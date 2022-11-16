@@ -147,12 +147,11 @@ void SupportPacketMetadata::PopulateMetadataContents(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void SupportPacketMetadata::OnMachineStatisticsLoaded(
     base::OnceClosure on_metadata_contents_populated) {
-  std::string machine_serial =
-      chromeos::system::StatisticsProvider::GetInstance()
-          ->GetEnterpriseMachineID();
-  if (!machine_serial.empty()) {
-    pii_[PIIType::kSerial].insert(machine_serial);
-    metadata_[kSerialNumberKey] = machine_serial;
+  const absl::optional<base::StringPiece> machine_serial =
+      chromeos::system::StatisticsProvider::GetInstance()->GetMachineID();
+  if (machine_serial && !machine_serial->empty()) {
+    pii_[PIIType::kSerial].insert(std::string(machine_serial.value()));
+    metadata_[kSerialNumberKey] = std::string(machine_serial.value());
   }
   std::move(on_metadata_contents_populated).Run();
 }
