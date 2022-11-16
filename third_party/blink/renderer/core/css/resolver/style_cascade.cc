@@ -224,9 +224,9 @@ void StyleCascade::Apply(CascadeFilter filter) {
   if (resolver.AuthorFlags() & CSSProperty::kBorderRadius)
     state_.StyleBuilder().SetHasAuthorBorderRadius();
 
-  if ((state_.Style()->InsideLink() != EInsideLink::kInsideVisitedLink &&
+  if ((state_.StyleBuilder().InsideLink() != EInsideLink::kInsideVisitedLink &&
        (resolver.AuthorFlags() & CSSProperty::kHighlightColors)) ||
-      (state_.Style()->InsideLink() == EInsideLink::kInsideVisitedLink &&
+      (state_.StyleBuilder().InsideLink() == EInsideLink::kInsideVisitedLink &&
        (resolver.AuthorFlags() & CSSProperty::kVisitedHighlightColors))) {
     state_.StyleBuilder().SetHasAuthorHighlightColors();
   }
@@ -409,8 +409,8 @@ void StyleCascade::ApplyCascadeAffecting(CascadeResolver& resolver) {
   // direction/writing-mode. If either property ends up with another value,
   // our assumption was incorrect, and we have to Reanalyze with the correct
   // values on ComputedStyle.
-  auto direction = state_.Style()->Direction();
-  auto writing_mode = state_.Style()->GetWritingMode();
+  auto direction = state_.StyleBuilder().Direction();
+  auto writing_mode = state_.StyleBuilder().GetWritingMode();
 
   if (map_.NativeBitset().Has(CSSPropertyID::kDirection)) {
     LookupAndApply(GetCSSPropertyDirection(), resolver);
@@ -420,8 +420,8 @@ void StyleCascade::ApplyCascadeAffecting(CascadeResolver& resolver) {
   }
 
   if (depends_on_cascade_affecting_property_) {
-    if (direction != state_.Style()->Direction() ||
-        writing_mode != state_.Style()->GetWritingMode()) {
+    if (direction != state_.StyleBuilder().Direction() ||
+        writing_mode != state_.StyleBuilder().GetWritingMode()) {
       Reanalyze();
     }
   }
@@ -1188,8 +1188,9 @@ const CSSProperty& StyleCascade::ResolveSurrogate(const CSSProperty& property) {
   // currently a flag to distinguish such surrogates from e.g. css-logical
   // properties.
   depends_on_cascade_affecting_property_ = true;
-  const CSSProperty* original = property.SurrogateFor(
-      state_.Style()->Direction(), state_.Style()->GetWritingMode());
+  const CSSProperty* original =
+      property.SurrogateFor(state_.StyleBuilder().Direction(),
+                            state_.StyleBuilder().GetWritingMode());
   DCHECK(original);
   return *original;
 }
