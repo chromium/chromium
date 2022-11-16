@@ -136,7 +136,6 @@ void TabManagerStatsCollector::OnSessionRestoreStartedLoadingTabs() {
 void TabManagerStatsCollector::OnSessionRestoreFinishedLoadingTabs() {
   DCHECK(is_session_restore_loading_tabs_);
 
-  UMA_HISTOGRAM_BOOLEAN(kHistogramSessionOverlapSessionRestore, false);
   if (swap_metrics_driver_)
     swap_metrics_driver_->UpdateMetrics();
 
@@ -226,10 +225,6 @@ const char
     TabManagerStatsCollector::kHistogramSessionRestoreTabSwitchLoadTime[] =
         "TabManager.Experimental.SessionRestore.TabSwitchLoadTime."
         "UntilTabIsLoaded";
-
-// static
-const char TabManagerStatsCollector::kHistogramSessionOverlapSessionRestore[] =
-    "TabManager.SessionOverlap.SessionRestore";
 
 // static
 constexpr base::TimeDelta

@@ -101,7 +101,6 @@ class TabManagerStatsCollector final : public SessionRestoreObserver {
 
   static const char kHistogramSessionRestoreSwitchToTab[];
   static const char kHistogramSessionRestoreTabSwitchLoadTime[];
-  static const char kHistogramSessionOverlapSessionRestore[];
 
   // The rough sampling interval for low-frequency sampled stats. This should
   // be O(minutes).

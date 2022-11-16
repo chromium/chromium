@@ -1428,19 +1428,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TabManager.SessionOverlap.SessionRestore"
-    enum="BooleanOverlap" expires_after="M77">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    Whether session restore is overlapped with other types of session, e.g.,
-    background tab opening. Session restore is the duration from the time when
-    the browser starts to restore tabs until the time when the browser has
-    finished loading those tabs or when the browser stops loading tabs due to
-    memory pressure. This metric helps to understand how often session restore
-    has overlap with other sessions.
-  </summary>
-</histogram>
-
 <histogram name="TabManager.SessionRestore.SwitchToTab" enum="TabLoadingState"
     expires_after="M79">
   <owner>chrisha@chromium.org</owner>
