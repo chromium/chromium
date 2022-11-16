@@ -712,7 +712,10 @@ void vpx_hadamard_16x16_neon(const int16_t* src_diff,
 void vpx_hadamard_32x32_c(const int16_t* src_diff,
                           ptrdiff_t src_stride,
                           tran_low_t* coeff);
-#define vpx_hadamard_32x32 vpx_hadamard_32x32_c
+void vpx_hadamard_32x32_neon(const int16_t* src_diff,
+                             ptrdiff_t src_stride,
+                             tran_low_t* coeff);
+#define vpx_hadamard_32x32 vpx_hadamard_32x32_neon
 
 void vpx_hadamard_8x8_c(const int16_t* src_diff,
                         ptrdiff_t src_stride,
@@ -3530,7 +3533,10 @@ void vpx_highbd_fdct16x16_1_neon(const int16_t* input,
 void vpx_highbd_fdct32x32_c(const int16_t* input,
                             tran_low_t* output,
                             int stride);
-#define vpx_highbd_fdct32x32 vpx_highbd_fdct32x32_c
+void vpx_highbd_fdct32x32_neon(const int16_t* input,
+                               tran_low_t* output,
+                               int stride);
+#define vpx_highbd_fdct32x32 vpx_highbd_fdct32x32_neon
 
 void vpx_highbd_fdct32x32_1_c(const int16_t* input,
                               tran_low_t* output,
@@ -3543,7 +3549,10 @@ void vpx_highbd_fdct32x32_1_neon(const int16_t* input,
 void vpx_highbd_fdct32x32_rd_c(const int16_t* input,
                                tran_low_t* output,
                                int stride);
-#define vpx_highbd_fdct32x32_rd vpx_highbd_fdct32x32_rd_c
+void vpx_highbd_fdct32x32_rd_neon(const int16_t* input,
+                                  tran_low_t* output,
+                                  int stride);
+#define vpx_highbd_fdct32x32_rd vpx_highbd_fdct32x32_rd_neon
 
 void vpx_highbd_fdct4x4_c(const int16_t* input, tran_low_t* output, int stride);
 void vpx_highbd_fdct4x4_neon(const int16_t* input,

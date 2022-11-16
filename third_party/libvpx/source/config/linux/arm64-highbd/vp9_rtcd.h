@@ -146,7 +146,11 @@ void vp9_highbd_fht4x4_c(const int16_t* input,
                          tran_low_t* output,
                          int stride,
                          int tx_type);
-#define vp9_highbd_fht4x4 vp9_highbd_fht4x4_c
+void vp9_highbd_fht4x4_neon(const int16_t* input,
+                            tran_low_t* output,
+                            int stride,
+                            int tx_type);
+#define vp9_highbd_fht4x4 vp9_highbd_fht4x4_neon
 
 void vp9_highbd_fht8x8_c(const int16_t* input,
                          tran_low_t* output,
