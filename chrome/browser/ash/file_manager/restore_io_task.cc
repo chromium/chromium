@@ -128,21 +128,23 @@ void RestoreIOTask::ValidateTrashInfo(size_t idx) {
 
 void RestoreIOTask::EnsureParentRestorePathExists(
     size_t idx,
-    base::FileErrorOr<trash::ParsedTrashInfoData> parsed_data) {
-  if (!parsed_data.has_value()) {
-    progress_.sources[idx].error = parsed_data.error();
+    trash::ParsedTrashInfoDataOrError parsed_data_or_error) {
+  if (!parsed_data_or_error.has_value()) {
+    progress_.sources[idx].error =
+        trash::ValidationErrorToFileError(parsed_data_or_error.error());
     Complete(State::kError);
     return;
   }
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&CreateNestedPath,
-                     parsed_data.value().absolute_restore_path.DirName()),
+      base::BindOnce(
+          &CreateNestedPath,
+          parsed_data_or_error.value().absolute_restore_path.DirName()),
       base::BindOnce(&RestoreIOTask::OnParentRestorePathExists,
                      weak_ptr_factory_.GetWeakPtr(), idx,
-                     parsed_data.value().trashed_file_path,
-                     parsed_data.value().absolute_restore_path));
+                     parsed_data_or_error.value().trashed_file_path,
+                     parsed_data_or_error.value().absolute_restore_path));
 }
 
 void RestoreIOTask::OnParentRestorePathExists(

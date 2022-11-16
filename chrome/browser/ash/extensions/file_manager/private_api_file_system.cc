@@ -1644,12 +1644,13 @@ FileManagerPrivateInternalParseTrashInfoFilesFunction::Run() {
   validator_ = std::make_unique<file_manager::trash::TrashInfoValidator>(
       profile, /*base_path=*/base::FilePath());
 
-  auto barrier_callback = base::BarrierCallback<
-      base::FileErrorOr<file_manager::trash::ParsedTrashInfoData>>(
-      trash_info_paths.size(),
-      base::BindOnce(&FileManagerPrivateInternalParseTrashInfoFilesFunction::
-                         OnTrashInfoFilesParsed,
-                     this));
+  auto barrier_callback =
+      base::BarrierCallback<file_manager::trash::ParsedTrashInfoDataOrError>(
+          trash_info_paths.size(),
+          base::BindOnce(
+              &FileManagerPrivateInternalParseTrashInfoFilesFunction::
+                  OnTrashInfoFilesParsed,
+              this));
 
   for (const base::FilePath& path : trash_info_paths) {
     validator_->ValidateAndParseTrashInfo(std::move(path), barrier_callback);
@@ -1660,8 +1661,8 @@ FileManagerPrivateInternalParseTrashInfoFilesFunction::Run() {
 
 void FileManagerPrivateInternalParseTrashInfoFilesFunction::
     OnTrashInfoFilesParsed(
-        std::vector<base::FileErrorOr<file_manager::trash::ParsedTrashInfoData>>
-            parsed_data) {
+        std::vector<file_manager::trash::ParsedTrashInfoDataOrError>
+            parsed_data_or_error) {
   // The underlying trash service could potentially live longer than the Files
   // window that invoked this function, ensure the frame host and browser
   // context are alive before continuing.
@@ -1676,24 +1677,24 @@ void FileManagerPrivateInternalParseTrashInfoFilesFunction::
   std::vector<file_manager::trash::ParsedTrashInfoData> valid_data;
   url::Origin origin = render_frame_host()->GetLastCommittedOrigin();
 
-  for (auto& trash_info_data : parsed_data) {
-    if (!trash_info_data.has_value()) {
+  for (auto& trash_info_data_or_error : parsed_data_or_error) {
+    if (!trash_info_data_or_error.has_value()) {
       LOG(ERROR) << "Failed parsing trashinfo file: "
-                 << trash_info_data.error();
+                 << trash_info_data_or_error.error();
       continue;
     }
 
     file_manager::util::FileDefinition file_definition;
     if (!file_manager::util::ConvertAbsoluteFilePathToRelativeFileSystemPath(
             Profile::FromBrowserContext(browser_context()), origin.GetURL(),
-            trash_info_data.value().absolute_restore_path,
+            trash_info_data_or_error.value().absolute_restore_path,
             &file_definition.virtual_path)) {
       LOG(ERROR) << "Failed to convert absolute path to relative path";
       continue;
     }
 
     file_definition_list.push_back(std::move(file_definition));
-    valid_data.push_back(std::move(trash_info_data.value()));
+    valid_data.push_back(std::move(trash_info_data_or_error.value()));
   }
 
   file_manager::util::ConvertFileDefinitionListToEntryDefinitionList(

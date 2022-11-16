@@ -17,6 +17,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ash/extensions/file_manager/logged_extension_function.h"
 #include "chrome/browser/ash/file_manager/trash_info_validator.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
@@ -542,8 +543,7 @@ class FileManagerPrivateInternalParseTrashInfoFilesFunction
   // retrieved from the .trashinfo files. If any are error'd out they are logged
   // and ultimately discarded.
   void OnTrashInfoFilesParsed(
-      std::vector<base::FileErrorOr<file_manager::trash::ParsedTrashInfoData>>
-          parsed_data);
+      std::vector<file_manager::trash::ParsedTrashInfoDataOrError> parsed_data);
 
   // After converting the restorePath (converted to Entry to ensure we can
   // perform a getMetadata on it to verify existence) zip the 2 `std::vector`'s

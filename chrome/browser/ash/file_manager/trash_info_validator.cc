@@ -6,6 +6,7 @@
 
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -18,9 +19,9 @@ namespace file_manager::trash {
 
 namespace {
 
-void RunCallbackWithError(base::File::Error error,
+void RunCallbackWithError(ValidationError error,
                           ValidateAndParseTrashInfoCallback callback) {
-  std::move(callback).Run(base::unexpected(error));
+  std::move(callback).Run(base::unexpected<ValidationError>(std::move(error)));
 }
 
 }  // namespace
@@ -31,6 +32,43 @@ ParsedTrashInfoData::~ParsedTrashInfoData() = default;
 ParsedTrashInfoData::ParsedTrashInfoData(ParsedTrashInfoData&& other) = default;
 ParsedTrashInfoData& ParsedTrashInfoData::operator=(
     ParsedTrashInfoData&& other) = default;
+
+std::ostream& operator<<(std::ostream& out, const ValidationError& value) {
+  switch (value) {
+    case ValidationError::kFileNotExist:
+      out << "kFileNotExist";
+      break;
+    case ValidationError::kInfoNotExist:
+      out << "kInfoNotExist";
+      break;
+    case ValidationError::kInfoFileInvalidLocation:
+      out << "kInfoFileInvalidLocation";
+      break;
+    case ValidationError::kInfoFileInvalid:
+      out << "kInfoFileInvalid";
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+  return out;
+}
+
+base::File::Error ValidationErrorToFileError(ValidationError error) {
+  switch (error) {
+    case ValidationError::kFileNotExist:
+      return base::File::FILE_ERROR_NOT_FOUND;
+    case ValidationError::kInfoNotExist:
+      return base::File::FILE_ERROR_NOT_FOUND;
+    case ValidationError::kInfoFileInvalidLocation:
+      return base::File::FILE_ERROR_INVALID_URL;
+    case ValidationError::kInfoFileInvalid:
+      return base::File::FILE_ERROR_INVALID_OPERATION;
+    default:
+      NOTREACHED();
+      break;
+  }
+}
 
 TrashInfoValidator::TrashInfoValidator(Profile* profile,
                                        const base::FilePath& base_path) {
@@ -55,7 +93,7 @@ void TrashInfoValidator::ValidateAndParseTrashInfo(
     ValidateAndParseTrashInfoCallback callback) {
   // Validates the supplied file ends in a .trashinfo extension.
   if (trash_info_path.FinalExtension() != kTrashInfoExtension) {
-    RunCallbackWithError(base::File::FILE_ERROR_INVALID_URL,
+    RunCallbackWithError(ValidationError::kInfoFileInvalid,
                          std::move(callback));
     return;
   }
@@ -73,7 +111,7 @@ void TrashInfoValidator::ValidateAndParseTrashInfo(
   }
 
   if (mount_point_path.empty() || trash_folder_location.empty()) {
-    RunCallbackWithError(base::File::FILE_ERROR_INVALID_OPERATION,
+    RunCallbackWithError(ValidationError::kInfoFileInvalidLocation,
                          std::move(callback));
     return;
   }
@@ -100,7 +138,7 @@ void TrashInfoValidator::OnTrashedFileExists(
     ValidateAndParseTrashInfoCallback callback,
     bool exists) {
   if (!exists) {
-    RunCallbackWithError(base::File::FILE_ERROR_NOT_FOUND, std::move(callback));
+    RunCallbackWithError(ValidationError::kFileNotExist, std::move(callback));
     return;
   }
 
@@ -123,14 +161,17 @@ void TrashInfoValidator::OnTrashInfoParsed(
     const base::FilePath& restore_path,
     base::Time deletion_date) {
   if (status != base::File::FILE_OK) {
-    RunCallbackWithError(status, std::move(callback));
+    RunCallbackWithError((status == base::File::FILE_ERROR_NOT_FOUND)
+                             ? ValidationError::kInfoNotExist
+                             : ValidationError::kInfoFileInvalid,
+                         std::move(callback));
     return;
   }
 
   // The restore path that was parsed could be empty or not have a leading "/".
   if (restore_path.empty() ||
       restore_path.value()[0] != base::FilePath::kSeparators[0]) {
-    RunCallbackWithError(base::File::FILE_ERROR_INVALID_URL,
+    RunCallbackWithError(ValidationError::kInfoFileInvalid,
                          std::move(callback));
     return;
   }
@@ -147,7 +188,8 @@ void TrashInfoValidator::OnTrashInfoParsed(
   parsed_data.absolute_restore_path = std::move(absolute_restore_path);
   parsed_data.deletion_date = std::move(deletion_date);
 
-  std::move(callback).Run(std::move(parsed_data));
+  std::move(callback).Run(
+      base::ok<ParsedTrashInfoData>(std::move(parsed_data)));
 }
 
 }  // namespace file_manager::trash

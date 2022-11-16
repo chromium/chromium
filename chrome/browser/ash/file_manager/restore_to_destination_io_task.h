@@ -8,11 +8,11 @@
 #include <memory>
 #include <vector>
 
-#include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/trash_info_validator.h"
@@ -65,7 +65,7 @@ class RestoreToDestinationIOTask : public IOTask {
   // `move_io_task`
   void OnTrashInfoParsed(
       size_t idx,
-      base::FileErrorOr<trash::ParsedTrashInfoData> parsed_data);
+      trash::ParsedTrashInfoDataOrError parsed_data_or_error);
 
   // Used to intercept the `move_io_task_` ProgressCallback and ensure the
   // progress is coming from the current task with the relevant task_id.

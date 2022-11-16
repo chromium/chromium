@@ -7,10 +7,9 @@
 
 #include <utility>
 
-#include "base/callback.h"
-#include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chromeos/ash/components/trash_service/public/cpp/trash_info_parser.h"
 
@@ -41,9 +40,25 @@ struct ParsedTrashInfoData {
   base::Time deletion_date;
 };
 
+// Possible validation errors that may arise.
+enum class ValidationError {
+  kFileNotExist = 0,
+  kInfoNotExist = 1,
+  kInfoFileInvalid = 2,
+  kInfoFileInvalidLocation = 3,
+};
+
+// Helper operator to enable pretty printing of the validation errors to logs.
+std::ostream& operator<<(std::ostream& out, const ValidationError& value);
+
+// Helper to convert the underlying `ValidationError` to a base::File::Error.
+base::File::Error ValidationErrorToFileError(ValidationError error);
+
 // Helper alias to define the callback type that is returned from the validator.
+using ParsedTrashInfoDataOrError =
+    base::expected<ParsedTrashInfoData, ValidationError>;
 using ValidateAndParseTrashInfoCallback =
-    base::OnceCallback<void(base::FileErrorOr<ParsedTrashInfoData>)>;
+    base::OnceCallback<void(ParsedTrashInfoDataOrError)>;
 
 // Validates and parses individual .trashinfo files to ensure they conform to
 // the XDG specification. This is exposed here as we need to get a file handler

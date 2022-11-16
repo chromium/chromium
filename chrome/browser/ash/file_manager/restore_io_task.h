@@ -54,7 +54,7 @@ class RestoreIOTask : public IOTask {
   // actually exists. In the event the file path has been removed, recreate it.
   void EnsureParentRestorePathExists(
       size_t idx,
-      base::FileErrorOr<trash::ParsedTrashInfoData> parsed_data);
+      trash::ParsedTrashInfoDataOrError parsed_data_or_error);
 
   void OnParentRestorePathExists(size_t idx,
                                  const base::FilePath& trashed_file_location,

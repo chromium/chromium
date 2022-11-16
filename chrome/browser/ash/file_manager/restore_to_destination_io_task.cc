@@ -11,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/file_manager/io_task_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/trash_info_validator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace file_manager::io_task {
@@ -109,19 +110,21 @@ void RestoreToDestinationIOTask::ValidateTrashInfo(size_t idx) {
 
 void RestoreToDestinationIOTask::OnTrashInfoParsed(
     size_t idx,
-    base::FileErrorOr<trash::ParsedTrashInfoData> parsed_data) {
-  if (!parsed_data.has_value()) {
-    progress_.sources[idx].error = parsed_data.error();
+    trash::ParsedTrashInfoDataOrError parsed_data_or_error) {
+  if (!parsed_data_or_error.has_value()) {
+    progress_.sources[idx].error =
+        trash::ValidationErrorToFileError(parsed_data_or_error.error());
     Complete(State::kError);
     return;
   }
 
   destination_file_names_.emplace_back(
-      parsed_data.value().absolute_restore_path.BaseName());
+      parsed_data_or_error.value().absolute_restore_path.BaseName());
   source_urls_.push_back(file_system_context_->CreateCrackedFileSystemURL(
       progress_.sources[idx].url.storage_key(),
       progress_.sources[idx].url.type(),
-      MakeRelativeFromBasePath(parsed_data.value().trashed_file_path)));
+      MakeRelativeFromBasePath(
+          parsed_data_or_error.value().trashed_file_path)));
 
   if (progress_.sources.size() == (idx + 1)) {
     // Make sure to reset the TrashInfoValidator as it is not required anymore.
