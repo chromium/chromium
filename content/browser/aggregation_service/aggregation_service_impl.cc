@@ -17,11 +17,13 @@
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/task/updateable_sequenced_task_runner.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -43,17 +45,16 @@ namespace content {
 
 namespace {
 
-// The shared task runner for all aggregation service storage operations. Note
-// that different AggregationServiceImpl instances perform operations on the
-// same task runner. This prevents any potential races when a given storage
-// context is destroyed and recreated using the same backing storage. This uses
-// BLOCK_SHUTDOWN as some data deletion operations may be running when the
-// browser is closed, and we want to ensure all data is deleted correctly.
-base::LazyThreadPoolSequencedTaskRunner g_storage_task_runner =
-    LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(
-        base::TaskTraits(base::TaskPriority::BEST_EFFORT,
-                         base::MayBlock(),
-                         base::TaskShutdownBehavior::BLOCK_SHUTDOWN));
+scoped_refptr<base::UpdateableSequencedTaskRunner> CreateStorageTaskRunner() {
+  // This uses BLOCK_SHUTDOWN as some data deletion operations may be running
+  // when the browser is closed, and we want to ensure all data is deleted
+  // correctly. Additionally, we use MUST_USE_FOREGROUND to avoid priority
+  // inversions if a task is already running when the priority is increased.
+  return base::ThreadPool::CreateUpdateableSequencedTaskRunner(
+      base::TaskTraits(base::TaskPriority::BEST_EFFORT, base::MayBlock(),
+                       base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
+                       base::ThreadPolicy::MUST_USE_FOREGROUND));
+}
 
 }  // namespace
 
@@ -61,13 +62,14 @@ AggregationServiceImpl::AggregationServiceImpl(
     bool run_in_memory,
     const base::FilePath& user_data_directory,
     StoragePartitionImpl* storage_partition)
-    : storage_(
+    : storage_task_runner_(CreateStorageTaskRunner()),
+      storage_(
           // Ensure storage is constructed first (and destroyed last) so we can
           // safely pass `this` as an `AggregationServiceStorageContext` in the
           // below constructors.
           // TODO(alexmt): Pass the storage directly to avoid an extra wrapper.
           base::SequenceBound<AggregationServiceStorageSql>(
-              g_storage_task_runner.Get(),
+              storage_task_runner_,
               run_in_memory,
               user_data_directory,
               base::DefaultClock::GetInstance())),
@@ -105,8 +107,9 @@ AggregationServiceImpl::AggregationServiceImpl(
     std::unique_ptr<AggregatableReportScheduler> scheduler,
     std::unique_ptr<AggregatableReportAssembler> assembler,
     std::unique_ptr<AggregatableReportSender> sender)
-    : storage_(base::SequenceBound<AggregationServiceStorageSql>(
-          g_storage_task_runner.Get(),
+    : storage_task_runner_(CreateStorageTaskRunner()),
+      storage_(base::SequenceBound<AggregationServiceStorageSql>(
+          storage_task_runner_,
           run_in_memory,
           user_data_directory,
           clock)),
@@ -142,18 +145,26 @@ void AggregationServiceImpl::ClearData(
     base::Time delete_end,
     StoragePartition::StorageKeyMatcherFunction filter,
     base::OnceClosure done) {
+  // When a clear data task is queued or running, we use a higher priority.
+  ++num_pending_clear_data_tasks_;
+  storage_task_runner_->UpdatePriority(base::TaskPriority::USER_VISIBLE);
+
   storage_.AsyncCall(&AggregationServiceStorage::ClearDataBetween)
       .WithArgs(delete_begin, delete_end, std::move(filter),
                 base::ElapsedTimer())
-      .Then(base::BindOnce(
-          [](base::OnceClosure done,
-             base::WeakPtr<AggregationServiceImpl> aggregation_service) {
-            std::move(done).Run();
+      .Then(std::move(done).Then(
+          base::BindOnce(&AggregationServiceImpl::OnClearDataComplete,
+                         weak_factory_.GetWeakPtr())));
+}
 
-            if (aggregation_service)
-              aggregation_service->NotifyRequestStorageModified();
-          },
-          std::move(done), weak_factory_.GetWeakPtr()));
+void AggregationServiceImpl::OnClearDataComplete() {
+  DCHECK_GT(num_pending_clear_data_tasks_, 0);
+  --num_pending_clear_data_tasks_;
+
+  // No more clear data tasks, so we can reset the priority.
+  if (num_pending_clear_data_tasks_ == 0)
+    storage_task_runner_->UpdatePriority(base::TaskPriority::BEST_EFFORT);
+  NotifyRequestStorageModified();
 }
 
 void AggregationServiceImpl::ScheduleReport(

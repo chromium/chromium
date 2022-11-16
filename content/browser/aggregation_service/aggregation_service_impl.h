@@ -12,6 +12,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/sequence_bound.h"
@@ -31,6 +32,7 @@ class GURL;
 namespace base {
 class Clock;
 class FilePath;
+class UpdateableSequencedTaskRunner;
 }  // namespace base
 
 namespace content {
@@ -135,6 +137,7 @@ class CONTENT_EXPORT AggregationServiceImpl
       absl::optional<AggregationServiceStorage::RequestId> request_id,
       AggregatableReport report,
       AggregatableReportSender::RequestStatus status);
+  void OnClearDataComplete();
 
   void OnGetRequestsToSendFromWebUI(
       base::OnceClosure reports_sent_callback,
@@ -147,6 +150,15 @@ class CONTENT_EXPORT AggregationServiceImpl
       AggregationServiceObserver::ReportStatus status);
 
   void NotifyRequestStorageModified();
+
+  // The task runner for all aggregation service storage operations. Updateable
+  // to allow for priority to be temporarily increased to `USER_VISIBLE` when a
+  // clear data task is queued or running. Otherwise `BEST_EFFORT` is used.
+  scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner_;
+
+  // How many clear data storage tasks are queued or running currently, i.e.
+  // have been posted but the reply has not been run.
+  int num_pending_clear_data_tasks_ = 0;
 
   base::SequenceBound<AggregationServiceStorage> storage_;
   std::unique_ptr<AggregatableReportScheduler> scheduler_;
