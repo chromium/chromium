@@ -51,7 +51,6 @@ source_set("libpng_sources") {
     "pnglibconf.h",
     "pngmem.c",
     "pngpread.c",
-    "pngprefix.h",
     "pngpriv.h",
     "pngread.c",
     "pngrio.c",

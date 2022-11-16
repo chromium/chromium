@@ -225,13 +225,4 @@
 #define PNG_USER_CHUNK_MALLOC_MAX 4000000L
 /* end of chromium settings */
 
-/* chromium prefixing */
-/*
- * This is necessary to build multiple copies of libpng.  We need this while pdfium builds
- * its own copy of libpng.
- */
-#define PNG_PREFIX
-#include "pngprefix.h"
-/* end of chromium prefixing */
-
 #endif /* PNGLCONF_H */
