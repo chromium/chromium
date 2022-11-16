@@ -117,7 +117,7 @@ void InvalidationsMessageHandler::OnUpdatedTopics(
     dict.Set("totalCount", topic_item.second);
     list_of_objects.Append(std::move(dict));
   }
-  FireWebUIListener("update-ids", base::Value(handler_name), list_of_objects);
+  FireWebUIListener("ids-updated", base::Value(handler_name), list_of_objects);
 }
 void InvalidationsMessageHandler::OnDebugMessage(
     const base::Value::Dict& details) {}
