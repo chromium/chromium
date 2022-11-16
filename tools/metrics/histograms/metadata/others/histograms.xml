@@ -4535,6 +4535,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Crashpad.CrashReportPending" enum="CrashpadReportPending"
     expires_after="M85">
+  <expired_intentionally>
+    Kept as a diagnostic metric.
+  </expired_intentionally>
   <owner>jperaza@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>
@@ -4543,6 +4546,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crashpad.CrashReportSize" units="bytes" expires_after="M85">
+  <expired_intentionally>
+    Kept as a diagnostic metric.
+  </expired_intentionally>
   <owner>jperaza@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>The size of a crash report minidump on disk when captured.</summary>
@@ -4550,6 +4556,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Crashpad.CrashUpload.AttemptSuccessful"
     enum="CrashpadUploadAttemptStatus" expires_after="M85">
+  <expired_intentionally>
+    Kept as a diagnostic metric.
+  </expired_intentionally>
   <owner>jperaza@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>Logs whether a crash uploaded succeeded or failed.</summary>
@@ -4557,6 +4566,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Crashpad.CrashUpload.Skipped"
     enum="CrashpadUploadSkippedReason" expires_after="M85">
+  <expired_intentionally>
+    Kept as a diagnostic metric.
+  </expired_intentionally>
   <owner>jperaza@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>The reason that a crash report upload was skipped.</summary>
@@ -4564,6 +4576,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Crashpad.ExceptionCaptureResult"
     enum="CrashpadExceptionCaptureResult" expires_after="M90">
+  <expired_intentionally>
+    Kept as a diagnostic metric.
+  </expired_intentionally>
   <owner>jperaza@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>The outcome of execution of the Crashpad exception handler.</summary>
@@ -4571,6 +4586,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Crashpad.ExceptionCode.Mac" enum="CrashpadMacExceptionCodes"
     expires_after="M90">
+  <expired_intentionally>
+    Kept as a diagnostic metric.
+  </expired_intentionally>
   <owner>mark@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>The exception code encountered in a crash on Mac OS X.</summary>
@@ -4578,6 +4596,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Crashpad.ExceptionCode.Win" enum="CrashpadWinExceptionCodes"
     expires_after="M90">
+  <expired_intentionally>
+    Kept as a diagnostic metric.
+  </expired_intentionally>
   <owner>jperaza@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>The exception code encountered in a crash on Windows.</summary>
@@ -4585,6 +4606,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Crashpad.ExceptionEncountered"
     enum="CrashpadExceptionProcessingState" expires_after="2021-08-22">
+  <expired_intentionally>
+    Kept as a diagnostic metric.
+  </expired_intentionally>
   <owner>jperaza@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>
@@ -4595,6 +4619,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Crashpad.HandlerCrash.ExceptionCode.Mac"
     enum="CrashpadMacExceptionCodes" expires_after="M90">
+  <expired_intentionally>
+    Kept as a diagnostic metric.
+  </expired_intentionally>
   <owner>mark@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>
@@ -4605,6 +4632,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Crashpad.HandlerCrash.ExceptionCode.Win"
     enum="CrashpadWinExceptionCodes" expires_after="M90">
+  <expired_intentionally>
+    Kept as a diagnostic metric.
+  </expired_intentionally>
   <owner>jperaza@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>
@@ -4615,6 +4645,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Crashpad.HandlerLifetimeMilestone"
     enum="CrashpadLifetimeMilestone" expires_after="M90">
+  <expired_intentionally>
+    Kept as a diagnostic metric.
+  </expired_intentionally>
   <owner>jperaza@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>Handler start/crash/exit events.</summary>
