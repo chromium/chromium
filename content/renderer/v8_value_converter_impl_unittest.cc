@@ -84,13 +84,13 @@ class V8ValueConverterImplTest : public testing::Test {
 
   void TearDown() override { context_.Reset(); }
 
-  std::string GetString(base::DictionaryValue* value, const std::string& key) {
-    std::string temp;
-    if (!value->GetString(key, &temp)) {
+  std::string GetString(base::Value::Dict* value, const std::string& key) {
+    std::string* temp = value->FindString(key);
+    if (!temp) {
       ADD_FAILURE();
       return std::string();
     }
-    return temp;
+    return *temp;
   }
 
   std::string GetString(v8::Local<v8::Object> value, const std::string& key) {
@@ -149,9 +149,9 @@ class V8ValueConverterImplTest : public testing::Test {
     return temp.As<v8::Int32>()->Value();
   }
 
-  bool IsNull(base::DictionaryValue* value, const std::string& key) {
-    base::Value* child = nullptr;
-    if (!value->Get(key, &child)) {
+  bool IsNull(base::Value::Dict* value, const std::string& key) {
+    base::Value* child = value->Find(key);
+    if (!child) {
       ADD_FAILURE();
       return false;
     }
@@ -452,17 +452,19 @@ TEST_F(V8ValueConverterImplTest, ObjectExceptions) {
 
   // Converting from v8 value should replace the foo property with null.
   V8ValueConverterImpl converter;
-  std::unique_ptr<base::DictionaryValue> converted(
-      base::DictionaryValue::From(converter.FromV8Value(object, context)));
-  ASSERT_TRUE(converted.get());
+  std::unique_ptr<base::Value> base_value =
+      converter.FromV8Value(object, context);
+  base::Value::Dict* converted = base_value->GetIfDict();
+  ASSERT_TRUE(converted);
+
   // http://code.google.com/p/v8/issues/detail?id=1342
-  // EXPECT_EQ(2u, converted->size());
-  // EXPECT_TRUE(IsNull(converted.get(), "foo"));
-  EXPECT_EQ(1u, converted->DictSize());
-  EXPECT_EQ("bar", GetString(converted.get(), "bar"));
+  // EXPECT_EQ(2u, converted);
+  // EXPECT_TRUE(IsNull(*converted, "foo"));
+  EXPECT_EQ(1u, converted->size());
+  EXPECT_EQ("bar", GetString(converted, "bar"));
 
   // Converting to v8 value should not trigger the setter.
-  converted->SetString("foo", "foo");
+  converted->Set("foo", "foo");
   v8::Local<v8::Object> copy =
       converter.ToV8Value(*converted, context).As<v8::Object>();
   EXPECT_FALSE(copy.IsEmpty());
@@ -533,9 +535,9 @@ TEST_F(V8ValueConverterImplTest, WeirdTypes) {
                 std::unique_ptr<base::Value>());
   TestWeirdType(converter, v8::Date::New(context, 1000).ToLocalChecked(),
                 base::Value::Type::DICTIONARY,
-                std::unique_ptr<base::Value>(new base::DictionaryValue()));
+                std::make_unique<base::Value>(base::Value::Type::DICT));
   TestWeirdType(converter, regex, base::Value::Type::DICTIONARY,
-                std::unique_ptr<base::Value>(new base::DictionaryValue()));
+                std::make_unique<base::Value>(base::Value::Type::DICT));
 
   converter.SetDateAllowed(true);
   TestWeirdType(converter, v8::Date::New(context, 1000).ToLocalChecked(),
@@ -563,10 +565,11 @@ TEST_F(V8ValueConverterImplTest, Prototype) {
   v8::Local<v8::Object> object = CompileRun<v8::Object>(context, source);
 
   V8ValueConverterImpl converter;
-  std::unique_ptr<base::DictionaryValue> result(
-      base::DictionaryValue::From(converter.FromV8Value(object, context)));
-  ASSERT_TRUE(result.get());
-  EXPECT_EQ(0u, result->DictSize());
+  std::unique_ptr<base::Value> base_value =
+      converter.FromV8Value(object, context);
+  base::Value::Dict* result = base_value->GetIfDict();
+  ASSERT_TRUE(result);
+  EXPECT_TRUE(result->empty());
 }
 
 TEST_F(V8ValueConverterImplTest, ObjectPrototypeSetter) {
@@ -723,11 +726,11 @@ TEST_F(V8ValueConverterImplTest, StripNullFromObjects) {
 
   V8ValueConverterImpl converter;
   converter.SetStripNullFromObjects(true);
-
-  std::unique_ptr<base::DictionaryValue> result(
-      base::DictionaryValue::From(converter.FromV8Value(object, context)));
-  ASSERT_TRUE(result.get());
-  EXPECT_EQ(0u, result->DictSize());
+  std::unique_ptr<base::Value> base_value =
+      converter.FromV8Value(object, context);
+  base::Value::Dict* result = base_value->GetIfDict();
+  ASSERT_TRUE(result);
+  EXPECT_TRUE(result->empty());
 }
 
 TEST_F(V8ValueConverterImplTest, RecursiveObjects) {
@@ -757,11 +760,12 @@ TEST_F(V8ValueConverterImplTest, RecursiveObjects) {
             object)
       .Check();
 
-  std::unique_ptr<base::DictionaryValue> object_result(
-      base::DictionaryValue::From(converter.FromV8Value(object, context)));
-  ASSERT_TRUE(object_result.get());
-  EXPECT_EQ(2u, object_result->DictSize());
-  EXPECT_TRUE(IsNull(object_result.get(), "obj"));
+  std::unique_ptr<base::Value> base_value =
+      converter.FromV8Value(object, context);
+  base::Value::Dict* object_result = base_value->GetIfDict();
+  ASSERT_TRUE(object_result);
+  EXPECT_EQ(2u, object_result->size());
+  EXPECT_TRUE(IsNull(object_result, "obj"));
 
   v8::Local<v8::Array> array = v8::Array::New(isolate_).As<v8::Array>();
   ASSERT_FALSE(array.IsEmpty());
@@ -961,15 +965,15 @@ TEST_F(V8ValueConverterImplTest, DetectCycles) {
       .Check();
 
   // The first repetition should be trimmed and replaced by a null value.
-  base::DictionaryValue expected_dictionary;
-  expected_dictionary.SetKey(key, base::Value());
+  base::Value::Dict expected_dictionary;
+  expected_dictionary.Set(key, base::Value());
 
   // The actual result.
-  std::unique_ptr<base::Value> actual_dictionary(
-      converter.FromV8Value(recursive_object, context));
-  ASSERT_TRUE(actual_dictionary.get());
-
-  EXPECT_TRUE(expected_dictionary == *actual_dictionary);
+  std::unique_ptr<base::Value> base_value =
+      converter.FromV8Value(recursive_object, context);
+  base::Value::Dict* actual_dictionary = base_value->GetIfDict();
+  ASSERT_TRUE(actual_dictionary);
+  EXPECT_EQ(expected_dictionary, *actual_dictionary);
 }
 
 // Tests that reused object values with no cycles do not get nullified.
@@ -993,21 +997,22 @@ TEST_F(V8ValueConverterImplTest, ReuseObjects) {
     v8::Local<v8::Object> object = CompileRun<v8::Object>(context, source);
 
     // The actual result.
-    std::unique_ptr<base::DictionaryValue> result(
-        base::DictionaryValue::From(converter.FromV8Value(object, context)));
-    ASSERT_TRUE(result.get());
-    EXPECT_EQ(2u, result->DictSize());
+    std::unique_ptr<base::Value> base_value =
+        converter.FromV8Value(object, context);
+    base::Value::Dict* result = base_value->GetIfDict();
+    ASSERT_TRUE(result);
+    EXPECT_EQ(2u, result->size());
 
     {
-      base::DictionaryValue* one_dict = nullptr;
       const char key1[] = "one";
-      ASSERT_TRUE(result->GetDictionary(key1, &one_dict));
+      base::Value::Dict* one_dict = result->FindDict(key1);
+      ASSERT_TRUE(one_dict);
       EXPECT_EQ("another same value", GetString(one_dict, "key"));
     }
     {
-      base::DictionaryValue* two_dict = nullptr;
       const char key2[] = "two";
-      ASSERT_TRUE(result->GetDictionary(key2, &two_dict));
+      base::Value::Dict* two_dict = result->FindDict(key2);
+      ASSERT_TRUE(two_dict);
       EXPECT_EQ("another same value", GetString(two_dict, "key"));
     }
   }
