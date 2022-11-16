@@ -37,6 +37,29 @@ bool InternalDisplayThrottled(
   // No internal displays
   return false;
 }
+
+// Move all internal panel displays to the front of the display list. Otherwise,
+// the list remains in order.
+void MoveInternalDisplaysToTheFront(std::vector<DisplaySnapshot*>& displays) {
+  DisplayConfigurator::DisplayStateList sorted_displays;
+
+  // First pass for internal panels.
+  for (DisplaySnapshot* display : displays) {
+    if (display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL)
+      sorted_displays.push_back(display);
+  }
+
+  // Second pass for the rest.
+  for (DisplaySnapshot* display : displays) {
+    if (display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL)
+      continue;
+
+    sorted_displays.push_back(display);
+  }
+
+  displays.swap(sorted_displays);
+}
+
 }  // namespace
 
 UpdateDisplayConfigurationTask::UpdateDisplayConfigurationTask(
@@ -89,6 +112,7 @@ void UpdateDisplayConfigurationTask::OnDisplaySnapshotsInvalidated() {
 void UpdateDisplayConfigurationTask::OnDisplaysUpdated(
     const std::vector<DisplaySnapshot*>& displays) {
   cached_displays_ = displays;
+  MoveInternalDisplaysToTheFront(cached_displays_);
   requesting_displays_ = false;
 
   // If the user hasn't requested a display state, update it using the requested

@@ -1005,6 +1005,48 @@ TEST_F(DisplayConfiguratorTest, UpdateCachedOutputsEvenAfterFailure) {
   EXPECT_EQ(outputs_[1]->current_mode(), cached[1]->current_mode());
 }
 
+TEST_F(DisplayConfiguratorTest, VerifyInternalPanelIsAtTheTopOfTheList) {
+  InitWithOutputs(&small_mode_);
+
+  // Initialize with 3 displays where the internal panel is not at the top of
+  // the display list.
+  outputs_[0] = FakeDisplaySnapshot::Builder()
+                    .SetId(1L)
+                    .SetType(DISPLAY_CONNECTION_TYPE_DISPLAYPORT)
+                    .SetNativeMode(big_mode_.Clone())
+                    .Build();
+  outputs_[1] = FakeDisplaySnapshot::Builder()
+                    .SetId(2L)
+                    .SetType(DISPLAY_CONNECTION_TYPE_INTERNAL)
+                    .SetNativeMode(small_mode_.Clone())
+                    .Build();
+  outputs_[2] = FakeDisplaySnapshot::Builder()
+                    .SetId(3L)
+                    .SetType(DISPLAY_CONNECTION_TYPE_HDMI)
+                    .SetNativeMode(big_mode_.Clone())
+                    .Build();
+
+  native_display_delegate_->set_max_configurable_pixels(
+      big_mode_.size().GetArea());
+  UpdateOutputs(3, true);
+
+  // We expect the internal display to be at the top of DisplayConfigurator's
+  // |cached_displays_| list post configuration. The rest of the display should
+  // be in the original order from DRM.
+  const DisplayConfigurator::DisplayStateList& cached =
+      configurator_.cached_displays();
+  ASSERT_EQ(cached.size(), 3U);
+
+  EXPECT_EQ(cached[0]->display_id(), 2L);
+  EXPECT_EQ(cached[0]->type(), DISPLAY_CONNECTION_TYPE_INTERNAL);
+
+  EXPECT_EQ(cached[1]->display_id(), 1L);
+  EXPECT_EQ(cached[1]->type(), DISPLAY_CONNECTION_TYPE_DISPLAYPORT);
+
+  EXPECT_EQ(cached[2]->display_id(), 3L);
+  EXPECT_EQ(cached[2]->type(), DISPLAY_CONNECTION_TYPE_HDMI);
+}
+
 TEST_F(DisplayConfiguratorTest, DoNotConfigureWithSuspendedDisplays) {
   InitWithOutputs(&small_mode_);
 
