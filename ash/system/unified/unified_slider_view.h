@@ -7,7 +7,8 @@
 
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/style/icon_button.h"
-#include "quick_settings_slider.h"
+#include "ui/views/controls/slider.h"
+#include "ui/views/view.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -15,8 +16,6 @@ struct VectorIcon;
 
 namespace views {
 class Label;
-class Slider;
-class View;
 }  // namespace views
 
 namespace ash {
@@ -48,22 +47,17 @@ class UnifiedSliderListener : public views::SliderListener {
 // left side and a slider on the right side.
 class UnifiedSliderView : public views::View {
  public:
-  // If |read_only| is set, the slider will not accept any user events.
+  // If |readonly| is set, the slider will not accept any user events.
   UnifiedSliderView(views::Button::PressedCallback callback,
                     UnifiedSliderListener* listener,
                     const gfx::VectorIcon& icon,
                     int accessible_name_id,
-                    bool read_only = false);
+                    bool readonly = false);
 
   UnifiedSliderView(const UnifiedSliderView&) = delete;
   UnifiedSliderView& operator=(const UnifiedSliderView&) = delete;
 
   ~UnifiedSliderView() override;
-
-  std::unique_ptr<views::Slider> CreateSlider(
-      UnifiedSliderListener* listener,
-      bool read_only,
-      QuickSettingsSlider::Style slider_style);
 
   IconButton* button() { return button_; }
   views::Slider* slider() { return slider_; }
