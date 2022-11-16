@@ -57,6 +57,8 @@
                 "fuchsia.camera3.DeviceWatcher",
                 "fuchsia.device.NameProvider",
                 "fuchsia.element.GraphicalPresenter",
+                "fuchsia.feedback.ComponentDataRegister",
+                "fuchsia.feedback.CrashReportingProductRegister",
                 "fuchsia.fonts.Provider",
                 "fuchsia.hwinfo.Product",
                 "fuchsia.input.virtualkeyboard.ControllerCreator",

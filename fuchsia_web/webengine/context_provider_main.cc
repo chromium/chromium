@@ -23,10 +23,12 @@
 
 namespace {
 
+// LINT.IfChange(web_engine_crash_product_name)
 // This must match the value in web_instance_host.cc
 constexpr char kCrashProductName[] = "FuchsiaWebEngine";
+// LINT.ThenChange(//fuchsia_web/webinstance_host/web_instance_host.cc:web_engine_crash_product_name)
 
-// TODO(https://fxbug.dev/51490): Use a programmatic mechanism to obtain this.
+// The URL cannot be obtained programmatically - see fxbug.dev/51490.
 constexpr char kComponentUrl[] =
     "fuchsia-pkg://fuchsia.com/web_engine#meta/context_provider.cm";
 constexpr char kComponentUrlCfv1[] =

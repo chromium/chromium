@@ -11,6 +11,7 @@ source_set("fuchsia_component_support") {
   # Only for use by Fuchsia Components.
   visibility += [
     ":unit_tests",
+    "//chrome/browser",
     "//chromecast/internal/*",
     "//fuchsia_web/runners/*",
     "//fuchsia_web/webengine/*",

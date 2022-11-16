@@ -33,6 +33,7 @@ class ChromeBrowserMainPartsFuchsia : public ChromeBrowserMainParts,
 
   // content::BrowserMainParts overrides.
   int PreEarlyInitialization() override;
+  void PostCreateMainMessageLoop() override;
   int PreMainMessageLoopRun() override;
   void PostMainMessageLoopRun() override;
 

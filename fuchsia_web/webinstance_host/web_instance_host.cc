@@ -59,7 +59,7 @@
 namespace {
 
 // Production URL for web hosting Component instances.
-// TODO(fxbug.dev/51490): Use a programmatic mechanism to obtain this.
+// The URL cannot be obtained programmatically - see fxbug.dev/51490.
 const char kWebInstanceComponentUrl[] =
     "fuchsia-pkg://fuchsia.com/web_engine#meta/web_instance.cmx";
 
@@ -103,7 +103,10 @@ constexpr char kClearKeyKeySystem[] = "org.w3.clearkey";
 // is available - see crbug.com/1211174). This should only be called once per
 // process, and the calling thread must have an async_dispatcher.
 void RegisterWebInstanceProductData() {
+  // LINT.IfChange(web_engine_crash_product_name)
   constexpr char kCrashProductName[] = "FuchsiaWebEngine";
+  // LINT.ThenChange(//fuchsia_web/webengine/context_provider_main.cc:web_engine_crash_product_name)
+
   constexpr char kFeedbackAnnotationsNamespace[] = "web-engine";
 
   fuchsia_component_support::RegisterProductDataForCrashReporting(
