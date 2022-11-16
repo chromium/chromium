@@ -102,12 +102,6 @@ Transform::Transform(const Quaternion& q)
           0, 0, 0, 1) {}
 // clang-format on
 
-// static
-const Transform& Transform::Identity() {
-  static const Transform kIdentity;
-  return kIdentity;
-}
-
 Matrix44 Transform::GetFullMatrix() const {
   if (LIKELY(!full_matrix_))
     return AxisTransform2dToMatrix44(axis_2d_);

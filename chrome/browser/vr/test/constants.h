@@ -13,7 +13,7 @@ namespace vr {
 
 // Proj matrix as used on a Pixel phone with the Daydream headset.
 gfx::Transform GetPixelDaydreamProjMatrix();
-gfx::Transform StartHeadPose();
+static constexpr gfx::Transform kStartHeadPose;
 static constexpr gfx::Vector3dF kStartControllerPosition(0.3, -0.3, -0.3);
 static constexpr gfx::Vector3dF kForwardVector(0.0f, 0.0f, -1.0f);
 static constexpr gfx::Vector3dF kBackwardVector(0.0f, 0.0f, 1.0f);

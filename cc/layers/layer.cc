@@ -72,6 +72,7 @@ static_assert(sizeof(Layer) == sizeof(SameSizeAsLayer),
 
 base::AtomicSequenceNumber g_next_layer_id;
 
+constexpr gfx::Transform Layer::kIdentityTransform;
 constexpr gfx::RoundedCornersF Layer::kNoRoundedCornersF;
 
 LayerDebugInfo::LayerDebugInfo() = default;

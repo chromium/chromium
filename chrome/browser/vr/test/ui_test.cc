@@ -258,7 +258,7 @@ bool UiTest::RunFor(base::TimeDelta delta) {
 bool UiTest::OnBeginFrame() const {
   bool changed = false;
   model_->current_time = current_time_;
-  changed |= scene_->OnBeginFrame(current_time_, StartHeadPose());
+  changed |= scene_->OnBeginFrame(current_time_, kStartHeadPose);
   if (scene_->HasDirtyTextures()) {
     scene_->UpdateTextures();
     changed = true;

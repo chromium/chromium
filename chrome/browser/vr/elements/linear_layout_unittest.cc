@@ -189,7 +189,7 @@ TEST(LinearLayout, NestedLayouts) {
 
   auto scene = std::make_unique<UiScene>();
   scene->AddUiElement(kRoot, std::move(parent_layout));
-  scene->OnBeginFrame(gfx::MicrosecondsToTicks(1), StartHeadPose());
+  scene->OnBeginFrame(gfx::MicrosecondsToTicks(1), kStartHeadPose);
 
   // Ensure that layouts expand to include the cumulative size of children.
   EXPECT_FLOAT_EQ(p_parent_layout->size().width(), 999.f);
@@ -219,25 +219,25 @@ TEST(LinearLayout, SpecifiedMajorExtent) {
 
   auto scene = std::make_unique<UiScene>();
   scene->AddUiElement(kRoot, std::move(layout));
-  scene->OnBeginFrame(gfx::MicrosecondsToTicks(0), StartHeadPose());
+  scene->OnBeginFrame(gfx::MicrosecondsToTicks(0), kStartHeadPose);
   EXPECT_FLOAT_EQ(p_layout->size().width(), 3.f);
 
   // Element grows to fit.
   p_layout->set_layout_length(3.5f);
   p_resizable_child->set_resizable_by_layout(true);
-  scene->OnBeginFrame(gfx::MicrosecondsToTicks(1), StartHeadPose());
+  scene->OnBeginFrame(gfx::MicrosecondsToTicks(1), kStartHeadPose);
   EXPECT_FLOAT_EQ(p_layout->size().width(), 3.5f);
   EXPECT_FLOAT_EQ(p_resizable_child->size().width(), 1.5f);
 
   // Element shrinks to fit.
   p_layout->set_layout_length(2.5f);
-  scene->OnBeginFrame(gfx::MicrosecondsToTicks(0), StartHeadPose());
+  scene->OnBeginFrame(gfx::MicrosecondsToTicks(0), kStartHeadPose);
   EXPECT_FLOAT_EQ(p_layout->size().width(), 2.5f);
   EXPECT_FLOAT_EQ(p_resizable_child->size().width(), 0.5f);
 
   // Element shrinks to 0 if there's no size for it.
   p_layout->set_layout_length(1.5f);
-  scene->OnBeginFrame(gfx::MicrosecondsToTicks(0), StartHeadPose());
+  scene->OnBeginFrame(gfx::MicrosecondsToTicks(0), kStartHeadPose);
   EXPECT_FLOAT_EQ(p_layout->size().width(), 2.0f);
   EXPECT_FLOAT_EQ(p_resizable_child->size().width(), 0.f);
 }

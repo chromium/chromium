@@ -36,10 +36,10 @@ class GEOMETRY_EXPORT AxisTransform2d {
     return AxisTransform2d(scale, translation);
   }
 
-  bool operator==(const AxisTransform2d& other) const {
+  constexpr bool operator==(const AxisTransform2d& other) const {
     return scale_ == other.scale_ && translation_ == other.translation_;
   }
-  bool operator!=(const AxisTransform2d& other) const {
+  constexpr bool operator!=(const AxisTransform2d& other) const {
     return !(*this == other);
   }
 
@@ -111,8 +111,8 @@ class GEOMETRY_EXPORT AxisTransform2d {
   // It's a simplified version of Matrix44::Decompose2d().
   DecomposedTransform Decompose() const;
 
-  const Vector2dF& scale() const { return scale_; }
-  const Vector2dF& translation() const { return translation_; }
+  constexpr const Vector2dF& scale() const { return scale_; }
+  constexpr const Vector2dF& translation() const { return translation_; }
 
   std::string ToString() const;
 

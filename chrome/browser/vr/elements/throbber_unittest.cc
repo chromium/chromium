@@ -35,11 +35,11 @@ TEST(Throbber, CircleGrowAnimation) {
   scene.AddUiElement(kRoot, std::move(element));
 
   throbber->SetCircleGrowAnimationEnabled(true);
-  scene.OnBeginFrame(gfx::MsToTicks(1), StartHeadPose());
+  scene.OnBeginFrame(gfx::MsToTicks(1), kStartHeadPose);
   EXPECT_TRUE(throbber->IsAnimatingProperty(CIRCLE_GROW));
 
   // Half way through animation.
-  scene.OnBeginFrame(gfx::MsToTicks(501), StartHeadPose());
+  scene.OnBeginFrame(gfx::MsToTicks(501), kStartHeadPose);
   EXPECT_FLOAT_EQ(throbber->opacity(), kInitialOpacity / 2);
   EXPECT_FLOAT_EQ(
       throbber->GetTargetTransform().at(UiElement::kScaleIndex).scale.x,

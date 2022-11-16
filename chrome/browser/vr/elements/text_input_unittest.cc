@@ -188,13 +188,13 @@ TEST(TextInputTest, HintText) {
   scene.root_element().AddChild(std::move(instance));
 
   // Text field is empty, so we should be showing hint text.
-  scene.OnBeginFrame(base::TimeTicks(), StartHeadPose());
+  scene.OnBeginFrame(base::TimeTicks(), kStartHeadPose);
   EXPECT_GT(element->get_hint_element()->GetTargetOpacity(), 0);
 
   // When text enters the field, the hint should disappear.
   EditedText info(u"text");
   element->UpdateInput(info);
-  scene.OnBeginFrame(base::TimeTicks(), StartHeadPose());
+  scene.OnBeginFrame(base::TimeTicks(), kStartHeadPose);
   EXPECT_EQ(element->get_hint_element()->GetTargetOpacity(), 0);
 }
 
@@ -214,7 +214,7 @@ TEST(TextInputTest, CursorBlinking) {
   float initial = element->get_cursor_element()->GetTargetOpacity();
   EXPECT_EQ(initial, 0.f);
   for (int ms = 0; ms <= 2000; ms += 100) {
-    scene.OnBeginFrame(gfx::MsToTicks(ms), StartHeadPose());
+    scene.OnBeginFrame(gfx::MsToTicks(ms), kStartHeadPose);
     EXPECT_EQ(initial, element->get_cursor_element()->GetTargetOpacity());
   }
 
@@ -223,7 +223,7 @@ TEST(TextInputTest, CursorBlinking) {
   initial = element->get_cursor_element()->GetTargetOpacity();
   bool toggled = false;
   for (int ms = 0; ms <= 2000; ms += 100) {
-    scene.OnBeginFrame(gfx::MsToTicks(ms), StartHeadPose());
+    scene.OnBeginFrame(gfx::MsToTicks(ms), kStartHeadPose);
     if (initial != element->get_cursor_element()->GetTargetOpacity())
       toggled = true;
   }
@@ -236,7 +236,7 @@ TEST(TextInputTest, CursorBlinking) {
   element->UpdateInput(info);
   EXPECT_EQ(0.f, element->get_cursor_element()->GetTargetOpacity());
   for (int ms = 0; ms <= 2000; ms += 100) {
-    scene.OnBeginFrame(gfx::MsToTicks(ms), StartHeadPose());
+    scene.OnBeginFrame(gfx::MsToTicks(ms), kStartHeadPose);
     EXPECT_EQ(0.f, element->get_cursor_element()->GetTargetOpacity());
   }
 }

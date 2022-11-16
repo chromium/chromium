@@ -12,8 +12,4 @@ gfx::Transform GetPixelDaydreamProjMatrix() {
                                   -1.002f, -0.2002f, 0.0f, 0.0f, -1.0f, 0.0f);
 }
 
-gfx::Transform StartHeadPose() {
-  return gfx::Transform();
-}
-
 }  // namespace vr

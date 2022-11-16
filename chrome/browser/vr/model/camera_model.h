@@ -18,11 +18,6 @@ enum EyeType {
 };
 
 struct VR_BASE_EXPORT CameraModel {
-  CameraModel();
-  ~CameraModel();
-  CameraModel(const CameraModel&);
-  CameraModel& operator=(const CameraModel&);
-
   EyeType eye_type;
   gfx::Rect viewport;
   gfx::Transform view_matrix;

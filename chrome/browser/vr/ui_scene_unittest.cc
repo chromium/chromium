@@ -105,14 +105,14 @@ TEST(UiScene, IsVisibleInHiddenSubtree) {
   parent->AddChild(std::move(element));
 
   // Set initial computed opacity.
-  scene.OnBeginFrame(gfx::MsToTicks(1), StartHeadPose());
+  scene.OnBeginFrame(gfx::MsToTicks(1), kStartHeadPose);
 
   parent->SetVisible(false);
 
-  scene.OnBeginFrame(gfx::MsToTicks(2), StartHeadPose());
+  scene.OnBeginFrame(gfx::MsToTicks(2), kStartHeadPose);
 
   // On the second walk, we should skip the child.
-  scene.OnBeginFrame(gfx::MsToTicks(3), StartHeadPose());
+  scene.OnBeginFrame(gfx::MsToTicks(3), kStartHeadPose);
 
   EXPECT_FALSE(child->IsVisible());
 }
@@ -142,7 +142,7 @@ TEST(UiScene, ParentTransformAppliesToChild) {
   UiElement* child = element.get();
   parent->AddChild(std::move(element));
 
-  scene.OnBeginFrame(gfx::MsToTicks(0), StartHeadPose());
+  scene.OnBeginFrame(gfx::MsToTicks(0), kStartHeadPose);
   gfx::Point3F origin = child->world_space_transform().MapPoint(gfx::Point3F());
   gfx::Point3F point =
       child->world_space_transform().MapPoint(gfx::Point3F(1, 0, 0));
@@ -163,7 +163,7 @@ TEST(UiScene, Opacity) {
   element->SetOpacity(0.5);
   parent->AddChild(std::move(element));
 
-  scene.OnBeginFrame(gfx::MsToTicks(0), StartHeadPose());
+  scene.OnBeginFrame(gfx::MsToTicks(0), kStartHeadPose);
   EXPECT_EQ(0.5f, parent->computed_opacity());
   EXPECT_EQ(0.25f, child->computed_opacity());
 }
@@ -190,7 +190,7 @@ TEST(UiScene, NoViewportAwareElementWhenNoVisibleChild) {
 
   EXPECT_FALSE(scene.GetWebVrOverlayElementsToDraw().empty());
   child->SetVisible(false);
-  scene.OnBeginFrame(gfx::MsToTicks(0), StartHeadPose());
+  scene.OnBeginFrame(gfx::MsToTicks(0), kStartHeadPose);
   EXPECT_TRUE(scene.GetWebVrOverlayElementsToDraw().empty());
 }
 
@@ -202,11 +202,11 @@ TEST(UiScene, InvisibleElementsDoNotCauseAnimationDirtiness) {
       gfx::MsToDelta(1000)));
   UiElement* element_ptr = element.get();
   scene.AddUiElement(kRoot, std::move(element));
-  EXPECT_TRUE(scene.OnBeginFrame(gfx::MsToTicks(1), StartHeadPose()));
+  EXPECT_TRUE(scene.OnBeginFrame(gfx::MsToTicks(1), kStartHeadPose));
 
   element_ptr->SetVisible(false);
   element_ptr->UpdateComputedOpacity();
-  EXPECT_FALSE(scene.OnBeginFrame(gfx::MsToTicks(2), StartHeadPose()));
+  EXPECT_FALSE(scene.OnBeginFrame(gfx::MsToTicks(2), kStartHeadPose));
 }
 
 TEST(UiScene, InvisibleElementsDoNotCauseBindingDirtiness) {
@@ -219,12 +219,12 @@ TEST(UiScene, InvisibleElementsDoNotCauseBindingDirtiness) {
                               element.get(), view->SetSize(1, value)));
   UiElement* element_ptr = element.get();
   scene.AddUiElement(kRoot, std::move(element));
-  EXPECT_TRUE(scene.OnBeginFrame(gfx::MsToTicks(1), StartHeadPose()));
+  EXPECT_TRUE(scene.OnBeginFrame(gfx::MsToTicks(1), kStartHeadPose));
 
   model.foo = 2;
   element_ptr->SetVisible(false);
   element_ptr->UpdateComputedOpacity();
-  EXPECT_FALSE(scene.OnBeginFrame(gfx::MsToTicks(2), StartHeadPose()));
+  EXPECT_FALSE(scene.OnBeginFrame(gfx::MsToTicks(2), kStartHeadPose));
 }
 
 TEST(UiScene, InvisibleElementsDoNotCauseOnBeginFrameDirtiness) {
@@ -232,11 +232,11 @@ TEST(UiScene, InvisibleElementsDoNotCauseOnBeginFrameDirtiness) {
   auto element = std::make_unique<AlwaysDirty>();
   UiElement* element_ptr = element.get();
   scene.AddUiElement(kRoot, std::move(element));
-  EXPECT_TRUE(scene.OnBeginFrame(gfx::MsToTicks(1), StartHeadPose()));
+  EXPECT_TRUE(scene.OnBeginFrame(gfx::MsToTicks(1), kStartHeadPose));
 
   element_ptr->SetVisible(false);
   element_ptr->UpdateComputedOpacity();
-  EXPECT_FALSE(scene.OnBeginFrame(gfx::MsToTicks(2), StartHeadPose()));
+  EXPECT_FALSE(scene.OnBeginFrame(gfx::MsToTicks(2), kStartHeadPose));
 }
 
 typedef struct {
@@ -271,7 +271,7 @@ TEST_P(AlignmentTest, VerifyCorrectPosition) {
   element->set_y_centering(GetParam().y_centering);
   parent->AddChild(std::move(element));
 
-  scene.OnBeginFrame(gfx::MsToTicks(0), StartHeadPose());
+  scene.OnBeginFrame(gfx::MsToTicks(0), kStartHeadPose);
   EXPECT_NEAR(GetParam().expected_x, child->GetCenter().x(), TOLERANCE);
   EXPECT_NEAR(GetParam().expected_y, child->GetCenter().y(), TOLERANCE);
 }

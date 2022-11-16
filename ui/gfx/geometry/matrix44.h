@@ -43,27 +43,17 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
       : matrix_{{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}} {}
 
   // The parameters are in col-major order.
-  Matrix44(double r0c0,
-           double r1c0,
-           double r2c0,
-           double r3c0,
-           double r0c1,
-           double r1c1,
-           double r2c1,
-           double r3c1,
-           double r0c2,
-           double r1c2,
-           double r2c2,
-           double r3c2,
-           double r0c3,
-           double r1c3,
-           double r2c3,
-           double r3c3)
+  // clang-format off
+  constexpr Matrix44(double r0c0, double r1c0, double r2c0, double r3c0,
+                     double r0c1, double r1c1, double r2c1, double r3c1,
+                     double r0c2, double r1c2, double r2c2, double r3c2,
+                     double r0c3, double r1c3, double r2c3, double r3c3)
       // matrix_ is indexed by [col][row] (i.e. col-major).
       : matrix_{{r0c0, r1c0, r2c0, r3c0},
                 {r0c1, r1c1, r2c1, r3c1},
                 {r0c2, r1c2, r2c2, r3c2},
                 {r0c3, r1c3, r2c3, r3c3}} {}
+  // clang-format on
 
   bool operator==(const Matrix44& other) const {
     return AllTrue(Col(0) == other.Col(0)) && AllTrue(Col(1) == other.Col(1)) &&
@@ -109,7 +99,7 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
   bool Is2dTransform() const { return IsFlat() && !HasPerspective(); }
 
   // Gets a value at |row|, |col| from the matrix.
-  double rc(int row, int col) const {
+  constexpr double rc(int row, int col) const {
     DCHECK_LE(static_cast<unsigned>(row), 3u);
     DCHECK_LE(static_cast<unsigned>(col), 3u);
     return matrix_[col][row];

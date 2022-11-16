@@ -48,11 +48,6 @@ class TexturedQuadRenderer : public BaseRenderer {
 
  private:
   struct QuadData {
-    QuadData();
-    ~QuadData();
-    QuadData(const QuadData&);
-    QuadData& operator=(const QuadData&);
-
     int texture_data_handle;
     int overlay_texture_data_handle;
     gfx::Transform model_view_proj_matrix;
