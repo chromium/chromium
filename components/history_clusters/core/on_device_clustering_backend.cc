@@ -424,10 +424,6 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
       "History.Clusters.Backend.ClusterFinalizers.ThreadTime",
       cluster_finalizers_timer.Elapsed());
 
-  // It's a bit strange that this is essentially a `ClusterProcessor` but has
-  // to operate after the finalizers.
-  SortClusters(&clusters);
-
   if (!visits_in_clusters.empty()) {
     // We check for empty to ensure the below code doesn't crash, but
     // realistically this vector should never be empty.

@@ -64,6 +64,10 @@ void HideAndCullLowScoringVisits(std::vector<history::Cluster>& clusters);
 // the cluster level with numerical limits defined by flags.
 void CoalesceRelatedSearches(std::vector<history::Cluster>& clusters);
 
+// Enforces the reverse-chronological invariant of clusters, as well the
+// by-score sorting of visits within clusters. Exposed for testing.
+void SortClusters(std::vector<history::Cluster>* clusters);
+
 }  // namespace history_clusters
 
 #endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_HISTORY_CLUSTERS_UTIL_H_

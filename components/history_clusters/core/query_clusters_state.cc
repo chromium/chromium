@@ -35,6 +35,10 @@ class QueryClustersState::PostProcessor
     ApplySearchQuery(query_, clusters);
     CullNonProminentOrDuplicateClusters(query_, clusters,
                                         &seen_single_visit_cluster_urls_);
+
+    // Only sort after we figured out what we are showing.
+    SortClusters(&clusters);
+
     // We have to do this AFTER applying the search query, because applying the
     // search query re-scores matching visits to promote them above non-matching
     // visits.
