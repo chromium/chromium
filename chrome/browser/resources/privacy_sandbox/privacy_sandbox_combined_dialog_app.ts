@@ -15,6 +15,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './privacy_sandbox_combined_dialog_app.html.js';
+import {PrivacySandboxDialogBrowserProxy, PrivacySandboxPromptAction} from './privacy_sandbox_dialog_browser_proxy.js';
 import {PrivacySandboxDialogResizeMixin} from './privacy_sandbox_dialog_resize_mixin.js';
 
 export enum PrivacySandboxCombinedDialogStep {
@@ -53,37 +54,55 @@ export class PrivacySandboxCombinedDialogAppElement extends
   }
 
   private step_: PrivacySandboxCombinedDialogStep;
+  private animationsEnabled_: boolean = true;
 
   override ready() {
     super.ready();
 
     // Support starting with notice step instead of starting with consent step.
     const step = new URLSearchParams(window.location.search).get('step');
+    const startWithNotice = step === PrivacySandboxCombinedDialogStep.NOTICE;
     let promise: Promise<void>;
-    if (step === PrivacySandboxCombinedDialogStep.NOTICE) {
+    if (startWithNotice) {
       promise = this.navigateToStep_(PrivacySandboxCombinedDialogStep.NOTICE);
     } else {
       promise = this.navigateToStep_(PrivacySandboxCombinedDialogStep.CONSENT);
     }
-    // After the initial step was loaded, resize the native dialog to fit it..
-    promise.then(() => this.resizeNativeDialog());
+    // After the initial step was loaded, resize the native dialog to fit it.
+    promise.then(() => this.resizeAndShowNativeDialog())
+        .then(
+            () => this.promptActionOccurred(
+                startWithNotice ? PrivacySandboxPromptAction.NOTICE_SHOWN :
+                                  PrivacySandboxPromptAction.CONSENT_SHOWN));
+  }
+
+  disableAnimationsForTesting() {
+    this.animationsEnabled_ = false;
   }
 
   private onConsentStepResolved_() {
-    const savingDurationMs = 1500;
+    const savingDurationMs = this.animationsEnabled_ ? 1500 : 0;
     this.navigateToStep_(PrivacySandboxCombinedDialogStep.SAVING)
+        .then(() => new Promise(r => setTimeout(r, savingDurationMs)))
         .then(
-            () => new Promise(r => setTimeout(r, savingDurationMs))
-                      .then(
-                          () => this.navigateToStep_(
-                              PrivacySandboxCombinedDialogStep.NOTICE)));
+            () => this.navigateToStep_(PrivacySandboxCombinedDialogStep.NOTICE))
+        .then(
+            () => this.promptActionOccurred(
+                PrivacySandboxPromptAction.NOTICE_SHOWN));
   }
 
   private navigateToStep_(step: PrivacySandboxCombinedDialogStep):
       Promise<void> {
     assert(step !== this.step_);
     this.step_ = step;
-    return this.$.viewManager.switchView(this.step_);
+    const enterAnimation = this.animationsEnabled_ ? 'fade-in' : 'no-animation';
+    const exitAnimation = this.animationsEnabled_ ? 'fade-out' : 'no-animation';
+    return this.$.viewManager.switchView(
+        this.step_, enterAnimation, exitAnimation);
+  }
+
+  private promptActionOccurred(action: PrivacySandboxPromptAction) {
+    PrivacySandboxDialogBrowserProxy.getInstance().promptActionOccurred(action);
   }
 }
 

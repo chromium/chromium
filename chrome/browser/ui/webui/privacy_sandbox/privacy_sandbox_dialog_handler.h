@@ -50,6 +50,7 @@ class PrivacySandboxDialogHandler : public content::WebUIMessageHandler {
   void HandleShowDialog(const base::Value::List& args);
   void NotifyServiceAboutPromptAction(
       PrivacySandboxService::PromptAction action);
+  void CloseDialog();
 
   base::OnceClosure close_callback_;
   base::OnceCallback<void(int)> resize_callback_;

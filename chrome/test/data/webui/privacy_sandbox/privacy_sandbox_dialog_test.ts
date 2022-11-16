@@ -3,9 +3,13 @@
 // found in the LICENSE file.
 
 import 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_app.js';
+import 'chrome://privacy-sandbox-dialog/privacy_sandbox_notice_dialog_app.js';
+import 'chrome://privacy-sandbox-dialog/privacy_sandbox_combined_dialog_app.js';
 
+import {PrivacySandboxCombinedDialogAppElement, PrivacySandboxCombinedDialogStep} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_combined_dialog_app.js';
 import {PrivacySandboxDialogAppElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_app.js';
 import {PrivacySandboxDialogBrowserProxy, PrivacySandboxPromptAction} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_browser_proxy.js';
+import {PrivacySandboxNoticeDialogAppElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_notice_dialog_app.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
@@ -37,9 +41,10 @@ suite('PrivacySandboxDialogConsent', function() {
   let page: PrivacySandboxDialogAppElement;
   let browserProxy: TestPrivacySandboxDialogBrowserProxy;
 
-  function testClickButton(buttonSelector: string) {
+  function testClickButton(
+      buttonSelector: string, element: HTMLElement = page) {
     const actionButton =
-        page.shadowRoot!.querySelector(buttonSelector) as CrButtonElement;
+        element.shadowRoot!.querySelector(buttonSelector) as CrButtonElement;
     actionButton.click();
   }
 
@@ -195,5 +200,231 @@ suite('PrivacySandboxDialogNotice', function() {
     pressAndReleaseKeyOn(page, 0, '', 'Escape');
     const [action] = await browserProxy.whenCalled('promptActionOccurred');
     assertEquals(action, PrivacySandboxPromptAction.NOTICE_DISMISS);
+  });
+});
+
+suite('PrivacySandboxDialogCombined', function() {
+  let page: PrivacySandboxCombinedDialogAppElement;
+  let browserProxy: TestPrivacySandboxDialogBrowserProxy;
+
+  function testClickButton(
+      buttonSelector: string, element: HTMLElement|null = page) {
+    const actionButton =
+        element!.shadowRoot!.querySelector(buttonSelector) as CrButtonElement;
+    actionButton.click();
+  }
+
+  async function verifyActionOccured(targetAction: PrivacySandboxPromptAction) {
+    const [action] = await browserProxy.whenCalled('promptActionOccurred');
+    assertEquals(action, targetAction);
+    browserProxy.reset();
+  }
+
+  function getActiveStep(): HTMLElement|null {
+    return page.shadowRoot!.querySelector('.active');
+  }
+
+  setup(async function() {
+    browserProxy = new TestPrivacySandboxDialogBrowserProxy();
+    PrivacySandboxDialogBrowserProxy.setInstance(browserProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('privacy-sandbox-combined-dialog-app');
+    page.disableAnimationsForTesting();
+    document.body.appendChild(page);
+
+    await browserProxy.whenCalled('resizeDialog');
+    await browserProxy.whenCalled('showDialog');
+  });
+
+  test('acceptConsentAndAckNotice', async function() {
+    // Verify that dialog starts with consent step.
+    await verifyActionOccured(PrivacySandboxPromptAction.CONSENT_SHOWN);
+    const consentStep: HTMLElement|null = getActiveStep();
+    assertEquals(getActiveStep()!.id, PrivacySandboxCombinedDialogStep.CONSENT);
+
+    // Accept the consent step.
+    testClickButton('#confirmButton', consentStep);
+    await verifyActionOccured(PrivacySandboxPromptAction.CONSENT_ACCEPTED);
+
+    // Resolving consent step triggers saving step.
+    assertEquals(getActiveStep()!.id, PrivacySandboxCombinedDialogStep.SAVING);
+
+    // After saving step has ended (with a delay), the notice is shown.
+    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
+    const noticeStep: HTMLElement|null = getActiveStep();
+    assertEquals(noticeStep!.id, PrivacySandboxCombinedDialogStep.NOTICE);
+
+    // Acknowledge the notice.
+    testClickButton('#ackButton', noticeStep);
+    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_ACKNOWLEDGE);
+  });
+
+  test('acceptConsentAndOpenSettings', async function() {
+    // Verify that dialog starts with consent step.
+    await verifyActionOccured(PrivacySandboxPromptAction.CONSENT_SHOWN);
+    const consentStep: HTMLElement|null = getActiveStep();
+    assertEquals(consentStep!.id, PrivacySandboxCombinedDialogStep.CONSENT);
+
+    // Accept the consent step.
+    testClickButton('#confirmButton', consentStep);
+    await verifyActionOccured(PrivacySandboxPromptAction.CONSENT_ACCEPTED);
+
+    // Resolving consent step triggers saving step.
+    assertEquals(getActiveStep()!.id, PrivacySandboxCombinedDialogStep.SAVING);
+
+    // After saving step has ended (with a delay), the notice is shown.
+    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
+    const noticeStep: HTMLElement|null = getActiveStep();
+    assertEquals(getActiveStep()!.id, PrivacySandboxCombinedDialogStep.NOTICE);
+
+    // Click 'Open settings' button.
+    testClickButton('#settingsButton', noticeStep);
+    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_OPEN_SETTINGS);
+  });
+
+  test('declineConsentAndAckNotice', async function() {
+    // Verify that dialog starts with consent step.
+    await verifyActionOccured(PrivacySandboxPromptAction.CONSENT_SHOWN);
+    const consentStep: HTMLElement|null = getActiveStep();
+    assertEquals(consentStep!.id, PrivacySandboxCombinedDialogStep.CONSENT);
+
+    // Decline the consent step.
+    testClickButton('#declineButton', consentStep);
+    await verifyActionOccured(PrivacySandboxPromptAction.CONSENT_DECLINED);
+
+    // Resolving consent step triggers saving step.
+    assertEquals(getActiveStep()!.id, PrivacySandboxCombinedDialogStep.SAVING);
+
+    // After saving step has ended (with a delay), the notice is shown.
+    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
+    const noticeStep: HTMLElement|null = getActiveStep();
+    assertEquals(noticeStep!.id, PrivacySandboxCombinedDialogStep.NOTICE);
+
+    // Acknowledge the notice.
+    testClickButton('#ackButton', noticeStep);
+    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_ACKNOWLEDGE);
+  });
+
+  test('declineConsentAndOpenSettings', async function() {
+    // Verify that dialog starts with consent step.
+    await verifyActionOccured(PrivacySandboxPromptAction.CONSENT_SHOWN);
+    const consentStep: HTMLElement|null = getActiveStep();
+    assertEquals(consentStep!.id, PrivacySandboxCombinedDialogStep.CONSENT);
+
+    // Decline the consent step.
+    testClickButton('#declineButton', consentStep);
+    await verifyActionOccured(PrivacySandboxPromptAction.CONSENT_DECLINED);
+
+    // Resolving consent step triggers saving step.
+    assertEquals(getActiveStep()!.id, PrivacySandboxCombinedDialogStep.SAVING);
+
+    // After saving step has ended (with a delay), the notice is shown.
+    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
+    const noticeStep: HTMLElement|null = getActiveStep();
+    assertEquals(noticeStep!.id, PrivacySandboxCombinedDialogStep.NOTICE);
+
+    // Click 'Open settings' button.
+    testClickButton('#settingsButton', noticeStep);
+    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_OPEN_SETTINGS);
+  });
+});
+
+suite('PrivacySandboxDialogNoticeEEA', function() {
+  let page: PrivacySandboxCombinedDialogAppElement;
+  let browserProxy: TestPrivacySandboxDialogBrowserProxy;
+
+  function testClickButton(
+      buttonSelector: string, element: HTMLElement|null = page) {
+    const actionButton =
+        element!.shadowRoot!.querySelector(buttonSelector) as CrButtonElement;
+    actionButton.click();
+  }
+
+  async function verifyActionOccured(targetAction: PrivacySandboxPromptAction) {
+    const [action] = await browserProxy.whenCalled('promptActionOccurred');
+    assertEquals(action, targetAction);
+    browserProxy.reset();
+  }
+
+  function getActiveStep(): HTMLElement|null {
+    return page.shadowRoot!.querySelector('.active');
+  }
+
+  setup(async function() {
+    browserProxy = new TestPrivacySandboxDialogBrowserProxy();
+    PrivacySandboxDialogBrowserProxy.setInstance(browserProxy);
+
+    window.history.replaceState({}, '', '?step=notice');
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('privacy-sandbox-combined-dialog-app');
+    page.disableAnimationsForTesting();
+    document.body.appendChild(page);
+
+    await browserProxy.whenCalled('resizeDialog');
+    await browserProxy.whenCalled('showDialog');
+  });
+
+  test('ackClicked', async function() {
+    // Verify that dialog starts with notice step.
+    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
+    const noticeStep: HTMLElement|null = getActiveStep();
+    assertEquals(noticeStep!.id, PrivacySandboxCombinedDialogStep.NOTICE);
+
+    // Acknowledge the notice.
+    testClickButton('#ackButton', noticeStep);
+    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_ACKNOWLEDGE);
+  });
+
+  test('settingsClicked', async function() {
+    // Verify that dialog starts with notice step.
+    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
+    const noticeStep: HTMLElement|null = getActiveStep();
+    assertEquals(noticeStep!.id, PrivacySandboxCombinedDialogStep.NOTICE);
+
+    // Acknowledge the notice.
+    testClickButton('#settingsButton', noticeStep);
+    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_OPEN_SETTINGS);
+  });
+});
+
+suite('PrivacySandboxDialogNoticeROW', function() {
+  let page: PrivacySandboxNoticeDialogAppElement;
+  let browserProxy: TestPrivacySandboxDialogBrowserProxy;
+
+  function testClickButton(buttonSelector: string) {
+    const actionButton =
+        page.shadowRoot!.querySelector(buttonSelector) as CrButtonElement;
+    actionButton.click();
+  }
+
+  async function verifyActionOccured(targetAction: PrivacySandboxPromptAction) {
+    const [action] = await browserProxy.whenCalled('promptActionOccurred');
+    assertEquals(action, targetAction);
+    browserProxy.reset();
+  }
+
+  setup(async function() {
+    browserProxy = new TestPrivacySandboxDialogBrowserProxy();
+    PrivacySandboxDialogBrowserProxy.setInstance(browserProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('privacy-sandbox-notice-dialog-app');
+    document.body.appendChild(page);
+
+    await browserProxy.whenCalled('resizeDialog');
+    await browserProxy.whenCalled('showDialog');
+  });
+
+  test('ackClicked', async function() {
+    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
+    testClickButton('#ackButton');
+    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_ACKNOWLEDGE);
+  });
+
+  test('settingsClicked', async function() {
+    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
+    testClickButton('#settingsButton');
+    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_OPEN_SETTINGS);
   });
 });

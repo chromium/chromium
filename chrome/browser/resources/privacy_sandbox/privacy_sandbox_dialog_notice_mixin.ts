@@ -28,16 +28,16 @@ export const PrivacySandboxDialogNoticeMixin = dedupingMixin(
         }
 
         onNoticeOpenSettings() {
-          this.promptActionOccurred_(
+          this.promptActionOccurred(
               PrivacySandboxPromptAction.NOTICE_OPEN_SETTINGS);
         }
 
         onNoticeAcknowledge() {
-          this.promptActionOccurred_(
+          this.promptActionOccurred(
               PrivacySandboxPromptAction.NOTICE_ACKNOWLEDGE);
         }
 
-        private promptActionOccurred_(action: PrivacySandboxPromptAction) {
+        promptActionOccurred(action: PrivacySandboxPromptAction) {
           PrivacySandboxDialogBrowserProxy.getInstance().promptActionOccurred(
               action);
         }
@@ -49,4 +49,5 @@ export const PrivacySandboxDialogNoticeMixin = dedupingMixin(
 export interface PrivacySandboxDialogNoticeMixinInterface {
   onNoticeOpenSettings(): void;
   onNoticeAcknowledge(): void;
+  promptActionOccurred(action: PrivacySandboxPromptAction): void;
 }

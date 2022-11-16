@@ -45,13 +45,13 @@ export class PrivacySandboxDialogConsentStepElement extends PolymerElement {
   }
 
   private onConsentAccepted_() {
-    // TODO(crbug.com/1378703): Handle user action.
+    this.promptActionOccurred(PrivacySandboxPromptAction.CONSENT_ACCEPTED);
     this.dispatchEvent(
         new CustomEvent('consent-resolved', {bubbles: true, composed: true}));
   }
 
   private onConsentDeclined_() {
-    // TODO(crbug.com/1378703): Handle user action.
+    this.promptActionOccurred(PrivacySandboxPromptAction.CONSENT_DECLINED);
     this.dispatchEvent(
         new CustomEvent('consent-resolved', {bubbles: true, composed: true}));
   }

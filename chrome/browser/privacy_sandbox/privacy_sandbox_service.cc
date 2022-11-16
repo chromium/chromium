@@ -156,12 +156,14 @@ void PrivacySandboxService::PromptActionOccurred(
   InformSentimentService(action);
   switch (action) {
     case (PromptAction::kNoticeShown): {
-      DCHECK_EQ(PromptType::kNotice, GetRequiredPromptType());
-      // The new Privacy Sandbox pref can be enabled when the notice has been
-      // shown. Note that a notice will not have been shown if the user disabled
-      // the old Privacy Sandbox pref.
-      pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, true);
-      pref_service_->SetBoolean(prefs::kPrivacySandboxNoticeDisplayed, true);
+      // TODO(crbug.com/1378703): Handle new prompt types.
+      if (PromptType::kNotice == GetRequiredPromptType()) {
+        // The new Privacy Sandbox pref can be enabled when the notice has been
+        // shown. Note that a notice will not have been shown if the user
+        // disabled the old Privacy Sandbox pref.
+        pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, true);
+        pref_service_->SetBoolean(prefs::kPrivacySandboxNoticeDisplayed, true);
+      }
       base::RecordAction(
           base::UserMetricsAction("Settings.PrivacySandbox.Notice.Shown"));
       break;
