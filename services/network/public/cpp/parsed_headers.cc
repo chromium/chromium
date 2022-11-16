@@ -16,6 +16,7 @@
 #include "services/network/public/cpp/cross_origin_opener_policy_parser.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/link_header_parser.h"
+#include "services/network/public/cpp/no_vary_search_header_parser.h"
 #include "services/network/public/cpp/origin_agent_cluster_parser.h"
 #include "services/network/public/cpp/supports_loading_mode/supports_loading_mode_parser.h"
 #include "services/network/public/cpp/timing_allow_origin_parser.h"
@@ -99,6 +100,10 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
           ParseContentLanguages(content_language);
     }
   }
+
+  if (base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch))
+    parsed_headers->no_vary_search = ParseNoVarySearch(*headers);
+
   return parsed_headers;
 }
 

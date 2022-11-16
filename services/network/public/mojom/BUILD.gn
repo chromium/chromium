@@ -352,6 +352,7 @@ mojom("url_loader_base") {
     "network_change_manager.mojom",
     "network_interface.mojom",
     "network_types.mojom",
+    "no_vary_search.mojom",
     "parsed_headers.mojom",
     "referrer_policy.mojom",
     "request_priority.mojom",

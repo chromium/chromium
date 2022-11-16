@@ -1,0 +1,35 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+// Describes the variance of URL query search params for cache matching
+// purposes.
+// For more information, see:
+// https://wicg.github.io/nav-speculation/no-vary-search.html#model
+union SearchParamsVariance {
+  // Query parameters which should be ignored when comparing a request
+  // to a cached response. This is empty if all query parameters are
+  // significant.
+  array<string> no_vary_params;
+  // Query parameters which should be respected when comparing a request
+  // to a cached response. This is empty if all query parameters should be
+  // ignored.
+  array<string> vary_params;
+};
+
+// The parsed value of the No-Vary-Search header.
+// For more information, see:
+// https://wicg.github.io/nav-speculation/no-vary-search.html#model
+struct NoVarySearch {
+  // Describes the variance of URL query search params for cache matching
+  // purposes.
+  // For more information, see:
+  // https://wicg.github.io/nav-speculation/no-vary-search.html#model
+  SearchParamsVariance search_variance;
+
+  // If false, parameters with distinct keys can be reordered in order to find a
+  // cache hit. Defaults to true.
+  bool vary_on_key_order;
+};

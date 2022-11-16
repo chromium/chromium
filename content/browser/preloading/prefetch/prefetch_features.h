@@ -15,11 +15,6 @@ namespace content::features {
 // chrome/browser/preloadingprefetch/prefetch_proxy/.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchUseContentRefactor);
 
-// If enabled, then navigation requests should check the match responses in the
-// prefetch cache by using the No-Vary-Search rules if No-Vary-Search header
-// is specified in prefetched responses.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchNoVarySearch);
-
 }  // namespace content::features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_FEATURES_H_

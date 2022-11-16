@@ -9,8 +9,5 @@ namespace content::features {
 BASE_FEATURE(kPrefetchUseContentRefactor,
              "PrefetchUseContentRefactor",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kPrefetchNoVarySearch,
-             "PrefetchNoVarySearch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace content::features
