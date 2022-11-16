@@ -203,7 +203,7 @@ function requestEvents(data: PageData, element: HTMLElement) {
     // Disable all other start recording buttons. UI reflects the fact that
     // there can only be one accessibility recorder at once.
     const buttons = document.body.querySelectorAll<HTMLButtonElement>(
-        '#recordEventsButton');
+        '.recordEventsButton');
     for (const button of buttons) {
       if (button !== element) {
         button.disabled = true;
@@ -215,7 +215,7 @@ function requestEvents(data: PageData, element: HTMLElement) {
 
     // Enable all start recording buttons.
     const buttons = document.body.querySelectorAll<HTMLButtonElement>(
-        '#recordEventsButton');
+        '.recordEventsButton');
     for (const button of buttons) {
       if (button !== element) {
         button.disabled = false;
