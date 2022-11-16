@@ -302,7 +302,7 @@ void PreferenceEventRouter::OnAshGetSuccess(
       browser_pref, &event_name, &permission);
   DCHECK(found_event);
 
-  base::ListValue args;
+  base::Value::List args;
   PrefTransformerInterface* transformer =
       PrefMapping::GetInstance()->FindTransformerForBrowserPref(browser_pref);
 
@@ -321,8 +321,8 @@ void PreferenceEventRouter::OnAshGetSuccess(
   events::HistogramValue histogram_value =
       events::TYPES_CHROME_SETTING_ON_CHANGE;
   extensions::preference_helpers::DispatchEventToExtensionsWithAshControlState(
-      profile_, histogram_value, event_name, &args, permission, incognito,
-      browser_pref, control_state);
+      profile_, histogram_value, event_name, std::move(args), permission,
+      incognito, browser_pref, control_state);
 }
 #endif
 
@@ -336,7 +336,7 @@ void PreferenceEventRouter::OnPrefChanged(PrefService* pref_service,
       browser_pref, &event_name, &permission);
   DCHECK(rv);
 
-  base::ListValue args;
+  base::Value::List args;
   const PrefService::Preference* pref =
       pref_service->FindPreference(browser_pref);
   CHECK(pref);
@@ -370,8 +370,8 @@ void PreferenceEventRouter::OnPrefChanged(PrefService* pref_service,
   events::HistogramValue histogram_value =
       events::TYPES_CHROME_SETTING_ON_CHANGE;
   extensions::preference_helpers::DispatchEventToExtensions(
-      profile_, histogram_value, event_name, &args, permission, incognito,
-      browser_pref);
+      profile_, histogram_value, event_name, std::move(args), permission,
+      incognito, browser_pref);
 }
 
 void PreferenceEventRouter::OnOffTheRecordProfileCreated(

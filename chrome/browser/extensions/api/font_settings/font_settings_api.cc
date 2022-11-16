@@ -159,7 +159,7 @@ void FontSettingsEventRouter::OnFontNamePrefChanged(
     return;
   }
   std::string font_name = pref->GetValue()->GetString();
-  base::ListValue args;
+  base::Value::List args;
   base::Value::Dict dict;
   dict.Set(kFontIdKey, font_name);
   dict.Set(kGenericFamilyKey, generic_family);
@@ -168,7 +168,7 @@ void FontSettingsEventRouter::OnFontNamePrefChanged(
 
   extensions::preference_helpers::DispatchEventToExtensions(
       profile_, events::FONT_SETTINGS_ON_FONT_CHANGED,
-      fonts::OnFontChanged::kEventName, &args,
+      fonts::OnFontChanged::kEventName, std::move(args),
       extensions::mojom::APIPermissionID::kFontSettings, false, pref_name);
 }
 
@@ -181,13 +181,13 @@ void FontSettingsEventRouter::OnFontPrefChanged(
       pref_name);
   CHECK(pref);
 
-  base::ListValue args;
+  base::Value::List args;
   base::Value::Dict dict;
   dict.Set(key, pref->GetValue()->Clone());
   args.Append(std::move(dict));
 
   extensions::preference_helpers::DispatchEventToExtensions(
-      profile_, histogram_value, event_name, &args,
+      profile_, histogram_value, event_name, std::move(args),
       extensions::mojom::APIPermissionID::kFontSettings, false, pref_name);
 }
 
