@@ -96,14 +96,6 @@ ApplicationLaunchSource ConvertLaunchSourceToProtoApplicationLaunchSource(
 // TODO(crbug.com/1253250): Remove these functions after migrating to non-mojo
 // AppService.
 COMPONENT_EXPORT(APP_TYPES)
-LaunchSource ConvertMojomLaunchSourceToLaunchSource(
-    apps::mojom::LaunchSource mojom_launch_source);
-
-COMPONENT_EXPORT(APP_TYPES)
-apps::mojom::LaunchSource ConvertLaunchSourceToMojomLaunchSource(
-    LaunchSource launch_source);
-
-COMPONENT_EXPORT(APP_TYPES)
 WindowInfoPtr ConvertMojomWindowInfoToWindowInfo(
     const apps::mojom::WindowInfoPtr& mojom_window_info);
 

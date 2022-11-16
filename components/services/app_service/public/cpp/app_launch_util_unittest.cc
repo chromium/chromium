@@ -13,17 +13,6 @@ namespace apps {
 
 using AppLaunchUtilTest = testing::Test;
 
-TEST_F(AppLaunchUtilTest, ConvertLaunchSource) {
-  EXPECT_EQ(LaunchSource::kFromAppListGrid,
-            ConvertMojomLaunchSourceToLaunchSource(
-                ConvertLaunchSourceToMojomLaunchSource(
-                    LaunchSource::kFromAppListGrid)));
-  EXPECT_EQ(LaunchSource::kFromUrlHandler,
-            ConvertMojomLaunchSourceToLaunchSource(
-                ConvertLaunchSourceToMojomLaunchSource(
-                    LaunchSource::kFromUrlHandler)));
-}
-
 TEST_F(AppLaunchUtilTest, ConvertEmptyWindowInfo) {
   auto mojom_window_info = apps::mojom::WindowInfo::New();
   EXPECT_EQ(mojom_window_info,
