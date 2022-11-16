@@ -312,6 +312,41 @@ export class FileSelectionHandler extends EventTarget {
     return this.allowedPaths_ !== AllowedPaths.ANY_PATH_OR_URL &&
         this.selection.anyFilesHosted;
   }
+
+  /**
+   * Returns true if any file/directory in the selection is blocked by DLP
+   * policy.
+   * @return {boolean}
+   */
+  isDlpBlocked() {
+    const selectedIndexes =
+        this.directoryModel_.getFileListSelection().selectedIndexes;
+    const selectedEntries = selectedIndexes.map(index => {
+      return /** @type {!Entry} */ (
+          this.directoryModel_.getFileList().item(index));
+    });
+
+    for (const entry of selectedEntries) {
+      if (!entry.isDirectory) {
+        // TODO(b/259183224): Add proper checks; files are blocked if their
+        // source is not allowed to be opened by the files app dialog caller.
+        return false;
+      }
+      // The entry is a directory, which can only be blocked if it's a
+      // disabled volume/DLP component.
+      // TODO(b/259184588): Properly handle case when VolumeInfo is not
+      // available. E.g. for Crostini we might not have VolumeInfo before it's
+      // mounted.
+      const volumeInfo = this.volumeManager_.getVolumeInfo(entry);
+      if (!volumeInfo) {
+        continue;
+      }
+      if (this.volumeManager_.isDisabled(volumeInfo.volumeType)) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
 
 /**

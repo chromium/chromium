@@ -8,6 +8,7 @@ import {FileType} from '../../../common/js/file_type.js';
 import {str, strf, util} from '../../../common/js/util.js';
 import {EntryLocation} from '../../../externs/entry_location.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
+import {VolumeManager} from '../../../externs/volume_manager.js';
 import {FileListModel} from '../file_list_model.js';
 import {MetadataModel} from '../metadata/metadata_model.js';
 
@@ -346,9 +347,10 @@ class FileListSelectionController extends ListSelectionController {
  * @param {ListItem} li List item.
  * @param {Entry|FilesAppEntry} entry The entry.
  * @param {!MetadataModel} metadataModel Cache to
- *     retrieve metadada.
+ *     retrieve metadata.
+ * @param {!VolumeManager} volumeManager Used to retrieve VolumeInfo.
  */
-filelist.decorateListItem = (li, entry, metadataModel) => {
+filelist.decorateListItem = (li, entry, metadataModel, volumeManager) => {
   li.classList.add(entry.isDirectory ? 'directory' : 'file');
   // The metadata may not yet be ready. In that case, the list item will be
   // updated when the metadata is ready via updateListItemsMetadata. For files
@@ -369,6 +371,7 @@ filelist.decorateListItem = (li, entry, metadataModel) => {
   // Overriding the default role 'list' to 'listbox' for better
   // accessibility on ChromeOS.
   li.setAttribute('role', 'option');
+  li.toggleAttribute('disabled', filelist.isDlpBlocked_(entry, volumeManager));
 
   Object.defineProperty(li, 'selected', {
     /**
@@ -390,6 +393,30 @@ filelist.decorateListItem = (li, entry, metadataModel) => {
       }
     },
   });
+};
+
+/**
+ * Returns true if `entry` is blocked by DLP.
+ * @param {Entry|FilesAppEntry} entry The entry.
+ * @param {!VolumeManager} volumeManager Used to retrieve VolumeInfo.
+ * @return {boolean}
+ */
+filelist.isDlpBlocked_ = (entry, volumeManager) => {
+  if (!entry.isDirectory) {
+    // TODO(b/259183224): Add proper checks; files are blocked if their source
+    // is not allowed to be opened by the files app dialog caller.
+    return false;
+  }
+  // The entry is a directory, which can only be blocked if it's a
+  // disabled volume/DLP component.
+  // TODO(b/259184588): Properly handle case when VolumeInfo is not
+  // available. E.g. for Crostini we might not have VolumeInfo before it's
+  // mounted.
+  const volumeInfo = volumeManager.getVolumeInfo(assert(entry));
+  if (!volumeInfo) {
+    return false;
+  }
+  return volumeManager.isDisabled(volumeInfo.volumeType);
 };
 
 /**

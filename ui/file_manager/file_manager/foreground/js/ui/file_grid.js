@@ -774,7 +774,8 @@ export class FileGrid extends Grid {
   decorateThumbnail_(li, entry) {
     li.className = 'thumbnail-item';
     if (entry) {
-      filelist.decorateListItem(li, entry, assert(this.metadataModel_));
+      filelist.decorateListItem(
+          li, entry, assert(this.metadataModel_), assert(this.volumeManager_));
     }
 
     const frame = li.ownerDocument.createElement('div');

@@ -408,7 +408,8 @@ export class DialogActionController {
     if (this.dialogType_ === DialogType.SELECT_SAVEAS_FILE) {
       if (selection.directoryCount === 1 && selection.fileCount === 0) {
         this.dialogFooter_.okButtonLabel.textContent = str('OPEN_LABEL');
-        this.dialogFooter_.okButton.disabled = false;
+        this.dialogFooter_.okButton.disabled =
+            this.fileSelectionHandler_.isDlpBlocked();
       } else {
         this.dialogFooter_.okButtonLabel.textContent = str('SAVE_LABEL');
         this.dialogFooter_.okButton.disabled =

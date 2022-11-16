@@ -1018,7 +1018,8 @@ export class FileTable extends Table {
     const typeId = item.id + '-type';
     const dateId = item.id + '-date';
     const dlpId = item.id + '-dlp-managed-icon';
-    filelist.decorateListItem(item, entry, assert(this.metadataModel_));
+    filelist.decorateListItem(
+        item, entry, assert(this.metadataModel_), assert(this.volumeManager_));
     item.setAttribute('file-name', entry.name);
     item.querySelector('.detail-name').setAttribute('id', nameId);
     item.querySelector('.size').setAttribute('id', sizeId);

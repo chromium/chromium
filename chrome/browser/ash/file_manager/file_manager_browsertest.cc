@@ -343,6 +343,14 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
               ::testing::Return(policy::DlpRulesManager::Level::kBlock));
       return true;
     }
+    if (name == "setBlockedComponents") {
+      policy::DlpRulesManager::AggregatedComponents components;
+      components[policy::DlpRulesManager::Level::kBlock].insert(
+          policy::DlpRulesManager::Component::kArc);
+      EXPECT_CALL(*mock_rules_manager_, GetAggregatedComponents)
+          .WillOnce(testing::Return(components));
+      return true;
+    }
     if (name == "setIsRestrictedByAnyRuleRestrictions") {
       EXPECT_CALL(*mock_rules_manager_, IsRestrictedByAnyRule)
           .WillOnce(::testing::Return(policy::DlpRulesManager::Level::kWarn))
@@ -1266,10 +1274,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DLP, /* dlp.js */
     DlpFilesAppBrowserTest,
-    ::testing::Values(
-        TestCase("transferShowDlpToast").EnableDlp(),
-        TestCase("dlpShowManagedIcon").EnableDlp(),
-        TestCase("dlpContextMenuRestrictionDetails").EnableDlp()));
+    ::testing::Values(TestCase("transferShowDlpToast").EnableDlp(),
+                      TestCase("dlpShowManagedIcon").EnableDlp(),
+                      TestCase("dlpContextMenuRestrictionDetails").EnableDlp(),
+                      TestCase("saveAsDlpRestrictedDirectory").EnableDlp()));
 
 #define FILE_TRANSFER_TEST_CASE(name) \
   TestCase(name).EnableFileTransferConnector()

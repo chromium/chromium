@@ -288,7 +288,6 @@ html.focus-outline-visible #directory-tree:focus .tree-row[selected] > .file-row
 
 #directory-tree .tree-item[disabled] > .tree-row {
   cursor: default;
-  opacity: var(--cros-disabled-opacity);
 }
 
 #directory-tree .tree-row > .align-right-icon {
@@ -1926,7 +1925,10 @@ body:not([type='saveas-file']) #filename-input-box {
 body[type='folder'] .file,
 body[type='upload-folder'] .file,
 .dialog-container[connection='OFFLINE'] .dim-offline,
-body[block-hosted-docs] .file.dim-hosted {
+body[block-hosted-docs] .file.dim-hosted,
+.thumbnail-grid [disabled],
+#detail-table [disabled],
+#directory-tree .tree-item[disabled] > .tree-row {
   opacity: var(--cros-disabled-opacity);
 }
 

@@ -261,6 +261,11 @@ export class MainWindowComponent {
       this.showFailedToOpenTrashItemDialog_(trashEntries);
       return false;
     }
+    // If the selection is blocked by DLP restrictions, we don't allow to change
+    // directory or the default action.
+    if (this.selectionHandler_.isDlpBlocked()) {
+      return false;
+    }
     const entry = selection.entries[0];
     if (entry.isDirectory) {
       this.directoryModel_.changeDirectoryEntry(
@@ -455,20 +460,28 @@ export class MainWindowComponent {
         break;
 
       case 'Enter':  // Enter => Change directory or perform default action.
+                     // If the selection is blocked by DLP restrictions, we
+                     // don't allow to
+        // change directory or the default action.
+        if (this.selectionHandler_.isDlpBlocked()) {
+          break;
+        }
         const selection = this.selectionHandler_.selection;
         if (selection.totalCount === 1 && selection.entries[0].isDirectory &&
             !isFolderDialogType(this.dialogType_) &&
             !selection.entries.some(util.isTrashEntry)) {
           const item = this.ui_.listContainer.currentList.getListItemByIndex(
               selection.indexes[0]);
-          // If the item is in renaming process, we don't allow to change
+          // If the item is in renaming process we don't allow to change
           // directory.
           if (item && !item.hasAttribute('renaming')) {
             event.preventDefault();
             this.directoryModel_.changeDirectoryEntry(
                 /** @type {!DirectoryEntry} */ (selection.entries[0]));
           }
-        } else if (this.acceptSelection_()) {
+          break;
+        }
+        if (this.acceptSelection_()) {
           event.preventDefault();
         }
         break;
