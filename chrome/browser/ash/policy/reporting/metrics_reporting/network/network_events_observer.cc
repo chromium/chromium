@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/logging.h"
@@ -85,15 +86,13 @@ void NetworkEventsObserver::OnConnectionStateChanged(
 void NetworkEventsObserver::OnSignalStrengthChanged(
     const std::string& guid,
     chromeos::network_health::mojom::UInt32ValuePtr signal_strength) {
+  DCHECK(signal_strength) << "Signal strength should have a value.";
+
   const auto* network_state = ::ash::NetworkHandler::Get()
                                   ->network_state_handler()
                                   ->GetNetworkStateFromGuid(guid);
-  if (signal_strength.is_null()) {
-    NOTREACHED() << "Signal strength is null";
-    return;
-  }
   if (!network_state) {
-    NOTREACHED() << "Could not find network state with guid " << guid;
+    DVLOG(1) << "Could not find network state with guid " << guid;
     return;
   }
 

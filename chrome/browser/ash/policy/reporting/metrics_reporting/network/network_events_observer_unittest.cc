@@ -241,6 +241,22 @@ TEST_F(NetworkEventsObserverTest, CellularSignalStrength) {
   ASSERT_FALSE(event_reported);
 }
 
+TEST_F(NetworkEventsObserverTest, SignalStrengthInvalidGuid) {
+  NetworkEventsObserver network_events_observer;
+  bool event_reported = false;
+  auto cb =
+      base::BindLambdaForTesting([&](MetricData) { event_reported = true; });
+
+  network_events_observer.SetOnEventObservedCallback(std::move(cb));
+  network_events_observer.SetReportingEnabled(/*is_enabled=*/true);
+  network_events_observer.OnSignalStrengthChanged(
+      "invalid_guid",
+      ::chromeos::network_health::mojom::UInt32Value::New(kSignalStrength));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_FALSE(event_reported);
+}
+
 TEST_P(NetworkEventsObserverTest, ConnectionState) {
   const NetworkConnectionStateTestCase& test_case = GetParam();
 
