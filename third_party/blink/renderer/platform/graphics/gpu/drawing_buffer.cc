@@ -1779,10 +1779,14 @@ void DrawingBuffer::ResolveAndPresentSwapChainIfNeeded() {
     GLuint dest_texture_id = premultiplied_alpha_false_texture_
                                  ? premultiplied_alpha_false_texture_
                                  : back_color_buffer_->texture_id;
+    gl_->BeginSharedImageAccessDirectCHROMIUM(
+        front_color_buffer_->texture_id,
+        GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
     gl_->CopySubTextureCHROMIUM(front_color_buffer_->texture_id, 0,
                                 texture_target_, dest_texture_id, 0, 0, 0, 0, 0,
                                 size_.width(), size_.height(), GL_FALSE,
                                 GL_FALSE, GL_FALSE);
+    gl_->EndSharedImageAccessDirectCHROMIUM(front_color_buffer_->texture_id);
   }
   contents_changed_ = false;
   if (preserve_drawing_buffer_ == kDiscard) {
