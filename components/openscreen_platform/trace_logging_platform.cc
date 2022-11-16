@@ -6,7 +6,7 @@
 
 namespace openscreen {
 
-bool IsTraceLoggingEnabled(TraceCategory::Value category) {
+bool IsTraceLoggingEnabled(TraceCategory category) {
   return false;
 }
 

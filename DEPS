@@ -196,7 +196,7 @@ vars = {
   #   - workstation.qemu-x64
   #   Hardware:
   #   - workstation_eng.chromebook-x64
-  #   - workstation_eng.chromebook-x64-dfv2 
+  #   - workstation_eng.chromebook-x64-dfv2
   #
   # Since the images are hundreds of MB, default to only downloading the image
   # most commonly useful for developers. Bots and developers that need to use
@@ -1647,7 +1647,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/cisco/openh264' + '@' + 'db956674bbdfbaab5acdd3fdb4117c2fef5527e9',
 
   'src/third_party/openscreen/src':
-    Var('chromium_git') + '/openscreen' + '@' + '9be5eefa2605408a671cc11c695849400caecbbb',
+    Var('chromium_git') + '/openscreen' + '@' + '90450999d233e3557ace3e8e4961301b919d8ba9',
 
   'src/third_party/openxr/src': {
     'url': Var('chromium_git') + '/external/github.com/KhronosGroup/OpenXR-SDK' + '@' + 'bf21ccb1007bb531b45d9978919a56ea5059c245',
