@@ -33,32 +33,59 @@ TEST(AggregationKeysTest, FromJSON) {
     absl::optional<base::Value> json;
     base::expected<AggregationKeys, SourceRegistrationError> expected;
   } kTestCases[] = {
-      {"Null", absl::nullopt, AggregationKeys()},
-      {"Not a dictionary", base::Value(base::Value::List()),
-       base::unexpected(SourceRegistrationError::kAggregationKeysWrongType)},
-      {"key not a string", base::test::ParseJson(R"({"key":123})"),
-       base::unexpected(
-           SourceRegistrationError::kAggregationKeysValueWrongType)},
-      {"key doesn't start with 0x", base::test::ParseJson(R"({"key":"159"})"),
-       base::unexpected(
-           SourceRegistrationError::kAggregationKeysValueWrongFormat)},
-      {"Invalid key", base::test::ParseJson(R"({"key":"0xG59"})"),
-       base::unexpected(
-           SourceRegistrationError::kAggregationKeysValueWrongFormat)},
-      {"One valid key", base::test::ParseJson(R"({"key":"0x159"})"),
-       *AggregationKeys::FromKeys(
-           {{"key", absl::MakeUint128(/*high=*/0, /*low=*/345)}})},
+      {
+          "Null",
+          absl::nullopt,
+          AggregationKeys(),
+      },
+      {
+          "Not a dictionary",
+          base::Value(base::Value::List()),
+          base::unexpected(SourceRegistrationError::kAggregationKeysWrongType),
+      },
+      {
+          "key not a string",
+          base::test::ParseJson(R"({"key":123})"),
+          base::unexpected(
+              SourceRegistrationError::kAggregationKeysValueWrongType),
+      },
+      {
+          "key doesn't start with 0x",
+          base::test::ParseJson(R"({"key":"159"})"),
+          base::unexpected(
+              SourceRegistrationError::kAggregationKeysValueWrongFormat),
+      },
+      {
+          "Invalid key",
+          base::test::ParseJson(R"({"key":"0xG59"})"),
+          base::unexpected(
+              SourceRegistrationError::kAggregationKeysValueWrongFormat),
+      },
+      {
+          "One valid key",
+          base::test::ParseJson(R"({"key":"0x159"})"),
+          *AggregationKeys::FromKeys(
+              {{"key", absl::MakeUint128(/*high=*/0, /*low=*/345)}}),
+      },
       {"Two valid keys",
        base::test::ParseJson(
            R"({"key1":"0x159","key2":"0x50000000000000159"})"),
        *AggregationKeys::FromKeys({
-           {"key1", absl::MakeUint128(/*high=*/0, /*low=*/345)},
-           {"key2", absl::MakeUint128(/*high=*/5, /*low=*/345)},
+           {
+               "key1",
+               absl::MakeUint128(/*high=*/0, /*low=*/345),
+           },
+           {
+               "key2",
+               absl::MakeUint128(/*high=*/5, /*low=*/345),
+           },
        })},
-      {"Second key invalid",
-       base::test::ParseJson(R"({"key1":"0x159","key2":""})"),
-       base::unexpected(
-           SourceRegistrationError::kAggregationKeysValueWrongFormat)},
+      {
+          "Second key invalid",
+          base::test::ParseJson(R"({"key1":"0x159","key2":""})"),
+          base::unexpected(
+              SourceRegistrationError::kAggregationKeysValueWrongFormat),
+      },
   };
 
   for (const auto& test_case : kTestCases) {

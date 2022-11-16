@@ -54,88 +54,126 @@ TEST(AggregatableTriggerDataTest, FromJSON) {
     base::Value json;
     base::expected<AggregatableTriggerData, TriggerRegistrationError> expected;
   } kTestCases[] = {
-      {"required_fields_only", base::test::ParseJson(R"json({
-         "key_piece": "0x1234",
-         "source_keys": ["abc"]
-       })json"),
-       *AggregatableTriggerData::Create(
-           /*key_piece=*/4660, /*source_keys=*/{"abc"},
-           /*filters=*/Filters(), /*not_filters=*/Filters())},
-      {"empty_source_keys", base::test::ParseJson(R"json({
-         "key_piece": "0x1234",
-         "source_keys": []
-       })json"),
-       *AggregatableTriggerData::Create(
-           /*key_piece=*/4660, /*source_keys=*/{},
-           /*filters=*/Filters(), /*not_filters=*/Filters())},
-      {"filters", base::test::ParseJson(R"json({
-         "key_piece": "0x1",
-         "source_keys": ["a", "b"],
-         "filters": {"a": ["b", "c"]}
-      })json"),
-       *AggregatableTriggerData::Create(
-           /*key_piece=*/1, /*source_keys=*/{"a", "b"},
-           /*filters=*/*Filters::Create({{"a", {"b", "c"}}}),
-           /*not_filters=*/Filters())},
-      {"not_filters", base::test::ParseJson(R"json({
-         "key_piece": "0x2",
-         "source_keys": ["a", "b"],
-         "not_filters": {"a": ["b", "c"]}
-      })json"),
-       *AggregatableTriggerData::Create(
-           /*key_piece=*/2, /*source_keys=*/{"a", "b"},
-           /*filters=*/Filters(),
-           /*not_filters=*/*Filters::Create({{"a", {"b", "c"}}}))},
-      {"not_dictionary", base::Value(base::Value::List()),
-       base::unexpected(
-           TriggerRegistrationError::kAggregatableTriggerDataWrongType)},
-      {"key_piece_missing", base::Value(base::Value::Dict()),
-       base::unexpected(
-           TriggerRegistrationError::kAggregatableTriggerDataKeyPieceMissing)},
-      {"key_piece_wrong_type",
-       base::test::ParseJson(R"json({"key_piece":123})json"),
-       base::unexpected(TriggerRegistrationError::
-                            kAggregatableTriggerDataKeyPieceWrongType)},
-      {"key_piece_wrong_format",
-       base::test::ParseJson(R"json({"key_piece":"1234"})json"),
-       base::unexpected(TriggerRegistrationError::
-                            kAggregatableTriggerDataKeyPieceWrongFormat)},
-      {"source_keys_missing",
-       base::test::ParseJson(R"json({"key_piece":"0x1234"})json"),
-       base::unexpected(TriggerRegistrationError::
-                            kAggregatableTriggerDataSourceKeysMissing)},
-      {"source_keys_wrong_type",
-       base::test::ParseJson(
-           R"json({"key_piece":"0x1234", "source_keys":{}})json"),
-       base::unexpected(TriggerRegistrationError::
-                            kAggregatableTriggerDataSourceKeysWrongType)},
-      {"source_keys_key_wrong_type",
-       base::test::ParseJson(
-           R"json({"key_piece":"0x1234", "source_keys":[123]})json"),
-       base::unexpected(TriggerRegistrationError::
-                            kAggregatableTriggerDataSourceKeysKeyWrongType)},
-      {"source_keys_too_many_keys",
-       make_aggregatable_trigger_data_with_keys(
-           kMaxAggregationKeysPerSourceOrTrigger + 1),
-       base::unexpected(TriggerRegistrationError::
-                            kAggregatableTriggerDataSourceKeysTooManyKeys)},
-      {"source_keys_key_too_long",
-       make_aggregatable_trigger_data_with_key_length(
-           kMaxBytesPerAggregationKeyId + 1),
-       base::unexpected(TriggerRegistrationError::
-                            kAggregatableTriggerDataSourceKeysKeyTooLong)},
-      {"filters_wrong_type", base::test::ParseJson(R"json({
-         "key_piece": "0x1",
-         "source_keys": ["abc"],
-         "filters": 123
-       })json"),
-       base::unexpected(TriggerRegistrationError::kFiltersWrongType)},
-      {"not_filters_wrong_type", base::test::ParseJson(R"json({
-         "key_piece": "0x1",
-         "source_keys": ["abc"],
-         "not_filters": 123
-       })json"),
-       base::unexpected(TriggerRegistrationError::kFiltersWrongType)},
+      {
+          "required_fields_only",
+          base::test::ParseJson(R"json({
+            "key_piece": "0x1234",
+            "source_keys": ["abc"]
+          })json"),
+          *AggregatableTriggerData::Create(
+              /*key_piece=*/4660, /*source_keys=*/{"abc"},
+              /*filters=*/Filters(), /*not_filters=*/Filters()),
+      },
+      {
+          "empty_source_keys",
+          base::test::ParseJson(R"json({
+            "key_piece": "0x1234",
+            "source_keys": []
+          })json"),
+          *AggregatableTriggerData::Create(
+              /*key_piece=*/4660, /*source_keys=*/{},
+              /*filters=*/Filters(), /*not_filters=*/Filters()),
+      },
+      {
+          "filters",
+          base::test::ParseJson(R"json({
+            "key_piece": "0x1",
+            "source_keys": ["a", "b"],
+            "filters": {"a": ["b", "c"]}
+         })json"),
+          *AggregatableTriggerData::Create(
+              /*key_piece=*/1, /*source_keys=*/{"a", "b"},
+              /*filters=*/*Filters::Create({{"a", {"b", "c"}}}),
+              /*not_filters=*/Filters()),
+      },
+      {
+          "not_filters",
+          base::test::ParseJson(R"json({
+            "key_piece": "0x2",
+            "source_keys": ["a", "b"],
+            "not_filters": {"a": ["b", "c"]}
+          })json"),
+          *AggregatableTriggerData::Create(
+              /*key_piece=*/2, /*source_keys=*/{"a", "b"},
+              /*filters=*/Filters(),
+              /*not_filters=*/*Filters::Create({{"a", {"b", "c"}}})),
+      },
+      {
+          "not_dictionary",
+          base::Value(base::Value::List()),
+          base::unexpected(
+              TriggerRegistrationError::kAggregatableTriggerDataWrongType),
+      },
+      {
+          "key_piece_missing",
+          base::Value(base::Value::Dict()),
+          base::unexpected(TriggerRegistrationError::
+                               kAggregatableTriggerDataKeyPieceMissing),
+      },
+      {
+          "key_piece_wrong_type",
+          base::test::ParseJson(R"json({"key_piece":123})json"),
+          base::unexpected(TriggerRegistrationError::
+                               kAggregatableTriggerDataKeyPieceWrongType),
+      },
+      {
+          "key_piece_wrong_format",
+          base::test::ParseJson(R"json({"key_piece":"1234"})json"),
+          base::unexpected(TriggerRegistrationError::
+                               kAggregatableTriggerDataKeyPieceWrongFormat),
+      },
+      {
+          "source_keys_missing",
+          base::test::ParseJson(R"json({"key_piece":"0x1234"})json"),
+          base::unexpected(TriggerRegistrationError::
+                               kAggregatableTriggerDataSourceKeysMissing),
+      },
+      {
+          "source_keys_wrong_type",
+          base::test::ParseJson(
+              R"json({"key_piece":"0x1234", "source_keys":{}})json"),
+          base::unexpected(TriggerRegistrationError::
+                               kAggregatableTriggerDataSourceKeysWrongType),
+      },
+      {
+          "source_keys_key_wrong_type",
+          base::test::ParseJson(
+              R"json({"key_piece":"0x1234", "source_keys":[123]})json"),
+          base::unexpected(TriggerRegistrationError::
+                               kAggregatableTriggerDataSourceKeysKeyWrongType),
+      },
+      {
+          "source_keys_too_many_keys",
+          make_aggregatable_trigger_data_with_keys(
+              kMaxAggregationKeysPerSourceOrTrigger + 1),
+          base::unexpected(TriggerRegistrationError::
+                               kAggregatableTriggerDataSourceKeysTooManyKeys),
+      },
+      {
+          "source_keys_key_too_long",
+          make_aggregatable_trigger_data_with_key_length(
+              kMaxBytesPerAggregationKeyId + 1),
+          base::unexpected(TriggerRegistrationError::
+                               kAggregatableTriggerDataSourceKeysKeyTooLong),
+      },
+      {
+          "filters_wrong_type",
+          base::test::ParseJson(R"json({
+            "key_piece": "0x1",
+            "source_keys": ["abc"],
+            "filters": 123
+          })json"),
+          base::unexpected(TriggerRegistrationError::kFiltersWrongType),
+      },
+      {
+          "not_filters_wrong_type",
+          base::test::ParseJson(R"json({
+            "key_piece": "0x1",
+            "source_keys": ["abc"],
+            "not_filters": 123
+          })json"),
+          base::unexpected(TriggerRegistrationError::kFiltersWrongType),
+      },
   };
 
   for (auto& test_case : kTestCases) {
