@@ -207,9 +207,10 @@ constexpr uint32_t kScancodesDrallion[] = {
 mojom::MechanicalLayout GetSystemMechanicalLayout() {
   chromeos::system::StatisticsProvider* stats_provider =
       chromeos::system::StatisticsProvider::GetInstance();
-  std::string layout_string;
-  if (!stats_provider->GetMachineStatistic(
-          chromeos::system::kKeyboardMechanicalLayoutKey, &layout_string)) {
+  const absl::optional<base::StringPiece> layout_string =
+      stats_provider->GetMachineStatistic(
+          chromeos::system::kKeyboardMechanicalLayoutKey);
+  if (!layout_string) {
     LOG(ERROR) << "Couldn't determine mechanical layout";
     return mojom::MechanicalLayout::kUnknown;
   }
@@ -220,7 +221,7 @@ mojom::MechanicalLayout GetSystemMechanicalLayout() {
   } else if (layout_string == "JIS") {
     return mojom::MechanicalLayout::kJis;
   } else {
-    LOG(ERROR) << "Unknown mechanical layout " << layout_string;
+    LOG(ERROR) << "Unknown mechanical layout " << layout_string.value();
     return mojom::MechanicalLayout::kUnknown;
   }
 }
@@ -228,14 +229,14 @@ mojom::MechanicalLayout GetSystemMechanicalLayout() {
 absl::optional<std::string> GetRegionCode() {
   chromeos::system::StatisticsProvider* stats_provider =
       chromeos::system::StatisticsProvider::GetInstance();
-  std::string layout_string;
-  if (!stats_provider->GetMachineStatistic(chromeos::system::kRegionKey,
-                                           &layout_string)) {
+  const absl::optional<base::StringPiece> layout_string =
+      stats_provider->GetMachineStatistic(chromeos::system::kRegionKey);
+  if (!layout_string) {
     LOG(ERROR) << "Couldn't determine region";
     return absl::nullopt;
   }
 
-  return layout_string;
+  return std::string(layout_string.value());
 }
 
 }  // namespace
