@@ -136,7 +136,9 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   static constexpr webui::ResourcePath kResources[] = {
-    {"account_manager_shared_css.js", IDR_ACCOUNT_MANAGER_SHARED_CSS_JS},
+    {"account_manager_shared.css.js", IDR_ACCOUNT_MANAGER_SHARED_CSS_JS},
+    {"error_screen.html.js",
+     IDR_ACCOUNT_MANAGER_COMPONENTS_ERROR_SCREEN_HTML_JS},
     {"error_screen.js", IDR_ACCOUNT_MANAGER_COMPONENTS_ERROR_SCREEN_JS},
     // Resources for the server-based edu coexistence flow.
     {"edu-coexistence", IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_HTML},

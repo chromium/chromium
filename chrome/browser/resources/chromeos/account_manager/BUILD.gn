@@ -3,7 +3,8 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/css_to_wrapper.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
@@ -37,10 +38,15 @@ js_library("account_manager_browser_proxy") {
   externs_list = [ "$externs_path/chrome_send.js" ]
 }
 
-html_to_js("web_components") {
-  js_files = [
-    "account_manager_shared_css.js",
-    "account_migration_welcome_app.js",
-    "account_manager_error_app.js",
+html_to_wrapper("html_wrapper_files") {
+  in_files = [
+    "account_migration_welcome_app.html",
+    "account_manager_error_app.html",
   ]
+  use_js = true
+}
+
+css_to_wrapper("css_wrapper_files") {
+  in_files = [ "account_manager_shared.css" ]
+  use_js = true
 }

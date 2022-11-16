@@ -1,0 +1,67 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=chrome://resources/cr_elements/cr_shared_style.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #include=cr-shared-style
+ * #css_wrapper_metadata_end */
+
+h1 {
+  font-size: 2em;
+  font-weight: normal;
+  margin-bottom: 8px;
+  margin-top: 28px;
+}
+
+p {
+  line-height: 1.5;
+  margin-top: 0;
+  white-space: pre-line;
+}
+
+a {
+  color: var(--cr-link-color);
+  text-decoration: none;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 61px);
+  padding-bottom: 32px;
+  padding-inline-end: 0;
+  padding-inline-start: 0;
+  padding-top: 29px; /* 64px - 35px(dialog top border size) */
+}
+
+.google-logo {
+  height: 32px;
+  width: 32px;
+}
+
+.image-container {
+  align-items: center;
+  display: flex;
+  flex-grow: 1;
+  justify-content: center;
+  width: 100%;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding-inline-end: 64px;
+  padding-inline-start: 64px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  padding-inline-end: 32px;
+  padding-inline-start: 32px;
+}

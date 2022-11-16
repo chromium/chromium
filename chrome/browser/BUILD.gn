@@ -8042,8 +8042,9 @@ grit("resources") {
   }
   if (is_chromeos_ash) {
     deps += [
-      "//chrome/browser/resources/chromeos/account_manager:web_components",
-      "//chrome/browser/resources/chromeos/account_manager/components:web_components",
+      "//chrome/browser/resources/chromeos/account_manager:css_wrapper_files",
+      "//chrome/browser/resources/chromeos/account_manager:html_wrapper_files",
+      "//chrome/browser/resources/chromeos/account_manager/components:html_wrapper_files",
       "//chrome/browser/resources/chromeos/add_supervision:web_components",
       "//chrome/browser/resources/chromeos/arc_account_picker:web_components",
       "//chrome/browser/resources/chromeos/crostini_installer:web_components",

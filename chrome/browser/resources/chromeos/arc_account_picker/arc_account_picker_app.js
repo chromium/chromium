@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../account_manager_shared_css.js';
+import '../account_manager_shared.css.js';
 import '../strings.m.js';
 
 import {getImage} from '//resources/js/icon.js';

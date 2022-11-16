@@ -4,18 +4,19 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './strings.m.js';
-import './account_manager_shared_css.js';
+import './account_manager_shared.css.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';
+import {getTemplate} from './account_migration_welcome_app.html.js';
 
 Polymer({
   is: 'account-migration-welcome',
 
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
 
   properties: {
     /** @private */

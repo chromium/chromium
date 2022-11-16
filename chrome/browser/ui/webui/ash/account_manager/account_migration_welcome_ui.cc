@@ -104,7 +104,9 @@ AccountMigrationWelcomeUI::AccountMigrationWelcomeUI(content::WebUI* web_ui)
   // Add required resources.
   html_source->AddResourcePath("account_migration_welcome_app.js",
                                IDR_ACCOUNT_MIGRATION_WELCOME_APP_JS);
-  html_source->AddResourcePath("account_manager_shared_css.js",
+  html_source->AddResourcePath("account_migration_welcome_app.html.js",
+                               IDR_ACCOUNT_MIGRATION_WELCOME_APP_HTML_JS);
+  html_source->AddResourcePath("account_manager_shared.css.js",
                                IDR_ACCOUNT_MANAGER_SHARED_CSS_JS);
   html_source->AddResourcePath("account_manager_browser_proxy.js",
                                IDR_ACCOUNT_MANAGER_BROWSER_PROXY_JS);

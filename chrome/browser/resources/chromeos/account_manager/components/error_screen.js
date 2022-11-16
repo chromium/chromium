@@ -5,7 +5,10 @@
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './error_screen.html.js';
+
 /**
  * @fileoverview Polymer element for displaying error screens with error icon,
  * title and body text.
@@ -14,7 +17,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 Polymer({
   is: 'account-manager-error-screen',
 
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
 
   properties: {
     errorTitle: {
