@@ -65,6 +65,14 @@ static_library("model_executor") {
     "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//third_party/re2",
   ]
+  deps = [
+    ":features",
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//net",
+    "//url",
+  ]
+
   if (build_with_tflite_lib) {
     public_deps += [
       "//components/optimization_guide/core:machine_learning",
@@ -74,15 +82,8 @@ static_library("model_executor") {
       "//third_party/tflite_support",
       "//third_party/tflite_support:tflite_support_proto",
     ]
+    deps += [ ":machine_learning" ]
   }
-  deps = [
-    ":features",
-    ":machine_learning",
-    "//base",
-    "//components/optimization_guide/proto:optimization_guide_proto",
-    "//net",
-    "//url",
-  ]
 }
 
 mojom("interfaces") {
