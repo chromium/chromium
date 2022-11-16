@@ -758,6 +758,31 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+                       SubresourceRequestNoRestart) {
+  base::HistogramTester histograms;
+  SetTestOptions({.content_language_in_parent = "es",
+                  .variants_in_parent = "accept-language=(es en-US)",
+                  .vary_in_parent = "accept-language"},
+                 {SameOriginImgUrl(), SimpleImgUrl()});
+  SetPrefsAcceptLanguage({"es", "en-us"});
+
+  // Initial request.
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginImgUrl(), "es");
+  EXPECT_EQ(LastRequestUrl().path(), "/subresource_simple.jpg");
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  // Ensure no restart happens.
+  histograms.ExpectBucketCount(
+      "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+      /*=kNavigationRestarted=*/3, 0);
+  // Total two different url requests:
+  // * same_origin_img.html: one fetch for initially adding header.
+  // * subresource_simple.jpg: no prefs read, it directly reads from the
+  // navigation commit language.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
                        SiteLanguageMatchMultipleLanguage) {
   base::HistogramTester histograms;
 
@@ -2296,7 +2321,7 @@ class SameOriginReduceAcceptLanguageOTBrowserTest
 
     SetOriginTrialFirstPartyToken(kValidFirstPartyToken);
 
-    // initial request.
+    // Initial request.
     NavigateAndVerifyAcceptLanguageOfLastRequest(url, "en-US");
     EXPECT_EQ(LastRequestUrl().path(), last_request_path);
 
@@ -2322,7 +2347,8 @@ class SameOriginReduceAcceptLanguageOTBrowserTest
   }
 
   void VerifySameOriginRequestNoRestart(
-      const absl::optional<std::string>& expect_accept_language) {
+      const absl::optional<std::string>& expect_accept_language,
+      int expect_fetch_count) {
     base::HistogramTester histograms;
     // The first request won't add the Accept-Language in navigation request
     // since it can't verify the origin trial.
@@ -2333,8 +2359,8 @@ class SameOriginReduceAcceptLanguageOTBrowserTest
     histograms.ExpectBucketCount(
         "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
         /*=kNavigationRestarted=*/3, 0);
-    // One Prefs fetch when initially adding header.
-    histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 1);
+    histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency",
+                                expect_fetch_count);
     // Expect one storage update when response has a valid origin token.
     histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
   }
@@ -2378,9 +2404,14 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageOTBrowserTest,
 
   // The first request won't add the Accept-Language in navigation request
   // since it can't verify the origin trial.
-  VerifySameOriginRequestNoRestart(absl::nullopt);
+  // One fetch for initially checking whether need to add reduce Accept-Language
+  // header and one fetch for navigation request commits when visiting
+  // same_origin_request.html.
+  VerifySameOriginRequestNoRestart(/*expect_accept_language=*/absl::nullopt,
+                                   /*expect_fetch_count=*/2);
   // The second request should send out with the persist language.
-  VerifySameOriginRequestNoRestart("es");
+  VerifySameOriginRequestNoRestart(/*expect_accept_language=*/"es",
+                                   /*expect_fetch_count=*/1);
   VerifySameOriginRequestAfterTokenInvalid("es");
 }
 
@@ -2419,7 +2450,8 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageOTBrowserTest,
 
     // The second request should send out with the first matched negotiation
     // language en-us.
-    VerifySameOriginRequestNoRestart("en-us");
+    VerifySameOriginRequestNoRestart(/*expect_accept_language=*/"en-us",
+                                     /*expect_fetch_count=*/1);
     VerifySameOriginRequestAfterTokenInvalid("en-us");
   }
 }
@@ -2435,9 +2467,11 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageOTBrowserTest,
 
   // The first request won't add the Accept-Language in navigation request
   // since it can't verify the origin trial.
-  VerifySameOriginRequestNoRestart(absl::nullopt);
+  VerifySameOriginRequestNoRestart(/*expect_accept_language=*/absl::nullopt,
+                                   /*expect_fetch_count=*/2);
   // The second request should send out with the persist language zh.
-  VerifySameOriginRequestNoRestart("zh");
+  VerifySameOriginRequestNoRestart(/*expect_accept_language=*/"zh",
+                                   /*expect_fetch_count=*/1);
   VerifySameOriginRequestAfterTokenInvalid("zh");
 }
 
@@ -2459,6 +2493,46 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageOTBrowserTest,
       /*url=*/SameOriginImgUrl(),
       /*last_request_path=*/"/subresource_simple.jpg",
       /*expect_fetch_count=*/2);
+}
+
+IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageOTBrowserTest,
+                       SubresourceRequestNoRestart) {
+  base::HistogramTester histograms;
+  SetTestOptions({.content_language_in_parent = "es",
+                  .variants_in_parent = "accept-language=(es en-US)",
+                  .vary_in_parent = "accept-language"},
+                 {{SameOriginImgUrl(), SimpleImgUrl()}});
+  SetOriginTrialFirstPartyToken(kValidFirstPartyToken);
+  SetPrefsAcceptLanguage({"es", "ja"});
+
+  // Initial request.
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginImgUrl(), "es");
+  EXPECT_EQ(LastRequestUrl().path(), "/subresource_simple.jpg");
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  // Ensure no restart happens.
+  histograms.ExpectBucketCount(
+      "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+      /*=kNavigationRestarted=*/3, 0);
+  // Total two different url requests:
+  // * same_origin_img.html: one fetch for initially adding header and one for
+  // navigation request commits.
+  // * subresource_simple.jpg: no prefs read, it directly reads from the
+  // navigation commit language.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
+
+  // Verify navigator.languages only returns an array length 1 if
+  // has valid origin trial token.
+  VerifyNavigatorLanguages({"es"});
+
+  // Second request with invalid origin token.
+  SetOriginTrialFirstPartyToken(kInvalidOriginToken);
+  // No Accept-Language added in content navigation request, network layer
+  // will add user's Accept-Language list.
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginImgUrl(),
+                                               absl::nullopt);
+  EXPECT_EQ(LastRequestUrl().path(), "/subresource_simple.jpg");
+  VerifyNavigatorLanguages({"es", "ja"});
 }
 
 // Browser tests verify third party origin trial. Currently we are not
@@ -2502,10 +2576,11 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageOTBrowserTest,
       "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
       /*=kNavigationRestarted=*/3, 0);
   // One fetch for initially checking whether need to add reduce Accept-Language
-  // header when visiting the following two URLs:
+  // header and one fetch for navigation request commits when visiting the
+  // following two URLs:
   // * cross_origin_iframe_url.
   // * simple_3p_request_url.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 4);
   // No persist reduce accept language happens.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 
@@ -2548,11 +2623,12 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageOTBrowserTest,
       "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
       /*=kNavigationRestarted=*/3, 0);
   // One fetch for initially checking whether need to add reduce Accept-Language
-  // header when visiting the following three URLs:
+  // header and one fetch for navigation request commits when visiting the
+  // following three URLs:
   // * cross_origin_iframe_with_subrequests_url.
   // * iframe_3p_request_url.
   // * other_site_b_basic_request_url.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 3);
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 6);
   // No persist reduce accept language happens.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 

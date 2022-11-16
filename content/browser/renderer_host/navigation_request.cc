@@ -5060,12 +5060,26 @@ void NavigationRequest::CommitNavigation() {
 
   PersistOriginTrialsFromHeaders(origin, response(), browser_context);
 
-  // If the final response do not have a valid ReduceAcceptLanguage origin trial
-  // token, stop persisting the accepted language. This happens when the token
-  // expires, is invalid, or is missing when the server stop using it.
+  // Update the reduced accept-language to commit if it's empty, and stop
+  // persisting the accepted language if the final response do not have a valid
+  // ReduceAcceptLanguage origin trial token. This happens when a site initially
+  // opts-in to the origin trial, the token expires, is invalid, or is missing
+  // when the server stops using it.
   if (auto reduce_accept_lang_utils =
           ReduceAcceptLanguageUtils::Create(browser_context);
       reduce_accept_lang_utils && !devtools_accept_language_override_) {
+    // When the server initially opt into the origin trial, via an OT token in
+    // the navigation response, the reduced accept-language to commit has not
+    // been set. It is set here to make sure the initial page load uses an
+    // appropriate value. E.g. this helps subresource requests send reduced
+    // accept-language when server initially opt into the origin trial.
+    if (commit_params_->reduced_accept_language.empty()) {
+      commit_params_->reduced_accept_language =
+          reduce_accept_lang_utils.value()
+              .LookupReducedAcceptLanguage(GetOriginToCommit().value(),
+                                           frame_tree_node_)
+              .value_or("");
+    }
     reduce_accept_lang_utils.value().RemoveOriginTrialReducedAcceptLanguage(
         commit_params_->reduced_accept_language, GetOriginToCommit().value(),
         response(), frame_tree_node_);
