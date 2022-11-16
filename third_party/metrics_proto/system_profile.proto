@@ -17,7 +17,7 @@ import "extension_install.proto";
 // Almost all the fields should be populated on every upload. (The only
 // exception is some fields in the stability section that are only uploaded
 // once per browsing session, usually shortly after startup.)
-// Next tag: 42
+// Next tag: 43
 message SystemProfileProto {
   // The time when the client was compiled/linked, in seconds since the epoch.
   optional int64 build_timestamp = 1;
@@ -1076,6 +1076,28 @@ message SystemProfileProto {
   // The Chrome package name on Android, if it's different from
   // "com.android.chrome".
   optional string app_package_name = 26;
+
+  // Indicates if the `app_package_name` should be filtered out on the
+  // server-side. The client will use this to signal no further filtering is
+  // required if filtering is enabled on the client-side. If the package name is
+  // a system app and the server-side filtering is enabled, the client will use
+  // this to indicate no filtering is required since system apps are not subject
+  // to filtering. Only recorded on the Android WebView platform.
+  enum AppPackageNameAllowlistFilter {
+    // Indicates the package name filtering was not set.
+    // This will be the case with data coming from old WebView versions.
+    SERVER_SIDE_FILTER_UNSPECIFIED = 0;
+    // Indicates the package name filtering should occur on the server-side
+    SERVER_SIDE_FILTER_REQUIRED = 1;
+    // Indicates the `app_package_name` does not need filtering since filtering
+    // occurred on the client-side.
+    NO_SERVER_SIDE_FILTER_REQUIRED_DUE_TO_CLIENT_FILTERING = 2;
+    // Indicates the `app_package_name` does not need filtering since it is
+    // a system app.
+    NO_SERVER_SIDE_FILTER_REQUIRED_FOR_SYSTEM_APPS = 3;
+  }
+
+  optional AppPackageNameAllowlistFilter app_package_name_allowlist_filter = 42;
 
   // The package which installed Chrome, as reported by
   // PackageManager.getInstallerPackageName().

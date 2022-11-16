@@ -14,7 +14,7 @@ package metrics;
 import "omnibox_input_type.proto";
 
 // Stores information about an omnibox interaction.
-// Next tag: 23
+// Next tag: 24
 message OmniboxEventProto {
   // The timestamp for the event, in seconds.
   // This value comes from Chromium's TimeTicks::Now(), which is an abstract
@@ -258,7 +258,7 @@ message OmniboxEventProto {
   }
 
   // The result set displayed on the completion popup
-  // Next tag: 10
+  // Next tag: 11
   message Suggestion {
     // Where does this result come from?
     optional ProviderType provider = 1;
@@ -380,6 +380,122 @@ message OmniboxEventProto {
     // Bing for testing" in the dropdown.  This suggestion will be marked as
     // |is_keyword_suggestion|.
     optional bool is_keyword_suggestion = 9;
+
+    // Signals for machine learning scoring.
+    // See details: http://shortn/_B21YgmkLs9.
+    // Currently, this message is only populated for URL suggestions
+    // (excluding Navsuggest and Document URLs) and only when there is a click
+    // on a URL suggestion.
+    // Only recorded on desktop platforms (Windows, Mac, Linux, ChromeOS).
+    // Next tag: 25
+    message ScoringSignals {
+      // Number of times the URL was navigated to using the Omnibox for this
+      // profile on this device, and all other devices syncing with this
+      // profile. Only include typed visits from the last 90 days. Discounted by
+      // a time-decaying factor with a 30-day half-life based on the last visit
+      // timestamp.
+      optional int32 typed_count = 1;
+      // Number of times the URL was visited in general for this profile on this
+      // device. Note that this will soon be across syncing devices with the
+      // rollout of full history sync in 2023. Only include visits from the last
+      // 90 days. Discounted by a time-decaying factor with a 30-day half-life
+      // based on the last visit timestamp.
+      optional int32 visit_count = 2;
+      // Elapsed time since last visit for this profile on this device. Uses the
+      // local client-side timestamps. Can be unreliable as local times can
+      // change in between different runs of Chrome.
+      optional int64 elapsed_time_last_visit_secs = 3;
+      // Number of times the suggestion was visited with the current input or
+      // prefix of it for this profile on this device.
+      // Discounted by a time-decaying factor with a 1-week half-life based on
+      // the last visit timestamp.
+      optional int32 shortcut_visit_count = 4;
+      // Length of the shortest shortcut text.
+      // Useful in comparison with |typed_length|.
+      optional int32 shortest_shortcut_len = 5;
+      // Elapsed time since last shortcut visit for this profile on this device.
+      // Uses the local client-side timestamps. Can be unreliable as local times
+      // can change in between different runs of Chrome.
+      optional int64 elapsed_time_last_shortcut_visit_sec = 6;
+      // URL points to the root page of a website, i.e., no query, path words,
+      // or references after "/".
+      optional bool is_host_only = 7;
+      // Number of bookmarks for this profile with this URL.
+      optional int32 num_bookmarks_of_url = 8;
+      // Position of the first matched bookmark title term.
+      // E.g. 4 for input 'x' and title "0123x56".
+      // Not set when there is no match in the bookmark title.
+      optional int32 first_bookmark_title_match_position = 9;
+      // Total length of matched strings in the bookmark title. Can be larger
+      // than the input text length. The input text is split by whitespaces, and
+      // each input word is matched against the title separately. Their matching
+      // lengths are summed. Similarly for other text matching signals below.
+      // E.g. 9 for input "[abc] ijk [xyz]" and title "[abc] def [xyz] - [xyz]".
+      // Set to 0 when there is no match in the title.
+      optional int32 total_bookmark_title_match_length = 10;
+      // Number of input terms matched by bookmark title. Take the maximum when
+      // there are multiple matching bookmarks of this URL.
+      // E.g., 1 for input "[a] b" and bookmark title "[a] book title".
+      // Not set when the user does not have this URL bookmarked.
+      optional int32 num_input_terms_matched_by_bookmark_title = 11;
+      // Position of the first matched URL substring.
+      // URL scheme or TLD matches are excluded, though those characters are
+      // counted when assessing match position. E.g., 11 for 't' in
+      // "https://hos[t].com" Not set when there is no URL match.
+      optional int32 first_url_match_position = 12;
+      // Total length of the matched URL strings. Can be longer than the input
+      // string. E.g., Given input "ab abc" and url "abc.com/ab", total is 7 (4
+      // for "ab" in "[ab]c.com/[ab]" and 3 for "abc" in
+      // "[abc].com"). Set to 0 when there is no URL string match.
+      optional int32 total_url_match_length = 13;
+      // One word matches host at a word boundary. E.g., true for input "[h] a"
+      // and "[h].com", Set to false when there are matches in the host but none
+      // at word boundaries. E.g., false for input "a" and "h[a].com". Not set
+      // when there is no host match.
+      optional bool host_match_at_word_boundary = 14;
+      // Total length of the matched host substrings.
+      // Can be larger than the input text.
+      // E.g., 3 for input "h a" and "[h]ost[aa].com".
+      // Set to 0 when there is no host match.
+      optional int32 total_host_match_length = 15;
+      // Total length of the matched substrings in the path at word boundaries.
+      // Can be larger than the input text. E.g. 3 for 'p' in
+      // 'a.com/[p]ath_[p]ath/[p]ath'. Set to 0 when there are no such matches.
+      optional int32 total_path_match_length = 16;
+      // Total length of the matched substrings in the query_or_ref at word
+      // boundaries. Can be larger than the input text.
+      // E.g., 3 for input '[qu] [a]' and 'a.com/a?[qu]ery_[a]'.
+      // Set to 0 when there are no such matches.
+      optional int32 total_query_or_ref_match_length = 17;
+      // Total length of the matched substrings in the page title at word
+      // boundaries. Can be larger than the input text.
+      // E.g., 2 for input "[a] [t] x" and page title "[a]bc [t]itle".
+      // Set to 0 when there is no title match.
+      optional int32 total_title_match_length = 18;
+      // Has matches that are not in schemes (e.g., "https") or "www".
+      optional bool has_non_scheme_www_match = 19;
+      // Number of input terms matched by title.
+      // E.g., 1 for input "[a] b" and title "[a] title [a]".
+      // Useful in comparison with |num_typed_terms|.
+      optional int32 num_input_terms_matched_by_title = 20;
+      // Number of input terms matched by url.
+      // Useful in comparison with |num_typed_terms|.
+      // E.g., 1 for input "[a] b" and url "[a].com".
+      optional int32 num_input_terms_matched_by_url = 21;
+      // Length of url. E.g., 22 for "https://www.host.com/p".
+      optional int32 length_of_url = 22;
+      // Site engagement score for the site the URL is on. See
+      // https://www.chromium.org/developers/design-documents/site-engagement/
+      optional float site_engagement = 23;
+      // True if url can be default match.
+      // Currently, this requires single-term input, and match needs to begin
+      // immediately after '', scheme, or 'http://www' in the URL, e.g., given
+      // input 'w', true for "https://www.[w]sj.com" or "[w]ww.a.com", false for
+      // "host[w].com". ref:
+      // https://source.chromium.org/chromium/chromium/src/+/main:components/omnibox/browser/scored_history_match.cc;l=187?q=inline%20autocomplete
+      optional bool allowed_to_be_default_match = 24;
+    }
+    optional ScoringSignals scoring_signals = 10;
   }
   repeated Suggestion suggestion = 9;
 
@@ -454,4 +570,20 @@ message OmniboxEventProto {
   // See AutocompleteController::ResetSession() for more details on the
   // definition of a session.
   repeated int32 feature_triggered_in_session = 22;
+
+  // Profile data of the user. Currently, only logged when there is a URL click.
+  message ProfileData {
+    // Total number of bookmarks in the profile this omnibox interaction took
+    // place in.
+    optional int32 total_num_bookmarks = 1;
+    // Total number of URLs stored in the history database in the profile this
+    // omnibox interaction took place in.
+    optional int32 total_num_history_urls = 2;
+    // Is signed into the browser. Set to false for Guest and Incognito
+    // profiles. Not set when signed-in status is unknown.
+    optional bool is_signed_into_browser = 3;
+    // Is sync-enabled.
+    optional bool is_sync_enabled = 4;
+  }
+  optional ProfileData profile_data = 23;
 }
