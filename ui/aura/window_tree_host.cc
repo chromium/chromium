@@ -137,7 +137,7 @@ class WindowTreeHost::HideHelper {
         host_window->layer()->device_scale_factor());
     // Request a presentation frame. Once the frame is generated the real root
     // layer is added back (from the destructor).
-    compositor->RequestPresentationTimeForNextFrame(base::BindOnce(
+    compositor->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
         &HideHelper::OnFramePresented, weak_ptr_factory_.GetWeakPtr()));
   }
 
@@ -151,7 +151,7 @@ class WindowTreeHost::HideHelper {
   }
 
  private:
-  void OnFramePresented(const gfx::PresentationFeedback& feedback) {
+  void OnFramePresented(base::TimeTicks presentation_timestamp) {
     host_->FinishHideTransition();
     // WARNING: this has been deleted.
   }

@@ -368,12 +368,11 @@ cc::Layer* ccLayerFromUiLayer(ui::Layer* layer) {
 bool WaitForFrame(WindowTreeHost* host) {
   base::RunLoop run_loop;
   bool got_frame = false;
-  host->compositor()->RequestPresentationTimeForNextFrame(
-      base::BindLambdaForTesting(
-          [&](const gfx::PresentationFeedback& feedback) {
-            got_frame = true;
-            run_loop.Quit();
-          }));
+  host->compositor()->RequestSuccessfulPresentationTimeForNextFrame(
+      base::BindLambdaForTesting([&](base::TimeTicks presentation_timestamp) {
+        got_frame = true;
+        run_loop.Quit();
+      }));
   run_loop.Run();
   return got_frame;
 }
