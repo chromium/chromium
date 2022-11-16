@@ -54129,6 +54129,14 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="2" label="Subresource"/>
 </enum>
 
+<enum name="IsolatedWebAppResponseReaderCacheState">
+  <int value="0" label="Not cached"/>
+  <int value="1" label="Cached and ready"/>
+  <int value="2"
+      label="Cached but still processing integrity block, signatures, or
+             metadata"/>
+</enum>
+
 <enum name="IsPinnedToTaskbarResult">
   <int value="0" label="Not pinned"/>
   <int value="1" label="Pinned"/>

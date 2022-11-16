@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -29,11 +30,14 @@
 #include "content/public/common/content_features.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_app {
 
 namespace {
+
+using testing::ElementsAre;
 
 constexpr uint8_t kEd25519PublicKey[32] = {0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0,
                                            0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0,
@@ -613,6 +617,9 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidResponse) {
 }
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
+  using ReaderCacheState = IsolatedWebAppReaderRegistry::ReaderCacheState;
+  base::HistogramTester histogram_tester;
+
   network::ResourceRequest resource_request;
   resource_request.url = kPrimaryUrl;
 
@@ -620,9 +627,20 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
   base::test::TestFuture<ReadResult> read_response_future_1;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                           read_response_future_1.GetCallback());
+
+  histogram_tester.GetAllSamples("WebApp.Isolated.ResponseReaderCacheState"),
+      ElementsAre(base::Bucket(ReaderCacheState::kNotCached, 1),
+                  base::Bucket(ReaderCacheState::kCachedReady, 0),
+                  base::Bucket(ReaderCacheState::kCachedPending, 0));
+
   base::test::TestFuture<ReadResult> read_response_future_2;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                           read_response_future_2.GetCallback());
+
+  histogram_tester.GetAllSamples("WebApp.Isolated.ResponseReaderCacheState"),
+      ElementsAre(base::Bucket(ReaderCacheState::kNotCached, 1),
+                  base::Bucket(ReaderCacheState::kCachedReady, 0),
+                  base::Bucket(ReaderCacheState::kCachedPending, 1));
 
   FulfillIntegrityBlock();
   FulfillMetadata();
@@ -655,6 +673,11 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
   base::test::TestFuture<ReadResult> read_response_future_3;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                           read_response_future_3.GetCallback());
+
+  histogram_tester.GetAllSamples("WebApp.Isolated.ResponseReaderCacheState"),
+      ElementsAre(base::Bucket(ReaderCacheState::kNotCached, 1),
+                  base::Bucket(ReaderCacheState::kCachedReady, 1),
+                  base::Bucket(ReaderCacheState::kCachedPending, 1));
 
   FulfillResponse(resource_request);
   {

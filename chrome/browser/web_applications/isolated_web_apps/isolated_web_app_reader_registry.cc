@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -62,22 +63,31 @@ void IsolatedWebAppReaderRegistry::ReadResponse(
   DCHECK_EQ(web_bundle_id.type(),
             web_package::SignedWebBundleId::Type::kEd25519PublicKey);
 
-  if (auto cache_entry_it = reader_cache_.Find(web_bundle_path);
-      cache_entry_it != reader_cache_.End()) {
-    switch (cache_entry_it->second.state) {
-      case Cache::Entry::State::kPending:
-        // If integrity block and metadata are still being read, then the
-        // `SignedWebBundleReader` is not yet ready to be used for serving
-        // responses. Queue the request and callback in this case.
-        cache_entry_it->second.pending_requests.emplace_back(
-            resource_request, std::move(callback));
-        return;
-      case Cache::Entry::State::kReady:
-        // If integrity block and metadata have already been read, read the
-        // response from the cached `SignedWebBundleReader`.
-        DoReadResponse(cache_entry_it->second.GetReader(), resource_request,
-                       std::move(callback));
-        return;
+  {
+    auto cache_entry_it = reader_cache_.Find(web_bundle_path);
+    bool found = cache_entry_it != reader_cache_.End();
+
+    base::UmaHistogramEnumeration(
+        "WebApp.Isolated.ResponseReaderCacheState",
+        found ? cache_entry_it->second.AsReaderCacheState()
+              : ReaderCacheState::kNotCached);
+
+    if (found) {
+      switch (cache_entry_it->second.state) {
+        case Cache::Entry::State::kPending:
+          // If integrity block and metadata are still being read, then the
+          // `SignedWebBundleReader` is not yet ready to be used for serving
+          // responses. Queue the request and callback in this case.
+          cache_entry_it->second.pending_requests.emplace_back(
+              resource_request, std::move(callback));
+          return;
+        case Cache::Entry::State::kReady:
+          // If integrity block and metadata have already been read, read
+          // the response from the cached `SignedWebBundleReader`.
+          DoReadResponse(cache_entry_it->second.GetReader(), resource_request,
+                         std::move(callback));
+          return;
+      }
     }
   }
 

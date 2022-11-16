@@ -746,6 +746,23 @@ chromium-metrics-reviews@google.com.
   <summary>Records the result code of Web App installs.</summary>
 </histogram>
 
+<histogram name="WebApp.Isolated.ResponseReaderCacheState"
+    enum="IsolatedWebAppResponseReaderCacheState" expires_after="2023-11-08">
+  <owner>cmfcmf@chromium.org</owner>
+  <owner>peletskyi@chromium.org</owner>
+  <summary>
+    This histogram is logged whenever an HTTP request to read a response from a
+    Signed Web Bundle used for Isolated Web Apps is made through the
+    isolated-app: scheme and handled by the corresponding URLLoader. This
+    happens both during installation of an Isolated Web App, and when users
+    browse an installed Isolated Web App. The histogram records whether a cached
+    reader was used to read the response. A cached reader is able to directly
+    read a response from the Signed Web Bundle, whereas an uncached reader first
+    needs to parse the Signed Web Bundle's Integrity Block and metadata, and
+    possibly verify signatures.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Isolated.SignatureVerificationDuration" units="ms"
     expires_after="2023-11-08">
   <owner>cmfcmf@chromium.org</owner>

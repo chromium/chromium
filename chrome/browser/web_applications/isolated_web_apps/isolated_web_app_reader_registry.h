@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -127,6 +128,9 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
                     ReadResponseCallback callback);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppReaderRegistryTest,
+                           TestConcurrentRequests);
+
   void OnIntegrityBlockRead(
       const base::FilePath& web_bundle_path,
       const web_package::SignedWebBundleId& web_bundle_id,
@@ -157,6 +161,8 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
       ReadResponseCallback callback,
       base::expected<web_package::mojom::BundleResponsePtr,
                      SignedWebBundleReader::ReadResponseError> response_head);
+
+  enum class ReaderCacheState;
 
   // A thin wrapper around `base::flat_map<base::FilePath, Cache::Entry>` that
   // automatically removes entries from the cache if they have not been accessed
@@ -207,6 +213,15 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
 
       const base::TimeTicks last_access() const { return last_access_; }
 
+      ReaderCacheState AsReaderCacheState() {
+        switch (state) {
+          case State::kPending:
+            return ReaderCacheState::kCachedPending;
+          case State::kReady:
+            return ReaderCacheState::kCachedReady;
+        }
+      }
+
       enum class State { kPending, kReady };
 
       State state = State::kPending;
@@ -230,6 +245,15 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
     base::flat_map<base::FilePath, Entry> cache_;
     base::RepeatingTimer cleanup_timer_;
     SEQUENCE_CHECKER(sequence_checker_);
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ReaderCacheState {
+    kNotCached = 0,
+    kCachedReady = 1,
+    kCachedPending = 2,
+    kMaxValue = kCachedPending
   };
 
   Cache reader_cache_;
