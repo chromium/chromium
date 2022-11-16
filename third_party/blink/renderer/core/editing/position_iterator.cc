@@ -55,7 +55,7 @@ ContainerNode* SelectableParentOf(const Node& node) {
 
 }  // namespace
 
-static const int kInvalidOffset = -1;
+static constexpr int kInvalidOffset = -1;
 
 template <typename Strategy>
 PositionIteratorAlgorithm<Strategy>::PositionIteratorAlgorithm(
@@ -88,12 +88,7 @@ PositionIteratorAlgorithm<Strategy>::PositionIteratorAlgorithm(
                                           pos.ComputeEditingOffset())) {}
 
 template <typename Strategy>
-PositionIteratorAlgorithm<Strategy>::PositionIteratorAlgorithm()
-    : anchor_node_(nullptr),
-      node_after_position_in_anchor_(nullptr),
-      offset_in_anchor_(0),
-      depth_to_anchor_node_(0),
-      dom_tree_version_(0) {}
+PositionIteratorAlgorithm<Strategy>::PositionIteratorAlgorithm() = default;
 
 template <typename Strategy>
 PositionTemplate<Strategy>
