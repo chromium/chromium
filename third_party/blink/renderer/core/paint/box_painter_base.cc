@@ -473,10 +473,12 @@ BoxPainterBase::FillLayerInfo::FillLayerInfo(
   const bool has_rounded_border =
       style.HasBorderRadius() && !sides_to_include.IsEmpty();
   // BorderFillBox radius clipping is taken care of by
-  // BackgroundBleedClip{Only,Layer}
+  // BackgroundBleedClip{Only,Layer}.
   is_rounded_fill =
       has_rounded_border && !is_painting_background_in_contents_space &&
-      !(is_border_fill && BleedAvoidanceIsClipping(bleed_avoidance));
+      (is_clipped_with_local_scrolling ||
+       !(is_border_fill && BleedAvoidanceIsClipping(bleed_avoidance)));
+
   is_printing = doc.Printing();
 
   should_paint_image = image && image->CanRender();
@@ -955,7 +957,8 @@ FloatRoundedRect RoundedBorderRectForClip(
   }
 
   if (info.is_border_fill &&
-      bleed_avoidance == kBackgroundBleedShrinkBackground) {
+      bleed_avoidance == kBackgroundBleedShrinkBackground &&
+      !info.is_clipped_with_local_scrolling) {
     border = BackgroundRoundedRectAdjustedForBleedAvoidance(
         style, rect, object_has_multiple_boxes, info.sides_to_include, border);
   }
@@ -966,7 +969,10 @@ FloatRoundedRect RoundedBorderRectForClip(
   if (bg_layer.Clip() == EFillBox::kContent) {
     border = RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
         style, border_rect, border_padding_insets, info.sides_to_include);
-  } else if (bg_layer.Clip() == EFillBox::kPadding) {
+    // Background of 'background-attachment: local' without visible/clip
+    // overflow also needs to use inner border which is equivalent to kPadding.
+  } else if (bg_layer.Clip() == EFillBox::kPadding ||
+             info.is_clipped_with_local_scrolling) {
     border = RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
         style, border_rect, info.sides_to_include);
   }

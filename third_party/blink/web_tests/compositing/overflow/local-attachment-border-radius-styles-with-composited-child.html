@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<style>
+
+.outer {
+    border: 10px solid black;
+    width: 100px;
+    height: 100px;
+    border-radius: 40px;
+    background-color: lightblue;
+    overflow: hidden;
+    margin: 10px;
+    background-attachment: local;
+}
+
+.inner {
+    width: 80px;
+    height: 80px;
+    background-color: green;
+    padding: .5em;
+}
+
+.double {
+   border-style: double;
+}
+
+.dashed {
+    border-style: dashed;
+}
+
+.translucent {
+    border-color: rgba(255,0,0,0.5);
+}
+
+.clip {
+    overflow: clip;
+}
+
+</style>
+
+<div class = "outer double">
+    <div class = "inner"></div>
+</div>
+
+<div class = "outer double clip">
+    <div class = "inner"></div>
+</div>
+
+<div class = "outer dashed">
+    <div class = "inner"></div>
+</div>
+
+<div class = "outer translucent">
+    <div class = "inner"></div>
+</div>
