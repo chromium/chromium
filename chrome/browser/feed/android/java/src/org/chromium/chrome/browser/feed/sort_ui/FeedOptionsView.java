@@ -59,6 +59,7 @@ public class FeedOptionsView extends LinearLayout {
 
     /** Expands this view to full height. */
     private void expand() {
+        if (this.getParent() == null) return;
         // Width is match_parent and height is wrap_content.
         int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(
                 ((ViewGroup) getParent()).getWidth(), View.MeasureSpec.EXACTLY);
@@ -96,6 +97,7 @@ public class FeedOptionsView extends LinearLayout {
 
     /** Collapses this view to 0 height and then marks it GONE. */
     private void collapse() {
+        if (this.getParent() == null) return;
         int initialHeight = getMeasuredHeight();
 
         Animation animation = new Animation() {
