@@ -665,8 +665,6 @@ AXObjectCacheImpl::AXObjectCacheImpl(Document& document,
       ax_tree_source_(BlinkAXTreeSource::Create(*this)),
       ax_tree_serializer_(
           std::make_unique<ui::AXTreeSerializer<AXObject*>>(ax_tree_source_)) {
-  if (document_->IsLoadCompleted())
-    AddPermissionStatusListener();
   use_ax_menu_list_ = GetSettings()->GetUseAXMenuList();
 }
 
@@ -4368,7 +4366,6 @@ void AXObjectCacheImpl::HandleLoadCompleteWithCleanLayout(Node* document_node) {
   if (!document->IsLoadCompleted() || IsInitialEmptyDocument(*document))
     return;
 
-  AddPermissionStatusListener();
   PostNotification(GetOrCreate(document_node),
                    ax::mojom::blink::Event::kLoadComplete);
 }

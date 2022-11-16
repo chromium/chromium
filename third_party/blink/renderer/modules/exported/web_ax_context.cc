@@ -130,4 +130,9 @@ void WebAXContext::ScheduleAXUpdate() {
   return private_->GetAXObjectCache().ScheduleAXUpdate();
 }
 
+void WebAXContext::FireLoadCompleteIfLoaded() {
+  if (!private_->HasActiveDocument())
+    return;
+  return private_->GetDocument()->DispatchHandleLoadComplete();
+}
 }  // namespace blink

@@ -87,6 +87,9 @@ class BLINK_EXPORT WebAXContext {
   // Ensure that a layout and accessibility update will occur soon.
   void ScheduleAXUpdate();
 
+  // If the document is loaded, fire a load complete event.
+  void FireLoadCompleteIfLoaded();
+
  private:
   std::unique_ptr<AXContext> private_;
 };

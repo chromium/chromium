@@ -117,8 +117,7 @@ class ScopedFreezeAXTreeSource {
 
 RenderAccessibilityImpl::RenderAccessibilityImpl(
     RenderAccessibilityManager* const render_accessibility_manager,
-    RenderFrameImpl* const render_frame,
-    ui::AXMode mode)
+    RenderFrameImpl* const render_frame)
     : RenderFrameObserver(render_frame),
       render_accessibility_manager_(render_accessibility_manager),
       render_frame_(render_frame),
@@ -126,8 +125,7 @@ RenderAccessibilityImpl::RenderAccessibilityImpl(
       event_schedule_status_(EventScheduleStatus::kNotWaiting),
       reset_token_(0),
       ukm_timer_(std::make_unique<base::ElapsedTimer>()),
-      last_ukm_source_id_(ukm::kInvalidSourceId),
-      accessibility_mode_(mode) {
+      last_ukm_source_id_(ukm::kInvalidSourceId) {
   mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> recorder;
   content::RenderThread::Get()->BindHostReceiver(
       recorder.InitWithNewPipeAndPassReceiver());
@@ -135,17 +133,9 @@ RenderAccessibilityImpl::RenderAccessibilityImpl(
   WebView* web_view = render_frame_->GetWebView();
   WebSettings* settings = web_view->GetSettings();
 
-  SetAccessibilityCrashKey(mode);
 #if BUILDFLAG(IS_ANDROID)
   // Password values are only passed through on Android.
   settings->SetAccessibilityPasswordValuesEnabled(true);
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Inline text boxes can be enabled globally on all except Android.
-  // On Android they can be requested for just a specific node.
-  if (mode.has_mode(ui::AXMode::kInlineTextBoxes))
-    settings->SetInlineTextBoxAccessibilityEnabled(true);
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -176,18 +166,6 @@ RenderAccessibilityImpl::RenderAccessibilityImpl(
   if (disable_ax_menu_list)
     settings->SetUseAXMenuList(false);
 
-  const WebDocument& document = GetMainDocument();
-  if (!document.IsNull()) {
-    ax_context_ = std::make_unique<WebAXContext>(document, mode);
-    StartOrStopLabelingImages(ui::AXMode(), mode);
-
-    // It's possible that the webview has already loaded a webpage without
-    // accessibility being enabled. Initialize the browser's cached
-    // accessibility tree by firing a layout complete for the document.
-    // Ensure that this occurs after initial layout is actually complete.
-    ScheduleSendPendingAccessibilityEvents();
-  }
-
   image_annotation_debugging_ =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           ::switches::kEnableExperimentalAccessibilityLabelsDebugging);
@@ -197,8 +175,8 @@ RenderAccessibilityImpl::~RenderAccessibilityImpl() = default;
 
 void RenderAccessibilityImpl::DidCreateNewDocument() {
   const WebDocument& document = GetMainDocument();
-  if (!document.IsNull())
-    ax_context_ = std::make_unique<WebAXContext>(document, accessibility_mode_);
+  DCHECK(!document.IsNull());
+  ax_context_ = std::make_unique<WebAXContext>(document, accessibility_mode_);
 }
 
 void RenderAccessibilityImpl::DidCommitProvisionalLoad(
@@ -228,52 +206,71 @@ void RenderAccessibilityImpl::DidCommitProvisionalLoad(
 
 void RenderAccessibilityImpl::AccessibilityModeChanged(const ui::AXMode& mode) {
   ui::AXMode old_mode = accessibility_mode_;
-  if (old_mode == mode)
-    return;
-  accessibility_mode_ = mode;
+  DCHECK(!mode.is_mode_off())
+      << "Should not be reached when turning a11y off; rather, the "
+         "RenderAccessibilityImpl should be destroyed.";
 
-  // TODO(aleventhal): DCHECK(!mode.is_mode_off()), because this object
-  // should be deleted before that mode is set.
-  if (mode.is_mode_off()) {
-    ax_context_ = nullptr;
-    return;
-  } else if (ax_context_) {
-    ax_context_->SetAXMode(mode);
-  } else {
+  if (old_mode == mode) {
+    DCHECK(ax_context_);
     return;
   }
 
-  DCHECK(ax_context_);
-  DCHECK_EQ(accessibility_mode_, ax_context_->GetAXMode());
+  accessibility_mode_ = mode;
+
+  bool was_on = !old_mode.is_mode_off();
+
+  DCHECK_EQ(was_on, !!ax_context_);
 
   SetAccessibilityCrashKey(mode);
 
+  // Initialize features based on the accessibility mode.
 #if !BUILDFLAG(IS_ANDROID)
   // Inline text boxes can be enabled globally on all except Android.
   // On Android they can be requested for just a specific node.
   WebView* web_view = render_frame_->GetWebView();
-  if (web_view) {
-    WebSettings* settings = web_view->GetSettings();
-    if (settings) {
-      if (mode.has_mode(ui::AXMode::kInlineTextBoxes)) {
-        settings->SetInlineTextBoxAccessibilityEnabled(true);
-        ax_context_->UpdateAXForAllDocuments();
-        ComputeRoot().LoadInlineTextBoxes();
-      } else {
-        settings->SetInlineTextBoxAccessibilityEnabled(false);
-      }
+  DCHECK(web_view);
+  WebSettings* settings = web_view->GetSettings();
+  DCHECK(settings);
+  if (mode.has_mode(ui::AXMode::kInlineTextBoxes)) {
+    settings->SetInlineTextBoxAccessibilityEnabled(true);
+    // If accessibility was already on, update it to load inline text boxes.
+    // Otherwise, just build the tree naturally.
+    if (was_on) {
+      ax_context_->UpdateAXForAllDocuments();
+      ComputeRoot().LoadInlineTextBoxes();
     }
+  } else {
+    settings->SetInlineTextBoxAccessibilityEnabled(false);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
+  StartOrStopLabelingImages(old_mode, mode);
 
-  ax_context_->ResetSerializer();
-  const WebDocument& document = GetMainDocument();
-  if (!document.IsNull()) {
-    StartOrStopLabelingImages(old_mode, mode);
+  if (ax_context_)
+    ax_context_->SetAXMode(mode);
+  else
+    DidCreateNewDocument();
 
-    needs_initial_ax_tree_root_ = true;
-    event_schedule_mode_ = EventScheduleMode::kProcessEventsImmediately;
-    ScheduleSendPendingAccessibilityEvents();
+  DCHECK(ax_context_);
+  DCHECK_EQ(accessibility_mode_, ax_context_->GetAXMode());
+
+  if (was_on) {
+    // When the accessibility mode changes, all state contained in the
+    // serializer, which prevents previously serialized data from being
+    // reserialized, is now out-of-date.
+    ax_context_->ResetSerializer();
+  }
+
+  // Fire a load complete event so that any ATs present can treat the page as
+  // fresh and newly loaded.
+  FireLoadCompleteIfLoaded();
+}
+
+void RenderAccessibilityImpl::FireLoadCompleteIfLoaded() {
+  if (GetMainDocument().GetFrame()->GetEmbeddingToken()) {
+    DCHECK(ax_context_);
+    ax_context_->UpdateAXForAllDocuments();
+    ax_context_->FireLoadCompleteIfLoaded();
+    ax_context_->UpdateAXForAllDocuments();
   }
 }
 
@@ -287,6 +284,7 @@ void RenderAccessibilityImpl::HitTest(
     blink::mojom::RenderAccessibility::HitTestCallback callback) {
   const WebDocument& document = GetMainDocument();
   DCHECK(!document.IsNull());
+  DCHECK(ax_context_);
   ax_context_->UpdateAXForAllDocuments();
 
   WebAXObject ax_object;
@@ -474,22 +472,12 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
 }
 
 void RenderAccessibilityImpl::Reset(int32_t reset_token) {
+  DCHECK(ax_context_);
+  DCHECK(!accessibility_mode_.is_mode_off());
   reset_token_ = reset_token;
-  if (ax_context_) {
-    ax_context_->ResetSerializer();
-    ax_context_->ClearDirtyObjectsAndPendingEvents();
-  }
-
-  const WebDocument& document = GetMainDocument();
-  if (!document.IsNull()) {
-    // Tree-only mode gets used by the automation extension API which requires a
-    // load complete event to invoke listener callbacks.
-    // SendPendingAccessibilityEvents() will fire the load complete event
-    // if the page is loaded.
-    needs_initial_ax_tree_root_ = true;
-    event_schedule_mode_ = EventScheduleMode::kProcessEventsImmediately;
-    ScheduleSendPendingAccessibilityEvents();
-  }
+  ax_context_->ResetSerializer();
+  ax_context_->ClearDirtyObjectsAndPendingEvents();
+  FireLoadCompleteIfLoaded();
 }
 
 void RenderAccessibilityImpl::MarkWebAXObjectDirty(
@@ -522,9 +510,9 @@ void RenderAccessibilityImpl::NotifyWebAXObjectMarkedDirty(
 }
 
 void RenderAccessibilityImpl::HandleAXEvent(const ui::AXEvent& event) {
+  DCHECK(ax_context_);
   const WebDocument& document = GetMainDocument();
-  if (document.IsNull())
-    return;
+  DCHECK(!document.IsNull());
 
   auto obj = WebAXObject::FromWebDocumentByID(document, event.id);
   if (obj.IsDetached())
@@ -540,7 +528,7 @@ void RenderAccessibilityImpl::HandleAXEvent(const ui::AXEvent& event) {
     obj.InvalidateSerializerSubtree();
 #endif
 
-  if (!ax_context_ || !ax_context_->AddPendingEvent(event)) {
+  if (!ax_context_->AddPendingEvent(event)) {
     DCHECK(ax_context_);
     return;
   }
@@ -1030,6 +1018,8 @@ bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
   // Serialize all dirty objects in the list at this point in time, stopping
   // either when the queue is empty, or the number of remaining objects to
   // serialize has been reached.
+  DCHECK(ax_context_);
+  DCHECK(!accessibility_mode_.is_mode_off());
   ax_context_->SerializeDirtyObjectsAndEvents(
       !!plugin_tree_source_, updates, events, had_end_of_test_event,
       had_load_complete_messages, need_to_send_location_changes);

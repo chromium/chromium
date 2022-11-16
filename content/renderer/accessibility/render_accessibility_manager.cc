@@ -55,8 +55,8 @@ void RenderAccessibilityManager::SetMode(uint32_t ax_mode) {
 
   if (new_mode.has_mode(ui::AXMode::kWebContents) &&
       !old_mode.has_mode(ui::AXMode::kWebContents)) {
-    render_accessibility_ = std::make_unique<RenderAccessibilityImpl>(
-        this, render_frame_, new_mode);
+    render_accessibility_ =
+        std::make_unique<RenderAccessibilityImpl>(this, render_frame_);
   } else if (!new_mode.has_mode(ui::AXMode::kWebContents) &&
              old_mode.has_mode(ui::AXMode::kWebContents)) {
     render_accessibility_.reset();

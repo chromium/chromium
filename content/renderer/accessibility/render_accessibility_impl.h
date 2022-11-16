@@ -80,10 +80,11 @@ class RenderAccessibilityManager;
 class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
                                                public RenderFrameObserver {
  public:
+  // A call to AccessibilityModeChanged() is required after construction to
+  // start accessibility.
   RenderAccessibilityImpl(
       RenderAccessibilityManager* const render_accessibility_manager,
-      RenderFrameImpl* const render_frame,
-      ui::AXMode mode);
+      RenderFrameImpl* const render_frame);
 
   RenderAccessibilityImpl(const RenderAccessibilityImpl&) = delete;
   RenderAccessibilityImpl& operator=(const RenderAccessibilityImpl&) = delete;
@@ -185,6 +186,9 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
                       const gfx::Size& max_size);
   void AddPluginTreeToUpdate(ui::AXTreeUpdate* update,
                              bool invalidate_plugin_subtree);
+
+  // If the document is loaded, fire a load complete event.
+  void FireLoadCompleteIfLoaded();
 
   // Creates and takes ownership of an instance of the class that automatically
   // labels images for accessibility.
