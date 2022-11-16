@@ -42,7 +42,6 @@
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_image_native_pixmap.h"
-#include "ui/gl/gl_image_shared_memory.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/scoped_binders.h"
