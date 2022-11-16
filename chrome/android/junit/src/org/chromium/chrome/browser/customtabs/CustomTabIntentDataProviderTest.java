@@ -302,41 +302,41 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    public void partialCustomTabResizeBehavior_Default() {
-        Intent intent =
-                new Intent().putExtra(CustomTabIntentDataProvider.EXTRA_ACTIVITY_RESIZE_BEHAVIOR,
-                        BrowserServicesIntentDataProvider.ACTIVITY_HEIGHT_DEFAULT);
+    public void partialCustomTabHeightResizeBehavior_Default() {
+        Intent intent = new Intent().putExtra(
+                CustomTabIntentDataProvider.EXTRA_ACTIVITY_HEIGHT_RESIZE_BEHAVIOR,
+                BrowserServicesIntentDataProvider.ACTIVITY_HEIGHT_DEFAULT);
 
         CustomTabIntentDataProvider dataProvider =
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
 
-        assertFalse("The default resize behavior should return false",
+        assertFalse("The default height resize behavior should return false",
                 dataProvider.isPartialCustomTabFixedHeight());
     }
 
     @Test
-    public void partialCustomTabResizeBehavior_Adjustable() {
-        Intent intent =
-                new Intent().putExtra(CustomTabIntentDataProvider.EXTRA_ACTIVITY_RESIZE_BEHAVIOR,
-                        BrowserServicesIntentDataProvider.ACTIVITY_HEIGHT_ADJUSTABLE);
+    public void partialCustomTabHeightResizeBehavior_Adjustable() {
+        Intent intent = new Intent().putExtra(
+                CustomTabIntentDataProvider.EXTRA_ACTIVITY_HEIGHT_RESIZE_BEHAVIOR,
+                BrowserServicesIntentDataProvider.ACTIVITY_HEIGHT_ADJUSTABLE);
 
         CustomTabIntentDataProvider dataProvider =
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
 
-        assertFalse("The adjustable resize behavior should return false",
+        assertFalse("The adjustable height resize behavior should return false",
                 dataProvider.isPartialCustomTabFixedHeight());
     }
 
     @Test
-    public void partialCustomTabResizeBehavior_Fixed() {
-        Intent intent =
-                new Intent().putExtra(CustomTabIntentDataProvider.EXTRA_ACTIVITY_RESIZE_BEHAVIOR,
-                        BrowserServicesIntentDataProvider.ACTIVITY_HEIGHT_FIXED);
+    public void partialCustomTabHeightResizeBehavior_Fixed() {
+        Intent intent = new Intent().putExtra(
+                CustomTabIntentDataProvider.EXTRA_ACTIVITY_HEIGHT_RESIZE_BEHAVIOR,
+                BrowserServicesIntentDataProvider.ACTIVITY_HEIGHT_FIXED);
 
         CustomTabIntentDataProvider dataProvider =
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
 
-        assertTrue("The fixed resize behavior should return true",
+        assertTrue("The fixed height resize behavior should return true",
                 dataProvider.isPartialCustomTabFixedHeight());
     }
 

@@ -38,7 +38,7 @@
     <string name="package_label">Package:</string>
     <string name="amazing_grace">Amazing Grace 2011</string>
     <string name="artist">Kevin MacLeod</string>
-    <string name="pcct_resizable_text">PCCT Resizable</string>
+    <string name="pcct_height_resizable_text">PCCT Height Resizable</string>
     <string name="pcct_initial_height_text">PCCT Initial Height</string>
     <string name="pcct_initial_height_slider_label_desc">PCCT initial height slider</string>
     <string name="px_template">%dpx</string>
