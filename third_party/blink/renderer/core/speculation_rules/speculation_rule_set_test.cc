@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
+#include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
@@ -1657,6 +1658,76 @@ TEST_F(DocumentRulesTest, AreaElement) {
   // Remove area.
   PropagateRulesToStubSpeculationHostWithMicrotasksScope(
       page_holder, speculation_host, [&]() { area->remove(); });
+  EXPECT_TRUE(candidates.empty());
+}
+
+// Test that adding a link to an element that isn't connected doesn't DCHECK.
+TEST_F(DocumentRulesTest, DisconnectedLink) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  String speculation_script = R"(
+    {"prefetch": [
+      {"source": "document", "where": {"href_matches": "https://foo.com/*"}}
+    ]}
+  )";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  ASSERT_TRUE(candidates.empty());
+
+  HTMLDivElement* div = nullptr;
+  HTMLAnchorElement* link = nullptr;
+  PropagateRulesToStubSpeculationHostWithMicrotasksScope(
+      page_holder, speculation_host, [&]() {
+        div = MakeGarbageCollected<HTMLDivElement>(document);
+        link = AddAnchor(*div, "https://foo.com/blah.html");
+        document.body()->AppendChild(div);
+      });
+  EXPECT_EQ(candidates.size(), 1u);
+
+  PropagateRulesToStubSpeculationHostWithMicrotasksScope(
+      page_holder, speculation_host, [&]() {
+        div->remove();
+        link->remove();
+      });
+  EXPECT_TRUE(candidates.empty());
+}
+
+// Similar to test above, but now inside a shadow tree.
+TEST_F(DocumentRulesTest, DisconnectedLinkInShadowTree) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  String speculation_script = R"(
+    {"prefetch": [
+      {"source": "document", "where": {"href_matches": "https://foo.com/*"}}
+    ]}
+  )";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  ASSERT_TRUE(candidates.empty());
+
+  HTMLDivElement* div = nullptr;
+  HTMLAnchorElement* link = nullptr;
+  PropagateRulesToStubSpeculationHostWithMicrotasksScope(
+      page_holder, speculation_host, [&]() {
+        div = MakeGarbageCollected<HTMLDivElement>(document);
+        ShadowRoot& shadow_root =
+            div->AttachShadowRootInternal(ShadowRootType::kOpen);
+        link = AddAnchor(shadow_root, "https://foo.com/blah.html");
+        document.body()->AppendChild(div);
+      });
+  EXPECT_EQ(candidates.size(), 1u);
+
+  PropagateRulesToStubSpeculationHostWithMicrotasksScope(
+      page_holder, speculation_host, [&]() {
+        div->remove();
+        link->remove();
+      });
   EXPECT_TRUE(candidates.empty());
 }
 

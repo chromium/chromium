@@ -129,12 +129,19 @@ void DocumentSpeculationRules::RemoveSpeculationRuleLoader(
 }
 
 void DocumentSpeculationRules::LinkInserted(HTMLAnchorElement* link) {
+  if (!initialized_)
+    return;
+
   DCHECK(link->IsLink());
+  DCHECK(link->isConnected());
   AddLink(link);
   QueueUpdateSpeculationCandidates();
 }
 
 void DocumentSpeculationRules::LinkRemoved(HTMLAnchorElement* link) {
+  if (!initialized_)
+    return;
+
   DCHECK(link->IsLink());
   RemoveLink(link);
   QueueUpdateSpeculationCandidates();
@@ -144,10 +151,11 @@ void DocumentSpeculationRules::HrefAttributeChanged(
     HTMLAnchorElement* link,
     const AtomicString& old_value,
     const AtomicString& new_value) {
-  DCHECK_NE(old_value, new_value);
-
-  if (!link->isConnected())
+  if (!initialized_)
     return;
+
+  DCHECK_NE(old_value, new_value);
+  DCHECK(link->isConnected());
 
   if (old_value.IsNull())
     AddLink(link);
@@ -367,6 +375,7 @@ void DocumentSpeculationRules::InitializeIfNecessary() {
 }
 
 void DocumentSpeculationRules::AddLink(HTMLAnchorElement* link) {
+  DCHECK(initialized_);
   DCHECK(link->IsLink());
   DCHECK(!base::Contains(unmatched_links_, link));
   DCHECK(!base::Contains(matched_links_, link));
@@ -376,6 +385,8 @@ void DocumentSpeculationRules::AddLink(HTMLAnchorElement* link) {
 }
 
 void DocumentSpeculationRules::RemoveLink(HTMLAnchorElement* link) {
+  DCHECK(initialized_);
+
   if (auto it = matched_links_.find(link); it != matched_links_.end()) {
     matched_links_.erase(it);
     DCHECK(!base::Contains(unmatched_links_, link));
@@ -396,6 +407,8 @@ void DocumentSpeculationRules::RemoveLink(HTMLAnchorElement* link) {
 }
 
 void DocumentSpeculationRules::InvalidateLink(HTMLAnchorElement* link) {
+  DCHECK(initialized_);
+
   pending_links_.insert(link);
   if (auto it = matched_links_.find(link); it != matched_links_.end()) {
     matched_links_.erase(it);
@@ -407,6 +420,8 @@ void DocumentSpeculationRules::InvalidateLink(HTMLAnchorElement* link) {
 }
 
 void DocumentSpeculationRules::InvalidateAllLinks() {
+  DCHECK(initialized_);
+
   for (const auto& it : matched_links_)
     pending_links_.insert(it.key);
   matched_links_.clear();

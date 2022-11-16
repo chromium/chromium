@@ -263,10 +263,12 @@ void HTMLAnchorElement::ParseAttribute(
         }
       }
     }
-    if (auto* document_rules =
-            DocumentSpeculationRules::FromIfExists(GetDocument())) {
-      document_rules->HrefAttributeChanged(this, params.old_value,
-                                           params.new_value);
+    if (isConnected()) {
+      if (auto* document_rules =
+              DocumentSpeculationRules::FromIfExists(GetDocument())) {
+        document_rules->HrefAttributeChanged(this, params.old_value,
+                                             params.new_value);
+      }
     }
     InvalidateCachedVisitedLinkHash();
     LogUpdateAttributeIfIsolatedWorldAndInDocument("a", params);
@@ -604,7 +606,7 @@ Node::InsertionNotificationRequest HTMLAnchorElement::InsertedInto(
     AnchorElementMetricsSender::From(top_document)->AddAnchorElement(*this);
   }
 
-  if (IsLink()) {
+  if (isConnected() && IsLink()) {
     if (auto* document_rules =
             DocumentSpeculationRules::FromIfExists(GetDocument())) {
       document_rules->LinkInserted(this);
@@ -617,7 +619,7 @@ Node::InsertionNotificationRequest HTMLAnchorElement::InsertedInto(
 void HTMLAnchorElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLElement::RemovedFrom(insertion_point);
 
-  if (IsLink()) {
+  if (insertion_point.isConnected() && IsLink()) {
     if (auto* document_rules =
             DocumentSpeculationRules::FromIfExists(GetDocument())) {
       document_rules->LinkRemoved(this);
