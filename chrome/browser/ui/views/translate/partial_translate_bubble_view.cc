@@ -544,12 +544,11 @@ std::unique_ptr<views::View> PartialTranslateBubbleView::CreateView() {
       tab_view_top_row_->AddChildView(CreateOptionsMenuButton());
   tab_view_top_row_->AddChildView(CreateCloseButton());
 
+  const int button_horizontal_spacing =
+      provider->GetDistanceMetric(views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
   if (icon) {
-    icon->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets::TLBR(0, 0, 0,
-                          provider->GetDistanceMetric(
-                              views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
+    icon->SetProperty(views::kMarginsKey,
+                      gfx::Insets().set_right(button_horizontal_spacing));
   }
   tabbed_pane_->SetProperty(
       views::kFlexBehaviorKey,
@@ -561,15 +560,11 @@ std::unique_ptr<views::View> PartialTranslateBubbleView::CreateView() {
                                views::MaximumFlexSizeRule::kUnbounded)
           .WithOrder(2));
   options_menu->SetProperty(views::kElementIdentifierKey, kOptionsMenuButton);
-  options_menu->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::VH(0, provider->GetDistanceMetric(
-                             views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
+  options_menu->SetProperty(views::kMarginsKey,
+                            gfx::Insets::VH(0, button_horizontal_spacing));
 
   const int vertical_spacing =
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
-  const int horizontal_spacing =
-      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_HORIZONTAL);
 
   // Text selection.
   auto partial_text_label = std::make_unique<views::Label>(
@@ -579,10 +574,8 @@ std::unique_ptr<views::View> PartialTranslateBubbleView::CreateView() {
   partial_text_label->SizeToFit(tab_view_top_row_->GetPreferredSize().width());
   partial_text_label->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_LEFT);
-  partial_text_label->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(vertical_spacing, 0, vertical_spacing,
-                        horizontal_spacing));
+  partial_text_label->SetProperty(views::kMarginsKey,
+                                  gfx::Insets::VH(vertical_spacing, 0));
   partial_text_label_ = view->AddChildView(std::move(partial_text_label));
   SetTextAlignmentForLocaleTextDirection(model_->GetSourceLanguageCode());
 
@@ -596,9 +589,8 @@ std::unique_ptr<views::View> PartialTranslateBubbleView::CreateView() {
           IDS_PARTIAL_TRANSLATE_BUBBLE_TRANSLATE_FULL_PAGE));
   full_page_button->SetID(BUTTON_ID_FULL_PAGE_TRANSLATE);
   button_row->AddChildView(std::move(full_page_button));
-  button_row->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(0, 0, vertical_spacing, horizontal_spacing));
+  button_row->SetProperty(views::kMarginsKey,
+                          gfx::Insets().set_bottom(vertical_spacing));
   view->AddChildView(std::move(button_row));
 
   return view;
@@ -651,9 +643,7 @@ std::unique_ptr<views::View> PartialTranslateBubbleView::CreateViewErrorNoTitle(
                                views::MaximumFlexSizeRule::kUnbounded));
 
   title_row->AddChildView(std::move(error_message_label));
-  auto* close_button = title_row->AddChildView(CreateCloseButton());
-  close_button->SetProperty(views::kCrossAxisAlignmentKey,
-                            views::LayoutAlignment::kStart);
+  title_row->AddChildView(CreateCloseButton());
   view->AddChildView(std::move(title_row));
 
   // Button row
@@ -675,11 +665,6 @@ std::unique_ptr<views::View> PartialTranslateBubbleView::CreateViewErrorNoTitle(
   try_again_button->SetID(BUTTON_ID_TRY_AGAIN);
   button_row->AddChildView(std::move(try_again_button));
   button_row->AddChildView(std::move(advanced_button));
-  button_row->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(0, 0, 0,
-                        provider->GetDistanceMetric(
-                            views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
   view->AddChildView(std::move(button_row));
 
   return view;
@@ -703,10 +688,9 @@ std::unique_ptr<views::View> PartialTranslateBubbleView::CreateViewWaiting() {
       close_button_container->AddChildView(CreateCloseButton());
   // The positioning of the close button should match that of the same button
   // in the Tab UI. However, the button in the Tab UI is uniquely spaced due to
-  // its layout behaviour with the views around it, and there are no constants
-  // used to determine its margins. Ideally the margins here would not be
-  // hard-coded but they are needed to match the spacing.
-  close_button->SetProperty(views::kMarginsKey, gfx::Insets::VH(6, 8));
+  // its layout behaviour with the views around it. Ideally the margins here
+  // would not be hard-coded but they are needed to match the spacing.
+  close_button->SetProperty(views::kMarginsKey, gfx::Insets().set_top(9));
   view->AddChildView(std::move(close_button_container));
 
   const int throbber_diameter = 35;
@@ -715,7 +699,7 @@ std::unique_ptr<views::View> PartialTranslateBubbleView::CreateViewWaiting() {
   auto throbber = std::make_unique<views::Throbber>();
   throbber->SetPreferredSize(gfx::Size(throbber_diameter, throbber_diameter));
   throbber->SetProperty(views::kMarginsKey,
-                        gfx::Insets::TLBR(0, 0, vertical_spacing, 0));
+                        gfx::Insets().set_bottom(vertical_spacing));
   throbber_ = throbber_container->AddChildView(std::move(throbber));
   view->AddChildView(std::move(throbber_container));
 
@@ -869,9 +853,7 @@ std::unique_ptr<views::View> PartialTranslateBubbleView::CreateViewAdvanced(
   title_row->SetLayoutManager(std::make_unique<views::FlexLayout>());
   auto* title_label = title_row->AddChildView(std::move(language_title_label));
   auto* padding_view = title_row->AddChildView(std::make_unique<views::View>());
-  title_row->AddChildView(CreateCloseButton())
-      ->SetProperty(views::kCrossAxisAlignmentKey,
-                    views::LayoutAlignment::kStart);
+  title_row->AddChildView(CreateCloseButton());
   // Set flex specifications for |title_row| views.
   title_label->SetProperty(
       views::kFlexBehaviorKey,
@@ -885,14 +867,11 @@ std::unique_ptr<views::View> PartialTranslateBubbleView::CreateViewAdvanced(
                                views::MaximumFlexSizeRule::kUnbounded)
           .WithOrder(2));
 
-  form_view->AddChildView(std::move(combobox))
-      ->SetProperty(views::kMarginsKey,
-                    gfx::Insets::TLBR(0, 0, 0, horizontal_spacing));
+  form_view->AddChildView(std::move(combobox));
 
   auto button_row = std::make_unique<views::BoxLayoutView>();
-  button_row->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(2 * vertical_spacing, 0, 0, horizontal_spacing));
+  button_row->SetProperty(views::kMarginsKey,
+                          gfx::Insets().set_top(2 * vertical_spacing));
   button_row->SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd);
   button_row->SetBetweenChildSpacing(
       provider->GetDistanceMetric(views::DISTANCE_RELATED_BUTTON_HORIZONTAL));
@@ -1119,8 +1098,19 @@ void PartialTranslateBubbleView::UpdateAdvancedView() {
 
 void PartialTranslateBubbleView::UpdateInsets(
     PartialTranslateBubbleModel::ViewState state) {
-  gfx::Insets kTabStateMargins = gfx::Insets::TLBR(7, 16, 8, 12);
-  gfx::Insets kDialogStateMargins = gfx::Insets::TLBR(5, 16, 16, 4);
+  ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
+  const int horizontal_spacing =
+      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_HORIZONTAL);
+
+  // The constants used for insets serve two purposes. |horizontal_spacing| is
+  // used as the UX standard for horizontal padding on the edges. Vertical
+  // insets keep top-most elements as closely aligned as possible across the
+  // bubble's different view states. Some additional margins are set in view
+  // construction due to small differences in how elements are laid out.
+  gfx::Insets kTabStateMargins =
+      gfx::Insets::TLBR(7, horizontal_spacing, 8, horizontal_spacing);
+  gfx::Insets kDialogStateMargins =
+      gfx::Insets::TLBR(2, horizontal_spacing, 16, horizontal_spacing);
 
   if (state == PartialTranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE ||
       state == PartialTranslateBubbleModel::VIEW_STATE_TRANSLATING ||
