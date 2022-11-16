@@ -39,7 +39,7 @@ class ChromotingHostServicesClientTest : public testing::Test,
 
  protected:
   void SetChromeRemoteDesktopSessionEnvVar(bool is_crd_session);
-  void WaitForInvitationSent();
+  void WaitForServerEndpointCreated();
   void WaitForSessionServicesBound();
   void SetRemoteDisconnectCallback(base::OnceClosure callback);
 
@@ -53,10 +53,10 @@ class ChromotingHostServicesClientTest : public testing::Test,
       receivers_;
 
  private:
-  void OnInvitationSent();
+  void OnServerEndpointCreated();
 
-  // Used to block the thread until the server has sent out an invitation.
-  std::unique_ptr<base::RunLoop> on_invitation_sent_run_loop_;
+  // Used to block the thread until the server has created the endpoint.
+  std::unique_ptr<base::RunLoop> on_server_endpoint_created_run_loop_;
 
   // Used to block the thread until a session services bind request is received.
   std::unique_ptr<base::RunLoop> session_services_bound_run_loop_;
@@ -72,10 +72,11 @@ ChromotingHostServicesClientTest::ChromotingHostServicesClientTest() {
   ipc_server_ = std::make_unique<
       named_mojo_ipc_server::NamedMojoIpcServer<mojom::ChromotingHostServices>>(
       test_server_name, this, base::BindRepeating(&IsTrustedMojoEndpoint));
-  ipc_server_->set_on_invitation_sent_callback_for_testing(
-      base::BindRepeating(&ChromotingHostServicesClientTest::OnInvitationSent,
-                          base::Unretained(this)));
-  on_invitation_sent_run_loop_ = std::make_unique<base::RunLoop>();
+  ipc_server_->set_on_server_endpoint_created_callback_for_testing(
+      base::BindRepeating(
+          &ChromotingHostServicesClientTest::OnServerEndpointCreated,
+          base::Unretained(this)));
+  on_server_endpoint_created_run_loop_ = std::make_unique<base::RunLoop>();
   session_services_bound_run_loop_ = std::make_unique<base::RunLoop>();
   SetChromeRemoteDesktopSessionEnvVar(true);
 }
@@ -107,9 +108,9 @@ void ChromotingHostServicesClientTest::SetChromeRemoteDesktopSessionEnvVar(
   // No-op on other platforms.
 }
 
-void ChromotingHostServicesClientTest::WaitForInvitationSent() {
-  on_invitation_sent_run_loop_->Run();
-  on_invitation_sent_run_loop_ = std::make_unique<base::RunLoop>();
+void ChromotingHostServicesClientTest::WaitForServerEndpointCreated() {
+  on_server_endpoint_created_run_loop_->Run();
+  on_server_endpoint_created_run_loop_ = std::make_unique<base::RunLoop>();
 }
 
 void ChromotingHostServicesClientTest::WaitForSessionServicesBound() {
@@ -122,8 +123,8 @@ void ChromotingHostServicesClientTest::SetRemoteDisconnectCallback(
   client_->on_session_disconnected_callback_for_testing_ = std::move(callback);
 }
 
-void ChromotingHostServicesClientTest::OnInvitationSent() {
-  on_invitation_sent_run_loop_->Quit();
+void ChromotingHostServicesClientTest::OnServerEndpointCreated() {
+  on_server_endpoint_created_run_loop_->Quit();
 }
 
 TEST_F(ChromotingHostServicesClientTest,
@@ -138,7 +139,7 @@ TEST_F(ChromotingHostServicesClientTest,
        NotInRemoteDesktopSession_GetSessionServicesReturnsNull) {
   SetChromeRemoteDesktopSessionEnvVar(false);
   ipc_server_->StartServer();
-  WaitForInvitationSent();
+  WaitForServerEndpointCreated();
   ASSERT_EQ(client_->GetSessionServices(), nullptr);
 }
 
@@ -147,7 +148,7 @@ TEST_F(ChromotingHostServicesClientTest,
 TEST_F(ChromotingHostServicesClientTest,
        CallGetSessionServicesTwice_SamePointerReturned) {
   ipc_server_->StartServer();
-  WaitForInvitationSent();
+  WaitForServerEndpointCreated();
   auto* session_services = client_->GetSessionServices();
   ASSERT_NE(session_services, nullptr);
   WaitForSessionServicesBound();
@@ -158,7 +159,7 @@ TEST_F(ChromotingHostServicesClientTest,
 TEST_F(ChromotingHostServicesClientTest,
        ServerClosesReceiverAndClientReconnects) {
   ipc_server_->StartServer();
-  WaitForInvitationSent();
+  WaitForServerEndpointCreated();
   ASSERT_NE(client_->GetSessionServices(), nullptr);
   WaitForSessionServicesBound();
   ASSERT_EQ(receivers_.size(), 1u);

@@ -159,7 +159,7 @@ void NamedMojoIpcServerBase::OnServerEndpointCreated(
 
   endpoint_connector_.AsyncCall(&NamedMojoServerEndpointConnector::Connect)
       .WithArgs(std::move(endpoint))
-      .Then(on_invitation_sent_callback_for_testing_);
+      .Then(on_server_endpoint_created_callback_for_testing_);
 }
 
 void NamedMojoIpcServerBase::OnServerEndpointConnected(
@@ -178,7 +178,7 @@ void NamedMojoIpcServerBase::OnServerEndpointConnected(
 }
 
 void NamedMojoIpcServerBase::OnServerEndpointConnectionFailed() {
-  resent_invitation_on_error_timer_.Start(
+  resend_invitation_on_error_timer_.Start(
       FROM_HERE, kResentInvitationOnErrorDelay, this,
       &NamedMojoIpcServerBase::SendInvitation);
 }
