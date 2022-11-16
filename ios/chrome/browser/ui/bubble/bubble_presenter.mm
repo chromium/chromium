@@ -19,8 +19,8 @@
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/ui/commands/toolbar_commands.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
-#import "ios/chrome/browser/ui/util/named_guide_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/util_swift.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/url/url_util.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
@@ -507,8 +507,9 @@ presentBubbleForFeature:(const base::Feature&)feature
 - (CGPoint)anchorPointToGuide:(GuideName*)guideName
                     direction:(BubbleArrowDirection)arrowDirection {
   UILayoutGuide* guide =
-      [NamedGuide guideWithName:guideName view:self.rootViewController.view];
+      [self.layoutGuideCenter makeLayoutGuideNamed:guideName];
   DCHECK(guide);
+  [self.rootViewController.view addLayoutGuide:guide];
   CGPoint anchorPoint =
       bubble_util::AnchorPoint(guide.layoutFrame, arrowDirection);
   return [guide.owningView convertPoint:anchorPoint
