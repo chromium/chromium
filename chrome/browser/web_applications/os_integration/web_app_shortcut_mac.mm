@@ -1400,7 +1400,7 @@ void LaunchShim(LaunchShimUpdateBehavior update_behavior,
 }
 
 void LaunchShimForTesting(const base::FilePath& shim_path,  // IN-TEST
-                          const std::vector<GURL> urls,
+                          const std::vector<GURL>& urls,
                           ShimLaunchedCallback launched_callback,
                           ShimTerminatedCallback terminated_callback) {
   base::CommandLine command_line = BuildCommandLineForShimLaunch();

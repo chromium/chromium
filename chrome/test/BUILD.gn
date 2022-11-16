@@ -2446,6 +2446,16 @@ if (!is_android) {
       ]
     }
 
+    if (is_win || is_linux) {
+      sources += [ "../browser/ui/views/web_apps/web_app_integration_browsertest_win_linux.cc" ]
+    }
+
+    if (is_mac) {
+      sources += [
+        "../browser/ui/views/web_apps/web_app_integration_browsertest_mac.cc",
+      ]
+    }
+
     if (is_chromeos_ash) {
       data += [ "//chrome/browser/resources/chromeos/arc_support/i18n_template_no_process.js" ]
       sources += [

@@ -138,7 +138,7 @@ void LaunchShim(LaunchShimUpdateBehavior update_behavior,
 // if none was launched). If `launched_callback` returns a valid pid, then
 // `terminated_callback` will be called when that process terminates.
 void LaunchShimForTesting(const base::FilePath& shim_path,
-                          const std::vector<GURL> urls,
+                          const std::vector<GURL>& urls,
                           ShimLaunchedCallback launched_callback,
                           ShimTerminatedCallback terminated_callback);
 

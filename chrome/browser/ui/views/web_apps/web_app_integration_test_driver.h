@@ -312,6 +312,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckUserDisplayModeInternal(UserDisplayMode user_display_mode);
   void CheckWindowClosed();
   void CheckWindowCreated();
+  void CheckWindowNotCreated();
   void CheckWindowControlsOverlay(Site site, IsOn is_on);
   void CheckWindowControlsOverlayToggle(Site site, IsShown is_shown);
   void CheckWindowDisplayBrowser();
@@ -381,6 +382,9 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void SetRunOnOsLoginMode(Site site, apps::RunOnOsLoginMode login_mode);
 
   void LaunchAppStartupBrowserCreator(const AppId& app_id);
+#if BUILDFLAG(IS_MAC)
+  void LaunchFromAppShim(Site site, const std::vector<GURL>& urls);
+#endif
 
   void CheckAppSettingsAppState(Profile* profile, const AppState& app_state);
 

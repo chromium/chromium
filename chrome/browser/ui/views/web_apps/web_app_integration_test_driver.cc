@@ -293,7 +293,7 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
           "/webapps_integration/standalone/not_start_url/basic.html",
       .relative_manifest_id =
           "webapps_integration/standalone/not_start_url/basic.html",
-      .app_name = "Not Start URL",
+      .app_name = "Site A",
       .wco_not_enabled_title = u"Not Start URL",
       .icon_color = SK_ColorGREEN}},
     {Site::kScreenshots,
@@ -406,16 +406,21 @@ class BrowserAddedWaiter final : public BrowserListObserver {
   raw_ptr<Browser> browser_added_ = nullptr;
 };
 
-bool AreAppBrowsersOpen(const Profile* profile, const AppId& app_id) {
-  BrowserList* browser_list = BrowserList::GetInstance();
-  std::vector<Browser*> app_browsers;
-  for (Browser* browser : *browser_list) {
+Browser* GetBrowserForAppId(const Profile* profile, const AppId& app_id) {
+  const BrowserList* browser_list = BrowserList::GetInstance();
+  for (auto it = browser_list->begin_browsers_ordered_by_activation();
+       it != browser_list->end_browsers_ordered_by_activation(); ++it) {
+    Browser* browser = *it;
     if (browser->profile() != profile)
       continue;
     if (AppBrowserController::IsForWebApp(browser, app_id))
-      return true;
+      return browser;
   }
-  return false;
+  return nullptr;
+}
+
+bool AreAppBrowsersOpen(const Profile* profile, const AppId& app_id) {
+  return GetBrowserForAppId(profile, app_id) != nullptr;
 }
 
 class UninstallCompleteWaiter final : public BrowserListObserver,
@@ -479,15 +484,6 @@ class UninstallCompleteWaiter final : public BrowserListObserver,
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
       observation_{this};
 };
-
-Browser* GetBrowserForAppId(const AppId& app_id) {
-  BrowserList* browser_list = BrowserList::GetInstance();
-  for (Browser* browser : *browser_list) {
-    if (AppBrowserController::IsForWebApp(browser, app_id))
-      return browser;
-  }
-  return nullptr;
-}
 
 #if BUILDFLAG(IS_WIN)
 std::vector<std::wstring> GetFileExtensionsForProgId(
@@ -908,10 +904,10 @@ void WebAppIntegrationTestDriver::AwaitManifestUpdate(Site site) {
   if (!previous_manifest_updates_.contains(app_id)) {
     waiting_for_update_id_ = app_id;
     waiting_for_update_run_loop_ = std::make_unique<base::RunLoop>();
-    Browser* browser = GetBrowserForAppId(app_id);
+    Browser* browser = GetBrowserForAppId(profile(), app_id);
     while (browser != nullptr) {
       delegate_->CloseBrowserSynchronously(browser);
-      browser = GetBrowserForAppId(app_id);
+      browser = GetBrowserForAppId(profile(), app_id);
     }
     waiting_for_update_run_loop_->Run();
     waiting_for_update_run_loop_.reset();
@@ -1257,7 +1253,6 @@ void WebAppIntegrationTestDriver::LaunchFromChromeApps(Site site) {
   } else {
     app_browser_ = LaunchWebAppBrowserAndWait(profile(), app_id);
     active_app_id_ = app_id;
-    app_browser_ = GetBrowserForAppId(active_app_id_);
   }
   AfterStateChangeAction();
 }
@@ -1330,6 +1325,24 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
   DisplayMode display_mode = app_registrar.GetAppEffectiveDisplayMode(app_id);
   bool is_open_in_app_browser =
       (display_mode != blink::mojom::DisplayMode::kBrowser);
+#if BUILDFLAG(IS_MAC)
+  if (is_open_in_app_browser) {
+    BrowserAddedWaiter browser_added_waiter;
+    // If there already is an open app browser for this app the launch is not
+    // expected to open a new one, so only wait for a new browser to be added
+    // if there wasn't an open one already.
+    app_browser_ = GetBrowserForAppId(profile(), app_id);
+    LaunchFromAppShim(site, /*urls=*/{});
+    if (!app_browser_) {
+      browser_added_waiter.Wait();
+      app_browser_ = browser_added_waiter.browser_added();
+    }
+    active_app_id_ = app_id;
+    EXPECT_EQ(app_browser()->app_controller()->app_id(), app_id);
+  } else {
+    LaunchFromAppShim(site, /*urls=*/{});
+  }
+#else
   if (is_open_in_app_browser) {
     BrowserAddedWaiter browser_added_waiter;
     LaunchAppStartupBrowserCreator(app_id);
@@ -1341,6 +1354,7 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
   } else {
     LaunchAppStartupBrowserCreator(app_id);
   }
+#endif
   AfterStateChangeAction();
 #else
   NOTREACHED() << "Not implemented on Chrome OS.";
@@ -2495,6 +2509,24 @@ void WebAppIntegrationTestDriver::CheckWindowCreated() {
   AfterStateCheckAction();
 }
 
+void WebAppIntegrationTestDriver::CheckWindowNotCreated() {
+  if (!BeforeStateCheckAction(__FUNCTION__))
+    return;
+  DCHECK(before_state_change_action_state_);
+  absl::optional<ProfileState> after_action_profile =
+      GetStateForProfile(after_state_change_action_state_.get(), profile());
+  absl::optional<ProfileState> before_action_profile =
+      GetStateForProfile(before_state_change_action_state_.get(), profile());
+  ASSERT_TRUE(after_action_profile.has_value());
+  ASSERT_TRUE(before_action_profile.has_value());
+  EXPECT_EQ(after_action_profile->browsers.size(),
+            before_action_profile->browsers.size())
+      << "Before: \n"
+      << *before_state_change_action_state_ << "\nAfter:\n"
+      << *after_state_change_action_state_;
+  AfterStateCheckAction();
+}
+
 void WebAppIntegrationTestDriver::CheckWindowControlsOverlayToggle(
     Site site,
     IsShown is_shown) {
@@ -3160,23 +3192,13 @@ void WebAppIntegrationTestDriver::LaunchFile(Site site,
   AppId app_id = GetAppIdBySiteMode(site);
   std::vector<base::FilePath> file_paths = GetTestFilePaths(files_options);
 #if BUILDFLAG(IS_MAC)
-  std::string app_name = GetSiteConfiguration(site).app_name;
-  base::FilePath app_path = GetShortcutPath(
-      override_registration_->shortcut_override->chrome_apps_folder.GetPath(),
-      app_name, app_id);
-
   std::vector<GURL> urls;
   urls.reserve(file_paths.size());
   for (const base::FilePath& path : file_paths) {
     urls.push_back(net::FilePathToFileURL(path));
   }
 
-  base::RunLoop loop;
-  LaunchShimForTesting(
-      app_path, urls,
-      base::BindLambdaForTesting([&](base::Process process) { loop.Quit(); }),
-      base::DoNothing());
-  loop.Run();
+  LaunchFromAppShim(site, urls);
 #else
   StartupBrowserCreator browser_creator;
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
@@ -3205,10 +3227,6 @@ void WebAppIntegrationTestDriver::SetRunOnOsLoginMode(
 
 void WebAppIntegrationTestDriver::LaunchAppStartupBrowserCreator(
     const AppId& app_id) {
-  // TODO(https://crbug.com/1232763): On Mac this should use logic similar to
-  // what is in LaunchFile, using LaunchShimForTesting. Actually making that
-  // change will also require updating all the tests that currently assert
-  // incorrect behavior following a launch.
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kAppId, app_id);
   command_line.AppendSwitchASCII(switches::kTestType, "browser");
@@ -3217,6 +3235,24 @@ void WebAppIntegrationTestDriver::LaunchAppStartupBrowserCreator(
       {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
   content::RunAllTasksUntilIdle();
 }
+
+#if BUILDFLAG(IS_MAC)
+void WebAppIntegrationTestDriver::LaunchFromAppShim(
+    Site site,
+    const std::vector<GURL>& urls) {
+  AppId app_id = GetAppIdBySiteMode(site);
+  std::string app_name = GetSiteConfiguration(site).app_name;
+  base::FilePath app_path = GetShortcutPath(
+      override_registration_->shortcut_override->chrome_apps_folder.GetPath(),
+      app_name, app_id);
+  base::RunLoop loop;
+  LaunchShimForTesting(
+      app_path, urls,
+      base::BindLambdaForTesting([&](base::Process process) { loop.Quit(); }),
+      base::DoNothing());
+  loop.Run();
+}
+#endif
 
 Browser* WebAppIntegrationTestDriver::browser() {
   Browser* browser =

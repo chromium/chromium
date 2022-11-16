@@ -114,13 +114,23 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 # Launch behavior tests
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| WMLC | install_or_shortcut_windowed | launch | check_window_created |
+| WMLC | install_or_shortcut_windowed | launch_not_from_platform_shortcut | check_window_created |
+| WLC | install_or_shortcut_windowed | launch_from_platform_shortcut | check_window_created |
+| M | install_or_shortcut_by_user_windowed | launch_from_platform_shortcut | check_window_not_created |
+| M | install_policy_app(Standalone, ShortcutOptions::All, Windowed, WebApp) | launch_from_platform_shortcut | check_window_created |
 | WMLC | install_or_shortcut_windowed | launch | check_window_display_standalone |
 | WMLC | install_or_shortcut_tabbed | set_open_in_window | launch | check_window_created |
-| WMLC | install_or_shortcut_windowed | set_open_in_tab | launch_from_shortcut_or_list | check_tab_created |
+| WLC | install_or_shortcut_windowed | set_open_in_tab | launch_from_shortcut_or_list | check_tab_created |
+| M | install_or_shortcut_by_user_windowed | set_open_in_tab | launch_from_platform_shortcut | check_tab_not_created |
+| M | install_or_shortcut_by_user_windowed | close_pwa | set_open_in_tab | launch_from_platform_shortcut | check_tab_created |
+| M | install_policy_app(Standalone, ShortcutOptions::All, Windowed, WebApp) | set_open_in_tab | launch_from_platform_shortcut | check_tab_created |
+| M | install_or_shortcut_windowed | set_open_in_tab | launch_from_chrome_apps | check_tab_created |
 | WMLC | install_or_shortcut_tabbed(NotPromotable) | launch_from_shortcut_or_list(NotPromotable) | check_tab_created |
 | WMLC | install_or_shortcut_windowed(MinimalUi) | launch(MinimalUi) | check_window_display_minimal |
-| WMLC | install_or_shortcut_windowed(NotPromotable) | launch(NotPromotable) | check_window_created |
+| WMLC | install_or_shortcut_windowed(NotPromotable) | launch_not_from_platform_shortcut(NotPromotable) | check_window_created |
+| WLC | install_or_shortcut_windowed(NotPromotable) | launch_from_platform_shortcut(NotPromotable) | check_window_created |
+| M | install_or_shortcut_by_user_windowed(NotPromotable) | launch_from_platform_shortcut(NotPromotable) | check_window_not_created |
+| M | install_policy_app(NotPromotable, ShortcutOptions::All, Windowed, WebApp) | launch_from_platform_shortcut(NotPromotable) | check_window_created |
 
 # Misc UX Flows
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
@@ -130,7 +140,9 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 | WMLC | install_or_shortcut | delete_profile | check_app_not_in_list |
 | WMLC | install_or_shortcut_with_shortcut | delete_profile | check_platform_shortcut_not_exists |
 | WMLC | install_or_shortcut_tabbed_with_shortcut | delete_platform_shortcut | create_shortcuts_from_list | launch_from_platform_shortcut | check_tab_created |
-| WMLC | install_or_shortcut_windowed_with_shortcut | delete_platform_shortcut | create_shortcuts_from_list | launch_from_platform_shortcut | check_window_created |
+| WLC | install_or_shortcut_windowed_with_shortcut | delete_platform_shortcut | create_shortcuts_from_list | launch_from_platform_shortcut | check_window_created |
+| M | install_or_shortcut_by_user_windowed_with_shortcut | delete_platform_shortcut | create_shortcuts_from_list | launch_from_platform_shortcut | check_window_not_created |
+| M |  install_policy_app(Standalone, WithShortcut, Windowed, WebApp) | delete_platform_shortcut | create_shortcuts_from_list | launch_from_platform_shortcut | check_window_created |
 | WMLC | install_tabbed_no_shortcut | create_shortcuts_from_list | launch_from_platform_shortcut | check_tab_created |
 | WMLC | install_windowed_no_shortcut | create_shortcuts_from_list | launch_from_platform_shortcut | check_window_created |
 | WMLC | install_or_shortcut_by_user_windowed | open_in_chrome | check_tab_created |
@@ -188,7 +200,9 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 | WMLC | install_or_shortcut_by_user_windowed | install_policy_app(Standalone, ShortcutOptions::All, Browser, WebApp) | navigate_browser(Standalone) | check_launch_icon_shown |
 | WMLC | install_or_shortcut_by_user_tabbed | install_policy_app(Standalone, ShortcutOptions::All, Windowed, WebApp) | check_app_in_list_tabbed |
 | WMLC | install_or_shortcut_by_user_tabbed | install_policy_app(Standalone, ShortcutOptions::All, Windowed, WebApp) | navigate_browser(Standalone) | check_install_icon_shown |
-| WMLC | install_or_shortcut_by_user_windowed | install_policy_app(Standalone, ShortcutOptions::All, Browser, WebApp) | launch | check_window_created |
+| WMLC | install_or_shortcut_by_user_windowed | install_policy_app(Standalone, ShortcutOptions::All, Browser, WebApp) | launch_not_from_platform_shortcut | check_window_created |
+| WLC | install_or_shortcut_by_user_windowed | install_policy_app(Standalone, ShortcutOptions::All, Browser, WebApp) | launch_from_platform_shortcut | check_window_created |
+| M | install_or_shortcut_by_user_windowed | install_policy_app(Standalone, ShortcutOptions::All, Browser, WebApp) | launch_from_platform_shortcut | check_window_not_created |
 | WMLC | install_policy_app(Standalone, ShortcutOptions::All, Browser, WebApp) | install_or_shortcut_by_user_windowed | check_app_in_list_windowed |
 | WMLC | install_policy_app(Standalone, ShortcutOptions::All, Browser, WebApp) | install_or_shortcut_by_user_windowed | check_platform_shortcut_and_icon |
 | WMLC | install_policy_app(Standalone, ShortcutOptions::All, Browser, WebApp) | install_or_shortcut_by_user_windowed | check_window_created |
@@ -215,7 +229,9 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | WMLC | install_or_shortcut_by_user_windowed | manifest_update_colors | await_manifest_update | launch | check_window_color_correct |
 | WMLC | install_or_shortcut_by_user_windowed | manifest_update_display(Standalone, Browser) | await_manifest_update | launch | check_tab_not_created |
-| WMLC | install_or_shortcut_by_user_windowed | manifest_update_display(Standalone, Browser) | await_manifest_update | launch | check_window_created |
+| WMLC | install_or_shortcut_by_user_windowed | manifest_update_display(Standalone, Browser) | await_manifest_update | launch_not_from_platform_shortcut | check_window_created |
+| WLC | install_or_shortcut_by_user_windowed | manifest_update_display(Standalone, Browser) | await_manifest_update | launch_from_platform_shortcut | check_window_created |
+| M | install_or_shortcut_by_user_windowed | manifest_update_display(Standalone, Browser) | await_manifest_update | launch_from_platform_shortcut | check_window_created |
 | WMLC | install_or_shortcut_by_user_windowed | manifest_update_display(Standalone, Browser) | await_manifest_update | launch | check_window_display_minimal |
 | WMLC | install_or_shortcut_by_user_windowed | manifest_update_display(Standalone, MinimalUi) | await_manifest_update | launch | check_window_display_minimal |
 | WMLC | install_or_shortcut_by_user_windowed(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | await_manifest_update(StandaloneNestedA) | launch_from_platform_shortcut(StandaloneNestedA) | navigate_browser(Standalone) | check_install_icon_not_shown |

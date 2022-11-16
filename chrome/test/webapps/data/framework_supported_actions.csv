@@ -20,6 +20,7 @@ check_tab_created,                                     🌕, 🌕,  🌕,   🌕
 check_tab_not_created,                                 🌕, 🌕,  🌕,   🌕,
 check_window_closed,                                   🌕, 🌕,  🌕,   🌕,
 check_window_created,                                  🌕, 🌕,  🌕,   🌕,
+check_window_not_created,                              🌕, 🌕,  🌕,   🌕,
 check_window_display_minimal,                          🌕, 🌕,  🌕,   🌕,
 check_window_display_standalone,                       🌕, 🌕,  🌕,   🌕,
 check_window_controls_overlay,                         🌕, 🌕,  🌕,   🌕,
