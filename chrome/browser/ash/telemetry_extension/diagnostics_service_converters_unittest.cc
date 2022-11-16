@@ -4,9 +4,14 @@
 
 #include "chrome/browser/ash/telemetry_extension/diagnostics_service_converters.h"
 
+#include <cstdint>
+#include <vector>
+
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace converters {
@@ -18,6 +23,87 @@ TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticsPtrTakesNullPtr) {
   EXPECT_TRUE(
       ConvertDiagnosticsPtr(cros_healthd::mojom::InteractiveRoutineUpdatePtr())
           .is_null());
+}
+
+TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineEnum) {
+  namespace cros_healthd = cros_healthd::mojom;
+  namespace crosapi = ::crosapi::mojom;
+
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kAcPower),
+            crosapi::DiagnosticsRoutineEnum::kAcPower);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kBatteryCapacity),
+            crosapi::DiagnosticsRoutineEnum::kBatteryCapacity);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kBatteryHealth),
+            crosapi::DiagnosticsRoutineEnum::kBatteryHealth);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kBatteryDischarge),
+            crosapi::DiagnosticsRoutineEnum::kBatteryDischarge);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kBatteryCharge),
+            crosapi::DiagnosticsRoutineEnum::kBatteryCharge);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kCpuCache),
+            crosapi::DiagnosticsRoutineEnum::kCpuCache);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kCpuStress),
+            crosapi::DiagnosticsRoutineEnum::kCpuStress);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kDiskRead),
+            crosapi::DiagnosticsRoutineEnum::kDiskRead);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kDnsResolution),
+            crosapi::DiagnosticsRoutineEnum::kDnsResolution);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kDnsResolverPresent),
+            crosapi::DiagnosticsRoutineEnum::kDnsResolverPresent);
+  EXPECT_EQ(
+      Convert(cros_healthd::DiagnosticRoutineEnum::kFloatingPointAccuracy),
+      crosapi::DiagnosticsRoutineEnum::kFloatingPointAccuracy);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kGatewayCanBePinged),
+            crosapi::DiagnosticsRoutineEnum::kGatewayCanBePinged);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kLanConnectivity),
+            crosapi::DiagnosticsRoutineEnum::kLanConnectivity);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kMemory),
+            crosapi::DiagnosticsRoutineEnum::kMemory);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kNvmeSelfTest),
+            crosapi::DiagnosticsRoutineEnum::kNvmeSelfTest);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kNvmeWearLevel),
+            crosapi::DiagnosticsRoutineEnum::kNvmeWearLevel);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kNvmeWearLevel),
+            crosapi::DiagnosticsRoutineEnum::kNvmeWearLevel);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kPrimeSearch),
+            crosapi::DiagnosticsRoutineEnum::kPrimeSearch);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kSignalStrength),
+            crosapi::DiagnosticsRoutineEnum::kSignalStrength);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kSensitiveSensor),
+            crosapi::DiagnosticsRoutineEnum::kSensitiveSensor);
+
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kArcHttp),
+            absl::nullopt);
+}
+
+// This test checks, that successful conversion of all
+// `cros_health::DiagnosticRoutineEnum` variants match to all
+// `crosapi::DiagnosticsRoutineEnum` variants. If this test fails, the
+// corresponding crosapi variant was added, but no conversion from a
+// cros_healthd variant.
+TEST(DiagnosticsServiceConvertersTest, CheckAllVariantsCovered) {
+  namespace cros_healthd = cros_healthd::mojom;
+  namespace crosapi = ::crosapi::mojom;
+
+  // Create a vector of all conversions by converting all possible
+  // cros_healthd variants.
+  std::vector<crosapi::DiagnosticsRoutineEnum> found_conversions;
+  for (auto iter = cros_healthd::DiagnosticRoutineEnum::kMinValue;
+       iter <= cros_healthd::DiagnosticRoutineEnum::kMaxValue;
+       iter = static_cast<cros_healthd::DiagnosticRoutineEnum>(
+           static_cast<int>(iter) + 1)) {
+    auto converted = Convert(iter);
+    if (converted) {
+      found_conversions.push_back(converted.value());
+    }
+  }
+
+  // Assure that each crosapi variant is part of the conversions.
+  for (auto iter = crosapi::DiagnosticsRoutineEnum::kMinValue;
+       iter <= crosapi::DiagnosticsRoutineEnum::kMaxValue;
+       iter = static_cast<crosapi::DiagnosticsRoutineEnum>(
+           static_cast<int>(iter) + 1)) {
+    EXPECT_THAT(found_conversions, testing::Contains(iter));
+  }
 }
 
 TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineStatusEnum) {

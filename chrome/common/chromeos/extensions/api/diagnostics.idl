@@ -26,7 +26,8 @@ namespace os.diagnostics {
     lan_connectivity,
     signal_strength,
     dns_resolver_present,
-    gateway_can_be_pinged
+    gateway_can_be_pinged,
+    sensitive_sensor
   };
 
   enum RoutineStatus {
@@ -177,6 +178,8 @@ namespace os.diagnostics {
 
     [supportsPromises] static void runNvmeWearLevelRoutine(RunNvmeWearLevelRequest request,
                                                            RunRoutineCallback callback);
+
+    [supportsPromises] static void runSensitiveSensorRoutine(RunRoutineCallback callback);
 
     [supportsPromises] static void runSignalStrengthRoutine(RunRoutineCallback callback);
 

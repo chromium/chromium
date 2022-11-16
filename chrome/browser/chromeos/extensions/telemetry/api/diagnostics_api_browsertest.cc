@@ -284,6 +284,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         );
         chrome.test.succeed();
       },
+      async function runSensitiveSensorRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runSensitiveSensorRoutine(),
+            'Error: API chrome.os.diagnostics.runSensitiveSensorRoutine ' +
+            'failed. Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
       async function runSignalStrengthRoutine() {
         await chrome.test.assertPromiseRejects(
             chrome.os.diagnostics.runSignalStrengthRoutine(),
@@ -356,6 +364,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::mojom::DiagnosticsRoutineEnum::kSignalStrength,
         crosapi::mojom::DiagnosticsRoutineEnum::kGatewayCanBePinged,
         crosapi::mojom::DiagnosticsRoutineEnum::kSmartctlCheck,
+        crosapi::mojom::DiagnosticsRoutineEnum::kSensitiveSensor,
     });
 
     SetServiceForTesting(std::move(fake_service_impl));
@@ -386,7 +395,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
               "nvme_wear_level",
               "signal_strength",
               "gateway_can_be_pinged",
-              "smartctl_check"
+              "smartctl_check",
+              "sensitive_sensor"
             ]
           }, response);
         chrome.test.succeed();
@@ -1274,6 +1284,47 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
               wear_level_threshold: 80
             }
           );
+        chrome.test.assertEq({id: 0, status: "ready"}, response);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
+                       RunSensitiveSensorRoutineSuccess) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Diagnostics interface is not available on this version of ash-chrome,
+  // this test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  // Configure FakeDiagnosticsService.
+  {
+    auto expected_response =
+        crosapi::mojom::DiagnosticsRunRoutineResponse::New();
+    expected_response->id = 0;
+    expected_response->status =
+        crosapi::mojom::DiagnosticsRoutineStatusEnum::kReady;
+
+    // Set the return value for a call to RunSmartctlCheckRoutine.
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
+    fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
+
+    // Set the expected called routine.
+    fake_service_impl->SetExpectedLastCalledRoutine(
+        crosapi::mojom::DiagnosticsRoutineEnum::kSensitiveSensor);
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function runSensitiveSensorRoutine() {
+        const response =
+          await chrome.os.diagnostics.runSensitiveSensorRoutine();
         chrome.test.assertEq({id: 0, status: "ready"}, response);
         chrome.test.succeed();
       }

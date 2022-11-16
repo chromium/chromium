@@ -336,6 +336,18 @@ void DiagnosticsServiceAsh::RunPrimeSearchRoutine(
           std::move(callback)));
 }
 
+void DiagnosticsServiceAsh::RunSensitiveSensorRoutine(
+    RunSensitiveSensorRoutineCallback callback) {
+  GetService()->RunSensitiveSensorRoutine(base::BindOnce(
+      [](crosapi::mojom::DiagnosticsService::RunSensitiveSensorRoutineCallback
+             callback,
+         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+        std::move(callback).Run(
+            converters::ConvertDiagnosticsPtr(std::move(ptr)));
+      },
+      std::move(callback)));
+}
+
 void DiagnosticsServiceAsh::RunSignalStrengthRoutine(
     RunSignalStrengthRoutineCallback callback) {
   GetService()->RunSignalStrengthRoutine(base::BindOnce(

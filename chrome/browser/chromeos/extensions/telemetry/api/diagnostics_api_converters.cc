@@ -90,6 +90,9 @@ bool ConvertMojoRoutine(MojoRoutineType in, RoutineType* out) {
     case MojoRoutineType::kSmartctlCheck:
       *out = RoutineType::ROUTINE_TYPE_SMARTCTL_CHECK;
       return true;
+    case MojoRoutineType::kSensitiveSensor:
+      *out = RoutineType::ROUTINE_TYPE_SENSITIVE_SENSOR;
+      return true;
     default:
       return false;
   }

@@ -32,6 +32,7 @@ source_set("telemetry_extension") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "diagnostics_service_ash_unittest.cc",
     "diagnostics_service_converters_unittest.cc",
     "probe_service_ash_unittest.cc",
     "probe_service_converters_unittest.cc",

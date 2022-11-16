@@ -72,6 +72,8 @@ crosapi::mojom::DiagnosticsRunRoutineResponsePtr UncheckedConvertPtr(
 absl::optional<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
     cros_healthd::mojom::DiagnosticRoutineEnum input) {
   switch (input) {
+    case cros_healthd::mojom::DiagnosticRoutineEnum::kUnknown:
+      return crosapi::mojom::DiagnosticsRoutineEnum::kUnknown;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity:
       return crosapi::mojom::DiagnosticsRoutineEnum::kBatteryCapacity;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryHealth:
@@ -110,6 +112,8 @@ absl::optional<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
       return crosapi::mojom::DiagnosticsRoutineEnum::kSignalStrength;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kGatewayCanBePinged:
       return crosapi::mojom::DiagnosticsRoutineEnum::kGatewayCanBePinged;
+    case cros_healthd::mojom::DiagnosticRoutineEnum::kSensitiveSensor:
+      return crosapi::mojom::DiagnosticsRoutineEnum::kSensitiveSensor;
     default:
       return absl::nullopt;
   }

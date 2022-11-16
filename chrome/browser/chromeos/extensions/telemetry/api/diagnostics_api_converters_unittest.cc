@@ -121,6 +121,11 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
   }
   {
     RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
+    EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kSensitiveSensor, &out));
+    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_SENSITIVE_SENSOR);
+  }
+  {
+    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kSmartctlCheck, &out));
     EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_SMARTCTL_CHECK);
   }

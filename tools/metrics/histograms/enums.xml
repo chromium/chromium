@@ -36609,6 +36609,7 @@ Called by update_extension_histograms.py.-->
   <int value="1730" label="PASSWORDSPRIVATE_REQUESTCREDENTIALSDETAILS"/>
   <int value="1731" label="PASSWORDSPRIVATE_GETCREDENTIALGROUPS"/>
   <int value="1732" label="AUTOTESTPRIVATE_GETLAUNCHERSSEARCHBOXSTATE"/>
+  <int value="1733" label="OS_DIAGNOSTICS_RUNSENSITIVESENSORROUTINE"/>
 </enum>
 
 <enum name="ExtensionIconState">

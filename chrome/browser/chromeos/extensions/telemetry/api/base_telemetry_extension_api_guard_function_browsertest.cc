@@ -336,6 +336,15 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function runSensitiveSensorRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runSensitiveSensorRoutine(),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.runSensitiveSensorRoutine. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
       async function runSignalStrengthRoutine() {
         await chrome.test.assertPromiseRejects(
             chrome.os.diagnostics.runSignalStrengthRoutine(),

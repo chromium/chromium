@@ -466,6 +466,20 @@ void OsDiagnosticsRunNvmeWearLevelRoutineFunction::RunIfAllowed() {
       params->request.wear_level_threshold, std::move(cb));
 }
 
+// OsDiagnosticsRunSensitiveSensorRoutineFunction -----------------------------
+
+OsDiagnosticsRunSensitiveSensorRoutineFunction::
+    OsDiagnosticsRunSensitiveSensorRoutineFunction() = default;
+OsDiagnosticsRunSensitiveSensorRoutineFunction::
+    ~OsDiagnosticsRunSensitiveSensorRoutineFunction() = default;
+
+void OsDiagnosticsRunSensitiveSensorRoutineFunction::RunIfAllowed() {
+  auto cb =
+      base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
+
+  GetRemoteService()->RunSensitiveSensorRoutine(std::move(cb));
+}
+
 // OsDiagnosticsRunSignalStrengthRoutineFunction -------------------------------
 
 OsDiagnosticsRunSignalStrengthRoutineFunction::

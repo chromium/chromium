@@ -403,6 +403,25 @@ class OsDiagnosticsRunNvmeWearLevelRoutineFunction
   void RunIfAllowed() override;
 };
 
+class OsDiagnosticsRunSensitiveSensorRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runSensitiveSensorRoutine",
+                             OS_DIAGNOSTICS_RUNSENSITIVESENSORROUTINE)
+
+  OsDiagnosticsRunSensitiveSensorRoutineFunction();
+  OsDiagnosticsRunSensitiveSensorRoutineFunction(
+      const OsDiagnosticsRunSensitiveSensorRoutineFunction&) = delete;
+  OsDiagnosticsRunSensitiveSensorRoutineFunction& operator=(
+      const OsDiagnosticsRunSensitiveSensorRoutineFunction&) = delete;
+
+ private:
+  ~OsDiagnosticsRunSensitiveSensorRoutineFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
 class OsDiagnosticsRunSignalStrengthRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
  public:
