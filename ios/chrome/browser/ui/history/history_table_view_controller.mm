@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/ui/history/history_ui_delegate.h"
 #import "ios/chrome/browser/ui/history/history_util.h"
 #import "ios/chrome/browser/ui/history/public/history_presentation_delegate.h"
+#import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
@@ -720,6 +721,23 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 
     [self fetchHistoryForQuery:_currentQuery continuation:true];
   }
+}
+
+#pragma mark - UIResponder
+
+// To always be able to register key commands via -keyCommands, the VC must be
+// able to become first responder.
+- (BOOL)canBecomeFirstResponder {
+  return YES;
+}
+
+- (NSArray*)keyCommands {
+  return @[ UIKeyCommand.cr_close ];
+}
+
+- (void)keyCommand_close {
+  base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
+  [self.delegate dismissHistoryWithCompletion:nil];
 }
 
 #pragma mark - TableViewURLDragDataSource
