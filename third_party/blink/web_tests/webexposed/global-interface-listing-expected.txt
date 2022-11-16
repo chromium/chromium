@@ -9529,6 +9529,8 @@ interface VideoTrackList : EventTarget
     setter onremovetrack
 interface ViewTimeline : ScrollTimeline
     attribute @@toStringTag
+    getter endOffset
+    getter startOffset
     getter subject
     method constructor
 interface VirtualKeyboard : EventTarget

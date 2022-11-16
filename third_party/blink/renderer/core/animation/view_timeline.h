@@ -65,6 +65,10 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
 
   void Trace(Visitor*) const override;
 
+  CSSNumericValue* startOffset() const;
+
+  CSSNumericValue* endOffset() const;
+
  protected:
   const Inset& GetInset() const { return inset_; }
 

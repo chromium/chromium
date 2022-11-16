@@ -29,8 +29,8 @@ PASS ViewTimeline interface: existence and properties of interface prototype obj
 PASS ViewTimeline interface: existence and properties of interface prototype object's "constructor" property
 PASS ViewTimeline interface: existence and properties of interface prototype object's @@unscopables property
 PASS ViewTimeline interface: attribute subject
-FAIL ViewTimeline interface: attribute startOffset assert_true: The prototype object must have a property "startOffset" expected true got false
-FAIL ViewTimeline interface: attribute endOffset assert_true: The prototype object must have a property "endOffset" expected true got false
+PASS ViewTimeline interface: attribute startOffset
+PASS ViewTimeline interface: attribute endOffset
 PASS AnimationTimeline interface: existence and properties of interface object
 PASS AnimationTimeline interface object length
 PASS AnimationTimeline interface object name
