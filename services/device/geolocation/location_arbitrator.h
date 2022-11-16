@@ -103,7 +103,7 @@ class LocationArbitrator : public LocationProvider {
                            bool from_same_provider) const;
 
   const CustomLocationProviderCallback custom_location_provider_getter_;
-  const raw_ptr<GeolocationManager> geolocation_manager_;
+  const raw_ptr<GeolocationManager, DanglingUntriaged> geolocation_manager_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const std::string api_key_;

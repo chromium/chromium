@@ -175,17 +175,19 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
                     const absl::optional<AppId>& app_id,
                     ManifestUpdateResult result);
 
-  raw_ptr<WebAppRegistrar> registrar_ = nullptr;
-  raw_ptr<WebAppIconManager> icon_manager_ = nullptr;
+  raw_ptr<WebAppRegistrar, DanglingUntriaged> registrar_ = nullptr;
+  raw_ptr<WebAppIconManager, DanglingUntriaged> icon_manager_ = nullptr;
   raw_ptr<WebAppUiManager, DanglingUntriaged> ui_manager_ = nullptr;
-  raw_ptr<WebAppInstallFinalizer> install_finalizer_ = nullptr;
-  raw_ptr<const ash::SystemWebAppDelegateMap> system_web_apps_delegate_map_ =
+  raw_ptr<WebAppInstallFinalizer, DanglingUntriaged> install_finalizer_ =
       nullptr;
+  raw_ptr<const ash::SystemWebAppDelegateMap, DanglingUntriaged>
+      system_web_apps_delegate_map_ = nullptr;
   raw_ptr<OsIntegrationManager, DanglingUntriaged> os_integration_manager_ =
       nullptr;
-  raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
+  raw_ptr<WebAppSyncBridge, DanglingUntriaged> sync_bridge_ = nullptr;
   raw_ptr<WebAppInstallManager, DanglingUntriaged> install_manager_ = nullptr;
-  raw_ptr<WebAppCommandScheduler> command_scheduler_ = nullptr;
+  raw_ptr<WebAppCommandScheduler, DanglingUntriaged> command_scheduler_ =
+      nullptr;
 
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
       install_manager_observation_{this};

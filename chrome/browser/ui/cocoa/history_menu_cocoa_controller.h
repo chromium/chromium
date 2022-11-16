@@ -15,7 +15,7 @@
 // creation and maintenance of the menu happens in the Bridge.
 @interface HistoryMenuCocoaController : NSObject<NSMenuDelegate> {
  @private
-  raw_ptr<HistoryMenuBridge> _bridge;  // weak; owns us
+  raw_ptr<HistoryMenuBridge, DanglingUntriaged> _bridge;  // weak; owns us
 }
 
 - (instancetype)initWithBridge:(HistoryMenuBridge*)bridge;

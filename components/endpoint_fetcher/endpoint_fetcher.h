@@ -163,7 +163,7 @@ class EndpointFetcher {
 
   // Members set in constructor
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  const raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
   bool sanitize_response_;
   bool is_stable_channel_;
 

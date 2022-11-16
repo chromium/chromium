@@ -36,7 +36,7 @@ class UsbContext::UsbEventHandler : public base::SimpleThread {
 
  private:
   base::subtle::Atomic32 running_;
-  raw_ptr<libusb_context> context_;
+  raw_ptr<libusb_context, DanglingUntriaged> context_;
 };
 
 UsbContext::UsbEventHandler::UsbEventHandler(libusb_context* context)

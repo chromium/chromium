@@ -103,7 +103,7 @@ class AppShimQuitTest : public PlatformAppBrowserTest {
   }
 
   base::FilePath app_path_;
-  raw_ptr<AppShimManager> manager_ = nullptr;
+  raw_ptr<AppShimManager, DanglingUntriaged> manager_ = nullptr;
   std::string extension_id_;
 };
 

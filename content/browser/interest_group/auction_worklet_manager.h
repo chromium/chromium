@@ -174,7 +174,8 @@ class CONTENT_EXPORT AuctionWorkletManager {
     FatalErrorCallback fatal_error_callback_;
 
     // Never null, owned by InterestGroupAuction / InterestGroupAuctionReporter.
-    const raw_ptr<const SubresourceUrlBuilder> subresource_url_builder_;
+    const raw_ptr<const SubresourceUrlBuilder, DanglingUntriaged>
+        subresource_url_builder_;
   };
 
   // `delegate` and `auction_process_manager` must outlive the created
