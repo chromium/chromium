@@ -25,6 +25,7 @@
 #endif
 
 namespace views {
+class FrameBackground;
 class Label;
 }
 
@@ -155,6 +156,10 @@ class PictureInPictureBrowserFrameView
 
   // Returns whether a client-side shadow should be drawn for the window.
   bool ShouldDrawFrameShadow() const;
+
+  // Gets the shadow metrics (radius, offset, and number of shadows) even if
+  // shadows are not drawn.
+  static gfx::ShadowValues GetShadowValues();
 #endif
 
  private:
@@ -185,6 +190,10 @@ class PictureInPictureBrowserFrameView
   // Used to draw window frame borders and shadow on Linux when GTK theme is
   // enabled.
   raw_ptr<ui::WindowFrameProvider> window_frame_provider_ = nullptr;
+
+  // Used to draw window frame borders and shadow on Linux when classic theme is
+  // enabled.
+  std::unique_ptr<views::FrameBackground> frame_background_;
 #endif
 };
 

@@ -5323,6 +5323,8 @@ static_library("ui") {
         "views/frame/browser_frame_view_linux.h",
         "views/frame/browser_frame_view_linux_native.cc",
         "views/frame/browser_frame_view_linux_native.h",
+        "views/frame/browser_frame_view_paint_utils_linux.cc",
+        "views/frame/browser_frame_view_paint_utils_linux.h",
       ]
     }
 

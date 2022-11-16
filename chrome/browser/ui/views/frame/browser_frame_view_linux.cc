@@ -5,16 +5,12 @@
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux.h"
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view_paint_utils_linux.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
-#include "ui/color/color_id.h"
-#include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/skia_conversions.h"
-#include "ui/gfx/scoped_canvas.h"
-#include "ui/gfx/skia_paint_util.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/window/frame_background.h"
 #include "ui/views/window/window_button_order_provider.h"
 
 BrowserFrameViewLinux::BrowserFrameViewLinux(
@@ -79,42 +75,10 @@ void BrowserFrameViewLinux::OnWindowButtonOrderingChange() {
 
 void BrowserFrameViewLinux::PaintRestoredFrameBorder(
     gfx::Canvas* canvas) const {
-  auto clip = GetRestoredClipRegion();
-  bool showing_shadow = ShouldDrawRestoredFrameShadow();
-
-  if (auto* frame_bg = frame_background()) {
-    gfx::ScopedCanvas scoped_canvas(canvas);
-    canvas->sk_canvas()->clipRRect(clip, SkClipOp::kIntersect, true);
-    auto border = layout_->MirroredFrameBorderInsets();
-    auto shadow_inset = showing_shadow ? border : gfx::Insets();
-    frame_bg->PaintMaximized(canvas, GetNativeTheme(), GetColorProvider(),
-                             shadow_inset.left(), shadow_inset.top(),
-                             width() - shadow_inset.width());
-    if (!showing_shadow)
-      frame_bg->FillFrameBorders(canvas, this, border.left(), border.right(),
-                                 border.bottom());
-  }
-
-  // If rendering shadows, draw a 1px exterior border, otherwise
-  // draw a 1px interior border.
-  const SkScalar one_pixel = SkFloatToScalar(1 / canvas->image_scale());
-  auto rect = clip;
-  if (showing_shadow)
-    rect.outset(one_pixel, one_pixel);
-  else
-    clip.inset(one_pixel, one_pixel);
-
-  cc::PaintFlags flags;
-  flags.setColor(GetColorProvider()->GetColor(
-      showing_shadow ? ui::kColorBubbleBorderWhenShadowPresent
-                     : ui::kColorBubbleBorder));
-  flags.setAntiAlias(true);
-  if (showing_shadow)
-    flags.setLooper(gfx::CreateShadowDrawLooper(GetShadowValues()));
-
-  gfx::ScopedCanvas scoped_canvas(canvas);
-  canvas->sk_canvas()->clipRRect(clip, SkClipOp::kDifference, true);
-  canvas->sk_canvas()->drawRRect(rect, flags);
+  PaintRestoredFrameBorderLinux(
+      *canvas, *this, frame_background(), GetRestoredClipRegion(),
+      ShouldDrawRestoredFrameShadow(), layout_->MirroredFrameBorderInsets(),
+      GetShadowValues());
 }
 
 void BrowserFrameViewLinux::GetWindowMask(const gfx::Size& size,
