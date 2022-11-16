@@ -44,8 +44,8 @@ void Parcel::SetInlinedData(std::vector<uint8_t> data) {
 
 void Parcel::SetDataFromMessage(Message::ReceivedDataBuffer buffer,
                                 absl::Span<uint8_t> data_view) {
-  ABSL_ASSERT(data_view.begin() >= buffer.bytes().begin());
-  ABSL_ASSERT(data_view.end() <= buffer.bytes().end());
+  ABSL_ASSERT(data_view.empty() || data_view.begin() >= buffer.bytes().begin());
+  ABSL_ASSERT(data_view.empty() || data_view.end() <= buffer.bytes().end());
   data_.storage = std::move(buffer);
   data_.view = data_view;
 }
