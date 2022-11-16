@@ -2,31 +2,46 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+assert(is_fuchsia)
+
 source_set("video") {
   visibility = [
     ":unittests",
     "//content/renderer/*",
+    "//media/gpu/*",
     "//third_party/blink/renderer/modules/webcodecs/*",
+  ]
+  public = [
+    "fuchsia_decoder_factory.h",
+    "fuchsia_video_decoder.h",
+    "fuchsia_video_encode_accelerator.h",
   ]
   sources = [
     "fuchsia_decoder_factory.cc",
-    "fuchsia_decoder_factory.h",
     "fuchsia_video_decoder.cc",
-    "fuchsia_video_decoder.h",
+    "fuchsia_video_encode_accelerator.cc",
   ]
-  public_deps = [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media" ]
+  public_deps = [
+    "//base",
+    "//media",
+    "//media/fuchsia/common",
+    "//media/fuchsia/mojom:fuchsia_media_resource_provider",
+    "//mojo/public/cpp/bindings",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec",
+    "//ui/gfx",
+  ]
   deps = [
     "//components/viz/common",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/common",
     "//gpu/ipc/common",
     "//media/fuchsia/cdm",
-    "//media/fuchsia/common",
-    "//media/fuchsia/mojom:fuchsia_media_resource_provider",
     "//third_party/blink/public/common",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    "//third_party/libyuv:libyuv",
     "//ui/ozone",
   ]
 }

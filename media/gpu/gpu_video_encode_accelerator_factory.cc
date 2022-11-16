@@ -5,6 +5,7 @@
 #include "media/gpu/gpu_video_encode_accelerator_factory.h"
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
@@ -18,6 +19,7 @@
 #include "media/gpu/buildflags.h"
 #include "media/gpu/gpu_video_accelerator_util.h"
 #include "media/gpu/macros.h"
+#include "media/video/video_encode_accelerator.h"
 
 #if BUILDFLAG(USE_V4L2_CODEC)
 #include "media/gpu/v4l2/v4l2_video_encode_accelerator.h"
@@ -34,6 +36,9 @@
 #endif
 #if BUILDFLAG(USE_VAAPI)
 #include "media/gpu/vaapi/vaapi_video_encode_accelerator.h"
+#endif
+#if BUILDFLAG(IS_FUCHSIA)
+#include "media/fuchsia/video/fuchsia_video_encode_accelerator.h"
 #endif
 
 namespace media {
@@ -94,6 +99,13 @@ std::unique_ptr<VideoEncodeAccelerator> CreateMediaFoundationVEA(
 }
 #endif
 
+#if BUILDFLAG(IS_FUCHSIA)
+std::unique_ptr<VideoEncodeAccelerator> CreateFuchsiaVEA() {
+  return base::WrapUnique<VideoEncodeAccelerator>(
+      new FuchsiaVideoEncodeAccelerator());
+}
+#endif
+
 using VEAFactoryFunction =
     base::RepeatingCallback<std::unique_ptr<VideoEncodeAccelerator>()>;
 
@@ -130,6 +142,11 @@ std::vector<VEAFactoryFunction> GetVEAFactoryFunctions(
 #if BUILDFLAG(IS_WIN)
   vea_factory_functions.push_back(base::BindRepeating(
       &CreateMediaFoundationVEA, gpu_preferences, gpu_workarounds, gpu_device));
+#endif
+#if BUILDFLAG(IS_FUCHSIA)
+  if (base::FeatureList::IsEnabled(kFuchsiaMediacodecVideoEncoder)) {
+    vea_factory_functions.push_back(base::BindRepeating(&CreateFuchsiaVEA));
+  }
 #endif
   return vea_factory_functions;
 }

@@ -6,6 +6,7 @@
 #define MEDIA_MOJO_SERVICES_MOJO_VIDEO_ENCODE_ACCELERATOR_PROVIDER_H_
 
 #include "base/compiler_specific.h"
+#include "base/memory/scoped_refptr.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_preferences.h"
@@ -13,6 +14,10 @@
 #include "media/mojo/services/media_mojo_export.h"
 #include "media/mojo/services/mojo_video_encode_accelerator_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+
+namespace base {
+class SingleThreadTaskRunner;
+}
 
 namespace gpu {
 struct GpuPreferences;
@@ -40,7 +45,8 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorProvider
       CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-      const gpu::GPUInfo::GPUDevice& gpu_device);
+      const gpu::GPUInfo::GPUDevice& gpu_device,
+      scoped_refptr<base::SingleThreadTaskRunner> runner);
 
   MojoVideoEncodeAcceleratorProvider(
       CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,

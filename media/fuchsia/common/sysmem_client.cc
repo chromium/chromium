@@ -49,7 +49,7 @@ void SysmemCollectionClient::Initialize(
 
   // If Sync() is not required then constraints can be set immediately.
   if (sync_completion_closures_.empty()) {
-    collection_->SetConstraints(/*have_constraints=*/true,
+    collection_->SetConstraints(/*has_constraints=*/true,
                                 std::move(constraints));
     return;
   }

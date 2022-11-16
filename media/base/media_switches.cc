@@ -1217,6 +1217,13 @@ BASE_FEATURE(kBresenhamCadence,
              "BresenhamCadence",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_FUCHSIA)
+// Enables use of Fuchsia's Mediacodec service for encoding.
+BASE_FEATURE(kFuchsiaMediacodecVideoEncoder,
+             "FuchsiaMediacodecVideoEncoder",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_FUCHSIA)
+
 bool IsChromeWideEchoCancellationEnabled() {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   return base::FeatureList::IsEnabled(kChromeWideEchoCancellation);

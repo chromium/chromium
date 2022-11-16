@@ -10,8 +10,8 @@
 
 #include <forward_list>
 
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -32,6 +32,7 @@ class MEDIA_EXPORT StreamProcessorHelper {
              size_t size,
              base::TimeDelta timestamp,
              bool unit_end,
+             bool key_frame,
              base::OnceClosure destroy_cb);
 
     IoPacket(const IoPacket&) = delete;
@@ -47,10 +48,11 @@ class MEDIA_EXPORT StreamProcessorHelper {
     size_t size() const { return size_; }
     base::TimeDelta timestamp() const { return timestamp_; }
     bool unit_end() const { return unit_end_; }
+    bool key_frame() const { return key_frame_; }
+    const fuchsia::media::FormatDetails& format() const { return format_; }
     void set_format(fuchsia::media::FormatDetails format) {
       format_ = std::move(format);
     }
-    const fuchsia::media::FormatDetails& format() const { return format_; }
 
     // Adds a |closure| that will be called when the packet is destroyed.
     void AddOnDestroyClosure(base::OnceClosure closure);
@@ -61,14 +63,23 @@ class MEDIA_EXPORT StreamProcessorHelper {
     size_t size_;
     base::TimeDelta timestamp_;
     bool unit_end_;
+    bool key_frame_;
     fuchsia::media::FormatDetails format_;
     std::forward_list<base::OnceClosure> destroy_callbacks_;
   };
 
   class Client {
    public:
+    // Allocate input buffers with the given constraints. Clients should call
+    // SetInputBufferCollectionToken to finish the buffer allocation flow.
+    // Implementing this method is optional if a client chooses to allocate
+    // input buffers before input constraints are returned from the
+    // StreamProcessor.
+    virtual void OnStreamProcessorAllocateInputBuffers(
+        const fuchsia::media::StreamBufferConstraints& stream_constraints) {}
+
     // Allocate output buffers with the given constraints. Client should call
-    // ProvideIOutputBufferCollectionToken to finish the buffer allocation flow.
+    // CompleteOutputBuffersAllocation to finish the buffer allocation flow.
     virtual void OnStreamProcessorAllocateOutputBuffers(
         const fuchsia::media::StreamBufferConstraints& stream_constraints) = 0;
 

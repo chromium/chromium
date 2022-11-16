@@ -428,6 +428,12 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   scoped_refptr<base::SingleThreadTaskRunner> main_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_runner_;
 
+#if BUILDFLAG(IS_FUCHSIA)
+  // TODO(crbug.com/1340041): Fuchsia does not support FIDL communication from
+  // ThreadPool's worker threads.
+  std::unique_ptr<base::Thread> vea_thread_;
+#endif
+
   // Do not change the class member order here. watchdog_thread_ should be the
   // last one to be destroyed before main_runner_ and io_runner_.
   std::unique_ptr<gpu::GpuWatchdogThread> watchdog_thread_;

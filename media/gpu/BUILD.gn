@@ -191,6 +191,10 @@ component("gpu") {
     ]
   }
 
+  if (is_fuchsia) {
+    public_deps += [ "//media/fuchsia/video" ]
+  }
+
   if (is_win) {
     sources += [
       "windows/av1_guids.h",

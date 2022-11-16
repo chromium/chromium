@@ -12,12 +12,15 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -836,11 +839,30 @@ void GpuServiceImpl::CreateVideoEncodeAcceleratorProvider(
     mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
         vea_provider_receiver) {
   DCHECK(io_runner_->BelongsToCurrentThread());
+
+  // Offload VEA providers to a dedicated runner. Things like loading profiles
+  // and creating encoder might take quite some time, and they might block
+  // processing of other mojo calls if executed on the current runner.
+  scoped_refptr<base::SingleThreadTaskRunner> runner;
+#if BUILDFLAG(IS_FUCHSIA)
+  // TODO(crbug.com/1340041): Fuchsia does not support FIDL communication from
+  // ThreadPool's worker threads.
+  if (!vea_thread_) {
+    base::Thread::Options thread_options(base::MessagePumpType::IO, /*size=*/0);
+    vea_thread_ =
+        std::make_unique<base::Thread>("GpuVideoEncodeAcceleratorThread");
+    CHECK(vea_thread_->StartWithOptions(std::move(thread_options)));
+  }
+  runner = vea_thread_->task_runner();
+#else
+  // MayBlock() because MF VEA can take long time running GetSupportedProfiles()
+  runner = base::ThreadPool::CreateSingleThreadTaskRunner({base::MayBlock()});
+#endif
   media::MojoVideoEncodeAcceleratorProvider::Create(
       std::move(vea_provider_receiver),
       base::BindRepeating(&media::GpuVideoEncodeAcceleratorFactory::CreateVEA),
       gpu_preferences_, gpu_channel_manager_->gpu_driver_bug_workarounds(),
-      gpu_info_.active_gpu());
+      gpu_info_.active_gpu(), std::move(runner));
 }
 
 void GpuServiceImpl::CreateGpuMemoryBuffer(
