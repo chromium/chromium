@@ -119,7 +119,7 @@
     return JSON.stringify(formattedEvents, null, 2);
   }
 
-  logEventShape(evt) {
+  logEventShape(evt, excludedProperties) {
     const logArray = (prefix, name, array) => {
       let start = name ? `${name}: ` : '';
       start = prefix + start;
@@ -148,6 +148,9 @@
           continue;
         } else if (value instanceof Object) {
           logObject(`${prefix}\t`, key, value)
+          continue;
+        }
+        if (excludedProperties && excludedProperties.includes(key)) {
           continue;
         }
         this._testRunner.log(`${prefix}\t${key}: ${typeof value}`);
