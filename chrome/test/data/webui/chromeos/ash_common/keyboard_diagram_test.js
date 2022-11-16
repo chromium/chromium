@@ -298,6 +298,31 @@ export function keyboardDiagramTestSuite() {
     assertEquals(0, pressedKeys.length);
   });
 
+  test('resetAllKeys', async () => {
+    diagramElement.mechanicalLayout = MechanicalLayout.ISO;
+    diagramElement.topRowKeys = [
+      TopRowKey.kBack,
+      TopRowKey.kRefresh,
+      TopRowKey.kOverview,
+    ];
+    await flushTasks();
+
+    diagramElement.setKeyState(28 /* KEY_ENTER */, KeyboardKeyState.PRESSED);
+    diagramElement.setKeyState(56 /* KEY_LEFTALT */, KeyboardKeyState.PRESSED);
+    diagramElement.setKeyState(15 /* KEY_TAB */, KeyboardKeyState.TESTED);
+    diagramElement.setTopRowKeyState(2, KeyboardKeyState.TESTED);
+    diagramElement.resetAllKeys();
+    await flushTasks();
+
+    const pressedKeys = diagramElement.root.querySelectorAll(
+        `keyboard-key[state="${KeyboardKeyState.PRESSED}"]`);
+    assertEquals(0, pressedKeys.length);
+
+    const testedKeys = diagramElement.root.querySelectorAll(
+        `keyboard-key[state="${KeyboardKeyState.TESTED}"]`);
+    assertEquals(0, testedKeys.length);
+  });
+
   test('visualLayout_mainGlyph', async () => {
     diagramElement.regionCode = 'fr';
 

@@ -316,7 +316,7 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
     const diagram: KeyboardDiagramElement|null =
         this.shadowRoot!.querySelector('#diagram');
     assert(diagram);
-    diagram.clearPressedKeys();
+    diagram.resetAllKeys();
     this.$.dialog.close();
   }
 

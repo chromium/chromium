@@ -2175,8 +2175,18 @@ TEST_F(InputDataProviderTest, KeyboardInputLog) {
   task_environment()->RunUntilIdle();
   std::string contents;
   EXPECT_TRUE(base::ReadFileToString(full_log_path, &contents));
+
   std::vector<std::string> lines = GetLogLines(contents);
-  EXPECT_EQ("Key press test - AT Translated Set 2 keyboard", lines[0]);
+  ASSERT_EQ(2u, lines.size());
+
+  // First line is of form:
+  // [TimeStamp] - Key press test - AT Translated Set 2 keyboard
+  std::vector<std::string> first_line_contents =
+      GetLogLineContents(lines[0], "-");
+  ASSERT_EQ(3u, first_line_contents.size());
+  EXPECT_EQ("Key press test", first_line_contents[1]);
+  EXPECT_EQ("AT Translated Set 2 keyboard", first_line_contents[2]);
+
   EXPECT_EQ("Key code: 30, Scan code: 30", lines[1]);
 }
 

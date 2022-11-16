@@ -427,6 +427,14 @@ export class KeyboardDiagramElement extends KeyboardDiagramElementBase {
       key.state = KeyboardKeyState.TESTED;
     }
   }
+
+  /** Set all keys to the "not pressed" state. */
+  resetAllKeys() {
+    const keys = this.root.querySelectorAll(`keyboard-key`);
+    for (const key of keys) {
+      key.state = KeyboardKeyState.NOT_PRESSED;
+    }
+  }
 }
 
 customElements.define(KeyboardDiagramElement.is, KeyboardDiagramElement);

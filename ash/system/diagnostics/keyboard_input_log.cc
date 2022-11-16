@@ -8,18 +8,25 @@
 #include <string>
 
 #include "base/containers/contains.h"
+#include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 
 namespace ash::diagnostics {
 namespace {
 const char kNewline[] = "\n";
 const char kDelimiter[] = ", ";
-const char kKeyboardNameTemplate[] = "Key press test - %s";
+const char kKeyboardNameTemplate[] = "%s - Key press test - %s";
 const char kKeyboardInputLogFilename[] = "keyboard_input.log";
 
 void AddKeyboardNameToLog(std::stringstream& output, const std::string& name) {
-  output << base::StringPrintf(kKeyboardNameTemplate, name.c_str()) << kNewline;
+  const std::string datetime =
+      base::UTF16ToUTF8(base::TimeFormatShortDateAndTime(base::Time::Now()));
+  output << base::StringPrintf(kKeyboardNameTemplate, datetime.c_str(),
+                               name.c_str())
+         << kNewline;
 }
 
 void AddKeyPressToLog(std::stringstream& output,

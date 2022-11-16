@@ -34,6 +34,7 @@ interface KeyboardDiagramElement extends LegacyElementMixin, HTMLElement {
   setKeyState(evdevCode: number, state: KeyboardKeyState): void;
   setTopRowKeyState(topRowPosition: number, state: KeyboardKeyState): void;
   clearPressedKeys(): void;
+  resetAllKeys(): void;
 }
 
 export const TopRowKey: TopRowKeyInterface;
