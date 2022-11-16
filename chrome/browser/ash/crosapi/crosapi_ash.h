@@ -333,16 +333,31 @@ class CrosapiAsh : public mojom::Crosapi {
   void REMOVED_29(
       mojo::PendingReceiver<mojom::SystemDisplayDeprecated> receiver) override;
 
+  AutomationAsh* automation_ash() { return automation_ash_.get(); }
+
   BrowserServiceHostAsh* browser_service_host_ash() {
     return browser_service_host_ash_.get();
   }
 
-  AutomationAsh* automation_ash() { return automation_ash_.get(); }
+  CertDatabaseAsh* cert_database_ash() { return cert_database_ash_.get(); }
+
+  CertProvisioningAsh* cert_provisioning_ash() {
+    return cert_provisioning_ash_.get();
+  }
+
+  ChromeAppKioskServiceAsh* chrome_app_kiosk_service() {
+    return chrome_app_kiosk_service_ash_.get();
+  }
 
   DeskTemplateAsh* desk_template_ash() { return desk_template_ash_.get(); }
 
   DeviceAttributesAsh* device_attributes_ash() {
     return device_attributes_ash_.get();
+  }
+
+  DeviceLocalAccountExtensionServiceAsh*
+  device_local_account_extension_service() {
+    return device_local_account_extension_service_ash_.get();
   }
 
   DocumentScanAsh* document_scan_ash() { return document_scan_ash_.get(); }
@@ -352,11 +367,18 @@ class CrosapiAsh : public mojom::Crosapi {
   }
 
   EchoPrivateAsh* echo_private_ash() { return echo_private_ash_.get(); }
+
   EmojiPickerAsh* emoji_picker_ash() { return emoji_picker_ash_.get(); }
 
   ExtensionInfoPrivateAsh* extension_info_private_ash() {
     return extension_info_private_ash_.get();
   }
+
+  FileSystemProviderServiceAsh* file_system_provider_service_ash() {
+    return file_system_provider_service_ash_.get();
+  }
+
+  FileManagerAsh* file_manager_ash() { return file_manager_ash_.get(); }
 
   ForceInstalledTrackerAsh* force_installed_tracker_ash() {
     return force_installed_tracker_ash_.get();
@@ -366,38 +388,25 @@ class CrosapiAsh : public mojom::Crosapi {
     return fullscreen_controller_ash_.get();
   }
 
+  ImageWriterAsh* image_writer_ash() { return image_writer_ash_.get(); }
+
+  KeystoreServiceAsh* keystore_service_ash() {
+    return keystore_service_ash_.get();
+  }
+
   KioskSessionServiceAsh* kiosk_session_service() {
     return kiosk_session_service_ash_.get();
   }
 
-  ChromeAppKioskServiceAsh* chrome_app_kiosk_service() {
-    return chrome_app_kiosk_service_ash_.get();
-  }
-
-  DeviceLocalAccountExtensionServiceAsh*
-  device_local_account_extension_service() {
-    return device_local_account_extension_service_ash_.get();
-  }
-
-  PrintingMetricsAsh* printing_metrics_ash() {
-    return printing_metrics_ash_.get();
-  }
-
-  SearchProviderAsh* search_provider_ash() {
-    return search_provider_ash_.get();
-  }
-
-  WallpaperAsh* wallpaper_ash() { return wallpaper_ash_.get(); }
-
-  WebAppServiceAsh* web_app_service_ash() { return web_app_service_ash_.get(); }
-
-  WebPageInfoFactoryAsh* web_page_info_factory_ash() {
-    return web_page_info_factory_ash_.get();
-  }
-
-  ImageWriterAsh* image_writer_ash() { return image_writer_ash_.get(); }
-
   LocalPrinterAsh* local_printer_ash() { return local_printer_ash_.get(); }
+
+  LoginAsh* login_ash() { return login_ash_.get(); }
+
+  LoginScreenStorageAsh* login_screen_storage_ash() {
+    return login_screen_storage_ash_.get();
+  }
+
+  LoginStateAsh* login_state_ash() { return login_state_ash_.get(); }
 
   NetworkChangeAsh* network_change_ash() { return network_change_ash_.get(); }
 
@@ -409,35 +418,17 @@ class CrosapiAsh : public mojom::Crosapi {
     return networking_private_ash_.get();
   }
 
-  TaskManagerAsh* task_manager_ash() { return task_manager_ash_.get(); }
-
-  TtsAsh* tts_ash() { return tts_ash_.get(); }
-
-  KeystoreServiceAsh* keystore_service_ash() {
-    return keystore_service_ash_.get();
-  }
-
-  CertDatabaseAsh* cert_database_ash() { return cert_database_ash_.get(); }
-
-  FileSystemProviderServiceAsh* file_system_provider_service_ash() {
-    return file_system_provider_service_ash_.get();
-  }
-
-  FileManagerAsh* file_manager_ash() { return file_manager_ash_.get(); }
-
-  CertProvisioningAsh* cert_provisioning_ash() {
-    return cert_provisioning_ash_.get();
-  }
-
-  LoginAsh* login_ash() { return login_ash_.get(); }
-
-  LoginScreenStorageAsh* login_screen_storage_ash() {
-    return login_screen_storage_ash_.get();
-  }
-
-  LoginStateAsh* login_state_ash() { return login_state_ash_.get(); }
-
   ParentAccessAsh* parent_access_ash() { return parent_access_ash_.get(); }
+
+  PrintingMetricsAsh* printing_metrics_ash() {
+    return printing_metrics_ash_.get();
+  }
+
+  ScreenManagerAsh* screen_manager_ash() { return screen_manager_ash_.get(); }
+
+  SearchProviderAsh* search_provider_ash() {
+    return search_provider_ash_.get();
+  }
 
   SharesheetAsh* sharesheet_ash() { return sharesheet_ash_.get(); }
 
@@ -445,7 +436,17 @@ class CrosapiAsh : public mojom::Crosapi {
     return structured_metrics_service_ash_.get();
   }
 
-  ScreenManagerAsh* screen_manager_ash() { return screen_manager_ash_.get(); }
+  TaskManagerAsh* task_manager_ash() { return task_manager_ash_.get(); }
+
+  TtsAsh* tts_ash() { return tts_ash_.get(); }
+
+  WallpaperAsh* wallpaper_ash() { return wallpaper_ash_.get(); }
+
+  WebAppServiceAsh* web_app_service_ash() { return web_app_service_ash_.get(); }
+
+  WebPageInfoFactoryAsh* web_page_info_factory_ash() {
+    return web_page_info_factory_ash_.get();
+  }
 
   VirtualKeyboardAsh* virtual_keyboard_ash() {
     return virtual_keyboard_ash_.get();
@@ -454,6 +455,7 @@ class CrosapiAsh : public mojom::Crosapi {
   VpnExtensionObserverAsh* vpn_extension_observer_ash() {
     return vpn_extension_observer_ash_.get();
   }
+
   VpnServiceAsh* vpn_service_ash() { return vpn_service_ash_.get(); }
 
   // Caller is responsible for ensuring that the pointer stays valid.
@@ -471,6 +473,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<BrowserVersionServiceAsh> browser_version_service_ash_;
   std::unique_ptr<CertDatabaseAsh> cert_database_ash_;
   std::unique_ptr<CertProvisioningAsh> cert_provisioning_ash_;
+  std::unique_ptr<ChromeAppKioskServiceAsh> chrome_app_kiosk_service_ash_;
   std::unique_ptr<ChromeAppWindowTrackerAsh> chrome_app_window_tracker_ash_;
   std::unique_ptr<ClipboardAsh> clipboard_ash_;
   std::unique_ptr<ClipboardHistoryAsh> clipboard_history_ash_;
@@ -504,7 +507,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<InSessionAuthAsh> in_session_auth_ash_;
   std::unique_ptr<KeystoreServiceAsh> keystore_service_ash_;
   std::unique_ptr<KioskSessionServiceAsh> kiosk_session_service_ash_;
-  std::unique_ptr<ChromeAppKioskServiceAsh> chrome_app_kiosk_service_ash_;
   std::unique_ptr<LocalPrinterAsh> local_printer_ash_;
   std::unique_ptr<LoginAsh> login_ash_;
   std::unique_ptr<LoginScreenStorageAsh> login_screen_storage_ash_;
