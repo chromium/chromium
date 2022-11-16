@@ -573,8 +573,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          AutotestPrivateSearchTest,
                          /* tablet_mode= */ ::testing::Bool());
 
+// TODO(https://crbug.com/1385365): This test is extremely flaky.
 IN_PROC_BROWSER_TEST_P(AutotestPrivateSearchTest,
-                       LauncherSearchBoxStateAPITest) {
+                       DISABLED_LauncherSearchBoxStateAPITest) {
   ash::ShellTestApi().SetTabletModeEnabledForTest(GetParam());
   test::GetAppListClient()->ShowAppList();
   if (!GetParam()) {
