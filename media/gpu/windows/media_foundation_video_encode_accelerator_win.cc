@@ -385,11 +385,6 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfilesForCodec(
 #else
     return profiles;
 #endif  // BULIDFLAG(ENABLE_PLATFORM_HEVC)
-  } else if ((codec == VideoCodec::kVP9 &&
-              !base::FeatureList::IsEnabled(kMediaFoundationVP9Encoding)) ||
-             (codec == VideoCodec::kAV1 &&
-              !base::FeatureList::IsEnabled(kMediaFoundationAV1Encoding))) {
-    return profiles;
   }
 
   IMFActivate** pp_activate = nullptr;

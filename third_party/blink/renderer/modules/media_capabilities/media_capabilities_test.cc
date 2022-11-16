@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/peerconnection/rtc_video_encoder_factory.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -1464,9 +1465,14 @@ TEST(MediaCapabilitiesTests, WebrtcEncodePowerEfficientIsSmooth) {
   // supported and powerEfficient.
   MediaCapabilitiesTestContext context;
   media::MockGpuVideoAcceleratorFactories mock_gpu_factories(nullptr);
+
+  auto video_encoder_factory =
+      std::make_unique<RTCVideoEncoderFactory>(&mock_gpu_factories);
+  // Ensure all the profiles in our mock GPU factory are allowed.
+  video_encoder_factory->clear_disabled_profiles_for_testing();
+
   WebrtcEncodingInfoHandler encoding_info_handler(
-      blink::CreateWebrtcVideoEncoderFactory(&mock_gpu_factories,
-                                             base::DoNothing()),
+      std::move(video_encoder_factory),
       blink::CreateWebrtcAudioEncoderFactory());
   context.GetMediaCapabilities()->set_webrtc_encoding_info_handler_for_test(
       &encoding_info_handler);
@@ -1502,9 +1508,14 @@ TEST(MediaCapabilitiesTests, WebrtcEncodeOverridePowerEfficientIsSmooth) {
   // supported and powerEfficient.
   MediaCapabilitiesTestContext context;
   media::MockGpuVideoAcceleratorFactories mock_gpu_factories(nullptr);
+
+  auto video_encoder_factory =
+      std::make_unique<RTCVideoEncoderFactory>(&mock_gpu_factories);
+  // Ensure all the profiles in our mock GPU factory are allowed.
+  video_encoder_factory->clear_disabled_profiles_for_testing();
+
   WebrtcEncodingInfoHandler encoding_info_handler(
-      blink::CreateWebrtcVideoEncoderFactory(&mock_gpu_factories,
-                                             base::DoNothing()),
+      std::move(video_encoder_factory),
       blink::CreateWebrtcAudioEncoderFactory());
   context.GetMediaCapabilities()->set_webrtc_encoding_info_handler_for_test(
       &encoding_info_handler);

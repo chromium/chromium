@@ -274,14 +274,6 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseAlternateVideoDecoderImplementation);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kDelayCopyNV12Textures);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kDirectShowGetPhotoState);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kIncludeIRCamerasInDeviceEnumeration);
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationAV1Encoding);
-
-// For feature check of kMediaFoundationH264CbpEncoding at runtime,
-// please use IsMediaFoundationH264CbpEncodingEnabled() instead.
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationH264CbpEncoding);
-
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationVP9Encoding);
-
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationVideoCapture);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationVP8Decoding);
 
@@ -345,7 +337,6 @@ MEDIA_EXPORT bool IsHardwareSecureDecryptionEnabled();
 MEDIA_EXPORT bool IsVideoCaptureAcceleratedJpegDecodingEnabled();
 
 #if BUILDFLAG(IS_WIN)
-MEDIA_EXPORT bool IsMediaFoundationH264CbpEncodingEnabled();
 MEDIA_EXPORT bool IsMediaFoundationD3D11VideoCaptureEnabled();
 #endif
 

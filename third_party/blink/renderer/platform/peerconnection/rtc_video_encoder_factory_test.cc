@@ -61,7 +61,10 @@ typedef webrtc::SdpVideoFormat::Parameters Params;
 
 class RTCVideoEncoderFactoryTest : public ::testing::Test {
  public:
-  RTCVideoEncoderFactoryTest() : encoder_factory_(&mock_gpu_factories_) {}
+  RTCVideoEncoderFactoryTest() : encoder_factory_(&mock_gpu_factories_) {
+    // Ensure all the profiles in our mock GPU factory are allowed.
+    encoder_factory_.clear_disabled_profiles_for_testing();
+  }
 
  protected:
   base::test::TaskEnvironment task_environment_;
@@ -72,7 +75,7 @@ class RTCVideoEncoderFactoryTest : public ::testing::Test {
 TEST_F(RTCVideoEncoderFactoryTest, QueryCodecSupportNoSvc) {
   EXPECT_CALL(mock_gpu_factories_, IsEncoderSupportKnown())
       .WillRepeatedly(Return(true));
-  // VP8, H264, and VP9 profile 0 are supported.
+  // VP8 and VP9 profile 0 are supported.
   EXPECT_TRUE(Equals(encoder_factory_.QueryCodecSupport(
                          Sdp("VP8"), /*scalability_mode=*/absl::nullopt),
                      kSupportedPowerEfficient));

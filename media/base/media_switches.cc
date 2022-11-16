@@ -978,20 +978,6 @@ BASE_FEATURE(kIncludeIRCamerasInDeviceEnumeration,
              "IncludeIRCamerasInDeviceEnumeration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables AV1 encode acceleration for Windows.
-const base::Feature MEDIA_EXPORT kMediaFoundationAV1Encoding{
-    "MediaFoundationAV1Encoding", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables H.264 CBP encode acceleration for Windows.
-// For feature check of kMediaFoundationH264CbpEncoding at runtime,
-// please use IsMediaFoundationH264CbpEncodingEnabled() instead.
-const base::Feature MEDIA_EXPORT kMediaFoundationH264CbpEncoding{
-    "MediaFoundationH264CbpEncoding", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables VP9 encode acceleration for Windows.
-const base::Feature MEDIA_EXPORT kMediaFoundationVP9Encoding{
-    "MediaFoundationVP9Encoding", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables MediaFoundation based video capture
 BASE_FEATURE(kMediaFoundationVideoCapture,
              "MediaFoundationVideoCapture",
@@ -1261,10 +1247,6 @@ bool IsVideoCaptureAcceleratedJpegDecodingEnabled() {
 }
 
 #if BUILDFLAG(IS_WIN)
-bool IsMediaFoundationH264CbpEncodingEnabled() {
-  return base::FeatureList::IsEnabled(kMediaFoundationH264CbpEncoding);
-}
-
 bool IsMediaFoundationD3D11VideoCaptureEnabled() {
   return base::FeatureList::IsEnabled(kMediaFoundationD3D11VideoCapture);
 }

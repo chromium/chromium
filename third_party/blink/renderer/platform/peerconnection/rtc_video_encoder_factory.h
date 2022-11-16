@@ -37,12 +37,20 @@ class PLATFORM_EXPORT RTCVideoEncoderFactory
       const webrtc::SdpVideoFormat& format,
       absl::optional<std::string> scalability_mode) const override;
 
+  // Some platforms don't allow hardware encoding for certain profiles. Tests
+  // exercising VP9 or AV1 likely want to clear this list.
+  void clear_disabled_profiles_for_testing() { disabled_profiles_.clear(); }
+
  private:
   void CheckAndWaitEncoderSupportStatusIfNeeded() const;
 
   media::GpuVideoAcceleratorFactories* gpu_factories_;
 
   GpuCodecSupportWaiter gpu_codec_support_waiter_;
+
+  // List of profiles that RTCVideoEncoderFactory will refuse to create an
+  // encoder for even if the underlying GPU factories has support.
+  std::vector<media::VideoCodecProfile> disabled_profiles_;
 };
 
 }  // namespace blink
