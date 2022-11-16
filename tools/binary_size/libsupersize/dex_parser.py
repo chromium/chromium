@@ -13,7 +13,6 @@ import abc
 import argparse
 import collections
 import errno
-import itertools
 import os
 import re
 import struct
@@ -77,6 +76,8 @@ _StringDataItem = collections.namedtuple('StringDataItem', 'utf16_size,data')
 _TypeIdItem = collections.namedtuple('TypeIdItem', 'descriptor_idx')
 _ProtoIdItem = collections.namedtuple(
     'ProtoIdItem', 'shorty_idx,return_type_idx,parameters_off')
+_FieldIdItem = collections.namedtuple('FieldIdItem',
+                                      'class_idx,type_idx,name_idx')
 _MethodIdItem = collections.namedtuple('MethodIdItem',
                                        'type_idx,proto_idx,name_idx')
 _ClassDefItem = collections.namedtuple(
@@ -257,6 +258,13 @@ class _ProtoIdItemList(_MemoryItemList):
     super().__init__(reader, offset, size, factory)
 
 
+class _FieldIdItemList(_MemoryItemList):
+  def __init__(self, reader, offset, size):
+    factory = (
+        lambda x: _FieldIdItem(x.NextUShort(), x.NextUShort(), x.NextUInt()))
+    super().__init__(reader, offset, size, factory)
+
+
 class _MethodIdItemList(_MemoryItemList):
   def __init__(self, reader, offset, size):
     factory = (
@@ -350,6 +358,7 @@ class DexFile:
       referenced by index in other sections.
     type_id_item_list: _TypeIdItemList containing _TypeIdItems.
     proto_id_item_list: _ProtoIdItemList containing _ProtoIdItems.
+    field_id_item_list: _FieldIdItemList containing _FieldIdItems.
     method_id_item_list: _MethodIdItemList containing _MethodIdItems.
     type_list_item_list: _TypeListItemList containing _TypeListItems.
       _TypeListItems are referenced by their offsets from other DEX items.
@@ -376,6 +385,9 @@ class DexFile:
     self.proto_id_item_list = _ProtoIdItemList(self.reader,
                                                self.header.proto_ids_off,
                                                self.header.proto_ids_size)
+    self.field_id_item_list = _FieldIdItemList(self.reader,
+                                               self.header.field_ids_off,
+                                               self.header.field_ids_size)
     self.method_id_item_list = _MethodIdItemList(self.reader,
                                                  self.header.method_ids_off,
                                                  self.header.method_ids_size)
@@ -448,14 +460,13 @@ class DexFile:
         (class name, return type, method name, (parameter type, ...)).
     """
     for method_id_item in self.method_id_item_list:
-      class_name_string = self.GetTypeString(method_id_item.type_idx)
-      method_name_string = self.GetString(method_id_item.name_idx)
+      class_name = self.GetTypeString(method_id_item.type_idx)
+      method_name = self.GetString(method_id_item.name_idx)
       proto_id_item = self.proto_id_item_list[method_id_item.proto_idx]
-      return_type_string = self.GetTypeString(proto_id_item.return_type_idx)
+      return_type_name = self.GetTypeString(proto_id_item.return_type_idx)
       parameter_types = self.GetTypeListStringsByOffset(
           proto_id_item.parameters_off)
-      yield (class_name_string, return_type_string, method_name_string,
-             parameter_types)
+      yield (class_name, return_type_name, method_name, parameter_types)
 
   def __repr__(self):
     items = [
@@ -464,6 +475,7 @@ class DexFile:
         self.string_data_item_list,
         self.type_id_item_list,
         self.proto_id_item_list,
+        self.field_id_item_list,
         self.method_id_item_list,
         self.type_list_item_list,
         self.class_def_item_list,
@@ -489,35 +501,48 @@ class _DumpSummary(_DumpCommand):
 
 class _DumpStrings(_DumpCommand):
   def Run(self):
-    for string_data_item in self._dexfile.string_data_item_list:
+    for (i, string_data_item) in enumerate(self._dexfile.string_data_item_list):
       # Some strings are likely to be non-ascii (vs. methods/classes).
-      print(string_data_item.data.encode('utf-8'))
+      s = string_data_item.data
+      rep_str = repr(s) if s.isprintable() else s.encode('utf-8')
+      print('string(%08X): %s' % (i, rep_str))
+
+
+class _DumpFields(_DumpCommand):
+  def Run(self):
+    dexfile = self._dexfile
+    for (i, field_id_item) in enumerate(dexfile.field_id_item_list):
+      class_name = dexfile.GetTypeString(field_id_item.class_idx)
+      type_name = dexfile.GetTypeString(field_id_item.type_idx)
+      name = dexfile.GetString(field_id_item.name_idx)
+      print('field(%08x): (class=%s, name=%s, type=%s)' %
+            (i, class_name, name, type_name))
 
 
 class _DumpMethods(_DumpCommand):
   def Run(self):
-    for parts in self._dexfile.IterMethodSignatureParts():
-      class_type, return_type, method_name, parameter_types = parts
-      print('{} {} (return type={}, parameters={})'.format(
-          class_type, method_name, return_type, parameter_types))
+    for (i, parts) in enumerate(self._dexfile.IterMethodSignatureParts()):
+      class_name, return_type_name, method_name, parameter_types = parts
+      print('method(%08x): (class=%s, name=%s, return_type=%s, params=%s)' %
+            (i, class_name, method_name, return_type_name, parameter_types))
 
 
 class _DumpClasses(_DumpCommand):
   def Run(self):
-    for class_item in self._dexfile.class_def_item_list:
-      class_string = self._dexfile.GetTypeString(class_item.class_idx)
-      superclass_string = self._dexfile.GetTypeString(class_item.superclass_idx)
-      interfaces = self._dexfile.GetTypeListStringsByOffset(
-          class_item.interfaces_off)
+    dexfile = self._dexfile
+    fmt = ('class(%08x): (name=%s, superclass=%s, interfaces=%s, ' +
+           'access_flags=%s)')
+    for (i, class_item) in enumerate(dexfile.class_def_item_list):
+      name = dexfile.GetTypeString(class_item.class_idx)
+      superclass_name = dexfile.GetTypeString(class_item.superclass_idx)
+      interfaces = dexfile.GetTypeListStringsByOffset(class_item.interfaces_off)
       access_flags = DexFile.ResolveClassAccessFlags(class_item.access_flags)
-      print('{} (superclass={}, interfaces={}, access_flags={})'.format(
-          class_string, superclass_string, interfaces, access_flags))
+      print(fmt % (i, name, superclass_name, interfaces, access_flags))
 
 
 class _DumpCodes(_DumpCommand):
   def Run(self):
     dexfile = self._dexfile
-
     total_insns_bytes = 0
     total_insns_count = 0
     total_code_bytes = 0
@@ -558,6 +583,7 @@ def _DumpDexItems(dexfile_data, name, item):
   cmds = {
       'summary': _DumpSummary,
       'strings': _DumpStrings,
+      'fields': _DumpFields,
       'methods': _DumpMethods,
       'classes': _DumpClasses,
       'codes': _DumpCodes,
@@ -575,8 +601,8 @@ def main():
   parser.add_argument('input',
                       help='Input (.dex, .jar, .zip, .aab, .apk) file path.')
   parser.add_argument('item',
-                      choices=('summary', 'strings', 'methods', 'classes',
-                               'codes'),
+                      choices=('summary', 'strings', 'fields', 'methods',
+                               'classes', 'codes'),
                       help='Item to dump',
                       nargs='?',
                       default='summary')
