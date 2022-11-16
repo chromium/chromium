@@ -667,21 +667,19 @@ void MultiDeviceSection::AddHandlers(content::WebUI* web_ui) {
   if (profile()->IsGuestSession())
     return;
 
-  web_ui->AddMessageHandler(
-      std::make_unique<chromeos::settings::MultideviceHandler>(
-          pref_service_, multidevice_setup_client_,
-          phone_hub_manager_
-              ? phone_hub_manager_->GetMultideviceFeatureAccessManager()
-              : nullptr,
-          android_sms_service_
-              ? android_sms_service_->android_sms_pairing_state_tracker()
-              : nullptr,
-          android_sms_service_ ? android_sms_service_->android_sms_app_manager()
-                               : nullptr,
-          eche_app_manager_ ? eche_app_manager_->GetAppsAccessManager()
-                            : nullptr,
-          phone_hub_manager_ ? phone_hub_manager_->GetCameraRollManager()
-                             : nullptr));
+  web_ui->AddMessageHandler(std::make_unique<MultideviceHandler>(
+      pref_service_, multidevice_setup_client_,
+      phone_hub_manager_
+          ? phone_hub_manager_->GetMultideviceFeatureAccessManager()
+          : nullptr,
+      android_sms_service_
+          ? android_sms_service_->android_sms_pairing_state_tracker()
+          : nullptr,
+      android_sms_service_ ? android_sms_service_->android_sms_app_manager()
+                           : nullptr,
+      eche_app_manager_ ? eche_app_manager_->GetAppsAccessManager() : nullptr,
+      phone_hub_manager_ ? phone_hub_manager_->GetCameraRollManager()
+                         : nullptr));
 }
 
 int MultiDeviceSection::GetSectionNameMessageId() const {

@@ -43,9 +43,4 @@ class PointerHandler : public ::settings::SettingsPageUIHandler,
 
 }  // namespace ash::settings
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::settings {
-using ::ash::settings::PointerHandler;
-}
-
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_DEVICE_POINTER_HANDLER_H_

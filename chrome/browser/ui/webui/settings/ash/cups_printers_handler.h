@@ -295,9 +295,4 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
 }  // namespace settings
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::settings {
-using ::ash::settings::CupsPrintersHandler;
-}
-
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_CUPS_PRINTERS_HANDLER_H_

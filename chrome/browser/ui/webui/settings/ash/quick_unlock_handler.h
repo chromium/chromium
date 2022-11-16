@@ -43,9 +43,4 @@ class QuickUnlockHandler : public ::settings::SettingsPageUIHandler {
 
 }  // namespace ash::settings
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::settings {
-using ::ash::settings::QuickUnlockHandler;
-}
-
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_QUICK_UNLOCK_HANDLER_H_

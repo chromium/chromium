@@ -33,9 +33,4 @@ class PersonalizationHubHandler : public ::settings::SettingsPageUIHandler {
 
 }  // namespace ash::settings
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::settings {
-using ::ash::settings::PersonalizationHubHandler;
-}
-
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PERSONALIZATION_HUB_HANDLER_H_

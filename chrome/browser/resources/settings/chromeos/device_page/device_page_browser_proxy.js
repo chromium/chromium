@@ -50,7 +50,7 @@ export let PowerSource;
 export let BatteryStatus;
 
 /**
- * Mirrors chromeos::settings::PowerHandler::IdleBehavior.
+ * Mirrors ash::settings::PowerHandler::IdleBehavior.
  * @enum {number}
  */
 export const IdleBehavior = {

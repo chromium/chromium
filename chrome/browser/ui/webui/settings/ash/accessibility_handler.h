@@ -76,9 +76,4 @@ class AccessibilityHandler : public ::settings::SettingsPageUIHandler,
 
 }  // namespace ash::settings
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::settings {
-using ::ash::settings::AccessibilityHandler;
-}
-
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_ACCESSIBILITY_HANDLER_H_

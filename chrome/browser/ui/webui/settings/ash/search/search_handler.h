@@ -116,9 +116,4 @@ class SearchHandler : public mojom::SearchHandler,
 
 }  // namespace ash::settings
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::settings {
-using ::ash::settings::SearchHandler;
-}
-
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SEARCH_SEARCH_HANDLER_H_

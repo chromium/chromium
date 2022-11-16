@@ -477,7 +477,7 @@ void SettingsUI::InitBrowserSettingsWebUIHandlers() {
     DCHECK(account_manager_facade);
 
     web_ui()->AddMessageHandler(
-        std::make_unique<chromeos::settings::AccountManagerUIHandler>(
+        std::make_unique<ash::settings::AccountManagerUIHandler>(
             account_manager, account_manager_facade,
             IdentityManagerFactory::GetForProfile(profile),
             ash::AccountAppsAvailabilityFactory::GetForProfile(profile)));

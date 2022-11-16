@@ -64,9 +64,4 @@ class AppNotificationHandler
 
 }  // namespace ash::settings
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::settings {
-using ::ash::settings::AppNotificationHandler;
-}
-
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_OS_APPS_PAGE_APP_NOTIFICATION_HANDLER_H_

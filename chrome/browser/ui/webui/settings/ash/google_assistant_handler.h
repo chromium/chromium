@@ -45,9 +45,4 @@ class GoogleAssistantHandler : public ::settings::SettingsPageUIHandler,
 
 }  // namespace ash::settings
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::settings {
-using ::ash::settings::GoogleAssistantHandler;
-}
-
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_GOOGLE_ASSISTANT_HANDLER_H_

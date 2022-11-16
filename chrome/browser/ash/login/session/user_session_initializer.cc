@@ -276,10 +276,10 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
     // Pciguard is turned on.
     if (PeripheralNotificationManager::IsInitialized()) {
       PeripheralNotificationManager::Get()->SetPcieTunnelingAllowedState(
-          chromeos::settings::PeripheralDataAccessHandler::GetPrefState());
+          settings::PeripheralDataAccessHandler::GetPrefState());
     }
     PciguardClient::Get()->SendExternalPciDevicesPermissionState(
-        chromeos::settings::PeripheralDataAccessHandler::GetPrefState());
+        settings::PeripheralDataAccessHandler::GetPrefState());
 
     CrasAudioHandler::Get()->RefreshNoiseCancellationState();
   }

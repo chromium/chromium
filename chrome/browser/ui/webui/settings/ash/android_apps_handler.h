@@ -68,9 +68,4 @@ class AndroidAppsHandler : public ::settings::SettingsPageUIHandler,
 
 }  // namespace ash::settings
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::settings {
-using ::ash::settings::AndroidAppsHandler;
-}
-
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_ANDROID_APPS_HANDLER_H_

@@ -71,9 +71,4 @@ class FastPairSavedDevicesHandler : public ::settings::SettingsPageUIHandler {
 }  // namespace settings
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::settings {
-using ::ash::settings::FastPairSavedDevicesHandler;
-}
-
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_FAST_PAIR_SAVED_DEVICES_HANDLER_H_

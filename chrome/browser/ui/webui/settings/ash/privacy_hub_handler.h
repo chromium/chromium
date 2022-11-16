@@ -48,9 +48,4 @@ class PrivacyHubHandler : public content::WebUIMessageHandler,
 
 }  // namespace ash::settings
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::settings {
-using ::ash::settings::PrivacyHubHandler;
-}
-
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PRIVACY_HUB_HANDLER_H_

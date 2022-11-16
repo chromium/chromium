@@ -11,9 +11,4 @@ extern const char kSyncOsWallpaper[];
 
 }  // namespace ash::settings::prefs
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::settings::prefs {
-using ::ash::settings::prefs::kSyncOsWallpaper;
-}
-
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PREF_NAMES_H_
