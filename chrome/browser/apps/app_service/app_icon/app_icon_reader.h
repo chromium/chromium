@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_APP_ICON_READER_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_APP_ICON_READER_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -15,6 +16,8 @@
 class Profile;
 
 namespace apps {
+
+class AppIconDecoder;
 
 // AppIconReader reads app icons from the icon image files in the local
 // disk and provides an ImageSkia for UI code to use.
@@ -36,11 +39,19 @@ class AppIconReader {
                  LoadIconCallback callback);
 
  private:
-  void OnIconRead(IconType icon_type,
-                  LoadIconCallback callback,
-                  std::vector<uint8_t> icon_data);
+  void OnCompressedIconRead(IconType icon_type,
+                            LoadIconCallback callback,
+                            std::vector<uint8_t> icon_data);
+
+  void OnUncompressedIconRead(IconType icon_type,
+                              LoadIconCallback callback,
+                              AppIconDecoder* decoder,
+                              gfx::ImageSkia image);
 
   const raw_ptr<Profile> profile_;
+
+  // Contains pending image app icon decoders.
+  std::vector<std::unique_ptr<AppIconDecoder>> decodes_;
 
   base::WeakPtrFactory<AppIconReader> weak_ptr_factory_{this};
 };

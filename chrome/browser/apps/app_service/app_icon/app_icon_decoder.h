@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_APP_ICON_DECODER_H_
 
 #include <map>
+#include <memory>
 #include <set>
-#include <utility>
 #include <vector>
 
 #include "base/files/file_path.h"
