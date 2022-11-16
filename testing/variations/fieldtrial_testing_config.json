@@ -8659,23 +8659,26 @@
             ]
         }
     ],
-    "PermissionChip": [
+    "PermissionConfirmationChip": [
         {
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
-                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20210721",
+                    "name": "RequestChipConfirmationChipNoLockIconOverride",
                     "enable_features": [
+                        "ConfirmationChip",
                         "PermissionChip",
                         "PermissionChipGestureSensitive",
                         "PermissionChipRequestTypeSensitive"
+                    ],
+                    "disable_features": [
+                        "ChipLocationIconOverride"
                     ]
                 }
             ]
