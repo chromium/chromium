@@ -12314,6 +12314,21 @@
             ]
         }
     ],
+    "WebApkManifestUniqueId": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebApkUniqueId"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebApkSkipServiceWorkerForInstallPrompt": [
         {
             "platforms": [
