@@ -7,14 +7,142 @@ Rust toolchain (the Rust compiler, and also C++/Rust FFI tools like
 [TOC]
 
 
-## Rolling Rust compiler and other Rust tools
+## Background
 
-Steps to roll the Rust compiler (and other Rust tools like `rustfmt`) to
-a new version:
-- Locally, update `RUST_REVISION` in `update_rust.py`.
-  (Update `RUST_SUB_REVISION` when the build or packaging is changed, but
-  the upstream Rust revision we build from is not changed.)
-- Follow the general roll process below
+Like with Clang, Chromium uses bleeding edge Rust tooling. We track the upstream
+projects' latest development as closely as possible. However, Chromium cannot
+use official Rust builds for various reasons which require us to match the Rust
+LLVM backend version with the Clang we use. 
+
+It would not be reasonable to build the tooling for every Chromium build, so we
+build it centrally (with the scripts here) and distribute it for all to use
+(also fetched with the scripts here).
+
+
+## Rust build overview
+
+Each Rust package is built from an official Rust nightly source release and a
+corresponding LLVM revision. Hence a new Rust package must be built whenever
+either Rust or Clang is updated.
+
+Chromium's Clang build process leaves behind several artifacts needed for the
+Rust build. Each Rust build begins after a Clang build and uses these artifacts,
+which include `clang`, LLVM libraries, etc.
+
+A special CI job is used to build Clang and Rust from the revisions specified in
+the Chromium source tree. These are uploaded to a storage bucket. After being
+manually blessed by a developer, they can then be fetched by Chromium checkouts.
+
+Scripts are provided in tree to fetch the packages for the specified revisions.
+
+Whenever a Chromium checkout is updated, `gclient` hooks will update the
+toolchain packages to match the revisions listed in tree.
+
+
+## Updating Rust
+
+### Set the revision
+
+First, pick a new instance of the [CIPD `rust_src`
+package](https://chrome-infra-packages.appspot.com/p/chromium/third_party/rust_src/+/).
+Click it and copy the version ID (e.g. `version:2@2022-01-01`) to the `//DEPS` entry for
+`src/third_party/rust_src/src`. For example (though don't change the other parts
+of the entry):
+
+```
+  'src/third_party/rust_src/src': {
+    'packages': [
+      {
+        'package': 'chromium/third_party/rust_src',
+        'version': 'version:2@2022-01-01',
+      },
+    ],
+    'dep_type': 'cipd',
+    'condition': 'checkout_rust_toolchain_deps or use_rust',
+  },
+```
+
+Similarly, update the `RUST_REVISION` named in `//tools/rust/update_rust.py`,
+removing dashes from the date (e.g. `version:2@2022-01-01` becomes
+`RUST_REVISION = '20220101'`). Reset `RUST_SUB_REVISION = 1`.
+
+Run the following to check for changes to Rust's `src/stage0.json`, which
+contains revisions of upstream binaries to be fetched and used in the Rust
+build:
+
+```
+tools/rust/build_rust.py --verify-stage0-hash
+```
+
+If it exists without printing anything, the stage0 hash is up-to-date and
+nothing needs to be done. Otherwise, it will print the actual hash like so:
+
+```
+...
+Actual hash:   6b1c61d494ad447f41c8ae3b9b3239626eecac00e0f0b793b844e0761133dc37
+...
+```
+
+...in which case you should check the `stage0.json` changes for trustworthiness
+(criteria TBD) and then update `STAGE0_JSON_SHA256` in update_rust.py with the
+new hash. Re-run the above and confirm it succeeds.
+
+
+### Optional: build locally and run tests
+
+This step is not strictly necessary since the CI tooling will catch any errors.
+But the CI build process is slow and this can save some time.
+
+Running this will do a full build and provide a local toolchain that works for
+the host machine, albeit not the same as the CI-provided one:
+
+```
+tools/rust/build_rust.py --fetch-llvm-libs --use-final-llvm-build-dir
+```
+
+To do a full build, first build Clang locally (TODO: provide instructions) then
+simply run `tools/rust/build_rust.py` with no arguments.
+
+However, for most cases simply doing
+
+```
+tools/rust/build_rust.py --fetch-llvm-libs --use-final-llvm-build-dir --run-xpy -- build --stage 1 library/std
+```
+
+will catch most errors and will be fast.
+
+### Upload CL and build package
+
+Upload a CL with the changes, which in the simplest case will only have two
+changes: one line in `//DEPS`, one line in `//tools/rust/update_rust.py`. Add the
+following line to the end of the CL description, which ensures the new toolchain
+will be tested on appropriate Rust tryjobs:
+
+```
+Cq-Include-Trybots: luci.chromium.try:android-rust-arm-dbg,android-rust-arm-rel,linux-rust-x64-dbg,linux-rust-x64-rel
+```
+
+From Gerrit run the `linux_upload_clang` tryjob on the CL and wait for it to
+finish. Check that it's successful; it is **not** sufficient to check the
+result in Gerrit as a Rust failure will not surface here. Check the build page
+(e.g.
+https://ci.chromium.org/ui/p/chromium/builders/try/linux_upload_clang/2611/overview)
+and confirm the "package rust" step succeeded. If it did not, further
+investigation is needed.
+
+After the package is built, a developer with permissions must bless the package
+for use. As of writing this is anyone in [Clang
+OWNERS](/tools/clang/scripts/OWNERS) or collinbaker@chromium.org.
+
+
+### Submit CL
+
+Once the package has been uploaded and blessed, it is ready to be fetched from
+any Chromium checkout.
+
+Submit the CL. CQ tryjobs will use the specified toolchain package
+version. Any build failures will need to be investigated, as these indicate
+breaking changes to Rust.
 
 
 ## Rolling Crubit tools
@@ -34,35 +162,6 @@ to a new version:
   TODO(https://crbug.com/1329611): These manual steps should
   be made obsolete once Rust-specific tryjobs cover Crubit
   tests.
-
-- Follow the general roll process below
-
-
-## General roll process
-
-- Author a CL that updates `CRUBIT_REVISION` and/or `RUST_REVISION`
-  (see one of the sections above for details).
-
-- Upload the CL to Gerrit.
-  Ask [CQ](//docs/infra/cq.md) for Rust-specific tryjobs in the CL description:
-  `Cq-Include-Trybots: luci.chromium.try:linux-rust-x64-rel,linux-rust-x64-dbg,android-rust-arm-rel,android-rust-arm-dbg`.
-
-- Run `linux_upload_clang` tryjob.  This will run `package_rust.py` which will
-  `build_rust.py` and then upload a new version of the Rust toolchain package to
-  the staging bucket.  This step runs `build_crubit.py` but doesn't (yet) package
-  the built binaries.
-  TODO(https://crbug.com/1329611): Update the docs once Crubit also gets packaged.
-
-- Move the new toolchain package from staging to prod.
-  (A small set of people have the permission for this.  There are
-  some Google-internal docs with more details.)
-
-- Run CQ (see also `Cq-Include-Trybots` suggested above).
-  This step will test that `gclient sync` can fetch the new Rust toolchain
-  package + that the new package works fine in Chromium build.
-
-- Land the CL.  The new package won't be used outside of this CL
-  until this step.
 
 
 ## Building and testing the tools locally
