@@ -75,6 +75,7 @@
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/file_handler_info.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "content/public/browser/network_service_instance.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/entry_info.h"
 #include "extensions/browser/extension_host.h"
@@ -556,9 +557,7 @@ void OpenODFSUrl(Profile* profile,
 bool ExecuteOpenInOfficeTask(Profile* profile,
                              const TaskDescriptor& task,
                              const std::vector<FileSystemURL>& file_urls) {
-  bool offline = drive::util::GetDriveConnectionStatus(profile) !=
-                 drive::util::DRIVE_CONNECTED;
-  if (offline) {
+  if (content::GetNetworkConnectionTracker()->IsOffline()) {
     return GetUserFallbackChoice(
         profile, task, file_urls,
         ash::office_fallback::FallbackReason::kOffline);
