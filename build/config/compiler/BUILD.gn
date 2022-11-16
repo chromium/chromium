@@ -637,6 +637,11 @@ config("compiler") {
     cflags_cc += [ "-Wno-trigraphs" ]
   }
 
+  if (use_relative_vtables_abi) {
+    cflags_cc += [ "-fexperimental-relative-c++-abi-vtables" ]
+    ldflags += [ "-fexperimental-relative-c++-abi-vtables" ]
+  }
+
   # Add flags for link-time optimization. These flags enable
   # optimizations/transformations that require whole-program visibility at link
   # time, so they need to be applied to all translation units, and we may end up

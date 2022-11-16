@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/c++/c++.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/args.gni")
@@ -29,16 +30,16 @@ if (is_ios) {
 }
 
 declare_args() {
-  # Set to true to use the android unwinder V2 implementation.
-  use_android_unwinder_v2 = true
-}
-
-declare_args() {
   # Set to true to use lld, the LLVM linker.
   # In late bring-up on macOS (see docs/mac_lld.md).
   # Tentatively used on iOS.
   # The default linker everywhere else.
   use_lld = is_clang && current_os != "zos"
+
+  # If true, optimize for size.
+  # Default to favoring speed over size for platforms not listed below.
+  optimize_for_size =
+      !is_high_end_android && (is_android || is_ios || is_castos)
 }
 
 declare_args() {
@@ -133,15 +134,25 @@ declare_args() {
   # https://chromium.googlesource.com/chromium/src/+/main/docs/design/sandbox.md#cet-shadow-stack
   enable_cet_shadow_stack = target_cpu == "x64"
 
-  # If true, optimize for size.
-  # Default to favoring speed over size for platforms not listed below.
-  optimize_for_size =
-      !is_high_end_android && (is_android || is_ios || is_castos)
-
   # Set to true to enable using the ML inliner in LLVM. This currently only
   # enables the ML inliner when targeting Android.
   # Currently the ML inliner is only supported on linux hosts
   use_ml_inliner = host_os == "linux" && is_android
+
+  # Set to true to use the android unwinder V2 implementation.
+  use_android_unwinder_v2 = true
+
+  # Whether we should consider the profile we're using to be accurate. Accurate
+  # profiles have the benefit of (potentially substantial) binary size
+  # reductions, by instructing the compiler to optimize cold and uncovered
+  # functions heavily for size. This often comes at the cost of performance.
+  sample_profile_is_accurate = optimize_for_size
+
+  # Use offsets rather than pointers in vtables in order to reduce the number of
+  # relocations. This is safe to enable only when all C++ code is built with the
+  # flag set to the same value.
+  use_relative_vtables_abi = is_android && current_cpu == "arm64" &&
+                             use_custom_libcxx && !is_component_build
 }
 
 assert(!is_cfi || use_thin_lto, "CFI requires ThinLTO")
@@ -151,14 +162,6 @@ assert(!enable_profiling || !is_component_build,
 if (use_thin_lto && is_debug) {
   print("WARNING: ThinLTO (use_thin_lto=true) doesn't work with debug" +
         " (is_debug=true) build.")
-}
-
-declare_args() {
-  # Whether we should consider the profile we're using to be accurate. Accurate
-  # profiles have the benefit of (potentially substantial) binary size
-  # reductions, by instructing the compiler to optimize cold and uncovered
-  # functions heavily for size. This often comes at the cost of performance.
-  sample_profile_is_accurate = optimize_for_size
 }
 
 # Determine whether to enable or disable frame pointers, based on the platform
