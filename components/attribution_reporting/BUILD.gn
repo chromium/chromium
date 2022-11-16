@@ -67,6 +67,7 @@ source_set("unit_tests") {
     "parsing_utils_unittest.cc",
     "source_registration_unittest.cc",
     "suitable_origin_unittest.cc",
+    "trigger_registration_unittest.cc",
   ]
 
   deps = [

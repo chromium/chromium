@@ -61,4 +61,12 @@ int64_t ParsePriority(const base::Value::Dict& dict) {
   return ParseInt64(dict, "priority").value_or(0);
 }
 
+absl::optional<uint64_t> ParseDebugKey(const base::Value::Dict& dict) {
+  return ParseUint64(dict, "debug_key");
+}
+
+bool ParseDebugReporting(const base::Value::Dict& dict) {
+  return dict.FindBool("debug_reporting").value_or(false);
+}
+
 }  // namespace attribution_reporting

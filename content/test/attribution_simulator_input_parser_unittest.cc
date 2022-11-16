@@ -607,7 +607,7 @@ TEST(AttributionSimulatorInputParserTest, InvalidAggregatableTriggerDataSize) {
   };
 
   static constexpr char kError[] =
-      R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["aggregatable_trigger_data"]: too many elements)";
+      R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: kAggregatableTriggerDataListTooLong)";
 
   for (const auto test_case : kTestCases) {
     base::Value::List list;
@@ -619,6 +619,9 @@ TEST(AttributionSimulatorInputParserTest, InvalidAggregatableTriggerDataSize) {
 
     base::Value::Dict dict;
     dict.Set("Attribution-Reporting-Register-Trigger", std::move(trigger));
+    dict.Set("timestamp", "1643235576000");
+    dict.Set("destination_origin", "https://a.d1.test");
+    dict.Set("reporting_origin", "https://a.r.test");
 
     base::Value::List triggers;
     triggers.Append(std::move(dict));
@@ -649,7 +652,7 @@ TEST(AttributionSimulatorInputParserTest, InvalidEventTriggerDataSize) {
   };
 
   static constexpr char kError[] =
-      R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["event_trigger_data"]: too many elements)";
+      R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: kEventTriggerDataListTooLong)";
 
   for (const auto test_case : kTestCases) {
     base::Value::List list;
@@ -661,6 +664,9 @@ TEST(AttributionSimulatorInputParserTest, InvalidEventTriggerDataSize) {
 
     base::Value::Dict dict;
     dict.Set("Attribution-Reporting-Register-Trigger", std::move(trigger));
+    dict.Set("timestamp", "1643235576000");
+    dict.Set("destination_origin", "https://a.d1.test");
+    dict.Set("reporting_origin", "https://a.r.test");
 
     base::Value::List triggers;
     triggers.Append(std::move(dict));
@@ -913,25 +919,38 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     },
     {
         R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: must be present)",
-        R"json({"triggers": [{}]})json",
+        R"json({"triggers": [{
+          "timestamp": "1643235576000",
+          "destination_origin": "https://a.d1.test",
+          "reporting_origin": "https://a.r.test"
+        }]})json",
     },
     {
         R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: must be a dictionary)",
         R"json({"triggers": [{
+          "timestamp": "1643235576000",
+          "destination_origin": "https://a.d1.test",
+          "reporting_origin": "https://a.r.test",
           "Attribution-Reporting-Register-Trigger": ""
         }]})json",
     },
     {
-        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["filters"]: kFiltersWrongType)",
+        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: kFiltersWrongType)",
         R"json({"triggers": [{
+          "timestamp": "1643235576000",
+          "destination_origin": "https://a.d1.test",
+          "reporting_origin": "https://a.r.test",
           "Attribution-Reporting-Register-Trigger": {
             "filters": ""
           }
         }]})json",
     },
     {
-        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["not_filters"]: kFiltersListWrongType)",
+        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: kFiltersListWrongType)",
         R"json({"triggers": [{
+          "timestamp": "1643235576000",
+          "destination_origin": "https://a.d1.test",
+          "reporting_origin": "https://a.r.test",
           "Attribution-Reporting-Register-Trigger": {
             "not_filters": {
               "a": "x"
@@ -940,45 +959,45 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["event_trigger_data"]: must be a list)",
+        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: kEventTriggerDataListWrongType)",
         R"json({"triggers": [{
+          "timestamp": "1643235576000",
+          "reporting_origin": "https://a.r.test",
+          "destination_origin": " https://a.d1.test",
           "Attribution-Reporting-Register-Trigger": {
-            "timestamp": "1643235576000",
-            "reporting_origin": "https://a.r.test",
-            "destination_origin": " https://a.d1.test",
             "event_trigger_data": 1
           }
         }]})json",
     },
     {
-        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["aggregatable_trigger_data"]: must be a list)",
+        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: kAggregatableTriggerDataListWrongType)",
         R"json({"triggers": [{
+          "timestamp": "1643235576000",
+          "reporting_origin": "https://a.r.test",
+          "destination_origin": " https://a.d1.test",
           "Attribution-Reporting-Register-Trigger": {
-            "timestamp": "1643235576000",
-            "reporting_origin": "https://a.r.test",
-            "destination_origin": " https://a.d1.test",
             "aggregatable_trigger_data": 5
           }
         }]})json",
     },
     {
-        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["aggregatable_trigger_data"][0]: kAggregatableTriggerDataWrongType)",
+        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: kAggregatableTriggerDataWrongType)",
         R"json({"triggers": [{
+          "timestamp": "1643235576000",
+          "reporting_origin": "https://a.r.test",
+          "destination_origin": " https://a.d1.test",
           "Attribution-Reporting-Register-Trigger": {
-            "timestamp": "1643235576000",
-            "reporting_origin": "https://a.r.test",
-            "destination_origin": " https://a.d1.test",
             "aggregatable_trigger_data": [ 5 ]
           }
         }]})json",
     },
     {
-        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["aggregatable_trigger_data"][0]: kAggregatableTriggerDataSourceKeysMissing)",
+        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: kAggregatableTriggerDataSourceKeysMissing)",
         R"json({"triggers": [{
+          "timestamp": "1643235576000",
+          "reporting_origin": "https://a.r.test",
+          "destination_origin": " https://a.d1.test",
           "Attribution-Reporting-Register-Trigger": {
-            "timestamp": "1643235576000",
-            "reporting_origin": "https://a.r.test",
-            "destination_origin": " https://a.d1.test",
             "aggregatable_trigger_data": [{
               "key_piece": "0x123"
             }]
@@ -986,12 +1005,12 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["aggregatable_trigger_data"][0]: kAggregatableTriggerDataSourceKeysWrongType)",
+        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: kAggregatableTriggerDataSourceKeysWrongType)",
         R"json({"triggers": [{
+          "timestamp": "1643235576000",
+          "reporting_origin": "https://a.r.test",
+          "destination_origin": " https://a.d1.test",
           "Attribution-Reporting-Register-Trigger": {
-            "timestamp": "1643235576000",
-            "reporting_origin": "https://a.r.test",
-            "destination_origin": " https://a.d1.test",
             "aggregatable_trigger_data": [{
               "key_piece": "0x123",
               "source_keys": "a"
@@ -1000,12 +1019,12 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["aggregatable_trigger_data"][0]: kAggregatableTriggerDataSourceKeysKeyWrongType)",
+        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: kAggregatableTriggerDataSourceKeysKeyWrongType)",
         R"json({"triggers": [{
+          "timestamp": "1643235576000",
+          "reporting_origin": "https://a.r.test",
+          "destination_origin": " https://a.d1.test",
           "Attribution-Reporting-Register-Trigger": {
-            "timestamp": "1643235576000",
-            "reporting_origin": "https://a.r.test",
-            "destination_origin": " https://a.d1.test",
             "aggregatable_trigger_data": [{
               "key_piece": "0x123",
               "source_keys": [ 5 ]
@@ -1014,12 +1033,12 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["aggregatable_trigger_data"][0]: kAggregatableTriggerDataKeyPieceWrongFormat)",
+        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: kAggregatableTriggerDataKeyPieceWrongFormat)",
         R"json({"triggers": [{
+          "timestamp": "1643235576000",
+          "reporting_origin": "https://a.r.test",
+          "destination_origin": " https://a.d1.test",
           "Attribution-Reporting-Register-Trigger": {
-            "timestamp": "1643235576000",
-            "reporting_origin": "https://a.r.test",
-            "destination_origin": " https://a.d1.test",
             "aggregatable_trigger_data": [{
               "source_keys": [ "a" ],
               "key_piece": "0xG"
@@ -1028,23 +1047,23 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["aggregatable_values"]: kAggregatableValuesWrongType)",
+        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: kAggregatableValuesWrongType)",
         R"json({"triggers": [{
+          "timestamp": "1643235576000",
+          "reporting_origin": "https://a.r.test",
+          "destination_origin": " https://a.d1.test",
           "Attribution-Reporting-Register-Trigger": {
-            "timestamp": "1643235576000",
-            "reporting_origin": "https://a.r.test",
-            "destination_origin": " https://a.d1.test",
             "aggregatable_values": 5
           }
         }]})json",
     },
     {
-        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["aggregatable_values"]: kAggregatableValuesValueOutOfRange)",
+        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: kAggregatableValuesValueOutOfRange)",
         R"json({"triggers": [{
+          "timestamp": "1643235576000",
+          "reporting_origin": "https://a.r.test",
+          "destination_origin": " https://a.d1.test",
           "Attribution-Reporting-Register-Trigger": {
-            "timestamp": "1643235576000",
-            "reporting_origin": "https://a.r.test",
-            "destination_origin": " https://a.d1.test",
             "aggregatable_values": {
               "a": -5
             }
@@ -1052,29 +1071,13 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["event_trigger_data"][0]: kEventTriggerDataWrongType)",
+        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: kEventTriggerDataWrongType)",
         R"json({"triggers":[{
+          "timestamp": "1643235576000",
+          "reporting_origin": "https://a.r.test",
+          "destination_origin": " https://a.d1.test",
           "Attribution-Reporting-Register-Trigger": {
-            "timestamp": "1643235576000",
-            "reporting_origin": "https://a.r.test",
-            "destination_origin": " https://a.d1.test",
             "event_trigger_data":[true]
-          }
-        }]})json",
-    },
-    {
-        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["aggregatable_deduplication_key"]: must be a uint64 formatted)",
-        R"json({"triggers":[{
-          "Attribution-Reporting-Register-Trigger": {
-            "aggregatable_deduplication_key": 123
-          }
-        }]})json",
-    },
-    {
-        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["debug_reporting"]: must be a boolean)",
-        R"json({"triggers":[{
-          "Attribution-Reporting-Register-Trigger": {
-            "debug_reporting": 123
           }
         }]})json",
     },

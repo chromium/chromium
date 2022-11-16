@@ -10,17 +10,25 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/types/expected.h"
+#include "base/values.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
  public:
+  static base::expected<TriggerRegistration, mojom::TriggerRegistrationError>
+  Parse(base::Value::Dict, SuitableOrigin reporting_origin);
+
+  explicit TriggerRegistration(SuitableOrigin reporting_origin);
+
   TriggerRegistration(SuitableOrigin reporting_origin,
                       Filters filters,
                       Filters not_filters,

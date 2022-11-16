@@ -109,10 +109,9 @@ SourceRegistration::Parse(base::Value::Dict registration,
   result.aggregatable_report_window =
       ParseTimeDeltaInSeconds(registration, "aggregatable_report_window");
 
-  result.debug_key = ParseUint64(registration, "debug_key");
+  result.debug_key = ParseDebugKey(registration);
 
-  result.debug_reporting =
-      registration.FindBool("debug_reporting").value_or(false);
+  result.debug_reporting = ParseDebugReporting(registration);
 
   return result;
 }

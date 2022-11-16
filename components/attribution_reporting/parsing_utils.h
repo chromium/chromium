@@ -33,6 +33,10 @@ absl::optional<int64_t> ParseInt64(const base::Value::Dict& dict,
 
 int64_t ParsePriority(const base::Value::Dict& dict);
 
+absl::optional<uint64_t> ParseDebugKey(const base::Value::Dict& dict);
+
+bool ParseDebugReporting(const base::Value::Dict& dict);
+
 }  // namespace attribution_reporting
 
 #endif  // COMPONENTS_ATTRIBUTION_REPORTING_PARSING_UTILS_H_
