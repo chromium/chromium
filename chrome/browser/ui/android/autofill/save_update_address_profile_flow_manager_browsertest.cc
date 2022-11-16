@@ -23,8 +23,6 @@ class SaveUpdateAddressProfileFlowManagerBrowserTest
   ~SaveUpdateAddressProfileFlowManagerBrowserTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        features::kAutofillAddressProfileSavePrompt);
     AndroidBrowserTest::SetUp();
     profile_ = test::GetFullProfile();
     original_profile_ = test::GetFullProfile2();
@@ -55,7 +53,6 @@ class SaveUpdateAddressProfileFlowManagerBrowserTest
   AutofillProfile profile_;
   AutofillProfile original_profile_;
   std::unique_ptr<SaveUpdateAddressProfileFlowManager> flow_manager_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SaveUpdateAddressProfileFlowManagerBrowserTest,

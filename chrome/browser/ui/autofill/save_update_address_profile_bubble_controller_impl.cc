@@ -22,10 +22,7 @@ SaveUpdateAddressProfileBubbleControllerImpl::
         content::WebContents* web_contents)
     : AutofillBubbleControllerBase(web_contents),
       content::WebContentsUserData<
-          SaveUpdateAddressProfileBubbleControllerImpl>(*web_contents) {
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kAutofillAddressProfileSavePrompt));
-}
+          SaveUpdateAddressProfileBubbleControllerImpl>(*web_contents) {}
 
 SaveUpdateAddressProfileBubbleControllerImpl::
     ~SaveUpdateAddressProfileBubbleControllerImpl() {

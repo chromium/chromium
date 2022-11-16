@@ -112,8 +112,6 @@ id<GREYMatcher> UploadBannerMatcher() {
       [self isRunningTest:@selector(testUserData_LocalSave_UserDeclines)] ||
       [self isRunningTest:@selector
             (testOfferLocalSave_FullData_PaymentsDeclines)]) {
-    config.features_disabled.push_back(
-        autofill::features::kAutofillAddressProfileSavePrompt);
   }
   return config;
 }

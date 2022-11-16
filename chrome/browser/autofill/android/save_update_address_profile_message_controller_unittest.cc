@@ -80,8 +80,6 @@ class SaveUpdateAddressProfileMessageControllerTest
 };
 
 void SaveUpdateAddressProfileMessageControllerTest::SetUp() {
-  feature_list_.InitAndEnableFeature(
-      features::kAutofillAddressProfileSavePrompt);
   ChromeRenderViewHostTestHarness::SetUp();
   messages::MessageDispatcherBridge::SetInstanceForTesting(
       &message_dispatcher_bridge_);

@@ -17,10 +17,7 @@ namespace autofill {
 
 class EditAddressProfileDialogControllerImplTest : public DialogBrowserTest {
  public:
-  EditAddressProfileDialogControllerImplTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kAutofillAddressProfileSavePrompt);
-  }
+  EditAddressProfileDialogControllerImplTest() = default;
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
@@ -35,9 +32,6 @@ class EditAddressProfileDialogControllerImplTest : public DialogBrowserTest {
         test::GetFullProfile(), /*original_profile=*/nullptr,
         /*address_profile_save_prompt_callback=*/base::DoNothing());
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(EditAddressProfileDialogControllerImplTest,

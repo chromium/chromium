@@ -611,12 +611,6 @@ class FormDataImporterTestBase {
                              const FormStructure& form,
                              bool skip_waiting_on_pdm = false,
                              bool allow_save_prompts = true) {
-    // This parameter has no effect unless save prompts for addresses are
-    // enabled.
-    allow_save_prompts =
-        allow_save_prompts || !base::FeatureList::IsEnabled(
-                                  features::kAutofillAddressProfileSavePrompt);
-
     std::vector<FormDataImporter::AddressProfileImportCandidate>
         address_profile_import_candidates;
 
@@ -1175,26 +1169,12 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_DependentLocality) {
 // Test that the storage is prevented if the structured address prompt feature
 // is enabled, but address prompts are not allowed.
 TEST_P(FormDataImporterTest, ImportAddressProfiles_DontAllowPrompt) {
-  base::test::ScopedFeatureList save_prompt_feature;
-  save_prompt_feature.InitAndEnableFeature(
-      features::kAutofillAddressProfileSavePrompt);
-
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultProfileFormStructure();
   ImportAddressProfiles(/*extraction_successful=*/true, *form_structure,
                         /*skip_waiting_on_pdm=*/true,
                         /*allow_save_prompts=*/false);
   VerifyExpectationForImportedAddressProfiles({});
-
-  save_prompt_feature.Reset();
-  save_prompt_feature.InitAndDisableFeature(
-      features::kAutofillAddressProfileSavePrompt);
-
-  // Verify that the behavior changes when prompts are disabled.
-  ImportAddressProfiles(/*extraction_successful=*/true, *form_structure,
-                        /*skip_waiting_on_pdm=*/false,
-                        /*allow_save_prompts=*/false);
-  VerifyExpectationForImportedAddressProfiles({ConstructDefaultProfile()});
 }
 
 TEST_P(FormDataImporterTest, ImportAddressProfileFromUnifiedSection) {
@@ -4157,10 +4137,8 @@ TEST_P(
     FormDataImporterTest,
     SilentlyUpdateExistingProfileByIncompleteProfile_DespiteDisallowedPrompts) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kAutofillSilentProfileUpdateForInsufficientImport,
-       features::kAutofillAddressProfileSavePrompt},
-      {});
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillSilentProfileUpdateForInsufficientImport);
 
   AutofillProfile profile(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",

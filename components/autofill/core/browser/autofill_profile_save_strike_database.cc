@@ -16,6 +16,12 @@ constexpr size_t kMaxStrikeEntities = 200;
 // Once the limit of domains is reached, delete 50 to create a bit of headroom.
 constexpr size_t kMaxStrikeEntitiesAfterCleanup = 150;
 
+// The number of days it takes for strikes to expire.
+constexpr int kNumberOfDaysToExpire = 180;
+
+// The strike limit for suppressing save prompts.
+constexpr int kStrikeLimit = 3;
+
 AutofillProfileSaveStrikeDatabase::AutofillProfileSaveStrikeDatabase(
     StrikeDatabaseBase* strike_database)
     : StrikeDatabaseIntegratorBase(strike_database) {
@@ -40,15 +46,12 @@ std::string AutofillProfileSaveStrikeDatabase::GetProjectPrefix() const {
 }
 
 int AutofillProfileSaveStrikeDatabase::GetMaxStrikesLimit() const {
-  // The default limit for strikes is 3.
-  return features::kAutofillAutoBlockSaveAddressProfilePromptStrikeLimit.Get();
+  return kStrikeLimit;
 }
 
 absl::optional<base::TimeDelta>
 AutofillProfileSaveStrikeDatabase::GetExpiryTimeDelta() const {
-  // Expiry time is 180 days by default.
-  return base::Days(
-      features::kAutofillAutoBlockSaveAddressProfilePromptExpirationDays.Get());
+  return base::Days(kNumberOfDaysToExpire);
 }
 
 bool AutofillProfileSaveStrikeDatabase::UniqueIdsRequired() const {

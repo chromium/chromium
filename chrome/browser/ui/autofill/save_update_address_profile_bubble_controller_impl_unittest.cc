@@ -21,10 +21,6 @@ class SaveUpdateAddressProfileBubbleControllerImplTest
  public:
   SaveUpdateAddressProfileBubbleControllerImplTest() = default;
   void SetUp() override {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        features::kAutofillAddressProfileSavePrompt);
-
     BrowserWithTestWindowTest::SetUp();
     AddTab(browser(), GURL("about:blank"));
     content::WebContents* web_contents =

@@ -217,9 +217,7 @@ void FormDataImporter::ImportAndProcessFormData(
 bool FormDataImporter::ComplementCountry(
     AutofillProfile& profile,
     const std::string& predicted_country_code) {
-  bool should_complement_country =
-      !profile.HasRawInfo(ADDRESS_HOME_COUNTRY) &&
-      base::FeatureList::IsEnabled(features::kAutofillAddressProfileSavePrompt);
+  bool should_complement_country = !profile.HasRawInfo(ADDRESS_HOME_COUNTRY);
   return should_complement_country &&
          profile.SetInfoWithVerificationStatus(
              AutofillType(ADDRESS_HOME_COUNTRY),
@@ -688,8 +686,7 @@ bool FormDataImporter::ProcessAddressProfileImportCandidates(
   // At this point, no credit card prompt was shown. Initiate the import of
   // addresses is possible.
   int imported_profiles = 0;
-  if (allow_prompt || !base::FeatureList::IsEnabled(
-                          features::kAutofillAddressProfileSavePrompt)) {
+  if (allow_prompt) {
     for (const auto& candidate : address_profile_import_candidates) {
       // First try to import a single complete profile.
       if (!candidate.all_requirements_fulfilled)

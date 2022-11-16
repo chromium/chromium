@@ -197,10 +197,6 @@ class AddressProfileSaveManagerTest
                                                    : PhoneImportStatus::kValid,
                         .did_import_from_unrecognized_autocomplete_field =
                             std::get<3>(GetParam())};
-    // Enable both explicit save prompts and structured names.
-    // The latter is needed to test the concept of silent updates.
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAutofillAddressProfileSavePrompt);
   }
 
   void BlockProfileForUpdates(const std::string& guid) {
@@ -224,7 +220,6 @@ class AddressProfileSaveManagerTest
   base::test::TaskEnvironment task_environment_;
   TestAutofillClient autofill_client_;
   MockPersonalDataManager mock_personal_data_manager_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   ProfileImportMetadata import_metadata_;
 };
 
@@ -1230,21 +1225,6 @@ TEST_P(AddressProfileSaveManagerTest,
           AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kZip}};
 
   TestImportScenario(test_scenario);
-}
-
-TEST_P(AddressProfileSaveManagerTest, SaveProfileWhenNoSavePrompt) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillAddressProfileSavePrompt);
-
-  AddressProfileSaveManager save_manager(&autofill_client_,
-                                         &mock_personal_data_manager_);
-  AutofillProfile test_profile = test::GetFullProfile();
-  EXPECT_CALL(mock_personal_data_manager_, SaveImportedProfile(test_profile));
-  save_manager.ImportProfileFromForm(test_profile, "en_US",
-                                     GURL("https://www.noprompt.com"),
-                                     /*allow_only_silent_updates=*/false,
-                                     /*import_metadata=*/{});
 }
 
 // Tests that a new profile is not imported when only silent updates are

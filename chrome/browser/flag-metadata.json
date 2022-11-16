@@ -416,11 +416,6 @@
     "expiry_milestone": 111
   },
   {
-    "name": "autofill-address-save-prompt",
-    "owners": [ "mamir", "koerber" ],
-    "expiry_milestone": 106
-  },
-  {
       "name": "autofill-address-verification-in-save-prompt",
       "owners": [ "mamir", "koerber" ],
       "expiry_milestone": 106

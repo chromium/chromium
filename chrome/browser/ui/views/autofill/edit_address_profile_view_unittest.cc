@@ -49,8 +49,6 @@ class EditAddressProfileViewTest : public ChromeViewsTestBase {
   void CreateViewAndShow();
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        features::kAutofillAddressProfileSavePrompt);
     ChromeViewsTestBase::SetUp();
 
     address_profile_to_edit_ = test::GetFullProfile();

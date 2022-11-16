@@ -837,11 +837,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::
              kAutofillAddressProfileSavePromptAddressVerificationSupport)},
-    {"autofill-address-save-prompt",
-     flag_descriptions::kEnableAutofillAddressSavePromptName,
-     flag_descriptions::kEnableAutofillAddressSavePromptDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillAddressProfileSavePrompt)},
     {"filling-across-affiliated-websites",
      flag_descriptions::kFillingAcrossAffiliatedWebsitesName,
      flag_descriptions::kFillingAcrossAffiliatedWebsitesDescription,

@@ -39,9 +39,6 @@ void SaveUpdateAddressProfileMessageController::DisplayMessage(
   DCHECK(save_address_profile_callback);
   DCHECK(primary_action_callback);
 
-  DCHECK(base::FeatureList::IsEnabled(
-      autofill::features::kAutofillAddressProfileSavePrompt));
-
   // Dismiss previous message if it is displayed.
   DismissMessage();
   DCHECK(!message_);

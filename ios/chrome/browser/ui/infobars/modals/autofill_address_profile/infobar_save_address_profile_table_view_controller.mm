@@ -195,22 +195,18 @@ const CGFloat kSymbolSize = 16;
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   TableViewModel* model = self.tableViewModel;
   NSInteger itemType = [model itemTypeForIndexPath:indexPath];
-  if (base::FeatureList::IsEnabled(
-          autofill::features::
-              kAutofillAddressProfileSavePromptAddressVerificationSupport)) {
-    switch (itemType) {
-      case ItemTypeSaveAddress:
-      case ItemTypeSaveEmail:
-      case ItemTypeSavePhone:
-      case ItemTypeUpdateNameNew:
-      case ItemTypeUpdateAddressNew:
-      case ItemTypeUpdateEmailNew:
-      case ItemTypeUpdatePhoneNew:
-        [self ensureContextMenuShownForItemType:itemType atIndexPath:indexPath];
-        break;
-      default:
-        break;
-    }
+  switch (itemType) {
+    case ItemTypeSaveAddress:
+    case ItemTypeSaveEmail:
+    case ItemTypeSavePhone:
+    case ItemTypeUpdateNameNew:
+    case ItemTypeUpdateAddressNew:
+    case ItemTypeUpdateEmailNew:
+    case ItemTypeUpdatePhoneNew:
+      [self ensureContextMenuShownForItemType:itemType atIndexPath:indexPath];
+      break;
+    default:
+      break;
   }
 }
 

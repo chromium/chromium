@@ -20,10 +20,7 @@ namespace autofill {
 class SaveUpdateAddressProfileBubbleControllerImplTest
     : public DialogBrowserTest {
  public:
-  SaveUpdateAddressProfileBubbleControllerImplTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kAutofillAddressProfileSavePrompt);
-  }
+  SaveUpdateAddressProfileBubbleControllerImplTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DialogBrowserTest::SetUpCommandLine(command_line);
@@ -53,7 +50,6 @@ class SaveUpdateAddressProfileBubbleControllerImplTest
  private:
   raw_ptr<SaveUpdateAddressProfileBubbleControllerImpl, DanglingUntriaged>
       controller_ = nullptr;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,

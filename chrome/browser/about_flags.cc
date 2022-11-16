@@ -8343,12 +8343,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsWin | kOsLinux | kOsLacros | kOsMac | kOsCrOS | kOsAndroid | kOsFuchsia,
      FEATURE_VALUE_TYPE(net::features::kSplitCacheByNetworkIsolationKey)},
 
-    {"autofill-address-save-prompt",
-     flag_descriptions::kEnableAutofillAddressSavePromptName,
-     flag_descriptions::kEnableAutofillAddressSavePromptDescription,
-     kOsWin | kOsMac | kOsLinux | kOsLacros | kOsCrOS | kOsAndroid | kOsFuchsia,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillAddressProfileSavePrompt)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"content-languages-in-language-picker",
      flag_descriptions::kContentLanguagesInLanguagePickerName,

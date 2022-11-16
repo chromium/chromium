@@ -15,47 +15,6 @@ BASE_FEATURE(kAutofillAcrossIframes,
              "AutofillAcrossIframes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// TODO(crbug.com/1135188): Remove this feature flag after the explicit save
-// prompts for address profiles is complete.
-// When enabled, a save prompt will be shown to user upon form submission before
-// storing any detected address profile.
-BASE_FEATURE(kAutofillAddressProfileSavePrompt,
-             "AutofillAddressProfileSavePrompt",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// This parameter controls if save profile prompts are automatically blocked for
-// a given domain after N (default is 3) subsequent declines.
-const base::FeatureParam<bool> kAutofillAutoBlockSaveAddressProfilePrompt{
-    &kAutofillAddressProfileSavePrompt, "save_profile_prompt_auto_block", true};
-// The auto blocking feature is based on a strike model. This parameter defines
-// the months before such strikes expire.
-const base::FeatureParam<int>
-    kAutofillAutoBlockSaveAddressProfilePromptExpirationDays{
-        &kAutofillAddressProfileSavePrompt,
-        "save_profile_prompt_auto_block_strike_expiration_days", 180};
-// The number of strikes before the prompt gets blocked.
-const base::FeatureParam<int>
-    kAutofillAutoBlockSaveAddressProfilePromptStrikeLimit{
-        &kAutofillAddressProfileSavePrompt,
-        "save_profile_prompt_auto_block_strike_limit", 3};
-
-// Same as above but for update bubbles.
-const base::FeatureParam<bool> kAutofillAutoBlockUpdateAddressProfilePrompt{
-    &kAutofillAddressProfileSavePrompt, "update_profile_prompt_auto_block",
-    true};
-// Same as above but for update bubbles.
-const base::FeatureParam<int>
-    kAutofillAutoBlockUpdateAddressProfilePromptExpirationDays{
-        &kAutofillAddressProfileSavePrompt,
-        "update_profile_prompt_auto_block_strike_expiration_days", 180};
-// Same as above but for update bubbles.
-const base::FeatureParam<int>
-    kAutofillAutoBlockUpdateAddressProfilePromptStrikeLimit{
-        &kAutofillAddressProfileSavePrompt,
-        "update_profile_prompt_auto_block_strike_limit", 3};
-
-// TODO(crbug.com/1135188): Remove this feature flag after the explicit save
-// prompts for address profiles is complete.
 // When enabled, address data will be verified and autocorrected in the
 // save/update prompt before saving an address profile. Relevant only if the
 // AutofillAddressProfileSavePrompt feature is enabled.

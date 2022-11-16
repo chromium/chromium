@@ -25,8 +25,6 @@ void SaveUpdateAddressProfileFlowManager::OfferSave(
     AutofillClient::AddressProfileSavePromptCallback callback) {
   DCHECK(web_contents);
   DCHECK(callback);
-  DCHECK(base::FeatureList::IsEnabled(
-      autofill::features::kAutofillAddressProfileSavePrompt));
 
   // If the message or prompt is already shown, suppress the incoming offer.
   if (save_update_address_profile_message_controller_.IsMessageDisplayed() ||

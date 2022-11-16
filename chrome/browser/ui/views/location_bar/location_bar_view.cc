@@ -344,12 +344,10 @@ void LocationBarView::Init() {
       PageActionIconType::kVirtualCardManualFallback);
   params.types_enabled.push_back(PageActionIconType::kVirtualCardEnroll);
 
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAddressProfileSavePrompt)) {
-    // TODO(crbug.com/1167060): Place this in the proper order upon having
-    // final mocks.
-    params.types_enabled.push_back(PageActionIconType::kSaveAutofillAddress);
-  }
+  // TODO(crbug.com/1167060): Place this in the proper order upon having final
+  // mocks.
+  params.types_enabled.push_back(PageActionIconType::kSaveAutofillAddress);
+
   if (browser_) {
     if (sharing_hub::HasPageAction(profile_, is_popup_mode_))
       params.types_enabled.push_back(PageActionIconType::kSharingHub);

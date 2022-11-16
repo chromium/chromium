@@ -37,8 +37,6 @@ SaveUpdateAddressProfilePromptController::
   DCHECK(prompt_view_);
   DCHECK(decision_callback_);
   DCHECK(dismissal_callback_);
-  DCHECK(base::FeatureList::IsEnabled(
-      autofill::features::kAutofillAddressProfileSavePrompt));
 }
 
 SaveUpdateAddressProfilePromptController::

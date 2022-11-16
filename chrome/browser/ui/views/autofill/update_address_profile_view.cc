@@ -151,8 +151,6 @@ UpdateAddressProfileView::UpdateAddressProfileView(
     SaveUpdateAddressProfileBubbleController* controller)
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
       controller_(controller) {
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kAutofillAddressProfileSavePrompt));
   // Since this is an update prompt, original profile must be set. Otherwise, it
   // would have been a save prompt.
   DCHECK(controller_->GetOriginalProfile());

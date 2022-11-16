@@ -1631,8 +1631,7 @@ void PersonalDataManager::SetProfiles(std::vector<AutofillProfile>* profiles) {
 
 bool PersonalDataManager::IsNewProfileImportBlockedForDomain(
     const GURL& url) const {
-  if (!GetProfileSaveStrikeDatabase() || !url.is_valid() || !url.has_host() ||
-      !features::kAutofillAutoBlockSaveAddressProfilePrompt.Get()) {
+  if (!GetProfileSaveStrikeDatabase() || !url.is_valid() || !url.has_host()) {
     return false;
   }
 
@@ -1641,8 +1640,7 @@ bool PersonalDataManager::IsNewProfileImportBlockedForDomain(
 
 void PersonalDataManager::AddStrikeToBlockNewProfileImportForDomain(
     const GURL& url) {
-  if (!GetProfileSaveStrikeDatabase() || !url.is_valid() || !url.has_host() ||
-      !features::kAutofillAutoBlockSaveAddressProfilePrompt.Get()) {
+  if (!GetProfileSaveStrikeDatabase() || !url.is_valid() || !url.has_host()) {
     return;
   }
   GetProfileSaveStrikeDatabase()->AddStrike(url.host());
@@ -1658,8 +1656,7 @@ void PersonalDataManager::RemoveStrikesToBlockNewProfileImportForDomain(
 
 bool PersonalDataManager::IsProfileUpdateBlocked(
     const std::string& guid) const {
-  if (!GetProfileUpdateStrikeDatabase() ||
-      !features::kAutofillAutoBlockUpdateAddressProfilePrompt.Get()) {
+  if (!GetProfileUpdateStrikeDatabase()) {
     return false;
   }
 
@@ -1668,10 +1665,9 @@ bool PersonalDataManager::IsProfileUpdateBlocked(
 
 void PersonalDataManager::AddStrikeToBlockProfileUpdate(
     const std::string& guid) {
-  if (!GetProfileUpdateStrikeDatabase() ||
-      !features::kAutofillAutoBlockUpdateAddressProfilePrompt.Get()) {
+  if (!GetProfileUpdateStrikeDatabase())
     return;
-  }
+
   GetProfileUpdateStrikeDatabase()->AddStrike(guid);
 }
 

@@ -335,8 +335,6 @@ void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
     const AutofillProfile* original_profile,
     SaveAddressProfilePromptOptions options,
     AddressProfileSavePromptCallback callback) {
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kAutofillAddressProfileSavePrompt));
   // TODO(crbug.com/1167062): Respect SaveAddressProfilePromptOptions.
   for (size_t i = 0; i < infobar_manager_->infobar_count(); ++i) {
     AutofillSaveUpdateAddressProfileDelegateIOS* existing_delegate =
