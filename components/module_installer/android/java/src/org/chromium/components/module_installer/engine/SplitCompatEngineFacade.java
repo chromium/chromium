@@ -11,6 +11,7 @@ import com.google.android.play.core.splitinstall.SplitInstallManager;
 import com.google.android.play.core.splitinstall.SplitInstallManagerFactory;
 import com.google.android.play.core.splitinstall.SplitInstallRequest;
 
+import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.components.module_installer.logger.Logger;
 import org.chromium.components.module_installer.logger.PlayCoreLogger;
@@ -58,5 +59,9 @@ class SplitCompatEngineFacade {
 
     public void updateCrashKeys() {
         ModuleUtil.updateCrashKeys();
+    }
+
+    public void updateBundleUtils() {
+        BundleUtils.invalidateListOfInstalledSplits();
     }
 }

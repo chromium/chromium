@@ -235,6 +235,7 @@ public class SplitCompatEngineTest {
 
         // Assert.
         inOrder.verify(mInstallerFacade, times(1)).updateCrashKeys();
+        inOrder.verify(mInstallerFacade, times(1)).updateBundleUtils();
         inOrder.verify(listener1, times(1)).onComplete(true);
         inOrder.verify(mLogger, times(1)).logStatus(moduleName1, status);
         inOrder.verify(listener2, times(1)).onComplete(true);
