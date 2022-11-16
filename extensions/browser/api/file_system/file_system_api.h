@@ -69,12 +69,12 @@ class FileSystemEntryFunction : public ExtensionFunction {
       const std::vector<base::FilePath>& path);
 
   // Creates a result dictionary.
-  std::unique_ptr<base::DictionaryValue> CreateResult();
+  base::Value::Dict CreateResult();
 
   // Adds an entry to the result dictionary.
   void AddEntryToResult(const base::FilePath& path,
                         const std::string& id_override,
-                        base::DictionaryValue* result);
+                        base::Value::Dict& result);
 
   // called on the UI thread if there is a problem checking a writable file.
   void HandleWritableFileError(const base::FilePath& error_path);

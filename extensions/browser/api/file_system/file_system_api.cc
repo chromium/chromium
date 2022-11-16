@@ -333,27 +333,26 @@ void FileSystemEntryFunction::RegisterFileSystemsAndSendResponse(
   if (!render_frame_host())
     return;
 
-  std::unique_ptr<base::DictionaryValue> result = CreateResult();
+  base::Value::Dict result = CreateResult();
   for (const auto& path : paths)
-    AddEntryToResult(path, std::string(), result.get());
-  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
+    AddEntryToResult(path, std::string(), result);
+  Respond(OneArgument(base::Value(std::move(result))));
 }
 
-std::unique_ptr<base::DictionaryValue> FileSystemEntryFunction::CreateResult() {
-  std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
-  result->Set("entries", std::make_unique<base::ListValue>());
-  result->SetBoolKey("multiple", multiple_);
+base::Value::Dict FileSystemEntryFunction::CreateResult() {
+  base::Value::Dict result;
+  result.Set("entries", base::Value::List());
+  result.Set("multiple", multiple_);
   return result;
 }
 
 void FileSystemEntryFunction::AddEntryToResult(const base::FilePath& path,
                                                const std::string& id_override,
-                                               base::DictionaryValue* result) {
+                                               base::Value::Dict& result) {
   GrantedFileEntry file_entry = app_file_handler_util::CreateFileEntry(
       browser_context(), extension(), source_process_id(), path, is_directory_);
-  base::ListValue* entries;
-  bool success = result->GetList("entries", &entries);
-  DCHECK(success);
+  base::Value::List* entries = result.FindList("entries");
+  DCHECK(entries);
 
   base::Value::Dict entry;
   entry.Set("fileSystemId", file_entry.filesystem_id);
@@ -364,7 +363,7 @@ void FileSystemEntryFunction::AddEntryToResult(const base::FilePath& path,
     entry.Set("id", id_override);
   }
   entry.Set("isDirectory", is_directory_);
-  entries->Append(base::Value(std::move(entry)));
+  entries->Append(std::move(entry));
 }
 
 void FileSystemEntryFunction::HandleWritableFileError(
@@ -1030,10 +1029,9 @@ ExtensionFunction::ResponseAction FileSystemRestoreEntryFunction::Run() {
   // |entry_id|.
   if (needs_new_entry) {
     is_directory_ = file->is_directory;
-    std::unique_ptr<base::DictionaryValue> result = CreateResult();
-    AddEntryToResult(file->path, file->id, result.get());
-    return RespondNow(
-        OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
+    base::Value::Dict result = CreateResult();
+    AddEntryToResult(file->path, file->id, result);
+    return RespondNow(OneArgument(base::Value(std::move(result))));
   }
   return RespondNow(NoArguments());
 }
@@ -1077,10 +1075,10 @@ ExtensionFunction::ResponseAction FileSystemRequestFileSystemFunction::Run() {
 void FileSystemRequestFileSystemFunction::OnGotFileSystem(
     const std::string& id,
     const std::string& path) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetStringKey("file_system_id", id);
-  dict->SetStringKey("file_system_path", path);
-  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(dict))));
+  base::Value::Dict dict;
+  dict.Set("file_system_id", id);
+  dict.Set("file_system_path", path);
+  Respond(OneArgument(base::Value(std::move(dict))));
 }
 
 void FileSystemRequestFileSystemFunction::OnError(const std::string& error) {
