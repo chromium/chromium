@@ -11,6 +11,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/api_unittest.h"
@@ -173,11 +174,12 @@ class PowerAPITest : public ApiUnitTest {
   bool CallFunction(FunctionType type,
                     const std::string& args,
                     const extensions::Extension* extension) {
-    scoped_refptr<ExtensionFunction> function(
-        type == REQUEST
-            ? static_cast<ExtensionFunction*>(new PowerRequestKeepAwakeFunction)
-            : static_cast<ExtensionFunction*>(
-                  new PowerReleaseKeepAwakeFunction));
+    scoped_refptr<ExtensionFunction> function;
+    if (type == REQUEST) {
+      function = base::MakeRefCounted<PowerRequestKeepAwakeFunction>();
+    } else {
+      function = base::MakeRefCounted<PowerReleaseKeepAwakeFunction>();
+    }
     function->set_extension(extension);
     return api_test_utils::RunFunction(function.get(), args, browser_context());
   }

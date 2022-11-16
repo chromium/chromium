@@ -9,6 +9,8 @@
 #include "base/bind.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/browser/ash/attestation/mock_tpm_challenge_key.h"
@@ -157,7 +159,8 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
 class EPKChallengeMachineKeyTest : public EPKChallengeKeyTestBase {
  protected:
   EPKChallengeMachineKeyTest()
-      : func_(new EnterprisePlatformKeysChallengeMachineKeyFunction()) {
+      : func_(base::MakeRefCounted<
+              EnterprisePlatformKeysChallengeMachineKeyFunction>()) {
     func_->set_extension(extension_.get());
   }
 
@@ -229,7 +232,8 @@ TEST_F(EPKChallengeMachineKeyTest, KeyNotRegisteredByDefault) {
 class EPKChallengeUserKeyTest : public EPKChallengeKeyTestBase {
  protected:
   EPKChallengeUserKeyTest()
-      : func_(new EnterprisePlatformKeysChallengeUserKeyFunction()) {
+      : func_(base::MakeRefCounted<
+              EnterprisePlatformKeysChallengeUserKeyFunction>()) {
     func_->set_extension(extension_.get());
   }
 

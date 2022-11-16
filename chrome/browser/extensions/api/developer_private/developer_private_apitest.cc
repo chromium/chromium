@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -58,8 +60,8 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectAppWindowView) {
   const Extension* app = LoadAndLaunchApp(dir);
 
   // Get the info about the app, including the inspectable views.
-  scoped_refptr<ExtensionFunction> function(
-      new api::DeveloperPrivateGetExtensionInfoFunction());
+  scoped_refptr<ExtensionFunction> function =
+      base::MakeRefCounted<api::DeveloperPrivateGetExtensionInfoFunction>();
   std::unique_ptr<base::Value> result(
       extension_function_test_utils::RunFunctionAndReturnSingleResult(
           function.get(), base::StringPrintf("[\"%s\"]", app->id().c_str()),
@@ -82,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectAppWindowView) {
   ASSERT_TRUE(window_view);
 
   // Inspect the app window.
-  function = new api::DeveloperPrivateOpenDevToolsFunction();
+  function = base::MakeRefCounted<api::DeveloperPrivateOpenDevToolsFunction>();
   extension_function_test_utils::RunFunction(
       function.get(),
       base::StringPrintf("[{\"renderViewId\": %d, \"renderProcessId\": %d}]",
@@ -112,8 +114,8 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectEmbeddedOptionsPage) {
   WaitForExtensionNotIdle(extension->id());
 
   // Get the info about the extension, including the inspectable views.
-  scoped_refptr<ExtensionFunction> function(
-      new api::DeveloperPrivateGetExtensionInfoFunction());
+  scoped_refptr<ExtensionFunction> function =
+      base::MakeRefCounted<api::DeveloperPrivateGetExtensionInfoFunction>();
   std::unique_ptr<base::Value> result(
       extension_function_test_utils::RunFunctionAndReturnSingleResult(
           function.get(),
@@ -129,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectEmbeddedOptionsPage) {
   ASSERT_EQ(api::developer_private::VIEW_TYPE_EXTENSION_GUEST, view.type);
 
   // Inspect the embedded options page.
-  function = new api::DeveloperPrivateOpenDevToolsFunction();
+  function = base::MakeRefCounted<api::DeveloperPrivateOpenDevToolsFunction>();
   extension_function_test_utils::RunFunction(
       function.get(),
       base::StringPrintf("[{\"renderViewId\": %d, \"renderProcessId\": %d}]",

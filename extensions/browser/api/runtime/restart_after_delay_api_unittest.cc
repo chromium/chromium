@@ -7,6 +7,8 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -167,24 +169,25 @@ class RestartAfterDelayApiTest : public ApiUnitTest {
       const Extension* extension,
       const std::string& expected_error) {
     std::string error = RunFunctionGetError(
-        new RuntimeRestartAfterDelayFunction(), extension, args);
+        base::MakeRefCounted<RuntimeRestartAfterDelayFunction>(), extension,
+        args);
     ASSERT_EQ(error, expected_error);
   }
 
   void RunRestartFunctionAssertNoError() {
-    std::string error =
-        RunFunctionGetError(new RuntimeRestartFunction(), extension(), "[]");
+    std::string error = RunFunctionGetError(
+        base::MakeRefCounted<RuntimeRestartFunction>(), extension(), "[]");
     ASSERT_TRUE(error.empty()) << error;
   }
 
  private:
-  std::string RunFunctionGetError(ExtensionFunction* function,
+  std::string RunFunctionGetError(scoped_refptr<ExtensionFunction> function,
                                   const Extension* extension,
                                   const std::string& args) {
     scoped_refptr<ExtensionFunction> function_owner(function);
     function->set_extension(extension);
     function->set_has_callback(true);
-    api_test_utils::RunFunction(function, args, browser_context());
+    api_test_utils::RunFunction(function.get(), args, browser_context());
     return function->GetError();
   }
 };
