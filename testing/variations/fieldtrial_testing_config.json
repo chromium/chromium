@@ -7771,21 +7771,6 @@
             ]
         }
     ],
-    "OmniboxRemoveExcessiveRecycledViewClearCalls": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OmniboxRemoveExcessiveRecycledViewClearCalls"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxZeroSuggestPrefetchingWithInMemoryCaching": [
         {
             "platforms": [
