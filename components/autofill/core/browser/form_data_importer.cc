@@ -43,8 +43,6 @@
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_util.h"
-#include "components/variations/service/variations_field_trial_creator.h"
-#include "components/variations/service/variations_service.h"
 
 namespace autofill {
 

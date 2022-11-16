@@ -113,7 +113,12 @@ _disallowed_printing_deps = [
 # that depends on those targets once this is correctly supported.
 _disallowed_deps =
     _disallowed_cast_deps + _disallowed_extensions_deps + _disallowed_pdf_deps +
-    _disallowed_ppapi_deps + _disallowed_printing_deps
+    _disallowed_ppapi_deps + _disallowed_printing_deps +
+    [
+      # Ensure WebEngine is not communicating with the Finch service until it
+      # is explicitly supported. See crbug.com/1155712.
+      "//components/variations/service",
+    ]
 
 source_set("web_engine_export_from_implementation") {
   public = [ "web_engine_export.h" ]

@@ -560,7 +560,6 @@ static_library("browser") {
     "//components/translate/core/common",
     "//components/variations",
     "//components/variations/net",
-    "//components/variations/service:service",
     "//components/version_info",
     "//components/webdata/common",
     "//crypto",
