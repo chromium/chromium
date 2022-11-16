@@ -54,13 +54,12 @@ bool WaitForNextFrameToBePresented(ui::Compositor* compositor,
                                    absl::optional<base::TimeDelta> timeout) {
   bool frames_presented = false;
   base::RunLoop runloop;
-  base::CancelableOnceCallback<void(const gfx::PresentationFeedback&)>
-      cancelable_callback(base::BindLambdaForTesting(
-          [&](const gfx::PresentationFeedback& feedback) {
-            frames_presented = true;
-            runloop.Quit();
-          }));
-  compositor->RequestPresentationTimeForNextFrame(
+  base::CancelableOnceCallback<void(base::TimeTicks)> cancelable_callback(
+      base::BindLambdaForTesting([&](base::TimeTicks presentation_timestamp) {
+        frames_presented = true;
+        runloop.Quit();
+      }));
+  compositor->RequestSuccessfulPresentationTimeForNextFrame(
       cancelable_callback.callback());
 
   absl::optional<base::OneShotTimer> timer;
