@@ -366,6 +366,16 @@ crbug.com/1373965 [ fuchsia ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableOOPRaste
 
 crbug.com/1376927 [ win10 target-cpu-32 nvidia-0x2184 ] Pixel_MediaFoundationClearDirectComposition [ Failure ]
 
+# Pixel_MediaRecorderFromVideoElement fails on several FYI bots
+crbug.com/1382332 [ win10 ] Pixel_MediaRecorderFromVideoElement [ Failure ]
+crbug.com/1382332 [ win10 ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+crbug.com/1382332 [ mac ] Pixel_MediaRecorderFromVideoElement [ Failure ]
+crbug.com/1382332 [ mac ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+crbug.com/1382332 [ chromeos ] Pixel_MediaRecorderFromVideoElement [ Failure ]
+crbug.com/1382332 [ chromeos ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+crbug.com/1382332 [ android ] Pixel_MediaRecorderFromVideoElement [ Failure ]
+crbug.com/1382332 [ android ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
