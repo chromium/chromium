@@ -4,60 +4,38 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_zaura_output.h"
 
-#include <aura-shell-client-protocol.h>
-#include <aura-shell-server-protocol.h>
-#include <wayland-server-protocol.h>
-
 #include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
-#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
-#include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/test/mock_zaura_shell.h"
-#include "ui/ozone/platform/wayland/test/server_object.h"
-#include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/test_zaura_output.h"
-
-#include "base/logging.h"
+#include "ui/ozone/platform/wayland/test/wayland_test.h"
 
 namespace ui {
 
 using ::testing::Values;
 namespace {
-class WaylandZAuraOutputTest : public ::testing::Test {
+class WaylandZAuraOutputTest : public WaylandTest {
  public:
-  WaylandZAuraOutputTest()
-      : task_environment_(
-            base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
-
+  WaylandZAuraOutputTest() : WaylandTest(TestServerMode::kAsync) {}
   WaylandZAuraOutputTest(const WaylandZAuraOutputTest&) = delete;
   WaylandZAuraOutputTest& operator=(const WaylandZAuraOutputTest&) = delete;
-
   ~WaylandZAuraOutputTest() override = default;
 
   void SetUp() override {
-    ::testing::Test::SetUp();
-
-    ASSERT_TRUE(server_.Start({}));
-    mock_zaura_shell_.Initialize(server_.display());
-
-    ASSERT_TRUE(connection_.Initialize());
-    connection_.event_source()->StartProcessingEvents();
-    base::RunLoop().RunUntilIdle();
+    WaylandTest::SetUp();
 
     // Set default values for the output.
-    wl::TestOutput* output = server_.output();
-    output->SetRect({800, 600});
-    output->SetScale(1);
-    output->Flush();
+    PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+      wl::TestOutput* output = server->output();
+      output->SetRect({800, 600});
+      output->SetScale(1);
+      output->Flush();
+    });
 
-    base::RunLoop().RunUntilIdle();
-    server_.Pause();
-
-    output_manager_ = connection_.wayland_output_manager();
+    output_manager_ = connection_->wayland_output_manager();
     ASSERT_TRUE(output_manager_);
     EXPECT_TRUE(output_manager_->IsOutputReady());
 
@@ -68,18 +46,13 @@ class WaylandZAuraOutputTest : public ::testing::Test {
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
-  wl::TestWaylandServerThread server_;
-  wl::MockZAuraShell mock_zaura_shell_;
-  WaylandConnection connection_;
-
   raw_ptr<WaylandOutputManager> output_manager_ = nullptr;
   std::unique_ptr<WaylandScreen> platform_screen_;
 };
 
 }  // namespace
 
-TEST_F(WaylandZAuraOutputTest, HandleInsets) {
+TEST_P(WaylandZAuraOutputTest, HandleInsets) {
   WaylandOutput* wayland_output = output_manager_->GetPrimaryOutput();
   ASSERT_TRUE(wayland_output);
   EXPECT_TRUE(wayland_output->IsReady());
@@ -87,28 +60,26 @@ TEST_F(WaylandZAuraOutputTest, HandleInsets) {
   EXPECT_TRUE(wayland_output->insets().IsEmpty());
   EXPECT_TRUE(wayland_output->get_zaura_output());
 
-  // Simulate server sending updated insets to the client.
-  wl_resource* zaura_output_resource =
-      server_.output()->GetAuraOutput()->resource();
-  ASSERT_TRUE(zaura_output_resource);
-  const gfx::Insets sent_insets =
+  const gfx::Insets insets =
       gfx::Rect(800, 600).InsetsFrom(gfx::Rect(10, 10, 500, 400));
-  EXPECT_FALSE(sent_insets.IsEmpty());
-  zaura_output_send_insets(zaura_output_resource, sent_insets.top(),
-                           sent_insets.left(), sent_insets.bottom(),
-                           sent_insets.right());
 
-  server_.Resume();
-  base::RunLoop().RunUntilIdle();
-  server_.Pause();
+  // Simulate server sending updated insets to the client.
+  PostToServerAndWait([&insets](wl::TestWaylandServerThread* server) {
+    auto* const zaura_output = server->output()->GetAuraOutput()->resource();
+
+    ASSERT_TRUE(zaura_output);
+    EXPECT_FALSE(insets.IsEmpty());
+    zaura_output_send_insets(zaura_output, insets.top(), insets.left(),
+                             insets.bottom(), insets.right());
+  });
 
   // Verify that insets is updated.
   EXPECT_TRUE(wayland_output->IsReady());
   EXPECT_EQ(wayland_output->physical_size(), gfx::Size(800, 600));
-  EXPECT_EQ(wayland_output->insets(), sent_insets);
+  EXPECT_EQ(wayland_output->insets(), insets);
 }
 
-TEST_F(WaylandZAuraOutputTest, HandleLogicalTransform) {
+TEST_P(WaylandZAuraOutputTest, HandleLogicalTransform) {
   WaylandOutput* wayland_output = output_manager_->GetPrimaryOutput();
   ASSERT_TRUE(wayland_output);
   EXPECT_TRUE(wayland_output->IsReady());
@@ -116,22 +87,18 @@ TEST_F(WaylandZAuraOutputTest, HandleLogicalTransform) {
   EXPECT_TRUE(wayland_output->get_zaura_output());
 
   // Simulate server sending updated transform offset to the client.
-  wl_resource* zaura_output_resource =
-      server_.output()->GetAuraOutput()->resource();
-  ASSERT_TRUE(zaura_output_resource);
-  zaura_output_send_logical_transform(zaura_output_resource,
-                                      WL_OUTPUT_TRANSFORM_270);
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* const zaura_output = server->output()->GetAuraOutput()->resource();
 
-  server_.Resume();
-  base::RunLoop().RunUntilIdle();
-  server_.Pause();
+    zaura_output_send_logical_transform(zaura_output, WL_OUTPUT_TRANSFORM_270);
+  });
 
   EXPECT_TRUE(wayland_output->IsReady());
   EXPECT_EQ(wayland_output->logical_transform(), WL_OUTPUT_TRANSFORM_270);
 }
 
 // Test edge case display ids are converted correctly.
-TEST_F(WaylandZAuraOutputTest, DisplayIdConversions) {
+TEST_P(WaylandZAuraOutputTest, DisplayIdConversions) {
   const int64_t kTestIds[] = {
       std::numeric_limits<int64_t>::min(),
       std::numeric_limits<int64_t>::min() + 1,
@@ -154,5 +121,9 @@ TEST_F(WaylandZAuraOutputTest, DisplayIdConversions) {
     EXPECT_EQ(id, aura_output.display_id().value());
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
+                         WaylandZAuraOutputTest,
+                         Values(wl::ServerConfig{}));
 
 }  // namespace ui
