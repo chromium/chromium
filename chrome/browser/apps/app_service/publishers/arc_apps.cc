@@ -49,6 +49,7 @@
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/arc/common/intent_helper/arc_intent_helper_package.h"
+#include "components/arc/intent_helper/intent_constants.h"
 #include "components/services/app_service/public/cpp/capability_access.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -574,6 +575,35 @@ bool AppShouldDefaultHandleLinksInBrowser(const std::string& app_id) {
   // Play Store provides core system functionality and should handle links
   // inside the app rather than in the browser.
   return app_id != arc::kPlayStoreAppId;
+}
+
+// Returns the hard-coded Play Store intent filters. This is a stop-gap solution
+// to handle Play Store URLs before ARC gets ready.
+// TODO(b/259205050): Remove this once intent filters are properly cached.
+std::vector<apps::IntentFilterPtr> GetHardcodedPlayStoreIntentFilters() {
+  const std::vector<std::string> actions = {arc::kIntentActionView};
+  const std::vector<std::string> schemes = {"http", "https"};
+  const std::vector<std::string> mime_types;
+
+  std::vector<arc::IntentFilter::AuthorityEntry> authorities;
+  authorities.emplace_back("play.google.com", -1);
+
+  std::vector<arc::IntentFilter::PatternMatcher> paths;
+  paths.emplace_back("", arc::mojom::PatternType::PATTERN_LITERAL);
+  paths.emplace_back("/", arc::mojom::PatternType::PATTERN_LITERAL);
+  paths.emplace_back("/store", arc::mojom::PatternType::PATTERN_PREFIX);
+  paths.emplace_back("/redeem", arc::mojom::PatternType::PATTERN_PREFIX);
+  paths.emplace_back("/wishlist", arc::mojom::PatternType::PATTERN_PREFIX);
+  paths.emplace_back("/apps/test/", arc::mojom::PatternType::PATTERN_PREFIX);
+  paths.emplace_back("/apps", arc::mojom::PatternType::PATTERN_LITERAL);
+  paths.emplace_back("/apps/launch", arc::mojom::PatternType::PATTERN_LITERAL);
+  paths.emplace_back("/protect/home", arc::mojom::PatternType::PATTERN_PREFIX);
+
+  std::vector<apps::IntentFilterPtr> intent_filters;
+  intent_filters.push_back(apps_util::CreateIntentFilterForArc(
+      arc::IntentFilter(arc::kPlayStorePackage, actions, std::move(authorities),
+                        std::move(paths), schemes, mime_types)));
+  return intent_filters;
 }
 
 }  // namespace
@@ -1635,6 +1665,13 @@ AppPtr ArcApps::CreateApp(ArcAppListPrefs* prefs,
       app_info.package_name != arc::kArcIntentHelperPackageName) {
     app->intent_filters = apps_util::CreateIntentFiltersFromArcBridge(
         app_info.package_name, intent_helper_bridge);
+  }
+
+  // Set hard-coded Play Store intent filters if not set. This is a stop-gap
+  // solution to handle Play Store URLs before ARC gets ready.
+  // TODO(b/259205050): Remove this once intent filters are properly cached.
+  if (app->intent_filters.empty() && app_id == arc::kPlayStoreAppId) {
+    app->intent_filters = GetHardcodedPlayStoreIntentFilters();
   }
 
   app->resize_locked = GetResizeLocked(prefs, app_id);
