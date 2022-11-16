@@ -155,6 +155,9 @@ TEST(AboutThisSiteValidation, InvalidMoreAbout) {
 }
 
 TEST(AboutThisSiteValidation, MissingMoreAbout_FeatureDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kPageInfoAboutThisSiteMoreInfo);
+
   proto::AboutThisSiteMetadata meta_data = GetSampleMetaData();
   EXPECT_EQ(ValidateMetadata(meta_data, /*allow_missing_description=*/true),
             AboutThisSiteStatus::kValid);
