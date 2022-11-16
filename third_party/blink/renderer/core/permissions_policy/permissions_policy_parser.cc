@@ -267,12 +267,15 @@ ParsingContext::ParseFeatureName(const String& feature_name) {
   mojom::blink::PermissionsPolicyFeature feature =
       feature_names_.at(feature_name);
 
-  // Counter is required for Origin Trial.
   // TODO(https://crbug.com/1324111): Remove this after OT.
   if (feature == mojom::blink::PermissionsPolicyFeature::kUnload) {
-    if (execution_context_ && execution_context_->IsWindow() &&
-        RuntimeEnabledFeatures::PermissionsPolicyUnloadEnabled(
+    if (!execution_context_ ||
+        !RuntimeEnabledFeatures::PermissionsPolicyUnloadEnabled(
             execution_context_)) {
+      // kUnload should not be recognised unless the OT is enabled.
+      feature = mojom::blink::PermissionsPolicyFeature::kNotFound;
+    } else if (execution_context_->IsWindow()) {
+      // Counter is required for Origin Trial.
       execution_context_->CountUse(WebFeature::kPermissionsPolicyUnload);
     }
   }
