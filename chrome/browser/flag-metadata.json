@@ -6794,8 +6794,8 @@
   },
   {
     "name": "use-load-simulated-request-for-error-page-navigation",
-    "owners": [ "alionadangla", "bwwilliams", "gambard" ],
-    "expiry_milestone": 105
+    "owners": [ "gambard", "bling-flags@google.com" ],
+    "expiry_milestone": 115
   },
   {
     "name": "use_messages_staging_url",
