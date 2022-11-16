@@ -1107,6 +1107,50 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
         Chrome is finding new ways to reduce tracking and keep you even safer as you browse. Chrome also <ph name="BEGIN_LINK">&lt;link&gt;</ph>estimates your interests<ph name="END_LINK">&lt;/link&gt;</ph> and enables you to manage them. Then, sites you visit can ask Chrome for your interests to show you ads.
       </message>
 
+      <!-- Privacy Sandbox v4 - Notice EEA. -->
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_TITLE" translateable="false" desc="Privacy Sandbox dialog notice EEA: title.">
+        Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lore
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_DESCRIPTION_1" translateable="false" desc="Privacy Sandbox dialog notice EEA: First section of the body, above the bullet points.">
+        Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lore Lorem ipsum
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_BULLET_1" translateable="false" desc="Privacy Sandbox dialog notice EEA: First bullet point (outside expand).">
+        Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lore Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_BULLET_2" translateable="false" desc="Privacy Sandbox dialog notice EEA: Second bullet point (outside expand).">
+        Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lore Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_LEARN_MORE_EXPAND_LABEL" translateable="false" desc="Privacy Sandbox dialog notice EEA: Text user clicks to expand the collapsed section.">
+        Lorem ipsum Lorem ipsum
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_DESCRIPTION_2" translateable="false" desc="Privacy Sandbox dialog notice EEA: Second section of text, below the expand label.">
+        Lorem ipsum Lorem ipsum Lorem ipsum
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_ACK_BUTTON" translateable="false" desc="Privacy Sandbox dialog notice EEA: Got it button.">
+        Lorem ipsum
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_SETTINGS_BUTTON" translateable="false" desc="Privacy Sandbox dialog notice EEA: Settings button.">
+        Lorem ipsum
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_LEARN_MORE_HEADING_1" translateable="false" desc="Privacy Sandbox dialog notice EEA: First header in learn more expand.">
+        Lorem ipsum
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_LEARN_MORE_DESCRIPTION" translateable="false" desc="Privacy Sandbox dialog notice EEA: First description block in expand.">
+        Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_LEARN_MORE_HEADING_2" translateable="false" desc="Privacy Sandbox dialog notice EEA: Second header in learn more expand.">
+        Lorem ipsum Lorem ipsum Lorem
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_LEARN_MORE_BULLET_1" translateable="false" desc="Privacy Sandbox dialog notice EEA: First bullet point in expand.">
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Lorem ipsum:<ph name="END_BOLD">&lt;/b&gt;</ph> Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_LEARN_MORE_BULLET_2" translateable="false" desc="Privacy Sandbox dialog notice EEA: Second bullet point in expand.">
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Lorem ipsum:<ph name="END_BOLD">&lt;/b&gt;</ph> Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_LEARN_MORE_BULLET_3" translateable="false" desc="Privacy Sandbox dialog notice EEA: Third bullet point in expand.">
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Lorem ipsum:<ph name="END_BOLD">&lt;/b&gt;</ph> Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum
+      </message>
+
       <!-- Secure DNS Settings.  Used by //chrome/browser/privacy. -->
       <message name="IDS_SETTINGS_CUSTOM" desc="Label for a custom option in a dropdown menu.">
         Custom

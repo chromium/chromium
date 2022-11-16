@@ -31,6 +31,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/privacy_sandbox/SpamFraudFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/Topic.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicPreference.java",
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/v4/PrivacySandboxDialogNoticeEEAV4.java",
   ]
   deps = [
     ":java_resources",
@@ -102,11 +103,14 @@ android_resources("java_resources") {
     "java/res/drawable-night/privacy_sandbox_illustration.xml",
     "java/res/drawable/privacy_sandbox_dialog_illustration.xml",
     "java/res/drawable/privacy_sandbox_illustration.xml",
+    "java/res/drawable/privacy_sandbox_notice_eea_illustration_v4.xml",
     "java/res/layout/privacy_sandbox_consent.xml",
     "java/res/layout/privacy_sandbox_consent_dropdown.xml",
     "java/res/layout/privacy_sandbox_header.xml",
     "java/res/layout/privacy_sandbox_notice.xml",
     "java/res/layout/privacy_sandbox_notice_bottom_sheet.xml",
+    "java/res/layout/privacy_sandbox_notice_eea_dropdown_v4.xml",
+    "java/res/layout/privacy_sandbox_notice_eea_v4.xml",
     "java/res/values/dimens.xml",
     "java/res/xml/ad_measurement_preference.xml",
     "java/res/xml/ad_personalization_preference.xml",
