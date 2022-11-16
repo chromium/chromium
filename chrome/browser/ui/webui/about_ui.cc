@@ -149,12 +149,12 @@ std::string ReadDeviceRegionFromVpd() {
   std::string region = "us";
   chromeos::system::StatisticsProvider* provider =
       chromeos::system::StatisticsProvider::GetInstance();
-  bool region_found =
-      provider->GetMachineStatistic(chromeos::system::kRegionKey, &region);
-  if (region_found) {
+  if (const absl::optional<base::StringPiece> region_statistic =
+          provider->GetMachineStatistic(chromeos::system::kRegionKey)) {
     // We only need the first part of the complex region codes like ca.ansi.
-    std::vector<std::string> region_pieces = base::SplitString(
-        region, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    std::vector<std::string> region_pieces =
+        base::SplitString(region_statistic.value(), ".", base::TRIM_WHITESPACE,
+                          base::SPLIT_WANT_NONEMPTY);
     if (!region_pieces.empty())
       region = region_pieces[0];
   } else {
