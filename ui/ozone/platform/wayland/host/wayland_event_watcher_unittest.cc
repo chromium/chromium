@@ -10,6 +10,7 @@
 #include "base/nix/xdg_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "components/crash/core/common/crash_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
@@ -28,48 +29,77 @@ std::string NumberToString(uint32_t number) {
 
 }  // namespace
 
+// Tests that various types of critical errors result in correct crash keys.
+//
+// Posting the error terminates the client-server connection.  Further attempts
+// to sync will hang.  That is why we run "bare" lambdas in all tests of this
+// suite instead of using `PostToServerAndWait()`: that helper syncs the
+// connection after running the server task.  Due to the same reason we disable
+// the sync on the test tear down.
 class WaylandEventWatcherTest : public WaylandTest {
  public:
-  WaylandEventWatcherTest() = default;
+  WaylandEventWatcherTest() : WaylandTest(TestServerMode::kAsync) {}
+  WaylandEventWatcherTest(const WaylandEventWatcherTest&) = delete;
+  WaylandEventWatcherTest& operator=(const WaylandEventWatcherTest&) = delete;
+  ~WaylandEventWatcherTest() override = default;
+
+ protected:
+  void TearDown() override {
+    // All tests in this suite terminate the client-server connection by posting
+    // various errors.  We cannot sync the connection on tear down.
+    DisableSyncOnTearDown();
+
+    WaylandTest::TearDown();
+  }
 };
 
 TEST_P(WaylandEventWatcherTest, CrashKeyResourceError) {
   const std::string kTestErrorString = "This is a nice error.";
-  auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->get_surface_id());
-  auto* xdg_surface = mock_surface->xdg_surface();
 
-  // Prepare the expectation error string.
-  const std::string expected_error_code =
-      base::StrCat({wl_resource_get_class(xdg_surface->resource()), ": error ",
-                    NumberToString(static_cast<uint32_t>(
-                        XDG_SURFACE_ERROR_UNCONFIGURED_BUFFER)),
-                    ": ", kTestErrorString});
+  std::string text;
+  auto callback = base::BindLambdaForTesting(
+      [&text](const std::string& data) { text = data; });
 
-  wl_resource_post_error(xdg_surface->resource(),
-                         XDG_SURFACE_ERROR_UNCONFIGURED_BUFFER, "%s",
-                         kTestErrorString.c_str());
+  server_.RunAndWait(base::BindLambdaForTesting(
+      [&kTestErrorString, callback,
+       surface_id = window_->root_surface()->get_surface_id()](
+          wl::TestWaylandServerThread* server) {
+        auto* const xdg_surface = server->GetObject<wl::MockSurface>(surface_id)
+                                      ->xdg_surface()
+                                      ->resource();
 
-  Sync();
+        // Prepare the expectation error string.
+        const std::string expected_error_code =
+            base::StrCat({wl_resource_get_class(xdg_surface), ": error ",
+                          NumberToString(static_cast<uint32_t>(
+                              XDG_SURFACE_ERROR_UNCONFIGURED_BUFFER)),
+                          ": ", kTestErrorString});
 
-  EXPECT_EQ(expected_error_code,
-            crash_reporter::GetCrashKeyValue("wayland_error"));
+        callback.Run(expected_error_code);
+        wl_resource_post_error(xdg_surface,
+                               XDG_SURFACE_ERROR_UNCONFIGURED_BUFFER, "%s",
+                               kTestErrorString.c_str());
+      }));
+
+  EXPECT_EQ(text, crash_reporter::GetCrashKeyValue("wayland_error"));
 }
 
 TEST_P(WaylandEventWatcherTest, CrashKeyResourceNoMemory) {
-  auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->get_surface_id());
-  auto* xdg_surface = mock_surface->xdg_surface();
-
   // Prepare the expectation error string.
   const std::string expected_error_code = base::StrCat(
       {"wl_display: error ",
        NumberToString(static_cast<uint32_t>(WL_DISPLAY_ERROR_NO_MEMORY)),
        ": no memory"});
 
-  wl_resource_post_no_memory(xdg_surface->resource());
+  server_.RunAndWait(base::BindLambdaForTesting(
+      [surface_id = window_->root_surface()->get_surface_id()](
+          wl::TestWaylandServerThread* server) {
+        auto* const xdg_surface = server->GetObject<wl::MockSurface>(surface_id)
+                                      ->xdg_surface()
+                                      ->resource();
 
-  Sync();
+        wl_resource_post_no_memory(xdg_surface);
+      }));
 
   EXPECT_EQ(expected_error_code,
             crash_reporter::GetCrashKeyValue("wayland_error"));
@@ -81,9 +111,10 @@ TEST_P(WaylandEventWatcherTest, CrashKeyClientNoMemoryError) {
        NumberToString(static_cast<uint32_t>(WL_DISPLAY_ERROR_NO_MEMORY)),
        ": no memory"});
 
-  wl_client_post_no_memory(server_.client());
-
-  Sync();
+  server_.RunAndWait(
+      base::BindLambdaForTesting([](wl::TestWaylandServerThread* server) {
+        wl_client_post_no_memory(server->client());
+      }));
 
   EXPECT_EQ(expected_error_code,
             crash_reporter::GetCrashKeyValue("wayland_error"));
@@ -96,9 +127,11 @@ TEST_P(WaylandEventWatcherTest, CrashKeyClientImplementationError) {
        NumberToString(static_cast<uint32_t>(WL_DISPLAY_ERROR_IMPLEMENTATION)),
        ": ", kError});
 
-  wl_client_post_implementation_error(server_.client(), "%s", kError.c_str());
-
-  Sync();
+  server_.RunAndWait(base::BindLambdaForTesting(
+      [&kError](wl::TestWaylandServerThread* server) {
+        wl_client_post_implementation_error(server->client(), "%s",
+                                            kError.c_str());
+      }));
 
   EXPECT_EQ(expected_error_code,
             crash_reporter::GetCrashKeyValue("wayland_error"));
@@ -109,8 +142,11 @@ TEST_P(WaylandEventWatcherTest, CrashKeyCompositorNameSet) {
   base::Environment::Create()->SetVar(base::nix::kXdgCurrentDesktopEnvVar,
                                       kTestWaylandCompositor);
 
-  wl_client_post_implementation_error(server_.client(), "%s", "stub error");
-  Sync();
+  server_.RunAndWait(
+      base::BindLambdaForTesting([](wl::TestWaylandServerThread* server) {
+        wl_client_post_implementation_error(server->client(), "%s",
+                                            "stub error");
+      }));
 
   EXPECT_EQ(kTestWaylandCompositor,
             crash_reporter::GetCrashKeyValue("wayland_compositor"));
@@ -119,8 +155,11 @@ TEST_P(WaylandEventWatcherTest, CrashKeyCompositorNameSet) {
 TEST_P(WaylandEventWatcherTest, CrashKeyCompositorNameUnset) {
   base::Environment::Create()->UnSetVar(base::nix::kXdgCurrentDesktopEnvVar);
 
-  wl_client_post_implementation_error(server_.client(), "%s", "stub error");
-  Sync();
+  server_.RunAndWait(
+      base::BindLambdaForTesting([](wl::TestWaylandServerThread* server) {
+        wl_client_post_implementation_error(server->client(), "%s",
+                                            "stub error");
+      }));
 
   EXPECT_EQ("Unknown", crash_reporter::GetCrashKeyValue("wayland_compositor"));
 }

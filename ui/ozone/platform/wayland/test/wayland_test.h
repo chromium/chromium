@@ -83,6 +83,10 @@ class WaylandTest : public ::testing::TestWithParam<wl::ServerConfig> {
   }
 
  protected:
+  // Disables client-server sync during the teardown.  Used by tests that
+  // intentionally spoil the client-server communication.
+  void DisableSyncOnTearDown();
+
   void SetPointerFocusedWindow(WaylandWindow* window);
   void SetKeyboardFocusedWindow(WaylandWindow* window);
 

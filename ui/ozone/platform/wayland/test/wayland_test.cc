@@ -151,6 +151,10 @@ void WaylandTest::PostToServerAndWait(base::OnceClosure closure) {
   SyncDisplay();
 }
 
+void WaylandTest::DisableSyncOnTearDown() {
+  initialized_ = false;
+}
+
 void WaylandTest::SetPointerFocusedWindow(WaylandWindow* window) {
   connection_->wayland_window_manager()->SetPointerFocusedWindow(window);
 }
