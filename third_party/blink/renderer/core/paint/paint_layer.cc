@@ -549,20 +549,24 @@ void PaintLayer::UpdateDescendantDependentFlags() {
     }
     needs_descendant_dependent_flags_update_ = false;
 
-    if (IsSelfPaintingLayer() && needs_visual_overflow_recalc_) {
-      PhysicalRect old_visual_rect =
-          PhysicalVisualOverflowRectAllowingUnset(GetLayoutObject());
-      GetLayoutObject().RecalcVisualOverflow();
-      if (old_visual_rect != GetLayoutObject().PhysicalVisualOverflowRect()) {
-        MarkAncestorChainForFlagsUpdate(kDoesNotNeedDescendantDependentUpdate);
+    if (needs_visual_overflow_recalc_) {
+      if (IsSelfPaintingLayer()) {
+        PhysicalRect old_visual_rect =
+            PhysicalVisualOverflowRectAllowingUnset(GetLayoutObject());
+        GetLayoutObject().RecalcVisualOverflow();
+        if (old_visual_rect != GetLayoutObject().PhysicalVisualOverflowRect()) {
+          MarkAncestorChainForFlagsUpdate(
+              kDoesNotNeedDescendantDependentUpdate);
+        }
       }
+      if (base::FeatureList::IsEnabled(
+              features::kFastPathPaintPropertyUpdates)) {
+        GetLayoutObject().InvalidateIntersectionObserverCachedRects();
+        GetLayoutObject().GetFrameView()->SetIntersectionObservationState(
+            LocalFrameView::kDesired);
+      }
+      needs_visual_overflow_recalc_ = false;
     }
-    if (base::FeatureList::IsEnabled(features::kFastPathPaintPropertyUpdates)) {
-      GetLayoutObject().InvalidateIntersectionObserverCachedRects();
-      GetLayoutObject().GetFrameView()->SetIntersectionObservationState(
-          LocalFrameView::kDesired);
-    }
-    needs_visual_overflow_recalc_ = false;
   }
 
   bool previously_has_visible_content = has_visible_content_;
