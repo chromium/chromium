@@ -381,6 +381,10 @@ class ASH_EXPORT WallpaperControllerImpl
 
   void set_bypass_decode_for_testing() { bypass_decode_for_testing_ = true; }
 
+  void set_allow_blur_or_shield_for_testing() {
+    allow_blur_or_shield_for_testing_ = true;
+  }
+
   // Exposed for testing.
   void UpdateDailyRefreshWallpaperForTesting();
   base::WallClockTimer& GetUpdateWallpaperTimerForTesting();
@@ -861,6 +865,9 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // Tracks how many wallpapers have been set.
   int wallpaper_count_for_testing_ = 0;
+
+  // If true, the one shot wallpaper is allowed to be blurred or shielded.
+  bool allow_blur_or_shield_for_testing_ = false;
 
   // The file paths of decoding requests that have been initiated. Must be a
   // list because more than one decoding requests may happen during a single

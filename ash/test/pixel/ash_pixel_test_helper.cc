@@ -12,7 +12,6 @@
 #include "base/i18n/base_i18n_switches.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
-#include "third_party/googletest/src/googletest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
@@ -74,11 +73,15 @@ void AshPixelTestHelper::SetWallPaper(const gfx::Size& wallpaper_size) {
     case pixel_test::WallpaperInitType::kRegular: {
       gfx::ImageSkia wallpaper_image =
           CreateImage(wallpaper_size, kWallPaperColor);
+      controller->set_allow_blur_or_shield_for_testing();
+
+      // Use the one shot wallpaper to ensure that the custom wallpaper set by
+      // pixel tests does not go away after changing display metrics.
       controller->ShowWallpaperImage(
           wallpaper_image,
           WallpaperInfo{/*in_location=*/std::string(),
                         /*in_layout=*/WALLPAPER_LAYOUT_STRETCH,
-                        /*in_type=*/WallpaperType::kDefault,
+                        /*in_type=*/WallpaperType::kOneShot,
                         /*in_date=*/base::Time::Now().LocalMidnight()},
           /*preview_mode=*/false, /*always_on_top=*/false);
       break;
