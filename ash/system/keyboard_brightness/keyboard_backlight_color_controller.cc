@@ -13,6 +13,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_nudge_controller.h"
+#include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -83,10 +84,35 @@ KeyboardBacklightColorController::GetBacklightColor(
 void KeyboardBacklightColorController::OnRgbKeyboardSupportedChanged(
     bool supported) {
   if (supported) {
-    if (!session_observer_.IsObserving())
-      session_observer_.Observe(Shell::Get()->session_controller());
-    if (!wallpaper_controller_observation_.IsObserving())
-      wallpaper_controller_observation_.Observe(WallpaperController::Get());
+    if (!session_observer_.IsObserving()) {
+      auto* session_controller = Shell::Get()->session_controller();
+      DCHECK(session_controller);
+
+      session_observer_.Observe(session_controller);
+
+      // Since |session_observer_| does not start observing until after Chrome
+      // is initially started, the rgb keyboard needs to be initiallized based
+      // on state from the |SessionController|.
+      OnSessionStateChanged(session_controller->GetSessionState());
+      if (session_controller->IsActiveUserSessionStarted()) {
+        OnActiveUserPrefServiceChanged(
+            session_controller->GetActivePrefService());
+      }
+    }
+    if (!wallpaper_controller_observation_.IsObserving()) {
+      auto* wallpaper_controller = Shell::Get()->wallpaper_controller();
+      DCHECK(wallpaper_controller);
+
+      wallpaper_controller_observation_.Observe(wallpaper_controller);
+
+      // Since |wallpaper_controller_observation_| does not start observering
+      // until after Chrome is initially started, the rgb keyboard needs to be
+      // initialized to match the wallpaper if the colors have been calculated
+      // before.
+      if (wallpaper_controller->GetKMeanColor() != kInvalidWallpaperColor) {
+        OnWallpaperColorsChanged();
+      }
+    }
   } else {
     session_observer_.Reset();
     wallpaper_controller_observation_.Reset();
