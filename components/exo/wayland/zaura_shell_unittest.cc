@@ -13,9 +13,12 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_util.h"
+#include "base/containers/cxx20_erase_list.h"
 #include "base/time/time.h"
 #include "components/exo/buffer.h"
+#include "components/exo/shell_surface.h"
 #include "components/exo/test/exo_test_base.h"
+#include "components/exo/test/shell_surface_builder.h"
 #include "components/exo/wayland/scoped_wl.h"
 #include "components/exo/wayland/wayland_display_observer.h"
 #include "components/exo/wayland/wayland_display_output.h"
@@ -415,6 +418,7 @@ class MockAuraOutput : public AuraOutput {
 
   MOCK_METHOD(void, SendInsets, (const gfx::Insets&), (override));
   MOCK_METHOD(void, SendLogicalTransform, (int32_t), (override));
+  MOCK_METHOD(void, SendActiveDisplay, (), (override));
 };
 
 class ZAuraOutputTest : public test::ExoTestBase {
@@ -433,28 +437,101 @@ class ZAuraOutputTest : public test::ExoTestBase {
     wayland_display_.reset(wl_display_create());
     client_ = wl_client_create(wayland_display_.get(), fds[0]);
 
-    wl_resource* output_resource =
-        wl_resource_create(client_, &wl_output_interface, kWlOutputVersion, 0);
-    display_handler_ = std::make_unique<WaylandDisplayHandler>(&display_output_,
-                                                               output_resource);
+    UpdateDisplayOutput();
   }
 
-  std::unique_ptr<MockAuraOutput> CreateAuraOutput(int version) {
-    return std::make_unique<::testing::NiceMock<MockAuraOutput>>(
-        wl_resource_create(client_, &zaura_output_interface, version, 0),
-        display_handler_.get());
+  void TearDown() override {
+    output_holder_list_.clear();
+    test::ExoTestBase::TearDown();
   }
 
-  std::unique_ptr<WaylandDisplayHandler> display_handler_;
+  void ResetDisplayOutput() {
+    for (auto& holder : output_holder_list_) {
+      holder->aura_output.reset();
+      holder->output.reset();
+    }
+  }
+
+  void UpdateDisplayOutput() {
+    auto display_list = display::Screen::GetScreen()->GetAllDisplays();
+    auto iter = output_holder_list_.begin();
+    while (iter != output_holder_list_.end()) {
+      auto* out_ptr = (*iter)->output.get();
+      bool erased = base::EraseIf(display_list,
+                                  [out_ptr](const display::Display& display) {
+                                    return display.id() == out_ptr->id();
+                                  });
+      if (erased)
+        ++iter;
+      else
+        iter = output_holder_list_.erase(iter);
+    }
+
+    for (auto& display : display_list) {
+      auto output_holder = std::make_unique<OutputHolder>();
+      output_holder->client = client_;
+      output_holder->output =
+          std::make_unique<WaylandDisplayOutput>(display.id());
+
+      wl_resource* output_resource = wl_resource_create(
+          client_, &wl_output_interface, kWlOutputVersion, 0);
+      output_holder->handler = std::make_unique<WaylandDisplayHandler>(
+          output_holder->output.get(), output_resource);
+      output_holder->handler->Initialize();
+      output_holder->CreateAuraOutput();
+
+      output_holder_list_.push_back(std::move(output_holder));
+    }
+  }
+
+  MockAuraOutput* GetPrimaryAuraOutput() {
+    return GetAuraOutput(
+        display::Screen::GetScreen()->GetPrimaryDisplay().id());
+  }
+
+  MockAuraOutput* GetAuraOutput(int64_t display_id) {
+    return GetOutputHolder(display_id)->aura_output.get();
+  }
+
+  WaylandDisplayHandler* GetPrimaryDisplayHandler() {
+    return GetOutputHolder(
+               display::Screen::GetScreen()->GetPrimaryDisplay().id())
+        ->handler.get();
+  }
+
+  struct OutputHolder {
+    std::unique_ptr<MockAuraOutput> aura_output;
+    std::unique_ptr<WaylandDisplayOutput> output;
+    std::unique_ptr<WaylandDisplayHandler> handler;
+
+    wl_client* client;
+
+    void CreateAuraOutput() {
+      DCHECK(!aura_output);
+      aura_output = std::make_unique<::testing::NiceMock<MockAuraOutput>>(
+          wl_resource_create(client, &zaura_output_interface,
+                             kZAuraShellVersion, 0),
+          handler.get());
+    }
+  };
+
+  OutputHolder* GetOutputHolder(int64_t display_id) {
+    auto iter = base::ranges::find_if(
+        output_holder_list_,
+        [display_id](const std::unique_ptr<OutputHolder>& holder) {
+          return holder->output->id() == display_id;
+        });
+    return iter == output_holder_list_.end() ? nullptr : iter->get();
+  }
 
  private:
-  WaylandDisplayOutput display_output_{0};
+  std::vector<std::unique_ptr<OutputHolder>> output_holder_list_;
   std::unique_ptr<wl_display, WlDisplayDeleter> wayland_display_;
   wl_client* client_ = nullptr;
 };
 
 TEST_F(ZAuraOutputTest, SendInsets) {
-  auto mock_aura_output = CreateAuraOutput(ZAURA_OUTPUT_INSETS_SINCE_VERSION);
+  auto* mock_aura_output = GetPrimaryAuraOutput();
 
   UpdateDisplay("800x600");
   display::Display display =
@@ -472,8 +549,7 @@ TEST_F(ZAuraOutputTest, SendInsets) {
 }
 
 TEST_F(ZAuraOutputTest, SendLogicalTransform) {
-  auto mock_aura_output =
-      CreateAuraOutput(ZAURA_OUTPUT_LOGICAL_TRANSFORM_SINCE_VERSION);
+  auto* mock_aura_output = GetPrimaryAuraOutput();
 
   UpdateDisplay("800x600");
   display::Display display =
@@ -515,21 +591,66 @@ TEST_F(ZAuraOutputTest, SendLogicalTransform) {
       display, display::DisplayObserver::DISPLAY_METRIC_ROTATION);
 }
 
-// Make sure that data associated with wl/aura outputs are destroyd
+// Make sure that data associated with wl/aura outputs are destroyed
 // properly regardless of which one is destroyed first.
 TEST_F(ZAuraOutputTest, DestroyAuraOutput) {
-  auto mock_aura_output =
-      CreateAuraOutput(ZAURA_OUTPUT_LOGICAL_TRANSFORM_SINCE_VERSION);
-  EXPECT_EQ(1u, display_handler_->CountObserversForTesting());
-  mock_aura_output.reset();
-  EXPECT_EQ(0u, display_handler_->CountObserversForTesting());
+  auto* output_holder =
+      GetOutputHolder(display::Screen::GetScreen()->GetPrimaryDisplay().id());
 
-  mock_aura_output =
-      CreateAuraOutput(ZAURA_OUTPUT_LOGICAL_TRANSFORM_SINCE_VERSION);
-  EXPECT_EQ(1u, display_handler_->CountObserversForTesting());
-  EXPECT_TRUE(mock_aura_output->HasDisplayHandlerForTesting());
-  display_handler_.reset();
-  EXPECT_FALSE(mock_aura_output->HasDisplayHandlerForTesting());
+  EXPECT_EQ(1u, GetPrimaryDisplayHandler()->CountObserversForTesting());
+  output_holder->aura_output.reset();
+  EXPECT_EQ(0u, GetPrimaryDisplayHandler()->CountObserversForTesting());
+  output_holder->CreateAuraOutput();
+
+  EXPECT_EQ(1u, GetPrimaryDisplayHandler()->CountObserversForTesting());
+  EXPECT_TRUE(output_holder->aura_output->HasDisplayHandlerForTesting());
+  output_holder->handler.reset();
+  EXPECT_FALSE(output_holder->aura_output->HasDisplayHandlerForTesting());
+}
+
+// Make sure that data associated with wl/aura outputs are destroyed
+// properly regardless of which one is destroyed first.
+TEST_F(ZAuraOutputTest, ActiveDisplay) {
+  UpdateDisplay("800x600, 800x600");
+  UpdateDisplayOutput();
+  auto* screen = display::Screen::GetScreen();
+  int64_t primary_id = screen->GetAllDisplays()[0].id();
+  int64_t secondary_id = screen->GetAllDisplays()[1].id();
+
+  auto* primary_output_holder = GetOutputHolder(primary_id);
+  auto* secondary_output_holder = GetOutputHolder(secondary_id);
+
+  auto shell_surface =
+      test::ShellSurfaceBuilder({100, 100}).BuildShellSurface();
+
+  auto test_widget = CreateTestWidget();
+  test_widget->SetBounds({800, 0, 100, 100});
+
+  ASSERT_EQ(screen->GetDisplayNearestWindow(shell_surface->host_window()).id(),
+            primary_id);
+  ASSERT_EQ(
+      screen->GetDisplayNearestWindow(test_widget->GetNativeWindow()).id(),
+      secondary_id);
+
+  EXPECT_CALL(*(primary_output_holder->aura_output), SendActiveDisplay())
+      .Times(1);
+  EXPECT_CALL(*(secondary_output_holder->aura_output), SendActiveDisplay())
+      .Times(0);
+  shell_surface->GetWidget()->Activate();
+  testing::Mock::VerifyAndClearExpectations(
+      primary_output_holder->aura_output.get());
+  testing::Mock::VerifyAndClearExpectations(
+      secondary_output_holder->aura_output.get());
+
+  EXPECT_CALL(*(primary_output_holder->aura_output), SendActiveDisplay())
+      .Times(0);
+  EXPECT_CALL(*(secondary_output_holder->aura_output), SendActiveDisplay())
+      .Times(1);
+  test_widget->Activate();
+  testing::Mock::VerifyAndClearExpectations(
+      primary_output_holder->aura_output.get());
+  testing::Mock::VerifyAndClearExpectations(
+      secondary_output_holder->aura_output.get());
 }
 
 }  // namespace wayland

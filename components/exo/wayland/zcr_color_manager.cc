@@ -214,6 +214,7 @@ class ColorManagerObserver : public WaylandDisplayObserver {
         color_management_output_resource_);
     return true;
   }
+  void SendActiveDisplay() override {}
 
  private:
   WaylandDisplayHandler* wayland_display_handler_;

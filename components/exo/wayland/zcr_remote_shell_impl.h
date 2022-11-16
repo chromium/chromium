@@ -37,6 +37,7 @@ class WaylandRemoteOutput : public WaylandDisplayObserver {
   // Overridden from WaylandDisplayObserver:
   bool SendDisplayMetrics(const display::Display& display,
                           uint32_t changed_metrics) override;
+  void SendActiveDisplay() override;
   void OnOutputDestroyed() override;
 
  private:

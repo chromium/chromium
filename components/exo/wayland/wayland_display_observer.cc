@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "ash/shell.h"
 #include "chrome-color-management-server-protocol.h"
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/wayland_display_output.h"
@@ -29,6 +30,7 @@ WaylandDisplayHandler::WaylandDisplayHandler(WaylandDisplayOutput* output,
 }
 
 WaylandDisplayHandler::~WaylandDisplayHandler() {
+  ash::Shell::Get()->RemoveShellObserver(this);
   for (auto& obs : observers_)
     obs.OnOutputDestroyed();
   if (xdg_output_resource_)
@@ -40,6 +42,7 @@ void WaylandDisplayHandler::Initialize() {
   // Adding itself as an observer will send the initial display metrics.
   AddObserver(this);
   output_->RegisterOutput(output_resource_);
+  ash::Shell::Get()->AddShellObserver(this);
 }
 
 void WaylandDisplayHandler::AddObserver(WaylandDisplayObserver* observer) {
@@ -94,6 +97,17 @@ void WaylandDisplayHandler::OnDisplayMetricsChanged(
     }
     wl_client_flush(wl_resource_get_client(output_resource_));
   }
+}
+
+void WaylandDisplayHandler::OnDisplayForNewWindowsChanged() {
+  DCHECK(output_resource_);
+  if (output_->id() !=
+      display::Screen::GetScreen()->GetDisplayForNewWindows().id()) {
+    return;
+  }
+
+  for (auto& observer : observers_)
+    observer.SendActiveDisplay();
 }
 
 void WaylandDisplayHandler::OnXdgOutputCreated(
@@ -210,6 +224,8 @@ bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
 
   return true;
 }
+
+void WaylandDisplayHandler::SendActiveDisplay() {}
 
 void WaylandDisplayHandler::OnOutputDestroyed() {
   // destroying itself.

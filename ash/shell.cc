@@ -571,6 +571,11 @@ void Shell::NotifyShelfAlignmentChanged(aura::Window* root_window,
     observer.OnShelfAlignmentChanged(root_window, old_alignment);
 }
 
+void Shell::NotifyDisplayForNewWindowsChanged() {
+  for (auto& observer : shell_observers_)
+    observer.OnDisplayForNewWindowsChanged();
+}
+
 void Shell::AddAccessibilityEventHandler(
     ui::EventHandler* handler,
     AccessibilityEventHandlerManager::HandlerType type) {

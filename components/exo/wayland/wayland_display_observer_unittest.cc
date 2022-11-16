@@ -60,6 +60,8 @@ class WaylandDisplayObserverTest : public test::ExoTestBase {
     wl_client_destroy(client_);
     wl_display_destroy(wayland_display_);
     close(fds_[1]);
+    handler_.reset();
+    output_.reset();
 
     test::ExoTestBase::TearDown();
   }

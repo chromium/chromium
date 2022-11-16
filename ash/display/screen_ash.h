@@ -49,6 +49,7 @@ class ASH_EXPORT ScreenAsh : public display::Screen {
   display::Display GetDisplayMatching(
       const gfx::Rect& match_rect) const override;
   display::Display GetPrimaryDisplay() const override;
+  void SetDisplayForNewWindows(int64_t display_id) override;
   void AddObserver(display::DisplayObserver* observer) override;
   void RemoveObserver(display::DisplayObserver* observer) override;
   display::TabletState GetTabletState() const override;

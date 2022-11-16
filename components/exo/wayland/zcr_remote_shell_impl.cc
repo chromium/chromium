@@ -363,6 +363,8 @@ bool WaylandRemoteOutput::SendDisplayMetrics(const display::Display& display,
   return true;
 }
 
+void WaylandRemoteOutput::SendActiveDisplay() {}
+
 void WaylandRemoteOutput::OnOutputDestroyed() {
   display_handler_->RemoveObserver(this);
   display_handler_ = nullptr;

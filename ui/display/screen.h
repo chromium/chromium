@@ -121,7 +121,7 @@ class DISPLAY_EXPORT Screen {
   Display GetDisplayForNewWindows() const;
 
   // Sets the suggested display to use when creating a new window.
-  void SetDisplayForNewWindows(int64_t display_id);
+  virtual void SetDisplayForNewWindows(int64_t display_id);
 
   // Returns ScreenInfos, attempting to set the current ScreenInfo to the
   // display corresponding to `nearest_id`.  The returned result is guaranteed
@@ -203,6 +203,9 @@ class DISPLAY_EXPORT Screen {
 
  protected:
   void set_shutdown(bool shutdown) { shutdown_ = shutdown; }
+  int64_t display_id_for_new_windows() const {
+    return display_id_for_new_windows_;
+  }
 
  private:
   friend class ScopedDisplayForNewWindows;

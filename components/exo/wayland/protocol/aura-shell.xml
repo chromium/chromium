@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="44">
+  <interface name="zaura_shell" version="45">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -537,7 +537,7 @@
     </request>
   </interface>
 
-  <interface name="zaura_output" version="43">
+  <interface name="zaura_output" version="45">
     <description summary="aura shell interface to a wl_output">
       An additional interface to a wl_output object, which allows the
       client to access aura shell specific functionality for output.
@@ -691,6 +691,14 @@
       </description>
       <arg name="display_id_hi" type="uint"/>
       <arg name="display_id_lo" type="uint"/>
+    </event>
+
+    <!-- Version 45 additions -->
+    <event name="activated" since="45">
+      <description summary="target display for new windows">
+        Notifies that this output is now active output. It is typically used as a
+        target when a new window is created without specific bounds.
+      </description>
     </event>
   </interface>
 

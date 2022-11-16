@@ -43,6 +43,8 @@ class ASH_EXPORT ShellObserver {
   // Invoked when |pinned_window| enter or exit pinned mode.
   virtual void OnPinnedStateChanged(aura::Window* pinned_window) {}
 
+  virtual void OnDisplayForNewWindowsChanged() {}
+
   // Called when dictation is activated.
   virtual void OnDictationStarted() {}
 

@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <wayland-server-protocol-core.h>
 
+#include "ash/shell_observer.h"
 #include "base/observer_list.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
@@ -29,6 +30,11 @@ class WaylandDisplayObserver : public base::CheckedObserver {
   // to be followed by "done" event, |false| otherwise.
   virtual bool SendDisplayMetrics(const display::Display& display,
                                   uint32_t changed_metrics) = 0;
+
+  // Called when the server should send the active display information to the
+  // client.
+  virtual void SendActiveDisplay() = 0;
+
   // Called when wl_output is destroyed.
   virtual void OnOutputDestroyed() = 0;
 
@@ -37,7 +43,8 @@ class WaylandDisplayObserver : public base::CheckedObserver {
 };
 
 class WaylandDisplayHandler : public display::DisplayObserver,
-                              public WaylandDisplayObserver {
+                              public WaylandDisplayObserver,
+                              public ash::ShellObserver {
  public:
   WaylandDisplayHandler(WaylandDisplayOutput* output,
                         wl_resource* output_resource);
@@ -75,7 +82,11 @@ class WaylandDisplayHandler : public display::DisplayObserver,
   // Overridden from WaylandDisplayObserver:
   bool SendDisplayMetrics(const display::Display& display,
                           uint32_t changed_metrics) override;
+  void SendActiveDisplay() override;
   void OnOutputDestroyed() override;
+
+  // ShellObserver:
+  void OnDisplayForNewWindowsChanged() override;
 
   // Output.
   WaylandDisplayOutput* output_;

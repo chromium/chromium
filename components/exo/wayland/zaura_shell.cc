@@ -955,6 +955,13 @@ bool AuraOutput::HasDisplayHandlerForTesting() const {
   return !!display_handler_;
 }
 
+void AuraOutput::SendActiveDisplay() {
+  if (wl_resource_get_version(resource_) >=
+      ZAURA_OUTPUT_ACTIVATED_SINCE_VERSION) {
+    zaura_output_send_activated(resource_);
+  }
+}
+
 void AuraOutput::SendInsets(const gfx::Insets& insets) {
   zaura_output_send_insets(resource_, insets.top(), insets.left(),
                            insets.bottom(), insets.right());

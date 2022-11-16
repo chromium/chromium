@@ -756,6 +756,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   void NotifyShelfAlignmentChanged(aura::Window* root_window,
                                    ShelfAlignment old_alignment);
 
+  // Notifies observers that the display for new windows has changed.
+  void NotifyDisplayForNewWindowsChanged();
+
   // Adds the |handler| based on its |type| to receive events, ensuring that
   // event handlers continue to be called in their HandlerType order.
   void AddAccessibilityEventHandler(

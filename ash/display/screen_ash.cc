@@ -157,6 +157,13 @@ display::Display ScreenAsh::GetDisplayNearestWindow(
   return display_manager->GetDisplayForId(id);
 }
 
+void ScreenAsh::SetDisplayForNewWindows(int64_t display_id) {
+  if (display_id_for_new_windows() == display_id)
+    return;
+  Screen::SetDisplayForNewWindows(display_id);
+  Shell::Get()->NotifyDisplayForNewWindowsChanged();
+}
+
 display::Display ScreenAsh::GetDisplayNearestPoint(
     const gfx::Point& point) const {
   const display::Display& display =
