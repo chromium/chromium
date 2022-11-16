@@ -5,9 +5,7 @@
 /** @fileoverview Suite of tests for extension-keyboard-shortcuts. */
 
 import {ExtensionsKeyboardShortcutsElement, isValidKeyCode, Key, keystrokeToString} from 'chrome://extensions/extensions.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
@@ -80,7 +78,7 @@ suite(extension_shortcut_tests.suiteName, function() {
     flush();
   });
 
-  test(assert(extension_shortcut_tests.TestNames.Layout), function() {
+  test(extension_shortcut_tests.TestNames.Layout, function() {
     function isVisibleOnCard(e: HTMLElement, s: string): boolean {
       // We check the light DOM in the card because it's a regular old div,
       // rather than a fancy-schmancy custom element.

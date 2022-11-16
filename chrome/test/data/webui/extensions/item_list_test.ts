@@ -6,10 +6,10 @@
 import 'chrome://extensions/extensions.js';
 
 import {ExtensionsItemListElement} from 'chrome://extensions/extensions.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+
 import {createExtensionInfo, testVisible} from './test_util.js';
 
 const extension_item_list_tests = {
@@ -50,7 +50,7 @@ suite(extension_item_list_tests.suiteName, function() {
     document.body.appendChild(itemList);
   });
 
-  test(assert(extension_item_list_tests.TestNames.Filtering), function() {
+  test(extension_item_list_tests.TestNames.Filtering, function() {
     function itemLengthEquals(num: number) {
       flush();
       assertEquals(
@@ -102,7 +102,7 @@ suite(extension_item_list_tests.suiteName, function() {
         itemList.shadowRoot!.querySelector('extensions-item')!.data.name);
   });
 
-  test(assert(extension_item_list_tests.TestNames.NoItemsMsg), function() {
+  test(extension_item_list_tests.TestNames.NoItemsMsg, function() {
     flush();
     boundTestVisible('#no-items', false);
     boundTestVisible('#no-search-results', false);
@@ -114,20 +114,18 @@ suite(extension_item_list_tests.suiteName, function() {
     boundTestVisible('#no-search-results', false);
   });
 
-  test(
-      assert(extension_item_list_tests.TestNames.NoSearchResultsMsg),
-      function() {
-        flush();
-        boundTestVisible('#no-items', false);
-        boundTestVisible('#no-search-results', false);
+  test(extension_item_list_tests.TestNames.NoSearchResultsMsg, function() {
+    flush();
+    boundTestVisible('#no-items', false);
+    boundTestVisible('#no-search-results', false);
 
-        itemList.filter = 'non-existent name';
-        flush();
-        boundTestVisible('#no-items', false);
-        boundTestVisible('#no-search-results', true);
-      });
+    itemList.filter = 'non-existent name';
+    flush();
+    boundTestVisible('#no-items', false);
+    boundTestVisible('#no-search-results', true);
+  });
 
-  test(assert(extension_item_list_tests.TestNames.LoadTimeData), function() {
+  test(extension_item_list_tests.TestNames.LoadTimeData, function() {
     // Check that loadTimeData contains these values.
     loadTimeData.getBoolean('isManaged');
     loadTimeData.getString('browserManagedByOrg');

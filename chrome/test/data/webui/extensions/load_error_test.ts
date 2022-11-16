@@ -7,8 +7,8 @@
 import 'chrome://extensions/extensions.js';
 
 import {ExtensionsLoadErrorElement} from 'chrome://extensions/extensions.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 import {TestService} from './test_service.js';
 import {isElementVisible} from './test_util.js';
 
@@ -44,43 +44,36 @@ suite(extension_load_error_tests.suiteName, function() {
     document.body.appendChild(loadError);
   });
 
-  test(
-      assert(extension_load_error_tests.TestNames.RetryError),
-      async function() {
-        const dialogElement =
-            loadError.shadowRoot!.querySelector('cr-dialog')!.getNative();
-        assertFalse(isElementVisible(dialogElement));
-        loadError.show();
-        assertTrue(isElementVisible(dialogElement));
+  test(extension_load_error_tests.TestNames.RetryError, async function() {
+    const dialogElement =
+        loadError.shadowRoot!.querySelector('cr-dialog')!.getNative();
+    assertFalse(isElementVisible(dialogElement));
+    loadError.show();
+    assertTrue(isElementVisible(dialogElement));
 
-        mockDelegate.setRetryLoadUnpackedError(stubLoadError);
-        loadError.shadowRoot!.querySelector<HTMLElement>(
-                                 '.action-button')!.click();
-        const arg = await mockDelegate.whenCalled('retryLoadUnpacked');
-        assertEquals(fakeGuid, arg);
-        assertTrue(isElementVisible(dialogElement));
-        loadError.shadowRoot!.querySelector<HTMLElement>(
-                                 '.cancel-button')!.click();
-        assertFalse(isElementVisible(dialogElement));
-      });
+    mockDelegate.setRetryLoadUnpackedError(stubLoadError);
+    loadError.shadowRoot!.querySelector<HTMLElement>('.action-button')!.click();
+    const arg = await mockDelegate.whenCalled('retryLoadUnpacked');
+    assertEquals(fakeGuid, arg);
+    assertTrue(isElementVisible(dialogElement));
+    loadError.shadowRoot!.querySelector<HTMLElement>('.cancel-button')!.click();
+    assertFalse(isElementVisible(dialogElement));
+  });
 
-  test(
-      assert(extension_load_error_tests.TestNames.RetrySuccess),
-      async function() {
-        const dialogElement =
-            loadError.shadowRoot!.querySelector('cr-dialog')!.getNative();
-        assertFalse(isElementVisible(dialogElement));
-        loadError.show();
-        assertTrue(isElementVisible(dialogElement));
+  test(extension_load_error_tests.TestNames.RetrySuccess, async function() {
+    const dialogElement =
+        loadError.shadowRoot!.querySelector('cr-dialog')!.getNative();
+    assertFalse(isElementVisible(dialogElement));
+    loadError.show();
+    assertTrue(isElementVisible(dialogElement));
 
-        loadError.shadowRoot!.querySelector<HTMLElement>(
-                                 '.action-button')!.click();
-        const arg = await mockDelegate.whenCalled('retryLoadUnpacked');
-        assertEquals(fakeGuid, arg);
-        assertFalse(isElementVisible(dialogElement));
-      });
+    loadError.shadowRoot!.querySelector<HTMLElement>('.action-button')!.click();
+    const arg = await mockDelegate.whenCalled('retryLoadUnpacked');
+    assertEquals(fakeGuid, arg);
+    assertFalse(isElementVisible(dialogElement));
+  });
 
-  test(assert(extension_load_error_tests.TestNames.CodeSection), function() {
+  test(extension_load_error_tests.TestNames.CodeSection, function() {
     assertTrue(loadError.$.code.shadowRoot!
                    .querySelector<HTMLElement>('#scroll-container')!.hidden);
     const loadErrorWithSource = {

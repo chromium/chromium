@@ -9,7 +9,6 @@
  */
 
 import {ExtensionsManagerElement, navigation, Page, Service} from 'chrome://extensions/extensions.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -77,7 +76,7 @@ suite(extension_manager_unit_tests.suiteName, function() {
   }
 
   // Test that newly added items are inserted in the correct order.
-  test(assert(extension_manager_unit_tests.TestNames.ItemOrder), function() {
+  test(extension_manager_unit_tests.TestNames.ItemOrder, function() {
     assertEquals(0, getExtensions().length);
 
     const alphaFromStore = createExtensionInfo({
@@ -142,7 +141,7 @@ suite(extension_manager_unit_tests.suiteName, function() {
     assertEquals(alphaFromStore.id, getExtension(5).id);
   });
 
-  test(assert(extension_manager_unit_tests.TestNames.SetItemData), function() {
+  test(extension_manager_unit_tests.TestNames.SetItemData, function() {
     const description = 'description';
 
     const extension = createExtensionInfo({description: description});
@@ -163,8 +162,7 @@ suite(extension_manager_unit_tests.suiteName, function() {
   });
 
   test(
-      assert(extension_manager_unit_tests.TestNames.UpdateItemData),
-      function() {
+      extension_manager_unit_tests.TestNames.UpdateItemData, function() {
         const oldDescription = 'old description';
         const newDescription = 'new description';
 
@@ -204,29 +202,23 @@ suite(extension_manager_unit_tests.suiteName, function() {
         assertEquals(newDescription, content.textContent!.trim());
       });
 
-  test(
-      assert(extension_manager_unit_tests.TestNames.ProfileSettings),
-      function() {
-        assertFalse(manager.inDevMode);
+  test(extension_manager_unit_tests.TestNames.ProfileSettings, function() {
+    assertFalse(manager.inDevMode);
 
-        service.profileStateChangedTarget.callListeners(
-            {inDeveloperMode: true});
-        assertTrue(manager.inDevMode);
+    service.profileStateChangedTarget.callListeners({inDeveloperMode: true});
+    assertTrue(manager.inDevMode);
 
-        service.profileStateChangedTarget.callListeners(
-            {inDeveloperMode: false});
-        assertFalse(manager.inDevMode);
+    service.profileStateChangedTarget.callListeners({inDeveloperMode: false});
+    assertFalse(manager.inDevMode);
 
-        service.profileStateChangedTarget.callListeners(
-            {canLoadUnpacked: true});
-        assertTrue(manager.canLoadUnpacked);
+    service.profileStateChangedTarget.callListeners({canLoadUnpacked: true});
+    assertTrue(manager.canLoadUnpacked);
 
-        service.profileStateChangedTarget.callListeners(
-            {canLoadUnpacked: false});
-        assertFalse(manager.canLoadUnpacked);
-      });
+    service.profileStateChangedTarget.callListeners({canLoadUnpacked: false});
+    assertFalse(manager.canLoadUnpacked);
+  });
 
-  test(assert(extension_manager_unit_tests.TestNames.Uninstall), function() {
+  test(extension_manager_unit_tests.TestNames.Uninstall, function() {
     assertEquals(0, getExtensions().length);
 
     const extension = createExtensionInfo({
@@ -252,7 +244,7 @@ suite(extension_manager_unit_tests.suiteName, function() {
   }
 
   test(
-      assert(extension_manager_unit_tests.TestNames.UninstallFromDetails),
+      extension_manager_unit_tests.TestNames.UninstallFromDetails,
       function(done) {
         const extension = createExtensionInfo({
           location: chrome.developerPrivate.Location.FROM_STORE,
@@ -279,8 +271,7 @@ suite(extension_manager_unit_tests.suiteName, function() {
       });
 
   test(
-      assert(extension_manager_unit_tests.TestNames.ToggleIncognitoMode),
-      function() {
+      extension_manager_unit_tests.TestNames.ToggleIncognitoMode, function() {
         assertEquals(0, getExtensions().length);
         const extension = createExtensionInfo({
           location: chrome.developerPrivate.Location.FROM_STORE,
@@ -315,8 +306,7 @@ suite(extension_manager_unit_tests.suiteName, function() {
       });
 
   test(
-      assert(extension_manager_unit_tests.TestNames.EnableAndDisable),
-      function() {
+      extension_manager_unit_tests.TestNames.EnableAndDisable, function() {
         const ExtensionState = chrome.developerPrivate.ExtensionState;
         assertEquals(0, getExtensions().length);
         const extension = createExtensionInfo({

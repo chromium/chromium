@@ -6,10 +6,8 @@
 import 'chrome://extensions/extensions.js';
 
 import {ErrorPageDelegate, ExtensionsErrorPageElement} from 'chrome://extensions/extensions.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
@@ -95,7 +93,7 @@ suite(extension_error_page_tests.suiteName, function() {
     document.body.appendChild(errorPage);
   });
 
-  test(assert(extension_error_page_tests.TestNames.Layout), function() {
+  test(extension_error_page_tests.TestNames.Layout, function() {
     flush();
 
     const testIsVisible = isChildVisible.bind(null, errorPage);
@@ -137,7 +135,7 @@ suite(extension_error_page_tests.suiteName, function() {
   });
 
   test(
-      assert(extension_error_page_tests.TestNames.CodeSection), function(done) {
+      extension_error_page_tests.TestNames.CodeSection, function(done) {
         flush();
 
         assertTrue(!!mockDelegate.requestFileSourceArgs);
@@ -165,7 +163,7 @@ suite(extension_error_page_tests.suiteName, function() {
         });
       });
 
-  test(assert(extension_error_page_tests.TestNames.ErrorSelection), function() {
+  test(extension_error_page_tests.TestNames.ErrorSelection, function() {
     const nextRuntimeError = Object.assign(
         {
           source: 'chrome-extension://' + extensionId + '/other_source.html',

@@ -7,7 +7,6 @@
 import 'chrome://extensions/extensions.js';
 
 import {ExtensionsPackDialogAlertElement, ExtensionsPackDialogElement, PackDialogDelegate} from 'chrome://extensions/extensions.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -73,7 +72,7 @@ suite(extension_pack_dialog_tests.suiteName, function() {
     document.body.appendChild(packDialog);
   });
 
-  test(assert(extension_pack_dialog_tests.TestNames.Interaction), function() {
+  test(extension_pack_dialog_tests.TestNames.Interaction, function() {
     const dialogElement = packDialog.$.dialog.getNative();
 
     assertTrue(isElementVisible(dialogElement));
@@ -110,7 +109,7 @@ suite(extension_pack_dialog_tests.suiteName, function() {
     });
   });
 
-  test(assert(extension_pack_dialog_tests.TestNames.PackSuccess), function() {
+  test(extension_pack_dialog_tests.TestNames.PackSuccess, function() {
     const dialogElement = packDialog.$.dialog.getNative();
     let packDialogAlert: ExtensionsPackDialogAlertElement;
     let alertElement: HTMLDialogElement;
@@ -159,7 +158,7 @@ suite(extension_pack_dialog_tests.suiteName, function() {
         });
   });
 
-  test(assert(extension_pack_dialog_tests.TestNames.PackError), function() {
+  test(extension_pack_dialog_tests.TestNames.PackError, function() {
     const dialogElement = packDialog.$.dialog.getNative();
     let packDialogAlert: ExtensionsPackDialogAlertElement;
     let alertElement: HTMLDialogElement;
@@ -202,7 +201,7 @@ suite(extension_pack_dialog_tests.suiteName, function() {
     });
   });
 
-  test(assert(extension_pack_dialog_tests.TestNames.PackWarning), function() {
+  test(extension_pack_dialog_tests.TestNames.PackWarning, function() {
     const dialogElement = packDialog.$.dialog.getNative();
     let packDialogAlert: ExtensionsPackDialogAlertElement;
     let alertElement: HTMLDialogElement;

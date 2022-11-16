@@ -5,7 +5,6 @@
 /** @fileoverview Suite of tests for extension-item. */
 
 import {ExtensionsItemElement, IronIconElement, navigation, Page} from 'chrome://extensions/extensions.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
@@ -107,21 +106,19 @@ suite(extension_item_tests.suiteName, function() {
     document.body.appendChild(toastManager);
   });
 
-  test(
-      assert(extension_item_tests.TestNames.ElementVisibilityNormalState),
-      function() {
-        testNormalElementsAreVisible(item);
-        testDeveloperElementsAreHidden(item);
+  test(extension_item_tests.TestNames.ElementVisibilityNormalState, function() {
+    testNormalElementsAreVisible(item);
+    testDeveloperElementsAreHidden(item);
 
-        assertTrue(item.$.enableToggle.checked);
-        item.set('data.state', 'DISABLED');
-        assertFalse(item.$.enableToggle.checked);
-        item.set('data.state', 'BLACKLISTED');
-        assertFalse(item.$.enableToggle.checked);
-      });
+    assertTrue(item.$.enableToggle.checked);
+    item.set('data.state', 'DISABLED');
+    assertFalse(item.$.enableToggle.checked);
+    item.set('data.state', 'BLACKLISTED');
+    assertFalse(item.$.enableToggle.checked);
+  });
 
   test(
-      assert(extension_item_tests.TestNames.ElementVisibilityDeveloperState),
+      extension_item_tests.TestNames.ElementVisibilityDeveloperState,
       function() {
         item.set('inDevMode', true);
 
@@ -154,7 +151,7 @@ suite(extension_item_tests.suiteName, function() {
       });
 
   /** Tests that the delegate methods are correctly called. */
-  test(assert(extension_item_tests.TestNames.ClickableItems), function() {
+  test(extension_item_tests.TestNames.ClickableItems, function() {
     item.set('inDevMode', true);
 
     mockDelegate.testClickingCalls(
@@ -208,7 +205,7 @@ suite(extension_item_tests.suiteName, function() {
 
   /** Tests that the reload button properly fires the load-error event. */
   test(
-      assert(extension_item_tests.TestNames.FailedReloadFiresLoadError),
+      extension_item_tests.TestNames.FailedReloadFiresLoadError,
       async function() {
         item.set('inDevMode', true);
         item.set('data.location', chrome.developerPrivate.Location.UNPACKED);
@@ -252,7 +249,7 @@ suite(extension_item_tests.suiteName, function() {
         return verifyEventPromise(true);
       });
 
-  test(assert(extension_item_tests.TestNames.Warnings), function() {
+  test(extension_item_tests.TestNames.Warnings, function() {
     const kCorrupt = 1 << 0;
     const kSuspicious = 1 << 1;
     const kBlacklisted = 1 << 2;
@@ -313,7 +310,7 @@ suite(extension_item_tests.suiteName, function() {
     assertWarnings(kSuspicious);
   });
 
-  test(assert(extension_item_tests.TestNames.SourceIndicator), function() {
+  test(extension_item_tests.TestNames.SourceIndicator, function() {
     assertFalse(isChildVisible(item, '#source-indicator'));
     item.set('data.location', 'UNPACKED');
     flush();
@@ -348,7 +345,7 @@ suite(extension_item_tests.suiteName, function() {
     assertFalse(isChildVisible(item, '#source-indicator'));
   });
 
-  test(assert(extension_item_tests.TestNames.EnableToggle), function() {
+  test(extension_item_tests.TestNames.EnableToggle, function() {
     assertFalse(item.$.enableToggle.disabled);
 
     // Test case where user does not have permission.
@@ -394,14 +391,14 @@ suite(extension_item_tests.suiteName, function() {
     flush();
   });
 
-  test(assert(extension_item_tests.TestNames.RemoveButton), function() {
+  test(extension_item_tests.TestNames.RemoveButton, function() {
     assertFalse(item.$.removeButton.hidden);
     item.set('data.mustRemainInstalled', true);
     flush();
     assertTrue(item.$.removeButton.hidden);
   });
 
-  test(assert(extension_item_tests.TestNames.HtmlInName), function() {
+  test(extension_item_tests.TestNames.HtmlInName, function() {
     const name = '<HTML> in the name!';
     item.set('data.name', name);
     flush();
@@ -411,7 +408,7 @@ suite(extension_item_tests.suiteName, function() {
         `Related to ${name}`, item.$.a11yAssociation.textContent!.trim());
   });
 
-  test(assert(extension_item_tests.TestNames.RepairButton), function() {
+  test(extension_item_tests.TestNames.RepairButton, function() {
     // For most extensions, the "repair" button should be displayed if the
     // extension is detected as corrupted.
     testVisible(item, '#repair-button', false);
@@ -431,8 +428,7 @@ suite(extension_item_tests.suiteName, function() {
   });
 
   test(
-      assert(extension_item_tests.TestNames.InspectableViewSortOrder),
-      function() {
+      extension_item_tests.TestNames.InspectableViewSortOrder, function() {
         function getUrl(path: string) {
           return `chrome-extension://${extensionData.id}/${path}`;
         }

@@ -5,7 +5,6 @@
 import 'chrome://extensions/extensions.js';
 
 import {ExtensionsManagerElement, navigation, Page} from 'chrome://extensions/extensions.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -44,8 +43,7 @@ suite(extension_manager_tests.suiteName, function() {
   });
 
   test(
-      assert(extension_manager_tests.TestNames.UrlNavigationToDetails),
-      function() {
+      extension_manager_tests.TestNames.UrlNavigationToDetails, function() {
         assertViewActive('extensions-detail-view');
         const detailsView =
             manager.shadowRoot!.querySelector('extensions-detail-view');
@@ -69,7 +67,7 @@ suite(extension_manager_tests.suiteName, function() {
       });
 
   test(
-      assert(extension_manager_tests.TestNames.UrlNavigationToActivityLogFail),
+      extension_manager_tests.TestNames.UrlNavigationToActivityLogFail,
       function() {
         assertFalse(manager.showActivityLog);
 

@@ -5,10 +5,8 @@
 /** @fileoverview Suite of tests for extensions-detail-view. */
 
 import {CrCheckboxElement, ExtensionsDetailViewElement, ExtensionsToggleRowElement, navigation, Page} from 'chrome://extensions/extensions.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -61,7 +59,7 @@ suite(extension_detail_view_tests.suiteName, function() {
     document.body.appendChild(item);
   });
 
-  test(assert(extension_detail_view_tests.TestNames.Layout), function() {
+  test(extension_detail_view_tests.TestNames.Layout, function() {
     flush();
 
     const testIsVisible: (selector: string) => boolean =
@@ -242,7 +240,7 @@ suite(extension_detail_view_tests.suiteName, function() {
     assertTrue(testIsVisible('extensions-host-permissions-toggle-list'));
   });
 
-  test(assert(extension_detail_view_tests.TestNames.LayoutSource), function() {
+  test(extension_detail_view_tests.TestNames.LayoutSource, function() {
     item.set('data.location', 'FROM_STORE');
     flush();
     assertEquals('Chrome Web Store', item.$.source.textContent!.trim());
@@ -275,8 +273,7 @@ suite(extension_detail_view_tests.suiteName, function() {
   });
 
   test(
-      assert(
-          extension_detail_view_tests.TestNames.SupervisedUserDisableReasons),
+      extension_detail_view_tests.TestNames.SupervisedUserDisableReasons,
       function() {
         flush();
         const toggle = item.$.enableToggle;
@@ -311,8 +308,7 @@ suite(extension_detail_view_tests.suiteName, function() {
       });
 
   test(
-      assert(extension_detail_view_tests.TestNames.ClickableElements),
-      function() {
+      extension_detail_view_tests.TestNames.ClickableElements, function() {
         const optionsUrl =
             'chrome-extension://' + extensionData.id + '/options.html';
         item.set('data.optionsPage', {openInTab: true, url: optionsUrl});
@@ -377,7 +373,7 @@ suite(extension_detail_view_tests.suiteName, function() {
             'reloadItem', [extensionData.id], Promise.resolve());
       });
 
-  test(assert(extension_detail_view_tests.TestNames.Indicator), function() {
+  test(extension_detail_view_tests.TestNames.Indicator, function() {
     const indicator = item.shadowRoot!.querySelector('cr-tooltip-icon')!;
     assertTrue(indicator.hidden);
     item.set('data.controlledInfo', {text: 'policy'});
@@ -385,7 +381,7 @@ suite(extension_detail_view_tests.suiteName, function() {
     assertFalse(indicator.hidden);
   });
 
-  test(assert(extension_detail_view_tests.TestNames.Warnings), function() {
+  test(extension_detail_view_tests.TestNames.Warnings, function() {
     function testWarningVisible(id: string, expectVisible: boolean): void {
       const f: (arg: boolean) => void =
           expectVisible ? assertTrue : assertFalse;
@@ -491,8 +487,8 @@ suite(extension_detail_view_tests.suiteName, function() {
   });
 
   test(
-      assert(extension_detail_view_tests.TestNames
-                 .NoSiteAccessWithEnhancedSiteControls),
+      extension_detail_view_tests.TestNames
+          .NoSiteAccessWithEnhancedSiteControls,
       function() {
         const testIsVisible = isChildVisible.bind(null, item);
 
@@ -529,7 +525,7 @@ suite(extension_detail_view_tests.suiteName, function() {
       });
 
   test(
-      assert(extension_detail_view_tests.TestNames.InspectableViewSortOrder),
+      extension_detail_view_tests.TestNames.InspectableViewSortOrder,
       function() {
         function getUrl(path: string) {
           return `chrome-extension://${extensionData.id}/${path}`;
@@ -564,7 +560,7 @@ suite(extension_detail_view_tests.suiteName, function() {
       });
 
   test(
-      assert(extension_detail_view_tests.TestNames.ShowAccessRequestsInToolbar),
+      extension_detail_view_tests.TestNames.ShowAccessRequestsInToolbar,
       function() {
         const testIsVisible = isChildVisible.bind(null, item);
 
