@@ -444,7 +444,7 @@ class ScheduledNotificationManagerImpl : public ScheduledNotificationManager {
   std::map<SchedulerClientType,
            std::map<std::string, std::unique_ptr<NotificationEntry>>>
       notifications_;
-  const raw_ref<const SchedulerConfig> config_;
+  const raw_ref<const SchedulerConfig, DanglingUntriaged> config_;
   base::WeakPtrFactory<ScheduledNotificationManagerImpl> weak_ptr_factory_{
       this};
 };

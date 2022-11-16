@@ -81,13 +81,13 @@ struct InstallableData {
 
   // The URL of the the web app manifest. Empty if the site has no
   // <link rel="manifest"> tag.
-  const raw_ref<const GURL> manifest_url;
+  const raw_ref<const GURL, DanglingUntriaged> manifest_url;
 
   // The parsed web app manifest.
-  const raw_ref<const blink::mojom::Manifest> manifest;
+  const raw_ref<const blink::mojom::Manifest, DanglingUntriaged> manifest;
 
   // The URL of the chosen primary icon.
-  const raw_ref<const GURL> primary_icon_url;
+  const raw_ref<const GURL, DanglingUntriaged> primary_icon_url;
 
   // nullptr if the most appropriate primary icon couldn't be determined or
   // downloaded. The underlying primary icon is owned by the InstallableManager;
@@ -99,7 +99,7 @@ struct InstallableData {
   const bool has_maskable_primary_icon;
 
   // The URL of the chosen splash icon.
-  const raw_ref<const GURL> splash_icon_url;
+  const raw_ref<const GURL, DanglingUntriaged> splash_icon_url;
 
   // nullptr if the most appropriate splash icon couldn't be determined or
   // downloaded. The underlying splash icon is owned by the InstallableManager;
@@ -114,7 +114,7 @@ struct InstallableData {
   const bool has_maskable_splash_icon;
 
   // The screenshots to show in the install UI.
-  const raw_ref<const std::vector<Screenshot>> screenshots;
+  const raw_ref<const std::vector<Screenshot>, DanglingUntriaged> screenshots;
 
   // true if the site has a valid, installable web app manifest. If
   // |valid_manifest| or |worker_check_passed| was true and the site isn't

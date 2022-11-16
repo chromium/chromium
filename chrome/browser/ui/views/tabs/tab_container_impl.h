@@ -342,7 +342,7 @@ class TabContainerImpl : public TabContainer,
   // This view is animated by `bounds_animator_` to guarantee that this
   // container's bounds change smoothly when tabs are animated into or out of
   // this container.
-  const raw_ref<views::View> overall_bounds_view_;
+  const raw_ref<views::View, DanglingUntriaged> overall_bounds_view_;
 
   // Responsible for animating tabs in response to model changes.
   views::BoundsAnimator bounds_animator_;

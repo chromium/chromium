@@ -312,7 +312,8 @@ class LayerTreeHostImpl::ImageDecodeCacheHolder {
   }
 
  private:
-  raw_ptr<ImageDecodeCache> image_decode_cache_ptr_ = nullptr;
+  raw_ptr<ImageDecodeCache, DanglingUntriaged> image_decode_cache_ptr_ =
+      nullptr;
   std::unique_ptr<ImageDecodeCache> image_decode_cache_;
 };
 

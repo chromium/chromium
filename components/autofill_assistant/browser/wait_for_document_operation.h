@@ -47,7 +47,8 @@ class WaitForDocumentOperation {
   raw_ptr<ScriptExecutorDelegate> script_executor_delegate_;
   base::TimeDelta max_wait_time_;
   DocumentReadyState min_ready_state_;
-  const raw_ref<const ElementFinderResult> optional_frame_element_;
+  const raw_ref<const ElementFinderResult, DanglingUntriaged>
+      optional_frame_element_;
   Callback callback_;
   base::OneShotTimer timer_;
 

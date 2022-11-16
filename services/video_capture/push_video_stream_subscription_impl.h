@@ -70,7 +70,7 @@ class PushVideoStreamSubscriptionImpl
   const media::VideoCaptureParams requested_settings_;
   mojom::VideoSource::CreatePushSubscriptionCallback creation_callback_;
   const raw_ptr<BroadcastingReceiver> broadcaster_;
-  raw_ptr<Device> device_;
+  raw_ptr<Device, DanglingUntriaged> device_;
   Status status_{Status::kCreationCallbackNotYetRun};
 
   // Client id handed out by |broadcaster_| when registering |this| as its

@@ -200,7 +200,7 @@ class ImpressionHistoryTrackerImpl : public ImpressionHistoryTracker {
   std::unique_ptr<CollectionStore<ClientState>> store_;
 
   // System configuration.
-  const raw_ref<const SchedulerConfig> config_;
+  const raw_ref<const SchedulerConfig, DanglingUntriaged> config_;
 
   const std::vector<SchedulerClientType> registered_clients_;
 

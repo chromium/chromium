@@ -232,7 +232,7 @@ class PasswordProtectionRequest
   const GURL password_form_frame_url_;
 
   // The contents MIME type.
-  const raw_ref<const std::string> mime_type_;
+  const raw_ref<const std::string, DanglingUntriaged> mime_type_;
 
   // The username of the reused password hash. The username can be an email or
   // a username for a non-GAIA or saved-password reuse. No validation has been

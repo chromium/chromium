@@ -117,7 +117,7 @@ class Http2Connection::DataFrameSource
 
  private:
   const raw_ptr<Http2Connection> connection_;
-  const raw_ref<const StreamId> stream_id_;
+  const raw_ref<const StreamId, DanglingUntriaged> stream_id_;
   std::queue<std::string> chunks_;
   bool last_frame_ = false;
   base::OnceClosure send_completion_callback_;

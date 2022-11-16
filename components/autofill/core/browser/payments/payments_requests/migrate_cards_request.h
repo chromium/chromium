@@ -48,7 +48,7 @@ class MigrateCardsRequest : public PaymentsRequest {
                            const std::string& pan_field_name);
 
   const PaymentsClient::MigrationRequestDetails request_details_;
-  const raw_ref<const std::vector<MigratableCreditCard>>
+  const raw_ref<const std::vector<MigratableCreditCard>, DanglingUntriaged>
       migratable_credit_cards_;
   const bool full_sync_enabled_;
   MigrateCardsCallback callback_;

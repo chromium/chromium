@@ -200,8 +200,8 @@ class NewTabPageTest : public InProcessBrowserTest,
 
  protected:
   base::test::ScopedFeatureList features_;
-  raw_ptr<content::WebContents> contents_;
-  raw_ptr<BrowserView> browser_view_;
+  raw_ptr<content::WebContents, DanglingUntriaged> contents_;
+  raw_ptr<BrowserView, DanglingUntriaged> browser_view_;
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
   std::map<std::string, GURL> loading_resources_;
   std::set<GURL> loaded_resources_;

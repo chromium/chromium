@@ -52,8 +52,8 @@ class HeadlessDevTooledBrowserTest : public HeadlessBrowserTest,
 
   void RunTest();
 
-  raw_ptr<HeadlessBrowserContext> browser_context_;
-  raw_ptr<HeadlessWebContents> web_contents_;
+  raw_ptr<HeadlessBrowserContext, DanglingUntriaged> browser_context_;
+  raw_ptr<HeadlessWebContents, DanglingUntriaged> web_contents_;
   simple_devtools_protocol_client::SimpleDevToolsProtocolClient
       devtools_client_;
   simple_devtools_protocol_client::SimpleDevToolsProtocolClient

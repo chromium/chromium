@@ -305,7 +305,7 @@ class DownloadOpenObserver : public download::DownloadItem::Observer {
   base::ScopedObservation<download::DownloadItem,
                           download::DownloadItem::Observer>
       open_observation_{this};
-  raw_ptr<download::DownloadItem> item_;
+  raw_ptr<download::DownloadItem, DanglingUntriaged> item_;
   base::OnceClosure completion_closure_;
 };
 

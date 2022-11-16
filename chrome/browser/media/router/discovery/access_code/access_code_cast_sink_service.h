@@ -342,7 +342,8 @@ class AccessCodeCastSinkService : public KeyedService,
 
   raw_ptr<PrefService, DanglingUntriaged> prefs_;
 
-  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+  raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_ =
+      nullptr;
 
   // This registrar monitors for user prefs changes.
   std::unique_ptr<PrefChangeRegistrar> user_prefs_registrar_;

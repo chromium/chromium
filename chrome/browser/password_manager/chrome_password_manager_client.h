@@ -421,7 +421,8 @@ class ChromePasswordManagerClient
       generated_password_saved_message_delegate_;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  raw_ptr<password_manager::ContentPasswordManagerDriverFactory>
+  raw_ptr<password_manager::ContentPasswordManagerDriverFactory,
+          DanglingUntriaged>
       driver_factory_;
 
   // As a mojo service, will be registered into service registry

@@ -1039,7 +1039,7 @@ class GetDisplayMediaHiDpiBrowserTest
 
   base::test::ScopedFeatureList feature_list_;
   const TestConfigForHiDpi test_config_;
-  raw_ptr<content::WebContents> tab_ = nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged> tab_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_P(GetDisplayMediaHiDpiBrowserTest, Capture) {

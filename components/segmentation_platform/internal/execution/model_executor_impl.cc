@@ -30,7 +30,8 @@ struct ModelExecutorImpl::ModelExecutionTraceEvent {
                            const ModelExecutorImpl::ExecutionState& state);
   ~ModelExecutionTraceEvent();
 
-  const raw_ref<const ModelExecutorImpl::ExecutionState> state;
+  const raw_ref<const ModelExecutorImpl::ExecutionState, DanglingUntriaged>
+      state;
 };
 
 struct ModelExecutorImpl::ExecutionState {

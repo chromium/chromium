@@ -118,10 +118,10 @@ class NtpCustomBackgroundService : public KeyedService,
                                                       const GURL& fetch_url);
 
   const raw_ptr<Profile> profile_;
-  raw_ptr<PrefService> pref_service_;
-  raw_ptr<ThemeService> theme_service_;
+  raw_ptr<PrefService, DanglingUntriaged> pref_service_;
+  raw_ptr<ThemeService, DanglingUntriaged> theme_service_;
   PrefChangeRegistrar pref_change_registrar_;
-  raw_ptr<NtpBackgroundService> background_service_;
+  raw_ptr<NtpBackgroundService, DanglingUntriaged> background_service_;
   base::ScopedObservation<NtpBackgroundService, NtpBackgroundServiceObserver>
       background_service_observation_{this};
   raw_ptr<base::Clock> clock_;
