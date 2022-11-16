@@ -43209,8 +43209,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="50" label="Show Unfollow Succeed Snackbar."/>
   <int value="51" label="Show Unfollow Failed Snackbar."/>
   <int value="52"
-      label="User tapped to go to feed using the snackbar 'go to feed'
-             option."/>
+      label="User tapped to go to Following feed using the snackbar 'go to
+             Following' option."/>
   <int value="53" label="User tapped the Crow button in the context menu."/>
   <int value="54" label="Show First Follow Sheet."/>
   <int value="55"
@@ -43233,6 +43233,9 @@ Called by update_permissions_policy_enum.py.-->
   <int value="62"
       label="User tapped the follow accelerator which is presented after a
              user taps on a recommendation that is in the feed."/>
+  <int value="63"
+      label="User requested to refresh the Following feed using the
+             post-follow snackbar 'refresh' action."/>
 </enum>
 
 <enum name="FeedUserCommandType">

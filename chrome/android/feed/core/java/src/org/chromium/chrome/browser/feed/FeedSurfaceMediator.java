@@ -173,6 +173,11 @@ public class FeedSurfaceMediator
                 FeedSurfaceMediator.this.switchToStream(headerIndex);
             }
         }
+
+        @Override
+        public void refreshStream() {
+            mCoordinator.onRefresh();
+        }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -1157,7 +1162,7 @@ public class FeedSurfaceMediator
         return mSignInPromo;
     }
 
-    public void manualRefresh(Callback<Boolean> callback) {
+    void manualRefresh(Callback<Boolean> callback) {
         if (mCurrentStream != null) {
             mCurrentStream.triggerRefresh(callback);
         } else {

@@ -674,12 +674,19 @@ public class FeedStream implements Stream {
         mFeedAutoplaySettingsDelegate = feedAutoplaySettingsDelegate;
         mRotationObserver = new RotationObserver();
         mFeedContentFirstLoadWatcher = feedContentFirstLoadWatcher;
-        WebFeedSnackbarController.FeedLauncher switchToFollowing = () -> {
-            // Note: for now there's no need to store streamsMediator as an instance variable.
-            streamsMediator.switchToStreamKind(StreamKind.FOLLOWING);
-        };
-        mWebFeedSnackbarController = new WebFeedSnackbarController(activity, switchToFollowing,
-                windowAndroid.getModalDialogManager(), snackbarManager);
+        WebFeedSnackbarController.FeedLauncher snackbarAction;
+        // Note: for now there's no need to store streamsMediator as an instance variable.
+        if (mStreamKind == StreamKind.FOLLOWING) {
+            snackbarAction = () -> {
+                streamsMediator.refreshStream();
+            };
+        } else {
+            snackbarAction = () -> {
+                streamsMediator.switchToStreamKind(StreamKind.FOLLOWING);
+            };
+        }
+        mWebFeedSnackbarController = new WebFeedSnackbarController(
+                activity, snackbarAction, windowAndroid.getModalDialogManager(), snackbarManager);
 
         mHandlersMap = new HashMap<>();
         mHandlersMap.put(SurfaceActionsHandler.KEY, new FeedSurfaceActionsHandler(actionDelegate));
@@ -803,6 +810,7 @@ public class FeedStream implements Stream {
             mSnackManager.dismissSnackbars(controller);
         }
         mSnackbarControllers.clear();
+        mWebFeedSnackbarController.dismissSnackbars();
 
         mSliceViewTracker.destroy();
         mSliceViewTracker = null;

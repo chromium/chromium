@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feature_engagement.TriggerDetails;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.url.GURL;
@@ -171,14 +172,28 @@ public final class WebFeedSnackbarControllerTest {
                 mContext.getString(R.string.web_feed_follow_success_snackbar_message,
                         getSuccessfulFollowResult().metadata.title),
                 snackbar.getTextForTesting());
+        assertEquals("Snackbar action should be for going to the Following feed.",
+                mContext.getString(
+                        R.string.web_feed_follow_success_snackbar_action_go_to_following),
+                snackbar.getActionText());
     }
 
     @Test
-    public void showPostSuccessfulFollowHelp_NoSnackbar_FromFollowingFeed() {
+    public void showPostSuccessfulFollowHelp_ShowsSnackbar_FromFollowingFeed() {
         mWebFeedSnackbarController.showPostSuccessfulFollowHelp(sTitle, true, StreamKind.FOLLOWING);
 
         assertFalse("Dialog should not be showing.", mDialogManager.isShowing());
-        verify(mSnackbarManager, times(0)).showSnackbar(any());
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar snackbar = mSnackbarCaptor.getValue();
+        assertEquals("Snackbar should be for successful follow.",
+                Snackbar.UMA_WEB_FEED_FOLLOW_SUCCESS, snackbar.getIdentifierForTesting());
+        assertEquals("Snackbar message should be for successful follow with title from metadata.",
+                mContext.getString(R.string.web_feed_follow_success_snackbar_message,
+                        getSuccessfulFollowResult().metadata.title),
+                snackbar.getTextForTesting());
+        assertEquals("Snackbar action should be for refreshing the contents of the feed.",
+                mContext.getString(R.string.web_feed_follow_success_snackbar_action_refresh),
+                snackbar.getActionText());
     }
 
     @Test
@@ -249,10 +264,45 @@ public final class WebFeedSnackbarControllerTest {
 
         View currentDialog =
                 mDialogManager.getCurrentDialogForTest().get(ModalDialogProperties.CUSTOM_VIEW);
-        verify(mSnackbarManager, times(0)).showSnackbar(any());
         assertTrue("Dialog should be showing.", mDialogManager.isShowing());
         // TODO(b/243676323): figure out how to test the positive_button label, which is out of the
         // currentDialog hierarchy.
+
+        // No snackbar should be shown after the dialog is closed.
+        mDialogManager.dismissAllDialogs(DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+        verify(mSnackbarManager, times(0)).showSnackbar(any());
+    }
+
+    @Test
+    public void showPostSuccessfulFollowHelp_DialogAndSnackbar_FromFollowingFeed() {
+        when(mTracker.shouldTriggerHelpUI(FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE))
+                .thenReturn(true);
+        when(mTracker.shouldTriggerHelpUIWithSnooze(
+                     FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE))
+                .thenReturn(new TriggerDetails(true, false));
+
+        mWebFeedSnackbarController.showPostSuccessfulFollowHelp(sTitle, true, StreamKind.FOLLOWING);
+
+        verify(mSnackbarManager, times(0)).showSnackbar(any());
+        View currentDialog =
+                mDialogManager.getCurrentDialogForTest().get(ModalDialogProperties.CUSTOM_VIEW);
+        assertTrue("Dialog should be showing.", mDialogManager.isShowing());
+        // TODO(b/243676323): figure out how to test the positive_button label, which is out of the
+        // currentDialog hierarchy.
+
+        // A snackbar should be shown when the dialog is closed, offering the refresh action.
+        mDialogManager.dismissAllDialogs(DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar snackbar = mSnackbarCaptor.getValue();
+        assertEquals("Snackbar should be for successful follow.",
+                Snackbar.UMA_WEB_FEED_FOLLOW_SUCCESS, snackbar.getIdentifierForTesting());
+        assertEquals("Snackbar message should be for successful follow with title from metadata.",
+                mContext.getString(R.string.web_feed_follow_success_snackbar_message,
+                        getSuccessfulFollowResult().metadata.title),
+                snackbar.getTextForTesting());
+        assertEquals("Snackbar action should be for refreshing the contents of the feed.",
+                mContext.getString(R.string.web_feed_follow_success_snackbar_action_refresh),
+                snackbar.getActionText());
     }
 
     @Test

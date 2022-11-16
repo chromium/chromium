@@ -28,6 +28,11 @@ public interface Stream {
          * @param streamKind The {@link StreamKind} of the stream to switch to.
          */
         void switchToStreamKind(@StreamKind int streamKind);
+
+        /**
+         * Request the immediate refresh of the contents of the active stream.
+         */
+        void refreshStream();
     }
     /** Called when the Stream is no longer needed. */
     default void destroy() {}
@@ -64,7 +69,7 @@ public interface Stream {
     /**
      * Allow the container to trigger a refresh of the stream.
      *
-     * <p>Note: this will assume {@link RequestReason.HOST_REQUESTED}.
+     * <p>Note: this will assume {@link RequestReason.MANUAL_REFRESH}.
      */
     void triggerRefresh(Callback<Boolean> callback);
 
