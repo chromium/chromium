@@ -1,8 +1,8 @@
 This is a testharness.js-based test.
-Found 60 tests; 58 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 60 tests; 59 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS getDisplayMedia in navigator.mediaDevices
 FAIL getDisplayMedia() must require user activation assert_unreached: Should have rejected: getDisplayMedia should have returned an already-rejected promise. Reached unreachable code
-FAIL getDisplayMedia() must adhere to frameRate if set assert_greater_than_equal: expected a number greater than or equal to 2.5 but got NaN
+PASS getDisplayMedia() must adhere to frameRate if set
 PASS getDisplayMedia({"video":true}) must succeed with video
 PASS getDisplayMedia({"video":true,"audio":false}) must succeed with video
 PASS getDisplayMedia({"video":{}}) must succeed with video
