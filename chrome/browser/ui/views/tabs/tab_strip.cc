@@ -1292,7 +1292,7 @@ TabDragContext* TabStrip::GetDragContext() {
 }
 
 bool TabStrip::IsAnimating() const {
-  return tab_container_->IsAnimating();
+  return tab_container_->IsAnimating() || drag_context_->IsAnimatingDragEnd();
 }
 
 void TabStrip::StopAnimating(bool layout) {
@@ -1359,6 +1359,18 @@ bool TabStrip::CanExtendDragHandle() const {
 
 const views::View* TabStrip::GetTabClosingModeMouseWatcherHostView() const {
   return this;
+}
+
+bool TabStrip::IsAnimatingInTabStrip() const {
+  return IsAnimating();
+}
+
+void TabStrip::UpdateAnimationTarget(TabSlotView* tab_slot_view,
+                                     gfx::Rect target_bounds) {
+  // TODO(1116121): This may need to do coordinate space transformations if the
+  // view hierarchy changes so `tab_container_` and `drag_context_` don't share
+  // spaces.
+  drag_context_->UpdateAnimationTarget(tab_slot_view, target_bounds);
 }
 
 bool TabStrip::IsGroupCollapsed(const tab_groups::TabGroupId& group) const {

@@ -109,8 +109,7 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
   // (cough TabDragController cough) moves tabs directly.
   virtual void InvalidateIdealBounds() = 0;
 
-  // Returns true if any tabs are being animated, whether by |this| or by
-  // |drag_context_|.
+  // Returns true if any tabs are being animated by this TabContainer.
   virtual bool IsAnimating() const = 0;
 
   // Stops any ongoing animations, leaving tabs where they are.

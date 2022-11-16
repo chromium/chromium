@@ -63,6 +63,14 @@ class FakeTabContainerController final : public TabContainerController {
       : tab_strip_controller_(tab_strip_controller) {}
   ~FakeTabContainerController() override = default;
 
+  void set_tab_container(TabContainer* tab_container) {
+    tab_container_ = tab_container;
+  }
+
+  void set_is_animating_outside_container(bool is_animating_outside_container) {
+    is_animating_outside_container_ = is_animating_outside_container;
+  }
+
   bool IsValidModelIndex(int index) const override {
     return tab_strip_controller_->IsValidIndex(index);
   }
@@ -109,8 +117,19 @@ class FakeTabContainerController final : public TabContainerController {
     return nullptr;
   }
 
+  bool IsAnimatingInTabStrip() const override {
+    return tab_container_->IsAnimating() || is_animating_outside_container_;
+  }
+
+  void UpdateAnimationTarget(TabSlotView* tab_slot_view,
+                             gfx::Rect target_bounds) override {}
+
  private:
   const raw_ref<TabStripController> tab_strip_controller_;
+  raw_ptr<const TabContainer> tab_container_;
+
+  // Set this to true to emulate a tab being animated outside `tab_container_`.
+  bool is_animating_outside_container_ = false;
 };
 }  // namespace
 
@@ -141,14 +160,15 @@ class TabContainerTest : public ChromeViewsTestBase {
         [](TabContainerTest* test) { return test->tab_container_width_; },
         this));
 
+    tab_container_controller_->set_tab_container(tab_container.get());
+    tab_slot_controller_->set_tab_container(tab_container.get());
+
     widget_ = CreateTestWidget();
     tab_container_ =
         widget_->GetRootView()->AddChildView(std::move(tab_container));
     drag_context_ =
         widget_->GetRootView()->AddChildView(std::move(drag_context));
     SetTabContainerWidth(1000);
-
-    tab_slot_controller_->set_tab_container(tab_container_);
   }
 
   void TearDown() override {

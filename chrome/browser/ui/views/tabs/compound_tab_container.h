@@ -101,6 +101,13 @@ class CompoundTabContainer : public TabContainer {
       const absl::optional<BrowserRootView::DropIndex>& index) override;
   void HandleDragExited() override;
 
+  // Notifies this CompoundTabContainer that `tab_slot_view` must be animated to
+  // `target_bounds`. `pinned` indicates whether these bounds are relative to
+  // `pinned_tab_container_` or `unpinned_tab_container_`.
+  void UpdateAnimationTarget(TabSlotView* tab_slot_view,
+                             gfx::Rect target_bounds,
+                             TabPinned pinned);
+
  private:
   int NumPinnedTabs() const;
 
@@ -115,11 +122,22 @@ class CompoundTabContainer : public TabContainer {
   // the index that corresponds to `to_model_index`.
   void TransferTabBetweenContainers(int from_model_index, int to_model_index);
 
+  // Converts `ideal_bounds` from `unpinned_tab_container_`'s coordinate space
+  // into local coordinate space. References ideal bounds instead of current
+  // bounds to correctly account for any ongoing animations in the pinned tab
+  // container.
+  gfx::Rect ConvertUnpinnedContainerIdealBoundsToLocal(
+      gfx::Rect ideal_bounds) const;
+
   // Returns the child TabContainer that should contain `view`. NB this can be
   // different from `view->parent()` e.g. while `view` is being dragged.
   raw_ref<TabContainer> GetTabContainerFor(TabSlotView* view);
 
   TabContainer* GetTabContainerAt(gfx::Point point_in_local_coords);
+
+  // Returns the x position that `unpinned_tab_container_` should be at after
+  // any running animations finish.
+  int GetUnpinnedContainerIdealLeadingX() const;
 
   int GetAvailableWidthForUnpinnedTabContainer(
       base::RepeatingCallback<int()> available_width_callback);

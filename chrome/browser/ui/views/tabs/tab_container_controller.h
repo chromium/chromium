@@ -7,6 +7,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range.h"
 
 namespace tab_groups {
@@ -16,6 +17,8 @@ class TabGroupId;
 namespace views {
 class View;
 }
+
+class TabSlotView;
 
 // Model/Controller for the TabContainer.
 // NOTE: All indices used by this class are in model coordinates.
@@ -66,6 +69,15 @@ class TabContainerController {
   // this view. See `TabContainerImpl::in_tab_close_` for more details on tab
   // closing mode.
   virtual const views::View* GetTabClosingModeMouseWatcherHostView() const = 0;
+
+  // Returns true if any tabs are being animated, anywhere in the TabStrip.
+  virtual bool IsAnimatingInTabStrip() const = 0;
+
+  // Retargets the animation of `tab_slot_view` to
+  // `target_bounds_in_tab_container_coords`, without disrupting its timing.
+  virtual void UpdateAnimationTarget(
+      TabSlotView* tab_slot_view,
+      gfx::Rect target_bounds_in_tab_container_coords) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTAINER_CONTROLLER_H_

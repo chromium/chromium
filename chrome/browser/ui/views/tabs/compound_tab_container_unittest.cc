@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/tabs/tab_drag_context.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "tab_style_views.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -83,6 +84,13 @@ class FakeTabContainerController final : public TabContainerController {
     return nullptr;
   }
 
+  bool IsAnimatingInTabStrip() const override { return false; }
+
+  MOCK_METHOD(void,
+              UpdateAnimationTarget,
+              (TabSlotView*, gfx::Rect),
+              (override));
+
  private:
   const raw_ref<TabStripController> tab_strip_controller_;
 };
@@ -101,12 +109,14 @@ class CompoundTabContainerTest : public ChromeViewsTestBase {
     tab_strip_controller_ = std::make_unique<FakeBaseTabStripController>();
     tab_container_controller_ = std::make_unique<FakeTabContainerController>(
         *(tab_strip_controller_.get()));
+    ON_CALL(*tab_container_controller_, UpdateAnimationTarget)
+        .WillByDefault(testing::Return());
     tab_slot_controller_ =
         std::make_unique<FakeTabSlotController>(tab_strip_controller_.get());
 
     std::unique_ptr<TabDragContextBase> drag_context =
         std::make_unique<FakeTabDragContext>();
-    std::unique_ptr<TabContainer> tab_container =
+    std::unique_ptr<CompoundTabContainer> tab_container =
         std::make_unique<CompoundTabContainer>(
             raw_ref<TabContainerController>(*(tab_container_controller_.get())),
             nullptr /*hover_card_controller*/, drag_context.get(),
@@ -195,7 +205,7 @@ class CompoundTabContainerTest : public ChromeViewsTestBase {
   std::unique_ptr<FakeTabContainerController> tab_container_controller_;
   std::unique_ptr<FakeTabSlotController> tab_slot_controller_;
   raw_ptr<TabDragContextBase> drag_context_;
-  raw_ptr<TabContainer> tab_container_;
+  raw_ptr<CompoundTabContainer> tab_container_;
   std::unique_ptr<views::Widget> widget_;
 
   int tab_container_width_ = 0;
@@ -430,4 +440,37 @@ TEST_F(CompoundTabContainerTest, ExitsClosingModeWhenClosingLastUnpinnedTab) {
   RemoveTab(tab_container_->GetTabCount() - 1);
   tab_container_->CompleteAnimationAndLayout();
   EXPECT_FALSE(tab_container_->InTabClose());
+}
+
+TEST_F(CompoundTabContainerTest, UpdateAnimationTarget) {
+  using testing::Return;
+
+  gfx::Rect animation_target(10, 10);
+
+  // Start with one unpinned tab.
+  Tab* tab = AddTab(0, TabPinned::kUnpinned);
+  // Verify that animation target updates for unpinned container are unchanged
+  // when there are no pinned tabs.
+  EXPECT_CALL(*tab_container_controller_,
+              UpdateAnimationTarget(testing::_, animation_target))
+      .WillOnce(Return());
+  tab_container_->UpdateAnimationTarget(tab, animation_target,
+                                        TabPinned::kUnpinned);
+
+  // Add a pinned tab.
+  AddTab(0, TabPinned::kPinned);
+  // Verify that animation target updates for pinned container are unchanged.
+  EXPECT_CALL(*tab_container_controller_,
+              UpdateAnimationTarget(testing::_, animation_target))
+      .WillOnce(Return());
+  tab_container_->UpdateAnimationTarget(tab, animation_target,
+                                        TabPinned::kPinned);
+
+  // Verify that animation target updates for unpinned container are adjusted
+  // when there are pinned tabs.
+  EXPECT_CALL(*tab_container_controller_,
+              UpdateAnimationTarget(testing::_, testing::Ne(animation_target)))
+      .WillOnce(Return());
+  tab_container_->UpdateAnimationTarget(tab, animation_target,
+                                        TabPinned::kUnpinned);
 }

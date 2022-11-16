@@ -24,8 +24,10 @@ namespace {
 class PinnedTabContainerController final : public TabContainerController {
  public:
   explicit PinnedTabContainerController(
-      raw_ref<TabContainerController> base_controller)
-      : base_controller_(base_controller) {}
+      raw_ref<TabContainerController> base_controller,
+      CompoundTabContainer& compound_tab_container)
+      : base_controller_(base_controller),
+        compound_tab_container_(compound_tab_container) {}
 
   ~PinnedTabContainerController() override = default;
 
@@ -74,15 +76,28 @@ class PinnedTabContainerController final : public TabContainerController {
     return base_controller_->GetTabClosingModeMouseWatcherHostView();
   }
 
+  bool IsAnimatingInTabStrip() const override {
+    return base_controller_->IsAnimatingInTabStrip();
+  }
+
+  void UpdateAnimationTarget(TabSlotView* tab_slot_view,
+                             gfx::Rect target_bounds) override {
+    compound_tab_container_->UpdateAnimationTarget(tab_slot_view, target_bounds,
+                                                   TabPinned::kPinned);
+  }
+
  private:
   const raw_ref<TabContainerController> base_controller_;
+  const raw_ref<CompoundTabContainer> compound_tab_container_;
 };
 
 class UnpinnedTabContainerController final : public TabContainerController {
  public:
   explicit UnpinnedTabContainerController(
-      raw_ref<TabContainerController> base_controller)
-      : base_controller_(base_controller) {}
+      raw_ref<TabContainerController> base_controller,
+      CompoundTabContainer& compound_tab_container)
+      : base_controller_(base_controller),
+        compound_tab_container_(compound_tab_container) {}
 
   ~UnpinnedTabContainerController() override = default;
 
@@ -133,6 +148,16 @@ class UnpinnedTabContainerController final : public TabContainerController {
     return base_controller_->GetTabClosingModeMouseWatcherHostView();
   }
 
+  bool IsAnimatingInTabStrip() const override {
+    return base_controller_->IsAnimatingInTabStrip();
+  }
+
+  void UpdateAnimationTarget(TabSlotView* tab_slot_view,
+                             gfx::Rect target_bounds) override {
+    compound_tab_container_->UpdateAnimationTarget(tab_slot_view, target_bounds,
+                                                   TabPinned::kUnpinned);
+  }
+
  private:
   absl::optional<int> ModelToContainerIndex(int model_index) const {
     if (model_index < base_controller_->NumPinnedTabsInModel() ||
@@ -152,6 +177,7 @@ class UnpinnedTabContainerController final : public TabContainerController {
   }
 
   const raw_ref<TabContainerController> base_controller_;
+  const raw_ref<CompoundTabContainer> compound_tab_container_;
 };
 }  // namespace
 
@@ -163,7 +189,7 @@ CompoundTabContainer::CompoundTabContainer(
     views::View* scroll_contents_view)
     : controller_(controller),
       pinned_tab_container_controller_(
-          std::make_unique<PinnedTabContainerController>(controller)),
+          std::make_unique<PinnedTabContainerController>(controller, *this)),
       pinned_tab_container_(*AddChildView(std::make_unique<TabContainerImpl>(
           *(pinned_tab_container_controller_.get()),
           hover_card_controller,
@@ -171,7 +197,7 @@ CompoundTabContainer::CompoundTabContainer(
           tab_slot_controller,
           scroll_contents_view))),
       unpinned_tab_container_controller_(
-          std::make_unique<UnpinnedTabContainerController>(controller)),
+          std::make_unique<UnpinnedTabContainerController>(controller, *this)),
       unpinned_tab_container_(*AddChildView(std::make_unique<TabContainerImpl>(
           *(unpinned_tab_container_controller_.get()),
           hover_card_controller,
@@ -502,23 +528,18 @@ int CompoundTabContainer::GetInactiveTabWidth() const {
 }
 
 gfx::Rect CompoundTabContainer::GetIdealBounds(int model_index) const {
-  const raw_ref<TabContainer> sub_container = model_index < NumPinnedTabs()
-                                                  ? pinned_tab_container_
-                                                  : unpinned_tab_container_;
-  const int submodel_index = model_index < NumPinnedTabs()
-                                 ? model_index
-                                 : model_index - NumPinnedTabs();
+  // Ideal bounds for pinned tabs are fine as-is.
+  if (model_index < NumPinnedTabs())
+    return pinned_tab_container_->GetIdealBounds(model_index);
 
-  return gfx::ToEnclosingRect(ConvertRectToTarget(
-      base::to_address(sub_container), this,
-      gfx::RectF(sub_container->GetIdealBounds(submodel_index))));
+  return ConvertUnpinnedContainerIdealBoundsToLocal(
+      unpinned_tab_container_->GetIdealBounds(model_index - NumPinnedTabs()));
 }
 
 gfx::Rect CompoundTabContainer::GetIdealBounds(
     tab_groups::TabGroupId group) const {
-  return gfx::ToEnclosingRect(ConvertRectToTarget(
-      base::to_address(unpinned_tab_container_), this,
-      gfx::RectF(unpinned_tab_container_->GetIdealBounds(group))));
+  return ConvertUnpinnedContainerIdealBoundsToLocal(
+      unpinned_tab_container_->GetIdealBounds(group));
 }
 
 void CompoundTabContainer::Layout() {
@@ -560,6 +581,16 @@ void CompoundTabContainer::HandleDragUpdate(
 
 void CompoundTabContainer::HandleDragExited() {
   NOTREACHED();
+}
+
+void CompoundTabContainer::UpdateAnimationTarget(TabSlotView* tab_slot_view,
+                                                 gfx::Rect target_bounds,
+                                                 TabPinned pinned) {
+  controller_->UpdateAnimationTarget(
+      tab_slot_view,
+      pinned == TabPinned::kPinned
+          ? target_bounds
+          : ConvertUnpinnedContainerIdealBoundsToLocal(target_bounds));
 }
 
 int CompoundTabContainer::NumPinnedTabs() const {
@@ -611,6 +642,14 @@ void CompoundTabContainer::TransferTabBetweenContainers(int from_model_index,
   Layout();
 }
 
+gfx::Rect CompoundTabContainer::ConvertUnpinnedContainerIdealBoundsToLocal(
+    gfx::Rect ideal_bounds) const {
+  const int unpinned_container_ideal_leading_x =
+      GetUnpinnedContainerIdealLeadingX();
+  ideal_bounds.Offset(unpinned_container_ideal_leading_x, 0);
+  return ideal_bounds;
+}
+
 raw_ref<TabContainer> CompoundTabContainer::GetTabContainerFor(
     TabSlotView* view) {
   if (view->GetTabSlotViewType() == TabSlotView::ViewType::kTabGroupHeader)
@@ -634,14 +673,18 @@ TabContainer* CompoundTabContainer::GetTabContainerAt(
   return nullptr;
 }
 
+int CompoundTabContainer::GetUnpinnedContainerIdealLeadingX() const {
+  return NumPinnedTabs() > 0
+             ? pinned_tab_container_->GetIdealBounds(NumPinnedTabs() - 1)
+                   .right()
+             : 0;
+}
+
 int CompoundTabContainer::GetAvailableWidthForUnpinnedTabContainer(
     base::RepeatingCallback<int()> available_width_callback) {
   // The unpinned container gets the width the pinned container doesn't want.
-  // TODO(crbug.com/1346023): Pinned container's preferred width might be a)
-  // not correct during animations and b) expensive to call, maybe triggering
-  // TabStrip relayout sometimes. Could be the cause of the lag spike issue.
-  return available_width_callback.Run() -
-         pinned_tab_container_->GetPreferredSize().width();
+  return GetAvailableWidthForTabContainer() -
+         GetUnpinnedContainerIdealLeadingX();
 }
 
 BEGIN_METADATA(CompoundTabContainer, views::View)

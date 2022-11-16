@@ -562,7 +562,7 @@ void TabContainerImpl::UpdateHoverCard(
   // to change at the same time as the tabstrip is starting to animate; the
   // hover card should not be visible at this time.
   // See crbug.com/1220840 for an example case.
-  if (IsAnimating()) {
+  if (controller_->IsAnimatingInTabStrip()) {
     tab = nullptr;
     update_type = TabSlotController::HoverCardUpdateType::kAnimating;
   }
@@ -627,7 +627,7 @@ void TabContainerImpl::InvalidateIdealBounds() {
 }
 
 bool TabContainerImpl::IsAnimating() const {
-  return bounds_animator_.IsAnimating() || IsDragSessionEnding();
+  return bounds_animator_.IsAnimating();
 }
 
 void TabContainerImpl::CancelAnimation() {
@@ -762,7 +762,7 @@ gfx::Rect TabContainerImpl::GetIdealBounds(tab_groups::TabGroupId group) const {
 }
 
 void TabContainerImpl::Layout() {
-  if (IsAnimating()) {
+  if (controller_->IsAnimatingInTabStrip()) {
     // Hide tabs that have animated at least partially out of the clip region.
     SetTabSlotVisibility();
     return;
@@ -801,7 +801,8 @@ gfx::Size TabContainerImpl::GetMinimumSize() const {
 gfx::Size TabContainerImpl::CalculatePreferredSize() const {
   int preferred_width = 0;
   // Our preferred size is different in different contexts to enable UI polish.
-  if (IsAnimating() && !IsDragSessionActive() && !IsDragSessionEnding()) {
+  if (controller_->IsAnimatingInTabStrip() && !IsDragSessionActive() &&
+      !IsDragSessionEnding()) {
     // During animations not related to a drag session, we want to tightly hug
     // our tabs. This allows the NTB to slide smoothly as tabs are opened and
     // closed.
@@ -1083,13 +1084,13 @@ void TabContainerImpl::AnimateTabSlotViewTo(TabSlotView* tab_slot_view,
 
 void TabContainerImpl::SnapToIdealBounds() {
   for (int i = 0; i < GetTabCount(); ++i) {
-    if (GetTabAtModelIndex(i)->dragging())
+    if (GetTabAtModelIndex(i)->parent() != this)
       continue;
     GetTabAtModelIndex(i)->SetBoundsRect(tabs_view_model_.ideal_bounds(i));
   }
 
   for (const auto& header_pair : group_views_) {
-    if (header_pair.second->header()->dragging())
+    if (header_pair.second->header()->parent() != this)
       continue;
     header_pair.second->header()->SetBoundsRect(
         layout_helper_->group_header_ideal_bounds().at(header_pair.first));
@@ -1168,9 +1169,12 @@ void TabContainerImpl::StartRemoveTabAnimation(Tab* tab,
     }
 
     DCHECK(IsDragSessionEnding());
-    // Notify |drag_context_| of the new animation target, since we can't
-    // animate |tab| ourselves.
-    drag_context_->UpdateAnimationTarget(tab, target_bounds);
+  }
+
+  if (tab->parent() != this) {
+    // Notify our parent of the new animation target, since we can't animate
+    // `tab` ourselves.
+    controller_->UpdateAnimationTarget(tab, target_bounds);
     return;
   }
 
@@ -1450,7 +1454,7 @@ bool TabContainerImpl::ShouldTabBeVisible(const Tab* tab) const {
   // tabstrip were resized to its greatest possible width, it shouldn't be
   // visible.
   int right_edge = tab->bounds().right();
-  const int tabstrip_right = tab->dragging()
+  const int tabstrip_right = tab->parent() != this
                                  ? drag_context_->GetTabDragAreaWidth()
                                  : GetAvailableWidthForTabContainer();
   if (right_edge > tabstrip_right)
