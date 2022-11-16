@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_PERSISTENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_PERSISTENT_H_
 
-#include "base/bind.h"
 #include "third_party/blink/renderer/platform/heap/heap_buildflags.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
@@ -245,6 +244,9 @@ struct DefaultHash<blink::WeakPersistent<T>> : PersistentHashBase<T> {};
 namespace base {
 
 template <typename T>
+struct IsWeakReceiver;
+
+template <typename T>
 struct IsWeakReceiver<blink::WeakPersistent<T>> : std::true_type {};
 
 // template <typename T>
@@ -258,6 +260,9 @@ struct IsWeakReceiver<blink::WeakPersistent<T>> : std::true_type {};
 //     return wrapped.Lock();
 //   }
 // };
+
+template <typename>
+struct MaybeValidTraits;
 
 // TODO(https://crbug.com/653394): Consider returning a thread-safe best
 // guess of validity. MaybeValid() can be invoked from an arbitrary thread.

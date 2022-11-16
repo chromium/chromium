@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/encryptedmedia/encrypted_media_utils.h"
 
+#include "base/notreached.h"
 #include "media/base/eme_constants.h"
 
 namespace blink {

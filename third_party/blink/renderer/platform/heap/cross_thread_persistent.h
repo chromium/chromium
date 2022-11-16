@@ -96,6 +96,9 @@ namespace base {
 template <typename T>
 struct IsWeakReceiver<blink::CrossThreadWeakPersistent<T>> : std::true_type {};
 
+template <typename>
+struct BindUnwrapTraits;
+
 template <typename T>
 struct BindUnwrapTraits<blink::CrossThreadWeakPersistent<T>> {
   static blink::CrossThreadPersistent<T> Unwrap(
