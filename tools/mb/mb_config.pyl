@@ -3596,19 +3596,19 @@
     ],
 
     'release_trybot_backuprefptr_arm64_reclient': [
-      'release_trybot_minimal_symbols_reclient', 'backuprefptr', 'android', 'arm64', 'enable_dangling_raw_ptr_checks',
+      'release_trybot_blink', 'no_goma', 'reclient', 'backuprefptr', 'android', 'arm64', 'enable_dangling_raw_ptr_checks',
     ],
 
     'release_trybot_backuprefptr_arm_reclient': [
-      'release_trybot_minimal_symbols_reclient', 'backuprefptr', 'android', 'arm', 'enable_dangling_raw_ptr_checks',
+      'release_trybot_blink', 'no_goma', 'reclient', 'backuprefptr', 'android', 'arm', 'enable_dangling_raw_ptr_checks',
     ],
 
     'release_trybot_backuprefptr_x64_reclient': [
-      'release_trybot_minimal_symbols_reclient', 'backuprefptr', 'x64', 'enable_dangling_raw_ptr_checks',
+      'release_trybot_blink', 'no_goma', 'reclient', 'backuprefptr', 'x64', 'enable_dangling_raw_ptr_checks',
     ],
 
     'release_trybot_backuprefptr_x86_reclient': [
-      'release_trybot_minimal_symbols_reclient', 'backuprefptr', 'x86', 'enable_dangling_raw_ptr_checks',
+      'release_trybot_blink', 'no_goma', 'reclient', 'backuprefptr', 'x86', 'enable_dangling_raw_ptr_checks',
     ],
 
     'release_trybot_blink': [
