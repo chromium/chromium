@@ -82,6 +82,20 @@ SourceRegistration::Parse(base::Value::Dict registration,
   SourceRegistration result(std::move(*destination),
                             std::move(reporting_origin));
 
+  base::expected<FilterData, SourceRegistrationError> filter_data =
+      FilterData::FromJSON(registration.Find("filter_data"));
+  if (!filter_data.has_value())
+    return base::unexpected(filter_data.error());
+
+  result.filter_data = std::move(*filter_data);
+
+  base::expected<AggregationKeys, SourceRegistrationError> aggregation_keys =
+      AggregationKeys::FromJSON(registration.Find("aggregation_keys"));
+  if (!aggregation_keys.has_value())
+    return base::unexpected(aggregation_keys.error());
+
+  result.aggregation_keys = std::move(*aggregation_keys);
+
   result.source_event_id =
       ParseUint64(registration, "source_event_id").value_or(0);
 
@@ -96,20 +110,6 @@ SourceRegistration::Parse(base::Value::Dict registration,
       ParseTimeDeltaInSeconds(registration, "aggregatable_report_window");
 
   result.debug_key = ParseUint64(registration, "debug_key");
-
-  base::expected<FilterData, SourceRegistrationError> filter_data =
-      FilterData::FromJSON(registration.Find("filter_data"));
-  if (!filter_data.has_value())
-    return base::unexpected(filter_data.error());
-
-  result.filter_data = std::move(*filter_data);
-
-  base::expected<AggregationKeys, SourceRegistrationError> aggregation_keys =
-      AggregationKeys::FromJSON(registration.Find("aggregation_keys"));
-  if (!aggregation_keys.has_value())
-    return base::unexpected(aggregation_keys.error());
-
-  result.aggregation_keys = std::move(*aggregation_keys);
 
   result.debug_reporting =
       registration.FindBool("debug_reporting").value_or(false);
