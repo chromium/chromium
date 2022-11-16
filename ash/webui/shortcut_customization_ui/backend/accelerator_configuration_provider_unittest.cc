@@ -22,6 +22,7 @@
 #include "base/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -165,6 +166,8 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {::features::kImprovedKeyboardShortcuts}, {});
     // ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ENGLISH_US);
 
     ui::ResourceBundle::CleanupSharedInstance();
@@ -188,6 +191,7 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
   }
 
   std::unique_ptr<AcceleratorConfigurationProvider> provider_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(AcceleratorConfigurationProviderTest, ResetReceiverOnBindInterface) {
@@ -387,6 +391,102 @@ TEST_F(AcceleratorConfigurationProviderTest, TopRowKeyAcceleratorRemapped) {
   // Verify observer received the top-row-remapped accelerators.
   ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh,
                                expected_test_data, observer.config());
+}
+
+TEST_F(AcceleratorConfigurationProviderTest, SixPackKeyAcceleratorRemapped) {
+  FakeAcceleratorsUpdatedObserver observer;
+  SetUpObserver(&observer);
+  EXPECT_EQ(0, observer.num_times_notified());
+
+  // kImprovedKeyboardShortcuts is enabled.
+  EXPECT_TRUE(::features::IsImprovedKeyboardShortcutsEnabled());
+
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
+       CYCLE_FORWARD_MRU},
+      // Below are fake shortcuts, only used for testing.
+      {/*trigger_on_press=*/true, ui::VKEY_DELETE, ui::EF_NONE,
+       CYCLE_BACKWARD_MRU},
+      {/*trigger_on_press=*/true, ui::VKEY_HOME, ui::EF_NONE,
+       TAKE_WINDOW_SCREENSHOT},
+      {/*trigger_on_press=*/true, ui::VKEY_HOME, ui::EF_ALT_DOWN,
+       KEYBOARD_BRIGHTNESS_UP},
+      {/*trigger_on_press=*/true, ui::VKEY_END, ui::EF_SHIFT_DOWN,
+       DISABLE_CAPS_LOCK},
+      {/*trigger_on_press=*/true, ui::VKEY_NEXT, ui::EF_ALT_DOWN, NEW_TAB},
+      {/*trigger_on_press=*/true, ui::VKEY_INSERT, ui::EF_NONE, NEW_TAB},
+      {/*trigger_on_press=*/true, ui::VKEY_INSERT, ui::EF_ALT_DOWN, NEW_TAB},
+      // When [search] is part of the original accelerator.
+      {/*trigger_on_press=*/true, ui::VKEY_HOME,
+       ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN, KEYBOARD_BRIGHTNESS_UP},
+      {/*trigger_on_press=*/true, ui::VKEY_END,
+       ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN, DISABLE_CAPS_LOCK},
+      //  Edge case: [Shift] + [Delete].
+      {/*trigger_on_press=*/true, ui::VKEY_DELETE, ui::EF_SHIFT_DOWN,
+       DESKS_NEW_DESK},
+  };
+
+  const AcceleratorData expected_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
+       CYCLE_FORWARD_MRU},
+      // Below are fake shortcuts, only used for testing.
+      {/*trigger_on_press=*/true, ui::VKEY_DELETE, ui::EF_NONE,
+       CYCLE_BACKWARD_MRU},
+      {/*trigger_on_press=*/true, ui::VKEY_HOME, ui::EF_NONE,
+       TAKE_WINDOW_SCREENSHOT},
+      {/*trigger_on_press=*/true, ui::VKEY_HOME, ui::EF_ALT_DOWN,
+       KEYBOARD_BRIGHTNESS_UP},
+      {/*trigger_on_press=*/true, ui::VKEY_END, ui::EF_SHIFT_DOWN,
+       DISABLE_CAPS_LOCK},
+      {/*trigger_on_press=*/true, ui::VKEY_NEXT, ui::EF_ALT_DOWN, NEW_TAB},
+      {/*trigger_on_press=*/true, ui::VKEY_INSERT, ui::EF_NONE, NEW_TAB},
+      {/*trigger_on_press=*/true, ui::VKEY_INSERT, ui::EF_ALT_DOWN, NEW_TAB},
+
+      // When [search] is part of the original accelerator. No remapping is
+      // done. Search+Alt+Home -> Search+Alt+Home.
+      {/*trigger_on_press=*/true, ui::VKEY_HOME,
+       ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN, KEYBOARD_BRIGHTNESS_UP},
+      // Search+Shift+End -> Search+Shift+End.
+      {/*trigger_on_press=*/true, ui::VKEY_END,
+       ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN, DISABLE_CAPS_LOCK},
+
+      // Edge case: [Shift] + [Delete]. It should not remapped to
+      // [Shift]+[Search]+[Back](aka, Insert).
+      //  Shift+Delete -> Shift+Delete
+      {/*trigger_on_press=*/true, ui::VKEY_DELETE, ui::EF_SHIFT_DOWN,
+       DESKS_NEW_DESK},
+
+      // Additional six-pack remapped accelerators.
+      // Delete -> Search+Backspace
+      {/*trigger_on_press=*/true, ui::VKEY_BACK, ui::EF_COMMAND_DOWN,
+       CYCLE_BACKWARD_MRU},
+      // Home -> Search+Left
+      {/*trigger_on_press=*/true, ui::VKEY_LEFT, ui::EF_COMMAND_DOWN,
+       TAKE_WINDOW_SCREENSHOT},
+      // Alt+Home -> Search+Alt+Left
+      {/*trigger_on_press=*/true, ui::VKEY_LEFT,
+       ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN, KEYBOARD_BRIGHTNESS_UP},
+      // Shift+End -> Search+Shift+Right
+      {/*trigger_on_press=*/true, ui::VKEY_RIGHT,
+       ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN, DISABLE_CAPS_LOCK},
+      // Alt+Next -> Search+Alt+Down
+      {/*trigger_on_press=*/true, ui::VKEY_DOWN,
+       ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN, NEW_TAB},
+      // Insert -> Search+Shift+Backspace
+      {/*trigger_on_press=*/true, ui::VKEY_BACK,
+       ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN, NEW_TAB},
+      // Alt+Insert -> Search+Shift+Alt+Backspace
+      {/*trigger_on_press=*/true, ui::VKEY_BACK,
+       ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN, NEW_TAB},
+  };
+
+  Shell::Get()->ash_accelerator_configuration()->Initialize(test_data);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1, observer.num_times_notified());
+  // Verify observer received the correct remapped accelerators.
+  ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh, expected_data,
+                               observer.config());
 }
 
 }  // namespace shortcut_ui
