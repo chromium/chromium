@@ -55,6 +55,9 @@ class EntropyState final {
   // The argument used to generate a non-identifying entropy source. We want no
   // more than 13 bits of entropy, so use this max to return a number in the
   // range [0, 7999] as the entropy source (12.97 bits of entropy).
+  //
+  // The value should be kept consistent with
+  // LowEntropySource.MAX_LOW_ENTROPY_SIZE in Java.
   static constexpr int kMaxLowEntropySize = 8000;
 
  private:

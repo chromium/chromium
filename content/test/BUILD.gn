@@ -1124,6 +1124,7 @@ if (is_android) {
       "//base:base_java_test_support",
       "//base:jni_java",
       "//components/download/internal/common:internal_java",
+      "//components/metrics:metrics_java",
       "//components/viz/service:service_java",
       "//content/public/android:content_java",
       "//content/public/test/android:content_java_test_support",
