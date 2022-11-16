@@ -116,6 +116,30 @@ class TrustSafetySentimentServiceTest : public testing::Test {
         });
   }
 
+  struct FeatureParamsV2 {
+    std::string min_time_to_prompt = "2m";
+    std::string max_time_to_prompt = "60m";
+    std::string ntp_visits_min_range = "2";
+    std::string ntp_visits_max_range = "4";
+    std::string trusted_surface_time = "5s";
+    std::string trusted_surface_probability = "0.4";
+    std::string trusted_surface_trigger_id = "trusted-surface-test";
+  };
+
+  void SetupFeatureParametersV2(FeatureParamsV2 params) {
+    feature_list()->InitAndEnableFeatureWithParameters(
+        features::kTrustSafetySentimentSurveyV2,
+        {
+            {"min-time-to-prompt", params.min_time_to_prompt},
+            {"max-time-to-prompt", params.max_time_to_prompt},
+            {"ntp-visits-min-range", params.ntp_visits_min_range},
+            {"ntp-visits-max-range", params.ntp_visits_max_range},
+            {"trusted-surface-time", params.trusted_surface_time},
+            {"trusted-surface-probability", params.trusted_surface_probability},
+            {"trusted-surface-trigger-id", params.trusted_surface_trigger_id},
+        });
+  }
+
   void CheckHistograms(
       const std::set<TrustSafetySentimentService::FeatureArea>& triggered_areas,
       const std::set<TrustSafetySentimentService::FeatureArea>&
@@ -762,5 +786,88 @@ TEST_F(TrustSafetySentimentServiceTest, ClosingIncognitoDelaysSurvey) {
 
   CheckHistograms({TrustSafetySentimentService::FeatureArea::kPrivacySettings,
                    TrustSafetySentimentService::FeatureArea::kIneligible},
+                  {TrustSafetySentimentService::FeatureArea::kPrivacySettings});
+}
+
+TEST_F(TrustSafetySentimentServiceTest, Eligibility_V2Enabled) {
+  // A survey from version 2 is only shown if the right conditions are met.
+  FeatureParamsV2 params;
+  params.trusted_surface_probability = "1.0";
+  params.min_time_to_prompt = "2m";
+  params.max_time_to_prompt = "4m";
+  params.ntp_visits_min_range = "2";
+  params.ntp_visits_max_range = "2";
+  SetupFeatureParametersV2(params);
+
+  EXPECT_CALL(*mock_hats_service(), LaunchSurvey(_, _, _, _, _)).Times(0);
+  service()->TriggerOccurred(
+      TrustSafetySentimentService::FeatureArea::kTrustedSurface, {});
+
+  service()->OpenedNewTabPage();
+  service()->OpenedNewTabPage();
+
+  // Survey should not shown because although the ntp visits condition is met,
+  // the time is not.
+  CheckHistograms({TrustSafetySentimentService::FeatureArea::kTrustedSurface},
+                  {});
+  testing::Mock::VerifyAndClearExpectations(mock_hats_service());
+
+  task_environment()->AdvanceClock(base::Minutes(3));
+  // Assert the V2 survey is called and not the V1.
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchSurvey(kHatsSurveyTriggerTrustSafetyTrustedSurface, _, _, _, _))
+      .Times(0);
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchSurvey(kHatsSurveyTriggerTrustSafetyV2TrustedSurface, _, _, _, _));
+
+  // A survey should be shown because we are now within the right time.
+  service()->OpenedNewTabPage();
+  CheckHistograms({TrustSafetySentimentService::FeatureArea::kTrustedSurface},
+                  {TrustSafetySentimentService::FeatureArea::kTrustedSurface});
+}
+
+TEST_F(TrustSafetySentimentServiceTest, Eligibility_V1FeatureWhileV2Enabled) {
+  // A survey from V1 only is not shown because V2 is enabled.
+  FeatureParams params;
+  params.privacy_settings_probability = "1.0";
+  params.min_time_to_prompt = "0s";
+  params.ntp_visits_min_range = "0";
+  params.ntp_visits_max_range = "0";
+  feature_list()->InitWithFeaturesAndParameters(
+      {{features::kTrustSafetySentimentSurvey,
+        {
+            {"min-time-to-prompt", params.min_time_to_prompt},
+            {"max-time-to-prompt", params.max_time_to_prompt},
+            {"ntp-visits-min-range", params.ntp_visits_min_range},
+            {"ntp-visits-max-range", params.ntp_visits_max_range},
+            {"trusted-surface-probability", params.trusted_surface_probability},
+            {"trusted-surface-trigger-id", params.trusted_surface_trigger_id},
+        }},
+       {features::kTrustSafetySentimentSurveyV2, {}}},
+      {});
+
+  EXPECT_CALL(*mock_hats_service(), LaunchSurvey(_, _, _, _, _)).Times(0);
+  service()->TriggerOccurred(
+      TrustSafetySentimentService::FeatureArea::kPrivacySettings, {});
+
+  service()->OpenedNewTabPage();
+
+  // Survey should not shown be shown as triggered because v2 enabled.
+  CheckHistograms({}, {});
+  testing::Mock::VerifyAndClearExpectations(mock_hats_service());
+
+  // Disable V2 and now the same trigger should work.
+  feature_list()->Reset();
+  SetupFeatureParameters(params);
+
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchSurvey(kHatsSurveyTriggerTrustSafetyPrivacySettings, _, _, _, _));
+  service()->TriggerOccurred(
+      TrustSafetySentimentService::FeatureArea::kPrivacySettings, {});
+  service()->OpenedNewTabPage();
+  CheckHistograms({TrustSafetySentimentService::FeatureArea::kPrivacySettings},
                   {TrustSafetySentimentService::FeatureArea::kPrivacySettings});
 }

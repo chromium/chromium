@@ -75,6 +75,8 @@ constexpr char kHatsSurveyTriggerTrustSafetyTrustedSurface[] =
     "ts-trusted-surface";
 constexpr char kHatsSurveyTriggerTrustSafetyTransactions[] = "ts-transactions";
 constexpr char kHatsSurveyTriggerWhatsNew[] = "whats-new";
+constexpr char kHatsSurveyTriggerTrustSafetyV2TrustedSurface[] =
+    "ts-v2-trusted-surface";
 
 constexpr char kHatsNextSurveyTriggerIDTesting[] =
     "HLpeYy5Av0ugnJ3q1cK0XzzA8UHv";
@@ -247,6 +249,13 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
               .Get(),
       std::vector<std::string>{"Stable channel", "3P cookies blocked",
                                "Privacy Sandbox enabled"});
+
+  // Trust & Safety Sentiment surveys - Version 2.
+  survey_configs.emplace_back(
+      &features::kTrustSafetySentimentSurveyV2,
+      kHatsSurveyTriggerTrustSafetyV2TrustedSurface,
+      features::kTrustSafetySentimentSurveyV2TrustedSurfaceTriggerId.Get(),
+      std::vector<std::string>{"Interacted with Page Info"});
 
   // Accuracy tips survey.
   survey_configs.emplace_back(

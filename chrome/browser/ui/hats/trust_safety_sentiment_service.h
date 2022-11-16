@@ -116,6 +116,10 @@ class TrustSafetySentimentService : public KeyedService,
                            PrivacySettingsProductSpecificData);
   FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest,
                            InteractedWithPrivacySandbox3ConsentAccept);
+  FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest,
+                           Eligibility_V2Enabled);
+  FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest,
+                           Eligibility_V1FeatureWhileV2Enabled);
 
   // Struct representing a trigger (user action relevant to T&S) that previously
   // occurred, and is awaiting the appropriate eligibility steps before causing

@@ -1236,6 +1236,24 @@ const base::FeatureParam<int> kTrustSafetySentimentSurveyV2NtpVisitsMinRange{
     &kTrustSafetySentimentSurveyV2, "ntp-visits-min-range", 2};
 const base::FeatureParam<int> kTrustSafetySentimentSurveyV2NtpVisitsMaxRange{
     &kTrustSafetySentimentSurveyV2, "ntp-visits-max-range", 4};
+// The feature area probabilities for each feature area considered as part of
+// the Trust & Safety sentiment survey.
+// TODO(crbug.com/1382134): Calculate initial probabilities and remove 0.0
+const base::FeatureParam<double>
+    kTrustSafetySentimentSurveyV2TrustedSurfaceProbability{
+        &kTrustSafetySentimentSurveyV2, "trusted-surface-probability", 0.0};
+// The HaTS trigger IDs, which determine which survey is delivered from the HaTS
+// backend.
+const base::FeatureParam<std::string>
+    kTrustSafetySentimentSurveyV2TrustedSurfaceTriggerId{
+        &kTrustSafetySentimentSurveyV2, "trusted-surface-trigger-id", ""};
+// The time the user must have the Trusted Surface bubble open to be considered.
+// Alternatively the user can interact with the bubble, in which case this time
+// is irrelevant.
+const base::FeatureParam<base::TimeDelta>
+    kTrustSafetySentimentSurveyV2TrustedSurfaceTime{
+        &kTrustSafetySentimentSurveyV2, "trusted-surface-time",
+        base::Seconds(5)};
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

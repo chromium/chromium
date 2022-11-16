@@ -704,6 +704,15 @@ extern const base::FeatureParam<int>
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<int>
     kTrustSafetySentimentSurveyV2NtpVisitsMaxRange;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<double>
+    kTrustSafetySentimentSurveyV2TrustedSurfaceProbability;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<std::string>
+    kTrustSafetySentimentSurveyV2TrustedSurfaceTriggerId;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kTrustSafetySentimentSurveyV2TrustedSurfaceTime;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kUploadZippedSystemLogs);
