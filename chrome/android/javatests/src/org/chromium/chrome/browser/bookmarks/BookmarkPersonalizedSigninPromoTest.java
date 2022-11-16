@@ -12,17 +12,12 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.core.AllOf.allOf;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.components.browser_ui.widget.RecyclerViewTestUtils.activeInRecyclerView;
 
 import android.app.Activity;
-import android.content.Context;
 
 import androidx.test.filters.MediumTest;
 
@@ -34,6 +29,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -79,11 +76,12 @@ public class BookmarkPersonalizedSigninPromoTest {
     public final RuleChain chain =
             RuleChain.outerRule(mAccountManagerTestRule).around(mBookmarkTestRule);
 
-    private final SyncConsentActivityLauncher mMockSyncConsentActivityLauncher =
-            mock(SyncConsentActivityLauncher.class);
+    @Mock
+    private SyncConsentActivityLauncher mMockSyncConsentActivityLauncher;
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
         BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE);
         SyncConsentActivityLauncherImpl.setLauncherForTest(mMockSyncConsentActivityLauncher);
     }
@@ -103,9 +101,6 @@ public class BookmarkPersonalizedSigninPromoTest {
                 mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         HistogramDelta signinHistogram =
                 new HistogramDelta("Signin.SyncPromo.Continued.Count.Bookmarks", 1);
-        doNothing()
-                .when(SyncConsentActivityLauncherImpl.get())
-                .launchActivityForPromoDefaultFlow(any(Context.class), anyInt(), anyString());
         showBookmarkManagerAndCheckSigninPromoIsDisplayed();
 
         onView(allOf(withId(R.id.sync_promo_signin_button), activeInRecyclerView()))
@@ -122,9 +117,6 @@ public class BookmarkPersonalizedSigninPromoTest {
     public void testSigninButtonNotDefaultAccount() {
         HistogramDelta signinHistogram =
                 new HistogramDelta("Signin.SyncPromo.Continued.Count.Bookmarks", 1);
-        doNothing()
-                .when(SyncConsentActivityLauncherImpl.get())
-                .launchActivityForPromoChooseAccountFlow(any(Context.class), anyInt(), anyString());
         CoreAccountInfo accountInfo =
                 mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         showBookmarkManagerAndCheckSigninPromoIsDisplayed();
@@ -141,9 +133,6 @@ public class BookmarkPersonalizedSigninPromoTest {
     public void testSigninButtonNewAccount() {
         HistogramDelta signinHistogram =
                 new HistogramDelta("Signin.SyncPromo.Continued.Count.Bookmarks", 1);
-        doNothing()
-                .when(SyncConsentActivityLauncherImpl.get())
-                .launchActivityForPromoAddAccountFlow(any(Context.class), anyInt());
         showBookmarkManagerAndCheckSigninPromoIsDisplayed();
         onView(allOf(withId(R.id.sync_promo_signin_button), activeInRecyclerView()))
                 .perform(click());
