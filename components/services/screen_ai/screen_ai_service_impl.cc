@@ -101,9 +101,7 @@ std::unique_ptr<LibraryFunctions> LoadAndInitializeLibrary(
     CallEnableDebugMode(library_functions.get());
 
   bool init_ok = true;
-
-  if (features::IsPdfOcrEnabled() ||
-      features::IsScreenAIVisualAnnotationsEnabled()) {
+  if (features::IsPdfOcrEnabled() || features::IsLayoutExtractionEnabled()) {
     if (!CallInitVisualAnnotationsFunction(library_functions.get(),
                                            library_path.DirName())) {
       init_ok = false;
@@ -168,9 +166,8 @@ LibraryFunctions::LibraryFunctions(const base::FilePath& library_path) {
     extract_main_content_ = nullptr;
   }
 
-// Visual Annotation functions.
-  if (features::IsPdfOcrEnabled() ||
-      features::IsScreenAIVisualAnnotationsEnabled()) {
+  // Visual Annotation functions.
+  if (features::IsPdfOcrEnabled() || features::IsLayoutExtractionEnabled()) {
     init_visual_annotation_ = reinterpret_cast<InitVisualAnnotations>(
         library_.GetFunctionPointer("InitVisualAnnotations"));
     DCHECK(init_visual_annotation_);

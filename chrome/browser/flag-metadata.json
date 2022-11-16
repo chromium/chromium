@@ -4425,6 +4425,14 @@
     "expiry_milestone": 115
   },
   {
+    "name": "layout-extraction",
+    "owners": [
+      "rhalavati",
+      "//ui/accessibility/OWNERS"
+    ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "legacy-tls-interstitial",
     "owners": [ "cthomp" ],
     "expiry_milestone": 92

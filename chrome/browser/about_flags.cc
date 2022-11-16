@@ -9071,10 +9071,10 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if !BUILDFLAG(IS_ANDROID)
     // TODO(https://crbug.com/1278249): Add Windows once library supports it.
-    {"screen-ai", flag_descriptions::kScreenAIName,
-     flag_descriptions::kScreenAIDescription,
+    {"layout-extraction", flag_descriptions::kLayoutExtractionName,
+     flag_descriptions::kLayoutExtractionDescription,
      kOsMac | kOsLinux | kOsCrOS | kOsLacros,
-     FEATURE_VALUE_TYPE(features::kScreenAI)},
+     FEATURE_VALUE_TYPE(features::kLayoutExtraction)},
 #endif
 
     {"autofill-enable-virtual-card-management-in-desktop-settings-page",

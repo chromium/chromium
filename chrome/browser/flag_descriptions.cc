@@ -4358,6 +4358,11 @@ const char kHappinessTrackingSurveysForDesktopDemoName[] =
 const char kHappinessTrackingSurveysForDesktopDemoDescription[] =
     "Enable showing Happiness Tracking Surveys Demo to users on Desktop";
 
+const char kLayoutExtractionName[] = "Layout Extraction";
+const char kLayoutExtractionDescription[] =
+    "Enables Layout Extraction local machine intelligence library to use "
+    "screen snapshots to add metadata for accessibility tools.";
+
 const char kOmniboxDriveSuggestionsName[] =
     "Omnibox Google Drive Document suggestions";
 const char kOmniboxDriveSuggestionsDescription[] =
@@ -4373,11 +4378,6 @@ const char kOmniboxExperimentalKeywordModeDescription[] =
 const char kPasswordManagerRedesignName[] = "Password Manager new UI";
 const char kPasswordManagerRedesignDescription[] =
     "Enables new Password Manager UI on Desktop";
-
-const char kScreenAIName[] = "Screen AI";
-const char kScreenAIDescription[] =
-    "Enables Screen AI local machine intelligence library to use the screen "
-    "snapshots to add metadata for accessibility tools.";
 
 const char kSCTAuditingName[] = "SCT auditing";
 const char kSCTAuditingDescription[] =

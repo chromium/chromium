@@ -2505,6 +2505,9 @@ extern const char kEnableReaderModeDescription[];
 extern const char kHappinessTrackingSurveysForDesktopDemoName[];
 extern const char kHappinessTrackingSurveysForDesktopDemoDescription[];
 
+extern const char kLayoutExtractionName[];
+extern const char kLayoutExtractionDescription[];
+
 extern const char kOmniboxDriveSuggestionsName[];
 extern const char kOmniboxDriveSuggestionsDescription[];
 
@@ -2513,9 +2516,6 @@ extern const char kOmniboxExperimentalKeywordModeDescription[];
 
 extern const char kPasswordManagerRedesignName[];
 extern const char kPasswordManagerRedesignDescription[];
-
-extern const char kScreenAIName[];
-extern const char kScreenAIDescription[];
 
 extern const char kSCTAuditingName[];
 extern const char kSCTAuditingDescription[];

@@ -305,14 +305,8 @@ bool IsReadAnythingWithScreen2xEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnythingWithScreen2x);
 }
 
-BASE_FEATURE(kScreenAI, "ScreenAI", base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsScreenAIVisualAnnotationsEnabled() {
-  return base::FeatureList::IsEnabled(::features::kScreenAI);
-}
-
 bool IsScreenAIServiceNeeded() {
-  return IsPdfOcrEnabled() || IsScreenAIVisualAnnotationsEnabled() ||
+  return IsPdfOcrEnabled() || IsLayoutExtractionEnabled() ||
          IsReadAnythingWithScreen2xEnabled();
 }
 
@@ -326,18 +320,18 @@ bool IsScreenAIDebugModeEnabled() {
   return base::FeatureList::IsEnabled(::features::kScreenAIDebugMode);
 }
 
-BASE_FEATURE(kScreenAIUseLayoutExtraction,
-             "ScreenAIUseLayoutExtraction",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsScreenAIUseLayoutExtractionEnabled() {
-  return base::FeatureList::IsEnabled(::features::kScreenAIUseLayoutExtraction);
-}
-
 BASE_FEATURE(kPdfOcr, "PdfOcr", base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsPdfOcrEnabled() {
   return base::FeatureList::IsEnabled(::features::kPdfOcr);
+}
+
+BASE_FEATURE(kLayoutExtraction,
+             "LayoutExtraction",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsLayoutExtractionEnabled() {
+  return base::FeatureList::IsEnabled(::features::kLayoutExtraction);
 }
 
 BASE_FEATURE(kAccessibilityService,

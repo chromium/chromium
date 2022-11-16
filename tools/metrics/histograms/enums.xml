@@ -63235,6 +63235,7 @@ from previous Chrome versions.
   <int value="1075637651" label="disable-tablet-splitview"/>
   <int value="1075862390" label="LauncherItemSuggest:enabled"/>
   <int value="1076335895" label="CrosPrivacyHubV0:enabled"/>
+  <int value="1079017005" label="LayoutExtraction:disabled"/>
   <int value="1079032226" label="ParallelDownloading:enabled"/>
   <int value="1079302639" label="ArcEnableWebAppShare:disabled"/>
   <int value="1080108820" label="OneGroupPerRenderer:enabled"/>
@@ -63700,6 +63701,7 @@ from previous Chrome versions.
   <int value="1344833841" label="ImeThread:enabled"/>
   <int value="1345192233" label="VaapiVideoDecoder:enabled"/>
   <int value="1346994602" label="SyncPseudoUSSDictionary:enabled"/>
+  <int value="1348575062" label="LayoutExtraction:enabled"/>
   <int value="1349100152"
       label="AutofillEnablePasswordInfoBarAccountIndicationFooter:disabled"/>
   <int value="1349313561" label="RestrictedApiOrigins:enabled"/>

@@ -6,10 +6,8 @@
 
 #include <string>
 
-#include "base/test/scoped_feature_list.h"
 #include "components/services/screen_ai/proto/chrome_screen_ai.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_tree_update.h"
 
 namespace screen_ai {
@@ -22,10 +20,6 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
   gfx::Rect snapshot_bounds(800, 900);
 
   screen_ai::ResetNodeIDForTesting();
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kScreenAIUseLayoutExtraction},
-      /*disabled_features=*/{});
 
   {
     chrome_screen_ai::UIComponent* component_0 = annotation.add_ui_component();
@@ -73,9 +67,6 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
   gfx::Rect snapshot_bounds(800, 900);
 
   screen_ai::ResetNodeIDForTesting();
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(/*enabled_features=*/{}, /*disabled_features=*/{
-                                    features::kScreenAIUseLayoutExtraction});
 
   {
     chrome_screen_ai::LineBox* line_0 = annotation.add_lines();
