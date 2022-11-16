@@ -77,12 +77,6 @@ BASE_FEATURE(kAmbientModeFeature,
              "ChromeOSAmbientMode",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Allows Cryptohome to migrate existing VaultKeysets to AuthFactors and
-// UserSecretStash.
-BASE_FEATURE(kMigrateToUserSecretStash,
-             "MigrateToUserSecretStash",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 constexpr base::FeatureParam<bool> kAmbientModeCapturedOnPixelAlbumEnabled{
     &kAmbientModeFeature, "CapturedOnPixelAlbumEnabled", false};
 
@@ -2229,10 +2223,6 @@ bool DoWindowsFollowCursor() {
 
 bool Is16DesksEnabled() {
   return base::FeatureList::IsEnabled(kEnable16Desks);
-}
-
-bool IsMigrateToUserSecretStashEnabled() {
-  return base::FeatureList::IsEnabled(kMigrateToUserSecretStash);
 }
 
 bool IsAdaptiveChargingEnabled() {
