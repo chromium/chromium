@@ -41,10 +41,11 @@ bool ControllerVisibleToListener(WindowController* window_controller,
     return false;
 
   // If there is no filter the visibility is based on the extension.
-  const base::ListValue* filter_value = nullptr;
-  if (listener_filter)
-    listener_filter->GetList(extensions::tabs_constants::kWindowTypesKey,
-                             &filter_value);
+  const base::Value::List* filter_value = nullptr;
+  if (listener_filter) {
+    filter_value = listener_filter->GetDict().FindList(
+        extensions::tabs_constants::kWindowTypesKey);
+  }
 
   // TODO(https://crbug.com/807313): Remove this.
   bool allow_dev_tools_windows = !!filter_value;

@@ -1623,18 +1623,6 @@ ExtensionFunction::ResponseValue TabsUpdateFunction::GetResult() {
       web_contents_, extension(), source_context_type(), nullptr, -1)));
 }
 
-void TabsUpdateFunction::OnExecuteCodeFinished(
-    const std::string& error,
-    const GURL& url,
-    const base::ListValue& script_result) {
-  if (!error.empty()) {
-    Respond(Error(error));
-    return;
-  }
-
-  return Respond(GetResult());
-}
-
 ExtensionFunction::ResponseAction TabsMoveFunction::Run() {
   std::unique_ptr<tabs::Move::Params> params(
       tabs::Move::Params::Create(args()));
@@ -1642,7 +1630,7 @@ ExtensionFunction::ResponseAction TabsMoveFunction::Run() {
 
   int new_index = params->move_properties.index;
   const auto& window_id = params->move_properties.window_id;
-  base::ListValue tab_values;
+  base::Value::List tab_values;
 
   size_t num_tabs = 0;
   std::string error;
@@ -1650,14 +1638,14 @@ ExtensionFunction::ResponseAction TabsMoveFunction::Run() {
     std::vector<int>& tab_ids = *params->tab_ids.as_integers;
     num_tabs = tab_ids.size();
     for (int tab_id : tab_ids) {
-      if (!MoveTab(tab_id, &new_index, &tab_values, window_id, &error))
+      if (!MoveTab(tab_id, &new_index, tab_values, window_id, &error))
         return RespondNow(Error(std::move(error)));
     }
   } else {
     EXTENSION_FUNCTION_VALIDATE(params->tab_ids.as_integer);
     num_tabs = 1;
-    if (!MoveTab(*params->tab_ids.as_integer, &new_index, &tab_values,
-                 window_id, &error)) {
+    if (!MoveTab(*params->tab_ids.as_integer, &new_index, tab_values, window_id,
+                 &error)) {
       return RespondNow(Error(std::move(error)));
     }
   }
@@ -1670,9 +1658,8 @@ ExtensionFunction::ResponseAction TabsMoveFunction::Run() {
   if (num_tabs == 0)
     return RespondNow(Error("No tabs given."));
   if (num_tabs == 1) {
-    CHECK_EQ(1u, tab_values.GetList().size());
-    base::Value::List tabs = std::move(tab_values).TakeList();
-    return RespondNow(WithArguments(std::move(tabs[0])));
+    CHECK_EQ(1u, tab_values.size());
+    return RespondNow(WithArguments(std::move(tab_values[0])));
   }
 
   // Return the results as an array if there are multiple tabs.
@@ -1681,7 +1668,7 @@ ExtensionFunction::ResponseAction TabsMoveFunction::Run() {
 
 bool TabsMoveFunction::MoveTab(int tab_id,
                                int* new_index,
-                               base::ListValue* tab_values,
+                               base::Value::List& tab_values,
                                const absl::optional<int>& window_id,
                                std::string* error) {
   Browser* source_browser = nullptr;
@@ -1724,10 +1711,10 @@ bool TabsMoveFunction::MoveTab(int tab_id,
       content::WebContents* web_contents =
           tab_strip_model->GetWebContentsAt(inserted_index);
 
-      tab_values->Append(CreateTabObjectHelper(web_contents, extension(),
-                                               source_context_type(),
-                                               tab_strip_model, inserted_index)
-                             .ToValue());
+      tab_values.Append(CreateTabObjectHelper(web_contents, extension(),
+                                              source_context_type(),
+                                              tab_strip_model, inserted_index)
+                            .ToValue());
     }
 
     // Insert the tabs one after another.
@@ -1748,10 +1735,10 @@ bool TabsMoveFunction::MoveTab(int tab_id,
         source_tab_strip->MoveWebContentsAt(tab_index, *new_index, false);
 
   if (has_callback()) {
-    tab_values->Append(CreateTabObjectHelper(contents, extension(),
-                                             source_context_type(),
-                                             source_tab_strip, *new_index)
-                           .ToValue());
+    tab_values.Append(CreateTabObjectHelper(contents, extension(),
+                                            source_context_type(),
+                                            source_tab_strip, *new_index)
+                          .ToValue());
   }
 
   // Insert the tabs one after another.

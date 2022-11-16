@@ -42,14 +42,14 @@ WindowController::TypeFilter WindowController::GetFilterFromWindowTypes(
 
 // static
 WindowController::TypeFilter WindowController::GetFilterFromWindowTypesValues(
-    const base::ListValue* types) {
+    const base::Value::List* types) {
   WindowController::TypeFilter filter = WindowController::kNoWindowFilter;
   if (!types)
     return filter;
-  for (const base::Value& type : types->GetList()) {
-    const std::string* window_type = type.GetIfString();
-    if (window_type)
-      filter |= 1 << api::windows::ParseWindowType(*window_type);
+  for (const base::Value& type : *types) {
+    if (!type.is_string())
+      continue;
+    filter |= 1 << api::windows::ParseWindowType(type.GetString());
   }
   return filter;
 }

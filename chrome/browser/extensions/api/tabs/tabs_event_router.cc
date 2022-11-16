@@ -32,7 +32,6 @@
 #include "third_party/blink/public/common/page/page_zoom.h"
 
 using base::DictionaryValue;
-using base::ListValue;
 using base::Value;
 using content::WebContents;
 using zoom::ZoomController;
@@ -445,7 +444,7 @@ void TabsEventRouter::DispatchTabSelectionChanged(
     const ui::ListSelectionModel& old_model) {
   ui::ListSelectionModel::SelectedIndices new_selection =
       tab_strip_model->selection_model().selected_indices();
-  base::ListValue all_tabs;
+  base::Value::List all_tabs;
 
   for (int index : new_selection) {
     WebContents* contents = tab_strip_model->GetWebContentsAt(index);

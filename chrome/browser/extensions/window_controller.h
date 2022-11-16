@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/extensions/api/windows.h"
 
@@ -52,7 +53,7 @@ class WindowController {
       const std::vector<api::windows::WindowType>& types);
 
   static TypeFilter GetFilterFromWindowTypesValues(
-      const base::ListValue* types);
+      const base::Value::List* types);
 
   WindowController(ui::BaseWindow* window, Profile* profile);
   WindowController(const WindowController&) = delete;
