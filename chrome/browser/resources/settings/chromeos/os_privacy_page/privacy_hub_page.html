@@ -77,6 +77,15 @@
   </settings-toggle-button>
 </template>
 
+<if expr="_google_chrome">
+  <settings-metrics-consent-toggle-button
+      class="settings-box no-padding"
+      id="metricsConsentToggle"
+      deep-link-focus-id$="[[Setting.kUsageStatsAndCrashReports]]"
+      prefs="{{prefs}}">
+  </settings-metrics-consent-toggle-button>
+</if>
+
 <settings-toggle-button
     class="settings-box"
     id="suggested-content"
@@ -85,12 +94,3 @@
     sub-label="$i18n{enableSuggestedContentDesc}"
     learn-more-url="$i18n{suggestedContentLearnMoreURL}">
 </settings-toggle-button>
-
-<if expr="_google_chrome">
-    <settings-metrics-consent-toggle-button
-        class="settings-box no-padding"
-        id="metricsConsentToggle"
-        deep-link-focus-id$="[[Setting.kUsageStatsAndCrashReports]]"
-        prefs="{{prefs}}">
-    </settings-metrics-consent-toggle-button>
-</if>
