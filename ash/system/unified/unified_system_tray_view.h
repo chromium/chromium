@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_UNIFIED_UNIFIED_SYSTEM_TRAY_VIEW_H_
 #define ASH_SYSTEM_UNIFIED_UNIFIED_SYSTEM_TRAY_VIEW_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
@@ -84,7 +86,7 @@ class ASH_EXPORT UnifiedSystemTrayView : public views::View,
   void AddMediaControlsView(views::View* media_controls);
 
   // Hide the main view and show the given |detailed_view|.
-  void SetDetailedView(views::View* detailed_view);
+  void SetDetailedView(std::unique_ptr<views::View> detailed_view);
 
   // Remove the detailed view set by SetDetailedView, and show the main view.
   // It deletes |detailed_view| and children.

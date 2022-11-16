@@ -4,7 +4,10 @@
 
 #include "ash/system/network/network_detailed_view_controller.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -16,6 +19,7 @@
 #include "ash/system/network/network_utils.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/detailed_view_delegate.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/ash/components/network/network_connect.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
@@ -133,7 +137,7 @@ NetworkDetailedViewController::NetworkDetailedViewController(
 
 NetworkDetailedViewController::~NetworkDetailedViewController() = default;
 
-views::View* NetworkDetailedViewController::CreateView() {
+std::unique_ptr<views::View> NetworkDetailedViewController::CreateView() {
   DCHECK(!network_detailed_view_);
   std::unique_ptr<NetworkDetailedNetworkView> view =
       NetworkDetailedNetworkView::Factory::Create(detailed_view_delegate_.get(),
@@ -142,9 +146,8 @@ views::View* NetworkDetailedViewController::CreateView() {
   network_list_view_controller_ =
       NetworkListViewController::Factory::Create(view.get());
 
-  // We are expected to return an unowned pointer that the caller is responsible
-  // for deleting.
-  return view.release()->GetAsView();
+  // `view` is not a views::View, so we must GetAsView().
+  return base::WrapUnique(view.release()->GetAsView());
 }
 
 std::u16string NetworkDetailedViewController::GetAccessibleName() const {

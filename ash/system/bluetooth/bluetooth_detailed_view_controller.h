@@ -47,8 +47,8 @@ class ASH_EXPORT BluetoothDetailedViewController
       std::vector<bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr>;
 
  private:
-  // DetailedViewControllerBase:
-  views::View* CreateView() override;
+  // DetailedViewController:
+  std::unique_ptr<views::View> CreateView() override;
   std::u16string GetAccessibleName() const override;
 
   // bluetooth_config::mojom::SystemPropertiesObserver:

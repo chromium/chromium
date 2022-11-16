@@ -40,7 +40,7 @@ class ASH_EXPORT UserChooserDetailedViewController
   void HandleAddUserAction();
 
   // DetailedViewController:
-  views::View* CreateView() override;
+  std::unique_ptr<views::View> CreateView() override;
   std::u16string GetAccessibleName() const override;
 
  private:

@@ -4,6 +4,8 @@
 
 #include "ash/system/media/unified_media_controls_container.h"
 
+#include <memory>
+
 #include "ash/system/media/media_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
@@ -51,7 +53,7 @@ class UnifiedMediaControlsContainerTest : public AshTestBase {
 
 TEST_F(UnifiedMediaControlsContainerTest, DoNotShowControlsWhenInDetailedView) {
   // Navigate to a dummy detailed view.
-  system_tray_view()->SetDetailedView(new views::View());
+  system_tray_view()->SetDetailedView(std::make_unique<views::View>());
 
   // Simulate media playing, container should still be hidden.
   system_tray_view()->ShowMediaControls();

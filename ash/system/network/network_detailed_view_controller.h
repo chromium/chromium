@@ -9,7 +9,6 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/system/network/network_detailed_network_view.h"
 #include "ash/system/network/network_detailed_view.h"
 #include "ash/system/network/network_list_view_controller.h"
@@ -41,8 +40,8 @@ class ASH_EXPORT NetworkDetailedViewController
       const NetworkDetailedViewController&) = delete;
   ~NetworkDetailedViewController() override;
 
-  // DetailedViewControllerBase:
-  views::View* CreateView() override;
+  // DetailedViewController:
+  std::unique_ptr<views::View> CreateView() override;
   std::u16string GetAccessibleName() const override;
 
  private:

@@ -23,8 +23,8 @@ class ASH_EXPORT UnifiedMediaControlsDetailedViewController
       UnifiedSystemTrayController* tray_controller);
   ~UnifiedMediaControlsDetailedViewController() override;
 
-  // DetailedViewController implementations.
-  views::View* CreateView() override;
+  // DetailedViewController:
+  std::unique_ptr<views::View> CreateView() override;
   std::u16string GetAccessibleName() const override;
 
  private:

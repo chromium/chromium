@@ -284,15 +284,17 @@ void UnifiedSystemTrayView::ShowMediaControls() {
     PreferredSizeChanged();
 }
 
-void UnifiedSystemTrayView::SetDetailedView(views::View* detailed_view) {
+void UnifiedSystemTrayView::SetDetailedView(
+    std::unique_ptr<views::View> detailed_view) {
   auto system_tray_size = system_tray_container_->GetPreferredSize();
   system_tray_container_->SetVisible(false);
 
   detailed_view_container_->RemoveAllChildViews();
-  detailed_view_container_->AddChildView(detailed_view);
+  views::View* view =
+      detailed_view_container_->AddChildView(std::move(detailed_view));
   detailed_view_container_->SetVisible(true);
   detailed_view_container_->SetPreferredSize(system_tray_size);
-  detailed_view->InvalidateLayout();
+  view->InvalidateLayout();
   Layout();
 }
 

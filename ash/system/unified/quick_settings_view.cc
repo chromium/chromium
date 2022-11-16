@@ -186,9 +186,10 @@ void QuickSettingsView::ShowMediaControls() {
     PreferredSizeChanged();
 }
 
-void QuickSettingsView::SetDetailedView(views::View* detailed_view) {
+void QuickSettingsView::SetDetailedView(
+    std::unique_ptr<views::View> detailed_view) {
   detailed_view_container_->RemoveAllChildViews();
-  detailed_view_container_->AddChildView(detailed_view);
+  detailed_view_container_->AddChildView(std::move(detailed_view));
   system_tray_container_->SetVisible(false);
   detailed_view_container_->SetVisible(true);
 

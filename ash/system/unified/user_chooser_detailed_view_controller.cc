@@ -4,6 +4,8 @@
 
 #include "ash/system/unified/user_chooser_detailed_view_controller.h"
 
+#include <memory>
+
 #include "ash/multi_profile_uma.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -73,8 +75,8 @@ void UserChooserDetailedViewController::HandleAddUserAction() {
   // ShowMultiProfileLogin may delete us.
 }
 
-views::View* UserChooserDetailedViewController::CreateView() {
-  return new UserChooserView(this);
+std::unique_ptr<views::View> UserChooserDetailedViewController::CreateView() {
+  return std::make_unique<UserChooserView>(this);
 }
 
 std::u16string UserChooserDetailedViewController::GetAccessibleName() const {

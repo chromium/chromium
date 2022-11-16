@@ -28,8 +28,8 @@ class UnifiedLocaleDetailedViewController : public DetailedViewController {
 
   ~UnifiedLocaleDetailedViewController() override;
 
-  // DetailedViewControllerBase:
-  views::View* CreateView() override;
+  // DetailedViewController:
+  std::unique_ptr<views::View> CreateView() override;
   std::u16string GetAccessibleName() const override;
 
  private:

@@ -27,7 +27,7 @@ class UnifiedCalendarViewController : public DetailedViewController {
   ~UnifiedCalendarViewController() override;
 
   // DetailedViewController:
-  views::View* CreateView() override;
+  std::unique_ptr<views::View> CreateView() override;
   std::u16string GetAccessibleName() const override;
 
  private:

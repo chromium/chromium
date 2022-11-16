@@ -4,6 +4,8 @@
 
 #include "ash/system/network/unified_network_detailed_view_controller.h"
 
+#include <memory>
+
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -22,13 +24,15 @@ UnifiedNetworkDetailedViewController::UnifiedNetworkDetailedViewController(
 UnifiedNetworkDetailedViewController::~UnifiedNetworkDetailedViewController() =
     default;
 
-views::View* UnifiedNetworkDetailedViewController::CreateView() {
+std::unique_ptr<views::View>
+UnifiedNetworkDetailedViewController::CreateView() {
   DCHECK(!view_);
-  view_ =
-      new NetworkListView(detailed_view_delegate_.get(),
-                          Shell::Get()->session_controller()->login_status());
+  auto view = std::make_unique<NetworkListView>(
+      detailed_view_delegate_.get(),
+      Shell::Get()->session_controller()->login_status());
+  view_ = view.get();
   view_->Init();
-  return view_;
+  return view;
 }
 
 std::u16string UnifiedNetworkDetailedViewController::GetAccessibleName() const {

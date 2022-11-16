@@ -40,12 +40,13 @@ UnifiedIMEDetailedViewController::~UnifiedIMEDetailedViewController() {
   Shell::Get()->accessibility_controller()->RemoveObserver(this);
 }
 
-views::View* UnifiedIMEDetailedViewController::CreateView() {
+std::unique_ptr<views::View> UnifiedIMEDetailedViewController::CreateView() {
   DCHECK(!view_);
-  view_ = new IMEDetailedView(detailed_view_delegate_.get(),
-                              Shell::Get()->ime_controller());
+  auto view = std::make_unique<IMEDetailedView>(detailed_view_delegate_.get(),
+                                                Shell::Get()->ime_controller());
+  view_ = view.get();
   view_->Init(ShouldShowKeyboardToggle(), GetSingleImeBehavior());
-  return view_;
+  return view;
 }
 
 std::u16string UnifiedIMEDetailedViewController::GetAccessibleName() const {

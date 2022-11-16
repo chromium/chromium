@@ -178,7 +178,7 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
   AudioDetailedView* audio_detailed_view() {
     if (!audio_detailed_view_) {
       audio_detailed_view_ = base::WrapUnique(static_cast<AudioDetailedView*>(
-          audio_detailed_view_controller_->CreateView()));
+          audio_detailed_view_controller_->CreateView().release()));
     }
     return audio_detailed_view_.get();
   }
@@ -208,7 +208,7 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
 
 TEST_F(UnifiedAudioDetailedViewControllerTest, OnlyOneVisibleSlider) {
   std::unique_ptr<views::View> view =
-      base::WrapUnique(audio_detailed_view_controller_->CreateView());
+      audio_detailed_view_controller_->CreateView();
   fake_cras_audio_client()->SetAudioNodesAndNotifyObserversForTesting(
       GenerateAudioNodeList({kInternalMic, kMicJack}));
 
@@ -239,7 +239,7 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
   EXPECT_TRUE(cras_audio_handler_->HasDualInternalMic());
 
   std::unique_ptr<views::View> view =
-      base::WrapUnique(audio_detailed_view_controller_->CreateView());
+      audio_detailed_view_controller_->CreateView();
 
   // Verify there is only 1 slider in the view.
   EXPECT_EQ(sliders_map_.size(), 1u);
@@ -259,7 +259,7 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
       CrasAudioHandler::ACTIVATE_BY_USER);
 
   std::unique_ptr<views::View> view =
-      base::WrapUnique(audio_detailed_view_controller_->CreateView());
+      audio_detailed_view_controller_->CreateView();
   EXPECT_EQ(0u, toggles_map_.size());
 }
 
@@ -275,7 +275,7 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
                                       CrasAudioHandler::ACTIVATE_BY_USER);
 
   std::unique_ptr<views::View> view =
-      base::WrapUnique(audio_detailed_view_controller_->CreateView());
+      audio_detailed_view_controller_->CreateView();
   EXPECT_EQ(1u, toggles_map_.size());
 
   views::ToggleButton* toggle =
@@ -297,7 +297,7 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
                                       CrasAudioHandler::ACTIVATE_BY_USER);
 
   std::unique_ptr<views::View> view =
-      base::WrapUnique(audio_detailed_view_controller_->CreateView());
+      audio_detailed_view_controller_->CreateView();
   EXPECT_EQ(1u, toggles_map_.size());
 
   views::ToggleButton* toggle =
@@ -334,7 +334,7 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
                                       true, CrasAudioHandler::ACTIVATE_BY_USER);
 
   std::unique_ptr<views::View> view =
-      base::WrapUnique(audio_detailed_view_controller_->CreateView());
+      audio_detailed_view_controller_->CreateView();
 
   EXPECT_EQ(0u, toggles_map_.size());
 

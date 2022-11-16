@@ -13,6 +13,7 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/memory/ptr_util.h"
 #include "build/chromeos_buildflags.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
@@ -48,7 +49,7 @@ BluetoothDetailedViewController::BluetoothDetailedViewController(
 
 BluetoothDetailedViewController::~BluetoothDetailedViewController() = default;
 
-views::View* BluetoothDetailedViewController::CreateView() {
+std::unique_ptr<views::View> BluetoothDetailedViewController::CreateView() {
   DCHECK(!view_);
   std::unique_ptr<BluetoothDetailedView> bluetooth_detailed_view =
       BluetoothDetailedView::Factory::Create(detailed_view_delegate_.get(),
@@ -63,9 +64,8 @@ views::View* BluetoothDetailedViewController::CreateView() {
                                               previously_connected_devices_);
   }
 
-  // We are expected to return an unowned pointer that the caller is responsible
-  // for deleting.
-  return bluetooth_detailed_view.release()->GetAsView();
+  // `bluetooth_detailed_view` is not a views::View, so we must GetAsView().
+  return base::WrapUnique(bluetooth_detailed_view.release()->GetAsView());
 }
 
 std::u16string BluetoothDetailedViewController::GetAccessibleName() const {
