@@ -18,7 +18,9 @@
 #import "ios/chrome/browser/history/top_sites_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/ui/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
@@ -40,6 +42,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_ios.h"
 #import "ios/chrome/browser/ui/omnibox/popup/pedal_section_extractor.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_swift.h"
+#import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -49,7 +52,8 @@
 #error "This file requires ARC support."
 #endif
 
-@interface OmniboxPopupCoordinator () <OmniboxPopupMediatorProtocolProvider> {
+@interface OmniboxPopupCoordinator () <OmniboxPopupMediatorProtocolProvider,
+                                       OmniboxPopupMediatorSharingDelegate> {
   std::unique_ptr<OmniboxPopupViewIOS> _popupView;
 }
 
@@ -57,6 +61,7 @@
 @property(nonatomic, strong) OmniboxPopupMediator* mediator;
 @property(nonatomic, strong) PopupModel* model;
 @property(nonatomic, strong) PopupUIConfiguration* uiConfiguration;
+@property(nonatomic, strong) SharingCoordinator* sharingCoordinator;
 
 @end
 
@@ -104,6 +109,7 @@
       templateURLService->GetDefaultSearchProvider()->GetEngineType(
           templateURLService->search_terms_data()) == SEARCH_ENGINE_GOOGLE;
   self.mediator.protocolProvider = self;
+  self.mediator.sharingDelegate = self;
   BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
       initWithBrowser:self.browser
              scenario:MenuScenario::kOmniboxMostVisitedEntry];
@@ -131,6 +137,8 @@
         self.popupMatchPreviewDelegate;
     self.popupViewController.acceptReturnDelegate = self.acceptReturnDelegate;
     self.mediator.carouselItemConsumer = self.popupViewController;
+    self.mediator.allowIncognitoActions =
+        IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs());
   }
 
   if (IsOmniboxActionsEnabled()) {
@@ -156,6 +164,7 @@
 }
 
 - (void)stop {
+  [self.sharingCoordinator stop];
   _popupView.reset();
 }
 
@@ -179,6 +188,26 @@
 - (id<SnackbarCommands>)snackbarCommandsHandler {
   return HandlerForProtocol(self.browser->GetCommandDispatcher(),
                             SnackbarCommands);
+}
+
+#pragma mark - OmniboxPopupMediatorSharingDelegate
+
+// Triggers the URL sharing flow for the given `URL` and `title`, with the
+// origin `view` representing the UI component for that URL.
+- (void)popupMediator:(OmniboxPopupMediator*)mediator
+             shareURL:(GURL)URL
+                title:(NSString*)title
+           originView:(UIView*)originView {
+  ActivityParams* params =
+      [[ActivityParams alloc] initWithURL:URL
+                                    title:title
+                                 scenario:ActivityScenario::MostVisitedEntry];
+  self.sharingCoordinator = [[SharingCoordinator alloc]
+      initWithBaseViewController:self.popupViewController
+                         browser:self.browser
+                          params:params
+                      originView:originView];
+  [self.sharingCoordinator start];
 }
 
 @end

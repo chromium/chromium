@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator.h"
 
 #import "base/feature_list.h"
+#import "base/ios/ios_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -509,6 +510,40 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
         NSMutableArray<UIMenuElement*>* menuElements =
             [[NSMutableArray alloc] init];
 
+        [menuElements
+            addObject:[actionFactory actionToOpenInNewTabWithURL:copyURL
+                                                      completion:nil]];
+
+        UIAction* incognitoAction =
+            [actionFactory actionToOpenInNewIncognitoTabWithURL:copyURL
+                                                     completion:nil];
+
+        if (self.allowIncognitoActions) {
+          // Disable the "Open in Incognito" option if the incognito mode is
+          // disabled.
+          incognitoAction.attributes = UIMenuElementAttributesDisabled;
+        }
+
+        [menuElements addObject:incognitoAction];
+
+        if (base::ios::IsMultipleScenesSupported()) {
+          UIAction* newWindowAction = [actionFactory
+              actionToOpenInNewWindowWithURL:copyURL
+                              activityOrigin:
+                                  WindowActivityContentSuggestionsOrigin];
+          [menuElements addObject:newWindowAction];
+        }
+
+        [menuElements addObject:[actionFactory actionToCopyURL:copyURL]];
+
+        [menuElements addObject:[actionFactory actionToShareWithBlock:^{
+                        [weakSelf.sharingDelegate
+                            popupMediator:weakSelf
+                                 shareURL:copyURL
+                                    title:carouselItem.title
+                               originView:view];
+                      }]];
+
         [menuElements addObject:[actionFactory actionToRemoveWithBlock:^{
                         [weakSelf removeMostVisitedForURL:copyURL
                                          withCarouselItem:weakItem];
@@ -540,7 +575,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
     return;
   }
   base::RecordAction(
-      base::UserMetricsAction("MostVisited_UrlBlacklisted_Omnibox"));
+      base::UserMetricsAction("MostVisited_UrlBlocklisted_Omnibox"));
   [self blockMostVisitedURL:URL];
   [self.carouselItemConsumer deleteCarouselItem:carouselItem];
 }

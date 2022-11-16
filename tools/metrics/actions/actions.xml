@@ -21432,10 +21432,10 @@ should be able to be added at any place in this file.
   <description>An NTP tile was blacklisted. iOS only.</description>
 </action>
 
-<action name="MostVisited_UrlBlacklisted_Omnibox">
+<action name="MostVisited_UrlBlocklisted_Omnibox">
   <owner>christianxu@chromium.org</owner>
   <owner>stkhapugin@chromium.org</owner>
-  <description>An omnibox MV tile was blacklisted. iOS only.</description>
+  <description>An omnibox MV tile was blocklisted. iOS only.</description>
 </action>
 
 <action name="MostVisited_UrlPinned">

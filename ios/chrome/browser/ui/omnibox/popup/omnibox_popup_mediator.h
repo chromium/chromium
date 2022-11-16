@@ -24,6 +24,7 @@
 @class DefaultBrowserPromoNonModalScheduler;
 class FaviconLoader;
 @class OmniboxPedalAnnotator;
+@class OmniboxPopupMediator;
 @class OmniboxPopupPresenter;
 @class PopupModel;
 @protocol SnackbarCommands;
@@ -54,6 +55,17 @@ class OmniboxPopupMediatorDelegate {
 // Returns command handler for SnackbarCommands;
 - (id<SnackbarCommands>)snackbarCommandsHandler;
 
+@end
+
+// Delegate for share purposes, such as sharing URLs from the popup.
+@protocol OmniboxPopupMediatorSharingDelegate
+
+// Called by `popupMediator` to share `URL` with `title`, originating from
+// `originView`.
+- (void)popupMediator:(OmniboxPopupMediator*)mediator
+             shareURL:(GURL)URL
+                title:(NSString*)title
+           originView:(UIView*)originView;
 @end
 
 @interface OmniboxPopupMediator : NSObject <AutocompleteResultConsumerDelegate,
@@ -90,7 +102,13 @@ class OmniboxPopupMediatorDelegate {
 @property(nonatomic, weak) PopupModel* model;
 // The annotator to create pedals for ths mediator.
 @property(nonatomic) OmniboxPedalAnnotator* pedalAnnotator;
+// Flag that marks that incognito actions are available. Those can be disabled
+// by an enterprise policy.
+@property(nonatomic, assign) BOOL allowIncognitoActions;
 
+// Delegate for sharing popup content.
+@property(nonatomic, weak) id<OmniboxPopupMediatorSharingDelegate>
+    sharingDelegate;
 @property(nonatomic, weak) id<OmniboxPopupMediatorProtocolProvider>
     protocolProvider;
 @property(nonatomic, strong) BrowserActionFactory* mostVisitedActionFactory;
