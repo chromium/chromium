@@ -128,6 +128,13 @@ ios_eg2_test_app_host("ios_web_shell_eg2tests") {
     ":eg_app_support+eg2",
     "//ios/testing/earl_grey:eg_app_support+eg2",
   ]
+
+  if (ios_use_shared_bundle_id_for_test_apps) {
+    bundle_identifier = shared_bundle_id_for_test_apps
+  } else {
+    bundle_identifier = "$ios_app_bundle_id_prefix.chrome." +
+                        string_replace(_output_name, "_", "-")
+  }
 }
 
 ios_eg2_test("ios_web_shell_eg2tests_module") {
