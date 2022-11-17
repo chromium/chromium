@@ -162,7 +162,7 @@ BASE_FEATURE(kAutofillEnableVirtualCardMetadata,
 // added before Chrome attempts to show offer again.
 BASE_FEATURE(kAutofillEnforceDelaysInStrikeDatabase,
              "AutofillEnforceDelaysInStrikeDatabase",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, Autofill will attempt to fill IBAN (International Bank Account
 // Number) fields when data is available.
