@@ -63,12 +63,14 @@ robolectric_library("junit") {
 
 source_set("crash_android") {
   sources = [
+    "anr_build_id_provider.cc",
     "crash_keys_android.cc",
     "crash_keys_android.h",
     "pure_java_exception_handler.cc",
     "pure_java_exception_handler.h",
   ]
   deps = [
+    ":anr_collector_jni_headers",
     ":jni_headers",
     "//base",
     "//components/crash/core/common:crash_key",
@@ -124,12 +126,21 @@ proto_java_library("anr_data_proto_java") {
   sources = [ "anr_data.proto" ]
 }
 
+_anr_collector_jni_sources =
+    [ "java/src/org/chromium/components/crash/anr/AnrCollector.java" ]
+
+generate_jni("anr_collector_jni_headers") {
+  sources = _anr_collector_jni_sources
+}
 android_library("anr_collector_java") {
   deps = [
     ":anr_data_proto_java",
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   srcjar_deps = [ ":anr_skipped_reason_enum" ]
-  sources = [ "java/src/org/chromium/components/crash/anr/AnrCollector.java" ]
+  sources = _anr_collector_jni_sources
 }

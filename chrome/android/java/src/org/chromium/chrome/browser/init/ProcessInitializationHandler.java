@@ -95,6 +95,7 @@ import org.chromium.components.browser_ui.photo_picker.PhotoPickerDialog;
 import org.chromium.components.browser_ui.share.ClipboardImageFileProvider;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.content_capture.PlatformContentCaptureController;
+import org.chromium.components.crash.anr.AnrCollector;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.components.optimization_guide.proto.HintsProto;
@@ -118,6 +119,7 @@ import org.chromium.ui.base.SelectFileDialog;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -185,20 +187,7 @@ public class ProcessInitializationHandler {
         AccountManagerFacadeProvider.setInstance(
                 new AccountManagerFacadeImpl(AppHooks.get().createAccountManagerDelegate()));
 
-        // For ANR uploading - we set the version number so that when we ask Android for our ANRs,
-        // it can also give us the version it happened on. This helps in the case that before we can
-        // report the ANR, our app gets updated.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            ActivityManager am =
-                    (ActivityManager) ContextUtils.getApplicationContext().getSystemService(
-                            Context.ACTIVITY_SERVICE);
-            // We can only do 128 bytes in ProcessStateSummary, so only storing the most important
-            // thing that could change between the ANR happening and upload (when the rest of the
-            // metadata is gathered) - the version number. Other fields either won't change (eg.
-            // which channel) or don't matter as much (eg. what experiments are running).
-            String productVersion = VersionInfo.getProductVersion();
-            ApiHelperForR.setProcessStateSummary(am, productVersion.getBytes());
-        }
+        setProcessStateSummaryForAnrs(false);
 
         // De-jelly can also be controlled by a system property. As sandboxed processes can't
         // read this property directly, convert it to the equivalent command line flag.
@@ -278,6 +267,34 @@ public class ProcessInitializationHandler {
         FeatureNotificationGuideService.setDelegate(new FeatureNotificationGuideDelegate());
 
         PrivacyPreferencesManagerImpl.getInstance().onNativeInitialized();
+
+        setProcessStateSummaryForAnrs(true);
+    }
+
+    /**
+     * We use the Android API to store key information which we can't afford to have wrong on our
+     * ANR reports. So, we set the version number, and the main .so file's Build ID once native has
+     * been loaded. Then, when we query Android for any ANRs that have happened, we can also pull
+     * these key fields.
+     *
+     * We are limited to 128 bytes in ProcessStateSummary, so we only store the most important
+     * things that can change between the ANR happening and an upload (when the rest of the metadata
+     * is gathered). Some fields we ignore because they won't change (eg. which channel or what the
+     * .so filename is) and some we ignore because they aren't as critical (eg. experiments). In the
+     * future, we could make this point to a file where we would write out all our crash keys, and
+     * thus get full fidelity.
+     */
+    protected void setProcessStateSummaryForAnrs(boolean includeNative) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            ActivityManager am =
+                    (ActivityManager) ContextUtils.getApplicationContext().getSystemService(
+                            Context.ACTIVITY_SERVICE);
+            String summary = VersionInfo.getProductVersion();
+            if (includeNative) {
+                summary += "," + AnrCollector.getSharedLibraryBuildId();
+            }
+            ApiHelperForR.setProcessStateSummary(am, summary.getBytes(StandardCharsets.UTF_8));
+        }
     }
 
     /**

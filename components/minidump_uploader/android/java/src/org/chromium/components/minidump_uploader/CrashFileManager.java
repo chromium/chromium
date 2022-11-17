@@ -4,8 +4,6 @@
 
 package org.chromium.components.minidump_uploader;
 
-import android.util.Pair;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -370,9 +368,12 @@ public class CrashFileManager {
             File anrDir = new File(getCrashDirectory(), ANR_DIR);
             anrDir.mkdir();
 
-            List<Pair<File, String>> anrFiles = AnrCollector.collectAndWriteAnrs(anrDir);
+            List<String> anrs = AnrCollector.collectAndWriteAnrs(anrDir);
+            if (anrs.isEmpty()) {
+                return;
+            }
             File crashDir = getCrashDirectory();
-            CrashReportMimeWriter.rewriteAnrsAsMIMEs(anrFiles, crashDir);
+            CrashReportMimeWriter.rewriteAnrsAsMIMEs(anrs, crashDir);
         }
     }
 

@@ -223,6 +223,7 @@ static void reportAnrUploadFailure(AnrSkippedReason reason) {
 static void WriteAnrAsMime(crashpad::FileReader* anr_reader,
                            crashpad::FileWriter* writer,
                            const std::string& version_number,
+                           const std::string& build_id,
                            const std::string& anr_file_name) {
   static constexpr char kAnrKey[] = "anr_data";
 
@@ -232,6 +233,9 @@ static void WriteAnrAsMime(crashpad::FileReader* anr_reader,
   std::string channel =
       version_info::GetChannelString(version_info::android::GetChannel());
   builder.SetFormData("channel", channel);
+  if (!build_id.empty()) {
+    builder.SetFormData("elf_build_id", build_id);
+  }
 
   // We can't use crashpad::AnnotationList::Get() as it contains a number of
   // fields which change on each Chrome restart.
@@ -267,25 +271,23 @@ static void WriteAnrAsMime(crashpad::FileReader* anr_reader,
 
 static void JNI_CrashReportMimeWriter_RewriteAnrsAsMIMEs(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobjectArray>& j_anr_files,
-    const base::android::JavaParamRef<jobjectArray>& j_version_numbers,
+    const base::android::JavaParamRef<jobjectArray>& j_anrs,
     const base::android::JavaParamRef<jstring>& j_dest_dir) {
-  std::vector<std::string> anr_files;
-  AppendJavaStringArrayToStringVector(env, j_anr_files, &anr_files);
-  std::vector<std::string> version_numbers;
-  AppendJavaStringArrayToStringVector(env, j_version_numbers, &version_numbers);
-  // We are assuming a 1:1 mapping between an ANR and its version number.
-  DCHECK_EQ(anr_files.size(), version_numbers.size());
+  std::vector<std::string> anr_strings;
+  base::android::AppendJavaStringArrayToStringVector(env, j_anrs, &anr_strings);
   std::string dest_dir;
   base::android::ConvertJavaStringToUTF8(env, j_dest_dir, &dest_dir);
 
-  for (size_t i = 0; i < anr_files.size(); ++i) {
+  for (size_t i = 0; i < anr_strings.size(); i += 3) {
+    std::string anr_proto_file_path = anr_strings.at(i);
+    std::string chrome_version = anr_strings.at(i + 1);
+    std::string build_id = anr_strings.at(i + 2);
     crashpad::FileWriter writer;
     crashpad::FileReader reader;
     crashpad::UUID uuid;
     uuid.InitializeWithNew();
     std::string anr_file_name = uuid.ToString() + "_ANR.dmp";
-    if (!reader.Open(base::FilePath(anr_files[i]))) {
+    if (!reader.Open(base::FilePath(anr_proto_file_path))) {
       reportAnrUploadFailure(AnrSkippedReason::kFilesystemReadFailure);
       continue;
     }
@@ -296,7 +298,7 @@ static void JNI_CrashReportMimeWriter_RewriteAnrsAsMIMEs(
       continue;
     }
 
-    WriteAnrAsMime(&reader, &writer, version_numbers[i], anr_file_name);
+    WriteAnrAsMime(&reader, &writer, chrome_version, build_id, anr_file_name);
   }
 }
 
