@@ -32,6 +32,8 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) StableCdmContextImpl
 
   ~StableCdmContextImpl() override;
 
+  const media::CdmContext* cdm_context() const { return cdm_context_; }
+
   // media::stable::mojom::StableCdmContext:
   void GetHwKeyData(std::unique_ptr<media::DecryptConfig> decrypt_config,
                     const std::vector<uint8_t>& hw_identifier,

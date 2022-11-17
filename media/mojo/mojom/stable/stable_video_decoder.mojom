@@ -124,6 +124,12 @@ interface StableVideoDecoder {
   // Configure (or reconfigure) the decoder. This must be called before decoding
   // any frames, and must not be called while there are pending Initialize(),
   // Decode(), or Reset() requests.
+  //
+  // |cdm_context| is required for the first Initialize() call that sets up
+  // encryption and is ignored on subsequent calls.
+  //
+  // TODO(b/195769334): consider passing |cdm_context| in Construct() instead of
+  // Initialize().
   Initialize@2(VideoDecoderConfig config, bool low_delay,
                pending_remote<StableCdmContext>? cdm_context)
       => (Status status,

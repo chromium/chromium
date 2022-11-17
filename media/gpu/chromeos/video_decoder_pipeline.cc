@@ -383,11 +383,6 @@ void VideoDecoderPipeline::Initialize(const VideoDecoderConfig& config,
     std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
   }
-  if (cdm_context && !allow_encrypted_content_for_testing_) {
-    VLOGF(1) << "cdm_context is not supported.";
-    std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
-    return;
-  }
 #endif  // !BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 
   // Make sure that the configuration requested is supported by the driver,

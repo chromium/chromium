@@ -95,29 +95,21 @@ void StableVideoDecoderService::Initialize(
 
   // The |config| should have been validated at deserialization time.
   DCHECK(config.IsValidConfig());
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // This can change across initializations, so reset this state.
-  if (cdm_id_) {
-    cdm_service_context_->UnregisterRemoteCdmContext(cdm_id_.value());
-    cdm_id_.reset();
-  }
-  remote_cdm_context_.reset();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   if (config.is_encrypted()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (!cdm_context) {
-      std::move(callback).Run(DecoderStatus::Codes::kMissingCDM,
-                              /*needs_bitstream_conversion=*/false,
-                              /*max_decode_requests=*/1,
-                              VideoDecoderType::kUnknown);
-      return;
+    if (!cdm_id_) {
+      if (!cdm_context) {
+        std::move(callback).Run(DecoderStatus::Codes::kMissingCDM,
+                                /*needs_bitstream_conversion=*/false,
+                                /*max_decode_requests=*/1,
+                                VideoDecoderType::kUnknown);
+        return;
+      }
+      remote_cdm_context_ = base::WrapRefCounted(
+          new chromeos::RemoteCdmContext(std::move(cdm_context)));
+      cdm_id_ = cdm_service_context_->RegisterRemoteCdmContext(
+          remote_cdm_context_.get());
     }
-    remote_cdm_context_ = base::WrapRefCounted(
-        new chromeos::RemoteCdmContext(std::move(cdm_context)));
-    cdm_id_ = cdm_service_context_->RegisterRemoteCdmContext(
-        remote_cdm_context_.get());
 #else
     std::move(callback).Run(DecoderStatus::Codes::kUnsupportedConfig,
                             /*needs_bitstream_conversion=*/false,

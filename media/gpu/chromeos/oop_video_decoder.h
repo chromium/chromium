@@ -15,6 +15,12 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+namespace chromeos {
+class StableCdmContextImpl;
+}  // namespace chromeos
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace media {
 
 class MojoDecoderBufferWriter;
@@ -123,6 +129,13 @@ class OOPVideoDecoder : public VideoDecoderMixin,
 
   mojo::Receiver<stable::mojom::MediaLog> stable_media_log_receiver_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
+
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<chromeos::StableCdmContextImpl> stable_cdm_context_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<mojo::Receiver<stable::mojom::StableCdmContext>>
+      stable_cdm_context_receiver_ GUARDED_BY_CONTEXT(sequence_checker_);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   VideoDecoderType decoder_type_ GUARDED_BY_CONTEXT(sequence_checker_) =
       VideoDecoderType::kUnknown;

@@ -190,22 +190,37 @@ void OOPVideoDecoder::Initialize(const VideoDecoderConfig& config,
       pending_remote_stable_cdm_context;
   if (config.is_encrypted()) {
 #if BUILDFLAG(IS_CHROMEOS)
-    if (!cdm_context || !cdm_context->GetChromeOsCdmContext()) {
-      std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
-      return;
-    }
-    mojo::PendingReceiver<stable::mojom::StableCdmContext> cdm_receiver;
-    pending_remote_stable_cdm_context =
-        cdm_receiver.InitWithNewPipeAndPassRemote();
-    mojo::MakeSelfOwnedReceiver(
-        std::make_unique<chromeos::StableCdmContextImpl>(cdm_context),
-        std::move(cdm_receiver));
+    // There's logic in MojoVideoDecoderService::Initialize() to ensure that the
+    // CDM doesn't change across Initialize() calls. We rely on this assumption
+    // to ensure that creating a single StableCdmContextImpl that survives
+    // re-initializations is correct: the remote decoder requires a bound
+    // |pending_remote_stable_cdm_context| only for the first Initialize() call
+    // that sets up encryption.
+    DCHECK(!stable_cdm_context_ ||
+           cdm_context == stable_cdm_context_->cdm_context());
+    if (!stable_cdm_context_) {
+      if (!cdm_context || !cdm_context->GetChromeOsCdmContext()) {
+        std::move(init_cb).Run(
+            DecoderStatus::Codes::kUnsupportedEncryptionMode);
+        return;
+      }
+      stable_cdm_context_ =
+          std::make_unique<chromeos::StableCdmContextImpl>(cdm_context);
+      stable_cdm_context_receiver_ =
+          std::make_unique<mojo::Receiver<stable::mojom::StableCdmContext>>(
+              stable_cdm_context_.get(), pending_remote_stable_cdm_context
+                                             .InitWithNewPipeAndPassReceiver());
+
+      // base::Unretained() is safe because |this| owns the mojo::Receiver.
+      stable_cdm_context_receiver_->set_disconnect_handler(
+          base::BindOnce(&OOPVideoDecoder::Stop, base::Unretained(this)));
 #if BUILDFLAG(USE_VAAPI)
-    // We need to signal that for AMD we will do transcryption on the GPU side.
-    // Then on the other end we just make transcryption a no-op.
-    needs_transcryption_ = (VaapiWrapper::GetImplementationType() ==
-                            VAImplementation::kMesaGallium);
+      // We need to signal that for AMD we will do transcryption on the GPU
+      // side. Then on the other end we just make transcryption a no-op.
+      needs_transcryption_ = (VaapiWrapper::GetImplementationType() ==
+                              VAImplementation::kMesaGallium);
 #endif  // BUILDFLAG(USE_VAAPI)
+    }
 #else
     std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
@@ -395,6 +410,11 @@ void OOPVideoDecoder::Stop() {
   mojo_decoder_buffer_writer_.reset();
   stable_video_frame_handle_releaser_remote_.reset();
   fake_timestamp_to_real_timestamp_cache_.Clear();
+
+#if BUILDFLAG(IS_CHROMEOS)
+  stable_cdm_context_receiver_.reset();
+  stable_cdm_context_.reset();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (init_cb_)
     std::move(init_cb_).Run(DecoderStatus::Codes::kFailed);
