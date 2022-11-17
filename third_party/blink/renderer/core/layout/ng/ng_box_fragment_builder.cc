@@ -542,7 +542,7 @@ const NGLayoutResult* NGBoxFragmentBuilder::ToBoxFragment(
     if (!break_token_) {
       if (last_inline_break_token_)
         child_break_tokens_.push_back(std::move(last_inline_break_token_));
-      if (DidBreakSelf() || HasChildBreakInside())
+      if (DidBreakSelf() || ShouldBreakInside())
         break_token_ = NGBlockBreakToken::Create(this);
     }
 
@@ -700,7 +700,7 @@ void NGBoxFragmentBuilder::AdjustFixedposContainingBlockForInnerMulticols() {
 #if DCHECK_IS_ON()
 
 void NGBoxFragmentBuilder::CheckNoBlockFragmentation() const {
-  DCHECK(!HasChildBreakInside());
+  DCHECK(!ShouldBreakInside());
   DCHECK(!HasInflowChildBreakInside());
   DCHECK(!DidBreakSelf());
   DCHECK(!has_forced_break_);

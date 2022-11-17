@@ -532,12 +532,12 @@ NGBreakStatus FinishFragmentation(NGBlockNode node,
     return NGBreakStatus::kContinue;
   }
 
-  if (builder->HasChildBreakInside()) {
-    // We broke before or inside one of our children. Even if we fit within the
-    // remaining space, and even if the child involved in the break were to be
-    // in a parallel flow, we still need to prepare a break token for this node,
-    // so that we can resume layout of its broken or unstarted children in the
-    // next fragmentainer.
+  if (builder->ShouldBreakInside()) {
+    // We need to break before or inside one of our children (or have already
+    // done so). Even if we fit within the remaining space, and even if the
+    // child involved in the break were to be in a parallel flow, we still need
+    // to prepare a break token for this node, so that we can resume layout of
+    // its broken or unstarted children in the next fragmentainer.
     //
     // If we're at the end of the node, we need to mark the outgoing break token
     // as such. This is a way for the parent algorithm to determine whether we
@@ -564,8 +564,7 @@ NGBreakStatus FinishFragmentation(NGBlockNode node,
       // at the end. If block-size is unconstrained (or at least allowed to grow
       // a bit more), we're only at the end if no in-flow content inside broke.
       if (!was_broken_by_child || builder->IsKnownToFitInFragmentainer()) {
-        if (node.HasNonVisibleBlockOverflow() &&
-            builder->HasChildBreakInside()) {
+        if (node.HasNonVisibleBlockOverflow() && builder->ShouldBreakInside()) {
           // We have reached the end of a fragmentable node that clips overflow
           // in the block direction. If something broke inside at this point, we
           // need to relayout without fragmentation, so that we don't generate

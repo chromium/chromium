@@ -3535,7 +3535,7 @@ void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(
   bool should_process_block_end = true;
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     should_process_block_end = !container_builder_.DidBreakSelf() &&
-                               !container_builder_.HasChildBreakInside();
+                               !container_builder_.ShouldBreakInside();
   }
 
   const auto& node = Node();

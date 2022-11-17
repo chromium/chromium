@@ -260,7 +260,7 @@ void NGFlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
   // items, we could end up with an incorrect static position.
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     should_process_block_end = !container_builder_.DidBreakSelf() &&
-                               !container_builder_.HasChildBreakInside();
+                               !container_builder_.ShouldBreakInside();
     if (should_process_block_end) {
       // Recompute the total block size in case |total_intrinsic_block_size_|
       // changed as a result of fragmentation.
