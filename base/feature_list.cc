@@ -12,7 +12,6 @@
 #include "base/base_switches.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/debug/stack_trace.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
@@ -92,9 +91,9 @@ class EarlyFeatureAccessTracker {
     DCHECK(!feature) << "Accessed feature " << feature->name
                      << " before FeatureList registration.";
     // TODO(crbug.com/1383852): When we believe that all early accesses have
-    // been fixed, add a base::debug::DumpWithoutCrashing(), to get reports from
-    // the field without making Chrome unusable. If we don't get reports, change
-    // the DCHECK above to a CHECK.
+    // been fixed, remove this base::debug::DumpWithoutCrashing() and change the
+    // above DCHECK to a CHECK.
+    base::debug::DumpWithoutCrashing();
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID) &&
         // !BUILDFLAG(IS_CHROMEOS)
   }
