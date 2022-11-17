@@ -102,8 +102,6 @@ bool IsProcessRunning(const wchar_t* executable);
 // Returns true if every running processes are stopped.
 bool WaitForProcessesStopped(const wchar_t* executable);
 
-bool InitializeCOMSecurity();
-
 // Gets the handle to the module containing the given executing address.
 HMODULE GetModuleHandleFromAddress(void* address);
 
