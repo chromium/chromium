@@ -1,0 +1,33 @@
+{% from 'templates/macros.tmpl' import license, source_files_for_generated_file %}
+{{license()}}
+
+{{source_files_for_generated_file(template_file, input_files)}}
+
+#include "third_party/blink/renderer/core/runtime_feature_state/runtime_feature_state_override_context.h"
+
+namespace blink {
+{% for feature in browser_read_access_features %}
+bool RuntimeFeatureStateOverrideContext::
+    Is{{feature.name}}ForceDisabled() {
+  // TODO(crbug.com/1377000): Get the real value.
+  return true;
+}
+
+bool RuntimeFeatureStateOverrideContext::
+    Is{{feature.name}}ForceEnabled() {
+  // TODO(crbug.com/1377000): Get the real value.
+  return true;
+}
+
+void RuntimeFeatureStateOverrideContext::
+    Set{{feature.name}}ForceDisabled() {
+  // TODO(crbug.com/1377000): Do something.
+}
+
+void RuntimeFeatureStateOverrideContext::
+    Set{{feature.name}}ForceEnabled() {
+  // TODO(crbug.com/1377000): Do something.
+}
+{% endfor %}
+
+}  // namespace blink

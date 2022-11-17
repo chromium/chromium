@@ -1,0 +1,36 @@
+{% from 'templates/macros.tmpl' import license, source_files_for_generated_file %}
+{{license()}}
+
+{{source_files_for_generated_file(template_file, input_files)}}
+
+#ifndef {{header_guard}}
+#define {{header_guard}}
+
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+
+namespace blink {
+
+// This class coalesces browser side and enterprise policy state into a final
+// value which is then used to override the blink runtime feature state. It can
+// be queried with `Is*ForceEnabled()` or `Is*ForceDisabled()`.
+class RuntimeFeatureStateOverrideContext {
+ public:
+  explicit RuntimeFeatureStateOverrideContext(
+      ExecutionContext* execution_context) {
+    // TODO(crbug.com/1377000): Actually init the object.
+  }
+
+  {% for feature in browser_read_access_features %}
+  bool Is{{feature.name}}ForceDisabled();
+
+  bool Is{{feature.name}}ForceEnabled();
+
+  void Set{{feature.name}}ForceDisabled();
+
+  void Set{{feature.name}}ForceEnabled();
+  {% endfor %}
+};
+
+}  // namespace blink
+
+#endif // {{header_guard}}
