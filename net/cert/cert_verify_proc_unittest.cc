@@ -4312,6 +4312,24 @@ TEST_P(CertVerifyProcConstraintsTest,
   EXPECT_THAT(Verify(), IsOk());
 }
 
+TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsNotPresentRoot) {
+  chain_[3]->EraseExtension(der::Input(kBasicConstraintsOid));
+
+  if (VerifyProcTypeIsBuiltin() || VerifyProcTypeIsMacAtMostOS10_14() ||
+      verify_proc_type() == CERT_VERIFY_PROC_ANDROID ||
+      verify_proc_type() == CERT_VERIFY_PROC_WIN) {
+    EXPECT_THAT(Verify(), IsOk());
+  } else {
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
+  }
+}
+
+TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsNotPresentIntermediate) {
+  chain_[2]->EraseExtension(der::Input(kBasicConstraintsOid));
+
+  EXPECT_THAT(Verify(), IsError(ExpectedIntermediateConstraintError()));
+}
+
 TEST_P(CertVerifyProcConstraintsTest, NameConstraintsNotMatchingRoot) {
   chain_[3]->SetNameConstraintsDnsNames(/*permitted_dns_names=*/{"example.org"},
                                         /*excluded_dns_names=*/{});
