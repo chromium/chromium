@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATION_LISTENER;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BOTTOM_OFFSET_PX;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISABLE_ANIMATIONS_FOR_TESTING;
@@ -113,6 +114,8 @@ class KeyboardAccessoryViewBinder {
             if (!model.get(VISIBLE)) view.setVisible(false); // Update to cancel any animation.
         } else if (propertyKey == BOTTOM_OFFSET_PX) {
             view.setBottomOffset(model.get(BOTTOM_OFFSET_PX));
+        } else if (propertyKey == ANIMATION_LISTENER) {
+            view.setAnimationListener(model.get(ANIMATION_LISTENER));
         } else if (propertyKey == SHOW_KEYBOARD_CALLBACK || propertyKey == KEYBOARD_TOGGLE_VISIBLE
                 || propertyKey == SHEET_TITLE || propertyKey == SHEET_OPENER_ITEM
                 || propertyKey == OBFUSCATED_CHILD_AT_CALLBACK || propertyKey == SHOW_SWIPING_IPH

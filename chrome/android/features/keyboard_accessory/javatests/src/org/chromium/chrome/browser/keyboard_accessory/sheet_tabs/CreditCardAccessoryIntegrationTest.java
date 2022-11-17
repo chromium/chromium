@@ -9,21 +9,15 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
-import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
 
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.selectTabAtPosition;
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.selectTabWithDescription;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.whenDisplayed;
 import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabTestHelper.isKeyboardAccessoryTabLayout;
-
-import android.widget.TextView;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -136,9 +130,12 @@ public class CreditCardAccessoryIntegrationTest {
         mHelper.waitForKeyboardAccessoryToBeShown();
 
         // Click the tab to show the sheet and hide the keyboard.
-        whenDisplayed(allOf(withContentDescription(R.string.credit_card_accessory_sheet_toggle),
-                              not(isAssignableFrom(TextView.class))))
-                .perform(click());
+        whenDisplayed(withId(R.id.bar_items_view))
+                .perform(scrollTo(isKeyboardAccessoryTabLayout()),
+                        actionOnItem(isKeyboardAccessoryTabLayout(),
+                                selectTabWithDescription(
+                                        R.string.credit_card_accessory_sheet_toggle)));
+
         mHelper.waitForKeyboardToDisappear();
         whenDisplayed(withId(R.id.credit_card_sheet));
         onView(withText(containsString("No saved payment methods"))).check(matches(isDisplayed()));
@@ -157,7 +154,9 @@ public class CreditCardAccessoryIntegrationTest {
         // Scroll to last element and click the first icon:
         whenDisplayed(withId(R.id.bar_items_view))
                 .perform(scrollTo(isKeyboardAccessoryTabLayout()),
-                        actionOnItem(isKeyboardAccessoryTabLayout(), selectTabAtPosition(0)));
+                        actionOnItem(isKeyboardAccessoryTabLayout(),
+                                selectTabWithDescription(
+                                        R.string.credit_card_accessory_sheet_toggle)));
 
         // Wait for the sheet to come up and be stable.
         whenDisplayed(withId(R.id.credit_card_sheet));

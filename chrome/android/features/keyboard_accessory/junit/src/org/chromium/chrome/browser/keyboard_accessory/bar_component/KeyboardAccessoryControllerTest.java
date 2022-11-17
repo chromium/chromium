@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.AUTOFILL_SUGGESTION;
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.GENERATE_PASSWORD_AUTOMATIC;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATION_LISTENER;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_SUGGESTIONS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
@@ -583,6 +584,12 @@ public class KeyboardAccessoryControllerTest {
 
         autofillSuggestionProvider.notifyObservers(new AutofillSuggestion[] {});
         assertThat(mModel.get(HAS_SUGGESTIONS), is(false));
+    }
+
+    @Test
+    public void testFowardsAnimationEventsToVisibilityDelegate() {
+        mModel.get(ANIMATION_LISTENER).onFadeInEnd();
+        verify(mMockVisibilityDelegate).onBarFadeInAnimationEnd();
     }
 
     private int getGenerationImpressionCount() {

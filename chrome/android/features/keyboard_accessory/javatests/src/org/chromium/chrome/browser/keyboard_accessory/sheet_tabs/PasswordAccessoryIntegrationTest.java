@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem;
+import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
@@ -14,11 +16,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.core.AllOf.allOf;
 
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.isTransformed;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.scrollToLastElement;
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.selectTabAtPosition;
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.selectTabWithDescription;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.whenDisplayed;
 import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabTestHelper.isKeyboardAccessoryTabLayout;
 
@@ -88,8 +89,11 @@ public class PasswordAccessoryIntegrationTest {
         // Focus the field to bring up the accessory.
         mHelper.focusPasswordField();
         mHelper.waitForKeyboardAccessoryToBeShown();
-        whenDisplayed(allOf(isDisplayed(), isKeyboardAccessoryTabLayout()))
-                .perform(selectTabAtPosition(0));
+        whenDisplayed(withId(R.id.bar_items_view))
+                .perform(scrollTo(isKeyboardAccessoryTabLayout()),
+                        actionOnItem(isKeyboardAccessoryTabLayout(),
+                                selectTabWithDescription(
+                                        R.string.password_accessory_sheet_toggle)));
 
         // Check that the provided elements are there.
         whenDisplayed(withText("mayapark@gmail.com"));
@@ -109,8 +113,11 @@ public class PasswordAccessoryIntegrationTest {
         // Focus the field to bring up the accessory.
         mHelper.focusPasswordField();
         mHelper.waitForKeyboardAccessoryToBeShown();
-        whenDisplayed(allOf(isDisplayed(), isKeyboardAccessoryTabLayout()))
-                .perform(selectTabAtPosition(0));
+        whenDisplayed(withId(R.id.bar_items_view))
+                .perform(scrollTo(isKeyboardAccessoryTabLayout()),
+                        actionOnItem(isKeyboardAccessoryTabLayout(),
+                                selectTabWithDescription(
+                                        R.string.password_accessory_sheet_toggle)));
 
         mHelper.waitForKeyboardToDisappear();
         whenDisplayed(withId(R.id.passwords_sheet)).perform(scrollToLastElement());
@@ -127,8 +134,11 @@ public class PasswordAccessoryIntegrationTest {
         // Focus the field to bring up the accessory.
         mHelper.focusPasswordField();
         mHelper.waitForKeyboardAccessoryToBeShown();
-        whenDisplayed(allOf(isDisplayed(), isKeyboardAccessoryTabLayout()))
-                .perform(selectTabAtPosition(0));
+        whenDisplayed(withId(R.id.bar_items_view))
+                .perform(scrollTo(isKeyboardAccessoryTabLayout()),
+                        actionOnItem(isKeyboardAccessoryTabLayout(),
+                                selectTabWithDescription(
+                                        R.string.password_accessory_sheet_toggle)));
 
         // Click the suggestion.
         whenDisplayed(withText("ShorterPassword")).perform(click());
@@ -154,8 +164,11 @@ public class PasswordAccessoryIntegrationTest {
         mHelper.waitForKeyboardAccessoryToBeShown();
 
         // Click the tab to show the sheet and hide the keyboard.
-        whenDisplayed(allOf(isDisplayed(), isKeyboardAccessoryTabLayout()))
-                .perform(selectTabAtPosition(0));
+        whenDisplayed(withId(R.id.bar_items_view))
+                .perform(scrollTo(isKeyboardAccessoryTabLayout()),
+                        actionOnItem(isKeyboardAccessoryTabLayout(),
+                                selectTabWithDescription(
+                                        R.string.password_accessory_sheet_toggle)));
         mHelper.waitForKeyboardToDisappear();
         whenDisplayed(withId(R.id.passwords_sheet));
         onView(withText(containsString("No saved passwords"))).check(matches(isDisplayed()));
@@ -166,15 +179,18 @@ public class PasswordAccessoryIntegrationTest {
     @EnableFeatures({ChromeFeatureList.RECOVER_FROM_NEVER_SAVE_ANDROID,
             ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY})
     public void
-    testEnablesUndenylistingToggle() throws TimeoutException {
+    testEnablesUndenylistingToggle() throws TimeoutException, InterruptedException {
         mHelper.loadTestPage(false);
         mHelper.cacheCredentials(new String[0], new String[0], true);
 
         // Focus the field to bring up the accessory.
         mHelper.focusPasswordField();
         mHelper.waitForKeyboardAccessoryToBeShown();
-        whenDisplayed(allOf(isDisplayed(), isKeyboardAccessoryTabLayout()))
-                .perform(selectTabAtPosition(0));
+        whenDisplayed(withId(R.id.bar_items_view))
+                .perform(scrollTo(isKeyboardAccessoryTabLayout()),
+                        actionOnItem(isKeyboardAccessoryTabLayout(),
+                                selectTabWithDescription(
+                                        R.string.password_accessory_sheet_toggle)));
 
         whenDisplayed(withId(R.id.option_toggle_switch)).check(matches(isNotChecked()));
         onView(withId(R.id.option_toggle_subtitle)).check(matches(withText(R.string.text_off)));
