@@ -53937,6 +53937,12 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
              locked for 9+ seconds and the app was quit by OS or the user)."/>
 </enum>
 
+<enum name="IOSTabSwitcherDragDropTabs">
+  <int value="0" label="A tab is dragged."/>
+  <int value="1" label="A tab is dropped at the same index position."/>
+  <int value="2" label="A tab is dropped at a new index position."/>
+</enum>
+
 <enum name="IOSTabSwitcherPageChangeInteraction">
   <int value="0" label="Unknown Interaction"/>
   <int value="1" label="Scroll View Drag"/>
