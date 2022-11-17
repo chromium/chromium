@@ -473,10 +473,6 @@
     if (!GetFirstResponder()) {
       // It is possible to already have a first responder (for example the
       // omnibox). In that case, we don't want to mark BVC as first responder.
-      // TODO(crbug.com/1223090): Adding DCHECK below to confirm hypothesis
-      // that `-becomeFirstResponder` is crashing due to `currentBVC` not
-      // being in the view hierarchy.
-      DCHECK(self.bvcContainer.currentBVC.view.window);
       [self.bvcContainer.currentBVC becomeFirstResponder];
     }
     if (completion) {
