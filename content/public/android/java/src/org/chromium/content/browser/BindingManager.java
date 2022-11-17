@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArraySet;
 
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.common.ContentFeatures;
@@ -47,6 +48,8 @@ class BindingManager implements ComponentCallbacks2 {
     // If not null, this is the connection in |mConnections| that does not have a binding added
     // by BindingManager.
     private ChildProcessConnection mWaivedConnection;
+
+    private int mConnectionsDroppedDueToMaxSize;
 
     @Override
     public void onTrimMemory(final int level) {
@@ -142,6 +145,12 @@ class BindingManager implements ComponentCallbacks2 {
      */
     void onSentToBackground() {
         assert LauncherThread.runningOnLauncherThread();
+
+        RecordHistogram.recordCount1000Histogram(
+                "Android.BindingManger.ConnectionsDroppedDueToMaxSize",
+                mConnectionsDroppedDueToMaxSize);
+        mConnectionsDroppedDueToMaxSize = 0;
+
         if (mConnections.isEmpty()) return;
         LauncherThread.postDelayed(mDelayedClearer, BINDING_POOL_CLEARER_DELAY_MILLIS);
     }
@@ -243,6 +252,7 @@ class BindingManager implements ComponentCallbacks2 {
         addBinding(connection);
 
         if (mMaxSize != NO_MAX_SIZE && mConnections.size() == mMaxSize + 1) {
+            mConnectionsDroppedDueToMaxSize++;
             removeOldConnections(1);
             ensureLowestRankIsWaived();
         }

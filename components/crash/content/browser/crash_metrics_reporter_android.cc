@@ -186,7 +186,14 @@ void CrashMetricsReporter::ChildProcessExited(
       // the bindings are updated later than visibility on web contents.
       switch (info.binding_state) {
         case base::android::ChildBindingState::UNBOUND:
+          break;
         case base::android::ChildBindingState::WAIVED:
+          if (!intentional_kill && !info.normal_termination) {
+            ReportCrashCount(
+                ProcessedCrashCounts::
+                    kRendererForegroundInvisibleWithWaivedBindingOom,
+                &reported_counts);
+          }
           break;
         case base::android::ChildBindingState::STRONG:
           if (intentional_kill || info.normal_termination) {
