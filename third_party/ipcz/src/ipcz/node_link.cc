@@ -636,14 +636,6 @@ bool NodeLink::OnRouteDisconnected(msg::RouteDisconnected& route_closed) {
       context, sublink->router_link->GetType());
 }
 
-bool NodeLink::OnSnapshotPeerQueueState(msg::SnapshotPeerQueueState& snapshot) {
-  const OperationContext context{OperationContext::kTransportNotification};
-  if (Ref<Router> router = GetRouter(snapshot.params().sublink)) {
-    router->SnapshotPeerQueueState(context);
-  }
-  return true;
-}
-
 bool NodeLink::OnBypassPeer(msg::BypassPeer& bypass) {
   absl::optional<Sublink> sublink = GetSublink(bypass.params().sublink);
   if (!sublink) {

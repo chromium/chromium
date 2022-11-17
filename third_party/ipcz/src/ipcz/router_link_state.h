@@ -9,7 +9,6 @@
 #include <cstdint>
 #include <type_traits>
 
-#include "ipcz/atomic_queue_state.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/link_side.h"
 #include "ipcz/node_name.h"
@@ -72,14 +71,8 @@ struct IPCZ_ALIGN(8) RouterLinkState : public RefCountedFragment {
   // validate that C is an appropriate source of such a bypass request.
   NodeName allowed_bypass_request_source;
 
-  // An approximation of the queue state on each side of the link. These are
-  // used both for best-effort querying of remote conditions as well as for
-  // reliable synchronization against remote activity.
-  AtomicQueueState side_a_queue_state;
-  AtomicQueueState side_b_queue_state;
-
   // More reserved slots, padding out this structure to 64 bytes.
-  uint32_t reserved1[2] = {0};
+  uint32_t reserved1[10] = {0};
 
   bool is_locked_by(LinkSide side) const {
     Status s = status.load(std::memory_order_relaxed);
@@ -115,10 +108,6 @@ struct IPCZ_ALIGN(8) RouterLinkState : public RefCountedFragment {
   // attempt was made to TryLock() from that side, while the other side was
   // still unstable.
   bool ResetWaitingBit(LinkSide side);
-
-  // Returns a view of the inbound parcel queue state for the given `side` of
-  // this link.
-  AtomicQueueState& GetQueueState(LinkSide side);
 };
 
 // The size of this structure is fixed at 64 bytes to ensure that it fits the

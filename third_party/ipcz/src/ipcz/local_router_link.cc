@@ -131,20 +131,6 @@ void LocalRouterLink::AcceptRouteClosure(const OperationContext& context,
   }
 }
 
-AtomicQueueState* LocalRouterLink::GetPeerQueueState() {
-  return &state_->link_state().GetQueueState(side_.opposite());
-}
-
-AtomicQueueState* LocalRouterLink::GetLocalQueueState() {
-  return &state_->link_state().GetQueueState(side_);
-}
-
-void LocalRouterLink::SnapshotPeerQueueState(const OperationContext& context) {
-  if (Ref<Router> receiver = state_->GetRouter(side_.opposite())) {
-    receiver->SnapshotPeerQueueState(context);
-  }
-}
-
 void LocalRouterLink::AcceptRouteDisconnected(const OperationContext& context) {
   if (Ref<Router> receiver = state_->GetRouter(side_.opposite())) {
     receiver->AcceptRouteDisconnectedFrom(context, state_->type());

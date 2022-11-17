@@ -245,7 +245,6 @@ class NodeLink : public msg::NodeMessageListener {
       msg::AcceptParcelDriverObjects& accept) override;
   bool OnRouteClosed(msg::RouteClosed& route_closed) override;
   bool OnRouteDisconnected(msg::RouteDisconnected& route_disconnected) override;
-  bool OnSnapshotPeerQueueState(msg::SnapshotPeerQueueState& snapshot) override;
   bool OnBypassPeer(msg::BypassPeer& bypass) override;
   bool OnAcceptBypassLink(msg::AcceptBypassLink& accept) override;
   bool OnStopProxying(msg::StopProxying& stop) override;

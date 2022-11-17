@@ -24,7 +24,6 @@
 
 namespace ipcz {
 
-class AtomicQueueState;
 class NodeLink;
 class RemoteRouterLink;
 struct RouterLinkState;
@@ -137,10 +136,6 @@ class Router : public RefCounted {
   bool AcceptRouteClosureFrom(const OperationContext& context,
                               LinkType link_type,
                               SequenceNumber sequence_length);
-
-  // Queries the remote peer's queue state and performs any local state upates
-  // needed to reflect it. `source` indicates why the snapshot is being taken.
-  void SnapshotPeerQueueState(const OperationContext& context);
 
   // Accepts notification from a link bound to this Router that some node along
   // the route (in the direction of that link) has been disconnected, e.g. due
@@ -336,23 +331,6 @@ class Router : public RefCounted {
  private:
   ~Router() override;
 
-  // Returns a handle to the outward peer's queue state, if available. Otherwise
-  // returns null.
-  AtomicQueueState* GetPeerQueueState() ABSL_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
-
-  // Updates the AtomicQueueState shared with this Router's outward peer, based
-  // on the current portal status. Any monitor bit set by the remote peer is
-  // reset, and this returns the value of that bit prior to the reset. If this
-  // returns true, the caller is responsible for notifying the remote peer about
-  // a state change.
-  [[nodiscard]] bool RefreshLocalQueueState()
-      ABSL_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
-
-  // Updates this Router's status to reflect how many parcels and total bytes of
-  // parcel data remain on the remote peer's inbound queue.
-  void UpdateStatusForPeerQueueState(const AtomicQueueState::QueryResult& state)
-      ABSL_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
-
   // Attempts to initiate bypass of this router by its peers, and ultimately to
   // remove this router from its route.
   //
@@ -439,11 +417,6 @@ class Router : public RefCounted {
   // The current computed portal status to be reflected by a portal controlling
   // this router, iff this is a terminal router.
   IpczPortalStatus status_ ABSL_GUARDED_BY(mutex_) = {sizeof(status_)};
-
-  // A local cache of the most recently stored value for our own local
-  // AtomicQueueState.
-  absl::optional<AtomicQueueState::UpdateValue> last_queue_update_
-      ABSL_GUARDED_BY(mutex_);
 
   // A set of traps installed via a controlling portal where applicable. These
   // traps are notified about any interesting state changes within the router.
