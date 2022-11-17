@@ -126,7 +126,7 @@ source_set("v4l2") {
   }
 
   # TODO(b/243970152): update use_libgav1_parser flag
-  if (enable_libgav1_decoder || use_libgav1_parser) {
+  if (use_libgav1_parser) {
     deps += [ "//third_party/libgav1:libgav1" ]
   }
 }
@@ -193,7 +193,7 @@ executable("v4l2_stateless_decoder") {
     "//media/parsers",
   ]
 
-  if (enable_libgav1_decoder || use_libgav1_parser) {
+  if (use_libgav1_parser) {
     deps += [ "//third_party/libgav1:libgav1" ]
   }
 }

@@ -43,10 +43,6 @@
 #include "media/filters/ffmpeg_video_decoder.h"
 #endif
 
-#if BUILDFLAG(ENABLE_LIBGAV1_DECODER)
-#include "media/filters/gav1_video_decoder.h"
-#endif
-
 namespace media {
 
 namespace {
@@ -318,18 +314,10 @@ std::unique_ptr<CdmVideoDecoder> CreateVideoDecoder(
     video_decoder = std::make_unique<VpxVideoDecoder>();
 #endif
 
-#if BUILDFLAG(ENABLE_LIBGAV1_DECODER)
-  if (base::FeatureList::IsEnabled(kGav1VideoDecoder)) {
-    if (config.codec == cdm::kCodecAv1)
-      video_decoder.reset(new Gav1VideoDecoder(null_media_log.get()));
-  } else
-#endif  // BUILDFLAG(ENABLE_LIBGAV1_DECODER)
-  {
 #if BUILDFLAG(ENABLE_DAV1D_DECODER)
-    if (config.codec == cdm::kCodecAv1)
-      video_decoder = std::make_unique<Dav1dVideoDecoder>(null_media_log.get());
+  if (config.codec == cdm::kCodecAv1)
+    video_decoder = std::make_unique<Dav1dVideoDecoder>(null_media_log.get());
 #endif
-  }
 
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
   if (!video_decoder)

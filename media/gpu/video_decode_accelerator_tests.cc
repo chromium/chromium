@@ -17,6 +17,7 @@
 #include "media/base/test_data_util.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_transformation.h"
+#include "media/filters/dav1d_video_decoder.h"
 #include "media/gpu/test/video.h"
 #include "media/gpu/test/video_frame_file_writer.h"
 #include "media/gpu/test/video_frame_validator.h"
@@ -27,12 +28,6 @@
 #include "media/gpu/test/video_test_helpers.h"
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(ENABLE_DAV1D_DECODER)
-#include "media/filters/dav1d_video_decoder.h"
-#elif BUILDFLAG(ENABLE_LIBGAV1_DECODER)
-#include "media/filters/gav1_video_decoder.h"
-#endif
 
 namespace media {
 namespace test {
@@ -203,11 +198,8 @@ class VideoDecoderTest : public ::testing::Test {
       LOG(ERROR) << "Frame validation by SSIM is allowed for AV1 streams only";
       return false;
     }
-#if BUILDFLAG(ENABLE_DAV1D_DECODER)
+
     Dav1dVideoDecoder decoder(
-#elif BUILDFLAG(ENABLE_LIBGAV1_DECODER)
-    Gav1VideoDecoder decoder(
-#endif
         /*media_log=*/nullptr,
         OffloadableVideoDecoder::OffloadState::kOffloaded);
     VideoDecoderConfig decoder_config(

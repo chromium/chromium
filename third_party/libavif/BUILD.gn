@@ -38,10 +38,4 @@ source_set("libavif") {
     defines += [ "AVIF_CODEC_DAV1D" ]
     deps += [ "//third_party/dav1d" ]
   }
-
-  if (enable_libgav1_decoder) {
-    sources += [ "src/src/codec_libgav1.c" ]
-    defines += [ "AVIF_CODEC_LIBGAV1" ]
-    deps += [ "//third_party/libgav1" ]
-  }
 }

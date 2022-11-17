@@ -50,10 +50,6 @@
 #include "media/filters/dav1d_video_decoder.h"
 #endif
 
-#if BUILDFLAG(ENABLE_LIBGAV1_DECODER)
-#include "media/filters/gav1_video_decoder.h"
-#endif
-
 namespace media {
 
 struct SwVideoTestParams {
@@ -100,16 +96,9 @@ class SoftwareVideoEncoderTest
       decoder_ = std::make_unique<VpxVideoDecoder>();
 #endif
     } else if (codec_ == VideoCodec::kAV1) {
-#if BUILDFLAG(ENABLE_LIBGAV1_DECODER)
-      if (base::FeatureList::IsEnabled(kGav1VideoDecoder)) {
-        decoder_ = std::make_unique<Gav1VideoDecoder>(&media_log_);
-      } else
-#endif
-      {
 #if BUILDFLAG(ENABLE_DAV1D_DECODER)
-        decoder_ = std::make_unique<Dav1dVideoDecoder>(&media_log_);
+      decoder_ = std::make_unique<Dav1dVideoDecoder>(&media_log_);
 #endif
-      }
     }
 
     EXPECT_NE(decoder_, nullptr);
