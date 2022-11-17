@@ -173,9 +173,14 @@ NSUInteger ModifierMaskForKeyEvent(NSEvent* event) {
   if (useEventCharacters) {
     eventString = eventCharacters;
 
-    // Process the shift if necessary.
-    if (eventModifiers & NSEventModifierFlagShift)
+    // If the user is pressing the Shift key, force the shortcut string to
+    // uppercase. Otherwise, if only Caps Lock is down, ensure the shortcut
+    // string is lowercase.
+    if (eventModifiers & NSEventModifierFlagShift) {
       eventString = [eventString uppercaseString];
+    } else if (eventModifiers & NSEventModifierFlagCapsLock) {
+      eventString = [eventString lowercaseString];
+    }
   }
 
   if ([eventString length] == 0 || [[self keyEquivalent] length] == 0)

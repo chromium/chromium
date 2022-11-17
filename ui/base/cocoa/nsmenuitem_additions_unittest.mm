@@ -8,10 +8,31 @@
 
 #include <ostream>
 
+#include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/keyboard_code_conversion_mac.h"
+
+@interface NSEventForTesting : NSEvent
+@property(copy, nonatomic) NSString* characters;
+@end
+
+@implementation NSEventForTesting
+
+@synthesize characters = _characters;
+
+- (void)setCharacters:(NSString*)aString {
+  _characters = [aString copy];
+  if (aString.length)
+    ASSERT_TRUE([[self characters] isEqualToString:aString]);
+}
+
+- (NSString*)characters {
+  return _characters != nil ? _characters : [super characters];
+}
+
+@end
 
 std::ostream& operator<<(std::ostream& out, NSObject* obj) {
   return out << base::SysNSStringToUTF8([obj description]);
@@ -29,16 +50,16 @@ NSEvent* KeyEvent(const NSUInteger modifierFlags,
                   NSString* chars,
                   NSString* charsNoMods,
                   const NSUInteger keyCode = 0) {
-  return [NSEvent keyEventWithType:NSEventTypeKeyDown
-                          location:NSZeroPoint
-                     modifierFlags:modifierFlags
-                         timestamp:0.0
-                      windowNumber:0
-                           context:nil
-                        characters:chars
-       charactersIgnoringModifiers:charsNoMods
-                         isARepeat:NO
-                           keyCode:keyCode];
+  return [NSEventForTesting keyEventWithType:NSEventTypeKeyDown
+                                    location:NSZeroPoint
+                               modifierFlags:modifierFlags
+                                   timestamp:0.0
+                                windowNumber:0
+                                     context:nil
+                                  characters:chars
+                 charactersIgnoringModifiers:charsNoMods
+                                   isARepeat:NO
+                                     keyCode:keyCode];
 }
 
 NSMenuItem* MenuItem(NSString* equiv, NSUInteger mask = 0) {
@@ -507,6 +528,45 @@ TEST(NSMenuItemAdditionsTest, TestFiresForKeyEvent) {
                      /*compareCocoa=*/false);
 
   SetIsInputSourceCommandHebrewForTesting(false);
+}
+
+// With the Persian - Standard layout, pressing Cmd W without Shift but with
+// Caps Lock on generates a key event with a capital W. Make sure we treat
+// the W as lower case so that we don't match Shift Cmd W, unless the user
+// is also holding down the Shift key.
+TEST(NSMenuItemAdditionsTest, TestCmdCapsLockOnPersianStandardLayout) {
+  NSString* capitalW = @"W";
+  NSMenuItem* closeTabItem = MenuItem(@"w", NSEventModifierFlagCommand);
+  NSMenuItem* closeWindowItem = MenuItem(capitalW, NSEventModifierFlagCommand);
+
+  // Simulate pressing Cmd W with Caps Lock on.
+  NSEvent* cmdWWithCapsLock =
+      KeyEvent(NSEventModifierFlagCommand | NSEventModifierFlagCapsLock,
+               capitalW, @"\u0635", kVK_ANSI_W);
+  // The layout generates an event with a capital W. We have to force the
+  // characters because the regular NSEvent machinery insists on converting
+  // the string to lower case.
+  [base::mac::ObjCCastStrict<NSEventForTesting>(cmdWWithCapsLock)
+      setCharacters:capitalW];
+  ExpectKeyFiresItem(cmdWWithCapsLock, closeTabItem, /*compareCocoa=*/false);
+
+  // Make sure Shift-Cmd W triggers Close Window.
+  NSEvent* shiftCmdW =
+      KeyEvent(NSEventModifierFlagCommand | NSEventModifierFlagShift, capitalW,
+               @"\u1612", kVK_ANSI_W);
+  [base::mac::ObjCCastStrict<NSEventForTesting>(shiftCmdW)
+      setCharacters:capitalW];
+  ExpectKeyFiresItem(shiftCmdW, closeWindowItem, /*compareCocoa=*/false);
+
+  // And also Shift-Cmd W with Caps Lock down.
+  NSEvent* shiftCmdWWithCapsLock =
+      KeyEvent(NSEventModifierFlagCommand | NSEventModifierFlagShift |
+                   NSEventModifierFlagCapsLock,
+               capitalW, @"\u1612", kVK_ANSI_W);
+  [base::mac::ObjCCastStrict<NSEventForTesting>(shiftCmdWWithCapsLock)
+      setCharacters:capitalW];
+  ExpectKeyFiresItem(shiftCmdWWithCapsLock, closeWindowItem,
+                     /*compareCocoa=*/false);
 }
 
 NSString* keyCodeToCharacter(NSUInteger keyCode,
