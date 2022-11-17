@@ -505,7 +505,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
             strongSelf.mostVisitedActionFactory;
 
         // Record that this context menu was shown to the user.
-        RecordMenuShown(MenuScenario::kOmniboxMostVisitedEntry);
+        RecordMenuShown(MenuScenarioHistogram::kOmniboxMostVisitedEntry);
 
         NSMutableArray<UIMenuElement*>* menuElements =
             [[NSMutableArray alloc] init];

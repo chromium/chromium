@@ -42,7 +42,7 @@
 #endif
 
 namespace {
-MenuScenario kTestMenuScenario = MenuScenario::kHistoryEntry;
+MenuScenarioHistogram kTestMenuScenario = MenuScenarioHistogram::kHistoryEntry;
 }  // namespace
 
 // Test fixture for the BrowserActionFactory.

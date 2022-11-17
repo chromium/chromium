@@ -112,7 +112,7 @@
   self.mediator.sharingDelegate = self;
   BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
       initWithBrowser:self.browser
-             scenario:MenuScenario::kOmniboxMostVisitedEntry];
+             scenario:MenuScenarioHistogram::kOmniboxMostVisitedEntry];
   self.mediator.mostVisitedActionFactory = actionFactory;
 
   if (IsSwiftUIPopupEnabled()) {

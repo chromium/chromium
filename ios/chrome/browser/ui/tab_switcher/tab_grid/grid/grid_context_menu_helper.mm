@@ -62,7 +62,7 @@
 
 - (UIContextMenuConfiguration*)
     contextMenuConfigurationForGridCell:(GridCell*)gridCell
-                           menuScenario:(MenuScenario)scenario {
+                           menuScenario:(MenuScenarioHistogram)scenario {
   __weak __typeof(self) weakSelf = self;
 
   UIContextMenuActionProvider actionProvider =
@@ -85,7 +85,8 @@
 }
 
 - (NSArray<UIMenuElement*>*)menuElementsForGridCell:(GridCell*)gridCell
-                                       menuScenario:(MenuScenario)scenario {
+                                       menuScenario:
+                                           (MenuScenarioHistogram)scenario {
   // Record that this context menu was shown to the user.
   RecordMenuShown(scenario);
 
@@ -155,8 +156,8 @@
 
   // Thumb strip and search results menus don't support tab selection.
   BOOL scenarioDisablesSelection =
-      scenario == MenuScenario::kTabGridSearchResult ||
-      scenario == MenuScenario::kThumbStrip;
+      scenario == MenuScenarioHistogram::kTabGridSearchResult ||
+      scenario == MenuScenarioHistogram::kThumbStrip;
   if (!scenarioDisablesSelection &&
       [self.contextMenuDelegate respondsToSelector:@selector(selectTabs)]) {
     [menuElements addObject:[actionFactory actionToSelectTabsWithBlock:^{

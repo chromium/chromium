@@ -2310,11 +2310,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
         return [UIMenu menuWithTitle:@"" children:@[]];
 
       // Record that this context menu was shown to the user.
-      RecordMenuShown(MenuScenario::kBookmarkEntry);
+      RecordMenuShown(MenuScenarioHistogram::kBookmarkEntry);
 
       BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
           initWithBrowser:strongSelf.browser
-                 scenario:MenuScenario::kBookmarkEntry];
+                 scenario:MenuScenarioHistogram::kBookmarkEntry];
 
       NSMutableArray<UIMenuElement*>* menuElements =
           [[NSMutableArray alloc] init];
@@ -2408,10 +2408,10 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
         return [UIMenu menuWithTitle:@"" children:@[]];
 
       // Record that this context menu was shown to the user.
-      RecordMenuShown(MenuScenario::kBookmarkFolder);
+      RecordMenuShown(MenuScenarioHistogram::kBookmarkFolder);
 
       ActionFactory* actionFactory = [[ActionFactory alloc]
-          initWithScenario:MenuScenario::kBookmarkFolder];
+          initWithScenario:MenuScenarioHistogram::kBookmarkFolder];
 
       NSMutableArray<UIMenuElement*>* menuElements =
           [[NSMutableArray alloc] init];

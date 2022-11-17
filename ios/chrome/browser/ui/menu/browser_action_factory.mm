@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
+#import "ios/chrome/browser/ui/menu/action_factory+protected.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/url_loading/image_search_param_generator.h"
@@ -44,7 +45,7 @@
 @implementation BrowserActionFactory
 
 - (instancetype)initWithBrowser:(Browser*)browser
-                       scenario:(MenuScenario)scenario {
+                       scenario:(MenuScenarioHistogram)scenario {
   DCHECK(browser);
   if (self = [super initWithScenario:scenario]) {
     _browser = browser;

@@ -631,8 +631,8 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
     return nil;
   }
 
-  ActionFactory* actionFactory =
-      [[ActionFactory alloc] initWithScenario:MenuScenario::kTabGridAddTo];
+  ActionFactory* actionFactory = [[ActionFactory alloc]
+      initWithScenario:MenuScenarioHistogram::kTabGridAddTo];
 
   __weak TabGridMediator* weakSelf = self;
 

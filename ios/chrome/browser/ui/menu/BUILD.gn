@@ -4,6 +4,7 @@
 
 source_set("menu") {
   sources = [
+    "action_factory+protected.h",
     "action_factory.h",
     "action_factory.mm",
     "browser_action_factory.h",

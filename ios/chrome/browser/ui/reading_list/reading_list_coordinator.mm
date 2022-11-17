@@ -412,11 +412,11 @@ animationControllerForDismissedController:(UIViewController*)dismissed {
         ReadingListCoordinator* strongSelf = weakSelf;
 
         // Record that this context menu was shown to the user.
-        RecordMenuShown(MenuScenario::kReadingListEntry);
+        RecordMenuShown(MenuScenarioHistogram::kReadingListEntry);
 
         BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
             initWithBrowser:strongSelf.browser
-                   scenario:MenuScenario::kReadingListEntry];
+                   scenario:MenuScenarioHistogram::kReadingListEntry];
 
         NSMutableArray<UIMenuElement*>* menuElements =
             [[NSMutableArray alloc] init];

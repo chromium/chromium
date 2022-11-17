@@ -79,9 +79,9 @@
   self.mediator.templateURLService =
       ios::TemplateURLServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
-  self.mediator.actionFactory =
-      [[BrowserActionFactory alloc] initWithBrowser:self.browser
-                                           scenario:MenuScenario::kToolbarMenu];
+  self.mediator.actionFactory = [[BrowserActionFactory alloc]
+      initWithBrowser:self.browser
+             scenario:MenuScenarioHistogram::kToolbarMenu];
 
   self.viewController.menuProvider = self.mediator;
 }

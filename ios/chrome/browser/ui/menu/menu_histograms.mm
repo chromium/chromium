@@ -48,44 +48,44 @@ const char kOmniboxMostVisitedEntryActionsHistogram[] =
     "Mobile.ContextMenu.OmniboxMostVisitedEntry.Actions";
 }  // namespace
 
-void RecordMenuShown(MenuScenario scenario) {
+void RecordMenuShown(MenuScenarioHistogram scenario) {
   base::UmaHistogramEnumeration(kMenuEntryPointsHistogram, scenario);
 }
 
-const char* GetActionsHistogramName(MenuScenario scenario) {
+const char* GetActionsHistogramName(MenuScenarioHistogram scenario) {
   switch (scenario) {
-    case MenuScenario::kHistoryEntry:
+    case MenuScenarioHistogram::kHistoryEntry:
       return kHistoryEntryActionsHistogram;
-    case MenuScenario::kBookmarkEntry:
+    case MenuScenarioHistogram::kBookmarkEntry:
       return kBookmarkEntryActionsHistogram;
-    case MenuScenario::kReadingListEntry:
+    case MenuScenarioHistogram::kReadingListEntry:
       return kReadingListEntryActionsHistogram;
-    case MenuScenario::kRecentTabsEntry:
+    case MenuScenarioHistogram::kRecentTabsEntry:
       return kRecentTabsEntryActionsHistogram;
-    case MenuScenario::kRecentTabsHeader:
+    case MenuScenarioHistogram::kRecentTabsHeader:
       return kRecentTabsHeaderActionsHistogram;
-    case MenuScenario::kMostVisitedEntry:
+    case MenuScenarioHistogram::kMostVisitedEntry:
       return kMostVisitedEntryActionsHistogram;
-    case MenuScenario::kBookmarkFolder:
+    case MenuScenarioHistogram::kBookmarkFolder:
       return kBookmarkFolderActionsHistogram;
-    case MenuScenario::kContextMenuImage:
+    case MenuScenarioHistogram::kContextMenuImage:
       return KContextMenuImageActionsHistogram;
-    case MenuScenario::kContextMenuImageLink:
+    case MenuScenarioHistogram::kContextMenuImageLink:
       return KContextMenuImageLinkActionsHistogram;
-    case MenuScenario::kContextMenuLink:
+    case MenuScenarioHistogram::kContextMenuLink:
       return KContextMenuLinkActionsHistogram;
-    case MenuScenario::kTabGridEntry:
-    case MenuScenario::kThumbStrip:
+    case MenuScenarioHistogram::kTabGridEntry:
+    case MenuScenarioHistogram::kThumbStrip:
       return kTabGridActionsHistogram;
-    case MenuScenario::kTabGridAddTo:
+    case MenuScenarioHistogram::kTabGridAddTo:
       return kTabGridAddToActionsHistogram;
-    case MenuScenario::kTabGridEdit:
+    case MenuScenarioHistogram::kTabGridEdit:
       return kTabGridEditActionsHistogram;
-    case MenuScenario::kTabGridSearchResult:
+    case MenuScenarioHistogram::kTabGridSearchResult:
       return kTabGridSearchResultHistogram;
-    case MenuScenario::kToolbarMenu:
+    case MenuScenarioHistogram::kToolbarMenu:
       return kToolbarMenuActionsHistogram;
-    case MenuScenario::kOmniboxMostVisitedEntry:
+    case MenuScenarioHistogram::kOmniboxMostVisitedEntry:
       return kOmniboxMostVisitedEntryActionsHistogram;
   }
 }

@@ -65,11 +65,11 @@
     RecentTabsContextMenuHelper* strongSelf = weakSelf;
 
     // Record that this context menu was shown to the user.
-    RecordMenuShown(MenuScenario::kRecentTabsEntry);
+    RecordMenuShown(MenuScenarioHistogram::kRecentTabsEntry);
 
     BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
         initWithBrowser:strongSelf.browser
-               scenario:MenuScenario::kRecentTabsEntry];
+               scenario:MenuScenarioHistogram::kRecentTabsEntry];
 
     NSMutableArray<UIMenuElement*>* menuElements =
         [[NSMutableArray alloc] init];
@@ -129,10 +129,10 @@
         RecentTabsContextMenuHelper* strongSelf = weakSelf;
 
         // Record that this context menu was shown to the user.
-        RecordMenuShown(MenuScenario::kRecentTabsHeader);
+        RecordMenuShown(MenuScenarioHistogram::kRecentTabsHeader);
 
         ActionFactory* actionFactory = [[ActionFactory alloc]
-            initWithScenario:MenuScenario::kRecentTabsHeader];
+            initWithScenario:MenuScenarioHistogram::kRecentTabsHeader];
 
         NSMutableArray<UIMenuElement*>* menuElements =
             [[NSMutableArray alloc] init];

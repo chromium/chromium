@@ -283,11 +283,11 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
         ContentSuggestionsCoordinator* strongSelf = weakSelf;
 
         // Record that this context menu was shown to the user.
-        RecordMenuShown(MenuScenario::kMostVisitedEntry);
+        RecordMenuShown(MenuScenarioHistogram::kMostVisitedEntry);
 
         BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
             initWithBrowser:strongSelf.browser
-                   scenario:MenuScenario::kMostVisitedEntry];
+                   scenario:MenuScenarioHistogram::kMostVisitedEntry];
 
         NSMutableArray<UIMenuElement*>* menuElements =
             [[NSMutableArray alloc] init];

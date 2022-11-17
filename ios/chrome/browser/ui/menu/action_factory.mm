@@ -27,7 +27,7 @@
 
 @implementation ActionFactory
 
-- (instancetype)initWithScenario:(MenuScenario)scenario {
+- (instancetype)initWithScenario:(MenuScenarioHistogram)scenario {
   if (self = [super init]) {
     _histogram = GetActionsHistogramName(scenario);
   }

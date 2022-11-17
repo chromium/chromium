@@ -658,13 +658,13 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   GridCell* cell = base::mac::ObjCCastStrict<GridCell>(
       [self.collectionView cellForItemAtIndexPath:indexPath]);
 
-  MenuScenario scenario;
+  MenuScenarioHistogram scenario;
   if (_mode == TabGridModeSearch) {
-    scenario = MenuScenario::kTabGridSearchResult;
+    scenario = MenuScenarioHistogram::kTabGridSearchResult;
   } else if (self.currentLayout == self.horizontalLayout) {
-    scenario = MenuScenario::kThumbStrip;
+    scenario = MenuScenarioHistogram::kThumbStrip;
   } else {
-    scenario = MenuScenario::kTabGridEntry;
+    scenario = MenuScenarioHistogram::kTabGridEntry;
   }
 
   return [self.menuProvider contextMenuConfigurationForGridCell:cell

@@ -126,10 +126,10 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
 
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
   // TODO(crbug.com/1299758) add scenario for not a link and not an image.
-  MenuScenario menuScenario = isImage && isLink
-                                  ? MenuScenario::kContextMenuImageLink
-                                  : isImage ? MenuScenario::kContextMenuImage
-                                            : MenuScenario::kContextMenuLink;
+  MenuScenarioHistogram menuScenario =
+      isImage && isLink ? MenuScenarioHistogram::kContextMenuImageLink
+      : isImage         ? MenuScenarioHistogram::kContextMenuImage
+                        : MenuScenarioHistogram::kContextMenuLink;
 
   BrowserActionFactory* actionFactory =
       [[BrowserActionFactory alloc] initWithBrowser:self.browser

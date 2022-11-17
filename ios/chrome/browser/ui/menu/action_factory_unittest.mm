@@ -8,6 +8,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
+#import "ios/chrome/browser/ui/menu/action_factory+protected.h"
 #import "ios/chrome/browser/ui/menu/menu_action_type.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -27,7 +28,7 @@
 #endif
 
 namespace {
-MenuScenario kTestMenuScenario = MenuScenario::kHistoryEntry;
+MenuScenarioHistogram kTestMenuScenario = MenuScenarioHistogram::kHistoryEntry;
 }  // namespace
 
 // Test fixture for the ActionFactory.

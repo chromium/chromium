@@ -17,7 +17,7 @@
 // Returns a context menu configuration instance for the given `gridCell`.
 - (UIContextMenuConfiguration*)
     contextMenuConfigurationForGridCell:(GridCell*)gridCell
-                           menuScenario:(MenuScenario)scenario;
+                           menuScenario:(MenuScenarioHistogram)scenario;
 
 @end
 

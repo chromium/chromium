@@ -215,11 +215,11 @@
     HistoryCoordinator* strongSelf = weakSelf;
 
     // Record that this context menu was shown to the user.
-    RecordMenuShown(MenuScenario::kHistoryEntry);
+    RecordMenuShown(MenuScenarioHistogram::kHistoryEntry);
 
     BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
         initWithBrowser:strongSelf.browser
-               scenario:MenuScenario::kHistoryEntry];
+               scenario:MenuScenarioHistogram::kHistoryEntry];
 
     NSMutableArray<UIMenuElement*>* menuElements =
         [[NSMutableArray alloc] init];
