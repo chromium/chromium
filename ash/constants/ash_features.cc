@@ -1631,8 +1631,13 @@ BASE_FEATURE(kProjectorUseApiKeyForTranslation,
              "ProjectorUseApiKeyForTranslation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable or disable quick settings revamped view.
+// Enable or disable quick settings revamped view. This flag only works when the
+// `QsRevampWip` flag is enabled.
 BASE_FEATURE(kQsRevamp, "QsRevamp", base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enable or disable quick settings revamped wip view.
+// TODO(b/257541368): remove this flag once the wip view is finished.
+BASE_FEATURE(kQsRevampWip, "QsRevampWip", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether the Projector Viewer supports the user experience for
 // secondary account.
@@ -2867,7 +2872,8 @@ bool IsProjectorUseApiKeyForTranslationEnabled() {
 }
 
 bool IsQsRevampEnabled() {
-  return base::FeatureList::IsEnabled(kQsRevamp);
+  return base::FeatureList::IsEnabled(kQsRevamp) &&
+         base::FeatureList::IsEnabled(kQsRevampWip);
 }
 
 bool IsProjectorViewerUseSecondaryAccountEnabled() {

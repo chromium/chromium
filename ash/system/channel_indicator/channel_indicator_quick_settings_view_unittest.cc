@@ -22,8 +22,10 @@ class ChannelIndicatorQuickSettingsViewTest
  public:
   ChannelIndicatorQuickSettingsViewTest() {
     // Param 0 is whether QsRevamp is enabled.
-    feature_list_.InitWithFeatureState(features::kQsRevamp,
-                                       std::get<0>(GetParam()));
+    if (std::get<0>(GetParam())) {
+      feature_list_.InitWithFeatures(
+          {features::kQsRevamp, features::kQsRevampWip}, {});
+    }
   }
   ChannelIndicatorQuickSettingsViewTest(
       const ChannelIndicatorQuickSettingsViewTest&) = delete;

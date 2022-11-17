@@ -17,7 +17,8 @@ namespace ash {
 class QuickSettingsHeaderTest : public NoSessionAshTestBase {
  public:
   QuickSettingsHeaderTest() {
-    feature_list_.InitAndEnableFeature(features::kQsRevamp);
+    feature_list_.InitWithFeatures(
+        {features::kQsRevamp, features::kQsRevampWip}, {});
   }
 
   // AshTestBase:

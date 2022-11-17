@@ -637,7 +637,8 @@ TEST_F(StatusAreaWidgetCollapseStateTest, AllTraysFitInCollapsedState) {
 class StatusAreaWidgetQSRevampTest : public AshTestBase {
  protected:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({ash::features::kQsRevamp}, {});
+    scoped_feature_list_.InitWithFeatures(
+        {features::kQsRevamp, features::kQsRevampWip}, {});
     AshTestBase::SetUp();
   }
 
@@ -656,7 +657,8 @@ class StatusAreaWidgetQSRevampTest : public AshTestBase {
 // otherwise.
 TEST_F(StatusAreaWidgetQSRevampTest, DateTrayRoundedCornerBehavior) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kQsRevamp);
+  feature_list.InitWithFeatures({features::kQsRevamp, features::kQsRevampWip},
+                                {});
 
   StatusAreaWidget* status_area =
       StatusAreaWidgetTestHelper::GetStatusAreaWidget();
