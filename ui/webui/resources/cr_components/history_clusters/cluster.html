@@ -8,6 +8,7 @@
   }
 
   :host([in-side-panel_]) {
+    --cr-icon-button-margin-start: 8px;
     padding-bottom: 0;
     padding-top: 8px;
   }
@@ -64,6 +65,7 @@
   :host([in-side-panel_]) #label {
     font-size: .875rem;  /* 14px */
     line-height: calc(10/7); /* 20px */
+    margin-inline-end: 16px;
   }
 
   :host([in-side-panel_]) .timestamp {
@@ -136,11 +138,8 @@
     on-open-all-visits="onOpenAllVisits_"
     on-remove-all-visits="onRemoveAllVisits_"
     on-remove-visit="onRemoveVisit_">
-  <!-- In the side panel the label and timestamp should be stacked on the
-       left, while outside the side panel the timestamp and the menu should
-       be side by side on the right. -->
   <div class="label-row">
-    <span id="label" class="label"></span>
+    <span id="label" class="truncate"></span>
     <img is="cr-auto-img" auto-src="[[imageUrl_]]">
     <div class="debug-info">[[cluster.debugInfo]]</div>
     <div class="timestamp-and-menu">
