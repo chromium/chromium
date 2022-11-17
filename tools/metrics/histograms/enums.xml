@@ -105396,7 +105396,9 @@ others/histograms.xml -->
   <int value="6" label="kValidHttp"/>
   <int value="7" label="kValidHttps"/>
   <int value="8" label="kValidDataURL"/>
-  <int value="9" label="kValidOtherProtocol"/>
+  <int value="9" label="kValidFileURL"/>
+  <int value="10" label="kValidBlob"/>
+  <int value="11" label="kValidOtherProtocol"/>
 </enum>
 
 <enum name="WaylandTimingEvent">

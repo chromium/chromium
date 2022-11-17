@@ -533,7 +533,9 @@ void StreamFromResponseCallback(
     kValidHttp = 6,
     kValidHttps = 7,
     kValidDataURL = 8,
-    kValidOtherProtocol = 9,
+    kValidFileURL = 9,
+    kValidBlob = 10,
+    kValidOtherProtocol = 11,
 
     kMaxValue = kValidOtherProtocol
   };
@@ -587,12 +589,15 @@ void StreamFromResponseCallback(
   auto protocol_type = WasmStreamingInputType::kNoURL;
   if (const KURL* kurl = response->GetResponse()->Url()) {
     String protocol = kurl->Protocol();
-    // Http and https can be cached; we expect most other protocols to be
-    // "data". Thus track those three protocols.
+    // Http and https can be cached; also track other protocols we expect in
+    // Wasm streaming. If {kValidOtherProtocol} spikes, we should add more enum
+    // values.
     protocol_type = protocol == "http"    ? WasmStreamingInputType::kValidHttp
                     : protocol == "https" ? WasmStreamingInputType::kValidHttps
-                    : protocol == "data"
-                        ? WasmStreamingInputType::kValidDataURL
+                    : protocol == "data" ? WasmStreamingInputType::kValidDataURL
+                    : protocol == "file" ? WasmStreamingInputType::kValidFileURL
+                    : protocol == "blob"
+                        ? WasmStreamingInputType::kValidBlob
                         : WasmStreamingInputType::kValidOtherProtocol;
   }
   base::UmaHistogramEnumeration("V8.WasmStreamingInputType", protocol_type);
