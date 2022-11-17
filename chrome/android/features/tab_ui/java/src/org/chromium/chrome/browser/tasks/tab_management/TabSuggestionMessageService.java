@@ -114,8 +114,8 @@ public class TabSuggestionMessageService extends MessageService implements TabSu
                 getEnablingThreshold(tabSuggestion),
                 getNavigationProvider(tabSuggestion, feedbackCallback));
 
-        mTabSelectionEditorController.show(
-                getTabListFromSuggestion(tabSuggestion), tabSuggestion.getTabsInfo().size());
+        mTabSelectionEditorController.show(getTabListFromSuggestion(tabSuggestion),
+                tabSuggestion.getTabsInfo().size(), /*recyclerViewPosition=*/null);
     }
 
     private String getActionString(TabSuggestion tabSuggestion) {

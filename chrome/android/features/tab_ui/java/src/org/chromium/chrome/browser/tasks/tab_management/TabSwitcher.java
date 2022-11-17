@@ -22,8 +22,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.Ta
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 
-import java.util.List;
-
 /**
  * Interface for the Tab Switcher.
  */
@@ -150,12 +148,6 @@ public interface TabSwitcher {
          * @return An {@link ObservableSupplier<Boolean>} which yields true if any dialog is opened.
          */
         ObservableSupplier<Boolean> isDialogVisibleSupplier();
-
-        /**
-         * Shows the TabSelectionEditor.
-         */
-        @VisibleForTesting
-        default void showTabSelectionEditor(List<Tab> tabs) {}
 
         /**
          * Returns the tab switcher type.

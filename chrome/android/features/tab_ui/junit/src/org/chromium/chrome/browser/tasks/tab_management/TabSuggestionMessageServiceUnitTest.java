@@ -157,12 +157,14 @@ public class TabSuggestionMessageServiceUnitTest {
         verify(mTabSelectionEditorController)
                 .configureToolbar(eq(closeSuggestionActionButtonText), anyInt(), any(),
                         eq(expectedEnablingThreshold), any());
-        verify(mTabSelectionEditorController).show(eq(Arrays.asList(mTab1, mTab2, mTab3)), eq(2));
+        verify(mTabSelectionEditorController)
+                .show(eq(Arrays.asList(mTab1, mTab2, mTab3)), eq(2), eq(null));
 
         tabSuggestion = prepareTabSuggestion(
                 Arrays.asList(mTab1, mTab3), TabSuggestion.TabSuggestionAction.CLOSE);
         mMessageService.review(tabSuggestion, mTabSuggestionFeedbackCallback);
-        verify(mTabSelectionEditorController).show(eq(Arrays.asList(mTab1, mTab3, mTab2)), eq(2));
+        verify(mTabSelectionEditorController)
+                .show(eq(Arrays.asList(mTab1, mTab3, mTab2)), eq(2), eq(null));
     }
 
     @Test
@@ -228,12 +230,14 @@ public class TabSuggestionMessageServiceUnitTest {
         verify(mTabSelectionEditorController)
                 .configureToolbar(eq(groupSuggestionActionButtonText), anyInt(), any(),
                         eq(expectedEnablingThreshold), any());
-        verify(mTabSelectionEditorController).show(eq(Arrays.asList(mTab1, mTab2, mTab3)), eq(2));
+        verify(mTabSelectionEditorController)
+                .show(eq(Arrays.asList(mTab1, mTab2, mTab3)), eq(2), eq(null));
 
         tabSuggestion = prepareTabSuggestion(
                 Arrays.asList(mTab1, mTab3), TabSuggestion.TabSuggestionAction.GROUP);
         mMessageService.review(tabSuggestion, mTabSuggestionFeedbackCallback);
-        verify(mTabSelectionEditorController).show(eq(Arrays.asList(mTab1, mTab3, mTab2)), eq(2));
+        verify(mTabSelectionEditorController)
+                .show(eq(Arrays.asList(mTab1, mTab3, mTab2)), eq(2), eq(null));
     }
 
     @Test

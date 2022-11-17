@@ -327,7 +327,9 @@ public class TabSwitcherCoordinator
                                     mTabSelectionEditorCoordinator.getController().show(
                                             mTabModelSelector.getTabModelFilterProvider()
                                                     .getCurrentTabModelFilter()
-                                                    .getTabsWithNoOtherRelatedTabs());
+                                                    .getTabsWithNoOtherRelatedTabs(),
+                                            /*preSelectedTabCount=*/0,
+                                            /*recyclerViewPosition=*/null);
                                     RecordUserAction.record("MobileMenuGroupTabs");
                                     return true;
                                 } else if (id == R.id.menu_select_tabs) {
@@ -477,9 +479,9 @@ public class TabSwitcherCoordinator
         // For tab switcher in carousel mode, the selection editor should still follow grid
         // style.
         int selectionEditorMode = mMode == TabListMode.CAROUSEL ? TabListMode.GRID : mMode;
-        mTabSelectionEditorCoordinator =
-                new TabSelectionEditorCoordinator(context, mCoordinatorView, mTabModelSelector,
-                        tabContentManager, selectionEditorMode, mRootView, /*displayGroups=*/false);
+        mTabSelectionEditorCoordinator = new TabSelectionEditorCoordinator(context,
+                mCoordinatorView, mTabModelSelector, tabContentManager, null, selectionEditorMode,
+                mRootView, /*displayGroups=*/false);
     }
 
     private void showTabSelectionEditorV2() {
@@ -488,8 +490,9 @@ public class TabSwitcherCoordinator
         if (mTabSelectionEditorCoordinator == null) {
             int selectionEditorMode = mMode == TabListMode.CAROUSEL ? TabListMode.GRID : mMode;
             mTabSelectionEditorCoordinator = new TabSelectionEditorCoordinator(mActivity,
-                    mCoordinatorView, mTabModelSelector, mTabContentManager, selectionEditorMode,
-                    mRootView, /*displayGroups=*/true);
+                    mCoordinatorView, mTabModelSelector, mTabContentManager,
+                    mTabListCoordinator::setRecyclerViewPosition, selectionEditorMode, mRootView,
+                    /*displayGroups=*/true);
             mMediator.setTabSelectionEditorController(
                     mTabSelectionEditorCoordinator.getController());
         }
@@ -519,7 +522,8 @@ public class TabSwitcherCoordinator
         for (int i = 0; i < list.getCount(); i++) {
             tabs.add(list.getTabAt(i));
         }
-        mTabSelectionEditorCoordinator.getController().show(tabs);
+        mTabSelectionEditorCoordinator.getController().show(
+                tabs, /*preSelectedTabCount=*/0, mTabListCoordinator.getRecyclerViewPosition());
         RecordUserAction.record("TabMultiSelectV2.OpenFromGrid");
     }
 

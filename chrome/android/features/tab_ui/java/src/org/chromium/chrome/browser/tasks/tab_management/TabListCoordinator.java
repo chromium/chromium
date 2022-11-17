@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
+import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView.RecyclerViewPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -296,6 +297,21 @@ public class TabListCoordinator
         Rect recyclerViewRect = new Rect();
         mRecyclerView.getGlobalVisibleRect(recyclerViewRect);
         return recyclerViewRect;
+    }
+
+    /**
+     * @return the position and offset of the first visible element in the list.
+     */
+    @NonNull
+    RecyclerViewPosition getRecyclerViewPosition() {
+        return mRecyclerView.getRecyclerViewPosition();
+    }
+
+    /**
+     * @param recyclerViewPosition the position and offset to scroll the recycler view to.
+     */
+    void setRecyclerViewPosition(@NonNull RecyclerViewPosition recyclerViewPosition) {
+        mRecyclerView.setRecyclerViewPosition(recyclerViewPosition);
     }
 
     void initWithNative(DynamicResourceLoader dynamicResourceLoader) {

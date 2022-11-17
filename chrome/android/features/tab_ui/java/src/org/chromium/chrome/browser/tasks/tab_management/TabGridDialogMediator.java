@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView.RecyclerViewPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.IconPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ShowMode;
@@ -124,6 +125,7 @@ public class TabGridDialogMediator
     private final TabCreatorManager mTabCreatorManager;
     private final DialogController mDialogController;
     private final TabSwitcherMediator.ResetHandler mTabSwitcherResetHandler;
+    private final Supplier<RecyclerViewPosition> mRecyclerViewPositionSupplier;
     private final AnimationSourceViewProvider mAnimationSourceViewProvider;
     private final DialogHandler mTabGridDialogHandler;
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
@@ -142,6 +144,7 @@ public class TabGridDialogMediator
     TabGridDialogMediator(Context context, DialogController dialogController, PropertyModel model,
             TabModelSelector tabModelSelector, TabCreatorManager tabCreatorManager,
             TabSwitcherMediator.ResetHandler tabSwitcherResetHandler,
+            Supplier<RecyclerViewPosition> recyclerViewPositionSupplier,
             AnimationSourceViewProvider animationSourceViewProvider,
             Supplier<ShareDelegate> shareDelegateSupplier, SnackbarManager snackbarManager,
             String componentName) {
@@ -151,6 +154,7 @@ public class TabGridDialogMediator
         mTabCreatorManager = tabCreatorManager;
         mDialogController = dialogController;
         mTabSwitcherResetHandler = tabSwitcherResetHandler;
+        mRecyclerViewPositionSupplier = recyclerViewPositionSupplier;
         mAnimationSourceViewProvider = animationSourceViewProvider;
         mTabGridDialogHandler = new DialogHandler();
         mShareDelegateSupplier = shareDelegateSupplier;
@@ -302,8 +306,12 @@ public class TabGridDialogMediator
                 // Setup dialog selection editor.
                 setupDialogSelectionEditor();
                 if (mTabSelectionEditorControllerSupplier.get() != null) {
-                    mTabSelectionEditorControllerSupplier.get().show(tabs);
-                    if (TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mContext)) {
+                    boolean v2Enabled =
+                            TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mContext);
+                    mTabSelectionEditorControllerSupplier.get().show(tabs,
+                            /*preSelectedTabCount=*/0,
+                            v2Enabled ? mRecyclerViewPositionSupplier.get() : null);
+                    if (v2Enabled) {
                         RecordUserAction.record("TabMultiSelectV2.OpenFromDialog");
                     } else {
                         RecordUserAction.record("TabMultiSelect.OpenFromDialog");
