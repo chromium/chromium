@@ -6,7 +6,7 @@
 #define SERVICES_NETWORK_PUBLIC_CPP_CROSS_THREAD_PENDING_SHARED_URL_LOADER_FACTORY_H_
 
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace network {

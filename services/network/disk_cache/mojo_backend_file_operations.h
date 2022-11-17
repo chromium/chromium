@@ -6,7 +6,7 @@
 #define SERVICES_NETWORK_DISK_CACHE_MOJO_BACKEND_FILE_OPERATIONS_H_
 
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"

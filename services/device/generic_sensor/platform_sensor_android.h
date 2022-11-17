@@ -6,7 +6,7 @@
 #define SERVICES_DEVICE_GENERIC_SENSOR_PLATFORM_SENSOR_ANDROID_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/thread_pool.h"
 #include "services/device/generic_sensor/platform_sensor.h"
 

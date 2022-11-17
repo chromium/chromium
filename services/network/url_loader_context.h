@@ -6,7 +6,7 @@
 #define SERVICES_NETWORK_URL_LOADER_CONTEXT_H_
 
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "services/network/public/cpp/corb/corb_api.h"
 
 namespace net {

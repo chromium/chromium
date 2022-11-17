@@ -13,7 +13,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/check.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"

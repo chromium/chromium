@@ -10,7 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/debug/crash_logging.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"

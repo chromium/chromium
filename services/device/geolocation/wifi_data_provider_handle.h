@@ -17,7 +17,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "services/device/geolocation/wifi_data.h"
 

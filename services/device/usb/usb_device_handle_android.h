@@ -6,7 +6,7 @@
 #define SERVICES_DEVICE_USB_USB_DEVICE_HANDLE_ANDROID_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "services/device/usb/usb_device_handle_usbfs.h"
 
 namespace device {
