@@ -4,8 +4,6 @@
 
 #include "services/device/compute_pressure/pressure_test_support.h"
 
-#include <ostream>
-
 #include "base/location.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
@@ -13,15 +11,6 @@
 #include "services/device/compute_pressure/pressure_sample.h"
 
 namespace device {
-
-bool operator==(const PressureSample& lhs, const PressureSample& rhs) noexcept {
-  return lhs.cpu_utilization == rhs.cpu_utilization;
-}
-
-std::ostream& operator<<(std::ostream& os, const PressureSample& sample) {
-  os << "[utilization: " << sample.cpu_utilization << "]";
-  return os;
-}
 
 constexpr PressureSample FakeCpuProbe::kInitialSample;
 

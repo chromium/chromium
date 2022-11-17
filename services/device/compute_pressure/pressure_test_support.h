@@ -5,8 +5,6 @@
 #ifndef SERVICES_DEVICE_COMPUTE_PRESSURE_PRESSURE_TEST_SUPPORT_H_
 #define SERVICES_DEVICE_COMPUTE_PRESSURE_PRESSURE_TEST_SUPPORT_H_
 
-#include <ostream>
-
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -32,7 +30,7 @@ class FakeCpuProbe : public CpuProbe {
   void SetLastSample(PressureSample sample);
 
  private:
-  // Bound to the sequence for State() and LastSample().
+  // Bound to the sequence for Update() and LastSample().
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::Lock lock_;
