@@ -8,8 +8,7 @@ found in the LICENSE file.
              xmlns:app="http://schemas.android.com/apk/res-auto"
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:paddingHorizontal="@dimen/ttf_for_payments_sheet_padding_horizontal">
+             android:layout_height="match_parent">
 
   <ImageView
       android:id="@+id/drag_handlebar"
@@ -39,4 +38,27 @@ found in the LICENSE file.
       android:clipToPadding="false"
       android:divider="@null"
       tools:listitem="@layout/touch_to_fill_credit_card_sheet_item"/>
+
+    <!-- Divider -->
+    <View style="@style/HorizontalDivider"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:layout_above="@id/scan_new_card"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="@dimen/ttf_for_payments_buttons_vertical_margin"/>
+    <TextView
+        android:id="@+id/scan_new_card"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/ttf_for_payments_buttons_vertical_margin"
+        android:clickable="true"
+        android:drawablePadding="18dp"
+        android:focusable="true"
+        android:gravity="center_vertical|start"
+        android:paddingHorizontal="@dimen/ttf_for_payments_sheet_padding_horizontal"
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+        android:text="@string/autofill_scan_credit_card"
+        app:drawableStartCompat="@drawable/ic_photo_camera"
+        app:drawableTint="@color/default_icon_color_tint_list"/>
 </RelativeLayout>
