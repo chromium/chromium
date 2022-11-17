@@ -1889,6 +1889,8 @@ component("ash") {
     "system/usb_peripheral/usb_peripheral_notification_controller.h",
     "system/user/login_status.cc",
     "system/user/login_status.h",
+    "system/video_conference/video_conference_bubble.cc",
+    "system/video_conference/video_conference_bubble.h",
     "system/video_conference/video_conference_tray.cc",
     "system/video_conference/video_conference_tray.h",
     "system/video_conference/video_conference_tray_controller.cc",

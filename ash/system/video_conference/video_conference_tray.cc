@@ -19,6 +19,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_utils.h"
+#include "ash/system/video_conference/video_conference_bubble.h"
 #include "base/functional/bind.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -86,17 +87,7 @@ void VideoConferenceTray::ShowBubble() {
   init_params.translucent = true;
 
   // Create top-level bubble.
-  TrayBubbleView* bubble_view = new TrayBubbleView(init_params);
-
-  // TODO(b/253088232): Added an icon so that the bubble can show. Will remove
-  // this with the newly created class VcBubbleView.
-  auto icon = std::make_unique<views::ImageView>();
-  icon->SetImage(gfx::CreateVectorIcon(
-      kPrivacyIndicatorsMicrophoneIcon,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary)));
-  bubble_view->AddChildView(std::move(icon));
-
+  TrayBubbleView* bubble_view = new VideoConferenceBubbleView(init_params);
   bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view);
 
   SetIsActive(true);
