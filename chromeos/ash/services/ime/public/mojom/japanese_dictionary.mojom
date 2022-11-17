@@ -1,0 +1,126 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Updates to this file must be backwards-compatible, as it is used outside of
+// the Chromium repo. This file should be updated first, before syncing in the
+// other repos.
+
+// Next MinVersion: 2
+
+module ash.ime.mojom;
+
+// The following enums refer to the dictionary options used for the
+// Japanese decoder Mozc.
+// More information about this interface is documented publicly at
+// https://github.com/google/mozc/blob/master/src/protocol/user_dictionary_storage.proto
+
+// PosType corresponds to the UserDictionary::PosType object in the Mozc
+// dictionary storage proto.
+// https://github.com/google/mozc/blob/master/src/protocol/user_dictionary_storage.proto#L38
+//
+// Next ordinal: 44
+[Stable, Extensible]
+enum PosType {
+  [Default] kNoun = 0,
+  kAbbreviation = 1,
+  kSuggestionOnly = 2,
+  kProperNoun = 3,
+  kPersonalName = 4,
+  kFamilyName = 5,
+  kFirstName = 6,
+  kOrganizationName = 7,
+  kPlaceName = 8,
+  kSaIrregularConjugationNoun = 9,
+  kAdjectiveVerbalNoun = 10,
+  kNumber = 11,
+  kAlphabet = 12,
+  kSymbol = 13,
+  kEmoticon = 14,
+
+  kAdverb = 15,
+  kPrenounAdjectival = 16,
+  kConjunction = 17,
+  kInterjection = 18,
+
+  kPrefix = 19,
+  kCounterSuffix = 20,
+  kGenericSuffix = 21,
+  kPersonNameSuffix = 22,
+  kPlaceNameSuffix = 23,
+
+  kWaGroup0Verb = 25,
+  kKaGroup0Verb = 26,
+  kSaGroup0Verb = 27,
+  kTaGroup0Verb = 28,
+  kNaGroup0Verb = 29,
+  kMaGroup0Verb = 30,
+  kRaGroup0Verb = 31,
+  kGaGroup0Verb = 32,
+  kBaGroup0Verb = 33,
+  kHaGroup0Verb = 34,
+  kGroup1Verb = 35,
+  kKuruGroup2Verb = 36,
+  kSuruGroup2Verb = 37,
+  kZuruGroup2Verb = 38,
+  kRuGroup2Verb = 39,
+
+  kAdjective = 39,
+  kSentenceEndingParticle = 40,
+  kPunctuation = 41,
+  kFreeStandingWord = 42,
+
+  kSuppressionWord = 43,
+};
+
+// JapaneseUserDictionaryEntry corresponds to the UserDictionary::Entry object
+// in the Mozc dictionary storage proto.
+// https://github.com/google/mozc/blob/master/src/protocol/user_dictionary_storage.proto#L102
+//
+// Next ordinal: 4
+[Stable]
+struct JapaneseUserDictionaryEntry {
+  string key@0;
+  string value@1;
+  PosType pos_type@2;
+  string comment@3;
+};
+
+// Japanese user dictionaryID. This is used to mark this as a optional uint64
+// type.
+[Stable]
+struct JapaneseUserDictionaryId {
+  uint64 id@0;
+};
+
+// JapaneseUserDictionaryEntry corresponds to the UserDictionary object in the
+// Mozc dictionary storage proto.
+// https://github.com/google/mozc/blob/master/src/protocol/user_dictionary_storage.proto#L37
+//
+// Next ordinal: 3
+[Stable]
+struct JapaneseUserDictionary {
+  array<JapaneseUserDictionaryEntry> entries@0;
+  JapaneseUserDictionaryId? id@1;
+  string name@2;
+};
+
+// Japanese user dictionary storage ID. This is used to mark this as a optional
+// uint32 type.
+[Stable]
+struct JapaneseUserDictionaryStorageVersion {
+  uint32 version@0;
+};
+
+// JapaneseUserDictionaryStorage corresponds to the UserDictionaryStorage
+// object in the Mozc dictionary storage proto.
+// https://github.com/google/mozc/blob/master/src/protocol/user_dictionary_storage.proto#L146
+//
+// This contains all of the User's custom japanese dictionaries.
+//
+// Next ordinal: 2
+[Stable]
+struct JapaneseUserDictionaryStorage {
+  JapaneseUserDictionaryStorageVersion? version@0;
+  array<JapaneseUserDictionary> dictionaries@1;
+};

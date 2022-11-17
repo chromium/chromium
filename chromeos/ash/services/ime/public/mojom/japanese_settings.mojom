@@ -6,9 +6,11 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 2
+// Next MinVersion: 3
 
 module ash.ime.mojom;
+
+import "chromeos/ash/services/ime/public/mojom/japanese_dictionary.mojom";
 
 // The following enums refer to the config options used for the
 // Japanese decoder Mozc.
@@ -95,5 +97,10 @@ interface JapaneseDecoder {
     // Retrieve the config used for Mozc which is stored as a file internally.
     // If this file does not exist, this should just return the default config.
     FetchJapaneseConfig@0() => (JapaneseConfig config);
+    // Retrieve the dictionary used for Mozc which is stored as a file
+    // internally.  If this file does not exist, this should just return the
+    // empty dictionary.
+    [MinVersion=2] FetchJapaneseUserDictionary@1() => (
+        JapaneseUserDictionaryStorage japanese_user_dictionary_storage);
 };
 
