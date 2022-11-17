@@ -64,13 +64,6 @@ PageLoadType GetPageLoadType(ui::PageTransition transition) {
   return LOAD_TYPE_NONE;
 }
 
-void RecordFirstMeaningfulPaintStatus(
-    internal::FirstMeaningfulPaintStatus status) {
-  UMA_HISTOGRAM_ENUMERATION(internal::kHistogramFirstMeaningfulPaintStatus,
-                            status,
-                            internal::FIRST_MEANINGFUL_PAINT_LAST_ENTRY);
-}
-
 std::unique_ptr<base::trace_event::TracedValue> FirstInputDelayTraceData(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   std::unique_ptr<base::trace_event::TracedValue> data =
@@ -135,8 +128,6 @@ const char kBackgroundHistogramFirstContentfulPaint[] =
 const char kHistogramFirstContentfulPaintInitiatingProcess[] =
     "PageLoad.Internal.PaintTiming.NavigationToFirstContentfulPaint."
     "InitiatingProcess";
-const char kHistogramFirstMeaningfulPaint[] =
-    "PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint";
 const char kHistogramLargestContentfulPaint[] =
     "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2";
 const char kHistogramLargestContentfulPaintContentType[] =
@@ -259,9 +250,6 @@ const char kHistogramForegroundToFirstContentfulPaint[] =
 
 const char kHistogramFirstContentfulPaintUserInitiated[] =
     "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.UserInitiated";
-
-const char kHistogramFirstMeaningfulPaintStatus[] =
-    "PageLoad.Experimental.PaintTiming.FirstMeaningfulPaintStatus";
 
 const char kHistogramCachedResourceLoadTimePrefix[] =
     "PageLoad.Experimental.PageTiming.CachedResourceLoadTime.";
@@ -672,19 +660,6 @@ void UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
   }
 }
 
-void UmaPageLoadMetricsObserver::OnFirstMeaningfulPaintInMainFrameDocument(
-    const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
-          timing.paint_timing->first_meaningful_paint, GetDelegate())) {
-    PAGE_LOAD_HISTOGRAM(internal::kHistogramFirstMeaningfulPaint,
-                        timing.paint_timing->first_meaningful_paint.value());
-    RecordFirstMeaningfulPaintStatus(internal::FIRST_MEANINGFUL_PAINT_RECORDED);
-  } else {
-    RecordFirstMeaningfulPaintStatus(
-        internal::FIRST_MEANINGFUL_PAINT_BACKGROUNDED);
-  }
-}
-
 void UmaPageLoadMetricsObserver::OnFirstInputInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (!page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
@@ -1071,15 +1046,6 @@ void UmaPageLoadMetricsObserver::RecordTimingHistograms(
         GetDelegate().GetNavigationStart() +
             all_frames_largest_contentful_paint.Time().value(),
         "data", all_frames_largest_contentful_paint.DataAsTraceValue());
-  }
-
-  if (main_frame_timing.paint_timing->first_paint &&
-      !main_frame_timing.paint_timing->first_meaningful_paint) {
-    RecordFirstMeaningfulPaintStatus(
-        main_frame_timing.paint_timing->first_contentful_paint
-            ? internal::FIRST_MEANINGFUL_PAINT_DID_NOT_REACH_NETWORK_STABLE
-            : internal::
-                  FIRST_MEANINGFUL_PAINT_DID_NOT_REACH_FIRST_CONTENTFUL_PAINT);
   }
 
   if (main_frame_timing.interactive_timing->longest_input_timestamp) {

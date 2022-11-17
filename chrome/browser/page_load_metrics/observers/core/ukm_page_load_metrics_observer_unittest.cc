@@ -313,8 +313,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, NoMetrics) {
 TEST_F(UkmPageLoadMetricsObserverTest, Basic) {
   // PageLoadTiming with all recorded metrics other than FMP. This allows us to
   // verify both that all metrics are logged, and that we don't log metrics that
-  // aren't present in the PageLoadTiming struct. Logging of FMP is verified in
-  // the FirstMeaningfulPaint test below.
+  // aren't present in the PageLoadTiming struct.
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::FromDoubleT(1);
@@ -371,10 +370,6 @@ TEST_F(UkmPageLoadMetricsObserverTest, Basic) {
         PageLoad::kDocumentTiming_NavigationToLoadEventFiredName, 500);
     tester()->test_ukm_recorder().ExpectEntryMetric(
         kv.second.get(), PageLoad::kNet_HttpResponseCodeName, 200);
-    EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
-        kv.second.get(),
-        PageLoad::
-            kExperimental_PaintTiming_NavigationToFirstMeaningfulPaintName));
     EXPECT_TRUE(tester()->test_ukm_recorder().EntryHasMetric(
         kv.second.get(), PageLoad::kPageTiming_ForegroundDurationName));
     EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
@@ -440,38 +435,6 @@ TEST_F(UkmPageLoadMetricsObserverTest, FailedProvisionalLoad) {
     tester()->test_ukm_recorder().ExpectEntryMetric(
         kv.second.get(), PageLoad::kExperimental_Navigation_UserInitiatedName,
         false);
-  }
-}
-
-TEST_F(UkmPageLoadMetricsObserverTest, FirstMeaningfulPaint) {
-  page_load_metrics::mojom::PageLoadTiming timing;
-  page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.navigation_start = base::Time::FromDoubleT(1);
-  timing.parse_timing->parse_start = base::Milliseconds(10);
-  timing.paint_timing->first_meaningful_paint = base::Milliseconds(600);
-  PopulateRequiredTimingFields(&timing);
-
-  NavigateAndCommit(GURL(kTestUrl1));
-  tester()->SimulateTimingUpdate(timing);
-
-  // Simulate closing the tab.
-  DeleteContents();
-
-  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
-      tester()->test_ukm_recorder().GetMergedEntriesByName(
-          PageLoad::kEntryName);
-  EXPECT_EQ(1ul, merged_entries.size());
-
-  for (const auto& kv : merged_entries) {
-    tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(kv.second.get(),
-                                                          GURL(kTestUrl1));
-    tester()->test_ukm_recorder().ExpectEntryMetric(
-        kv.second.get(),
-        PageLoad::
-            kExperimental_PaintTiming_NavigationToFirstMeaningfulPaintName,
-        600);
-    EXPECT_TRUE(tester()->test_ukm_recorder().EntryHasMetric(
-        kv.second.get(), PageLoad::kPageTiming_ForegroundDurationName));
   }
 }
 
@@ -1576,10 +1539,6 @@ TEST_F(UkmPageLoadMetricsObserverTest, MultiplePageLoads) {
       page_load_metrics::END_NEW_NAVIGATION);
   tester()->test_ukm_recorder().ExpectEntryMetric(
       entry1, PageLoad::kPaintTiming_NavigationToFirstContentfulPaintName, 200);
-  EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
-      entry1,
-      PageLoad::
-          kExperimental_PaintTiming_NavigationToFirstMeaningfulPaintName));
   EXPECT_TRUE(tester()->test_ukm_recorder().EntryHasMetric(
       entry1, PageLoad::kPageTiming_ForegroundDurationName));
 
@@ -1592,10 +1551,6 @@ TEST_F(UkmPageLoadMetricsObserverTest, MultiplePageLoads) {
       entry2, PageLoad::kParseTiming_NavigationToParseStartName));
   EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
       entry2, PageLoad::kPaintTiming_NavigationToFirstContentfulPaintName));
-  EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
-      entry2,
-      PageLoad::
-          kExperimental_PaintTiming_NavigationToFirstMeaningfulPaintName));
   EXPECT_TRUE(tester()->test_ukm_recorder().EntryHasMetric(
       entry2, PageLoad::kPageTiming_ForegroundDurationName));
 }

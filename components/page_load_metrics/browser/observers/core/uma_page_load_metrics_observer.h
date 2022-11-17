@@ -39,7 +39,6 @@ extern const char kHistogramFirstImagePaint[];
 extern const char kHistogramDomContentLoaded[];
 extern const char kHistogramLoad[];
 extern const char kHistogramFirstContentfulPaint[];
-extern const char kHistogramFirstMeaningfulPaint[];
 extern const char kHistogramLargestContentfulPaint[];
 extern const char kHistogramLargestContentfulPaintContentType[];
 extern const char kHistogramLargestContentfulPaintMainFrame[];
@@ -66,8 +65,6 @@ extern const char kHistogramUserGestureNavigationToForwardBack[];
 
 extern const char kHistogramPageTimingForegroundDuration[];
 extern const char kHistogramPageTimingForegroundDurationNoCommit[];
-
-extern const char kHistogramFirstMeaningfulPaintStatus[];
 
 extern const char kHistogramCachedResourceLoadTimePrefix[];
 extern const char kHistogramCommitSentToFirstSubresourceLoadStart[];
@@ -145,15 +142,6 @@ extern const char kHistogramMemorySubframeAggregate[];
 extern const char kHistogramMemoryTotal[];
 extern const char kHistogramMemoryUpdateReceived[];
 
-enum FirstMeaningfulPaintStatus {
-  FIRST_MEANINGFUL_PAINT_RECORDED,
-  FIRST_MEANINGFUL_PAINT_BACKGROUNDED,
-  FIRST_MEANINGFUL_PAINT_DID_NOT_REACH_NETWORK_STABLE,
-  FIRST_MEANINGFUL_PAINT_USER_INTERACTION_BEFORE_FMP,
-  FIRST_MEANINGFUL_PAINT_DID_NOT_REACH_FIRST_CONTENTFUL_PAINT,
-  FIRST_MEANINGFUL_PAINT_LAST_ENTRY
-};
-
 // Please keep in sync with PageLoadBackForwardCacheEvent in
 // tools/metrics/histograms/enums.xml. These values should not be renumbered.
 enum class PageLoadBackForwardCacheEvent {
@@ -197,8 +185,6 @@ class UmaPageLoadMetricsObserver
   void OnFirstImagePaintInPage(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnFirstContentfulPaintInPage(
-      const page_load_metrics::mojom::PageLoadTiming& timing) override;
-  void OnFirstMeaningfulPaintInMainFrameDocument(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnFirstInputInPage(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;

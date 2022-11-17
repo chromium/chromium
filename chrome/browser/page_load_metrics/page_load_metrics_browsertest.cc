@@ -1522,53 +1522,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DISABLED_BadXhtml) {
       page_load_metrics::internal::INVALID_ORDER_PARSE_START_FIRST_PAINT, 1);
 }
 
-// TODO(crbug.com/1009885): Flaky on Linux MSan builds.
-#if defined(MEMORY_SANITIZER) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
-#define MAYBE_FirstMeaningfulPaintRecorded DISABLED_FirstMeaningfulPaintRecorded
-#else
-#define MAYBE_FirstMeaningfulPaintRecorded FirstMeaningfulPaintRecorded
-#endif
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
-                       MAYBE_FirstMeaningfulPaintRecorded) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
-  waiter->AddPageExpectation(TimingField::kFirstMeaningfulPaint);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/title1.html")));
-  waiter->Wait();
-
-  histogram_tester_->ExpectUniqueSample(
-      internal::kHistogramFirstMeaningfulPaintStatus,
-      internal::FIRST_MEANINGFUL_PAINT_RECORDED, 1);
-  histogram_tester_->ExpectTotalCount(internal::kHistogramFirstMeaningfulPaint,
-                                      1);
-}
-
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
-                       FirstMeaningfulPaintNotRecorded) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
-  waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(
-                     "/page_load_metrics/page_with_active_connections.html")));
-  waiter->Wait();
-
-  // Navigate away before a FMP is reported.
-  NavigateToUntrackedUrl();
-
-  histogram_tester_->ExpectTotalCount(internal::kHistogramFirstContentfulPaint,
-                                      1);
-  histogram_tester_->ExpectUniqueSample(
-      internal::kHistogramFirstMeaningfulPaintStatus,
-      internal::FIRST_MEANINGFUL_PAINT_DID_NOT_REACH_NETWORK_STABLE, 1);
-  histogram_tester_->ExpectTotalCount(internal::kHistogramFirstMeaningfulPaint,
-                                      0);
-}
-
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PayloadSize) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2425,9 +2378,6 @@ class SessionRestorePageLoadMetricsBrowserTest
     histogram_tester_->ExpectTotalCount(
         internal::kHistogramSessionRestoreForegroundTabFirstContentfulPaint,
         expected_total_count);
-    histogram_tester_->ExpectTotalCount(
-        internal::kHistogramSessionRestoreForegroundTabFirstMeaningfulPaint,
-        expected_total_count);
   }
 };
 
@@ -2447,7 +2397,6 @@ class SessionRestorePaintWaiter : public SessionRestoreObserver {
     auto waiter = std::make_unique<PageLoadMetricsTestWaiter>(contents);
     waiter->AddPageExpectation(TimingField::kFirstPaint);
     waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
-    waiter->AddPageExpectation(TimingField::kFirstMeaningfulPaint);
     waiters_[contents] = std::move(waiter);
   }
 
@@ -2558,7 +2507,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
 
   auto waiter = std::make_unique<PageLoadMetricsTestWaiter>(
       new_browser->tab_strip_model()->GetActiveWebContents());
-  waiter->AddPageExpectation(TimingField::kFirstMeaningfulPaint);
+  waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(new_browser, GetTestURL()));
   waiter->Wait();
 
@@ -2584,7 +2533,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
   // Load a new page after session restore.
   auto waiter = std::make_unique<PageLoadMetricsTestWaiter>(
       new_browser->tab_strip_model()->GetActiveWebContents());
-  waiter->AddPageExpectation(TimingField::kFirstMeaningfulPaint);
+  waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(new_browser, GetTestURL()));
   waiter->Wait();
 

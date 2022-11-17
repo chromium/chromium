@@ -717,25 +717,6 @@ TEST_P(UmaPageLoadMetricsObserverTest, CpuUsageCounted) {
       internal::kHistogramPageLoadCpuTotalUsageForegrounded, 750, 1);
 }
 
-TEST_P(UmaPageLoadMetricsObserverTest, FirstMeaningfulPaint) {
-  page_load_metrics::mojom::PageLoadTiming timing;
-  page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.navigation_start = base::Time::FromDoubleT(1);
-  timing.parse_timing->parse_start = base::Milliseconds(5);
-  timing.paint_timing->first_meaningful_paint = base::Milliseconds(10);
-  PopulateRequiredTimingFields(&timing);
-
-  NavigateAndCommit(GURL(kDefaultTestUrl));
-  tester()->SimulateTimingUpdate(timing);
-  NavigateAndCommit(GURL(kDefaultTestUrl2));
-
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramFirstMeaningfulPaint, 1);
-  tester()->histogram_tester().ExpectBucketCount(
-      internal::kHistogramFirstMeaningfulPaintStatus,
-      internal::FIRST_MEANINGFUL_PAINT_RECORDED, 1);
-}
-
 TEST_P(UmaPageLoadMetricsObserverTest, LargestImageLoading) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);

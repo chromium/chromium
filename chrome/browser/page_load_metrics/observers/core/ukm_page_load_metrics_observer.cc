@@ -656,11 +656,6 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
 
   // FCP is reported in OnFirstContentfulPaintInPage.
 
-  if (WasStartedInForegroundOptionalEventInForeground(
-          timing.paint_timing->first_meaningful_paint, GetDelegate())) {
-    builder.SetExperimental_PaintTiming_NavigationToFirstMeaningfulPaint(
-        timing.paint_timing->first_meaningful_paint.value().InMilliseconds());
-  }
   const page_load_metrics::ContentfulPaintTimingInfo&
       main_frame_largest_contentful_paint =
           GetDelegate()

@@ -3742,8 +3742,6 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.DocumentTiming.NavigationToLoadEventFired"/>
   <affected-histogram name="PageLoad.Experimental.Bytes.Network"/>
   <affected-histogram
-      name="PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"/>
-  <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram name="PageLoad.PaintTiming.NavigationToFirstImagePaint"/>
   <affected-histogram name="PageLoad.PaintTiming.NavigationToFirstPaint"/>
@@ -3806,8 +3804,6 @@ chromium-metrics-reviews@google.com.
              prerendered, the recorded value is modified as activation
              origined."/>
   <affected-histogram
-      name="PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"/>
-  <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
 </histogram_suffixes>
 
@@ -3816,8 +3812,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Preconnectable"
       label="The predictor database contained origins for preconnecting for a
              page"/>
-  <affected-histogram
-      name="PageLoad.Clients.LoadingPredictor2.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"/>
   <affected-histogram
       name="PageLoad.Clients.LoadingPredictor2.PaintTiming.NavigationToFirstContentfulPaint"/>
 </histogram_suffixes>
@@ -3848,8 +3842,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="PageLoad.DocumentTiming.NavigationToLoadEventFired"/>
   <affected-histogram
-      name="PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"/>
-  <affected-histogram
       name="PageLoad.PaintTiming.ForegroundToFirstContentfulPaint"/>
   <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
@@ -3864,8 +3856,6 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.DocumentTiming.NavigationToLoadEventFired"/>
   <affected-histogram
       name="PageLoad.Experimental.Bytes.NetworkIncludingHeaders"/>
-  <affected-histogram
-      name="PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"/>
   <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram name="PageLoad.ParseTiming.ParseBlockedOnScriptLoad"/>
@@ -3888,8 +3878,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="PageLoad.DocumentTiming.NavigationToLoadEventFired"/>
   <affected-histogram
-      name="PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"/>
-  <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram
       name="PageLoad.PaintTiming.ParseStartToFirstContentfulPaint"/>
@@ -3906,8 +3894,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="PageLoad.Experimental.Bytes.NetworkIncludingHeaders"/>
   <affected-histogram
-      name="PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"/>
-  <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram name="PageLoad.ParseTiming.ParseBlockedOnScriptLoad"/>
   <affected-histogram name="PageLoad.ParseTiming.ParseDuration"/>
@@ -3921,8 +3907,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Clients.Scheme.HTTPS"
       label="PageLoadMetrics that are a result of a navigation to a main
              resource where the committed URL is HTTPS."/>
-  <affected-histogram
-      name="PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"/>
   <affected-histogram name="PageLoad.Internal.NavigationStartedInForeground"/>
   <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
@@ -4056,8 +4040,6 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.DocumentTiming.NavigationToDOMContentLoadedEventFired"/>
   <affected-histogram
       name="PageLoad.DocumentTiming.NavigationToLoadEventFired"/>
-  <affected-histogram
-      name="PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"/>
   <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram name="PageLoad.PaintTiming.NavigationToFirstPaint"/>

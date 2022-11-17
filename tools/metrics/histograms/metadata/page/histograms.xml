@@ -1175,17 +1175,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.SideSearch.SidePanel.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"
-    units="ms" expires_after="2023-08-21">
-  <owner>tluk@chromium.org</owner>
-  <owner>chrome-cros@chromium.org</owner>
-  <summary>
-    Measures the time from navigation start to first meaningful paint. Only
-    recorded for side search navigations from the side panel.
-  </summary>
-</histogram>
-
-<histogram
     name="PageLoad.Clients.SideSearch.SidePanel.InteractiveTiming.FirstInputDelay4"
     units="ms" expires_after="2023-08-21">
   <owner>tluk@chromium.org</owner>
@@ -1925,17 +1914,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Experimental.PaintTiming.FirstMeaningfulPaintStatus"
-    enum="FirstMeaningfulPaintStatus" expires_after="2021-01-31">
-  <owner>ksakamoto@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    Records whether the First Meaningful Paint metric was reported for the page
-    load, or why it wasn't if not. See http://bit.ly/ttfmp-doc for the
-    definition of First Meaningful Paint.
-  </summary>
-</histogram>
-
 <histogram name="PageLoad.Experimental.PaintTiming.InputToFirstContentfulPaint"
     units="ms" expires_after="2023-03-19">
   <owner>sullivan@chromium.org</owner>
@@ -1984,20 +1962,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Measures the time from navigation start to when the page is eligible to
     paint. Logged for every foreground page load.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"
-    units="ms" expires_after="2023-04-30">
-  <owner>ksakamoto@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    Measures the time from navigation timing's navigation start to the first
-    meaningful paint (http://bit.ly/ttfmp-doc), for main frame documents.
-
-    Do not modify this metric in any way without contacting
-    speed-metrics-dev@chromium.org.
   </summary>
 </histogram>
 

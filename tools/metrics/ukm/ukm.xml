@@ -14317,6 +14317,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="Experimental.PaintTiming.NavigationToFirstMeaningfulPaint">
+    <obsolete>
+      Removed on 11/2022
+    </obsolete>
     <summary>
       Measures the time in milliseconds from navigation timing's navigation
       start to the first meaningful paint (http://bit.ly/ttfmp-doc), for main
