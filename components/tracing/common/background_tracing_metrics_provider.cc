@@ -39,11 +39,6 @@ void BackgroundTracingMetricsProvider::ProvideIndependentMetrics(
     return;
   }
 
-  base::UmaHistogramCounts100000("Tracing.Background.UploadingTraceSizeInKB",
-                                 serialized_trace.size() / 1024);
-  metrics::TraceLog* log = uma_proto->add_trace_log();
-  log->set_raw_data(std::move(serialized_trace));
-
   auto* system_profile = uma_proto->mutable_system_profile();
 
   for (auto& provider : system_profile_providers_) {
@@ -51,12 +46,28 @@ void BackgroundTracingMetricsProvider::ProvideIndependentMetrics(
         base::TimeTicks::Now(), system_profile);
   }
 
-  ProvideEmbedderMetrics(uma_proto, snapshot_manager);
-  std::move(done_callback).Run(true);
+  metrics::TraceLog* log = uma_proto->add_trace_log();
+  ProvideEmbedderMetrics(*uma_proto, std::move(serialized_trace), *log,
+                         snapshot_manager, std::move(done_callback));
 }
 
 void BackgroundTracingMetricsProvider::ProvideEmbedderMetrics(
-    metrics::ChromeUserMetricsExtension* uma_proto,
-    base::HistogramSnapshotManager* snapshot_manager) {}
+    metrics::ChromeUserMetricsExtension& uma_proto,
+    std::string&& serialized_trace,
+    metrics::TraceLog& log,
+    base::HistogramSnapshotManager* snapshot_manager,
+    base::OnceCallback<void(bool)> done_callback) {
+  SetTrace(log, std::move(serialized_trace));
+  std::move(done_callback).Run(true);
+}
+
+void BackgroundTracingMetricsProvider::SetTrace(
+    metrics::TraceLog& log,
+    std::string&& serialized_trace) {
+  base::UmaHistogramCounts100000("Tracing.Background.UploadingTraceSizeInKB",
+                                 serialized_trace.size() / 1024);
+
+  log.set_raw_data(std::move(serialized_trace));
+}
 
 }  // namespace tracing
