@@ -6,7 +6,6 @@
 
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/color_util.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "base/check_op.h"
@@ -15,73 +14,13 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/slider.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
 
 using ContentLayerType = AshColorProvider::ContentLayerType;
-
-namespace {
-
-// Custom the slider to use different colors.
-class SystemSlider : public views::Slider {
- public:
-  explicit SystemSlider(views::SliderListener* listener = nullptr)
-      : views::Slider(listener) {}
-  SystemSlider(const SystemSlider&) = delete;
-  SystemSlider& operator=(const SystemSlider&) = delete;
-  ~SystemSlider() override {}
-
- private:
-  // views::Slider:
-  SkColor GetThumbColor() const override {
-    using Type = AshColorProvider::ContentLayerType;
-    return AshColorProvider::Get()->GetContentLayerColor(
-        (style() == RenderingStyle::kMinimalStyle) ? Type::kSliderColorInactive
-                                                   : Type::kSliderColorActive);
-  }
-
-  // views::Slider:
-  SkColor GetTroughColor() const override {
-    return ColorUtil::GetSecondToneColor(GetThumbColor());
-  }
-
-  // views::View:
-  void OnThemeChanged() override {
-    views::Slider::OnThemeChanged();
-    SchedulePaint();
-  }
-};
-
-// A slider that ignores inputs.
-class ReadOnlySlider : public SystemSlider {
- public:
-  ReadOnlySlider() : SystemSlider() {}
-  ReadOnlySlider(const ReadOnlySlider&) = delete;
-  ReadOnlySlider& operator=(const ReadOnlySlider&) = delete;
-  ~ReadOnlySlider() override {}
-
- private:
-  // views::View:
-  bool OnMousePressed(const ui::MouseEvent& event) override { return false; }
-  bool OnMouseDragged(const ui::MouseEvent& event) override { return false; }
-  void OnMouseReleased(const ui::MouseEvent& event) override {}
-  bool OnKeyPressed(const ui::KeyEvent& event) override { return false; }
-  const char* GetClassName() const override { return "ReadOnlySlider"; }
-
-  // ui::EventHandler:
-  void OnGestureEvent(ui::GestureEvent* event) override {}
-};
-
-std::unique_ptr<views::Slider> CreateSlider(UnifiedSliderListener* listener,
-                                            bool readonly) {
-  return readonly ? std::make_unique<ReadOnlySlider>()
-                  : std::make_unique<SystemSlider>(listener);
-}
-
-}  // namespace
 
 void UnifiedSliderListener::TrackToggleUMA(bool target_toggle_state) {
   DCHECK_NE(GetCatalogName(), QsSliderCatalogName::kUnknown);
@@ -99,7 +38,7 @@ UnifiedSliderView::UnifiedSliderView(views::Button::PressedCallback callback,
                                      UnifiedSliderListener* listener,
                                      const gfx::VectorIcon& icon,
                                      int accessible_name_id,
-                                     bool readonly)
+                                     bool read_only)
     : button_(
           AddChildView(std::make_unique<IconButton>(std::move(callback),
                                                     IconButton::Type::kSmall,
@@ -107,7 +46,10 @@ UnifiedSliderView::UnifiedSliderView(views::Button::PressedCallback callback,
                                                     accessible_name_id,
                                                     /*is_togglable=*/true,
                                                     /*has_border=*/true))),
-      slider_(AddChildView(CreateSlider(listener, readonly))) {
+      slider_(
+          AddChildView(CreateSlider(listener,
+                                    read_only,
+                                    QuickSettingsSlider::Style::kDefault))) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kUnifiedSliderRowPadding,
       kUnifiedSliderViewSpacing));
@@ -127,6 +69,15 @@ UnifiedSliderView::UnifiedSliderView(views::Button::PressedCallback callback,
 
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
+}
+
+std::unique_ptr<views::Slider> UnifiedSliderView::CreateSlider(
+    UnifiedSliderListener* listener,
+    bool read_only,
+    QuickSettingsSlider::Style slider_style) {
+  return read_only
+             ? std::make_unique<ReadOnlySlider>(slider_style)
+             : std::make_unique<QuickSettingsSlider>(listener, slider_style);
 }
 
 void UnifiedSliderView::SetSliderValue(float value, bool by_user) {
