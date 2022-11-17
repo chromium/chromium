@@ -476,12 +476,11 @@ TEST_F(WebAppCommandManagerTest, MultipleCallbackCommands) {
         loop.Quit();
       }));
   for (auto* app_id : {kTestAppId, kTestAppId2}) {
-    base::OnceClosure callback = base::BindOnce(
-        [](AppId app_id, base::RepeatingCallback<void(std::string)> barrier) {
-          barrier.Run(app_id);
-        },
+    base::OnceCallback<void(AppLock&)> callback = base::BindOnce(
+        [](AppId app_id, base::RepeatingCallback<void(std::string)> barrier,
+           AppLock&) { barrier.Run(app_id); },
         app_id, barrier);
-    manager().ScheduleCommand(std::make_unique<CallbackCommand>(
+    manager().ScheduleCommand(std::make_unique<CallbackCommand<AppLock>>(
         std::make_unique<AppLockDescription, base::flat_set<AppId>>({app_id}),
         std::move(callback)));
   }
@@ -553,10 +552,10 @@ TEST_F(WebAppCommandManagerTest, AppWithSharedWebContents) {
 
 TEST_F(WebAppCommandManagerTest, ToDebugValue) {
   base::RunLoop loop;
-  manager().ScheduleCommand(std::make_unique<CallbackCommand>(
+  manager().ScheduleCommand(std::make_unique<CallbackCommand<AppLock>>(
       std::make_unique<AppLockDescription, base::flat_set<AppId>>({kTestAppId}),
-      base::BindLambdaForTesting([&]() { loop.Quit(); })));
-  manager().ScheduleCommand(std::make_unique<CallbackCommand>(
+      base::BindLambdaForTesting([&](AppLock&) { loop.Quit(); })));
+  manager().ScheduleCommand(std::make_unique<CallbackCommand<AppLock>>(
       std::make_unique<AppLockDescription, base::flat_set<AppId>>(
           {kTestAppId2}),
       base::DoNothing()));

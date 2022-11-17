@@ -281,15 +281,16 @@ TEST_F(ExternallyManagedInstallCommandTest, UpgradeLock) {
       GenerateAppId(/*manifest_id=*/absl::nullopt, kWebAppUrl)};
 
   bool callback_command_run = false;
-  auto callback_command = std::make_unique<CallbackCommand>(
+  auto callback_command = std::make_unique<CallbackCommand<AppLock>>(
       std::make_unique<AppLockDescription>(app_ids),
-      base::BindLambdaForTesting([&]() { callback_command_run = true; }));
+      base::BindLambdaForTesting(
+          [&](AppLock&) { callback_command_run = true; }));
 
   bool callback_command_2_run = false;
   base::RunLoop callback_runloop;
-  auto callback_command_2 = std::make_unique<CallbackCommand>(
+  auto callback_command_2 = std::make_unique<CallbackCommand<AppLock>>(
       std::make_unique<AppLockDescription>(app_ids),
-      base::BindLambdaForTesting([&]() {
+      base::BindLambdaForTesting([&](AppLock&) {
         callback_command_2_run = true;
         callback_runloop.Quit();
       }));

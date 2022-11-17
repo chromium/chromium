@@ -24,6 +24,8 @@ class NoopLockDescription : public LockDescription {
 
 class NoopLock {
  public:
+  using LockDescription = NoopLockDescription;
+
   NoopLock() = default;
   ~NoopLock() = default;
 };

@@ -7,32 +7,53 @@
 #include <memory>
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/locks/full_system_lock.h"
 #include "chrome/browser/web_applications/locks/lock.h"
+#include "chrome/browser/web_applications/locks/noop_lock.h"
+#include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
+#include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 
 namespace web_app {
 
-CallbackCommand::CallbackCommand(
-    std::unique_ptr<LockDescription> lock_description,
-    base::OnceClosure callback)
+template <class LockType, class DescriptionType>
+CallbackCommand<LockType, DescriptionType>::CallbackCommand(
+    std::unique_ptr<DescriptionType> lock_description,
+    base::OnceCallback<void(LockType& lock)> callback)
     : lock_description_(std::move(lock_description)),
       callback_(std::move(callback)) {
   DCHECK(lock_description_);
 }
 
-CallbackCommand::~CallbackCommand() = default;
+template <class LockType, class DescriptionType>
+CallbackCommand<LockType, DescriptionType>::~CallbackCommand() = default;
 
-void CallbackCommand::Start() {
-  return SignalCompletionAndSelfDestruct(CommandResult::kSuccess,
-                                         base::BindOnce(std::move(callback_)));
+template <class LockType, class DescriptionType>
+void CallbackCommand<LockType, DescriptionType>::StartWithLock(
+    std::unique_ptr<LockType> lock) {
+  lock_ = std::move(lock);
+  std::move(callback_).Run(*lock_.get());
+  return this->SignalCompletionAndSelfDestruct(CommandResult::kSuccess,
+                                               base::DoNothing());
 }
 
-LockDescription& CallbackCommand::lock_description() const {
+template <class LockType, class DescriptionType>
+LockDescription& CallbackCommand<LockType, DescriptionType>::lock_description()
+    const {
   return *lock_description_;
 }
 
-base::Value CallbackCommand::ToDebugValue() const {
-  return base::Value(base::StringPrintf("CallbackCommand %d", id()));
+template <class LockType, class DescriptionType>
+base::Value CallbackCommand<LockType, DescriptionType>::ToDebugValue() const {
+  return base::Value(base::StringPrintf("CallbackCommand %d", this->id()));
 }
+
+template class CallbackCommand<NoopLock>;
+template class CallbackCommand<SharedWebContentsLock>;
+template class CallbackCommand<AppLock>;
+template class CallbackCommand<SharedWebContentsWithAppLock>;
+template class CallbackCommand<FullSystemLock>;
+
 }  // namespace web_app

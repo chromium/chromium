@@ -44,6 +44,8 @@ class SharedWebContentsWithAppLockDescription : public LockDescription {
 class SharedWebContentsWithAppLock : public SharedWebContentsLock,
                                      public AppLock {
  public:
+  using LockDescription = SharedWebContentsWithAppLockDescription;
+
   SharedWebContentsWithAppLock(content::WebContents& shared_web_contents,
                                WebAppRegistrar& registrar,
                                WebAppSyncBridge& sync_bridge,

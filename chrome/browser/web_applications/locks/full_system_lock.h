@@ -34,6 +34,8 @@ class FullSystemLockDescription : public LockDescription {
 
 class FullSystemLock : public AppLock {
  public:
+  using LockDescription = FullSystemLockDescription;
+
   FullSystemLock(WebAppRegistrar& registrar,
                  WebAppSyncBridge& sync_bridge,
                  WebAppInstallFinalizer& install_finalizer,

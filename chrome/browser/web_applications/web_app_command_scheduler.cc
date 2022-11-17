@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/commands/callback_command.h"
 #include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_data_fetch_command.h"
@@ -14,6 +15,11 @@
 #include "chrome/browser/web_applications/commands/update_file_handler_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolation_data.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/locks/full_system_lock.h"
+#include "chrome/browser/web_applications/locks/noop_lock.h"
+#include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
+#include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -246,6 +252,51 @@ void WebAppCommandScheduler::SyncRunOnOsLoginMode(const AppId& app_id,
   provider_->command_manager().ScheduleCommand(
       RunOnOsLoginCommand::CreateForSyncLoginMode(app_id, std::move(callback)));
 }
+
+template <class LockType, class DescriptionType>
+void WebAppCommandScheduler::ScheduleCallbackWithLock(
+    std::unique_ptr<DescriptionType> lock_description,
+    base::OnceCallback<void(LockType& lock)> callback) {
+  if (is_in_shutdown_)
+    return;
+
+  if (!provider_->is_registry_ready()) {
+    provider_->on_registry_ready().Post(
+        FROM_HERE,
+        base::BindOnce(
+            &WebAppCommandScheduler::ScheduleCallbackWithLock<LockType>,
+            weak_ptr_factory_.GetWeakPtr(), std::move(lock_description),
+            std::move(callback)));
+    return;
+  }
+
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<CallbackCommand<LockType>>(std::move(lock_description),
+                                                  std::move(callback)));
+}
+
+template void WebAppCommandScheduler::ScheduleCallbackWithLock<NoopLock>(
+    std::unique_ptr<NoopLock::LockDescription> lock_description,
+    base::OnceCallback<void(NoopLock& lock)> callback);
+
+template void
+WebAppCommandScheduler::ScheduleCallbackWithLock<SharedWebContentsLock>(
+    std::unique_ptr<SharedWebContentsLock::LockDescription> lock_description,
+    base::OnceCallback<void(SharedWebContentsLock& lock)> callback);
+
+template void WebAppCommandScheduler::ScheduleCallbackWithLock<AppLock>(
+    std::unique_ptr<AppLock::LockDescription> lock_description,
+    base::OnceCallback<void(AppLock& lock)> callback);
+
+template void
+WebAppCommandScheduler::ScheduleCallbackWithLock<SharedWebContentsWithAppLock>(
+    std::unique_ptr<SharedWebContentsWithAppLock::LockDescription>
+        lock_description,
+    base::OnceCallback<void(SharedWebContentsWithAppLock& lock)> callback);
+
+template void WebAppCommandScheduler::ScheduleCallbackWithLock<FullSystemLock>(
+    std::unique_ptr<FullSystemLock::LockDescription> lock_description,
+    base::OnceCallback<void(FullSystemLock& lock)> callback);
 
 void WebAppCommandScheduler::Shutdown() {
   is_in_shutdown_ = true;

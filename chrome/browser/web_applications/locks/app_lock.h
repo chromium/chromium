@@ -35,6 +35,8 @@ class AppLockDescription : public LockDescription {
 
 class AppLock {
  public:
+  using LockDescription = AppLockDescription;
+
   AppLock(WebAppRegistrar& registrar,
           WebAppSyncBridge& sync_bridge,
           WebAppInstallFinalizer& install_finalizer,

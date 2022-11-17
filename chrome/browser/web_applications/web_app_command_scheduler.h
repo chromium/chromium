@@ -107,6 +107,14 @@ class WebAppCommandScheduler {
   // OS.
   void SyncRunOnOsLoginMode(const AppId& app_id, base::OnceClosure callback);
 
+  // Schedules provided callback after `lock` is granted. The callback can
+  // access web app resources through the `lock`.
+  template <typename LockType,
+            typename DescriptionType = typename LockType::LockDescription>
+  void ScheduleCallbackWithLock(
+      std::unique_ptr<DescriptionType> lock_description,
+      base::OnceCallback<void(LockType& lock)> callback);
+
   // TODO(https://crbug.com/1298130): expose all commands for web app
   // operations.
 

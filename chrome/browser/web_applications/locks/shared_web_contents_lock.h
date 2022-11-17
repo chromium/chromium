@@ -30,6 +30,8 @@ class SharedWebContentsLockDescription : public LockDescription {
 
 class SharedWebContentsLock {
  public:
+  using LockDescription = SharedWebContentsLockDescription;
+
   explicit SharedWebContentsLock(content::WebContents& shared_web_contents);
   ~SharedWebContentsLock();
 
