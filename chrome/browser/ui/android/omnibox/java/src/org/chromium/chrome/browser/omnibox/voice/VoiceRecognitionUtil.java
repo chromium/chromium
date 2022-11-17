@@ -11,11 +11,11 @@ import android.speech.RecognizerIntent;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -29,6 +29,9 @@ import org.chromium.ui.permissions.AndroidPermissionDelegate;
 public class VoiceRecognitionUtil {
     private static Boolean sHasRecognitionIntentHandler;
     private static Boolean sIsVoiceSearchEnabledForTesting;
+    private static MutableFlagWithSafeDefault sVoiceSearchAudioCapturePolicyFlag =
+            new MutableFlagWithSafeDefault(
+                    ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY, false);
 
     /**
      * Returns whether voice search is enabled.
@@ -84,9 +87,7 @@ public class VoiceRecognitionUtil {
         assert LibraryLoader.getInstance().isInitialized()
             : "Premature call to check VoiceSearch eligibility may not return reliable information";
 
-        if (FeatureList.isInitialized()
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY)) {
+        if (sVoiceSearchAudioCapturePolicyFlag.isEnabled()) {
             // If the PrefService isn't initialized yet we won't know here whether or not voice
             // search is allowed by policy. In that case, treat voice search as enabled but check
             // again when a Profile is set and PrefService becomes available.

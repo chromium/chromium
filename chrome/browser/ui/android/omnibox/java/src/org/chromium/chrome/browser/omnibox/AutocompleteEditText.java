@@ -12,7 +12,6 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
-import android.view.View.OnKeyListener;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -24,10 +23,10 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.components.browser_ui.widget.text.VerticallyFixedEditText;
 
 /**
@@ -38,6 +37,8 @@ public class AutocompleteEditText
     private static final String TAG = "AutocompleteEdit";
 
     private static final boolean DEBUG = false;
+    private static final MutableFlagWithSafeDefault sSpannableInlineAutocompleteFlag =
+            new MutableFlagWithSafeDefault(ChromeFeatureList.SPANNABLE_INLINE_AUTOCOMPLETE, true);
 
     private final AccessibilityManager mAccessibilityManager;
 
@@ -115,8 +116,7 @@ public class AutocompleteEditText
     private void ensureModel() {
         if (mModel != null) return;
 
-        if (!FeatureList.isInitialized()
-                || ChromeFeatureList.isEnabled(ChromeFeatureList.SPANNABLE_INLINE_AUTOCOMPLETE)) {
+        if (sSpannableInlineAutocompleteFlag.isEnabled()) {
             Log.w(TAG, "Using spannable model...");
             mModel = new SpannableAutocompleteEditTextModel(this);
         } else {
