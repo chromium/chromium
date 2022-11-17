@@ -8,9 +8,6 @@
 
 namespace content {
 
-const char kUmaScreenCaptureTime[] = "WebRTC.ScreenCaptureTime";
-const char kUmaWindowCaptureTime[] = "WebRTC.WindowCaptureTime";
-
 void IncrementDesktopCaptureCounter(DesktopCaptureCounters counter) {
   UMA_HISTOGRAM_ENUMERATION("WebRTC.DesktopCaptureCounters",
                             counter,

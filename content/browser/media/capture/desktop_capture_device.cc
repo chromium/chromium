@@ -330,16 +330,6 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
   }
   DCHECK(frame);
 
-  base::TimeDelta capture_time(base::Milliseconds(frame->capture_time_ms()));
-
-  // The two UMA_ blocks must be put in its own scope since it creates a static
-  // variable which expected constant histogram name.
-  if (capturer_type_ == DesktopMediaID::TYPE_SCREEN) {
-    UMA_HISTOGRAM_TIMES(kUmaScreenCaptureTime, capture_time);
-  } else {
-    UMA_HISTOGRAM_TIMES(kUmaWindowCaptureTime, capture_time);
-  }
-
   // If the frame size has changed, drop the output frame (if any), and
   // determine the new output size.
   if (!previous_frame_size_.equals(frame->size())) {

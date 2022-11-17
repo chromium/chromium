@@ -32,9 +32,6 @@ enum DesktopCaptureCounters {
   DESKTOP_CAPTURE_COUNTER_BOUNDARY
 };
 
-extern const char kUmaScreenCaptureTime[];
-extern const char kUmaWindowCaptureTime[];
-
 void IncrementDesktopCaptureCounter(DesktopCaptureCounters counter);
 
 }  // namespace content
