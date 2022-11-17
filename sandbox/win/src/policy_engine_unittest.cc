@@ -93,6 +93,11 @@ TEST(PolicyEngineTest, Rules1) {
   EXPECT_EQ(POLICY_MATCH, pr);
   EXPECT_EQ(FAKE_ACCESS_DENIED, pol_ev.GetAction());
 
+  // Cope ok with nullptr string fields.
+  filename = nullptr;
+  pr = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  EXPECT_EQ(NO_POLICY_MATCH, pr);
+
   delete[] reinterpret_cast<char*>(policy);
 }
 

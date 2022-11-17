@@ -262,6 +262,10 @@ EvalResult OpcodeEval<OP_WSTRING_MATCH>(PolicyOpcode* opcode,
   const wchar_t* source_str = nullptr;
   if (!param->Get(&source_str))
     return EVAL_ERROR;
+  // Assume we won't want to match when a nullptr parameter is passed to the
+  // hooked function.
+  if (!source_str)
+    return EVAL_FALSE;
 
   int start_position = 0;
   int match_len = 0;
