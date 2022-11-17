@@ -37,12 +37,11 @@ std::u16string IntentTypeToString(IntentType intent_type) {
   switch (intent_type) {
     case IntentType::kUnit:
       return l10n_util::GetStringUTF16(
-          IDS_ASH_QUICK_ANSWERS_UNIT_CONVERSION_INTENT);
+          IDS_QUICK_ANSWERS_UNIT_CONVERSION_INTENT);
     case IntentType::kDictionary:
-      return l10n_util::GetStringUTF16(IDS_ASH_QUICK_ANSWERS_DEFINITION_INTENT);
+      return l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_DEFINITION_INTENT);
     case IntentType::kTranslation:
-      return l10n_util::GetStringUTF16(
-          IDS_ASH_QUICK_ANSWERS_TRANSLATION_INTENT);
+      return l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_TRANSLATION_INTENT);
     case IntentType::kUnknown:
       return std::u16string();
   }
@@ -188,7 +187,7 @@ void QuickAnswersControllerImpl::OnQuickAnswerReceived(
         std::make_unique<quick_answers::QuickAnswerText>(title_));
     quick_answer_with_no_result.first_answer_row.push_back(
         std::make_unique<quick_answers::QuickAnswerResultText>(
-            l10n_util::GetStringUTF8(IDS_ASH_QUICK_ANSWERS_VIEW_NO_RESULT_V2)));
+            l10n_util::GetStringUTF8(IDS_QUICK_ANSWERS_VIEW_NO_RESULT_V2)));
     quick_answers_ui_controller_->RenderQuickAnswersViewWithResult(
         anchor_bounds_, quick_answer_with_no_result);
     // Fallback query to title if no result is available.

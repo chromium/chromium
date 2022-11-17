@@ -129,11 +129,11 @@ UserConsentView::UserConsentView(
                                         base::Unretained(this))) {
   if (intent_type.empty() || intent_text.empty()) {
     title_text_ = l10n_util::GetStringUTF16(
-        IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_TITLE_TEXT);
+        IDS_QUICK_ANSWERS_USER_NOTICE_VIEW_TITLE_TEXT);
   } else {
     title_text_ = l10n_util::GetStringFUTF16(
-        IDS_ASH_QUICK_ANSWERS_USER_CONSENT_VIEW_TITLE_TEXT_WITH_INTENT,
-        intent_type, intent_text);
+        IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_TITLE_TEXT_WITH_INTENT, intent_type,
+        intent_text);
   }
 
   InitLayout();
@@ -151,7 +151,7 @@ UserConsentView::UserConsentView(
 
   // Read out user-consent text if screen-reader is active.
   GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
-      IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_INFO_ALERT_TEXT));
+      IDS_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_INFO_ALERT_TEXT));
 }
 
 UserConsentView::~UserConsentView() = default;
@@ -193,9 +193,8 @@ void UserConsentView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kDialog;
   node_data->SetName(title_text_);
   auto desc_text = l10n_util::GetStringFUTF8(
-      IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_INFO_DESC_TEMPLATE,
-      l10n_util::GetStringUTF16(
-          IDS_ASH_QUICK_ANSWERS_USER_CONSENT_VIEW_DESC_TEXT));
+      IDS_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_INFO_DESC_TEMPLATE,
+      l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_DESC_TEXT));
   node_data->SetDescription(desc_text);
 }
 
@@ -263,10 +262,9 @@ void UserConsentView::InitContent() {
   title_->SetMaximumWidthSingleLine(maximum_width);
 
   // Description.
-  desc_ = content_->AddChildView(
-      CreateLabel(l10n_util::GetStringUTF16(
-                      IDS_ASH_QUICK_ANSWERS_USER_CONSENT_VIEW_DESC_TEXT),
-                  kDescFontSizeDelta));
+  desc_ = content_->AddChildView(CreateLabel(
+      l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_DESC_TEXT),
+      kDescFontSizeDelta));
   desc_->SetMultiLine(true);
 
   desc_->SetMaximumWidth(maximum_width);
@@ -293,7 +291,7 @@ void UserConsentView::InitButtonBar() {
       base::BindRepeating(&QuickAnswersUiController::OnUserConsentResult,
                           controller_, false),
       l10n_util::GetStringUTF16(
-          IDS_ASH_QUICK_ANSWERS_USER_CONSENT_VIEW_NO_THANKS_BUTTON),
+          IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_NO_THANKS_BUTTON),
       ShouldUseCompactButtonLayout(anchor_view_bounds_.width()));
   no_thanks_button_ = button_bar->AddChildView(std::move(no_thanks_button));
 
@@ -310,7 +308,7 @@ void UserConsentView::InitButtonBar() {
           },
           &event_handler_, controller_),
       l10n_util::GetStringUTF16(
-          IDS_ASH_QUICK_ANSWERS_USER_CONSENT_VIEW_ALLOW_BUTTON),
+          IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_ALLOW_BUTTON),
       ShouldUseCompactButtonLayout(anchor_view_bounds_.width()));
   allow_button->SetProminent(true);
   allow_button_ = button_bar->AddChildView(std::move(allow_button));

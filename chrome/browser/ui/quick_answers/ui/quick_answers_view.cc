@@ -170,7 +170,7 @@ class MainView : public views::Button {
 
   explicit MainView(PressedCallback callback) : Button(std::move(callback)) {
     SetAccessibleName(
-        l10n_util::GetStringUTF16(IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT));
+        l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT));
     SetInstallFocusRingOnFocus(false);
     set_suppress_default_focus_handling();
 
@@ -239,7 +239,7 @@ class ReportQueryView : public views::Button {
 
     description_label_ = AddChildView(std::make_unique<Label>(
         l10n_util::GetStringUTF16(
-            IDS_ASH_QUICK_ANSWERS_VIEW_REPORT_QUERY_INTERNAL_LABEL),
+            IDS_QUICK_ANSWERS_VIEW_REPORT_QUERY_INTERNAL_LABEL),
         Label::CustomFont{gfx::FontList({kGoogleSansFont}, gfx::Font::ITALIC,
                                         kReportQueryViewFontSize,
                                         gfx::Font::Weight::NORMAL)}));
@@ -248,7 +248,7 @@ class ReportQueryView : public views::Button {
 
     report_label_ = AddChildView(std::make_unique<Label>(
         l10n_util::GetStringUTF16(
-            IDS_ASH_QUICK_ANSWERS_VIEW_REPORT_QUERY_REPORT_LABEL),
+            IDS_QUICK_ANSWERS_VIEW_REPORT_QUERY_REPORT_LABEL),
         Label::CustomFont{gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL,
                                         kReportQueryViewFontSize,
                                         gfx::Font::Weight::MEDIUM)}));
@@ -425,7 +425,7 @@ void QuickAnswersView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
 
   node_data->SetName(
-      l10n_util::GetStringUTF8(IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT));
+      l10n_util::GetStringUTF8(IDS_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT));
 }
 
 void QuickAnswersView::SendQuickAnswersQuery() {
@@ -464,7 +464,7 @@ void QuickAnswersView::ShowRetryView() {
   // Add error label.
   std::vector<std::unique_ptr<QuickAnswerUiElement>> description_labels;
   description_labels.push_back(std::make_unique<QuickAnswerResultText>(
-      l10n_util::GetStringUTF8(IDS_ASH_QUICK_ANSWERS_VIEW_NETWORK_ERROR)));
+      l10n_util::GetStringUTF8(IDS_QUICK_ANSWERS_VIEW_NETWORK_ERROR)));
   auto* description_container =
       AddHorizontalUiElements(description_labels, content_view_);
 
@@ -473,18 +473,17 @@ void QuickAnswersView::ShowRetryView() {
       description_container->AddChildView(std::make_unique<views::LabelButton>(
           base::BindRepeating(&QuickAnswersUiController::OnRetryLabelPressed,
                               controller_),
-          l10n_util::GetStringUTF16(IDS_ASH_QUICK_ANSWERS_VIEW_RETRY)));
+          l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_RETRY)));
   retry_label_->SetEnabledTextColors(
       GetColorProvider()->GetColor(ui::kColorProgressBar));
   retry_label_->SetRequestFocusOnPress(true);
   retry_label_->button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
   retry_label_->SetAccessibleName(l10n_util::GetStringFUTF16(
-      IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_RETRY_LABEL_NAME_TEMPLATE,
-      l10n_util::GetStringUTF16(IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT)));
+      IDS_QUICK_ANSWERS_VIEW_A11Y_RETRY_LABEL_NAME_TEMPLATE,
+      l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT)));
   retry_label_->GetViewAccessibility().OverrideDescription(
-      l10n_util::GetStringUTF8(
-          IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_RETRY_LABEL_DESC));
+      l10n_util::GetStringUTF8(IDS_QUICK_ANSWERS_VIEW_A11Y_RETRY_LABEL_DESC));
 }
 
 void QuickAnswersView::InitLayout() {
@@ -547,7 +546,7 @@ void QuickAnswersView::AddContentView() {
       std::make_unique<QuickAnswersTextLabel>(QuickAnswerText(title_)));
   title_label->SetMaximumWidthSingleLine(GetLabelWidth());
   std::string loading =
-      l10n_util::GetStringUTF8(IDS_ASH_QUICK_ANSWERS_VIEW_LOADING);
+      l10n_util::GetStringUTF8(IDS_QUICK_ANSWERS_VIEW_LOADING);
   content_view_->AddChildView(
       std::make_unique<QuickAnswersTextLabel>(QuickAnswerResultText(loading)));
 }
@@ -569,14 +568,14 @@ void QuickAnswersView::AddFrameButtons() {
             &QuickAnswersUiController::OnReportQueryButtonPressed,
             controller_)));
     dogfood_feedback_button_->SetTooltipText(l10n_util::GetStringUTF16(
-        IDS_ASH_QUICK_ANSWERS_DOGFOOD_FEEDBACK_BUTTON_TOOLTIP_TEXT));
+        IDS_QUICK_ANSWERS_DOGFOOD_FEEDBACK_BUTTON_TOOLTIP_TEXT));
   }
 
   settings_button_ = buttons_view->AddChildView(
       std::make_unique<views::ImageButton>(base::BindRepeating(
           &QuickAnswersUiController::OnSettingsButtonPressed, controller_)));
   settings_button_->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_ASH_QUICK_ANSWERS_SETTINGS_BUTTON_TOOLTIP_TEXT));
+      IDS_QUICK_ANSWERS_SETTINGS_BUTTON_TOOLTIP_TEXT));
   settings_button_->SetBorder(
       views::CreateEmptyBorder(kSettingsButtonBorderDip));
 }
@@ -607,7 +606,7 @@ void QuickAnswersView::AddPhoneticsAudioButton(
           vector_icons::kVolumeUpIcon, kPhoneticsAudioButtonSizeDip,
           GetColorProvider()->GetColor(ui::kColorButtonBackgroundProminent)));
   phonetics_audio_button_->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_ASH_QUICK_ANSWERS_PHONETICS_BUTTON_TOOLTIP_TEXT));
+      IDS_QUICK_ANSWERS_PHONETICS_BUTTON_TOOLTIP_TEXT));
   phonetics_audio_button_->SetBorder(
       views::CreateEmptyBorder(kPhoneticsAudioButtonBorderDip));
 }
@@ -699,7 +698,7 @@ void QuickAnswersView::UpdateQuickAnswerResult(
     auto* answer_label =
         static_cast<Label*>(first_answer_view->children().front());
     GetViewAccessibility().OverrideDescription(l10n_util::GetStringFUTF8(
-        IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_INFO_DESC_TEMPLATE_V2,
+        IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_DESC_TEMPLATE_V2,
         title_label->GetText(), answer_label->GetText()));
   }
 
@@ -723,8 +722,8 @@ void QuickAnswersView::UpdateQuickAnswerResult(
     RequestFocus();
   } else {
     // Announce that a Quick Answer is available.
-    GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
-        IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_INFO_ALERT_TEXT));
+    GetViewAccessibility().AnnounceText(
+        l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_ALERT_TEXT));
   }
 
   if (quick_answer.result_type == ResultType::kNoResult && is_internal_) {
