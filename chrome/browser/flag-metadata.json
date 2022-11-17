@@ -4426,10 +4426,7 @@
   },
   {
     "name": "layout-extraction",
-    "owners": [
-      "rhalavati",
-      "//ui/accessibility/OWNERS"
-    ],
+    "owners": [ "rhalavati", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 120
   },
   {
@@ -5516,8 +5513,8 @@
   },
   {
     "name": "pdf-ocr",
-    "owners": [ "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 110
+    "owners": [ "rhalavati", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 120
   },
   {
     "name": "pdf-use-skia-renderer",
