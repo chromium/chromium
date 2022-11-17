@@ -56,6 +56,7 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource() {
       {"labelIsOffHoursActive", IDS_POLICY_LABEL_IS_OFFHOURS_ACTIVE},
       {"labelPoliciesPush", IDS_POLICY_LABEL_PUSH_POLICIES},
       {"labelPrecedence", IDS_POLICY_LABEL_PRECEDENCE},
+      {"labelProfileId", IDS_POLICY_LABEL_PROFILE_ID},
       {"labelRefreshInterval", IDS_POLICY_LABEL_REFRESH_INTERVAL},
       {"labelStatus", IDS_POLICY_LABEL_STATUS},
       {"labelTimeSinceLastFetchAttempt",
