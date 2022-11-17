@@ -127,6 +127,28 @@ class PropertyBase(object):
         super(PropertyBase, self).__init__()
 
     @property
+    def namespace(self):
+        """The namespace for the generated CSSProperty subclass."""
+        if self.is_shorthand:
+            return 'css_shorthand'
+        # Otherwise, 'self' is a longhand, or a descriptor (which also ends up
+        # in the css_longhand namespace).
+        return 'css_longhand'
+
+    @property
+    def classname(self):
+        """The name of the generated CSSProperty subclass."""
+        return self.name.to_upper_camel_case()
+
+    @property
+    def is_longhand(self):
+        return self.is_property and not self.longhands
+
+    @property
+    def is_shorthand(self):
+        return self.is_property and self.longhands
+
+    @property
     def is_internal(self):
         return self.name.original.startswith('-internal-')
 
@@ -368,10 +390,6 @@ class CSSProperties(object):
         name = property_.name
         property_.property_id = id_for_css_property(name)
         property_.enum_key = enum_key_for_css_property(name)
-        property_.is_shorthand = \
-                property_.is_property and bool(property_.longhands)
-        property_.is_longhand = \
-                property_.is_property and not property_.is_shorthand
         method_name = property_.name_for_methods
         if not method_name:
             method_name = name.to_upper_camel_case().replace('Webkit', '')

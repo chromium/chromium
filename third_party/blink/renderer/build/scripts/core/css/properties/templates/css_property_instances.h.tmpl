@@ -18,8 +18,8 @@ extern const CSSUnresolvedProperty* const kPropertyClasses[];
 
 const CSSUnresolvedProperty* GetAliasPropertyInternal(CSSPropertyID);
 
-{% for property_class_data in property_classes_by_property_id %}
-CORE_EXPORT const CSSProperty& Get{{property_class_data.property_id}}();
+{% for property in properties %}
+CORE_EXPORT const CSSProperty& Get{{property.property_id}}();
 {% endfor %}
 
 }  // namespace blink

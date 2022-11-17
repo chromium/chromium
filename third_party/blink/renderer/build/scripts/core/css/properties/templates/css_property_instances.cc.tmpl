@@ -15,18 +15,18 @@
 namespace blink {
 namespace {
 
-{% for _, _, property_id, classname, namespace_group, _ in property_classes_by_property_id %}
-static constexpr css_{{namespace_group.lower()}}::{{classname}} property_{{property_id.lower()}};
+{% for property in properties %}
+static constexpr {{property.namespace}}::{{property.classname}} property_{{property.property_id.lower()}};
 {% endfor %}
-{% for _, _, property_id, classname, namespace_group, _ in alias_classes_by_property_id %}
-static constexpr css_{{namespace_group.lower()}}::{{classname}} property_{{property_id.lower()}};
+{% for property in aliases %}
+static constexpr {{property.namespace}}::{{property.classname}} property_{{property.property_id.lower()}};
 {% endfor %}
 
 } // namespace
 
-{% for property_class_data in property_classes_by_property_id %}
-const CSSProperty& Get{{property_class_data.property_id}}() {
-  return property_{{property_class_data.property_id.lower()}};
+{% for property in properties %}
+const CSSProperty& Get{{property.property_id}}() {
+  return property_{{property.property_id.lower()}};
 }
 {% endfor %}
 
@@ -34,9 +34,9 @@ const CSSUnresolvedProperty* GetAliasPropertyInternal(CSSPropertyID id) {
   DCHECK_GT(id, kLastCSSProperty);  // last property id
   DCHECK_LE(id, kLastUnresolvedCSSProperty);  // last unresolved property id
   switch (id) {
-    {% for property_class_data in alias_classes_by_property_id %}
-    case CSSPropertyID::{{property_class_data.enum_key}}:
-      return &property_{{property_class_data.property_id.lower()}};
+    {% for property in aliases %}
+    case CSSPropertyID::{{property.enum_key}}:
+      return &property_{{property.property_id.lower()}};
     {% endfor %}
     default:
       NOTREACHED();
@@ -47,8 +47,8 @@ const CSSUnresolvedProperty* GetAliasPropertyInternal(CSSPropertyID id) {
 const CSSUnresolvedProperty* const kPropertyClasses[] = {
   nullptr,  // kInvalid.
   nullptr,  // kVariable.
-  {% for property_class_data in property_classes_by_property_id %}
-  &property_{{property_class_data.property_id.lower()}},  // {{property_class_data.property_id}}
+  {% for property in properties %}
+  &property_{{property.property_id.lower()}},  // {{property.property_id}}
   {% endfor %}
 };
 
