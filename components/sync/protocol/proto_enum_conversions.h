@@ -71,6 +71,8 @@ const char* ProtoEnumToString(sync_pb::SyncEnums::Action action);
 
 const char* ProtoEnumToString(sync_pb::SyncEnums::DeviceType device_type);
 
+const char* ProtoEnumToString(sync_pb::SyncEnums::OsType os_type);
+
 const char* ProtoEnumToString(
     sync_pb::SyncEnums::DeviceFormFactor device_form_factor);
 

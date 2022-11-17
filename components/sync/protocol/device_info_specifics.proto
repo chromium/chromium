@@ -90,6 +90,12 @@ message DeviceInfoSpecifics {
     ChromeVersionInfo chrome_version_info = 17;
     GooglePlayServicesVersionInfo google_play_services_version_info = 18;
   }
+
+  // The OS type the device.
+  optional SyncEnums.OsType os_type = 19;
+
+  // The form factor of the device.
+  optional SyncEnums.DeviceFormFactor device_form_factor = 20;
 }
 
 // Feature specific information about the device that is running a sync-enabled

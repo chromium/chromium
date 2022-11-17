@@ -150,6 +150,19 @@ message SyncEnums {
     TYPE_TABLET = 7;
   }
 
+  // Types of device OS.
+  enum OsType {
+    OS_TYPE_UNSPECIFIED = 0;
+    OS_TYPE_WINDOWS = 1;
+    OS_TYPE_MAC = 2;
+    OS_TYPE_LINUX = 3;
+    OS_TYPE_CHROME_OS_ASH = 4;
+    OS_TYPE_ANDROID = 5;
+    OS_TYPE_IOS = 6;
+    OS_TYPE_CHROME_OS_LACROS = 7;
+    OS_TYPE_FUCHSIA = 8;
+  }
+
   // Types of device form factors.
   enum DeviceFormFactor {
     DEVICE_FORM_FACTOR_UNSPECIFIED = 0;

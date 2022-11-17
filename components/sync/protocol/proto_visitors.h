@@ -477,6 +477,8 @@ VISIT_PROTO_FIELDS(const sync_pb::DeviceInfoSpecifics& proto) {
   VISIT(full_hardware_class);
   VISIT(chrome_version_info);
   VISIT(google_play_services_version_info);
+  VISIT_ENUM(os_type);
+  VISIT_ENUM(device_form_factor);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::FeatureSpecificFields& proto) {
@@ -1027,6 +1029,7 @@ VISIT_PROTO_FIELDS(const sync_pb::SessionHeader& proto) {
   VISIT_REP(window);
   VISIT(client_name);
   VISIT_ENUM(device_type);
+  VISIT_ENUM(device_form_factor);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SessionSpecifics& proto) {

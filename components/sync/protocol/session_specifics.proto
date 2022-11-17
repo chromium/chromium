@@ -37,6 +37,8 @@ message SessionHeader {
   optional string client_name = 3;
   // The type of device.
   optional SyncEnums.DeviceType device_type = 4;
+  // The form factor of device.
+  optional SyncEnums.DeviceFormFactor device_form_factor = 5;
 }
 
 message SessionWindow {
