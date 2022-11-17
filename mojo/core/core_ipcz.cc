@@ -410,9 +410,15 @@ MojoResult MojoCreateDataPipeIpcz(const MojoCreateDataPipeOptions* options,
       config.byte_capacity = options->capacity_num_bytes;
     }
   }
-  DataPipe::Pair pipe = DataPipe::CreatePair(config);
-  *data_pipe_producer_handle = DataPipe::Box(std::move(pipe.producer));
-  *data_pipe_consumer_handle = DataPipe::Box(std::move(pipe.consumer));
+  absl::optional<DataPipe::Pair> pipe = DataPipe::CreatePair(config);
+  if (!pipe) {
+    // This result implies that we failed to allocate or map a new shared memory
+    // region and therefore have no transfer buffer for the pipe.
+    return MOJO_RESULT_RESOURCE_EXHAUSTED;
+  }
+
+  *data_pipe_producer_handle = DataPipe::Box(std::move(pipe->producer));
+  *data_pipe_consumer_handle = DataPipe::Box(std::move(pipe->consumer));
   return MOJO_RESULT_OK;
 }
 
