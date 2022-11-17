@@ -6,6 +6,8 @@ package org.chromium.components.commerce.core;
 
 import androidx.annotation.VisibleForTesting;
 
+import com.google.common.base.Optional;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -22,16 +24,19 @@ public class ShoppingService {
         public final long offerId;
         public final String currencyCode;
         public final long amountMicros;
+        public final Optional<Long> previousAmountMicros;
         public final String countryCode;
 
         public ProductInfo(String title, GURL imageUrl, long productClusterId, long offerId,
-                String currencyCode, long amountMicros, String countryCode) {
+                String currencyCode, long amountMicros, String countryCode,
+                Optional<Long> previousAmountMicros) {
             this.title = title;
             this.imageUrl = imageUrl;
             this.productClusterId = productClusterId;
             this.offerId = offerId;
             this.currencyCode = currencyCode;
             this.amountMicros = amountMicros;
+            this.previousAmountMicros = previousAmountMicros;
             this.countryCode = countryCode;
         }
     }
@@ -158,9 +163,16 @@ public class ShoppingService {
 
     @CalledByNative
     private static ProductInfo createProductInfo(String title, GURL imageUrl, long productClusterId,
-            long offerId, String currencyCode, long amountMicros, String countryCode) {
+            long offerId, String currencyCode, long amountMicros, String countryCode,
+            boolean hasPreviousPrice, long previousAmountMicros) {
+        Optional<Long> previousPrice;
+        if (hasPreviousPrice) {
+            previousPrice = Optional.absent();
+        } else {
+            previousPrice = Optional.of(previousAmountMicros);
+        }
         return new ProductInfo(title, imageUrl, productClusterId, offerId, currencyCode,
-                amountMicros, countryCode);
+                amountMicros, countryCode, previousPrice);
     }
 
     @CalledByNative

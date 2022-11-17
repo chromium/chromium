@@ -432,7 +432,7 @@ std::unique_ptr<ProductInfo> ShoppingService::OptGuideResultToProductInfo(
   if (!parsed_any.has_value() || !price_data.IsInitialized())
     return nullptr;
 
-  commerce::BuyableProduct buyable_product = price_data.buyable_product();
+  const commerce::BuyableProduct buyable_product = price_data.buyable_product();
 
   std::unique_ptr<ProductInfo> info = std::make_unique<ProductInfo>();
 
@@ -463,6 +463,29 @@ std::unique_ptr<ProductInfo> ShoppingService::OptGuideResultToProductInfo(
 
   if (buyable_product.has_country_code())
     info->country_code = buyable_product.country_code();
+
+  // Check to see if there was a price drop associated with this product. Those
+  // prices take priority over what BuyableProduct has.
+  if (price_data.has_product_update()) {
+    const commerce::ProductPriceUpdate price_update =
+        price_data.product_update();
+
+    // Both new and old price should exist and have the same currency code.
+    bool currency_codes_match = price_update.new_price().currency_code() ==
+                                price_update.old_price().currency_code();
+
+    if (price_update.has_new_price() &&
+        info->currency_code == price_update.new_price().currency_code() &&
+        currency_codes_match) {
+      info->amount_micros = price_update.new_price().amount_micros();
+    }
+    if (price_update.has_old_price() &&
+        info->currency_code == price_update.old_price().currency_code() &&
+        currency_codes_match) {
+      info->previous_amount_micros.emplace(
+          price_update.old_price().amount_micros());
+    }
+  }
 
   return info;
 }

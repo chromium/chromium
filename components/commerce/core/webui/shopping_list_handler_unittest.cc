@@ -97,6 +97,12 @@ TEST_F(ShoppingListHandlerTest, ConvertToMojoTypes) {
   std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
       power_bookmarks::GetNodePowerBookmarkMeta(bookmark_model_.get(), product);
   meta->mutable_lead_image()->set_url(image_url);
+  meta->mutable_shopping_specifics()
+      ->mutable_previous_price()
+      ->set_amount_micros(4560000);
+  meta->mutable_shopping_specifics()
+      ->mutable_previous_price()
+      ->set_currency_code("usd");
   power_bookmarks::SetNodePowerBookmarkMeta(bookmark_model_.get(), product,
                                             std::move(meta));
 
@@ -109,6 +115,42 @@ TEST_F(ShoppingListHandlerTest, ConvertToMojoTypes) {
 
   EXPECT_EQ(mojo_list[0]->bookmark_id, product->id());
   EXPECT_EQ(mojo_list[0]->info->current_price, "$1.23");
+  EXPECT_EQ(mojo_list[0]->info->previous_price, "$4.56");
+  EXPECT_EQ(mojo_list[0]->info->domain, "example.com");
+  EXPECT_EQ(mojo_list[0]->info->title, "product 1");
+  EXPECT_EQ(mojo_list[0]->info->image_url.spec(), image_url);
+}
+
+// If the new price is greater than the old price, we shouldn't include the
+// |previous_price| field in the mojo data type.
+TEST_F(ShoppingListHandlerTest, ConvertToMojoTypes_PriceIncrease) {
+  const bookmarks::BookmarkNode* product = AddProductBookmark(
+      bookmark_model_.get(), u"product 1", GURL("http://example.com/1"), 123L,
+      true, 1230000, "usd");
+
+  const std::string image_url = "https://example.com/image.png";
+  std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
+      power_bookmarks::GetNodePowerBookmarkMeta(bookmark_model_.get(), product);
+  meta->mutable_lead_image()->set_url(image_url);
+  meta->mutable_shopping_specifics()
+      ->mutable_previous_price()
+      ->set_amount_micros(1000000);
+  meta->mutable_shopping_specifics()
+      ->mutable_previous_price()
+      ->set_currency_code("usd");
+  power_bookmarks::SetNodePowerBookmarkMeta(bookmark_model_.get(), product,
+                                            std::move(meta));
+
+  std::vector<const bookmarks::BookmarkNode*> bookmark_list;
+  bookmark_list.push_back(product);
+
+  std::vector<shopping_list::mojom::BookmarkProductInfoPtr> mojo_list =
+      ShoppingListHandler::BookmarkListToMojoList(*bookmark_model_,
+                                                  bookmark_list, "en-us");
+
+  EXPECT_EQ(mojo_list[0]->bookmark_id, product->id());
+  EXPECT_EQ(mojo_list[0]->info->current_price, "$1.23");
+  EXPECT_TRUE(mojo_list[0]->info->previous_price.empty());
   EXPECT_EQ(mojo_list[0]->info->domain, "example.com");
   EXPECT_EQ(mojo_list[0]->info->title, "product 1");
   EXPECT_EQ(mojo_list[0]->info->image_url.spec(), image_url);

@@ -87,7 +87,14 @@ class MockOptGuideDecider
       const std::string& image_url,
       const uint64_t offer_id,
       const uint64_t product_cluster_id,
-      const std::string& country_code);
+      const std::string& country_code,
+      const int64_t amount_micros = 0,
+      const std::string& currency_code = "USD");
+
+  void AddPriceUpdateToPriceTrackingResponse(OptimizationMetadata* out_meta,
+                                             const std::string& currency_code,
+                                             const int64_t current_price,
+                                             const int64_t previous_price);
 
   OptimizationMetadata BuildMerchantTrustResponse(
       const float star_rating,

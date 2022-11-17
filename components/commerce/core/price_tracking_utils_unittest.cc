@@ -250,6 +250,7 @@ TEST_F(PriceTrackingUtilsTest, PopulateOrUpdateBookmark) {
   const std::string new_image_url = "https://example.com/product_image.png";
   const std::string new_country_code = "us";
   const long new_price = 500000L;
+  const long old_price = 700000L;
   const std::string new_currency_code = "USD";
   const uint64_t new_offer_id = 10000L;
   const uint64_t cluster_id = 12345L;
@@ -277,6 +278,7 @@ TEST_F(PriceTrackingUtilsTest, PopulateOrUpdateBookmark) {
   new_info.country_code = new_country_code;
   new_info.offer_id = new_offer_id;
   new_info.product_cluster_id = cluster_id;  // This shouldn't change.
+  new_info.previous_amount_micros.emplace(old_price);
 
   EXPECT_TRUE(PopulateOrUpdateBookmarkMetaIfNeeded(&meta, new_info));
 
@@ -290,6 +292,7 @@ TEST_F(PriceTrackingUtilsTest, PopulateOrUpdateBookmark) {
   EXPECT_EQ(new_currency_code, specifics->current_price().currency_code());
   EXPECT_EQ(new_offer_id, specifics->offer_id());
   EXPECT_EQ(cluster_id, specifics->product_cluster_id());
+  EXPECT_EQ(old_price, specifics->previous_price().amount_micros());
 }
 
 TEST_F(PriceTrackingUtilsTest, PopulateOrUpdateBookmark_NoNewData) {
@@ -336,6 +339,7 @@ TEST_F(PriceTrackingUtilsTest, PopulateOrUpdateBookmark_NoNewData) {
   EXPECT_EQ(currency_code, specifics->current_price().currency_code());
   EXPECT_EQ(offer_id, specifics->offer_id());
   EXPECT_EQ(cluster_id, specifics->product_cluster_id());
+  EXPECT_FALSE(specifics->has_previous_price());
 }
 
 TEST_F(PriceTrackingUtilsTest,

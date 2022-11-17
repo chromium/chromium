@@ -39,6 +39,9 @@ const char kImageUrl[] = "http://example.com/image.png";
 const uint64_t kOfferId = 123;
 const uint64_t kClusterId = 456;
 const char kCountryCode[] = "US";
+const char kCurrencyCode[] = "USD";
+const int64_t kPrice = 1000;
+const int64_t kNewPrice = 500;
 
 const char kMerchantUrl[] = "http://example.com/merchant";
 const float kStarRating = 4.5;
@@ -71,27 +74,80 @@ TEST_F(ShoppingServiceTest, TestProductInfoResponse) {
       {commerce::kShoppingList, commerce::kCommerceAllowServerImages}, {});
 
   OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
-      kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode);
+      kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode, kPrice,
+      kCurrencyCode);
+  opt_guide_->AddPriceUpdateToPriceTrackingResponse(&meta, kCurrencyCode,
+                                                    kNewPrice, kPrice);
 
   opt_guide_->SetResponse(GURL(kProductUrl), OptimizationType::PRICE_TRACKING,
                           OptimizationGuideDecision::kTrue, meta);
 
   base::RunLoop run_loop;
   shopping_service_->GetProductInfoForUrl(
-      GURL(kProductUrl), base::BindOnce(
-                             [](base::RunLoop* run_loop, const GURL& url,
-                                const absl::optional<ProductInfo>& info) {
-                               ASSERT_EQ(kProductUrl, url.spec());
-                               ASSERT_TRUE(info.has_value());
+      GURL(kProductUrl),
+      base::BindOnce(
+          [](base::RunLoop* run_loop, const GURL& url,
+             const absl::optional<ProductInfo>& info) {
+            ASSERT_EQ(kProductUrl, url.spec());
+            ASSERT_TRUE(info.has_value());
 
-                               ASSERT_EQ(kTitle, info->title);
-                               ASSERT_EQ(kImageUrl, info->image_url);
-                               ASSERT_EQ(kOfferId, info->offer_id);
-                               ASSERT_EQ(kClusterId, info->product_cluster_id);
-                               ASSERT_EQ(kCountryCode, info->country_code);
-                               run_loop->Quit();
-                             },
-                             &run_loop));
+            ASSERT_EQ(kTitle, info->title);
+            ASSERT_EQ(kImageUrl, info->image_url);
+            ASSERT_EQ(kOfferId, info->offer_id);
+            ASSERT_EQ(kClusterId, info->product_cluster_id);
+            ASSERT_EQ(kCountryCode, info->country_code);
+
+            ASSERT_EQ(kCurrencyCode, info->currency_code);
+            ASSERT_EQ(kNewPrice, info->amount_micros);
+            ASSERT_TRUE(info->previous_amount_micros.has_value());
+            ASSERT_EQ(kPrice, info->previous_amount_micros.value());
+
+            run_loop->Quit();
+          },
+          &run_loop));
+  run_loop.Run();
+}
+
+TEST_F(ShoppingServiceTest, TestProductInfoResponse_CurrencyMismatch) {
+  // Ensure a feature that uses product info is enabled. This doesn't
+  // necessarily need to be the shopping list.
+  test_features_.InitWithFeatures(
+      {commerce::kShoppingList, commerce::kCommerceAllowServerImages}, {});
+
+  OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
+      kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode, kPrice,
+      kCurrencyCode);
+
+  // Add a fake currency code to that doesn't match the original to ensure that
+  // data is not used.
+  opt_guide_->AddPriceUpdateToPriceTrackingResponse(&meta, "ZZ", kNewPrice,
+                                                    kPrice);
+
+  opt_guide_->SetResponse(GURL(kProductUrl), OptimizationType::PRICE_TRACKING,
+                          OptimizationGuideDecision::kTrue, meta);
+
+  base::RunLoop run_loop;
+  shopping_service_->GetProductInfoForUrl(
+      GURL(kProductUrl),
+      base::BindOnce(
+          [](base::RunLoop* run_loop, const GURL& url,
+             const absl::optional<ProductInfo>& info) {
+            ASSERT_EQ(kProductUrl, url.spec());
+            ASSERT_TRUE(info.has_value());
+
+            ASSERT_EQ(kTitle, info->title);
+            ASSERT_EQ(kImageUrl, info->image_url);
+            ASSERT_EQ(kOfferId, info->offer_id);
+            ASSERT_EQ(kClusterId, info->product_cluster_id);
+            ASSERT_EQ(kCountryCode, info->country_code);
+
+            ASSERT_EQ(kCurrencyCode, info->currency_code);
+            ASSERT_EQ(kPrice, info->amount_micros);
+            ASSERT_FALSE(info->previous_amount_micros.has_value());
+
+            run_loop->Quit();
+          },
+          &run_loop));
   run_loop.Run();
 }
 

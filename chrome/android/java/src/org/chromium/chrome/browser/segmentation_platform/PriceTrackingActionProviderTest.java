@@ -10,6 +10,8 @@ import static org.mockito.Mockito.doReturn;
 
 import android.os.Handler;
 
+import com.google.common.base.Optional;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -80,7 +82,8 @@ public class PriceTrackingActionProviderTest {
     }
 
     private void setPriceTrackingBackendResult(boolean hasProductInfo) {
-        ProductInfo testProductInfo = new ProductInfo(null, null, 0, 0, null, 0, null);
+        ProductInfo testProductInfo =
+                new ProductInfo(null, null, 0, 0, null, 0, null, Optional.absent());
         Mockito.doAnswer(invocation -> {
                    ProductInfoCallback callback = invocation.getArgument(1);
                    callback.onResult(

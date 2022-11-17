@@ -46,19 +46,29 @@ shopping_list::mojom::BookmarkProductInfoPtr BookmarkNodeToMojoProduct(
   bookmark_info->info->image_url = GURL(meta->lead_image().url());
 
   const power_bookmarks::ProductPrice price = specifics.current_price();
-  std::string current_code = price.currency_code();
+  std::string currency_code = price.currency_code();
 
   std::unique_ptr<payments::CurrencyFormatter> formatter =
-      std::make_unique<payments::CurrencyFormatter>(current_code, locale);
+      std::make_unique<payments::CurrencyFormatter>(currency_code, locale);
   formatter->SetMaxFractionalDigits(2);
 
   bookmark_info->info->current_price =
       base::UTF16ToUTF8(formatter->Format(base::NumberToString(
           static_cast<float>(price.amount_micros()) / kToMicroCurrency)));
 
-  // TODO(1346620): Hook up previous price. We might need to fetch new
-  //                information when the UI is loaded to handle both
-  //                previous and current price.
+  // Only send the previous price if it is higher than the current price. This
+  // is exclusively used to decide whether to show the price drop chip in the
+  // UI.
+  if (specifics.has_previous_price() &&
+      specifics.previous_price().amount_micros() >
+          specifics.current_price().amount_micros()) {
+    const power_bookmarks::ProductPrice previous_price =
+        specifics.previous_price();
+    bookmark_info->info->previous_price =
+        base::UTF16ToUTF8(formatter->Format(base::NumberToString(
+            static_cast<float>(previous_price.amount_micros()) /
+            kToMicroCurrency)));
+  }
 
   return bookmark_info;
 }

@@ -111,7 +111,8 @@ struct ProductInfo {
   uint64_t product_cluster_id{0};
   uint64_t offer_id{0};
   std::string currency_code;
-  long amount_micros{0};
+  int64_t amount_micros{0};
+  absl::optional<int64_t> previous_amount_micros;
   std::string country_code;
 
  private:

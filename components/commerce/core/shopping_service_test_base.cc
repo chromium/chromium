@@ -119,7 +119,9 @@ OptimizationMetadata MockOptGuideDecider::BuildPriceTrackingResponse(
     const std::string& image_url,
     const uint64_t offer_id,
     const uint64_t product_cluster_id,
-    const std::string& country_code) {
+    const std::string& country_code,
+    const int64_t amount_micros,
+    const std::string& currency_code) {
   OptimizationMetadata meta;
 
   PriceTrackingData price_tracking_data;
@@ -138,12 +140,39 @@ OptimizationMetadata MockOptGuideDecider::BuildPriceTrackingResponse(
   if (!country_code.empty())
     buyable_product->set_country_code(country_code);
 
+  ProductPrice* price = buyable_product->mutable_current_price();
+  price->set_currency_code(currency_code);
+  price->set_amount_micros(amount_micros);
+
   Any any;
   any.set_type_url(price_tracking_data.GetTypeName());
   price_tracking_data.SerializeToString(any.mutable_value());
   meta.set_any_metadata(any);
 
   return meta;
+}
+
+void MockOptGuideDecider::AddPriceUpdateToPriceTrackingResponse(
+    OptimizationMetadata* out_meta,
+    const std::string& currency_code,
+    const int64_t current_price,
+    const int64_t previous_price) {
+  PriceTrackingData price_tracking_data =
+      optimization_guide::ParsedAnyMetadata<PriceTrackingData>(
+          out_meta->any_metadata().value())
+          .value();
+
+  ProductPriceUpdate* price_update =
+      price_tracking_data.mutable_product_update();
+  price_update->mutable_new_price()->set_amount_micros(current_price);
+  price_update->mutable_new_price()->set_currency_code(currency_code);
+  price_update->mutable_old_price()->set_amount_micros(previous_price);
+  price_update->mutable_old_price()->set_currency_code(currency_code);
+
+  Any any;
+  any.set_type_url(price_tracking_data.GetTypeName());
+  price_tracking_data.SerializeToString(any.mutable_value());
+  out_meta->set_any_metadata(any);
 }
 
 OptimizationMetadata MockOptGuideDecider::BuildMerchantTrustResponse(

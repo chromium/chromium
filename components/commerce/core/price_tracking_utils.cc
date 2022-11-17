@@ -262,6 +262,19 @@ bool PopulateOrUpdateBookmarkMetaIfNeeded(
     changed = true;
   }
 
+  if (info.previous_amount_micros.has_value() &&
+      (specifics->previous_price().currency_code() != info.currency_code ||
+       specifics->previous_price().amount_micros() !=
+           info.previous_amount_micros.value())) {
+    // Intentionally use the same currency code for both current and previous
+    // price. Consistency between the values is guaranteed by the shopping
+    // service.
+    specifics->mutable_previous_price()->set_currency_code(info.currency_code);
+    specifics->mutable_previous_price()->set_amount_micros(
+        info.previous_amount_micros.value());
+    changed = true;
+  }
+
   if (specifics->offer_id() != info.offer_id) {
     specifics->set_offer_id(info.offer_id);
     changed = true;

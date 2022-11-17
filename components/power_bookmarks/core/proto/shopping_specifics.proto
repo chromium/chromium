@@ -34,6 +34,10 @@ message ShoppingSpecifics {
 
   // The country code of the offer.
   optional string country_code = 7;
+
+  // The previous price of the product if available. This value can be used
+  // for price change events when compared to |current_price|.
+  optional ProductPrice previous_price = 8;
 }
 
 message ProductPrice {

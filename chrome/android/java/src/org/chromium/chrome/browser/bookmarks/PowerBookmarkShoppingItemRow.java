@@ -30,6 +30,7 @@ import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.ProductPrice;
+import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 
 import java.util.Locale;
 
@@ -73,16 +74,17 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
         PowerBookmarkMeta meta = mBookmarkModel.getPowerBookmarkMeta(bookmarkId);
         assert meta != null;
 
-        // TODO(crbug.com/1243383): Pull price updates once they're available.
-        ProductPrice originalPrice = meta.getShoppingSpecifics().getCurrentPrice();
+        ShoppingSpecifics specifics = meta.getShoppingSpecifics();
+        ProductPrice currentPrice = specifics.getCurrentPrice();
+        ProductPrice previousPrice = specifics.getPreviousPrice();
         mSubscription = PowerBookmarkUtils.createCommerceSubscriptionForPowerBookmarkMeta(meta);
         mCurrencyFormatter =
-                new CurrencyFormatter(originalPrice.getCurrencyCode(), Locale.getDefault());
+                new CurrencyFormatter(currentPrice.getCurrencyCode(), Locale.getDefault());
 
-        boolean mIsPriceTrackingEnabled =
-                meta != null && meta.getShoppingSpecifics().getIsPriceTracked();
+        boolean mIsPriceTrackingEnabled = specifics.getIsPriceTracked();
         initPriceTrackingUI(meta.getLeadImage().getUrl(), mIsPriceTrackingEnabled,
-                originalPrice.getAmountMicros(), originalPrice.getAmountMicros());
+                previousPrice.getAmountMicros(), currentPrice.getAmountMicros());
+
         return bookmarkItem;
     }
 
