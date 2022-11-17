@@ -45,9 +45,10 @@ export const HelpBubbleMixin = dedupingMixin(
          */
         private helpBubbleControllerById_: Map<string, HelpBubbleController> =
             new Map();
-        private listenerIds_: number[] = [];
+        private helpBubbleListenerIds_: number[] = [];
         private helpBubbleAnchorObserver_: IntersectionObserver|null = null;
-        private dismissedEventTracker_: EventTracker = new EventTracker();
+        private helBubbleDismissedEventTracker_: EventTracker =
+            new EventTracker();
 
         constructor(...args: any[]) {
           super(...args);
@@ -62,7 +63,7 @@ export const HelpBubbleMixin = dedupingMixin(
           super.connectedCallback();
 
           const router = this.helpBubbleCallbackRouter_;
-          this.listenerIds_.push(
+          this.helpBubbleListenerIds_.push(
               router.showHelpBubble.addListener(
                   this.onShowHelpBubble_.bind(this)),
               router.toggleFocusForAccessibility.addListener(
@@ -89,10 +90,10 @@ export const HelpBubbleMixin = dedupingMixin(
         override disconnectedCallback() {
           super.disconnectedCallback();
 
-          for (const listenerId of this.listenerIds_) {
+          for (const listenerId of this.helpBubbleListenerIds_) {
             this.helpBubbleCallbackRouter_.removeListener(listenerId);
           }
-          this.listenerIds_ = [];
+          this.helpBubbleListenerIds_ = [];
           assert(this.helpBubbleAnchorObserver_);
           this.helpBubbleAnchorObserver_.disconnect();
           this.helpBubbleAnchorObserver_ = null;
@@ -189,10 +190,10 @@ export const HelpBubbleMixin = dedupingMixin(
           assert(this.canShowHelpBubble(controller), 'Can\'t show help bubble');
           const bubble = controller.createBubble(params);
 
-          this.dismissedEventTracker_.add(
+          this.helBubbleDismissedEventTracker_.add(
               bubble, HELP_BUBBLE_DISMISSED_EVENT,
               this.onHelpBubbleDismissed_.bind(this));
-          this.dismissedEventTracker_.add(
+          this.helBubbleDismissedEventTracker_.add(
               bubble, HELP_BUBBLE_TIMED_OUT_EVENT,
               this.onHelpBubbleTimedOut_.bind(this));
 
@@ -210,9 +211,9 @@ export const HelpBubbleMixin = dedupingMixin(
             return false;
           }
 
-          this.dismissedEventTracker_.remove(
+          this.helBubbleDismissedEventTracker_.remove(
               bubble.getElement()!, HELP_BUBBLE_DISMISSED_EVENT);
-          this.dismissedEventTracker_.remove(
+          this.helBubbleDismissedEventTracker_.remove(
               bubble.getElement()!, HELP_BUBBLE_TIMED_OUT_EVENT);
 
           bubble.hide();
