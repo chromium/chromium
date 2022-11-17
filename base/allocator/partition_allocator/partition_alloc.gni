@@ -108,8 +108,7 @@ declare_args() {
   #
   # This flag is temporary, and isn't used by PA embedders, so it doesn't need
   # to go through build_overrides
-  enable_dangling_raw_ptr_perf_experiment =
-      enable_dangling_raw_ptr_checks_default && enable_backup_ref_ptr_support
+  enable_dangling_raw_ptr_perf_experiment = false
 }
 
 declare_args() {
