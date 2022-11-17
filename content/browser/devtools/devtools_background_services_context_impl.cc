@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/guid.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -31,16 +30,6 @@ std::string CreateEntryKeyPrefix(devtools::proto::BackgroundService service) {
 
 std::string CreateEntryKey(devtools::proto::BackgroundService service) {
   return CreateEntryKeyPrefix(service) + base::GenerateGUID();
-}
-
-void DidLogServiceEvent(blink::ServiceWorkerStatusCode status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  UMA_HISTOGRAM_ENUMERATION("DevTools.BackgroundService.LogEvent", status);
-}
-
-void DidClearServiceEvents(blink::ServiceWorkerStatusCode status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  UMA_HISTOGRAM_ENUMERATION("DevTools.BackgroundService.ClearEvents", status);
 }
 
 constexpr devtools::proto::BackgroundService ServiceToProtoEnum(
@@ -162,8 +151,6 @@ void DevToolsBackgroundServicesContextImpl::DidGetUserData(
     blink::ServiceWorkerStatusCode status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  UMA_HISTOGRAM_ENUMERATION("DevTools.BackgroundService.GetEvents", status);
-
   std::vector<devtools::proto::BackgroundServiceEvent> events;
 
   if (status != blink::ServiceWorkerStatusCode::kOk) {
@@ -197,7 +184,7 @@ void DevToolsBackgroundServicesContextImpl::ClearLoggedBackgroundServiceEvents(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   service_worker_context_->ClearUserDataForAllRegistrationsByKeyPrefix(
-      CreateEntryKeyPrefix(service), base::BindOnce(&DidClearServiceEvents));
+      CreateEntryKeyPrefix(service), base::DoNothing());
 }
 
 void DevToolsBackgroundServicesContextImpl::LogBackgroundServiceEvent(
@@ -235,7 +222,7 @@ void DevToolsBackgroundServicesContextImpl::LogBackgroundServiceEvent(
   service_worker_context_->StoreRegistrationUserData(
       service_worker_registration_id, blink::StorageKey(origin),
       {{CreateEntryKey(event.background_service()), event.SerializeAsString()}},
-      base::BindOnce(&DidLogServiceEvent));
+      base::DoNothing());
 
   NotifyEventObservers(std::move(event));
 }

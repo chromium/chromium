@@ -30,41 +30,6 @@ chromium-metrics-reviews@google.com.
   <summary>Specified DevTools action has been taken.</summary>
 </histogram>
 
-<histogram name="DevTools.BackgroundService.ClearEvents"
-    enum="ServiceWorkerStatusCode" expires_after="M99">
-  <owner>yangguo@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <owner>bmeurer@chromium.org</owner>
-  <summary>
-    The result of clearing all stored events for a Background Service feature.
-    This is called if a developer clicks on a delete button in a Background
-    Service DevTools panel.
-  </summary>
-</histogram>
-
-<histogram name="DevTools.BackgroundService.GetEvents"
-    enum="ServiceWorkerStatusCode" expires_after="M99">
-  <owner>rayankans@chromium.org</owner>
-  <owner>yangguo@chromium.org</owner>
-  <owner>bmeurer@chromium.org</owner>
-  <summary>
-    The result of loading all stored events for a Background Service feature.
-    This is called when the a Bakground Service DevTools panel is opened.
-  </summary>
-</histogram>
-
-<histogram name="DevTools.BackgroundService.LogEvent"
-    enum="ServiceWorkerStatusCode" expires_after="M99">
-  <owner>rayankans@chromium.org</owner>
-  <owner>yangguo@chromium.org</owner>
-  <owner>bmeurer@chromium.org</owner>
-  <summary>
-    The result of logging a Background Service event. An event is logged if
-    `Recording` mode is on and a relevant Background Service event is taking
-    place.
-  </summary>
-</histogram>
-
 <histogram name="DevTools.BackgroundService.StartRecording"
     enum="DevToolsBackgroundService" expires_after="2022-07-09">
   <owner>yangguo@chromium.org</owner>
