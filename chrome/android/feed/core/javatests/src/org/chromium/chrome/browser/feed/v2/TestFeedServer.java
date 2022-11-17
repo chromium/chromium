@@ -23,6 +23,8 @@ import java.util.Arrays;
  */
 public class TestFeedServer implements WebServer.RequestHandler {
     private static final String TAG = "TestFeedServer";
+    private static final String FEED_RESPONSE_BINARYPB_PATH =
+            "/chrome/test/data/android/feed/v2/feed_query_normal_response.binarypb";
     private WebServer mServer;
     private boolean mReceivedQueryRequest;
 
@@ -32,6 +34,8 @@ public class TestFeedServer implements WebServer.RequestHandler {
             TestThreadUtils.runOnUiThreadBlocking(() -> {
                 UserPrefs.get(Profile.getLastUsedRegularProfile())
                         .setString(Pref.HOST_OVERRIDE_HOST, getBaseUrl());
+                UserPrefs.get(Profile.getLastUsedRegularProfile())
+                        .setString(Pref.DISCOVER_API_ENDPOINT_OVERRIDE, getBaseUrl());
             });
             mServer.setRequestHandler(this);
         } catch (Exception e) {
@@ -47,10 +51,6 @@ public class TestFeedServer implements WebServer.RequestHandler {
         return mServer.getBaseUrl();
     }
 
-    public boolean receivedQueryRequest() {
-        return mReceivedQueryRequest;
-    }
-
     @Override
     public void handleRequest(WebServer.HTTPRequest request, OutputStream output) {
         try {
@@ -63,13 +63,16 @@ public class TestFeedServer implements WebServer.RequestHandler {
     private void tryHandleRequest(WebServer.HTTPRequest request, OutputStream output)
             throws IOException {
         if (request.getMethod().equals("GET") && request.getURI().contains("/FeedQuery?")) {
-            mReceivedQueryRequest = true;
-
-            WebServer.writeResponse(output, WebServer.STATUS_OK,
-                    feedQueryResponse("/chrome/test/data/android/feed/v2/"
-                            + "feed_query_normal_response.binarypb"));
+            WebServer.writeResponse(
+                    output, WebServer.STATUS_OK, feedQueryResponse(FEED_RESPONSE_BINARYPB_PATH));
             return;
         }
+        if (request.getURI().contains("queryInteractiveFeed")) {
+            WebServer.writeResponse(output, WebServer.STATUS_OK,
+                    readFile(UrlUtils.getIsolatedTestFilePath(FEED_RESPONSE_BINARYPB_PATH)));
+            return;
+        }
+
         // Note: Support could be added for NextPageQuery and actions:upload.
         Log.e(TAG, "Unhandled request: " + request);
     }
@@ -78,6 +81,7 @@ public class TestFeedServer implements WebServer.RequestHandler {
         RandomAccessFile file = new RandomAccessFile(filePath, "r");
         byte[] bytes = new byte[(int) file.length()];
         int bytesRead = file.read(bytes);
+        file.close();
         if (bytesRead != bytes.length) {
             return Arrays.copyOfRange(bytes, 0, bytesRead);
         }
