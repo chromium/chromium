@@ -40,14 +40,13 @@ class BoundedSegmentLength {
           is_segment_start(is_segment_start) {}
     SegmentEvent(const SegmentEvent& other) = default;
 
-    // Tiebreak with position with |is_segment_start| and |segment_id|.
+    // Tiebreak with position with |segment_id|.
     bool operator<(const SegmentEvent& rhs) const {
       if (pos == rhs.pos) {
-        if (segment_id == rhs.segment_id) {
-          return is_segment_start != rhs.is_segment_start;
-        } else {
-          return segment_id < rhs.segment_id;
-        }
+        // We do not have 0-length segment.
+        DCHECK_NE(segment_id, rhs.segment_id);
+
+        return segment_id < rhs.segment_id;
       } else {
         return pos < rhs.pos;
       }
@@ -342,6 +341,8 @@ PageAdDensityTracker::CalculateDensityWithin(const gfx::Rect& bounding_rect) {
           rect_event.rect_id, rect_event.rect.x(),
           rect_event.rect.x() + rect_event.rect.width());
       last_y = rect_event.rect.bottom();
+      // For first iteration, the current_area is 0 so we skip this iteration.
+      continue;
     }
 
     int current_y =
@@ -413,13 +414,11 @@ bool PageAdDensityTracker::RectEvent::operator<(const RectEvent& rhs) const {
   int lhs_y = is_bottom ? rect.bottom() : rect.y();
   int rhs_y = rhs.is_bottom ? rhs.rect.bottom() : rhs.rect.y();
 
-  // Tiebreak with |rect_id| and |is_bottom|.
+  // Tiebreak with |rect_id|.
   if (lhs_y == rhs_y) {
-    if (rect_id == rhs.rect_id) {
-      return is_bottom == rhs.is_bottom;
-    } else {
-      return rect_id < rhs.rect_id;
-    }
+    // We do not have 0-length Rect.
+    DCHECK_NE(rect_id, rhs.rect_id);
+    return rect_id < rhs.rect_id;
   } else {
     return lhs_y > rhs_y;
   }
