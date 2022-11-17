@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 59 tests; 42 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 59 tests; 49 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS new RTCPeerConnection() should have default configuration.iceServers of undefined
 PASS new RTCPeerConnection(config) - {} should succeed
 PASS setConfiguration(config) - {} should succeed
@@ -19,16 +19,16 @@ PASS new RTCPeerConnection(config) - with stun server should succeed
 PASS setConfiguration(config) - with stun server should succeed
 PASS new RTCPeerConnection(config) - with stun server array should succeed
 PASS setConfiguration(config) - with stun server array should succeed
-FAIL new RTCPeerConnection(config) - with 2 stun servers should succeed assert_equals: expected 1 but got 2
-FAIL setConfiguration(config) - with 2 stun servers should succeed assert_equals: expected 1 but got 2
+PASS new RTCPeerConnection(config) - with 2 stun servers should succeed
+PASS setConfiguration(config) - with 2 stun servers should succeed
 PASS new RTCPeerConnection(config) - with turn server, username, credential should succeed
 PASS setConfiguration(config) - with turn server, username, credential should succeed
 FAIL new RTCPeerConnection(config) - with turns server and empty string username, credential should succeed Failed to construct 'RTCPeerConnection': ICE server parsing failed: TURN server with empty username or password
 FAIL setConfiguration(config) - with turns server and empty string username, credential should succeed Failed to execute 'setConfiguration' on 'RTCPeerConnection': Could not update the PeerConnection with the given configuration.
 FAIL new RTCPeerConnection(config) - with turn server and empty string username, credential should succeed Failed to construct 'RTCPeerConnection': ICE server parsing failed: TURN server with empty username or password
 FAIL setConfiguration(config) - with turn server and empty string username, credential should succeed Failed to execute 'setConfiguration' on 'RTCPeerConnection': Could not update the PeerConnection with the given configuration.
-FAIL new RTCPeerConnection(config) - with one turns server, one turn server, username, credential should succeed assert_equals: expected 1 but got 2
-FAIL setConfiguration(config) - with one turns server, one turn server, username, credential should succeed assert_equals: expected 1 but got 2
+PASS new RTCPeerConnection(config) - with one turns server, one turn server, username, credential should succeed
+PASS setConfiguration(config) - with one turns server, one turn server, username, credential should succeed
 PASS new RTCPeerConnection(config) - with turn server and no credentials should throw InvalidAccessError
 PASS setConfiguration(config) - with turn server and no credentials should throw InvalidAccessError
 PASS new RTCPeerConnection(config) - with turn server and only username should throw InvalidAccessError
@@ -58,18 +58,9 @@ FAIL setConfiguration(config) - with invalid turn url should throw SyntaxError a
         urls: 'turn://example.org/foo?x=y'
       }] })" threw object "InvalidAccessError: Failed to execute 'setConfiguration' on 'RTCPeerConnection': Both username and credential are required when the URL scheme is "turn" or "turns"." that is not a DOMException SyntaxError: property "code" is equal to 15, expected 12
 PASS new RTCPeerConnection(config) - with invalid stun url should throw SyntaxError
-FAIL setConfiguration(config) - with invalid stun url should throw SyntaxError assert_throws_dom: function "() =>
-      makePc({ iceServers: [{
-        urls: 'stun://example.org/foo?x=y'
-      }] })" threw object "OperationError: Failed to execute 'setConfiguration' on 'RTCPeerConnection': Could not update the PeerConnection with the given configuration." that is not a DOMException SyntaxError: property "code" is equal to 0, expected 12
-FAIL new RTCPeerConnection(config) - with empty urls should throw SyntaxError assert_throws_dom: function "() =>
-      makePc({ iceServers: [{
-        urls: []
-      }] })" did not throw
-FAIL setConfiguration(config) - with empty urls should throw SyntaxError assert_throws_dom: function "() =>
-      makePc({ iceServers: [{
-        urls: []
-      }] })" did not throw
+PASS setConfiguration(config) - with invalid stun url should throw SyntaxError
+PASS new RTCPeerConnection(config) - with empty urls should throw SyntaxError
+PASS setConfiguration(config) - with empty urls should throw SyntaxError
 FAIL new RTCPeerConnection(config) - with url field should throw TypeError assert_throws_js: function "() =>
       makePc({ iceServers: [{
         url: 'stun:stun1.example.net'
