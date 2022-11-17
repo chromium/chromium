@@ -325745,24 +325745,8 @@
       }
      },
      "headers": {
-      "headers-basic.any-expected.txt": [
-       "bc7e6fb7baf09cf58272c93c1798c96fd8f780c7",
-       []
-      ],
       "headers-basic.any.js.ini": [
        "20c0ac2dfe559676f717546d157341969bfe58fd",
-       []
-      ],
-      "headers-basic.any.serviceworker-expected.txt": [
-       "bc7e6fb7baf09cf58272c93c1798c96fd8f780c7",
-       []
-      ],
-      "headers-basic.any.sharedworker-expected.txt": [
-       "bc7e6fb7baf09cf58272c93c1798c96fd8f780c7",
-       []
-      ],
-      "headers-basic.any.worker-expected.txt": [
-       "bc7e6fb7baf09cf58272c93c1798c96fd8f780c7",
        []
       ]
      },
@@ -365986,6 +365970,10 @@
    },
    "soft-navigation-heuristics": {
     "resources": {
+     "empty.html": [
+      "5fa1cdf5e66008396ab71673dbb9386066d7cc5f",
+      []
+     ],
      "soft-navigation-helper.js": [
       "1bef2c2fa0bcc907d235eef64bb26dc3dbdf363a",
       []
@@ -578861,6 +578849,15 @@
       }
      ]
     ],
+    "navigate-child.html": [
+     "63a8adb208f2a0c8cfeae4f36871578bb0bf20e4",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "navigation-api-preventDefault.tentative.html": [
      "f9f8cdec76c7f52a8f4efe9060f9087adf4d6009",
      [
@@ -598710,7 +598707,7 @@
      ]
     ],
     "disabled-by-permissions-policy-cross-origin.https.sub.html": [
-     "b13f7e0539f6652c7b82edee5c5f746fbf8fe727",
+     "148581df4dadb0f49f694fa8265ee1b3237e2747",
      [
       null,
       {}
