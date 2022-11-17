@@ -127,6 +127,12 @@ copy("copies") {
       "internal/chrome_dmg_dsstore",
       "internal/chrome_dmg_icon.icns",
       "keystone_install.sh",
+
+      # Provision profiles for staging signing.
+      "internal/Google_Chrome.39364a56fb7fe353d10e70d38db822e5182cc420.provisionprofile",
+      "internal/Google_Chrome_Beta.39364a56fb7fe353d10e70d38db822e5182cc420.provisionprofile",
+      "internal/Google_Chrome_Canary.39364a56fb7fe353d10e70d38db822e5182cc420.provisionprofile",
+      "internal/Google_Chrome_Dev.39364a56fb7fe353d10e70d38db822e5182cc420.provisionprofile",
     ]
   }
 
