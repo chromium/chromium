@@ -1056,8 +1056,6 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   dict->Set("FILES_SINGLE_PARTITION_FORMAT_ENABLED",
             base::FeatureList::IsEnabled(
                 chromeos::features::kFilesSinglePartitionFormat));
-  dict->Set("EXTRACT_ARCHIVE", base::FeatureList::IsEnabled(
-                                   chromeos::features::kFilesExtractArchive));
   dict->Set(
       "FILES_APP_EXPERIMENTAL",
       base::FeatureList::IsEnabled(chromeos::features::kFilesAppExperimental));

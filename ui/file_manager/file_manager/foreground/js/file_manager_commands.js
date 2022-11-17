@@ -2279,22 +2279,15 @@ CommandHandler.COMMANDS_['extract-all'] = new (class extends FilesCommand {
     }
 
     const selectionEntries = fileManager.getSelection().entries;
-    if (util.isExtractArchiveEnabled()) {
-      if (fileManager.directoryModel.isReadOnly()) {
-        dirEntry = fileManager.directoryModel.getMyFiles();
-      }
-      fileManager.taskController.startExtractIOTask(
-          selectionEntries, /** @type {!DirectoryEntry} */ (dirEntry));
+    if (fileManager.directoryModel.isReadOnly()) {
+      dirEntry = fileManager.directoryModel.getMyFiles();
     }
+    fileManager.taskController.startExtractIOTask(
+        selectionEntries, /** @type {!DirectoryEntry} */ (dirEntry));
   }
 
   /** @override */
   canExecute(event, fileManager) {
-    if (!util.isExtractArchiveEnabled()) {
-      event.command.setHidden(true);
-      event.canExecute = false;
-      return;
-    }
     const dirEntry = fileManager.getCurrentDirectoryEntry();
     const selection = fileManager.getSelection();
 
@@ -2342,13 +2335,11 @@ CommandHandler.COMMANDS_['zip-selection'] = new (class extends FilesCommand {
     const selection = fileManager.getSelection();
 
     // Hide ZIP selection for single ZIP file selected.
-    if (util.isExtractArchiveEnabled()) {
-      if (selection.entries.length === 1 &&
-          FileType.getExtension(selection.entries[0]) === '.zip') {
-        event.command.setHidden(true);
-        event.canExecute = false;
-        return;
-      }
+    if (selection.entries.length === 1 &&
+        FileType.getExtension(selection.entries[0]) === '.zip') {
+      event.command.setHidden(true);
+      event.canExecute = false;
+      return;
     }
 
     if (!selection.entries.every(CommandUtil.shouldShowMenuItemsForEntry.bind(

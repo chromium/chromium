@@ -91,11 +91,6 @@ struct TestCase {
     return *this;
   }
 
-  TestCase& ExtractArchive() {
-    options.extract_archive = true;
-    return *this;
-  }
-
   TestCase& Offline() {
     options.offline = true;
     return *this;
@@ -863,15 +858,15 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
                       TestCase("zipCreateFileDrive"),
                       TestCase("zipCreateFileDriveOffice"),
                       TestCase("zipCreateFileUsb"),
-                      TestCase("zipExtractA11y").ExtractArchive(),
-                      TestCase("zipExtractCheckContent").ExtractArchive(),
-                      TestCase("zipExtractCheckDuplicates").ExtractArchive(),
-                      TestCase("zipExtractCheckEncodings").ExtractArchive(),
-                      TestCase("zipExtractNotEnoughSpace").ExtractArchive(),
-                      TestCase("zipExtractFromReadOnly").ExtractArchive(),
-                      TestCase("zipExtractShowPanel").ExtractArchive(),
-                      TestCase("zipExtractShowMultiPanel").ExtractArchive(),
-                      TestCase("zipExtractSelectionMenus").ExtractArchive()));
+                      TestCase("zipExtractA11y"),
+                      TestCase("zipExtractCheckContent"),
+                      TestCase("zipExtractCheckDuplicates"),
+                      TestCase("zipExtractCheckEncodings"),
+                      TestCase("zipExtractNotEnoughSpace"),
+                      TestCase("zipExtractFromReadOnly"),
+                      TestCase("zipExtractShowPanel"),
+                      TestCase("zipExtractShowMultiPanel"),
+                      TestCase("zipExtractSelectionMenus")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     CreateNewFolder, /* create_new_folder.js */

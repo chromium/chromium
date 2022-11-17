@@ -3689,11 +3689,6 @@
     "expiry_milestone": 116
   },
   {
-    "name": "files-extract-archive",
-    "owners": [ "adanilo", "simmonsjosh@google.com" ],
-    "expiry_milestone": 112
-  },
-  {
     "name": "files-filters-in-recents-v2",
     "owners": [ "simmonsjosh@google.com", "benhartney@google.com", "wenbojie" ],
     "expiry_milestone": 110

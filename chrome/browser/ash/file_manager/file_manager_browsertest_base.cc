@@ -1930,12 +1930,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
         chromeos::features::kDriveFsBidirectionalNativeMessaging);
   }
 
-  if (options.extract_archive) {
-    enabled_features.push_back(chromeos::features::kFilesExtractArchive);
-  } else {
-    disabled_features.push_back(chromeos::features::kFilesExtractArchive);
-  }
-
   if (options.single_partition_format) {
     enabled_features.push_back(chromeos::features::kFilesSinglePartitionFormat);
   }

@@ -1568,17 +1568,14 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
       }
       break;
     case file_manager::io_task::OperationType::kExtract:
-      if (base::FeatureList::IsEnabled(
-              chromeos::features::kFilesExtractArchive)) {
-        std::string password;
-        if (params->params.password) {
-          password = *params->params.password;
-        }
-        task = std::make_unique<file_manager::io_task::ExtractIOTask>(
-            std::move(source_urls), std::move(password),
-            std::move(destination_folder_url), profile, file_system_context,
-            show_notification);
+      std::string password;
+      if (params->params.password) {
+        password = *params->params.password;
       }
+      task = std::make_unique<file_manager::io_task::ExtractIOTask>(
+          std::move(source_urls), std::move(password),
+          std::move(destination_folder_url), profile, file_system_context,
+          show_notification);
       break;
   }
   if (!task) {

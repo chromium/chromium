@@ -1088,14 +1088,6 @@ util.isDlpEnabled = () => {
 };
 
 /**
- * Returns true if FilesExtractArchive flag is enabled.
- * @return {boolean}
- */
-util.isExtractArchiveEnabled = () => {
-  return loadTimeData.getBoolean('EXTRACT_ARCHIVE');
-};
-
-/**
  * Whether the Files app Experimental flag is enabled.
  * @returns {boolean}
  */

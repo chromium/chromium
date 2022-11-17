@@ -81,9 +81,6 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
     // Whether test should enable drive dss pinning.
     bool drive_dss_pin = false;
 
-    // Whether test needs the extract-archive feature.
-    bool extract_archive = false;
-
     // Whether Drive should act as if offline.
     bool offline = false;
 

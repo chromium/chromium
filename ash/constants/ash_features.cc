@@ -904,12 +904,6 @@ BASE_FEATURE(kFilesAppExperimental,
              "FilesAppExperimental",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable the simple archive extraction.
-// https://crbug.com/953256
-BASE_FEATURE(kFilesExtractArchive,
-             "FilesExtractArchive",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable inline sync status in Files app.
 BASE_FEATURE(kFilesInlineSyncStatus,
              "FilesInlineSyncStatus",
