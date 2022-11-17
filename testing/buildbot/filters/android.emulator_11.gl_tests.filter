@@ -15,3 +15,6 @@
 -AHardwareBufferImageBackingFactoryTest.GLSkiaGL
 -AHardwareBufferImageBackingFactoryTest.InitialData
 -AHardwareBufferImageBackingFactoryTest.Overlay
+
+# BGRA_8888 support is poor in Android emulator.
+-GLTextureImageBackingFactoryWithReadbackTest.ReadbackToMemory/BGRA_8888
