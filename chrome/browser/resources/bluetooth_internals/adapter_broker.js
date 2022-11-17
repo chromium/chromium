@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
-
 import {AdapterInfo, AdapterObserverInterface, AdapterObserverReceiver, AdapterRemote, ConnectResult, DiscoverySessionRemote} from './adapter.mojom-webui.js';
 import {BluetoothInternalsHandler, BluetoothInternalsHandlerRemote} from './bluetooth_internals.mojom-webui.js';
 import {Device, DeviceInfo, DeviceRemote} from './device.mojom-webui.js';

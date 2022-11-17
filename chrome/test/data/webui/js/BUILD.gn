@@ -23,8 +23,6 @@ ts_library("build_ts") {
     "promise_resolver_test.ts",
     "static_types_test.ts",
     "util_test.ts",
-
-    "cr/event_target_test.ts",
   ]
 
   definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
