@@ -189,11 +189,12 @@ void OutgoingInvitation::SendAsync(OutgoingInvitation invitation,
 // static
 ScopedMessagePipeHandle OutgoingInvitation::SendIsolated(
     PlatformChannelEndpoint channel_endpoint,
-    base::StringPiece connection_name) {
+    base::StringPiece connection_name,
+    base::ProcessHandle target_process) {
   mojo::OutgoingInvitation invitation;
   ScopedMessagePipeHandle pipe =
       invitation.AttachMessagePipe(kIsolatedPipeName);
-  SendInvitation(std::move(invitation.handle_), base::kNullProcessHandle,
+  SendInvitation(std::move(invitation.handle_), target_process,
                  channel_endpoint.TakePlatformHandle(),
                  MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL,
                  MOJO_SEND_INVITATION_FLAG_ISOLATED | invitation.extra_flags_,
@@ -204,11 +205,12 @@ ScopedMessagePipeHandle OutgoingInvitation::SendIsolated(
 // static
 ScopedMessagePipeHandle OutgoingInvitation::SendIsolated(
     PlatformChannelServerEndpoint server_endpoint,
-    base::StringPiece connection_name) {
+    base::StringPiece connection_name,
+    base::ProcessHandle target_process) {
   mojo::OutgoingInvitation invitation;
   ScopedMessagePipeHandle pipe =
       invitation.AttachMessagePipe(kIsolatedPipeName);
-  SendInvitation(std::move(invitation.handle_), base::kNullProcessHandle,
+  SendInvitation(std::move(invitation.handle_), target_process,
                  server_endpoint.TakePlatformHandle(),
                  MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL_SERVER,
                  MOJO_SEND_INVITATION_FLAG_ISOLATED | invitation.extra_flags_,

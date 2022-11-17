@@ -144,8 +144,8 @@ class InvitationCppTest : public testing::Test,
         } else {
           DCHECK(primordial_pipes);
           DCHECK_EQ(num_primordial_pipes, 1u);
-          primordial_pipes[0] =
-              OutgoingInvitation::SendIsolated(std::move(channel_endpoint));
+          primordial_pipes[0] = OutgoingInvitation::SendIsolated(
+              std::move(channel_endpoint), {}, child_process_.Handle());
         }
         break;
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -158,8 +158,8 @@ class InvitationCppTest : public testing::Test,
         } else {
           DCHECK(primordial_pipes);
           DCHECK_EQ(num_primordial_pipes, 1u);
-          primordial_pipes[0] =
-              OutgoingInvitation::SendIsolated(std::move(server_endpoint));
+          primordial_pipes[0] = OutgoingInvitation::SendIsolated(
+              std::move(server_endpoint), {}, child_process_.Handle());
         }
         break;
 #endif  // !BUILDFLAG(IS_FUCHSIA)

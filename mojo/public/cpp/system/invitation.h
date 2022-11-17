@@ -138,7 +138,8 @@ class MOJO_CPP_SYSTEM_EXPORT OutgoingInvitation {
   // connection using the same name will be disconnected.
   static ScopedMessagePipeHandle SendIsolated(
       PlatformChannelEndpoint channel_endpoint,
-      base::StringPiece connection_name = {});
+      base::StringPiece connection_name = {},
+      base::ProcessHandle target_process = base::kNullProcessHandle);
 
   // Similar to above but sends |invitation| via |server_endpoint|, which should
   // correspond to a |PlatformChannelServerEndpoint| taken from a
@@ -148,7 +149,8 @@ class MOJO_CPP_SYSTEM_EXPORT OutgoingInvitation {
   // connection using the same name will be disconnected.
   static ScopedMessagePipeHandle SendIsolated(
       PlatformChannelServerEndpoint server_endpoint,
-      base::StringPiece connection_name = {});
+      base::StringPiece connection_name = {},
+      base::ProcessHandle target_process = base::kNullProcessHandle);
 
  private:
   MojoSendInvitationFlags extra_flags_ = MOJO_SEND_INVITATION_FLAG_NONE;
