@@ -25,6 +25,7 @@
 #include "chromeos/ash/components/network/cellular_utils.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/metrics/cellular_network_metrics_logger.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_device_handler.h"
 #include "chromeos/ash/components/network/network_event_log.h"
@@ -3604,6 +3605,8 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
   if (!network || network->profile_path().empty()) {
     NET_LOG(ERROR) << "CreateCustomApn: Called with unconfigured network: "
                    << network_guid << ".";
+    ash::CellularNetworkMetricsLogger::LogCreateCustomApnResult(
+        /*success=*/false, std::move(apn));
     return;
   }
 
@@ -3632,7 +3635,7 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
       network_guid, *network,
       UserApnListToOnc(network_guid, std::move(new_apns)),
       base::BindOnce(
-          [](const std::string& guid, bool success,
+          [](const std::string& guid, mojom::ApnPropertiesPtr apn, bool success,
              const std::string& message) {
             if (!success) {
               NET_LOG(ERROR)
@@ -3640,8 +3643,10 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
                      "list in Shill for network: "
                   << guid << ": [" << message << ']';
             }
+            ash::CellularNetworkMetricsLogger::LogCreateCustomApnResult(
+                success, std::move(apn));
           },
-          network_guid));
+          network_guid, std::move(apn)));
 }
 
 void CrosNetworkConfig::RemoveCustomApn(const std::string& network_guid,

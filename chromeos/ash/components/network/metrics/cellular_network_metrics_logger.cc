@@ -28,6 +28,14 @@ CellularNetworkMetricsLogger::CellularNetworkMetricsLogger(
 
 CellularNetworkMetricsLogger::~CellularNetworkMetricsLogger() = default;
 
+// static
+void CellularNetworkMetricsLogger::LogCreateCustomApnResult(
+    bool success,
+    chromeos::network_config::mojom::ApnPropertiesPtr apn) {
+  base::UmaHistogramBoolean(kCustomApnCreatedResultHistogram, success);
+  // TODO(b/162365553): Log metrics related to specific properties.
+}
+
 void CellularNetworkMetricsLogger::OnConnectionResult(
     const std::string& guid,
     const absl::optional<std::string>& shill_error) {

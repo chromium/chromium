@@ -9,6 +9,7 @@
 
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/network/metrics/connection_info_metrics_logger.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 
 namespace ash {
 
@@ -18,6 +19,9 @@ class NetworkMetadataStore;
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
     : public ConnectionInfoMetricsLogger::Observer {
  public:
+  static constexpr char kCustomApnCreatedResultHistogram[] =
+      "Network.Ash.Cellular.Apn.CreateCustomApn.Result";
+
   CellularNetworkMetricsLogger(
       NetworkStateHandler* network_state_handler,
       NetworkMetadataStore* network_metadata_store,
@@ -26,6 +30,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
   CellularNetworkMetricsLogger& operator=(const CellularNetworkMetricsLogger&) =
       delete;
   ~CellularNetworkMetricsLogger() override;
+
+  // Logs result from attempting to create a custom APN.
+  static void LogCreateCustomApnResult(
+      bool success,
+      chromeos::network_config::mojom::ApnPropertiesPtr apn);
 
  private:
   // ConnectionInfoMetricsLogger::Observer:
