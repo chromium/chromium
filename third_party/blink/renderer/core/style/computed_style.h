@@ -1937,9 +1937,18 @@ class ComputedStyle : public ComputedStyleBase,
     return !Transform().Operations().empty();
   }
   ETransformStyle3D UsedTransformStyle3D() const {
+    if (TransformStyle3D() == ETransformStyle3D::kFlat) {
+      return ETransformStyle3D::kFlat;
+    }
+
+    // Even if the user specified transform-style: preserves-3d (which is
+    // non-default), it could be overridden by a number of other properties.
+    // These checks are fairly expensive (since there are so many of them),
+    // so we only bother going through them if needed.
+    DCHECK_EQ(TransformStyle3D(), ETransformStyle3D::kPreserve3d);
     return HasGroupingPropertyForUsedTransformStyle3D()
                ? ETransformStyle3D::kFlat
-               : TransformStyle3D();
+               : ETransformStyle3D::kPreserve3d;
   }
   // Returns whether the transform operations for |otherStyle| differ from the
   // operations for this style instance. Note that callers may want to also
