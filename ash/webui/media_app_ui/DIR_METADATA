@@ -1,6 +1,9 @@
 buganizer {
   component_id: 562866
 }
+buganizer_public {
+    component_id: 1279070
+}
 monorail {
   component: "Platform>Apps>PhotoEditor"
 }
