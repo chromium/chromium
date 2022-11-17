@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="V8.ArrayBufferLargeAllocations" units="MB"
-    expires_after="2022-09-11">
+    expires_after="M120">
   <owner>gdeepti@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -33,8 +33,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.ArrayBufferNewSizeFailures" units="MB"
-    expires_after="2022-09-11">
+<histogram name="V8.ArrayBufferNewSizeFailures" units="MB" expires_after="M120">
   <owner>gdeepti@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
