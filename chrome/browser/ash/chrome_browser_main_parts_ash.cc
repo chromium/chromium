@@ -110,6 +110,7 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/memory_metrics.h"
 #include "chrome/browser/ash/mojo_service_manager/connection_helper.h"
 #include "chrome/browser/ash/net/bluetooth_pref_state_observer.h"
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
@@ -143,7 +144,6 @@
 #include "chrome/browser/ash/printing/bulk_printers_calculator_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
-#include "chrome/browser/ash/psi_memory_metrics.h"
 #include "chrome/browser/ash/quick_pair/quick_pair_browser_delegate_impl.h"
 #include "chrome/browser/ash/scheduler_configuration_manager.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -1263,15 +1263,6 @@ void ChromeBrowserMainPartsAsh::PreBrowserStart() {
   external_metrics_ = new ExternalMetrics;
   external_metrics_->Start();
 
-  // Aiming to collect memory metrics even prior to login, start them
-  // early.
-  if (base::FeatureList::IsEnabled(features::kMemoryPressureMetricsDetail)) {
-    // Start background collection of memory pressure data for Chrome OS.
-    memory_pressure_detail_ = base::MakeRefCounted<PSIMemoryMetrics>(
-        features::kMemoryPressureMetricsDetailLogPeriod.Get());
-    memory_pressure_detail_->Start();
-  }
-
   // -- This used to be in ChromeBrowserMainParts::PreMainMessageLoopRun()
   // -- immediately after ChildProcess::WaitForDebugger().
 
@@ -1380,8 +1371,10 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
         std::make_unique<diagnostics::DiagnosticsBrowserDelegateImpl>());
   }
 
-  zram_detail_ = base::MakeRefCounted<memory::ZramMetrics>();
-  zram_detail_->Start();
+  // Start background collection of memory pressure data for Chrome OS.
+  memory_pressure_detail_ = base::MakeRefCounted<MemoryMetrics>(
+      MemoryMetrics::kDefaultPeriodInSeconds);
+  memory_pressure_detail_->Start();
 
   if (ash::memory::ZramWritebackController::IsSupportedAndEnabled()) {
     zram_writeback_controller_ = ash::memory::ZramWritebackController::Create();
@@ -1402,9 +1395,6 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // Do this early to keep logging from taking time during shutdown.
   if (memory_pressure_detail_ != nullptr) {
     memory_pressure_detail_->Stop();
-  }
-  if (zram_detail_ != nullptr) {
-    zram_detail_->Stop();
   }
 
   if (zram_writeback_controller_ != nullptr) {

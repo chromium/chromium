@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_manager.h"
 #include "chrome/browser/chrome_browser_main_linux.h"
 #include "chrome/browser/memory/memory_kills_monitor.h"
-#include "chromeos/ash/components/memory/memory.h"
 #include "chromeos/ash/components/memory/zram_writeback_controller.h"
 
 class AssistantBrowserDelegateImpl;
@@ -80,7 +79,7 @@ class LowDiskNotification;
 class MultiCaptureNotification;
 class NetworkPrefStateObserver;
 class NetworkThrottlingObserver;
-class PSIMemoryMetrics;
+class MemoryMetrics;
 class PowerMetricsReporter;
 class RendererFreezer;
 class SessionTerminationManager;
@@ -196,9 +195,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
 
   scoped_refptr<ExternalMetrics> external_metrics_;
 
-  scoped_refptr<PSIMemoryMetrics> memory_pressure_detail_;
-
-  scoped_refptr<memory::ZramMetrics> zram_detail_;
+  scoped_refptr<MemoryMetrics> memory_pressure_detail_;
 
   std::unique_ptr<arc::ArcServiceLauncher> arc_service_launcher_;
 

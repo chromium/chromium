@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/psi_memory_metrics.h"
+#include "chrome/browser/ash/memory_metrics.h"
 
 #include <memory>
 
@@ -28,21 +28,21 @@ const char kFileContents1[] =
 
 }  // namespace
 
-class PSIMemoryMetricsTest : public testing::Test {
+class MemoryMetricsTest : public testing::Test {
  public:
-  PSIMemoryMetricsTest() = default;
-  ~PSIMemoryMetricsTest() override = default;
+  MemoryMetricsTest() = default;
+  ~MemoryMetricsTest() override = default;
 
   void Init(uint32_t period) {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
     testfilename_ = dir_.GetPath().Append("testpsimem.txt");
-    cit_ = PSIMemoryMetrics::CreateForTesting(period, testfilename_.value());
+    cit_ = MemoryMetrics::CreateForTesting(period, testfilename_.value());
   }
 
   base::TimeDelta GetCollection() { return cit_->collection_interval_; }
   const base::FilePath& GetTestFileName() { return testfilename_; }
   base::HistogramTester& Histograms() { return histogram_tester_; }
-  scoped_refptr<PSIMemoryMetrics> Cit() { return cit_; }
+  scoped_refptr<MemoryMetrics> Cit() { return cit_; }
   content::BrowserTaskEnvironment& task_environment() {
     return task_environment_;
   }
@@ -53,12 +53,13 @@ class PSIMemoryMetricsTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir dir_;
-  scoped_refptr<PSIMemoryMetrics> cit_;
+  scoped_refptr<MemoryMetrics> cit_;
   base::FilePath testfilename_;
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(PSIMemoryMetricsTest, SunnyDay1) {
+// Tests basic collection of PSI metrics.
+TEST_F(MemoryMetricsTest, SunnyDay1) {
   Init(10);
 
   ASSERT_TRUE(base::WriteFile(GetTestFileName(),
@@ -72,7 +73,8 @@ TEST_F(PSIMemoryMetricsTest, SunnyDay1) {
                                  900 /*bucket*/, 1 /*count*/);
 }
 
-TEST_F(PSIMemoryMetricsTest, TestWithTimer) {
+// Tests basic collection of PSI metrics using the timer.
+TEST_F(MemoryMetricsTest, TestWithTimer) {
   Init(10);
 
   ASSERT_TRUE(base::WriteFile(GetTestFileName(), kFileContents1));
@@ -112,7 +114,8 @@ TEST_F(PSIMemoryMetricsTest, TestWithTimer) {
                                  900 /*bucket*/, 2 /*count*/);
 }
 
-TEST_F(PSIMemoryMetricsTest, CancelBeforeFirstRun) {
+// Tests timer cancellation.
+TEST_F(MemoryMetricsTest, CancelBeforeFirstRun) {
   Init(300);
   int bytes_written = base::WriteFile(GetTestFileName(), kFileContents1,
                                       sizeof(kFileContents1) - 1);
@@ -141,7 +144,8 @@ TEST_F(PSIMemoryMetricsTest, CancelBeforeFirstRun) {
                                  900 /*bucket*/, 0 /*count*/);
 }
 
-TEST_F(PSIMemoryMetricsTest, SunnyDay2) {
+// Tests basic collection of PSI metrics with period=60.
+TEST_F(MemoryMetricsTest, SunnyDay2) {
   Init(60);
   int bytes_written = base::WriteFile(GetTestFileName(), kFileContents1,
                                       sizeof(kFileContents1) - 1);
@@ -156,7 +160,8 @@ TEST_F(PSIMemoryMetricsTest, SunnyDay2) {
                                  1920 /*bucket*/, 1 /*count*/);
 }
 
-TEST_F(PSIMemoryMetricsTest, SunnyDay3) {
+// Tests basic collection of PSI metrics with period=300.
+TEST_F(MemoryMetricsTest, SunnyDay3) {
   Init(300);
   int bytes_written = base::WriteFile(GetTestFileName(), kFileContents1,
                                       sizeof(kFileContents1) - 1);

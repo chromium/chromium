@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_PSI_MEMORY_METRICS_H_
-#define CHROME_BROWSER_ASH_PSI_MEMORY_METRICS_H_
+#ifndef CHROME_BROWSER_ASH_MEMORY_METRICS_H_
+#define CHROME_BROWSER_ASH_MEMORY_METRICS_H_
 
 #include <memory>
 #include <string>
@@ -15,26 +15,27 @@
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/memory/memory.h"
 #include "components/metrics/psi_memory_parser.h"
 
 namespace ash {
 
-// PSIMemoryMetrics is a background service that periodically
-// retrieves memory pressure stall information from ChromeOS and publishes that
-// information as UMA metrics, so that we can know the impact of upcoming
-// features by examining the memory pressure histograms in dashboards
-// with and without a candidate feature.
+// MemoryMetrics is a background service that periodically publishes memory
+// metrics. This class is responsible for retrieving memory pressure stall
+// information. The class ZramMetrics is responsible for retrieving zram-related
+// information.
 // Background: PSI (Pressure Stall Information) is a measure of the execution
 // stalls that happen while waiting for memory/paging operatios (thrashing),
 // and is a widely acceptable method of measuring the impact of low-memory
 // stations (ref.: https://lwn.net/Articles/759781/ )
-class PSIMemoryMetrics : public base::RefCountedThreadSafe<PSIMemoryMetrics> {
+class MemoryMetrics : public base::RefCountedThreadSafe<MemoryMetrics> {
  public:
-  explicit PSIMemoryMetrics(uint32_t period);
+  static constexpr int kDefaultPeriodInSeconds = 10;
+  explicit MemoryMetrics(uint32_t period);
 
-  PSIMemoryMetrics(const PSIMemoryMetrics&) = delete;
-  PSIMemoryMetrics& operator=(const PSIMemoryMetrics&) = delete;
-  PSIMemoryMetrics() = delete;
+  MemoryMetrics(const MemoryMetrics&) = delete;
+  MemoryMetrics& operator=(const MemoryMetrics&) = delete;
+  MemoryMetrics() = delete;
 
   // Begins data collection.
   void Start();
@@ -43,25 +44,25 @@ class PSIMemoryMetrics : public base::RefCountedThreadSafe<PSIMemoryMetrics> {
   void Stop();
 
  private:
-  ~PSIMemoryMetrics();
+  ~MemoryMetrics();
 
-  // Friend it so it can see private members for testing
-  friend class PSIMemoryMetricsTest;
-  FRIEND_TEST_ALL_PREFIXES(PSIMemoryMetricsTest, SunnyDay1);
-  FRIEND_TEST_ALL_PREFIXES(PSIMemoryMetricsTest, SunnyDay2);
-  FRIEND_TEST_ALL_PREFIXES(PSIMemoryMetricsTest, SunnyDay3);
+  // Friend it so it can see private members for testing.
+  friend class MemoryMetricsTest;
+  FRIEND_TEST_ALL_PREFIXES(MemoryMetricsTest, SunnyDay1);
+  FRIEND_TEST_ALL_PREFIXES(MemoryMetricsTest, SunnyDay2);
+  FRIEND_TEST_ALL_PREFIXES(MemoryMetricsTest, SunnyDay3);
 
-  static scoped_refptr<PSIMemoryMetrics> CreateForTesting(
+  static scoped_refptr<MemoryMetrics> CreateForTesting(
       uint32_t period,
       const std::string& testfilename) {
-    scoped_refptr<PSIMemoryMetrics> rv =
-        base::MakeRefCounted<PSIMemoryMetrics>(period);
+    scoped_refptr<MemoryMetrics> rv =
+        base::MakeRefCounted<MemoryMetrics>(period);
     rv->memory_psi_file_ = testfilename;
     return rv;
   }
 
   // Friend it so it can call our private destructor.
-  friend class base::RefCountedThreadSafe<PSIMemoryMetrics>;
+  friend class base::RefCountedThreadSafe<MemoryMetrics>;
 
   void CollectEvents();
 
@@ -83,9 +84,12 @@ class PSIMemoryMetrics : public base::RefCountedThreadSafe<PSIMemoryMetrics> {
   std::unique_ptr<base::RepeatingTimer> timer_
       GUARDED_BY_CONTEXT(background_sequence_checker_);
 
+  // The class that is responsible for emitting zram metrics.
+  scoped_refptr<memory::ZramMetrics> zram_metrics_;
+
   SEQUENCE_CHECKER(background_sequence_checker_);
 };
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_PSI_MEMORY_METRICS_H_
+#endif  // CHROME_BROWSER_ASH_MEMORY_METRICS_H_

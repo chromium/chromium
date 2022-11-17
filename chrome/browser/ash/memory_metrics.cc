@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/psi_memory_metrics.h"
+#include "chrome/browser/ash/memory_metrics.h"
 
 #include <stddef.h>
 
@@ -23,6 +23,7 @@
 #include "base/strings/string_piece.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/metrics/chromeos_metrics_provider.h"
+#include "chromeos/ash/components/memory/memory.h"
 #include "components/metrics/serialization/metric_sample.h"
 #include "components/metrics/serialization/serialization_utils.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -42,10 +43,12 @@ const char kPSIMemoryPath[] = "/proc/pressure/memory";
 
 }  // namespace
 
-PSIMemoryMetrics::PSIMemoryMetrics(uint32_t period)
+MemoryMetrics::MemoryMetrics(uint32_t period)
     : memory_psi_file_(kPSIMemoryPath), parser_(period) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DETACH_FROM_SEQUENCE(background_sequence_checker_);
+
+  zram_metrics_ = base::MakeRefCounted<memory::ZramMetrics>();
 
   collection_interval_ = base::Seconds(parser_.GetPeriod());
   runner_ = base::ThreadPool::CreateSequencedTaskRunner(
@@ -53,24 +56,26 @@ PSIMemoryMetrics::PSIMemoryMetrics(uint32_t period)
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 }
 
-PSIMemoryMetrics::~PSIMemoryMetrics() = default;
+MemoryMetrics::~MemoryMetrics() = default;
 
-void PSIMemoryMetrics::Start() {
+void MemoryMetrics::Start() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Start the collection on the background sequence.
   runner_->PostTask(FROM_HERE,
-                    base::BindOnce(&PSIMemoryMetrics::ScheduleCollector, this));
+                    base::BindOnce(&MemoryMetrics::ScheduleCollector, this));
 }
 
-void PSIMemoryMetrics::Stop() {
+void MemoryMetrics::Stop() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Stop the collection on the background sequence.
   runner_->PostTask(FROM_HERE,
-                    base::BindOnce(&PSIMemoryMetrics::CancelTimer, this));
+                    base::BindOnce(&MemoryMetrics::CancelTimer, this));
 }
 
-void PSIMemoryMetrics::CollectEvents() {
+void MemoryMetrics::CollectEvents() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
+
+  zram_metrics_->CollectEvents();
 
   std::string content;
   int metric_some;
@@ -95,14 +100,14 @@ void PSIMemoryMetrics::CollectEvents() {
       metrics::kMemPressureExclusiveMax, metrics::kMemPressureHistogramBuckets);
 }
 
-void PSIMemoryMetrics::ScheduleCollector() {
+void MemoryMetrics::ScheduleCollector() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
   timer_ = std::make_unique<base::RepeatingTimer>();
   timer_->Start(FROM_HERE, collection_interval_,
-                base::BindRepeating(&PSIMemoryMetrics::CollectEvents, this));
+                base::BindRepeating(&MemoryMetrics::CollectEvents, this));
 }
 
-void PSIMemoryMetrics::CancelTimer() {
+void MemoryMetrics::CancelTimer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
   timer_.reset();
 }

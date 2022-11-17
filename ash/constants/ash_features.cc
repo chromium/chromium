@@ -1357,15 +1357,6 @@ BASE_FEATURE(kMediaAppPhotosIntegrationVideo,
              "MediaAppPhotosIntegrationVideo",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Feature to continuously log PSI memory pressure data to UMA.
-BASE_FEATURE(kMemoryPressureMetricsDetail,
-             "MemoryPressureMetricsDetail",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Controls how frequently memory pressure is logged
-const base::FeatureParam<int> kMemoryPressureMetricsDetailLogPeriod{
-    &kMemoryPressureMetricsDetail, "period", 10};
-
 // Enables notification of when a microphone-using app is launched while the
 // microphone is muted.
 BASE_FEATURE(kMicMuteNotifications,

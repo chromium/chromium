@@ -243,45 +243,8 @@ bool GetZramIoStats(ZramIoStat* zram_io_stat) {
   return GetZramIoStatsForDevice(zram_io_stat, 0);
 }
 
-ZramMetrics::ZramMetrics() {
-  runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-}
-
+ZramMetrics::ZramMetrics() = default;
 ZramMetrics::~ZramMetrics() = default;
-
-void ZramMetrics::StartOnSequence() {
-  timer_.Start(FROM_HERE, kZramMetricsPeriod,
-               base::BindRepeating(&ZramMetrics::CollectEvents, this));
-}
-
-void ZramMetrics::StopOnSequence() {
-  timer_.Stop();
-}
-
-void ZramMetrics::Stop() {
-  if (!runner_->RunsTasksInCurrentSequence()) {
-    // Post back to the sequence we want to run on.
-    runner_->PostTask(FROM_HERE,
-                      base::BindOnce(&ZramMetrics::StopOnSequence, this));
-    return;
-  }
-
-  StopOnSequence();
-}
-
-void ZramMetrics::Start() {
-  has_old_huge_pages_ = false;
-  if (!runner_->RunsTasksInCurrentSequence()) {
-    // Post back to the sequence we want to run on.
-    runner_->PostTask(FROM_HERE,
-                      base::BindOnce(&ZramMetrics::StartOnSequence, this));
-    return;
-  }
-
-  StartOnSequence();
-}
 
 void ZramMetrics::CollectEvents() {
   ZramMmStat zram_mm_stat;

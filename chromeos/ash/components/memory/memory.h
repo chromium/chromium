@@ -43,7 +43,6 @@ namespace memory {
 class COMPONENT_EXPORT(ASH_MEMORY) ZramMetrics
     : public base::RefCountedThreadSafe<ZramMetrics> {
  public:
-  static constexpr base::TimeDelta kZramMetricsPeriod = base::Seconds(10);
   // Max number of pages should be the max system memory divided by the smallest
   // possible page size, or: 16GB / 4096
   static constexpr uint64_t kMaxNumPages =
@@ -54,24 +53,14 @@ class COMPONENT_EXPORT(ASH_MEMORY) ZramMetrics
   ZramMetrics(const ZramMetrics&) = delete;
   ZramMetrics& operator=(const ZramMetrics&) = delete;
 
-  // Begins data collection.
-  void Start();
-
-  // Ends data collection.
-  void Stop();
+  // Must be called on a background sequence.
+  void CollectEvents();
 
  private:
   // Friend it so it can call our private destructor.
   friend class base::RefCountedThreadSafe<ZramMetrics>;
 
   ~ZramMetrics();
-
-  void StartOnSequence();
-  void StopOnSequence();
-  void CollectEvents();
-
-  base::TimeDelta period_;
-  base::RepeatingTimer timer_;
 
   // Last-time old-pages stats for delta computation
   // (only for kernel v5.15+), using |has_old_huge_pages_| to determine
