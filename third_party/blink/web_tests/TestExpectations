@@ -4628,11 +4628,6 @@ crbug.com/1088475 [ Linux ] external/wpt/webvtt/rendering/cues-with-video/proces
 crbug.com/1088007 virtual/gpu/fast/canvas/OffscreenCanvasClearRect.html [ Failure Pass ]
 crbug.com/1088007 virtual/gpu/fast/canvas/OffscreenCanvasClearRectPartial.html [ Failure Pass ]
 
-# Sheriff 2020-06-03
-crbug.com/1349215 [ Mac11 ] external/wpt/fullscreen/api/document-fullscreen-enabled-cross-origin.sub.html [ Timeout ]
-crbug.com/1349215 [ Mac10.15 ] external/wpt/fullscreen/api/document-fullscreen-enabled-cross-origin.sub.html [ Timeout ]
-crbug.com/1349215 [ Mac12 ] external/wpt/fullscreen/api/document-fullscreen-enabled-cross-origin.sub.html [ Timeout ]
-
 # Sheriff 2020-06-09
 crbug.com/1093003 [ Mac ] external/wpt/html/rendering/replaced-elements/embedded-content/cross-domain-iframe.sub.html [ Failure Pass ]
 
@@ -6930,3 +6925,4 @@ crbug.com/1385676 external/wpt/screen-capture/getdisplaymedia.https.html [ Skip 
 crbug.com/1385681 external/wpt/web-share/disabled-by-permissions-policy-cross-origin.https.sub.html [ Failure Pass ]
 crbug.com/1372166 fast/spatial-navigation/snav-div-scrollable-but-without-focusable-content.html [ Failure Pass ]
 crbug.com/1385497 http/tests/inspector-protocol/tracing/page-load-metrics.js [ Failure Pass ]
+crbug.com/1349215 external/wpt/fullscreen/api/document-fullscreen-enabled-cross-origin.sub.html [ Skip Timeout ]
