@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/device_sharing/device_sharing_browser_agent.h"
 #import "ios/chrome/browser/follow/follow_browser_agent.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/infobar_overlay_browser_agent_util.h"
+#import "ios/chrome/browser/lens/lens_browser_agent.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
@@ -54,6 +55,9 @@ void AttachBrowserAgents(Browser* browser) {
   DeviceSharingBrowserAgent::CreateForBrowser(browser);
   UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser);
   AppLauncherBrowserAgent::CreateForBrowser(browser);
+
+  // LensBrowserAgent must be created before WebNavigationBrowserAgent.
+  LensBrowserAgent::CreateForBrowser(browser);
   WebNavigationBrowserAgent::CreateForBrowser(browser);
   TabParentingBrowserAgent::CreateForBrowser(browser);
 

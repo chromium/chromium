@@ -49,6 +49,10 @@ bool IsLensWebResultsURL(const GURL& url) {
   return false;
 }
 
+absl::optional<LensEntrypoint> GetLensEntryPointFromURL(const GURL& url) {
+  return absl::nullopt;
+}
+
 web::NavigationManager::WebLoadParams GenerateLensLoadParamsForImage(
     UIImage* image,
     LensEntrypoint entry_point,

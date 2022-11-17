@@ -7,6 +7,10 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "ios/chrome/browser/lens/lens_browser_agent.h"
+#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/lens_commands.h"
 #import "ios/chrome/browser/web/web_navigation_ntp_delegate.h"
 #import "ios/chrome/browser/web/web_navigation_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -25,44 +29,81 @@ WebNavigationBrowserAgent::WebNavigationBrowserAgent(Browser* browser)
 
 WebNavigationBrowserAgent::~WebNavigationBrowserAgent() {}
 
+bool WebNavigationBrowserAgent::CanGoBack(const web::WebState* web_state) {
+  if (!web_state) {
+    return false;
+  }
+
+  if (web_state->GetNavigationManager()->CanGoBack()) {
+    return true;
+  }
+
+  const LensBrowserAgent* lens_browser_agent =
+      LensBrowserAgent::FromBrowser(browser_);
+  if (!lens_browser_agent) {
+    return false;
+  }
+
+  return lens_browser_agent->CanGoBackToLensViewFinder();
+}
+
 bool WebNavigationBrowserAgent::CanGoBack() {
-  return web_state_list_->GetActiveWebState() &&
-         web_state_list_->GetActiveWebState()
-             ->GetNavigationManager()
-             ->CanGoBack();
+  const web::WebState* active_web_state = web_state_list_->GetActiveWebState();
+  return WebNavigationBrowserAgent::CanGoBack(active_web_state);
+}
+
+bool WebNavigationBrowserAgent::CanGoForward(const web::WebState* web_state) {
+  return web_state && web_state->GetNavigationManager()->CanGoForward();
 }
 
 bool WebNavigationBrowserAgent::CanGoForward() {
-  return web_state_list_->GetActiveWebState() &&
-         web_state_list_->GetActiveWebState()
-             ->GetNavigationManager()
-             ->CanGoForward();
+  const web::WebState* active_web_state = web_state_list_->GetActiveWebState();
+  return WebNavigationBrowserAgent::CanGoForward(active_web_state);
 }
 
 void WebNavigationBrowserAgent::GoBack() {
-  if (web_state_list_->GetActiveWebState())
-    web_navigation_util::GoBack(web_state_list_->GetActiveWebState());
+  web::WebState* active_web_state = web_state_list_->GetActiveWebState();
+  if (!active_web_state) {
+    return;
+  }
+
+  if (active_web_state->GetNavigationManager()->CanGoBack()) {
+    web_navigation_util::GoBack(active_web_state);
+    return;
+  }
+
+  // We are at the bottom of the navigation stack. Check to see if Lens back
+  // navigation should bring the user back to the camera.
+  const LensBrowserAgent* lens_browser_agent =
+      LensBrowserAgent::FromBrowser(browser_);
+  if (lens_browser_agent) {
+    lens_browser_agent->GoBackToLensViewFinder();
+  }
 }
+
 void WebNavigationBrowserAgent::GoForward() {
-  if (web_state_list_->GetActiveWebState())
-    web_navigation_util::GoForward(web_state_list_->GetActiveWebState());
+  web::WebState* active_web_state = web_state_list_->GetActiveWebState();
+  if (active_web_state)
+    web_navigation_util::GoForward(active_web_state);
 }
 
 void WebNavigationBrowserAgent::StopLoading() {
-  if (web_state_list_->GetActiveWebState())
-    web_state_list_->GetActiveWebState()->Stop();
+  web::WebState* active_web_state = web_state_list_->GetActiveWebState();
+  if (active_web_state)
+    active_web_state->Stop();
 }
 
 void WebNavigationBrowserAgent::Reload() {
-  if (!web_state_list_->GetActiveWebState())
+  web::WebState* active_web_state = web_state_list_->GetActiveWebState();
+  if (!active_web_state)
     return;
 
   if (delegate_.NTPActiveForCurrentWebState) {
-    [delegate_ reloadNTPForWebState:web_state_list_->GetActiveWebState()];
+    [delegate_ reloadNTPForWebState:active_web_state];
   } else {
     // `check_for_repost` is true because the reload is explicitly initiated
     // by the user.
-    web_state_list_->GetActiveWebState()->GetNavigationManager()->Reload(
+    active_web_state->GetNavigationManager()->Reload(
         web::ReloadType::NORMAL, true /* check_for_repost */);
   }
 }

@@ -9,6 +9,7 @@
 
 #import "base/callback.h"
 #import "ios/web/public/navigation/navigation_manager.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 
 @class LensConfiguration;
 @class UIViewController;
@@ -60,18 +61,21 @@ id<ChromeLensController> NewChromeLensController(LensConfiguration* config);
 // Returns whether Lens is supported for the current build.
 bool IsLensSupported();
 
-// Returns whether or not the url represents a Lens Web results page.
+// Returns whether or not `url` represents a Lens Web results page.
 bool IsLensWebResultsURL(const GURL& url);
 
+// Returns the Lens entry point for `url` if it is a Lens Web results page.
+absl::optional<LensEntrypoint> GetLensEntryPointFromURL(const GURL& url);
+
 // Generates web load params for a Lens image search for the given
-// 'image' and 'entry_point'.
+// `image` and `entry_point`.
 web::NavigationManager::WebLoadParams GenerateLensLoadParamsForImage(
     UIImage* image,
     LensEntrypoint entry_point,
     bool is_incognito);
 
 // Generates web load params for a Lens image search for the given
-// 'image' and 'entry_point'. `completion` will be run on the main
+// `image` and `entry_point`. `completion` will be run on the main
 // thread.
 void GenerateLensLoadParamsForImageAsync(UIImage* image,
                                          LensEntrypoint entry_point,

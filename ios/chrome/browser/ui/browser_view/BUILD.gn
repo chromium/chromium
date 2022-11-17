@@ -266,6 +266,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/find_in_page",
     "//ios/chrome/browser/history",
+    "//ios/chrome/browser/lens",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/prerender",

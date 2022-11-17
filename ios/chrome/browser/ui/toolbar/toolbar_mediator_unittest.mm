@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_navigation_manager.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_consumer.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
@@ -69,6 +70,7 @@ class ToolbarMediatorTest : public PlatformTest {
 
     chrome_browser_state_ = test_cbs_builder.Build();
     test_browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    WebNavigationBrowserAgent::CreateForBrowser(test_browser_.get());
 
     std::unique_ptr<ToolbarTestNavigationManager> navigation_manager =
         std::make_unique<ToolbarTestNavigationManager>();
@@ -79,6 +81,8 @@ class ToolbarMediatorTest : public PlatformTest {
     test_web_state_->SetLoading(true);
     web_state_ = test_web_state_.get();
     mediator_ = [[TestToolbarMediator alloc] init];
+    mediator_.navigationBrowserAgent =
+        WebNavigationBrowserAgent::FromBrowser(test_browser_.get());
     mediator_.actionFactory =
         [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
                                              scenario:kTestMenuScenario];

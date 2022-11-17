@@ -74,6 +74,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/lens",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/ui/activity_services/data",

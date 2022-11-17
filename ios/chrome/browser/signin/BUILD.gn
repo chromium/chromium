@@ -289,6 +289,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/content_settings",
     "//ios/chrome/browser/flags:system_flags",
+    "//ios/chrome/browser/lens",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/prefs:browser_prefs",

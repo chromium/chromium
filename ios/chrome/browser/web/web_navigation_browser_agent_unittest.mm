@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/lens/lens_browser_agent.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/web/web_navigation_ntp_delegate.h"
@@ -56,6 +57,7 @@ class WebNavigationBrowserAgentTest : public PlatformTest {
     browser_state_ = TestChromeBrowserState::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     delegate_ = [[FakeNTPDelegate alloc] init];
+    LensBrowserAgent::CreateForBrowser(browser_.get());
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
     agent_ = WebNavigationBrowserAgent::FromBrowser(browser_.get());
     agent_->SetDelegate(delegate_);

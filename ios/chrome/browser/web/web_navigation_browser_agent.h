@@ -34,10 +34,14 @@ class WebNavigationBrowserAgent
   // All of the following methods will silently no-op (or return false) if there
   // is no active web state in the assoicated browser's WebStateList.
 
+  // True if the given `web_state` can navigate back.
+  bool CanGoBack(const web::WebState* web_state);
   // True if it is possible to navigate back.
   bool CanGoBack();
   // Navigates back.
   void GoBack();
+  // True if the given `web_state` can navigate forward.
+  bool CanGoForward(const web::WebState* web_state);
   // True if it is possible to navigate forward.
   bool CanGoForward();
   // Navigates forward.

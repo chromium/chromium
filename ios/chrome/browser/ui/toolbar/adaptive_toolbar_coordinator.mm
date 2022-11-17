@@ -59,28 +59,30 @@
 - (void)start {
   if (self.started)
     return;
+  Browser* browser = self.browser;
 
   self.started = YES;
 
   self.viewController.longPressDelegate = self.longPressDelegate;
   self.viewController.overrideUserInterfaceStyle =
-      self.browser->GetBrowserState()->IsOffTheRecord()
+      browser->GetBrowserState()->IsOffTheRecord()
           ? UIUserInterfaceStyleDark
           : UIUserInterfaceStyleUnspecified;
-  self.viewController.layoutGuideCenter =
-      LayoutGuideCenterForBrowser(self.browser);
+  self.viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(browser);
 
   self.mediator = [[ToolbarMediator alloc] init];
-  self.mediator.incognito = self.browser->GetBrowserState()->IsOffTheRecord();
+  self.mediator.incognito = browser->GetBrowserState()->IsOffTheRecord();
   self.mediator.consumer = self.viewController;
-  self.mediator.webStateList = self.browser->GetWebStateList();
-  self.mediator.webContentAreaOverlayPresenter = OverlayPresenter::FromBrowser(
-      self.browser, OverlayModality::kWebContentArea);
+  self.mediator.navigationBrowserAgent =
+      WebNavigationBrowserAgent::FromBrowser(browser);
+  self.mediator.webStateList = browser->GetWebStateList();
+  self.mediator.webContentAreaOverlayPresenter =
+      OverlayPresenter::FromBrowser(browser, OverlayModality::kWebContentArea);
   self.mediator.templateURLService =
       ios::TemplateURLServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+          browser->GetBrowserState());
   self.mediator.actionFactory = [[BrowserActionFactory alloc]
-      initWithBrowser:self.browser
+      initWithBrowser:browser
              scenario:MenuScenarioHistogram::kToolbarMenu];
 
   self.viewController.menuProvider = self.mediator;

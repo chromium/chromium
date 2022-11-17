@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/url_loading/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
+#import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -297,9 +298,10 @@
 - (void)updateNavigationBackAndForwardStateForWebState:
     (web::WebState*)webState {
   DCHECK(webState);
-  [self.consumer
-      setCanGoForward:webState->GetNavigationManager()->CanGoForward()];
-  [self.consumer setCanGoBack:webState->GetNavigationManager()->CanGoBack()];
+  const id<ToolbarConsumer> consumer = self.consumer;
+  [consumer
+      setCanGoForward:self.navigationBrowserAgent->CanGoForward(webState)];
+  [consumer setCanGoBack:self.navigationBrowserAgent->CanGoBack(webState)];
 }
 
 // Updates the Share Menu button of the consumer.
