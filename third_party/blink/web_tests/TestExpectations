@@ -4606,7 +4606,6 @@ crbug.com/952717 [ Debug ] http/tests/xmlhttprequest/redirect-cross-origin-post.
 # Sheriff 2020-05-18
 crbug.com/1084256 [ Linux ] http/tests/misc/insert-iframe-into-xml-document-before-xsl-transform.html [ Failure Pass ]
 crbug.com/1084256 [ Mac ] http/tests/misc/insert-iframe-into-xml-document-before-xsl-transform.html [ Failure Pass ]
-crbug.com/1084276 [ Mac ] http/tests/security/offscreencanvas-placeholder-read-blocked-no-crossorigin.html [ Crash Failure Pass ]
 
 # Assorted virtual/threaded/.../wpt/scroll-animations tests
 crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/view-timeline-inset-animation.html [ Failure Pass Timeout ]
@@ -4630,9 +4629,6 @@ crbug.com/1088007 virtual/gpu/fast/canvas/OffscreenCanvasClearRectPartial.html [
 
 # Sheriff 2020-06-09
 crbug.com/1093003 [ Mac ] external/wpt/html/rendering/replaced-elements/embedded-content/cross-domain-iframe.sub.html [ Failure Pass ]
-
-# Sheriff 2020-06-11
-crbug.com/1093026 [ Linux ] http/tests/security/offscreencanvas-placeholder-read-blocked-no-crossorigin.html [ Failure Pass ]
 
 # Ecosystem-Infra Rotation 2020-06-15
 crbug.com/924472 external/wpt/css/css-transforms/transform-box/cssbox-content-box.html [ Failure ]
