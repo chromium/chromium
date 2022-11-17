@@ -22,7 +22,6 @@ class Page;
 // third_party/blink/renderer/core/speculation_rules/README.md
 class CONTENT_EXPORT SpeculationHostImpl final
     : public content::DocumentService<blink::mojom::SpeculationHost>,
-      public WebContentsObserver,
       public SpeculationHostDevToolsObserver {
  public:
   // Creates and binds an instance of this per-frame.
@@ -34,9 +33,6 @@ class CONTENT_EXPORT SpeculationHostImpl final
   SpeculationHostImpl& operator=(const SpeculationHostImpl&) = delete;
   SpeculationHostImpl(SpeculationHostImpl&&) = delete;
   SpeculationHostImpl& operator=(SpeculationHostImpl&&) = delete;
-
-  // WebContentsObserver implementation:
-  void PrimaryPageChanged(Page& page) override;
 
   // SpeculationHostDevToolsObserver implementation:
   void OnStartSinglePrefetch(const std::string& request_id,
@@ -63,27 +59,7 @@ class CONTENT_EXPORT SpeculationHostImpl final
   void UpdateSpeculationCandidates(
       std::vector<blink::mojom::SpeculationCandidatePtr> candidates) override;
 
-  void ProcessCandidatesForPrerender(
-      const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates);
-
-  void CancelStartedPrerenders();
-
-  // Iterates started prerenders and counts how many of them were canceled
-  // due to the excessive memory usage.
-  int GetNumberOfDestroyedByMemoryExceeded();
-
   std::unique_ptr<SpeculationHostDelegate> delegate_;
-
-  // TODO(https://crbug.com/1197133): Cancel started prerenders when candidates
-  // are updated.
-  // This is kept sorted by URL.
-  struct PrerenderInfo;
-  std::vector<PrerenderInfo> started_prerenders_;
-
-  base::WeakPtr<PrerenderHostRegistry> registry_;
-
-  class PrerenderHostObserver;
-  std::vector<std::unique_ptr<PrerenderHostObserver>> observers_;
 
   base::WeakPtrFactory<SpeculationHostImpl> weak_ptr_factory_{this};
 };

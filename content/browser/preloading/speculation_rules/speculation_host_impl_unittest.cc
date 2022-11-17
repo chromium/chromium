@@ -7,7 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "content/browser/preloading/prerender/prerender_host_registry.h"
+#include "content/browser/preloading/preloading_decider.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/test_browser_context.h"
@@ -31,6 +31,18 @@ class PrerenderWebContentsDelegate : public WebContentsDelegate {
   }
 };
 
+class PreloadingObserverImpl : public PreloadingDeciderObserverForTesting {
+ public:
+  void UpdateSpeculationCandidates(
+      const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates)
+      override {
+    for (const auto& candidate : candidates) {
+      candidates_.push_back(candidate.Clone());
+    }
+  }
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates_;
+};
+
 class SpeculationHostImplTest : public RenderViewHostImplTestHarness {
  public:
   SpeculationHostImplTest() {
@@ -50,9 +62,18 @@ class SpeculationHostImplTest : public RenderViewHostImplTestHarness {
         SiteInstanceImpl::Create(browser_context_.get()));
     web_contents_->SetDelegate(&web_contents_delegate_);
     web_contents_->NavigateAndCommit(GURL("https://example.com"));
+
+    auto* preloading_decider =
+        PreloadingDecider::GetOrCreateForCurrentDocument(GetRenderFrameHost());
+    auto observer = std::make_unique<PreloadingObserverImpl>();
+    observer_ = observer.get();
+    preloading_decider->SetObserverForTesting(std::move(observer));
   }
 
   void TearDown() override {
+    auto* preloading_decider =
+        PreloadingDecider::GetOrCreateForCurrentDocument(GetRenderFrameHost());
+    preloading_decider->ResetObserverForTesting();
     web_contents_.reset();
     browser_context_.reset();
     RenderViewHostImplTestHarness::TearDown();
@@ -83,19 +104,21 @@ class SpeculationHostImplTest : public RenderViewHostImplTestHarness {
     return candidate;
   }
 
+  PreloadingObserverImpl* GetObserver() { return observer_; }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
   std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<TestWebContents> web_contents_;
   PrerenderWebContentsDelegate web_contents_delegate_;
+  PreloadingObserverImpl* observer_;
 };
 
-// Tests that SpeculationHostImpl starts prerendering when it receives prerender
-// speculation candidates.
+// Tests that SpeculationHostImpl dispatches the candidates to
+// PreloadingDecider.
 TEST_F(SpeculationHostImplTest, StartPrerender) {
   RenderFrameHostImpl* render_frame_host = GetRenderFrameHost();
-  PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
   mojo::Remote<blink::mojom::SpeculationHost> remote;
   SpeculationHostImpl::Bind(render_frame_host,
                             remote.BindNewPipeAndPassReceiver());
@@ -106,38 +129,8 @@ TEST_F(SpeculationHostImplTest, StartPrerender) {
 
   remote->UpdateSpeculationCandidates(std::move(candidates));
   remote.FlushForTesting();
-  EXPECT_TRUE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
-}
-
-// Tests that SpeculationHostImpl will skip a cross-site candidate even if it
-// is the first prerender candidate in the candidate list.
-TEST_F(SpeculationHostImplTest, ProcessFirstSameOriginPrerenderCandidate) {
-  RenderFrameHostImpl* render_frame_host = GetRenderFrameHost();
-  PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
-  mojo::Remote<blink::mojom::SpeculationHost> remote;
-  SpeculationHostImpl::Bind(render_frame_host,
-                            remote.BindNewPipeAndPassReceiver());
-
-  const GURL kFirstPrerenderingUrlCrossSite = GetCrossSiteUrl("/title.html");
-  const GURL kSecondPrerenderingUrlSameOrigin =
-      GetSameOriginUrl("/title1.html");
-  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
-  candidates.push_back(
-      CreatePrerenderCandidate(kFirstPrerenderingUrlCrossSite));
-  candidates.push_back(
-      CreatePrerenderCandidate(kSecondPrerenderingUrlSameOrigin));
-
-  remote->UpdateSpeculationCandidates(std::move(candidates));
-  remote.FlushForTesting();
-
-  // The first prerender candidate is a cross-site one, so SpeculationHostImpl
-  // should not prerender it.
-  EXPECT_FALSE(
-      registry->FindHostByUrlForTesting(kFirstPrerenderingUrlCrossSite));
-  // The second element in this list is the first same-origin prerender
-  // candidate, so SpeculationHostImpl should prerender this candidate.
-  EXPECT_TRUE(
-      registry->FindHostByUrlForTesting(kSecondPrerenderingUrlSameOrigin));
+  EXPECT_EQ(1u, GetObserver()->candidates_.size());
+  EXPECT_EQ(kPrerenderingUrl, GetObserver()->candidates_[0]->url);
 }
 
 // Tests that SpeculationHostImpl crashes the renderer process if it receives
