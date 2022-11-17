@@ -249,12 +249,6 @@ void SyncServiceImpl::Initialize() {
                          user_settings_->IsFirstSetupComplete(),
                          is_regular_profile_for_uma_);
 
-  if (!HasSyncConsent()) {
-    // Remove after 11/2021. Migration logic to set SyncRequested to false if
-    // the user is signed-out or signed-in but not syncing (crbug.com/1147026).
-    user_settings_->SetSyncRequested(false);
-  }
-
   // Auto-start means the first time the profile starts up, sync should start up
   // immediately. Since IsSyncRequested() is false by default and nobody else
   // will set it, we need to set it here.
