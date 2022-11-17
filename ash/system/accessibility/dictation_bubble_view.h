@@ -45,8 +45,6 @@ class ASH_EXPORT DictationBubbleView : public views::BubbleDialogDelegateView {
       const absl::optional<std::u16string>& text,
       const absl::optional<std::vector<DictationBubbleHintType>>& hints);
 
-  void OnColorModeChanged(bool dark_mode_enabled);
-
   // views::BubbleDialogDelegateView:
   void Init() override;
   void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,

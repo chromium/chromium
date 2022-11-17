@@ -11,6 +11,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
 #include "ash/system/message_center/message_center_utils.h"
 #include "ash/system/notification_center/notification_center_tray.h"
@@ -21,6 +22,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -99,16 +101,15 @@ void NotificationIconTrayItemView::SetNotification(
 
   const auto* color_provider = GetColorProvider();
   gfx::Image masked_small_icon = notification->GenerateMaskedSmallIcon(
-      kUnifiedTrayIconSize,
-      TrayIconColor(Shell::Get()->session_controller()->GetSessionState()),
+      kUnifiedTrayIconSize, color_provider->GetColor(kColorAshIconColorPrimary),
       color_provider->GetColor(ui::kColorNotificationIconBackground),
       color_provider->GetColor(ui::kColorNotificationIconForeground));
   if (!masked_small_icon.IsEmpty()) {
     image_view()->SetImage(masked_small_icon.AsImageSkia());
   } else {
-    image_view()->SetImage(gfx::CreateVectorIcon(
-        message_center::kProductIcon, kUnifiedTrayIconSize,
-        TrayIconColor(Shell::Get()->session_controller()->GetSessionState())));
+    image_view()->SetImage(ui::ImageModel::FromVectorIcon(
+        message_center::kProductIcon, kColorAshIconColorPrimary,
+        kUnifiedTrayIconSize));
   }
 
   image_view()->SetTooltipText(notification->title());

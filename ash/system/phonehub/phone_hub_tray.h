@@ -73,7 +73,6 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   TrayBubbleView* GetBubbleView() override;
   views::Widget* GetBubbleWidget() const override;
   const char* GetClassName() const override;
-  void OnThemeChanged() override;
 
   // PhoneStatusView::Delegate:
   bool CanOpenConnectedDeviceSettings() override;

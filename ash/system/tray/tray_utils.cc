@@ -7,13 +7,11 @@
 #include <string>
 
 #include "ash/bubble/bubble_constants.h"
-#include "ash/constants/ash_features.h"
-#include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -55,9 +53,7 @@ void SetupConnectedScrollListItem(HoverHighlightView* view,
   }
 
   view->sub_text_label()->SetAutoColorReadabilityEnabled(false);
-  view->sub_text_label()->SetEnabledColor(
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorPositive));
+  view->sub_text_label()->SetEnabledColorId(kColorAshTextColorPositive);
 }
 
 void SetupConnectingScrollListItem(HoverHighlightView* view) {
@@ -72,19 +68,7 @@ void SetWarningSubText(HoverHighlightView* view, std::u16string subtext) {
 
   view->SetSubText(subtext);
   view->sub_text_label()->SetAutoColorReadabilityEnabled(false);
-  view->sub_text_label()->SetEnabledColor(
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorWarning));
-}
-
-SkColor TrayIconColor(session_manager::SessionState session_state) {
-  if (!features::IsDarkLightModeEnabled() &&
-      session_state == session_manager::SessionState::OOBE) {
-    return kIconColorInOobe;
-  }
-
-  return AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
+  view->sub_text_label()->SetEnabledColorId(kColorAshTextColorWarning);
 }
 
 gfx::Insets GetTrayBubbleInsets() {

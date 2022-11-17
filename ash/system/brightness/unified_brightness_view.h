@@ -31,7 +31,6 @@ class UnifiedBrightnessView : public UnifiedSliderView,
 
   // views::View:
   const char* GetClassName() const override;
-  void OnThemeChanged() override;
 
  private:
   scoped_refptr<UnifiedSystemTrayModel> model_;

@@ -8,7 +8,7 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/color_util.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/check.h"
@@ -39,17 +39,9 @@ BluetoothDisabledDetailedView::BluetoothDisabledDetailedView() {
   box_layout->set_main_axis_alignment(BoxLayout::MainAxisAlignment::kCenter);
   SetLayoutManager(std::move(box_layout));
 
-  AshColorProvider* color_provider = AshColorProvider::Get();
-  const SkColor icon_color =
-      ColorUtil::GetDisabledColor(color_provider->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary));
-  const SkColor text_color =
-      ColorUtil::GetDisabledColor(color_provider->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorPrimary));
-
-  ImageView* image_view = AddChildView(std::make_unique<ImageView>(
-      ui::ImageModel::FromImageSkia(gfx::CreateVectorIcon(
-          kSystemMenuBluetoothDisabledIcon, icon_color))));
+  ImageView* image_view =
+      AddChildView(std::make_unique<ImageView>(ui::ImageModel::FromVectorIcon(
+          kSystemMenuBluetoothDisabledIcon, kColorAshButtonIconDisabledColor)));
   image_view->SetVerticalAlignment(ImageView::Alignment::kTrailing);
 
   Label* label = AddChildView(std::make_unique<Label>(
@@ -58,7 +50,7 @@ BluetoothDisabledDetailedView::BluetoothDisabledDetailedView() {
       label, TrayPopupUtils::FontStyle::kDetailedViewLabel);
   label->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       kDesiredLabelBaselineY - label->GetBaseline(), 0, 0, 0)));
-  label->SetEnabledColor(text_color);
+  label->SetEnabledColorId(kColorAshTextColorPrimary);
 
   // Make top padding of the icon equal to the height of the label so that the
   // icon is vertically aligned to center of the container.

@@ -33,6 +33,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/insets.h"
@@ -194,10 +195,10 @@ void TimeView::UpdateClockLayout(ClockLayout clock_layout) {
   Layout();
 }
 
-void TimeView::SetTextColor(SkColor color,
+void TimeView::SetTextColor(ui::ColorId color_id,
                             bool auto_color_readability_enabled) {
   auto set_color = [&](views::Label* label) {
-    label->SetEnabledColor(color);
+    label->SetEnabledColorId(color_id);
     label->SetAutoColorReadabilityEnabled(auto_color_readability_enabled);
   };
 

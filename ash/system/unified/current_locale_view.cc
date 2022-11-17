@@ -7,6 +7,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
@@ -37,8 +38,7 @@ void CurrentLocaleView::OnLocaleListSet() {
   SetVisible(locale_model->ShouldShowCurrentLocaleInStatusArea());
   label()->SetText(base::i18n::ToUpper(base::UTF8ToUTF16(
       l10n_util::GetLanguage(locale_model->current_locale_iso_code()))));
-  label()->SetEnabledColor(
-      TrayIconColor(Shell::Get()->session_controller()->GetSessionState()));
+  label()->SetEnabledColorId(kColorAshIconColorPrimary);
 
   const std::vector<LocaleInfo>& locales = locale_model->locale_list();
   for (auto& entry : locales) {

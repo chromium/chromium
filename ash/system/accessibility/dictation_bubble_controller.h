@@ -34,7 +34,6 @@ class DictationBubbleView;
 
 // Manages the Dictation bubble view.
 class ASH_EXPORT DictationBubbleController : public ui::InputMethodObserver,
-                                             public ColorModeObserver,
                                              public views::ViewObserver {
  public:
   DictationBubbleController();
@@ -56,9 +55,6 @@ class ASH_EXPORT DictationBubbleController : public ui::InputMethodObserver,
   void OnCaretBoundsChanged(const ui::TextInputClient* client) override;
   void OnTextInputStateChanged(const ui::TextInputClient* client) override {}
   void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {}
-
-  // ColorModeObserver:
-  void OnColorModeChanged(bool dark_mode_enabled) override;
 
   // views::ViewObserver:
   void OnViewIsDeleting(views::View* observed_view) override;
@@ -82,8 +78,6 @@ class ASH_EXPORT DictationBubbleController : public ui::InputMethodObserver,
 
   base::ScopedObservation<ui::InputMethod, ui::InputMethodObserver>
       input_method_observer_{this};
-  base::ScopedObservation<DarkLightModeControllerImpl, ColorModeObserver>
-      color_mode_observer_{this};
 };
 
 }  // namespace ash

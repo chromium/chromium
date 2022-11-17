@@ -4,12 +4,13 @@
 
 #include "ash/system/accessibility/switch_access/switch_access_menu_button.h"
 
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "base/bind.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/mojom/ax_node_data.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -41,26 +42,21 @@ SwitchAccessMenuButton::SwitchAccessMenuButton(std::string action_name,
           base::BindRepeating(&SwitchAccessMenuButton::OnButtonPressed,
                               base::Unretained(this))),
       action_name_(action_name) {
-  SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
-  SkColor label_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary);
-
   std::u16string label_text = l10n_util::GetStringUTF16(label_text_id);
   views::Builder<SwitchAccessMenuButton>(this)
       .SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY)
-      .AddChildren(
-          views::Builder<views::ImageView>()
-              .CopyAddressTo(&image_view_)
-              .SetImage(gfx::CreateVectorIcon(icon, kIconSizeDip, icon_color)),
-          views::Builder<views::Label>()
-              .CopyAddressTo(&label_)
-              .SetText(label_text)
-              .SetTextContext(views::style::CONTEXT_BUTTON)
-              .SetAutoColorReadabilityEnabled(false)
-              .SetEnabledColor(label_color)
-              .SetMultiLine(true)
-              .SetMaximumWidth(kLabelMaxWidthDip))
+      .AddChildren(views::Builder<views::ImageView>()
+                       .CopyAddressTo(&image_view_)
+                       .SetImage(ui::ImageModel::FromVectorIcon(
+                           icon, kColorAshIconColorPrimary, kIconSizeDip)),
+                   views::Builder<views::Label>()
+                       .CopyAddressTo(&label_)
+                       .SetText(label_text)
+                       .SetTextContext(views::style::CONTEXT_BUTTON)
+                       .SetAutoColorReadabilityEnabled(false)
+                       .SetEnabledColorId(kColorAshTextColorPrimary)
+                       .SetMultiLine(true)
+                       .SetMaximumWidth(kLabelMaxWidthDip))
       .BuildChildren();
 
   std::unique_ptr<views::BoxLayout> layout = std::make_unique<views::BoxLayout>(

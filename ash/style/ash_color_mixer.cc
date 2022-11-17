@@ -478,6 +478,8 @@ void AddAshColorMixer(ui::ColorProvider* provider,
       ui::SetAlpha(cros_tokens::kCrosSysPrimary, kDisabledColorOpacity);
   mixer[KColorAshTextDisabledColor] =
       ui::SetAlpha(cros_tokens::kCrosSysOnSurface, kDisabledColorOpacity);
+
+  mixer[kColorAshIconColorBlocked] = {gfx::kGoogleGrey100};
 }
 
 }  // namespace ash

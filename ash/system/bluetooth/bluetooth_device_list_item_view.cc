@@ -8,9 +8,10 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_battery_view.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_multiple_battery_view.h"
+#include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_utils.h"
 #include "base/check.h"
 #include "base/notreached.h"
@@ -20,6 +21,7 @@
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -184,12 +186,9 @@ void BluetoothDeviceListItemView::UpdateDeviceProperties(
   const DeviceType& device_type =
       device_properties_->device_properties->device_type;
 
-  AddIconAndLabel(
-      gfx::CreateVectorIcon(
-          GetDeviceIcon(device_type),
-          AshColorProvider::Get()->GetContentLayerColor(
-              AshColorProvider::ContentLayerType::kIconColorPrimary)),
-      GetPairedDeviceName(device_properties_));
+  AddIconAndLabel(ui::ImageModel::FromVectorIcon(GetDeviceIcon(device_type),
+                                                 kColorAshIconColorPrimary),
+                  GetPairedDeviceName(device_properties_));
 
   UpdateAccessibleName(device_index, total_device_count);
 

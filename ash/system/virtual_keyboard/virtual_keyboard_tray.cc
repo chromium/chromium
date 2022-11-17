@@ -11,33 +11,21 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
-#include "ash/system/tray/tray_utils.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
-#include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
-
-namespace {
-
-gfx::ImageSkia GetIconImage() {
-  return gfx::CreateVectorIcon(
-      kShelfKeyboardNewuiIcon,
-      TrayIconColor(Shell::Get()->session_controller()->GetSessionState()));
-}
-
-}  // namespace
 
 VirtualKeyboardTray::VirtualKeyboardTray(
     Shelf* shelf,
@@ -45,11 +33,13 @@ VirtualKeyboardTray::VirtualKeyboardTray(
     : TrayBackgroundView(shelf, catalog_name),
       icon_(new views::ImageView),
       shelf_(shelf) {
-  const gfx::ImageSkia image = GetIconImage();
+  const ui::ImageModel image = ui::ImageModel::FromVectorIcon(
+      kShelfKeyboardNewuiIcon, kColorAshIconColorPrimary);
+  icon_->SetImage(image);
   icon_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD));
-  const int vertical_padding = (kTrayItemSize - image.height()) / 2;
-  const int horizontal_padding = (kTrayItemSize - image.width()) / 2;
+  const int vertical_padding = (kTrayItemSize - image.Size().height()) / 2;
+  const int horizontal_padding = (kTrayItemSize - image.Size().width()) / 2;
   icon_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(vertical_padding, horizontal_padding)));
   tray_container()->AddChildView(icon_);
@@ -120,11 +110,6 @@ bool VirtualKeyboardTray::PerformAction(const ui::Event& event) {
   return true;
 }
 
-void VirtualKeyboardTray::OnThemeChanged() {
-  TrayBackgroundView::OnThemeChanged();
-  icon_->SetImage(GetIconImage());
-}
-
 void VirtualKeyboardTray::OnAccessibilityStatusChanged() {
   bool new_enabled =
       Shell::Get()->accessibility_controller()->virtual_keyboard().enabled();
@@ -133,11 +118,6 @@ void VirtualKeyboardTray::OnAccessibilityStatusChanged() {
 
 void VirtualKeyboardTray::OnKeyboardVisibilityChanged(const bool is_visible) {
   SetIsActive(is_visible);
-}
-
-void VirtualKeyboardTray::OnSessionStateChanged(
-    session_manager::SessionState state) {
-  icon_->SetImage(GetIconImage());
 }
 
 const char* VirtualKeyboardTray::GetClassName() const {

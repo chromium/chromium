@@ -5,8 +5,9 @@
 #include "ash/system/video_conference/video_conference_bubble.h"
 
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/tray/tray_bubble_view.h"
+#include "ui/base/models/image_model.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
@@ -17,10 +18,8 @@ VideoConferenceBubbleView::VideoConferenceBubbleView(
   // TODO(b/253088232): Added an icon so that the bubble can show. Will remove
   // this with the newly created class VideoConferenceBubbleView.
   auto icon = std::make_unique<views::ImageView>();
-  icon->SetImage(gfx::CreateVectorIcon(
-      kPrivacyIndicatorsMicrophoneIcon,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary)));
+  icon->SetImage(ui::ImageModel::FromVectorIcon(
+      kPrivacyIndicatorsMicrophoneIcon, kColorAshIconColorPrimary));
   AddChildView(std::move(icon));
 }
 

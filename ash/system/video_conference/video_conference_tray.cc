@@ -13,6 +13,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
@@ -23,6 +24,7 @@
 #include "base/functional/bind.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/skbitmap_operations.h"
 #include "ui/views/controls/image_view.h"
@@ -149,7 +151,7 @@ void VideoConferenceTray::UpdateAfterLoginStatusChange() {
 void VideoConferenceTray::UpdateExpandIndicator() {
   auto image = gfx::CreateVectorIcon(
       kUnifiedMenuExpandIcon,
-      TrayIconColor(Shell::Get()->session_controller()->GetSessionState()));
+      GetColorProvider()->GetColor(kColorAshIconColorPrimary));
 
   SkBitmapOperations::RotationAmount rotation;
   switch (shelf()->alignment()) {

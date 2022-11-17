@@ -9,7 +9,6 @@
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
@@ -92,16 +91,6 @@ void PowerTrayView::OnPowerStatusChanged() {
   UpdateStatus();
 }
 
-void PowerTrayView::OnSessionStateChanged(session_manager::SessionState state) {
-  // Icon color changes only happens when switching session states between OOBE
-  // and other state.
-  const bool update_image =
-      session_state_ == session_manager::SessionState::OOBE ||
-      state == session_manager::SessionState::OOBE;
-  session_state_ = state;
-  UpdateImage(update_image);
-}
-
 void PowerTrayView::UpdateStatus() {
   UpdateImage(/*icon_color_changed=*/false);
   SetVisible(PowerStatus::Get()->IsBatteryPresent());
@@ -122,7 +111,8 @@ void PowerTrayView::UpdateImage(bool icon_color_changed) {
   info_ = info;
 
   // Note: The icon color (both fg and bg) changes when the UI in in OOBE mode.
-  const SkColor icon_fg_color = TrayIconColor(session_state_);
+  const SkColor icon_fg_color =
+      GetColorProvider()->GetColor(kColorAshIconColorPrimary);
   const SkColor icon_bg_color = color_utils::GetResultingPaintColor(
       ShelfConfig::Get()->GetShelfControlButtonColor(GetWidget()),
       GetColorProvider()->GetColor(kColorAshShieldAndBaseOpaque));

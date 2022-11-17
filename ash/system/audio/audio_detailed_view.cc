@@ -10,7 +10,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/audio/mic_gain_slider_controller.h"
 #include "ash/system/audio/mic_gain_slider_view.h"
 #include "ash/system/tray/hover_highlight_view.h"
@@ -282,9 +282,7 @@ AudioDetailedView::CreateNoiseCancellationToggleRow(const AudioDevice& device) {
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_AUDIO_INPUT_NOISE_CANCELLATION));
 
-  const SkColor text_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary);
-  noise_cancellation_label->SetEnabledColor(text_color);
+  noise_cancellation_label->SetEnabledColorId(kColorAshTextColorPrimary);
   noise_cancellation_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   noise_cancellation_label->SetFontList(
       gfx::FontList().DeriveWithSizeDelta(kLabelFontSizeDelta));

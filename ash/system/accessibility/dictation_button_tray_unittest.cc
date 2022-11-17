@@ -16,7 +16,7 @@
 #include "ash/rotator/screen_rotation_animator.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
@@ -206,16 +206,16 @@ TEST_F(DictationButtonTrayTest, ActiveStateOnlyDuringDictation) {
 }
 
 TEST_F(DictationButtonTrayTest, ImageIcons) {
-  SkColor color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
-  gfx::ImageSkia off_icon =
-      gfx::CreateVectorIcon(kDictationOffNewuiIcon, color);
-  gfx::ImageSkia on_icon = gfx::CreateVectorIcon(kDictationOnNewuiIcon, color);
-
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
   TestAccessibilityControllerClient client;
   controller->dictation().SetEnabled(true);
+
+  SkColor color =
+      GetTray()->GetColorProvider()->GetColor(kColorAshIconColorPrimary);
+  gfx::ImageSkia off_icon =
+      gfx::CreateVectorIcon(kDictationOffNewuiIcon, color);
+  gfx::ImageSkia on_icon = gfx::CreateVectorIcon(kDictationOnNewuiIcon, color);
 
   views::ImageView* view = GetImageView(GetTray());
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(*view->GetImage().bitmap(),

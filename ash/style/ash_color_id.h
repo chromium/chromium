@@ -119,7 +119,9 @@ namespace ash {
   E_CPONLY(kColorAshButtonIconDisabledColor) \
   E_CPONLY(kColorAshIconSecondaryDisabledColor) \
   E_CPONLY(kColorAshIconPrimaryDisabledColor) \
-  E_CPONLY(KColorAshTextDisabledColor)
+  E_CPONLY(KColorAshTextDisabledColor) \
+  /* Color for icon of the blocked bluetooth device */ \
+  E_CPONLY(kColorAshIconColorBlocked)
 
 #include "ui/color/color_id_macros.inc"
 

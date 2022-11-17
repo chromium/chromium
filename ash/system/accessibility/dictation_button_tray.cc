@@ -14,6 +14,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
@@ -23,6 +24,8 @@
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
@@ -36,14 +39,12 @@ namespace {
 // changes to an "on" icon from "off" when Dictation is listening.
 // |enabled| indicates whether the tray button is enabled, i.e. clickable.
 // A secondary color is used to indicate the icon is not enabled.
-gfx::ImageSkia GetIconImage(bool active, bool enabled) {
-  const SkColor color =
-      enabled
-          ? TrayIconColor(Shell::Get()->session_controller()->GetSessionState())
-          : AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kIconColorSecondary);
-  return active ? gfx::CreateVectorIcon(kDictationOnNewuiIcon, color)
-                : gfx::CreateVectorIcon(kDictationOffNewuiIcon, color);
+ui::ImageModel GetIconImage(bool active, bool enabled) {
+  const ui::ColorId color_id =
+      enabled ? kColorAshIconColorPrimary : kColorAshIconColorSecondary;
+  return active
+             ? ui::ImageModel::FromVectorIcon(kDictationOnNewuiIcon, color_id)
+             : ui::ImageModel::FromVectorIcon(kDictationOffNewuiIcon, color_id);
 }
 
 }  // namespace
@@ -60,11 +61,13 @@ DictationButtonTray::DictationButtonTray(
       shell->window_tree_host_manager()->input_method()->GetTextInputClient();
   in_text_input_ =
       (client && client->GetTextInputType() != ui::TEXT_INPUT_TYPE_NONE);
-  const gfx::ImageSkia icon_image =
+  const ui::ImageModel icon_image =
       GetIconImage(/*active=*/false, /*enabled=*/in_text_input_);
-  const int vertical_padding = (kTrayItemSize - icon_image.height()) / 2;
-  const int horizontal_padding = (kTrayItemSize - icon_image.width()) / 2;
+  const int vertical_padding = (kTrayItemSize - icon_image.Size().height()) / 2;
+  const int horizontal_padding =
+      (kTrayItemSize - icon_image.Size().height()) / 2;
   auto icon = std::make_unique<views::ImageView>();
+  icon->SetImage(icon_image);
   icon->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(vertical_padding, horizontal_padding)));
   icon->SetTooltipText(
@@ -126,9 +129,6 @@ void DictationButtonTray::HideBubbleWithView(
 
 void DictationButtonTray::OnThemeChanged() {
   TrayBackgroundView::OnThemeChanged();
-  icon_->SetImage(
-      GetIconImage(Shell::Get()->accessibility_controller()->dictation_active(),
-                   GetEnabled()));
   if (progress_indicator_)
     progress_indicator_->InvalidateLayer();
 }

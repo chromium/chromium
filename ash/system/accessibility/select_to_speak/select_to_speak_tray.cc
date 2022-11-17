@@ -10,12 +10,15 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_utils.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
@@ -28,20 +31,18 @@ namespace ash {
 
 namespace {
 
-gfx::ImageSkia GetImageOnCurrentSelectToSpeakStatus(
+ui::ImageModel GetImageOnCurrentSelectToSpeakStatus(
     const SelectToSpeakState& select_to_speak_state) {
-  auto* shell = Shell::Get();
-  const SkColor color =
-      TrayIconColor(shell->session_controller()->GetSessionState());
-
   switch (select_to_speak_state) {
     case SelectToSpeakState::kSelectToSpeakStateInactive:
-      return gfx::CreateVectorIcon(kSystemTraySelectToSpeakNewuiIcon, color);
+      return ui::ImageModel::FromVectorIcon(kSystemTraySelectToSpeakNewuiIcon,
+                                            kColorAshIconColorPrimary);
     case SelectToSpeakState::kSelectToSpeakStateSelecting:
-      return gfx::CreateVectorIcon(kSystemTraySelectToSpeakActiveNewuiIcon,
-                                   color);
+      return ui::ImageModel::FromVectorIcon(
+          kSystemTraySelectToSpeakActiveNewuiIcon, kColorAshIconColorPrimary);
     case SelectToSpeakState::kSelectToSpeakStateSpeaking:
-      return gfx::CreateVectorIcon(kSystemTrayStopNewuiIcon, color);
+      return ui::ImageModel::FromVectorIcon(kSystemTrayStopNewuiIcon,
+                                            kColorAshIconColorPrimary);
   }
 }
 
@@ -74,13 +75,14 @@ SelectToSpeakTray::SelectToSpeakTray(Shelf* shelf,
     Shell::Get()->accessibility_controller()->RequestSelectToSpeakStateChange();
   }));
 
-  const gfx::ImageSkia inactive_image = gfx::CreateVectorIcon(
-      kSystemTraySelectToSpeakNewuiIcon,
-      TrayIconColor(Shell::Get()->session_controller()->GetSessionState()));
+  const ui::ImageModel inactive_image = ui::ImageModel::FromVectorIcon(
+      kSystemTraySelectToSpeakNewuiIcon, kColorAshIconColorPrimary);
   auto icon = std::make_unique<views::ImageView>();
   icon->SetImage(inactive_image);
-  const int vertical_padding = (kTrayItemSize - inactive_image.height()) / 2;
-  const int horizontal_padding = (kTrayItemSize - inactive_image.width()) / 2;
+  const int vertical_padding =
+      (kTrayItemSize - inactive_image.Size().height()) / 2;
+  const int horizontal_padding =
+      (kTrayItemSize - inactive_image.Size().width()) / 2;
   icon->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(vertical_padding, horizontal_padding)));
   icon->SetTooltipText(l10n_util::GetStringUTF16(

@@ -22,8 +22,7 @@ namespace ash {
 class VirtualKeyboardTray : public TrayBackgroundView,
                             public AccessibilityObserver,
                             public KeyboardControllerObserver,
-                            public ShellObserver,
-                            public SessionObserver {
+                            public ShellObserver {
  public:
   VirtualKeyboardTray(Shelf* shelf, TrayBackgroundViewCatalogName catalog_name);
 
@@ -39,16 +38,12 @@ class VirtualKeyboardTray : public TrayBackgroundView,
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void ClickedOutsideBubble() override;
   bool PerformAction(const ui::Event& event) override;
-  void OnThemeChanged() override;
 
   // AccessibilityObserver:
   void OnAccessibilityStatusChanged() override;
 
   // KeyboardControllerObserver:
   void OnKeyboardVisibilityChanged(bool is_visible) override;
-
-  // SessionObserver:
-  void OnSessionStateChanged(session_manager::SessionState state) override;
 
   // views::View:
   const char* GetClassName() const override;
@@ -58,8 +53,6 @@ class VirtualKeyboardTray : public TrayBackgroundView,
   views::ImageView* icon_;
 
   Shelf* shelf_;
-
-  ScopedSessionObserver session_observer_{this};
 };
 
 }  // namespace ash

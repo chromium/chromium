@@ -7,15 +7,12 @@
 
 #include <memory>
 
-#include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/power/power_status.h"
 #include "ash/system/tray/tray_item_view.h"
 
 namespace ash {
 
-class PowerTrayView : public TrayItemView,
-                      public PowerStatus::Observer,
-                      public SessionObserver {
+class PowerTrayView : public TrayItemView, public PowerStatus::Observer {
  public:
   explicit PowerTrayView(Shelf* shelf);
 
@@ -38,9 +35,6 @@ class PowerTrayView : public TrayItemView,
   // PowerStatus::Observer:
   void OnPowerStatusChanged() override;
 
-  // SessionObserver:
-  void OnSessionStateChanged(session_manager::SessionState state) override;
-
  private:
   void UpdateStatus();
   void UpdateImage(bool icon_color_changed);
@@ -48,9 +42,6 @@ class PowerTrayView : public TrayItemView,
   std::u16string accessible_name_;
   std::u16string tooltip_;
   absl::optional<PowerStatus::BatteryImageInfo> info_;
-  session_manager::SessionState session_state_ =
-      session_manager::SessionState::UNKNOWN;
-  ScopedSessionObserver session_observer_{this};
 };
 
 }  // namespace ash

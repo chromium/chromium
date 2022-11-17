@@ -9,7 +9,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/system/accessibility/autoclick_menu_bubble_controller.h"
 #include "ash/system/accessibility/floating_menu_button.h"
 #include "ash/system/unified/custom_shape_button.h"
@@ -19,18 +18,16 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/masked_targeter_delegate.h"
 #include "ui/views/view.h"
 
 namespace ash {
-
-using ContentLayerType = AshColorProvider::ContentLayerType;
 
 namespace {
 
@@ -144,6 +141,10 @@ class AutoclickScrollButton : public CustomShapeButton,
     }
     SetPreferredSize(size_);
 
+    SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(icon_, kColorAshIconColorPrimary));
+
     SetClipPath(CreateCustomShapePath(gfx::Rect(GetPreferredSize())));
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
@@ -191,15 +192,6 @@ class AutoclickScrollButton : public CustomShapeButton,
   // CustomShapeButton:
   SkPath CreateCustomShapePath(const gfx::Rect& bounds) const override {
     return ComputePath(true /* all_edges */);
-  }
-
-  void OnThemeChanged() override {
-    CustomShapeButton::OnThemeChanged();
-    SetImage(views::Button::STATE_NORMAL,
-             gfx::CreateVectorIcon(
-                 icon_, AshColorProvider::Get()->GetContentLayerColor(
-                            ContentLayerType::kIconColorPrimary)));
-    SchedulePaint();
   }
 
   // Computes the path which is the outline of this button. If |all_edges|,
@@ -260,8 +252,7 @@ class AutoclickScrollButton : public CustomShapeButton,
 
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setStrokeWidth(kScrollpadStrokeWidthDips);
-    flags.setColor(AshColorProvider::Get()->GetContentLayerColor(
-        ContentLayerType::kSeparatorColor));
+    flags.setColor(GetColorProvider()->GetColor(kColorAshSeparatorColor));
     canvas->DrawPath(ComputePath(false /* only drawn edges */), flags);
 
     gfx::ImageSkia img = GetImageToPaint();

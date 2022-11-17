@@ -8,7 +8,7 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
@@ -84,14 +84,23 @@ void HoverHighlightView::SetSubText(const std::u16string& sub_text) {
         sub_row_->AddChildView(TrayPopupUtils::CreateUnfocusableLabel());
   }
 
-  sub_text_label_->SetEnabledColor(
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorSecondary));
+  sub_text_label_->SetEnabledColorId(kColorAshTextColorSecondary);
   sub_text_label_->SetAutoColorReadabilityEnabled(false);
   sub_text_label_->SetText(sub_text);
 }
 
 void HoverHighlightView::AddIconAndLabel(const gfx::ImageSkia& image,
+                                         const std::u16string& text) {
+  DCHECK(!is_populated_);
+
+  std::unique_ptr<views::ImageView> icon(TrayPopupUtils::CreateMainImageView());
+  icon->SetImage(image);
+  icon->SetEnabled(GetEnabled());
+
+  AddViewAndLabel(std::move(icon), text);
+}
+
+void HoverHighlightView::AddIconAndLabel(const ui::ImageModel& image,
                                          const std::u16string& text) {
   DCHECK(!is_populated_);
 
@@ -118,8 +127,7 @@ void HoverHighlightView::AddViewAndLabel(std::unique_ptr<views::View> view,
   text_label_ = TrayPopupUtils::CreateUnfocusableLabel();
   text_label_->SetText(text);
   text_label_->SetEnabled(GetEnabled());
-  text_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
+  text_label_->SetEnabledColorId(kColorAshTextColorPrimary);
   TrayPopupUtils::SetLabelFontList(
       text_label_, TrayPopupUtils::FontStyle::kDetailedViewLabel);
   tri_view_->AddView(TriView::Container::CENTER, text_label_);
@@ -145,8 +153,7 @@ void HoverHighlightView::AddLabelRow(const std::u16string& text) {
 
   text_label_ = TrayPopupUtils::CreateUnfocusableLabel();
   text_label_->SetText(text);
-  text_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
+  text_label_->SetEnabledColorId(kColorAshTextColorPrimary);
   TrayPopupUtils::SetLabelFontList(
       text_label_, TrayPopupUtils::FontStyle::kDetailedViewLabel);
   tri_view_->AddView(TriView::Container::CENTER, text_label_);

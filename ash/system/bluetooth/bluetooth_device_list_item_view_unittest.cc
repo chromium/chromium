@@ -10,7 +10,7 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_battery_view.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_multiple_battery_view.h"
 #include "ash/system/bluetooth/fake_bluetooth_detailed_view.h"
@@ -350,9 +350,10 @@ TEST_F(BluetoothDeviceListItemViewTest, HasCorrectIcon) {
           {DeviceType::kTablet, &ash::kSystemMenuTabletIcon},
           {DeviceType::kUnknown, &ash::kSystemMenuBluetoothIcon},
       }};
-  const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
 
+  const SkColor icon_color =
+      bluetooth_device_list_item()->GetColorProvider()->GetColor(
+          kColorAshIconColorPrimary);
   for (const auto& it : device_type_to_icon_map) {
     PairedBluetoothDevicePropertiesPtr paired_device_properties =
         CreatePairedDeviceProperties();

@@ -9,7 +9,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/accessibility/accessibility_detailed_view.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_constants.h"
@@ -141,9 +141,7 @@ views::Button* FloatingAccessibilityDetailedController::CreateBackButton(
   views::ImageButton* button = static_cast<views::ImageButton*>(
       DetailedViewDelegate::CreateBackButton(std::move(callback)));
   ui::ImageModel image = ui::ImageModel::FromVectorIcon(
-      kAutoclickCloseIcon,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary));
+      kAutoclickCloseIcon, kColorAshIconColorPrimary);
   button->SetImageModel(views::Button::STATE_NORMAL, image);
   button->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_FLOATING_ACCESSIBILITY_DETAILED_MENU_CLOSE));

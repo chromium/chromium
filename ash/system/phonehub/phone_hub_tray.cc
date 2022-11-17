@@ -18,6 +18,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/eche/eche_icon_loading_indicator_view.h"
 #include "ash/system/eche/eche_tray.h"
@@ -38,6 +39,7 @@
 #include "base/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
@@ -94,6 +96,9 @@ PhoneHubTray::PhoneHubTray(Shelf* shelf)
       views::ImageButton::VerticalAlignment::ALIGN_MIDDLE);
   icon->SetImageHorizontalAlignment(
       views::ImageButton::HorizontalAlignment::ALIGN_CENTER);
+  icon->SetImageModel(views::ImageButton::STATE_NORMAL,
+                      ui::ImageModel::FromVectorIcon(
+                          kPhoneHubPhoneIcon, kColorAshIconColorPrimary));
   icon_ = tray_container()->AddChildView(std::move(icon));
 }
 
@@ -180,9 +185,6 @@ void PhoneHubTray::OnPhoneHubUiStateChanged() {
 }
 
 void PhoneHubTray::OnSessionStateChanged(session_manager::SessionState state) {
-  icon_->SetImage(views::ImageButton::STATE_NORMAL,
-                  CreateVectorIcon(kPhoneHubPhoneIcon, TrayIconColor(state)));
-
   TemporarilyDisableAnimation();
 }
 
@@ -273,16 +275,6 @@ views::Widget* PhoneHubTray::GetBubbleWidget() const {
 
 const char* PhoneHubTray::GetClassName() const {
   return "PhoneHubTray";
-}
-
-void PhoneHubTray::OnThemeChanged() {
-  TrayBackgroundView::OnThemeChanged();
-  icon_->SetImage(
-      views::ImageButton::STATE_NORMAL,
-      CreateVectorIcon(
-          kPhoneHubPhoneIcon,
-          TrayIconColor(
-              Shell::Get()->session_controller()->GetSessionState())));
 }
 
 bool PhoneHubTray::CanOpenConnectedDeviceSettings() {

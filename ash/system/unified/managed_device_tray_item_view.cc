@@ -8,6 +8,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/enterprise/enterprise_domain_observer.h"
 #include "ash/system/model/enterprise_domain_model.h"
 #include "ash/system/model/system_tray_model.h"
@@ -16,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
@@ -79,8 +81,8 @@ void ManagedDeviceTrayItemView::UpdateIcon() {
     icon = &kSystemTraySupervisedUserIcon;
 
   if (icon) {
-    image_view()->SetImage(gfx::CreateVectorIcon(
-        *icon, TrayIconColor(session->GetSessionState())));
+    image_view()->SetImage(
+        ui::ImageModel::FromVectorIcon(*icon, kColorAshIconColorPrimary));
   }
 }
 
