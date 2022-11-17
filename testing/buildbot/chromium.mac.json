@@ -5816,7 +5816,6 @@
               "os": "Mac-11|Mac-10.16"
             }
           ],
-          "quickrun_shards": 10,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
@@ -6973,7 +6972,6 @@
               "os": "Mac-11|Mac-10.16"
             }
           ],
-          "quickrun_shards": 10,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
@@ -7012,7 +7010,6 @@
               "os": "Mac-11|Mac-10.16"
             }
           ],
-          "quickrun_shards": 16,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 18
         },
@@ -7735,7 +7732,6 @@
               "os": "Mac-12"
             }
           ],
-          "quickrun_shards": 10,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
@@ -8891,8 +8887,6 @@
               "os": "Mac-12"
             }
           ],
-          "inverse_quickrun_shards": 24,
-          "quickrun_shards": 10,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
@@ -8932,8 +8926,6 @@
               "os": "Mac-12"
             }
           ],
-          "inverse_quickrun_shards": 36,
-          "quickrun_shards": 16,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 18
         },

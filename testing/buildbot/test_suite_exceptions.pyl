@@ -241,7 +241,6 @@
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
         ],
         'swarming': {
-          'quickrun_shards': 7,
           'shards': 8,
         },
       },
@@ -281,7 +280,6 @@
             },
           ],
           'shards': 12,
-          'quickrun_shards': 10,
         },
       },
       'Mac12 Tests': {
@@ -292,8 +290,6 @@
             },
           ],
           'shards': 12,
-          'quickrun_shards': 10,
-          'inverse_quickrun_shards': 24,
         },
       },
       'Mac12 Tests (dbg)': {
@@ -569,7 +565,6 @@
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
         ],
         'swarming': {
-          'quickrun_shards': 11,
           'shards': 10,
         },
       },
@@ -609,7 +604,6 @@
             },
           ],
           'shards': 18,
-          'quickrun_shards': 16,
         },
       },
       'Mac12 Tests': {
@@ -623,8 +617,6 @@
             },
           ],
           'shards': 18,
-          'quickrun_shards': 16,
-          'inverse_quickrun_shards': 36,
         },
       },
       'Mac12 Tests (dbg)': {
@@ -909,7 +901,6 @@
         # crbug.com/1257927
         'swarming': {
           'shards': 40,
-          'quickrun_shards': 80
         },
       },
       'Linux ASan Tests (sandboxed)': {
@@ -958,7 +949,6 @@
       'Linux Tests': {
         'swarming': {
           'shards': 20,
-          'quickrun_shards': 15,
         },
       },
       # https://crbug.com/1084469
@@ -1048,7 +1038,6 @@
           # This is for slow test execution that often becomes a critical path of
           # swarming jobs. crbug.com/868114
           'shards': 55,
-          'quickrun_shards': 40,
         }
       },
       'Win11 Tests x64': {
@@ -1093,7 +1082,6 @@
       'linux-chromeos-rel': {
         'swarming': {
           'shards': 60,
-          'quickrun_shards': 40,
           'dimension_sets': [
             {
               'kvm': '1',
@@ -1118,7 +1106,6 @@
       'linux-lacros-tester-rel': {
         'swarming': {
           'shards': 20,
-          'quickrun_shards': 20,
         },
       },
       'mac-code-coverage': {
@@ -1229,7 +1216,6 @@
     'modifications': {
       'chromeos-amd64-generic-rel': {
         'swarming': {
-          'quickrun_shards': 8,
           'shards': 7,
         },
       },
@@ -1663,7 +1649,6 @@
       'Linux ASan LSan Tests (1)': {
         'swarming': {
           'shards': 24,
-          'quickrun_shards': 24,
         },
       },
       'Linux ASan Tests (sandboxed)': {
@@ -1682,13 +1667,11 @@
       'Mac11 Tests': {
         'swarming': {
           'shards': 12,
-          'quickrun_shards': 10,
         },
       },
       'Mac12 Tests': {
         'swarming': {
           'shards': 12,
-          'quickrun_shards': 10,
         },
       },
       'Mac12 Tests (dbg)': { # https://crbug.com/1279504
@@ -2487,7 +2470,6 @@
         # These are slow on the ASan trybot for some reason, crbug.com/1257927
         'swarming': {
           'shards': 12,
-          'quickrun_shards': 12,
         },
       },
       'Linux Chromium OS ASan LSan Tests (1)': {
@@ -2548,7 +2530,6 @@
       'Win10 Tests x64': {
         'swarming': {
           'shards': 9,
-          'quickrun_shards': 8,
         },
       },
       # temporary, https://crbug.com/818832
@@ -3362,7 +3343,6 @@
       'Win10 Tests x64': {
         'swarming': {
           'shards': 3,
-          'quickrun_shards': 3,
         },
       },
       'Win10 Tests x64 (dbg)': {

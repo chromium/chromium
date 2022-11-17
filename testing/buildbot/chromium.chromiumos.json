@@ -243,7 +243,6 @@
               }
             ]
           },
-          "quickrun_shards": 8,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 7
         },
@@ -3610,7 +3609,6 @@
               "os": "Ubuntu-18.04"
             }
           ],
-          "quickrun_shards": 40,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 60
         },
@@ -5254,7 +5252,6 @@
               "os": "Ubuntu-18.04"
             }
           ],
-          "quickrun_shards": 20,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
