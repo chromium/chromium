@@ -94,9 +94,9 @@ class UpdaterNetworkTest : public ::testing::Test {
     if (request.method == net::test_server::HttpMethod::METHOD_POST) {
       // Echo the posted data back.
       http_response->set_content(request.content);
-      http_response->AddCustomHeader("X-Retry-After", "67");
-      http_response->AddCustomHeader("ETag", "Wfhw789h");
-      http_response->AddCustomHeader("X-Cup-Server-Proof", "server-proof");
+      http_response->AddCustomHeader("x-retry-after", "67");
+      http_response->AddCustomHeader("etag", "Wfhw789h");
+      http_response->AddCustomHeader("x-cup-server-proof", "server-proof");
     } else if (request.method == net::test_server::HttpMethod::METHOD_GET) {
       http_response->set_content("hello");
       http_response->set_content_type("application/octet-stream");

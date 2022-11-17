@@ -214,6 +214,14 @@ class LibcurlNetworkFetcher : public update_client::NetworkFetcher {
 
   void OnTransferInfo(curl_off_t total, curl_off_t current);
 
+  // Helper function to find the value of a header or return an empty string.
+  static std::string GetHeaderValue(
+      const base::flat_map<std::string, std::string>& response_headers,
+      const std::string& header) {
+    const std::string lower = base::ToLowerASCII(header);
+    return response_headers.contains(lower) ? response_headers.at(lower) : "";
+  }
+
   // Sequence to perform blocking IO.
   scoped_refptr<base::SequencedTaskRunner> io_sequence_ =
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
@@ -327,16 +335,11 @@ void LibcurlNetworkFetcher::PostRequestOnIOSequence(
             << " (CURLcode " << result << ")";
   }
 
-  int x_retry_after = -1;
-  if (response_headers.contains(
-          update_client::NetworkFetcher::kHeaderXRetryAfter)) {
-    if (!base::StringToInt(
-            response_headers.at(
-                update_client::NetworkFetcher::kHeaderXRetryAfter),
-            &x_retry_after)) {
-      x_retry_after = -1;
-    }
-  } else {
+  int x_retry_after;
+  if (!base::StringToInt(
+          GetHeaderValue(response_headers,
+                         update_client::NetworkFetcher::kHeaderXRetryAfter),
+          &x_retry_after)) {
     x_retry_after = -1;
   }
 
@@ -345,14 +348,10 @@ void LibcurlNetworkFetcher::PostRequestOnIOSequence(
       base::BindOnce(
           std::move(post_request_complete_callback), std::move(response_body),
           CURLE_OK,
-          response_headers.contains(update_client::NetworkFetcher::kHeaderEtag)
-              ? response_headers.at(update_client::NetworkFetcher::kHeaderEtag)
-              : "",
-          response_headers.contains(
-              update_client::NetworkFetcher::kHeaderXCupServerProof)
-              ? response_headers.at(
-                    update_client::NetworkFetcher::kHeaderXCupServerProof)
-              : "",
+          GetHeaderValue(response_headers,
+                         update_client::NetworkFetcher::kHeaderEtag),
+          GetHeaderValue(response_headers,
+                         update_client::NetworkFetcher::kHeaderXCupServerProof),
           x_retry_after));
 
   curl_functions_->slist_free_all(headers);
@@ -494,8 +493,9 @@ size_t LibcurlNetworkFetcher::CurlHeaderCallback(char* data,
     base::TrimWhitespaceASCII(key, base::TRIM_ALL, &key);
     base::TrimWhitespaceASCII(value, base::TRIM_ALL, &value);
 
+    // HTTP headers are case insensitive. For simplicity, always use lower-case.
     if (!key.empty() && !value.empty())
-      headers->insert_or_assign(key, value);
+      headers->insert_or_assign(base::ToLowerASCII(key), value);
   }
   return buf_size.ValueOrDefault(0);
 }
