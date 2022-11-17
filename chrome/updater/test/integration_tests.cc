@@ -96,6 +96,7 @@ class IntegrationTest : public ::testing::Test {
                          true,    // enable_thread_id
                          true,    // enable_timestamp
                          false);  // enable_tickcount
+    CleanProcesses();
     EXPECT_TRUE(WaitForUpdaterExit());
     Clean();
     ExpectClean();
