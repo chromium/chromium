@@ -29,7 +29,7 @@ crosapi::mojom::ParentAccessResultPtr DialogResultToParentAccessResult(
           crosapi::mojom::ParentAccessDeclinedResult::New());
       break;
 
-    case ash::ParentAccessDialog::Result::Status::kCancelled:
+    case ash::ParentAccessDialog::Result::Status::kCanceled:
       parent_access_result = mojom::ParentAccessResult::NewCancelled(
           crosapi::mojom::ParentAccessCancelledResult::New());
       break;

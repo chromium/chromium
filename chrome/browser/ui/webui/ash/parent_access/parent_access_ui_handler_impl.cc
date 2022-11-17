@@ -133,7 +133,7 @@ void ParentAccessUIHandlerImpl::OnParentAccessDone(
     case parent_access_ui::mojom::ParentAccessResult::kDeclined:
       delegate_->SetDeclined();
       break;
-    case parent_access_ui::mojom::ParentAccessResult::kCancelled:
+    case parent_access_ui::mojom::ParentAccessResult::kCanceled:
       delegate_->SetCanceled();
       break;
     case parent_access_ui::mojom::ParentAccessResult::kError:

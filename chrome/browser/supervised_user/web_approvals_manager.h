@@ -149,7 +149,7 @@ class WebApprovalsManager {
   FRIEND_TEST_ALL_PREFIXES(WebApprovalsManagerTest,
                            LocalWebApprovalDeclinedChromeOSTest);
   FRIEND_TEST_ALL_PREFIXES(WebApprovalsManagerTest,
-                           LocalWebApprovalCancelledChromeOSTest);
+                           LocalWebApprovalCanceledChromeOSTest);
   FRIEND_TEST_ALL_PREFIXES(WebApprovalsManagerTest,
                            LocalWebApprovalErrorChromeOSTest);
 

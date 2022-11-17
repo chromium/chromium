@@ -43,7 +43,7 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, ShowDialog) {
   ParentAccessDialog::Callback callback = base::BindLambdaForTesting(
       [&](std::unique_ptr<ParentAccessDialog::Result> result) -> void {
         EXPECT_EQ(result->status,
-                  ParentAccessDialog::Result::Status::kCancelled);
+                  ParentAccessDialog::Result::Status::kCanceled);
         run_loop.Quit();
       });
 
@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, SetCanceled) {
   base::RunLoop run_loop;
 
   ParentAccessDialog::Result expected_result;
-  expected_result.status = ParentAccessDialog::Result::Status::kCancelled;
+  expected_result.status = ParentAccessDialog::Result::Status::kCanceled;
 
   // Create the callback.
   ParentAccessDialog::Callback callback = base::BindLambdaForTesting(
@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, DestroyedWithoutResult) {
   base::RunLoop run_loop;
 
   ParentAccessDialog::Result expected_result;
-  expected_result.status = ParentAccessDialog::Result::Status::kCancelled;
+  expected_result.status = ParentAccessDialog::Result::Status::kCanceled;
 
   // Create the callback.
   ParentAccessDialog::Callback callback = base::BindLambdaForTesting(

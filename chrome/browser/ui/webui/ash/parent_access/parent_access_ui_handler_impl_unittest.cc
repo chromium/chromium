@@ -287,7 +287,7 @@ TEST_F(ParentAccessUIHandlerImplTest, OnCanceled) {
   // Send the declined result status.
   base::RunLoop run_loop;
   parent_access_ui_handler_->OnParentAccessDone(
-      parent_access_ui::mojom::ParentAccessResult::kCancelled,
+      parent_access_ui::mojom::ParentAccessResult::kCanceled,
       base::BindLambdaForTesting([&]() -> void { run_loop.Quit(); }));
 
   run_loop.Run();

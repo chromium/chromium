@@ -86,8 +86,8 @@ std::string ParentAccessResultToLoggingStringChromeOS(
       return "Approved";
     case ash::ParentAccessDialog::Result::Status::kDeclined:
       return "Declined";
-    case ash::ParentAccessDialog::Result::Status::kCancelled:
-      return "Cancelled";
+    case ash::ParentAccessDialog::Result::Status::kCanceled:
+      return "Canceled";
     case ash::ParentAccessDialog::Result::Status::kError:
       return "Error";
   }
@@ -106,7 +106,7 @@ void RecordLocalApprovalResultMetricForChromeOSResult(
       histogram_enum =
           WebApprovalsManager::LocalApprovalResultMetric::kDeclined;
       break;
-    case ash::ParentAccessDialog::Result::Status::kCancelled:
+    case ash::ParentAccessDialog::Result::Status::kCanceled:
       histogram_enum =
           WebApprovalsManager::LocalApprovalResultMetric::kCanceled;
       break;

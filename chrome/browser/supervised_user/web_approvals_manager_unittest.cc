@@ -236,7 +236,7 @@ TEST_F(WebApprovalsManagerTest, LocalWebApprovalDurationHistogramTest) {
       WebApprovalsManager::GetLocalApprovalDurationMillisecondsHistogram(),
       elapsed_time, 1);
 
-  // Receive a request cancelled by the parent.
+  // Receive a request canceled by the parent.
   // Check that no duration metric is recorded for incomplete requests.
   web_approvals_manager().OnLocalApprovalRequestCompleted(
       &supervisedUserSettingsServiceMock, url, start_time,
@@ -338,7 +338,7 @@ TEST_F(WebApprovalsManagerTest, LocalWebApprovalDeclinedChromeOSTest) {
       approval_duration, 1);
 }
 
-TEST_F(WebApprovalsManagerTest, LocalWebApprovalCancelledChromeOSTest) {
+TEST_F(WebApprovalsManagerTest, LocalWebApprovalCanceledChromeOSTest) {
   base::HistogramTester histogram_tester;
   const GURL url("http://www.example.com");
 
@@ -349,7 +349,7 @@ TEST_F(WebApprovalsManagerTest, LocalWebApprovalCancelledChromeOSTest) {
       .Times(0);
 
   auto dialog_result = std::make_unique<ash::ParentAccessDialog::Result>();
-  dialog_result->status = ash::ParentAccessDialog::Result::Status::kCancelled;
+  dialog_result->status = ash::ParentAccessDialog::Result::Status::kCanceled;
 
   // Capture approval start time and forward clock by the fake approval
   // duration.
