@@ -3524,6 +3524,9 @@
           '--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json',
           '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
+        'chromeos_args': [
+          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
         'android_args': [
           '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
         ],
@@ -3532,6 +3535,9 @@
         ],
         'swarming': {
           'shards': 6,
+        },
+        'chromeos_swarming': {
+          'shards': 20,
         },
       },
     },
@@ -5977,6 +5983,8 @@
     ],
 
     'gpu_chromeos_telemetry_tests': [
+      'gpu_webgl_conformance_gles_passthrough_telemetry_tests',
+      'gpu_webgl2_conformance_gles_passthrough_telemetry_tests',
       'gpu_webgl_conformance_telemetry_tests',
     ],
 
