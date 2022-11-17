@@ -34,7 +34,12 @@ SQLitePersistentStoreBackendBase::SQLitePersistentStoreBackendBase(
       client_task_runner_(std::move(client_task_runner)) {}
 
 SQLitePersistentStoreBackendBase::~SQLitePersistentStoreBackendBase() {
-  DCHECK(!db_.get()) << "Close should already have been called.";
+  // If `db_` hasn't been reset by the time this destructor is called,
+  // a use-after-free could occur if the `db_` error callback is ever
+  // invoked. To guard against this, crash if `db_` hasn't been reset
+  // so that this use-after-free doesn't happen and so that we'll be
+  // alerted to the fact that a closer look at this code is needed.
+  CHECK(!db_.get()) << "Close should already have been called.";
 }
 
 void SQLitePersistentStoreBackendBase::Flush(base::OnceClosure callback) {
