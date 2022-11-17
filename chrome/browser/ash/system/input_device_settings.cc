@@ -471,13 +471,10 @@ bool InputDeviceSettings::ForceKeyboardDrivenUINavigation() {
     return true;
   }
 
-  bool keyboard_driven = false;
-  if (chromeos::system::StatisticsProvider::GetInstance()->GetMachineFlag(
-          chromeos::system::kOemKeyboardDrivenOobeKey, &keyboard_driven)) {
-    return keyboard_driven;
-  }
-
-  return false;
+  return chromeos::system::StatisticsProvider::FlagValueToBool(
+      chromeos::system::StatisticsProvider::GetInstance()->GetMachineFlag(
+          chromeos::system::kOemKeyboardDrivenOobeKey),
+      /*default_value=*/false);
 }
 
 }  // namespace system
