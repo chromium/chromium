@@ -3688,17 +3688,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.ThemeColor" enum="Android.ThemeColor"
-    expires_after="2022-06-19">
-  <owner>sinansahin@google.com</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Records whether a page defined theme color is available and applied to top
-    UI. Recorded in didFirstVisuallyNonEmptyPaint while a web page is being
-    loaded.
-  </summary>
-</histogram>
-
 <histogram name="Android.ThumbnailDiskStorage.CachedBitmap.Found"
     enum="BooleanFound" expires_after="2020-01-30">
   <owner>shaktisahu@chromium.org</owner>
