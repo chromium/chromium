@@ -19,6 +19,9 @@ IsolatedWebAppExternalInstallOptions::IsolatedWebAppExternalInstallOptions(
   DCHECK(update_manifest_url_.is_valid());
 }
 
+IsolatedWebAppExternalInstallOptions::IsolatedWebAppExternalInstallOptions(
+    const IsolatedWebAppExternalInstallOptions& other) = default;
+
 IsolatedWebAppExternalInstallOptions::~IsolatedWebAppExternalInstallOptions() =
     default;
 

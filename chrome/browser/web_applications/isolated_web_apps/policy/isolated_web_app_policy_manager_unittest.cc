@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
@@ -44,21 +45,31 @@ constexpr char kUpdateManifestUrl4[] =
     "https://example.com/4/update-manifest-4.json";
 constexpr char kUpdateManifestUrl5[] =
     "https://example.com/5/update-manifest-5.json";
+constexpr char kUpdateManifestUrl6[] =
+    "https://example.com/6/update-manifest-6.json";
+constexpr char kUpdateManifestUrl7[] =
+    "https://example.com/7/update-manifest-7.json";
 
 constexpr char kUpdateManifestValue1[] = R"(
     {"versions":[
-      {"version": "1.0.0", "src": "https://example.com/1/p1.swbn"},
-      {"version": "7.0.6", "src": "http://example.com/1/p7.wbn"}]
+      {"version": "1.0.0", "src": "https://example.com/not-used.swbn"},
+      {"version": "7.0.6", "src": "https://example.com/app1.swbn"}]
     })";
 constexpr char kUpdateManifestValue2[] = R"(
     {"versions":
-    [{"version": "3.0.0","src": "https://example.com/2/p3.swbn"}]})";
+    [{"version": "3.0.0","src": "https://example.com/app2.swbn"}]})";
 constexpr char kUpdateManifestValue3[] =
     "This update manifest should return error 404";
 constexpr char kUpdateManifestValue4[] = R"(This is not JSON)";
 constexpr char kUpdateManifestValue5[] = R"(
     {"versions":
     [{"version": "1.0.0", "src": "Ooops! Wrong Web Bundle URL!"}]})";
+constexpr char kUpdateManifestValue6[] = R"(
+    {"versions":
+    [{"version": "1.0.0", "src": "https://example.com/app6.swbn"}]})";
+constexpr char kUpdateManifestValue7[] = R"(
+    {"versions":
+    [{"version": "1.0.0", "src": "https://example.com/app7.swbn"}]})";
 
 constexpr char kWebBundleId1[] =
     "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
@@ -70,6 +81,9 @@ constexpr char kWebBundleId4[] =
     "derugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
 constexpr char kWebBundleId5[] =
     "eerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
+constexpr base::StringPiece kWebBundleId6 = kWebBundleId1;
+constexpr char kWebBundleId7[] =
+    "gerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
 
 base::Value CreatePolicyEntry(base::StringPiece web_bundle_id,
                               base::StringPiece update_manifest_url) {
@@ -81,30 +95,49 @@ base::Value CreatePolicyEntry(base::StringPiece web_bundle_id,
 }
 
 std::vector<IsolatedWebAppExternalInstallOptions> GenerateInstallOptions() {
+  // App 1 represents the most general case: the Update Manifest has several
+  // records. We should determine the latest version, download the appropreate
+  // file and install the app. It is successful case.
   const base::Value policy_value_1 =
       CreatePolicyEntry(kWebBundleId1, kUpdateManifestUrl1);
   IsolatedWebAppExternalInstallOptions app_options_1 =
       IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_value_1)
           .value();
+  // App 2 is similar to App 1 but has only one record in the Update Manifest.
   const base::Value policy_value_2 =
       CreatePolicyEntry(kWebBundleId2, kUpdateManifestUrl2);
   IsolatedWebAppExternalInstallOptions app_options_2 =
       IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_value_2)
           .value();
+  // We can't download Update Manifest for the app 3.
   const base::Value policy_value_3 =
       CreatePolicyEntry(kWebBundleId3, kUpdateManifestUrl3);
   IsolatedWebAppExternalInstallOptions app_options_3 =
       IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_value_3)
           .value();
+  // App 4 represents the case where the Update Manifest if not parceable.
   const base::Value policy_value_4 =
       CreatePolicyEntry(kWebBundleId4, kUpdateManifestUrl4);
   IsolatedWebAppExternalInstallOptions app_options_4 =
       IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_value_4)
           .value();
+  // The Web Bundle URL of the App 5 is not valid.
   const base::Value policy_value_5 =
       CreatePolicyEntry(kWebBundleId5, kUpdateManifestUrl5);
   IsolatedWebAppExternalInstallOptions app_options_5 =
       IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_value_5)
+          .value();
+  // ID of the App 6 is the same as ID of the App 1.
+  const base::Value policy_value_6 =
+      CreatePolicyEntry(kWebBundleId6, kUpdateManifestUrl6);
+  IsolatedWebAppExternalInstallOptions app_options_6 =
+      IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_value_6)
+          .value();
+  // The Web Bundle file of the App 7 can't be downloaded.
+  const base::Value policy_value_7 =
+      CreatePolicyEntry(kWebBundleId7, kUpdateManifestUrl7);
+  IsolatedWebAppExternalInstallOptions app_options_7 =
+      IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_value_7)
           .value();
 
   std::vector<IsolatedWebAppExternalInstallOptions> options;
@@ -113,6 +146,8 @@ std::vector<IsolatedWebAppExternalInstallOptions> GenerateInstallOptions() {
   options.push_back(std::move(app_options_3));
   options.push_back(std::move(app_options_4));
   options.push_back(std::move(app_options_5));
+  options.push_back(std::move(app_options_6));
+  options.push_back(std::move(app_options_7));
   return options;
 }
 
@@ -161,6 +196,15 @@ class IsolatedWebAppPolicyManagerTest : public ::testing::Test {
                               net::HttpStatusCode::HTTP_NOT_FOUND);
     AddJsonResponse(kUpdateManifestUrl4, kUpdateManifestValue4);
     AddJsonResponse(kUpdateManifestUrl5, kUpdateManifestValue5);
+    AddJsonResponse(kUpdateManifestUrl6, kUpdateManifestValue6);
+    AddJsonResponse(kUpdateManifestUrl7, kUpdateManifestValue7);
+    test_factory_.AddResponse("https://example.com/app1.swbn",
+                              "Content of app1");
+    test_factory_.AddResponse("https://example.com/app2.swbn",
+                              "Content of app2");
+    test_factory_.AddResponse("https://example.com/app7.swbn", "",
+                              net::HttpStatusCode::HTTP_NOT_FOUND);
+
     StartManagedGuestSession();
   }
 
@@ -205,6 +249,10 @@ TEST_F(IsolatedWebAppPolicyManagerTest, MgsRegularFlow) {
       EphemeralAppInstallResult::kErrorUpdateManifestParsingFailed;
   expected_results.at(4) = IsolatedWebAppPolicyManager::
       EphemeralAppInstallResult::kErrorWebBundleUrlCantBeDetermined;
+  expected_results.at(5) = IsolatedWebAppPolicyManager::
+      EphemeralAppInstallResult::kErrorCantCreateIwaDirectory;
+  expected_results.at(6) = IsolatedWebAppPolicyManager::
+      EphemeralAppInstallResult::kErrorCantDownloadWebBundle;
   base::test::TestFuture<
       std::vector<IsolatedWebAppPolicyManager::EphemeralAppInstallResult>>
       future;
@@ -212,10 +260,29 @@ TEST_F(IsolatedWebAppPolicyManagerTest, MgsRegularFlow) {
                                       shared_url_loader_factory_,
                                       future.GetCallback());
   manager.InstallEphemeralApps();
-
   EXPECT_EQ(future.Get(), expected_results);
-  EXPECT_TRUE(base::DirectoryExists(dir_.GetPath().Append(
-      IsolatedWebAppPolicyManager::kEphemeralIwaRootDirectory)));
+
+  const base::FilePath iwa_root_dir = dir_.GetPath().Append(
+      IsolatedWebAppPolicyManager::kEphemeralIwaRootDirectory);
+  ASSERT_TRUE(base::DirectoryExists(iwa_root_dir));
+
+  // There should be 2 directories that represent successfully installed apps.
+  base::FileEnumerator iter(
+      iwa_root_dir, /*recursive=*/false,
+      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
+  int counter = 0;
+  while (!iter.Next().empty()) {
+    EXPECT_TRUE(iter.GetInfo().IsDirectory());
+    ++counter;
+  }
+  EXPECT_EQ(counter, 2);
+
+  EXPECT_TRUE(base::PathExists(
+      iwa_root_dir.Append(kWebBundleId1)
+          .Append(IsolatedWebAppPolicyManager::kMainSignedWebBundleFileName)));
+  EXPECT_TRUE(base::PathExists(
+      iwa_root_dir.Append(kWebBundleId2)
+          .Append(IsolatedWebAppPolicyManager::kMainSignedWebBundleFileName)));
 }
 
 // If there is no MGS we don't create root directory for the IWAs.

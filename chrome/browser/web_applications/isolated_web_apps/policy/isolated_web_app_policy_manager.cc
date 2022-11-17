@@ -217,14 +217,108 @@ void IsolatedWebAppPolicyManager::OnUpdateManifestParsed(
     return;
   }
 
-  LOG(ERROR) << "We have determined the URL of the Web Bundle for the app "
+  current_app_->set_web_bundle_url(web_bundle_url.value());
+  CreateIwaDirectory();
+}
+
+void IsolatedWebAppPolicyManager::CreateIwaDirectory() {
+  base::FilePath iwa_dir =
+      installation_dir_.Append(current_app_->web_bundle_id().id());
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce(&CreateNonExistingDirectory, iwa_dir),
+      base::BindOnce(&IsolatedWebAppPolicyManager::OnIwaDirectoryCreated,
+                     weak_factory_.GetWeakPtr(), iwa_dir));
+}
+
+void IsolatedWebAppPolicyManager::OnIwaDirectoryCreated(
+    const base::FilePath& iwa_dir,
+    base::File::Error error) {
+  if (error != base::File::FILE_OK) {
+    SetResultForCurrentEphemeralApp(
+        EphemeralAppInstallResult::kErrorCantCreateIwaDirectory);
+    ContinueWithTheNextApp();
+    return;
+  }
+
+  current_app_->set_app_directory(iwa_dir);
+  DownloadWebBundle();
+}
+
+void IsolatedWebAppPolicyManager::DownloadWebBundle() {
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("iwa_policy_signed_web_bundle", R"(
+  semantics {
+    sender: "Isolated Web App Signed Web Bundle Downloader"
+    description:
+      "Downloads the Signed Web Bundle of the Isolated Web App (IWA) "
+      "by the URL taken form the Update Manifest."
+    trigger:
+      "Installing/update of every IWA (including policy-based installs) "
+      "require in a Signed Web Bundle that we download here."
+    data:
+      "This request does not send any data. It just downloads a Web Bundle."
+    destination: OTHER
+    contacts {
+      email: "peletskyi@google.com"
+    }
+  }
+  policy {
+    cookies_allowed: NO
+    setting: "This feature cannot be disabled in settings."
+    chrome_policy {
+      IsolatedWebAppInstallForceList {
+        IsolatedWebAppInstallForceList: ""
+      }
+    }
+  })");
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url = current_app_->web_bundle_url();
+  // Cookies are not allowed.
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+
+  std::unique_ptr<network::SimpleURLLoader> simple_loader =
+      network::SimpleURLLoader::Create(std::move(resource_request),
+                                       std::move(traffic_annotation));
+
+  simple_loader->SetRetryOptions(
+      /* max_retries=*/3,
+      network::SimpleURLLoader::RETRY_ON_5XX |
+          network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
+
+  network::SimpleURLLoader* const simple_loader_ptr = simple_loader.get();
+  base::OnceCallback<void(base::FilePath path)> cb =
+      base::BindOnce(&IsolatedWebAppPolicyManager::OnWebBundleDownloaded,
+                     weak_factory_.GetWeakPtr(), std::move(simple_loader));
+
+  base::FilePath swbn_path =
+      current_app_->app_directory().Append(kMainSignedWebBundleFileName);
+  simple_loader_ptr->DownloadToFile(url_loader_factory_.get(), std::move(cb),
+                                    swbn_path);
+}
+
+void IsolatedWebAppPolicyManager::OnWebBundleDownloaded(
+    std::unique_ptr<network::SimpleURLLoader> simple_loader,
+    base::FilePath path) {
+  if (path.empty()) {
+    // Delete the app directory as we don't need it any more.
+    const base::FilePath iwa_path_to_delete(current_app_->app_directory());
+    current_app_->reset_app_directory();
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::GetDeleteFileCallback(iwa_path_to_delete));
+
+    SetResultForCurrentEphemeralApp(
+        EphemeralAppInstallResult::kErrorCantDownloadWebBundle);
+    ContinueWithTheNextApp();
+    return;
+  }
+
+  LOG(ERROR) << "We downloaded the signed Web Bundle for the app "
              << current_app_->web_bundle_id().id()
              << ". Further installation steps will be executed after "
                 "the feature is complete.";
 
-  // Even though the app is not installed because the feature is not yet
-  // implemented, let's set the result to kSuccess as nothing went wrong for
-  // the current app.
   SetResultForCurrentEphemeralApp(EphemeralAppInstallResult::kSuccess);
   ContinueWithTheNextApp();
 }

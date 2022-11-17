@@ -34,9 +34,12 @@ class IsolatedWebAppPolicyManager {
     kErrorUpdateManifestDownloadFailed,
     kErrorUpdateManifestParsingFailed,
     kErrorWebBundleUrlCantBeDetermined,
+    kErrorCantCreateIwaDirectory,
+    kErrorCantDownloadWebBundle,
     kUnknown,
   };
   static constexpr char kEphemeralIwaRootDirectory[] = "EphemeralIWA";
+  static constexpr char kMainSignedWebBundleFileName[] = "main.swbn";
 
   IsolatedWebAppPolicyManager(
       const base::FilePath& context_dir,
@@ -77,6 +80,17 @@ class IsolatedWebAppPolicyManager {
   void ParseUpdateManifest(const std::string& manifest_content);
   void OnUpdateManifestParsed(absl::optional<base::Value> result,
                               const absl::optional<std::string>& error);
+
+  // Create a new directory for the exact instance of the IWA.
+  void CreateIwaDirectory();
+  void OnIwaDirectoryCreated(const base::FilePath& iwa_dir,
+                             base::File::Error error);
+
+  // Downloading of the Signed Web Bundle.
+  void DownloadWebBundle();
+  void OnWebBundleDownloaded(
+      std::unique_ptr<network::SimpleURLLoader> simple_loader,
+      base::FilePath path);
 
   void SetResultForCurrentEphemeralApp(EphemeralAppInstallResult result);
   void SetResultForAllEphemeralApps(EphemeralAppInstallResult result);
