@@ -309,6 +309,7 @@ crbug.com/1302427 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_CanvasLowLatencyWebGL
 
 # WebGPU pixel tests flakily hang in the metal shader compiler on Mac.
 crbug.com/1268120 [ mac asan ] Pixel_WebGPUToDataURL [ Failure ]
+crbug.com/1268120 [ mac asan ] Pixel_WebGPUDisplayP3 [ Failure ]
 
 crbug.com/1297636 [ mac ] Pixel_WebGPUImportUnaccelerated2DCanvas [ Failure ]
 
