@@ -36,7 +36,6 @@ import org.json.JSONObject;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FeatureList;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
@@ -62,6 +61,7 @@ import org.chromium.chrome.browser.customtabs.features.sessionrestore.SessionRes
 import org.chromium.chrome.browser.customtabs.features.sessionrestore.SessionRestoreManagerImpl;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.metrics.PageLoadMetrics;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
@@ -183,6 +183,9 @@ public class CustomTabsConnection {
     static final String GET_GREATEST_SCROLL_PERCENTAGE = "getGreatestScrollPercentage";
     @VisibleForTesting
     static final String GREATEST_SCROLL_PERCENTAGE_KEY = "greatestScrollPercentage";
+    private static final MutableFlagWithSafeDefault sRealTimeEngagementFlag =
+            new MutableFlagWithSafeDefault(
+                    ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS, false);
 
     @IntDef({ParallelRequestStatus.NO_REQUEST, ParallelRequestStatus.SUCCESS,
             ParallelRequestStatus.FAILURE_NOT_INITIALIZED,
@@ -668,9 +671,7 @@ public class CustomTabsConnection {
         Bundle result = null;
         switch (commandName) {
             case GET_GREATEST_SCROLL_PERCENTAGE:
-                if (!FeatureList.isInitialized()
-                        || !ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS)) {
+                if (!sRealTimeEngagementFlag.isEnabled()) {
                     break;
                 }
                 Integer percentage = mGreatestScrollPercentageSupplier != null
