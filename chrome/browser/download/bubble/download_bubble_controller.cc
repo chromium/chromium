@@ -16,6 +16,7 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_item_model.h"
+#include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/download/offline_item_model_manager.h"
 #include "chrome/browser/download/offline_item_model_manager_factory.h"
 #include "chrome/browser/download/offline_item_utils.h"
@@ -380,11 +381,22 @@ std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetPartialView() {
 
 void DownloadBubbleUIController::ProcessDownloadButtonPress(
     DownloadUIModel* model,
-    DownloadCommands::Command command) {
+    DownloadCommands::Command command,
+    bool is_main_view) {
   DownloadCommands commands(model->GetWeakPtr());
   base::UmaHistogramExactLinear("Download.Bubble.ProcessedCommand", command,
                                 DownloadCommands::MAX + 1);
   switch (command) {
+    case DownloadCommands::KEEP:
+    case DownloadCommands::DISCARD:
+      DownloadItemWarningData::AddWarningActionEvent(
+          model->GetDownloadItem(),
+          is_main_view ? DownloadItemWarningData::BUBBLE_MAINPAGE
+                       : DownloadItemWarningData::BUBBLE_SUBPAGE,
+          command == DownloadCommands::KEEP ? DownloadItemWarningData::PROCEED
+                                            : DownloadItemWarningData::DISCARD);
+      commands.ExecuteCommand(command);
+      break;
     case DownloadCommands::REVIEW:
       model->ReviewScanningVerdict(
           browser_->tab_strip_model()->GetActiveWebContents());
@@ -402,8 +414,6 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
     case DownloadCommands::OPEN_WHEN_COMPLETE:
     case DownloadCommands::SHOW_IN_FOLDER:
     case DownloadCommands::ALWAYS_OPEN_TYPE:
-    case DownloadCommands::KEEP:
-    case DownloadCommands::DISCARD:
       commands.ExecuteCommand(command);
       break;
     default:

@@ -66,7 +66,8 @@ class DownloadBubbleUIController
 
   // Process button press on the bubble.
   void ProcessDownloadButtonPress(DownloadUIModel* model,
-                                  DownloadCommands::Command command);
+                                  DownloadCommands::Command command,
+                                  bool is_main_view);
 
   // Notify when a new download is ready to be shown on UI, and if the window
   // this controller belongs to should show the partial view.

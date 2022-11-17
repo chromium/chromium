@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/download/bubble/download_bubble_controller.h"
+#include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
@@ -95,6 +96,9 @@ void DownloadBubbleSecurityView::AddHeader() {
 }
 
 void DownloadBubbleSecurityView::BackButtonPressed() {
+  DownloadItemWarningData::AddWarningActionEvent(
+      download_row_view_->model()->GetDownloadItem(),
+      DownloadItemWarningData::BUBBLE_SUBPAGE, DownloadItemWarningData::BACK);
   navigation_handler_->OpenPrimaryDialog();
   base::UmaHistogramEnumeration(
       kSubpageActionHistogram, DownloadBubbleSubpageAction::kPressedBackButton);
@@ -107,6 +111,9 @@ void DownloadBubbleSecurityView::UpdateHeader() {
 }
 
 void DownloadBubbleSecurityView::CloseBubble() {
+  DownloadItemWarningData::AddWarningActionEvent(
+      download_row_view_->model()->GetDownloadItem(),
+      DownloadItemWarningData::BUBBLE_SUBPAGE, DownloadItemWarningData::CLOSE);
   // CloseDialog will delete the object. Do not access any members below.
   navigation_handler_->CloseDialog(
       views::Widget::ClosedReason::kCloseButtonClicked);
@@ -220,8 +227,8 @@ void DownloadBubbleSecurityView::ProcessButtonClick(
   // happens leading to closure of the bubble, it will be called after primary
   // dialog is opened.
   navigation_handler_->OpenPrimaryDialog();
-  bubble_controller_->ProcessDownloadButtonPress(download_row_view_->model(),
-                                                 command);
+  bubble_controller_->ProcessDownloadButtonPress(
+      download_row_view_->model(), command, /*is_main_view=*/false);
   base::UmaHistogramEnumeration(
       kSubpageActionHistogram,
       is_secondary_button ? DownloadBubbleSubpageAction::kPressedSecondaryButton
