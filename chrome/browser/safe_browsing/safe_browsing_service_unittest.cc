@@ -7,6 +7,7 @@
 
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -15,24 +16,37 @@
 #include "components/download/public/common/mock_download_item.h"
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/download_item_utils.h"
-#include "content/public/browser/global_routing_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 using network::GetUploadData;
 using testing::Return;
 using testing::ReturnRef;
 
+using WarningSurface = DownloadItemWarningData::WarningSurface;
+using WarningAction = DownloadItemWarningData::WarningAction;
+using WarningActionEvent = DownloadItemWarningData::WarningActionEvent;
+using DownloadWarningAction =
+    safe_browsing::ClientSafeBrowsingReportRequest::DownloadWarningAction;
+
 namespace safe_browsing {
+
+namespace {
+const char kTestDownloadUrl[] = "https://example.com";
+}
 
 class SafeBrowsingServiceTest : public testing::Test {
  public:
-  SafeBrowsingServiceTest() = default;
+  SafeBrowsingServiceTest() {
+    feature_list_.InitAndEnableFeature(
+        safe_browsing::kSafeBrowsingCsbrrNewDownloadTrigger);
+  }
 
   void SetUp() override {
     browser_process_ = TestingBrowserProcess::GetGlobal();
@@ -68,61 +82,167 @@ class SafeBrowsingServiceTest : public testing::Test {
   Profile* profile() { return profile_.get(); }
 
  protected:
+  void SetUpDownload() {
+    content::DownloadItemUtils::AttachInfoForTesting(&download_item_, profile(),
+                                                     /*web_contents=*/nullptr);
+    EXPECT_CALL(download_item_, GetDangerType())
+        .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST));
+    EXPECT_CALL(download_item_, GetURL())
+        .WillRepeatedly(ReturnRef(download_url_));
+
+    DownloadProtectionService::SetDownloadProtectionData(
+        &download_item_, "download_token",
+        ClientDownloadResponse::DANGEROUS_HOST,
+        ClientDownloadResponse::TailoredVerdict());
+    DownloadItemWarningData::AddWarningActionEvent(
+        &download_item_, WarningSurface::BUBBLE_MAINPAGE, WarningAction::SHOWN);
+    DownloadItemWarningData::AddWarningActionEvent(
+        &download_item_, WarningSurface::BUBBLE_SUBPAGE, WarningAction::CLOSE);
+    DownloadItemWarningData::AddWarningActionEvent(
+        &download_item_, WarningSurface::DOWNLOADS_PAGE,
+        WarningAction::DISCARD);
+  }
+
+  std::unique_ptr<ClientSafeBrowsingReportRequest> GetActualRequest(
+      const network::ResourceRequest& request) {
+    std::string request_string = GetUploadData(request);
+    auto actual_request = std::make_unique<ClientSafeBrowsingReportRequest>();
+    actual_request->ParseFromString(request_string);
+    return actual_request;
+  }
+
+  void VerifyDownloadReportRequest(
+      ClientSafeBrowsingReportRequest* actual_request) {
+    EXPECT_EQ(actual_request->type(),
+              ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_OPENED);
+    EXPECT_EQ(actual_request->download_verdict(),
+              ClientDownloadResponse::DANGEROUS_HOST);
+    EXPECT_EQ(actual_request->url(), download_url_.spec());
+    EXPECT_TRUE(actual_request->did_proceed());
+    EXPECT_TRUE(actual_request->show_download_in_folder());
+    EXPECT_EQ(actual_request->token(), "download_token");
+  }
+
+  void VerifyDownloadWarningAction(
+      const ClientSafeBrowsingReportRequest::DownloadWarningAction&
+          warning_action,
+      DownloadWarningAction::Surface surface,
+      DownloadWarningAction::Action action,
+      bool is_terminal_action,
+      int64_t interval_msec) {
+    EXPECT_EQ(warning_action.surface(), surface);
+    EXPECT_EQ(warning_action.action(), action);
+    EXPECT_EQ(warning_action.is_terminal_action(), is_terminal_action);
+    EXPECT_EQ(warning_action.interval_msec(), interval_msec);
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   raw_ptr<TestingBrowserProcess> browser_process_;
   scoped_refptr<SafeBrowsingService> sb_service_;
   std::unique_ptr<TestingProfile> profile_;
+
+  ::testing::NiceMock<download::MockDownloadItem> download_item_;
+  GURL download_url_ = GURL(kTestDownloadUrl);
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(SafeBrowsingServiceTest, SendDownloadReport_Success) {
-  std::unique_ptr<download::MockDownloadItem> download_item =
-      std::make_unique<::testing::NiceMock<download::MockDownloadItem>>();
-  const GURL url("http://example.com/");
-  ClientSafeBrowsingReportRequest::ReportType report_type =
-      ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_OPENED;
-  ClientDownloadResponse::Verdict download_verdict =
-      ClientDownloadResponse::DANGEROUS_HOST;
-  download::DownloadDangerType danger_type =
-      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST;
-  bool did_proceed = true;
-  bool show_download_in_folder = true;
-  std::string token = "download_token";
-
-  content::DownloadItemUtils::AttachInfo(download_item.get(), profile(),
-                                         /*web_contents=*/nullptr,
-                                         content::GlobalRenderFrameHostId());
-  EXPECT_CALL(*download_item, GetDangerType())
-      .WillRepeatedly(Return(danger_type));
-  EXPECT_CALL(*download_item, GetURL()).WillRepeatedly(ReturnRef(url));
-
-  DownloadProtectionService::SetDownloadProtectionData(
-      download_item.get(), token, download_verdict,
-      ClientDownloadResponse::TailoredVerdict());
+  SetUpDownload();
+  SetExtendedReportingPrefForTests(profile_->GetPrefs(), true);
 
   auto* ping_manager =
       ChromePingManagerFactory::GetForBrowserContext(profile());
   network::TestURLLoaderFactory test_url_loader_factory;
   test_url_loader_factory.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
-        std::string request_string = GetUploadData(request);
-        auto actual_request =
-            std::make_unique<ClientSafeBrowsingReportRequest>();
-        actual_request->ParseFromString(request_string);
-        EXPECT_EQ(actual_request->type(), report_type);
-        EXPECT_EQ(actual_request->download_verdict(), download_verdict);
-        EXPECT_EQ(actual_request->url(), url.spec());
-        EXPECT_EQ(actual_request->did_proceed(), did_proceed);
-        EXPECT_EQ(actual_request->show_download_in_folder(),
-                  show_download_in_folder);
-        EXPECT_EQ(actual_request->token(), token);
+        std::unique_ptr<ClientSafeBrowsingReportRequest> actual_request =
+            GetActualRequest(request);
+        VerifyDownloadReportRequest(actual_request.get());
+        ASSERT_EQ(actual_request->download_warning_actions().size(), 2);
+        VerifyDownloadWarningAction(
+            actual_request->download_warning_actions().Get(0),
+            DownloadWarningAction::BUBBLE_SUBPAGE, DownloadWarningAction::CLOSE,
+            /*is_terminal_action=*/false, /*interval_msec=*/0);
+        VerifyDownloadWarningAction(
+            actual_request->download_warning_actions().Get(1),
+            DownloadWarningAction::DOWNLOADS_PAGE,
+            DownloadWarningAction::DISCARD,
+            /*is_terminal_action=*/true, /*interval_msec=*/0);
       }));
   ping_manager->SetURLLoaderFactoryForTesting(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory));
 
-  bool is_successful = sb_service_->SendDownloadReport(
-      download_item.get(), report_type, did_proceed, show_download_in_folder);
-  EXPECT_TRUE(is_successful);
+  EXPECT_TRUE(sb_service_->SendDownloadReport(
+      &download_item_,
+      ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_OPENED,
+      /*did_proceed=*/true,
+      /*show_download_in_folder=*/true));
+}
+
+TEST_F(
+    SafeBrowsingServiceTest,
+    SendDownloadReport_NoDownloadWarningActionWhenExtendedReportingDisabled) {
+  SetUpDownload();
+  SetExtendedReportingPrefForTests(profile_->GetPrefs(), false);
+
+  auto* ping_manager =
+      ChromePingManagerFactory::GetForBrowserContext(profile());
+  network::TestURLLoaderFactory test_url_loader_factory;
+  test_url_loader_factory.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        std::unique_ptr<ClientSafeBrowsingReportRequest> actual_request =
+            GetActualRequest(request);
+        EXPECT_TRUE(actual_request->download_warning_actions().empty());
+      }));
+  ping_manager->SetURLLoaderFactoryForTesting(
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory));
+
+  EXPECT_TRUE(sb_service_->SendDownloadReport(
+      &download_item_,
+      ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_OPENED,
+      /*did_proceed=*/true,
+      /*show_download_in_folder=*/true));
+}
+
+class SafeBrowsingServiceTestWithCsbrrNewTriggerDisabled
+    : public SafeBrowsingServiceTest {
+ public:
+  SafeBrowsingServiceTestWithCsbrrNewTriggerDisabled() {
+    feature_list_.InitAndDisableFeature(
+        safe_browsing::kSafeBrowsingCsbrrNewDownloadTrigger);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SafeBrowsingServiceTestWithCsbrrNewTriggerDisabled,
+       SendDownloadReport_NoDownloadWarningActionWhenFeatureFlagDisabled) {
+  SetUpDownload();
+  SetExtendedReportingPrefForTests(profile_->GetPrefs(), true);
+
+  auto* ping_manager =
+      ChromePingManagerFactory::GetForBrowserContext(profile());
+  network::TestURLLoaderFactory test_url_loader_factory;
+  test_url_loader_factory.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        std::unique_ptr<ClientSafeBrowsingReportRequest> actual_request =
+            GetActualRequest(request);
+        EXPECT_TRUE(actual_request->download_warning_actions().empty());
+      }));
+  ping_manager->SetURLLoaderFactoryForTesting(
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory));
+
+  EXPECT_TRUE(sb_service_->SendDownloadReport(
+      &download_item_,
+      ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_OPENED,
+      /*did_proceed=*/true,
+      /*show_download_in_folder=*/true));
 }
 
 }  // namespace safe_browsing

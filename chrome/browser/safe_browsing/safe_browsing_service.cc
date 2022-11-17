@@ -25,6 +25,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -61,6 +62,7 @@
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/unified_consent/pref_names.h"
 #include "content/public/browser/browser_context.h"
@@ -107,6 +109,18 @@ void OnGotCookies(
     base::UmaHistogramCounts10000("SafeBrowsing.CookieAgeHours", age.InHours());
   }
 }
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+void PopulateDownloadWarningActions(download::DownloadItem* download,
+                                    ClientSafeBrowsingReportRequest* report) {
+  for (auto& event :
+       DownloadItemWarningData::GetWarningActionEvents(download)) {
+    report->mutable_download_warning_actions()->Add(
+        DownloadItemWarningData::ConstructCsbrrDownloadWarningAction(event));
+  }
+}
+#endif
+
 }  // namespace
 
 // static
@@ -471,6 +485,10 @@ bool SafeBrowsingService::SendDownloadReport(
   std::string token = DownloadProtectionService::GetDownloadPingToken(download);
   if (!token.empty())
     report->set_token(token);
+  if (IsExtendedReportingEnabled(*profile->GetPrefs()) &&
+      base::FeatureList::IsEnabled(kSafeBrowsingCsbrrNewDownloadTrigger)) {
+    PopulateDownloadWarningActions(download, report.get());
+  }
   return ChromePingManagerFactory::GetForBrowserContext(profile)
              ->ReportThreatDetails(std::move(report)) ==
          PingManager::ReportThreatDetailsResult::SUCCESS;
