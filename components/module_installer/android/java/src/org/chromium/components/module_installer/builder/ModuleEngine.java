@@ -41,8 +41,7 @@ class ModuleEngine implements InstallEngine {
     @Override
     public boolean isInstalled(String moduleName) {
         // If the module is in an installed isolated split, it is installed.
-        if (BundleUtils.isIsolatedSplitInstalled(
-                    ContextUtils.getApplicationContext(), moduleName)) {
+        if (BundleUtils.isIsolatedSplitInstalled(moduleName)) {
             return true;
         }
 

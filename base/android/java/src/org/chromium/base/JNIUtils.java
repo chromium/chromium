@@ -35,9 +35,8 @@ public class JNIUtils {
     /** Returns a ClassLoader which can load Java classes from the specified split. */
     @CalledByNative
     public static ClassLoader getSplitClassLoader(String splitName) {
-        Context context = ContextUtils.getApplicationContext();
-        if (!TextUtils.isEmpty(splitName)
-                && BundleUtils.isIsolatedSplitInstalled(context, splitName)) {
+        if (!TextUtils.isEmpty(splitName) && BundleUtils.isIsolatedSplitInstalled(splitName)) {
+            Context context = ContextUtils.getApplicationContext();
             return BundleUtils.createIsolatedSplitContext(context, splitName).getClassLoader();
         }
         return getClassLoader();

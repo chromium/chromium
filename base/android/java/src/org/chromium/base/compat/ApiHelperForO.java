@@ -15,7 +15,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
@@ -69,11 +68,6 @@ public final class ApiHelperForO {
     /** See {@link ClipDescription#getTimestamp()}. */
     public static long getTimestamp(ClipDescription clipDescription) {
         return clipDescription.getTimestamp();
-    }
-
-    /** See {@link ApplicationInfo#splitNames}. */
-    public static String[] getSplitNames(ApplicationInfo info) {
-        return info.splitNames;
     }
 
     /**

@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.xsurface.ImageFetchClient;
 import org.chromium.chrome.browser.xsurface.LoggingParameters;
 import org.chromium.chrome.browser.xsurface.PersistentKeyValueCache;
 import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
-import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider.VisibilityLogType;
 import org.chromium.components.version_info.VersionConstants;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
@@ -48,7 +47,7 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
         mPersistentKeyValueCache = new FeedPersistentKeyValueCache();
         mPrivacyPreferencesManager = privacyPreferencesManager;
         mApiKey = apiKey;
-        if (BundleUtils.isIsolatedSplitInstalled(mContext, FEED_SPLIT_NAME)) {
+        if (BundleUtils.isIsolatedSplitInstalled(FEED_SPLIT_NAME)) {
             mLibraryResolver = (libName) -> {
                 return BundleUtils.getNativeLibraryPath(libName, FEED_SPLIT_NAME);
             };

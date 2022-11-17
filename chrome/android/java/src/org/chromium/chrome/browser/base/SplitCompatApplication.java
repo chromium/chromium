@@ -143,7 +143,6 @@ public class SplitCompatApplication extends Application {
                 LocaleUtils.setDefaultLocalesFromConfiguration(config);
                 context = context.createConfigurationContext(config);
             }
-            performBrowserProcessPreloading(context);
         }
 
         super.attachBaseContext(context);
@@ -151,6 +150,10 @@ public class SplitCompatApplication extends Application {
         ContextUtils.initApplicationContext(this);
         maybeInitProcessType();
         BundleUtils.setIsBundle(ProductConfig.IS_BUNDLE);
+
+        if (isBrowserProcess) {
+            performBrowserProcessPreloading(context);
+        }
 
         // Write installed modules to crash keys. This needs to be done as early as possible so
         // that these values are set before any crashes are reported.
@@ -294,7 +297,7 @@ public class SplitCompatApplication extends Application {
 
     /** Creates a context which can be used to load code and resources in the chrome split. */
     public static Context createChromeContext(Context base) {
-        if (!BundleUtils.isIsolatedSplitInstalled(base, CHROME_SPLIT_NAME)) {
+        if (!BundleUtils.isIsolatedSplitInstalled(CHROME_SPLIT_NAME)) {
             return base;
         }
         return BundleUtils.createIsolatedSplitContext(base, CHROME_SPLIT_NAME);

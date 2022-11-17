@@ -194,7 +194,7 @@ public class Module<T> {
      */
     private static Object instantiateReflectively(String moduleName, String className) {
         Context context = ContextUtils.getApplicationContext();
-        if (BundleUtils.isIsolatedSplitInstalled(context, moduleName)) {
+        if (BundleUtils.isIsolatedSplitInstalled(moduleName)) {
             context = BundleUtils.createIsolatedSplitContext(context, moduleName);
         }
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {

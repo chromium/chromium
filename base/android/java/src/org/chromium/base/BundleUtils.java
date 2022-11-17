@@ -133,7 +133,7 @@ public class BundleUtils {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private static String getSplitApkPath(Context context, String splitName) {
+    private static String getSplitApkPath(String splitName) {
         ApplicationInfo appInfo;
         synchronized (sSplitLock) {
             appInfo = sAppInfo;
@@ -142,7 +142,7 @@ public class BundleUtils {
                 // the application Context. When modules are installed on-the-fly,
                 // setInstalledSplits() is used to set them from the potentially more up-to-date
                 // PackageManager results.
-                appInfo = context.getApplicationInfo();
+                appInfo = ContextUtils.getApplicationContext().getApplicationInfo();
                 sAppInfo = appInfo;
             }
         }
@@ -158,11 +158,16 @@ public class BundleUtils {
      * Returns whether splitName is installed. Note, this will return false on Android versions
      * below O, where isolated splits are not supported.
      */
-    public static boolean isIsolatedSplitInstalled(Context context, String splitName) {
+    public static boolean isIsolatedSplitInstalled(String splitName) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             return false;
         }
-        return getSplitApkPath(context, splitName) != null;
+        return getSplitApkPath(splitName) != null;
+    }
+
+    // TODO(agrieve): Delete downstream references.
+    public static boolean isIsolatedSplitInstalled(Context unused, String splitName) {
+        return isIsolatedSplitInstalled(splitName);
     }
 
     /**
@@ -213,7 +218,7 @@ public class BundleUtils {
                     && !parent.equals(appContext.getClassLoader());
             synchronized (sCachedClassLoaders) {
                 if (shouldReplaceClassLoader && !sCachedClassLoaders.containsKey(splitName)) {
-                    String apkPath = getSplitApkPath(base, splitName);
+                    String apkPath = getSplitApkPath(splitName);
                     // The librarySearchPath argument to PathClassLoader is not needed here
                     // because the framework doesn't pass it either, see b/171269960.
                     sCachedClassLoaders.put(
@@ -328,7 +333,7 @@ public class BundleUtils {
      * layouts which reference classes from a split.
      */
     public static Context createContextForInflation(Context context, String splitName) {
-        if (!BundleUtils.isIsolatedSplitInstalled(context, splitName)) {
+        if (!isIsolatedSplitInstalled(splitName)) {
             return context;
         }
         ClassLoader splitClassLoader = registerSplitClassLoaderForInflation(splitName);
@@ -352,10 +357,9 @@ public class BundleUtils {
     public static ClassLoader registerSplitClassLoaderForInflation(String splitName) {
         ClassLoader splitClassLoader = sInflationClassLoaders.get(splitName);
         if (splitClassLoader == null) {
-            splitClassLoader = BundleUtils
-                                       .createIsolatedSplitContext(
-                                               ContextUtils.getApplicationContext(), splitName)
-                                       .getClassLoader();
+            splitClassLoader =
+                    createIsolatedSplitContext(ContextUtils.getApplicationContext(), splitName)
+                            .getClassLoader();
             sInflationClassLoaders.put(splitName, splitClassLoader);
         }
         return splitClassLoader;
@@ -453,7 +457,7 @@ public class BundleUtils {
             return null;
         }
 
-        String apkPath = getSplitApkPath(ContextUtils.getApplicationContext(), splitName);
+        String apkPath = getSplitApkPath(splitName);
         if (apkPath == null) {
             return null;
         }

@@ -45,7 +45,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.metrics.RecordHistogram;
@@ -982,7 +981,7 @@ public final class WebLayerImpl extends IWebLayer.Stub {
 
         PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> {
             ApplicationInfo appInfo = packageInfo.applicationInfo;
-            String[] splitNames = ApiHelperForO.getSplitNames(appInfo);
+            String[] splitNames = appInfo.splitNames;
             if (splitNames == null) {
                 return;
             }
