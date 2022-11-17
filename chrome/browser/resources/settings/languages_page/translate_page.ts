@@ -115,6 +115,15 @@ export class SettingsTranslatePageElement extends
   }
 
   /**
+   * A filter function to return true if language is not undefined and has a
+   * displayName.
+   */
+  private hasDisplayName_(language: chrome.languageSettingsPrivate.Language|
+                          undefined): boolean {
+    return !!language && !!language!.displayName;
+  }
+
+  /**
    * Stamps and opens the Add Languages dialog, registering a listener to
    * disable the dialog's dom-if again on close.
    */
