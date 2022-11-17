@@ -9,6 +9,27 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "chrome/grit/component_extension_resources.h"
+
+namespace {
+
+int GetResourceIdForIcon(const std::string& app_id,
+                         int32_t size_in_dip,
+                         const apps::IconKey& icon_key) {
+  int resource_id = icon_key.resource_id;
+
+  if (app_id == arc::kPlayStoreAppId) {
+    int size_in_px = apps_util::ConvertDipToPx(
+        size_in_dip, /*quantize_to_supported_scale_factor=*/true);
+    resource_id = (size_in_px <= 32) ? IDR_ARC_SUPPORT_ICON_32_PNG
+                                     : IDR_ARC_SUPPORT_ICON_192_PNG;
+  }
+
+  return resource_id;
+}
+
+}  // namespace
 
 namespace apps {
 
@@ -18,9 +39,19 @@ AppIconReader::~AppIconReader() = default;
 
 void AppIconReader::ReadIcons(const std::string& app_id,
                               int32_t size_in_dip,
-                              IconEffects icon_effects,
+                              const IconKey& icon_key,
                               IconType icon_type,
                               LoadIconCallback callback) {
+  IconEffects icon_effects = static_cast<IconEffects>(icon_key.icon_effects);
+  int resource_id = GetResourceIdForIcon(app_id, size_in_dip, icon_key);
+
+  if (icon_key.resource_id != IconKey::kInvalidResourceId) {
+    LoadIconFromResource(icon_type, size_in_dip, resource_id,
+                         /*is_placeholder_icon=*/false, icon_effects,
+                         std::move(callback));
+    return;
+  }
+
   const base::FilePath& base_path = profile_->GetPath();
 
   switch (icon_type) {

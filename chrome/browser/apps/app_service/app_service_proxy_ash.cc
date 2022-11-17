@@ -715,8 +715,7 @@ void AppServiceProxyAsh::ReadIcons(const std::string& app_id,
                                    IconType icon_type,
                                    LoadIconCallback callback) {
   icon_reader.ReadIcons(
-      app_id, size_hint_in_dip, static_cast<IconEffects>(icon_key.icon_effects),
-      icon_type,
+      app_id, size_hint_in_dip, icon_key, icon_type,
       base::BindOnce(&AppServiceProxyAsh::OnIconRead,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

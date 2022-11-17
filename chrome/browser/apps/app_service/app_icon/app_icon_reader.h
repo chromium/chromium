@@ -34,7 +34,7 @@ class AppIconReader {
   // `app_id`.
   void ReadIcons(const std::string& app_id,
                  int32_t size_in_dip,
-                 IconEffects icon_effects,
+                 const IconKey& icon_key,
                  IconType icon_type,
                  LoadIconCallback callback);
 
