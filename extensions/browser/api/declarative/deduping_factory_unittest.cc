@@ -62,9 +62,8 @@ scoped_refptr<const BaseClass> CreateFoo(const std::string& /*instance_type*/,
                                          const base::Value* value,
                                          std::string* error,
                                          bool* bad_message) {
-  const base::DictionaryValue* dict = nullptr;
-  CHECK(value->GetAsDictionary(&dict));
-  absl::optional<int> parameter = dict->FindIntKey("parameter");
+  CHECK(value->is_dict());
+  absl::optional<int> parameter = value->GetDict().FindInt("parameter");
   if (!parameter) {
     *error = "No parameter";
     *bad_message = true;
@@ -73,10 +72,10 @@ scoped_refptr<const BaseClass> CreateFoo(const std::string& /*instance_type*/,
   return scoped_refptr<const BaseClass>(new Foo(*parameter));
 }
 
-std::unique_ptr<base::DictionaryValue> CreateDictWithParameter(int parameter) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
-  dict->SetIntKey("parameter", parameter);
-  return dict;
+base::Value CreateDictWithParameter(int parameter) {
+  base::Value::Dict dict;
+  dict.Set("parameter", parameter);
+  return base::Value(std::move(dict));
 }
 
 }  // namespace
@@ -90,19 +89,19 @@ TEST(DedupingFactoryTest, InstantiationParameterized) {
   factory.RegisterFactoryMethod(kTypeName, FactoryT::IS_PARAMETERIZED,
                                 &CreateFoo);
 
-  std::unique_ptr<base::DictionaryValue> d1(CreateDictWithParameter(1));
-  std::unique_ptr<base::DictionaryValue> d2(CreateDictWithParameter(2));
-  std::unique_ptr<base::DictionaryValue> d3(CreateDictWithParameter(3));
-  std::unique_ptr<base::DictionaryValue> d4(CreateDictWithParameter(4));
+  base::Value d1 = CreateDictWithParameter(1);
+  base::Value d2 = CreateDictWithParameter(2);
+  base::Value d3 = CreateDictWithParameter(3);
+  base::Value d4 = CreateDictWithParameter(4);
 
   std::string error;
   bool bad_message = false;
 
   // Fill factory with 2 different types.
   scoped_refptr<const BaseClass> c1(
-      factory.Instantiate(kTypeName, d1.get(), &error, &bad_message));
+      factory.Instantiate(kTypeName, &d1, &error, &bad_message));
   scoped_refptr<const BaseClass> c2(
-      factory.Instantiate(kTypeName, d2.get(), &error, &bad_message));
+      factory.Instantiate(kTypeName, &d2, &error, &bad_message));
   ASSERT_TRUE(c1.get());
   ASSERT_TRUE(c2.get());
   EXPECT_EQ(1, static_cast<const Foo*>(c1.get())->parameter());
@@ -110,13 +109,13 @@ TEST(DedupingFactoryTest, InstantiationParameterized) {
 
   // This one produces an overflow, now the cache contains [2, 3]
   scoped_refptr<const BaseClass> c3(
-      factory.Instantiate(kTypeName, d3.get(), &error, &bad_message));
+      factory.Instantiate(kTypeName, &d3, &error, &bad_message));
   ASSERT_TRUE(c3.get());
   EXPECT_EQ(3, static_cast<const Foo*>(c3.get())->parameter());
 
   // Reuse 2, this should give the same instance as c2.
   scoped_refptr<const BaseClass> c2_b(
-      factory.Instantiate(kTypeName, d2.get(), &error, &bad_message));
+      factory.Instantiate(kTypeName, &d2, &error, &bad_message));
   EXPECT_EQ(2, static_cast<const Foo*>(c2_b.get())->parameter());
   EXPECT_EQ(c2, c2_b);
 
@@ -124,10 +123,10 @@ TEST(DedupingFactoryTest, InstantiationParameterized) {
   // now [3, 2] and 3 is discarded before 2.
   // This discards 3, so the cache becomes [2, 1]
   scoped_refptr<const BaseClass> c1_b(
-      factory.Instantiate(kTypeName, d1.get(), &error, &bad_message));
+      factory.Instantiate(kTypeName, &d1, &error, &bad_message));
 
   scoped_refptr<const BaseClass> c2_c(
-      factory.Instantiate(kTypeName, d2.get(), &error, &bad_message));
+      factory.Instantiate(kTypeName, &d2, &error, &bad_message));
   EXPECT_EQ(2, static_cast<const Foo*>(c2_c.get())->parameter());
   EXPECT_EQ(c2, c2_c);
 }
@@ -137,8 +136,8 @@ TEST(DedupingFactoryTest, InstantiationNonParameterized) {
   factory.RegisterFactoryMethod(kTypeName, FactoryT::IS_NOT_PARAMETERIZED,
                                 &CreateFoo);
 
-  std::unique_ptr<base::DictionaryValue> d1(CreateDictWithParameter(1));
-  std::unique_ptr<base::DictionaryValue> d2(CreateDictWithParameter(2));
+  base::Value d1 = CreateDictWithParameter(1);
+  base::Value d2 = CreateDictWithParameter(2);
 
   std::string error;
   bool bad_message = false;
@@ -146,9 +145,9 @@ TEST(DedupingFactoryTest, InstantiationNonParameterized) {
   // We create two instances with different dictionaries but because the type is
   // declared to be not parameterized, we should get the same instance.
   scoped_refptr<const BaseClass> c1(
-      factory.Instantiate(kTypeName, d1.get(), &error, &bad_message));
+      factory.Instantiate(kTypeName, &d1, &error, &bad_message));
   scoped_refptr<const BaseClass> c2(
-      factory.Instantiate(kTypeName, d2.get(), &error, &bad_message));
+      factory.Instantiate(kTypeName, &d2, &error, &bad_message));
   ASSERT_TRUE(c1.get());
   ASSERT_TRUE(c2.get());
   EXPECT_EQ(1, static_cast<const Foo*>(c1.get())->parameter());
@@ -163,15 +162,15 @@ TEST(DedupingFactoryTest, TypeNames) {
   factory.RegisterFactoryMethod(kTypeName2, FactoryT::IS_PARAMETERIZED,
                                 &CreateFoo);
 
-  std::unique_ptr<base::DictionaryValue> d1(CreateDictWithParameter(1));
+  base::Value d1 = CreateDictWithParameter(1);
 
   std::string error;
   bool bad_message = false;
 
   scoped_refptr<const BaseClass> c1_a(
-      factory.Instantiate(kTypeName, d1.get(), &error, &bad_message));
+      factory.Instantiate(kTypeName, &d1, &error, &bad_message));
   scoped_refptr<const BaseClass> c1_b(
-      factory.Instantiate(kTypeName2, d1.get(), &error, &bad_message));
+      factory.Instantiate(kTypeName2, &d1, &error, &bad_message));
 
   ASSERT_TRUE(c1_a.get());
   ASSERT_TRUE(c1_b.get());
@@ -183,18 +182,18 @@ TEST(DedupingFactoryTest, Clear) {
   factory.RegisterFactoryMethod(kTypeName, FactoryT::IS_PARAMETERIZED,
                                 &CreateFoo);
 
-  std::unique_ptr<base::DictionaryValue> d1(CreateDictWithParameter(1));
+  base::Value d1 = CreateDictWithParameter(1);
 
   std::string error;
   bool bad_message = false;
 
   scoped_refptr<const BaseClass> c1_a(
-      factory.Instantiate(kTypeName, d1.get(), &error, &bad_message));
+      factory.Instantiate(kTypeName, &d1, &error, &bad_message));
 
   factory.ClearPrototypes();
 
   scoped_refptr<const BaseClass> c1_b(
-      factory.Instantiate(kTypeName, d1.get(), &error, &bad_message));
+      factory.Instantiate(kTypeName, &d1, &error, &bad_message));
 
   ASSERT_TRUE(c1_a.get());
   ASSERT_TRUE(c1_b.get());

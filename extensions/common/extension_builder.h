@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
+#include "base/values.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
@@ -156,6 +157,9 @@ class ExtensionBuilder {
   // Assigns the extension's manifest to |manifest|.
   ExtensionBuilder& SetManifest(
       std::unique_ptr<base::DictionaryValue> manifest);
+
+  // Assigns the extension's manifest to |manifest|.
+  ExtensionBuilder& SetManifest(base::Value::Dict manifest);
 
   //////////////////////////////////////////////////////////////////////////////
   // Common utility methods (usable with both aided and custom manifest

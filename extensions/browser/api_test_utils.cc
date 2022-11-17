@@ -62,9 +62,11 @@ void SendResponseHelper::WaitForResponse() {
   run_loop_.Run();
 }
 
-std::unique_ptr<base::DictionaryValue> ParseDictionary(
-    const std::string& data) {
-  return base::DictionaryValue::From(base::JSONReader::ReadDeprecated(data));
+absl::optional<base::Value::Dict> ParseDictionary(const std::string& data) {
+  absl::optional<base::Value> value = base::JSONReader::Read(data);
+  if (!value || !value->is_dict())
+    return absl::nullopt;
+  return std::move(*value).TakeDict();
 }
 
 bool GetBoolean(const base::Value::Dict& dict, const std::string& key) {

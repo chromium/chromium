@@ -192,7 +192,7 @@ TEST(RulesRegistryTest, TwoRulesInManifest) {
   content::BrowserTaskEnvironment task_environment;
 
   // Create extension
-  std::unique_ptr<base::DictionaryValue> manifest = ParseDictionary(
+  absl::optional<base::Value::Dict> manifest = ParseDictionary(
       "{"
       "  \"name\": \"Test\","
       "  \"version\": \"1\","
@@ -225,7 +225,7 @@ TEST(RulesRegistryTest, TwoRulesInManifest) {
       "}");
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(std::move(manifest))
+          .SetManifest(std::move(*manifest))
           .SetID(kExtensionId)
           .Build();
 
@@ -238,7 +238,7 @@ TEST(RulesRegistryTest, TwoRulesInManifest) {
   registry->GetAllRules(kExtensionId, &get_rules);
 
   ASSERT_EQ(2u, get_rules.size());
-  std::unique_ptr<base::DictionaryValue> expected_rule_0 = ParseDictionary(
+  absl::optional<base::Value::Dict> expected_rule_0 = ParseDictionary(
       "{"
       "  \"id\": \"000\","
       "  \"priority\": 200,"
@@ -253,7 +253,7 @@ TEST(RulesRegistryTest, TwoRulesInManifest) {
       "}");
   EXPECT_EQ(*expected_rule_0, get_rules[0]->ToValue());
 
-  std::unique_ptr<base::DictionaryValue> expected_rule_1 = ParseDictionary(
+  absl::optional<base::Value::Dict> expected_rule_1 = ParseDictionary(
       "{"
       "  \"id\": \"_0_\","
       "  \"priority\": 100,"
@@ -274,7 +274,7 @@ TEST(RulesRegistryTest, DeleteRuleInManifest) {
   content::BrowserTaskEnvironment task_environment;
 
   // Create extension
-  std::unique_ptr<base::DictionaryValue> manifest = ParseDictionary(
+  absl::optional<base::Value::Dict> manifest = ParseDictionary(
       "{"
       "  \"name\": \"Test\","
       "  \"version\": \"1\","
@@ -293,7 +293,7 @@ TEST(RulesRegistryTest, DeleteRuleInManifest) {
       "}");
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(std::move(manifest))
+          .SetManifest(std::move(*manifest))
           .SetID(kExtensionId)
           .Build();
 

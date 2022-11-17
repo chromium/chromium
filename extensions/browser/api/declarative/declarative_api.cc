@@ -90,9 +90,9 @@ void RecordUMAHelper(DeclarativeAPIFunctionType type) {
                             kDeclarativeApiFunctionCallTypeMax);
 }
 
-void ConvertBinaryDictionaryValuesToBase64(base::Value& dict);
+void ConvertBinaryDictValuesToBase64(base::Value::Dict& dict);
 
-// Encodes |binary| as base64 and returns a new StringValue populated with the
+// Encodes |binary| as base64 and returns a new string value populated with the
 // encoded string.
 base::Value ConvertBinaryToBase64(const base::Value& binary) {
   std::string binary_data(binary.GetBlob().begin(), binary.GetBlob().end());
@@ -101,9 +101,9 @@ base::Value ConvertBinaryToBase64(const base::Value& binary) {
   return base::Value(std::move(data64));
 }
 
-// Parses through |args| replacing any BinaryValues with base64 encoded
-// StringValues. Recurses over any nested ListValues, and calls
-// ConvertBinaryDictionaryValuesToBase64 for any nested DictionaryValues.
+// Parses through |args| replacing any binary values with base64 encoded
+// string values. Recurses over any nested List values, and calls
+// ConvertBinaryDictValuesToBase64 for any nested Dict values.
 void ConvertBinaryListElementsToBase64(base::Value::List& args) {
   for (auto& value : args) {
     if (value.is_blob()) {
@@ -111,23 +111,23 @@ void ConvertBinaryListElementsToBase64(base::Value::List& args) {
     } else if (value.is_list() && !value.GetList().empty()) {
       ConvertBinaryListElementsToBase64(value.GetList());
     } else if (value.is_dict()) {
-      ConvertBinaryDictionaryValuesToBase64(value);
+      ConvertBinaryDictValuesToBase64(value.GetDict());
     }
   }
 }
 
 // Parses through |dict| replacing any BinaryValues with base64 encoded
-// StringValues. Recurses over any nested DictionaryValues, and calls
-// ConvertBinaryListElementsToBase64 for any nested ListValues.
-void ConvertBinaryDictionaryValuesToBase64(base::Value& dict) {
-  for (auto it : dict.DictItems()) {
+// string values. Recurses over any nested Dict values, and calls
+// ConvertBinaryListElementsToBase64 for any nested List values.
+void ConvertBinaryDictValuesToBase64(base::Value::Dict& dict) {
+  for (auto it : dict) {
     auto& value = it.second;
     if (value.is_blob()) {
       value = ConvertBinaryToBase64(value);
     } else if (value.is_list() && !value.GetList().empty()) {
       ConvertBinaryListElementsToBase64(value.GetList());
     } else if (value.is_dict()) {
-      ConvertBinaryDictionaryValuesToBase64(value);
+      ConvertBinaryDictValuesToBase64(value.GetDict());
     }
   }
 }

@@ -241,6 +241,11 @@ ExtensionBuilder& ExtensionBuilder::SetManifest(
   return *this;
 }
 
+ExtensionBuilder& ExtensionBuilder::SetManifest(base::Value::Dict manifest) {
+  return SetManifest(base::DictionaryValue::From(
+      std::make_unique<base::Value>(std::move(manifest))));
+}
+
 ExtensionBuilder& ExtensionBuilder::MergeManifest(const base::Value& to_merge) {
   CHECK(to_merge.is_dict());
   if (manifest_data_) {

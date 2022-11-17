@@ -59,9 +59,9 @@ class SendResponseHelper {
 
 enum RunFunctionFlags { NONE = 0, INCLUDE_INCOGNITO = 1 << 0 };
 
-// Parse JSON and return as the specified type, or NULL if the JSON is invalid
-// or not the specified type.
-std::unique_ptr<base::DictionaryValue> ParseDictionary(const std::string& data);
+// Parses JSON and returns the dictionary, or absl::nullopt if the JSON is
+// invalid or not a dictionary.
+absl::optional<base::Value::Dict> ParseDictionary(const std::string& data);
 
 // Get |key| from |val| as the specified type. If |key| does not exist, or is
 // not of the specified type, adds a failure to the current test and returns

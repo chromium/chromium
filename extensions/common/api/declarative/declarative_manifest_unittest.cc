@@ -22,7 +22,7 @@ TEST_F(DeclarativeManifestTest, Valid) {
   std::vector<DeclarativeManifestData::Rule> rules =
       manifest_data->RulesForEvent("foo");
   EXPECT_EQ(1u, rules.size());
-  std::unique_ptr<base::DictionaryValue> expected_rule = ParseDictionary(
+  absl::optional<base::Value::Dict> expected_rule = ParseDictionary(
       "{"
       "  \"actions\": [{"
       "    \"instanceType\": \"action_type\""
