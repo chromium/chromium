@@ -18,6 +18,7 @@
 #include "components/payments/content/payment_app.h"
 #include "components/payments/content/payment_details_converter.h"
 #include "components/payments/content/payment_request_converter.h"
+#include "components/payments/content/payment_request_web_contents_manager.h"
 #include "components/payments/content/secure_payment_confirmation_no_creds.h"
 #include "components/payments/core/can_make_payment_query.h"
 #include "components/payments/core/error_message_util.h"
@@ -67,28 +68,27 @@ mojom::PaymentAddressPtr RedactShippingAddress(
 }  // namespace
 
 PaymentRequest::PaymentRequest(
-    content::RenderFrameHost& render_frame_host,
     std::unique_ptr<ContentPaymentRequestDelegate> delegate,
-    base::WeakPtr<PaymentRequestDisplayManager> display_manager,
-    mojo::PendingReceiver<mojom::PaymentRequest> receiver,
-    SPCTransactionMode spc_transaction_mode,
-    base::WeakPtr<ObserverForTest> observer_for_testing)
-    : DocumentService(render_frame_host, std::move(receiver)),
-      WebContentsObserver(
-          content::WebContents::FromRenderFrameHost(&render_frame_host)),
+    mojo::PendingReceiver<mojom::PaymentRequest> receiver)
+    : DocumentService(*delegate->GetRenderFrameHost(), std::move(receiver)),
+      WebContentsObserver(content::WebContents::FromRenderFrameHost(
+          delegate->GetRenderFrameHost())),
       log_(web_contents()),
       delegate_(std::move(delegate)),
-      display_manager_(display_manager),
+      display_manager_(delegate_->GetDisplayManager()->GetWeakPtr()),
       display_handle_(nullptr),
       top_level_origin_(url_formatter::FormatUrlForSecurityDisplay(
           web_contents()->GetLastCommittedURL())),
       frame_origin_(url_formatter::FormatUrlForSecurityDisplay(
-          render_frame_host.GetLastCommittedURL())),
-      frame_security_origin_(render_frame_host.GetLastCommittedOrigin()),
-      spc_transaction_mode_(spc_transaction_mode),
-      observer_for_testing_(observer_for_testing),
+          delegate_->GetRenderFrameHost()->GetLastCommittedURL())),
+      frame_security_origin_(
+          delegate_->GetRenderFrameHost()->GetLastCommittedOrigin()),
+      spc_transaction_mode_(
+          PaymentRequestWebContentsManager::GetOrCreateForWebContents(
+              *web_contents())
+              ->transaction_mode()),
       journey_logger_(delegate_->IsOffTheRecord(),
-                      render_frame_host.GetPageUkmSourceId()) {
+                      delegate_->GetRenderFrameHost()->GetPageUkmSourceId()) {
   payment_handler_host_ = std::make_unique<PaymentHandlerHost>(
       web_contents(), weak_ptr_factory_.GetWeakPtr());
 }

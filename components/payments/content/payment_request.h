@@ -79,12 +79,8 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
     virtual ~ObserverForTest() {}
   };
 
-  PaymentRequest(content::RenderFrameHost& render_frame_host,
-                 std::unique_ptr<ContentPaymentRequestDelegate> delegate,
-                 base::WeakPtr<PaymentRequestDisplayManager> display_manager,
-                 mojo::PendingReceiver<mojom::PaymentRequest> receiver,
-                 SPCTransactionMode spc_transaction_mode,
-                 base::WeakPtr<ObserverForTest> observer_for_testing);
+  PaymentRequest(std::unique_ptr<ContentPaymentRequestDelegate> delegate,
+                 mojo::PendingReceiver<mojom::PaymentRequest> receiver);
 
   PaymentRequest(const PaymentRequest&) = delete;
   PaymentRequest& operator=(const PaymentRequest&) = delete;
@@ -161,6 +157,10 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
   }
 
   base::WeakPtr<PaymentRequest> GetWeakPtr();
+
+  void set_observer_for_test(base::WeakPtr<ObserverForTest> observer_for_test) {
+    observer_for_testing_ = observer_for_test;
+  }
 
  private:
   // CSPChecker.

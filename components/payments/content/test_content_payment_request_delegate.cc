@@ -8,6 +8,7 @@
 
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/core/error_strings.h"
+#include "content/public/browser/render_frame_host.h"
 
 namespace payments {
 
@@ -21,7 +22,7 @@ TestContentPaymentRequestDelegate::~TestContentPaymentRequestDelegate() =
 
 content::RenderFrameHost*
 TestContentPaymentRequestDelegate::GetRenderFrameHost() const {
-  return nullptr;
+  return content::RenderFrameHost::FromID(frame_routing_id_);
 }
 
 std::unique_ptr<webauthn::InternalAuthenticator>

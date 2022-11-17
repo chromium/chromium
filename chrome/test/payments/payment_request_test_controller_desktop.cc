@@ -215,12 +215,6 @@ void PaymentRequestTestController::UpdateDelegateFactory() {
          content::RenderFrameHost* render_frame_host) {
         DCHECK(render_frame_host);
         DCHECK(render_frame_host->IsActive());
-        auto* web_contents =
-            content::WebContents::FromRenderFrameHost(render_frame_host);
-        DCHECK(web_contents);
-        auto* manager =
-            PaymentRequestWebContentsManager::GetOrCreateForWebContents(
-                *web_contents);
 
         auto delegate = std::make_unique<TestChromePaymentRequestDelegate>(
             render_frame_host);
@@ -239,12 +233,12 @@ void PaymentRequestTestController::UpdateDelegateFactory() {
               ->SetAppForTesting(twa_package_name, twa_payment_app_method_name,
                                  twa_payment_app_response);
         }
-        auto display_manager = delegate->GetDisplayManager()->GetWeakPtr();
+
         // PaymentRequest is a DocumentService, whose lifetime is managed by the
-        // RenderFrameHost passed in here.
-        new PaymentRequest(*render_frame_host, std::move(delegate),
-                           std::move(display_manager), std::move(receiver),
-                           manager->transaction_mode(), observer_for_test);
+        // RenderFrameHost passed into the delegate.
+        auto* request =
+            new PaymentRequest(std::move(delegate), std::move(receiver));
+        request->set_observer_for_test(observer_for_test);
       },
       observer_converter_->GetWeakPtr(), is_off_the_record_, valid_ssl_,
       prefs_.get(), twa_package_name_, has_authenticator_,

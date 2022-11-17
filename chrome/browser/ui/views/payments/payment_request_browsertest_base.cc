@@ -557,10 +557,8 @@ void PaymentRequestBrowserTestBase::CreatePaymentRequestForTest(
   delegate->OverrideBrowserWindowActive(is_browser_window_active_);
   delegate_ = delegate.get();
 
-  auto display_manager = delegate->GetDisplayManager()->GetWeakPtr();
-  auto* request = new PaymentRequest(
-      *render_frame_host, std::move(delegate), std::move(display_manager),
-      std::move(receiver), SPCTransactionMode::NONE, GetWeakPtr());
+  auto* request = new PaymentRequest(std::move(delegate), std::move(receiver));
+  request->set_observer_for_test(GetWeakPtr());
   requests_.push_back(request->GetWeakPtr());
 }
 

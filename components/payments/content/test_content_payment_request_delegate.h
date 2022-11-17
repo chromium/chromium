@@ -10,6 +10,7 @@
 #include "components/payments/content/content_payment_request_delegate.h"
 #include "components/payments/content/payment_request_display_manager.h"
 #include "components/payments/core/test_payment_request_delegate.h"
+#include "content/public/browser/global_routing_id.h"
 
 namespace autofill {
 class PersonalDataManager;
@@ -78,9 +79,15 @@ class TestContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
       base::OnceClosure response_callback,
       base::OnceClosure opt_out_callback) override;
 
+  // Must be called if GetRenderFrameHost() needs to return non-null.
+  void set_frame_routing_id(content::GlobalRenderFrameHostId frame_routing_id) {
+    frame_routing_id_ = frame_routing_id;
+  }
+
  private:
   TestPaymentRequestDelegate core_delegate_;
   PaymentRequestDisplayManager payment_request_display_manager_;
+  content::GlobalRenderFrameHostId frame_routing_id_;
 };
 
 }  // namespace payments
