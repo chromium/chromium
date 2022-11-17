@@ -45,7 +45,7 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
   void ResetAggregator() { aggregator_.reset(); }
   void RestartAggregator() {
     aggregator_ = base::MakeRefCounted<LocalFrameUkmAggregator>(
-        ukm::UkmRecorder::GetNewSourceID(), &recorder_);
+        ukm::UkmRecorder::GetNewSourceID(), &recorder_, true);
     aggregator_->SetTickClockForTesting(test_task_runner_->GetMockTickClock());
   }
 
@@ -851,6 +851,33 @@ TEST_F(LocalFrameUkmAggregatorSimTest, DidReachFirstContentfulPaintMetric) {
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Blink.LocalFrameRoot.DidReachFirstContentfulPaint"),
               BucketsAre(base::Bucket(false, 0), base::Bucket(true, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Blink.LocalFrameRoot.DidReachFirstContentfulPaint.MainFrame"),
+      BucketsAre(base::Bucket(false, 0), base::Bucket(true, 1)));
+}
+
+TEST_F(LocalFrameUkmAggregatorSimTest,
+       RemoteDidReachFirstContentfulPaintMetric) {
+  base::HistogramTester histogram_tester;
+
+  InitializeRemote();
+  LocalFrame& local_frame_root = *LocalFrameRoot().GetFrame();
+  ASSERT_FALSE(local_frame_root.IsMainFrame());
+  ASSERT_TRUE(local_frame_root.IsLocalRoot());
+
+  // Simulate the first contentful paint.
+  PaintTiming::From(*local_frame_root.GetDocument()).MarkFirstContentfulPaint();
+
+  local_frame_root.GetDocument()->Shutdown();
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Blink.LocalFrameRoot.DidReachFirstContentfulPaint"),
+              BucketsAre(base::Bucket(false, 0), base::Bucket(true, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Blink.LocalFrameRoot.DidReachFirstContentfulPaint.MainFrame"),
+      BucketsAre(base::Bucket(false, 0), base::Bucket(true, 0)));
 }
 
 TEST_F(LocalFrameUkmAggregatorSimTest, DidNotReachFirstContentfulPaintMetric) {

@@ -1992,6 +1992,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.LocalFrameRoot.DidReachFirstContentfulPaint.MainFrame"
+    units="Boolean" expires_after="2023-03-19">
+  <owner>pdr@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
+  <summary>
+    Reports if the main frame ever receives a FirstContentfulPaint signal. Only
+    recorded for main frame local frame roots that run at least one main frame
+    update.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Blink.MainFrame.UpdateTime" units="microseconds"
     expires_after="2023-03-19">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->

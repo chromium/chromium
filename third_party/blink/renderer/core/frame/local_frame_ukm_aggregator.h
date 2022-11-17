@@ -259,7 +259,9 @@ class CORE_EXPORT LocalFrameUkmAggregator
     int64_t metric_index_ = -1;
   };
 
-  LocalFrameUkmAggregator(int64_t source_id, ukm::UkmRecorder*);
+  LocalFrameUkmAggregator(int64_t source_id,
+                          ukm::UkmRecorder*,
+                          bool is_for_main_frame_local_frame_root);
   LocalFrameUkmAggregator(const LocalFrameUkmAggregator&) = delete;
   LocalFrameUkmAggregator& operator=(const LocalFrameUkmAggregator&) = delete;
   ~LocalFrameUkmAggregator();
@@ -431,6 +433,9 @@ class CORE_EXPORT LocalFrameUkmAggregator
   // most of the benefit even if we downsample them. This value controls how
   // frequently we collect granular IntersectionObserver metrics.
   size_t intersection_observer_sample_period_ = 10;
+
+  // True if the local frame root that instantiated this is the main frame.
+  bool is_for_main_frame_ = false;
 };
 
 }  // namespace blink

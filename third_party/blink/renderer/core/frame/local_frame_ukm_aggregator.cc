@@ -122,11 +122,14 @@ void LocalFrameUkmAggregator::AbsoluteMetricRecord::reset() {
   main_frame_count = 0;
 }
 
-LocalFrameUkmAggregator::LocalFrameUkmAggregator(int64_t source_id,
-                                                 ukm::UkmRecorder* recorder)
+LocalFrameUkmAggregator::LocalFrameUkmAggregator(
+    int64_t source_id,
+    ukm::UkmRecorder* recorder,
+    bool is_for_main_frame_local_frame_root)
     : source_id_(source_id),
       recorder_(recorder),
-      clock_(base::DefaultTickClock::GetInstance()) {
+      clock_(base::DefaultTickClock::GetInstance()),
+      is_for_main_frame_(is_for_main_frame_local_frame_root) {
   // All of these are assumed to have one entry per sub-metric.
   DCHECK_EQ(std::size(absolute_metric_records_), metrics_data().size());
   DCHECK_EQ(std::size(current_sample_.sub_metrics_counts),
@@ -191,6 +194,11 @@ LocalFrameUkmAggregator::~LocalFrameUkmAggregator() {
 
   base::UmaHistogramBoolean("Blink.LocalFrameRoot.DidReachFirstContentfulPaint",
                             fcp_state_ != kBeforeFCPSignal);
+  if (is_for_main_frame_) {
+    base::UmaHistogramBoolean(
+        "Blink.LocalFrameRoot.DidReachFirstContentfulPaint.MainFrame",
+        fcp_state_ != kBeforeFCPSignal);
+  }
 }
 
 bool LocalFrameUkmAggregator::ShouldMeasureMetric(int64_t metric_id) const {

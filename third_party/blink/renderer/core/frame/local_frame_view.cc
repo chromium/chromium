@@ -4739,7 +4739,8 @@ LocalFrameUkmAggregator& LocalFrameView::EnsureUkmAggregator() {
   if (!local_root->ukm_aggregator_) {
     local_root->ukm_aggregator_ = base::MakeRefCounted<LocalFrameUkmAggregator>(
         local_root->frame_->GetDocument()->UkmSourceID(),
-        local_root->frame_->GetDocument()->UkmRecorder());
+        local_root->frame_->GetDocument()->UkmRecorder(),
+        local_root->frame_->IsMainFrame());
   }
   return *local_root->ukm_aggregator_;
 }
