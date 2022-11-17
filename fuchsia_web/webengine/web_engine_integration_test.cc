@@ -273,12 +273,11 @@ TEST_F(WebEngineIntegrationTest, RemoteDebuggingPort) {
   ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(url.spec()));
   navigation_listener()->RunUntilUrlEquals(url);
 
-  base::Value devtools_list = GetDevToolsListFromPort(remote_debugging_port);
-  ASSERT_TRUE(devtools_list.is_list());
-  EXPECT_EQ(devtools_list.GetListDeprecated().size(), 1u);
+  base::Value::List devtools_list =
+      GetDevToolsListFromPort(remote_debugging_port);
+  EXPECT_EQ(devtools_list.size(), 1u);
 
-  base::Value* devtools_url =
-      devtools_list.GetListDeprecated()[0].FindPath("url");
+  base::Value* devtools_url = devtools_list[0].FindPath("url");
   ASSERT_TRUE(devtools_url->is_string());
   EXPECT_EQ(devtools_url->GetString(), url);
 
@@ -289,10 +288,9 @@ TEST_F(WebEngineIntegrationTest, RemoteDebuggingPort) {
   context()->CreateFrame(web_frame2.NewRequest());
 
   devtools_list = GetDevToolsListFromPort(remote_debugging_port);
-  ASSERT_TRUE(devtools_list.is_list());
-  EXPECT_EQ(devtools_list.GetListDeprecated().size(), 1u);
+  EXPECT_EQ(devtools_list.size(), 1u);
 
-  devtools_url = devtools_list.GetListDeprecated()[0].FindPath("url");
+  devtools_url = devtools_list[0].FindPath("url");
   ASSERT_TRUE(devtools_url->is_string());
   EXPECT_EQ(devtools_url->GetString(), url);
 
@@ -309,7 +307,7 @@ TEST_F(WebEngineIntegrationTest, RemoteDebuggingPort) {
   controller_run_loop.Run();
 
   devtools_list = GetDevToolsListFromPort(remote_debugging_port);
-  EXPECT_TRUE(devtools_list.is_none());
+  EXPECT_TRUE(devtools_list.empty());
 }
 
 // Check that remote debugging requests for Frames in non-debuggable Contexts

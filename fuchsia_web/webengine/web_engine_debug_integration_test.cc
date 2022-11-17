@@ -123,18 +123,15 @@ TEST_F(WebEngineDebugIntegrationTest, DebugService) {
   // Test the debug information is correct.
   ASSERT_NO_FATAL_FAILURE(dev_tools_listener_.RunUntilNumberOfPortsIs(1u));
 
-  base::Value devtools_list =
+  base::Value::List devtools_list =
       GetDevToolsListFromPort(*dev_tools_listener_.debug_ports().begin());
-  ASSERT_TRUE(devtools_list.is_list());
-  EXPECT_EQ(devtools_list.GetListDeprecated().size(), 1u);
+  EXPECT_EQ(devtools_list.size(), 1u);
 
-  base::Value* devtools_url =
-      devtools_list.GetListDeprecated()[0].FindPath("url");
+  base::Value* devtools_url = devtools_list[0].FindPath("url");
   ASSERT_TRUE(devtools_url->is_string());
   EXPECT_EQ(devtools_url->GetString(), url);
 
-  base::Value* devtools_title =
-      devtools_list.GetListDeprecated()[0].FindPath("title");
+  base::Value* devtools_title = devtools_list[0].FindPath("title");
   ASSERT_TRUE(devtools_title->is_string());
   EXPECT_EQ(devtools_title->GetString(), "title 1");
 
@@ -154,17 +151,14 @@ TEST_F(WebEngineDebugIntegrationTest, MultipleDebugClients) {
   ASSERT_NO_FATAL_FAILURE(dev_tools_listener_.RunUntilNumberOfPortsIs(1u));
   uint16_t port1 = *dev_tools_listener_.debug_ports().begin();
 
-  base::Value devtools_list1 = GetDevToolsListFromPort(port1);
-  ASSERT_TRUE(devtools_list1.is_list());
-  EXPECT_EQ(devtools_list1.GetListDeprecated().size(), 1u);
+  base::Value::List devtools_list1 = GetDevToolsListFromPort(port1);
+  EXPECT_EQ(devtools_list1.size(), 1u);
 
-  base::Value* devtools_url1 =
-      devtools_list1.GetListDeprecated()[0].FindPath("url");
+  base::Value* devtools_url1 = devtools_list1[0].FindPath("url");
   ASSERT_TRUE(devtools_url1->is_string());
   EXPECT_EQ(devtools_url1->GetString(), url1);
 
-  base::Value* devtools_title1 =
-      devtools_list1.GetListDeprecated()[0].FindPath("title");
+  base::Value* devtools_title1 = devtools_list1[0].FindPath("title");
   ASSERT_TRUE(devtools_title1->is_string());
   EXPECT_EQ(devtools_title1->GetString(), "title 1");
 
@@ -192,17 +186,14 @@ TEST_F(WebEngineDebugIntegrationTest, MultipleDebugClients) {
   ASSERT_NE(dev_tools_listener_.debug_ports().find(port2),
             dev_tools_listener_.debug_ports().end());
 
-  base::Value devtools_list2 = GetDevToolsListFromPort(port2);
-  ASSERT_TRUE(devtools_list2.is_list());
-  EXPECT_EQ(devtools_list2.GetListDeprecated().size(), 1u);
+  base::Value::List devtools_list2 = GetDevToolsListFromPort(port2);
+  EXPECT_EQ(devtools_list2.size(), 1u);
 
-  base::Value* devtools_url2 =
-      devtools_list2.GetListDeprecated()[0].FindPath("url");
+  base::Value* devtools_url2 = devtools_list2[0].FindPath("url");
   ASSERT_TRUE(devtools_url2->is_string());
   EXPECT_EQ(devtools_url2->GetString(), url2);
 
-  base::Value* devtools_title2 =
-      devtools_list2.GetListDeprecated()[0].FindPath("title");
+  base::Value* devtools_title2 = devtools_list2[0].FindPath("title");
   ASSERT_TRUE(devtools_title2->is_string());
   EXPECT_EQ(devtools_title2->GetString(), "title 2");
 
@@ -238,17 +229,15 @@ TEST_F(WebEngineDebugIntegrationTest, DebugAndUserService) {
   ASSERT_EQ(remote_debugging_port, *dev_tools_listener_.debug_ports().begin());
 
   // Test the debug information is correct.
-  base::Value devtools_list = GetDevToolsListFromPort(remote_debugging_port);
-  ASSERT_TRUE(devtools_list.is_list());
-  EXPECT_EQ(devtools_list.GetListDeprecated().size(), 1u);
+  base::Value::List devtools_list =
+      GetDevToolsListFromPort(remote_debugging_port);
+  EXPECT_EQ(devtools_list.size(), 1u);
 
-  base::Value* devtools_url =
-      devtools_list.GetListDeprecated()[0].FindPath("url");
+  base::Value* devtools_url = devtools_list[0].FindPath("url");
   ASSERT_TRUE(devtools_url->is_string());
   EXPECT_EQ(devtools_url->GetString(), url);
 
-  base::Value* devtools_title =
-      devtools_list.GetListDeprecated()[0].FindPath("title");
+  base::Value* devtools_title = devtools_list[0].FindPath("title");
   ASSERT_TRUE(devtools_title->is_string());
   EXPECT_EQ(devtools_title->GetString(), "title 1");
 
