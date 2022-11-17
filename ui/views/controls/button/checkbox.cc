@@ -177,7 +177,6 @@ std::unique_ptr<LabelButtonBorder> Checkbox::CreateDefaultBorder() const {
 
 void Checkbox::OnThemeChanged() {
   LabelButton::OnThemeChanged();
-  UpdateImage();
 }
 
 SkPath Checkbox::GetFocusRingPath() const {
