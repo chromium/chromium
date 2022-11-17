@@ -608,6 +608,7 @@ try_.builder(
     ],
     goma_jobs = goma.jobs.J150,
     cores = 16,
+    ssd = True,
 )
 
 try_.builder(
