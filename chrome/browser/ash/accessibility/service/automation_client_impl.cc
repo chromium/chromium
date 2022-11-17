@@ -20,18 +20,21 @@ AutomationClientImpl::~AutomationClientImpl() {
       nullptr);
 }
 
-void AutomationClientImpl::Bind(ax::AccessibilityServiceRouter* router) {
+void AutomationClientImpl::Bind(
+    mojo::PendingRemote<ax::mojom::Automation> automation,
+    mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client) {
   // Launches the service if it wasn't running yet.
   // Development note (crbug.com/1355633): Using the remote router means
   // extensions don't get a11y events when AutomationClientImpl is bound, so
   // accessibility features built as component extensions are broken when the
   // service is running.
-  DCHECK(!bound_);
-  bound_ = true;
-  extensions::AutomationEventRouter::GetInstance()->RegisterRemoteRouter(this);
-  router->BindAutomationWithClient(
-      automation_client_receiver_.BindNewPipeAndPassRemote(),
-      automation_.BindNewPipeAndPassReceiver());
+  if (!bound_) {
+    bound_ = true;
+    extensions::AutomationEventRouter::GetInstance()->RegisterRemoteRouter(
+        this);
+  }
+  automation_remotes_.Add(std::move(automation));
+  automation_client_receivers_.Add(this, std::move(automation_client));
 }
 
 void AutomationClientImpl::DispatchAccessibilityEvents(
@@ -40,45 +43,52 @@ void AutomationClientImpl::DispatchAccessibilityEvents(
     const gfx::Point& mouse_location,
     std::vector<ui::AXEvent> events) {
   DCHECK(tree_id != ui::AXTreeIDUnknown());
-  if (tree_id == ui::AXTreeIDUnknown() || !automation_.is_bound())
+  if (tree_id == ui::AXTreeIDUnknown())
     return;
   // TODO(crbug.com/1355633): Send to AccessibilityService.
-  // automation_->DispatchAccessibilityEvents(*tree_id.token(), updates,
-  //                                         mouse_location, events);
+  // for (auto& remote : automation_remotes_) {
+  //   remote->DispatchAccessibilityEvents(tree_id, updates, mouse_location,
+  //                                       events);
+  // }
 }
 
 void AutomationClientImpl::DispatchAccessibilityLocationChange(
     const ExtensionMsg_AccessibilityLocationChangeParams& params) {
   ui::AXTreeID tree_id = params.tree_id;
-  if (!tree_id.token() || !automation_.is_bound())
+  if (tree_id == ui::AXTreeIDUnknown())
     return;
   // TODO(crbug.com/1355633): Send to AccessibilityService.
-  // automation_->DispatchAccessibilityLocationChange(*tree_id.token(),
-  // params.id,
-  //                                                  params.new_location);
+  // for (auto& remote : automation_remotes_) {
+  //   remote->DispatchAccessibilityLocationChange(tree_id, params.id,
+  //                                               params.new_location);
+  // }
 }
 void AutomationClientImpl::DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) {
-  if (!tree_id.token() || !automation_.is_bound())
+  if (tree_id == ui::AXTreeIDUnknown())
     return;
   // TODO(crbug.com/1355633): Send to AccessibilityService.
-  // automation_->DispatchTreeDestroyedEvent(*(tree_id.token()));
+  // for (auto& remote : automation_remotes_) {
+  //   remote->DispatchTreeDestroyedEvent(tree_id);
+  // }
 }
 
 void AutomationClientImpl::DispatchActionResult(
     const ui::AXActionData& data,
     bool result,
     content::BrowserContext* browser_context) {
-  if (!automation_.is_bound())
-    return;
   // TODO(crbug.com/1355633): Send to AccessibilityService.
-  // automation_->DispatchActionResult(data, result);
+  // for (auto& remote : automation_remotes_) {
+  //   remote->DispatchActionResult(data, result);
+  // }
 }
 
 void AutomationClientImpl::DispatchGetTextLocationDataResult(
     const ui::AXActionData& data,
     const absl::optional<gfx::Rect>& rect) {
   // TODO(crbug.com/1355633): Send to AccessibilityService.
-  // automation_->DispatchGetTextLocationDataResult(data, rect);
+  // for (auto& remote : automation_remotes_) {
+  //   remote->DispatchGetTextLocationDataResult(data, rect);
+  // }
 }
 
 void AutomationClientImpl::Enable() {
@@ -91,12 +101,11 @@ void AutomationClientImpl::Disable() {
   AutomationManagerAura::GetInstance()->Disable();
 }
 
-void AutomationClientImpl::EnableTree(const base::UnguessableToken& tree_id) {
-  ui::AXTreeID ax_tree_id = ui::AXTreeID::FromToken(tree_id);
+void AutomationClientImpl::EnableTree(const ui::AXTreeID& tree_id) {
   // TODO(crbug.com/1355633): Refactor logic from extensions namespace to a
   // common location.
   extensions::AutomationInternalEnableTreeFunction::EnableTree(
-      ax_tree_id, /*extension_id=*/"");
+      tree_id, /*extension_id=*/"");
 }
 
 void AutomationClientImpl::PerformAction(const ui::AXActionData& data) {

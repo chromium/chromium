@@ -6,13 +6,10 @@
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_SERVICE_AUTOMATION_CLIENT_IMPL_H_
 
 #include "extensions/browser/api/automation_internal/automation_event_router_interface.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
-
-namespace ax {
-class AccessibilityServiceRouter;
-}  // namespace ax
+#include "ui/accessibility/mojom/ax_tree_id.mojom.h"
 
 namespace ash {
 
@@ -26,7 +23,9 @@ class AutomationClientImpl : public ax::mojom::AutomationClient,
   AutomationClientImpl& operator=(const AutomationClientImpl&) = delete;
   ~AutomationClientImpl() override;
 
-  void Bind(ax::AccessibilityServiceRouter* router);
+  void Bind(
+      mojo::PendingRemote<ax::mojom::Automation> automation,
+      mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client);
 
  private:
   // The following are called by the Accessibility service, passing information
@@ -34,7 +33,7 @@ class AutomationClientImpl : public ax::mojom::AutomationClient,
   // TODO(crbug.com/1355633): Override from ax::mojom::AutomationClient:
   void Enable();
   void Disable();
-  void EnableTree(const base::UnguessableToken& tree_id);
+  void EnableTree(const ui::AXTreeID& tree_id);
   void PerformAction(const ui::AXActionData& data);
 
   // Receive accessibility information from AutomationEventRouter in ash and
@@ -54,14 +53,16 @@ class AutomationClientImpl : public ax::mojom::AutomationClient,
       const ui::AXActionData& data,
       const absl::optional<gfx::Rect>& rect) override;
 
-  // Here is the remote to Automation in the service.
-  mojo::Remote<ax::mojom::Automation> automation_;
+  // Here are all the remote to Automation in the service.
+  mojo::RemoteSet<ax::mojom::Automation> automation_remotes_;
 
   // This class is the AutomationClient, receiving AutomationClient calls
-  // from the AccessibilityService, therefore it is the Receiver.
-  mojo::Receiver<ax::mojom::AutomationClient> automation_client_receiver_{this};
+  // from the AccessibilityService.
+  mojo::ReceiverSet<ax::mojom::AutomationClient> automation_client_receivers_;
 
   bool bound_ = false;
 };
+
 }  // namespace ash
+
 #endif  // CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_CLIENT_IMPL_H_

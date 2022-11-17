@@ -31,10 +31,9 @@ class FakeAccessibilityService
   ~FakeAccessibilityService() override;
 
   // AccessibilityServiceRouter:
-  void BindAutomationWithClient(
-      mojo::PendingRemote<ax::mojom::AutomationClient> automation_client_remote,
-      mojo::PendingReceiver<ax::mojom::Automation> automation_receiver)
-      override;
+  void BindAccessibilityServiceClient(
+      mojo::PendingRemote<ax::mojom::AccessibilityServiceClient>
+          accessibility_service_client) override;
   void BindAssistiveTechnologyController(
       mojo::PendingReceiver<ax::mojom::AssistiveTechnologyController>
           at_controller_receiver,
@@ -53,10 +52,10 @@ class FakeAccessibilityService
       int node_id,
       const ui::AXRelativeBounds& bounds);
 
-  // TODO(crbug.com/1355633): Override from
   // ax::mojom::AssistiveTechnologyController:
-  void EnableAssistiveTechnology(ax::mojom::AssistiveTechnologyType type,
-                                 bool enabled);
+  void EnableAssistiveTechnology(
+      const std::vector<ax::mojom::AssistiveTechnologyType>& enabled_features)
+      override;
 
   //
   // Methods for testing.
@@ -70,7 +69,11 @@ class FakeAccessibilityService
     return enabled_ATs_;
   }
 
-  void EnableAutomationClient(bool enabled);
+  // Allows tests to bind Automation multiple times, mimicking multiple
+  // V8 instances in the service.
+  void BindAnotherAutomation();
+
+  void AutomationClientEnable(bool enabled);
 
   void WaitForAutomationEvents();
 
@@ -80,10 +83,14 @@ class FakeAccessibilityService
   base::OnceClosure automation_events_closure_;
   std::vector<base::UnguessableToken> tree_destroyed_events_;
   std::vector<std::tuple<ui::AXActionData, bool>> action_results_;
+
   mojo::ReceiverSet<ax::mojom::Automation> automation_receivers_;
   mojo::RemoteSet<ax::mojom::AutomationClient> automation_client_remotes_;
+
   mojo::ReceiverSet<ax::mojom::AssistiveTechnologyController>
       at_controller_receivers_;
+  mojo::Remote<ax::mojom::AccessibilityServiceClient>
+      accessibility_service_client_remote_;
 };
 
 }  // namespace ash

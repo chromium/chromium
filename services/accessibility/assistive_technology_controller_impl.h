@@ -29,25 +29,27 @@ class AssistiveTechnologyControllerImpl
   AssistiveTechnologyControllerImpl& operator=(
       const AssistiveTechnologyControllerImpl&) = delete;
 
-  // Called by the AccessibilityService.
+  // Called by the AccessibilityServiceCros.
   void Bind(mojo::PendingReceiver<mojom::AssistiveTechnologyController>
                 at_controller_receiver);
+  void BindAccessibilityServiceClient(
+      mojo::PendingRemote<mojom::AccessibilityServiceClient>
+          accessibility_client_remote);
 
-  // Called by the Automation implementation within a V8 isolate to request
-  // binding to the OS automation and automation client.
+  // Called by AutomationInternalBindings owned by a V8 instance
+  // to request binding of Automation and AutomationClient in the OS.
   void BindAutomation(
       mojo::PendingRemote<mojom::Automation> automation,
       mojo::PendingReceiver<mojom::AutomationClient> automation_client);
 
-  // TODO(crbug.com/1355633): Override this method from
   // mojom::AssistiveTechnologyController:
-  void EnableAssistiveTechnology(mojom::AssistiveTechnologyType type,
-                                 bool enabled);
+  void EnableAssistiveTechnology(
+      const std::vector<mojom::AssistiveTechnologyType>& enabled_features)
+      override;
 
   bool IsFeatureEnabled(mojom::AssistiveTechnologyType type) const;
 
   // Methods for testing.
-  void SetAutomationBoundClosureForTest(base::OnceClosure closure);
   void RunScriptForTest(mojom::AssistiveTechnologyType type,
                         const std::string& script,
                         base::OnceClosure on_complete);
@@ -65,12 +67,13 @@ class AssistiveTechnologyControllerImpl
   // AccessibilityServiceCros).
   bool v8_initialized_ = false;
 
-  // For testing.
-  base::OnceClosure automation_bound_closure_for_test_;
-
   // This class is a receiver for mojom::AssistiveTechnologyController.
   mojo::Receiver<mojom::AssistiveTechnologyController> at_controller_receiver_{
       this};
+
+  // The remote to the Accessibility Service Client in the OS.
+  mojo::Remote<mojom::AccessibilityServiceClient>
+      accessibility_service_client_remote_;
 
   base::WeakPtrFactory<AssistiveTechnologyControllerImpl> weak_ptr_factory_{
       this};

@@ -5,20 +5,21 @@
 #include "chrome/browser/accessibility/service/accessibility_service_router.h"
 
 #include "content/public/browser/service_process_host.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace ax {
 
 AccessibilityServiceRouter::AccessibilityServiceRouter() = default;
 AccessibilityServiceRouter::~AccessibilityServiceRouter() = default;
 
-void AccessibilityServiceRouter::BindAutomationWithClient(
-    mojo::PendingRemote<mojom::AutomationClient> automation_client_remote,
-    mojo::PendingReceiver<mojom::Automation> automation_receiver) {
+void AccessibilityServiceRouter::BindAccessibilityServiceClient(
+    mojo::PendingRemote<mojom::AccessibilityServiceClient>
+        accessibility_service_client) {
   LaunchIfNotRunning();
 
   if (accessibility_service_.is_bound()) {
-    accessibility_service_->BindAutomation(std::move(automation_client_remote),
-                                           std::move(automation_receiver));
+    accessibility_service_->BindAccessibilityServiceClient(
+        std::move(accessibility_service_client));
   }
 }
 

@@ -8,6 +8,7 @@
 
 #include "services/accessibility/automation_impl.h"
 #include "services/accessibility/features/v8_manager.h"
+#include "services/accessibility/public/mojom/accessibility_service.mojom.h"
 
 namespace ax {
 
@@ -24,35 +25,41 @@ void AssistiveTechnologyControllerImpl::Bind(
   at_controller_receiver_.Bind(std::move(at_controller_receiver));
 }
 
+void AssistiveTechnologyControllerImpl::BindAccessibilityServiceClient(
+    mojo::PendingRemote<mojom::AccessibilityServiceClient>
+        accessibility_client_remote) {
+  DCHECK(!accessibility_service_client_remote_.is_bound());
+  accessibility_service_client_remote_.Bind(
+      std::move(accessibility_client_remote));
+}
+
 void AssistiveTechnologyControllerImpl::BindAutomation(
     mojo::PendingRemote<mojom::Automation> automation,
     mojo::PendingReceiver<mojom::AutomationClient> automation_client) {
-  if (automation_bound_closure_for_test_) {
-    std::move(automation_bound_closure_for_test_).Run();
-  }
-  // TODO(crbug.com/1355633): Bind to Automation in the embedding OS
-  // after updating the mojom. See go/chromeos-atp-v8-design.
+  accessibility_service_client_remote_->BindAutomation(
+      std::move(automation), std::move(automation_client));
 }
 
 void AssistiveTechnologyControllerImpl::EnableAssistiveTechnology(
-    mojom::AssistiveTechnologyType type,
-    bool enabled) {
-  auto it = enabled_ATs_.find(type);
-  if (enabled && it == enabled_ATs_.end()) {
-    enabled_ATs_[type] = GetOrMakeV8Manager(type);
-  } else if (!enabled && it != enabled_ATs_.end()) {
-    enabled_ATs_.erase(type);
+    const std::vector<mojom::AssistiveTechnologyType>& enabled_features) {
+  for (int i = static_cast<int>(mojom::AssistiveTechnologyType::kMinValue);
+       i <= static_cast<int>(mojom::AssistiveTechnologyType::kMaxValue); i++) {
+    mojom::AssistiveTechnologyType type =
+        static_cast<mojom::AssistiveTechnologyType>(i);
+    bool enabled = std::find(enabled_features.begin(), enabled_features.end(),
+                             type) != enabled_features.end();
+    auto it = enabled_ATs_.find(type);
+    if (enabled && it == enabled_ATs_.end()) {
+      enabled_ATs_[type] = GetOrMakeV8Manager(type);
+    } else if (!enabled && it != enabled_ATs_.end()) {
+      enabled_ATs_.erase(type);
+    }
   }
 }
 
 bool AssistiveTechnologyControllerImpl::IsFeatureEnabled(
     mojom::AssistiveTechnologyType type) const {
   return enabled_ATs_.find(type) != enabled_ATs_.end();
-}
-
-void AssistiveTechnologyControllerImpl::SetAutomationBoundClosureForTest(
-    base::OnceClosure closure) {
-  automation_bound_closure_for_test_ = std::move(closure);
 }
 
 void AssistiveTechnologyControllerImpl::RunScriptForTest(

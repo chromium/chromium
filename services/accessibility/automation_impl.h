@@ -18,8 +18,7 @@
 
 namespace ax {
 
-// Implementation of Automation in the Accessibility service process for Chrome
-// OS. This will construct accessibility trees in V8.
+// Implementation of Automation in the Accessibility service process for Chrome.
 class AutomationImpl : public mojom::Automation {
  public:
   AutomationImpl();

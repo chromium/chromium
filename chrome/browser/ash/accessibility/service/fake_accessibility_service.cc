@@ -14,12 +14,24 @@ namespace ash {
 FakeAccessibilityService::FakeAccessibilityService() = default;
 FakeAccessibilityService::~FakeAccessibilityService() = default;
 
-void FakeAccessibilityService::BindAutomationWithClient(
-    mojo::PendingRemote<ax::mojom::AutomationClient>
-        accessibility_client_remote,
-    mojo::PendingReceiver<ax::mojom::Automation> automation_receiver) {
-  automation_client_remotes_.Add(std::move(accessibility_client_remote));
-  automation_receivers_.Add(this, std::move(automation_receiver));
+void FakeAccessibilityService::BindAccessibilityServiceClient(
+    mojo::PendingRemote<ax::mojom::AccessibilityServiceClient>
+        accessibility_service_client) {
+  accessibility_service_client_remote_.Bind(
+      std::move(accessibility_service_client));
+}
+
+void FakeAccessibilityService::BindAnotherAutomation() {
+  mojo::PendingRemote<ax::mojom::Automation> automation_remote;
+  automation_receivers_.Add(this,
+                            automation_remote.InitWithNewPipeAndPassReceiver());
+
+  mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client_receiver;
+  automation_client_remotes_.Add(
+      automation_client_receiver.InitWithNewPipeAndPassRemote());
+
+  accessibility_service_client_remote_->BindAutomation(
+      std::move(automation_remote), std::move(automation_client_receiver));
 }
 
 void FakeAccessibilityService::BindAssistiveTechnologyController(
@@ -27,9 +39,7 @@ void FakeAccessibilityService::BindAssistiveTechnologyController(
         at_controller_receiver,
     const std::vector<ax::mojom::AssistiveTechnologyType>& enabled_features) {
   at_controller_receivers_.Add(this, std::move(at_controller_receiver));
-  for (auto feature : enabled_features) {
-    EnableAssistiveTechnology(feature, /*enabled=*/true);
-  }
+  EnableAssistiveTechnology(enabled_features);
 }
 
 void FakeAccessibilityService::DispatchTreeDestroyedEvent(
@@ -65,13 +75,8 @@ void FakeAccessibilityService::DispatchAccessibilityLocationChange(
 }
 
 void FakeAccessibilityService::EnableAssistiveTechnology(
-    ax::mojom::AssistiveTechnologyType type,
-    bool enabled) {
-  if (enabled)
-    enabled_ATs_.insert(type);
-  else
-    enabled_ATs_.erase(type);
-
+    const std::vector<ax::mojom::AssistiveTechnologyType>& enabled_features) {
+  enabled_ATs_ = std::set(enabled_features.begin(), enabled_features.end());
   if (change_ATs_closure_)
     std::move(change_ATs_closure_).Run();
 }
@@ -83,11 +88,10 @@ void FakeAccessibilityService::WaitForATChanged() {
 }
 
 bool FakeAccessibilityService::IsBound() {
-  return automation_client_remotes_.size() > 0 &&
-         automation_client_remotes_.begin()->is_bound();
+  return accessibility_service_client_remote_.is_bound();
 }
 
-void FakeAccessibilityService::EnableAutomationClient(bool enabled) {
+void FakeAccessibilityService::AutomationClientEnable(bool enabled) {
   // TODO(crbug.com/1355633): Add once AutomationClient mojom is added.
   // for (auto& automation_client : automation_client_remotes_) {
   //   enabled ? automation_client->Enable() : automation_client->Disable();

@@ -11,8 +11,6 @@
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
 
 namespace ax {
-
-class AutomationImpl;
 class AssistiveTechnologyControllerImpl;
 
 // Implementation of the Accessibility Service for Chrome OS.
@@ -26,11 +24,12 @@ class AccessibilityServiceCros : public mojom::AccessibilityService {
 
  private:
   friend class AccessibilityServiceCrosTest;
+  friend class AssistiveTechnologyControllerTest;
 
   // mojom::AccessibilityService:
-  void BindAutomation(
-      mojo::PendingRemote<mojom::AutomationClient> accessibility_client_remote,
-      mojo::PendingReceiver<mojom::Automation> automation_receiver) override;
+  void BindAccessibilityServiceClient(
+      mojo::PendingRemote<mojom::AccessibilityServiceClient>
+          accessibility_client_remote) override;
   void BindAssistiveTechnologyController(
       mojo::PendingReceiver<mojom::AssistiveTechnologyController>
           at_controller_receiver,
@@ -38,8 +37,6 @@ class AccessibilityServiceCros : public mojom::AccessibilityService {
       override;
 
   std::unique_ptr<AssistiveTechnologyControllerImpl> at_controller_;
-
-  std::unique_ptr<AutomationImpl> automation_;
 
   mojo::Receiver<mojom::AccessibilityService> receiver_;
 

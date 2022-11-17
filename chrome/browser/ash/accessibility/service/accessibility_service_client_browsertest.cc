@@ -143,55 +143,60 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
   // with the enabled AT type.
   client.SetChromeVoxEnabled(true);
   EXPECT_TRUE(ServiceHasATEnabled(AssistiveTechnologyType::kChromeVox));
-
-  // TODO(crbug.com/1355633): Enable this part of the test once the mojom for AT
-  // controller lands.
-  // client.SetSelectToSpeakEnabled(true);
-  // fake_service_->WaitForATChanged();
-  // EXPECT_TRUE(ServiceHasATEnabled(AssistiveTechnologyType::kSelectToSpeak));
-  // client.SetSwitchAccessEnabled(true);
-  // fake_service_->WaitForATChanged();
-  // EXPECT_TRUE(ServiceHasATEnabled(AssistiveTechnologyType::kSwitchAccess));
-  // client.SetAutoclickEnabled(true);
-  // fake_service_->WaitForATChanged();
-  // EXPECT_TRUE(ServiceHasATEnabled(AssistiveTechnologyType::kAutoClick));
-  // client.SetDictationEnabled(true);
-  // fake_service_->WaitForATChanged();
-  // EXPECT_TRUE(ServiceHasATEnabled(AssistiveTechnologyType::kDictation));
-  // client.SetMagnifierEnabled(true);
-  // fake_service_->WaitForATChanged();
-  // EXPECT_TRUE(ServiceHasATEnabled(AssistiveTechnologyType::kMagnifier));
-  // client.SetChromeVoxEnabled(false);
-  // fake_service_->WaitForATChanged();
-  // EXPECT_FALSE(ServiceHasATEnabled(AssistiveTechnologyType::kChromeVox));
-  // client.SetSelectToSpeakEnabled(false);
-  // fake_service_->WaitForATChanged();
-  // EXPECT_FALSE(ServiceHasATEnabled(AssistiveTechnologyType::kSelectToSpeak));
-  // client.SetSwitchAccessEnabled(false);
-  // fake_service_->WaitForATChanged();
-  // EXPECT_FALSE(ServiceHasATEnabled(AssistiveTechnologyType::kSwitchAccess));
-  // client.SetAutoclickEnabled(false);
-  // fake_service_->WaitForATChanged();
-  // EXPECT_FALSE(ServiceHasATEnabled(AssistiveTechnologyType::kAutoClick));
-  // client.SetDictationEnabled(false);
-  // fake_service_->WaitForATChanged();
-  // EXPECT_FALSE(ServiceHasATEnabled(AssistiveTechnologyType::kDictation));
-  // client.SetMagnifierEnabled(false);
-  // fake_service_->WaitForATChanged();
-  // EXPECT_FALSE(ServiceHasATEnabled(AssistiveTechnologyType::kMagnifier));
+  client.SetSelectToSpeakEnabled(true);
+  fake_service_->WaitForATChanged();
+  EXPECT_TRUE(ServiceHasATEnabled(AssistiveTechnologyType::kSelectToSpeak));
+  client.SetSwitchAccessEnabled(true);
+  fake_service_->WaitForATChanged();
+  EXPECT_TRUE(ServiceHasATEnabled(AssistiveTechnologyType::kSwitchAccess));
+  client.SetAutoclickEnabled(true);
+  fake_service_->WaitForATChanged();
+  EXPECT_TRUE(ServiceHasATEnabled(AssistiveTechnologyType::kAutoClick));
+  client.SetDictationEnabled(true);
+  fake_service_->WaitForATChanged();
+  EXPECT_TRUE(ServiceHasATEnabled(AssistiveTechnologyType::kDictation));
+  client.SetMagnifierEnabled(true);
+  fake_service_->WaitForATChanged();
+  EXPECT_TRUE(ServiceHasATEnabled(AssistiveTechnologyType::kMagnifier));
+  client.SetChromeVoxEnabled(false);
+  fake_service_->WaitForATChanged();
+  EXPECT_FALSE(ServiceHasATEnabled(AssistiveTechnologyType::kChromeVox));
+  client.SetSelectToSpeakEnabled(false);
+  fake_service_->WaitForATChanged();
+  EXPECT_FALSE(ServiceHasATEnabled(AssistiveTechnologyType::kSelectToSpeak));
+  client.SetSwitchAccessEnabled(false);
+  fake_service_->WaitForATChanged();
+  EXPECT_FALSE(ServiceHasATEnabled(AssistiveTechnologyType::kSwitchAccess));
+  client.SetAutoclickEnabled(false);
+  fake_service_->WaitForATChanged();
+  EXPECT_FALSE(ServiceHasATEnabled(AssistiveTechnologyType::kAutoClick));
+  client.SetDictationEnabled(false);
+  fake_service_->WaitForATChanged();
+  EXPECT_FALSE(ServiceHasATEnabled(AssistiveTechnologyType::kDictation));
+  client.SetMagnifierEnabled(false);
+  fake_service_->WaitForATChanged();
+  EXPECT_FALSE(ServiceHasATEnabled(AssistiveTechnologyType::kMagnifier));
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, EnablesAutomation) {
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
+                       SendsAutomationToTheService) {
   AccessibilityServiceClient client;
   client.SetProfile(browser()->profile());
   // Enable an assistive technology. The service will not be started until
   // some AT needs it.
   client.SetChromeVoxEnabled(true);
+  EXPECT_TRUE(ServiceHasATEnabled(AssistiveTechnologyType::kChromeVox));
 
-  // TODO(crbug.com/1355633): Enable this part of the test once the mojom for AT
-  // controller lands.
-  // fake_service_->EnableAutomationClient(true);
-  // // Expect an a11y event to have come through.
+  // The service may bind multiple Automations to the AutomationClient.
+  for (int i = 0; i < 3; i++) {
+    fake_service_->BindAnotherAutomation();
+  }
+
+  // TODO(crbug.com/1355633): Enable this part of the test once the mojom
+  // AutomationClient and Automation land.
+  // fake_service_->AutomationClientEnable();
+  // // Expect an a11y event to have come through three times, once for
+  // // each AutomationClient.
   // fake_service_->WaitForAutomationEvents();
 }
 }  // namespace ash

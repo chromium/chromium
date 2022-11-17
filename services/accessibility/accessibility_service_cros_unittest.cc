@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "services/accessibility/accessibility_service_cros.h"
+
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/accessibility/assistive_technology_controller_impl.h"
-#include "services/accessibility/fake_automation_client.h"
+#include "services/accessibility/fake_service_client.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -64,14 +65,14 @@ class AccessibilityServiceCrosTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(AccessibilityServiceCrosTest, BindsAutomation) {
+TEST_F(AccessibilityServiceCrosTest, BindsAccessibilityServiceClient) {
   mojo::PendingReceiver<mojom::AccessibilityService> receiver;
   std::unique_ptr<AccessibilityServiceCros> service =
       std::make_unique<AccessibilityServiceCros>(std::move(receiver));
 
-  FakeAutomationClient client(service.get());
-  client.BindToAutomation();
-  EXPECT_TRUE(client.IsBound());
+  FakeServiceClient client(service.get());
+  client.BindAccessibilityServiceClientForTest();
+  EXPECT_TRUE(client.AccessibilityServiceClientIsBound());
 }
 
 TEST_F(AccessibilityServiceCrosTest,

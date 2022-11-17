@@ -8,6 +8,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
 
 namespace ax {
@@ -25,13 +26,15 @@ class AccessibilityServiceChrome : public mojom::AccessibilityService {
 
  private:
   // mojom::AccessibilityService:
-  void BindAutomation(
-      mojo::PendingRemote<mojom::AutomationClient> accessibility_client_remote,
-      mojo::PendingReceiver<mojom::Automation> automation_receiver) override;
+  void BindAccessibilityServiceClient(
+      mojo::PendingRemote<mojom::AccessibilityServiceClient>
+          accessibility_client_remote) override;
 
   std::unique_ptr<AutomationImpl> automation_;
 
   mojo::Receiver<mojom::AccessibilityService> receiver_;
+  mojo::Remote<mojom::AccessibilityServiceClient>
+      accessibility_service_client_remote_;
 
   base::WeakPtrFactory<AccessibilityServiceChrome> weak_ptr_factory_{this};
 };

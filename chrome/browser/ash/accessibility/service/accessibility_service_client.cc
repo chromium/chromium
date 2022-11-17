@@ -21,6 +21,12 @@ AccessibilityServiceClient::~AccessibilityServiceClient() {
   Reset();
 }
 
+void AccessibilityServiceClient::BindAutomation(
+    mojo::PendingRemote<ax::mojom::Automation> automation,
+    mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client) {
+  automation_client_->Bind(std::move(automation), std::move(automation_client));
+}
+
 void AccessibilityServiceClient::SetProfile(content::BrowserContext* profile) {
   // If the profile has changed we will need to disconnect from the previous
   // service, get the service keyed to this profile, and if any features were
@@ -89,8 +95,7 @@ void AccessibilityServiceClient::EnableAssistiveTechnology(
   }
 
   if (at_controller_.is_bound()) {
-    // TODO(crbug.com/1355633): Enable assistive technology with mojom.
-    // at_controller_->EnableAssistiveTechnology(type, enabled);
+    at_controller_->EnableAssistiveTechnology(enabled_features_);
     return;
   }
 
@@ -103,13 +108,15 @@ void AccessibilityServiceClient::LaunchAccessibilityServiceAndBind() {
   if (!profile_)
     return;
 
+  automation_client_ = std::make_unique<AutomationClientImpl>();
+
   ax::AccessibilityServiceRouter* router =
       ax::AccessibilityServiceRouterFactory::GetForBrowserContext(
           static_cast<content::BrowserContext*>(profile_));
-  automation_client_ = std::make_unique<AutomationClientImpl>();
-  automation_client_->Bind(router);
   router->BindAssistiveTechnologyController(
       at_controller_.BindNewPipeAndPassReceiver(), enabled_features_);
+  router->BindAccessibilityServiceClient(
+      service_client_.BindNewPipeAndPassRemote());
 }
 
 }  // namespace ash

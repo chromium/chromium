@@ -12,17 +12,13 @@ buildflag_header("buildflags") {
 }
 
 source_set("lib") {
-  sources = [
-    "automation_impl.cc",
-    "automation_impl.h",
-  ]
   public_deps = [
     "//services/accessibility/public/mojom",
     "//ui/accessibility:ax_base",
   ]
 
   if (is_chromeos_ash) {
-    sources += [
+    sources = [
       "accessibility_service_cros.cc",
       "accessibility_service_cros.h",
       "assistive_technology_controller_impl.cc",
@@ -41,9 +37,11 @@ source_set("lib") {
       "//v8:external_startup_data",
     ]
   } else {
-    sources += [
+    sources = [
       "accessibility_service_chrome.cc",
       "accessibility_service_chrome.h",
+      "automation_impl.cc",
+      "automation_impl.h",
     ]
   }
 }
@@ -52,8 +50,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
-    "fake_automation_client.cc",
-    "fake_automation_client.h",
+    "fake_service_client.cc",
+    "fake_service_client.h",
   ]
 
   deps = [ ":lib" ]

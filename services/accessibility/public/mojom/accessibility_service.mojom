@@ -14,8 +14,8 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Main interface a client uses to send accessibility tree updates and
 // results, implemented in the Accessibility service. Clients may
-// be the OS browser process, renderers, or other accessibility tree
-// sources.
+// be the main OS browser process, renderers, or other accessibility tree
+// sources or aggregators.
 interface Automation {
   // // Forwards an accessibility tree destroyed event from any accessibility
   // // tree from client to the accessibility service.
@@ -40,15 +40,22 @@ interface Automation {
   //   ax.mojom.AXTreeID tree_id,
   //   int32 node_id,
   //   ax.mojom.AXRelativeBounds bounds);
+
+  // // Dispatches the result of a query for text location.
+  // // Currently supported by ARC++ in response to
+  // // ax::mojom::Action::kGetTextLocation.
+  //  DispatchGetTextLocationResult(
+  //    ax.mojom.ActionData data,
+  //    gfx.mojom.Rect rect);
 };
 
-// Implemented by e.g. Chrome OS Ash, Chrome browser process, renderers,
-// or other tree sources.
-// Used by the accessibility service to enable accessibility and perform
+// Implemented outside of the service, e.g. Chrome OS Ash, Chrome browser
+// process, renderers, or other tree sources.
+// Called by the accessibility service to enable accessibility and perform
 // actions. For example the accessibility service might want to do a
 // 'click' because a screen reader requested the default action. Then the
 // accessibility service would use AutomationClient::PerformAction to pass
-// that down to the client.
+// that back to the client.
 interface AutomationClient {
   // // Enables automation for the client. This will result in the client
   // // repeatedly calling DispatchAccessibilityEvents() on the Automation
@@ -72,7 +79,7 @@ interface AutomationClient {
   // PerformAction(ax.mojom.AXActionData action_data);
 };
 
-// Features which are implemented by the accessibility service.
+// All the features which are implemented by the accessibility service.
 [EnableIf=is_chromeos_ash]
 enum AssistiveTechnologyType {
   kChromeVox,
@@ -87,8 +94,9 @@ enum AssistiveTechnologyType {
 // The caller is the client OS, for example, Chrome OS Ash.
 [EnableIf=is_chromeos_ash]
 interface AssistiveTechnologyController {
-  // // Turns on or off an accessibility feature in the service.
-  // EnableAssistiveTechnology(AssistiveTechnologyType type, bool enabled);
+  // Updates the service with the current list of enabled features.
+  // Any features not in this list are considered disabled.
+  EnableAssistiveTechnology(array<AssistiveTechnologyType> enabled_features);
 };
 
 // AccessibilityService aggregates accessibility information from
@@ -97,20 +105,38 @@ interface AssistiveTechnologyController {
 // hosts accessibility features in a V8 runtime.
 // TODO(crbug.com/1355633): The Accessibility Service will need to run in a
 // sandboxed process that allows V8 execution and access to read local
-// Javascript files in a known directory.
+// Javascript files in a known directory in Chrome OS and Fushcia.
 [ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface AccessibilityService {
-  // Binds a new Automation hosted in the service process to a client.
-  BindAutomation(
-    pending_remote<AutomationClient> automation_client,
-    pending_receiver<Automation> automation);
+  // Binds a AccessibilityServiceClient implemented in the main OS process to
+  // the service.
+  BindAccessibilityServiceClient(
+    pending_remote<AccessibilityServiceClient> accessibility_service_client);
 
-  // Binds an AssistiveTechnologyController hosted in the service process,
-  // allowing the client to control which Assistive Technologies are active.
-  // Callers may pass in a list of initially enabled features; features not
-  // in this list are assumed disabled.
+  // Binds an AssistiveTechnologyController implemented in in the service
+  // process, allowing the client to control which Assistive Technologies are
+  // active. Callers may pass in a list of initially enabled features; features
+  // not in this list are assumed disabled.
   [EnableIf=is_chromeos_ash]
   BindAssistiveTechnologyController(
     pending_receiver<AssistiveTechnologyController> at_controller,
     array<AssistiveTechnologyType> enabled_features);
+};
+
+// Implemented by the main OS process, e.g. Chrome OS Ash on Chrome OS. Allows
+// the AccessibilityService to bind APIs on-demand when needed by AT features,
+// and to bind once or once-per-feature. May be called more than once.
+// On Chrome OS, for example, when ChromeVox is turned on the service will use
+// this interface to bind text-to-speech and Automation APIs, and when Dictation
+// is turned on, the service will bind speech recognition and Automation APIs.
+// TODO(crbug.com/1355633): Other APIs needed in Chrome OS and Fuchsia should be
+// bound here.
+interface AccessibilityServiceClient {
+  // Binds an Automation implemented in the service process to a client
+  // implemented in the main OS process.
+  // In Chrome OS this may be called once per feature to provide
+  // automation connections to each V8 isolate.
+  BindAutomation(
+    pending_remote<Automation> automation,
+    pending_receiver<AutomationClient> automation_client);
 };

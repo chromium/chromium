@@ -21,9 +21,9 @@ class AccessibilityServiceRouter : public KeyedService {
       delete;
   ~AccessibilityServiceRouter() override;
 
-  virtual void BindAutomationWithClient(
-      mojo::PendingRemote<mojom::AutomationClient> automation_client_remote,
-      mojo::PendingReceiver<mojom::Automation> automation_receiver);
+  virtual void BindAccessibilityServiceClient(
+      mojo::PendingRemote<mojom::AccessibilityServiceClient>
+          accessibility_service_client);
 
   virtual void BindAssistiveTechnologyController(
       mojo::PendingReceiver<mojom::AssistiveTechnologyController>

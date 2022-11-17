@@ -17,11 +17,12 @@ AccessibilityServiceChrome::AccessibilityServiceChrome(
 
 AccessibilityServiceChrome::~AccessibilityServiceChrome() = default;
 
-void AccessibilityServiceChrome::BindAutomation(
-    mojo::PendingRemote<mojom::AutomationClient> automation_client_remote,
-    mojo::PendingReceiver<mojom::Automation> automation_receiver) {
-  automation_->Bind(std::move(automation_client_remote),
-                    std::move(automation_receiver));
+void AccessibilityServiceChrome::BindAccessibilityServiceClient(
+    mojo::PendingRemote<mojom::AccessibilityServiceClient>
+        accessibility_client_remote) {
+  DCHECK(!accessibility_service_client_remote_.is_bound());
+  accessibility_service_client_remote_.Bind(
+      std::move(accessibility_client_remote));
 }
 
 }  // namespace ax
