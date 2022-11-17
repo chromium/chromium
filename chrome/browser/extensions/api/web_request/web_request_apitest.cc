@@ -5256,16 +5256,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiPrerenderingTest, Load) {
 class WebRequestPersistentListenersTest
     : public ExtensionWebRequestApiTestWithContextType {
  public:
-  WebRequestPersistentListenersTest() = default;
+  WebRequestPersistentListenersTest()
+      // Note: Set the listener before triggering the parent
+      // SetUpOnMainThread to ensure it happens before extensions start
+      // loading.
+      : test_listener_(
+            std::make_unique<ExtensionTestMessageListener>("ready")) {}
   ~WebRequestPersistentListenersTest() override = default;
-
-  void SetUpOnMainThread() override {
-    // Note: Set the listener before triggering the parent SetUpOnMainThread
-    // to ensure it happens before extensions start loading.
-    test_listener_ = std::make_unique<ExtensionTestMessageListener>("ready");
-
-    ExtensionWebRequestApiTestWithContextType::SetUpOnMainThread();
-  }
 
   void TearDownOnMainThread() override {
     test_listener_.reset();
@@ -5317,14 +5314,8 @@ IN_PROC_BROWSER_TEST_P(WebRequestPersistentListenersTest,
   EXPECT_EQ(1, request_count.GetInt());
 }
 
-// TODO(https://crbug.com/1361941): Fix flakes under ASAN/LSAN.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_TestListenersArePersistent DISABLED_TestListenersArePersistent
-#else
-#define MAYBE_TestListenersArePersistent TestListenersArePersistent
-#endif
 IN_PROC_BROWSER_TEST_P(WebRequestPersistentListenersTest,
-                       MAYBE_TestListenersArePersistent) {
+                       TestListenersArePersistent) {
   // Find the installed extension and wait for it to fully load.
   ASSERT_TRUE(StartEmbeddedTestServer());
   const Extension* extension = nullptr;
