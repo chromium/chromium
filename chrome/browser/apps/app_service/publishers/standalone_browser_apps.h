@@ -91,7 +91,7 @@ class StandaloneBrowserApps : public apps::PublisherBase,
   void StopApp(const std::string& app_id) override;
 
   // crosapi::BrowserManagerObserver
-  void OnLoadComplete(bool success) override;
+  void OnLoadComplete(bool success, const base::Version& version) override;
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
   Profile* const profile_;

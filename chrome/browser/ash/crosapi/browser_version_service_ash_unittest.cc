@@ -37,6 +37,22 @@ class MockBrowserVersionObserver
   MOCK_METHOD1(OnBrowserVersionInstalled, void(const std::string& version));
 };
 
+class MockVersionServiceDelegate : public BrowserVersionServiceAsh::Delegate {
+ public:
+  MockVersionServiceDelegate() = default;
+  MockVersionServiceDelegate(const MockVersionServiceDelegate&) = delete;
+  MockVersionServiceDelegate& operator=(const MockVersionServiceDelegate&) =
+      delete;
+  ~MockVersionServiceDelegate() override = default;
+
+  // BrowserVersionServiceAsh::Delegate:
+  base::Version GetLatestLaunchableBrowserVersion() const override {
+    return base::Version("95.0.0.0");
+  }
+
+  bool IsNewerBrowserAvailable() const override { return true; }
+};
+
 class BrowserVersionServiceAshTest : public testing::Test {
  public:
   BrowserVersionServiceAshTest() = default;
@@ -70,8 +86,10 @@ TEST_F(BrowserVersionServiceAshTest,
       .Times(2);
 
   base::RunLoop run_loop;
+  MockVersionServiceDelegate delegate;
   BrowserVersionServiceAsh browser_version_service(
       &mock_component_update_service);
+  browser_version_service.set_delegate_for_testing(&delegate);
   browser_version_service.AddBrowserVersionObserver(
       browser_version_observer_.BindAndGetRemote());
 
@@ -96,8 +114,10 @@ TEST_F(BrowserVersionServiceAshTest, GetInstalledBrowserVersion) {
   ON_CALL(mock_component_update_service, GetComponents())
       .WillByDefault(Return(sample_components));
 
+  MockVersionServiceDelegate delegate;
   BrowserVersionServiceAsh browser_version_service(
       &mock_component_update_service);
+  browser_version_service.set_delegate_for_testing(&delegate);
 
   base::MockCallback<
       mojom::BrowserVersionService::GetInstalledBrowserVersionCallback>

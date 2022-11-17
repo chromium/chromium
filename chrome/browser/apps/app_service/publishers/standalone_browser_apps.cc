@@ -231,7 +231,8 @@ void StandaloneBrowserApps::StopApp(const std::string& app_id) {
   }
 }
 
-void StandaloneBrowserApps::OnLoadComplete(bool success) {
+void StandaloneBrowserApps::OnLoadComplete(bool success,
+                                           const base::Version& version) {
   is_browser_load_success_ = success;
 
   apps::mojom::AppPtr mojom_app = apps::mojom::App::New();

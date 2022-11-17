@@ -99,6 +99,36 @@ class BrowserManagerFake : public BrowserManager {
   int start_count_ = 0;
 };
 
+class MockVersionServiceDelegate : public BrowserVersionServiceAsh::Delegate {
+ public:
+  MockVersionServiceDelegate() = default;
+  MockVersionServiceDelegate(const MockVersionServiceDelegate&) = delete;
+  MockVersionServiceDelegate& operator=(const MockVersionServiceDelegate&) =
+      delete;
+  ~MockVersionServiceDelegate() override = default;
+
+  // BrowserVersionServiceAsh::Delegate:
+  base::Version GetLatestLaunchableBrowserVersion() const override {
+    return latest_launchable_version_;
+  }
+
+  bool IsNewerBrowserAvailable() const override {
+    return is_newer_browser_available_;
+  }
+
+  void set_latest_lauchable_version(base::Version version) {
+    latest_launchable_version_ = std::move(version);
+  }
+
+  void set_is_newer_browser_available(bool is_newer_browser_available) {
+    is_newer_browser_available_ = is_newer_browser_available;
+  }
+
+ private:
+  base::Version latest_launchable_version_;
+  bool is_newer_browser_available_ = false;
+};
+
 }  // namespace
 
 class MockBrowserLoader : public BrowserLoader {
@@ -137,6 +167,11 @@ class BrowserManagerTest : public testing::Test {
         std::make_unique<testing::NiceMock<MockComponentUpdateService>>();
     fake_browser_manager_ = std::make_unique<BrowserManagerFake>(
         std::move(browser_loader), component_update_service_.get());
+    auto version_service_delegate =
+        std::make_unique<MockVersionServiceDelegate>();
+    version_service_delegate_ = version_service_delegate.get();
+    fake_browser_manager_->set_version_service_delegate_for_testing(
+        std::move(version_service_delegate));
 
     shelf_model_ = std::make_unique<ash::ShelfModel>();
     shelf_controller_ = std::make_unique<ChromeShelfController>(
@@ -180,6 +215,7 @@ class BrowserManagerTest : public testing::Test {
   MockBrowserLoader* browser_loader_ = nullptr;
   std::unique_ptr<MockComponentUpdateService> component_update_service_;
   std::unique_ptr<BrowserManagerFake> fake_browser_manager_;
+  raw_ptr<MockVersionServiceDelegate> version_service_delegate_;
   ScopedTestingLocalState local_state_;
   std::unique_ptr<ash::ShelfModel> shelf_model_;
   std::unique_ptr<ChromeShelfController> shelf_controller_;
@@ -263,13 +299,9 @@ TEST_F(BrowserManagerTest, LacrosKeepAliveReloadsWhenUpdateAvailable) {
   fake_browser_manager_->SetStatePublic(State::UNAVAILABLE);
   EXPECT_EQ(fake_browser_manager_->start_count(), 0);
 
-  // Simulate an update event by the component update service.
-  const std::string lacros_component_id =
-      browser_util::kLacrosDogfoodDevInfo.crx_id;
-  static_cast<component_updater::ComponentUpdateService::Observer*>(
-      fake_browser_manager_.get())
-      ->OnEvent(UpdateClient::Observer::Events::COMPONENT_UPDATED,
-                lacros_component_id);
+  version_service_delegate_->set_is_newer_browser_available(true);
+  version_service_delegate_->set_latest_lauchable_version(
+      base::Version("1.0.0"));
 
   std::unique_ptr<BrowserManager::ScopedKeepAlive> keep_alive =
       fake_browser_manager_->KeepAlive(BrowserManager::Feature::kTestOnly);
@@ -312,12 +344,9 @@ TEST_F(BrowserManagerTest, NewWindowReloadsWhenUpdateAvailable) {
   using State = BrowserManagerFake::State;
   fake_browser_manager_->SetStatePublic(State::STOPPED);
 
-  const std::string lacros_component_id =
-      browser_util::kLacrosDogfoodDevInfo.crx_id;
-  static_cast<component_updater::ComponentUpdateService::Observer*>(
-      fake_browser_manager_.get())
-      ->OnEvent(UpdateClient::Observer::Events::COMPONENT_UPDATED,
-                lacros_component_id);
+  version_service_delegate_->set_is_newer_browser_available(true);
+  version_service_delegate_->set_latest_lauchable_version(
+      base::Version("1.0.0"));
 
   EXPECT_EQ(fake_browser_manager_->start_count(), 0);
   EXPECT_CALL(*browser_loader_, Load(_));

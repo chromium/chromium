@@ -4,24 +4,7 @@
 
 #include "chrome/browser/ash/crosapi/browser_version_service_ash.h"
 
-#include "base/ranges/algorithm.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-
-namespace {
-
-absl::optional<component_updater::ComponentInfo> GetComponent(
-    const std::vector<component_updater::ComponentInfo>& components,
-    const std::string& id) {
-  auto it =
-      base::ranges::find(components, id, &component_updater::ComponentInfo::id);
-
-  if (it != components.end())
-    return *it;
-
-  return absl::nullopt;
-}
-
-}  // namespace
+#include "chrome/browser/ash/crosapi/browser_manager.h"
 
 namespace crosapi {
 
@@ -52,50 +35,38 @@ void BrowserVersionServiceAsh::AddBrowserVersionObserver(
 
   // To avoid race conditions, trigger version notification on observer
   // registration.
-  absl::optional<base::Version> browser_version = GetBrowserVersion();
-  if (browser_version.has_value()) {
-    remote->OnBrowserVersionInstalled(browser_version.value().GetString());
-  }
+  remote->OnBrowserVersionInstalled(GetLatestLaunchableBrowserVersion());
 
   observers_.Add(std::move(remote));
 }
 
 void BrowserVersionServiceAsh::GetInstalledBrowserVersion(
     GetInstalledBrowserVersionCallback callback) {
-  std::string version_str;
+  std::move(callback).Run(GetLatestLaunchableBrowserVersion());
+}
 
-  auto browser_version = GetBrowserVersion();
-  if (browser_version.has_value())
-    version_str = browser_version.value().GetString();
-
-  std::move(callback).Run(version_str);
+const BrowserVersionServiceAsh::Delegate*
+BrowserVersionServiceAsh::GetDelegate() const {
+  return delegate_for_testing_
+             ? delegate_for_testing_.get()
+             : crosapi::BrowserManager::Get()->version_service_delegate();
 }
 
 void BrowserVersionServiceAsh::OnEvent(Events event, const std::string& id) {
-  absl::optional<component_updater::ComponentInfo> component_info =
-      GetComponent(component_update_service_->GetComponents(), id);
   // Check for notifications of the Lacros component being updated.
-  if (event == Events::COMPONENT_UPDATED &&
-      id == browser_util::GetLacrosComponentInfo().crx_id) {
-    absl::optional<base::Version> browser_version = GetBrowserVersion();
-    if (browser_version.has_value()) {
-      std::string version_str = browser_version.value().GetString();
-      for (auto& observer : observers_) {
-        observer->OnBrowserVersionInstalled(version_str);
-      }
-    }
+  if (event != Events::COMPONENT_UPDATED ||
+      id != browser_util::GetLacrosComponentInfo().crx_id ||
+      !GetDelegate()->IsNewerBrowserAvailable()) {
+    return;
   }
+
+  for (auto& observer : observers_)
+    observer->OnBrowserVersionInstalled(GetLatestLaunchableBrowserVersion());
 }
 
-absl::optional<base::Version> BrowserVersionServiceAsh::GetBrowserVersion() {
-  absl::optional<component_updater::ComponentInfo> component_info =
-      GetComponent(component_update_service_->GetComponents(),
-                   browser_util::GetLacrosComponentInfo().crx_id);
-  if (component_info.has_value()) {
-    return component_info.value().version;
-  }
-
-  return absl::nullopt;
+std::string BrowserVersionServiceAsh::GetLatestLaunchableBrowserVersion()
+    const {
+  return GetDelegate()->GetLatestLaunchableBrowserVersion().GetString();
 }
 
 }  // namespace crosapi

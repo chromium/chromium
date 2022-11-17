@@ -393,6 +393,75 @@ void RecordDataVerForPrimaryUser() {
                                        version_info::GetVersion());
 }
 
+// The delegate keeps track of the most recent lacros-chrome binary version
+// loaded by the BrowserLoader.
+// It is the single source of truth for what is the most up-to-date launchable
+// version of lacros-chrome. It should be queried when determining if loading a
+// more recent lacros-chrome binary should be attempted.
+class BrowserVersionServiceDelegate : public BrowserVersionServiceAsh::Delegate,
+                                      public BrowserManagerObserver {
+ public:
+  BrowserVersionServiceDelegate(
+      const ComponentUpdateService* component_update_service,
+      BrowserManager* browser_manager)
+      : component_update_service_(component_update_service) {
+    observation_.Observe(browser_manager);
+  }
+  BrowserVersionServiceDelegate(const BrowserVersionServiceDelegate&) = delete;
+  BrowserVersionServiceDelegate& operator=(
+      const BrowserVersionServiceDelegate&) = delete;
+  ~BrowserVersionServiceDelegate() override = default;
+
+  // BrowserVersionServiceAsh::Delegate:
+  base::Version GetLatestLaunchableBrowserVersion() const override {
+    // If there is a newer browser available return the version of lacros-chrome
+    // maintained by the component manager. Otherwise return the current version
+    // loaded by the manager.
+    const auto component_version_number =
+        browser_util::GetInstalledLacrosComponentVersion(
+            component_update_service_);
+    return IsNewerBrowserAvailable() && component_version_number.IsValid()
+               ? component_version_number
+               : browser_version_loaded_;
+  }
+
+  bool IsNewerBrowserAvailable() const override {
+    // If the browser loader is not able to load newer stateful component builds
+    // signal there is no update available.
+    if (!BrowserLoader::WillLoadStatefulComponentBuilds())
+      return false;
+
+    const auto component_version_number =
+        browser_util::GetInstalledLacrosComponentVersion(
+            component_update_service_);
+    return (!browser_version_loaded_.IsValid() &&
+            component_version_number.IsValid()) ||
+           (browser_version_loaded_.IsValid() &&
+            component_version_number.IsValid() &&
+            browser_version_loaded_ < component_version_number);
+  }
+
+  // crosapi::BrowserManagerObserver:
+  void OnLoadComplete(bool success, const base::Version& version) override {
+    browser_version_loaded_ = version;
+  }
+
+ private:
+  // Version number of the most recently loaded lacros-chrome browser. This
+  // can be used for version checking and version comparisons. It is in the
+  // format of:
+  // <major_version>.<minor_version>.<build>.<patch>
+  // For example, "86.0.4240.38".
+  // Set immediately after lacros has loaded. May be invalid if BrowserLoader
+  // fails to successfully load a lacros binary.
+  base::Version browser_version_loaded_;
+
+  const raw_ptr<const ComponentUpdateService> component_update_service_;
+
+  base::ScopedObservation<BrowserManager, BrowserManagerObserver> observation_{
+      this};
+};
+
 }  // namespace
 
 // To be sure the lacros is running with neutral thread type.
@@ -431,6 +500,8 @@ BrowserManager::BrowserManager(
       disabled_for_testing_(g_disabled_for_testing) {
   DCHECK(!g_instance);
   g_instance = this;
+  version_service_delegate_ =
+      std::make_unique<BrowserVersionServiceDelegate>(update_service, this);
 
   // Wait to query the flag until the user has entered the session. Enterprise
   // devices restart Chrome during login to apply flags. We don't want to run
@@ -599,7 +670,6 @@ void BrowserManager::InitializeAndStartIfNeeded() {
            !IsLoginLacrosOpeningDisabledForTesting())) {
         pending_actions_.Push(BrowserAction::GetActionForSessionStart());
       }
-      component_update_observation_.Observe(component_update_service_);
       SetState(State::MOUNTING);
       browser_loader_->Load(base::BindOnce(
           &BrowserManager::OnLoadComplete, weak_factory_.GetWeakPtr(),
@@ -632,7 +702,6 @@ void BrowserManager::PrelaunchAtLoginScreen() {
   DCHECK(!user_manager::UserManager::Get()->IsUserLoggedIn());
 
   // Load and start Lacros.
-  component_update_observation_.Observe(component_update_service_);
   SetState(State::MOUNTING);
   browser_loader_->Load(base::BindOnce(&BrowserManager::OnLoadComplete,
                                        weak_factory_.GetWeakPtr(),
@@ -776,17 +845,19 @@ void BrowserManager::Start(bool launching_at_login_screen) {
     DCHECK(browser_util::IsLacrosAllowedToLaunch());
   }
 
-  if (update_available_) {
-    update_available_ = false;
+  if (version_service_delegate_->IsNewerBrowserAvailable() &&
+      should_attempt_update_) {
     SetState(State::MOUNTING);
     lacros_path_ = base::FilePath();
     lacros_selection_ = absl::nullopt;
+    should_attempt_update_ = false;
     // OnLoadComplete will call Start again.
     browser_loader_->Load(base::BindOnce(&BrowserManager::OnLoadComplete,
                                          weak_factory_.GetWeakPtr(),
                                          launching_at_login_screen));
     return;
   }
+  should_attempt_update_ = true;
 
   // Always reset the |relaunch_requested_| flag when launching Lacros.
   relaunch_requested_ = false;
@@ -1243,15 +1314,6 @@ void BrowserManager::OnRefreshSchedulerDestruction(
   scheduler->RemoveObserver(this);
 }
 
-void BrowserManager::OnEvent(Events event, const std::string& id) {
-  // Track whether an update has been installed and should be loaded next time
-  // the browser is started.
-  if (event == Events::COMPONENT_UPDATED &&
-      id == browser_util::GetLacrosComponentInfo().crx_id) {
-    update_available_ = true;
-  }
-}
-
 void BrowserManager::OnLoadComplete(bool launching_at_login_screen,
                                     const base::FilePath& path,
                                     LacrosSelection selection,
@@ -1268,9 +1330,8 @@ void BrowserManager::OnLoadComplete(bool launching_at_login_screen,
   SetState(success ? State::STOPPED : State::UNAVAILABLE);
   // TODO(crbug.com/1266010): In the event the load operation failed, we should
   // launch the last successfully loaded image.
-  for (auto& observer : observers_) {
-    observer.OnLoadComplete(success);
-  }
+  for (auto& observer : observers_)
+    observer.OnLoadComplete(success, version);
 
   StartIfNeeded(launching_at_login_screen);
 }

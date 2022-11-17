@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/crosapi/browser_manager_observer.h"
 #include "chrome/browser/ash/crosapi/browser_service_host_observer.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/crosapi/browser_version_service_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/crosapi/environment_provider.h"
@@ -30,7 +31,6 @@
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/desk_template.mojom.h"
-#include "components/component_updater/component_updater_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler_observer.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -90,8 +90,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
                        public policy::CloudPolicyCore::Observer,
                        public policy::CloudPolicyStore::Observer,
                        public policy::ComponentCloudPolicyServiceObserver,
-                       public policy::CloudPolicyRefreshSchedulerObserver,
-                       public ComponentUpdateService::Observer {
+                       public policy::CloudPolicyRefreshSchedulerObserver {
  public:
   // Static getter of BrowserManager instance. In real use cases,
   // BrowserManager instance should be unique in the process.
@@ -284,6 +283,15 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // called in the early stages of ash shutdown to give Lacros sufficient time
   // for a graceful exit.
   void Shutdown();
+
+  const BrowserVersionServiceAsh::Delegate* version_service_delegate() const {
+    return version_service_delegate_.get();
+  }
+  void set_version_service_delegate_for_testing(
+      std::unique_ptr<BrowserVersionServiceAsh::Delegate>
+          version_service_delegate) {
+    version_service_delegate_ = std::move(version_service_delegate);
+  }
 
   void set_relaunch_requested_for_testing(bool relaunch_requested);
 
@@ -586,9 +594,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   void OnRefreshSchedulerDestruction(
       policy::CloudPolicyRefreshScheduler* scheduler) override;
 
-  // component_updater::ComponentUpdateService::Observer:
-  void OnEvent(Events event, const std::string& id) override;
-
   // crosapi::BrowserManagerObserver:
   void OnLoadComplete(bool launching_at_login_screen,
                       const base::FilePath& path,
@@ -632,6 +637,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // May be null in tests.
   ComponentUpdateService* const component_update_service_;
 
+  // Delegate handling various concerns regarding the version service.
+  std::unique_ptr<BrowserVersionServiceAsh::Delegate> version_service_delegate_;
+
   // Path to the lacros-chrome disk image directory.
   base::FilePath lacros_path_;
 
@@ -666,9 +674,11 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // was unnecessary (e.g. because the user doesn't have Lacros enabled).
   bool unload_requested_ = false;
 
-  // Tracks whether an updated browser component is available. Used to determine
-  // if an update should be loaded prior to starting the browser.
-  bool update_available_ = false;
+  // Tracks whether BrowserManager should attempt to load a newer lacros-chrome
+  // browser version (if an update is possible and a new version is available).
+  // This helps to avoid re-trying an update multiple times should lacros-chrome
+  // fail to uprev on a reload.
+  bool should_attempt_update_ = true;
 
   // Tracks whether lacros-chrome is terminated.
   bool is_terminated_ = false;
@@ -682,10 +692,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // ash-chrome in testing environment. Only applicable when
   // '--lacros-mojo-socket-for-testing' is present in the command line.
   std::unique_ptr<TestMojoConnectionManager> test_mojo_connection_manager_;
-
-  base::ScopedObservation<ComponentUpdateService,
-                          ComponentUpdateService::Observer>
-      component_update_observation_{this};
 
   // Used to pass ash-chrome specific flags/configurations to lacros-chrome.
   std::unique_ptr<EnvironmentProvider> environment_provider_;

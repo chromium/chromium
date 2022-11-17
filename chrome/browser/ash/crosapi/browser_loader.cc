@@ -167,6 +167,28 @@ BrowserLoader::BrowserLoader(
 
 BrowserLoader::~BrowserLoader() = default;
 
+// static.
+bool BrowserLoader::WillLoadStatefulComponentBuilds() {
+  // If the lacros chrome path is specified BrowserLoader will always attempt to
+  // load lacros from this path and component manager builds are ignored.
+  const base::FilePath lacros_chrome_path =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+          ash::switches::kLacrosChromePath);
+  if (!lacros_chrome_path.empty())
+    return false;
+
+  // If the user has set the lacros selection to rootfs this will always be
+  // loaded and component manager builds are ignored.
+  const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
+  if (cmdline->HasSwitch(browser_util::kLacrosSelectionSwitch) &&
+      (cmdline->GetSwitchValueASCII(browser_util::kLacrosSelectionSwitch) ==
+       browser_util::kLacrosSelectionRootfs)) {
+    return false;
+  }
+
+  return true;
+}
+
 void BrowserLoader::Load(LoadCompletionCallback callback) {
   lacros_start_load_time_ = base::TimeTicks::Now();
   // TODO(crbug.com/1078607): Remove non-error logging from this class.

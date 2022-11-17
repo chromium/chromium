@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_CROSAPI_BROWSER_MANAGER_OBSERVER_H_
 
 #include "base/observer_list_types.h"
+#include "base/version.h"
 
 namespace crosapi {
 
@@ -16,7 +17,7 @@ class BrowserManagerObserver : public base::CheckedObserver {
   // Invoked when lacros-chrome state changes, without specifying the state.
   virtual void OnStateChanged() {}
   // Invoked when the browser loader has finished loading an image.
-  virtual void OnLoadComplete(bool success) {}
+  virtual void OnLoadComplete(bool success, const base::Version& version) {}
 };
 
 }  // namespace crosapi
