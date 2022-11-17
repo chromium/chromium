@@ -115,7 +115,7 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
  private:
   void InitializePaintRecorder();
 
-  std::unique_ptr<PaintRecorder> paint_recorder_;
+  std::unique_ptr<cc::InspectablePaintRecorder> paint_recorder_;
   sk_sp<PaintRecord> previous_frame_;
   gfx::Size container_size_;
   Member<const PaintRenderingContext2DSettings> context_settings_;

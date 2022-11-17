@@ -319,12 +319,11 @@ class ChromePrintContext : public PrintContext {
 
     // The page rect gets scaled and translated, so specify the entire
     // print content area here as the recording rect.
-    gfx::RectF bounds(0, 0, printed_page_height_, printed_page_width_);
     auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
     GraphicsContext& context = builder->Context();
     context.SetPrintingMetafile(canvas->GetPrintingMetafile());
     context.SetPrinting(true);
-    context.BeginRecording(bounds);
+    context.BeginRecording();
     float scale = SpoolPage(context, page_number);
     canvas->drawPicture(context.EndRecording());
     return scale;
@@ -353,7 +352,7 @@ class ChromePrintContext : public PrintContext {
     GraphicsContext& context = builder->Context();
     context.SetPrintingMetafile(canvas->GetPrintingMetafile());
     context.SetPrinting(true);
-    context.BeginRecording(all_pages_rect);
+    context.BeginRecording();
 
     // Fill the whole background by white.
     context.FillRect(all_pages_rect, Color::kWhite, AutoDarkMode::Disabled());

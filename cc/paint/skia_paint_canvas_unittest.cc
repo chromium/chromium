@@ -37,7 +37,7 @@ TEST(SkiaPaintCanvasTest, ContextFlushesRecording) {
   PaintRecorder recorder;
   SkRect rect = SkRect::MakeWH(10, 10);
   PaintFlags flags;
-  recorder.beginRecording(rect);
+  recorder.beginRecording();
   for (int i = 0; i < 11; i++)
     recorder.getRecordingCanvas()->drawRect(rect, flags);
   auto record = recorder.finishRecordingAsPicture();

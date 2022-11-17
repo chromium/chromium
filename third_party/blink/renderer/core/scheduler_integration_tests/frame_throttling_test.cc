@@ -1966,7 +1966,7 @@ TEST_P(FrameThrottlingTest, PrintThrottledFrame) {
   WebPrintParams print_params(gfx::Size(500, 500));
   web_frame->PrintBegin(print_params, blink::WebNode());
   cc::PaintRecorder recorder;
-  web_frame->PrintPage(0, recorder.beginRecording(500, 500));
+  web_frame->PrintPage(0, recorder.beginRecording());
   auto record = recorder.finishRecordingAsPicture();
   String record_string = RecordAsDebugString(*record);
   EXPECT_TRUE(record_string.Contains("drawTextBlob")) << record_string.Utf8();

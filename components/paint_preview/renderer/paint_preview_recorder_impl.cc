@@ -339,8 +339,7 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
   response->frame_offsets = gfx::Point(bounds.x(), bounds.y());
 
   cc::PaintRecorder recorder;
-  cc::PaintCanvas* canvas =
-      recorder.beginRecording(bounds.width(), bounds.height());
+  cc::PaintCanvas* canvas = recorder.beginRecording();
   canvas->save();
   canvas->concat(SkMatrix::Translate(-bounds.x(), -bounds.y()));
   canvas->SetPaintPreviewTracker(tracker.get());

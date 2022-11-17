@@ -50,7 +50,7 @@ sk_sp<const PaintRecord> ScrollbarDisplayItem::Paint() const {
 
   PaintRecorder recorder;
   const gfx::Rect& rect = VisualRect();
-  recorder.beginRecording(gfx::RectToSkRect(rect));
+  recorder.beginRecording();
   auto* canvas = recorder.getRecordingCanvas();
   scrollbar->PaintPart(canvas, cc::ScrollbarPart::TRACK_BUTTONS_TICKMARKS,
                        rect);

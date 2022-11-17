@@ -481,8 +481,7 @@ void SVGImage::PopulatePaintRecordForCurrentFrameForContainer(
   const gfx::SizeF size =
       gfx::ScaleSize(draw_info.ContainerSize(), draw_info.Zoom());
   const gfx::Rect dest_rect(gfx::ToRoundedSize(size));
-  cc::PaintCanvas* canvas =
-      recorder.beginRecording(gfx::RectToSkRect(dest_rect));
+  cc::PaintCanvas* canvas = recorder.beginRecording();
   DrawForContainer(draw_info, canvas, cc::PaintFlags(), gfx::RectF(dest_rect),
                    gfx::RectF(size));
   builder.set_paint_record(recorder.finishRecordingAsPicture(), dest_rect,

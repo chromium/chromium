@@ -160,9 +160,7 @@ class BorderTest : public ViewsTestBase {
     view_ = std::make_unique<views::View>();
     view_->SetSize(gfx::Size(100, 50));
     recorder_ = std::make_unique<cc::PaintRecorder>();
-    canvas_ = std::make_unique<gfx::Canvas>(
-        recorder_->beginRecording(SkRect::MakeWH(kCanvasWidth, kCanvasHeight)),
-        1.0f);
+    canvas_ = std::make_unique<gfx::Canvas>(recorder_->beginRecording(), 1.0f);
   }
 
   void TearDown() override {

@@ -90,7 +90,7 @@ TestPaintArtifact& TestPaintArtifact::RectDrawing(DisplayItemClient& client,
                                                   const gfx::Rect& bounds,
                                                   Color color) {
   PaintRecorder recorder;
-  cc::PaintCanvas* canvas = recorder.beginRecording(gfx::RectToSkRect(bounds));
+  cc::PaintCanvas* canvas = recorder.beginRecording();
   if (!bounds.IsEmpty()) {
     cc::PaintFlags flags;
     flags.setColor(color.Rgb());

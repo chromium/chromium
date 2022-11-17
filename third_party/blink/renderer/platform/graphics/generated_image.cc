@@ -71,7 +71,7 @@ sk_sp<PaintShader> GeneratedImage::CreateShader(
   auto paint_controller =
       std::make_unique<PaintController>(PaintController::kTransient);
   GraphicsContext context(*paint_controller);
-  context.BeginRecording(tile_rect);
+  context.BeginRecording();
   DrawTile(context, src_rect, draw_options);
   sk_sp<PaintRecord> record = context.EndRecording();
 

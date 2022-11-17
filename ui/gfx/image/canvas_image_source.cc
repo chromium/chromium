@@ -58,16 +58,14 @@ ImageSkiaRep CanvasImageSource::GetImageForScale(float scale) {
           cc::DisplayItemList::kToBeReleasedAsPaintOpBuffer);
   display_item_list->StartPaint();
 
-  SizeF size_in_pixel = ScaleSize(SizeF(size_), scale);
-  cc::RecordPaintCanvas record_canvas(
-      display_item_list.get(),
-      SkRect::MakeWH(SkFloatToScalar(size_in_pixel.width()),
-                     SkFloatToScalar(size_in_pixel.height())));
+  Size size_in_pixel = ScaleToCeiledSize(size_, scale);
+  cc::InspectableRecordPaintCanvas record_canvas(display_item_list.get(),
+                                                 size_in_pixel);
   gfx::Canvas canvas(&record_canvas, scale);
 #if DCHECK_IS_ON()
   Rect clip_rect;
   DCHECK(canvas.GetClipBounds(&clip_rect));
-  DCHECK(clip_rect.Contains(gfx::Rect(ToCeiledSize(size_in_pixel))));
+  DCHECK(clip_rect.Contains(gfx::Rect(size_in_pixel)));
 #endif
   canvas.Scale(scale, scale);
   Draw(&canvas);

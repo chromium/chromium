@@ -219,8 +219,7 @@ class VideoPaintPreviewTest : public testing::Test,
     cc::PaintRecorder recorder;
     paint_preview::PaintPreviewTracker tracker(token, embedding_token,
                                                is_main_frame);
-    cc::PaintCanvas* canvas =
-        recorder.beginRecording(bounds().width(), bounds().height());
+    cc::PaintCanvas* canvas = recorder.beginRecording();
     canvas->SetPaintPreviewTracker(&tracker);
 
     GetLocalMainFrame().CapturePaintPreview(

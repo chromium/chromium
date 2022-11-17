@@ -83,15 +83,14 @@ TEST(GraphicsContextTest, Recording) {
   GraphicsContext context(*paint_controller);
 
   Color opaque = Color::FromRGBA(255, 0, 0, 255);
-  gfx::RectF bounds(0, 0, 100, 100);
 
-  context.BeginRecording(bounds);
+  context.BeginRecording();
   context.FillRect(gfx::RectF(0, 0, 50, 50), opaque, AutoDarkModeDisabled(),
                    SkBlendMode::kSrcOver);
   canvas.drawPicture(context.EndRecording());
   EXPECT_OPAQUE_PIXELS_ONLY_IN_RECT(bitmap, gfx::Rect(0, 0, 50, 50))
 
-  context.BeginRecording(bounds);
+  context.BeginRecording();
   context.FillRect(gfx::RectF(0, 0, 100, 100), opaque, AutoDarkModeDisabled(),
                    SkBlendMode::kSrcOver);
   // Make sure the opaque region was unaffected by the rect drawn during
@@ -110,11 +109,10 @@ TEST(GraphicsContextTest, UnboundedDrawsAreClipped) {
 
   Color opaque = Color::FromRGBA(255, 0, 0, 255);
   Color transparent = Color::kTransparent;
-  gfx::RectF bounds(0, 0, 100, 100);
 
   auto paint_controller = std::make_unique<PaintController>();
   GraphicsContext context(*paint_controller);
-  context.BeginRecording(bounds);
+  context.BeginRecording();
 
   context.SetShouldAntialias(false);
   context.SetMiterLimit(1);
@@ -134,7 +132,7 @@ TEST(GraphicsContextTest, UnboundedDrawsAreClipped) {
   canvas.drawPicture(context.EndRecording());
   EXPECT_OPAQUE_PIXELS_ONLY_IN_RECT(bitmap, gfx::Rect(10, 10, 40, 40));
 
-  context.BeginRecording(bounds);
+  context.BeginRecording();
   // Clip to the left edge of the opaque area.
   context.Clip(gfx::Rect(10, 10, 10, 40));
 
@@ -166,7 +164,7 @@ class GraphicsContextDarkModeTest : public testing::Test {
     GraphicsContext context(*paint_controller_);
     if (is_dark_mode_on)
       context.UpdateDarkModeSettingsForTest(settings);
-    context.BeginRecording(gfx::RectF(0, 0, 4, 1));
+    context.BeginRecording();
     context.FillRect(gfx::RectF(0, 0, 1, 1), Color::kBlack,
                      AutoDarkMode(DarkModeFilter::ElementRole::kBackground,
                                   is_dark_mode_on));

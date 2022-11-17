@@ -33,8 +33,7 @@ class DrawingDisplayItemTest : public testing::Test {
 
 static sk_sp<PaintRecord> CreateRectRecord(const gfx::RectF& record_bounds) {
   PaintRecorder recorder;
-  cc::PaintCanvas* canvas =
-      recorder.beginRecording(record_bounds.width(), record_bounds.height());
+  cc::PaintCanvas* canvas = recorder.beginRecording();
   canvas->drawRect(gfx::RectFToSkRect(record_bounds), cc::PaintFlags());
   return recorder.finishRecordingAsPicture();
 }
@@ -44,8 +43,7 @@ static sk_sp<PaintRecord> CreateRectRecordWithTranslate(
     float dx,
     float dy) {
   PaintRecorder recorder;
-  cc::PaintCanvas* canvas =
-      recorder.beginRecording(record_bounds.width(), record_bounds.height());
+  cc::PaintCanvas* canvas = recorder.beginRecording();
   canvas->save();
   canvas->translate(dx, dy);
   canvas->drawRect(gfx::RectFToSkRect(record_bounds), cc::PaintFlags());
@@ -160,8 +158,7 @@ TEST_F(DrawingDisplayItemTest, NonSolidColorOval) {
   gfx::RectF record_bounds(5, 6, 10, 10);
 
   PaintRecorder recorder;
-  cc::PaintCanvas* canvas =
-      recorder.beginRecording(record_bounds.width(), record_bounds.height());
+  cc::PaintCanvas* canvas = recorder.beginRecording();
   canvas->drawOval(gfx::RectFToSkRect(record_bounds), cc::PaintFlags());
 
   DrawingDisplayItem item(client_->Id(), DisplayItem::Type::kDocumentBackground,
@@ -200,9 +197,8 @@ TEST_F(DrawingDisplayItemTest, OpaqueRectForDrawRRectUniform) {
   flags.setColor(SK_ColorWHITE);
   for (float r = kRadiusStep; r < kSize / 2; r += kRadiusStep) {
     PaintRecorder recorder;
-    recorder.beginRecording(kSize, kSize)
-        ->drawRRect(SkRRect::MakeRectXY(SkRect::MakeWH(kSize, kSize), r, r),
-                    flags);
+    recorder.beginRecording()->drawRRect(
+        SkRRect::MakeRectXY(SkRect::MakeWH(kSize, kSize), r, r), flags);
     DrawingDisplayItem item(
         client_->Id(), DisplayItem::Type::kDocumentBackground,
         gfx::Rect(0, 0, kSize, kSize), recorder.finishRecordingAsPicture(),
@@ -226,7 +222,7 @@ TEST_F(DrawingDisplayItemTest, OpaqueRectForDrawRRectNonUniform) {
     SkRRect rrect;
     SkVector radii[4] = {{r, r}, {r, r * 2}, {r * 4, r * 3}, {r, r * 5}};
     rrect.setRectRadii(SkRect::MakeWH(kSize, kSize), radii);
-    recorder.beginRecording(kSize, kSize)->drawRRect(rrect, flags);
+    recorder.beginRecording()->drawRRect(rrect, flags);
     DrawingDisplayItem item(
         client_->Id(), DisplayItem::Type::kDocumentBackground,
         gfx::Rect(0, 0, kSize, kSize), recorder.finishRecordingAsPicture(),
@@ -243,9 +239,9 @@ TEST_F(DrawingDisplayItemTest, DrawEmptyImage) {
                    .set_id(1)
                    .TakePaintImage();
   PaintRecorder recorder;
-  recorder.beginRecording(100, 100)->drawImageRect(
-      image, SkRect::MakeEmpty(), SkRect::MakeEmpty(),
-      SkCanvas::kFast_SrcRectConstraint);
+  recorder.beginRecording()->drawImageRect(image, SkRect::MakeEmpty(),
+                                           SkRect::MakeEmpty(),
+                                           SkCanvas::kFast_SrcRectConstraint);
   DrawingDisplayItem item(
       client_->Id(), DisplayItem::kBoxDecorationBackground, gfx::Rect(10, 20),
       recorder.finishRecordingAsPicture(), RasterEffectOutset::kNone);

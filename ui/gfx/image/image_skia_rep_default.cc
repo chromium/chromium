@@ -80,8 +80,7 @@ sk_sp<cc::PaintRecord> ImageSkiaRep::GetPaintRecord() const {
       base::MakeRefCounted<cc::DisplayItemList>(
           cc::DisplayItemList::kToBeReleasedAsPaintOpBuffer);
 
-  cc::RecordPaintCanvas record_canvas(
-      display_item_list.get(), SkRect::MakeIWH(pixel_width(), pixel_height()));
+  cc::RecordPaintCanvas record_canvas(display_item_list.get());
 
   display_item_list->StartPaint();
   record_canvas.drawImage(paint_image(), 0, 0);

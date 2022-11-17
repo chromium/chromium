@@ -362,8 +362,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     const auto& size = pool_resource.size();
     auto display_item_list = base::MakeRefCounted<DisplayItemList>(
         DisplayItemList::kTopLevelDisplayItemList);
-    RecordPaintCanvas canvas(display_item_list.get(),
-                             SkRect::MakeIWH(size.width(), size.height()));
+    RecordPaintCanvas canvas(display_item_list.get());
     display_item_list->StartPaint();
     DrawHudContents(&canvas);
     display_item_list->EndPaintOfUnpaired(gfx::Rect(size));

@@ -250,9 +250,8 @@ PaintImage PlaceholderImage::PaintImageForCurrentFrame() {
   }
 
   PaintRecorder paint_recorder;
-  Draw(paint_recorder.beginRecording(gfx::RectToSkRect(dest_rect)),
-       cc::PaintFlags(), gfx::RectF(dest_rect), gfx::RectF(dest_rect),
-       ImageDrawOptions());
+  Draw(paint_recorder.beginRecording(), cc::PaintFlags(), gfx::RectF(dest_rect),
+       gfx::RectF(dest_rect), ImageDrawOptions());
 
   paint_record_for_current_frame_ = paint_recorder.finishRecordingAsPicture();
   paint_record_content_id_ = PaintImage::GetNextContentId();

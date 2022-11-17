@@ -307,9 +307,9 @@ void GraphicsContext::EndLayer() {
 #endif
 }
 
-void GraphicsContext::BeginRecording(const gfx::RectF& bounds) {
+void GraphicsContext::BeginRecording() {
   DCHECK(!canvas_);
-  canvas_ = paint_recorder_.beginRecording(gfx::RectFToSkRect(bounds));
+  canvas_ = paint_recorder_.beginRecording();
   if (printing_metafile_)
     canvas_->SetPrintingMetafile(printing_metafile_);
   if (paint_preview_tracker_)

@@ -928,8 +928,7 @@ ScriptPromise ImageBitmap::CreateAsync(
   gfx::Rect draw_dst_rect(0, 0, parsed_options.resize_width,
                           parsed_options.resize_height);
   PaintRecorder recorder;
-  cc::PaintCanvas* canvas =
-      recorder.beginRecording(gfx::RectToSkRect(draw_src_rect));
+  cc::PaintCanvas* canvas = recorder.beginRecording();
   if (parsed_options.flip_y) {
     canvas->translate(0, draw_dst_rect.height());
     canvas->scale(1, -1);

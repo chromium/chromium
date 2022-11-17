@@ -218,7 +218,7 @@ sk_sp<PaintShader> CreatePatternShader(const PaintImage& image,
                      subset_rect.height() + spacing.height());
 
   PaintRecorder recorder;
-  cc::PaintCanvas* canvas = recorder.beginRecording(tile_rect);
+  cc::PaintCanvas* canvas = recorder.beginRecording();
   cc::PaintFlags flags;
   flags.setAntiAlias(should_antialias);
   canvas->drawImageRect(

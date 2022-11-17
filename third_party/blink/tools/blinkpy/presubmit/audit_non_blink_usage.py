@@ -319,6 +319,8 @@ _CONFIG = [
             'base::TickClock',
 
             # cc painting types.
+            'cc::InspectablePaintRecorder',
+            'cc::InspectableRecordPaintCanvas',
             'cc::PaintCanvas',
             'cc::PaintFlags',
             'cc::PaintImage',

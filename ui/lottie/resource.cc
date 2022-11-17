@@ -58,9 +58,7 @@ gfx::ImageSkia CreateImageSkia(Animation* content) {
           cc::DisplayItemList::kToBeReleasedAsPaintOpBuffer);
   display_item_list->StartPaint();
 
-  cc::RecordPaintCanvas record_canvas(
-      display_item_list.get(), SkRect::MakeWH(SkFloatToScalar(size.width()),
-                                              SkFloatToScalar(size.height())));
+  cc::InspectableRecordPaintCanvas record_canvas(display_item_list.get(), size);
   gfx::Canvas canvas(&record_canvas, 1.0);
 #if DCHECK_IS_ON()
   gfx::Rect clip_rect;

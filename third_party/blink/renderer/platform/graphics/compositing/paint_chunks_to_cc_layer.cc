@@ -801,7 +801,7 @@ scoped_refptr<cc::DisplayItemList> PaintChunksToCcLayer::Convert(
   if (under_invalidation_checking_params) {
     auto& params = *under_invalidation_checking_params;
     PaintRecorder recorder;
-    recorder.beginRecording(gfx::RectToSkRect(params.interest_rect));
+    recorder.beginRecording();
     // Create a complete cloned list for under-invalidation checking. We can't
     // use cc_list because it is not finalized yet.
     auto list_clone = base::MakeRefCounted<cc::DisplayItemList>(

@@ -214,8 +214,7 @@ sk_sp<PaintRecord> LayoutSVGResourcePattern::AsPaintRecord(
 
   gfx::RectF bounds(size);
   PaintRecorder paint_recorder;
-  cc::PaintCanvas* canvas =
-      paint_recorder.beginRecording(gfx::RectFToSkRect(bounds));
+  cc::PaintCanvas* canvas = paint_recorder.beginRecording();
 
   auto* pattern_content_element = Attributes().PatternContentElement();
   DCHECK(pattern_content_element);

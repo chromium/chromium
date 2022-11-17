@@ -180,8 +180,7 @@ sk_sp<PaintFilter> FEImage::CreateImageFilterForLayoutObject(
   // cull rect for the paint record.
   gfx::RectF crop_rect = IntersectWithFilterRegion(GetFilter(), dst_rect);
   PaintRecorder paint_recorder;
-  cc::PaintCanvas* canvas =
-      paint_recorder.beginRecording(gfx::RectFToSkRect(crop_rect));
+  cc::PaintCanvas* canvas = paint_recorder.beginRecording();
   canvas->concat(AffineTransformToSkMatrix(transform));
   {
     auto* builder = MakeGarbageCollected<PaintRecordBuilder>();

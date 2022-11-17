@@ -32,6 +32,7 @@
 // Note that headers in third_party/skia/src are fragile.  This is
 // an experimental, fragile, and diagnostic-only document type.
 #include "third_party/skia/src/utils/SkMultiPictureDocument.h"
+#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -79,7 +80,7 @@ struct Page {
 };
 
 struct MetafileSkiaData {
-  cc::PaintRecorder recorder;  // Current recording
+  cc::InspectablePaintRecorder recorder;  // Current recording
 
   std::vector<Page> pages;
   std::unique_ptr<SkStreamAsset> data_stream;
@@ -147,8 +148,7 @@ void MetafileSkia::StartPage(const gfx::Size& page_size,
 
   float inverse_scale = 1.0 / scale_factor;
   cc::PaintCanvas* canvas = data_->recorder.beginRecording(
-      inverse_scale * physical_page_size.width(),
-      inverse_scale * physical_page_size.height());
+      gfx::ScaleToCeiledSize(physical_page_size, inverse_scale));
   // Recording canvas is owned by the `data_->recorder`.  No ref() necessary.
   if (content_area != gfx::Rect(page_size) ||
       page_orientation != mojom::PageOrientation::kUpright) {
@@ -189,11 +189,11 @@ bool MetafileSkia::FinishPage() {
 
   sk_sp<cc::PaintRecord> pic = data_->recorder.finishRecordingAsPicture();
   if (data_->scale_factor != 1.0f) {
-    cc::PaintCanvas* canvas = data_->recorder.beginRecording(
-        data_->size.width(), data_->size.height());
+    cc::PaintRecorder recorder;
+    cc::PaintCanvas* canvas = recorder.beginRecording();
     canvas->scale(data_->scale_factor, data_->scale_factor);
     canvas->drawPicture(pic);
-    pic = data_->recorder.finishRecordingAsPicture();
+    pic = recorder.finishRecordingAsPicture();
   }
   data_->pages.emplace_back(data_->size, std::move(pic));
   return true;

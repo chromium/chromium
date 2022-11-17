@@ -1306,7 +1306,7 @@ cc::PaintCanvas* CanvasResourceProvider::Canvas(bool needs_will_draw) {
     // |recorder_|.
     recorder_ = std::make_unique<MemoryManagedPaintRecorder>(this);
 
-    return recorder_->beginRecording(Size().width(), Size().height());
+    return recorder_->beginRecording(Size());
   }
   return recorder_->getRecordingCanvas();
 }
@@ -1416,8 +1416,7 @@ sk_sp<cc::PaintRecord> CanvasResourceProvider::FlushCanvasInternal(
   sk_sp<cc::PaintRecord> last_recording = recorder_->finishRecordingAsPicture();
   RasterRecord(last_recording, preserve_recording);
   total_pinned_image_bytes_ = 0;
-  cc::PaintCanvas* canvas =
-      recorder_->beginRecording(Size().width(), Size().height());
+  cc::PaintCanvas* canvas = recorder_->beginRecording(Size());
   if (restore_clip_stack_callback_)
     restore_clip_stack_callback_.Run(canvas);
   if (!preserve_recording)
@@ -1624,8 +1623,7 @@ void CanvasResourceProvider::SkipQueuedDrawCommands() {
   if (!HasRecordedDrawOps())
     return;
   recorder_->finishRecordingAsPicture();
-  cc::PaintCanvas* canvas =
-      recorder_->beginRecording(Size().width(), Size().height());
+  cc::PaintCanvas* canvas = recorder_->beginRecording(Size());
   total_pinned_image_bytes_ = 0;
   if (restore_clip_stack_callback_)
     restore_clip_stack_callback_.Run(canvas);

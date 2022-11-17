@@ -165,7 +165,7 @@ TEST_F(DeferredImageDecoderTest, drawIntoPaintRecord) {
   EXPECT_EQ(1, image.height());
 
   PaintRecorder recorder;
-  cc::PaintCanvas* temp_canvas = recorder.beginRecording(100, 100);
+  cc::PaintCanvas* temp_canvas = recorder.beginRecording();
   temp_canvas->drawImage(image, 0, 0);
   sk_sp<PaintRecord> record = recorder.finishRecordingAsPicture();
   EXPECT_EQ(0, decode_request_count_);
@@ -182,7 +182,7 @@ TEST_F(DeferredImageDecoderTest, drawIntoPaintRecordProgressive) {
   // Received only half the file.
   lazy_decoder_->SetData(partial_data, false /* all_data_received */);
   PaintRecorder recorder;
-  cc::PaintCanvas* temp_canvas = recorder.beginRecording(100, 100);
+  cc::PaintCanvas* temp_canvas = recorder.beginRecording();
   PaintImage image =
       CreatePaintImage(PaintImage::CompletionState::PARTIALLY_DONE);
   ASSERT_TRUE(image);
@@ -193,7 +193,7 @@ TEST_F(DeferredImageDecoderTest, drawIntoPaintRecordProgressive) {
   lazy_decoder_->SetData(data_, true /* all_data_received */);
   image = CreatePaintImage();
   ASSERT_TRUE(image);
-  temp_canvas = recorder.beginRecording(100, 100);
+  temp_canvas = recorder.beginRecording();
   temp_canvas->drawImage(image, 0, 0);
   canvas_->drawPicture(recorder.finishRecordingAsPicture());
   EXPECT_EQ(SkColorSetARGB(255, 255, 255, 255), bitmap_.getColor(0, 0));
@@ -263,7 +263,7 @@ TEST_F(DeferredImageDecoderTest, MAYBE_decodeOnOtherThread) {
   EXPECT_EQ(1, image.height());
 
   PaintRecorder recorder;
-  cc::PaintCanvas* temp_canvas = recorder.beginRecording(100, 100);
+  cc::PaintCanvas* temp_canvas = recorder.beginRecording();
   temp_canvas->drawImage(image, 0, 0);
   sk_sp<PaintRecord> record = recorder.finishRecordingAsPicture();
   EXPECT_EQ(0, decode_request_count_);
@@ -353,7 +353,7 @@ TEST_F(DeferredImageDecoderTest, decodedSize) {
 
   // The following code should not fail any assert.
   PaintRecorder recorder;
-  cc::PaintCanvas* temp_canvas = recorder.beginRecording(100, 100);
+  cc::PaintCanvas* temp_canvas = recorder.beginRecording();
   temp_canvas->drawImage(image, 0, 0);
   sk_sp<PaintRecord> record = recorder.finishRecordingAsPicture();
   EXPECT_EQ(0, decode_request_count_);

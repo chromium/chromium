@@ -46,7 +46,7 @@ class MockCanvas : public SkCanvas {
 // (CLOSE) uses the correct starting point. See crbug.com/697497
 TEST(VectorIconTest, RelativeMoveToAfterClose) {
   cc::PaintRecorder recorder;
-  Canvas canvas(recorder.beginRecording(100, 100), 1.0f);
+  Canvas canvas(recorder.beginRecording(), 1.0f);
 
   const PathElement elements[] = {
       MOVE_TO, 4, 5, LINE_TO, 10, 11, CLOSE,

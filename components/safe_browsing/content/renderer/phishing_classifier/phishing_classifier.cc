@@ -208,8 +208,7 @@ void PhishingClassifier::ExtractVisualFeatures() {
       base::UnguessableToken::Create(), frame->GetEmbeddingToken(),
       /*is_main_frame=*/true);
   cc::PaintRecorder recorder;
-  cc::PaintCanvas* canvas =
-      recorder.beginRecording(bounds.width(), bounds.height());
+  cc::PaintCanvas* canvas = recorder.beginRecording();
   canvas->SetPaintPreviewTracker(tracker.get());
 
   if (!frame->CapturePaintPreview(bounds, canvas,

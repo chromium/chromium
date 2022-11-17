@@ -252,14 +252,12 @@ sk_sp<cc::PaintRecord> PrepareWavyTileRecord(const WavyParams& params,
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(params.resolved_thickness);
 
-  // Create a canvas with origin (0,0) and size of the wavy pattern rect.
   PaintRecorder recorder;
-  recorder.beginRecording(pattern_rect.width(), pattern_rect.height());
+  cc::PaintCanvas* canvas = recorder.beginRecording();
 
   // Translate the wavy pattern so that nothing is painted at y<0.
-  cc::RecordPaintCanvas* canvas = recorder.getRecordingCanvas();
   canvas->translate(-pattern_rect.x(), -pattern_rect.y());
-  canvas->cc::PaintCanvas::drawPath(stroke_path.GetSkPath(), flags);
+  canvas->drawPath(stroke_path.GetSkPath(), flags);
 
   return recorder.finishRecordingAsPicture();
 }

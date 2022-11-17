@@ -306,9 +306,7 @@ class AnimationWithImageAssetsTest : public AnimationTest {
   AnimationWithImageAssetsTest()
       : display_list_(base::MakeRefCounted<cc::DisplayItemList>(
             cc::DisplayItemList::kToBeReleasedAsPaintOpBuffer)),
-        record_canvas_(display_list_.get(),
-                       SkRect::MakeIWH(cc::kLottieDataWith2AssetsWidth,
-                                       cc::kLottieDataWith2AssetsHeight)) {}
+        record_canvas_(display_list_.get()) {}
 
   void SetUp() override {
     canvas_ = std::make_unique<gfx::Canvas>(&record_canvas_, kCanvasImageScale);

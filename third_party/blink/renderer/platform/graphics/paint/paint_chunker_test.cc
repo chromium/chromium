@@ -51,7 +51,7 @@ class TestChunkerDisplayItem : public DrawingDisplayItem {
 
 sk_sp<const PaintRecord> OpaquePaintRecord(const gfx::Rect& visual_rect) {
   PaintRecorder recorder;
-  auto* canvas = recorder.beginRecording(gfx::RectToSkRect(visual_rect));
+  auto* canvas = recorder.beginRecording();
   cc::PaintFlags flags;
   flags.setColor(SK_ColorBLACK);
   canvas->drawRect(gfx::RectToSkRect(visual_rect), flags);

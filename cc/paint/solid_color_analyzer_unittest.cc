@@ -37,10 +37,10 @@ class SolidColorAnalyzerTest : public testing::Test {
   }
 
   void Initialize(const gfx::Rect& rect = gfx::Rect(0, 0, 100, 100)) {
-    canvas_.emplace(display_item_list_.get(), gfx::RectToSkRect(rect));
+    canvas_.emplace(display_item_list_.get());
     rect_ = rect;
   }
-  RecordPaintCanvas* canvas() { return &*canvas_; }
+  PaintCanvas* canvas() { return &*canvas_; }
 
   bool IsSolidColor(int max_ops_to_analyze = 1) {
     Finalize();

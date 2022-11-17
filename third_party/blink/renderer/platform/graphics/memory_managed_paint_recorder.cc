@@ -33,10 +33,12 @@ MemoryManagedPaintRecorder::MemoryManagedPaintRecorder(
   DCHECK(client);
 }
 
-std::unique_ptr<cc::RecordPaintCanvas> MemoryManagedPaintRecorder::CreateCanvas(
-    cc::DisplayItemList* list,
-    const SkRect& bounds) {
-  return std::make_unique<MemoryManagedPaintCanvas>(list, bounds, client_);
+cc::PaintCanvas* MemoryManagedPaintRecorder::beginRecording(
+    const gfx::Size& size) {
+  canvas_ = std::make_unique<MemoryManagedPaintCanvas>(display_item_list_.get(),
+                                                       size, client_);
+  cc::PaintRecorderBase::beginRecording();
+  return canvas_.get();
 }
 
 }  // namespace blink

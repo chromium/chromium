@@ -47,7 +47,7 @@ class COMPOSITOR_EXPORT PaintRecorder {
  private:
   const raw_ref<const PaintContext> context_;
   scoped_refptr<cc::DisplayItemList> local_list_;
-  cc::RecordPaintCanvas record_canvas_;
+  cc::InspectableRecordPaintCanvas record_canvas_;
   gfx::Canvas canvas_;
   raw_ptr<PaintCache> cache_;
   gfx::Size recording_size_;

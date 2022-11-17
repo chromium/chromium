@@ -19,7 +19,7 @@ namespace blink {
 // too much memory is used.
 
 class PLATFORM_EXPORT MemoryManagedPaintCanvas final
-    : public cc::RecordPaintCanvas {
+    : public cc::InspectableRecordPaintCanvas {
  public:
   // Base class for clients that receive callbacks from
   // MemoryManagedPaintCanvas.
@@ -29,7 +29,7 @@ class PLATFORM_EXPORT MemoryManagedPaintCanvas final
   };
 
   MemoryManagedPaintCanvas(cc::DisplayItemList* list,
-                           const SkRect& bounds,
+                           const gfx::Size& size,
                            Client* client);
   explicit MemoryManagedPaintCanvas(const cc::RecordPaintCanvas&) = delete;
   ~MemoryManagedPaintCanvas() override;

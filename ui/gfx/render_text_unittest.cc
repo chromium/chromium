@@ -454,7 +454,7 @@ class RenderTextTest : public testing::Test {
     constexpr int kCanvasHeight = 400;
 
     cc::PaintRecorder recorder;
-    Canvas canvas(recorder.beginRecording(kCanvasWidth, kCanvasHeight), 1.0f);
+    Canvas canvas(recorder.beginRecording(), 1.0f);
     test_api_->Draw(&canvas, select_all);
     sk_sp<cc::PaintRecord> record = recorder.finishRecordingAsPicture();
 

@@ -471,8 +471,8 @@ class PLATFORM_EXPORT GraphicsContext {
 
   // Instead of being dispatched to the active canvas, draw commands following
   // beginRecording() are stored in a display list that can be replayed at a
-  // later time. Pass in the bounding rectangle for the content in the list.
-  void BeginRecording(const gfx::RectF&);
+  // later time.
+  void BeginRecording();
 
   // Returns a record with any recorded draw commands since the prerequisite
   // call to beginRecording().  The record is guaranteed to be non-null (but
