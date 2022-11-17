@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
@@ -8,8 +8,6 @@
 its content.
 """
 
-from __future__ import print_function
-
 import argparse
 import array
 import collections
@@ -18,12 +16,17 @@ import logging
 import os
 import zlib
 
+import sys
+from os import path
+sys.path.append('tools/android/native_lib_memory')
+
+import parse_smaps
 
 PAGE_SIZE = 1 << 12
 
 
 # These are typically only populated with DCHECK() on.
-FREED_PATTERNS = {
+FREED_PATTERNS_32 = {
     0xcccccccc: 'V8',
     0xcdcdcdcd: 'PartitionAlloc zapped',
     0xabababab: 'PartitionAlloc uninitialized',
@@ -36,18 +39,23 @@ FREED_PATTERNS = {
     0xfeed1eaf: 'V8 zapped freelist'
 }
 
+FREED_PATTERNS_64 = {(key | (key << 32)): value
+                     for (key, value) in FREED_PATTERNS_32.items()}
 
-def _ReadPage(f):
+
+def _ReadPage(f, bitness):
   """Reads a page of data from a file.
 
   Args:
     f: (file) An opened file to read from.
+    bitness: (int) 32 or 64 bit.
 
   Returns:
-    An array.array() of unsigned int with the page content.
+    An array.array() of unsigned int (if bitness is 32) or unsigned long (if
+    bitness is 64)  with the page content.
   """
-  result = array.array('I')
-  result.fromfile(f, PAGE_SIZE / result.itemsize)
+  result = array.array('Q' if bitness == 64 else 'I')
+  result.fromfile(f, PAGE_SIZE // result.itemsize)
   return result
 
 
@@ -70,7 +78,7 @@ def _PrettyPrintSize(x):
     return '%.2fGB' % (x / 1e9)
 
 
-class MappingStats(object):
+class MappingStats:
   """Statistics about a mapping, from a dump.
 
   Slots:
@@ -78,6 +86,7 @@ class MappingStats(object):
     start: (int) Start address of the mapping.
     end: (int) End address of the mapping.
     pages: (int) Sizs of the mapping in pages.
+    pointers: (Counter) number of PA pointers found in region of mapping.
     is_zero: ([bool]) For each page, whether it's a zero page.
     is_present: ([bool]) For each page, whether it's present.
     is_swapped: ([bool]) For each page, whether it has been swapped out.
@@ -85,8 +94,8 @@ class MappingStats(object):
     hashes: ([str]) If a page is not zero, its SHA1 hash.
     freed: ({'description (str)': size (int)}) Size of freed data, per type.
   """
-  __slots__ = ('filename', 'start', 'end', 'pages', 'is_zero', 'is_present',
-               'is_swapped', 'compressed_size', 'hashes', 'freed')
+  __slots__ = ('filename', 'start', 'end', 'pages', 'pointers', 'is_zero',
+               'is_present', 'is_swapped', 'compressed_size', 'hashes', 'freed')
 
   def __init__(self, filename, start, end):
     """Init.
@@ -96,10 +105,12 @@ class MappingStats(object):
       start: (int) Start address.
       end: (int) End address
     """
+    assert (end - start) % PAGE_SIZE == 0
     self.filename = filename
     self.start = start
     self.end = end
-    self.pages = (end - start) / PAGE_SIZE
+    self.pages = (end - start) // PAGE_SIZE
+    self.pointers = collections.Counter()
     self.is_zero = [False for _ in range(self.pages)]
     self.is_present = [False for _ in range(self.pages)]
     self.is_swapped = [False for _ in range(self.pages)]
@@ -108,11 +119,57 @@ class MappingStats(object):
     self.freed = collections.defaultdict(int)
 
 
-def _GetStatsFromFileDump(filename):
+class Ranges:
+  """Represents a set of discontiguous ranges.
+
+  Allows simple operations such as looking whether something is contained in
+  every range.
+
+  Does not do checking to ensure that the ranges are discontiguous.
+  """
+
+  def __init__(self, ranges):
+    ranges.sort(key=lambda r: r.start)
+
+    self.valid_pages = {}
+
+    for r in ranges:
+      start = r.start
+      end = r.end
+      for x in range(start, end, PAGE_SIZE):
+        self.valid_pages[x] = r.pathname
+
+    self.ranges = ranges
+
+  def Contains(self, val):
+    return self.valid_pages.get(val - (val % PAGE_SIZE), False)
+
+
+def _OpenRanges(directory, filename, pred=lambda _: True):
+  with open(os.path.join(directory, filename)) as f:
+    mappings = parse_smaps._ParseProcSmapsLines(f.readlines())
+    return Ranges([mapping for mapping in mappings if pred(mapping)])
+
+
+def _IsPointer(x, ptr_ranges):
+  if ptr := ptr_ranges.Contains(x):
+    print(f'\r0x{x:x}', end='')
+    return ptr
+  return False
+
+
+def _GetFreedPatterns(bitness):
+  return FREED_PATTERNS_64 if bitness == 64 else FREED_PATTERNS_32
+
+
+def _GetStatsFromFileDump(filename, ptr_ranges, pa_ranges, bitness):
   """Computes per-dump statistics.
 
   Args:
     filename: (str) Path to the dump.
+    ptr_ranges: (Ranges) Ranges containing valid pointers.
+    pa_ranges: (Ranges) Ranges containing PA pointers only.
+    bitness: (int) 32 or 64 bit.
 
   Returns:
     MappingStats for the mapping.
@@ -130,13 +187,19 @@ def _GetStatsFromFileDump(filename):
   # each line is [01]{2}\n, eg '10\n', 1 line per page.
   assert metadata_file_stat.st_size == 3 * result.pages
 
-  with open(filename, 'r') as f, open(metadata_filename, 'r') as metadata_f:
+  if not pa_ranges.Contains(start) or not pa_ranges.Contains(end):
+    return None
+
+  FREED_PATTERNS = _GetFreedPatterns(bitness)
+  with open(filename, 'rb') as f, open(metadata_filename, 'rb') as metadata_f:
     for i in range(result.pages):
-      page = _ReadPage(f)
-      assert len(page) == 1024
+      page = _ReadPage(f, bitness)
+      assert len(page) == PAGE_SIZE / (bitness / 8)
       for x in page:
         if x in FREED_PATTERNS:
-          result.freed[FREED_PATTERNS[x]] += 4
+          result.freed[FREED_PATTERNS[x]] += (bitness / 8)
+        if ptr := _IsPointer(x, ptr_ranges):
+          result.pointers[ptr] += 1
       is_zero = max(page) == 0
       present, swapped = (bool(int(x)) for x in metadata_f.readline().strip())
       # Not present, not swapped private anonymous == lazily initialized zero
@@ -188,19 +251,22 @@ def _PrintPage(page):
 
 AggregateStats = collections.namedtuple(
     'AggregateStats', ('content_to_count', 'pages', 'zero_pages',
-                       'compressed_size', 'swapped_pages',
-                       'not_present_pages', 'present_zero_pages', 'freed'))
+                       'compressed_size', 'swapped_pages', 'not_present_pages',
+                       'present_zero_pages', 'freed', 'pointers'))
 
 
-def _AggregateStats(dump_stats):
-  """Aggreates statistics across dumps.
+def _AggregateStats(dump_stats, bitness):
+  """Aggregate statistics across dumps.
 
   Args:
     dump_stats: ([MappingStats]) Stats from all mappings.
+    bitness: (int) 32 or 64 bit.
 
   Returns:
     An instance of AggregateStats.
   """
+
+  FREED_PATTERNS = _GetFreedPatterns(bitness)
   content_to_count = collections.defaultdict(int)
   total_pages = sum(stats.pages for stats in dump_stats)
   total_zero_pages = sum(sum(stats.is_zero) for stats in dump_stats)
@@ -213,6 +279,9 @@ def _AggregateStats(dump_stats):
       sum(x == (True, True) for x in zip(stats.is_zero, stats.is_present))
       for stats in dump_stats)
   total_freed_space = {x: 0 for x in FREED_PATTERNS.values()}
+  total_pointers = collections.Counter()
+  for stats in dump_stats:
+    total_pointers += stats.pointers
   for dump in dump_stats:
     for (freed_data_type, value) in dump.freed.items():
       total_freed_space[freed_data_type] += value
@@ -223,29 +292,44 @@ def _AggregateStats(dump_stats):
       if page_hash:
         content_to_count[page_hash] += 1
 
-  return AggregateStats(
-      content_to_count=content_to_count, pages=total_pages,
-      zero_pages=total_zero_pages, compressed_size=total_compressed_size,
-      swapped_pages=total_swapped_pages,
-      not_present_pages=total_not_present_pages,
-      present_zero_pages=total_present_zero_pages,
-      freed=total_freed_space)
+  return AggregateStats(content_to_count=content_to_count,
+                        pages=total_pages,
+                        zero_pages=total_zero_pages,
+                        compressed_size=total_compressed_size,
+                        swapped_pages=total_swapped_pages,
+                        not_present_pages=total_not_present_pages,
+                        present_zero_pages=total_present_zero_pages,
+                        freed=total_freed_space,
+                        pointers=total_pointers)
 
 
-def PrintStats(dumps, verbose):
+def PrintStats(dumps, directory, verbose, bitness):
   """Logs statistics about a process mappings dump.
 
   Args:
     dumps: ([str]) List of dumps.
+    directory: (str) Directory containing dumps.
     verbose: (bool) Verbose output.
+    bitness: (int) 32 or 64 bit.
   """
-  dump_stats = [_GetStatsFromFileDump(filename) for filename in dumps]
-  total = _AggregateStats(dump_stats)
+  ptr_ranges = _OpenRanges(
+      directory, 'smaps.txt', lambda mapping: mapping.permissions != '---p')
+  pa_ranges = _OpenRanges(
+      directory,
+      'smaps.txt', lambda mapping: mapping.pathname == '[anon:partition_alloc]')
+  dump_stats = [
+      _GetStatsFromFileDump(filename, ptr_ranges, pa_ranges, bitness)
+      for filename in dumps
+  ]
+  dump_stats = [dump_stat for dump_stat in dump_stats if dump_stat is not None]
+  total = _AggregateStats(dump_stats, bitness)
   duplicated_pages = sum(x - 1 for x in total.content_to_count.values())
   count_and_hashes = sorted(((v, k) for k, v in total.content_to_count.items()),
                             reverse=True)
   max_common_pages = count_and_hashes[0][0] - 1
   total_size_non_zero_pages = (total.pages - total.zero_pages) * PAGE_SIZE
+
+  print('\r', end='')
 
   print('Total pages = %d (%s)' % (total.pages,
                                    _PrettyPrintSize(total.pages * PAGE_SIZE)))
@@ -273,6 +357,10 @@ def PrintStats(dumps, verbose):
     print('  %s = %d (%s)' % (k, total.freed[k], _PrettyPrintSize(
         total.freed[k])))
 
+  print(f'# Pointers: {total.pointers.total()}')
+  for pathname, count in total.pointers.most_common(10):
+    print(f'{pathname}: {count}')
+
   if verbose:
     print('Top Duplicated Pages:')
     for i in range(10):
@@ -288,6 +376,11 @@ def _CreateArgumentParser():
   parser.add_argument('--directory', type=str, required=True,
                       help='Dumps directory')
   parser.add_argument('--verbose', action='store_true', help='Dumps directory')
+  parser.add_argument('--bitness',
+                      choices={32, 64},
+                      type=int,
+                      required=True,
+                      help='Whether the dump is from a 64 or 32 build')
   return parser
 
 
@@ -301,7 +394,7 @@ def main():
     if f.endswith('.dump'):
       dumps.append(os.path.join(args.directory, f))
 
-  PrintStats(dumps, args.verbose)
+  PrintStats(dumps, args.directory, args.verbose, args.bitness)
 
 
 if __name__ == '__main__':
