@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/geolocation/geo_notifier.h"
 
-#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_position_options.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -28,11 +27,6 @@ GeoNotifier::GeoNotifier(Geolocation* geolocation,
       use_cached_position_(false) {
   DCHECK(geolocation_);
   DCHECK(success_callback_);
-
-  base::UmaHistogramCustomTimes("Geolocation.Timeout",
-                                base::Milliseconds(options_->timeout()),
-                                base::Milliseconds(1), base::Minutes(10),
-                                /* buckets = */ 20);
 }
 
 void GeoNotifier::Trace(Visitor* visitor) const {
@@ -134,11 +128,6 @@ void GeoNotifier::TimerFired(TimerBase*) {
         nullptr, MakeGarbageCollected<GeolocationPositionError>(
                      GeolocationPositionError::kTimeout, "Timeout expired"));
   }
-
-  base::UmaHistogramCustomTimes("Geolocation.TimeoutExpired",
-                                base::Milliseconds(options_->timeout()),
-                                base::Milliseconds(1), base::Minutes(10),
-                                /* buckets = */ 20);
 
   geolocation_->RequestTimedOut(this);
 }

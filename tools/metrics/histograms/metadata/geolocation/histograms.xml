@@ -191,28 +191,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Geolocation.Timeout" units="ms" expires_after="M85">
-  <owner>mattreynolds@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
-  <summary>
-    Counts Geolocation request timeout values, bucketing by timeout duration.
-    This is recorded for all requests upon creation, see
-    Geolocation.TimeoutExpired for timeouts that actually expired.
-  </summary>
-</histogram>
-
-<histogram name="Geolocation.TimeoutExpired" units="ms"
-    expires_after="2020-02-01">
-  <owner>mattreynolds@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
-  <summary>
-    Counts Geolocation request timeout expirations, bucketing by timeout
-    duration. This means no position was received within the allowed time from
-    the browser process due to e.g. a slow network or an unresponsive system
-    location provider.
-  </summary>
-</histogram>
-
 <histogram name="Geolocation.WifiDataProviderCommon.WifiScanTaskTime"
     units="ms" expires_after="2023-07-15">
   <owner>reillyg@chromium.org</owner>
