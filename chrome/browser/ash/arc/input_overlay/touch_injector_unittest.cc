@@ -563,11 +563,11 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
 
   // Press key A and generate touch down and move left event.
   event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, 1 /* keyboard id */);
-  EXPECT_TRUE(*(action->touch_id()) == 0);
+  EXPECT_EQ(0, *(action->touch_id()));
   EXPECT_TRUE(event_capturer_.key_events().empty());
   // Wait for touch move event.
   task_environment()->FastForwardBy(kSendTouchMoveDelay);
-  EXPECT_TRUE((int)event_capturer_.touch_events().size() == 2);
+  EXPECT_EQ(2u, event_capturer_.touch_events().size());
   // Generate touch down event.
   auto* event = event_capturer_.touch_events()[0].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
@@ -586,7 +586,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
 
   // Press key W (move left + up) and generate touch move (up and left) event.
   event_generator_->PressKey(ui::VKEY_W, ui::EF_NONE, 1);
-  EXPECT_TRUE((int)event_capturer_.touch_events().size() == 3);
+  EXPECT_EQ(3u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[2].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_MOVED, event->type());
   auto expectW = gfx::PointF(expectA);
@@ -595,7 +595,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
 
   // Release key A and generate touch move up event (Key W is still pressed).
   event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, 1);
-  EXPECT_TRUE((int)event_capturer_.touch_events().size() == 4);
+  EXPECT_EQ(4u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[3].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_MOVED, event->type());
   expectW = gfx::PointF(expect);
@@ -604,7 +604,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
 
   // Press key D and generate touch move (up and right) event.
   event_generator_->PressKey(ui::VKEY_D, ui::EF_NONE, 1);
-  EXPECT_TRUE((int)event_capturer_.touch_events().size() == 5);
+  EXPECT_EQ(5u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[4].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_MOVED, event->type());
   auto expectD = gfx::PointF(expectW);
@@ -614,7 +614,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
   // Release key W and generate touch move (right) event (Key D is still
   // pressed).
   event_generator_->ReleaseKey(ui::VKEY_W, ui::EF_NONE, 1);
-  EXPECT_TRUE((int)event_capturer_.touch_events().size() == 6);
+  EXPECT_EQ(6u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[5].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_MOVED, event->type());
   expectD = gfx::PointF(expect);
@@ -623,7 +623,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
 
   // Release key D and generate touch release event.
   event_generator_->ReleaseKey(ui::VKEY_D, ui::EF_NONE, 1);
-  EXPECT_TRUE((int)event_capturer_.touch_events().size() == 7);
+  EXPECT_EQ(7u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[6].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_RELEASED, event->type());
   EXPECT_POINTF_NEAR(expectD, event->root_location_f(), kTolerance);
@@ -631,10 +631,10 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
 
   // Press A again, it should repeat the same as previous result.
   event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, 1 /* keyboard id */);
-  EXPECT_TRUE(*(action->touch_id()) == 0);
+  EXPECT_EQ(0, *(action->touch_id()));
   EXPECT_TRUE(event_capturer_.key_events().empty());
   task_environment()->FastForwardBy(kSendTouchMoveDelay);
-  EXPECT_TRUE((int)event_capturer_.touch_events().size() == 2);
+  EXPECT_EQ(2u, event_capturer_.touch_events().size());
   // Generate touch down event.
   event = event_capturer_.touch_events()[0].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
