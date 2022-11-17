@@ -196,6 +196,8 @@ void PaymentRequest::Init(
       /*observer=*/weak_ptr_factory_.GetWeakPtr(),
       delegate_->GetApplicationLocale());
   state_ = std::make_unique<PaymentRequestState>(
+      std::make_unique<PaymentAppService>(
+          render_frame_host().GetBrowserContext()),
       &render_frame_host(), top_level_origin_, frame_origin_,
       frame_security_origin_, spec(),
       /*delegate=*/weak_ptr_factory_.GetWeakPtr(),

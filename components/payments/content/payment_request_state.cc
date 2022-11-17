@@ -25,8 +25,6 @@
 #include "components/autofill/core/browser/validation.h"
 #include "components/payments/content/content_payment_request_delegate.h"
 #include "components/payments/content/payment_app.h"
-#include "components/payments/content/payment_app_service.h"
-#include "components/payments/content/payment_app_service_factory.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/payment_response_helper.h"
 #include "components/payments/content/service_worker_payment_app.h"
@@ -60,6 +58,7 @@ void PostStatusCallback(PaymentRequestState::StatusCallback callback,
 }  // namespace
 
 PaymentRequestState::PaymentRequestState(
+    std::unique_ptr<PaymentAppService> payment_app_service,
     content::RenderFrameHost* initiator_render_frame_host,
     const GURL& top_level_origin,
     const GURL& frame_origin,
@@ -71,7 +70,8 @@ PaymentRequestState::PaymentRequestState(
     base::WeakPtr<ContentPaymentRequestDelegate> payment_request_delegate,
     base::WeakPtr<JourneyLogger> journey_logger,
     base::WeakPtr<CSPChecker> csp_checker)
-    : frame_routing_id_(initiator_render_frame_host->GetGlobalId()),
+    : payment_app_service_(std::move(payment_app_service)),
+      frame_routing_id_(initiator_render_frame_host->GetGlobalId()),
       top_origin_(top_level_origin),
       frame_origin_(frame_origin),
       frame_security_origin_(frame_security_origin),
@@ -85,10 +85,9 @@ PaymentRequestState::PaymentRequestState(
       profile_comparator_(app_locale, *spec) {
   PopulateProfileCache();
 
-  PaymentAppService* service = PaymentAppServiceFactory::GetForContext(
-      initiator_render_frame_host->GetBrowserContext());
-  number_of_payment_app_factories_ = service->GetNumberOfFactories();
-  service->Create(weak_ptr_factory_.GetWeakPtr());
+  number_of_payment_app_factories_ =
+      payment_app_service_->GetNumberOfFactories();
+  payment_app_service_->Create(weak_ptr_factory_.GetWeakPtr());
 
   spec_->AddObserver(this);
 }

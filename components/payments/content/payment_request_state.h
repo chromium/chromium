@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "components/payments/content/initialization_task.h"
 #include "components/payments/content/payment_app_factory.h"
+#include "components/payments/content/payment_app_service.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/content/payment_response_helper.h"
 #include "components/payments/content/service_worker_payment_app.h"
@@ -99,8 +100,8 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
                               const std::string& error_message,
                               AppCreationFailureReason error_reason)>;
 
-  // The `spec` parameter should not be null.
   PaymentRequestState(
+      std::unique_ptr<PaymentAppService> payment_app_service,
       content::RenderFrameHost* initiator_render_frame_host,
       const GURL& top_level_origin,
       const GURL& frame_origin,
@@ -339,6 +340,8 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
 
   bool GetCanMakePaymentValue() const;
   bool GetHasEnrolledInstrumentValue() const;
+
+  const std::unique_ptr<PaymentAppService> payment_app_service_;
 
   content::GlobalRenderFrameHostId frame_routing_id_;
   const GURL top_origin_;

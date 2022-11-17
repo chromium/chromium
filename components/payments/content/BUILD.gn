@@ -22,8 +22,6 @@ static_library("content") {
     "payment_app_factory.h",
     "payment_app_service.cc",
     "payment_app_service.h",
-    "payment_app_service_factory.cc",
-    "payment_app_service_factory.h",
     "payment_credential.cc",
     "payment_credential.h",
     "payment_credential_factory.cc",

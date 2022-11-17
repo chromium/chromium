@@ -17,7 +17,6 @@
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/payments/content/payment_app_factory.h"
 #include "components/payments/content/payment_app_service.h"
-#include "components/payments/content/payment_app_service_factory.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/content/test_content_payment_request_delegate.h"
 #include "components/payments/content/test_payment_app.h"
@@ -104,10 +103,9 @@ class PaymentRequestStateTest : public testing::Test,
     spec_ = std::make_unique<PaymentRequestSpec>(
         std::move(options), std::move(details), std::move(method_data),
         /*observer=*/nullptr, "en-US");
-    PaymentAppServiceFactory::SetForTesting(std::move(app_service));
     state_ = std::make_unique<PaymentRequestState>(
-        web_contents_->GetPrimaryMainFrame(), GURL("https://example.com"),
-        GURL("https://example.com/pay"),
+        std::move(app_service), web_contents_->GetPrimaryMainFrame(),
+        GURL("https://example.com"), GURL("https://example.com/pay"),
         url::Origin::Create(GURL("https://example.com")), spec_->AsWeakPtr(),
         weak_ptr_factory_.GetWeakPtr(), "en-US", &test_personal_data_manager_,
         test_payment_request_delegate_.GetContentWeakPtr(),

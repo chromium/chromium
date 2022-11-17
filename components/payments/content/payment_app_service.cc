@@ -53,10 +53,6 @@ void PaymentAppService::Create(
   }
 }
 
-void PaymentAppService::Shutdown() {
-  factories_.clear();
-}
-
 void PaymentAppService::AddFactoryForTesting(
     std::unique_ptr<PaymentAppFactory> factory) {
   factories_.push_back(std::move(factory));

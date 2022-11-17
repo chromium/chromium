@@ -26,6 +26,7 @@ class WebContents;
 }  // namespace content
 
 namespace payments {
+class PaymentAppService;
 
 // A bridge that holds parameters needed by PaymentAppService and redirects
 // callbacks from PaymentAppFactory to callbacks set by the caller.
@@ -39,10 +40,10 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
                                    AppCreationFailureReason)>;
 
   // Creates a new PaymentAppServiceBridge. This object is self-deleting; its
-  // memory is freed when OnDoneCreatingPaymentApps() is called
-  // `number_of_factories` times. The `spec` parameter should not be null.
+  // memory is freed after CreatePaymentApps() is invoked and
+  // OnDoneCreatingPaymentApps() is called `number_of_pending_factories_` times.
   static PaymentAppServiceBridge* Create(
-      size_t number_of_factories,
+      std::unique_ptr<PaymentAppService> payment_app_service,
       content::RenderFrameHost* render_frame_host,
       const GURL& top_origin,
       base::WeakPtr<PaymentRequestSpec> spec,
@@ -62,7 +63,9 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
   PaymentAppServiceBridge(const PaymentAppServiceBridge&) = delete;
   PaymentAppServiceBridge& operator=(const PaymentAppServiceBridge&) = delete;
 
-  base::WeakPtr<PaymentAppServiceBridge> GetWeakPtr();
+  void CreatePaymentApps();
+
+  base::WeakPtr<PaymentAppServiceBridge> GetWeakPtrForTest();
 
   // PaymentAppFactory::Delegate
   content::WebContents* GetWebContents() override;
@@ -96,10 +99,9 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
   base::WeakPtr<CSPChecker> GetCSPChecker() override;
 
  private:
-  // Prevents direct instantiation. Callers should use Create() instead. The
-  // `spec` parameter should not be null.
+  // Prevents direct instantiation. Callers should use Create() instead.
   PaymentAppServiceBridge(
-      size_t number_of_factories,
+      std::unique_ptr<PaymentAppService> payment_app_service,
       content::RenderFrameHost* render_frame_host,
       const GURL& top_origin,
       base::WeakPtr<PaymentRequestSpec> spec,
@@ -113,6 +115,7 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
       base::OnceClosure done_creating_payment_apps_callback,
       base::RepeatingClosure set_can_make_payment_even_without_apps_callback);
 
+  const std::unique_ptr<PaymentAppService> payment_app_service_;
   size_t number_of_pending_factories_;
   content::GlobalRenderFrameHostId frame_routing_id_;
   const GURL top_origin_;

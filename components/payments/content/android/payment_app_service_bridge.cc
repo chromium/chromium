@@ -20,7 +20,6 @@
 #include "components/payments/content/android/jni_payment_app.h"
 #include "components/payments/content/android/payment_request_spec.h"
 #include "components/payments/content/payment_app_service.h"
-#include "components/payments/content/payment_app_service_factory.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/url_formatter/elide_url.h"
@@ -113,11 +112,10 @@ void JNI_PaymentAppServiceBridge_Create(
               render_frame_host->GetBrowserContext(),
               ServiceAccessType::EXPLICIT_ACCESS);
 
-  payments::PaymentAppService* service =
-      payments::PaymentAppServiceFactory::GetForContext(
-          render_frame_host->GetBrowserContext());
   auto* bridge = payments::PaymentAppServiceBridge::Create(
-      service->GetNumberOfFactories(), render_frame_host, GURL(top_origin),
+      std::make_unique<payments::PaymentAppService>(
+          render_frame_host->GetBrowserContext()),
+      render_frame_host, GURL(top_origin),
       payments::android::PaymentRequestSpec::FromJavaPaymentRequestSpec(
           env, jpayment_request_spec),
       jtwa_package_name ? ConvertJavaStringToUTF8(env, jtwa_package_name) : "",
@@ -134,7 +132,7 @@ void JNI_PaymentAppServiceBridge_Create(
       base::BindRepeating(&SetCanMakePaymentEvenWithoutApps,
                           ScopedJavaGlobalRef<jobject>(env, jcallback)));
 
-  service->Create(bridge->GetWeakPtr());
+  bridge->CreatePaymentApps();
 }
 
 namespace payments {
@@ -173,7 +171,7 @@ class PaymentAppServiceBridgeStorage {
 
 /* static */
 PaymentAppServiceBridge* PaymentAppServiceBridge::Create(
-    size_t number_of_factories,
+    std::unique_ptr<PaymentAppService> payment_app_service,
     content::RenderFrameHost* render_frame_host,
     const GURL& top_origin,
     base::WeakPtr<PaymentRequestSpec> spec,
@@ -189,7 +187,7 @@ PaymentAppServiceBridge* PaymentAppServiceBridge::Create(
   DCHECK(render_frame_host);
   // Not using std::make_unique, because that requires a public constructor.
   std::unique_ptr<PaymentAppServiceBridge> bridge(new PaymentAppServiceBridge(
-      number_of_factories, render_frame_host, top_origin, spec,
+      std::move(payment_app_service), render_frame_host, top_origin, spec,
       twa_package_name, std::move(web_data_service), is_off_the_record,
       csp_checker, std::move(can_make_payment_calculated_callback),
       std::move(payment_app_created_callback),
@@ -199,44 +197,14 @@ PaymentAppServiceBridge* PaymentAppServiceBridge::Create(
   return PaymentAppServiceBridgeStorage::GetInstance()->Add(std::move(bridge));
 }
 
-PaymentAppServiceBridge::PaymentAppServiceBridge(
-    size_t number_of_factories,
-    content::RenderFrameHost* render_frame_host,
-    const GURL& top_origin,
-    base::WeakPtr<PaymentRequestSpec> spec,
-    const std::string& twa_package_name,
-    scoped_refptr<PaymentManifestWebDataService> web_data_service,
-    bool is_off_the_record,
-    base::WeakPtr<CSPChecker> csp_checker,
-    CanMakePaymentCalculatedCallback can_make_payment_calculated_callback,
-    PaymentAppCreatedCallback payment_app_created_callback,
-    PaymentAppCreationErrorCallback payment_app_creation_error_callback,
-    base::OnceClosure done_creating_payment_apps_callback,
-    base::RepeatingClosure set_can_make_payment_even_without_apps_callback)
-    : number_of_pending_factories_(number_of_factories),
-      frame_routing_id_(render_frame_host->GetGlobalId()),
-      top_origin_(top_origin),
-      frame_origin_(url_formatter::FormatUrlForSecurityDisplay(
-          render_frame_host->GetLastCommittedURL())),
-      frame_security_origin_(render_frame_host->GetLastCommittedOrigin()),
-      spec_(spec),
-      twa_package_name_(twa_package_name),
-      payment_manifest_web_data_service_(web_data_service),
-      is_off_the_record_(is_off_the_record),
-      csp_checker_(csp_checker),
-      can_make_payment_calculated_callback_(
-          std::move(can_make_payment_calculated_callback)),
-      payment_app_created_callback_(std::move(payment_app_created_callback)),
-      payment_app_creation_error_callback_(
-          std::move(payment_app_creation_error_callback)),
-      done_creating_payment_apps_callback_(
-          std::move(done_creating_payment_apps_callback)),
-      set_can_make_payment_even_without_apps_callback_(
-          std::move(set_can_make_payment_even_without_apps_callback)) {}
-
 PaymentAppServiceBridge::~PaymentAppServiceBridge() = default;
 
-base::WeakPtr<PaymentAppServiceBridge> PaymentAppServiceBridge::GetWeakPtr() {
+void PaymentAppServiceBridge::CreatePaymentApps() {
+  payment_app_service_->Create(weak_ptr_factory_.GetWeakPtr());
+}
+
+base::WeakPtr<PaymentAppServiceBridge>
+PaymentAppServiceBridge::GetWeakPtrForTest() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
@@ -372,5 +340,42 @@ void PaymentAppServiceBridge::SetCanMakePaymentEvenWithoutApps() {
 base::WeakPtr<CSPChecker> PaymentAppServiceBridge::GetCSPChecker() {
   return csp_checker_;
 }
+
+PaymentAppServiceBridge::PaymentAppServiceBridge(
+    std::unique_ptr<PaymentAppService> payment_app_service,
+    content::RenderFrameHost* render_frame_host,
+    const GURL& top_origin,
+    base::WeakPtr<PaymentRequestSpec> spec,
+    const std::string& twa_package_name,
+    scoped_refptr<PaymentManifestWebDataService> web_data_service,
+    bool is_off_the_record,
+    base::WeakPtr<CSPChecker> csp_checker,
+    CanMakePaymentCalculatedCallback can_make_payment_calculated_callback,
+    PaymentAppCreatedCallback payment_app_created_callback,
+    PaymentAppCreationErrorCallback payment_app_creation_error_callback,
+    base::OnceClosure done_creating_payment_apps_callback,
+    base::RepeatingClosure set_can_make_payment_even_without_apps_callback)
+    : payment_app_service_(std::move(payment_app_service)),
+      number_of_pending_factories_(
+          payment_app_service_->GetNumberOfFactories()),
+      frame_routing_id_(render_frame_host->GetGlobalId()),
+      top_origin_(top_origin),
+      frame_origin_(url_formatter::FormatUrlForSecurityDisplay(
+          render_frame_host->GetLastCommittedURL())),
+      frame_security_origin_(render_frame_host->GetLastCommittedOrigin()),
+      spec_(spec),
+      twa_package_name_(twa_package_name),
+      payment_manifest_web_data_service_(web_data_service),
+      is_off_the_record_(is_off_the_record),
+      csp_checker_(csp_checker),
+      can_make_payment_calculated_callback_(
+          std::move(can_make_payment_calculated_callback)),
+      payment_app_created_callback_(std::move(payment_app_created_callback)),
+      payment_app_creation_error_callback_(
+          std::move(payment_app_creation_error_callback)),
+      done_creating_payment_apps_callback_(
+          std::move(done_creating_payment_apps_callback)),
+      set_can_make_payment_even_without_apps_callback_(
+          std::move(set_can_make_payment_even_without_apps_callback)) {}
 
 }  // namespace payments

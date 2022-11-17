@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <vector>
 
 #include "base/bind.h"
@@ -10,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/payments/content/android/payment_app_service_bridge.h"
+#include "components/payments/content/payment_app_service.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/core/const_csp_checker.h"
@@ -102,10 +104,11 @@ TEST_P(PaymentAppServiceBridgeUnitTest, Smoke) {
   MockCallback mock_callback;
   base::WeakPtr<PaymentAppServiceBridge> bridge =
       PaymentAppServiceBridge::Create(
-          /*number_of_factories=*/3, web_contents_->GetPrimaryMainFrame(),
-          top_origin_, spec.AsWeakPtr(), /*twa_package_name=*/GetParam(),
-          web_data_service_, /*is_off_the_record=*/false,
-          const_csp_checker.GetWeakPtr(),
+          std::make_unique<PaymentAppService>(
+              web_contents_->GetBrowserContext()),
+          web_contents_->GetPrimaryMainFrame(), top_origin_, spec.AsWeakPtr(),
+          /*twa_package_name=*/GetParam(), web_data_service_,
+          /*is_off_the_record=*/false, const_csp_checker.GetWeakPtr(),
           base::BindRepeating(&MockCallback::NotifyCanMakePaymentCalculated,
                               base::Unretained(&mock_callback)),
           base::BindRepeating(&MockCallback::NotifyPaymentAppCreated,
@@ -116,7 +119,7 @@ TEST_P(PaymentAppServiceBridgeUnitTest, Smoke) {
                          base::Unretained(&mock_callback)),
           base::BindRepeating(&MockCallback::SetCanMakePaymentEvenWithoutApps,
                               base::Unretained(&mock_callback)))
-          ->GetWeakPtr();
+          ->GetWeakPtrForTest();
 
   EXPECT_TRUE(bridge->SkipCreatingNativePaymentApps());
   EXPECT_EQ(web_contents_, bridge->GetWebContents());

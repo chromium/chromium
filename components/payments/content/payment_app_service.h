@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "components/payments/content/payment_app_factory.h"
 
 namespace content {
@@ -20,7 +19,7 @@ class BrowserContext;
 namespace payments {
 
 // Retrieves payment apps of all types.
-class PaymentAppService : public KeyedService {
+class PaymentAppService {
  public:
   // The |context| pointer is not being saved.
   explicit PaymentAppService(content::BrowserContext* context);
@@ -28,7 +27,7 @@ class PaymentAppService : public KeyedService {
   PaymentAppService(const PaymentAppService&) = delete;
   PaymentAppService& operator=(const PaymentAppService&) = delete;
 
-  ~PaymentAppService() override;
+  ~PaymentAppService();
 
   // Returns the number of payment app factories, which is the number of times
   // that |delegate->OnDoneCreatingPaymentApps()| will be called as a result of
@@ -37,9 +36,6 @@ class PaymentAppService : public KeyedService {
 
   // Create payment apps for |delegate|.
   void Create(base::WeakPtr<PaymentAppFactory::Delegate> delegate);
-
-  // KeyedService implementation:
-  void Shutdown() override;
 
   void AddFactoryForTesting(std::unique_ptr<PaymentAppFactory> factory);
 
