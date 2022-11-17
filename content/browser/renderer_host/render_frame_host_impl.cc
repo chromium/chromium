@@ -35,7 +35,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/syslog_logging.h"
-#include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
@@ -114,7 +113,6 @@
 #include "content/browser/renderer_host/pending_beacon_host.h"
 #include "content/browser/renderer_host/pending_beacon_service.h"
 #include "content/browser/renderer_host/private_network_access_util.h"
-#include "content/browser/renderer_host/recently_destroyed_hosts.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_owner.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
@@ -374,8 +372,8 @@ class RenderFrameHostOrProxy {
 
 namespace {
 
-constexpr int kSubframeProcessShutdownLongDelayInMSec = 8 * 1000;
-static_assert(kSubframeProcessShutdownLongDelayInMSec +
+constexpr int kSubframeProcessShutdownDelayInMSec = 2 * 1000;
+static_assert(kSubframeProcessShutdownDelayInMSec +
                       RenderViewHostImpl::kUnloadTimeoutInMSec <
                   RenderProcessHostImpl::kKeepAliveHandleFactoryTimeoutInMSec,
               "The maximum process shutdown delay should not exceed the "
@@ -866,8 +864,8 @@ void WriteRenderFrameImplDeletion(perfetto::EventContext& ctx,
 }
 
 // Returns an experimental process shutdown delay if the SubframeShutdownDelay
-// experiment is enabled, 0 if not or if under memory pressure. This experiment
-// keeps subframe processes alive for a few seconds in case they can be reused.
+// experiment is enabled, 0 if not or if under memory pressure. This is used to
+// keep subframe processes alive for a few seconds in case they can be reused.
 base::TimeDelta GetSubframeProcessShutdownDelay(
     BrowserContext* browser_context) {
   static constexpr base::TimeDelta kZeroDelay;
@@ -883,62 +881,7 @@ base::TimeDelta GetSubframeProcessShutdownDelay(
     return kZeroDelay;
   }
 
-  static constexpr base::TimeDelta kShortDelay = base::Seconds(2);
-  static constexpr base::TimeDelta kLongDelay =
-      base::Milliseconds(kSubframeProcessShutdownLongDelayInMSec);
-  // Added to delay if based on recent performance (i.e., |kHistoryBased| and
-  // |kHistoryBasedLong|) to account for small variations in timing.
-  static constexpr base::TimeDelta kDelayBuffer = base::Seconds(1);
-
-  switch (features::kSubframeShutdownDelayTypeParam.Get()) {
-    case features::SubframeShutdownDelayType::kConstant: {
-      return kShortDelay;
-    }
-    case features::SubframeShutdownDelayType::kConstantLong: {
-      return kLongDelay;
-    }
-    case features::SubframeShutdownDelayType::kHistoryBased: {
-      const base::TimeDelta reuse_interval =
-          RecentlyDestroyedHosts::GetPercentileReuseInterval(50,
-                                                             browser_context);
-      // If no subframe reuse has happened recently, don't delay process
-      // shutdown at all.
-      if (reuse_interval.is_zero())
-        return kZeroDelay;
-      return std::min(reuse_interval + kDelayBuffer, kLongDelay);
-    }
-    case features::SubframeShutdownDelayType::kHistoryBasedLong: {
-      const base::TimeDelta reuse_interval =
-          RecentlyDestroyedHosts::GetPercentileReuseInterval(75,
-                                                             browser_context);
-      // If no subframe reuse has happened recently, don't delay process
-      // shutdown at all.
-      if (reuse_interval.is_zero())
-        return kZeroDelay;
-      return std::min(reuse_interval + kDelayBuffer, kLongDelay);
-    }
-    case features::SubframeShutdownDelayType::kMemoryBased: {
-      // See subframe-reuse design doc for more detail on these values.
-      // docs.google.com/document/d/1x_h4Gg4ForILEj8A4rMBX6d84uHWyQ9RSXmGVqMlBTk
-      static constexpr uint64_t kHighMemoryThreshold = 8'000'000'000;
-      static constexpr uint64_t kMaxMemoryThreshold = 16'000'000'000;
-
-      const uint64_t available_memory =
-          base::SysInfo::AmountOfAvailablePhysicalMemory();
-      if (available_memory <= kHighMemoryThreshold)
-        return kShortDelay;
-      if (available_memory >= kMaxMemoryThreshold)
-        return kLongDelay;
-
-      // Scale delay linearly based on where |available_memory| lies between
-      // |kHighMemoryThreshold| and |kMaxMemoryThreshold|.
-      const uint64_t available_memory_factor =
-          (available_memory - kHighMemoryThreshold) /
-          (kMaxMemoryThreshold - kHighMemoryThreshold);
-      return kShortDelay + (kLongDelay - kShortDelay) * available_memory_factor;
-    }
-  }
-  NOTREACHED();
+  return base::Milliseconds(kSubframeProcessShutdownDelayInMSec);
 }
 
 // Returns the "document" URL used for a navigation, which might be different

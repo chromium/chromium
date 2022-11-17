@@ -1005,16 +1005,6 @@ BASE_FEATURE(kSubframeShutdownDelay,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 );
-const base::FeatureParam<SubframeShutdownDelayType>::Option delay_types[] = {
-    {SubframeShutdownDelayType::kConstant, "constant"},
-    {SubframeShutdownDelayType::kConstantLong, "constant-long"},
-    {SubframeShutdownDelayType::kHistoryBased, "history-based"},
-    {SubframeShutdownDelayType::kHistoryBasedLong, "history-based-long"},
-    {SubframeShutdownDelayType::kMemoryBased, "memory-based"}};
-const base::FeatureParam<SubframeShutdownDelayType>
-    kSubframeShutdownDelayTypeParam{&kSubframeShutdownDelay, "type",
-                                    SubframeShutdownDelayType::kConstant,
-                                    &delay_types};
 
 // If enabled, GetUserMedia API will only work when the concerned tab is in
 // focus

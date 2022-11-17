@@ -230,25 +230,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kSpareRendererForSitePerProcess);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kStopVideoCaptureOnScreenLock);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kStrictOriginIsolation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSubframeShutdownDelay);
-enum class SubframeShutdownDelayType {
-  // A flat 2s shutdown delay.
-  kConstant,
-  // A flat 8s shutdown delay.
-  kConstantLong,
-  // A variable delay from 0s to 8s based on the median interval between
-  // subframe shutdown and process reuse over the past 5 subframe navigations.
-  // A subframe that could not be reused is counted as 0s.
-  kHistoryBased,
-  // A variable delay from 0s to 8s based on the 75th-percentile interval
-  // between subframe shutdown and process reuse over the past 5 subframe
-  // navigations. A subframe that could not be reused is counted as 0s.
-  kHistoryBasedLong,
-  // A 2s base delay at 8 GB available memory or lower. Above 8 GB available
-  // memory, scales up linearly to a maximum 8s delay at 16 GB or more.
-  kMemoryBased
-};
-CONTENT_EXPORT extern const base::FeatureParam<SubframeShutdownDelayType>
-    kSubframeShutdownDelayTypeParam;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSuppressDifferentOriginSubframeJSDialogs);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSurfaceSyncFullscreenKillswitch);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSyntheticPointerActions);

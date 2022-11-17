@@ -5529,10 +5529,7 @@ class RenderFrameHostImplSubframeReuseBrowserTest
     : public RenderFrameHostImplBrowserTest {
  public:
   RenderFrameHostImplSubframeReuseBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kSubframeShutdownDelay, {{"type", "constant-long"}});
-    EXPECT_EQ(features::kSubframeShutdownDelayTypeParam.Get(),
-              features::SubframeShutdownDelayType::kConstantLong);
+    scoped_feature_list_.InitAndEnableFeature(features::kSubframeShutdownDelay);
   }
 
  protected:

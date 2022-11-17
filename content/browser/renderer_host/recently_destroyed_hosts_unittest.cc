@@ -35,8 +35,6 @@ class RecentlyDestroyedHostsTest : public testing::Test {
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 
-  void ClearReuseIntervals() { instance_->reuse_intervals_.clear(); }
-
   std::vector<base::TimeDelta> GetReuseIntervals() {
     std::vector<base::TimeDelta> intervals;
     for (auto& reuse_interval : instance_->reuse_intervals_) {
@@ -144,47 +142,6 @@ TEST_F(RecentlyDestroyedHostsTest, AddReuseInterval) {
   EXPECT_THAT(GetReuseIntervals(), testing::ElementsAre(t1, t1, t3, t5, t6));
   AddReuseInterval(t4);
   EXPECT_THAT(GetReuseIntervals(), testing::ElementsAre(t1, t3, t4, t5, t6));
-}
-
-TEST_F(RecentlyDestroyedHostsTest, GetPercentileReuseInterval) {
-  struct PercentileReuseIntervalTestCase {
-    std::vector<double> reuse_interval_seconds;
-    double percentile_0;
-    double percentile_33;
-    double percentile_50;
-    double percentile_75;
-    double percentile_100;
-  } kPercentileReuseIntervalTestCases[] = {
-      // All percentiles should be zero if empty.
-      {{}, 0, 0, 0, 0, 0},
-      {{0, 0, 0, 0, 0}, 0, 0, 0, 0, 0},
-      {{1, 2}, 1, 1, 1, 2, 2},
-      {{1, 2, 3}, 1, 1, 2, 3, 3},
-      {{1, 2, 3, 4}, 1, 2, 2, 3, 4},
-      {{1, 2, 3, 4, 5}, 1, 2, 3, 4, 5},
-      {{1.2, 5, 11, 13.3, 15}, 1.2, 5, 11, 13.3, 15}};
-
-  for (auto& test_case : kPercentileReuseIntervalTestCases) {
-    for (auto& interval : test_case.reuse_interval_seconds) {
-      AddReuseInterval(base::Seconds(interval));
-    }
-    EXPECT_EQ(base::Seconds(test_case.percentile_0),
-              RecentlyDestroyedHosts::GetPercentileReuseInterval(
-                  0, &browser_context_));
-    EXPECT_EQ(base::Seconds(test_case.percentile_33),
-              RecentlyDestroyedHosts::GetPercentileReuseInterval(
-                  33, &browser_context_));
-    EXPECT_EQ(base::Seconds(test_case.percentile_50),
-              RecentlyDestroyedHosts::GetPercentileReuseInterval(
-                  50, &browser_context_));
-    EXPECT_EQ(base::Seconds(test_case.percentile_75),
-              RecentlyDestroyedHosts::GetPercentileReuseInterval(
-                  75, &browser_context_));
-    EXPECT_EQ(base::Seconds(test_case.percentile_100),
-              RecentlyDestroyedHosts::GetPercentileReuseInterval(
-                  100, &browser_context_));
-    ClearReuseIntervals();
-  }
 }
 
 }  // namespace content
