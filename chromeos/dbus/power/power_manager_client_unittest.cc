@@ -305,11 +305,6 @@ class PowerManagerClientTest : public testing::Test {
         *proxy_,
         DoCallMethod(HasMember(power_manager::kGetPowerSupplyPropertiesMethod),
                      _, _));
-    // Init will test for the presence of an ambient light sensor.
-    EXPECT_CALL(
-        *proxy_,
-        DoCallMethod(HasMember(power_manager::kHasAmbientColorDeviceMethod), _,
-                     _));
 
     PowerManagerClient::Initialize(bus_.get());
     client_ = PowerManagerClient::Get();

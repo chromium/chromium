@@ -296,10 +296,6 @@ void FakePowerManagerClient::UnblockSuspend(
   --num_pending_suspend_readiness_callbacks_;
 }
 
-bool FakePowerManagerClient::SupportsAmbientColor() {
-  return supports_ambient_color_;
-}
-
 void FakePowerManagerClient::CreateArcTimers(
     const std::string& tag,
     std::vector<std::pair<clockid_t, base::ScopedFD>> arc_timer_requests,

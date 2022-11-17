@@ -335,9 +335,6 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
   // ready for a suspend.
   virtual void UnblockSuspend(const base::UnguessableToken& token) = 0;
 
-  // Whether the device supports Ambient color.
-  virtual bool SupportsAmbientColor() = 0;
-
   // Creates timers corresponding to clocks present in |arc_timer_requests|.
   // ScopedFDs are used to indicate timer expiration as described in
   // |StartArcTimer|. Aysnchronously runs |callback| with the created timers'
