@@ -328,9 +328,12 @@ AX_TEST_F('SelectToSpeakMouseSelectionTest', 'SystemUI', async function() {
     this.mockTts.setOnSpeechCallbacks([this.newCallback(function(utterance) {
       assertTrue(this.mockTts.currentlySpeaking());
       // Sometimes we get "Select-to-speak button" and sometimes
-      // "Select-to-speak". Either is acceptable.
-      this.assertEqualsCollapseWhitespace(
-          utterance.replace(/button/, '').toLowerCase(), 'select-to-speak');
+      // "Select-to-speak" and sometimes "Highlight text on your screen". Any
+      // are acceptable.
+      const trimmedUtterance =
+          utterance.replace(/button/, '').toLowerCase().trim();
+      assertTrue(['select-to-speak', 'highlight text on your screen'].includes(
+          trimmedUtterance));
     })]);
 
     focusRingsCallback = this.newCallback((focusRings) => {
