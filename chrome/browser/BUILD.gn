@@ -4726,6 +4726,8 @@ static_library("browser") {
       "apps/app_discovery_service/result.h",
       "apps/app_discovery_service/test_fetcher.cc",
       "apps/app_discovery_service/test_fetcher.h",
+      "apps/app_preload_service/almanac_api_util.cc",
+      "apps/app_preload_service/almanac_api_util.h",
       "apps/app_preload_service/app_preload_server_connector.cc",
       "apps/app_preload_service/app_preload_server_connector.h",
       "apps/app_preload_service/app_preload_service.cc",

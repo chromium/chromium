@@ -45,6 +45,11 @@ const char kAllowOsInstall[] = "allow-os-install";
 // mode. This can be enabled by this flag.
 const char kAllowRAInDevMode[] = "allow-ra-in-dev-mode";
 
+// Override for the URL used for the ChromeOS Almanac API. Used for local
+// testing with a non-production server (e.g.
+// "--almanac-api-url=http://localhost:8000").
+const char kAlmanacApiUrl[] = "almanac-api-url";
+
 // Causes HDCP of the specified type to always be enabled when an external
 // display is connected. Used for HDCP compliance testing on ChromeOS.
 const char kAlwaysEnableHdcp[] = "always-enable-hdcp";

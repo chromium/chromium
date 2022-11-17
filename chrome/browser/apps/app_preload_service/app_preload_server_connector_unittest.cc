@@ -24,11 +24,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace {
-static constexpr char kServerUrl[] =
-    "http://localhost:9876/v1/app_provisioning/apps?alt=proto";
-}  // namespace
-
 namespace apps {
 
 class AppPreloadServerConnectorTest : public testing::Test {
@@ -101,7 +96,9 @@ TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginSuccessfulResponse) {
   auto* app = response.add_apps_to_install();
   app->set_name("Peanut Types");
 
-  url_loader_factory_.AddResponse(kServerUrl, response.SerializeAsString());
+  url_loader_factory_.AddResponse(
+      AppPreloadServerConnector::GetServerUrl().spec(),
+      response.SerializeAsString());
 
   base::test::TestFuture<std::vector<PreloadAppDefinition>> test_callback;
   server_connector_.GetAppsForFirstLogin(
