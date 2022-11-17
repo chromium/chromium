@@ -813,7 +813,7 @@
   {
     "name": "canvas-oop-rasterization",
     "owners": [ "junov", "vasilyt" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "captive-portal-ui-2022",
