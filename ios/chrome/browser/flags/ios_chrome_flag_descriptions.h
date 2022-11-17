@@ -128,6 +128,11 @@ extern const char kAppleCalendarExperienceKitDescription[];
 extern const char kEnableExpKitCalendarTextClassifierName[];
 extern const char kEnableExpKitCalendarTextClassifierDescription[];
 
+// Title and description for the flag to enable text classifier entity detection
+// in experience kit for different entity types.
+extern const char kEnableExpKitTextClassifierName[];
+extern const char kEnableExpKitTextClassifierDescription[];
+
 // Title and description for the flag to enable long press surrounding text.
 extern const char kLongPressSurroundingTextName[];
 extern const char kLongPressSurroundingTextDescription[];

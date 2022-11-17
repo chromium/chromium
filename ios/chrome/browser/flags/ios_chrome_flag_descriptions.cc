@@ -151,6 +151,12 @@ extern const char kEnableExpKitCalendarTextClassifierDescription[] =
     "When enabled, Experience Kit Calendar will use Text Classifier library in "
     "entity detection where possible.";
 
+extern const char kEnableExpKitTextClassifierName[] =
+    "Text Classifier in Experience Kit";
+extern const char kEnableExpKitTextClassifierDescription[] =
+    "When enabled, Experience Kit will use Text Classifier library in "
+    "entity detection where possible.";
+
 extern const char kMapsExperienceKitName[] = "Experience Kit Maps";
 extern const char kMapsExperienceKitDescription[] =
     "When enabled, long pressing on an address will trigger Experience Kit Maps"

@@ -11,4 +11,9 @@
 // calendar.
 BASE_DECLARE_FEATURE(kEnableExpKitCalendarTextClassifier);
 
+// Feature flag to enable Text Classifier entity detection in experience kit
+// The feature params will control which entity types are enabled for
+// detection.
+BASE_DECLARE_FEATURE(kEnableExpKitTextClassifier);
+
 #endif  // IOS_CHROME_BROWSER_TEXT_SELECTION_TEXT_SELECTION_UTIL_H_
