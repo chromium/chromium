@@ -212,7 +212,10 @@ suite('NewTabPageModulesRecipesTest', () => {
     const restoreCallback = dismissEvent.detail.restoreCallback;
 
     // Assert.
-    assertEquals('Recipe ideas hidden', toastMessage);
+    const moduleHeaderTitle =
+        moduleElement.shadowRoot!.querySelector(
+                                     'ntp-module-header')!.textContent!.trim();
+    assertEquals(moduleHeaderTitle + ' hidden', toastMessage);
     assertEquals('Hello world', await handler.whenCalled('dismissTask'));
 
     // Act.
