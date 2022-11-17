@@ -29,7 +29,6 @@
 #include "chrome/browser/resource_coordinator/time.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/swap_metrics_driver.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
@@ -50,45 +49,6 @@ ukm::SourceId GetUkmSourceId(content::WebContents* contents) {
 }
 
 }  // namespace
-
-class TabManagerStatsCollector::SwapMetricsDelegate
-    : public content::SwapMetricsDriver::Delegate {
- public:
-  explicit SwapMetricsDelegate(
-      TabManagerStatsCollector* tab_manager_stats_collector)
-      : tab_manager_stats_collector_(tab_manager_stats_collector) {}
-
-  ~SwapMetricsDelegate() override = default;
-
-  void OnSwapInCount(uint64_t count, base::TimeDelta interval) override {
-    tab_manager_stats_collector_->RecordSwapMetrics("SwapInPerSecond", count,
-                                                    interval);
-  }
-
-  void OnSwapOutCount(uint64_t count, base::TimeDelta interval) override {
-    tab_manager_stats_collector_->RecordSwapMetrics("SwapOutPerSecond", count,
-                                                    interval);
-  }
-
-  void OnDecompressedPageCount(uint64_t count,
-                               base::TimeDelta interval) override {
-    tab_manager_stats_collector_->RecordSwapMetrics(
-        "DecompressedPagesPerSecond", count, interval);
-  }
-
-  void OnCompressedPageCount(uint64_t count,
-                             base::TimeDelta interval) override {
-    tab_manager_stats_collector_->RecordSwapMetrics("CompressedPagesPerSecond",
-                                                    count, interval);
-  }
-
-  void OnUpdateMetricsFailed() override {
-    tab_manager_stats_collector_->OnUpdateSwapMetricsFailed();
-  }
-
- private:
-  raw_ptr<TabManagerStatsCollector> tab_manager_stats_collector_;
-};
 
 TabManagerStatsCollector::TabManagerStatsCollector() {
   SessionRestore::AddObserver(this);
@@ -127,45 +87,12 @@ void TabManagerStatsCollector::RecordSwitchToTab(
 void TabManagerStatsCollector::OnSessionRestoreStartedLoadingTabs() {
   DCHECK(!is_session_restore_loading_tabs_);
   UpdateSessionAndSequence();
-
-  CreateAndInitSwapMetricsDriverIfNeeded();
-
   is_session_restore_loading_tabs_ = true;
 }
 
 void TabManagerStatsCollector::OnSessionRestoreFinishedLoadingTabs() {
   DCHECK(is_session_restore_loading_tabs_);
-
-  if (swap_metrics_driver_)
-    swap_metrics_driver_->UpdateMetrics();
-
   is_session_restore_loading_tabs_ = false;
-}
-
-void TabManagerStatsCollector::CreateAndInitSwapMetricsDriverIfNeeded() {
-  swap_metrics_driver_ = content::SwapMetricsDriver::Create(
-      base::WrapUnique<content::SwapMetricsDriver::Delegate>(
-          new SwapMetricsDelegate(this)),
-      base::Seconds(0));
-  // The driver could still be null on a platform with no swap driver support.
-  if (swap_metrics_driver_)
-    swap_metrics_driver_->InitializeMetrics();
-}
-
-void TabManagerStatsCollector::RecordSwapMetrics(const std::string& metric_name,
-                                                 uint64_t count,
-                                                 base::TimeDelta interval) {
-  base::HistogramBase* histogram = base::Histogram::FactoryGet(
-      "TabManager.Experimental.SessionRestore." + metric_name,
-      1,      // minimum
-      10000,  // maximum
-      50,     // bucket_count
-      base::HistogramBase::kUmaTargetedHistogramFlag);
-  histogram->Add(static_cast<double>(count) / interval.InSecondsF());
-}
-
-void TabManagerStatsCollector::OnUpdateSwapMetricsFailed() {
-  swap_metrics_driver_ = nullptr;
 }
 
 void TabManagerStatsCollector::OnDidStartMainFrameNavigation(

@@ -1175,70 +1175,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="TabManager.Experimental.BackgroundTabOpening.CompressedPagesPerSecond"
-    units="pages/s" expires_after="M79">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    The number of pages compressed per second when opening background tabs. This
-    is recorded at the end of the background tab opening session as an average
-    over the entire period (the duration of time from when the browser starts to
-    open background tabs until the time the browser has finished loading those
-    tabs or otherwise decided to stop loading them). The metric is not recorded
-    when the session overlaps with session restore. Only recorded on macOS.
-    Warning: This metric is a ratio and the session interval differs for each
-    session. It is hard to tell if it is average rate for each second in the
-    interval or it has a huge spike.
-  </summary>
-</histogram>
-
-<histogram
-    name="TabManager.Experimental.BackgroundTabOpening.DecompressedPagesPerSecond"
-    units="pages/s" expires_after="M79">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    The number of pages decompressed per second when opening background tabs.
-    This is recorded at the end of the background tab opening session as an
-    average over the entire period (the duration of time from when the browser
-    starts to open background tabs until the time the browser has finished
-    loading those tabs or otherwise decided to stop loading them). The metric is
-    not recorded when the session overlaps with session restore. Only recorded
-    on macOS. Warning: This metric is a ratio and the session interval differs
-    for each session. It is hard to tell if it is average rate for each second
-    in the interval or it has a huge spike.
-  </summary>
-</histogram>
-
-<histogram name="TabManager.Experimental.BackgroundTabOpening.SwapInPerSecond"
-    units="swaps/s" expires_after="M79">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    The number of swap-ins per second when opening background tabs. This is
-    recorded at the end of the background tab opening session as an average over
-    the entire period (the duration of time from when the browser starts to open
-    background tabs until the time the browser has finished loading those tabs
-    or otherwise decided to stop loading them). The metric is not recorded when
-    the session overlaps with session restore. Warning: This metric is a ratio
-    and the session interval differs for each session. It is hard to tell if it
-    is average rate for each second in the interval or it has a huge spike.
-  </summary>
-</histogram>
-
-<histogram name="TabManager.Experimental.BackgroundTabOpening.SwapOutPerSecond"
-    units="swaps/s" expires_after="M79">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    The number of swap-outs per second when opening background tabs. This is
-    recorded at the end of the background tab opening session as an average over
-    the entire period (the duration of time from when the browser starts to open
-    background tabs until the time the browser has finished loading those tabs
-    or otherwise decided to stop loading them). The metric is not recorded when
-    the session overlaps with session restore. Warning: This metric is a ratio
-    and the session interval differs for each session. It is hard to tell if it
-    is average rate for each second in the interval or it has a huge spike.
-  </summary>
-</histogram>
-
-<histogram
     name="TabManager.Experimental.BackgroundTabOpening.TabSwitchLoadTime.UntilTabIsLoaded"
     units="ms" expires_after="M79">
   <owner>chrisha@chromium.org</owner>
@@ -1256,42 +1192,6 @@ chromium-metrics-reviews@google.com.
     is not included in this metric since it was not switched to from another
     tab. The metric is not recorded when the session overlaps with session
     restore.
-  </summary>
-</histogram>
-
-<histogram
-    name="TabManager.Experimental.SessionRestore.CompressedPagesPerSecond"
-    units="pages/s" expires_after="M79">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    The number of pages compressed per second during session restore. Recorded
-    at the end of session restore as an average over the entire period, defined
-    as the period of time when session restore is actively loading tabs, which
-    ends when either all tabs have been loaded and their pages rendered, or tab
-    loading needs to be deferred in cases where the system is under memory
-    pressure. The metric is not recorded when the session overlaps with
-    background tab opening session. Only recorded on macOS. Warning: This metric
-    is a ratio and the session interval differs for each session. It is hard to
-    tell if it is average rate for each second in the interval or it has a huge
-    spike.
-  </summary>
-</histogram>
-
-<histogram
-    name="TabManager.Experimental.SessionRestore.DecompressedPagesPerSecond"
-    units="pages/s" expires_after="M79">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    The number of pages decompressed per second during session restore. Recorded
-    at the end of session restore as an average over the entire period, defined
-    as the period of time when session restore is actively loading tabs, which
-    ends when either all tabs have been loaded and their pages rendered, or tab
-    loading needs to be deferred in cases where the system is under memory
-    pressure. The metric is not recorded when the session overlaps with
-    background tab opening session. Only recorded on macOS. Warning: This metric
-    is a ratio and the session interval differs for each session. It is hard to
-    tell if it is average rate for each second in the interval or it has a huge
-    spike.
   </summary>
 </histogram>
 
@@ -1322,38 +1222,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Elapsed time between the start of the loading and the first paint of
     foreground tabs when the browser loads tabs in session restore.
-  </summary>
-</histogram>
-
-<histogram name="TabManager.Experimental.SessionRestore.SwapInPerSecond"
-    units="swaps/s" expires_after="M79">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    The number of swap-ins per second during session restore. Recorded at the
-    end of session restore as an average over the entire period, defined as the
-    period of time when session restore is actively loading tabs, which ends
-    when either all tabs have been loaded and their pages rendered, or tab
-    loading needs to be deferred in cases where the system is under memory
-    pressure. The metric is not recorded when the session overlaps with
-    background tab opening session. Warning: This metric is a ratio and the
-    session interval differs for each session. It is hard to tell if it is
-    average rate for each second in the interval or it has a huge spike.
-  </summary>
-</histogram>
-
-<histogram name="TabManager.Experimental.SessionRestore.SwapOutPerSecond"
-    units="swaps/s" expires_after="M79">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    The number of swap-outs per second during session restore. Recorded at the
-    end of session restore as an average over the entire period, defined as the
-    period of time when session restore is actively loading tabs, which ends
-    when either all tabs have been loaded and their pages rendered, or tab
-    loading needs to be deferred in cases where the system is under memory
-    pressure. The metric is not recorded when the session overlaps with
-    background tab opening session. Warning: This metric is a ratio and the
-    session interval differs for each session. It is hard to tell if it is
-    average rate for each second in the interval or it has a huge spike.
   </summary>
 </histogram>
 

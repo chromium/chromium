@@ -22,7 +22,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace content {
-class SwapMetricsDriver;
 class WebContents;
 }  // namespace content
 
@@ -59,14 +58,6 @@ class TabManagerStatsCollector final : public SessionRestoreObserver {
   void OnSessionRestoreStartedLoadingTabs() override;
   void OnSessionRestoreFinishedLoadingTabs() override;
 
-  // Record UMA histograms for system swap metrics.
-  void RecordSwapMetrics(const std::string& metric_name,
-                         uint64_t count,
-                         base::TimeDelta interval);
-
-  // Handles the situation when failing to update swap metrics.
-  void OnUpdateSwapMetricsFailed();
-
   // Called by WebContentsData when a tab starts loading. Used to clean up
   // |foreground_contents_switched_to_times_| if we were tracking this tab and
   // OnDidStopLoading has not yet been called for it, which will happen if the
@@ -83,7 +74,6 @@ class TabManagerStatsCollector final : public SessionRestoreObserver {
   void OnWebContentsDestroyed(content::WebContents* contents);
 
  private:
-  class SwapMetricsDelegate;
   FRIEND_TEST_ALL_PREFIXES(TabManagerStatsCollectorTabSwitchTest,
                            HistogramsSwitchToTab);
   FRIEND_TEST_ALL_PREFIXES(TabManagerStatsCollectorTabSwitchTest,
@@ -92,9 +82,6 @@ class TabManagerStatsCollector final : public SessionRestoreObserver {
                            HistogramsTabCount);
   FRIEND_TEST_ALL_PREFIXES(TabManagerStatsCollectorPrerenderingTest,
                            KeepingWebContentsMapInPrerendering);
-
-  // Create and initialize the swap metrics driver if needed.
-  void CreateAndInitSwapMetricsDriverIfNeeded();
 
   // Update session and sequence information for UKM recording.
   void UpdateSessionAndSequence();
@@ -114,8 +101,6 @@ class TabManagerStatsCollector final : public SessionRestoreObserver {
   int sequence_ = 0;
 
   bool is_session_restore_loading_tabs_ = false;
-
-  std::unique_ptr<content::SwapMetricsDriver> swap_metrics_driver_;
 
   // The set of foreground tabs during session restore that were switched to
   // that have not yet finished loading, mapped to the time that they were
