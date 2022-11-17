@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "android_webview/browser/aw_contents_origin_matcher.h"
+#include "android_webview/browser/aw_permission_manager.h"
 #include "android_webview/browser/aw_ssl_host_state_delegate.h"
 #include "android_webview/browser/network_service/aw_proxy_config_monitor.h"
 #include "base/compiler_specific.h"
@@ -30,7 +31,6 @@ class AutocompleteHistoryManager;
 
 namespace content {
 class ClientHintsControllerDelegate;
-class PermissionControllerDelegate;
 class ResourceContext;
 class SSLHostStateDelegate;
 class WebContents;
@@ -109,8 +109,7 @@ class AwBrowserContext : public content::BrowserContext,
   content::PushMessagingService* GetPushMessagingService() override;
   content::StorageNotificationService* GetStorageNotificationService() override;
   content::SSLHostStateDelegate* GetSSLHostStateDelegate() override;
-  content::PermissionControllerDelegate* GetPermissionControllerDelegate()
-      override;
+  AwPermissionManager* GetPermissionControllerDelegate() override;
   content::ClientHintsControllerDelegate* GetClientHintsControllerDelegate()
       override;
   content::BackgroundFetchDelegate* GetBackgroundFetchDelegate() override;
@@ -163,7 +162,7 @@ class AwBrowserContext : public content::BrowserContext,
 
   std::unique_ptr<PrefService> user_pref_service_;
   std::unique_ptr<AwSSLHostStateDelegate> ssl_host_state_delegate_;
-  std::unique_ptr<content::PermissionControllerDelegate> permission_manager_;
+  std::unique_ptr<AwPermissionManager> permission_manager_;
   std::unique_ptr<content::ClientHintsControllerDelegate>
       client_hints_controller_delegate_;
   std::unique_ptr<content::OriginTrialsControllerDelegate>

@@ -614,6 +614,65 @@ void AwPermissionManager::CancelPermissionRequests() {
   DCHECK(pending_requests_.IsEmpty());
 }
 
+void AwPermissionManager::SetOriginCanReadEnumerateDevicesAudioLabels(
+    const GURL& origin,
+    bool audio) {
+  if (origin.spec().empty() || origin.SchemeIsFile())
+    return;
+  auto it = enumerate_devices_labels_cache_.find(origin);
+  if (it == enumerate_devices_labels_cache_.end()) {
+    enumerate_devices_labels_cache_[origin] = std::make_pair(audio, false);
+  } else {
+    it->second.first = audio;
+  }
+}
+
+void AwPermissionManager::SetOriginCanReadEnumerateDevicesVideoLabels(
+    const GURL& origin,
+    bool video) {
+  if (origin.spec().empty() || origin.SchemeIsFile())
+    return;
+  auto it = enumerate_devices_labels_cache_.find(origin);
+  if (it == enumerate_devices_labels_cache_.end())
+    enumerate_devices_labels_cache_[origin] = std::make_pair(false, video);
+  else
+    it->second.second = video;
+}
+
+bool AwPermissionManager::ShouldShowEnumerateDevicesAudioLabels(
+    const GURL& origin) {
+  auto it = enumerate_devices_labels_cache_.find(origin);
+  if (it == enumerate_devices_labels_cache_.end())
+    return false;
+  return it->second.first;
+}
+
+bool AwPermissionManager::ShouldShowEnumerateDevicesVideoLabels(
+    const GURL& origin) {
+  auto it = enumerate_devices_labels_cache_.find(origin);
+  if (it == enumerate_devices_labels_cache_.end())
+    return false;
+  return it->second.second;
+}
+
+void AwPermissionManager::ClearEnumerateDevicesCachedPermission(
+    const GURL& origin,
+    bool remove_audio,
+    bool remove_video) {
+  if (origin.spec().empty())
+    return;
+  auto it = enumerate_devices_labels_cache_.find(origin);
+  if (it == enumerate_devices_labels_cache_.end())
+    return;
+  else if (remove_audio && remove_video) {
+    enumerate_devices_labels_cache_.erase(origin);
+  } else if (remove_audio) {
+    it->second.first = false;
+  } else if (remove_video) {
+    it->second.second = false;
+  }
+}
+
 int AwPermissionManager::GetRenderProcessID(
     content::RenderFrameHost* render_frame_host) {
   return render_frame_host->GetProcess()->GetID();

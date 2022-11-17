@@ -5,6 +5,7 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_AW_PERMISSION_MANAGER_H_
 #define ANDROID_WEBVIEW_BROWSER_AW_PERMISSION_MANAGER_H_
 
+#include <map>
 #include <memory>
 
 #include "base/callback_forward.h"
@@ -80,6 +81,15 @@ class AwPermissionManager : public content::PermissionControllerDelegate {
       override;
   void UnsubscribePermissionStatusChange(
       SubscriptionId subscription_id) override;
+  void SetOriginCanReadEnumerateDevicesAudioLabels(const GURL& origin,
+                                                   bool audio);
+  void SetOriginCanReadEnumerateDevicesVideoLabels(const GURL& origin,
+                                                   bool video);
+  bool ShouldShowEnumerateDevicesAudioLabels(const GURL& origin);
+  bool ShouldShowEnumerateDevicesVideoLabels(const GURL& origin);
+  void ClearEnumerateDevicesCachedPermission(const GURL& origin,
+                                             bool remove_audio,
+                                             bool remove_video);
 
  protected:
   void CancelPermissionRequest(int request_id);
@@ -107,6 +117,9 @@ class AwPermissionManager : public content::PermissionControllerDelegate {
 
   PendingRequestsMap pending_requests_;
   std::unique_ptr<LastRequestResultCache> result_cache_;
+  // Maps origins to whether they can view device labels.
+  // The pair is ordered as (Audio, Video).
+  std::map<GURL, std::pair<bool, bool>> enumerate_devices_labels_cache_;
 
   base::WeakPtrFactory<AwPermissionManager> weak_ptr_factory_{this};
 };

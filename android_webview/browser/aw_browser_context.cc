@@ -447,8 +447,7 @@ content::SSLHostStateDelegate* AwBrowserContext::GetSSLHostStateDelegate() {
   return ssl_host_state_delegate_.get();
 }
 
-content::PermissionControllerDelegate*
-AwBrowserContext::GetPermissionControllerDelegate() {
+AwPermissionManager* AwBrowserContext::GetPermissionControllerDelegate() {
   if (!permission_manager_.get())
     permission_manager_ = std::make_unique<AwPermissionManager>();
   return permission_manager_.get();

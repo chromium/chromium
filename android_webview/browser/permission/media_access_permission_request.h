@@ -13,13 +13,15 @@
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
 namespace android_webview {
+class AwPermissionManager;
 
 // The AwPermissionRequestDelegate implementation for media access permission
 // request.
 class MediaAccessPermissionRequest : public AwPermissionRequestDelegate {
  public:
   MediaAccessPermissionRequest(const content::MediaStreamRequest& request,
-                               content::MediaResponseCallback callback);
+                               content::MediaResponseCallback callback,
+                               AwPermissionManager& permission_manager);
 
   MediaAccessPermissionRequest(const MediaAccessPermissionRequest&) = delete;
   MediaAccessPermissionRequest& operator=(const MediaAccessPermissionRequest&) =
@@ -37,6 +39,7 @@ class MediaAccessPermissionRequest : public AwPermissionRequestDelegate {
 
   const content::MediaStreamRequest request_;
   content::MediaResponseCallback callback_;
+  const raw_ref<AwPermissionManager> permission_manager_;
 
   // For test only.
   blink::MediaStreamDevices audio_test_devices_;

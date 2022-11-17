@@ -27,6 +27,12 @@ BASE_FEATURE(kWebViewConnectionlessSafeBrowsing,
              "WebViewConnectionlessSafeBrowsing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Cache origins which have camera/mic permissions approved to allow subsequent
+// calls to enumerate devices to return device labels.
+BASE_FEATURE(kWebViewEnumerateDevicesCache,
+             "WebViewEnumerateDevicesCache",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enable WebView to automatically darken the page in FORCE_DARK_AUTO mode if
 // the app's theme is dark.
 BASE_FEATURE(kWebViewForceDarkModeMatchTheme,
