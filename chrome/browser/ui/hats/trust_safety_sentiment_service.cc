@@ -67,6 +67,8 @@ std::string GetHatsTriggerForFeatureArea(
     switch (feature_area) {
       case (TrustSafetySentimentService::FeatureArea::kTrustedSurface):
         return kHatsSurveyTriggerTrustSafetyV2TrustedSurface;
+      case (TrustSafetySentimentService::FeatureArea::kSafetyCheck):
+        return kHatsSurveyTriggerTrustSafetyV2SafetyCheck;
       default:
         NOTREACHED();
         return "";
@@ -123,6 +125,8 @@ bool VersionCheck(TrustSafetySentimentService::FeatureArea feature_area) {
               kPrivacySandbox3NoticeLearnMore):
       return isV2 == false;
     // Version 2 only
+    case (TrustSafetySentimentService::FeatureArea::kSafetyCheck):
+      return isV2 == true;
     // Both Versions
     case (TrustSafetySentimentService::FeatureArea::kTrustedSurface):
       return true;
@@ -142,6 +146,10 @@ bool ProbabilityCheck(TrustSafetySentimentService::FeatureArea feature_area) {
       case (TrustSafetySentimentService::FeatureArea::kTrustedSurface):
         return base::RandDouble() <
                features::kTrustSafetySentimentSurveyV2TrustedSurfaceProbability
+                   .Get();
+      case (TrustSafetySentimentService::FeatureArea::kSafetyCheck):
+        return base::RandDouble() <
+               features::kTrustSafetySentimentSurveyV2SafetyCheckProbability
                    .Get();
       default:
         NOTREACHED();
@@ -391,6 +399,10 @@ void TrustSafetySentimentService::InteractedWithPrivacySettings(
 }
 
 void TrustSafetySentimentService::RanSafetyCheck() {
+  // Since we have logic to block a trigger for an incorrect version, we can
+  // call both of these and only the appropriate trigger and probability will be
+  // recorded.
+  TriggerOccurred(FeatureArea::kSafetyCheck, {});
   TriggerOccurred(FeatureArea::kPrivacySettings,
                   GetPrivacySettingsProductSpecificData(
                       profile_, /*ran_safety_check=*/true));
