@@ -963,6 +963,8 @@ void PrefetchService::HandlePrefetchedResponse(
     return;
   }
 
+  head->was_in_prefetch_cache = true;
+
   prefetch_container->TakePrefetchedResponse(
       std::make_unique<PrefetchedMainframeResponseContainer>(
           isolation_info, std::move(head), std::move(body)));

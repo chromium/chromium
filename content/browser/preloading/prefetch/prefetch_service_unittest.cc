@@ -12,6 +12,7 @@
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
+#include "content/browser/preloading/prefetch/prefetched_mainframe_response_container.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/frame_accept_header.h"
 #include "content/public/browser/prefetch_service_delegate.h"
@@ -483,6 +484,9 @@ TEST_F(PrefetchServiceTest, SuccessCase) {
             PrefetchStatus::kPrefetchSuccessful);
   EXPECT_TRUE(serveable_prefetch_container->HasValidPrefetchedResponse(
       base::TimeDelta::Max()));
+  EXPECT_TRUE(serveable_prefetch_container->ReleasePrefetchedResponse()
+                  ->ReleaseHead()
+                  ->was_in_prefetch_cache);
 }
 
 TEST_F(PrefetchServiceTest, NoPrefetchingPreloadingDisabled) {
