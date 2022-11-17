@@ -603,6 +603,7 @@ try_.builder(
         "ci/linux-lacros-asan-lsan-rel",
     ],
     goma_jobs = goma.jobs.J150,
+    cores = 16,
 )
 
 try_.builder(
