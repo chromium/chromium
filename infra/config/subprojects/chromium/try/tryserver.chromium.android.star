@@ -111,6 +111,9 @@ try_.orchestrator_builder(
     tryjob = try_.job(
         experiment_percentage = 20,
     ),
+    experiments = {
+        "chromium_rts.inverted_rts": 100,
+    },
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
@@ -318,8 +321,7 @@ try_.orchestrator_builder(
     main_list_view = "try",
     tryjob = try_.job(),
     experiments = {
-        # TODO (crbug.com/1382577): Reenable after cq active is reliable
-        "chromium_rts.inverted_rts": 0,
+        "chromium_rts.inverted_rts": 100,
     },
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
@@ -428,6 +430,9 @@ try_.orchestrator_builder(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
+    experiments = {
+        "chromium_rts.inverted_rts": 100,
+    },
     compilator = "android-pie-arm64-rel-compilator",
     check_for_flakiness = True,
     branch_selector = branches.STANDARD_MILESTONE,
