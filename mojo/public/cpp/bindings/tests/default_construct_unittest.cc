@@ -40,9 +40,10 @@ TEST_F(DefaultConstructTest, Echo) {
   base::RunLoop run_loop;
   remote->TestMethod(TestStruct(42),
                      base::BindLambdaForTesting([&](const TestStruct& out) {
-                       EXPECT_EQ(out.value, 42);
+                       EXPECT_EQ(out.value(), 42);
                        run_loop.Quit();
                      }));
+  run_loop.Run();
 }
 
 }  // namespace mojo::test::default_construct

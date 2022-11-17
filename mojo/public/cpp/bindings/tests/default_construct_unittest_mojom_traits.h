@@ -12,20 +12,23 @@ namespace mojo {
 
 namespace test::default_construct {
 
-// For convenience, the C++ struct is simply defined in the traits header. This
+// For convenience, the C++ class is simply defined in the traits header. This
 // should never be done in non-test code.
-struct TestStruct {
-  explicit TestStruct(int value) : value(value) {}
+class TestStruct {
+ public:
+  explicit TestStruct(int value) : value_(value) {}
 
   TestStruct(const TestStruct&) = default;
   TestStruct& operator=(const TestStruct&) = default;
 
- public:
+  int value() const { return value_; }
+
+ private:
   friend mojo::DefaultConstructTraits;
 
   TestStruct() = default;
 
-  int value = 0;
+  int value_ = 0;
 };
 
 }  // namespace test::default_construct
@@ -34,12 +37,12 @@ template <>
 struct StructTraits<test::default_construct::mojom::TestStructDataView,
                     test::default_construct::TestStruct> {
   static int value(const test::default_construct::TestStruct& in) {
-    return in.value;
+    return in.value();
   }
 
   static bool Read(test::default_construct::mojom::TestStructDataView in,
                    test::default_construct::TestStruct* out) {
-    out->value = in.value();
+    *out = test::default_construct::TestStruct(in.value());
     return true;
   }
 };
