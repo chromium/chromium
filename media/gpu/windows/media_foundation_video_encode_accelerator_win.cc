@@ -74,6 +74,7 @@ const size_t kNumInputBuffers = 3;
 // https://msdn.microsoft.com/en-us/library/windows/desktop/ms697282(v=vs.85).aspx.
 const size_t kOneMicrosecondInMFSampleTimeUnits = 10;
 const size_t kPrefixNALLocatedBytePos = 3;
+constexpr uint64_t kH264MaxQp = 51;
 
 constexpr const wchar_t* const kMediaFoundationVideoEncoderDLLs[] = {
     L"mf.dll",
@@ -603,29 +604,22 @@ void MediaFoundationVideoEncodeAccelerator::EncoderInitializeTask(
                                 kNumInputBuffers, input_visible_size_,
                                 bitstream_buffer_size_));
 
-  VideoEncoderInfo encoder_info;
-  encoder_info.implementation_name = "MediaFoundationVideoEncodeAccelerator";
-  encoder_info.has_trusted_rate_controller = false;
-  DCHECK(encoder_info.is_hardware_accelerated);
-  DCHECK(encoder_info.supports_native_handle);
-  DCHECK(!encoder_info.supports_simulcast);
-  if (vendor_ == DriverVendor::kIntel) {
-    encoder_info.reports_average_qp = false;
-  }
+  encoder_info_.implementation_name = "MediaFoundationVideoEncodeAccelerator";
+  encoder_info_.has_trusted_rate_controller = false;
+  DCHECK(encoder_info_.is_hardware_accelerated);
+  DCHECK(encoder_info_.supports_native_handle);
+  DCHECK(encoder_info_.reports_average_qp);
+  DCHECK(!encoder_info_.supports_simulcast);
   if (config.HasSpatialLayer() || config.HasTemporalLayer()) {
     DCHECK(!config.spatial_layers.empty());
     for (size_t i = 0; i < config.spatial_layers.size(); ++i) {
-      encoder_info.fps_allocation[i] =
+      encoder_info_.fps_allocation[i] =
           GetFpsAllocation(config.spatial_layers[i].num_of_temporal_layers);
     }
   } else {
     constexpr uint8_t kFullFramerate = 255;
-    encoder_info.fps_allocation[0] = {kFullFramerate};
+    encoder_info_.fps_allocation[0] = {kFullFramerate};
   }
-
-  main_client_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&Client::NotifyEncoderInfoChange, main_client_,
-                                encoder_info));
 }
 
 void MediaFoundationVideoEncodeAccelerator::Encode(
@@ -1460,6 +1454,26 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
         base::Microseconds(sample_time / kOneMicrosecondInMFSampleTimeUnits);
   }
 
+  // For HMFT that continuously reports valid QP, update encoder info so that
+  // WebRTC will not use bandwidth quality scaler for resolution adaptation.
+  uint64_t frame_qp = 0xfffful;
+  bool should_notify_encoder_info_change = false;
+  if (vendor_ == DriverVendor::kIntel && codec_ == VideoCodec::kH264) {
+    hr = output_data_buffer.pSample->GetUINT64(MFSampleExtension_VideoEncodeQP,
+                                               &frame_qp);
+    if ((FAILED(hr) || frame_qp > kH264MaxQp) &&
+        encoder_info_.reports_average_qp) {
+      should_notify_encoder_info_change = true;
+      encoder_info_.reports_average_qp = false;
+    }
+  }
+  if (!encoder_info_sent_ || should_notify_encoder_info_change) {
+    main_client_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&Client::NotifyEncoderInfoChange,
+                                  main_client_, encoder_info_));
+    encoder_info_sent_ = true;
+  }
+
   const bool keyframe = MFGetAttributeUINT32(
       output_data_buffer.pSample, MFSampleExtension_CleanPoint, false);
   int temporal_id = 0;
@@ -1506,6 +1520,10 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
   output_data_buffer.pSample = nullptr;
 
   BitstreamBufferMetadata md(size, keyframe, timestamp);
+  if (frame_qp <= kH264MaxQp) {
+    md.qp = static_cast<int32_t>(frame_qp);
+  }
+
   if (temporalScalableCoding()) {
     if (codec_ == VideoCodec::kH264) {
       md.h264.emplace().temporal_idx = temporal_id;

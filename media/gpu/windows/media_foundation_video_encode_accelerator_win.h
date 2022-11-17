@@ -197,6 +197,10 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // distance between two key frames.
   uint32_t gop_length_;
 
+  // Video encoder info that includes accelerator name, QP validity, etc.
+  VideoEncoderInfo encoder_info_;
+  bool encoder_info_sent_ = false;
+
   Microsoft::WRL::ComPtr<IMFActivate> activate_;
   Microsoft::WRL::ComPtr<IMFTransform> encoder_;
   Microsoft::WRL::ComPtr<ICodecAPI> codec_api_;
