@@ -578,16 +578,6 @@ base::WeakPtr<PrerenderHostRegistry> PrerenderHostRegistry::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-void PrerenderHostRegistry::ForEachPrerenderHost(
-    base::RepeatingCallback<void(PrerenderHost&)> callback) {
-  for (auto& iter : prerender_host_by_frame_tree_node_id_) {
-    callback.Run(*iter.second);
-  }
-
-  if (reserved_prerender_host_)
-    callback.Run(*reserved_prerender_host_);
-}
-
 void PrerenderHostRegistry::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
   auto* navigation_request = NavigationRequest::From(navigation_handle);

@@ -227,7 +227,6 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   absl::optional<url::Origin> initiator_origin() const {
     return attributes_.initiator_origin;
   }
-  const GURL& initiator_url() const { return attributes_.initiator_url; }
 
   const GURL& prerendering_url() const { return attributes_.prerendering_url; }
 

@@ -42,8 +42,6 @@
 #include "content/browser/network/reporting_service_proxy.h"
 #include "content/browser/picture_in_picture/picture_in_picture_service_impl.h"
 #include "content/browser/preloading/anchor_element_interaction_host_impl.h"
-#include "content/browser/preloading/prerender/prerender_internals.mojom.h"
-#include "content/browser/preloading/prerender/prerender_internals_ui.h"
 #include "content/browser/preloading/speculation_rules/speculation_host_impl.h"
 #include "content/browser/process_internals/process_internals.mojom.h"
 #include "content/browser/process_internals/process_internals_ui.h"
@@ -1060,8 +1058,6 @@ void PopulateBinderMapWithContext(
                                          AttributionInternalsUI>(map);
   RegisterWebUIControllerInterfaceBinder<storage::mojom::IdbInternalsHandler,
                                          IndexedDBInternalsUI>(map);
-  RegisterWebUIControllerInterfaceBinder<mojom::PrerenderInternalsHandler,
-                                         PrerenderInternalsUI>(map);
   RegisterWebUIControllerInterfaceBinder<::mojom::ProcessInternalsHandler,
                                          ProcessInternalsUI>(map);
   RegisterWebUIControllerInterfaceBinder<storage::mojom::QuotaInternalsHandler,

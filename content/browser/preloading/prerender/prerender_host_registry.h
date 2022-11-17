@@ -171,11 +171,6 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
 
   base::WeakPtr<PrerenderHostRegistry> GetWeakPtr();
 
-  // Applies the callback function to all prerender hosts owned by
-  // this registry.
-  void ForEachPrerenderHost(
-      base::RepeatingCallback<void(PrerenderHost&)> callback);
-
   // Only used for tests.
   base::OneShotTimer* GetTimerForTesting() { return &timeout_timer_; }
   void SetTaskRunnerForTesting(

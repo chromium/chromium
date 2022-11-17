@@ -43,9 +43,6 @@ files that belong there instead.
       <include name="IDR_NETWORK_ERROR_LISTING_HTML" file="browser/resources/net/network_errors_listing.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
       <include name="IDR_NETWORK_ERROR_LISTING_JS" file="browser/resources/net/network_errors_listing.js" type="BINDATA" />
       <include name="IDR_NETWORK_ERROR_LISTING_CSS" file="browser/resources/net/network_errors_listing.css" type="BINDATA" />
-      <include name="IDR_PRERENDER_INTERNALS_HTML" file="browser/resources/prerender/prerender_internals.html" type="BINDATA" />
-      <include name="IDR_PRERENDER_INTERNALS_MOJO_JS" file="${root_gen_dir}/mojom-webui/content/browser/preloading/prerender/prerender_internals.mojom-webui.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_PRERENDER_INTERNALS_JS" file="browser/resources/prerender/prerender_internals.js" type="BINDATA" />
       <include name="IDR_PROCESS_INTERNALS_HTML" file="browser/resources/process/process_internals.html" type="BINDATA" />
       <include name="IDR_PROCESS_INTERNALS_MOJO_JS" file="${root_gen_dir}/content/browser/resources/process/tsc/process_internals.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_PROCESS_INTERNALS_CSS" file="browser/resources/process/process_internals.css" type="BINDATA" />

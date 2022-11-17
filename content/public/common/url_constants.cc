@@ -36,7 +36,6 @@ const char kChromeUIMediaInternalsHost[] = "media-internals";
 const char kChromeUIMemoryExhaustHost[] = "memory-exhaust";
 const char kChromeUINetworkErrorHost[] = "network-error";
 const char kChromeUINetworkErrorsListingHost[] = "network-errors";
-const char kChromeUIPrerenderInternalsHost[] = "prerender-internals";
 const char kChromeUIPrivateAggregationInternalsHost[] =
     "private-aggregation-internals";
 const char kChromeUIProcessInternalsHost[] = "process-internals";
