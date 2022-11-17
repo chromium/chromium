@@ -8,9 +8,12 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -45,6 +48,68 @@ using ::policy::CloudPolicyClient;
 using ::policy::CloudPolicyCore;
 
 namespace reporting {
+
+// Manages reporting payload size via UMA.
+class PayloadSizeUmaReporter {
+ public:
+  PayloadSizeUmaReporter() = default;
+  PayloadSizeUmaReporter(const PayloadSizeUmaReporter&) = delete;
+  PayloadSizeUmaReporter& operator=(const PayloadSizeUmaReporter&) = delete;
+  PayloadSizeUmaReporter(PayloadSizeUmaReporter&&) = default;
+  PayloadSizeUmaReporter& operator=(PayloadSizeUmaReporter&&) = default;
+
+  // Whether payload size should be reported now.
+  bool ShouldReport() const {
+    return base::Time::Now() >= last_reported_time_ + min_report_timedelta_;
+  }
+
+  // Report to UMA.
+  void Report() {
+    DCHECK_GE(request_payload_size_, 0);
+    DCHECK_GE(response_payload_size_, 0);
+
+    last_reported_time_ = base::Time::Now();
+    base::UmaHistogramCounts1M("Browser.ERP.RequestPayloadSize",
+                               request_payload_size_);
+    base::UmaHistogramCounts1M("Browser.ERP.ResponsePayloadSize",
+                               response_payload_size_);
+  }
+
+  // Update request payload size.
+  void UpdateRequestPayloadSize(const base::Value::Dict& request_payload) {
+    request_payload_size_ = GetPayloadSize(request_payload);
+  }
+
+  // Update response payload size.
+  void UpdateResponsePayloadSize(const base::Value::Dict& response_payload) {
+    response_payload_size_ = GetPayloadSize(response_payload);
+  }
+
+ private:
+  // Gets the size of payload as a JSON string.
+  static int GetPayloadSize(const base::Value::Dict& payload) {
+    std::string payload_json;
+    base::JSONWriter::Write(payload, &payload_json);
+    return static_cast<int>(payload_json.size());
+  }
+
+  // Minimum amount of time between two reports.
+  static constexpr base::TimeDelta min_report_timedelta_ = base::Hours(1);
+
+  // Last time UMA report was done. This is accessed from |Report| and
+  // |ShouldReport|, both of which of all instances of this class should only be
+  // called in the same sequence.
+  static base::Time last_reported_time_;
+
+  // Request payload size. Negative means not set yet.
+  int request_payload_size_ = -1;
+
+  // Response payload size. Negative means not set yet.
+  int response_payload_size_ = -1;
+};
+
+// static
+base::Time PayloadSizeUmaReporter::last_reported_time_{base::Time::UnixEpoch()};
 
 ReportingServerConnector::ReportingServerConnector() = default;
 
@@ -112,20 +177,35 @@ void ReportingServerConnector::UploadEncryptedReport(
     return;
   }
 
+  // UMA for payload size
+  PayloadSizeUmaReporter payload_size_uma_reporter;
+  payload_size_uma_reporter.UpdateRequestPayloadSize(merging_payload);
+
   // Forward the `UploadEncryptedReport` to the cloud policy client.
   connector->client_->UploadEncryptedReport(
       std::move(merging_payload), std::move(context),
       base::BindOnce(
           [](ResponseCallback callback,
+             PayloadSizeUmaReporter payload_size_uma_reporter,
              absl::optional<base::Value::Dict> result) {
             if (!result.has_value()) {
               std::move(callback).Run(
                   Status(error::DATA_LOSS, "Failed to upload"));
               return;
             }
+
+            // Let UMA report the request and response payload sizes.
+            if (payload_size_uma_reporter.ShouldReport()) {
+              // Request payload has already been computed at the time of
+              // request.
+              payload_size_uma_reporter.UpdateResponsePayloadSize(
+                  result.value());
+              payload_size_uma_reporter.Report();
+            }
+
             std::move(callback).Run(std::move(result.value()));
           },
-          std::move(callback)));
+          std::move(callback), std::move(payload_size_uma_reporter)));
 }
 
 Status ReportingServerConnector::EnsureUsableCore() {

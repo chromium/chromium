@@ -159,6 +159,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Browser.ERP.{Param}PayloadSize" units="bytes"
+    expires_after="2023-11-17">
+  <owner>xuhong@chromium.org</owner>
+  <owner>lbaraz@chromium.org</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    The size of ERP's {Param} payload as a JSON string when upload is
+    successful. Updated every time when an upload succeeds and at least one hour
+    has passed since the last update.
+  </summary>
+  <token key="Param">
+    <variant name="Request" summary="request"/>
+    <variant name="Response" summary="response"/>
+  </token>
+</histogram>
+
 <histogram name="Browser.MainThreadsCongestion{Phase}" units="janks"
     expires_after="2023-03-15">
 <!-- on probation: expected to graduate as a go/chrome-browser-guiding-metrics -->
