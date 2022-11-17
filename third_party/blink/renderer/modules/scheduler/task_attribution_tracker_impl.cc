@@ -41,6 +41,8 @@ perfetto::protos::pbzero::BlinkTaskScope::TaskScopeType ToProtoEnum(
       return ProtoType::TASK_SCOPE_SCRIPT_EXECUTION;
     case TaskAttributionTracker::TaskScopeType::kPostMessage:
       return ProtoType::TASK_SCOPE_POST_MESSAGE;
+    case TaskAttributionTracker::TaskScopeType::kPopState:
+      return ProtoType::TASK_SCOPE_POP_STATE;
   }
 }
 

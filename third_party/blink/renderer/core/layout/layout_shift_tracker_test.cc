@@ -320,9 +320,10 @@ void LayoutShiftTrackerNavigationTest::RunTest(bool is_browser_initiated) {
   main_frame->Loader().GetDocumentLoader()->CommitSameDocumentNavigation(
       item1->Url(), WebFrameLoadType::kBackForward, item1.Get(),
       ClientRedirectPolicy::kNotClientRedirect,
-      false /* has_transient_user_activation */, nullptr /* initiator_origin */,
-      false /* is_synchronously_committed */,
-      mojom::blink::TriggeringEventInfo::kNotFromEvent, is_browser_initiated);
+      /*has_transient_user_activation=*/false, /*initiator_origin=*/nullptr,
+      /*is_synchronously_committed=*/false,
+      mojom::blink::TriggeringEventInfo::kNotFromEvent, is_browser_initiated,
+      /*soft_navigation_heuristics_task_id=*/absl::nullopt);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();

@@ -72,7 +72,10 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
   void DidChangeLoadProgress(double load_progress) override;
   void DidFinishLoad(const KURL& validated_url) override;
   void DispatchLoad() override;
-  void GoToEntryAtOffset(int32_t offset, bool has_user_gesture) override;
+  void GoToEntryAtOffset(
+      int32_t offset,
+      bool has_user_gesture,
+      absl::optional<blink::scheduler::TaskAttributionId>) override;
   void NavigateToNavigationApiKey(const WTF::String& key,
                                   bool has_user_gesture) override {}
   void UpdateTitle(const WTF::String& title,

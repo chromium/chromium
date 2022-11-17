@@ -19,6 +19,9 @@ class WebSecurityOrigin;
 class WebURL;
 struct WebNavigationInfo;
 struct WebNavigationParams;
+namespace scheduler {
+class TaskAttributionId;
+}  // namespace scheduler
 
 // This interface gives control to navigation-related functionality of
 // WebLocalFrame. It is separated from WebLocalFrame to give precise control
@@ -54,7 +57,9 @@ class WebNavigationControl : public WebLocalFrame {
       bool is_client_redirect,
       bool has_transient_user_activation,
       const WebSecurityOrigin& initiator_origin,
-      bool is_browser_initiated) = 0;
+      bool is_browser_initiated,
+      absl::optional<scheduler::TaskAttributionId>
+          soft_navigation_heuristics_task_id) = 0;
 
   // Override the normal rules that determine whether the frame is on the
   // initial empty document or not. Used to propagate state when this frame has

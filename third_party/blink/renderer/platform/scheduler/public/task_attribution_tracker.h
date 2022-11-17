@@ -35,6 +35,7 @@ class PLATFORM_EXPORT TaskAttributionTracker {
     kScheduledAction,
     kScriptExecution,
     kPostMessage,
+    kPopState,
   };
 
   // A class maintaining the scope of the current task. Keeping it alive ensures

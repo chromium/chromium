@@ -3095,6 +3095,9 @@ void RenderFrameImpl::CommitSameDocumentNavigation(
         !!(common_params->transition & ui::PAGE_TRANSITION_CLIENT_REDIRECT);
     bool started_with_transient_activation = common_params->has_user_gesture;
     bool is_browser_initiated = commit_params->is_browser_initiated;
+    absl::optional<blink::scheduler::TaskAttributionId>
+        soft_navigation_heuristic_task_id =
+            commit_params->soft_navigation_heuristic_task_id;
 
     WebSecurityOrigin initiator_origin;
     if (common_params->initiator_origin)
@@ -3115,7 +3118,7 @@ void RenderFrameImpl::CommitSameDocumentNavigation(
     commit_status = frame_->CommitSameDocumentNavigation(
         url, load_type, item_for_history_navigation, is_client_redirect,
         started_with_transient_activation, initiator_origin,
-        is_browser_initiated);
+        is_browser_initiated, soft_navigation_heuristic_task_id);
 
     // The load of the URL can result in this frame being removed. Use a
     // WeakPtr as an easy way to detect whether this has occured. If so, this

@@ -22,6 +22,7 @@ import "third_party/blink/public/mojom/frame/view_transition_state.mojom";
 import "third_party/blink/public/mojom/frame/frame_policy.mojom";
 import "third_party/blink/public/mojom/loader/mixed_content.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
+import "third_party/blink/public/mojom/messaging/task_attribution_id.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_api_history_entry_arrays.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_policy.mojom";
 import "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_info.mojom";
@@ -523,4 +524,9 @@ struct CommitNavigationParams {
   // transitions when navigating between same-origin Documents.
   // See https://drafts.csswg.org/css-view-transitions-1/ for details.
   blink.mojom.ViewTransitionState? view_transition_state;
+
+  // If any, the task ID of the initiator of the navigation. This is restricted
+  // to same-document main-frame navigation initiated by the top-level document.
+  // Used by SoftNavigationHeuristics to trace back the chain of events.
+  TaskAttributionId? soft_navigation_heuristic_task_id;
 };

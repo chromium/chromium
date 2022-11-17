@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -226,8 +227,15 @@ void History::go(ScriptState* script_state,
     // navigation is committed.
     ReportURLChange(window, script_state,
                     /*url=*/String(""));
+    // Pass the current task ID so it'd be set as the parent task for the future
+    // popstate event.
+    auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
+    absl::optional<scheduler::TaskAttributionId> task_id;
+    if (tracker && script_state->World().IsMainWorld()) {
+      task_id = tracker->RunningTaskAttributionId(script_state);
+    }
     DCHECK(frame->Client());
-    if (frame->Client()->NavigateBackForward(delta)) {
+    if (frame->Client()->NavigateBackForward(delta, task_id)) {
       if (Page* page = frame->GetPage())
         page->HistoryNavigationVirtualTimePauser().PauseVirtualTime();
     }

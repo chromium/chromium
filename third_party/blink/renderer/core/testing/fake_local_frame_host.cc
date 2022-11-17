@@ -100,8 +100,10 @@ void FakeLocalFrameHost::DidFinishLoad(const KURL& validated_url) {}
 
 void FakeLocalFrameHost::DispatchLoad() {}
 
-void FakeLocalFrameHost::GoToEntryAtOffset(int32_t offset,
-                                           bool has_user_gesture) {}
+void FakeLocalFrameHost::GoToEntryAtOffset(
+    int32_t offset,
+    bool has_user_gesture,
+    absl::optional<blink::scheduler::TaskAttributionId>) {}
 
 void FakeLocalFrameHost::UpdateTitle(
     const WTF::String& title,

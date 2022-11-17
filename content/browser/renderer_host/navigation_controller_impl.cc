@@ -884,8 +884,11 @@ void NavigationControllerImpl::Reload(ReloadType reload_type,
 
   // location.reload() goes through BeginNavigation, so all reloads triggered
   // via this codepath are browser initiated.
-  NavigateToExistingPendingEntry(reload_type, nullptr /* initiator_frame */,
-                                 nullptr /* navigation_api_key */);
+  NavigateToExistingPendingEntry(
+      reload_type,
+      /*initiator_rfh=*/nullptr,
+      /*soft_navigation_heuristics_task_id=*/absl::nullopt,
+      /*navigation_api_key=*/nullptr);
 }
 
 void NavigationControllerImpl::CancelPendingReload() {
@@ -1111,13 +1114,16 @@ void NavigationControllerImpl::GoForward() {
 }
 
 void NavigationControllerImpl::GoToIndex(int index) {
-  GoToIndex(index, nullptr /* initiator_frame */,
-            nullptr /* navigation_api_key */);
+  GoToIndex(index, /*initiator_rfh=*/nullptr,
+            /*soft_navigation_heuristics_task_id=*/absl::nullopt,
+            /*navigation_api_key=*/nullptr);
 }
 
 void NavigationControllerImpl::GoToIndex(
     int index,
     RenderFrameHostImpl* initiator_rfh,
+    absl::optional<blink::scheduler::TaskAttributionId>
+        soft_navigation_heuristics_task_id,
     const std::string* navigation_api_key) {
   SCOPED_CRASH_KEY_NUMBER("nav_reentrancy_caller1", "GoToIndex_index", index);
   TRACE_EVENT0("browser,navigation,benchmark",
@@ -1147,6 +1153,7 @@ void NavigationControllerImpl::GoToIndex(
   pending_entry_->SetTransitionType(ui::PageTransitionFromInt(
       pending_entry_->GetTransitionType() | ui::PAGE_TRANSITION_FORWARD_BACK));
   NavigateToExistingPendingEntry(ReloadType::NONE, initiator_rfh,
+                                 soft_navigation_heuristics_task_id,
                                  navigation_api_key);
 }
 
@@ -1160,13 +1167,16 @@ void NavigationControllerImpl::GoToOffset(int offset) {
 
 void NavigationControllerImpl::GoToOffsetFromRenderer(
     int offset,
-    RenderFrameHostImpl* initiator_rfh) {
+    RenderFrameHostImpl* initiator_rfh,
+    absl::optional<blink::scheduler::TaskAttributionId>
+        soft_navigation_heuristics_task_id) {
   // Note: This is actually reached in unit tests.
   if (!CanGoToOffset(offset))
     return;
 
   GoToIndex(GetIndexForOffset(offset), initiator_rfh,
-            nullptr /* navigation_api_key */);
+            soft_navigation_heuristics_task_id,
+            /*navigation_api_key=*/nullptr);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -3042,6 +3052,8 @@ void NavigationControllerImpl::PruneOldestSkippableEntryIfFull() {
 void NavigationControllerImpl::NavigateToExistingPendingEntry(
     ReloadType reload_type,
     RenderFrameHostImpl* initiator_rfh,
+    absl::optional<blink::scheduler::TaskAttributionId>
+        soft_navigation_heuristics_task_id,
     const std::string* navigation_api_key) {
   TRACE_EVENT0("navigation",
                "NavigationControllerImpl::NavigateToExistingPendingEntry");
@@ -3059,6 +3071,11 @@ void NavigationControllerImpl::NavigateToExistingPendingEntry(
   FrameTreeNode* root = frame_tree_->root();
   int nav_entry_id = pending_entry_->GetUniqueID();
   bool is_browser_initiated = !initiator_rfh;
+  // Only pass down the soft_navigation_heuristics_task_id when the initiator is
+  // the same as the top level frame being navigated.
+  if (root->current_frame_host() != initiator_rfh) {
+    soft_navigation_heuristics_task_id = absl::nullopt;
+  }
 
   // If we were navigating to a slow-to-commit page, and the user performs
   // a session history navigation to the last committed page, RenderViewHost
@@ -3080,7 +3097,8 @@ void NavigationControllerImpl::NavigateToExistingPendingEntry(
   std::vector<std::unique_ptr<NavigationRequest>> same_document_loads;
   std::vector<std::unique_ptr<NavigationRequest>> different_document_loads;
   FindFramesToNavigate(root, reload_type, is_browser_initiated,
-                       &same_document_loads, &different_document_loads);
+                       soft_navigation_heuristics_task_id, &same_document_loads,
+                       &different_document_loads);
 
   if (same_document_loads.empty() && different_document_loads.empty()) {
     // We were unable to match any frames to navigate.  This can happen if a
@@ -3379,6 +3397,8 @@ void NavigationControllerImpl::FindFramesToNavigate(
     FrameTreeNode* frame,
     ReloadType reload_type,
     bool is_browser_initiated,
+    absl::optional<blink::scheduler::TaskAttributionId>
+        soft_navigation_heuristics_task_id,
     std::vector<std::unique_ptr<NavigationRequest>>* same_document_loads,
     std::vector<std::unique_ptr<NavigationRequest>>* different_document_loads) {
   DCHECK(pending_entry_);
@@ -3390,9 +3410,9 @@ void NavigationControllerImpl::FindFramesToNavigate(
     std::unique_ptr<NavigationRequest> navigation_request =
         CreateNavigationRequestFromEntry(
             frame, pending_entry_, new_item, reload_type,
-            true /* is_same_document_history_load */,
-            false /* is_history_navigation_in_new_child */,
-            is_browser_initiated);
+            /*is_same_document_history_load=*/true,
+            /*is_history_navigation_in_new_child_frame=*/false,
+            is_browser_initiated, soft_navigation_heuristics_task_id);
     if (navigation_request) {
       // Only add the request if was properly created. It's possible for the
       // creation to fail in certain cases, e.g. when the URL is invalid.
@@ -3417,8 +3437,12 @@ void NavigationControllerImpl::FindFramesToNavigate(
     return;
   }
 
+  // Do not pass down the soft_navigation_heuristics_task_id to child frames, as
+  // we currently only support soft navigation heuristics for the top level
+  // frame.
   for (size_t i = 0; i < frame->child_count(); i++) {
     FindFramesToNavigate(frame->child_at(i), reload_type, is_browser_initiated,
+                         /*soft_navigation_heuristics_task_id=*/absl::nullopt,
                          same_document_loads, different_document_loads);
   }
 }
@@ -3843,44 +3867,46 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           common_params->url, common_params->method,
           params.can_load_local_resources,
           frame_entry->page_state().ToEncodedData(), entry->GetUniqueID(),
-          entry->GetSubframeUniqueNames(node), true /* intended_as_new_entry */,
-          -1 /* pending_history_list_offset */,
+          entry->GetSubframeUniqueNames(node),
+          /*intended_as_new_entry=*/true,
+          /*pending_history_list_offset=*/-1,
           params.should_clear_history_list ? -1 : GetLastCommittedEntryIndex(),
           params.should_clear_history_list ? 0 : GetEntryCount(),
-          false /* was_discarded */, is_view_source_mode,
+          /*was_discarded=*/false, is_view_source_mode,
           params.should_clear_history_list,
           blink::mojom::NavigationTiming::New(),
           blink::mojom::WasActivatedOption::kUnknown,
-          base::UnguessableToken::Create() /* navigation_token */,
+          /*navigation_token=*/base::UnguessableToken::Create(),
           std::vector<blink::mojom::PrefetchedSignedExchangeInfoPtr>(),
 #if BUILDFLAG(IS_ANDROID)
-          std::string(), /* data_url_as_string */
+          /*data_url_as_string=*/std::string(),
 #endif
-          !params.is_renderer_initiated, /* is_browser_initiated */
-          GURL() /* web_bundle_physical_url */,
-          GURL() /* base_url_override_for_web_bundle */,
-          ukm::kInvalidSourceId /* document_ukm_source_id */,
+          /*is_browser_initiated=*/!params.is_renderer_initiated,
+          /*web_bundle_physical_url=*/GURL(),
+          /*base_url_override_for_web_bundle=*/GURL(),
+          /*document_ukm_source_id=*/ukm::kInvalidSourceId,
           node->pending_frame_policy(),
-          std::vector<std::string>() /* force_enabled_origin_trials */,
-          false /* origin_agent_cluster */,
-          true /* origin_agent_cluster_left_as_default */,
-          std::vector<
-              network::mojom::WebClientHintsType>() /* enabled_client_hints */,
-          false /* is_cross_browsing_instance */, nullptr /* old_page_info */,
-          -1 /* http_response_code */,
+          /*force_enabled_origin_trials=*/std::vector<std::string>(),
+          /*origin_agent_cluster=*/false,
+          /*origin_agent_cluster_left_as_default=*/true,
+          /*enabled_client_hints=*/
+          std::vector<network::mojom::WebClientHintsType>(),
+          /*is_cross_browsing_instance=*/false, /*old_page_info=*/nullptr,
+          /*http_response_code=*/-1,
           blink::mojom::NavigationApiHistoryEntryArrays::New(),
-          std::vector<GURL>() /* early_hints_preloaded_resources */,
-          absl::nullopt /* ad_auction_components */,
+          /*early_hints_preloaded_resources=*/std::vector<GURL>(),
+          /*ad_auction_components=*/absl::nullopt,
           /*fenced_frame_reporting_metadata=*/nullptr,
           // This timestamp will be populated when the commit IPC is sent.
-          base::TimeTicks() /* commit_sent */, std::string() /* srcdoc_value */,
-          GURL() /* fallback_srcdoc_baseurl_value */,
-          false /* should_load_data_url */,
+          /*commit_sent=*/base::TimeTicks(), /*srcdoc_value=*/std::string(),
+          /*fallback_srcdoc_baseurl_value=*/GURL(),
+          /*should_load_data_url=*/false,
           /*ancestor_or_self_has_cspee=*/node->AncestorOrSelfHasCSPEE(),
-          std::string() /* reduced_accept_language */,
+          /*reduced_accept_language=*/std::string(),
           /*navigation_delivery_type=*/
           network::mojom::NavigationDeliveryType::kDefault,
-          /*view_transition_state=*/absl::nullopt);
+          /*view_transition_state=*/absl::nullopt,
+          /*soft_navigation_heuristics_task_id=*/absl::nullopt);
 #if BUILDFLAG(IS_ANDROID)
   if (ValidateDataURLAsString(params.data_url_as_string)) {
     commit_params->data_url_as_string = params.data_url_as_string->data();
@@ -3919,7 +3945,9 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
     ReloadType reload_type,
     bool is_same_document_history_load,
     bool is_history_navigation_in_new_child_frame,
-    bool is_browser_initiated) {
+    bool is_browser_initiated,
+    absl::optional<blink::scheduler::TaskAttributionId>
+        soft_navigation_heuristics_task_id) {
   DCHECK(frame_entry);
   GURL dest_url = frame_entry->url();
   // We should never navigate to an existing initial NavigationEntry that is the
@@ -4012,7 +4040,8 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
           GetPendingEntryIndex() == -1 /* intended_as_new_entry */,
           GetIndexOfEntry(entry), GetLastCommittedEntryIndex(), GetEntryCount(),
           frame_tree_node->pending_frame_policy(),
-          frame_tree_node->AncestorOrSelfHasCSPEE());
+          frame_tree_node->AncestorOrSelfHasCSPEE(),
+          soft_navigation_heuristics_task_id);
   commit_params->post_content_type = post_content_type;
 
   if (common_params->url.IsAboutSrcdoc()) {
@@ -4075,17 +4104,21 @@ void NavigationControllerImpl::LoadIfNecessary() {
   // Explicitly use NavigateToPendingEntry so that the renderer uses the
   // cached state.
   if (pending_entry_) {
-    NavigateToExistingPendingEntry(ReloadType::NONE,
-                                   nullptr /* initiator_frame */,
-                                   nullptr /* navigation_api_key */);
+    NavigateToExistingPendingEntry(
+        ReloadType::NONE,
+        /*initiator_rfh=*/nullptr,
+        /*soft_navigation_heuristics_task_id=*/absl::nullopt,
+        /*navigation_api_key=*/nullptr);
   } else if (last_committed_entry_index_ != -1 &&
              !GetLastCommittedEntry()
                   ->IsInitialEntryNotForSynchronousAboutBlank()) {
     pending_entry_ = entries_[last_committed_entry_index_].get();
     pending_entry_index_ = last_committed_entry_index_;
-    NavigateToExistingPendingEntry(ReloadType::NONE,
-                                   nullptr /* initiator_frame */,
-                                   nullptr /* navigation_api_key */);
+    NavigateToExistingPendingEntry(
+        ReloadType::NONE,
+        /*initiator_rfh=*/nullptr,
+        /*soft_navigation_heuristics_task_id=*/absl::nullopt,
+        /*navigation_api_key=*/nullptr);
   } else {
     // We should never navigate to an existing initial NavigationEntry that is
     // the initial NavigationEntry for the initial empty document that hasn't
@@ -4606,6 +4639,9 @@ void NavigationControllerImpl::NavigateToNavigationApiKey(
   if (!current_entry)
     return;
 
+  // TODO(https://crbug.com/1383704): Make sure that the right task ID is passed
+  // when `navigation.traverseTo()` is called.
+
   // We want to find the nearest matching entry that is contiguously
   // same-instance and same-origin. Check back first, then forward.
   // TODO(japhet): Link spec here once it exists.
@@ -4615,7 +4651,8 @@ void NavigationControllerImpl::NavigateToNavigationApiKey(
     if (result == HistoryNavigationAction::kStopLooking)
       break;
     if (result != HistoryNavigationAction::kKeepLooking) {
-      GoToIndex(i, initiator_rfh, &key);
+      GoToIndex(i, initiator_rfh,
+                /*soft_navigation_heuristics_task_id=*/absl::nullopt, &key);
       return;
     }
   }
@@ -4625,7 +4662,8 @@ void NavigationControllerImpl::NavigateToNavigationApiKey(
     if (result == HistoryNavigationAction::kStopLooking)
       break;
     if (result != HistoryNavigationAction::kKeepLooking) {
-      GoToIndex(i, initiator_rfh, &key);
+      GoToIndex(i, initiator_rfh,
+                /*soft_navigation_heuristics_task_id=*/absl::nullopt, &key);
       return;
     }
   }

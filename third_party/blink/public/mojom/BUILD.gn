@@ -1153,6 +1153,19 @@ mojom("mojom_core") {
       ]
       traits_headers = [ "//third_party/blink/public/common/messaging/message_port_descriptor_mojom_traits.h" ]
     },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.TaskAttributionId"
+          cpp = "::blink::scheduler::TaskAttributionId"
+          move_only = true
+        },
+      ]
+      traits_headers = [
+        "//third_party/blink/public/common/scheduler/task_attribution_id.h",
+      ]
+      traits_private_headers = [ "//third_party/blink/public/common/messaging/task_attribution_id_mojom_traits.h" ]
+    },
   ]
 
   cpp_typemaps = [
@@ -1196,16 +1209,6 @@ mojom("mojom_core") {
         "//third_party/blink/public/common/messaging/transferable_message.h",
       ]
       traits_private_headers = [ "//third_party/blink/public/common/messaging/transferable_message_mojom_traits.h" ]
-    },
-    {
-      types = [
-        {
-          mojom = "blink.mojom.TaskAttributionId"
-          cpp = "::blink::scheduler::TaskAttributionId"
-          move_only = true
-        },
-      ]
-      traits_private_headers = [ "//third_party/blink/public/common/messaging/task_attribution_id_mojom_traits.h" ]
     },
   ]
   cpp_typemaps += shared_cpp_typemaps

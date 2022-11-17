@@ -34,6 +34,7 @@ message BlinkTaskScope {
     TASK_SCOPE_SCHEDULED_ACTION = 2;
     TASK_SCOPE_SCRIPT_EXECUTION = 3;
     TASK_SCOPE_POST_MESSAGE = 4;
+    TASK_SCOPE_POP_STATE = 5;
   }
   optional TaskScopeType type = 1;
   optional int64 scope_task_id = 2;

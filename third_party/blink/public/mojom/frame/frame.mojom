@@ -46,6 +46,7 @@ import "third_party/blink/public/mojom/input/focus_type.mojom";
 import "third_party/blink/public/mojom/input/scroll_direction.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
 import "third_party/blink/public/mojom/messaging/delegated_capability.mojom";
+import "third_party/blink/public/mojom/messaging/task_attribution_id.mojom";
 import "third_party/blink/public/mojom/messaging/transferable_message.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_api_history_entry_arrays.mojom";
 import "third_party/blink/public/mojom/opengraph/metadata.mojom";
@@ -320,8 +321,12 @@ interface LocalFrameHost {
   // Tells the browser to navigate back or forward in session history by
   // the given offset (relative to the current position in session
   // history). |has_user_gesture| tells whether or not this is the consequence
-  // of a user action.
-  GoToEntryAtOffset(int32 offset, bool has_user_gesture);
+  // of a user action. |soft_navigation_heuristics_task_id| is the task ID of
+  // the initiator of the navigation, if any. It is restricted to same-document
+  // main-frame navigation initiated by the top-level document.
+  GoToEntryAtOffset(int32 offset,
+                    bool has_user_gesture,
+                    TaskAttributionId? soft_navigation_heuristics_task_id);
 
   // Tells the browser to navigate back or forward in session history to the
   // history entry associated with |key|. |key| is a renderer-generated random

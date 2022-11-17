@@ -35,6 +35,9 @@
 
 namespace blink {
 struct FramePolicy;
+namespace scheduler {
+class TaskAttributionId;
+}  // namespace scheduler
 }  // namespace blink
 
 namespace content {
@@ -218,7 +221,9 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
       int current_offset_to_send,
       int current_length_to_send,
       const blink::FramePolicy& frame_policy,
-      bool ancestor_or_self_has_cspee);
+      bool ancestor_or_self_has_cspee,
+      absl::optional<blink::scheduler::TaskAttributionId>
+          soft_navigation_heuristics_task_id);
 
   // Once a navigation entry is committed, we should no longer track several
   // pieces of non-persisted state, as documented on the members below.

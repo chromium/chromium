@@ -857,7 +857,9 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
     int current_history_list_offset,
     int current_history_list_length,
     const blink::FramePolicy& frame_policy,
-    bool ancestor_or_self_has_cspee) {
+    bool ancestor_or_self_has_cspee,
+    absl::optional<blink::scheduler::TaskAttributionId>
+        soft_navigation_heuristics_task_id) {
   // Set the redirect chain to the navigation's redirects, unless returning to a
   // completed navigation (whose previous redirects don't apply).
   // Note that this is actually does not work as intended right now because
@@ -924,7 +926,8 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           std::string() /* reduced_accept_language */,
           /*navigation_delivery_type=*/
           network::mojom::NavigationDeliveryType::kDefault,
-          /*view_transition_state=*/absl::nullopt);
+          /*view_transition_state=*/absl::nullopt,
+          soft_navigation_heuristics_task_id);
 #if BUILDFLAG(IS_ANDROID)
   // `data_url_as_string` is saved in NavigationEntry but should only be used by
   // main frames, because loadData* navigations can only happen on the main

@@ -818,7 +818,7 @@ void DocumentLoader::RunURLAndHistoryUpdateSteps(
   UpdateForSameDocumentNavigation(
       new_url, history_item, same_document_navigation_type, std::move(data),
       type, frame_->DomWindow()->GetSecurityOrigin(), is_browser_initiated,
-      is_synchronously_committed);
+      is_synchronously_committed, absl::nullopt);
 }
 
 void DocumentLoader::UpdateForSameDocumentNavigation(
@@ -829,7 +829,9 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     WebFrameLoadType type,
     const SecurityOrigin* initiator_origin,
     bool is_browser_initiated,
-    bool is_synchronously_committed) {
+    bool is_synchronously_committed,
+    absl::optional<scheduler::TaskAttributionId>
+        soft_navigation_heuristics_task_id) {
   DCHECK_EQ(IsBackForwardLoadType(type), !!history_item);
 
   if (frame_->IsMainFrame() && type == WebFrameLoadType::kBackForward) {
@@ -945,7 +947,8 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
       scoped_refptr<SerializedScriptValue> state_object =
           history_item ? history_item->StateObject()
                        : SerializedScriptValue::NullValue();
-      frame_->DomWindow()->DispatchPopstateEvent(std::move(state_object));
+      frame_->DomWindow()->DispatchPopstateEvent(
+          std::move(state_object), soft_navigation_heuristics_task_id);
     }
   }
 }
@@ -1393,7 +1396,9 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
     const SecurityOrigin* initiator_origin,
     bool is_synchronously_committed,
     mojom::blink::TriggeringEventInfo triggering_event_info,
-    bool is_browser_initiated) {
+    bool is_browser_initiated,
+    absl::optional<scheduler::TaskAttributionId>
+        soft_navigation_heuristics_task_id) {
   DCHECK(!IsReloadLoadType(frame_load_type));
   DCHECK(frame_->GetDocument());
   DCHECK(!is_browser_initiated || !is_synchronously_committed);
@@ -1476,7 +1481,8 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
                 WrapPersistent(history_item), same_document_navigation_type,
                 client_redirect_policy, has_transient_user_activation,
                 WTF::RetainedRef(initiator_origin), is_browser_initiated,
-                is_synchronously_committed, triggering_event_info));
+                is_synchronously_committed, triggering_event_info,
+                soft_navigation_heuristics_task_id));
   } else {
     // Treat a navigation to the same url as replacing only if it did not
     // originate from a cross-origin iframe. If |is_synchronously_committed| is
@@ -1488,8 +1494,8 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
     CommitSameDocumentNavigationInternal(
         url, frame_load_type, history_item, same_document_navigation_type,
         client_redirect_policy, has_transient_user_activation, initiator_origin,
-        is_browser_initiated, is_synchronously_committed,
-        triggering_event_info);
+        is_browser_initiated, is_synchronously_committed, triggering_event_info,
+        soft_navigation_heuristics_task_id);
   }
   return mojom::CommitResult::Ok;
 }
@@ -1504,7 +1510,9 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
     const SecurityOrigin* initiator_origin,
     bool is_browser_initiated,
     bool is_synchronously_committed,
-    mojom::blink::TriggeringEventInfo triggering_event_info) {
+    mojom::blink::TriggeringEventInfo triggering_event_info,
+    absl::optional<scheduler::TaskAttributionId>
+        soft_navigation_heuristics_task_id) {
   // If this function was scheduled to run asynchronously, this DocumentLoader
   // might have been detached before the task ran.
   if (!frame_)
@@ -1558,7 +1566,7 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
   UpdateForSameDocumentNavigation(
       url, history_item, same_document_navigation_type, nullptr,
       frame_load_type, initiator_origin, is_browser_initiated,
-      is_synchronously_committed);
+      is_synchronously_committed, soft_navigation_heuristics_task_id);
   if (!frame_)
     return;
 

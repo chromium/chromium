@@ -680,7 +680,8 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
                                       IsOnInitialEmptyDocument()),
         resource_request.HasUserGesture(), origin_window->GetSecurityOrigin(),
         /*is_synchronously_committed=*/true, request.GetTriggeringEventInfo(),
-        false /* is_browser_initiated */);
+        /*is_browser_initiated=*/false,
+        /*soft_navigation_heuristics_task_id=*/absl::nullopt);
     return;
   }
 
