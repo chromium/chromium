@@ -484,7 +484,6 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "https://crbug.com/1383178")
     public void testLongTextActionViewAndMenuItem() throws Exception {
         List<FakeTabSelectionEditorAction> actions = new ArrayList<>();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
