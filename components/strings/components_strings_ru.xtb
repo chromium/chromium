@@ -282,6 +282,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622571349153632031">Вегетарианская кухня</translation>
 <translation id="1623104350909869708">Запретить создание дополнительных диалоговых окон на этой странице</translation>
+<translation id="1633137413609266904">{0,plural, =1{Администратор запретил открывать этот файл.}one{Администратор запретил открывать # файл.}few{Администратор запретил открывать # файла.}many{Администратор запретил открывать # файлов.}other{Администратор запретил открывать # файла.}}</translation>
 <translation id="1634828734222219955">Всего</translation>
 <translation id="163669211644121865">Расчет и планирование налогов</translation>
 <translation id="1638780421120290329">Не удалось сохранить карту</translation>
@@ -895,6 +896,7 @@
 <translation id="3270847123878663523">&amp;Отменить изменение порядка</translation>
 <translation id="3271648667212143903">Сайт <ph name="ORIGIN" /> запрашивает подключение</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3281350579597955952">{0,plural, =1{Администратор не рекомендует открывать этот файл в месте назначения "<ph name="DESTINATION_NAME" />".}one{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}few{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}many{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}other{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}}</translation>
 <translation id="3282085321714087552">Ваша организация (<ph name="ENROLLMENT_DOMAIN" />) отправила на следующие веб-сайты некоторые данные, такие как настройки и правила.</translation>
 <translation id="3282497668470633863">Укажите имя владельца карты</translation>
 <translation id="3286372614333682499">вертикальная ориентация</translation>
@@ -1294,6 +1296,7 @@
 <translation id="4275830172053184480">Перезапуск устройства</translation>
 <translation id="4277028893293644418">Сбросить пароль</translation>
 <translation id="4278390842282768270">Разрешено</translation>
+<translation id="4281998142035485137">{0,plural, =1{Открыть конфиденциальный файл?}one{Открыть конфиденциальные файлы?}few{Открыть конфиденциальные файлы?}many{Открыть конфиденциальные файлы?}other{Открыть конфиденциальные файлы?}}</translation>
 <translation id="4282346679996504092">Оповещения об этом товаре отключены, а закладка удалена.</translation>
 <translation id="4285498937028063278">Открепить</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Карта сохранена в аккаунте Google.}one{Карты сохранены в аккаунте Google.}few{Карты сохранены в аккаунте Google.}many{Карты сохранены в аккаунте Google.}other{Карты сохранены в аккаунте Google.}}</translation>
@@ -1927,6 +1930,7 @@
 <translation id="5903264686717710770">Заголовок:</translation>
 <translation id="5904360430676679685">Семья и взаимоотношения</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (данные синхронизируются)</translation>
+<translation id="5911110632211230665">Открывать запрещено</translation>
 <translation id="59174027418879706">Включено</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{Используется 1 файл cookie}one{Используется # файл cookie}few{Используется # файла cookie}many{Используется # файлов cookie}other{Используется # файла cookie}}</translation>

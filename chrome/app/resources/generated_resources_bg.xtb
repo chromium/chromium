@@ -2382,6 +2382,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3143515551205905069">Анулиране на синхронизирането</translation>
 <translation id="3143754809889689516">Възпроизвеждане от началото</translation>
 <translation id="3144647712221361880">Отваряне на връзката като</translation>
+<translation id="3144896554017119333">Разширения и др.</translation>
 <translation id="3149510190863420837">Приложения в Chrome</translation>
 <translation id="3150693969729403281">Старт на функцията за проверка за безопасността</translation>
 <translation id="3150927491400159470">Твърдо презареждане</translation>
@@ -2490,6 +2491,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3268451620468152448">Отворени раздели</translation>
 <translation id="3269093882174072735">Зареждане на изображението</translation>
 <translation id="326911502853238749">Без показване на <ph name="MODULE_NAME" /></translation>
+<translation id="3269175001434213183">Включете синхронизирането, за да създадете резервно копие на нещата си и да ги използвате на всяко устройство</translation>
 <translation id="3269612321104318480">Светло синьо-зелено и бяло</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Файл}other{# файла}}</translation>
 <translation id="326999365752735949">Файлът с разликите се изтегля</translation>
@@ -4290,6 +4292,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4950993567860689081">Сесията се управлява от организацията ви. Администраторите могат да изтрият потребителския ви профил и да следят трафика ви в мрежата.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{файл}other{# файла}}</translation>
 <translation id="495170559598752135">Действия</translation>
+<translation id="4951966678293618079">Без запазване на паролите за този сайт</translation>
 <translation id="4953808748584563296">Стандартен оранжев аватар</translation>
 <translation id="4955710816792587366">Изберете ПИН код</translation>
 <translation id="4959262764292427323">Паролите се запазват в профила ви в Google, за да можете да ги използвате на всяко устройство</translation>
@@ -4319,6 +4322,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4981449534399733132">За да изчистите данните за сърфирането от всичките си синхронизирани устройства и от профила си в Google, <ph name="BEGIN_LINK" />влезте в него<ph name="END_LINK" />.</translation>
 <translation id="4982111327868342436">Продължавайте оттам, откъдето сте прекъснали – на което и да е устройство</translation>
 <translation id="4982236238228587209">Софтуер на устройството</translation>
+<translation id="4986706507552097681">Винаги можете да изберете какво да се синхронизира от настройките. Google може да персонализира Търсене и други услуги въз основа на историята ви.</translation>
 <translation id="4986728572522335985">Това ще изтрие всички данни на ключа за сигурност, включително ПИН кода му</translation>
 <translation id="4988526792673242964">Страници</translation>
 <translation id="49896407730300355">Завъртане о&amp;братно на часовниковата стрелка</translation>

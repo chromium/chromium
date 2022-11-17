@@ -282,6 +282,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Masakan vegetarian</translation>
 <translation id="1623104350909869708">Cegah dialog lain dari halaman ini.</translation>
+<translation id="1633137413609266904">{0,plural, =1{Pembukaan file ini diblokir oleh kebijakan administrator}other{Pembukaan # file diblokir oleh kebijakan administrator}}</translation>
 <translation id="1634828734222219955">Total</translation>
 <translation id="163669211644121865">Persiapan &amp; perencanaan pajak</translation>
 <translation id="1638780421120290329">Tidak dapat menyimpan kartu</translation>
@@ -896,6 +897,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3270847123878663523">&amp;Urungkan Pengaturan Ulang</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> ingin terhubung</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3281350579597955952">{0,plural, =1{Kebijakan administrator tidak merekomendasikan untuk membuka file ini di <ph name="DESTINATION_NAME" />}other{Kebijakan administrator tidak merekomendasikan untuk membuka file ini di <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Organisasi Anda, <ph name="ENROLLMENT_DOMAIN" />, telah mengirim beberapa info ke situs berikut, seperti setelan atau kebijakan.</translation>
 <translation id="3282497668470633863">Tambahkan nama di kartu</translation>
 <translation id="3286372614333682499">potret</translation>
@@ -1294,6 +1296,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4275830172053184480">Mulai ulang perangkat Anda</translation>
 <translation id="4277028893293644418">Reset sandi</translation>
 <translation id="4278390842282768270">Diizinkan</translation>
+<translation id="4281998142035485137">{0,plural, =1{Buka file rahasia?}other{Buka file rahasia?}}</translation>
 <translation id="4282346679996504092">Notifikasi untuk produk ini telah dinonaktifkan dan bookmark dihapus</translation>
 <translation id="4285498937028063278">Lepaskan</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Kartu ini telah disimpan di Akun Google Anda}other{Kartu-kartu ini telah disimpan di Akun Google Anda}}</translation>
@@ -1927,6 +1930,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5903264686717710770">Judul:</translation>
 <translation id="5904360430676679685">Keluarga &amp; hubungan</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (disinkronkan)</translation>
+<translation id="5911110632211230665">Pembukaan diblokir</translation>
 <translation id="59174027418879706">Diaktifkan</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 terpakai}other{# terpakai}}</translation>

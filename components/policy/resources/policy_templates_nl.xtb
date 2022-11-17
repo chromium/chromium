@@ -205,6 +205,7 @@ Op <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> en <ph name="LINUX_OS_NA
 
       Als dit beleid is ingesteld op False, wordt het selectievakje 'Altijd toestaan' niet getoond en krijgt de gebruiker elke keer als er een extern protocol wordt aangeroepen een prompt.</translation>
 <translation id="1181598794547737681">Ballon-UI voor downloaden aanzetten</translation>
+<translation id="1184562656144537588">Manifest v2 staat alleen aan voor afgedwongen extensies</translation>
 <translation id="11903325225202653">Als het beleid is ingesteld op True, blijft de modus voor hoog contrast aan. Als het beleid is ingesteld op False, blijft de modus voor hoog contrast uit.
 
       Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je dit beleid niet instelt, staat de modus voor hoog contrast uit, maar kunnen gebruikers deze op elk moment aanzetten.</translation>
@@ -1518,6 +1519,7 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
 
       De beleidswaarde moet worden opgegeven in dagen.</translation>
 <translation id="2466131534462628618">Captive portal-verificatie negeert proxyserver</translation>
+<translation id="2467181864598429837">Standaard browsergedrag</translation>
 <translation id="2467896267442150508">Tijdsinterval van maximaal één week. Is de begintijd later dan de eindtijd, dan eindigt het interval op de aangegeven eindtijd op de volgende dag.</translation>
 <translation id="2476249479201711962">Toegang tot het contextmenu van de standaard zoekprovider aanzetten</translation>
 <translation id="247658312644322296">De bestemming 'Opslaan als pdf'</translation>
@@ -2639,6 +2641,7 @@ Als het beleid is ingesteld op GAIA, wordt de login uitgevoerd volgens de normal
 <translation id="3524204464536655762">Niet toestaan dat sites via de WebUSB API toegang tot USB-apparaten vragen</translation>
 <translation id="3526752951628474302">Alleen monochroom afdrukken</translation>
 <translation id="3528000905991875314">Alternatieve foutpagina's gebruiken</translation>
+<translation id="3528681240373634003">De beschikbaarheid van Manifest v2-extensies beheren.</translation>
 <translation id="3530249698314520116">Hiermee stel je een lijst op met regels om datalekken op <ph name="PRODUCT_OS_NAME" /> te voorkomen.
       Een datalek kan optreden als je gegevens kopieert en plakt, gegevens overdraagt, afdrukt, je scherm deelt of screenshots maakt, enzovoort.
 
@@ -2830,17 +2833,6 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
       Als je het beleid niet toepast (False), wordt gebruikers niet om een wachtwoord gevraagd om het apparaat te ontgrendelen.
 
       Als je het beleid niet instelt, kunnen gebruikers zelf kiezen of ze een wachtwoord moeten opgeven om het apparaat te ontgrendelen.</translation>
-<translation id="3729689441404871493">Zet <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> aan voor een lijst met URL's op het inlog- en vergrendelscherm.
-
-      Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als onderdeel van het attestproces om de reeks signalen van de machine te krijgen.
-
-      Als je dit beleid niet instelt of leeg laat, kan geen enkel eindpunt het attestproces starten of signalen van de machine krijgen.
-
-      Opmerking: Jokertekens, <ph name="WILDCARD_VALUE" />, zijn toegestaan.
-
-      Dit beleid is alleen van invloed op het attestproces op het inlog- en vergrendelscherm. Gebruik het beleid <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" /> om het attestproces van een sessie te wijzigen.
-
-      Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor uitgebreide informatie over geldige <ph name="URL_LABEL" />-patronen.</translation>
 <translation id="3729937245044939404">Dit beleid is beëindigd in M70. Gebruik in plaats hiervan <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> en <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" />.
 
 Hiermee wordt de functie Automatisch aanvullen van <ph name="PRODUCT_NAME" /> geactiveerd en wordt gebruikers toegestaan webformulieren automatisch in te vullen met eerder opgeslagen informatie zoals adres- of creditcardgegevens.
@@ -2906,7 +2898,6 @@ Als je de instelling activeert of geen waarde instelt, kunnen gebruikers de opti
 
       Opmerking: Voor apparaten die via <ph name="MS_AD_NAME" /> worden beheerd, ondersteunt dit beleid de uitbreiding van <ph name="MACHINE_NAME_VARIABLE" /> naar de naam van de <ph name="MS_AD_NAME" />-machine of naar een subtekenreeks daarvan. Als de machinenaam bijvoorbeeld <ph name="MACHINE_NAME_EXAMPLE" /> is, wordt <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> vervangen door 4 tekens vanaf de 6e positie, oftewel <ph name="MACHINE_NAME_PART_EXAMPLE" />. De positie wordt geteld vanaf 0.</translation>
 <translation id="377044054160169374">Interventie voor misleidende functionaliteit afdwingen</translation>
-<translation id="3777833753656885744">Attestproces aanzetten voor een lijst met URL's op het inlog- en vergrendelscherm</translation>
 <translation id="3778689139323007309">Intrekkingscontroles uitvoeren voor gevalideerde servercertificaten die zijn ondertekend door lokaal geïnstalleerde CA-certificaten</translation>
 <translation id="3780152581321609624">Niet-standaardpoort in Kerberos-SPN opnemen</translation>
 <translation id="378495749480642482">Hiermee configureer je of de sites waar de gebruiker naartoe gaat uitgebreide augmented reality-sessies met <ph name="WEBXR_API_NAME" /> mogen maken.
@@ -3122,6 +3113,7 @@ Het veld <ph name="RUN_ON_OS_LOGIN_FIELD" /> geeft aan of een web-app kan worden
 <translation id="3990391739475801018">De batterijbesparingsmodus wordt uitgezet.</translation>
 <translation id="3994043824457743421">De aankondiging in de middelste ruimte op de pagina Nieuw tabblad tonen</translation>
 <translation id="399433537808390819">Samengestelde desktopmodus niet beschikbaar maken voor de gebruiker</translation>
+<translation id="3995880046827722248">Manifest v2 staat uit</translation>
 <translation id="3996325823532867220">Dit beleid wordt niet meer ondersteund, maar het gerelateerde beleid <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> wordt misschien wel ondersteund op bepaalde platforms.
 
       Als je deze instelling toepast, verifieert <ph name="PRODUCT_NAME" /> servercertificaten met de ingebouwde certificaatverificatie.
@@ -3621,6 +3613,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 
       Als dit beleid niet is ingesteld, kan de gebruiker alle op het systeem geïnstalleerde plug-ins uitzetten.</translation>
 <translation id="4549405078915181477">Schermtijd aanzetten voor websites</translation>
+<translation id="4549695018986780856">Manifest v2 staat aan</translation>
 <translation id="4554651132977135445">Loopback-verwerkingsmodus voor gebruikersbeleid</translation>
 <translation id="4554991346503872538">Nooit een vertaling aanbieden</translation>
 <translation id="4555850956567117258">Externe bevestiging van gebruiker aanzetten</translation>
@@ -3937,7 +3930,6 @@ Dit beleid wordt verwijderd in <ph name="PRODUCT_NAME" /> voor <ph name="MS_WIN_
 
       Als het beleid niet is ingesteld in versies tot en met M76, kan <ph name="PRODUCT_NAME" /> deze logboeken standaard niet verzamelen en uploaden. Vanaf M77 kan <ph name="PRODUCT_NAME" /> deze logboeken standaard verzamelen en uploaden vanuit de meeste profielen waarop cloudgebaseerde bedrijfsbeleidsregels op gebruikersniveau van toepassing zijn. Vanaf M77 tot en met M80 kan <ph name="PRODUCT_NAME" /> deze logboeken ook standaard verzamelen en uploaden vanuit profielen waarop <ph name="PRODUCT_NAME" />-beheer op locatie van toepassing is.</translation>
 <translation id="4911334289324462969">poort 989 (blokkering kan worden opgeheven tot 01-02-2022)</translation>
-<translation id="4913065710388638917">Attestproces aanzetten voor een lijst met URL's</translation>
 <translation id="4917385247580444890">Sterk</translation>
 <translation id="4918261735182294270">Gebruikers toestaan om te kiezen of <ph name="CHROME_SYNC_NAME" /> moet worden aangezet</translation>
 <translation id="491889618361437456"><ph name="GOOGLE_CALENDAR_NAME" />-integratie aanzetten</translation>
@@ -4948,6 +4940,17 @@ Gebruikers kunnen deze instelling niet wijzigen.</translation>
       Als je dit beleid instelt op True, kunnen sites zonder beperkingen WebAssembly-modules cross-origin versturen.
 
       Als je dit beleid instelt op False of niet instelt, kunnen sites alleen WebAssembly-modules naar vensters en werkrollen in dezelfde oorsprong sturen.</translation>
+<translation id="6005906773585863978">Bepaal of Manifest v2-extensies kunnen worden gebruikt door de browser.
+
+Ondersteuning voor Manifest v2-extensies wordt beëindigd en alle extensies moeten in de toekomst worden overgezet naar v3. Je kunt meer informatie en een tijdlijn van de migratie vinden op https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
+
+Als je het beleid instelt op <ph name="DEFAULT" /> (0) of niet instelt, wordt het laden van v2-extensies bepaald door de browser op basis van de bovenstaande tijdlijn.
+Als je het beleid instelt op <ph name="DISABLE" /> (1), wordt de installatie van v2-extensies geblokkeerd. Bestaande extensies worden uitgezet. De optie wordt op dezelfde manier behandeld als wanneer het beleid niet is ingesteld nadat de v2-ondersteuning standaard is uitgezet.
+Als je het beleid instelt op <ph name="ENABLE" /> (2), zijn v2-extensies toegestaan. De optie wordt op dezelfde manier behandeld als wanneer het beleid niet is ingesteld voordat de v2-ondersteuning standaard wordt uitgezet.
+Als je het beleid instelt op <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), zijn afgedwongen geïnstalleerde v2-extensies toegestaan. Dit omvat extensies die worden vermeld in <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> of <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> met <ph name="INSTALLATION_MODE" /> force_installed of normal_installed. Alle andere v2-extensies staan uit. De optie wordt op dezelfde manier behandeld als wanneer het beleid niet is ingesteld voordat de v2-ondersteuning standaard wordt uitgezet.
+
+
+De beschikbaarheid van extensies wordt nog steeds beheerd door andere beleidsregels.</translation>
 <translation id="6009062900206392980">Als het beleid is ingesteld op None, staat schermvergroting uit op het inlogscherm.
 
        Als je dit beleid instelt, kunnen gebruikers het vergrootglas tijdelijk aan- of uitzetten. Als het inlogscherm opnieuw wordt geladen of een minuut lang niet wordt gebruikt, wordt de oorspronkelijke status hersteld.
@@ -7251,17 +7254,6 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 <translation id="8274603902181597201">De eCryptfs-hoofdmap van de gebruiker wissen en beginnen met een nieuwe hoofdmap die is versleuteld met ext4</translation>
 <translation id="8274926413890711289">Opties voor gedetailleerde rapportage aanzetten</translation>
 <translation id="8278133379873210419">JavaScript-dialoogvensters onderdrukken als deze worden geactiveerd vanaf een subframe met een andere oorsprong</translation>
-<translation id="8279037559659894049">Stel <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> in voor een lijst met URL's.
-
-Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als onderdeel van het attestproces om de reeks signalen van de machine te ontvangen.
-
-      Als je dit beleid niet instelt of leeg laat, kan geen enkel eindpunt het attestproces starten of signalen van de machine krijgen.
-
-      Opmerking: Jokertekens, <ph name="WILDCARD_VALUE" />, zijn toegestaan.
-
-      Voor ChromeOS is dit beleid gerelateerd aan externe attesten, waarbij er automatisch certificaten worden gemaakt en geüpload naar de Device Management Server.
-
-      Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor uitgebreide informatie over geldige <ph name="URL_LABEL" />-patronen.</translation>
 <translation id="8284296539558710573">Cross-origin-prompts voor HTTP-verificatie</translation>
 <translation id="8284527236880877730">Als <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> is uitgezet, stel je met <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> het percentage in waarmee de dimperiode van het scherm wordt geschaald als met het apparaat wordt gepresenteerd. Als de dimperiode van het scherm wordt geschaald, blijven de perioden tot het scherm uitgaat, het scherm wordt vergrendeld en inactiviteit wordt geactiveerd, gelijk aan de periode voor het dimmen van het scherm die je oorspronkelijk had ingesteld.
 

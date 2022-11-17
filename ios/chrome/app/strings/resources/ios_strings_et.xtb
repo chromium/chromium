@@ -232,6 +232,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="2815198996063984598">2. Puudutage valikut Vaikebrauserirakendus.</translation>
 <translation id="2820289420301699633">Teie administraator saab Chrome'i hallata ja selle andmetele juurde pääseda</translation>
 <translation id="2830972654601096923">Halda aadresse …</translation>
+<translation id="2834399722155632105">3. Puudutage valikut Paroolivalikud.</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Tõlkimisseadete lähtestamine</translation>
 <translation id="2848086008667475748">Muuda seadetes vaikevalikuks …</translation>
@@ -632,6 +633,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5899314093904173337">Läheduses asuvate inimestega jagamiseks paluge neil kaamera või QR-skannerirakendusega skannida see QR-kood</translation>
 <translation id="5911030830365207728">Google'i tõlge</translation>
 <translation id="5913600720976431809">Lehe tõlkimise võimalused</translation>
+<translation id="5933515656458364246">Sünkroonige oma andmed kõigis seadmetes.</translation>
 <translation id="5938160824633642847">Seade on peaaegu täis. Vabastage ruumi ja proovige uuesti.</translation>
 <translation id="5948291296578561264">See võimaldab teil salvestada fotod fotokogusse.</translation>
 <translation id="5951816930277761335">Lingi jagamine</translation>
@@ -713,6 +715,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 
 Teie andmed krüpteeriti <ph name="TIME" /> teie sünkroonimisparooliga. Sisestage see sünkroonimise alustamiseks.</translation>
 <translation id="6418346271604475326">PDF-i ettevalm.</translation>
+<translation id="6429213933892582367">Avage jaotis Paroolivalikud.</translation>
 <translation id="6434591244308415567">Ilmnes viga. Proovige hiljem uuesti.</translation>
 <translation id="6435236283694032571">Lugemisloendisse lisamine</translation>
 <translation id="6439338047467462846">Luba kõik</translation>
@@ -828,6 +831,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7203585745079012652">Vastuste esitamine</translation>
 <translation id="7207023858769244910">Sünkroonige, et saada oma huvidel põhinevat sisu.</translation>
 <translation id="721597782417389033">Kaardi sobimatu hüüdnimi</translation>
+<translation id="7221173315674413369">Jaotises „Mis on uut?“ näete uusi funktsioone ja nõuandeid</translation>
 <translation id="722454870747268814">Uus inkognito vaheleht</translation>
 <translation id="7265758999917665941">Selle saidi puhul mitte kunagi</translation>
 <translation id="7272437679830969316">Teie isikut ei õnnestu tuvastada. Parooli ei kopeeritud.</translation>
@@ -861,6 +865,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7514365320538308">Laadi alla</translation>
 <translation id="7531345132340165516">Praegune sait</translation>
 <translation id="7537586195939242955">Kahjuks ei saa teie Passi praegu Passbooki installida.</translation>
+<translation id="7553234618121028547">Väljalülitamiseks avage jaotis <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" /> ja tehke valik Paroolivalikud.</translation>
 <translation id="7554791636758816595">Uus vaheleht</translation>
 <translation id="7561196759112975576">Alati</translation>
 <translation id="7583004045319035904">Kasutage oma inkognito vahelehtede avamiseks meetodit <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
@@ -942,6 +947,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8101409298456377967">Looge, salvestage ja hallake oma paroole, et saaksite hõlpsalt saitidele ja rakendustesse sisse logida. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Lülita välja</translation>
 <translation id="8114753159095730575">Allalaaditav fail on saadaval. Valikud kuvatakse ekraani alaosas.</translation>
+<translation id="81313319706244542">2. Puudutage valikut Paroolid.</translation>
 <translation id="8132598642024322408">Nüüd on <ph name="PRICE" />, enne oli <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="8136856065410661948">Seda kasutatakse Chrome'i ja Google Lensi kaudu teie Apple'i rakenduses Calendar sündmuste loomiseks.</translation>
 <translation id="8156478151976189188">Paroolide sünkroonimine ei tööta</translation>
@@ -964,6 +970,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8319076807703933069">Uus otsing</translation>
 <translation id="8323906514956095947">Vahelehtede lisavalikute nägemiseks puudutage ja hoidke</translation>
 <translation id="8328777765163860529">Sule kõik</translation>
+<translation id="8343993175958086504">Varundage oma sisu ja kasutage seda mis tahes seadmes.</translation>
 <translation id="8378714024927312812">Haldab teie organisatsioon</translation>
 <translation id="8386068868580335421">Lähtesta</translation>
 <translation id="8407669440184693619">Selle saidi jaoks ei leitud paroole</translation>

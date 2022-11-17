@@ -2372,6 +2372,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3143515551205905069">Cancelar sincronización</translation>
 <translation id="3143754809889689516">Reproducir desde el principio</translation>
 <translation id="3144647712221361880">Abrir enlace como</translation>
+<translation id="3144896554017119333">Extensiones y más</translation>
 <translation id="3149510190863420837">Aplicaciones de Chrome</translation>
 <translation id="3150693969729403281">Comprobar seguridad ahora</translation>
 <translation id="3150927491400159470">Volver a cargar de manera forzada</translation>
@@ -2480,6 +2481,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3268451620468152448">Pestañas abiertas</translation>
 <translation id="3269093882174072735">Cargar imagen</translation>
 <translation id="326911502853238749">No mostrar <ph name="MODULE_NAME" /></translation>
+<translation id="3269175001434213183">Activa la sincronización para crear una copia de seguridad de tus cosas y usarla en cualquier dispositivo</translation>
 <translation id="3269612321104318480">Turquesa claro y blanco</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Archivo}other{# archivos}}</translation>
 <translation id="326999365752735949">Descargando archivo diff</translation>
@@ -4277,6 +4279,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4950993567860689081">Tu organización gestiona tu sesión. Los administradores pueden eliminar tu perfil y monitorizar tu tráfico de red.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{un archivo}other{# archivos}}</translation>
 <translation id="495170559598752135">Acciones</translation>
+<translation id="4951966678293618079">Nunca guardar contraseñas de este sitio</translation>
 <translation id="4953808748584563296">Avatar naranja predeterminado</translation>
 <translation id="4955710816792587366">Elige un PIN</translation>
 <translation id="4959262764292427323">Las contraseñas se guardan en tu cuenta de Google para que puedas utilizarlas en cualquier dispositivo</translation>
@@ -4306,6 +4309,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4981449534399733132">Para borrar los datos de navegación de todos los dispositivos sincronizados y de tu cuenta de Google, <ph name="BEGIN_LINK" />inicia sesión<ph name="END_LINK" />.</translation>
 <translation id="4982111327868342436">Sigue por donde lo dejaste en cualquier dispositivo</translation>
 <translation id="4982236238228587209">Software del dispositivo</translation>
+<translation id="4986706507552097681">Siempre puedes seleccionar qué contenido quieres sincronizar en los ajustes. Google puede personalizar la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="4986728572522335985">Esta acción borrará todos los datos de la llave de seguridad, incluido el PIN</translation>
 <translation id="4988526792673242964">Páginas</translation>
 <translation id="49896407730300355">Girar a la &amp;izquierda</translation>

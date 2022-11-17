@@ -282,6 +282,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Vegetáriánus konyha</translation>
 <translation id="1623104350909869708">Akadályozza meg, hogy ez az oldal további párbeszédablakokat hozzon létre.</translation>
+<translation id="1633137413609266904">{0,plural, =1{A fájl megnyitását rendszergazdai házirend tiltja}other{# fájl megnyitását rendszergazdai házirend tiltja}}</translation>
 <translation id="1634828734222219955">Végösszeg</translation>
 <translation id="163669211644121865">Adóelőkészítés és -tervezés</translation>
 <translation id="1638780421120290329">Nem lehet menteni a kártyát</translation>
@@ -894,6 +895,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3270847123878663523">&amp;Átrendezés visszavonása</translation>
 <translation id="3271648667212143903">A(z) <ph name="ORIGIN" /> csatlakozni szeretne</translation>
 <translation id="3272091146646336650">„Super B” méret</translation>
+<translation id="3281350579597955952">{0,plural, =1{A rendszergazda által beállított házirend nem javasolja ennek a fájlnak a megnyitását itt: <ph name="DESTINATION_NAME" />}other{A rendszergazda által beállított házirend nem javasolja ezeknek a fájloknak a megnyitását itt: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">A szervezete (<ph name="ENROLLMENT_DOMAIN" />) elküldött bizonyos információkat (pl. a beállításokat és a házirendeket) a következő webhelyeknek.</translation>
 <translation id="3282497668470633863">Adja meg a kártyán szereplő nevet</translation>
 <translation id="3286372614333682499">álló</translation>
@@ -1293,6 +1295,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4275830172053184480">Indítsa újra az eszközt</translation>
 <translation id="4277028893293644418">Jelszó visszaállítása</translation>
 <translation id="4278390842282768270">Engedélyezve</translation>
+<translation id="4281998142035485137">{0,plural, =1{Megnyitja a bizalmas fájlt?}other{Megnyitja a bizalmas fájlokat?}}</translation>
 <translation id="4282346679996504092">Megtörtént a termékhez tartozó értesítések kikapcsolása és a könyvjelző eltávolítása</translation>
 <translation id="4285498937028063278">Rögzítés megszüntetése</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{A kártyát mentettük a Google-fiókjába.}other{Ezeket a kártyákat mentettük a Google-fiókjába.}}</translation>
@@ -1926,6 +1929,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5903264686717710770">Megszólítás:</translation>
 <translation id="5904360430676679685">Család és kapcsolatok</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (szinkronizálva)</translation>
+<translation id="5911110632211230665">Megnyitás letiltva</translation>
 <translation id="59174027418879706">Engedélyezve</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 van használatban}other{# van használatban}}</translation>

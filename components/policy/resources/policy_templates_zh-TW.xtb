@@ -204,6 +204,7 @@
 
       如果將這項政策設為 False，系統將不會顯示「一律允許」核取方塊，並會在每次叫用外部通訊協定時向使用者顯示提示。</translation>
 <translation id="1181598794547737681">啟用下載對話框 UI</translation>
+<translation id="1184562656144537588">僅針對強制安裝的擴充功能啟用資訊清單 v2</translation>
 <translation id="11903325225202653">將這項政策設為 True 時，系統會讓高對比模式保持在啟用狀態。將這項政策設為 False 時，系統會讓高對比模式保持在停用狀態。
 
       如果設定這項政策，使用者將無法變更。如果未設定，系統會停用高對比模式，但使用者隨時可以啟用。</translation>
@@ -1509,6 +1510,7 @@
 
       指定政策值時需以天為單位。</translation>
 <translation id="2466131534462628618">要求網頁認證入口的驗證機制忽略 Proxy 設定</translation>
+<translation id="2467181864598429837">預設瀏覽器行為</translation>
 <translation id="2467896267442150508">最長為期一週的限制時段。如果開始時間設在結束時間之後，限制時段會跨日。</translation>
 <translation id="2476249479201711962">允許存取預設搜尋引擎內容選單</translation>
 <translation id="247658312644322296">「另存為 PDF」目的地</translation>
@@ -2616,6 +2618,7 @@
 <translation id="3524204464536655762">不允許任何網站透過 WebUSB API 要求存取 USB 裝置</translation>
 <translation id="3526752951628474302">僅限單色列印</translation>
 <translation id="3528000905991875314">啟用替代的錯誤網頁</translation>
+<translation id="3528681240373634003">控制資訊清單 v2 擴充功能的可用性。</translation>
 <translation id="3530249698314520116">設定規則清單，避免 <ph name="PRODUCT_OS_NAME" /> 發生資料外洩。
       複製及貼上資料、傳輸檔案、列印、分享螢幕畫面或擷取螢幕畫面等動作都有可能導致資料外洩。
 
@@ -2806,17 +2809,6 @@
       如果將這項政策設為停用，系統不會要求使用者必須輸入密碼，才能解鎖裝置。
 
       如果不設定這項政策，使用者可選擇在解鎖裝置時，是否要收到輸入密碼的提示。</translation>
-<translation id="3729689441404871493">在登入畫面和螢幕鎖定畫面上針對清單中的網址啟用 <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" />。
-
-      你可以透過這項政策指定要讓哪些網址加入認證流程，接收裝置傳送的信號。
-
-      如果不設定這項政策或留空，就表示沒有端點能啟動認證流程，以及接收裝置傳送的信號。
-
-      附註：可以使用萬用字元 <ph name="WILDCARD_VALUE" />。
-
-      這項政策只會影響登入畫面和螢幕鎖定畫面上的認證流程。如要變更工作階段中認證流程，請使用 <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" /> 政策。
-
-      如要進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://support.google.com/chrome/a?p=url_blocklist_filter_format。</translation>
 <translation id="3729937245044939404">這項政策自 M70 起已淘汰，請改用 <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> 和 <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" />。
 
       啟用 <ph name="PRODUCT_NAME" /> 的自動填入功能，允許使用者利用先前儲存的資訊 (例如地址或信用卡資訊) 自動填寫網路表單。
@@ -2882,7 +2874,6 @@
 
       注意：如果是 <ph name="MS_AD_NAME" /> 管理的裝置，這項政策支援將 <ph name="MACHINE_NAME_VARIABLE" /> 擴充為 <ph name="MS_AD_NAME" /> 電腦名稱或其子字串。舉例來說，如果電腦名稱為 <ph name="MACHINE_NAME_EXAMPLE" />，系統將以第 6 個字元後的 4 個字元取代 <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" />，也就是 <ph name="MACHINE_NAME_PART_EXAMPLE" />。字元序數是從 0 開始計算。</translation>
 <translation id="377044054160169374">強制干預濫用行為</translation>
-<translation id="3777833753656885744">在登入畫面和螢幕鎖定畫面上針對清單中的網址啟用認證流程</translation>
 <translation id="3778689139323007309">針對由本機裝載 CA 憑證所簽署並經過成功驗證的伺服器憑證，執行撤銷檢查</translation>
 <translation id="3780152581321609624">Kerberos SPN 包含非標準連接埠</translation>
 <translation id="378495749480642482">設定使用者前往的網站是否能透過 <ph name="WEBXR_API_NAME" /> 建立沉浸式擴增實境工作階段。
@@ -2991,6 +2982,13 @@
 
       如果將這項政策設為 2，系統會禁止包含侵入式廣告的網站顯示廣告。</translation>
 <translation id="3877517141460819966">整合式雙重驗證模式</translation>
+<translation id="3877908683993837673">這項政策可指定要使用哪一個軟體堆疊與 DNS 伺服器進行通訊，選項包括作業系統 DNS 用戶端，以及 <ph name="PRODUCT_NAME" /> 的內建 DNS 用戶端。這項政策不會影響所用的 DNS 伺服器。比方說，如果作業系統設定使用企業的 DNS 伺服器，內建 DNS 用戶端就會使用相同的伺服器。這項政策也不會限制是否使用 DNS-over-HTTPS。<ph name="PRODUCT_NAME" /> 一律會使用內建解析器處理 DNS-over-HTTPS 要求。想瞭解如何控管 DNS-over-HTTPS，請參閱 <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> 政策。
+
+      如果將這項政策設為啟用，系統將使用內建的 DNS 用戶端 (如果有的話)。
+
+      如果將這項政策設為停用，只有在採用 DNS-over-HTTPS 的情況下，系統才會使用內建的 DNS 用戶端。
+
+      如果不設定這項政策，在 <ph name="MS_WIN_NAME" />、<ph name="MAC_OS_NAME" />、<ph name="ANDROID_NAME" /> (適用於私人 DNS 和 VPN 皆未啟用的情形) 和 <ph name="PRODUCT_OS_NAME" /> 上，系統預設會啟用內建的 DNS 用戶端。</translation>
 <translation id="3879208481373875102">設定強制安裝的網頁應用程式清單</translation>
 <translation id="3879700444818346084">不允許在第一次執行時匯入儲存的密碼</translation>
 <translation id="388237772682176890">自 M53 起我們已淘汰這項政策，至 M54 則移除了這項政策 (因為我們已不再支援 SPDY/3.1)。
@@ -3091,6 +3089,7 @@
 <translation id="3990391739475801018">裝置將停用省電模式。</translation>
 <translation id="3994043824457743421">在新分頁顯示中間版位公告</translation>
 <translation id="399433537808390819">不要讓使用者使用整合桌面模式</translation>
+<translation id="3995880046827722248">資訊清單 v2 已停用</translation>
 <translation id="3996325823532867220">系統不再支援這項政策，但特定平台可能支援相關政策 <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" />。
 
       如果啟用這項設定，<ph name="PRODUCT_NAME" /> 將使用內建的憑證驗證器執行伺服器憑證驗證作業。
@@ -3589,6 +3588,7 @@
 
       如果不設定這項政策，使用者將可停用系統上安裝的任何外掛程式。</translation>
 <translation id="4549405078915181477">啟用網站的裝置使用時間功能</translation>
+<translation id="4549695018986780856">資訊清單 v2 已啟用</translation>
 <translation id="4554651132977135445">使用者政策回送處理模式</translation>
 <translation id="4554991346503872538">一律不提供翻譯</translation>
 <translation id="4555850956567117258">為使用者啟用遠端認證機制</translation>
@@ -3904,7 +3904,6 @@
 
       如果不設定這項政策，<ph name="PRODUCT_NAME" /> M76 以下版本預設將無法收集與上傳這類記錄。自 M77 版起，針對大多數適用雲端式使用者層級企業政策的設定檔，<ph name="PRODUCT_NAME" /> 預設可收集與上傳這類記錄。從 M77 版到 M80 版，針對適用 <ph name="PRODUCT_NAME" /> 內部部署管理設定的設定檔，<ph name="PRODUCT_NAME" /> 預設也可收集與上傳這類記錄。</translation>
 <translation id="4911334289324462969">通訊埠 989 (2022 年 2 月 1 日前可解除封鎖)</translation>
-<translation id="4913065710388638917">針對清單中的網址啟用認證流程</translation>
 <translation id="4917385247580444890">強</translation>
 <translation id="4918261735182294270">允許使用者選擇是否要啟用 <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="491889618361437456">啟用 <ph name="GOOGLE_CALENDAR_NAME" />整合</translation>
@@ -4902,6 +4901,17 @@
       如果將這項政策設為 True，網站即可不受限制地跨來源傳送 WebAssembly 模組。
 
       如果設為 False 或未設定，網站就只能將 WebAssembly 模組傳送到相同來源的視窗和工作站。</translation>
+<translation id="6005906773585863978">控制瀏覽器可否使用資訊清單 v2 擴充功能。
+
+資訊清單 v2 擴充功能支援將遭淘汰，日後所有擴充功能都必須遷移至 v3。如要進一步瞭解遷移的資訊和時間表，請前往 https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/。
+
+如果將這項政策設為「<ph name="DEFAULT" />」(0) 或不設定，瀏覽器會依據上述時間表決定是否載入 v2 擴充功能。
+如果將這項政策設為「<ph name="DISABLE" />」(1)，系統將禁止安裝 v2 擴充功能，並停用現有的 v2 擴充功能。在根據預設關閉 v2 支援後，這個選項將比照不設定這項政策時的做法處理。
+如果將這項政策設為「<ph name="ENABLE" />」(2)，系統將允許使用 v2 擴充功能。在根據預設關閉 v2 支援前，這個選項將比照不設定這項政策時的做法處理。
+如果將這項政策設為 <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3)，系統將允許強制安裝的 v2 擴充功能。這包括 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 或 <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> 列出，且 <ph name="INSTALLATION_MODE" /> 為「force_installed」或「normal_installed」的擴充功能。系統會停用所有其他 v2 擴充功能。在根據預設關閉 v2 支援前，這個選項將比照不設定這項政策時的做法處理。
+
+
+擴充功能可用性仍會受其他政策控制。</translation>
 <translation id="6009062900206392980">將這項政策設為 None 時，系統會在登入畫面停用螢幕放大功能。
 
        如果設定這項政策，使用者可暫時啟用或停用放大鏡。當登入畫面重新載入或閒置達一分鐘時，放大鏡會還原成原始狀態。
@@ -5471,6 +5481,7 @@
       注意：目前只有在裝置顯示登入畫面或正在進行資訊站應用程式工作階段時，才能啟用自動重新啟動。</translation>
 <translation id="6556586932263358975">允許螢幕鎖定</translation>
 <translation id="6559057113164934677">不允許任何網站使用攝影機和麥克風</translation>
+<translation id="65591220958874949">在 Windows、macOS、Android 和 ChromeOS 中使用內建 DNS 用戶端</translation>
 <translation id="6559221564468029245">如果將這項政策設為啟用或不設定，系統在音訊播放期間不會將使用者狀態視為閒置。這麼做可防止系統因達到閒置逾時限制，而採取閒置因應動作。不過，即使有音訊活動，系統在達到螢幕調暗、螢幕關閉和螢幕鎖定的逾時限制後，仍會觸發這些動作。
 
       如果將這項政策設為停用，即使有音訊活動，系統仍會將使用者狀態視為閒置。</translation>
@@ -7190,17 +7201,6 @@
 <translation id="8274603902181597201">清除使用者的 eCryptfs 主目錄，改用全新的 Ext4 加密主目錄。</translation>
 <translation id="8274926413890711289">啟用精細回報控制項</translation>
 <translation id="8278133379873210419">隱藏從不同來源子頁框觸發的 JavaScript 對話方塊</translation>
-<translation id="8279037559659894049">針對清單中的網址啟用 <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" />。
-
-      你可以透過這項政策指定要讓哪些網址加入認證流程，以接收裝置傳送的信號。
-
-      如果不設定這項政策或留空，就表示沒有端點能啟動認證流程，以及接收裝置傳送的信號。
-
-      附註：可以使用萬用字元 <ph name="WILDCARD_VALUE" />。
-
-      對 ChromeOS 而言，這項政策與遠端認證相關，其中的憑證會自動產生並上傳至裝置管理伺服器。
-
-      如要進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://support.google.com/chrome/a?p=url_blocklist_filter_format。</translation>
 <translation id="8284296539558710573">跨來源 HTTP 驗證提示</translation>
 <translation id="8284527236880877730">如果 <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> 設定為停用，當裝置播放簡報時，系統將根據 <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> 所設百分比延長螢幕調暗延遲時間。一旦延長螢幕調暗延遲時間，螢幕關閉、螢幕鎖定和閒置狀態的延遲時間也會隨之調整，以維持與原先設定相同的間隔時間。
 

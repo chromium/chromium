@@ -2368,6 +2368,7 @@
 <translation id="3143515551205905069">Синхрондаудан бас тарту</translation>
 <translation id="3143754809889689516">Басынан бастап ойнату</translation>
 <translation id="3144647712221361880">Сілтемені басқа атпен ашу</translation>
+<translation id="3144896554017119333">Кеңейтімдер және т.б.</translation>
 <translation id="3149510190863420837">Chrome Apps</translation>
 <translation id="3150693969729403281">Қауіпсіздік шарасын қазір іске қосу</translation>
 <translation id="3150927491400159470">Жабдықты қайта жүктеу</translation>
@@ -2476,6 +2477,7 @@
 <translation id="3268451620468152448">Ашық қойындылар</translation>
 <translation id="3269093882174072735">Кескінді жүктеу</translation>
 <translation id="326911502853238749">"<ph name="MODULE_NAME" />" көрсетпеу</translation>
+<translation id="3269175001434213183">Деректердің сақтық көшірмесін жасап, оны кез келген құрылғыда пайдалану үшін синхрондауды қосыңыз</translation>
 <translation id="3269612321104318480">Ашық көкшіл жасыл және ақ</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Файл}other{# файл}}</translation>
 <translation id="326999365752735949">Басқасын жүктеу</translation>
@@ -4274,6 +4276,7 @@
 <translation id="4950993567860689081">Сеансты ұйым басқарады. Әкімшілер профильді жоя және желі трафигін қадағалай алады.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{файл}other{# файл}}</translation>
 <translation id="495170559598752135">Әрекеттер</translation>
+<translation id="4951966678293618079">Бұл сайт үшін құпия сөздерді ешқашан сақтамау</translation>
 <translation id="4953808748584563296">Әдепкі сарғыш түсті аватар</translation>
 <translation id="4955710816792587366">PIN кодын таңдаңыз</translation>
 <translation id="4959262764292427323">Құпия сөздер Google аккаунтыңызда сақталады және оларды кез келген құрылғыда пайдалана аласыз</translation>
@@ -4303,6 +4306,7 @@
 <translation id="4981449534399733132">Барлық синхрондалған құрылғылардан және Google аккаунтынан браузерді пайдалану деректерін өшіру үшін, <ph name="BEGIN_LINK" />жүйеге кіріңіз<ph name="END_LINK" />.</translation>
 <translation id="4982111327868342436">Кез келген құрылғыда тоқтаған жеріңізден жалғастырыңыз.</translation>
 <translation id="4982236238228587209">Құрылғының бағдарламалық құралы</translation>
+<translation id="4986706507552097681">Синхрондалатын мазмұнды кез келген уақытта "Параметрлер" бөлімінде таңдай аласыз. Google жүйесі Search және басқа да қызметтерді тарихыңызға негіздеп жекелендіре алады.</translation>
 <translation id="4986728572522335985">Қауіпсіздік кілтінде сақталған барлық деректер және оның PIN коды жойылады</translation>
 <translation id="4988526792673242964">Беттер</translation>
 <translation id="49896407730300355">С&amp;ағат тіліне қарсы айналдыру</translation>

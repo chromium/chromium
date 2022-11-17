@@ -282,6 +282,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1620510694547887537">Máy ảnh</translation>
 <translation id="1622571349153632031">Món chay</translation>
 <translation id="1623104350909869708">Ngăn trang này tạo hộp thoại bổ sung</translation>
+<translation id="1633137413609266904">{0,plural, =1{Chính sách của quản trị viên không cho phép mở tệp này}other{Chính sách của quản trị viên không cho phép mở # tệp}}</translation>
 <translation id="1634828734222219955">Tổng cộng</translation>
 <translation id="163669211644121865">Lập kế hoạch và chuẩn bị hồ sơ thuế</translation>
 <translation id="1638780421120290329">Không thể lưu thẻ</translation>
@@ -896,6 +897,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3270847123878663523">&amp;Hoàn tác sắp xếp lại</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> muốn kết nối</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3281350579597955952">{0,plural, =1{Theo chính sách của quản trị viên, bạn không nên mở tệp này trong <ph name="DESTINATION_NAME" />}other{Theo chính sách của quản trị viên, bạn không nên mở các tệp này trong <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Tổ chức <ph name="ENROLLMENT_DOMAIN" /> của bạn đã gửi một số thông tin (chẳng hạn như chế độ cài đặt hoặc chính sách) đến các trang web sau đây.</translation>
 <translation id="3282497668470633863">Thêm tên trên thẻ</translation>
 <translation id="3286372614333682499">dọc</translation>
@@ -1295,6 +1297,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4275830172053184480">Khởi động lại thiết bị của bạn</translation>
 <translation id="4277028893293644418">Đặt lại mật khẩu</translation>
 <translation id="4278390842282768270">Được cho phép</translation>
+<translation id="4281998142035485137">{0,plural, =1{Mở tệp bảo mật?}other{Mở các tệp bảo mật?}}</translation>
 <translation id="4282346679996504092">Thông báo về sản phẩm này đã bị tắt và dấu trang đã bị xoá</translation>
 <translation id="4285498937028063278">Bỏ ghim</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Đã lưu thẻ này vào Tài khoản Google của bạn}other{Đã lưu các thẻ này vào Tài khoản Google của bạn}}</translation>
@@ -1928,6 +1931,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5903264686717710770">Tiêu đề:</translation>
 <translation id="5904360430676679685">Gia đình và các mối quan hệ</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (được đồng bộ hóa)</translation>
+<translation id="5911110632211230665">Đã chặn việc mở tệp</translation>
 <translation id="59174027418879706">Được kích hoạt</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{Đang sử dụng 1 cookie}other{Đang sử dụng # cookie}}</translation>

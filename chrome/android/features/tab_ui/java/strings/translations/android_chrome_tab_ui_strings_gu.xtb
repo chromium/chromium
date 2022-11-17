@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">ખોલવામાં આવેલી ટૅબમાં જ્યારે કોઈ આઇટમની કિંમત ઓછી થશે, ત્યારે તમને અલર્ટ મળશે</translation>
 <translation id="3328308545011660196">સૂચન: <ph name="NUMBER_OF_TABS" /> ટૅબ સંબંધિત હોય તેમ જણાય છે. તેમનું ગ્રૂપ બનાવીએ?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">શેર શીટ પ્રીવ્યૂનો થંબનેલ.</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ નાની કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને નાનું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને નાનું કરો.}}</translation>
 <translation id="3882834874697329510">ખોલવામાં આવેલી ટૅબમાં જ્યારે કોઈ આઇટમની કિંમત ઓછી થાય ત્યારે અલર્ટ મેળવવા માટે, સેટિંગમાં જઈને નોટિફિકેશન ચાલુ કરો.</translation>
 <translation id="3940195383040445971">ટૅબ પર કિંમત ટ્રૅક કરો</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">સ્ટોરની માહિતી જુઓ, વિકલ્પ સ્ક્રીનની ટોચની નજીક ઉપલબ્ધ છે</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને બંધ કરો</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ટૅબનું ગ્રૂપ બનાવ્યું</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chromeમાંથી <ph name="TABS_COUNT_ONE" /> લિંક}one{Chromeમાંથી <ph name="TABS_COUNT_MANY" /> લિંક}other{Chromeમાંથી <ph name="TABS_COUNT_MANY" /> લિંક}}</translation>
 <translation id="575494663145460764">કિંમતમાં ઘટાડો થાય ત્યારે અલર્ટની સુવિધા જોઈએ છે?</translation>
 <translation id="58326064309361797">ટૅબનું ગ્રૂપ બનાવવા માટે તેને ખેંચો</translation>
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ગ્રૂપ બંધ કરો</translation>

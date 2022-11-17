@@ -283,6 +283,7 @@
 <translation id="1620510694547887537">کیمرا</translation>
 <translation id="1622571349153632031">سبزی والے پکوان</translation>
 <translation id="1623104350909869708">اس صفحہ کو اضافی ڈائیلاگز بنانے سے روکیں</translation>
+<translation id="1633137413609266904">{0,plural, =1{منتظم کی پالیسی کے تحت اس فائل کا کھولنا مسدود ہے}other{منتظم کی پالیسی کے تحت # فائلز کا کھولنا مسدود ہے}}</translation>
 <translation id="1634828734222219955">کُل</translation>
 <translation id="163669211644121865">ٹیکس کی تیاری اور منصوبہ بندی</translation>
 <translation id="1638780421120290329">کارڈ محفوظ نہیں کر سکتے</translation>
@@ -898,6 +899,7 @@
 <translation id="3270847123878663523">دوبارہ ترتیب &amp;کالعدم کریں</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> منسلک ہونا چاہتی ہے</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3281350579597955952">{0,plural, =1{منتظم کی پالیسی اس فائل کو <ph name="DESTINATION_NAME" /> میں کھولنے کی تجویز نہیں کرتی ہے}other{منتظم کی پالیسی ان فائلز کو <ph name="DESTINATION_NAME" /> میں کھولنے کی تجویز نہیں کرتی ہے}}</translation>
 <translation id="3282085321714087552">آپ کی تنظیم، <ph name="ENROLLMENT_DOMAIN" />، نے کچھ معلومات، جیسے ترتیبات یا پالیسیاں درج ذیل ویب سائٹس پر بھیجی ہیں۔</translation>
 <translation id="3282497668470633863">کارڈ پر نام شامل کریں</translation>
 <translation id="3286372614333682499">پورٹریٹ</translation>
@@ -1297,6 +1299,7 @@
 <translation id="4275830172053184480">اپنا آلہ دوبارہ شروع کریں</translation>
 <translation id="4277028893293644418">پاس ورڈ ری سیٹ کریں</translation>
 <translation id="4278390842282768270">اجازت یافتہ</translation>
+<translation id="4281998142035485137">{0,plural, =1{رازدارانہ فائل کھولیں؟}other{رازدارانہ فائلز کھولیں؟}}</translation>
 <translation id="4282346679996504092">اس پروڈکٹ کے لیے الرٹس کو آف کر دیا گیا ہے اور بُک مارک ہٹا دیا گیا ہے</translation>
 <translation id="4285498937028063278">پن ہٹائیں</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{‏اس کارڈ کو آپ کے Google اکاؤنٹ میں محفوظ کر دیا گیا ہے}other{‏ان کارڈز کو آپ کے Google اکاؤنٹ میں محفوظ کر دیا گیا ہے}}</translation>
@@ -1930,6 +1933,7 @@
 <translation id="5903264686717710770">عنوان:</translation>
 <translation id="5904360430676679685">خاندان اور تعلقات</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (مطابقت پذیری کردہ)</translation>
+<translation id="5911110632211230665">فائل کھولنے کو مسدود کیا گیا</translation>
 <translation id="59174027418879706">فعال</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 زیر استعمال ہے}other{# زیر استعمال ہیں}}</translation>

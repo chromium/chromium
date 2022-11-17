@@ -87,6 +87,7 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="1545749641540134597">Naskenovať kód QR</translation>
 <translation id="1552525382687785070">Synchronizáciu zakázal správca</translation>
 <translation id="1554477036522844996">Nové okno</translation>
+<translation id="1565371473877914088">Nová karta inkognito</translation>
 <translation id="1580715474678097352">Chráňte sa pred nebezpečenými webmi</translation>
 <translation id="1580783302095112590">E-mail bol odoslaný.</translation>
 <translation id="1582732959743469162">Tým zastavíte ďalší postup aktuálneho sťahovania.</translation>
@@ -133,6 +134,7 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="1981118202195772574">Mobil</translation>
 <translation id="1989112275319619282">Prehliadať</translation>
 <translation id="199425419756152024">Zobraziť heslo</translation>
+<translation id="2010008505735295285">Opätovné načítanie</translation>
 <translation id="2015722694326466240">Ak si chcete zobraziť heslá, najprv musíte v zariadení nastaviť vstupný kód.</translation>
 <translation id="2021670401941426298">Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania (ak je to možné).</translation>
 <translation id="202292859882676807">Prístup k mikrofónu je povolený</translation>
@@ -299,6 +301,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3272527697863656322">Zrušiť</translation>
 <translation id="3277021493514034324">Adresa webu bola skopírovaná</translation>
 <translation id="3285962946108803577">Zdieľať stránku...</translation>
+<translation id="3289505634533552500">Hlasové vyhľadávanie</translation>
 <translation id="3290875554372353449">Výber účtu</translation>
 <translation id="3305294846493618482">viac</translation>
 <translation id="3311748811247479259">Vypnuté</translation>
@@ -556,6 +559,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="5295239312320826323">Chcete odstrániť účet <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Zobraziť</translation>
 <translation id="5317780077021120954">Uložiť</translation>
+<translation id="5318298563956633672">Tento výrobok už sledujete.</translation>
 <translation id="5339316356165661760">Zapnúť synchronizáciu</translation>
 <translation id="536067926684072644">Zobraziť záložky</translation>
 <translation id="5360976571138293719">Ďalšie nastavenia týkajúce sa ochrany súkromia, zabezpečenia a zhromažďovania údajov nájdete v sekcii <ph name="BEGIN_LINK" />Služby Googlu<ph name="END_LINK" />.</translation>
@@ -619,6 +623,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="581659025233126501">Zapnúť synchronizáciu</translation>
 <translation id="5819208479324046259">Spravuje <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Uložte si heslá, spôsoby platby a adresy, aby ich Chrome mohol neskôr automaticky dopĺňať.</translation>
+<translation id="5834415013958049700">Obrázok Lens, ktorý ste skopírovali</translation>
 <translation id="5846482154967366008">Vyhľadávací nástroj</translation>
 <translation id="5854790677617711513">Staršie ako 30 dní</translation>
 <translation id="5857090052475505287">Nový priečinok</translation>
@@ -646,6 +651,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5984222099446776634">Nedávno navštívené</translation>
 <translation id="5988097621740394599">Zobrazte si na kartách poklesy cien.</translation>
 <translation id="5988851877894965432">Otvoriť webové adresy v Chrome</translation>
+<translation id="6006672969046233841">Nová karta</translation>
 <translation id="6012140227487808125">Prebieha šifrovanie…</translation>
 <translation id="6021332621416007159">Otvoriť v...</translation>
 <translation id="6027945736510816438">Mysleli ste <ph name="WEBSITE" />?</translation>
@@ -832,6 +838,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7207023858769244910">Synchronizujte a získavajte tak obsah na základe svojich záujmov.</translation>
 <translation id="721597782417389033">Neplatná prezývka karty</translation>
 <translation id="7221173315674413369">Preskúmajte nové funkcie a tipy v sekcii Novinky</translation>
+<translation id="7223102419539744003">Zavretie karty</translation>
 <translation id="722454870747268814">Nová karta inkognito</translation>
 <translation id="7265758999917665941">Nikdy pre tento web</translation>
 <translation id="7272437679830969316">Vašu totožnosť nie je možné overiť. Heslo sa neskopírovalo.</translation>
@@ -903,6 +910,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7856733331829174190">Sťahovanie zlyhalo</translation>
 <translation id="785938070103630874">Otvorte heslá, spôsoby platby alebo adresu a podobne</translation>
 <translation id="7859704718976024901">História prehliadania</translation>
+<translation id="7870750252270996949">Funkcia Lens skopírovala obrázok</translation>
 <translation id="7879275349003161544">Zobraziť stiahnuté</translation>
 <translation id="7884694604461143138">Hľadať v histórii (počet nájdených: <ph name="COUNT" />)</translation>
 <translation id="7887198238286927132">Chrome automaticky nedoplní toho pole, čím ochráni vaše súkromie.</translation>
@@ -1027,6 +1035,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Predvolené zobrazenie webu</translation>
 <translation id="8820817407110198400">Záložky</translation>
+<translation id="882557203579758546">Vyhľadanie na stránke…</translation>
 <translation id="8840513115188359703">Neodhlásime vás z účtu Google.</translation>
 <translation id="8843129975935593190">Vaša organizácia obmedzuje, čo môžete synchronizovať.</translation>
 <translation id="8849001918648564819">Skryté</translation>

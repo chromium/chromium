@@ -282,6 +282,7 @@
 <translation id="1620510694547887537">Камер</translation>
 <translation id="1622571349153632031">Цагаан хоол</translation>
 <translation id="1623104350909869708">Энэ хуудсыг нэмэлт хэлэлцүүлэг үүсгэхээс нь урьдчилан сэргийлэх</translation>
+<translation id="1633137413609266904">{0,plural, =1{Энэ файлыг нээхийг администраторын бодлогоор блоклосон}other{# файлыг нээхийг администраторын бодлогоор блоклосон}}</translation>
 <translation id="1634828734222219955">Нийт</translation>
 <translation id="163669211644121865">Татварын тайлан гаргах болон төлөвлөх</translation>
 <translation id="1638780421120290329">Картыг хадгалах боломжгүй байна</translation>
@@ -897,6 +898,7 @@
 <translation id="3270847123878663523">&amp; Дахин эрэмбэлэх үйлдлийг буцаах</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> холбогдох хүсэлтэй байна</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3281350579597955952">{0,plural, =1{Администраторын бодлого энэ файлыг <ph name="DESTINATION_NAME" />-д нээхийг санал болгодоггүй}other{Администраторын бодлого эдгээр файлыг <ph name="DESTINATION_NAME" />-д нээхийг санал болгодоггүй}}</translation>
 <translation id="3282085321714087552">Танай байгууллага, <ph name="ENROLLMENT_DOMAIN" /> дараах вебсайтууд руу тохиргоо эсвэл бодлого зэрэг зарим мэдээллийг илгээсэн.</translation>
 <translation id="3282497668470633863">Картанд нэр нэмэх</translation>
 <translation id="3286372614333682499">хөрөг зураг</translation>
@@ -1296,6 +1298,7 @@
 <translation id="4275830172053184480">Төхөөрөмжийг дахин эхлүүл</translation>
 <translation id="4277028893293644418">Нууц үгийг шинэчлэх</translation>
 <translation id="4278390842282768270">Зөвшөөрөгдсөн</translation>
+<translation id="4281998142035485137">{0,plural, =1{Нууцлалтай файлыг нээх үү?}other{Нууцлалтай файлуудыг нээх үү?}}</translation>
 <translation id="4282346679996504092">Энэ бүтээгдэхүүний сэрэмжлүүлгийг унтраасан бөгөөд хавчуургыг хассан</translation>
 <translation id="4285498937028063278">Сонголтоос гаргах</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Энэ картыг таны Google Бүртгэлд хадгаллаа}other{Эдгээр картыг таны Google Бүртгэлд хадгаллаа}}</translation>
@@ -1929,6 +1932,7 @@
 <translation id="5903264686717710770">Гарчиг:</translation>
 <translation id="5904360430676679685">Гэр бүл, харилцаа холбоо</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (синк хийсэн)</translation>
+<translation id="5911110632211230665">Нээхийг блоклосон</translation>
 <translation id="59174027418879706">Идэвхжсэн</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1-г ашиглаж байгаа}other{# ашиглаж байгаа}}</translation>

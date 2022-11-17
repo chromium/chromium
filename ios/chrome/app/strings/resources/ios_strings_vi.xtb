@@ -87,6 +87,7 @@ Bạn đang dùng công cụ tìm kiếm <ph name="DSE_NAME" />. Để xóa nh�
 <translation id="1545749641540134597">Quét mã QR</translation>
 <translation id="1552525382687785070">Quản trị viên của bạn đã tắt tính năng đồng bộ hóa</translation>
 <translation id="1554477036522844996">Cửa sổ mới</translation>
+<translation id="1565371473877914088">Thẻ ẩn danh mới</translation>
 <translation id="1580715474678097352">Luôn được bảo vệ khỏi các trang web nguy hiểm</translation>
 <translation id="1580783302095112590">Thư đã được gửi.</translation>
 <translation id="1582732959743469162">Thao tác này sẽ ngừng tất cả hoạt động tải xuống đang diễn ra.</translation>
@@ -133,6 +134,7 @@ Bạn đang dùng công cụ tìm kiếm <ph name="DSE_NAME" />. Để xóa nh�
 <translation id="1981118202195772574">Thiết bị di động</translation>
 <translation id="1989112275319619282">Duyệt qua</translation>
 <translation id="199425419756152024">Xem mật khẩu</translation>
+<translation id="2010008505735295285">Tải lại</translation>
 <translation id="2015722694326466240">Để xem mật khẩu, trước tiên bạn phải đặt mật mã trên thiết bị của mình.</translation>
 <translation id="2021670401941426298">Để xóa nhật ký tìm kiếm, hãy xem hướng dẫn (nếu có) của công cụ tìm kiếm bạn đang dùng.</translation>
 <translation id="202292859882676807">Đã cho phép truy cập micrô</translation>
@@ -299,6 +301,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="3272527697863656322">Hủy</translation>
 <translation id="3277021493514034324">Đã sao chép địa chỉ trang web</translation>
 <translation id="3285962946108803577">Chia sẻ trang...</translation>
+<translation id="3289505634533552500">Tìm kiếm bằng giọng nói</translation>
 <translation id="3290875554372353449">Chọn một tài khoản</translation>
 <translation id="3305294846493618482">xem thêm</translation>
 <translation id="3311748811247479259">Đang tắt</translation>
@@ -556,6 +559,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5295239312320826323">Xóa tài khoản <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Hiển thị</translation>
 <translation id="5317780077021120954">Lưu</translation>
+<translation id="5318298563956633672">Bạn đã theo dõi sản phẩm này rồi.</translation>
 <translation id="5339316356165661760">Bật tính năng đồng bộ hóa</translation>
 <translation id="536067926684072644">Hiện dấu trang</translation>
 <translation id="5360976571138293719">Bạn có thể xem thêm các chế độ cài đặt liên quan đến quyền riêng tư, khả năng bảo mật và hoạt động thu thập dữ liệu trong phần <ph name="BEGIN_LINK" />Các dịch vụ của Google<ph name="END_LINK" />.</translation>
@@ -619,6 +623,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="581659025233126501">Bật tính năng đồng bộ hóa</translation>
 <translation id="5819208479324046259">Do <ph name="MANAGER" /> quản lý. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Lưu mật khẩu, phương thức thanh toán và địa chỉ để Chrome tự động điền về sau.</translation>
+<translation id="5834415013958049700">Dùng Ống kính để tìm hình ảnh bạn đã sao chép</translation>
 <translation id="5846482154967366008">Công cụ tìm kiếm</translation>
 <translation id="5854790677617711513">Đã tồn tại hơn 30 ngày</translation>
 <translation id="5857090052475505287">Thư mục Mới</translation>
@@ -646,6 +651,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5984222099446776634">Truy cập gần đây</translation>
 <translation id="5988097621740394599">Xem các mặt hàng giảm giá trong thẻ của bạn.</translation>
 <translation id="5988851877894965432">Mở URL trong Chrome</translation>
+<translation id="6006672969046233841">Thẻ mới</translation>
 <translation id="6012140227487808125">Đang mã hóa...</translation>
 <translation id="6021332621416007159">Mở trong...</translation>
 <translation id="6027945736510816438">Ý của bạn là <ph name="WEBSITE" /> phải không?</translation>
@@ -832,6 +838,7 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="7207023858769244910">Đồng bộ hóa để nhận nội dung dựa trên mối quan tâm của bạn.</translation>
 <translation id="721597782417389033">Biệt hiệu của thẻ không hợp lệ</translation>
 <translation id="7221173315674413369">Khám phá các mẹo và tính năng mới trong phần Tính năng mới</translation>
+<translation id="7223102419539744003">Đóng thẻ</translation>
 <translation id="722454870747268814">Thẻ ẩn danh mới</translation>
 <translation id="7265758999917665941">Không bao giờ đối với trang web này</translation>
 <translation id="7272437679830969316">Không thể xác minh danh tính của bạn. Chưa sao chép mật khẩu.</translation>
@@ -903,6 +910,7 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="7856733331829174190">Không thể tải xuống</translation>
 <translation id="785938070103630874">Mở phần Mật khẩu, Phương thức thanh toán hoặc Địa chỉ và các thông tin khác</translation>
 <translation id="7859704718976024901">Lịch sử duyệt web</translation>
+<translation id="7870750252270996949">Dùng Ống kính để tìm hình ảnh đã sao chép</translation>
 <translation id="7879275349003161544">Hiện nội dung tải xuống</translation>
 <translation id="7884694604461143138">Nhật ký tìm kiếm (Đã tìm thấy <ph name="COUNT" />)</translation>
 <translation id="7887198238286927132">Để bảo vệ quyền riêng tư của bạn, Chrome sẽ không tự động điền trường này.</translation>
@@ -1027,6 +1035,7 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Chế độ xem trang web mặc định</translation>
 <translation id="8820817407110198400">Dấu trang</translation>
+<translation id="882557203579758546">Tìm trong trang…</translation>
 <translation id="8840513115188359703">Bạn sẽ không được đăng xuất khỏi Tài khoản Google của mình.</translation>
 <translation id="8843129975935593190">Tổ chức của bạn giới hạn những nội dung bạn có thể đồng bộ hóa.</translation>
 <translation id="8849001918648564819">Đã ẩn</translation>

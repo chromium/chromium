@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">Rebràs una alerta quan hi hagi un preu més baix en una pestanya oberta</translation>
 <translation id="3328308545011660196">Suggeriment: sembla que hi ha <ph name="NUMBER_OF_TABS" /> pestanyes relacionades. Vols agrupar-les?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">Miniatura del full de compartició.</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Replega <ph name="TABS_COUNT_ONE" /> pestanya.}other{Replega el grup <ph name="TITLE_OF_GROUP" /> format per <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
 <translation id="3882834874697329510">Per rebre una alerta quan hi hagi un preu més baix en una pestanya oberta, activa les notificacions a Configuració.</translation>
 <translation id="3940195383040445971">Seguiment dels preus a les pestanyes</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">Consulta la informació de la botiga, opció disponible a prop de la part superior de la pantalla</translation>
 <translation id="5558362125926932819">Tanca el grup format per <ph name="NUMBER_OF_TABS" /> pestanyes</translation>
 <translation id="5580090775658607195">S'han agrupat <ph name="TAB_COUNT" /> pestanyes</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> enllaç de Chrome}other{<ph name="TABS_COUNT_MANY" /> enllaços de Chrome}}</translation>
 <translation id="575494663145460764">Vols rebre alertes de baixades de preu?</translation>
 <translation id="58326064309361797">Arrossega les pestanyes per agrupar-les</translation>
 <translation id="5846292395804797011">Tanca el grup <ph name="TITLE_OF_GROUP" /> format per <ph name="NUMBER_OF_TABS" /> pestanyes</translation>

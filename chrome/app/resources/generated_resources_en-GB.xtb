@@ -1204,6 +1204,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="208928984520943006">To get to the home screen at any time, swipe up from the bottom.</translation>
 <translation id="2089566709556890888">Browse safely with Google Chrome</translation>
 <translation id="2089795179672254991">Ask when a site wants to see text and images copied to the clipboard (recommended)</translation>
+<translation id="2089925163047119068">OR</translation>
 <translation id="2090165459409185032">To recover your account information, go to: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Automatically connects when you log in</translation>
 <translation id="2090876986345970080">System security setting</translation>
@@ -2767,6 +2768,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3514373592552233661">Preferred networks will be preferred over other known networks if more than one is available</translation>
 <translation id="3514647716686280777">You're getting standard security protection. To get more protection against dangerous websites, downloads and extensions, turn on Enhanced Safe Browsing in Chrome settings.</translation>
 <translation id="3515983984924808886">Touch your security key again to confirm reset. All information stored on the security key, including its PIN, will be deleted.</translation>
+<translation id="3518866566087677312">Bookmark things you want to come back to later</translation>
 <translation id="3518985090088779359">Accept &amp; continue</translation>
 <translation id="3519564332031442870">Print backend service</translation>
 <translation id="3519938335881974273">Save page as…</translation>
@@ -6978,6 +6980,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> is paused</translation>
 <translation id="7520766081042531487">Incognito portal: <ph name="SUBFRAME_SITE" /></translation>
+<translation id="752098910262610337">Show shortcuts</translation>
 <translation id="7522255036471229694">Say 'Ok Google'</translation>
 <translation id="7523585675576642403">Rename profile</translation>
 <translation id="7525067979554623046">Create</translation>
@@ -7947,6 +7950,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8389492867173948260">Allow this extension to read and change all your data on websites that you visit:</translation>
 <translation id="8390449457866780408">Server unavailable.</translation>
 <translation id="8391218455464584335">Vinyl</translation>
+<translation id="8392726714909453725">Select-to-speak settings</translation>
 <translation id="8393511274964623038">Stop plug-in</translation>
 <translation id="839363317075970734">Bluetooth device details</translation>
 <translation id="8393700583063109961">Send message</translation>

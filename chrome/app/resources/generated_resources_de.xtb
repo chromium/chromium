@@ -2368,6 +2368,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3143515551205905069">Synchronisierung abbrechen</translation>
 <translation id="3143754809889689516">Von vorne abspielen</translation>
 <translation id="3144647712221361880">Link öffnen als</translation>
+<translation id="3144896554017119333">Erweiterungen und mehr</translation>
 <translation id="3149510190863420837">Chrome-Apps</translation>
 <translation id="3150693969729403281">Sicherheitscheck jetzt durchführen</translation>
 <translation id="3150927491400159470">Vollständiges Aktualisieren (Hard Reload)</translation>
@@ -2476,6 +2477,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3268451620468152448">Geöffnete Tabs</translation>
 <translation id="3269093882174072735">Bild laden</translation>
 <translation id="326911502853238749"><ph name="MODULE_NAME" /> ausblenden</translation>
+<translation id="3269175001434213183">Synchronisierung aktivieren, um deine Inhalte zu sichern und auf jedem Gerät zu verwenden</translation>
 <translation id="3269612321104318480">Helles Blaugrün und Weiß</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Datei}other{# Dateien}}</translation>
 <translation id="326999365752735949">DIFF-Datei wird heruntergeladen.</translation>
@@ -3737,6 +3739,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> hat ein aktives TPM erkannt, das deine Daten sicherer speichern kann.</translation>
 <translation id="4451479197788154834">Dein Passwort ist auf diesem Gerät und in deinem Google-Konto gespeichert</translation>
 <translation id="4451757071857432900">Auf Websites blockiert, die aufdringliche oder irreführende Werbung anzeigen (empfohlen)</translation>
+<translation id="4452898361839215358">oder PPD-Datei auswählen. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="4453946976636652378">Mit <ph name="SEARCH_ENGINE_NAME" /> suchen oder eine URL eingeben</translation>
 <translation id="4458535500699390320">Während dieser Tab inaktiv war, hat der Arbeitsspeicher-Sparmodus Arbeitsspeicher für andere Aufgaben freigegeben. Du kannst dies jederzeit in den Einstellungen ändern.</translation>
 <translation id="4459169140545916303">Vor <ph name="DEVICE_LAST_ACTIVATED_TIME" /> Tagen aktiv</translation>
@@ -4273,6 +4276,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4950993567860689081">Deine Sitzung wird von deiner Organisation verwaltet. Administratoren können dein Profil löschen und auch deinen Netzwerkverkehr ansehen.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{eine Datei}other{# Dateien}}</translation>
 <translation id="495170559598752135">Aktionen</translation>
+<translation id="4951966678293618079">Passwörter für diese Website niemals speichern</translation>
 <translation id="4953808748584563296">Orangefarbener Standardavatar</translation>
 <translation id="4955710816792587366">PIN wählen</translation>
 <translation id="4959262764292427323">Passwörter werden in deinem Google-Konto gespeichert, sodass du sie auf jedem Gerät verwenden kannst</translation>
@@ -4302,6 +4306,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4981449534399733132">Wenn du Browserdaten von allen deinen synchronisierten Geräten und aus deinem Google-Konto löschen möchtest, <ph name="BEGIN_LINK" />melde dich an<ph name="END_LINK" />.</translation>
 <translation id="4982111327868342436">Weitermachen, wo du aufgehört hast – auf jedem Gerät</translation>
 <translation id="4982236238228587209">Gerätesoftware</translation>
+<translation id="4986706507552097681">In den Einstellungen kannst du auswählen, was synchronisiert werden soll. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="4986728572522335985">Damit werden alle Daten auf dem Sicherheitsschlüssel und die dazugehörige PIN gelöscht</translation>
 <translation id="4988526792673242964">Seiten</translation>
 <translation id="49896407730300355">&amp;Gegen den Uhrzeigersinn drehen</translation>
@@ -8362,6 +8367,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8823514049557262177">Linkte&amp;xt kopieren</translation>
 <translation id="8823559166155093873">Cookies blockieren</translation>
 <translation id="8823704566850948458">Passwort vorschlagen…</translation>
+<translation id="8823963789776061136">Alternativ kannst du die PPD-Datei des Druckers auswählen. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">&amp;Seite hinzufügen...</translation>
 <translation id="8827125715368568315"><ph name="PERMISSION" /> und <ph name="COUNT" /> weitere blockiert</translation>
 <translation id="8827289157496676362">Erweiterung anpinnen</translation>
@@ -8618,6 +8624,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> möchte auf die folgenden Inhalte zugreifen:</translation>
 <translation id="9057354806206861646">Aktualisierungszeitplan</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Etwa 1 Benachrichtigung pro Tag}other{Etwa {NUM_NOTIFICATION} Benachrichtigungen pro Tag}}</translation>
+<translation id="9058760336383947367">Drucker-PPD-Datei ansehen</translation>
 <translation id="9061383912634843744">Die automatische Anmeldung bei Websites und Apps ist bei gespeicherten Anmeldedaten verfügbar. Wenn diese Funktion deaktiviert ist, musst du bei jeder Anmeldung bei einer Website oder App deine Anmeldedaten eingeben.</translation>
 <translation id="9062468308252555888">14-fach</translation>
 <translation id="9063208415146866933">Fehler von Zeile <ph name="ERROR_LINE_START" /> bis <ph name="ERROR_LINE_END" /></translation>

@@ -2871,17 +2871,6 @@ Si la política no se establece, se usará el nuevo comportamiento, tal como suc
       Si se inhabilita la política, no se solicitará a los usuarios una contraseña para desbloquear el dispositivo.
 
       Si no se establece esta política, el usuario podrá elegir si quiere que se le pida una contraseña para desbloquear el dispositivo.</translation>
-<translation id="3729689441404871493">Habilita <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> para una lista de URLs en las pantallas de inicio de sesión y de bloqueo.
-
-      Si se establece esta política, se especificarán las URLs que podrán formar parte del flujo de atestación para obtener el conjunto de señales del equipo.
-
-      Si no se establece esta política o se deja vacía, ningún punto final podrá iniciar el flujo de atestación ni obtener señales procedentes del equipo.
-
-      Nota: Se permiten los comodines (<ph name="WILDCARD_VALUE" />).
-
-      Esta política solo afectará al flujo de atestación de las pantallas de inicio de sesión y de bloqueo. Para cambiar el flujo de atestación de la sesión, usa la política <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" />.
-
-      Para obtener información detallada sobre los patrones válidos de <ph name="URL_LABEL" />, consulta https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="3729937245044939404">Esta política está obsoleta en M70. Utiliza <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> y <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" /> en su lugar.
 
       Habilita la función Autocompletar de <ph name="PRODUCT_NAME" /> y permite que los usuarios rellenen formularios web automáticamente con información almacenada anteriormente, como una dirección o una tarjeta de crédito.
@@ -2947,7 +2936,6 @@ Si la política no se establece, se usará el nuevo comportamiento, tal como suc
 
       Nota: En los dispositivos administrados de <ph name="MS_AD_NAME" />, esta política admite una expansión de <ph name="MACHINE_NAME_VARIABLE" /> al nombre de máquina de <ph name="MS_AD_NAME" /> o una subcadena de este. Por ejemplo, si el nombre del equipo es <ph name="MACHINE_NAME_EXAMPLE" />, <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> se sustituye por 4 caracteres después de la sexta posición; es decir, <ph name="MACHINE_NAME_PART_EXAMPLE" />. La posición se basa en cero.</translation>
 <translation id="377044054160169374">Aplicar intervención de experiencia abusiva</translation>
-<translation id="3777833753656885744">Habilitar el flujo de atestación de una lista de URLs en las pantallas de inicio de sesión y de bloqueo</translation>
 <translation id="3778689139323007309">Realizar comprobaciones de revocación de los certificados del servidor validados correctamente y firmados por certificados AC instalados localmente</translation>
 <translation id="3780152581321609624">Incluir un puerto no estándar en SPN de Kerberos</translation>
 <translation id="378495749480642482">Configura si los sitios a los que accede el usuario tienen permiso para crear sesiones de realidad aumentada inmersiva usando <ph name="WEBXR_API_NAME" />.
@@ -3056,6 +3044,13 @@ Si la política no se establece, se usará el nuevo comportamiento, tal como suc
 
       Si asignas el valor "2" a esta política, se bloquearán los anuncios de sitios web con anuncios invasivos.</translation>
 <translation id="3877517141460819966">Modo de autenticación de dos factores integrado</translation>
+<translation id="3877908683993837673">Esta política controla qué pila de software se usa para comunicarse con el servidor DNS: el cliente DNS del sistema operativo o el cliente DNS integrado de <ph name="PRODUCT_NAME" />. Esta política no afecta a qué servidores DNS se utilizan. Por ejemplo, si el sistema operativo está configurado para utilizar un servidor DNS de empresa, el cliente DNS integrado usará ese mismo servidor. Tampoco controla si se usará DNS‑over‑HTTPS; <ph name="PRODUCT_NAME" /> siempre utilizará la resolución integrada para solicitudes DNS‑over‑HTTPS. Consulta la política <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> para obtener información sobre los controles de DNS‑over‑HTTPS.
+
+      Si se habilita esta política, se usará el cliente DNS integrado si está disponible.
+
+      Si se inhabilita esta política, solo se usará el cliente DNS integrado cuando se esté utilizando DNS‑over‑HTTPS.
+
+      Si no se define esta política, el cliente DNS integrado se habilitará de forma predeterminada en <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" />, <ph name="ANDROID_NAME" /> (si no se ha habilitado un DNS privado ni una VPN) y <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3879208481373875102">Configurar lista de aplicaciones web de instalación forzada</translation>
 <translation id="3879700444818346084">Inhabilitar la importación de las contraseñas guardadas en la primera ejecución</translation>
 <translation id="388237772682176890">Esta política está obsoleta en M53 y se ha quitado de M54, ya que se ha retirado la compatibilidad con SPDY/3.1.
@@ -3995,7 +3990,6 @@ Se prevé que esta política se quite en la versión 113 de <ph name="PRODUCT_NA
 
       Si no se establece esta política en las versiones hasta la M76 (incluida), <ph name="PRODUCT_NAME" /> no podrá recoger ni enviar esos registros de forma predeterminada. A partir de la versión M77, <ph name="PRODUCT_NAME" /> puede recoger y enviar esos registros de forma predeterminada de la mayoría de los perfiles afectados por políticas de empresa a nivel de usuario basadas en la nube. Desde la versión M77 hasta la M80 (incluida), <ph name="PRODUCT_NAME" /> también puede recoger y enviar esos registros de forma predeterminada de los perfiles afectados por la gestión on-premise de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4911334289324462969">puerto 989 (puede desbloquearse hasta el 01/02/2022)</translation>
-<translation id="4913065710388638917">Habilitar el flujo de atestación de una lista de URLs</translation>
 <translation id="4917385247580444890">Buena</translation>
 <translation id="4918261735182294270">Permitir que los usuarios elijan si se habilita <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="491889618361437456">Habilitar integración con <ph name="GOOGLE_CALENDAR_NAME" /></translation>
@@ -4120,6 +4114,7 @@ Se prevé que esta política se quite en la versión 113 de <ph name="PRODUCT_NA
 <translation id="5025239932007658691">Si se habilita la política o no se establece, <ph name="PRODUCT_NAME" /> enviará consultas ocasionales a un servidor de Google para obtener una marca de tiempo precisa.
 
       Si se inhabilita la política, <ph name="PRODUCT_NAME" /> no podrá enviar esas consultas.</translation>
+<translation id="5033070732967197381">Permitir solicitudes de la API WebAuthn en sitios con certificados TLS rotos.</translation>
 <translation id="5034504101537897433">Habilitar los datos de informes sobre fallos del dispositivo</translation>
 <translation id="5039110755072335605">Compatibilidad con encabezados de solicitud CORS sin comodín</translation>
 <translation id="504116558738617678">Solor mostrar advertencias de poco espacio en disco si el dispositivo no está gestionado o si únicamente hay 1 usuario</translation>
@@ -5607,6 +5602,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Nota: Actualmente, los reinicios automáticos solo están habilitados mientras se muestra la pantalla de inicio de sesión o mientras haya una sesión de una aplicación de kiosco.</translation>
 <translation id="6556586932263358975">Permitir el bloqueo de la pantalla</translation>
 <translation id="6559057113164934677">No permitir que ningún sitio acceda a la cámara y al micrófono</translation>
+<translation id="65591220958874949">Usar el cliente DNS integrado en Windows, macOS, Android y ChromeOS</translation>
 <translation id="6559221564468029245">Si se habilita la política o no se establece, no se considerará que el usuario está inactivo mientras se reproduzca audio. Esto impide que se alcance el tiempo de espera de inactividad y que se entre en modo de inactividad. Sin embargo, se llevarán a cabo la atenuación de pantalla, la desconexión de pantalla y el bloqueo de pantalla tras los tiempos de espera configurados, a pesar de la actividad del audio.
 
       Si se inhabilita la política, la actividad de audio no impedirá que se considere al usuario como inactivo.</translation>
@@ -5694,6 +5690,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       - Si se inhabilita esta política, los administradores deberán comunicárselo a los usuarios finales del dispositivo.</translation>
 <translation id="6609867253856597039">Establecer la experiencia de usuario de funciones inhabilitadas</translation>
 <translation id="6614557704487944013">Permitir que los usuarios utilicen el navegador <ph name="LACROS_NAME" /></translation>
+<translation id="661610294649586421">No permitir solicitudes de la API WebAuthn en sitios con certificados TLS rotos.</translation>
 <translation id="6617589895942747919">Hora de inicio del intervalo, inclusiva.</translation>
 <translation id="6621830999036927230">Si se le asigna un valor a esta política, el host de acceso remoto utilizará esta URL para validar los tokens de autenticación de los clientes de acceso remoto y para aceptar las conexiones. Esta función está inhabilitada si está vacía o no se le asigna ningún valor.
 
@@ -5996,6 +5993,9 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6907778402784621686">Permite bloquear el contenido no seguro en estos sitios web</translation>
 <translation id="6908640907898649429">Permite configurar el proveedor de búsquedas predeterminadas. Puedes especificar el proveedor de búsquedas predeterminadas que utilizarán los usuarios o inhabilitar las búsquedas predeterminadas.</translation>
 <translation id="6913068954484253496">Permitir que <ph name="PRODUCT_NAME" /> se conecte a dispositivos de transmisión de todas las direcciones IP.</translation>
+<translation id="6915493311660114995">Si se habilita esta política, <ph name="PRODUCT_NAME" /> permitirá las solicitudes de Web Authentication de los sitios web que tengan certificados TLS con errores (por ejemplo, sitios web que no se consideren seguros).
+
+Si se inhabilita esta política o no se define, se aplicará el comportamiento predeterminado de bloquear dichas solicitudes.</translation>
 <translation id="6919819553978815392">Si se le asigna el valor true a esta política o no se configura, <ph name="PRODUCT_NAME" /> y <ph name="LACROS_NAME" /> habilitarán los inicios de sesión como invitado. Los inicios de sesión como invitado son perfiles de <ph name="PRODUCT_NAME" /> en los que todas las ventanas están en modo Incógnito.
 
       Si se le asigna el valor false, <ph name="PRODUCT_NAME" /> y <ph name="LACROS_NAME" /> no permitirán que se inicien perfiles para invitados.
@@ -6913,6 +6913,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="782661371433719637">No permitir que ningún sitio web solicite acceso de lectura a archivos y directorios a través de la API File System</translation>
 <translation id="7827127381981620448">Aplicación de una plataforma</translation>
 <translation id="7829436838673974723">Permitir que las páginas envíen solicitudes XHR síncronas durante el cierre de la página</translation>
+<translation id="782978857350824974">Permitir solicitudes de Web Authentication en sitios con certificados TLS rotos.</translation>
 <translation id="7832225468415136704">Impedir que Limpiador de Chrome analice periódicamente el sistema e inhabilitar los análisis manuales</translation>
 <translation id="7833148823006528332">Identificador de la aplicación Android (por ejemplo, "com.google.android.gm" para Gmail)</translation>
 <translation id="7835218570504220753">Inhabilitar el clic automático</translation>
@@ -7347,17 +7348,6 @@ OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están present
 <translation id="8274603902181597201">Borrar los eCryptfs del directorio principal del usuario y empezar con un nuevo directorio principal cifrado con ext4.</translation>
 <translation id="8274926413890711289">Habilitar los controles de informes granulares</translation>
 <translation id="8278133379873210419">Impedir que se activen cuadros de diálogo de JavaScript desde submarcos de origen diferente</translation>
-<translation id="8279037559659894049">Habilita <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> para una lista de URLs.
-
-      Si se establece esta política, se especificarán las URLs que podrán formar parte del flujo de atestación para obtener un conjunto de señales del equipo.
-
-      Si no se establece esta política o se deja vacía, ningún punto final podrá iniciar el flujo de atestación ni obtener señales procedentes del equipo.
-
-      Nota: Se permiten los comodines (<ph name="WILDCARD_VALUE" />).
-
-      En el caso de ChromeOS, esta política está relacionada con la atestación remota en la que un certificado se genera automáticamente y se sube al servidor de administración de dispositivos.
-
-      Para obtener información detallada sobre los patrones válidos de <ph name="URL_LABEL" />, consulta https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="8284296539558710573">Solicitudes de autenticación HTTP de origen cruzado</translation>
 <translation id="8284527236880877730">Si se inhabilita la política <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> y se establece <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" />, se especifica el porcentaje del retraso de atenuación de pantalla cuando el dispositivo esté en el modo de presentación. Si se ajusta el retraso de atenuación de pantalla, se ajustan los retrasos de apagado de pantalla, bloqueo de pantalla e inactividad para mantener las mismas distancias del retraso de atenuación de pantalla que tenía la configuración original.
 

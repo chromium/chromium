@@ -282,6 +282,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Vegetarmad</translation>
 <translation id="1623104350909869708">Undgå, at denne side opretter yderligere dialogbokse</translation>
+<translation id="1633137413609266904">{0,plural, =1{Administratorpolitikken tillader ikke, at du åbner denne fil}one{Administratorpolitikken tillader ikke, at du åbner # fil}other{Administratorpolitikken tillader ikke, at du åbner # filer}}</translation>
 <translation id="1634828734222219955">Total</translation>
 <translation id="163669211644121865">Skatteangivelse og -rådgivning</translation>
 <translation id="1638780421120290329">Kortet kan ikke gemmes</translation>
@@ -896,6 +897,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3270847123878663523">&amp;Fortryd omarrangering</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> vil gerne oprette forbindelse</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3281350579597955952">{0,plural, =1{Administratorpolitikken fraråder at åbne denne fil på <ph name="DESTINATION_NAME" />}one{Administratorpolitikken fraråder at åbne denne fil på <ph name="DESTINATION_NAME" />}other{Administratorpolitikken fraråder at åbne disse filer på <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Din organisation <ph name="ENROLLMENT_DOMAIN" /> har sendt nogle oplysninger til følgende websites, f.eks. indstillinger eller politikker.</translation>
 <translation id="3282497668470633863">Tilføj navn på kort</translation>
 <translation id="3286372614333682499">stående</translation>
@@ -1295,6 +1297,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4275830172053184480">Genstart din enhed</translation>
 <translation id="4277028893293644418">Nulstil adgangskoden</translation>
 <translation id="4278390842282768270">Tilladt</translation>
+<translation id="4281998142035485137">{0,plural, =1{Vil du åbne den fortrolige fil?}one{Vil du åbne den fortrolige fil?}other{Vil du åbne de fortrolige filer?}}</translation>
 <translation id="4282346679996504092">Underretninger for dette produkt er deaktiveret, og bogmærket er fjernet</translation>
 <translation id="4285498937028063278">Frigør</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Kortet er gemt på din Google-konto}one{Kortet er gemt på din Google-konto}other{Kortene er gemt på din Google-konto}}</translation>
@@ -1928,6 +1931,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5903264686717710770">Titel:</translation>
 <translation id="5904360430676679685">Familie og forhold</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synkroniseret)</translation>
+<translation id="5911110632211230665">Åbning er ikke tilladt</translation>
 <translation id="59174027418879706">Aktiveret</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 i brug}one{# i brug}other{# i brug}}</translation>

@@ -232,6 +232,7 @@
 <translation id="2815198996063984598">২) ডিফ’ল্ট ব্ৰাউজাৰ এপত টিপক</translation>
 <translation id="2820289420301699633">আপোনাৰ প্ৰশাসকে Chrome নিয়ন্ত্ৰণ কৰিব পাৰে আৰু ইয়াৰ ডেটা এক্সেছ কৰিব পাৰে</translation>
 <translation id="2830972654601096923">ঠিকনা পৰিচালনা কৰক...</translation>
+<translation id="2834399722155632105">৩) পাছৱৰ্ডৰ বিকল্পসমূহত টিপক</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">অনুবাদৰ ছেটিং ৰিছেট কৰক</translation>
 <translation id="2848086008667475748">ছেটিঙত ডিফ’ল্ট হিচাপে ছেট কৰক…</translation>
@@ -632,6 +633,7 @@
 <translation id="5899314093904173337">আশে-পাশে থকা লোকসকলৰ সৈতে শ্বেয়াৰ কৰিবলৈ তেওঁলোকক তেওঁলোকৰ কেমেৰা অথবা কিউআৰ স্কেনাৰ এপ্‌টো ব্যৱহাৰ কৰি এই কিউআৰ ক’ডটো স্কেন কৰিবলৈ দিয়ক</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5913600720976431809">পৃষ্ঠাখন অনুবাদ কৰাৰ বিকল্পসমূহ</translation>
+<translation id="5933515656458364246">আটাইবোৰ ডিভাইচত আপোনাৰ ডেটা ছিংক কৰক।</translation>
 <translation id="5938160824633642847">আপোনাৰ ডিভাইচৰ ষ্ট’ৰেজ প্ৰায় সম্পূর্ণ হৈছে। খালী ঠাই উলিয়াই আকৌ চেষ্টা কৰক।</translation>
 <translation id="5948291296578561264">ইয়াৰ জৰিয়তে আপুনি ফট’ লাইব্ৰেৰীত ফট’ ছেভ কৰিব পাৰে।</translation>
 <translation id="5951816930277761335">লিংকটো শ্বেয়াৰ কৰক</translation>
@@ -713,6 +715,7 @@
 
 আপোনাৰ ছিংক পাছফ্ৰেজৰ সৈতে নিজৰ ডেটা <ph name="TIME" />ত এনক্ৰিপ্ট কৰা হৈছিল। ছিংক আৰম্ভ কৰিবলৈ এইটো দিয়ক।</translation>
 <translation id="6418346271604475326">PDF সাজু কৰি থকা হৈছে</translation>
+<translation id="6429213933892582367">পাছৱৰ্ডৰ বিকল্পসমূহ খোলক</translation>
 <translation id="6434591244308415567">আসোঁৱাহ হৈছে। পাছত আকৌ চেষ্টা কৰক।</translation>
 <translation id="6435236283694032571">পঢ়াৰ সূচীত যোগ দিয়ক</translation>
 <translation id="6439338047467462846">সকলোকে অনুমতি দিয়ক</translation>
@@ -828,6 +831,7 @@
 <translation id="7203585745079012652">সঁহাৰিটো কৈ দিয়ক</translation>
 <translation id="7207023858769244910">আপোনাৰ আগ্ৰহৰ ওপৰত ভিত্তি কৰি সমল লাভ কৰিবলৈ ছিংক কৰক।</translation>
 <translation id="721597782417389033">কার্ডৰ উপনাম অমান্য</translation>
+<translation id="7221173315674413369">নতুন কি আছেত নতুন সুবিধা আৰু পৰামৰ্শসমূহ অন্বেষণ কৰক</translation>
 <translation id="722454870747268814">নতুন ইনক’গ্নিট’ টেব</translation>
 <translation id="7265758999917665941">এই ছাইটটোৰ বাবে কেতিয়াও নহয়</translation>
 <translation id="7272437679830969316">আপোনাৰ পৰিচয় সত্যাপন কৰিব পৰা নগ’ল। পাছৱৰ্ড প্ৰতিলিপি কৰা নহ’ল।</translation>
@@ -861,6 +865,7 @@
 <translation id="7514365320538308">ডাউনল'ড কৰক</translation>
 <translation id="7531345132340165516">বৰ্তমানৰ ছাইট</translation>
 <translation id="7537586195939242955">দুঃখিত, এই সময়ত আপোনাৰ পাছ Passbookত ইনষ্টল কৰিব নোৱাৰি।</translation>
+<translation id="7553234618121028547">অফ কৰিবলৈ<ph name="BEGIN_LINK" />ছেটিং<ph name="END_LINK" /> খোলক আৰু পাছৱৰ্ডৰ বিকল্পসমূহলৈ যাওক।</translation>
 <translation id="7554791636758816595">নতুন টেব</translation>
 <translation id="7561196759112975576">সদায়</translation>
 <translation id="7583004045319035904">আপোনাৰ ইনক’গনিট’ টেবসমূহ আনলক কৰিবলৈ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ব্যৱহাৰ কৰক।</translation>
@@ -942,6 +947,7 @@
 <translation id="8101409298456377967">আপুনি যাতে ছাইট আৰু এপ্‌সমূহত সহজতে ছাইন ইন কৰিব পাৰে, তাৰ বাবে আপোনাৰ পাছৱৰ্ড সৃষ্টি, ছেভ আৰু পৰিচালনা কৰক। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">অফ কৰক</translation>
 <translation id="8114753159095730575">ফাইল ডাউনল’ড উপলব্ধ। স্ক্ৰীনৰ তলৰ অংশৰ কাষত থকা বিকল্পসমূহ।</translation>
+<translation id="81313319706244542">২) পাছৱৰ্ডত টিপক</translation>
 <translation id="8132598642024322408">পূৰ্বে <ph name="PREVIOUS_PRICE" /> আছিল, এতিয়া <ph name="PRICE" />।</translation>
 <translation id="8136856065410661948">Chrome আৰু Google Lensৰ পৰা আপোনাৰ Apple Calendarত অনুষ্ঠান সৃষ্টি কৰিবলৈ এইটো ব্যৱহাৰ কৰা হ’ব।</translation>
 <translation id="8156478151976189188">পাছৱৰ্ড ছিংক কৰাৰ সুবিধাটোৱে কাম কৰা নাই</translation>
@@ -964,6 +970,7 @@
 <translation id="8319076807703933069">নতুন সন্ধান</translation>
 <translation id="8323906514956095947">টেবৰ অধিক বিকল্পৰ বাবে স্পৰ্শ কৰি ধৰি ৰাখক</translation>
 <translation id="8328777765163860529">সকলো বন্ধ কৰক</translation>
+<translation id="8343993175958086504">আপোনাৰ বস্তুবোৰৰ বেক আপ লওক আৰু সেইবোৰ যিকোনো ডিভাইচত ব্যৱহাৰ কৰক।</translation>
 <translation id="8378714024927312812">আপোনাৰ প্ৰতিষ্ঠানৰ দ্বাৰা পৰিচালিত</translation>
 <translation id="8386068868580335421">ৰিছেট কৰক</translation>
 <translation id="8407669440184693619">এই ছাইটটোৰ বাবে কোনো পাছৱৰ্ড বিচাৰি পোৱা নগ’ল</translation>

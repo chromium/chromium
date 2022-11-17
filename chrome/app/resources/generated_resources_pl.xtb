@@ -2358,6 +2358,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3143515551205905069">Anuluj synchronizację</translation>
 <translation id="3143754809889689516">Odtwórz od początku</translation>
 <translation id="3144647712221361880">Otwórz link jako</translation>
+<translation id="3144896554017119333">Rozszerzenia i inne</translation>
 <translation id="3149510190863420837">Aplikacje Chrome</translation>
 <translation id="3150693969729403281">Wykonaj kontrolę zabezpieczeń teraz</translation>
 <translation id="3150927491400159470">Wymuś ponowne załadowanie</translation>
@@ -2466,6 +2467,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3268451620468152448">Otwarte karty</translation>
 <translation id="3269093882174072735">Wczytaj obraz</translation>
 <translation id="326911502853238749">Nie pokazuj: <ph name="MODULE_NAME" /></translation>
+<translation id="3269175001434213183">Włącz synchronizację, aby tworzyć kopie zapasowe swoich danych i używać ich na dowolnym urządzeniu</translation>
 <translation id="3269612321104318480">Jasny morski i biały</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Plik}few{# pliki}many{# plików}other{# pliku}}</translation>
 <translation id="326999365752735949">Pobieram zmiany</translation>
@@ -4264,6 +4266,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4950993567860689081">Sesją zarządza Twoja organizacja. Administratorzy mogą usunąć Twój profil i obserwować Twój ruch w sieci.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{plik}few{# pliki}many{# plików}other{# pliku}}</translation>
 <translation id="495170559598752135">Czynności</translation>
+<translation id="4951966678293618079">Nigdy nie zapisuj haseł do tej witryny</translation>
 <translation id="4953808748584563296">Domyślny pomarańczowy awatar</translation>
 <translation id="4955710816792587366">Ustaw kod PIN</translation>
 <translation id="4959262764292427323">Hasła są zapisywane na Twoim koncie Google, dzięki czemu możesz ich używać na dowolnym urządzeniu</translation>
@@ -4293,6 +4296,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4981449534399733132">Aby wyczyścić dane przeglądania ze wszystkich zsynchronizowanych urządzeń i z konta Google, <ph name="BEGIN_LINK" />zaloguj się<ph name="END_LINK" />.</translation>
 <translation id="4982111327868342436">Wznów od tego samego miejsca na dowolnym urządzeniu</translation>
 <translation id="4982236238228587209">Oprogramowanie urządzenia</translation>
+<translation id="4986706507552097681">W ustawieniach możesz wybrać, co chcesz synchronizować. Google może korzystać z Twojej historii, aby dostosowywać działanie wyszukiwarki i innych usług.</translation>
 <translation id="4986728572522335985">Spowoduje to usunięcie z klucza bezpieczeństwa wszystkich danych, w tym kodu PIN</translation>
 <translation id="4988526792673242964">Strony</translation>
 <translation id="49896407730300355">&amp;Obróć w lewo</translation>

@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">तपाईंले खोल्नुभएको ट्याबमा कुनै वस्तुको मूल्य कम हुँदा तपाईंलाई अलर्ट पठाइने छ</translation>
 <translation id="3328308545011660196">सुझाव: <ph name="NUMBER_OF_TABS" /> ट्याबहरू एकअर्कासँग सम्बन्धित देखिन्छन्। यिनलाई एउटै समूहमा राख्ने हो?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">सेयर सिटको प्रिभ्यूको थम्बनेल।</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब संक्षिप्त गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको <ph name="TITLE_OF_GROUP" /> ट्याब समूह संक्षिप्त गर्नुहोस्।}}</translation>
 <translation id="3882834874697329510">तपाईंले खोल्नुभएको ट्याबमा कुनै वस्तुको मूल्य घट्दा अलर्ट प्राप्त गर्न सेटिङमा गई सूचना प्राप्त गर्ने सुविधा अन गर्नुहोस्।</translation>
 <translation id="3940195383040445971">ट्याबहरूमा मूल्य ट्र्याक गर्नुहोस्</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">स्क्रिनको सिरानको नजिक रहेको 'स्टोरसम्बन्धी जानकारी हेर्नुहोस्' नामक विकल्प</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> वटा ट्याब भएको ट्याब समूह बन्द गर्नुहोस्</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ट्याबहरू समूहबद्ध गरिए</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome को <ph name="TABS_COUNT_ONE" /> लिंक}other{Chrome का <ph name="TABS_COUNT_MANY" /> वटा लिंक}}</translation>
 <translation id="575494663145460764">मूल्य घटेको कुरासम्बन्धी अलर्ट प्राप्त गर्ने हो?</translation>
 <translation id="58326064309361797">ट्याबहरूलाई समूहबद्ध गर्न तिनीहरूलाई ड्र्याग गर्नुहोस्</translation>
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> वटा ट्याब भएको <ph name="TITLE_OF_GROUP" /> समूह बन्द गर्नुहोस्</translation>

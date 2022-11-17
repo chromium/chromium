@@ -207,6 +207,7 @@ kebijakan ini tidak melarang screenshot yang diambil dengan aplikasi sistem oper
 
       Jika kebijakan ini ditetapkan ke Salah, kotak centang "Selalu izinkan" tidak akan ditampilkan dan pengguna akan diminta untuk mengonfirmasi setiap kali protokol eksternal dipanggil.</translation>
 <translation id="1181598794547737681">Aktifkan UI balon download</translation>
+<translation id="1184562656144537588">Manifes v2 hanya diaktifkan untuk ekstensi yang diinstal otomatis</translation>
 <translation id="11903325225202653">Jika kebijakan ditetapkan ke Benar (True), Mode kontras tinggi akan tetap diaktifkan. Jika kebijakan ditetapkan ke Salah (False), Mode kontras tinggi akan tetap dinonaktifkan.
 
       Jika kebijakan ditetapkan, pengguna tidak dapat mengubahnya. Jika tidak ditetapkan, Mode kontras tinggi akan dinonaktifkan, tetapi pengguna dapat mengaktifkannya kapan saja.</translation>
@@ -1524,6 +1525,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
       Nilai kebijakan harus ditentukan dalam hari.</translation>
 <translation id="2466131534462628618">Autentikasi portal tawanan mengabaikan proxy</translation>
+<translation id="2467181864598429837">Perilaku browser default</translation>
 <translation id="2467896267442150508">Interval waktu paling lama satu minggu. Jika waktu mulai melebihi waktu berakhir, maka intervalnya akan berakhir di hari berikutnya.</translation>
 <translation id="2476249479201711962">Aktifkan akses ke menu konteks penyedia penelusuran default</translation>
 <translation id="247658312644322296">Tujuan 'Simpan sebagai PDF'</translation>
@@ -2685,6 +2687,7 @@ Jika kebijakan ini tidak disetel, perilaku baru akan digunakan seperti pengguna 
 <translation id="3524204464536655762">Jangan izinkan situs apa pun meminta akses ke perangkat USB melalui WebUSB API</translation>
 <translation id="3526752951628474302">Khusus pencetakan monokrom</translation>
 <translation id="3528000905991875314">Mengaktifkan halaman kesalahan alternatif</translation>
+<translation id="3528681240373634003">Mengontrol ketersediaan ekstensi manifes v2.</translation>
 <translation id="3530249698314520116">Mengonfigurasi daftar aturan untuk mencegah kebocoran data di <ph name="PRODUCT_OS_NAME" />.
       Kebocoran data dapat terjadi dengan menyalin dan menempelkan data, mentransfer file, mencetak, berbagi layar, atau mengambil screenshot ...dll.
 
@@ -2876,17 +2879,6 @@ Jika kebijakan ini tidak disetel, perilaku baru akan digunakan seperti pengguna 
       Jika kebijakan disetel ke Nonaktif, pengguna tidak akan dimintai sandi untuk membuka kunci perangkat.
 
       Jika kebijakan tidak disetel, pengguna dapat memilih apakah akan dimintai sandi untuk membuka kunci perangkat.</translation>
-<translation id="3729689441404871493">Mengaktifkan <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> untuk daftar URL di layar login dan layar kunci.
-
-      Menyetel kebijakan ini akan menentukan URL mana yang akan diizinkan menjadi bagian dari alur pengesahan untuk mendapatkan serangkaian sinyal dari perangkat.
-
-      Jika kebijakan ini disetel ke kosong atau tidak disetel, tidak ada endpoint yang akan dapat memulai alur pengesahan atau memperoleh sinyal dari perangkat.
-
-      Catatan: Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
-
-      Kebijakan ini hanya akan memengaruhi alur pengesahan di layar login dan layar kunci. Untuk mengubah alur pengesahan dalam sesi, gunakan kebijakan <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" />.
-
-      Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="3729937245044939404">Kebijakan ini tidak digunakan lagi di M70. Sebagai gantinya, gunakan <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> dan <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" />.
 
       Mengaktifkan fitur Isi Otomatis <ph name="PRODUCT_NAME" /> dan mengizinkan pengguna untuk melengkapi formulir web secara otomatis menggunakan informasi yang tersimpan sebelumnya, seperti alamat atau informasi kartu kredit.
@@ -2953,7 +2945,6 @@ Jika kebijakan ini tidak disetel, perilaku baru akan digunakan seperti pengguna 
 
       Catatan: Untuk perangkat yang dikelola oleh <ph name="MS_AD_NAME" />, kebijakan ini mendukung ekspansi <ph name="MACHINE_NAME_VARIABLE" /> ke nama mesin <ph name="MS_AD_NAME" /> atau substring darinya. Misalnya, jika nama mesin adalah <ph name="MACHINE_NAME_EXAMPLE" />, lalu <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> digantikan oleh 4 karakter yang dimulai setelah posisi ke-6, dengan kata lain, <ph name="MACHINE_NAME_PART_EXAMPLE" />. Posisi dimulai dari nol.</translation>
 <translation id="377044054160169374">Penerapan Pencegahan Pengalaman yang Menyinggung</translation>
-<translation id="3777833753656885744">Mengaktifkan alur pengesahan untuk daftar URL pada layar login dan layar kunci</translation>
 <translation id="3778689139323007309">Lakukan pemeriksaan pembatalan sertifikat server yang berhasil divalidasi yang ditandatangani oleh sertifikat CA yang diinstal secara lokal</translation>
 <translation id="3780152581321609624">Sertakan port non-standar di SPN Kerberos</translation>
 <translation id="378495749480642482">Mengonfigurasi apakah situs yang dibuka pengguna akan diizinkan untuk membuat sesi Augmented Reality yang imersif menggunakan <ph name="WEBXR_API_NAME" />.
@@ -3062,6 +3053,13 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 
       Jika kebijakan disetel ke 2, iklan akan diblokir di situs yang menayangkan iklan mengganggu.</translation>
 <translation id="3877517141460819966">Mode autentikasi faktor kedua yang terintegrasi</translation>
+<translation id="3877908683993837673">Kebijakan ini mengontrol stack software yang digunakan untuk berkomunikasi dengan server DNS: klien DNS Sistem Operasi, atau klien DNS bawaan dari <ph name="PRODUCT_NAME" />. Kebijakan ini tidak memengaruhi server DNS mana yang digunakan: misalnya, jika sistem operasi dikonfigurasi untuk menggunakan server DNS perusahaan, server yang sama tersebut akan digunakan oleh klien DNS bawaan. Kebijakan ini juga tidak akan mengontrol jika DNS-over-HTTPS digunakan; <ph name="PRODUCT_NAME" /> akan selalu menggunakan resolver bawaan untuk permintaan DNS-over-HTTPS. Lihat kebijakan <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> untuk mengetahui informasi mengenai pengontrolan DNS-over-HTTPS.
+
+      Jika kebijakan ini disetel ke Aktif, klien DNS bawaan akan digunakan, jika tersedia.
+
+      Jika kebijakan ini disetel ke Nonaktif, klien DNS bawaan hanya akan digunakan jika DNS-over-HTTPS sedang digunakan.
+
+      Jika kebijakan ini tidak disetel, klien DNS bawaan akan diaktifkan secara default di <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" />, <ph name="ANDROID_NAME" /> (jika DNS Pribadi atau VPN tidak diaktifkan), dan <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3879208481373875102">Konfigurasi daftar Aplikasi Web yang diinstal otomatis</translation>
 <translation id="3879700444818346084">Nonaktifkan impor sandi tersimpan saat browser pertama kali dijalankan</translation>
 <translation id="388237772682176890">Kebijakan ini sudah tidak digunakan di M53 dan dihapus di M54, karena dukungan SPDY/3.1 telah dihapus.
@@ -3163,6 +3161,7 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 <translation id="3990391739475801018">Mode Penghemat Baterai akan dinonaktifkan.</translation>
 <translation id="3994043824457743421">Menampilkan pengumuman slot tengah di Halaman Tab Baru</translation>
 <translation id="399433537808390819">Jangan menyediakan Mode Desktop Terpadu untuk pengguna</translation>
+<translation id="3995880046827722248">Manifes v2 dinonaktifkan</translation>
 <translation id="3996325823532867220">Kebijakan ini tidak lagi didukung, tetapi kebijakan terkait, <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" />, mungkin didukung di platform tertentu.
 
       Jika setelan ini diaktifkan, <ph name="PRODUCT_NAME" /> akan menjalankan verifikasi sertifikat server menggunakan pemverifikasi sertifikat bawaan.
@@ -3684,6 +3683,7 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 
       Jika kebijakan ini tidak ditetapkan, pengguna dapat menonaktifkan plugin apa pun yang diinstal pada sistem.</translation>
 <translation id="4549405078915181477">Aktifkan Waktu Pemakaian Perangkat untuk situs</translation>
+<translation id="4549695018986780856">Manifes v2 diaktifkan</translation>
 <translation id="4554651132977135445">Mode pemrosesan loopback kebijakan pengguna</translation>
 <translation id="4554991346503872538">Jangan pernah tawarkan terjemahan</translation>
 <translation id="4555850956567117258">Mengaktifkan pengesahan jarak jauh bagi pengguna</translation>
@@ -4020,7 +4020,6 @@ dan saat ini terjadi, dukungan untuk penggunaan pemverifikasi sertifikat dan roo
 
       Jika kebijakan pada versi hingga dan termasuk M76 tidak disetel, berarti default <ph name="PRODUCT_NAME" /> tidak dapat mengumpulkan atau mengupload log tersebut. Mulai versi M77, default <ph name="PRODUCT_NAME" /> akan dapat mengumpulkan dan mengupload log tersebut dari sebagian besar profil yang terdampak oleh kebijakan perusahaan tingkat pengguna berbasis cloud. Mulai versi M77 hingga dan termasuk M80, <ph name="PRODUCT_NAME" /> juga dapat mengumpulkan dan mengupload log secara default dari profil yang terdampak oleh manajemen lokal <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4911334289324462969">port 989 (blokir dapat dibatalkan hingga 01/02/2022)</translation>
-<translation id="4913065710388638917">Mengaktifkan alur pengesahan untuk daftar URL</translation>
 <translation id="4917385247580444890">Kuat</translation>
 <translation id="4918261735182294270">Izinkan pengguna memilih apakah akan mengaktifkan <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="491889618361437456">Mengaktifkan Integrasi <ph name="GOOGLE_CALENDAR_NAME" /></translation>
@@ -5046,6 +5045,19 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika disetel ke Benar (True), situs dapat mengirim modul WebAssembly serta lintas asal tanpa batasan.
 
       Jika disetel ke Salah (False) atau tidak disetel, situs hanya dapat mengirim modul WebAssembly ke jendela dan pekerja di asal yang sama.</translation>
+<translation id="6005906773585863978">Mengontrol apakah ekstensi manifes v2 dapat digunakan oleh browser.
+
+Dukungan ekstensi manifes v2 tidak akan digunakan lagi dan semua ekstensi perlu
+dimigrasikan ke v3 di masa mendatang. Informasi selengkapnya dan linimasa migrasi
+dapat ditemukan di https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
+
+Jika kebijakan disetel ke <ph name="DEFAULT" /> (0) atau tidak disetel, pemuatan ekstensi v2 akan ditentukan oleh browser, mengikuti linimasa di atas.
+Jika kebijakan disetel ke <ph name="DISABLE" /> (1), penginstalan ekstensi v2 akan diblokir dan ekstensi yang ada akan dinonaktifkan. Opsi ini akan diperlakukan sama seperti jika kebijakan tidak disetel setelah dukungan v2 dinonaktifkan secara default.
+Jika kebijakan disetel ke <ph name="ENABLE" /> (2), ekstensi v2 akan diizinkan. Opsi ini akan diperlakukan sama seperti jika kebijakan tidak disetel sebelum dukungan v2 dinonaktifkan secara default.
+Jika kebijakan disetel ke <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), ekstensi v2 yang diinstal otomatis akan diizinkan. Ini termasuk ekstensi yang dicantumkan oleh <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> atau <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> dengan <ph name="INSTALLATION_MODE" /> "force_installed" atau "normal_installed". Semua ekstensi v2 lainnya akan dinonaktifkan. Opsi ini akan diperlakukan sama seperti jika kebijakan tidak disetel sebelum dukungan v2 dinonaktifkan secara default.
+
+
+Ketersediaan ekstensi masih dikontrol oleh kebijakan lainnya.</translation>
 <translation id="6009062900206392980">Menetapkan kebijakan ke Tidak Ada (None) akan menonaktifkan fitur pembesaran layar di layar login.
 
        Jika kebijakan ditetapkan, pengguna dapat mengaktifkan atau menonaktifkan Kaca Pembesar Layar untuk sementara. Saat dimuat ulang atau tidak ada aktivitas selama satu menit, layar login akan kembali ke keadaan semula.
@@ -5633,6 +5645,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Catatan: Saat ini, mulai ulang otomatis hanya diaktifkan ketika layar login ditampilkan atau sesi aplikasi kios sedang berlangsung.</translation>
 <translation id="6556586932263358975">Izinkan penguncian layar</translation>
 <translation id="6559057113164934677">Jangan izinkan situs apa pun mengakses kamera dan mikrofon</translation>
+<translation id="65591220958874949">Gunakan klien DNS bawaan di Windows, macOS, Android, dan Chrome OS</translation>
 <translation id="6559221564468029245">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna tidak akan dianggap tidak ada aktivitas saat audio diputar. Hal ini mencegah tercapainya waktu tunggu tidak ada aktivitas dan mencegah diambilnya tindakan tidak ada aktivitas. Namun, peredupan layar, penonaktifan layar, dan penguncian layar akan tetap terjadi setelah waktu tunggu yang dikonfigurasi tercapai, meski terdapat aktivitas audio.
 
       Jika kebijakan disetel ke Nonaktif, sistem akan dapat menganggap pengguna tidak ada aktivitas meski terdapat aktivitas audio.</translation>
@@ -7371,17 +7384,6 @@ Cara yang disarankan untuk mengonfigurasi kebijakan di Windows adalah melalui GP
 <translation id="8274603902181597201">Menghapus total direktori beranda ecryptfs pengguna dan memulai direktori beranda yang dienkripsi ext4.</translation>
 <translation id="8274926413890711289">Mengaktifkan kontrol pelaporan terperinci</translation>
 <translation id="8278133379873210419">Menyembunyikan Dialog JavaScript yang dipicu dari subframe asal yang berbeda</translation>
-<translation id="8279037559659894049">Mengaktifkan <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> untuk daftar URL.
-
-      Menyetel kebijakan ini akan menentukan URL mana yang akan diizinkan menjadi bagian dari alur pengesahan untuk mendapatkan serangkaian sinyal dari perangkat.
-
-      Jika kebijakan ini disetel ke kosong atau tidak disetel, tidak ada endpoint yang akan dapat memulai alur pengesahan atau memperoleh sinyal dari perangkat.
-
-      Catatan: Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
-
-      Untuk ChromeOS, kebijakan ini berhubungan dengan pengesahan jarak jauh dengan sertifikat yang otomatis dibuat dan diupload ke Server Pengelolaan Perangkat.
-
-      Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="8284296539558710573">Permintaan Autentikasi HTTP lintas asal</translation>
 <translation id="8284527236880877730">Jika <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> Dinonaktifkan, menyetel <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> akan menentukan persentase yang menskalakan penundaan peredupan layar saat perangkat dalam mode presentasi. Jika penundaan peredupan layar diskalakan, penundaan penonaktifan layar, penguncian layar, dan tidak ada aktivitas akan disesuaikan untuk mempertahankan jarak waktu yang sama dari penundaan peredupan layar seperti yang disetel sebelumnya.
 

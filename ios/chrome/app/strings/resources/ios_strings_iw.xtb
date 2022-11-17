@@ -572,6 +572,7 @@
 <translation id="5489208564673669003">‏הסבר על ניהול קובצי ה-cookie עבור כל האתרים זמין במאמר <ph name="BEGIN_LINK" />הגדרות קובצי cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">‏חסימה של כל קובצי ה-cookie (לא מומלץ)</translation>
 <translation id="5513681519188741830">לפני <ph name="TIME" /> שעות</translation>
+<translation id="5520466080178053306">מקישים על 'מנהל הסיסמאות' ואז על 'הוספה'</translation>
 <translation id="5525095647255982834">‏כדי לשלוח את הכרטיסייה הזו למכשיר אחר, יש להיכנס ל-Chrome במכשיר האחר.</translation>
 <translation id="5525269841082836315">יצירת ביטוי סיסמה</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> נמצאו</translation>
@@ -879,6 +880,7 @@
 <translation id="7726702057919861819">תפריט ← היסטוריה ← מחיקה של נתוני הגלישה</translation>
 <translation id="7738120385185846461">דיווח על בעיה…</translation>
 <translation id="7741325291586284254">דף חדש של כרטיסיית מצב אנונימי</translation>
+<translation id="7744394900930577716">סיסמאות ששמורות באפליקציות אחרות</translation>
 <translation id="7756478488453921771">תפריט ← הגדרות ← אמצעי תשלום</translation>
 <translation id="7765158879357617694">העברה</translation>
 <translation id="7772032839648071052">אישור משפט-סיסמה</translation>
@@ -1056,6 +1058,7 @@
 <translation id="9081058212938299310">לעדכן את הסיסמה של <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">כדי לסנכרן ולהתאים אישית את החוויה במכשירים שונים, צריך להפעיל את הסנכרון.</translation>
 <translation id="9087108903408689779">‏הצעה לסיסמה מ-Chrome:</translation>
+<translation id="9093271241977565440">בחלק העליון של המסך, מקישים על סמל החיפוש</translation>
 <translation id="9094033019050270033">עדכון סיסמה</translation>
 <translation id="9097506547406246598">לא ניתן לבטל את המעקב. משהו השתבש.</translation>
 <translation id="9100610230175265781">יש להזין ביטוי סיסמה</translation>

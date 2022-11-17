@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">തുറന്നിരിക്കുന്ന ടാബിൽ, വിലക്കുറവുള്ളപ്പോൾ നിങ്ങൾക്ക് മുന്നറിയിപ്പ് ലഭിക്കും</translation>
 <translation id="3328308545011660196">നിർദ്ദേശം: <ph name="NUMBER_OF_TABS" /> ടാബുകൾ സമാനമാണെന്ന് തോന്നുന്നു. അവ ഗ്രൂപ്പ് ചെയ്യണോ?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">ഷെയർഷീറ്റ് പ്രിവ്യൂ തംബ്നൈൽ</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ടാബ് ചുരുക്കുക.}other{<ph name="TABS_COUNT_MANY" /> ടാബുകളുള്ള <ph name="TITLE_OF_GROUP" /> ടാബ് ഗ്രൂപ്പ് ചുരുക്കുക.}}</translation>
 <translation id="3882834874697329510">തുറന്നിരിക്കുന്ന ടാബിൽ വിലക്കുറവുള്ളപ്പോൾ അറിയിപ്പ് ലഭിക്കാൻ ക്രമീകരണത്തിൽ അറിയിപ്പുകൾ ഓണാക്കുക.</translation>
 <translation id="3940195383040445971">ടാബുകളിൽ നിരക്കുകൾ ട്രാക്ക് ചെയ്യുക</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">സ്റ്റോർ വിവരങ്ങൾ കാണുക, സ്ക്രീനിന്റെ മുകൾ ഭാഗത്തിന് സമീപം ഓപ്ഷൻ ലഭ്യമാണ്</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> ടാബുകളുള്ള ടാബ് ഗ്രൂപ്പ് അടയ്ക്കുക</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ടാബുകൾ ഗ്രൂപ്പ് ചെയ്‌തു</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome-ൽ നിന്നുള്ള <ph name="TABS_COUNT_ONE" /> ലിങ്ക്}other{Chrome-ൽ നിന്നുള്ള <ph name="TABS_COUNT_MANY" /> ലിങ്ക്}}</translation>
 <translation id="575494663145460764">വിലയിടിവിന് മുന്നറിയിപ്പുകൾ നേടണോ?</translation>
 <translation id="58326064309361797">ടാബുകൾ ഗ്രൂപ്പ് ചെയ്യാൻ അവ വലിച്ചിടുക</translation>
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> ടാബുകളുള്ള <ph name="TITLE_OF_GROUP" /> ഗ്രൂപ്പ് അടയ്ക്കുക</translation>

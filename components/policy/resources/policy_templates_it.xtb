@@ -2831,17 +2831,6 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
       Se il criterio viene impostato su Disabled, agli utenti non viene richiesta la password per sbloccare il dispositivo.
 
       Se non viene configurato, gli utenti possono scegliere se devono inserire una password o meno per sbloccare il dispositivo.</translation>
-<translation id="3729689441404871493">Consente di attivare <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> per un elenco di URL nella schermata di accesso e di blocco.
-
-      La configurazione di questo criterio consente di specificare gli URL autorizzati a far parte del flusso di attestazione per ricevere l'insieme di segnali dalla macchina.
-
-      Se questo criterio non viene impostato o se viene lasciato vuoto, nessun endpoint potrà avviare il flusso di attestazione o ricevere segnali dalla macchina.
-
-      Nota: i caratteri jolly, <ph name="WILDCARD_VALUE" />, sono consentiti.
-
-      Questo criterio inciderà soltanto sul flusso di attestazione nella schermata di accesso e di blocco. Per modificare il flusso di attestazione all'interno della sessione, utilizza il criterio <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" />.
-
-      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="3729937245044939404">Questo criterio è stata deprecato in M70, utilizza invece <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> e <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" />.
 
       Consente di attivare la funzionalità di compilazione automatica di <ph name="PRODUCT_NAME" /> e permette agli utenti di compilare automaticamente i moduli web utilizzando informazioni memorizzate in precedenza, come l'indirizzo o i dati della carta di credito.
@@ -2907,7 +2896,6 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
 
       Nota: per i dispositivi <ph name="MS_AD_NAME" /> gestiti, questo criterio supporta l'espansione di <ph name="MACHINE_NAME_VARIABLE" /> al nome della macchina <ph name="MS_AD_NAME" /> oppure a una sua sottostringa. Ad esempio, se il nome della macchina è <ph name="MACHINE_NAME_EXAMPLE" />, la variabile <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> viene sostituita dai quattro caratteri che iniziano dopo la sesta posizione, ad esempio <ph name="MACHINE_NAME_PART_EXAMPLE" />. La posizione è in base zero.</translation>
 <translation id="377044054160169374">Applicazione dell'intervento in caso di esperienza intrusiva</translation>
-<translation id="3777833753656885744">Attiva il flusso di attestazione per un elenco di URL nella schermata di accesso e di blocco</translation>
 <translation id="3778689139323007309">Esegui i controlli delle revoche per i certificati dei server che vengono convalidati correttamente e firmati tramite certificati CA installati localmente</translation>
 <translation id="3780152581321609624">Includi porta non standard in Kerberos SPN</translation>
 <translation id="378495749480642482">Consente di stabilire se i siti visitati dagli utenti possono creare sessioni di realtà aumentata immersive usando <ph name="WEBXR_API_NAME" />.
@@ -3951,7 +3939,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 
       Se il criterio non viene impostato su versioni fino alla M76 inclusa, per impostazione predefinita <ph name="PRODUCT_NAME" /> non può raccogliere e caricare questi log. A partire dalla versione M77, per impostazione predefinita <ph name="PRODUCT_NAME" /> può raccogliere e caricare questi log dalla maggior parte dei profili interessati dai criteri aziendali a livello di utente basati su cloud. Dalla versione M77 fino alla M80 inclusa, <ph name="PRODUCT_NAME" /> può anche raccogliere e caricare questi log per impostazione predefinita dai profili soggetti alla gestione on-premise di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4911334289324462969">porta 989 (può essere sbloccata fino al 01/02/2022)</translation>
-<translation id="4913065710388638917">Attiva flusso di attestazione per un elenco di URL</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4918261735182294270">Consenti agli utenti di scegliere se attivare <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="491889618361437456">Attiva integrazione di <ph name="GOOGLE_CALENDAR_NAME" /></translation>
@@ -5693,6 +5680,13 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Se questo criterio viene impostato su False, viene applicata la visualizzazione dell'URL predefinita.
       Se questo criterio non viene configurato, viene applicata la visualizzazione dell'URL predefinita e l'utente può passare dalla visualizzazione predefinita all'URL completo e viceversa tramite un menu contestuale.
       </translation>
+<translation id="6670716303606644752">Come descritto alla pagina https://www.chromestatus.com/feature/5148698084376576, le finestre di dialogo modali JavaScript, attivate da <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" /> e <ph name="JS_PROMPT" />, saranno bloccate in <ph name="PRODUCT_NAME" /> se attivate da un frame secondario la cui origine è diversa da quella del frame principale.
+
+Il criterio consente di eseguire l'override di questa modifica.
+Se il criterio viene attivato o se non viene configurato, le finestre di dialogo JavaScript attivate da un frame secondario di origine diversa verranno bloccate.
+Se il criterio viene disattivato, le finestre di dialogo JavaScript attivate da un frame secondario di origine diversa non verranno bloccate.
+
+Il criterio verrà rimosso da <ph name="PRODUCT_NAME" /> in futuro.</translation>
 <translation id="6670794785040100077">Disattiva l'invio di documenti a <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6672070613706645316">Consenti agli utenti di personalizzare lo sfondo della pagina Nuova scheda</translation>
 <translation id="6672630473862787247">Attiva l'autenticazione ambientale nelle sessioni standard, Ospite e in modalità in incognito.</translation>
@@ -7272,17 +7266,6 @@ Su Windows è consigliabile configurare le norme tramite Criteri di gruppo, anch
 <translation id="8274603902181597201">Cancella la home directory ecryptfs dell'utente e inizia con una nuova home directory criptata tramite ext4</translation>
 <translation id="8274926413890711289">Attiva i controlli di reporting granulare</translation>
 <translation id="8278133379873210419">Elimina le finestre di dialogo JavaScript attivate da frame secondari di origine diversa</translation>
-<translation id="8279037559659894049">Consente di attivare <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> per un elenco di URL.
-
-      La configurazione di questo criterio consente di specificare gli URL autorizzati a far parte del flusso di attestazione per ricevere l'insieme di segnali dalla macchina.
-
-      Se questo criterio non viene impostato o se viene lasciato vuoto, nessun endpoint potrà avviare il flusso di attestazione o ricevere segnali dalla macchina.
-
-      Nota: i caratteri jolly, <ph name="WILDCARD_VALUE" />, sono consentiti.
-
-      Per ChromeOS, questo criterio riguarda l'attestazione da remoto, durante la quale un certificato viene generato e caricato automaticamente sul Server di gestione del dispositivo.
-
-      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="8284296539558710573">Prompt di autenticazione HTTP multiorigine</translation>
 <translation id="8284527236880877730">Se il criterio <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> è impostato su Disattivato, la configurazione del criterio <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> consente di specificare la percentuale di regolazione del ritardo di oscuramento dello schermo quando il dispositivo è in modalità di presentazione. Quando il ritardo di oscuramento dello schermo viene regolato, i ritardi di spegnimento, blocco e inattività dello schermo vengono regolati per mantenere gli stessi distacchi dal ritardo di oscuramento dello schermo impostato in origine.
 

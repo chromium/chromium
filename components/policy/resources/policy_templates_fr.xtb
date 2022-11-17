@@ -2860,17 +2860,6 @@ Si cette règle n'est pas configurée, le nouveau comportement sera utilisé tou
       Si cette règle est désactivée, l'utilisateur n'est pas invité à saisir de mot de passe pour déverrouiller l'appareil.
 
       Si cette règle n'est pas configurée, l'utilisateur peut choisir d'être invité ou non à saisir un mot de passe pour déverrouiller l'appareil.</translation>
-<translation id="3729689441404871493">Activez <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> pour une liste d'URL sur l'écran de connexion et de verrouillage.
-
-      Cette règle indique quelles URL doivent être autorisées à faire partie du parcours d'attestation visant à obtenir l'ensemble de signaux auprès de la machine.
-
-      Si cette règle n'est pas configurée ou qu'elle est vide, aucun point de terminaison ne peut lancer le parcours d'attestation ni obtenir de signaux auprès de la machine.
-
-      Remarque : les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.
-
-      Cette règle ne s'appliquera qu'au parcours d'attestation sur l'écran de connexion et de verrouillage. Pour modifier le flux d'attestation en cours de session, veuillez utiliser la règle <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" />.
-
-      Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="3729937245044939404">Cette règle a été abandonnée dans la version M70. Veuillez utiliser <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> et <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" /> à la place.
 
       Active la fonctionnalité de saisie automatique de <ph name="PRODUCT_NAME" />, qui permet aux utilisateurs de remplir automatiquement des formulaires Web à partir de données stockées précédemment, telles qu'une adresse et des infos de carte de crédit.
@@ -2936,7 +2925,6 @@ Si cette règle n'est pas configurée, le nouveau comportement sera utilisé tou
 
       Remarque : Pour les appareils gérés par <ph name="MS_AD_NAME" />, cette règle permet l'extension de <ph name="MACHINE_NAME_VARIABLE" /> sur le nom de machine <ph name="MS_AD_NAME" /> ou l'une de ses sous-chaînes. Par exemple, si le nom de machine est <ph name="MACHINE_NAME_EXAMPLE" />, <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> est remplacé par les quatre caractères suivant la sixième position, soit <ph name="MACHINE_NAME_PART_EXAMPLE" />. La position prend en compte le zéro.</translation>
 <translation id="377044054160169374">Application de l'intervention en cas d'expérience abusive</translation>
-<translation id="3777833753656885744">Activer le flux d'attestation pour une liste d'URL sur l'écran de connexion et de verrouillage</translation>
 <translation id="3778689139323007309">Procéder à des vérifications de la révocation des certificats de serveur qui sont validés et signés par des certificats CA installés localement</translation>
 <translation id="3780152581321609624">Inclure un port non standard dans le SPN Kerberos</translation>
 <translation id="378495749480642482">Définit si les sites auxquels l'utilisateur accède sont autorisés à créer des sessions de réalité augmentée immersive avec <ph name="WEBXR_API_NAME" />.
@@ -3971,7 +3959,6 @@ Il est prévu que cette règle soit supprimée dans la version 113 de <ph name=
 
       Sur <ph name="PRODUCT_NAME" /> version M76 ou inférieure, si la règle n'est pas définie, l'application ne peut, par défaut, ni collecter, ni importer ces journaux. À partir de la version M77, <ph name="PRODUCT_NAME" /> est, par défaut, en mesure de collecter et d'importer ces journaux à partir de la plupart des profils affectés par les règles d'entreprise au niveau de l'utilisateur dans le cloud. De la version M77 à la version M80, <ph name="PRODUCT_NAME" /> peut également, par défaut, collecter et importer ces journaux à partir des profils affectés par la fonction de gestion sur site de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4911334289324462969">port 989 (peut être débloqué jusqu'au 01/02/2022)</translation>
-<translation id="4913065710388638917">Activer le flux d'attestation pour une liste d'URL</translation>
 <translation id="4917385247580444890">Très bon</translation>
 <translation id="4918261735182294270">Laisser aux utilisateurs le choix d'activer ou de désactiver <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="491889618361437456">Activer l'intégration de <ph name="GOOGLE_CALENDAR_NAME" /></translation>
@@ -4092,6 +4079,7 @@ Il est prévu que cette règle soit supprimée dans la version 113 de <ph name=
 <translation id="5025239932007658691">Si cette règle est activée ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> envoie des requêtes occasionnelles à un serveur Google pour récupérer un horodatage précis.
 
       Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> cesse d'envoyer ces requêtes.</translation>
+<translation id="5033070732967197381">Autoriser les requêtes API WebAuthn sur les sites avec des certificats TLS non fonctionnels.</translation>
 <translation id="5034504101537897433">Activer les rapports d'erreur de l'appareil</translation>
 <translation id="5039110755072335605">Prise en charge des en-têtes de requêtes CORS sans caractères génériques</translation>
 <translation id="504116558738617678">N'afficher des avertissements de type "espace disque insuffisant" que si l'appareil n'est pas géré ou s'il n'a qu'un seul utilisateur</translation>
@@ -5649,6 +5637,7 @@ Si vous sélectionnez les options suivantes :
       - Si cette règle est désactivée, les administrateurs doivent le signaler aux utilisateurs finaux de l'appareil.</translation>
 <translation id="6609867253856597039">Définir l'expérience utilisateur pour les fonctionnalités désactivées</translation>
 <translation id="6614557704487944013">Autoriser les utilisateurs à se servir du navigateur <ph name="LACROS_NAME" /></translation>
+<translation id="661610294649586421">Ne pas autoriser les requêtes API WebAuthn sur les sites avec des certificats TLS non fonctionnels.</translation>
 <translation id="6617589895942747919">Heure de début de l'intervalle (incluse).</translation>
 <translation id="6621830999036927230">Si cette règle est configurée, l'hôte d'accès à distance utilise cette URL pour valider les jetons d'authentification provenant des clients d'accès à distance afin d'accepter les connexions. Si cette règle est définie sur une chaîne vide ou qu'elle n'est pas configurée, elle est désactivée.
 
@@ -5951,6 +5940,9 @@ Si vous sélectionnez les options suivantes :
 <translation id="6907778402784621686">Bloquer le contenu non sécurisé sur ces sites</translation>
 <translation id="6908640907898649429">Configure le moteur de recherche par défaut. Vous pouvez définir le moteur de recherche par défaut dont se servira l'utilisateur ou choisir de désactiver le moteur de recherche par défaut.</translation>
 <translation id="6913068954484253496">Autoriser <ph name="PRODUCT_NAME" /> à se connecter aux appareils Cast sur toutes les adresses IP.</translation>
+<translation id="6915493311660114995">Si cette règle est activée, <ph name="PRODUCT_NAME" /> autorise les requêtes d'authentification Web sur les sites dont les certificats TLS comportent des erreurs (c'est-à-dire les sites Web considérés comme non sécurisés).
+
+Si la règle est désactivée ou n'est pas configurée, le comportement par défaut s'applique et ces requêtes sont bloquées.</translation>
 <translation id="6919819553978815392">Si cette règle est définie sur "true" ou si elle n'est pas configurée, <ph name="PRODUCT_NAME" /> et <ph name="LACROS_NAME" /> autorisent les connexions en mode Invité. Les connexions en mode Invité sont des profils <ph name="PRODUCT_NAME" /> où toutes les fenêtres s'ouvrent en mode navigation privée.
 
       Si elle est définie sur "false", <ph name="PRODUCT_NAME" /> et <ph name="LACROS_NAME" /> n'autorisent pas l'utilisation de profils Invité.
@@ -6863,6 +6855,7 @@ Dans le cas contraire, le moteur de rendu par défaut sera utilisé pour tous le
 <translation id="782661371433719637">Interdire à tous les sites de demander l'accès en lecture aux fichiers et répertoires via l'API File System</translation>
 <translation id="7827127381981620448">Application de plate-forme</translation>
 <translation id="7829436838673974723">Autoriser les pages à envoyer des requêtes XHR synchrones pendant leur fermeture</translation>
+<translation id="782978857350824974">Autoriser les requêtes d'authentification Web sur les sites avec des certificats TLS non fonctionnels.</translation>
 <translation id="7832225468415136704">Empêcher Chrome Cleanup d'analyser périodiquement le système, et désactiver les analyses manuelles</translation>
 <translation id="7833148823006528332">Identifiant d'appli Android (par ex. : "com.google.android.gm" pour Gmail)</translation>
 <translation id="7835218570504220753">Désactiver les clics automatiques</translation>
@@ -7257,6 +7250,7 @@ Si cette règle n'est pas définie, l'écran de confidentialité est désactivé
 <translation id="8250048892729838843">Cette règle est obsolète. Si cette règle est activée ou qu'elle n'est pas configurée, l'appareil peut recevoir des contrôles de rapports précis.
       Si cette règle est désactivée, les appareils enregistrés ne reçoivent pas de contrôles de rapports précis.</translation>
 <translation id="82530263956734297">Identifiants d'extension à exclure de la liste de blocage</translation>
+<translation id="8256006033157034334">Cette règle est obsolète et incompatible, veuillez utiliser la règle <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" /> à la place.</translation>
 <translation id="8256688113167012935">Définit quel nom de compte s'affiche sur l'écran de connexion de <ph name="PRODUCT_OS_NAME" /> pour le compte local de l'appareil correspondant.
 
       Si cette règle est définie, l'écran de connexion affiche la chaîne spécifiée dans le sélecteur de comptes reposant sur les images, pour le compte local de l'appareil correspondant.
@@ -7296,17 +7290,6 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8274603902181597201">Nettoyer le répertoire d'accueil eCryptfs de l'utilisateur et employer un nouveau répertoire d'accueil chiffré avec ext4.</translation>
 <translation id="8274926413890711289">Activer les contrôles de rapports précis</translation>
 <translation id="8278133379873210419">Supprimer les boîtes de dialogue JavaScript déclenchées depuis des sous-frames d'une autre origine</translation>
-<translation id="8279037559659894049">Activer <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> pour une liste d'URL.
-
-      Cette règle indique quelles URL doivent être autorisées à faire partie du parcours d'attestation visant à obtenir l'ensemble de signaux auprès de la machine.
-
-      Si cette règle n'est pas configurée ou qu'elle est vide, aucun point de terminaison ne peut lancer le parcours d'attestation ni obtenir de signaux auprès de la machine.
-
-      Remarque : les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.
-
-      Pour ChromeOS, cette règle est liée à l'attestation à distance où un certificat est automatiquement généré et importé sur le serveur de gestion des appareils.
-
-      Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="8284296539558710573">Commandes d'authentification HTTP multi-domaines</translation>
 <translation id="8284527236880877730">Si la règle <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> est désactivée, la règle <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> permet de définir le pourcentage de scaling du délai d'assombrissement lorsque l'appareil effectue la présentation. Le scaling de ce délai décale d'autant le moment où l'écran doit s'éteindre, se verrouiller et se mettre en veille, ceci afin de maintenir l'intervalle initialement configuré.
 

@@ -282,6 +282,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Vegetarmat</translation>
 <translation id="1623104350909869708">Hindre denne siden i å opprette flere dialogruter</translation>
+<translation id="1633137413609266904">{0,plural, =1{Åpning av denne filen er blokkert på grunn av en administratorregel}other{Åpning av # filer er blokkert på grunn av en administratorregel}}</translation>
 <translation id="1634828734222219955">Totalt</translation>
 <translation id="163669211644121865">Skatteforberedelse og -planlegging</translation>
 <translation id="1638780421120290329">Kan ikke lagre kortet</translation>
@@ -896,6 +897,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3270847123878663523">&amp;Angre omorganiseringen</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> vil koble til</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3281350579597955952">{0,plural, =1{Administratorreglene anbefaler ikke at du åpner denne filen i <ph name="DESTINATION_NAME" />}other{Administratorreglene anbefaler ikke at du åpner disse filene i <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Organisasjonen din, <ph name="ENROLLMENT_DOMAIN" />, har sendt noe informasjon til de følgende nettstedene, for eksempel innstillinger eller retningslinjer.</translation>
 <translation id="3282497668470633863">Legg til navnet på kortet</translation>
 <translation id="3286372614333682499">stående</translation>
@@ -1295,6 +1297,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4275830172053184480">Start enheten din på nytt</translation>
 <translation id="4277028893293644418">Tilbakestill passordet</translation>
 <translation id="4278390842282768270">Tillatt</translation>
+<translation id="4281998142035485137">{0,plural, =1{Vil du åpne den konfidensielle filen?}other{Vil du åpne de konfidensielle filene?}}</translation>
 <translation id="4282346679996504092">Varsler for dette produktet er slått av, og bokmerket er fjernet</translation>
 <translation id="4285498937028063278">Løsne</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Dette kortet er lagret i Google-kontoen din}other{Disse kortene er lagret i Google-kontoen din}}</translation>
@@ -1928,6 +1931,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5903264686717710770">Tittel:</translation>
 <translation id="5904360430676679685">Familie og forhold</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synkronisert)</translation>
+<translation id="5911110632211230665">Blokkert åpning</translation>
 <translation id="59174027418879706">Aktivert</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 er i bruk}other{# er i bruk}}</translation>

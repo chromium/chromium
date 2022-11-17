@@ -282,6 +282,7 @@
 <translation id="1620510694547887537">कैमरा</translation>
 <translation id="1622571349153632031">शाकाहारी पकवान</translation>
 <translation id="1623104350909869708">इस पेज को अतिरिक्त डॉयलॉग बनाने से रोकें</translation>
+<translation id="1633137413609266904">{0,plural, =1{एडमिन नीति के तहत, इस फ़ाइल को खोलने की अनुमति नहीं है}one{एडमिन नीति के तहत, # फ़ाइल को खोलने की अनुमति नहीं है}other{एडमिन नीति के तहत, # फ़ाइलों को खोलने की अनुमति नहीं है}}</translation>
 <translation id="1634828734222219955">कुल</translation>
 <translation id="163669211644121865">टैक्स भरने से जुड़ी जानकारी तैयार करने और सलाह देने वाली सेवाएं</translation>
 <translation id="1638780421120290329">कार्ड सेव नहीं किया जा सकता</translation>
@@ -896,6 +897,7 @@
 <translation id="3270847123878663523">&amp;पुन: क्रमित करना वापस लाएं</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> कनेक्ट करना चाहती है</translation>
 <translation id="3272091146646336650">सुपर बी</translation>
+<translation id="3281350579597955952">{0,plural, =1{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> में खोलने का सुझाव नहीं देती}one{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> में खोलने का सुझाव नहीं देती}other{एडमिन नीति, इन फ़ाइलों को <ph name="DESTINATION_NAME" /> में खोलने का सुझाव नहीं देती}}</translation>
 <translation id="3282085321714087552">आपके संगठन <ph name="ENROLLMENT_DOMAIN" /> ने नीचे दी गई वेबसाइटों को सेटिंग या नीतियों वगैरह के बारे में कुछ जानकारी भेजी है.</translation>
 <translation id="3282497668470633863">कार्ड पर नाम जोड़ें</translation>
 <translation id="3286372614333682499">पोर्ट्रेट</translation>
@@ -1295,6 +1297,7 @@
 <translation id="4275830172053184480">अपना डिवाइस फिर से प्रारंभ करें</translation>
 <translation id="4277028893293644418">पासवर्ड रीसेट करें</translation>
 <translation id="4278390842282768270">अनुमति है</translation>
+<translation id="4281998142035485137">{0,plural, =1{क्या आपको गोपनीय फ़ाइल खोलनी है?}one{क्या आपको गोपनीय फ़ाइल खोलनी है?}other{क्या आपको गोपनीय फ़ाइलें खोलनी हैं?}}</translation>
 <translation id="4282346679996504092">इस प्रॉडक्ट के लिए, सूचनाएं पाने की सुविधा बंद कर दी गई है और बुकमार्क को हटा दिया गया है</translation>
 <translation id="4285498937028063278">अनपिन करें</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{यह कार्ड आपके Google खाते में सेव कर लिया गया है}one{ये कार्ड आपके Google खाते में सेव कर लिए गए हैं}other{ये कार्ड आपके Google खाते में सेव कर लिए गए हैं}}</translation>
@@ -1928,6 +1931,7 @@
 <translation id="5903264686717710770">शीर्षक :</translation>
 <translation id="5904360430676679685">परिवार और रिश्तेदार</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (सिंक किया गया)</translation>
+<translation id="5911110632211230665">फ़ाइल को खोलने की अनुमति नहीं है</translation>
 <translation id="59174027418879706">चालू किया गया</translation>
 <translation id="5919090499915321845">बी10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 इस्तेमाल में है}one{# इस्तेमाल में है}other{# इस्तेमाल में हैं}}</translation>

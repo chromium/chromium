@@ -282,6 +282,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="1620510694547887537">Ikhamela</translation>
 <translation id="1622571349153632031">I-cuisine yabangadli inyama</translation>
 <translation id="1623104350909869708">Vimbela leli khasi kusukela ekudaleni izingxoxo ezingeziwe</translation>
+<translation id="1633137413609266904">{0,plural, =1{Ukukopisha leli fayela kuvinjelwe inqubomgomo yomlawuli}one{Ukukopisha amafayela angu-# kuvinjelwe inqubomgomo yomlawuli}other{Ukukopisha amafayela angu-# kuvinjelwe inqubomgomo yomlawuli}}</translation>
 <translation id="1634828734222219955">Inani</translation>
 <translation id="163669211644121865">Ukulungiselwa kwentela nokuhlela</translation>
 <translation id="1638780421120290329">Ayikwazi ukulondoloza ikhadi</translation>
@@ -894,6 +895,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="3270847123878663523">&amp;Hlehlisa ukuhlela kabusha</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> ufuna ukuxhuma</translation>
 <translation id="3272091146646336650">I-Super-B</translation>
+<translation id="3281350579597955952">{0,plural, =1{Inqubomgomo yomlawuli ayincomi ukuvula leli fayela e-<ph name="DESTINATION_NAME" />}one{Inqubomgomo yomlawuli ayincomi ukuvula lamafayela ku-<ph name="DESTINATION_NAME" />}other{Inqubomgomo yomlawuli ayincomi ukuvula lamafayela ku-<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Inhlangano yakho, i-<ph name="ENROLLMENT_DOMAIN" />, ithumele ulwazi kumawebhusayithi alandelayo, njengamasethingi noma izinqumbomgomo.</translation>
 <translation id="3282497668470633863">Engeza igama kukhadi</translation>
 <translation id="3286372614333682499">ukuma ngobude</translation>
@@ -1292,6 +1294,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="4275830172053184480">Qalisa kabusha idivayisi yakho</translation>
 <translation id="4277028893293644418">Setha kabusha iphasiwedi</translation>
 <translation id="4278390842282768270">Kuvunyelwe</translation>
+<translation id="4281998142035485137">{0,plural, =1{Vula ifayela lokuyimfihlo?}one{Vula amafayela wokuyimfihlo?}other{Vula amafayela wokuyimfihlo?}}</translation>
 <translation id="4282346679996504092">Izaziso zalo mkhiqizo zivaliwe futhi ibhukhimakhi isusiwe</translation>
 <translation id="4285498937028063278">Susa ukuphina</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Leli khadi lilondolozwe ku-akhawunti yakho ye-Google}one{Lawa makhadi alondolozwe ku-akhawunti yakho ye-Google}other{Lawa makhadi alondolozwe ku-akhawunti yakho ye-Google}}</translation>
@@ -1925,6 +1928,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="5903264686717710770">Isihloko:</translation>
 <translation id="5904360430676679685">Umndeni nobudlelwano</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (kuvumelanisiwe)</translation>
+<translation id="5911110632211230665">Ukuvula okuvinjelwe</translation>
 <translation id="59174027418879706">Kunikwe amandla</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 esebenzayo}one{# esebenzayo}other{# esebenzayo}}</translation>

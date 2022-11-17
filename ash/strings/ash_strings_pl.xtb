@@ -175,6 +175,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1862380676329487333">Zaktualizuj i wyloguj się</translation>
 <translation id="1864454756846565995">Urządzenie USB-C (tylny port)</translation>
 <translation id="1869497990620230175">Szybkie pliki</translation>
+<translation id="1871703283152909317">Włącz dostęp w obu przypadkach</translation>
 <translation id="1879018240766558464">Okna incognito nie są obecnie obsługiwane. Inne aplikacje zostaną zapisane.</translation>
 <translation id="1882814835921407042">Brak sieci komórkowej</translation>
 <translation id="1882897271359938046">Kopia na <ph name="DISPLAY_NAME" /></translation>
@@ -924,6 +925,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6095008505822982596">Prędkość mowy</translation>
 <translation id="6099678161144790572">Edytowane w zeszłym miesiącu</translation>
 <translation id="6103838137565245112">system</translation>
+<translation id="6107292179555508368">Dostęp do mikrofonu i aparatu na tym urządzeniu jest wyłączony</translation>
 <translation id="6114505516289286752">Pliki z mową w języku: <ph name="LANGUAGE" /> zostały pobrane</translation>
 <translation id="6116825164611323644">Dostęp do aparatu jest wyłączony na tym urządzeniu</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -952,6 +954,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6259254695169772643">Zaznacz rysikiem</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: aktywuję...</translation>
 <translation id="6274202259872570803">Screencast</translation>
+<translation id="6282694724099204652">Włącz dostęp, aby zezwolić aplikacjom i stronom internetowym z uprawnieniami na korzystanie z mikrofonów i aparatów na tym urządzeniu.</translation>
 <translation id="6283712521836204486">Tryb Nie przeszkadzać jest wyłączony.</translation>
 <translation id="6284232397434400372">Rozdzielczość została zmieniona</translation>
 <translation id="6288235558961782912">Adres <ph name="USER_EMAIL_ADDRESS" /> będzie można dodać ponownie później po uzyskaniu zgody rodzica.</translation>

@@ -2389,6 +2389,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3143515551205905069">Canslo cysoni</translation>
 <translation id="3143754809889689516">Chwarae o'r dechrau</translation>
 <translation id="3144647712221361880">Agor Dolen fel</translation>
+<translation id="3144896554017119333">Estyniadau a rhagor</translation>
 <translation id="3149510190863420837">Apiau Chrome</translation>
 <translation id="3150693969729403281">Rhedeg y gwiriad diogelwch nawr</translation>
 <translation id="3150927491400159470">Ail-lwytho Caled</translation>
@@ -2497,6 +2498,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3268451620468152448">Tabiau sydd ar Agor</translation>
 <translation id="3269093882174072735">Llwytho llun</translation>
 <translation id="326911502853238749">Peidio â dangos <ph name="MODULE_NAME" /></translation>
+<translation id="3269175001434213183">Trowch gysoni ymlaen i wneud copïau wrth gefn o'ch pethau a'u defnyddio ar unrhyw ddyfais</translation>
 <translation id="3269612321104318480">Gwyrddlas a gwyn golau</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Ffeil}zero{# ffeil}two{# ffeil}few{# ffeil}many{# ffeil}other{# ffeil}}</translation>
 <translation id="326999365752735949">Wrthi'n lawrlwytho ffeil diff</translation>
@@ -4296,6 +4298,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4950993567860689081">Rheolir eich sesiwn gan eich sefydliad Gall gweinyddwyr ddileu eich proffil a hefyd monitro traffig eich rhwydwaith.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ffeil}zero{# ffeil}two{# ffeil}few{# ffeil}many{# ffeil}other{# ffeil}}</translation>
 <translation id="495170559598752135">Gweithrediadau</translation>
+<translation id="4951966678293618079">Peidio byth â chadw cyfrineiriau ar gyfer y wefan hon</translation>
 <translation id="4953808748584563296">Rhithffurf oren diofyn</translation>
 <translation id="4955710816792587366">Dewiswch eich PIN</translation>
 <translation id="4959262764292427323">Mae cyfrineiriau'n cael eu cadw i'ch Cyfrif Google fel y gallwch eu defnyddio ar unrhyw ddyfais</translation>
@@ -4325,6 +4328,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4981449534399733132">Er mwyn clirio data pori o'ch holl ddyfeisiau sydd wedi'u cysoni a'ch Cyfrif Google, <ph name="BEGIN_LINK" />mewngofnodwch<ph name="END_LINK" />.</translation>
 <translation id="4982111327868342436">Parhau lle y gwnaethoch adael ar unrhyw ddyfais</translation>
 <translation id="4982236238228587209">Meddalwedd dyfais</translation>
+<translation id="4986706507552097681">Gallwch bob amser ddewis beth i'w gysoni yn y gosodiadau. Gall Google bersonoleiddio Search a gwasanaethau eraill yn seiliedig ar eich hanes.</translation>
 <translation id="4986728572522335985">Bydd hyn yn dileu'r holl ddata ar yr allwedd ddiogelwch, gan gynnwys ei PIN</translation>
 <translation id="4988526792673242964">Tudalennau</translation>
 <translation id="49896407730300355">Cylchdroi yn w&amp;rthglocwedd</translation>

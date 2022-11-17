@@ -282,6 +282,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622571349153632031">Вегетарианска кухня</translation>
 <translation id="1623104350909869708">Да не се създават допълнителни диалогови прозорци от тази страница</translation>
+<translation id="1633137413609266904">{0,plural, =1{Отварянето на този файл е блокирано чрез администраторско правило}other{Отварянето на # файла е блокирано чрез администраторско правило}}</translation>
 <translation id="1634828734222219955">Общо</translation>
 <translation id="163669211644121865">Данъчна подготовка и планиране</translation>
 <translation id="1638780421120290329">Картата не може да бъде запазена</translation>
@@ -896,6 +897,7 @@
 <translation id="3270847123878663523">&amp;Отмяна на пренареждането</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> иска да се свърже</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3281350579597955952">{0,plural, =1{Според администраторско правило отварянето на този файл в(ъв) <ph name="DESTINATION_NAME" /> не се препоръчва}other{Според администраторско правило отварянето на тези файлове в(ъв) <ph name="DESTINATION_NAME" /> не се препоръчва}}</translation>
 <translation id="3282085321714087552">Организацията ви (<ph name="ENROLLMENT_DOMAIN" />) изпрати известна информация, като например настройки или правила, до долупосочените уебсайтове.</translation>
 <translation id="3282497668470633863">Добавяне на името на картодържателя</translation>
 <translation id="3286372614333682499">вертикална ориентация</translation>
@@ -1295,6 +1297,7 @@
 <translation id="4275830172053184480">Рестартиране на устройството ви</translation>
 <translation id="4277028893293644418">Повторно задаване на паролата</translation>
 <translation id="4278390842282768270">Разрешено</translation>
+<translation id="4281998142035485137">{0,plural, =1{Да се отвори ли поверителният файл?}other{Да се отворят ли поверителните файлове?}}</translation>
 <translation id="4282346679996504092">Сигналите за този продукт са изключени и отметката е премахната</translation>
 <translation id="4285498937028063278">Освобождаване</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Тази карта е запазена в профила ви в Google}other{Тези карти са запазени в профила ви в Google}}</translation>
@@ -1928,6 +1931,7 @@
 <translation id="5903264686717710770">Заглавие:</translation>
 <translation id="5904360430676679685">Семейство и връзки</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (синхронизирано)</translation>
+<translation id="5911110632211230665">Отварянето е блокирано</translation>
 <translation id="59174027418879706">Активирано</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{Използва се 1}other{Използват се #}}</translation>

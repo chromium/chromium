@@ -232,6 +232,7 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 <translation id="2815198996063984598">2. Ketik Apl Penyemak Imbas Lalai</translation>
 <translation id="2820289420301699633">Pentadbir anda boleh mengawal Chrome dan dapat mengakses data penyemak imbas itu</translation>
 <translation id="2830972654601096923">Urus Alamat...</translation>
+<translation id="2834399722155632105">3. Ketik Pilihan Kata Laluan</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Tetapkan semula tetapan terjemahan</translation>
 <translation id="2848086008667475748">Jadikan Lalai dalam Tetapan…</translation>
@@ -632,6 +633,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5899314093904173337">Untuk berkongsi dengan orang yang berdekatan, benarkan mereka mengimbas kod QR ini dengan kamera atau apl pengimbas QR mereka</translation>
 <translation id="5911030830365207728">Google Terjemah</translation>
 <translation id="5913600720976431809">Pilihan untuk Menterjemah halaman</translation>
+<translation id="5933515656458364246">Segerakkan data anda pada semua peranti.</translation>
 <translation id="5938160824633642847">Peranti anda hampir penuh. Kosongkan ruang dan cuba lagi.</translation>
 <translation id="5948291296578561264">Tindakan ini membolehkan anda menyimpan foto pada pustaka foto anda.</translation>
 <translation id="5951816930277761335">Kongsi Pautan</translation>
@@ -713,6 +715,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 
 Data anda disulitkan dengan ungkapan laluan segerak anda pada <ph name="TIME" />. Masukkannya untuk memulakan penyegerakan.</translation>
 <translation id="6418346271604475326">Menyediakan PDF</translation>
+<translation id="6429213933892582367">Buka Pilihan Kata Laluan</translation>
 <translation id="6434591244308415567">Ralat telah berlaku. Cuba sebentar lagi.</translation>
 <translation id="6435236283694032571">Tambahkan pada Senarai Bacaan</translation>
 <translation id="6439338047467462846">Benarkan Semua</translation>
@@ -828,6 +831,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7203585745079012652">Sebut Kembali Jawapan</translation>
 <translation id="7207023858769244910">Segerakkan untuk mendapatkan kandungan berdasarkan minat anda.</translation>
 <translation id="721597782417389033">Nama Panggilan Kad Tidak Sah</translation>
+<translation id="7221173315674413369">Teroka ciri dan petua baharu dalam Perkara Baharu</translation>
 <translation id="722454870747268814">Tab Inkognito Baharu</translation>
 <translation id="7265758999917665941">Jangan Sekali-kali untuk Tapak Ini</translation>
 <translation id="7272437679830969316">Tidak dapat mengesahkan identiti anda. Kata laluan tidak disalin.</translation>
@@ -861,6 +865,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7514365320538308">Muat Turun</translation>
 <translation id="7531345132340165516">Laman Semasa</translation>
 <translation id="7537586195939242955">Maaf, Pas anda tidak boleh dipasang pd Passbook pd masa ini.</translation>
+<translation id="7553234618121028547">Untuk mematikan, buka <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" /> dan pergi ke Pilihan Kata Laluan.</translation>
 <translation id="7554791636758816595">Tab Baharu</translation>
 <translation id="7561196759112975576">Sentiasa</translation>
 <translation id="7583004045319035904">Gunakan <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> untuk membuka kunci tab Inkognito anda.</translation>
@@ -942,6 +947,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8101409298456377967">Buat, simpan dan urus kata laluan anda supaya anda dapat log masuk ke laman dan apl dengan mudah. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Matikan</translation>
 <translation id="8114753159095730575">Muat turun fail tersedia. Pilihan tersedia di bahagian bawah skrin.</translation>
+<translation id="81313319706244542">2. Ketik Kata Kaluan</translation>
 <translation id="8132598642024322408">Kini <ph name="PRICE" />, sebelum ini <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="8136856065410661948">Ini akan digunakan untuk membuat acara dalam Apple Calendar anda daripada Chrome dan Google Lens.</translation>
 <translation id="8156478151976189188">Penyegerakan Kata Laluan Tidak Berfungsi</translation>
@@ -964,6 +970,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8319076807703933069">Carian Baharu</translation>
 <translation id="8323906514956095947">Sentuh &amp; tahan untuk melihat lagi pilihan tab</translation>
 <translation id="8328777765163860529">Tutup Semua</translation>
+<translation id="8343993175958086504">Sandarkan bahan anda dan gunakan bahan itu pada mana-mana peranti.</translation>
 <translation id="8378714024927312812">Diurus oleh organisasi anda</translation>
 <translation id="8386068868580335421">Tetapkan semula</translation>
 <translation id="8407669440184693619">Tiada kata laluan ditemui untuk tapak ini</translation>

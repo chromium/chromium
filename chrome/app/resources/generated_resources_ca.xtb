@@ -2371,6 +2371,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3143515551205905069">Cancel·la la sincronització</translation>
 <translation id="3143754809889689516">Reprodueix des del principi</translation>
 <translation id="3144647712221361880">Obre l'enllaç com a</translation>
+<translation id="3144896554017119333">Extensions i més</translation>
 <translation id="3149510190863420837">Aplicacions de Chrome</translation>
 <translation id="3150693969729403281">Executa la comprovació de seguretat ara</translation>
 <translation id="3150927491400159470">Torna a carregar de manera forçada</translation>
@@ -2479,6 +2480,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3268451620468152448">Pestanyes obertes</translation>
 <translation id="3269093882174072735">Carrega la imatge</translation>
 <translation id="326911502853238749">No mostris <ph name="MODULE_NAME" /></translation>
+<translation id="3269175001434213183">Activa la sincronització per crear una còpia de seguretat de les teves dades i utilitza-les en qualsevol dispositiu</translation>
 <translation id="3269612321104318480">Verd blavós clar i blanc</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Fitxer}other{# fitxers}}</translation>
 <translation id="326999365752735949">S'està baixant la diferència.</translation>
@@ -4276,6 +4278,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4950993567860689081">La sessió està gestionada per la teva organització. Els administradors poden suprimir el teu perfil i també monitorar el teu trànsit de xarxa.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{1 fitxer}other{# fitxers}}</translation>
 <translation id="495170559598752135">Accions</translation>
+<translation id="4951966678293618079">No desis mai les contrasenyes d'aquest lloc web</translation>
 <translation id="4953808748584563296">Avatar taronja predeterminat</translation>
 <translation id="4955710816792587366">Tria un PIN</translation>
 <translation id="4959262764292427323">Les contrasenyes es desen al Compte de Google perquè les puguis utilitzar en tots els dispositius</translation>
@@ -4305,6 +4308,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4981449534399733132">Per esborrar les dades de navegació de tots els dispositius sincronitzats i del Compte de Google, <ph name="BEGIN_LINK" />inicia la sessió<ph name="END_LINK" />.</translation>
 <translation id="4982111327868342436">Continua des d'on ho hagis deixat en qualsevol dispositiu</translation>
 <translation id="4982236238228587209">Programari del dispositiu</translation>
+<translation id="4986706507552097681">Sempre pots anar a la configuració per decidir què vols sincronitzar. És possible que Google personalitzi la Cerca i altres serveis en funció del teu historial.</translation>
 <translation id="4986728572522335985">Amb aquesta acció se suprimiran totes les dades de la clau de seguretat, inclòs el PIN</translation>
 <translation id="4988526792673242964">Pàgines</translation>
 <translation id="49896407730300355">Gira en el sentit con&amp;trari a les agulles del rellotge</translation>

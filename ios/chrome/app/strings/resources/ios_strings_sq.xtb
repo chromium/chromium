@@ -232,6 +232,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2815198996063984598">2. Trokit tek "Aplikacioni i parazgjedhur i shfletuesit"</translation>
 <translation id="2820289420301699633">Administratori yt ka kontroll mbi Chrome dhe mund të ketë qasje në të dhënat e tij</translation>
 <translation id="2830972654601096923">Menaxho adresat...</translation>
+<translation id="2834399722155632105">3. Trokit tek "Opsionet e fjalëkalimeve"</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Rivendos cilësimet e përkthimit</translation>
 <translation id="2848086008667475748">Bëje "Të parazgjedhur" te "Cilësimet"…</translation>
@@ -632,6 +633,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5899314093904173337">Për të ndarë me personat në afërsi, lejoji të skanojnë këtë kod QR me kamerën e tyre ose aplikacionin e skanerit të kodeve QR</translation>
 <translation id="5911030830365207728">Përkthe me Google</translation>
 <translation id="5913600720976431809">Opsionet për përkthimin e faqes</translation>
+<translation id="5933515656458364246">Sinkronizo të dhënat e tua në të gjitha pajisjet.</translation>
 <translation id="5938160824633642847">Pajisja jote është thuajse plot. Liro hapësirë dhe provo përsëri.</translation>
 <translation id="5948291296578561264">Kjo të lejon të ruash fotografi në bibliotekën tënde të fotografive.</translation>
 <translation id="5951816930277761335">Ndaj lidhjen</translation>
@@ -713,6 +715,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 
 Të dhënat e tua janë koduar me frazën tënde të kalimit për sinkronizimin më <ph name="TIME" />. Fute atë për të nisur sinkronizmin.</translation>
 <translation id="6418346271604475326">Po përgatit PDF</translation>
+<translation id="6429213933892582367">Hap "Opsionet e fjalëkalimeve"</translation>
 <translation id="6434591244308415567">Ndodhi një gabim. Provo përsëri më vonë.</translation>
 <translation id="6435236283694032571">Shto te lista e leximit</translation>
 <translation id="6439338047467462846">Lejo të gjitha</translation>
@@ -828,6 +831,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7203585745079012652">Thuaji përgjigjet mbrapsht</translation>
 <translation id="7207023858769244910">Sinkronizoje për të marrë përmbajtje bazuar në interesat e tu.</translation>
 <translation id="721597782417389033">Pseudonim i pavlefshëm karte</translation>
+<translation id="7221173315674413369">Eksploro këshillat dhe veçoritë e reja te "Ç'të reja ka"</translation>
 <translation id="722454870747268814">Skedë e re "e fshehtë"</translation>
 <translation id="7265758999917665941">Asnjëherë për këtë faqe</translation>
 <translation id="7272437679830969316">Nuk mund të verifikohet identiteti yt. Fjalëkalimi nuk u kopjua.</translation>
@@ -861,6 +865,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7514365320538308">Shkarko</translation>
 <translation id="7531345132340165516">Sajti aktual</translation>
 <translation id="7537586195939242955">Na vjen keq, "Pass" nuk mund të instalohet te "Passbook" në këtë moment.</translation>
+<translation id="7553234618121028547">Për ta çaktivizuar, hap <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" /> dhe shko te "Opsionet e fjalëkalimeve".</translation>
 <translation id="7554791636758816595">Skedë e re</translation>
 <translation id="7561196759112975576">Gjithmonë</translation>
 <translation id="7583004045319035904">Përdor <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> për të shkyçur skedat "e fshehta".</translation>
@@ -942,6 +947,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8101409298456377967">Krijo, ruaj dhe menaxho fjalëkalimet e tua që të mund të identifikohesh me lehtësi në sajte dhe aplikacione. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Çaktivizo</translation>
 <translation id="8114753159095730575">Ofrohet shkarkimi i skedarit. Opsionet ofrohen pranë fundit të ekranit.</translation>
+<translation id="81313319706244542">2. Trokit te "Fjalëkalimet"</translation>
 <translation id="8132598642024322408">Tani <ph name="PRICE" />, ishte <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="8136856065410661948">Kjo do të përdoret për të krijuar ngjarje në Apple Calendar nga Chrome dhe nga "Lentja e Google".</translation>
 <translation id="8156478151976189188">Sinkronizimi i fjalëkalimeve nuk po funksionon</translation>
@@ -964,6 +970,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8319076807703933069">Kërkim i ri</translation>
 <translation id="8323906514956095947">Prek dhe mbaj të shtypur për opsione të tjera të skedës</translation>
 <translation id="8328777765163860529">Mbylli të gjitha</translation>
+<translation id="8343993175958086504">Rezervo gjërat e tua dhe përdori në çdo pajisje.</translation>
 <translation id="8378714024927312812">Menaxhohet nga organizata jote</translation>
 <translation id="8386068868580335421">Rivendos</translation>
 <translation id="8407669440184693619">Nuk u gjetën fjalëkalime për këtë sajt</translation>

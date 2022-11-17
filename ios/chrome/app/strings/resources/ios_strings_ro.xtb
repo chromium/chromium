@@ -87,6 +87,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="1545749641540134597">Scanează codul QR</translation>
 <translation id="1552525382687785070">Sincronizarea este dezactivată de administrator</translation>
 <translation id="1554477036522844996">Fereastră nouă</translation>
+<translation id="1565371473877914088">Filă incognito nouă</translation>
 <translation id="1580715474678097352">Protejează-te împotriva site-urilor periculoase</translation>
 <translation id="1580783302095112590">E-mail trimis.</translation>
 <translation id="1582732959743469162">Aceasta va opri progresul descărcării actuale.</translation>
@@ -133,6 +134,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="1981118202195772574">Mobil</translation>
 <translation id="1989112275319619282">Răsfoiește</translation>
 <translation id="199425419756152024">Vezi parola</translation>
+<translation id="2010008505735295285">Reîncarcă</translation>
 <translation id="2015722694326466240">Pentru a vedea parolele, trebuie mai întâi să setezi o parolă pe dispozitiv.</translation>
 <translation id="2021670401941426298">Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căutărilor, dacă este cazul.</translation>
 <translation id="202292859882676807">Se acordă acces la microfon</translation>
@@ -299,6 +301,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3272527697863656322">Anulează</translation>
 <translation id="3277021493514034324">Adresa site-ului a fost copiată</translation>
 <translation id="3285962946108803577">Trimite pagina…</translation>
+<translation id="3289505634533552500">Căutare vocală</translation>
 <translation id="3290875554372353449">Alege un cont</translation>
 <translation id="3305294846493618482">mai multe</translation>
 <translation id="3311748811247479259">Dezactivat</translation>
@@ -556,6 +559,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5295239312320826323">Elimini contul <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Afișează</translation>
 <translation id="5317780077021120954">Salvează</translation>
+<translation id="5318298563956633672">Urmărești deja acest produs.</translation>
 <translation id="5339316356165661760">Activează sincronizarea</translation>
 <translation id="536067926684072644">Afișează marcajele</translation>
 <translation id="5360976571138293719">Pentru mai multe setări privind confidențialitatea, securitatea și colectarea datelor, consultă <ph name="BEGIN_LINK" />Serviciile Google<ph name="END_LINK" />.</translation>
@@ -619,6 +623,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="581659025233126501">Activează sincronizarea</translation>
 <translation id="5819208479324046259">Gestionat de <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Salvează parole, metode de plată și adrese pentru ca browserul Chrome să le completeze automat mai târziu.</translation>
+<translation id="5834415013958049700">Imaginea pe care ai copiat-o din Lens</translation>
 <translation id="5846482154967366008">Motor de căutare</translation>
 <translation id="5854790677617711513">Mai vechi de 30 de zile</translation>
 <translation id="5857090052475505287">Dosar nou</translation>
@@ -646,6 +651,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5984222099446776634">Recently visited (Vizitate recent)</translation>
 <translation id="5988097621740394599">Vezi scăderile de prețuri din file</translation>
 <translation id="5988851877894965432">Deschide adresele URL în Chrome</translation>
+<translation id="6006672969046233841">Filă nouă</translation>
 <translation id="6012140227487808125">Se criptează…</translation>
 <translation id="6021332621416007159">Deschide în…</translation>
 <translation id="6027945736510816438">Ai vrut să scrii <ph name="WEBSITE" />?</translation>
@@ -832,6 +838,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7207023858769244910">Sincronizează pentru a obține conținut în funcție de interesele tale.</translation>
 <translation id="721597782417389033">Pseudonimul cardului nu este valid</translation>
 <translation id="7221173315674413369">Explorează noile funcții și sfaturi în secțiunea Noutăți</translation>
+<translation id="7223102419539744003">Închide fila</translation>
 <translation id="722454870747268814">Filă incognito nouă</translation>
 <translation id="7265758999917665941">Niciodată pentru acest site</translation>
 <translation id="7272437679830969316">Nu ți se poate confirma identitatea. Parola nu a fost copiată.</translation>
@@ -903,6 +910,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7856733331829174190">Nu s-a putut descărca</translation>
 <translation id="785938070103630874">Deschide parole, metode de plată sau adresa și multe altele</translation>
 <translation id="7859704718976024901">Istoricul de navigare</translation>
+<translation id="7870750252270996949">Imaginea copiată din Lens</translation>
 <translation id="7879275349003161544">Afișează descărcările</translation>
 <translation id="7884694604461143138">Istoricul căutărilor (găsite: <ph name="COUNT" />)</translation>
 <translation id="7887198238286927132">Pentru a-ți proteja confidențialitatea, Chrome nu va completa automat acest câmp.</translation>
@@ -1027,6 +1035,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Vizualizarea prestabilită a site-urilor</translation>
 <translation id="8820817407110198400">Marcaje</translation>
+<translation id="882557203579758546">Caută în pagină…</translation>
 <translation id="8840513115188359703">Nu vei fi deconectat(ă) de la Contul Google.</translation>
 <translation id="8843129975935593190">Organizația ta limitează tipurile de conținut pe care îl poți sincroniza.</translation>
 <translation id="8849001918648564819">Ascuns</translation>

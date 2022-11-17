@@ -282,6 +282,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1622571349153632031">Pang-vegetarian na cuisine</translation>
 <translation id="1623104350909869708">Pigilan ang pahinang ito sa paggawa ng mga karagdagang dialog</translation>
+<translation id="1633137413609266904">{0,plural, =1{Na-block ng patakaran ng administrator ang pagbubukas ng file na ito}one{Na-block ng patakaran ng administrator ang pagbubukas ng # file}other{Na-block ng patakaran ng administrator ang pagbubukas ng # na file}}</translation>
 <translation id="1634828734222219955">Kabuuan</translation>
 <translation id="163669211644121865">Paghahanda at pagpaplano sa pagbubuwis</translation>
 <translation id="1638780421120290329">Hindi ma-save ang card</translation>
@@ -896,6 +897,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3270847123878663523">&amp;I-undo ang Pagbabago sa Ayos</translation>
 <translation id="3271648667212143903">Gustong kumonekta ng <ph name="ORIGIN" /></translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3281350579597955952">{0,plural, =1{Hindi inirerekomenda ng patakaran ng administrator na buksan ang file na ito sa <ph name="DESTINATION_NAME" />}one{Hindi inirerekomenda ng patakaran ng administrator na buksan ang mga file na ito sa <ph name="DESTINATION_NAME" />}other{Hindi inirerekomenda ng patakaran ng administrator na buksan ang mga file na ito sa <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Nagpadala ang iyong organisasyon, ang <ph name="ENROLLMENT_DOMAIN" />, ng ilang impormasyon sa mga sumusunod na website, tulad ng mga setting o patakaran.</translation>
 <translation id="3282497668470633863">Magdagdag ng pangalan sa card</translation>
 <translation id="3286372614333682499">portrait</translation>
@@ -1295,6 +1297,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4275830172053184480">I-restart ang iyong device</translation>
 <translation id="4277028893293644418">I-reset ang password</translation>
 <translation id="4278390842282768270">Pinapayagan</translation>
+<translation id="4281998142035485137">{0,plural, =1{Buksan ang kumpidensyal na file?}one{Buksan ang mga kumpidensyal na file?}other{Buksan ang mga kumpidensyal na file?}}</translation>
 <translation id="4282346679996504092">Na-off ang mga alerto para sa produktong ito at inalis ang bookmark</translation>
 <translation id="4285498937028063278">I-unpin</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Na-save na ang card na ito sa iyong Google Account}one{Na-save na ang mga card na ito sa iyong Google Account}other{Na-save na ang mga card na ito sa iyong Google Account}}</translation>
@@ -1928,6 +1931,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5903264686717710770">Pamagat:</translation>
 <translation id="5904360430676679685">Pamilya at mga ugnayan</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (naka-sync)</translation>
+<translation id="5911110632211230665">Naka-block ang pagbubukas</translation>
 <translation id="59174027418879706">Pinagana</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 ang ginagamit}one{# ang ginagamit}other{# ang ginagamit}}</translation>

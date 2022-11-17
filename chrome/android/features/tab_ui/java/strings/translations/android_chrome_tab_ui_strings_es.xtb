@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">Recibirás una alerta cuando haya un precio más bajo en una pestaña abierta.</translation>
 <translation id="3328308545011660196">Sugerencia: Hay <ph name="NUMBER_OF_TABS" /> pestañas que parecen relacionadas. ¿Quieres agruparlas?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">Miniatura de hoja para compartir.</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Ocultar <ph name="TABS_COUNT_ONE" /> pestaña}other{Ocultar grupo de pestañas <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> pestañas.}}</translation>
 <translation id="3882834874697329510">Para recibir una alerta cuando haya un precio más bajo en una pestaña abierta, activa las notificaciones en Ajustes.</translation>
 <translation id="3940195383040445971">Seguir precios en pestañas</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">Ver información de la tienda, opción disponible cerca de la parte superior de la pantalla</translation>
 <translation id="5558362125926932819">Cerrar grupo de pestañas con <ph name="NUMBER_OF_TABS" /> pestañas</translation>
 <translation id="5580090775658607195">Se han agrupado <ph name="TAB_COUNT" /> pestañas</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> enlace de Chrome}other{<ph name="TABS_COUNT_MANY" /> enlaces de Chrome}}</translation>
 <translation id="575494663145460764">¿Quieres recibir alertas por bajadas de precio?</translation>
 <translation id="58326064309361797">Arrastra las pestañas para agruparlas</translation>
 <translation id="5846292395804797011">Cerrar grupo <ph name="TITLE_OF_GROUP" /> con <ph name="NUMBER_OF_TABS" /> pestañas</translation>

@@ -205,6 +205,7 @@
 
       如果您将此政策设为 false，系统将不会显示“始终打开”复选框，并且在每次调用外部协议时都会提示用户。</translation>
 <translation id="1181598794547737681">启用下载气泡界面</translation>
+<translation id="1184562656144537588">仅为强制安装的扩展程序启用 Manifest V2</translation>
 <translation id="11903325225202653">将此政策设为 True 会使高对比度模式保持开启状态。将此政策设为 False 会使高对比度模式保持关闭状态。
 
       如果您设置了此政策，用户便无法更改它。如果您未设置此政策，高对比度模式会处于关闭状态，但用户可随时开启它。</translation>
@@ -1510,6 +1511,7 @@
 
       此政策的值应以天为单位。</translation>
 <translation id="2466131534462628618">进行强制门户身份验证时忽略代理服务器</translation>
+<translation id="2467181864598429837">默认浏览器行为</translation>
 <translation id="2467896267442150508">持续时间不超过 1 周的间隔时段。如果开始时间晚于结束时间，该间隔时段会跨周。</translation>
 <translation id="2476249479201711962">允许在上下文菜单中使用默认搜索服务提供商</translation>
 <translation id="247658312644322296">“另存为 PDF”目的地</translation>
@@ -2632,6 +2634,7 @@
 <translation id="3524204464536655762">不允许任何网站通过 WebUSB API 请求访问 USB 设备</translation>
 <translation id="3526752951628474302">仅限单色打印</translation>
 <translation id="3528000905991875314">启用备用的错误页面</translation>
+<translation id="3528681240373634003">控制 Manifest V2 扩展程序的可用性。</translation>
 <translation id="3530249698314520116">配置一个规则列表，以防止 <ph name="PRODUCT_OS_NAME" /> 上发生数据泄露。
       复制和粘贴数据、传输文件、打印、共享屏幕或截屏等操作都可能会导致数据泄露。
 
@@ -2823,17 +2826,6 @@
       如果此政策已停用，系统将不会要求用户提供密码来解锁设备。
 
       如果您未设置此政策，用户可选择是否让系统提示输入密码以设备解锁。</translation>
-<translation id="3729689441404871493">旨在以列表形式为登录屏幕和锁定的屏幕上的一系列网址启用 <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" />。
-
-      通过设置此政策，您可以指定应允许哪些网址参与认证流程，以便接收来自计算机的一系列信号。
-
-      如果您未设置此政策或将其留空，任何端点都将无法启动认证流程，也无法接收来自计算机的信号。
-
-      注意：允许使用通配符 <ph name="WILDCARD_VALUE" />。
-
-      此政策只会影响登录屏幕和锁定的屏幕上的认证流程。如需更改会话期间认证流程，请使用 <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" /> 政策。
-
-      如需详细了解有效<ph name="URL_LABEL" />格式，请访问 https://support.google.com/chrome/a?p=url_blocklist_filter_format。</translation>
 <translation id="3729937245044939404">此政策已在 M70 中弃用，请改用 <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> 和 <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" />。
 
       此政策会启用 <ph name="PRODUCT_NAME" /> 的“自动填充”功能，并允许用户使用先前存储的信息（例如地址或信用卡信息）自动填写网络表单。
@@ -2898,7 +2890,6 @@
 
       注意：对于 <ph name="MS_AD_NAME" /> 管理的设备，此政策支持将 <ph name="MACHINE_NAME_VARIABLE" /> 扩展为 <ph name="MS_AD_NAME" /> 机器名称或其子字符串。例如，如果机器名称是“<ph name="MACHINE_NAME_EXAMPLE" />”，<ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> 便会被替换为第 6 个字符后面的 4 个字符（即 <ph name="MACHINE_NAME_PART_EXAMPLE" />）。位置序数从 0 起算。</translation>
 <translation id="377044054160169374">针对误导性体验的强制干预政策</translation>
-<translation id="3777833753656885744">为登录屏幕和锁定的屏幕上的网址列表启用认证流程</translation>
 <translation id="3778689139323007309">对于已成功通过验证且已由安装在本地的 CA 证书签名的服务器证书，一律执行撤消检查</translation>
 <translation id="3780152581321609624">在 Kerberos SPN 中加入非标准端口</translation>
 <translation id="378495749480642482">此政策旨在配置是否允许用户所导航到的网站使用 <ph name="WEBXR_API_NAME" /> 创建沉浸式增强现实会话。
@@ -3008,6 +2999,13 @@
 
       如果此政策设为 2，系统会阻止含侵扰性广告的网站展示广告。</translation>
 <translation id="3877517141460819966">集成的双重身份验证模式</translation>
+<translation id="3877908683993837673">此政策用于控制使用哪个软件堆栈与 DNS 服务器通信：操作系统 DNS 客户端或 <ph name="PRODUCT_NAME" /> 的内置 DNS 客户端。此政策不会影响使用哪些 DNS 服务器：例如，如果操作系统已配置为使用一台企业 DNS 服务器，内置 DNS 客户端也会使用这台服务器。此政策也不会控制是否使用 DNS-over-HTTPS；<ph name="PRODUCT_NAME" /> 将始终使用内置的解析器发送 DNS-over-HTTPS 请求。如需了解如何控制 DNS-over-HTTPS，请参阅 <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> 政策。
+
+      如果此政策已启用，系统将会使用内置 DNS 客户端（如果可用）。
+
+      如果此政策已停用，只有当 DNS-over-HTTPS 正在使用中时，系统才会使用内置 DNS 客户端。
+
+      如果此政策未设置，在 <ph name="MS_WIN_NAME" />、<ph name="MAC_OS_NAME" />、<ph name="ANDROID_NAME" />（当专用 DNS 和 VPN 均未启用时）和 <ph name="PRODUCT_OS_NAME" /> 中，内置 DNS 客户端将会默认处于启用状态。</translation>
 <translation id="3879208481373875102">配置强制安装的 Web 应用的列表</translation>
 <translation id="3879700444818346084">禁止在首次运行时导入已保存的密码</translation>
 <translation id="388237772682176890">我们在 M53 中弃用了此政策，并在 M54 中移除了此政策（因为 SPDY/3.1 已不再受支持）。
@@ -3108,6 +3106,7 @@
 <translation id="3990391739475801018">系统将停用省电模式。</translation>
 <translation id="3994043824457743421">在“新标签页”页面上显示中间槽通知</translation>
 <translation id="399433537808390819">不为用户提供统一桌面模式选项</translation>
+<translation id="3995880046827722248">停用 Manifest V2</translation>
 <translation id="3996325823532867220">此政策已不再受支持，但特定平台可能支持相关政策 <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" />。
 
       如果此设置已启用，<ph name="PRODUCT_NAME" /> 将会使用内置的证书验证程序来验证服务器证书。
@@ -3609,6 +3608,7 @@
 
       如果未设置此政策，则用户可以停用系统中安装的任何插件。</translation>
 <translation id="4549405078915181477">为网站启用“设备使用时间”功能</translation>
+<translation id="4549695018986780856">启用 Manifest V2</translation>
 <translation id="4554651132977135445">用户政策环回处理模式</translation>
 <translation id="4554991346503872538">一律不提供翻译</translation>
 <translation id="4555850956567117258">为该用户启用远程认证</translation>
@@ -3925,7 +3925,6 @@
 
       在 M76 或更早版本中，不设置此政策意味着 <ph name="PRODUCT_NAME" /> 默认无法收集和上传这些日志。从 M77 开始，<ph name="PRODUCT_NAME" /> 默认能够从受基于云的用户级企业政策影响的大多数个人资料中收集并上传这些日志。从 M77 到 M80（含），<ph name="PRODUCT_NAME" /> 还默认能从受 <ph name="PRODUCT_NAME" /> 本地管理功能影响的个人资料中收集并上传这些日志。</translation>
 <translation id="4911334289324462969">端口 989（可在 2022 年 2 月 1 日之前解禁）</translation>
-<translation id="4913065710388638917">为一个网址列表启用认证流程</translation>
 <translation id="4917385247580444890">强</translation>
 <translation id="4918261735182294270">允许用户选择是否启用 <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="491889618361437456">启用 <ph name="GOOGLE_CALENDAR_NAME" />集成</translation>
@@ -4048,6 +4047,7 @@
 <translation id="5025239932007658691">如果此政策已启用或未设置，<ph name="PRODUCT_NAME" /> 会不定时向 Google 服务器发送查询以检索准确的时间戳。
 
       如果此政策已停用，系统会阻止 <ph name="PRODUCT_NAME" /> 发送此类查询。</translation>
+<translation id="5033070732967197381">允许在 TLS 证书已损坏的网站上发出 WebAuthn API 请求。</translation>
 <translation id="5034504101537897433">启用设备崩溃报告信息报告功能</translation>
 <translation id="5039110755072335605">对 CORS 非通配符式请求标头的支持情况</translation>
 <translation id="504116558738617678">仅在相应设备不受管理或只有 1 个用户时显示磁盘空间不足警告</translation>
@@ -4934,6 +4934,17 @@
       如果此政策设为 True，网站不仅能发送 WebAssembly 模块，而且能不受限制地跨源发送。
 
       如果此政策设为 False 或未设置，网站只能将 WebAssembly 模块发送到同源的窗口和工作器。</translation>
+<translation id="6005906773585863978">控制浏览器是否可以使用 Manifest V2 扩展程序。
+
+对 Manifest V2 扩展程序的支持将被弃用，日后所有扩展程序都需要迁移到 v3。如需了解详情和迁移时间轴，请访问 https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/。
+
+如果此政策设为 <ph name="DEFAULT" /> (0) 或未设置，浏览器会根据上述时间轴决定是否加载 V2 扩展程序。
+如果此政策设为 <ph name="DISABLE" /> (1)，系统会禁止安装 V2 扩展程序，并停用已安装的这类扩展程序。在 V2 支持被默认关闭之后，系统对该选项的处理方式将与未设置此政策时的情形相同。
+如果此政策设为 <ph name="ENABLE" /> (2)，系统将允许安装 V2 扩展程序。在 V2 支持被默认关闭之前，系统对该选项的处理方式将与未设置此政策时的情形相同。
+如果此政策设为 <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3)，系统将允许使用强制安装的 V2 扩展程序。这包括由 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 或 <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> 列出且 <ph name="INSTALLATION_MODE" /> 为“force_installed”或“normal_installed”的扩展程序。所有其他 V2 扩展程序均会被停用。在 V2 支持被默认关闭之前，系统对该选项的处理方式将与未设置此政策时的情形相同。
+
+
+扩展程序的可用性仍由其他政策控制。</translation>
 <translation id="6009062900206392980">将此政策设为 None 时，系统会在登录屏幕上关闭屏幕放大功能。
 
        如果您设置了此政策，用户便可暂时开启或关闭放大镜。当登录屏幕重新加载或闲置了 1 分钟后，放大镜就会还原为初始状态。
@@ -5504,6 +5515,7 @@
       请注意：目前，系统仅会在显示登录屏幕或使用自助服务终端应用期间启用自动重新启动。</translation>
 <translation id="6556586932263358975">允许锁定屏幕</translation>
 <translation id="6559057113164934677">不允许任何网站使用摄像头和麦克风</translation>
+<translation id="65591220958874949">在 Windows、macOS、Android 和 ChromeOS 中使用内置 DNS 客户端</translation>
 <translation id="6559221564468029245">如果此政策已启用或未设置，播放音频时设备不会被视为闲置。这样就不会导致闲置超时，系统也不会执行闲置操作。不过，在达到配置的超时值后，尽管存在音频活动，屏幕仍会变暗、关闭和锁定。
 
           如果此政策已停用，则即使存在音频活动，系统仍会将设备视为闲置。</translation>
@@ -5591,6 +5603,7 @@
       - 如果此政策已停用，管理员必须将这项设置告知设备的最终用户。</translation>
 <translation id="6609867253856597039">设置已停用功能的用户体验</translation>
 <translation id="6614557704487944013">允许用户使用 <ph name="LACROS_NAME" /> 浏览器</translation>
+<translation id="661610294649586421">禁止在 TLS 证书已损坏的网站上发出 WebAuthn API 请求。</translation>
 <translation id="6617589895942747919">间隔时段（含端点值）的开始时间。</translation>
 <translation id="6621830999036927230">如果您设置了此政策，远程访问主机会使用该网址来验证远程访问客户端的身份验证令牌，以便确定是否接受连接。如果您未设置此政策或将它留空，系统会停用此功能。
 
@@ -5893,6 +5906,9 @@
 <translation id="6907778402784621686">禁止在这些网站上显示不安全内容</translation>
 <translation id="6908640907898649429">配置默认搜索服务提供商。您可以指定用户会使用的默认搜索服务提供商，或选择停用默认搜索。</translation>
 <translation id="6913068954484253496">允许 <ph name="PRODUCT_NAME" /> 连接到位于所有 IP 地址的 Cast 设备。</translation>
+<translation id="6915493311660114995">如果此政策已启用，<ph name="PRODUCT_NAME" /> 将允许在 TLS 证书含有错误的网站（即，那些被视为不安全的网站）上发出网络身份验证请求。
+
+如果此政策已停用或未设置，系统将会应用默认行为（即，屏蔽这类请求）。</translation>
 <translation id="6919819553978815392">如果此政策设为 true 或未配置，<ph name="PRODUCT_NAME" /> 和 <ph name="LACROS_NAME" /> 将会允许以访客身份登录。访客身份是一类 <ph name="PRODUCT_NAME" /> 个人资料；使用此类个人资料登录后，所有窗口均会处于无痕模式。
 
       如果此政策设为 false，<ph name="PRODUCT_NAME" /> 和 <ph name="LACROS_NAME" /> 将会禁止启用访客个人资料。
@@ -6801,6 +6817,7 @@
 <translation id="782661371433719637">不允许任何网站通过 File System API 请求对文件和目录的读取权限</translation>
 <translation id="7827127381981620448">平台应用</translation>
 <translation id="7829436838673974723">允许页面在关闭期间发送同步 XHR 请求</translation>
+<translation id="782978857350824974">允许在 TLS 证书已损坏的网站上发出网络身份验证请求。</translation>
 <translation id="7832225468415136704">禁止 Chrome 清理功能定期扫描系统并停用人工扫描</translation>
 <translation id="7833148823006528332">Android 应用标识符，例如“com.google.android.gm”是 Gmail 的标识符</translation>
 <translation id="7835218570504220753">禁止自动点击</translation>
@@ -7228,17 +7245,6 @@
 <translation id="8274603902181597201">清空用户的 ecryptfs 主目录，并改用全新的 ext4 加密主目录。</translation>
 <translation id="8274926413890711289">启用精细报告控件</translation>
 <translation id="8278133379873210419">禁止显示从其他来源的子框架触发的 JavaScript 对话框</translation>
-<translation id="8279037559659894049">旨在以列表形式为一系列网址启用 <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" />。
-
-      通过设置此政策，您可以指定应允许哪些网址参与认证流程，以便接收来自计算机的一系列信号。
-
-      如果您未设置此政策或将其留空，任何端点都将无法启动认证流程，也无法接收来自计算机的信号。
-
-      注意：允许使用通配符 <ph name="WILDCARD_VALUE" />。
-
-      对于 ChromeOS，此政策会与远程认证关联，在这种情况下，系统会自动生成一个证书，并将其上传到设备管理服务器。
-
-      如需详细了解有效<ph name="URL_LABEL" />格式，请访问 https://support.google.com/chrome/a?p=url_blocklist_filter_format。</translation>
 <translation id="8284296539558710573">跨域 HTTP 身份验证提示</translation>
 <translation id="8284527236880877730">如果 <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> 已停用，您可以通过设置 <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> 来指定：当设备处于演示模式时，系统应该对屏幕变暗延迟时间采取的调整幅度（百分比）。调整屏幕变暗延迟时间时，系统会随之调整屏幕关闭延迟时间、屏幕锁定延迟时间和闲置延迟时间，以使它们保持在原有设置下与屏幕变暗延迟时间的间隔。
 

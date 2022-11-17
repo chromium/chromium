@@ -205,6 +205,7 @@ Beachte, dass unter <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> und <ph
 
       Wird sie auf "false" gesetzt, wird das Kästchen für "Immer zulassen" nicht angezeigt und der Nutzer jedes Mal, wenn ein externes Protokoll aufgerufen wird, zur Bestätigung aufgefordert.</translation>
 <translation id="1181598794547737681">Benutzeroberfläche für Download-Infofeld aktivieren</translation>
+<translation id="1184562656144537588">Manifest V2 ist nur für erzwungene Erweiterungen aktiviert</translation>
 <translation id="11903325225202653">Wenn du die Richtlinie auf "True" setzt, bleibt der Modus mit hohem Kontrast aktiviert. Wenn du die Richtlinie auf "False" setzt, bleibt der Modus mit hohem Kontrast deaktiviert.
 
       Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden. Wird sie nicht konfiguriert, ist der Modus mit hohem Kontrast erst einmal deaktiviert, kann aber jederzeit von Nutzern aktiviert werden.</translation>
@@ -1514,6 +1515,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
       Der Wert der Richtlinie ist in Tagen anzugeben.</translation>
 <translation id="2466131534462628618">Captive-Portal-Authentifizierung ignoriert Proxy</translation>
+<translation id="2467181864598429837">Standardverhalten des Browsers</translation>
 <translation id="2467896267442150508">Zeitintervall, das maximal eine Woche abdeckt. Wenn die angegebene Startzeit nach der Endzeit liegt, läuft das Intervall über die natürliche Intervallgrenze hinaus.</translation>
 <translation id="2476249479201711962">Zugriff auf das Kontextmenü des Standardsuchanbieters erlauben</translation>
 <translation id="247658312644322296">Das Ziel "Als PDF speichern"</translation>
@@ -2668,6 +2670,7 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
 <translation id="3524204464536655762">Websites dürfen nie Zugriff auf USB-Geräte über die WebUSB API anfordern</translation>
 <translation id="3526752951628474302">Nur Schwarz-Weiß-Druck</translation>
 <translation id="3528000905991875314">Alternative Fehlerseiten aktivieren</translation>
+<translation id="3528681240373634003">Verfügbarkeit von Manifest V2-Erweiterungen steuern.</translation>
 <translation id="3530249698314520116">Konfiguriert eine Liste mit Regeln zur Vermeidung von Datenlecks in <ph name="PRODUCT_OS_NAME" />.
       Datenlecks können unter anderem beim Kopieren und Einfügen von Daten, beim Übertragen von Dateien, beim Drucken, bei der Bildschirmfreigabe oder beim Aufnehmen von Screenshots auftreten.
 
@@ -2859,17 +2862,6 @@ Jede Regel hat folgende Bestandteile:
       Ist die Richtlinie deaktiviert, werden Nutzer beim Entsperren des Geräts nicht nach einem Passwort gefragt.
 
       Wenn die Richtlinie nicht konfiguriert ist, kann der Nutzer festlegen, ob er nach einem Passwort zum Entsperren des Geräts gefragt werden möchte.</translation>
-<translation id="3729689441404871493">Hiermit aktivierst du <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> für eine Liste von URLs auf dem Anmelde- und Sperrbildschirm.
-
-      Wenn du diese Richtlinie konfigurierst, legst du damit fest, welche URLs für den Attestierungsablauf zugelassen sein sollen, um die Signalgruppe vom Computer abzurufen.
-
-      Wenn du sie nicht konfigurierst oder leer lässt, bedeutet das, dass kein Endpunkt dazu in der Lage ist, den Attestierungsablauf zu starten oder Signale vom Computer abzurufen.
-
-      Hinweis: Platzhalter (<ph name="WILDCARD_VALUE" />) sind zulässig.
-
-      Diese Richtlinie wirkt sich nur auf den Attestierungsablauf auf dem Anmelde- und Sperrbildschirm aus. Den Attestierungsablauf während der Sitzung kannst du mit der Richtlinie <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" /> ändern.
-
-      Weitere Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="3729937245044939404">Diese Richtlinie wurde in M70 eingestellt. Bitte verwende stattdessen <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> und <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" />.
 
 Aktiviert die Autofill-Funktion von <ph name="PRODUCT_NAME" /> und ermöglicht es Nutzern, Webformulare mit zuvor gespeicherten Informationen wie Adresse oder Kreditkartendaten ausfüllen zu lassen.
@@ -2935,7 +2927,6 @@ Ist diese Einstellung aktiviert oder nicht konfiguriert, kann der Nutzer selbst 
 
       Hinweis: Bei Geräten, die über <ph name="MS_AD_NAME" /> verwaltet werden, unterstützt diese Richtlinie die Erweiterung von <ph name="MACHINE_NAME_VARIABLE" /> auf den <ph name="MS_AD_NAME" />-Computernamen oder einen Teilstring davon. Wenn der Computername beispielsweise „<ph name="MACHINE_NAME_EXAMPLE" />“ lautet, wird „<ph name="MACHINE_NAME_VARIABLE_EXAMPLE" />“ durch die vier Zeichen nach der sechsten Stelle ersetzt, z. B. „<ph name="MACHINE_NAME_PART_EXAMPLE" />“. Die Position basiert auf null.</translation>
 <translation id="377044054160169374">Zwingende Maßnahmen bei irreführenden Inhalten</translation>
-<translation id="3777833753656885744">Attestierungsablauf für eine Liste von URLs auf dem Anmelde- und Sperrbildschirm aktivieren</translation>
 <translation id="3778689139323007309">Widerrufsprüfung für Serverzertifikate durchführen, die erfolgreich bestätigt und von lokal installierten CA-Zertifikaten signiert wurden</translation>
 <translation id="3780152581321609624">Nicht-Standard-Port in Kerberos-SPN einschließen</translation>
 <translation id="378495749480642482">Über diese Richtlinie wird konfiguriert, ob vom Nutzer aufgerufene Websites immersive Augmented-Reality-Sitzungen mit der <ph name="WEBXR_API_NAME" /> erstellen dürfen.
@@ -3043,6 +3034,13 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
 
       Ist die Richtlinie auf 2 gesetzt, wird Werbung auf Websites mit aufdringlichen Werbeanzeigen blockiert.</translation>
 <translation id="3877517141460819966">Integrierter Zwei-Faktor-Authentifizierungsmodus</translation>
+<translation id="3877908683993837673">Mit dieser Richtlinie wird festgelegt, welcher Software-Stack zur Kommunikation mit dem DNS-Server verwendet wird: der DNS-Client des Betriebssystems oder der integrierte DNS-Client von <ph name="PRODUCT_NAME" />. Sie beeinflusst nicht, welche DNS-Server verwendet werden. Wenn beispielsweise das Betriebssystem für die Verwendung eines Unternehmens-DNS-Servers konfiguriert ist, verwendet der integrierte DNS-Client genau diesen Server. Mit der Richtlinie wird auch nicht gesteuert, ob DNS-over-HTTPS verwendet wird. <ph name="PRODUCT_NAME" /> nutzt immer den integrierten Resolver für DNS-over-HTTPS-Anfragen. Weitere Informationen zum Steuern von DNS-over-HTTPS findest du in der Richtlinie „<ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" />“.
+
+      Wenn diese Richtlinie aktiviert ist, wird, falls verfügbar, der integrierte DNS-Client verwendet.
+
+      Wenn die Richtlinie deaktiviert ist, wird der integrierte DNS-Client nur bei Nutzung von DNS-over-HTTPS verwendet.
+
+      Wird die Richtlinie nicht konfiguriert, ist der integrierte DNS-Client unter <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" />, <ph name="ANDROID_NAME" /> – sofern weder ein privates DNS noch ein VPN aktiviert ist – und <ph name="PRODUCT_OS_NAME" /> standardmäßig aktiviert.</translation>
 <translation id="3879208481373875102">Liste der Web-Apps konfigurieren, deren Installation erzwungen wurde</translation>
 <translation id="3879700444818346084">Import von gespeicherten Passwörtern bei der ersten Ausführung deaktivieren</translation>
 <translation id="388237772682176890">Da SPDY/3.1 nicht mehr unterstützt wird, wurde diese Richtlinie in M53 eingestellt und in M54 entfernt.
@@ -3144,6 +3142,7 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
 <translation id="3990391739475801018">Der Energiesparmodus wird deaktiviert.</translation>
 <translation id="3994043824457743421">Information im mittleren Slot auf der Seite „Neuer Tab“ anzeigen</translation>
 <translation id="399433537808390819">Nutzern keinen Zugriff auf den Unified Desktop-Modus gewähren</translation>
+<translation id="3995880046827722248">Manifest V2 ist deaktiviert</translation>
 <translation id="3996325823532867220">Diese Richtlinie wird nicht mehr unterstützt. Die zugehörige Richtlinie <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> wird jedoch möglicherweise auf bestimmten Plattformen unterstützt.
 
       Wenn diese Einstellung aktiviert ist, verifiziert <ph name="PRODUCT_NAME" /> Serverzertifikate anhand der integrierten Zertifikatsprüfung.
@@ -3644,6 +3643,7 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
 
       Wenn die Richtlinie nicht konfiguriert ist, kann der Nutzer beliebige auf dem System installierte Plug-ins deaktivieren.</translation>
 <translation id="4549405078915181477">„Bildschirmzeit“ für Websites aktivieren</translation>
+<translation id="4549695018986780856">Manifest V2 ist aktiviert</translation>
 <translation id="4554651132977135445">Loopback-Verarbeitungsmodus der Nutzerrichtlinien</translation>
 <translation id="4554991346503872538">Nie Übersetzung anbieten</translation>
 <translation id="4555850956567117258">Remote-Bescheinigung (Remote Attestation) für den Nutzer aktivieren</translation>
@@ -3960,7 +3960,6 @@ Diese Richtlinie wird voraussichtlich in Version 113 von <ph name="PRODUCT_NAME
 
       Ist diese Richtlinie nicht konfiguriert (bis einschließlich Version M76), kann <ph name="PRODUCT_NAME" /> diese Protokolle standardmäßig weder erfassen noch hochladen. Ab Version M77 kann <ph name="PRODUCT_NAME" /> diese Protokolle standardmäßig von den meisten Profilen erfassen und hochladen, für die cloudbasierte Unternehmensrichtlinien auf Nutzerebene gelten. Ab Version M77 bis einschließlich M80 kann <ph name="PRODUCT_NAME" /> diese Protokolle außerdem standardmäßig von Profilen erfassen und hochladen, die mit <ph name="PRODUCT_NAME" /> lokal verwaltet werden.</translation>
 <translation id="4911334289324462969">Port 989 (Blockierung kann bis 01.02.2022 aufgehoben werden)</translation>
-<translation id="4913065710388638917">Attestierungsablauf für eine Liste von URLs aktivieren</translation>
 <translation id="4917385247580444890">Stark</translation>
 <translation id="4918261735182294270">Nutzern die Wahl lassen, ob sie <ph name="CHROME_SYNC_NAME" /> aktivieren</translation>
 <translation id="491889618361437456"><ph name="GOOGLE_CALENDAR_NAME" />-Integration aktivieren</translation>
@@ -4083,6 +4082,7 @@ Diese Richtlinie wird voraussichtlich in Version 113 von <ph name="PRODUCT_NAME
 <translation id="5025239932007658691">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, sendet <ph name="PRODUCT_NAME" /> gelegentlich Abfragen an einen Google-Server, um einen korrekten Zeitstempel abzurufen.
 
       Wird die Richtlinie deaktiviert, sendet <ph name="PRODUCT_NAME" /> solche Abfragen nicht mehr.</translation>
+<translation id="5033070732967197381">WebAuthn-API-Anfragen auf Websites mit fehlerhaften TLS-Zertifikaten zulassen.</translation>
 <translation id="5034504101537897433">Melden von Informationen zu Absturzberichten auf Geräten aktivieren</translation>
 <translation id="5039110755072335605">Unterstützung für CORS-Anfrageheader ohne Platzhalter</translation>
 <translation id="504116558738617678">Warnungen bei wenig Speicherplatz nur anzeigen, wenn das Gerät nicht verwaltet wird oder es nur einen Nutzer gibt</translation>
@@ -4970,6 +4970,17 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
       Wenn die Richtlinie auf „wahr“ gesetzt wird, können Websites WebAssembly-Module ohne Einschränkungen auch ursprungsübergreifend senden.
 
       Wird sie auf „falsch“ gesetzt oder nicht konfiguriert, können Websites WebAssembly-Module nur an Fenster und Worker im selben Ursprung senden.</translation>
+<translation id="6005906773585863978">Mit dieser Richtlinie kannst du festlegen, ob vom Browser Manifest V2-Erweiterungen verwendet werden können.
+
+Die Unterstützung für Manifest V2-Erweiterungen wird eingestellt. Alle Erweiterungen müssen dann zur Version V3 migriert werden. Weitere Informationen und den Zeitplan für die Migration findest du unter https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
+
+Wenn die Richtlinie auf <ph name="DEFAULT" /> (0) gesetzt oder nicht konfiguriert ist, werden V2-Erweiterungen abhängig vom Browser und gemäß dem obigen Zeitplan geladen.
+Ist die Richtlinie auf <ph name="DISABLE" /> (1) gesetzt, wird das Installieren von V2-Erweiterungen blockiert und vorhandene V2-Erweiterungen werden deaktiviert. Nachdem die V2-Unterstützung standardmäßig deaktiviert wurde, wirkt die Option so, als wäre die Richtlinie nicht konfiguriert.
+Ist die Richtlinie auf <ph name="ENABLE" /> (2) gesetzt, sind V2-Erweiterungen zulässig. Bevor die V2-Unterstützung standardmäßig deaktiviert wird, wirkt die Option so, als wäre die Richtlinie nicht konfiguriert.
+Wenn die Richtlinie auf <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3) gesetzt ist, sind V2-Erweiterungen mit erzwungener Installation zulässig. Dazu gehören Erweiterungen, die in <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> oder <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> mit <ph name="INSTALLATION_MODE" /> „force_installed“ oder „normal_installed“ aufgeführt sind. Alle anderen V2-Erweiterungen sind deaktiviert. Bevor die V2-Unterstützung standardmäßig deaktiviert wird, wirkt die Option so, als wäre die Richtlinie nicht konfiguriert.
+
+
+Die Verfügbarkeit von Erweiterungen wird weiterhin über andere Richtlinien gesteuert.</translation>
 <translation id="6009062900206392980">Wenn du die Richtlinie auf "None" setzt, wird die Lupe auf dem Anmeldebildschirm deaktiviert.
 
        Wenn du diese Richtlinie konfigurierst, können Nutzer vorübergehend die Lupe aktivieren oder deaktivieren. Wenn der Anmeldebildschirm neu geladen wird oder eine Minute lang inaktiv bleibt, wird sie in den Originalzustand zurückversetzt.
@@ -5542,6 +5553,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
       Hinweis: Automatische Neustarts können derzeit nur stattfinden, wenn der Anmeldebildschirm angezeigt wird oder eine Kiosk-App-Sitzung läuft.</translation>
 <translation id="6556586932263358975">Sperren des Bildschirms zulassen</translation>
 <translation id="6559057113164934677">Keine Website darf auf meine Kamera oder mein Mikrofon zugreifen</translation>
+<translation id="65591220958874949">Integrierten DNS-Client für Windows, macOS, Android und ChromeOS verwenden</translation>
 <translation id="6559221564468029245">Wenn die Richtlinie aktiviert wird oder nicht konfiguriert ist, gilt der Nutzer während der Audiowiedergabe nicht als inaktiv. Dadurch wird verhindert, dass das Zeitlimit für die Inaktivität erreicht wird und entsprechende Aktionen ausgeführt werden. Der Bildschirm wird jedoch unabhängig von den Audioaktivitäten gemäß den konfigurierten Zeitlimits gedimmt, abgeschaltet und gesperrt.
 
       Wenn die Richtlinie deaktiviert ist, kann das System den Nutzer auch bei Audioaktivitäten als inaktiv ansehen.</translation>
@@ -5629,6 +5641,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
       – Wenn die Richtlinie deaktiviert ist, müssen Administratoren Endnutzer dieses Geräts darüber informieren.</translation>
 <translation id="6609867253856597039">Nutzereinstellungen für deaktivierte Funktionen festlegen</translation>
 <translation id="6614557704487944013">Nutzern erlauben, <ph name="LACROS_NAME" /> zu verwenden</translation>
+<translation id="661610294649586421">WebAuthn-API-Anfragen auf Websites mit fehlerhaften TLS-Zertifikaten nicht zulassen.</translation>
 <translation id="6617589895942747919">Beginn des Intervalls, inklusiv.</translation>
 <translation id="6621830999036927230">Wenn diese Richtlinie konfiguriert ist, verwendet der Host für den Remotezugriff diese URL zur Validierung von Authentifizierungstokens von Clients für den Remotezugriff, um Verbindungen zu akzeptieren. Diese Funktion ist deaktiviert, wenn sie leer oder nicht konfiguriert ist.
 
@@ -5931,6 +5944,9 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
 <translation id="6907778402784621686">Unsichere Inhalte auf diesen Websites blockieren</translation>
 <translation id="6908640907898649429">Konfiguriert die Standardsuchmaschine. Du kannst festlegen, welche Suchmaschine als Standardsuchmaschine für die Nutzer verwendet werden soll, oder die Verwendung einer Standardsuchmaschine deaktivieren.</translation>
 <translation id="6913068954484253496"><ph name="PRODUCT_NAME" /> erlauben, eine Verbindung zu Übertragungsgeräten unter allen IP-Adressen herzustellen.</translation>
+<translation id="6915493311660114995">Wenn die Richtlinie aktiviert ist, erlaubt <ph name="PRODUCT_NAME" /> Webauthentifizierungsanfragen auf Websites mit fehlerhaften TLS-Zertifikaten (d. h. Websites, die als nicht sicher eingestuft werden).
+
+Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, gilt das Standardverhalten zum Blockieren solcher Anfragen.</translation>
 <translation id="6919819553978815392">Wenn diese Richtlinie auf „wahr“ gesetzt oder nicht konfiguriert ist, sind Gastanmeldungen in <ph name="PRODUCT_NAME" /> und <ph name="LACROS_NAME" /> möglich. Gastanmeldungen sind <ph name="PRODUCT_NAME" />-Profile, bei denen alle Fenster im Inkognitomodus geöffnet werden.
 
       Ist die Richtlinie auf „falsch“ gesetzt, sind keine Gastanmeldungen in <ph name="PRODUCT_NAME" /> und <ph name="LACROS_NAME" /> möglich.
@@ -6836,6 +6852,7 @@ werden abgelehnt.</translation>
 <translation id="782661371433719637">Websites dürfen den Nutzer nicht um Lesezugriff auf Dateien und Verzeichnisse über die File System API bitten</translation>
 <translation id="7827127381981620448">Plattform-App</translation>
 <translation id="7829436838673974723">Zulassen, dass Seiten beim Schließen synchrone XHR-Anfragen senden</translation>
+<translation id="782978857350824974">Webauthentifizierungsanfragen auf Websites mit fehlerhaften TLS-Zertifikaten zulassen.</translation>
 <translation id="7832225468415136704">Verhindern, dass das Chrome Cleanup Tool das System regelmäßig scannt, und manuelle Scans deaktivieren</translation>
 <translation id="7833148823006528332">Android-App-ID, z. B. „com.google.android.gm“ für Gmail.</translation>
 <translation id="7835218570504220753">Automatisches Klicken deaktivieren</translation>
@@ -7278,17 +7295,6 @@ Unter Windows ist es empfehlenswert, Richtlinien über Gruppenrichtlinienobjekte
 <translation id="8274603902181597201">ecryptfs-Basisverzeichnis des Nutzers löschen und durch ein neues ext4-verschlüsseltes Basisverzeichnis ersetzen.</translation>
 <translation id="8274926413890711289">Steuerelemente für detailliertes Reporting aktivieren</translation>
 <translation id="8278133379873210419">JavaScript-Dialogfelder unterdrücken, die von anderen Quell-Subframes ausgelöst wurden</translation>
-<translation id="8279037559659894049">Aktiviere <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" />, um eine Liste von URLs anzuzeigen.
-
-      Wenn du diese Richtlinie konfigurierst, legst du damit fest, welche URLs für den Attestierungsablauf zugelassen sein sollen, um die Signalgruppe vom Computer abzurufen.
-
-      Wenn du sie nicht konfigurierst oder leer lässt, bedeutet das, dass kein Endpunkt dazu in der Lage ist, den Attestierungsablauf zu starten oder Signale vom Computer abzurufen.
-
-      Hinweis: Platzhalter (<ph name="WILDCARD_VALUE" />) sind zulässig.
-
-      Bei Chrome OS bezieht sich diese Richtlinie auf die Remote-Attestierung, bei der automatisch ein Zertifikat generiert und auf den Geräteverwaltungsserver hochgeladen wird.
-
-      Weitere Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="8284296539558710573">Ursprungsübergreifende HTTP-Authentifizierungsaufforderungen</translation>
 <translation id="8284527236880877730">Wenn <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> deaktiviert ist, wird mit <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> der Prozentsatz angegeben, um den die Verzögerung für das Dimmen des Bildschirms skaliert wird, wenn sich das Gerät im Präsentationsmodus befindet. Wenn die Verzögerung für das Dimmen skaliert wird, werden die Verzögerung für die Abschaltung und Sperre des Bildschirms sowie die Inaktivität so angepasst, dass die Abstände der ursprünglichen Konfiguration proportional beibehalten werden.
 

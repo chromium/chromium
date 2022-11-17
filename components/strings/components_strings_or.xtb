@@ -282,6 +282,7 @@
 <translation id="1620510694547887537">କ୍ୟାମେରା</translation>
 <translation id="1622571349153632031">ନିରାମିଷ ପାକପ୍ରଣାଳୀ</translation>
 <translation id="1623104350909869708">ଅତିରିକ୍ତ ସଂଳାପଗୁଡିକ ସୃଷ୍ଟି କରିବା କାର୍ଯ୍ୟରୁ ଏହି ପୃଷ୍ଠାକୁ ପ୍ରତିରୋଧ କରନ୍ତୁ</translation>
+<translation id="1633137413609266904">{0,plural, =1{ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ଅନୁଯାୟୀ ଏହି ଫାଇଲକୁ ଖୋଲିବା ବ୍ଲକ କରାଯାଇଛି}other{ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ଅନୁଯାୟୀ #ଟି ଫାଇଲକୁ ଖୋଲିବା ବ୍ଲକ କରାଯାଇଛି}}</translation>
 <translation id="1634828734222219955">ମୋଟ</translation>
 <translation id="163669211644121865">କର ପ୍ରସ୍ତୁତି ଏବଂ ପ୍ଲାନିଂ</translation>
 <translation id="1638780421120290329">କାର୍ଡ ସେଭ୍ କରିପାରିବ ନାହିଁ</translation>
@@ -894,6 +895,7 @@
 <translation id="3270847123878663523">ପୁନଃକ୍ରମକୁ &amp;ପୂର୍ବବତ୍ କରନ୍ତୁ</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> ସଂଯୋଗ ହେବାକୁ ଚାହୁଁଛି</translation>
 <translation id="3272091146646336650">ସୁପର B</translation>
+<translation id="3281350579597955952">{0,plural, =1{<ph name="DESTINATION_NAME" />ରେ ଏହି ଫାଇଲକୁ ଖୋଲିବା ପାଇଁ ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ସୁପାରିଶ କରେ ନାହିଁ}other{<ph name="DESTINATION_NAME" />ରେ ଏହି ଫାଇଲଗୁଡ଼ିକୁ ଖୋଲିବା ପାଇଁ ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ସୁପାରିଶ କରେ ନାହିଁ}}</translation>
 <translation id="3282085321714087552">ଆପଣଙ୍କ ସଂସ୍ଥା, <ph name="ENROLLMENT_DOMAIN" />, ନିମ୍ନୋକ୍ତ ୱେବସାଇଟଗୁଡ଼ିକୁ ସେଟିଂସ୍ କିମ୍ବା ନୀତିଗୁଡ଼ିକ ପରି କିଛି ସୂଚନା ପଠାଇଛି।</translation>
 <translation id="3282497668470633863">କାର୍ଡରେ ନାମକୁ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="3286372614333682499">ପୋଟ୍ରେଟ୍‌</translation>
@@ -1292,6 +1294,7 @@
 <translation id="4275830172053184480">ଆପଣଙ୍କର ଡିଭାଇସ୍‌ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="4277028893293644418">ପାସ୍‌ୱର୍ଡ ରିସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="4278390842282768270">ଅନୁମୋଦିତ</translation>
+<translation id="4281998142035485137">{0,plural, =1{ଗୋପନୀୟ ଫାଇଲ ଖୋଲିବେ?}other{ଗୋପନୀୟ ଫାଇଲଗୁଡ଼ିକୁ ଖୋଲିବେ?}}</translation>
 <translation id="4282346679996504092">ଏହି ପ୍ରଡକ୍ଟ ପାଇଁ ଆଲର୍ଟଗୁଡ଼ିକୁ ବନ୍ଦ କରିଦିଆଯାଇଛି ଏବଂ ବୁକମାର୍କକୁ କାଢ଼ି ଦିଆଯାଇଛି</translation>
 <translation id="4285498937028063278">ଅନ୍‌ପିନ୍ କରନ୍ତୁ</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{ଏହି କାର୍ଡ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ୍ କରିଦିଆଯାଇଛି}other{ଏହି କାର୍ଡଗୁଡ଼ିକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ୍ କରିଦିଆଯାଇଛି}}</translation>
@@ -1926,6 +1929,7 @@
 <translation id="5903264686717710770">ଆଖ୍ୟା:</translation>
 <translation id="5904360430676679685">ପରିବାର ଏବଂ ସମ୍ପର୍କଗୁଡ଼ିକ</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> ( ସିଙ୍କ୍‍ କରାଯାଇଛି)</translation>
+<translation id="5911110632211230665">ଖୋଲିବା ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="59174027418879706">ସାମର୍ଥ୍ୟ ହୋଇଛି</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1ଟି ବ୍ୟବହାରରେ ଅଛି}other{#ଟି ବ୍ୟବହାରରେ ଅଛି}}</translation>

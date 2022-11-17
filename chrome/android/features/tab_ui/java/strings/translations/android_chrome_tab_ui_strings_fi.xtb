@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">Saat ilmoituksen, kun avoimella välilehdellä oleva hinta laskee</translation>
 <translation id="3328308545011660196">Ehdotus: <ph name="NUMBER_OF_TABS" /> välilehteä vaikuttaa liittyvän toisiinsa. Lisätäänkö ne ryhmäksi?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">Jakotaulukon pikkukuva.</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Tiivistä <ph name="TABS_COUNT_ONE" /> välilehti.}other{Tiivistä <ph name="TITLE_OF_GROUP" /> välilehtiryhmä, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä.}}</translation>
 <translation id="3882834874697329510">Jos haluat ilmoituksen, kun avoimella välilehdellä oleva hinta laskee, laita ilmoitukset päälle asetuksista.</translation>
 <translation id="3940195383040445971">Seuraa hintoja välilehdillä</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">Näytä kaupan tiedot, vaihtoehto lähellä näytön yläreunaa</translation>
 <translation id="5558362125926932819">Sulje välilehtiryhmä, jossa on <ph name="NUMBER_OF_TABS" /> välilehteä.</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> välilehteä ryhmiteltiin</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> linkki Chromesta}other{<ph name="TABS_COUNT_MANY" /> linkkiä Chromesta}}</translation>
 <translation id="575494663145460764">Haluatko ilmoituksia hinnanalennuksista?</translation>
 <translation id="58326064309361797">Ryhmittele välilehtiä vetämällä niitä</translation>
 <translation id="5846292395804797011">Sulje ryhmä <ph name="TITLE_OF_GROUP" />, jossa on <ph name="NUMBER_OF_TABS" /> välilehteä</translation>

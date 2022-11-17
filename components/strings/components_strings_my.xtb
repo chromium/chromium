@@ -282,6 +282,7 @@
 <translation id="1620510694547887537">ကင်မရာ</translation>
 <translation id="1622571349153632031">သက်သတ်လွတ် အစားအစာ</translation>
 <translation id="1623104350909869708">ဤစာမျက်နှာကို နောက်ထပ် စကားကွက်များထပ်မံ ဖန်တီးခြင်းမှ ကာကွယ်မည်။</translation>
+<translation id="1633137413609266904">{0,plural, =1{စီမံခန့်ခွဲသူမူဝါဒက ဤဖိုင်ဖွင့်ခွင့် ပိတ်ထားသည်}other{စီမံခန့်ခွဲသူမူဝါဒက ဖိုင် # ဖိုင်ဖွင့်ခွင့် ပိတ်ထားသည်}}</translation>
 <translation id="1634828734222219955">စုစုပေါင်း</translation>
 <translation id="163669211644121865">အခွန်ပြင်ဆင်ခြင်းနှင့် စီစဉ်ခြင်း</translation>
 <translation id="1638780421120290329">ကတ်ကို သိမ်း၍မရပါ</translation>
@@ -898,6 +899,7 @@
 <translation id="3270847123878663523">&amp;ပြန်စီမှုကို တစ်ဆင့်နောက်ပြန်ရန်</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> သည် ချိတ်ဆက်လိုပါသည်</translation>
 <translation id="3272091146646336650">စူပါ B</translation>
+<translation id="3281350579597955952">{0,plural, =1{စီမံခန့်ခွဲသူမူဝါဒက <ph name="DESTINATION_NAME" /> ရှိ ဤဖိုင်ဖွင့်ရန် အကြံမပြုပါ}other{စီမံခန့်ခွဲသူမူဝါဒက <ph name="DESTINATION_NAME" /> ရှိ ဤဖိုင်များဖွင့်ရန် အကြံမပြုပါ}}</translation>
 <translation id="3282085321714087552">သင့်အဖွဲ့အစည်း <ph name="ENROLLMENT_DOMAIN" /> သည် ဆက်တင်များ (သို့) မူဝါဒများကဲ့သို့ အချက်အလက်အချို့ကို အောက်ပါဝဘ်ဆိုက်များသို့ ပို့လိုက်သည်။</translation>
 <translation id="3282497668470633863">ကတ်ပေါ်ရှိ အမည်ကို ထည့်ပါ</translation>
 <translation id="3286372614333682499">ဒေါင်လိုက်</translation>
@@ -1296,6 +1298,7 @@
 <translation id="4275830172053184480">သင့်စက်ပစ္စည်းကို ပြန်လည် အစပြုပါ</translation>
 <translation id="4277028893293644418">စကားဝှက် ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="4278390842282768270">ခွင့်ပြုထား</translation>
+<translation id="4281998142035485137">{0,plural, =1{လျှို့ဝှက်ဖိုင် ဖွင့်မလား။}other{လျှို့ဝှက်ဖိုင်များ ဖွင့်မလား။}}</translation>
 <translation id="4282346679996504092">ဤထုတ်ကုန်အတွက် သတိပေးချက်များကို ပိတ်ထားပြီး လိပ်စာကို ဖယ်ရှားထားသည်</translation>
 <translation id="4285498937028063278">ပင်ဖြုတ်ရန်</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{ဤကတ်ကို သင်၏ Google အကောင့်တွင် သိမ်းပြီးပါပြီ}other{ဤကတ်များကို သင်၏ Google အကောင့်တွင် သိမ်းပြီးပါပြီ}}</translation>
@@ -1929,6 +1932,7 @@
 <translation id="5903264686717710770">ခေါင်းစဉ်-</translation>
 <translation id="5904360430676679685">မိသားစုအရေးနှင့် အချစ်ရေး</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (စင့်ခ်လုပ်ထားသည်)</translation>
+<translation id="5911110632211230665">ဖွင့်ခွင့် ပိတ်ထားသည်</translation>
 <translation id="59174027418879706">ဖွင့်ထားသည်</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{၁ ခု အသုံးပြုနေသည်}other{#  ခု အသုံးပြုနေသည်}}</translation>

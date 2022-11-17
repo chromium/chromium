@@ -282,6 +282,7 @@
 <translation id="1620510694547887537">相機</translation>
 <translation id="1622571349153632031">素食</translation>
 <translation id="1623104350909869708">防止這個網頁產生其他對話方塊</translation>
+<translation id="1633137413609266904">{0,plural, =1{管理員政策已禁止開啟此檔案}other{管理員政策已禁止開啟 # 個檔案}}</translation>
 <translation id="1634828734222219955">全部</translation>
 <translation id="163669211644121865">稅務籌劃</translation>
 <translation id="1638780421120290329">無法儲存付款卡</translation>
@@ -896,6 +897,7 @@
 <translation id="3270847123878663523">復原重新排序(&amp;U)</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> 要求連接至</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3281350579597955952">{0,plural, =1{管理員政策不建議在<ph name="DESTINATION_NAME" />中開啟這個檔案}other{管理員政策不建議在<ph name="DESTINATION_NAME" />中開啟這些檔案}}</translation>
 <translation id="3282085321714087552">機構 (<ph name="ENROLLMENT_DOMAIN" />) 已將一些資訊 (例如設定或政策) 傳送到以下網站。</translation>
 <translation id="3282497668470633863">新增持卡人姓名</translation>
 <translation id="3286372614333682499">直向</translation>
@@ -1294,6 +1296,7 @@
 <translation id="4275830172053184480">重新啟動裝置</translation>
 <translation id="4277028893293644418">重設密碼</translation>
 <translation id="4278390842282768270">已允許</translation>
+<translation id="4281998142035485137">{0,plural, =1{要開啟機密檔案嗎？}other{要開啟機密檔案嗎？}}</translation>
 <translation id="4282346679996504092">此產品的通知已關閉，網頁亦已從書籤中移除</translation>
 <translation id="4285498937028063278">取消固定</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{此卡已儲存至您的 Google 帳戶}other{這些卡已儲存至您的 Google 帳戶}}</translation>
@@ -1927,6 +1930,7 @@
 <translation id="5903264686717710770">標題：</translation>
 <translation id="5904360430676679685">家庭和人際關係</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (已同步)</translation>
+<translation id="5911110632211230665">已禁止開啟</translation>
 <translation id="59174027418879706">已啟用</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{正在使用 1 個 cookie}other{正在使用 # 個 cookie}}</translation>

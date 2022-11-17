@@ -282,6 +282,7 @@
 <translation id="1620510694547887537">ക്യാമറ</translation>
 <translation id="1622571349153632031">വെജിറ്റേറിയൻ ഭക്ഷണം</translation>
 <translation id="1623104350909869708">കൂടുതൽ ഡയലോഗുകൾ സൃഷ്‌ടിക്കുന്നതിൽ നിന്നും ഈ പേജിനെ തടയുക</translation>
+<translation id="1633137413609266904">{0,plural, =1{ഈ ഫയൽ തുറക്കുന്നത് അഡ്‌മിൻ നയം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു}other{# ഫയലുകൾ തുറക്കുന്നത് അഡ്‌മിൻ നയം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു}}</translation>
 <translation id="1634828734222219955">മൊത്തം</translation>
 <translation id="163669211644121865">നികുതി തയ്യാറാക്കലും ആസൂത്രണവും</translation>
 <translation id="1638780421120290329">കാർഡ് സംരക്ഷിക്കാനാകുന്നില്ല</translation>
@@ -895,6 +896,7 @@
 <translation id="3270847123878663523">&amp;പുനഃക്രമീകരിക്കുന്നത് പഴയപടിയാക്കുക</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> കണക്‌റ്റുചെയ്യാൻ താൽപ്പര്യപ്പെടുന്നു</translation>
 <translation id="3272091146646336650">സൂപ്പർ B</translation>
+<translation id="3281350579597955952">{0,plural, =1{<ph name="DESTINATION_NAME" /> എന്നതിൽ ഈ ഫയൽ തുറക്കുന്നത് അഡ്‌മിൻ നയം ശുപാർശ ചെയ്യുന്നില്ല}other{<ph name="DESTINATION_NAME" /> എന്നതിൽ ഈ ഫയലുകൾ തുറക്കുന്നത് അഡ്‌മിൻ നയം ശുപാർശ ചെയ്യുന്നില്ല}}</translation>
 <translation id="3282085321714087552">നിങ്ങളുടെ സ്ഥാപനം, <ph name="ENROLLMENT_DOMAIN" />, ക്രമീകരണമോ നയങ്ങളോ പോലുള്ള ചില വിവരങ്ങൾ ഇനിപ്പറയുന്ന വെബ്‌സൈറ്റുകളിലേക്ക് അയച്ചു.</translation>
 <translation id="3282497668470633863">കാർഡിൽ പേര് ചേർക്കുക</translation>
 <translation id="3286372614333682499">പോർട്രെയ്‌റ്റ്</translation>
@@ -1294,6 +1296,7 @@
 <translation id="4275830172053184480">നിങ്ങളുടെ ഉപകരണം പുനരാരംഭിക്കുക</translation>
 <translation id="4277028893293644418">പാസ്‌വേഡ് റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="4278390842282768270">അനുവദനീയം</translation>
+<translation id="4281998142035485137">{0,plural, =1{രഹസ്യാത്മക ഫയൽ തുറക്കണോ?}other{രഹസ്യാത്മക ഫയലുകൾ തുറക്കണോ?}}</translation>
 <translation id="4282346679996504092">ഈ ഉൽപ്പന്നത്തിനായുള്ള അറിയിപ്പുകൾ ഓഫാക്കി, ബുക്ക്‌മാർക്ക് നീക്കം ചെയ്തു</translation>
 <translation id="4285498937028063278">പിൻചെയ്യൽ മാറ്റുക</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{ഈ കാർഡ് നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിച്ചു}other{ഈ കാർഡുകൾ നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിച്ചു}}</translation>
@@ -1927,6 +1930,7 @@
 <translation id="5903264686717710770">ശീര്‍ഷകം:</translation>
 <translation id="5904360430676679685">കുടുംബവും ബന്ധങ്ങളും</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (സമന്വയിപ്പിച്ചത്)</translation>
+<translation id="5911110632211230665">തുറക്കുന്നത് ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="59174027418879706">പ്രവർത്തനക്ഷമമാക്കി</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{ഒരെണ്ണം ഉപയോഗത്തിലുണ്ട്}other{# എണ്ണം ഉപയോഗത്തിലുണ്ട്}}</translation>

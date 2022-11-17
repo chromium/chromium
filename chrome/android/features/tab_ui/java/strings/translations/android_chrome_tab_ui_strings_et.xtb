@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">Kui avatud vahelehel on soodsam hind, saate selle kohta märguande</translation>
 <translation id="3328308545011660196">Soovitus: <ph name="NUMBER_OF_TABS" /> vahelehte näivad olevat seotud. Kas soovite need grupeerida?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">Jagatud lehe eelvaate pisipilt.</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Ahenda <ph name="TABS_COUNT_ONE" /> vaheleht.}other{Ahenda <ph name="TABS_COUNT_MANY" /> vahelehega vahelehegrupp <ph name="TITLE_OF_GROUP" />.}}</translation>
 <translation id="3882834874697329510">Kui soovite avatud vahelehel oleva soodsama hinna kohta märguannet saada, lülitage märguanded seadetes sisse.</translation>
 <translation id="3940195383040445971">Jälgige vahelehtedel hindu</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">Poe teabe vaatamine, valik saadaval ekraanikuva ülaosas</translation>
 <translation id="5558362125926932819">Sule <ph name="NUMBER_OF_TABS" /> vahelehega vahelehegrupp</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> vahekaarti grupeeriti</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link Chrome'ist}other{<ph name="TABS_COUNT_MANY" /> linki Chrome'ist}}</translation>
 <translation id="575494663145460764">Kas soovite hinnalanguste puhul märguandeid saada?</translation>
 <translation id="58326064309361797">Lohistage vahelehti, et neid grupeerida</translation>
 <translation id="5846292395804797011">Sule <ph name="NUMBER_OF_TABS" /> vahelehega grupp <ph name="TITLE_OF_GROUP" /></translation>

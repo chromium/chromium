@@ -282,6 +282,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622571349153632031">Вегетаријанска кухиња</translation>
 <translation id="1623104350909869708">Спречи ову страницу да прави додатне дијалоге</translation>
+<translation id="1633137413609266904">{0,plural, =1{Смернице администратора блокирају отварање овог фајла}one{Смернице администратора блокирају отварање # фајла}few{Смернице администратора блокирају отварање # фајла}other{Смернице администратора блокирају отварање # фајлова}}</translation>
 <translation id="1634828734222219955">Укупно</translation>
 <translation id="163669211644121865">Припрема и планирање пореза</translation>
 <translation id="1638780421120290329">Чување картице није успело</translation>
@@ -896,6 +897,7 @@
 <translation id="3270847123878663523">&amp;Опозови промену редоследа</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> жели да се повеже</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3281350579597955952">{0,plural, =1{Смернице администратора не препоручују отварање овог фајла у: <ph name="DESTINATION_NAME" />}one{Смернице администратора не препоручују отварање ових фајлова у: <ph name="DESTINATION_NAME" />}few{Смернице администратора не препоручују отварање ових фајлова у: <ph name="DESTINATION_NAME" />}other{Смернице администратора не препоручују отварање ових фајлова у: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Ваша организација, <ph name="ENROLLMENT_DOMAIN" />, послала је одређене податке следећим веб-сајтовима, попут подешавања или смерница.</translation>
 <translation id="3282497668470633863">Додајте име на картици</translation>
 <translation id="3286372614333682499">усправно</translation>
@@ -1295,6 +1297,7 @@
 <translation id="4275830172053184480">Поновно покретање уређаја</translation>
 <translation id="4277028893293644418">Ресетујте лозинку</translation>
 <translation id="4278390842282768270">Дозвољено</translation>
+<translation id="4281998142035485137">{0,plural, =1{Желите да отворите поверљив фајл?}one{Желите да отворите поверљиве фајлове?}few{Желите да отворите поверљиве фајлове?}other{Желите да отворите поверљиве фајлове?}}</translation>
 <translation id="4282346679996504092">Обавештења за овај производ су искључена, а обележивач је уклоњен</translation>
 <translation id="4285498937028063278">Откачи</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Ова картица је сачувана на Google налогу}one{Ове картице су сачуване на Google налогу}few{Ове картице су сачуване на Google налогу}other{Ове картице су сачуване на Google налогу}}</translation>
@@ -1928,6 +1931,7 @@
 <translation id="5903264686717710770">Наслов:</translation>
 <translation id="5904360430676679685">Породични и други односи</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (синхронизовано)</translation>
+<translation id="5911110632211230665">Отварање је блокирано</translation>
 <translation id="59174027418879706">Омогућено</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{Користи се 1}one{Користи се #}few{Користе се #}other{Користи се #}}</translation>

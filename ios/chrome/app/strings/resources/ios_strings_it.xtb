@@ -87,6 +87,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="1545749641540134597">Scansiona codice QR</translation>
 <translation id="1552525382687785070">Sincronizzazione disattivata dall'amministratore</translation>
 <translation id="1554477036522844996">Nuova finestra</translation>
+<translation id="1565371473877914088">Nuova scheda di navigazione in incognito</translation>
 <translation id="1580715474678097352">Proteggiti dai siti web pericolosi</translation>
 <translation id="1580783302095112590">Messaggio inviato.</translation>
 <translation id="1582732959743469162">Verrà interrotto l'avanzamento del tuo download attuale.</translation>
@@ -133,6 +134,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="1981118202195772574">Dispositivo mobile</translation>
 <translation id="1989112275319619282">Esplora</translation>
 <translation id="199425419756152024">Visualizza password</translation>
+<translation id="2010008505735295285">Ricarica</translation>
 <translation id="2015722694326466240">Per visualizzare le password, per prima cosa imposta un passcode sul tuo dispositivo.</translation>
 <translation id="2021670401941426298">Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia delle ricerche, se applicabile.</translation>
 <translation id="202292859882676807">Accesso al microfono consentito</translation>
@@ -299,6 +301,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3272527697863656322">Annulla</translation>
 <translation id="3277021493514034324">Indirizzo del sito copiato</translation>
 <translation id="3285962946108803577">Condividi pagina…</translation>
+<translation id="3289505634533552500">Ricerca vocale</translation>
 <translation id="3290875554372353449">Scegli un account</translation>
 <translation id="3305294846493618482">altro</translation>
 <translation id="3311748811247479259">Off</translation>
@@ -556,6 +559,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5295239312320826323">Vuoi rimuovere l'account <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostra</translation>
 <translation id="5317780077021120954">Salva</translation>
+<translation id="5318298563956633672">Stai già monitorando questo prodotto.</translation>
 <translation id="5339316356165661760">Attiva la sincronizzazione</translation>
 <translation id="536067926684072644">Mostra i preferiti</translation>
 <translation id="5360976571138293719">Per altre impostazioni relative a privacy, sicurezza e raccolta dei dati, consulta la sezione <ph name="BEGIN_LINK" />Servizi Google<ph name="END_LINK" />.</translation>
@@ -619,6 +623,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="581659025233126501">Attiva la sincronizzazione</translation>
 <translation id="5819208479324046259">Gestito da <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Salva password, metodi di pagamento e indirizzi per la compilazione automatica di Chrome in un secondo momento.</translation>
+<translation id="5834415013958049700">Immagine Lens copiata</translation>
 <translation id="5846482154967366008">Motore di ricerca</translation>
 <translation id="5854790677617711513">Oltre 30 giorni fa</translation>
 <translation id="5857090052475505287">Nuova cartella</translation>
@@ -646,6 +651,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5984222099446776634">Visitati di recente</translation>
 <translation id="5988097621740394599">Visualizza i cali di prezzo nelle tue schede.</translation>
 <translation id="5988851877894965432">Apri URL in Chrome</translation>
+<translation id="6006672969046233841">Nuova scheda</translation>
 <translation id="6012140227487808125">Crittografia…</translation>
 <translation id="6021332621416007159">Apri in...</translation>
 <translation id="6027945736510816438">Intendevi <ph name="WEBSITE" />?</translation>
@@ -832,6 +838,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7207023858769244910">Sincronizza per ricevere contenuti in base ai tuoi interessi.</translation>
 <translation id="721597782417389033">Nickname carta non valido</translation>
 <translation id="7221173315674413369">Esplora nuove funzionalità e suggerimenti nella sezione Novità</translation>
+<translation id="7223102419539744003">Chiudi scheda</translation>
 <translation id="722454870747268814">Nuova scheda in incognito</translation>
 <translation id="7265758999917665941">Mai per questo sito</translation>
 <translation id="7272437679830969316">Impossibile verificare la tua identità. Password non copiata.</translation>
@@ -903,6 +910,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7856733331829174190">Download non riuscito</translation>
 <translation id="785938070103630874">Apri password, metodi di pagamento o indirizzo e altro</translation>
 <translation id="7859704718976024901">Cronologia di navigazione</translation>
+<translation id="7870750252270996949">Immagine copiata da Lens</translation>
 <translation id="7879275349003161544">Mostra download</translation>
 <translation id="7884694604461143138">Cerca nella cronologia (<ph name="COUNT" /> risultati)</translation>
 <translation id="7887198238286927132">Per tutelare la tua privacy, Chrome non compilerà automaticamente questo campo.</translation>
@@ -1027,6 +1035,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Visualizzazione predefinita sito</translation>
 <translation id="8820817407110198400">Preferiti</translation>
+<translation id="882557203579758546">Trova nella pagina…</translation>
 <translation id="8840513115188359703">Non verrai disconnesso dal tuo Account Google.</translation>
 <translation id="8843129975935593190">La tua organizzazione limita ciò che puoi sincronizzare.</translation>
 <translation id="8849001918648564819">Nascosto</translation>

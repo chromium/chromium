@@ -2386,6 +2386,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3143515551205905069">Avbryt synkronisering</translation>
 <translation id="3143754809889689516">Spela upp från början</translation>
 <translation id="3144647712221361880">Öppna länk som</translation>
+<translation id="3144896554017119333">Tillägg med mera</translation>
 <translation id="3149510190863420837">Chrome-appar</translation>
 <translation id="3150693969729403281">Kontrollera säkerheten nu</translation>
 <translation id="3150927491400159470">Hård inläsning</translation>
@@ -2494,6 +2495,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3268451620468152448">Öppna flikar</translation>
 <translation id="3269093882174072735">Läs in bild</translation>
 <translation id="326911502853238749">Visa inte <ph name="MODULE_NAME" /></translation>
+<translation id="3269175001434213183">Aktivera synkronisering om du vill säkerhetskopiera dina grejer och använda dem på vilken enhet som helst</translation>
 <translation id="3269612321104318480">Ljust blågrön och vit</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Fil}other{# filer}}</translation>
 <translation id="326999365752735949">Laddar ned skillnaden</translation>
@@ -4293,6 +4295,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4950993567860689081">Sessionen hanteras av organisationen. Administratören kan radera din profil och även övervaka nätverkstrafiken.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{en fil}other{# filer}}</translation>
 <translation id="495170559598752135">Åtgärder</translation>
+<translation id="4951966678293618079">Spara aldrig lösenord för den här webbplatsen</translation>
 <translation id="4953808748584563296">Orange standardavatar</translation>
 <translation id="4955710816792587366">Välj en pinkod</translation>
 <translation id="4959262764292427323">Lösenorden sparas i Google-kontot så att du kan använda dem på vilken enhet som helst</translation>
@@ -4322,6 +4325,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4981449534399733132"><ph name="BEGIN_LINK" />Logga in<ph name="END_LINK" /> om du vill rensa webbinformation från alla synkroniserade enheter och ditt Google-konto.</translation>
 <translation id="4982111327868342436">Fortsätt där du slutade på vilket enhet som helst</translation>
 <translation id="4982236238228587209">Enhetens programvara</translation>
+<translation id="4986706507552097681">Du kan alltid välja vad som ska synkroniseras i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="4986728572522335985">All data på säkerhetsnyckeln raderas, inklusive pinkoden</translation>
 <translation id="4988526792673242964">Sidor</translation>
 <translation id="49896407730300355">Rotera m&amp;oturs</translation>

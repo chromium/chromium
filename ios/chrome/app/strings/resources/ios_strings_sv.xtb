@@ -232,6 +232,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2815198996063984598">2. Tryck på Standardwebbläsarapp</translation>
 <translation id="2820289420301699633">Administratören har kontroll över Chrome och kan få åtkomst till dess data</translation>
 <translation id="2830972654601096923">Hantera adresser …</translation>
+<translation id="2834399722155632105">3. Tryck på Lösenordsalternativ</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Återställ översättningsinställningar</translation>
 <translation id="2848086008667475748">Använd som standard i Inställningar …</translation>
@@ -632,6 +633,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5899314093904173337">Om du vill dela med personer i närheten ber du dem att skanna QR-koden med kameran eller en app för att skanna QR-koder</translation>
 <translation id="5911030830365207728">Google Översätt</translation>
 <translation id="5913600720976431809">Alternativ för att översätta sidan</translation>
+<translation id="5933515656458364246">Synkronisera din data på alla enheter.</translation>
 <translation id="5938160824633642847">Det finns nästan ingen plats kvar på enheten. Frigör utrymme och försök igen.</translation>
 <translation id="5948291296578561264">Gör så att du kan spara foton i fotobiblioteket.</translation>
 <translation id="5951816930277761335">Dela länken</translation>
@@ -713,6 +715,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 
 Din data krypterades med lösenfrasen den <ph name="TIME" />. Ange den om du vill starta synkroniseringen.</translation>
 <translation id="6418346271604475326">Förbereder PDF</translation>
+<translation id="6429213933892582367">Öppna Lösenordsalternativ</translation>
 <translation id="6434591244308415567">Ett fel uppstod. Försök igen senare.</translation>
 <translation id="6435236283694032571">Lägg till i läslistan</translation>
 <translation id="6439338047467462846">Tillåt alla</translation>
@@ -828,6 +831,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7203585745079012652">Läs upp svaren</translation>
 <translation id="7207023858769244910">Synkronisera för att få innehåll utifrån dina intressen.</translation>
 <translation id="721597782417389033">Ogiltigt kortnamn</translation>
+<translation id="7221173315674413369">Utforska nya funktioner och tips i Nyheter</translation>
 <translation id="722454870747268814">Ny inkognitoflik</translation>
 <translation id="7265758999917665941">Aldrig på den här webbplatsen</translation>
 <translation id="7272437679830969316">Det gick inte att verifiera din identitet. Lösenordet har inte kopierats.</translation>
@@ -861,6 +865,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7514365320538308">Ladda ned</translation>
 <translation id="7531345132340165516">Nuvarande webbplats</translation>
 <translation id="7537586195939242955">Det går tyvärr inte att installera det här objektet i Passbook just nu.</translation>
+<translation id="7553234618121028547">Inaktivera genom att öppna <ph name="BEGIN_LINK" />Inställningar<ph name="END_LINK" /> och sedan Lösenordsalternativ.</translation>
 <translation id="7554791636758816595">Ny flik</translation>
 <translation id="7561196759112975576">Alltid</translation>
 <translation id="7583004045319035904">Lås upp inkognitoflikarna med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
@@ -942,6 +947,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8101409298456377967">Skapa, spara och hantera dina lösenord så att du enkelt kan logga in på webbplatser och i appar. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Inaktivera</translation>
 <translation id="8114753159095730575">En filnedladdning är tillgänglig. Alternativ visas nära skärmens nederkant.</translation>
+<translation id="81313319706244542">2. Tryck på Lösenord</translation>
 <translation id="8132598642024322408">Nedsatt från <ph name="PREVIOUS_PRICE" /> till <ph name="PRICE" />.</translation>
 <translation id="8136856065410661948">Detta används för att skapa händelser i Apple Kalender från Chrome och Google Lens.</translation>
 <translation id="8156478151976189188">Det går inte att synkronisera lösenord</translation>
@@ -964,6 +970,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8319076807703933069">Ny sökning</translation>
 <translation id="8323906514956095947">Tryck länge för fler flikalternatv</translation>
 <translation id="8328777765163860529">Stäng alla</translation>
+<translation id="8343993175958086504">Säkerhetskopiera dina grejer och använd dem på vilken enhet som helst</translation>
 <translation id="8378714024927312812">Hanteras av organisationen</translation>
 <translation id="8386068868580335421">Återställ</translation>
 <translation id="8407669440184693619">Inga lösenord hittades för webbplatsen</translation>

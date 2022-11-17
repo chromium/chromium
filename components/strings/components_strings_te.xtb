@@ -284,6 +284,7 @@
 <translation id="1620510694547887537">కెమెరా</translation>
 <translation id="1622571349153632031">శాకాహార వంటకాలు</translation>
 <translation id="1623104350909869708">ఈ పేజీని అదనపు డైలాగ్‌లు సృష్టించనీయకుండా నిరోధించు</translation>
+<translation id="1633137413609266904">{0,plural, =1{ఈ ఫైల్‌ను తెరవకుండా అడ్మినిస్ట్రేటర్ పాలసీ బ్లాక్ చేసింది}other{# ఫైల్స్‌ను తెరవకుండా అడ్మినిస్ట్రేటర్ పాలసీ బ్లాక్ చేసింది}}</translation>
 <translation id="1634828734222219955">మొత్తం</translation>
 <translation id="163669211644121865">ట్యాక్స్ రూపకల్పన &amp; ప్లానింగ్</translation>
 <translation id="1638780421120290329">కార్డ్‌ను సేవ్ చేయలేకపోయింది</translation>
@@ -898,6 +899,7 @@
 <translation id="3270847123878663523">&amp;మళ్లీ క్రమం చేయడాన్ని రద్దు చేయి</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> దీనికి కనెక్ట్ చేయాలనుకుంటోంది</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3281350579597955952">{0,plural, =1{<ph name="DESTINATION_NAME" />‌లో ఈ ఫైల్‌ను తెరవవద్దని అడ్మినిస్ట్రేటర్ పాలసీ సిఫార్సు చేస్తోంది}other{<ph name="DESTINATION_NAME" />‌లో ఈ ఫైల్స్‌ను తెరవవద్దని అడ్మినిస్ట్రేటర్ పాలసీ సిఫార్సు చేస్తోంది}}</translation>
 <translation id="3282085321714087552">సెట్టింగ్‌లు లేదా పాలసీల వంటి కొంత సమాచారాన్ని మీ సంస్థ <ph name="ENROLLMENT_DOMAIN" />, దిగువున పేర్కొన్న వెబ్‌సైట్‌లకు పంపింది.</translation>
 <translation id="3282497668470633863">కార్డ్‌లో పేరుని జోడించండి</translation>
 <translation id="3286372614333682499">పోర్ట్రెయిట్‌లో ఉంది</translation>
@@ -1297,6 +1299,7 @@
 <translation id="4275830172053184480">మీ పరికరాన్ని పునఃప్రారంభించండి</translation>
 <translation id="4277028893293644418">పాస్‌వర్డ్‌ను రీసెట్ చేయి</translation>
 <translation id="4278390842282768270">అనుమతించబడింది</translation>
+<translation id="4281998142035485137">{0,plural, =1{గోప్యమైన ఫైల్‌ను తెరవాలా?}other{గోప్యమైన ఫైల్స్‌ను తెరవాలా?}}</translation>
 <translation id="4282346679996504092">ఈ ప్రోడక్ట్‌కి సంబంధించిన హెచ్చరికలు ఆఫ్ చేయబడ్డాయి, బుక్‌మార్క్ తీసివేయబడింది</translation>
 <translation id="4285498937028063278">అన్‌పిన్ చేయి</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{ఈ కార్డ్ మీ Google ఖాతాలో సేవ్ చేయబడింది}other{ఈ కార్డ్‌లు మీ Google ఖాతాలో సేవ్ చేయబడ్డాయి}}</translation>
@@ -1930,6 +1933,7 @@
 <translation id="5903264686717710770">శీర్షిక:</translation>
 <translation id="5904360430676679685">కుటుంబం &amp; సంబంధాలు</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (సింక్ చేయబడింది)</translation>
+<translation id="5911110632211230665">తెరవకుండా బ్లాక్ చేసింది</translation>
 <translation id="59174027418879706">ప్రారంభించబడింది</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 వినియోగంలో ఉంది}other{# వినియోగంలో ఉన్నాయి}}</translation>

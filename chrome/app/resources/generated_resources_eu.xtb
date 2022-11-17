@@ -2371,6 +2371,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3143515551205905069">Utzi sinkronizazioa bertan behera</translation>
 <translation id="3143754809889689516">Erreproduzitu hasieratik</translation>
 <translation id="3144647712221361880">Ireki esteka honela:</translation>
+<translation id="3144896554017119333">Luzapenak eta beste</translation>
 <translation id="3149510190863420837">Chrome-ren aplikazioak</translation>
 <translation id="3150693969729403281">Egin segurtasun-egiaztapena</translation>
 <translation id="3150927491400159470">Behartu berriro kargatzera</translation>
@@ -2479,6 +2480,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3268451620468152448">Ireki fitxak</translation>
 <translation id="3269093882174072735">Kargatu irudia</translation>
 <translation id="326911502853238749">Ez erakutsi <ph name="MODULE_NAME" /></translation>
+<translation id="3269175001434213183">Aktibatu sinkronizazioa, zure gauzen babeskopiak egin eta edozein gailutan erabil ditzazun</translation>
 <translation id="3269612321104318480">Anil argia eta zuria</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Fitxategia}other{# fitxategi}}</translation>
 <translation id="326999365752735949">Aldea deskargatzen</translation>
@@ -4277,6 +4279,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4950993567860689081">Erakundeak kudeatzen du saioa. Administratzaileek zure profila ezaba dezakete, eta sareko trafikoa gainbegiratu.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{fitxategi bat}other{# fitxategi}}</translation>
 <translation id="495170559598752135">Ekintzak</translation>
+<translation id="4951966678293618079">Ez gorde webgune honetako pasahitzak inoiz</translation>
 <translation id="4953808748584563296">Abatar laranja lehenetsia</translation>
 <translation id="4955710816792587366">Aukeratu PIN bat</translation>
 <translation id="4959262764292427323">Pasahitzak Google-ko kontuan gordetzen dira, edozein gailutan eskura izan ditzazun</translation>
@@ -4306,6 +4309,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4981449534399733132">Sinkronizatutako gailu guztietako eta zure Google-ko kontuko arakatze-datuak garbitzeko, <ph name="BEGIN_LINK" />hasi saioa<ph name="END_LINK" />.</translation>
 <translation id="4982111327868342436">Berrekin partidari utzitako tokitik edozein gailu erabilita</translation>
 <translation id="4982236238228587209">Gailuaren softwarea</translation>
+<translation id="4986706507552097681">Zer sinkronizatu nahi duzun aukeratzeko, joan Ezarpenak atalera. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="4986728572522335985">Segurtasun-giltzako datu guztiak ezabatuko dira, baita PINa ere</translation>
 <translation id="4988526792673242964">Orriak</translation>
 <translation id="49896407730300355">Biratu e&amp;rlojuaren orratzen aurka</translation>

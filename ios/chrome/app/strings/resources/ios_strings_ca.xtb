@@ -232,6 +232,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="2815198996063984598">2. Toca Aplicació de navegador predeterminada.</translation>
 <translation id="2820289420301699633">El teu administrador té control sobre Chrome i pot accedir a les dades associades</translation>
 <translation id="2830972654601096923">Gestiona les adreces...</translation>
+<translation id="2834399722155632105">3. Toca Opcions de contrasenya</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Restableix config. Traductor</translation>
 <translation id="2848086008667475748">Estableix com a predeterminat a Configuració…</translation>
@@ -632,6 +633,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5899314093904173337">Per compartir contingut amb persones del teu entorn, permet-los que escanegin aquest codi QR amb la càmera o l'aplicació d'escaneig QR</translation>
 <translation id="5911030830365207728">Traductor de Google</translation>
 <translation id="5913600720976431809">Opcions per traduir la pàgina</translation>
+<translation id="5933515656458364246">Sincronitza les dades en tots els dispositius.</translation>
 <translation id="5938160824633642847">El dispositiu està gairebé ple. Allibera espai i torna-ho a provar.</translation>
 <translation id="5948291296578561264">Et permet desar fotos a la biblioteca de fotos.</translation>
 <translation id="5951816930277761335">Comparteix l'enllaç</translation>
@@ -713,6 +715,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 
 Les teves dades es van encriptar el dia <ph name="TIME" /> amb la teva frase de contrasenya de sincronització. Introduei-la per començar la sincronització.</translation>
 <translation id="6418346271604475326">Preparant el PDF</translation>
+<translation id="6429213933892582367">Obre Opcions de contrasenya</translation>
 <translation id="6434591244308415567">S'ha produït un error. Torna-ho a provar més tard.</translation>
 <translation id="6435236283694032571">Afegeix a la llista de lectura</translation>
 <translation id="6439338047467462846">Permet-ho tot</translation>
@@ -828,6 +831,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7203585745079012652">Pronuncia les respostes</translation>
 <translation id="7207023858769244910">Sincronitza per obtenir contingut basat en els teus interessos.</translation>
 <translation id="721597782417389033">L'àlies de la targeta no és vàlid</translation>
+<translation id="7221173315674413369">Explora noves funcions i consells a Novetats</translation>
 <translation id="722454870747268814">Pestanya d'incògnit nova</translation>
 <translation id="7265758999917665941">Mai per a aquest lloc web</translation>
 <translation id="7272437679830969316">No es pot verificar la teva identitat. La contrasenya no s'ha copiat.</translation>
@@ -861,6 +865,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7514365320538308">Baixa</translation>
 <translation id="7531345132340165516">Lloc web actual</translation>
 <translation id="7537586195939242955">No es pot instal·lar el passi a Passbook en aquest moment.</translation>
+<translation id="7553234618121028547">Per desactivar aquesta funció, obre <ph name="BEGIN_LINK" />Configuració<ph name="END_LINK" /> i ves a Opcions de contrasenya.</translation>
 <translation id="7554791636758816595">Pestanya nova</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7583004045319035904">Utilitza <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> per desbloquejar les pestanyes d'incògnit.</translation>
@@ -942,6 +947,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8101409298456377967">Crea, desa i gestiona les teves contrasenyes de manera que puguis iniciar la sessió fàcilment en llocs web i aplicacions. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Desactiva</translation>
 <translation id="8114753159095730575">La baixada de fitxers està disponible. Opcions disponibles a la part inferior de la pantalla.</translation>
+<translation id="81313319706244542">2. Toca Contrasenyes</translation>
 <translation id="8132598642024322408">Ara val <ph name="PRICE" />, abans valia <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="8136856065410661948">S'utilitzarà per crear esdeveniments al teu Calendari d'Apple des de Chrome i Google Lens.</translation>
 <translation id="8156478151976189188">La sincronització de contrasenyes no funciona</translation>
@@ -964,6 +970,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8319076807703933069">Cerca nova</translation>
 <translation id="8323906514956095947">Mantén premut el botó per veure més opcions de pestanyes</translation>
 <translation id="8328777765163860529">Tanca-ho tot</translation>
+<translation id="8343993175958086504">Fes una còpia de seguretat de les teves dades i utilitza-les en qualsevol dispositiu.</translation>
 <translation id="8378714024927312812">Gestionat per la teva organització</translation>
 <translation id="8386068868580335421">Restableix</translation>
 <translation id="8407669440184693619">No s'ha trobat cap contrasenya per a aquest lloc web</translation>

@@ -207,6 +207,7 @@ esto no impide que se tomen capturas de pantalla con aplicaciones del sistema op
 
       Si se establece esta política como falsa, no aparecerá la casilla de verificación "Permitir siempre" y el usuario verá un mensaje de confirmación cada vez que se invoque un protocolo externo.</translation>
 <translation id="1181598794547737681">Habilitar la IU del cuadro de descarga</translation>
+<translation id="1184562656144537588">Habilitar Manifest v2 solo para extensiones instaladas de manera automática</translation>
 <translation id="11903325225202653">Si estableces el valor "True" para la política, se activará el modo de contraste alto. Si estableces el valor "False", se desactivará el modo de contraste alto.
 
       Si configuras la política, los usuarios no podrán cambiarla. Si no la configuras, el modo de contraste alto estará desactivado, pero los usuarios podrán activarlo en cualquier momento.</translation>
@@ -1523,6 +1524,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       El valor de la política deberá especificarse en días.</translation>
 <translation id="2466131534462628618">La autenticación de portal cautivo ignora el proxy</translation>
+<translation id="2467181864598429837">Comportamiento predeterminado del navegador</translation>
 <translation id="2467896267442150508">El intervalo de tiempo que se extiende como máximo una semana. Si la hora de inicio es más tarde que la hora de finalización, el intervalo continuará al día siguiente.</translation>
 <translation id="2476249479201711962">Habilitar el acceso al menú contextual del proveedor de búsqueda predeterminado</translation>
 <translation id="247658312644322296">El destino "Guardar como PDF"</translation>
@@ -2679,6 +2681,7 @@ Si no se establece, se usará el comportamiento nuevo al igual que en el resto d
 <translation id="3524204464536655762">No permitir que ningún sitio solicite acceso a dispositivos USB a través de la API de WebUSB</translation>
 <translation id="3526752951628474302">Solo impresión monocromática</translation>
 <translation id="3528000905991875314">Habilitar páginas de error alternativas</translation>
+<translation id="3528681240373634003">Controlar la disponibilidad de la extensión de Manifest v2</translation>
 <translation id="3530249698314520116">Configura una lista de reglas para impedir la filtración de datos de <ph name="PRODUCT_OS_NAME" />.
       Se pueden filtrar datos cuando se copia y pega información, se transfieren archivos, se imprime contenido, se comparten pantallas, se realizan capturas de pantalla, etc.
 
@@ -2870,17 +2873,6 @@ Si no se establece, se usará el comportamiento nuevo al igual que en el resto d
       Si inhabilitas la política, no se solicitará a los usuarios una contraseña para desbloquear el dispositivo.
 
       Si no la estableces, los usuarios podrán elegir si reciben una solicitud de contraseña para desbloquear el dispositivo.</translation>
-<translation id="3729689441404871493">Habilita <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> para obtener una lista de URLs en la pantalla de acceso y de bloqueo.
-
-      Si estableces esta política, se especificará qué URLs pueden formar parte del flujo de certificación para obtener el conjunto de señales de la máquina.
-
-      Si dejas vacía esta política o no la estableces, ningún extremo podrá iniciar el flujo de certificación ni obtener señales de la máquina.
-
-      Nota: Se permiten los comodines, <ph name="WILDCARD_VALUE" />.
-
-      Esta política solo afectará el flujo de certificación en la pantalla de acceso y de bloqueo. Para cambiar el flujo de certificación dentro de la sesión, usa la política <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" />.
-
-      Para obtener información detallada sobre los patrones válidos de <ph name="URL_LABEL" />, consulta https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="3729937245044939404">Esta política dejó de estar disponible en M70. En su lugar, utiliza <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> y <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" />.
 
       Habilita la función Autocompletar de <ph name="PRODUCT_NAME" /> y permite que los usuarios completen automáticamente los formularios web con la información que se haya almacenado, como la dirección o información de la tarjeta de crédito.
@@ -2946,7 +2938,6 @@ Si no se establece, se usará el comportamiento nuevo al igual que en el resto d
 
       Nota: Para los dispositivos administrados con <ph name="MS_AD_NAME" />, esta política es compatible con la expansión de <ph name="MACHINE_NAME_VARIABLE" /> al nombre de la máquina de <ph name="MS_AD_NAME" /> o una substring de él. Por ejemplo, si el nombre de la máquina es <ph name="MACHINE_NAME_EXAMPLE" />, <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> se reemplazará con los 4 caracteres a partir de la sexta posición, es decir, <ph name="MACHINE_NAME_PART_EXAMPLE" />. Esta posición incluye el cero.</translation>
 <translation id="377044054160169374">Intervención ante experiencias abusivas</translation>
-<translation id="3777833753656885744">Habilitar el flujo de certificación para una lista de URLs en la pantalla de acceso y de bloqueo</translation>
 <translation id="3778689139323007309">Comprueba la revocación de los certificados del servidor validados correctamente y firmados por certificados de CA instalados de manera local</translation>
 <translation id="3780152581321609624">Incluir puerto no estándar en el SPN de Kerberos</translation>
 <translation id="378495749480642482">Determina si los sitios que visita el usuario pueden crear sesiones de realidad aumentada inmersiva mediante la <ph name="WEBXR_API_NAME" />.
@@ -3055,6 +3046,13 @@ Si no se establece, se usará el comportamiento nuevo al igual que en el resto d
 
       Si estableces la política en 2, se bloquearán los anuncios en sitios con anuncios intrusivos.</translation>
 <translation id="3877517141460819966">Modo de autenticación de dos factores integrado</translation>
+<translation id="3877908683993837673">Esta política controla la pila de software que se utiliza para establecer la comunicación con el servidor DNS: el cliente DNS del sistema operativo o el cliente DNS integrado de <ph name="PRODUCT_NAME" />. Esta política no cambia los servidores DNS que se utilizan: si, por ejemplo, el sistema operativo está configurado para usar un servidor DNS empresarial, el cliente DNS integrado utilizará ese mismo servidor. Tampoco controla si se utiliza DNS-over-HTTPS; <ph name="PRODUCT_NAME" /> siempre utilizará el agente de resolución integrado para las solicitudes de DNS-over-HTTPS. Para obtener información sobre el control de este protocolo, consulta la política <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" />.
+
+      Si habilitas esta política, se usará el cliente DNS integrado cuando esté disponible.
+
+      Si la inhabilitas, el cliente DNS integrado solo se utilizará cuando esté en uso DNS-over-HTTPS.
+
+      Si no la estableces, el cliente DNS integrado estará habilitado de forma predeterminada en <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" />, <ph name="ANDROID_NAME" /> (cuando no estén habilitados el DNS privado ni la VPN) y <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3879208481373875102">Configura la lista de aplicaciones web instaladas de manera automática</translation>
 <translation id="3879700444818346084">Inhabilitar la importación de contraseñas guardadas en la primera ejecución</translation>
 <translation id="388237772682176890">Esta política ya no está disponible en M53 y se quitó en M54 porque se quitó la compatibilidad con SPDY/3.1.
@@ -3156,6 +3154,7 @@ Si no se establece, se usará el comportamiento nuevo al igual que en el resto d
 <translation id="3990391739475801018">Inhabilitar el modo de Ahorro de batería</translation>
 <translation id="3994043824457743421">Mostrar la notificación del espacio del medio en la página Nueva pestaña</translation>
 <translation id="399433537808390819">Hacer que el Modo de escritorio unificado no esté disponible para el usuario</translation>
+<translation id="3995880046827722248">Inhabilitar Manifest v2</translation>
 <translation id="3996325823532867220">Ya no se admite esta política. Sin embargo, es posible que se admita la política relacionada <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> en determinadas plataformas.
 
       Si habilitas esta configuración, <ph name="PRODUCT_NAME" /> verificará los certificados de servidores mediante el verificador de certificados integrado.
@@ -3677,6 +3676,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 
       Si no se configura esta política, el usuario podrá inhabilitar cualquier complemento instalado en el sistema.</translation>
 <translation id="4549405078915181477">Activar el Tiempo de uso para sitios web</translation>
+<translation id="4549695018986780856">Habilitar Manifest v2</translation>
 <translation id="4554651132977135445">Modo de procesamiento de bucle invertido de la política del usuario</translation>
 <translation id="4554991346503872538">Nunca ofrecer la traducción</translation>
 <translation id="4555850956567117258">Habilita la atestación remota para el usuario.</translation>
@@ -4006,7 +4006,6 @@ Se planea quitar esta política en la versión 113 de <ph name="PRODUCT_NAME" />
 
       Si no la estableces, hasta la versión M76 inclusive, <ph name="PRODUCT_NAME" /> no podrá recopilar ni subir esos registros de forma predeterminada. A partir de la versión M77, <ph name="PRODUCT_NAME" /> podrá, de forma predeterminada, recopilar y subir esos registros de la mayoría de los perfiles afectados por las políticas empresariales en la nube para los usuarios. En las versiones posteriores a M77 y hasta la M80 inclusive, <ph name="PRODUCT_NAME" /> también podrá recopilar y subir de forma predeterminada esos registros de los perfiles afectados por la administración local de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4911334289324462969">puerto 989 (puede desbloquearse hasta el 01/02/2022)</translation>
-<translation id="4913065710388638917">Permite el flujo de certificación para una lista de URL</translation>
 <translation id="4917385247580444890">Fuerte</translation>
 <translation id="4918261735182294270">Permitir que los usuarios puedan habilitar <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="491889618361437456">Habilitar la integración de <ph name="GOOGLE_CALENDAR_NAME" /></translation>
@@ -5034,6 +5033,19 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Si estableces la política como verdadera, los sitios también podrán enviar módulos de WebAssembly entre orígenes cruzados sin restricciones.
 
       Si la estableces como falsa o no la estableces, los sitios solo podrán enviar módulos de WebAssembly a ventanas y trabajadores del mismo origen.</translation>
+<translation id="6005906773585863978">Controla si el navegador puede usar extensiones de Manifest v2.
+
+La compatibilidad con extensiones de Manifest v2 dejará de estar disponible y todas las extensiones deberán
+migrar a v3 en el futuro. Para obtener más información y el cronograma de
+migración, consulta https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
+
+Si estableces la política como <ph name="DEFAULT" /> (0) o no la estableces, el navegador determinará las cargas de las extensiones de v2, de acuerdo con el cronograma que se indica más arriba.
+Si estableces la política como <ph name="DISABLE" /> (1), se bloqueará la instalación de extensiones de v2 y se inhabilitarán las extensiones existentes. La opción se tratará de la misma manera que si no estableces la política después de que la compatibilidad con v2 se desactive de forma predeterminada.
+Si estableces la política como <ph name="ENABLE" /> (2), se permitirán las extensiones de v2. La opción se tratará de la misma manera que si no estableces la política antes de que la compatibilidad con v2 se desactive de forma predeterminada.
+Si estableces la política como <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), se permitirán las extensiones de v2 instaladas de manera automática. Esto incluye las extensiones que aparecen en la lista de <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o de <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> con <ph name="INSTALLATION_MODE" /> "force_installed" o "normal_installed". Todas las demás extensiones de v2 están inhabilitadas. La opción se tratará de la misma manera que si no estableces la política antes de que la compatibilidad con v2 se desactive de forma predeterminada.
+
+
+La disponibilidad de las extensiones aún se controla mediante otras políticas.</translation>
 <translation id="6009062900206392980">Si estableces la política con el valor "None", se desactivará la lupa en la pantalla de acceso.
 
        Si configuras la política, los usuarios podrán activar o desactivar la lupa de forma temporal. Cuando la pantalla de acceso se actualice o permanezca inactiva durante un minuto, la lupa se revertirá a su estado original.
@@ -5621,6 +5633,7 @@ principal del string usuario-agente en 99.
       Nota: Por el momento, los reinicios automáticos solo están habilitados mientras se muestra la pantalla de acceso o una sesión de la app de kiosco está en curso.</translation>
 <translation id="6556586932263358975">Permitir el bloqueo de la pantalla</translation>
 <translation id="6559057113164934677">No permitir que ningún sitio acceda a la cámara ni al micrófono</translation>
+<translation id="65591220958874949">Usar el cliente DNS integrado en Windows, macOS, Android y ChromeOS</translation>
 <translation id="6559221564468029245">Si habilitas la política o no la estableces, no se considerará que el usuario está inactivo cuando se esté reproduciendo audio. Esto evitará que se alcance el tiempo de espera de inactividad y se tome la medida de inactividad. Sin embargo, la pantalla aún se atenuará, apagará y bloqueará después de los tiempos de espera configurados, independientemente de la actividad del audio.
 
       Si inhabilitas la política, el sistema podrá considerar que el usuario está inactivo, independientemente de la actividad del audio.</translation>
@@ -7367,17 +7380,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8274603902181597201">Borra el directorio principal de eCryptfs del usuario y crea un nuevo directorio principal ext4 encriptado.</translation>
 <translation id="8274926413890711289">Habilitar los controles de informes detallados</translation>
 <translation id="8278133379873210419">Suprime los diálogos de JavaScript que se envían desde submarcos de otro origen</translation>
-<translation id="8279037559659894049">Habilita <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> para una lista de URLs.
-
-      Si estableces esta política, se especificará qué URLs pueden formar parte del flujo de certificación para obtener el conjunto de señales de la máquina.
-
-      Si dejas vacía esta política o no la estableces, ningún extremo podrá iniciar el flujo de certificación ni obtener señales de la máquina.
-
-      Nota: Se permiten los comodines, <ph name="WILDCARD_VALUE" />.
-
-      En ChromeOS, esta política está relacionada con la certificación remota donde se genera un certificado y se sube al servidor del Administrador de dispositivos de forma automática.
-
-      Para obtener información detallada sobre los patrones válidos de <ph name="URL_LABEL" />, consulta https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="8284296539558710573">Solicitudes de autenticación HTTP de origen cruzado</translation>
 <translation id="8284527236880877730">Si inhabilitas <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" />, la configuración <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> especificará el porcentaje en el que debe escalarse el tiempo de espera de atenuación de la pantalla cuando el dispositivo está en el modo de presentación. Cuando se escala el tiempo de espera de atenuación de la pantalla, se modifican el apagado de la pantalla, el bloqueo de pantalla y los tiempos de espera de inactividad a fin de mantener las mismas distancias con respecto al tiempo de espera para la atenuación de la pantalla según la configuración original.
 

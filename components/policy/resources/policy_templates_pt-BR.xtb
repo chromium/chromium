@@ -2868,17 +2868,6 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
       Se a política for desativada, os usuários não vão precisar digitar uma senha para desbloquear o dispositivo.
 
       Se ela for deixada sem definição, os usuários vão poder escolher se querem receber uma solicitação de senha para desbloquear o dispositivo.</translation>
-<translation id="3729689441404871493">Ative o <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> para criar uma lista de URLs nas telas de login e bloqueio.
-
-      Se esta política for definida, ela vai especificar quais URLs têm permissão para fazer parte do fluxo de atestado e receber o conjunto de indicadores da máquina.
-
-      Se ela não for definida ou se for deixada em branco, nenhum endpoint poderá iniciar o fluxo de atestado ou receber sinais da máquina.
-
-      Observação: caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
-
-      Esta política afeta apenas o fluxo de atestado nas telas de login e bloqueio. Para mudar o fluxo de atestado na sessão, use a política <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" />.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="3729937245044939404">O esta política foi descontinuada na versão M70. Use a <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> e a <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" />.
 
       Ativa o recurso de preenchimento automático do <ph name="PRODUCT_NAME" /> e permite que os usuários preencham formulários da Web automaticamente usando informações já armazenadas, como dados de endereço ou do cartão de crédito.
@@ -2944,7 +2933,6 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
 
       Observação: para dispositivos gerenciados com o <ph name="MS_AD_NAME" />, esta política é compatível com a expansão de <ph name="MACHINE_NAME_VARIABLE" /> para o nome de máquina do <ph name="MS_AD_NAME" /> ou uma substring correspondente. Por exemplo, se o nome de máquina for <ph name="MACHINE_NAME_EXAMPLE" />, <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> será substituído pelos quatro caracteres que começam depois da sexta posição, ou seja, <ph name="MACHINE_NAME_PART_EXAMPLE" />. A posição se baseia em zero.</translation>
 <translation id="377044054160169374">Aplicação de intervenção de experiência ofensiva</translation>
-<translation id="3777833753656885744">Ativar o fluxo de atestado para uma lista de URLs nas telas de login e bloqueio</translation>
 <translation id="3778689139323007309">Realizar verificações de revogação para certificados de servidor validados com assinatura dos certificados de CA locais</translation>
 <translation id="3780152581321609624">Incluir porta não padrão no SPN Kerberos</translation>
 <translation id="378495749480642482">Define se os sites acessados pelos usuários podem criar sessões de realidade aumentada imersivas usando a <ph name="WEBXR_API_NAME" />.
@@ -3053,6 +3041,13 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
 
       Se a política for definida como 2, os anúncios serão bloqueados em sites com anúncios invasivos.</translation>
 <translation id="3877517141460819966">Modo de autenticação de segundo fator integrado</translation>
+<translation id="3877908683993837673">Esta política controla qual pilha de software é usada para se comunicar com o servidor DNS: o cliente DNS do sistema operacional ou o integrado do <ph name="PRODUCT_NAME" />. A política não afeta qual servidor DNS vai ser usado. Se, por exemplo, o sistema operacional estiver configurado para usar um servidor DNS empresarial, o mesmo servidor será usado pelo cliente DNS integrado. Ela também não controla como o DNS sobre HTTPS é usado. O <ph name="PRODUCT_NAME" /> sempre vai usar o resolvedor integrado para solicitações DNS sobre HTTPS. Consulte a política <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> para informações sobre como controlar o DNS sobre HTTPS.
+
+      Se a política for ativada, o cliente DNS integrado será usado, quando disponível.
+
+      Se ela for desativada, o cliente DNS integrado vai ser usado apenas quando o DNS sobre HTTPS estiver em uso.
+
+      Se esta política for deixada sem definição, o cliente DNS integrado será ativado por padrão no <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" />, <ph name="ANDROID_NAME" /> (quando não houver uma VPN ou um DNS particular ativos) e <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3879208481373875102">Configurar a lista de apps da Web de instalação forçada</translation>
 <translation id="3879700444818346084">Desativar a importação de senhas salvas na primeira execução</translation>
 <translation id="388237772682176890">O uso dessa política foi suspenso no M53 e removido no M54, porque a compatibilidade com o SPDY/3.1 foi removida.
@@ -4010,7 +4005,6 @@ O suporte ao uso das raízes e do verificador de certificados disponibilizados p
 
       Se a política não for definida em versões até a M76, o <ph name="PRODUCT_NAME" /> terá como padrão não coletar esses registros nem fazer upload deles. A partir da versão M77, o <ph name="PRODUCT_NAME" /> terá como padrão coletar os registros e fazer upload deles da maioria dos perfis afetados por políticas de empresas no nível de usuário baseadas em nuvem. A partir da versão M77 até a M80, o <ph name="PRODUCT_NAME" /> também pode coletar esses registros e, por padrão, fazer upload deles tomando perfis afetados pelo gerenciamento local do <ph name="PRODUCT_NAME" /> como base.</translation>
 <translation id="4911334289324462969">porta 989 (pode ser desbloqueada até 01/02/2022)</translation>
-<translation id="4913065710388638917">Ativar fluxo de atestado para uma lista de URLs</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4918261735182294270">Permitir que os usuários escolham quando ativar a <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="491889618361437456">Ativar a integração com o <ph name="GOOGLE_CALENDAR_NAME" /></translation>
@@ -5615,6 +5609,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       Observação: no momento, as reinicializações automáticas são ativadas apenas enquanto a tela de login está sendo mostrada ou uma sessão de aplicativo de quiosque está em andamento.</translation>
 <translation id="6556586932263358975">Permitir o bloqueio da tela</translation>
 <translation id="6559057113164934677">Não permitir que nenhum site acesse minha câmera e meu microfone</translation>
+<translation id="65591220958874949">Usar o cliente DNS integrado no Windows, macOS, Android e ChromeOS</translation>
 <translation id="6559221564468029245">Se a política for definida como "Ativada" ou não for definida, o usuário não será considerado inativo quando o dispositivo estiver tocando áudio. Isso impede que o tempo limite de inatividade seja atingido e que as ações correspondentes sejam realizadas. No entanto, o escurecimento, o desligamento e o bloqueio de tela ainda serão realizados após os limites de tempo configurados, independentemente da atividade de áudio.
 
       Se a política for definida como "Desativada", o sistema poderá considerar os usuários inativos, independentemente da atividade de áudio.</translation>
@@ -7349,17 +7344,6 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8274603902181597201">Faz a limpeza do diretório inicial do ecryptfs do usuário e começa com um novo diretório inicial ext4-encrypted.</translation>
 <translation id="8274926413890711289">Ativar controles de geração de relatórios granulares</translation>
 <translation id="8278133379873210419">Suprimir caixas de diálogo de JavaScript acionadas por subframes de origem diferentes</translation>
-<translation id="8279037559659894049">Ativar <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> para uma lista de URLs.
-
-      Se esta política for definida, ela especificará quais URLs têm permissão para fazer parte do fluxo de atestado e receber o conjunto de sinais da máquina.
-
-      Se ela não for definida ou se for deixada em branco, nenhum endpoint poderá iniciar o fluxo de atestado ou receber sinais da máquina.
-
-      Observação: caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
-
-      No ChromeOS, esta política está relacionada a atestados remotos em que um certificado é gerado automaticamente e o upload dele é feito para o servidor do Gerenciador de dispositivos.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="8284296539558710573">Prompts de autenticação HTTP de origem cruzada</translation>
 <translation id="8284527236880877730">Se <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> for definida como "Desativada", a definição de <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> especificará a porcentagem para o cálculo do intervalo de escurecimento da tela quando o dispositivo estiver no modo de apresentação. Quando o intervalo de escurecimento for calculado, os intervalos de desligamento, bloqueio e inatividade da tela serão ajustados para manter as mesmas distâncias do intervalo de escurecimento da tela de acordo com a configuração original.
 

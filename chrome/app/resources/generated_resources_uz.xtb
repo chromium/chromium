@@ -1191,6 +1191,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="208928984520943006">Istalgan vaqtda bosh ekranga qaytish uchun pastdan tepaga suring.</translation>
 <translation id="2089566709556890888">Google Chrome yordamida internetda xavfsiz ishlaysiz</translation>
 <translation id="2089795179672254991">Saytlar klipbordga nusxalangan matn va rasmlarni ko‘rmoqchi bo‘lganda xabar berilsin (tavsiya etiladi)</translation>
+<translation id="2089925163047119068">YOKI</translation>
 <translation id="2090165459409185032">Hisob ma’lumotini tiklash uchun bu yerga o‘ting: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Hisobga kirilganda avtomatik ulanadi</translation>
 <translation id="2090876986345970080">Tizim xavfsizlik sozlamasi</translation>
@@ -2754,6 +2755,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3514373592552233661">Agar bir nechta saqlangan tarmoqlar mavjud bo‘lsa, avval afzal tarmoqlar tanlanadi</translation>
 <translation id="3514647716686280777">Siz standart xavfsizlik himoyasiga ega boʻlasiz. Zararli saytlar, yuklamalar va kengaytmalardan himoyalanish uchun Chrome sozlamalarida Saytlarni kuchaytirilgan rejimda xavfsiz kezish funksiyasini yoqing.</translation>
 <translation id="3515983984924808886">Sozlamalarni asliga qaytarishni tasdiqlash uchun elektron kalit tugmasini qayta bosing. Bunda elektron kalitdagi barcha maʼlumotlar, jumladan, PIN kodlar ham tozalab tashlanadi.</translation>
+<translation id="3518866566087677312">Keyinroq qayta murojaat qiladigan narsalaringiz bukmarkini yarating</translation>
 <translation id="3518985090088779359">Davom etish</translation>
 <translation id="3519564332031442870">Chop etish serveri</translation>
 <translation id="3519938335881974273">Sahifani saqlab olish...</translation>
@@ -6965,6 +6967,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> pauza qilindi</translation>
 <translation id="7520766081042531487">Inkognito rejimidagi portal: <ph name="SUBFRAME_SITE" /></translation>
+<translation id="752098910262610337">Yorliqlarni ochish</translation>
 <translation id="7522255036471229694">“Ok Google” deb ayting</translation>
 <translation id="7523585675576642403">Profilni qayta nomlash</translation>
 <translation id="7525067979554623046">Yaratish</translation>
@@ -7932,6 +7935,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8389492867173948260">Kengaytmaga tashrif buyurgan saytlaringizdagi ma’lumotlarni ko‘rish va o‘zgartirishga ruxsat bering:</translation>
 <translation id="8390449457866780408">Server ish faoliyatida emas.</translation>
 <translation id="8391218455464584335">Vinil</translation>
+<translation id="8392726714909453725">Teginib tinglash sozlamalari</translation>
 <translation id="8393511274964623038">Plagin to‘xtatilsin</translation>
 <translation id="839363317075970734">Bluetooth qurilma axboroti</translation>
 <translation id="8393700583063109961">Xabar yuborish</translation>

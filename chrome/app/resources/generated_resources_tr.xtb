@@ -2369,6 +2369,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3143515551205905069">Senkronizasyonu iptal et</translation>
 <translation id="3143754809889689516">Baştan oynat</translation>
 <translation id="3144647712221361880">Bağlantıyı farklı aç</translation>
+<translation id="3144896554017119333">Uzantılar ve daha fazlası</translation>
 <translation id="3149510190863420837">Chrome Uygulamaları</translation>
 <translation id="3150693969729403281">Güvenlik kontrolünü şimdi çalıştır</translation>
 <translation id="3150927491400159470">Tam Yeniden Yükle</translation>
@@ -2477,6 +2478,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3268451620468152448">Açık Sekmeler</translation>
 <translation id="3269093882174072735">Resim yükle</translation>
 <translation id="326911502853238749">Şunu gösterme: <ph name="MODULE_NAME" /></translation>
+<translation id="3269175001434213183">Verilerinizi yedeklemek ve istediğiniz cihazda kullanmak için senkronizasyonu etkinleştirin</translation>
 <translation id="3269612321104318480">Açık turkuaz ve beyaz</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Dosya}other{# dosya}}</translation>
 <translation id="326999365752735949">Fark indiriliyor</translation>
@@ -4275,6 +4277,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4950993567860689081">Oturumunuz, kuruluşunuz tarafından yönetiliyor. Yöneticiler profilinizi silebilir ve ayrıca ağ trafiğinizi izleyebilir.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{bir dosya}other{# dosya}}</translation>
 <translation id="495170559598752135">İşlemler</translation>
+<translation id="4951966678293618079">Bu sitedeki şifreleri hiçbir zaman kaydetme</translation>
 <translation id="4953808748584563296">Varsayılan turuncu avatar</translation>
 <translation id="4955710816792587366">PIN'inizi seçin</translation>
 <translation id="4959262764292427323">Şifreler Google Hesabınıza kaydedildiğinden bunları herhangi bir cihazda kullanabilirsiniz</translation>
@@ -4304,6 +4307,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4981449534399733132">Tarama verilerini senkronize edilmiş tüm cihazlarınızdan ve Google Hesabınızdan temizlemek için <ph name="BEGIN_LINK" />oturum açın<ph name="END_LINK" />.</translation>
 <translation id="4982111327868342436">Herhangi bir cihazda, kaldığınız yerden devam edin</translation>
 <translation id="4982236238228587209">Cihaz yazılımı</translation>
+<translation id="4986706507552097681">Neyin senkronize edileceğini istediğiniz zaman ayarlardan seçebilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="4986728572522335985">Bu işlem, PIN'i de dahil olmak üzere güvenlik anahtarındaki tüm verileri silecek.</translation>
 <translation id="4988526792673242964">Sayfalar</translation>
 <translation id="49896407730300355">Saat yönünün &amp;tersine döndür</translation>

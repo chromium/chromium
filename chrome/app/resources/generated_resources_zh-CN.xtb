@@ -2363,6 +2363,7 @@
 <translation id="3143515551205905069">取消同步</translation>
 <translation id="3143754809889689516">从头播放</translation>
 <translation id="3144647712221361880">以其他身份打开链接</translation>
+<translation id="3144896554017119333">扩展程序，等等</translation>
 <translation id="3149510190863420837">Chrome 应用</translation>
 <translation id="3150693969729403281">立即进行安全检查</translation>
 <translation id="3150927491400159470">硬性重新加载</translation>
@@ -2471,6 +2472,7 @@
 <translation id="3268451620468152448">打开的标签页</translation>
 <translation id="3269093882174072735">加载图片</translation>
 <translation id="326911502853238749">不显示<ph name="MODULE_NAME" /></translation>
+<translation id="3269175001434213183">开启同步功能，以备份您的资料并在任意设备上使用</translation>
 <translation id="3269612321104318480">浅蓝绿色和白色</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{文件}other{# 个文件}}</translation>
 <translation id="326999365752735949">正在下载diff</translation>
@@ -4265,6 +4267,7 @@
 <translation id="4950993567860689081">您的会话由您所在的单位负责管理。管理员可以删除您的个人资料和监控您的网络流量。</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{1 个文件}other{# 个文件}}</translation>
 <translation id="495170559598752135">操作</translation>
+<translation id="4951966678293618079">一律不为此网站保存密码</translation>
 <translation id="4953808748584563296">默认的橙色头像</translation>
 <translation id="4955710816792587366">选择 PIN 码</translation>
 <translation id="4959262764292427323">系统会将密码保存在您的 Google 帐号中，以便您在任意设备上使用密码</translation>
@@ -4294,6 +4297,7 @@
 <translation id="4981449534399733132">要想清除您的所有已同步设备中的浏览数据以及您的 Google 帐号中的浏览数据，请<ph name="BEGIN_LINK" />登录<ph name="END_LINK" />。</translation>
 <translation id="4982111327868342436">让您能在任何设备上从上次停下的地方继续</translation>
 <translation id="4982236238228587209">设备软件</translation>
+<translation id="4986706507552097681">您始终可在“设置”中选择要同步的内容。Google 可能会根据您的历史记录在 Google 搜索和其他服务中为您提供个性化的体验。</translation>
 <translation id="4986728572522335985">安全密钥上的所有数据（包括它的 PIN 码）都会被删除</translation>
 <translation id="4988526792673242964">页面</translation>
 <translation id="49896407730300355">逆时针旋转(&amp;O)</translation>

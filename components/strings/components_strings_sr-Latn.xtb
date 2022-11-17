@@ -282,6 +282,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Vegetarijanska kuhinja</translation>
 <translation id="1623104350909869708">Spreči ovu stranicu da pravi dodatne dijaloge</translation>
+<translation id="1633137413609266904">{0,plural, =1{Smernice administratora blokiraju otvaranje ovog fajla}one{Smernice administratora blokiraju otvaranje # fajla}few{Smernice administratora blokiraju otvaranje # fajla}other{Smernice administratora blokiraju otvaranje # fajlova}}</translation>
 <translation id="1634828734222219955">Ukupno</translation>
 <translation id="163669211644121865">Priprema i planiranje poreza</translation>
 <translation id="1638780421120290329">Čuvanje kartice nije uspelo</translation>
@@ -896,6 +897,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3270847123878663523">&amp;Opozovi promenu redosleda</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> želi da se poveže</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3281350579597955952">{0,plural, =1{Smernice administratora ne preporučuju otvaranje ovog fajla u: <ph name="DESTINATION_NAME" />}one{Smernice administratora ne preporučuju otvaranje ovih fajlova u: <ph name="DESTINATION_NAME" />}few{Smernice administratora ne preporučuju otvaranje ovih fajlova u: <ph name="DESTINATION_NAME" />}other{Smernice administratora ne preporučuju otvaranje ovih fajlova u: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Vaša organizacija, <ph name="ENROLLMENT_DOMAIN" />, poslala je određene podatke sledećim veb-sajtovima, poput podešavanja ili smernica.</translation>
 <translation id="3282497668470633863">Dodajte ime na kartici</translation>
 <translation id="3286372614333682499">uspravno</translation>
@@ -1295,6 +1297,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4275830172053184480">Ponovno pokretanje uređaja</translation>
 <translation id="4277028893293644418">Resetujte lozinku</translation>
 <translation id="4278390842282768270">Dozvoljeno</translation>
+<translation id="4281998142035485137">{0,plural, =1{Želite da otvorite poverljiv fajl?}one{Želite da otvorite poverljive fajlove?}few{Želite da otvorite poverljive fajlove?}other{Želite da otvorite poverljive fajlove?}}</translation>
 <translation id="4282346679996504092">Obaveštenja za ovaj proizvod su isključena, a obeleživač je uklonjen</translation>
 <translation id="4285498937028063278">Otkači</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Ova kartica je sačuvana na Google nalogu}one{Ove kartice su sačuvane na Google nalogu}few{Ove kartice su sačuvane na Google nalogu}other{Ove kartice su sačuvane na Google nalogu}}</translation>
@@ -1928,6 +1931,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5903264686717710770">Naslov:</translation>
 <translation id="5904360430676679685">Porodični i drugi odnosi</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sinhronizovano)</translation>
+<translation id="5911110632211230665">Otvaranje je blokirano</translation>
 <translation id="59174027418879706">Omogućeno</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{Koristi se 1}one{Koristi se #}few{Koriste se #}other{Koristi se #}}</translation>

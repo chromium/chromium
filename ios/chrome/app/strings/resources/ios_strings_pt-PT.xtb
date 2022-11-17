@@ -87,6 +87,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="1545749641540134597">Ler código QR</translation>
 <translation id="1552525382687785070">A sincronização foi desativada pelo administrador.</translation>
 <translation id="1554477036522844996">Nova janela</translation>
+<translation id="1565371473877914088">Novo separador de navegação anónima</translation>
 <translation id="1580715474678097352">Obtenha proteção contra Websites perigosos.</translation>
 <translation id="1580783302095112590">Correio enviado.</translation>
 <translation id="1582732959743469162">Esta ação vai interromper totalmente o progresso da transferência atual.</translation>
@@ -133,6 +134,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="1981118202195772574">Telemóvel</translation>
 <translation id="1989112275319619282">Procurar</translation>
 <translation id="199425419756152024">Ver a palavra-passe</translation>
+<translation id="2010008505735295285">Atualizar</translation>
 <translation id="2015722694326466240">Para ver as palavras-passe, tem de definir primeiro um código secreto no dispositivo.</translation>
 <translation id="2021670401941426298">Se aplicável, consulte as instruções do motor de pesquisa para eliminar o histórico de pesquisas.</translation>
 <translation id="202292859882676807">Acesso ao microfone permitido</translation>
@@ -299,6 +301,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3272527697863656322">Cancelar</translation>
 <translation id="3277021493514034324">Endereço do site copiado</translation>
 <translation id="3285962946108803577">Partilhar página…</translation>
+<translation id="3289505634533552500">Pesquisa por voz</translation>
 <translation id="3290875554372353449">Selecione uma conta</translation>
 <translation id="3305294846493618482">mais</translation>
 <translation id="3311748811247479259">Desativado</translation>
@@ -556,6 +559,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5295239312320826323">Pretende remover a conta <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5317780077021120954">Guardar</translation>
+<translation id="5318298563956633672">Já está a acompanhar este produto.</translation>
 <translation id="5339316356165661760">Ativar sincronização</translation>
 <translation id="536067926684072644">Mostrar marcadores</translation>
 <translation id="5360976571138293719">Para obter mais definições relacionadas com privacidade, segurança e recolha de dados, consulte <ph name="BEGIN_LINK" />Serviços Google<ph name="END_LINK" />.</translation>
@@ -619,6 +623,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="581659025233126501">Ativar sincronização</translation>
 <translation id="5819208479324046259">Gerido por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Guarde palavras-passe, métodos de pagamento e moradas para o Chrome preencher automaticamente mais tarde.</translation>
+<translation id="5834415013958049700">Imagem do Lens que copiou</translation>
 <translation id="5846482154967366008">Motor de Pesquisa</translation>
 <translation id="5854790677617711513">Com mais de 30 dias</translation>
 <translation id="5857090052475505287">Nova pasta</translation>
@@ -646,6 +651,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5984222099446776634">Visitados Recentemente</translation>
 <translation id="5988097621740394599">Veja as descidas de preços nos seus separadores</translation>
 <translation id="5988851877894965432">Abrir URLs no Chrome</translation>
+<translation id="6006672969046233841">Novo separador</translation>
 <translation id="6012140227487808125">A encriptar...</translation>
 <translation id="6021332621416007159">Abrir em...</translation>
 <translation id="6027945736510816438">Será que quis dizer <ph name="WEBSITE" />?</translation>
@@ -832,6 +838,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7207023858769244910">Sincronize para obter conteúdo com base nos seus interesses.</translation>
 <translation id="721597782417389033">Alcunha do cartão inválido</translation>
 <translation id="7221173315674413369">Explore novas funcionalidades e sugestões em Novidades</translation>
+<translation id="7223102419539744003">Fechar separador</translation>
 <translation id="722454870747268814">Novo separador anónimo</translation>
 <translation id="7265758999917665941">Nunca para este site</translation>
 <translation id="7272437679830969316">Não é possível validar a sua identidade. Palavra-passe não copiada.</translation>
@@ -903,6 +910,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7856733331829174190">Impossível transferir</translation>
 <translation id="785938070103630874">Abra palavras-passe, métodos de pagamento, moradas e muito mais</translation>
 <translation id="7859704718976024901">Histórico de navegação</translation>
+<translation id="7870750252270996949">Imagem copiada do Lens</translation>
 <translation id="7879275349003161544">Mostrar transferências</translation>
 <translation id="7884694604461143138">Histórico de pesquisas (<ph name="COUNT" /> encontrado[s])</translation>
 <translation id="7887198238286927132">Para proteger a sua privacidade, o Chrome não irá preencher automaticamente este campo.</translation>
@@ -1027,6 +1035,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Vista do site predefinida</translation>
 <translation id="8820817407110198400">Marcadores</translation>
+<translation id="882557203579758546">Localizar na página…</translation>
 <translation id="8840513115188359703">A sessão na sua Conta Google não é terminada.</translation>
 <translation id="8843129975935593190">A sua organização limita o que pode sincronizar.</translation>
 <translation id="8849001918648564819">Oculto</translation>

@@ -87,6 +87,7 @@
 <translation id="1545749641540134597">ស្កេនកូដ QR</translation>
 <translation id="1552525382687785070">ការធ្វើ​សមកាលកម្ម​ត្រូវបាន​បិទដោយ​អ្នកគ្រប់គ្រង​របស់អ្នក</translation>
 <translation id="1554477036522844996">វិនដូ​ថ្មី</translation>
+<translation id="1565371473877914088">ផ្ទាំងឯកជនថ្មី</translation>
 <translation id="1580715474678097352">ទទួលបានការការពារពីគេហទំព័រគ្រោះថ្នាក់</translation>
 <translation id="1580783302095112590">បានផ្ញើមែល។</translation>
 <translation id="1582732959743469162">សកម្មភាព​នេះនឹង​បញ្ឈប់​ដំណើរការ​ទាំងអស់​សម្រាប់​ការទាញយក​បច្ចុប្បន្ន​របស់អ្នក។</translation>
@@ -133,6 +134,7 @@
 <translation id="1981118202195772574">ឧបករណ៍​ចល័ត</translation>
 <translation id="1989112275319619282">រុករក</translation>
 <translation id="199425419756152024">មើលពាក្យសម្ងាត់</translation>
+<translation id="2010008505735295285">ផ្ទុក​ឡើង​វិញ</translation>
 <translation id="2015722694326466240">ដើម្បី​មើល​ពាក្យសម្ងាត់ អ្នកត្រូវ​កំណត់​លេខ​កូដ​សម្ងាត់​នៅលើ​ឧបករណ៍​របស់អ្នក​ជាមុន​សិន។</translation>
 <translation id="2021670401941426298">មើល​ការណែនាំ​របស់​ម៉ាស៊ីន​ស្វែងរកអ្នក ដើម្បីដឹង​អំពីរបៀប​លុបប្រវត្តិ​ស្វែងរក​របស់អ្នក ប្រសិនបើអាច។</translation>
 <translation id="202292859882676807">បានអនុញ្ញាត​សិទ្ធិចូលប្រើ​មីក្រូហ្វូន</translation>
@@ -299,6 +301,7 @@
 <translation id="3272527697863656322">បោះបង់</translation>
 <translation id="3277021493514034324">បានចម្លង​អាសយដ្ឋាន​ទំព័រ</translation>
 <translation id="3285962946108803577">ចែករំលែក​ទំព័រ...</translation>
+<translation id="3289505634533552500">ស្វែងរក​តាម​សំឡេង</translation>
 <translation id="3290875554372353449">ជ្រើសរើសគណនី</translation>
 <translation id="3305294846493618482">ច្រើន​ទៀត</translation>
 <translation id="3311748811247479259">បិទ</translation>
@@ -556,6 +559,7 @@
 <translation id="5295239312320826323">លុបគណនី <ph name="USER_EMAIL" /> ឬ?</translation>
 <translation id="5300589172476337783">បង្ហាញ</translation>
 <translation id="5317780077021120954">រក្សាទុក</translation>
+<translation id="5318298563956633672">អ្នកកំពុងតាមដានផលិតផលនេះស្រាប់ហើយ។</translation>
 <translation id="5339316356165661760">បើក​សមកាលកម្ម</translation>
 <translation id="536067926684072644">បង្ហាញចំណាំ</translation>
 <translation id="5360976571138293719">សម្រាប់​ការកំណត់​ជាច្រើនទៀត ដែលពាក់ព័ន្ធនឹង​ឯកជនភាព សុវត្ថិភាព និងការប្រមូល​ទិន្នន័យ សូមមើល<ph name="BEGIN_LINK" />សេវាកម្ម Google<ph name="END_LINK" />។</translation>
@@ -619,6 +623,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="581659025233126501">បើក​សមកាលកម្ម</translation>
 <translation id="5819208479324046259">គ្រប់គ្រង​ដោយ <ph name="MANAGER" />។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">រក្សាទុក​ពាក្យសម្ងាត់ វិធីបង់ប្រាក់ និងអាសយដ្ឋាន​សម្រាប់ Chrome ដើម្បីបំពេញស្វ័យប្រវត្តិ​នៅពេលក្រោយ។</translation>
+<translation id="5834415013958049700">ស្វែងរកលើរូបភាពដែលអ្នកបានចម្លងដោយប្រើ Lens</translation>
 <translation id="5846482154967366008">ម៉ាស៊ីនស្វែងរក</translation>
 <translation id="5854790677617711513">ចាស់ជាង 30 ថ្ងៃ</translation>
 <translation id="5857090052475505287">ថតឯកសារថ្មី</translation>
@@ -646,6 +651,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="5984222099446776634">បានទៅកាន់កន្លងទៅថ្មីៗ</translation>
 <translation id="5988097621740394599">មើលការធ្លាក់ថ្លៃ​នៅក្នុងផ្ទាំង​របស់អ្នក។</translation>
 <translation id="5988851877894965432">បើក URL នៅក្នុង Chrome</translation>
+<translation id="6006672969046233841">ផ្ទាំងថ្មី</translation>
 <translation id="6012140227487808125">កំពុងអ៊ីនគ្រីប…</translation>
 <translation id="6021332621416007159">បើកនៅក្នុង...</translation>
 <translation id="6027945736510816438">តើ​អ្នក​ចង់​មានន័យ​ថា <ph name="WEBSITE" /> មែនទេ?</translation>
@@ -832,6 +838,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7207023858769244910">ធ្វើសមកាលកម្ម ដើម្បី​យក​ខ្លឹមសារដោយផ្អែកលើ​ចំណាប់អារម្មណ៍​របស់អ្នក។</translation>
 <translation id="721597782417389033">ឈ្មោះហៅក្រៅរបស់​កាតមិនត្រឹមត្រូវ</translation>
 <translation id="7221173315674413369">រុករក​មុខងារ និង​គន្លឹះ​ថ្មីៗ​នៅក្នុង "អ្វីដែលថ្មី"</translation>
+<translation id="7223102419539744003">បិទផ្ទាំង</translation>
 <translation id="722454870747268814">ផ្ទាំងអនាមិកថ្មី</translation>
 <translation id="7265758999917665941">មិន​ចងចាំ​សម្រាប់​គេហទំព័រ​នេះទេ</translation>
 <translation id="7272437679830969316">មិនអាច​ផ្ទៀងផ្ទាត់​អត្តសញ្ញាណ​របស់អ្នក​បានទេ។ ពាក្យសម្ងាត់​មិន​បានចម្លង។</translation>
@@ -903,6 +910,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7856733331829174190">មិន​អាច​ទាញ​យកបាន​ទេ</translation>
 <translation id="785938070103630874">បើក​ពាក្យសម្ងាត់ វិធីបង់ប្រាក់ ឬអាសយដ្ឋាន និងអ្វីៗជាច្រើនទៀត</translation>
 <translation id="7859704718976024901">ប្រវត្តិរុករក</translation>
+<translation id="7870750252270996949">ស្វែងរកលើរូបភាព​ដែលបាន​ចម្លងដោយប្រើ Lens</translation>
 <translation id="7879275349003161544">បង្ហាញការទាញយក​</translation>
 <translation id="7884694604461143138">ប្រវត្តិ​ស្វែងរក (បានរកឃើញ <ph name="COUNT" />)</translation>
 <translation id="7887198238286927132">ដើម្បី​ការពារ​ឯកជនភាព​របស់អ្នក Chrome នឹងមិន​បំពេញ​កន្លែងបញ្ចូល​នេះដោយស្វ័យ​ប្រវត្តិទេ។</translation>
@@ -1027,6 +1035,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">ទិដ្ឋភាព​គេហទំព័រលំនាំដើម</translation>
 <translation id="8820817407110198400">ចំណាំ</translation>
+<translation id="882557203579758546">ស្វែងរក​ក្នុង​ទំព័រ…</translation>
 <translation id="8840513115188359703">អ្នកនឹងមិនត្រូវបាននាំចេញពីគណនី Google របស់អ្នកទេ។</translation>
 <translation id="8843129975935593190">ស្ថាប័ន​របស់អ្នក​ដាក់កំហិត​លើអ្វីដែលអ្នកអាច​ធ្វើសមកាលកម្មបាន។</translation>
 <translation id="8849001918648564819">លាក់</translation>
