@@ -28,6 +28,9 @@ class UtilsNativeHandler : public ObjectBackedNativeHandler {
   // that value. The copy will have no references to nested values of the
   // argument.
   void DeepCopy(const v8::FunctionCallbackInfo<v8::Value>& args);
+
+  // Returns true if the ScriptContext is for a service worker.
+  void IsInServiceWorker(const v8::FunctionCallbackInfo<v8::Value>& args);
 };
 
 }  // namespace extensions

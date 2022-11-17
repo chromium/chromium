@@ -75,9 +75,6 @@ SetIconNatives::SetIconNatives(ScriptContext* context)
     : ObjectBackedNativeHandler(context) {}
 
 void SetIconNatives::AddRoutes() {
-  RouteHandlerFunction("IsInServiceWorker",
-                       base::BindRepeating(&SetIconNatives::IsInServiceWorker,
-                                           base::Unretained(this)));
   RouteHandlerFunction("SetIconCommon",
                        base::BindRepeating(&SetIconNatives::SetIconCommon,
                                            base::Unretained(this)));
@@ -204,14 +201,6 @@ bool SetIconNatives::ConvertImageDataSetToBitmapValueSet(
         .FromMaybe(false);
   }
   return true;
-}
-
-void SetIconNatives::IsInServiceWorker(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
-  CHECK_EQ(0, args.Length());
-  const bool is_in_service_worker = context()->IsForServiceWorker();
-  args.GetReturnValue().Set(
-      v8::Boolean::New(args.GetIsolate(), is_in_service_worker));
 }
 
 void SetIconNatives::SetIconCommon(

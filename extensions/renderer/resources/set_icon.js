@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 var exceptionHandler = require('uncaught_exception_handler');
-var natives = requireNative('setIcon');
-var SetIconCommon = natives.SetIconCommon;
-var inServiceWorker = natives.IsInServiceWorker();
+var SetIconCommon = requireNative('setIcon').SetIconCommon;
+var inServiceWorker = requireNative('utils').isInServiceWorker();
 
 function loadImagePathForServiceWorker(path, callback, failureCallback) {
   let fetchPromise = fetch(path);
