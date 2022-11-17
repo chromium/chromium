@@ -55,9 +55,8 @@ class NET_EXPORT GlobalFirstPartySets {
   // Creates a clone of this instance.
   GlobalFirstPartySets Clone() const;
 
-  // Returns a FirstPartySetsContextConfig suitable for passing into
-  // FindEntries, in order to respect the overrides given by `replacement_sets`
-  // and `addition_sets`.
+  // Returns a FirstPartySetsContextConfig that respects the overrides given by
+  // `replacement_sets` and `addition_sets`, relative to this instance's state.
   //
   // Preconditions: sets defined by `replacement_sets` and
   // `addition_sets` must be disjoint.
@@ -103,6 +102,17 @@ class NET_EXPORT GlobalFirstPartySets {
       base::FunctionRef<bool(const SchemefulSite&, const FirstPartySetEntry&)>
           f) const;
 
+  // Synchronously iterate over all the effective entries (i.e. anything that
+  // could be returned by `FindEntry` using this instance and `config`,
+  // including the manual set, policy sets, and aliases). Returns early if any
+  // of the iterations returns false. Returns false if iteration was incomplete;
+  // true if all iterations returned true. No guarantees are made re: iteration
+  // order.
+  bool ForEachEffectiveSetEntry(
+      const FirstPartySetsContextConfig& config,
+      base::FunctionRef<bool(const SchemefulSite&, const FirstPartySetEntry&)>
+          f) const;
+
   // Whether the global sets are empty.
   bool empty() const { return entries_.empty() && manual_config_.empty(); }
 
@@ -144,6 +154,13 @@ class NET_EXPORT GlobalFirstPartySets {
       const SchemefulSite* top_frame_site,
       const std::set<SchemefulSite>& party_context,
       const FirstPartySetsContextConfig& fps_context_config) const;
+
+  // Same as the public version of ForEachEffectiveSetEntry, but is allowed to
+  // omit the `config` argument (i.e. pass nullptr instead of a reference).
+  bool ForEachEffectiveSetEntry(
+      const FirstPartySetsContextConfig* config,
+      base::FunctionRef<bool(const SchemefulSite&, const FirstPartySetEntry&)>
+          f) const;
 
   const base::flat_map<SchemefulSite, FirstPartySetEntry>& entries() const {
     return entries_;
