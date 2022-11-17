@@ -152,6 +152,12 @@ class BluetoothGattFlossTest : public testing::Test {
     fake_floss_gatt_client_->GattSearchComplete(address, services, status);
   }
 
+  void SetGattConfigureMtu(std::string address,
+                           int32_t mtu,
+                           GattStatus status) {
+    fake_floss_gatt_client_->GattConfigureMtu(address, mtu, status);
+  }
+
   GattService CreateFakeServiceFor(const device::BluetoothUUID& uuid) {
     GattService underlying_service;
     underlying_service.uuid = uuid;
@@ -229,6 +235,9 @@ TEST_F(BluetoothGattFlossTest, UpgradeToFullDiscovery) {
 
   // Create a gatt connection with partial service discovery.
   paired_device->CreateGattConnection(base::DoNothing(), fake_uuid_optional);
+
+  // Fake a successful configure MTU.
+  SetGattConfigureMtu(paired_device->GetAddress(), 500, GattStatus::kSuccess);
 
   // Fake a connection completion.
   SetGattConnectionState(GattStatus::kSuccess, /*connected=*/true,

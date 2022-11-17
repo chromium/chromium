@@ -136,6 +136,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
                              int32_t latency,
                              int32_t timeout,
                              GattStatus status) override;
+  void GattConfigureMtu(std::string address,
+                        int32_t mtu,
+                        GattStatus status) override;
 
   // Returns the adapter which owns this device instance.
   BluetoothAdapterFloss* adapter() const {

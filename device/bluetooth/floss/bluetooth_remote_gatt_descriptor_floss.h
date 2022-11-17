@@ -77,6 +77,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptorFloss
                          std::vector<uint8_t> data,
                          DBusResult<Void> result);
 
+  // Handle timeout for receiving a |GattDescriptorWrite|.
+  void OnWriteTimeout();
+
   // Send notifications to observer on adapter.
   void NotifyValueChanged();
 

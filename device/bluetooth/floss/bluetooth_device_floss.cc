@@ -44,6 +44,9 @@ const int32_t kDefaultConnectionLatency = 0;
 // Link supervision timeout for LE connections.
 const int32_t kDefaultConnectionTimeout = 2000;
 
+// Maximum MTU size that can be requested by Android.
+const int32_t kMaxMtuSize = 517;
+
 void OnCreateBond(DBusResult<bool> ret) {
   if (ret.has_value() && !*ret) {
     BLUETOOTH_LOG(ERROR) << "CreateBond returned failure";
@@ -697,15 +700,11 @@ void BluetoothDeviceFloss::GattClientConnectionState(GattStatus status,
 
   DCHECK(num_connecting_calls_ >= 0);
 
-  // Trigger service discovery only when connected.
+  // Request for maximum MTU only when connected.
   if (connected) {
-    if (search_uuid.has_value()) {
-      FlossDBusManager::Get()->GetGattClient()->DiscoverServiceByUuid(
-          base::DoNothing(), address_, search_uuid.value());
-    } else {
-      FlossDBusManager::Get()->GetGattClient()->DiscoverAllServices(
-          base::DoNothing(), address_);
-    }
+    FlossDBusManager::Get()->GetGattClient()->ConfigureMTU(
+        base::DoNothing(), address_, kMaxMtuSize);
+    return;
   }
 
   // Complete GATT connection callback.
@@ -770,6 +769,28 @@ void BluetoothDeviceFloss::GattConnectionUpdated(std::string address,
 
     pending_set_connection_latency_ = absl::nullopt;
   }
+}
+
+void BluetoothDeviceFloss::GattConfigureMtu(std::string address,
+                                            int32_t mtu,
+                                            GattStatus status) {
+  if (address != GetAddress())
+    return;
+
+  VLOG(1) << "GattConfigureMtu on " << GetAddress() << "; mtu=" << mtu
+          << "; status=" << static_cast<uint32_t>(status);
+
+  // Discover services after configuring MTU
+  // This can be done even if configuring MTU failed.
+  if (search_uuid.has_value()) {
+    FlossDBusManager::Get()->GetGattClient()->DiscoverServiceByUuid(
+        base::DoNothing(), address_, search_uuid.value());
+  } else if (!IsGattServicesDiscoveryComplete()) {
+    FlossDBusManager::Get()->GetGattClient()->DiscoverAllServices(
+        base::DoNothing(), address_);
+  }
+
+  DidConnectGatt(absl::nullopt);
 }
 
 }  // namespace floss

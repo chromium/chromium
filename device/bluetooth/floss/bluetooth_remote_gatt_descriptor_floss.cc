@@ -8,6 +8,8 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/floss/bluetooth_adapter_floss.h"
 #include "device/bluetooth/floss/bluetooth_remote_gatt_characteristic_floss.h"
 #include "device/bluetooth/floss/bluetooth_remote_gatt_service_floss.h"
@@ -15,6 +17,8 @@
 #include "device/bluetooth/floss/floss_gatt_client.h"
 
 namespace floss {
+
+const int kGattTimeoutMs = 2000;
 
 // static
 std::unique_ptr<BluetoothRemoteGattDescriptorFloss>
@@ -131,6 +135,8 @@ void BluetoothRemoteGattDescriptorFloss::GattDescriptorWrite(
   }
 
   auto [callback, error_callback, data] = std::move(pending_write_callbacks_);
+  DCHECK(callback);
+  DCHECK(error_callback);
 
   if (status == GattStatus::kSuccess) {
     cached_data_ = data;
@@ -184,6 +190,23 @@ void BluetoothRemoteGattDescriptorFloss::OnWriteDescriptor(
 
   pending_write_callbacks_ = std::make_tuple(
       std::move(callback), std::move(error_callback), std::move(data));
+
+  // Ensure callbacks don't get dropped if no |GattDescriptorWrite| received.
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&BluetoothRemoteGattDescriptorFloss::OnWriteTimeout,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::Milliseconds(kGattTimeoutMs));
+}
+
+void BluetoothRemoteGattDescriptorFloss::OnWriteTimeout() {
+  if (std::get<0>(pending_write_callbacks_)) {
+    BLUETOOTH_LOG(ERROR)
+        << "Timeout waiting for GattDescriptorWrite for Device "
+        << service_->GetDevice()->GetAddress();
+    GattDescriptorWrite(service_->GetDevice()->GetAddress(), GattStatus::kError,
+                        descriptor_->instance_id);
+  }
 }
 
 void BluetoothRemoteGattDescriptorFloss::NotifyValueChanged() {
