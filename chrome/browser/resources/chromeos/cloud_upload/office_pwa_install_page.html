@@ -1,0 +1,42 @@
+<!-- TODO(b/254586358): Use localized strings -->
+<style>
+  div[slot=button-container] {
+    display: flex;
+  }
+
+  .icon-button::before {
+    -webkit-mask-position: center;
+    background-color: currentColor;
+    content: ' ';
+    display: inline-block;
+    height: 20px;
+    margin-inline-end: 8px;
+    width: 20px;
+  }
+
+  .install::before {
+    -webkit-mask-image: url(icons/download.svg);
+  }
+
+  .installing::before {
+    -webkit-mask-image: url(chrome://resources/images/throbber_medium.svg);
+    -webkit-mask-size: 100%;
+  }
+
+  .installed::before {
+    -webkit-mask-image: url(icons/check.svg);
+  }
+</style>
+<div slot="title">
+  Install the Microsoft Office app
+</div>
+<div slot="body">
+  <p>
+    Open, edit, save, and share Word, Excel, and PowerPoint files in the
+    Microsoft Office app. A subscription may be required for some features.
+  </p>
+</div>
+<div slot="button-container">
+  <cr-button class="cancel-button">i18n{cancel}</cr-button>
+  <cr-button class="action-button icon-button install">Install</cr-button>
+</div>

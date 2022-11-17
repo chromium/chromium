@@ -52,6 +52,9 @@ interface PageHandler {
   // Returns arguments passed to the dialog on creation.
   GetDialogArgs() => (DialogArgs args);
 
+  // Returns whether or not the Office PWA is installed.
+  IsOfficePWAInstalled() => (bool installed);
+
   // Returns the user selected action and requests the dialog to be closed.
   RespondAndClose(UserAction response);
 };

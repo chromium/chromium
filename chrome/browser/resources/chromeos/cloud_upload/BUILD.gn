@@ -7,10 +7,15 @@ import("//chrome/browser/resources/tools/build_webui.gni")
 build_webui("build") {
   grd_prefix = "cloud_upload"
 
-  static_files = [ "main.html" ]
+  static_files = [
+    "icons/check.svg",
+    "icons/download.svg",
+    "main.html",
+  ]
   web_component_files = [
     "base_setup_page.ts",
     "drive_upload_page.ts",
+    "office_pwa_install_page.ts",
     "one_drive_upload_page.ts",
     "welcome_page.ts",
   ]

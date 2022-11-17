@@ -7,6 +7,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {CANCEL_SETUP_EVENT, NEXT_PAGE_EVENT} from './base_setup_page.js';
 import {UserAction} from './cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
+import {OfficePwaInstallPageElement} from './office_pwa_install_page.js';
 import {OneDriveUploadPageElement} from './one_drive_upload_page.js';
 import {WelcomePageElement} from './welcome_page.js';
 
@@ -34,15 +35,22 @@ export class CloudUploadElement extends HTMLElement {
   }
 
   async init(): Promise<void> {
-    await this.processDialogArgs();
+    const [, {installed: isOfficePwaInstalled}] = await Promise.all([
+      this.processDialogArgs(),
+      this.proxy.handler.isOfficePWAInstalled(),
+    ]);
 
     // TODO(b/251046341): Adjust this once the rest of the pages are in place.
+    this.pages.push(new WelcomePageElement());
+
+    if (!isOfficePwaInstalled) {
+      this.pages.push(new OfficePwaInstallPageElement());
+    }
+
     const oneDriveUploadPage = new OneDriveUploadPageElement();
     oneDriveUploadPage.setFileNames(this.fileNames);
-    this.pages = [
-      new WelcomePageElement(),
-      oneDriveUploadPage,
-    ];
+    this.pages.push(oneDriveUploadPage);
+
     for (let i = 0; i < this.pages.length; i++) {
       this.pages[i]?.setAttribute(
           'total-pages', (this.pages.length).toString());

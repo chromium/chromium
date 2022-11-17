@@ -7,8 +7,14 @@ import 'chrome://cloud-upload/cloud_upload_dialog.js';
 import {CloudProvider, DialogArgs, DialogPage, PageHandlerRemote, UserAction} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browser_proxy.js';
 import {CloudUploadElement} from 'chrome://cloud-upload/cloud_upload_dialog.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+
+interface ProxyOptions {
+  uploadType: CloudProvider;
+  fileName?: string|null;
+  officePWAInstalled: boolean;
+}
 
 /**
  * A test CloudUploadBrowserProxy implementation that enables to mock various
@@ -17,17 +23,23 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 class CloudUploadTestBrowserProxy implements CloudUploadBrowserProxy {
   handler: PageHandlerRemote&TestBrowserProxy;
 
-  constructor(uploadType: CloudProvider, fileName: string|null) {
+  constructor(options: ProxyOptions) {
     this.handler = TestBrowserProxy.fromClass(PageHandlerRemote);
     const args: DialogArgs = {
-      cloudProvider: uploadType,
+      cloudProvider: options.uploadType,
       fileNames: [],
       dialogPage: DialogPage.kOneDriveSetup,
     };
-    if (fileName != null) {
-      args.fileNames.push(fileName);
+    if (options.fileName != null) {
+      args.fileNames.push(options.fileName);
     }
     this.handler.setResultFor('getDialogArgs', {args: args});
+    this.handler.setResultFor(
+        'isOfficePWAInstalled', {installed: options.officePWAInstalled});
+  }
+
+  isTest() {
+    return true;
   }
 }
 
@@ -40,9 +52,8 @@ suite('<cloud-upload>', () => {
      called. */
   let testProxy: CloudUploadTestBrowserProxy;
 
-  const setupForUploadType =
-      async (uploadType: CloudProvider, fileName: string|null) => {
-    testProxy = new CloudUploadTestBrowserProxy(uploadType, fileName);
+  const setupForUploadType = async (options: ProxyOptions) => {
+    testProxy = new CloudUploadTestBrowserProxy(options);
     CloudUploadBrowserProxy.setInstance(testProxy);
 
     // Creates and attaches the <cloud-upload> element to the DOM tree.
@@ -50,9 +61,24 @@ suite('<cloud-upload>', () => {
         document.createElement('cloud-upload') as CloudUploadElement;
     container.appendChild(cloudUploadApp);
     await cloudUploadApp.initPromise;
+  };
 
-    // Click the 'next' button on the welcome page.
+  const doPWAInstallPage = async () => {
+    // This promise resolves once a new page appears.
+    const nextPagePromise = new Promise<void>(resolve => {
+      const observer = new MutationObserver(mutations => {
+        for (const mutation of mutations) {
+          if (mutation.addedNodes.length > 0) {
+            observer.disconnect();
+            resolve();
+          }
+        }
+      });
+      observer.observe(cloudUploadApp.shadowRoot!, {childList: true});
+    });
+
     cloudUploadApp.$('.action-button').click();
+    await nextPagePromise;
   };
 
   /**
@@ -78,7 +104,17 @@ suite('<cloud-upload>', () => {
    * file.
    */
   test('Set up OneDrive with file', async () => {
-    await setupForUploadType(CloudProvider.kOneDrive, 'file.docx');
+    await setupForUploadType({
+      uploadType: CloudProvider.kOneDrive,
+      fileName: 'file.docx',
+      officePWAInstalled: false,
+    });
+
+    // Click the 'next' button on the welcome page.
+    cloudUploadApp.$('.action-button').click();
+
+    await doPWAInstallPage();
+
     const fileContainer = cloudUploadApp.$('#file-container');
     assertFalse(fileContainer.hidden);
   });
@@ -88,9 +124,34 @@ suite('<cloud-upload>', () => {
    * file.
    */
   test('Set up OneDrive without file', async () => {
-    await setupForUploadType(CloudProvider.kOneDrive, null);
+    await setupForUploadType({
+      uploadType: CloudProvider.kOneDrive,
+      officePWAInstalled: false,
+    });
+
+    // Click the 'next' button on the welcome page.
+    cloudUploadApp.$('.action-button').click();
+
+    await doPWAInstallPage();
+
     const fileContainer = cloudUploadApp.$('#file-container');
     assertTrue(fileContainer.hidden);
+  });
+
+  test('Set up OneDrive with Office PWA already installed', async () => {
+    await setupForUploadType({
+      uploadType: CloudProvider.kOneDrive,
+      officePWAInstalled: true,
+    });
+
+    // Click the 'next' button on the welcome page.
+    cloudUploadApp.$('.action-button').click();
+
+    // Make the setup skips the PWA install page and goes to the upload page.
+    // TODO(b/251046341): Once the sign in page is ready, this should check for
+    // that page instead.
+    assertEquals(null, cloudUploadApp.$('office-pwa-install-page'));
+    assertNotEquals(null, cloudUploadApp.$('upload-page'));
   });
 
   /**
@@ -98,7 +159,17 @@ suite('<cloud-upload>', () => {
    * `respondAndClose` mojo request.
    */
   test('Open file button', async () => {
-    await setupForUploadType(CloudProvider.kGoogleDrive, 'file.docx');
+    await setupForUploadType({
+      uploadType: CloudProvider.kGoogleDrive,
+      fileName: 'file.docx',
+      officePWAInstalled: false,
+    });
+
+    // Click the 'next' button on the welcome page.
+    cloudUploadApp.$('.action-button').click();
+
+    await doPWAInstallPage();
+
     cloudUploadApp.$('.action-button').click();
     await testProxy.handler.whenCalled('respondAndClose');
     assertEquals(1, testProxy.handler.getCallCount('respondAndClose'));
@@ -111,7 +182,17 @@ suite('<cloud-upload>', () => {
    * mojo request.
    */
   test('Close button', async () => {
-    await setupForUploadType(CloudProvider.kGoogleDrive, 'file.docx');
+    await setupForUploadType({
+      uploadType: CloudProvider.kGoogleDrive,
+      fileName: 'file.docx',
+      officePWAInstalled: false,
+    });
+
+    // Click the 'next' button on the welcome page.
+    cloudUploadApp.$('.action-button').click();
+
+    await doPWAInstallPage();
+
     cloudUploadApp.$('.cancel-button').click();
     await testProxy.handler.whenCalled('respondAndClose');
     assertEquals(1, testProxy.handler.getCallCount('respondAndClose'));

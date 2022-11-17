@@ -10,10 +10,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom-shared.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+class Profile;
 
 namespace ash::cloud_upload {
 
@@ -24,6 +28,7 @@ class CloudUploadPageHandler : public mojom::PageHandler {
   using RespondAndCloseCallback =
       base::OnceCallback<void(mojom::UserAction action)>;
   CloudUploadPageHandler(
+      Profile* profile,
       mojom::DialogArgsPtr args,
       mojo::PendingReceiver<mojom::PageHandler> pending_page_handler,
       RespondAndCloseCallback callback);
@@ -35,9 +40,12 @@ class CloudUploadPageHandler : public mojom::PageHandler {
 
   // mojom::PageHandler:
   void GetDialogArgs(GetDialogArgsCallback callback) override;
+  void IsOfficePWAInstalled(IsOfficePWAInstalledCallback callback) override;
   void RespondAndClose(mojom::UserAction action) override;
 
  private:
+  Profile* profile_;
+
   mojom::DialogArgsPtr dialog_args_;
 
   mojo::Receiver<PageHandler> receiver_;

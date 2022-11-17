@@ -1,0 +1,63 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
+
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {assertInstanceof} from 'chrome://resources/js/assert_ts.js';
+
+import {BaseSetupPageElement, CANCEL_SETUP_EVENT, NEXT_PAGE_EVENT} from './base_setup_page.js';
+import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
+import {getTemplate} from './office_pwa_install_page.html.js';
+
+/**
+ * The OfficePwaInstallPageElement guides the user through installing the
+ * Microsoft 365 PWA.
+ */
+export class OfficePwaInstallPageElement extends BaseSetupPageElement {
+  connectedCallback() {
+    this.innerHTML = getTemplate();
+
+    const actionButton = this.querySelector<HTMLElement>('.action-button')!;
+    actionButton.addEventListener('click', this.onActionButtonClick.bind(this));
+
+    const cancelButton = this.querySelector<HTMLElement>('.cancel-button')!;
+    cancelButton.addEventListener('click', this.onCancelButtonClick.bind(this));
+  }
+
+  private async onActionButtonClick(event: MouseEvent) {
+    const proxy = CloudUploadBrowserProxy.getInstance();
+
+    assertInstanceof(event.target, CrButtonElement);
+    const actionButton = event.target;
+    actionButton.innerText = 'Installing...';
+    actionButton.classList.replace('install', 'installing');
+    actionButton.disabled = true;
+
+    // Keep the installing state shown for at least 2 seconds to give the
+    // impression that the PWA is being installed.
+    // TODO(b/251045239): Call out to actually install the PWA.
+    await new Promise(
+        resolve => setTimeout(resolve, proxy.isTest() ? 20 : 2000));
+
+    actionButton.innerText = 'Installed';
+    actionButton.classList.replace('installing', 'installed');
+
+    // Keep the installed state shown for a second before changing pages to
+    // give the user feedback that the PWA has been installed.
+    await new Promise(
+        resolve => setTimeout(resolve, proxy.isTest() ? 10 : 1000));
+
+    this.dispatchEvent(
+        new CustomEvent(NEXT_PAGE_EVENT, {bubbles: true, composed: true}));
+  }
+
+  private onCancelButtonClick() {
+    this.dispatchEvent(
+        new CustomEvent(CANCEL_SETUP_EVENT, {bubbles: true, composed: true}));
+  }
+}
+
+customElements.define('office-pwa-install-page', OfficePwaInstallPageElement);

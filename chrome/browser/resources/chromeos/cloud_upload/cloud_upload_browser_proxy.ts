@@ -18,6 +18,11 @@ export abstract class CloudUploadBrowserProxy {
   static setInstance(obj: CloudUploadBrowserProxy) {
     instance = obj;
   }
+
+  // Whether or not this is a test proxy instance.
+  isTest() {
+    return false;
+  }
 }
 
 class CloudUploadBrowserProxyImpl extends CloudUploadBrowserProxy {
