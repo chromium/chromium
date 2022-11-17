@@ -115,6 +115,15 @@ void NodeRareData::UnregisterScrollTimeline(ScrollTimeline* timeline) {
   scroll_timelines_->erase(timeline);
 }
 
+void NodeRareData::InvalidateAssociatedAnimationEffects() {
+  if (!scroll_timelines_)
+    return;
+
+  for (ScrollTimeline* scroll_timeline : *scroll_timelines_) {
+    scroll_timeline->InvalidateEffectTargetStyle();
+  }
+}
+
 void NodeRareData::Trace(blink::Visitor* visitor) const {
   visitor->Trace(mutation_observer_data_);
   visitor->Trace(flat_tree_node_data_);

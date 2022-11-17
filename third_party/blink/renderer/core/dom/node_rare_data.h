@@ -240,6 +240,7 @@ class NodeRareData : public NodeData {
 
   void RegisterScrollTimeline(ScrollTimeline*);
   void UnregisterScrollTimeline(ScrollTimeline*);
+  void InvalidateAssociatedAnimationEffects();
 
   void Trace(blink::Visitor*) const override;
 

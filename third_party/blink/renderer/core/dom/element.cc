@@ -2707,6 +2707,9 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
     if (ElementAnimations* element_animations = data->GetElementAnimations())
       element_animations->CssAnimations().Cancel();
 
+    NodeRareData* node_data = RareData();
+    node_data->InvalidateAssociatedAnimationEffects();
+
     if (was_in_document && data->IntersectionObserverData()) {
       data->IntersectionObserverData()->ComputeIntersectionsForTarget(
           IntersectionObservation::kExplicitRootObserversNeedUpdate |
