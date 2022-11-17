@@ -104,11 +104,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-blink-v8-sandbox-future-rel",
-    mirrors = ["ci/linux-blink-v8-sandbox-future-rel"],
-)
-
-try_.builder(
     name = "linux-dcheck-off-rel",
     mirrors = builder_config.copy_from("linux-rel"),
 )

@@ -421,7 +421,6 @@
       'linux-blink-animation-use-time-delta': 'debug_bot_enable_blink_animation_use_time_delta_reclient',
       'linux-blink-heap-concurrent-marking-tsan-rel': 'release_trybot_minimal_symbols_tsan',
       'linux-blink-heap-verification': 'release_bot_enable_blink_heap_verification_dcheck_always_on_reclient',
-      'linux-blink-v8-sandbox-future-rel': 'release_bot_enable_v8_sandbox_future_dcheck_always_on_reclient',
       'linux-blink-wpt-reset-rel': 'release_bot_blink_minimal_symbols_reclient',
       'linux-chromeos-annotator-rel': 'chromeos_with_codecs_release_bot_reclient',
       'linux-chromeos-code-coverage': 'chromeos_with_codecs_release_bot_coverage_reclient',
@@ -3500,10 +3499,6 @@
       'release_bot_blink_reclient', 'enable_blink_heap_verification', 'dcheck_always_on',
     ],
 
-    'release_bot_enable_v8_sandbox_future_dcheck_always_on_reclient': [
-      'release_bot_blink_reclient', 'v8_sandbox_future', 'dcheck_always_on',
-    ],
-
     'release_bot_extended_tracing_reclient': [
       'release_bot_reclient', 'extended_tracing',
     ],
@@ -4812,10 +4807,6 @@
       # TODO(machenbach): Temporarily toggle pointer-compression off while it
       # is on by default.
       'gn_args': 'v8_enable_pointer_compression=false',
-    },
-
-    'v8_sandbox_future': {
-      'gn_args': 'v8_enable_sandbox_future=true',
     },
 
     'v8_simulate_arm': {

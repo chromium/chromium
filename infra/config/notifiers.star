@@ -279,14 +279,6 @@ tree_closure_notifier(
 )
 
 luci.notifier(
-    name = "v8-sandbox-fyi-bots",
-    notify_emails = [
-        "saelo+fyi-bots@chromium.org",
-    ],
-    on_new_status = ["FAILURE"],
-)
-
-luci.notifier(
     name = "cr-accessibility",
     notify_emails = [
         "chrome-a11y-alerts@google.com",
