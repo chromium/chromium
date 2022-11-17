@@ -11,16 +11,15 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/system/accessibility/dictation_button_tray.h"
-#include "ash/system/status_area_widget_delegate.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "components/user_manager/user_manager.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
-#include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 
 namespace ash {
 
@@ -79,7 +78,8 @@ class TestTrayBackgroundView : public TrayBackgroundView,
   bool show_bubble_called_ = false;
 };
 
-class TrayBackgroundViewTest : public AshTestBase {
+class TrayBackgroundViewTest : public AshTestBase,
+                               public ui::LayerAnimationObserver {
  public:
   TrayBackgroundViewTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
@@ -110,9 +110,19 @@ class TrayBackgroundViewTest : public AshTestBase {
     controller->dictation().SetEnabled(true);
   }
 
+  // ui::LayerAnimationObserver:
+  void OnLayerAnimationScheduled(
+      ui::LayerAnimationSequence* sequence) override {
+    num_animations_scheduled_++;
+  }
+  void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override {}
+  void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override {}
+
   TestTrayBackgroundView* test_tray_background_view() const {
     return test_tray_background_view_;
   }
+
+  int num_animations_scheduled() const { return num_animations_scheduled_; }
 
  protected:
   // Here we use dictation tray for testing secondary screen.
@@ -136,6 +146,7 @@ class TrayBackgroundViewTest : public AshTestBase {
 
  private:
   TestTrayBackgroundView* test_tray_background_view_ = nullptr;
+  int num_animations_scheduled_ = 0;
 };
 
 TEST_F(TrayBackgroundViewTest, ShowingAnimationAbortedByHideAnimation) {
@@ -240,45 +251,55 @@ TEST_F(TrayBackgroundViewTest, HandleSessionChange) {
   EXPECT_TRUE(test_tray_background_view()->GetVisible());
 }
 
-// TODO(crbug.com/1314693): Flaky.
-TEST_F(TrayBackgroundViewTest, DISABLED_SecondaryDisplay) {
+TEST_F(TrayBackgroundViewTest, SecondaryDisplay) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Add secondary screen.
   UpdateDisplay("800x600,800x600");
+  GetPrimaryDictationTray()->layer()->GetAnimator()->AddObserver(this);
+  GetSecondaryDictationTray()->layer()->GetAnimator()->AddObserver(this);
 
-  // Switch the primary and secondary screen.
+  // Switch the primary and secondary screen. This should not cause additional
+  // TrayBackgroundView animations to occur.
   SwapPrimaryDisplay();
-  task_environment()->FastForwardBy(base::Milliseconds(20));
-  EXPECT_FALSE(
-      GetPrimaryDictationTray()->layer()->GetAnimator()->is_animating());
+  task_environment()->RunUntilIdle();
   EXPECT_TRUE(GetPrimaryDictationTray()->GetVisible());
-  EXPECT_FALSE(
-      GetSecondaryDictationTray()->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(GetSecondaryDictationTray()->GetVisible());
+  EXPECT_EQ(num_animations_scheduled(), 0);
 
   // Enable the animation after showing up on the secondary screen.
-  task_environment()->FastForwardBy(base::Milliseconds(20));
+  task_environment()->RunUntilIdle();
+  ui::LayerAnimationStoppedWaiter animation_waiter;
   GetPrimaryDictationTray()->SetVisiblePreferred(false);
-  GetPrimaryDictationTray()->SetVisiblePreferred(true);
-  GetSecondaryDictationTray()->SetVisiblePreferred(false);
-  GetSecondaryDictationTray()->SetVisiblePreferred(true);
-  task_environment()->FastForwardBy(base::Milliseconds(20));
   EXPECT_TRUE(
       GetPrimaryDictationTray()->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(GetPrimaryDictationTray()->GetVisible());
+  animation_waiter.Wait(GetPrimaryDictationTray()->layer());
+
+  GetPrimaryDictationTray()->SetVisiblePreferred(true);
+  EXPECT_TRUE(
+      GetPrimaryDictationTray()->layer()->GetAnimator()->is_animating());
+  animation_waiter.Wait(GetPrimaryDictationTray()->layer());
+
+  GetSecondaryDictationTray()->SetVisiblePreferred(false);
   EXPECT_TRUE(
       GetSecondaryDictationTray()->layer()->GetAnimator()->is_animating());
+  animation_waiter.Wait(GetSecondaryDictationTray()->layer());
+
+  GetSecondaryDictationTray()->SetVisiblePreferred(true);
+  EXPECT_TRUE(
+      GetSecondaryDictationTray()->layer()->GetAnimator()->is_animating());
+  animation_waiter.Wait(GetSecondaryDictationTray()->layer());
+
+  EXPECT_TRUE(GetPrimaryDictationTray()->GetVisible());
   EXPECT_TRUE(GetSecondaryDictationTray()->GetVisible());
-  task_environment()->FastForwardBy(base::Seconds(3));
 
-  // Remove the secondary screen.
+  // Remove the secondary screen. This should not cause additional
+  // TrayBackgroundView animations to occur.
+  int num_animations_scheduled_before = num_animations_scheduled();
   UpdateDisplay("800x600");
-
-  task_environment()->FastForwardBy(base::Milliseconds(20));
-  EXPECT_FALSE(
-      GetPrimaryDictationTray()->layer()->GetAnimator()->is_animating());
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(num_animations_scheduled(), num_animations_scheduled_before);
   EXPECT_TRUE(GetPrimaryDictationTray()->GetVisible());
 }
 
