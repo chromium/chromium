@@ -37,6 +37,7 @@ class TestContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
   ~TestContentPaymentRequestDelegate() override;
 
   // ContentPaymentRequestDelegate:
+  content::RenderFrameHost* GetRenderFrameHost() const override;
   std::unique_ptr<webauthn::InternalAuthenticator> CreateInternalAuthenticator()
       const override;
   scoped_refptr<PaymentManifestWebDataService>
@@ -48,7 +49,6 @@ class TestContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
   void ShowErrorMessage() override;
   void ShowProcessingSpinner() override;
   bool IsBrowserWindowActive() const override;
-  bool SkipUiForBasicCard() const override;
   std::string GetTwaPackageName() const override;
   PaymentRequestDialog* GetDialogForTesting() override;
   SecurePaymentConfirmationNoCreds* GetNoMatchingCredentialsDialogForTesting()

@@ -57,6 +57,7 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
       base::OnceClosure opt_out_callback) override;
 
   // ContentPaymentRequestDelegate:
+  content::RenderFrameHost* GetRenderFrameHost() const override;
   std::unique_ptr<webauthn::InternalAuthenticator> CreateInternalAuthenticator()
       const override;
   scoped_refptr<PaymentManifestWebDataService>
@@ -67,7 +68,6 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
       PaymentHandlerOpenWindowCallback callback) override;
   bool IsInteractive() const override;
   std::string GetInvalidSslCertificateErrorMessage() override;
-  bool SkipUiForBasicCard() const override;
   std::string GetTwaPackageName() const override;
   PaymentRequestDialog* GetDialogForTesting() override;
   SecurePaymentConfirmationNoCreds* GetNoMatchingCredentialsDialogForTesting()
@@ -90,7 +90,7 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
 
   std::unique_ptr<SecurePaymentConfirmationNoCreds> spc_no_creds_dialog_;
 
-  content::GlobalRenderFrameHostId frame_routing_id_;
+  const content::GlobalRenderFrameHostId frame_routing_id_;
 };
 
 }  // namespace payments

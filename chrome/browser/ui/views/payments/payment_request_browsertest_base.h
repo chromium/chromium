@@ -116,7 +116,6 @@ class PaymentRequestBrowserTestBase
   void SetIncognito();
   void SetInvalidSsl();
   void SetBrowserWindowInactive();
-  void SetSkipUiForForBasicCard();
 
   // PaymentRequest::ObserverForTest:
   void OnCanMakePaymentCalled() override;
@@ -272,7 +271,7 @@ class PaymentRequestBrowserTestBase
   PaymentRequestDialogView* dialog_view() { return delegate_->dialog_view(); }
 
   void SetRegionDataLoader(autofill::RegionDataLoader* region_data_loader) {
-    delegate_->SetRegionDataLoader(region_data_loader);
+    delegate_->OverrideRegionDataLoader(region_data_loader);
   }
 
   // Sets the value of the payments.can_make_payment_enabled pref.
@@ -300,7 +299,6 @@ class PaymentRequestBrowserTestBase
   bool is_incognito_ = false;
   bool is_valid_ssl_ = true;
   bool is_browser_window_active_ = true;
-  bool skip_ui_for_basic_card_ = false;
   std::vector<base::WeakPtr<PaymentRequest>> requests_;
   ConstCSPChecker const_csp_checker_{/*allow=*/true};
 

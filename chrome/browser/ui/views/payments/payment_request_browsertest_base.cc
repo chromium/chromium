@@ -140,10 +140,6 @@ void PaymentRequestBrowserTestBase::SetBrowserWindowInactive() {
   is_browser_window_active_ = false;
 }
 
-void PaymentRequestBrowserTestBase::SetSkipUiForForBasicCard() {
-  skip_ui_for_basic_card_ = true;
-}
-
 void PaymentRequestBrowserTestBase::OnCanMakePaymentCalled() {
   if (event_waiter_)
     event_waiter_->OnEvent(DialogEvent::CAN_MAKE_PAYMENT_CALLED);
@@ -551,11 +547,16 @@ void PaymentRequestBrowserTestBase::CreatePaymentRequestForTest(
     content::RenderFrameHost* render_frame_host) {
   DCHECK(render_frame_host);
   DCHECK(render_frame_host->IsActive());
-  std::unique_ptr<TestChromePaymentRequestDelegate> delegate =
-      std::make_unique<TestChromePaymentRequestDelegate>(
-          render_frame_host, /*observer=*/GetWeakPtr(), &prefs_, is_incognito_,
-          is_valid_ssl_, is_browser_window_active_, skip_ui_for_basic_card_);
+
+  auto delegate =
+      std::make_unique<TestChromePaymentRequestDelegate>(render_frame_host);
+  delegate->set_payment_request_dialog_view_observer_for_test(GetWeakPtr());
+  delegate->OverridePrefService(&prefs_);
+  delegate->OverrideOffTheRecord(is_incognito_);
+  delegate->OverrideValidSSL(is_valid_ssl_);
+  delegate->OverrideBrowserWindowActive(is_browser_window_active_);
   delegate_ = delegate.get();
+
   auto display_manager = delegate->GetDisplayManager()->GetWeakPtr();
   auto* request = new PaymentRequest(
       *render_frame_host, std::move(delegate), std::move(display_manager),

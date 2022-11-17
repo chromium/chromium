@@ -5915,6 +5915,7 @@ static_library("test_support") {
   if (toolkit_views) {
     deps += [
       "//components/constrained_window:constrained_window",
+      "//components/webauthn/content/browser",
       "//ui/views:test_support",
     ]
     sources += [

@@ -7,7 +7,6 @@
 
 #include "chrome/browser/payments/chrome_payment_request_delegate.h"
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_dialog_view.h"
-#include "content/public/browser/global_routing_id.h"
 
 namespace content {
 class RenderFrameHost;
@@ -38,7 +37,6 @@ class TestSecurePaymentConfirmationPaymentRequestDelegate
   }
 
  private:
-  const content::GlobalRenderFrameHostId frame_routing_id_;
   base::WeakPtr<SecurePaymentConfirmationModel> model_;
   base::WeakPtr<SecurePaymentConfirmationDialogView> dialog_view_;
 };

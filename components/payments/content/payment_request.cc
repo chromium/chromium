@@ -740,8 +740,7 @@ bool PaymentRequest::SatisfiesSkipUIConstraints() {
   // Only allowing URL based payment apps to skip the payment sheet.
   skipped_payment_request_ui_ =
       !spec()->IsSecurePaymentConfirmationRequested() &&
-      (spec()->url_payment_method_identifiers().size() > 0 ||
-       delegate_->SkipUiForBasicCard()) &&
+      spec()->url_payment_method_identifiers().size() > 0 &&
       base::FeatureList::IsEnabled(features::kWebPaymentsSingleAppUiSkip) &&
       base::FeatureList::IsEnabled(::features::kServiceWorkerPaymentApps) &&
       state()->IsInitialized() && spec()->IsInitialized() &&

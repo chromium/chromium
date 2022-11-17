@@ -252,6 +252,11 @@ void ChromePaymentRequestDelegate::ShowNoMatchingPaymentCredentialDialog(
                                    std::move(opt_out_callback));
 }
 
+content::RenderFrameHost* ChromePaymentRequestDelegate::GetRenderFrameHost()
+    const {
+  return content::RenderFrameHost::FromID(frame_routing_id_);
+}
+
 std::unique_ptr<webauthn::InternalAuthenticator>
 ChromePaymentRequestDelegate::CreateInternalAuthenticator() const {
   // This authenticator can be used in a cross-origin iframe only if the
@@ -308,10 +313,6 @@ ChromePaymentRequestDelegate::GetInvalidSslCertificateErrorMessage() {
              ? SslValidityChecker::GetInvalidSslCertificateErrorMessage(
                    content::WebContents::FromRenderFrameHost(rfh))
              : "";
-}
-
-bool ChromePaymentRequestDelegate::SkipUiForBasicCard() const {
-  return false;  // Only tests do this.
 }
 
 std::string ChromePaymentRequestDelegate::GetTwaPackageName() const {

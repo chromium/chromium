@@ -2,24 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/test/payments/payment_request_test_controller.h"
 
 #include "base/check.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/payments/chrome_payment_request_delegate.h"
 #include "chrome/browser/payments/payment_request_factory.h"
+#include "chrome/browser/ui/views/payments/test_chrome_payment_request_delegate.h"
 #include "components/payments/content/android_app_communication.h"
 #include "components/payments/content/payment_request.h"
 #include "components/payments/content/payment_request_web_contents_manager.h"
 #include "components/payments/content/payment_ui_observer.h"
 #include "components/payments/core/payment_prefs.h"
-#include "components/payments/core/payment_request_delegate.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/webauthn/content/browser/internal_authenticator_impl.h"
-#include "components/webauthn/core/browser/internal_authenticator.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -28,78 +25,6 @@
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
 namespace payments {
-namespace {
-
-class TestAuthenticator : public content::InternalAuthenticatorImpl {
- public:
-  explicit TestAuthenticator(content::RenderFrameHost* rfh,
-                             bool has_authenticator)
-      : content::InternalAuthenticatorImpl(rfh),
-        has_authenticator_(has_authenticator) {}
-
-  ~TestAuthenticator() override = default;
-
-  // webauthn::InternalAuthenticator
-  void IsUserVerifyingPlatformAuthenticatorAvailable(
-      blink::mojom::Authenticator::
-          IsUserVerifyingPlatformAuthenticatorAvailableCallback callback)
-      override {
-    std::move(callback).Run(has_authenticator_);
-  }
-
- private:
-  const bool has_authenticator_;
-};
-
-class ChromePaymentRequestTestDelegate : public ChromePaymentRequestDelegate {
- public:
-  ChromePaymentRequestTestDelegate(
-      content::RenderFrameHost* render_frame_host,
-      bool is_off_the_record,
-      bool valid_ssl,
-      PrefService* prefs,
-      const std::string& twa_package_name,
-      bool has_authenticator,
-      base::WeakPtr<PaymentUIObserver> ui_observer_for_test)
-      : ChromePaymentRequestDelegate(render_frame_host),
-        frame_routing_id_(content::GlobalRenderFrameHostId(
-            render_frame_host->GetProcess()->GetID(),
-            render_frame_host->GetRoutingID())),
-        is_off_the_record_(is_off_the_record),
-        valid_ssl_(valid_ssl),
-        prefs_(prefs),
-        twa_package_name_(twa_package_name),
-        has_authenticator_(has_authenticator),
-        ui_observer_for_test_(ui_observer_for_test) {}
-
-  bool IsOffTheRecord() const override { return is_off_the_record_; }
-  std::string GetInvalidSslCertificateErrorMessage() override {
-    return valid_ssl_ ? "" : "Invalid SSL certificate";
-  }
-  PrefService* GetPrefService() override { return prefs_; }
-  bool IsBrowserWindowActive() const override { return true; }
-  std::string GetTwaPackageName() const override { return twa_package_name_; }
-  std::unique_ptr<webauthn::InternalAuthenticator> CreateInternalAuthenticator()
-      const override {
-    auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-    return rfh ? std::make_unique<TestAuthenticator>(rfh, has_authenticator_)
-               : nullptr;
-  }
-  const base::WeakPtr<PaymentUIObserver> GetPaymentUIObserver() const override {
-    return ui_observer_for_test_;
-  }
-
- private:
-  content::GlobalRenderFrameHostId frame_routing_id_;
-  const bool is_off_the_record_;
-  const bool valid_ssl_;
-  const raw_ptr<PrefService> prefs_;
-  const std::string twa_package_name_;
-  const bool has_authenticator_;
-  base::WeakPtr<PaymentUIObserver> ui_observer_for_test_;
-};
-
-}  // namespace
 
 class PaymentRequestTestController::ObserverConverter
     : public PaymentRequest::ObserverForTest,
@@ -296,10 +221,18 @@ void PaymentRequestTestController::UpdateDelegateFactory() {
         auto* manager =
             PaymentRequestWebContentsManager::GetOrCreateForWebContents(
                 *web_contents);
-        auto delegate = std::make_unique<ChromePaymentRequestTestDelegate>(
-            render_frame_host, is_off_the_record, valid_ssl, prefs,
-            twa_package_name, has_authenticator, observer_for_test);
+
+        auto delegate = std::make_unique<TestChromePaymentRequestDelegate>(
+            render_frame_host);
+        delegate->OverrideBrowserWindowActive(true);
+        delegate->OverrideOffTheRecord(is_off_the_record);
+        delegate->OverrideValidSSL(valid_ssl);
+        delegate->OverridePrefService(prefs);
+        delegate->set_twa_package_name(twa_package_name);
+        delegate->set_has_authenticator(has_authenticator);
+        delegate->set_payment_ui_observer(observer_for_test);
         *delegate_weakptr = delegate->GetContentWeakPtr();
+
         if (!twa_payment_app_method_name.empty()) {
           AndroidAppCommunication::GetForBrowserContext(
               render_frame_host->GetBrowserContext())
