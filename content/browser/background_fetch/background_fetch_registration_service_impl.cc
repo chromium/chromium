@@ -130,7 +130,7 @@ void BackgroundFetchRegistrationServiceImpl::AddRegistrationObserver(
 bool BackgroundFetchRegistrationServiceImpl::ValidateTitle(
     const std::string& title) {
   if (title.empty() || title.size() > kMaxTitleLength) {
-    mojo::ReportBadMessage("Invalid title");
+    receiver_.ReportBadMessage("Invalid title");
     return false;
   }
 
