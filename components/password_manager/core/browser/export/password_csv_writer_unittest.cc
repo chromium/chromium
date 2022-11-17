@@ -73,7 +73,8 @@ TEST(PasswordCSVWriterTest, SerializePasswords_SinglePassword) {
     EXPECT_THAT(pwds, ElementsAre(FormHasOriginUsernamePassword(
                           "http://example.com/", "Someone", "Secret")));
 
-    // TODO: remove this when CSVPasswordSequence will support notes.
+    // TODO(crbug.com/1383938): remove this when CSVPasswordSequence will
+    // support notes.
     std::string expected =
         is_notes_enabled
             ? "name,url,username,password,note" + kLineEnding +

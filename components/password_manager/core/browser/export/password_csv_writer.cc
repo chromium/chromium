@@ -31,7 +31,8 @@ std::string PasswordCSVWriter::SerializePasswords(
   header[2] = kUsernameColumnName;
   header[3] = kPasswordColumnName;
   if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
-    header.push_back(kNoteColumnName);
+    header.resize(5);
+    header[4] = kNoteColumnName;
   }
 
   std::vector<std::map<std::string, std::string>> records;
@@ -48,13 +49,13 @@ std::string PasswordCSVWriter::SerializePasswords(
 std::map<std::string, std::string> PasswordCSVWriter::PasswordFormToRecord(
     const CredentialUIEntry& credential) {
   std::map<std::string, std::string> record;
+  record[kTitleColumnName] = GetShownOrigin(credential);
   record[kUrlColumnName] = credential.GetURL().spec();
   record[kUsernameColumnName] = base::UTF16ToUTF8(credential.username);
   record[kPasswordColumnName] = base::UTF16ToUTF8(credential.password);
   if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
     record[kNoteColumnName] = base::UTF16ToUTF8(credential.note.value);
   }
-  record[kTitleColumnName] = GetShownOrigin(credential);
   return record;
 }
 
