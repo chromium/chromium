@@ -9,14 +9,11 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct AutocompleteMatch;
-class AutocompleteResult;
 class GURL;
 enum class WindowOpenDisposition;
 
 class OmniboxPopupViewSuggestionsDelegate {
  public:
-  // Called when results are updated.
-  virtual void OnResultsChanged(const AutocompleteResult& result) = 0;
   // Called whenever the popup is scrolled.
   virtual void OnPopupDidScroll() = 0;
   // Called when the user chooses a suggestion from the popup via the "append"

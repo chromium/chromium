@@ -52,8 +52,6 @@ void OmniboxPopupViewIOS::UpdatePopupAppearance() {
   const AutocompleteResult& result = model()->result();
 
   [mediator_ updateWithResults:result];
-
-  delegate_->OnResultsChanged(result);
 }
 
 bool OmniboxPopupViewIOS::IsOpen() const {

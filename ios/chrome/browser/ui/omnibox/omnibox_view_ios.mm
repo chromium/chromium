@@ -712,18 +712,6 @@ int OmniboxViewIOS::GetOmniboxTextLength() const {
 
 #pragma mark - OmniboxPopupViewSuggestionsDelegate
 
-void OmniboxViewIOS::OnResultsChanged(const AutocompleteResult& result) {
-  if (ignore_popup_updates_) {
-    // Please contact rohitrao@ if the following DCHECK ever fires.  If
-    // `ignore_popup_updates_` is true but `result` is not empty, then the new
-    // prerender code in ChromeOmniboxClientIOS will incorrectly discard its
-    // prerender.
-    // TODO(crbug.com/754050): Remove this whole method once we are reasonably
-    // confident that we are not throwing away prerenders.
-    DCHECK(result.empty());
-  }
-}
-
 void OmniboxViewIOS::OnPopupDidScroll() {
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET ||
       base::FeatureList::IsEnabled(kEnableSuggestionsScrollingOnIPad)) {

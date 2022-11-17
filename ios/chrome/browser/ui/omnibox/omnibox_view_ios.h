@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_suggestions_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-class AutocompleteResult;
 class ChromeBrowserState;
 class GURL;
 class WebOmniboxEditController;
@@ -141,7 +140,6 @@ class OmniboxViewIOS : public OmniboxView,
   void OnAccept() override;
 
   // OmniboxPopupViewSuggestionsDelegate methods
-  void OnResultsChanged(const AutocompleteResult& result) override;
   void OnPopupDidScroll() override;
   void OnSelectedMatchForAppending(const std::u16string& str) override;
   void OnSelectedMatchForOpening(AutocompleteMatch match,
