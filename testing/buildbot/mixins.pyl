@@ -849,7 +849,7 @@
       'dimensions': {
         'cpu': 'arm64',
         'mac_model': 'Macmini9,1',
-        'os': 'Mac-12.4|Mac-12.5',
+        'os': 'Mac-12.5',
         'pool': 'chromium.tests',
         'display_attached': '1',
       },

@@ -11486,7 +11486,7 @@
               "cpu": "arm64",
               "display_attached": "1",
               "mac_model": "Macmini9,1",
-              "os": "Mac-12.4|Mac-12.5",
+              "os": "Mac-12.5",
               "pool": "chromium.tests"
             }
           ],
@@ -11516,7 +11516,7 @@
               "cpu": "arm64",
               "display_attached": "1",
               "mac_model": "Macmini9,1",
-              "os": "Mac-12.4|Mac-12.5",
+              "os": "Mac-12.5",
               "pool": "chromium.tests"
             }
           ],
@@ -11544,7 +11544,7 @@
               "cpu": "arm64",
               "display_attached": "1",
               "mac_model": "Macmini9,1",
-              "os": "Mac-12.4|Mac-12.5",
+              "os": "Mac-12.5",
               "pool": "chromium.tests"
             }
           ],
@@ -11570,7 +11570,7 @@
               "cpu": "arm64",
               "display_attached": "1",
               "mac_model": "Macmini9,1",
-              "os": "Mac-12.4|Mac-12.5",
+              "os": "Mac-12.5",
               "pool": "chromium.tests"
             }
           ],
@@ -11595,7 +11595,7 @@
               "cpu": "arm64",
               "display_attached": "1",
               "mac_model": "Macmini9,1",
-              "os": "Mac-12.4|Mac-12.5",
+              "os": "Mac-12.5",
               "pool": "chromium.tests"
             }
           ],
@@ -11617,7 +11617,7 @@
               "cpu": "arm64",
               "display_attached": "1",
               "mac_model": "Macmini9,1",
-              "os": "Mac-12.4|Mac-12.5",
+              "os": "Mac-12.5",
               "pool": "chromium.tests"
             }
           ],
@@ -11643,7 +11643,7 @@
               "cpu": "arm64",
               "display_attached": "1",
               "mac_model": "Macmini9,1",
-              "os": "Mac-12.4|Mac-12.5",
+              "os": "Mac-12.5",
               "pool": "chromium.tests"
             }
           ],
@@ -11683,7 +11683,7 @@
               "cpu": "arm64",
               "display_attached": "1",
               "mac_model": "Macmini9,1",
-              "os": "Mac-12.4|Mac-12.5",
+              "os": "Mac-12.5",
               "pool": "chromium.tests"
             }
           ],
@@ -11721,7 +11721,7 @@
               "cpu": "arm64",
               "display_attached": "1",
               "mac_model": "Macmini9,1",
-              "os": "Mac-12.4|Mac-12.5",
+              "os": "Mac-12.5",
               "pool": "chromium.tests"
             }
           ],
@@ -11759,7 +11759,7 @@
               "cpu": "arm64",
               "display_attached": "1",
               "mac_model": "Macmini9,1",
-              "os": "Mac-12.4|Mac-12.5",
+              "os": "Mac-12.5",
               "pool": "chromium.tests"
             }
           ],
@@ -11801,7 +11801,7 @@
               "cpu": "arm64",
               "display_attached": "1",
               "mac_model": "Macmini9,1",
-              "os": "Mac-12.4|Mac-12.5",
+              "os": "Mac-12.5",
               "pool": "chromium.tests"
             }
           ],
@@ -11848,7 +11848,7 @@
               "cpu": "arm64",
               "display_attached": "1",
               "mac_model": "Macmini9,1",
-              "os": "Mac-12.4|Mac-12.5",
+              "os": "Mac-12.5",
               "pool": "chromium.tests"
             }
           ],
@@ -11886,7 +11886,7 @@
               "cpu": "arm64",
               "display_attached": "1",
               "mac_model": "Macmini9,1",
-              "os": "Mac-12.4|Mac-12.5",
+              "os": "Mac-12.5",
               "pool": "chromium.tests"
             }
           ],
@@ -11933,7 +11933,7 @@
               "cpu": "arm64",
               "display_attached": "1",
               "mac_model": "Macmini9,1",
-              "os": "Mac-12.4|Mac-12.5",
+              "os": "Mac-12.5",
               "pool": "chromium.tests"
             }
           ],
@@ -11972,7 +11972,7 @@
               "cpu": "arm64",
               "display_attached": "1",
               "mac_model": "Macmini9,1",
-              "os": "Mac-12.4|Mac-12.5",
+              "os": "Mac-12.5",
               "pool": "chromium.tests"
             }
           ],
@@ -12010,7 +12010,7 @@
               "cpu": "arm64",
               "display_attached": "1",
               "mac_model": "Macmini9,1",
-              "os": "Mac-12.4|Mac-12.5",
+              "os": "Mac-12.5",
               "pool": "chromium.tests"
             }
           ],
@@ -12048,7 +12048,7 @@
               "cpu": "arm64",
               "display_attached": "1",
               "mac_model": "Macmini9,1",
-              "os": "Mac-12.4|Mac-12.5",
+              "os": "Mac-12.5",
               "pool": "chromium.tests"
             }
           ],
@@ -12089,7 +12089,7 @@
               "cpu": "arm64",
               "display_attached": "1",
               "mac_model": "Macmini9,1",
-              "os": "Mac-12.4|Mac-12.5",
+              "os": "Mac-12.5",
               "pool": "chromium.tests"
             }
           ],
@@ -12131,7 +12131,7 @@
               "cpu": "arm64",
               "display_attached": "1",
               "mac_model": "Macmini9,1",
-              "os": "Mac-12.4|Mac-12.5",
+              "os": "Mac-12.5",
               "pool": "chromium.tests"
             }
           ],
@@ -12172,7 +12172,7 @@
               "cpu": "arm64",
               "display_attached": "1",
               "mac_model": "Macmini9,1",
-              "os": "Mac-12.4|Mac-12.5",
+              "os": "Mac-12.5",
               "pool": "chromium.tests"
             }
           ],
@@ -12213,7 +12213,7 @@
               "cpu": "arm64",
               "display_attached": "1",
               "mac_model": "Macmini9,1",
-              "os": "Mac-12.4|Mac-12.5",
+              "os": "Mac-12.5",
               "pool": "chromium.tests"
             }
           ],
@@ -12254,7 +12254,7 @@
               "cpu": "arm64",
               "display_attached": "1",
               "mac_model": "Macmini9,1",
-              "os": "Mac-12.4|Mac-12.5",
+              "os": "Mac-12.5",
               "pool": "chromium.tests"
             }
           ],
