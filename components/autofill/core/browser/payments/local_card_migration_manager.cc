@@ -58,11 +58,11 @@ bool LocalCardMigrationManager::ShouldOfferLocalCardMigration(
   imported_credit_card_record_type_ = imported_credit_card_record_type;
   // Must be an existing card. New cards always get Upstream or local save.
   switch (imported_credit_card_record_type_) {
-    case FormDataImporter::ImportedCreditCardRecordType::LOCAL_CARD:
+    case FormDataImporter::ImportedCreditCardRecordType::kLocalCard:
       local_card_migration_origin_ =
           autofill_metrics::LocalCardMigrationOrigin::UseOfLocalCard;
       break;
-    case FormDataImporter::ImportedCreditCardRecordType::SERVER_CARD:
+    case FormDataImporter::ImportedCreditCardRecordType::kServerCard:
       local_card_migration_origin_ =
           autofill_metrics::LocalCardMigrationOrigin::UseOfServerCard;
       break;
@@ -83,11 +83,11 @@ bool LocalCardMigrationManager::ShouldOfferLocalCardMigration(
   // Don't show the prompt if max strike count was reached.
   if (GetLocalCardMigrationStrikeDatabase()->ShouldBlockFeature()) {
     switch (imported_credit_card_record_type_) {
-      case FormDataImporter::ImportedCreditCardRecordType::LOCAL_CARD:
+      case FormDataImporter::ImportedCreditCardRecordType::kLocalCard:
         autofill_metrics::LogLocalCardMigrationNotOfferedDueToMaxStrikesMetric(
             AutofillMetrics::SaveTypeMetric::LOCAL);
         break;
-      case FormDataImporter::ImportedCreditCardRecordType::SERVER_CARD:
+      case FormDataImporter::ImportedCreditCardRecordType::kServerCard:
         autofill_metrics::LogLocalCardMigrationNotOfferedDueToMaxStrikesMetric(
             AutofillMetrics::SaveTypeMetric::SERVER);
         break;
@@ -106,14 +106,14 @@ bool LocalCardMigrationManager::ShouldOfferLocalCardMigration(
   // was submitted with a server card, offer migration if ANY local cards can be
   // migrated.
   if ((imported_credit_card_record_type_ ==
-           FormDataImporter::ImportedCreditCardRecordType::LOCAL_CARD &&
+           FormDataImporter::ImportedCreditCardRecordType::kLocalCard &&
        migratable_credit_cards_.size() > 1) ||
       (imported_credit_card_record_type_ ==
-           FormDataImporter::ImportedCreditCardRecordType::SERVER_CARD &&
+           FormDataImporter::ImportedCreditCardRecordType::kServerCard &&
        !migratable_credit_cards_.empty())) {
     return true;
   } else if (imported_credit_card_record_type_ ==
-                 FormDataImporter::ImportedCreditCardRecordType::LOCAL_CARD &&
+                 FormDataImporter::ImportedCreditCardRecordType::kLocalCard &&
              migratable_credit_cards_.size() == 1) {
     autofill_metrics::LogLocalCardMigrationDecisionMetric(
         autofill_metrics::LocalCardMigrationDecisionMetric::
@@ -236,7 +236,7 @@ void LocalCardMigrationManager::OnDidGetUploadDetails(
       // unsupported local card.
       if (!supported_card_bin_ranges.empty() &&
           imported_credit_card_record_type_ ==
-              FormDataImporter::ImportedCreditCardRecordType::LOCAL_CARD &&
+              FormDataImporter::ImportedCreditCardRecordType::kLocalCard &&
           imported_credit_card_number_.has_value() &&
           !payments::IsCreditCardNumberSupported(
               imported_credit_card_number_.value(),

@@ -36,19 +36,17 @@ class AddressProfileSaveManager;
 // Owned by `ChromeAutofillClient`.
 class FormDataImporter : public PersonalDataManagerObserver {
  public:
-  // TODO(crbug.com/1356057): Rename below RecordType into kNoCard, kLocalCard.
-  //                          See new naming convention from go/c-style.
   // Record type of the credit card imported from the form, if one exists.
   enum ImportedCreditCardRecordType {
     // No card was successfully imported from the form.
-    NO_CARD,
+    kNoCard,
     // The imported card is already stored locally on the device.
-    LOCAL_CARD,
+    kLocalCard,
     // The imported card is already known to be a server card (either masked or
     // unmasked).
-    SERVER_CARD,
+    kServerCard,
     // The imported card is not currently stored with the browser.
-    NEW_CARD,
+    kNewCard,
   };
 
   // The parameters should outlive the FormDataImporter.
@@ -338,7 +336,7 @@ class FormDataImporter : public PersonalDataManagerObserver {
   // It will be used to determine whether to offer upload save or card
   // migration. Will be passed to `credit_card_save_manager_` for metrics.
   ImportedCreditCardRecordType imported_credit_card_record_type_ =
-      ImportedCreditCardRecordType::NO_CARD;
+      ImportedCreditCardRecordType::kNoCard;
 
   std::string app_locale_;
 
