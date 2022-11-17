@@ -358,6 +358,7 @@ static_library("ui") {
   public_deps = [ ":metrics" ]
   deps = [
     "//base",
+    "//build/config/chromebox_for_meetings:buildflags",
     "//ui/base",
     "//ui/display",
     "//ui/gfx",

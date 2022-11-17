@@ -199,10 +199,9 @@ std::string YandexSearchPathFromDeviceFormFactor() {
       return "search/touch/";
     case ui::DEVICE_FORM_FACTOR_TABLET:
       return "search/pad/";
-    default:
-      NOTREACHED();
-      return std::string();
   }
+  NOTREACHED();
+  return std::string();
 }
 
 }  // namespace

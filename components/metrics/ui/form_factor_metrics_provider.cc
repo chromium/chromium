@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/metrics/ui/form_factor_metrics_provider.h"
+#include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
 
 #include "build/build_config.h"
 #include "ui/base/device_form_factor.h"
@@ -27,6 +28,9 @@ FormFactorMetricsProvider::GetFormFactor() const {
     return SystemProfileProto::Hardware::FORM_FACTOR_TV;
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(PLATFORM_CFM)
+  return SystemProfileProto::Hardware::FORM_FACTOR_MEET_DEVICE;
+#else
   switch (ui::GetDeviceFormFactor()) {
     case ui::DEVICE_FORM_FACTOR_DESKTOP:
       return SystemProfileProto::Hardware::FORM_FACTOR_DESKTOP;
@@ -37,6 +41,7 @@ FormFactorMetricsProvider::GetFormFactor() const {
     default:
       return SystemProfileProto::Hardware::FORM_FACTOR_UNKNOWN;
   }
+#endif  // BUILDFLAG(PLATFORM_CFM)
 }
 
 }  // namespace metrics
