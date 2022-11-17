@@ -50,16 +50,6 @@ namespace eche_app {
 
 namespace {
 
-// Enumeration of possible interactions with a PhoneHub notification. Keep in
-// sync with corresponding enum in tools/metrics/histograms/enums.xml. These
-// values are persisted to logs. Entries should not be renumbered and numeric
-// values should never be reused.
-enum class NotificationInteraction {
-  kUnknown = 0,
-  kOpenAppStreaming = 1,
-  kMaxValue = kOpenAppStreaming,
-};
-
 void EnsureStreamClose(Profile* profile) {
   EcheAppManager* eche_app_manager =
       EcheAppManagerFactory::GetForProfile(profile);
@@ -205,8 +195,6 @@ void EcheAppManagerFactory::LaunchEcheApp(
     const gfx::Image& icon) {
   LaunchWebApp(package_name, notification_id, visible_name, user_id, icon,
                profile);
-  base::UmaHistogramEnumeration("Eche.NotificationClicked",
-                                NotificationInteraction::kOpenAppStreaming);
   EcheAppManagerFactory::GetInstance()
       ->CloseConnectionOrLaunchErrorNotifications();
 }

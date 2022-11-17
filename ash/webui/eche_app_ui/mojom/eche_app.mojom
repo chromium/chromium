@@ -132,3 +132,12 @@ interface StreamActionObserver {
   // SWA
   OnStreamAction(StreamAction action);
 };
+
+// Enum representing what EntryPoint was used to launch the eche app stream.
+// Keep in sync with AppStreamLaunchEntryPoint in
+// tools/metrics/histograms/enums.xml
+enum AppStreamLaunchEntryPoint {
+  APPS_LIST = 0,    // App stream was launched from the full apps list.
+  NOTIFICATION = 1, // App stream was launched from a notification.
+  RECENT_APPS = 2,  // App stream was launched from the recent apps.
+};

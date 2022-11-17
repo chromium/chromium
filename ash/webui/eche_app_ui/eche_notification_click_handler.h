@@ -11,6 +11,7 @@
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/webui/eche_app_ui/feature_status_provider.h"
+#include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/callback.h"
 
 namespace ash {

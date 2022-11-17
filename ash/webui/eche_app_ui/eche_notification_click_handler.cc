@@ -8,6 +8,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash {
@@ -44,6 +45,9 @@ void EcheNotificationClickHandler::HandleNotificationClick(
           feature_status_provider_->GetStatus());
   switch (prohibited_reason) {
     case LaunchAppHelper::AppLaunchProhibitedReason::kNotProhibited:
+      base::UmaHistogramEnumeration(
+          "Eche.AppStream.LaunchAttempt",
+          mojom::AppStreamLaunchEntryPoint::NOTIFICATION);
       launch_app_helper_->LaunchEcheApp(
           notification_id, app_metadata.package_name,
           app_metadata.visible_app_name, app_metadata.user_id,

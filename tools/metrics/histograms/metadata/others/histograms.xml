@@ -5777,6 +5777,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Eche.AppStream.LaunchAttempt" enum="AppStreamLaunchEntryPoint"
+    expires_after="2023-05-18">
+  <owner>crisrael@google.com</owner>
+  <owner>jonmann@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    This metric logs where the Eche app was launched from. The metric is emmited
+    when the eche app is launched.
+  </summary>
+</histogram>
+
 <histogram name="Eche.Connection.Duration" units="ms"
     expires_after="2022-10-04">
   <owner>samchiu@chromium.org</owner>
@@ -5823,6 +5834,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Eche.NotificationClicked" enum="EcheNotificationInteraction"
     expires_after="2023-04-16">
+  <obsolete>
+    Deprecated as of 11/2022. Replaced with Eche.AppStream.LaunchAttempt
+  </obsolete>
   <owner>samchiu@chromium.org</owner>
   <owner>andychou@chromium.org</owner>
   <summary>

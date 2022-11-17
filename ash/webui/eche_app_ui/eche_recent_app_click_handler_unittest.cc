@@ -13,6 +13,7 @@
 #include "ash/webui/eche_app_ui/fake_launch_app_helper.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "base/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -171,6 +172,7 @@ TEST_F(EcheRecentAppClickHandlerTest, LaunchEcheAppFunction) {
   const int64_t user_id = 1;
   const char16_t app_visible_name[] = u"Fake App";
   const char package_name[] = "com.fakeapp";
+  base::HistogramTester histogram_tester;
   auto fake_app_metadata = phonehub::Notification::AppMetadata(
       app_visible_name, package_name, gfx::Image(),
       /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, user_id);
@@ -181,6 +183,9 @@ TEST_F(EcheRecentAppClickHandlerTest, LaunchEcheAppFunction) {
   EXPECT_EQ(app_metadata.size(), 0u);
 
   RecentAppClicked(fake_app_metadata);
+  histogram_tester.ExpectUniqueSample(
+      "Eche.AppStream.LaunchAttempt",
+      mojom::AppStreamLaunchEntryPoint::RECENT_APPS, 1);
   // Call one more time to make sure deduplication works.
   RecentAppClicked(fake_app_metadata);
 
@@ -196,6 +201,9 @@ TEST_F(EcheRecentAppClickHandlerTest, LaunchEcheAppFunction) {
             app_metadata[0].visible_app_name);
   EXPECT_EQ(fake_app_metadata.package_name, app_metadata[0].package_name);
   EXPECT_EQ(fake_app_metadata.user_id, app_metadata[0].user_id);
+  histogram_tester.ExpectUniqueSample(
+      "Eche.AppStream.LaunchAttempt",
+      mojom::AppStreamLaunchEntryPoint::RECENT_APPS, 2);
 }
 
 TEST_F(EcheRecentAppClickHandlerTest, HandleNotificationClick) {
@@ -252,6 +260,7 @@ TEST_F(EcheRecentAppClickHandlerTest,
   const int64_t user_id = 1;
   const char16_t app_visible_name[] = u"Fake App";
   const char package_name[] = "com.fakeapp";
+  base::HistogramTester histogram_tester;
   auto fake_app_metadata = phonehub::Notification::AppMetadata(
       app_visible_name, package_name, gfx::Image(),
       /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, user_id);
@@ -260,6 +269,9 @@ TEST_F(EcheRecentAppClickHandlerTest,
       LaunchAppHelper::AppLaunchProhibitedReason::kDisabledByScreenLock);
   RecentAppClicked(fake_app_metadata);
   EXPECT_EQ(num_notifications_shown(), 1u);
+  histogram_tester.ExpectUniqueSample(
+      "Eche.AppStream.LaunchAttempt",
+      mojom::AppStreamLaunchEntryPoint::RECENT_APPS, 0);
 }
 
 }  // namespace eche_app
