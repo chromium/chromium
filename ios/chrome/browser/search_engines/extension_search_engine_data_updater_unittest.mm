@@ -92,7 +92,7 @@ TEST_F(ExtensionSearchEngineDataUpdaterTest, AddGoogleSearchEngine) {
       base::StringPiece(), base::StringPiece(), base::StringPiece(),
       base::StringPiece(), base::StringPiece(), base::StringPiece(),
       base::StringPiece(), base::StringPiece(), base::StringPiece(),
-      base::StringPiece(), base::StringPiece(), base::StringPiece(),
+      base::StringPiece(), {}, base::StringPiece(), base::StringPiece(),
       base::StringPiece16(), base::ListValue(), false, false, 0);
   TemplateURL google_template_url(google_template_url_data);
 

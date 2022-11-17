@@ -726,6 +726,9 @@ class TemplateURL {
                ? data_.image_search_branding_label
                : short_name();
   }
+  const std::vector<std::string>& search_intent_params() const {
+    return data_.search_intent_params;
+  }
   const std::vector<std::string>& alternate_urls() const {
     return data_.alternate_urls;
   }
@@ -828,6 +831,15 @@ class TemplateURL {
   // could be the result of performing a search with |this|.
   bool IsSearchURL(const GURL& url,
                    const SearchTermsData& search_terms_data) const;
+
+  // Given a |url| corresponding to this TemplateURL, keeps the search terms and
+  // optionally the search intent params and removes the other params. If |url|
+  // is not a search URL or replacement fails, leaves |result| untouched and
+  // returns false. Used to compare normalized (aka canonical) search URLs.
+  bool KeepSearchTermsInURL(const GURL& url,
+                            const SearchTermsData& search_terms_data,
+                            const bool keep_search_intent_params,
+                            GURL* result) const;
 
   // Given a |url| corresponding to this TemplateURL, identifies the search
   // terms and replaces them with the ones in |search_terms_args|, leaving the

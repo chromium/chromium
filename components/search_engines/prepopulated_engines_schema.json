@@ -57,6 +57,16 @@
     // The label to use for image search related queries. If omitted, will use the
     // value under the "name" field for image search queries.
     { "field": "image_search_branding_label", "type": "string16", "optional": true},
+    // The parameters making up the engine's canonical search URL in addition to
+    // the search terms. These params disambiguate the search terms and
+    // determine the fulfillment. For instance the same "Harry Potter" search
+    // terms may refer to the novel series or the film series.
+    {
+      "field": "search_intent_params",
+      "type": "array",
+      "contents": { "type": "string" },
+      "optional": true
+    },
     // A list of URL patterns that can be used, in addition to |search_url|,
     // to extract search terms from a URL.
     // If "search_url_post_params" is not empty, then all alternate URLs are

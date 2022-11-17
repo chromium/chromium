@@ -48,6 +48,7 @@ class DefaultSearchManager {
   static const char kSideSearchParam[];
   static const char kSideImageSearchParam[];
   static const char kImageSearchBrandingLabel[];
+  static const char kSearchIntentParams[];
 
   static const char kSafeForAutoReplace[];
   static const char kInputEncodings[];

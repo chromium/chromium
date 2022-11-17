@@ -41,6 +41,7 @@ struct TemplateURLData {
                   base::StringPiece image_url_post_params,
                   base::StringPiece side_search_param,
                   base::StringPiece side_image_search_param,
+                  std::vector<std::string> search_intent_params,
                   base::StringPiece favicon_url,
                   base::StringPiece encoding,
                   base::StringPiece16 image_search_branding_label,
@@ -105,6 +106,11 @@ struct TemplateURLData {
   // Brand name used for image search queries. If not set, the short_name
   // will be used.
   std::u16string image_search_branding_label;
+
+  // The parameters making up the engine's canonical search URL in addition to
+  // the search terms. These params disambiguate the search terms and determine
+  // the fulfillment.
+  std::vector<std::string> search_intent_params;
 
   // Favicon for the TemplateURL.
   GURL favicon_url;

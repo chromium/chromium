@@ -28,7 +28,7 @@
     // Increment this if you change the data in ways that mean users with
     // existing data should get a new version. Otherwise, existing data may
     // continue to be used and updates made here will not always appear.
-    "kCurrentDataVersion": 134
+    "kCurrentDataVersion": 135
   },
 
   // The following engines are included in country lists and are added to the
@@ -125,6 +125,7 @@
       "side_search_param": "sidesearch",
       "side_image_search_param": "sideimagesearch",
       "image_search_branding_label": "Google Lens",
+      "search_intent_params": ["si", "gs_ssp"],
       "alternate_urls": [
         "{google:baseURL}#q={searchTerms}",
         "{google:baseURL}search#q={searchTerms}",

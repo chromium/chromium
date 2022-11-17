@@ -15,7 +15,7 @@ TEST(TemplateURLDataTest, Trim) {
       base::StringPiece(), base::StringPiece(), base::StringPiece(),
       base::StringPiece(), base::StringPiece(), base::StringPiece(),
       base::StringPiece(), base::StringPiece(), base::StringPiece(),
-      base::StringPiece(), base::StringPiece(), base::StringPiece(),
+      base::StringPiece(), base::StringPiece(), {}, base::StringPiece(),
       base::StringPiece(), base::StringPiece16(), base::ListValue(), false,
       false, 0);
 

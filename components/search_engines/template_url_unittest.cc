@@ -2036,6 +2036,100 @@ TEST_F(TemplateURLTest, GenerateKeyword) {
       TemplateURL::GenerateKeyword(GURL("http://embeddedhtml.<head>/"))));
 }
 
+TEST_F(TemplateURLTest, KeepSearchTermsInURL) {
+  search_terms_data_.set_google_base_url("http://bar/");
+
+  TemplateURLData data;
+  data.SetURL("http://bar/search?q={searchTerms}&{google:sessionToken}xssi=t");
+  data.search_intent_params = {"gs_ssp", "si"};
+  TemplateURL turl(data);
+
+  TemplateURLRef::SearchTermsArgs search_terms_args(u"foo");
+  search_terms_args.session_token = "SESSIONTOKEN";
+
+  {
+    // Optionally keeps non-empty search intent params.
+    search_terms_args.additional_query_params = "gs_ssp=GS_SSP";
+    std::string original_search_url = turl.url_ref().ReplaceSearchTerms(
+        search_terms_args, search_terms_data_);
+    EXPECT_EQ("http://bar/search?gs_ssp=GS_SSP&q=foo&psi=SESSIONTOKEN&xssi=t",
+              original_search_url);
+
+    GURL canonical_search_url;
+    EXPECT_TRUE(turl.KeepSearchTermsInURL(
+        GURL(original_search_url), search_terms_data_,
+        /*keep_search_intent_params=*/true, &canonical_search_url));
+    EXPECT_EQ("http://bar/search?gs_ssp=GS_SSP&q=foo&xssi=t",
+              canonical_search_url);
+
+    EXPECT_TRUE(turl.KeepSearchTermsInURL(
+        GURL(original_search_url), search_terms_data_,
+        /*keep_search_intent_params=*/false, &canonical_search_url));
+    EXPECT_EQ("http://bar/search?q=foo&xssi=t", canonical_search_url);
+  }
+  {
+    // Optionally keeps empty search intent params.
+    search_terms_args.additional_query_params = "gs_ssp=";
+    std::string original_search_url = turl.url_ref().ReplaceSearchTerms(
+        search_terms_args, search_terms_data_);
+    EXPECT_EQ("http://bar/search?gs_ssp=&q=foo&psi=SESSIONTOKEN&xssi=t",
+              original_search_url);
+
+    GURL canonical_search_url;
+    EXPECT_TRUE(turl.KeepSearchTermsInURL(
+        GURL(original_search_url), search_terms_data_,
+        /*keep_search_intent_params=*/true, &canonical_search_url));
+    EXPECT_EQ("http://bar/search?gs_ssp=&q=foo&xssi=t", canonical_search_url);
+
+    EXPECT_TRUE(turl.KeepSearchTermsInURL(
+        GURL(original_search_url), search_terms_data_,
+        /*keep_search_intent_params=*/false, &canonical_search_url));
+    EXPECT_EQ("http://bar/search?q=foo&xssi=t", canonical_search_url);
+  }
+  {
+    // Discards params besides search terms and optionally search intent params.
+    search_terms_args.additional_query_params = "wiz=baz&gs_ssp=GS_SSP";
+    std::string original_search_url = turl.url_ref().ReplaceSearchTerms(
+        search_terms_args, search_terms_data_);
+    EXPECT_EQ(
+        "http://bar/search?wiz=baz&gs_ssp=GS_SSP&q=foo&psi=SESSIONTOKEN&xssi=t",
+        original_search_url);
+
+    GURL canonical_search_url;
+    EXPECT_TRUE(turl.KeepSearchTermsInURL(
+        GURL(original_search_url), search_terms_data_,
+        /*keep_search_intent_params=*/true, &canonical_search_url));
+    EXPECT_EQ("http://bar/search?gs_ssp=GS_SSP&q=foo&xssi=t",
+              canonical_search_url);
+
+    EXPECT_TRUE(turl.KeepSearchTermsInURL(
+        GURL(original_search_url), search_terms_data_,
+        /*keep_search_intent_params=*/false, &canonical_search_url));
+    EXPECT_EQ("http://bar/search?q=foo&xssi=t", canonical_search_url);
+  }
+  {
+    // Optionally keeps multiple search intent params.
+    search_terms_args.additional_query_params = "si=SI&gs_ssp=GS_SSP";
+    std::string original_search_url = turl.url_ref().ReplaceSearchTerms(
+        search_terms_args, search_terms_data_);
+    EXPECT_EQ(
+        "http://bar/search?si=SI&gs_ssp=GS_SSP&q=foo&psi=SESSIONTOKEN&xssi=t",
+        original_search_url);
+
+    GURL canonical_search_url;
+    EXPECT_TRUE(turl.KeepSearchTermsInURL(
+        GURL(original_search_url), search_terms_data_,
+        /*keep_search_intent_params=*/true, &canonical_search_url));
+    EXPECT_EQ("http://bar/search?si=SI&gs_ssp=GS_SSP&q=foo&xssi=t",
+              canonical_search_url);
+
+    EXPECT_TRUE(turl.KeepSearchTermsInURL(
+        GURL(original_search_url), search_terms_data_,
+        /*keep_search_intent_params=*/false, &canonical_search_url));
+    EXPECT_EQ("http://bar/search?q=foo&xssi=t", canonical_search_url);
+  }
+}
+
 TEST_F(TemplateURLTest, GenerateSearchURL) {
   struct GenerateSearchURLCase {
     const char* test_name;

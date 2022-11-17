@@ -124,6 +124,17 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
     result->image_search_branding_label =
         base::UTF8ToUTF16(*image_search_branding_label);
   }
+  const base::Value::List* additional_params_list =
+      dict.FindList(DefaultSearchManager::kSearchIntentParams);
+  if (additional_params_list) {
+    for (const auto& additional_param_value : *additional_params_list) {
+      const auto* additional_param = additional_param_value.GetIfString();
+      DCHECK(additional_param && !additional_param->empty());
+      if (additional_param && !additional_param->empty()) {
+        result->search_intent_params.push_back(*additional_param);
+      }
+    }
+  }
   absl::optional<bool> safe_for_autoreplace =
       dict.FindBool(DefaultSearchManager::kSafeForAutoReplace);
   if (safe_for_autoreplace) {
@@ -240,6 +251,13 @@ std::unique_ptr<base::DictionaryValue> TemplateURLDataToDictionary(
   url_dict->SetStringKey(DefaultSearchManager::kImageSearchBrandingLabel,
                          data.image_search_branding_label);
 
+  base::Value::List additional_params_list;
+  for (const auto& additional_param : data.search_intent_params) {
+    additional_params_list.Append(additional_param);
+  }
+  url_dict->GetDict().Set(DefaultSearchManager::kSearchIntentParams,
+                          std::move(additional_params_list));
+
   url_dict->SetBoolKey(DefaultSearchManager::kSafeForAutoReplace,
                        data.safe_for_autoreplace);
 
@@ -281,6 +299,13 @@ std::unique_ptr<base::DictionaryValue> TemplateURLDataToDictionary(
 
 std::unique_ptr<TemplateURLData> TemplateURLDataFromPrepopulatedEngine(
     const TemplateURLPrepopulateData::PrepopulatedEngine& engine) {
+  std::vector<std::string> search_intent_params;
+  if (engine.search_intent_params) {
+    for (size_t i = 0; i < engine.search_intent_params_size; ++i) {
+      search_intent_params.emplace_back(engine.search_intent_params[i]);
+    }
+  }
+
   base::ListValue alternate_urls;
   if (engine.alternate_urls) {
     for (size_t i = 0; i < engine.alternate_urls_size; ++i)
@@ -303,8 +328,9 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromPrepopulatedEngine(
       ToStringPiece(engine.image_url_post_params),
       ToStringPiece(engine.side_search_param),
       ToStringPiece(engine.side_image_search_param),
-      ToStringPiece(engine.favicon_url), ToStringPiece(engine.encoding),
-      image_search_branding_label, alternate_urls,
+      std::move(search_intent_params), ToStringPiece(engine.favicon_url),
+      ToStringPiece(engine.encoding), image_search_branding_label,
+      alternate_urls,
       ToStringPiece(engine.preconnect_to_search_url) == "ALLOWED",
       ToStringPiece(engine.prefetch_likely_navigations) == "ALLOWED",
       engine.id);
@@ -363,6 +389,7 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
     std::string side_search_param;
     std::string side_image_search_param;
     std::u16string image_search_branding_label;
+    std::vector<std::string> search_intent_params;
     std::string preconnect_to_search_url;
     std::string prefetch_likely_navigations;
 
@@ -414,6 +441,16 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
     if (string_value) {
       image_search_branding_label = base::UTF8ToUTF16(*string_value);
     }
+    const base::Value::List* additional_params_list =
+        engine.GetDict().FindList(DefaultSearchManager::kSearchIntentParams);
+    if (additional_params_list) {
+      for (const auto& additional_param_value : *additional_params_list) {
+        const auto* additional_param = additional_param_value.GetIfString();
+        if (additional_param && !additional_param->empty()) {
+          search_intent_params.push_back(*additional_param);
+        }
+      }
+    }
     string_value = engine.FindStringKey("preconnect_to_search_url");
     if (string_value) {
       preconnect_to_search_url = *string_value;
@@ -427,8 +464,8 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
         name, keyword, search_url, suggest_url, image_url, new_tab_url,
         contextual_search_url, logo_url, doodle_url, search_url_post_params,
         suggest_url_post_params, image_url_post_params, side_search_param,
-        side_image_search_param, favicon_url, encoding,
-        image_search_branding_label, *alternate_urls,
+        side_image_search_param, std::move(search_intent_params), favicon_url,
+        encoding, image_search_branding_label, *alternate_urls,
         preconnect_to_search_url.compare("ALLOWED") == 0,
         prefetch_likely_navigations.compare("ALLOWED") == 0, *id);
   }

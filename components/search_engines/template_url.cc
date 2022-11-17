@@ -24,6 +24,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -1610,6 +1611,38 @@ bool TemplateURL::IsSearchURL(const GURL& url,
   std::u16string search_terms;
   return ExtractSearchTermsFromURL(url, search_terms_data, &search_terms) &&
       !search_terms.empty();
+}
+
+bool TemplateURL::KeepSearchTermsInURL(const GURL& url,
+                                       const SearchTermsData& search_terms_data,
+                                       const bool keep_search_intent_params,
+                                       GURL* result) const {
+  std::u16string search_terms;
+  if (!ExtractSearchTermsFromURL(url, search_terms_data, &search_terms) ||
+      search_terms.empty()) {
+    return false;
+  }
+
+  if (!url_ref().SupportsReplacement(search_terms_data)) {
+    return false;
+  }
+
+  std::vector<std::string> query_params;
+  if (keep_search_intent_params && !data_.search_intent_params.empty()) {
+    for (net::QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
+      if (!base::Contains(data_.search_intent_params, it.GetKey())) {
+        continue;
+      }
+      query_params.push_back(base::StrCat({it.GetKey(), "=", it.GetValue()}));
+    }
+  }
+
+  TemplateURLRef::SearchTermsArgs search_terms_args(search_terms);
+  search_terms_args.additional_query_params =
+      base::JoinString(query_params, "&");
+  *result =
+      GURL(url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data));
+  return true;
 }
 
 bool TemplateURL::ReplaceSearchTermsInURL(
