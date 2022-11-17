@@ -10,7 +10,7 @@
  * Messages can be any object that can be serialized using JSON.
  */
 
-export class ContentScriptBridge {
+export class ExtensionBridge {
   /** @private */
   constructor() {
     /** @private {!Array<!function(Object, Port)>} */
@@ -24,8 +24,8 @@ export class ContentScriptBridge {
   }
 
   /**
-   * Initialize the content script bridge by registering a listener for
-   * connections from the content script.
+   * Initialize the extension bridge in a background page context by registering
+   * a listener for connections from the content script.
    * @private
    */
   init_() {
@@ -33,10 +33,13 @@ export class ContentScriptBridge {
         port => this.onConnectHandler_(port));
   }
 
-
-  /** Initialize the content script bridge. */
+  /**
+   * Initialize the extension bridge. Dynamically figure out whether we're in
+   * the background page, content script, or in a page, and call the
+   * corresponding function for more specific initialization.
+   */
   static init() {
-    ContentScriptBridge.instance = new ContentScriptBridge();
+    ExtensionBridge.instance = new ExtensionBridge();
   }
 
   /**
@@ -48,7 +51,7 @@ export class ContentScriptBridge {
    * @param {function(Object, Port)} listener The message listener.
    */
   static addMessageListener(listener) {
-    ContentScriptBridge.instance.messageListeners_.push(listener);
+    ExtensionBridge.instance.messageListeners_.push(listener);
   }
 
   /**
@@ -57,7 +60,7 @@ export class ContentScriptBridge {
    * @private
    */
   onConnectHandler_(port) {
-    if (port.name !== ContentScriptBridge.PORT_NAME) {
+    if (port.name !== ExtensionBridge.PORT_NAME) {
       return;
     }
 
@@ -66,6 +69,22 @@ export class ContentScriptBridge {
     port.onMessage.addListener(message => this.onMessage_(message, port));
 
     port.onDisconnect.addListener(() => this.onDisconnect_(port));
+  }
+
+  /**
+   * Listens for messages to the background page from a specific port.
+   * @param {Object} message
+   * @param {!Port} port
+   * @private
+   */
+  onMessage_(message, port) {
+    if (message[ExtensionBridge.PING_MSG]) {
+      const pongMessage = {[ExtensionBridge.PONG_MSG]: this.nextPongId_++};
+      port.postMessage(pongMessage);
+      return;
+    }
+
+    this.messageListeners_.forEach(listener => listener(message, port));
   }
 
   /**
@@ -81,26 +100,10 @@ export class ContentScriptBridge {
       }
     }
   }
-
-  /**
-   * Listens for messages to the background page from a specific port.
-   * @param {Object} message
-   * @param {!Port} port
-   * @private
-   */
-  onMessage_(message, port) {
-    if (message[ContentScriptBridge.PING_MSG]) {
-      const pongMessage = {[ContentScriptBridge.PONG_MSG]: this.nextPongId_++};
-      port.postMessage(pongMessage);
-      return;
-    }
-
-    this.messageListeners_.forEach(listener => listener(message, port));
-  }
 }
 
-/** @private {ContentScriptBridge} */
-ContentScriptBridge.instance;
+/** @private {ExtensionBridge} */
+ExtensionBridge.instance;
 
 // Keep these constants in sync with injected/extension_bridge.js.
 
@@ -108,18 +111,18 @@ ContentScriptBridge.instance;
  * The name of the port between the content script and background page.
  * @const {string}
  */
-ContentScriptBridge.PORT_NAME = 'ExtensionBridge.Port';
+ExtensionBridge.PORT_NAME = 'ExtensionBridge.Port';
 
 /**
  * The name of the message between the content script and background to
  * see if they're connected.
  * @const {string}
  */
-ContentScriptBridge.PING_MSG = 'ExtensionBridge.Ping';
+ExtensionBridge.PING_MSG = 'ExtensionBridge.Ping';
 
 /**
  * The name of the message between the background and content script to
  * confirm that they're connected.
  * @const {string}
  */
-ContentScriptBridge.PONG_MSG = 'ExtensionBridge.Pong';
+ExtensionBridge.PONG_MSG = 'ExtensionBridge.Pong';
