@@ -122,8 +122,7 @@ public class CustomTabsConnectionTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             WarmupManager warmupManager = WarmupManager.getInstance();
             Assert.assertTrue(warmupManager.hasSpareWebContents());
-            WebContents webContents =
-                    warmupManager.takeSpareWebContents(false, false, WarmupManager.FOR_CCT);
+            WebContents webContents = warmupManager.takeSpareWebContents(false, false);
             Assert.assertNotNull(webContents);
             Assert.assertFalse(warmupManager.hasSpareWebContents());
             webContents.destroy();
@@ -365,13 +364,12 @@ public class CustomTabsConnectionTest {
         mCustomTabsConnection.mayLaunchUrl(token, Uri.parse(URL), null, urls);
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> Assert.assertNull(WarmupManager.getInstance().takeSpareWebContents(
-                                false, false, WarmupManager.FOR_CCT)));
+                        -> Assert.assertNull(
+                                WarmupManager.getInstance().takeSpareWebContents(false, false)));
     }
 
     private void assertSpareWebContentsNotNullAndDestroy() {
-        WebContents webContents = WarmupManager.getInstance().takeSpareWebContents(
-                false, false, WarmupManager.FOR_CCT);
+        WebContents webContents = WarmupManager.getInstance().takeSpareWebContents(false, false);
         Assert.assertNotNull(webContents);
         webContents.destroy();
     }
@@ -587,8 +585,8 @@ public class CustomTabsConnectionTest {
         Assert.assertTrue(mCustomTabsConnection.mayLaunchUrl(token, Uri.parse(URL), null, null));
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> Assert.assertNull(WarmupManager.getInstance().takeSpareWebContents(
-                                false, false, WarmupManager.FOR_CCT)));
+                        -> Assert.assertNull(
+                                WarmupManager.getInstance().takeSpareWebContents(false, false)));
     }
 
     @Test

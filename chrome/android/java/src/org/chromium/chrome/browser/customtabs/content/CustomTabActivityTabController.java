@@ -383,8 +383,8 @@ public class CustomTabActivityTabController implements InflationObserver {
             return webContents;
         }
 
-        webContents = mWarmupManager.takeSpareWebContents(mIntentDataProvider.isIncognito(),
-                false /*initiallyHidden*/, WarmupManager.FOR_CCT);
+        webContents = mWarmupManager.takeSpareWebContents(
+                mIntentDataProvider.isIncognito(), false /*initiallyHidden*/);
         if (webContents != null) {
             recordWebContentsStateOnLaunch(WebContentsState.SPARE_WEBCONTENTS);
             return webContents;

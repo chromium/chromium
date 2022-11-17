@@ -558,8 +558,8 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
 
         if (mPendingLoadParams != null) {
             assert isFrozen();
-            WebContents webContents = WarmupManager.getInstance().takeSpareWebContents(
-                    isIncognito(), isHidden(), isCustomTab());
+            WebContents webContents =
+                    WarmupManager.getInstance().takeSpareWebContents(isIncognito(), isHidden());
             if (webContents == null) {
                 Profile profile =
                         IncognitoUtils.getProfileFromWindowAndroid(mWindowAndroid, isIncognito());
@@ -917,7 +917,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
             boolean creatingWebContents = webContents == null;
             if (creatingWebContents) {
                 webContents = WarmupManager.getInstance().takeSpareWebContents(
-                        isIncognito(), initiallyHidden, isCustomTab());
+                        isIncognito(), initiallyHidden);
                 if (webContents == null) {
                     Profile profile = IncognitoUtils.getProfileFromWindowAndroid(
                             mWindowAndroid, isIncognito());

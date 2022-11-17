@@ -492,31 +492,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.SpareWebContents.Status2"
-    enum="SpareWebContentsStatus2" expires_after="2020-12-20">
-  <owner>lizeb@chromium.org</owner>
-  <owner>mthiesse@chromium.org</owner>
-  <summary>
-    Android: When a spare WebContents is created from Custom Tabs, record
-    creation, and whether it was used by CCT, stolen by another Chrome Activity,
-    killed or destroyed. Creation is recorded to get the &quot;abandoned&quot;
-    case, that is when Chrome is killed before the renderer. Starting with M84
-    this is is also recorded for webapps/WebAPKs. Filter the platform for just
-    CCT/TWA data.
-  </summary>
-</histogram>
-
-<histogram name="CustomTabs.SpareWebContents.TimeBeforeDeath" units="ms"
-    expires_after="2020-05-10">
-  <owner>lizeb@chromium.org</owner>
-  <summary>
-    Android: When a spare WebContents is created from Custom Tabs, record how
-    long is took before the render process was killed. Starting with M84 this is
-    is also recorded for webapps/WebAPKs. Filter the platform for just CCT/TWA
-    data.
-  </summary>
-</histogram>
-
 <histogram name="CustomTabs.SpeculationStatusOnStart"
     enum="CustomTabsSpeculationStatusOnStart" expires_after="2021-02-14">
   <owner>lizeb@chromium.org</owner>

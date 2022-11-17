@@ -1704,7 +1704,7 @@ public class CustomTabsConnection {
 
     public static void createSpareWebContents() {
         if (SysUtils.isLowEndDevice()) return;
-        WarmupManager.getInstance().createSpareWebContents(WarmupManager.FOR_CCT);
+        WarmupManager.getInstance().createSpareWebContents();
     }
 
     public boolean receiveFile(

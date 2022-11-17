@@ -24,7 +24,6 @@ import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.MetricsUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
@@ -133,10 +132,9 @@ public class WarmupManagerTest {
         final AtomicReference<WebContents> webContentsReference = new AtomicReference<>();
 
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-            mWarmupManager.createSpareWebContents(!WarmupManager.FOR_CCT);
+            mWarmupManager.createSpareWebContents();
             Assert.assertTrue(mWarmupManager.hasSpareWebContents());
-            WebContents webContents =
-                    mWarmupManager.takeSpareWebContents(false, false, !WarmupManager.FOR_CCT);
+            WebContents webContents = mWarmupManager.takeSpareWebContents(false, false);
             Assert.assertNotNull(webContents);
             Assert.assertFalse(mWarmupManager.hasSpareWebContents());
 
@@ -164,9 +162,8 @@ public class WarmupManagerTest {
     @SmallTest
     @UiThreadTest
     public void testTakeSpareWebContents() {
-        mWarmupManager.createSpareWebContents(!WarmupManager.FOR_CCT);
-        WebContents webContents =
-                mWarmupManager.takeSpareWebContents(false, false, !WarmupManager.FOR_CCT);
+        mWarmupManager.createSpareWebContents();
+        WebContents webContents = mWarmupManager.takeSpareWebContents(false, false);
         Assert.assertNotNull(webContents);
         Assert.assertFalse(mWarmupManager.hasSpareWebContents());
         webContents.destroy();
@@ -176,12 +173,11 @@ public class WarmupManagerTest {
     @SmallTest
     @UiThreadTest
     public void testTakeSpareWebContentsChecksArguments() {
-        mWarmupManager.createSpareWebContents(!WarmupManager.FOR_CCT);
-        Assert.assertNull(mWarmupManager.takeSpareWebContents(true, false, !WarmupManager.FOR_CCT));
-        Assert.assertNull(mWarmupManager.takeSpareWebContents(true, true, !WarmupManager.FOR_CCT));
+        mWarmupManager.createSpareWebContents();
+        Assert.assertNull(mWarmupManager.takeSpareWebContents(true, false));
+        Assert.assertNull(mWarmupManager.takeSpareWebContents(true, true));
         Assert.assertTrue(mWarmupManager.hasSpareWebContents());
-        Assert.assertNotNull(
-                mWarmupManager.takeSpareWebContents(false, true, !WarmupManager.FOR_CCT));
+        Assert.assertNotNull(mWarmupManager.takeSpareWebContents(false, true));
         Assert.assertFalse(mWarmupManager.hasSpareWebContents());
     }
 
@@ -189,64 +185,9 @@ public class WarmupManagerTest {
     @SmallTest
     @UiThreadTest
     public void testClearsDeadWebContents() {
-        mWarmupManager.createSpareWebContents(!WarmupManager.FOR_CCT);
+        mWarmupManager.createSpareWebContents();
         WebContentsUtils.simulateRendererKilled(mWarmupManager.mSpareWebContents);
-        Assert.assertNull(
-                mWarmupManager.takeSpareWebContents(false, false, !WarmupManager.FOR_CCT));
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    public void testRecordWebContentsStatus() {
-        String name = WarmupManager.WEBCONTENTS_STATUS_HISTOGRAM;
-        MetricsUtils.HistogramDelta createdDelta =
-                new MetricsUtils.HistogramDelta(name, WarmupManager.WebContentsStatus.CREATED);
-        MetricsUtils.HistogramDelta usedDelta =
-                new MetricsUtils.HistogramDelta(name, WarmupManager.WebContentsStatus.USED);
-        MetricsUtils.HistogramDelta killedDelta =
-                new MetricsUtils.HistogramDelta(name, WarmupManager.WebContentsStatus.KILLED);
-        MetricsUtils.HistogramDelta destroyedDelta =
-                new MetricsUtils.HistogramDelta(name, WarmupManager.WebContentsStatus.DESTROYED);
-        MetricsUtils.HistogramDelta stolenDelta =
-                new MetricsUtils.HistogramDelta(name, WarmupManager.WebContentsStatus.STOLEN);
-
-        // Created, used.
-        mWarmupManager.createSpareWebContents(WarmupManager.FOR_CCT);
-        Assert.assertEquals(1, createdDelta.getDelta());
-        Assert.assertNotNull(
-                mWarmupManager.takeSpareWebContents(false, false, WarmupManager.FOR_CCT));
-        Assert.assertEquals(1, usedDelta.getDelta());
-
-        // Created, killed.
-        mWarmupManager.createSpareWebContents(WarmupManager.FOR_CCT);
-        Assert.assertEquals(2, createdDelta.getDelta());
-        Assert.assertNotNull(mWarmupManager.mSpareWebContents);
-        WebContentsUtils.simulateRendererKilled(mWarmupManager.mSpareWebContents);
-        Assert.assertEquals(1, killedDelta.getDelta());
-        Assert.assertNull(mWarmupManager.takeSpareWebContents(false, false, WarmupManager.FOR_CCT));
-
-        // Created, destroyed.
-        mWarmupManager.createSpareWebContents(WarmupManager.FOR_CCT);
-        Assert.assertEquals(3, createdDelta.getDelta());
-        Assert.assertNotNull(mWarmupManager.mSpareWebContents);
-        mWarmupManager.destroySpareWebContents();
-        Assert.assertEquals(1, destroyedDelta.getDelta());
-
-        // Created, stolen.
-        mWarmupManager.createSpareWebContents(WarmupManager.FOR_CCT);
-        Assert.assertEquals(4, createdDelta.getDelta());
-        Assert.assertNotNull(
-                mWarmupManager.takeSpareWebContents(false, false, !WarmupManager.FOR_CCT));
-        Assert.assertEquals(1, stolenDelta.getDelta());
-
-        // Created, used, not for CCT.
-        mWarmupManager.createSpareWebContents(!WarmupManager.FOR_CCT);
-        Assert.assertEquals(4, createdDelta.getDelta());
-        Assert.assertNotNull(
-                mWarmupManager.takeSpareWebContents(false, false, !WarmupManager.FOR_CCT));
-        Assert.assertEquals(1, stolenDelta.getDelta());
-        Assert.assertEquals(1, usedDelta.getDelta());
+        Assert.assertNull(mWarmupManager.takeSpareWebContents(false, false));
     }
 
     /** Checks that the View inflation works. */

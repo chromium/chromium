@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.customtabs.content;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -244,8 +243,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
 
     public WebContents prepareSpareWebcontents() {
         WebContents webContents = mock(WebContents.class);
-        when(warmupManager.takeSpareWebContents(
-                     anyBoolean(), anyBoolean(), eq(WarmupManager.FOR_CCT)))
+        when(warmupManager.takeSpareWebContents(anyBoolean(), anyBoolean()))
                 .thenReturn(webContents);
         return webContents;
     }
