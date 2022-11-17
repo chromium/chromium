@@ -8,7 +8,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
-#include "chrome/browser/resource_coordinator/tab_manager_stats_collector.h"
 #include "chrome/browser/resource_coordinator/time.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -26,21 +25,6 @@ TabManager::WebContentsData::WebContentsData(content::WebContents* web_contents)
 
 TabManager::WebContentsData::~WebContentsData() {}
 
-void TabManager::WebContentsData::DidStartNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // Only change to the loading state if there is a navigation in the main
-  // frame. DidStartLoading() happens before this, but at that point we don't
-  // know if the load is happening in the main frame or an iframe.
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->IsSameDocument()) {
-    return;
-  }
-
-  g_browser_process->GetTabManager()
-      ->stats_collector()
-      ->OnDidStartMainFrameNavigation(web_contents());
-}
-
 void TabManager::WebContentsData::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   SetIsInSessionRestore(false);
@@ -51,7 +35,6 @@ void TabManager::WebContentsData::WebContentsDestroyed() {
   if (g_browser_process->IsShuttingDown())
     return;
   SetIsInSessionRestore(false);
-  g_browser_process->GetTabManager()->OnWebContentsDestroyed(web_contents());
 }
 
 // static

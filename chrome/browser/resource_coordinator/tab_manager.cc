@@ -40,7 +40,6 @@
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/resource_coordinator/tab_manager_resource_coordinator_signal_observer.h"
-#include "chrome/browser/resource_coordinator/tab_manager_stats_collector.h"
 #include "chrome/browser/resource_coordinator/tab_manager_web_contents_data.h"
 #include "chrome/browser/resource_coordinator/time.h"
 #include "chrome/browser/sessions/session_restore.h"
@@ -127,7 +126,6 @@ TabManager::TabManager(TabLoadTracker* tab_load_tracker)
   session_restore_observer_ =
       std::make_unique<TabManagerSessionRestoreObserver>(this);
 
-  stats_collector_ = std::make_unique<TabManagerStatsCollector>();
   tab_load_tracker_->AddObserver(this);
 }
 
@@ -326,17 +324,6 @@ void TabManager::UnregisterMemoryPressureListener() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-void TabManager::OnActiveTabChanged(content::WebContents* old_contents,
-                                    content::WebContents* new_contents) {
-  // If |old_contents| is set, that tab has switched from being active to
-  // inactive, so record the time of that transition.
-  if (old_contents) {
-    // Only record switch-to-tab metrics when a switch happens, i.e.
-    // |old_contents| is set.
-    stats_collector_->RecordSwitchToTab(old_contents, new_contents);
-  }
-}
-
 void TabManager::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
@@ -345,9 +332,6 @@ void TabManager::OnTabStripModelChanged(
     auto* replace = change.GetReplace();
     WebContentsData::CopyState(replace->old_contents, replace->new_contents);
   }
-
-  if (selection.active_tab_changed() && !tab_strip_model->empty())
-    OnActiveTabChanged(selection.old_contents, selection.new_contents);
 }
 
 void TabManager::OnStartTracking(content::WebContents* web_contents,
@@ -359,10 +343,6 @@ void TabManager::OnLoadingStateChange(content::WebContents* web_contents,
                                       LoadingState old_loading_state,
                                       LoadingState new_loading_state) {
   GetWebContentsData(web_contents)->SetTabLoadingState(new_loading_state);
-
-  if (new_loading_state == LoadingState::LOADED) {
-    stats_collector_->OnTabIsLoaded(web_contents);
-  }
 }
 
 void TabManager::OnStopTracking(content::WebContents* web_contents,
@@ -425,10 +405,6 @@ void TabManager::OnWillRestoreTab(WebContents* contents) {
   // TabUIHelper here.
   TabUIHelper::CreateForWebContents(contents);
   TabUIHelper::FromWebContents(contents)->set_created_by_session_restore(true);
-}
-
-void TabManager::OnWebContentsDestroyed(content::WebContents* contents) {
-  stats_collector_->OnWebContentsDestroyed(contents);
 }
 
 void TabManager::OnLifecycleUnitDestroyed(LifecycleUnit* lifecycle_unit) {

@@ -44,7 +44,6 @@ namespace resource_coordinator {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class TabManagerDelegate;
 #endif
-class TabManagerStatsCollector;
 
 // TabManager is responsible for triggering tab lifecycle state transitions.
 //
@@ -108,10 +107,6 @@ class TabManager : public LifecycleUnitObserver,
   // https://crbug.com/775644
   void AddObserver(TabLifecycleObserver* observer);
   void RemoveObserver(TabLifecycleObserver* observer);
-
-  // Notifies TabManager that one tab WebContents has been destroyed. TabManager
-  // needs to clean up data related to that tab.
-  void OnWebContentsDestroyed(content::WebContents* contents);
 
   // Return whether tabs are being loaded during session restore.
   bool IsSessionRestoreLoadingTabs() const {
@@ -186,10 +181,6 @@ class TabManager : public LifecycleUnitObserver,
   void UnregisterMemoryPressureListener();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // Called by OnTabStripModelChanged()
-  void OnActiveTabChanged(content::WebContents* old_contents,
-                          content::WebContents* new_contents);
-
   // TabStripModelObserver:
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
@@ -222,8 +213,6 @@ class TabManager : public LifecycleUnitObserver,
   // Returns the number of tabs that are not pending load or discarded.
   int GetNumAliveTabs() const;
 
-  TabManagerStatsCollector* stats_collector() { return stats_collector_.get(); }
-
   // LifecycleUnitObserver:
   void OnLifecycleUnitDestroyed(LifecycleUnit* lifecycle_unit) override;
 
@@ -249,10 +238,6 @@ class TabManager : public LifecycleUnitObserver,
 
   class TabManagerSessionRestoreObserver;
   std::unique_ptr<TabManagerSessionRestoreObserver> session_restore_observer_;
-
-  // Records UMAs for tab and system-related events and properties during
-  // session restore.
-  std::unique_ptr<TabManagerStatsCollector> stats_collector_;
 
   // A clock that advances when Chrome is in use.
   UsageClock usage_clock_;

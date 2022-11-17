@@ -36,8 +36,6 @@ class TabManager::WebContentsData
   ~WebContentsData() override;
 
   // WebContentsObserver implementation:
-  void DidStartNavigation(
-      content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void WebContentsDestroyed() override;

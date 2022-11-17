@@ -1010,22 +1010,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TabManager.BackgroundTabOpening.SwitchToTab"
-    enum="TabLoadingState" expires_after="M79">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    The loading state of a tab at the time the user switches to it during a
-    background tab opening session (the duration of time from when the browser
-    starts to open background tabs until the time the browser has finished
-    loading those tabs or otherwise decided to stop loading them). The metric is
-    only recorded when a tab is switched to from another tab within the same
-    tabstrip. As a result, the case when switching between different windows is
-    not included, either between two tabs in different browser windows, or when
-    switching to a different application and switching back to the browser. The
-    metric is not recorded when the session overlaps with session restore.
-  </summary>
-</histogram>
-
 <histogram name="TabManager.BackgroundTabOpening.TabCount" units="tabs"
     expires_after="M79">
   <owner>chrisha@chromium.org</owner>
@@ -1175,27 +1159,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="TabManager.Experimental.BackgroundTabOpening.TabSwitchLoadTime.UntilTabIsLoaded"
-    units="ms" expires_after="M79">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    The tab load time of a tab that is switched to during a background tab
-    opening session (the duration of time from when the browser starts to open
-    background tabs until the time the browser has finished loading those tabs
-    or otherwise decided to stop loading them). Tab load time is defined as the
-    time between when the user switches to a backround tab, and the time when
-    that tab finishes loading in the foreground. If the user switches away
-    before the tab finishes loading, a metric will not be recorded unless the
-    user switches back, in which case the tab load time is measured from that
-    point in time. The metric is only recorded when a tab is switched to from
-    another tab within the same tabstrip. As a result, the initial forground tab
-    is not included in this metric since it was not switched to from another
-    tab. The metric is not recorded when the session overlaps with session
-    restore.
-  </summary>
-</histogram>
-
-<histogram
     name="TabManager.Experimental.SessionRestore.ForegroundTab.FirstContentfulPaint"
     units="ms" expires_after="M79">
   <owner>chrisha@chromium.org</owner>
@@ -1293,25 +1256,6 @@ chromium-metrics-reviews@google.com.
     the time the browser has finished loading those tabs or otherwise decided to
     stop loading them. This metric helps to understand how often background tab
     opening has overlap with other sessions.
-  </summary>
-</histogram>
-
-<histogram name="TabManager.SessionRestore.SwitchToTab" enum="TabLoadingState"
-    expires_after="M79">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    The loading state of a tab at the time the user switched to it during a
-    session restore. The metric is only recorded when a tab is switched to from
-    another tab within the same tabstrip. As a result, there are two cases where
-    tabs are not included. The first case is when the initial forground tab is
-    shown, since it was not switched to from another tab. The second case is
-    when switching between different windows, either between two tabs in
-    different browser windows, or when switching to a different application and
-    switching back to the browser. The metric is only recorded when session
-    restore is actively loading tabs, which ends when either all tabs have been
-    loaded and their pages rendered, or tab loading needs to be deferred in
-    cases where the system is under memory pressure. The metric is not recorded
-    when the session overlaps with background tab opening session.
   </summary>
 </histogram>
 

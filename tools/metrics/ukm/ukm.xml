@@ -20407,6 +20407,9 @@ be describing additional metrics about the same event.
 
 <event name="TabManager.Experimental.BackgroundTabOpening.TabSwitchLoadStopped"
     singular="True">
+  <obsolete>
+    Removed 11/2022 because it wasn't actively used.
+  </obsolete>
   <owner>zhenw@chromium.org</owner>
   <summary>
     Collects data when a tab is switched to from another tab and then finishes

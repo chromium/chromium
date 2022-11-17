@@ -4166,8 +4166,6 @@ static_library("browser") {
       "resource_coordinator/tab_manager.h",
       "resource_coordinator/tab_manager_resource_coordinator_signal_observer.cc",
       "resource_coordinator/tab_manager_resource_coordinator_signal_observer.h",
-      "resource_coordinator/tab_manager_stats_collector.cc",
-      "resource_coordinator/tab_manager_stats_collector.h",
       "resource_coordinator/tab_manager_web_contents_data.cc",
       "resource_coordinator/tab_manager_web_contents_data.h",
       "resource_coordinator/tab_metrics_logger.cc",
