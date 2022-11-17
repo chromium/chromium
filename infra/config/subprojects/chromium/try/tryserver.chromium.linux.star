@@ -94,6 +94,7 @@ try_.builder(
         "ci/linux-bfcache-rel",
     ],
     goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
