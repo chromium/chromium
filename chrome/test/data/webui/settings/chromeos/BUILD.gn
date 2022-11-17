@@ -156,6 +156,7 @@ test_files = [
   "quick_unlock_authenticate_browsertest_chromeos.js",
   "search_engine_test.js",
   "search_subpage_test.js",
+  "select_to_speak_subpage_tests.js",
   "settings_scheduler_slider_test.js",
   "settings_traffic_counters_test.js",
   "smart_inputs_page_test.js",

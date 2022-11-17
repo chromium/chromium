@@ -501,6 +501,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['ResetPage', 'os_reset_page_test.js'],
  ['SettingsSchedulerSlider', 'settings_scheduler_slider_test.js'],
  ['SearchSubpage', 'search_subpage_test.js'],
+ [
+   'SelectToSpeakSubpage',
+   'select_to_speak_subpage_tests.js',
+   {enabled: ['features::kAccessibilitySelectToSpeakPageMigration']},
+ ],
  ['SettingsTrafficCounters', 'settings_traffic_counters_test.js'],
  ['SmartInputsPage', 'smart_inputs_page_test.js'],
  ['SmbPage', 'smb_shares_page_tests.js'],

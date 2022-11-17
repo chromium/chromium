@@ -9,11 +9,30 @@ found in the LICENSE file.
     --cr-section-indent-width: 60px;
   }
 
+  h2 {
+    padding-inline-start: var(--cr-section-padding);
+  }
+
   .sub-item {
     padding-inline-start: var(--cr-section-indent-width);
+  }
+
+  h2 ~ settings-toggle-button {
+    margin-inline-end: var(--cr-section-padding);
+    margin-inline-start: var(--cr-section-indent-padding);
+    padding-inline-end: 0;
+    padding-inline-start: 0;
   }
 
   .settings-box {
     padding-inline-start: 0;
   }
 </style>
+
+<h2>$i18n{selectToSpeakOptionsHighlight}</h2>
+<settings-toggle-button
+    id="a11ySelectToSpeakOptionsHighlight"
+    pref="{{prefs.settings.a11y.select_to_speak_word_highlight}}"
+    label="$i18n{selectToSpeakOptionsHighlightDescription}"
+    deep-link-focus-id$="[[Setting.kSelectToSpeakWordHighlight]]">
+</settings-toggle-button>
