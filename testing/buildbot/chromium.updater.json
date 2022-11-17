@@ -5,6 +5,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -28,6 +29,7 @@
       },
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -56,6 +58,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -79,6 +82,7 @@
       },
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -107,6 +111,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -130,6 +135,7 @@
       },
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -158,6 +164,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -181,6 +188,7 @@
       },
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -209,6 +217,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -232,6 +241,7 @@
       },
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -260,6 +270,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -283,6 +294,7 @@
       },
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -311,6 +323,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -334,6 +347,7 @@
       },
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -362,6 +376,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -385,6 +400,7 @@
       },
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -413,6 +429,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -436,6 +453,7 @@
       },
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -464,6 +482,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -487,6 +506,7 @@
       },
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -515,6 +535,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -540,6 +561,7 @@
       },
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -569,6 +591,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -594,6 +617,7 @@
       },
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -623,6 +647,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000",
@@ -649,6 +674,7 @@
       },
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -677,6 +703,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -702,6 +729,7 @@
       },
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -731,6 +759,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000",
@@ -757,6 +786,7 @@
       },
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -785,6 +815,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -810,6 +841,7 @@
       },
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -839,6 +871,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -863,6 +896,7 @@
       },
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -891,6 +925,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
@@ -915,6 +950,7 @@
       },
       {
         "args": [
+          "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"

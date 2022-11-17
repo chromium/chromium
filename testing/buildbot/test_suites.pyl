@@ -4848,6 +4848,7 @@
     'updater_gtests_mac': {
       'updater_tests': {
         'args': [
+          '--gtest_shuffle',
           # Timeouts based on empirical observations of test runtimes, 2021-07.
           '--test-launcher-timeout=90000',
           '--ui-test-action-max-timeout=45000',
@@ -4856,6 +4857,7 @@
       },
       'updater_tests_system': {
         'args': [
+          '--gtest_shuffle',
           # Timeouts based on empirical observations of test runtimes, 2021-07.
           '--test-launcher-timeout=90000',
           '--ui-test-action-max-timeout=45000',
@@ -4875,6 +4877,7 @@
     'updater_gtests_win': {
       'updater_tests': {
         'args': [
+          '--gtest_shuffle',
           # Timeouts based on empirical observations of test runtimes, 2021-07.
           '--test-launcher-timeout=90000',
           '--ui-test-action-max-timeout=45000',
@@ -4883,6 +4886,7 @@
       },
       'updater_tests_system': {
         'args': [
+          '--gtest_shuffle',
           # Timeouts based on empirical observations of test runtimes, 2021-07.
           '--test-launcher-timeout=90000',
           '--ui-test-action-max-timeout=45000',
@@ -4901,6 +4905,7 @@
     'updater_gtests_win_uac': {
       'updater_tests_system': {
         'args': [
+          '--gtest_shuffle',
           # Timeouts based on empirical observations of test runtimes, 2021-07.
           '--test-launcher-timeout=90000',
           '--ui-test-action-max-timeout=45000',
@@ -4917,6 +4922,7 @@
       },
       'updater_tests_win_uac': {
         'args': [
+          '--gtest_shuffle',
           # Timeouts based on empirical observations of test runtimes, 2021-07.
           '--test-launcher-timeout=90000',
           '--ui-test-action-max-timeout=45000',
