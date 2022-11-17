@@ -6,11 +6,10 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 16
+// Next MinVersion: 15
 
 module ash.ime.mojom;
 
-import "chromeos/ash/services/ime/public/mojom/japanese_dictionary.mojom";
 import "chromeos/ash/services/ime/public/mojom/japanese_settings.mojom";
 
 // Do not modify this enum. If new values are needed, deprecate the entire enum.
@@ -330,12 +329,11 @@ struct FuzzyPinyinSettings {
   bool z_zh@11;
 };
 
-// Next ordinal: 2
+// Next ordinal: 1
 [Stable]
 struct JapaneseSettings {
   JapaneseConfig japanese_config@0;
-  [MinVersion=15] JapaneseUserDictionaryStorage?
-    japanese_user_dictionary_storage@1;
+  // TODO(b/232341104): Add the Japanese user dictionary here.
 };
 
 // Next ordinal: 3

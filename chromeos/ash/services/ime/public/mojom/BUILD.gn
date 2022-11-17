@@ -14,7 +14,6 @@ mojom("mojom") {
     "input_engine.mojom",
     "input_method.mojom",
     "input_method_host.mojom",
-    "japanese_dictionary.mojom",
     "japanese_settings.mojom",
   ]
 
