@@ -22,38 +22,6 @@ namespace {
 
 using ::attribution_reporting::mojom::TriggerRegistrationError;
 
-base::expected<EventTriggerDataList, TriggerRegistrationError>
-ParseEventTriggerDataList(base::Value* value) {
-  if (!value)
-    return EventTriggerDataList();
-
-  base::Value::List* list = value->GetIfList();
-  if (!list) {
-    return base::unexpected(
-        TriggerRegistrationError::kEventTriggerDataListWrongType);
-  }
-
-  return EventTriggerDataList::Build(
-      *list, TriggerRegistrationError::kEventTriggerDataListTooLong,
-      &EventTriggerData::FromJSON);
-}
-
-base::expected<AggregatableTriggerDataList, TriggerRegistrationError>
-ParseAggregatableTriggerDataList(base::Value* value) {
-  if (!value)
-    return AggregatableTriggerDataList();
-
-  base::Value::List* list = value->GetIfList();
-  if (!list) {
-    return base::unexpected(
-        TriggerRegistrationError::kAggregatableTriggerDataListWrongType);
-  }
-
-  return AggregatableTriggerDataList::Build(
-      *list, TriggerRegistrationError::kAggregatableTriggerDataListTooLong,
-      &AggregatableTriggerData::FromJSON);
-}
-
 }  // namespace
 
 // static
@@ -68,13 +36,19 @@ TriggerRegistration::Parse(base::Value::Dict registration,
   if (!not_filters.has_value())
     return base::unexpected(not_filters.error());
 
-  auto event_triggers =
-      ParseEventTriggerDataList(registration.Find("event_trigger_data"));
+  auto event_triggers = EventTriggerDataList::Build(
+      registration.Find("event_trigger_data"),
+      TriggerRegistrationError::kEventTriggerDataListWrongType,
+      TriggerRegistrationError::kEventTriggerDataListTooLong,
+      &EventTriggerData::FromJSON);
   if (!event_triggers.has_value())
     return base::unexpected(event_triggers.error());
 
-  auto aggregatable_trigger_data = ParseAggregatableTriggerDataList(
-      registration.Find("aggregatable_trigger_data"));
+  auto aggregatable_trigger_data = AggregatableTriggerDataList::Build(
+      registration.Find("aggregatable_trigger_data"),
+      TriggerRegistrationError::kAggregatableTriggerDataListWrongType,
+      TriggerRegistrationError::kAggregatableTriggerDataListTooLong,
+      &AggregatableTriggerData::FromJSON);
   if (!aggregatable_trigger_data.has_value())
     return base::unexpected(aggregatable_trigger_data.error());
 

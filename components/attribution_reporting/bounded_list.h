@@ -29,16 +29,24 @@ class BoundedList {
   }
 
   template <typename Error, typename F>
-  static base::expected<BoundedList, Error> Build(base::Value::List& list,
+  static base::expected<BoundedList, Error> Build(base::Value* input_value,
+                                                  Error wrong_type,
                                                   Error out_of_bounds,
                                                   F&& build_element) {
-    if (list.size() > kMaxSize)
+    if (!input_value)
+      return BoundedList();
+
+    base::Value::List* list = input_value->GetIfList();
+    if (!list)
+      return base::unexpected(wrong_type);
+
+    if (list->size() > kMaxSize)
       return base::unexpected(out_of_bounds);
 
     std::vector<T> vec;
-    vec.reserve(list.size());
+    vec.reserve(list->size());
 
-    for (auto& value : list) {
+    for (auto& value : *list) {
       base::expected<T, Error> element = base::invoke(build_element, value);
       if (!element.has_value())
         return base::unexpected(element.error());
