@@ -151,8 +151,8 @@ declare_args() {
   # Use offsets rather than pointers in vtables in order to reduce the number of
   # relocations. This is safe to enable only when all C++ code is built with the
   # flag set to the same value.
-  use_relative_vtables_abi = is_android && current_cpu == "arm64" &&
-                             use_custom_libcxx && !is_component_build
+  use_relative_vtables_abi =
+      is_android && use_custom_libcxx && !is_component_build
 }
 
 assert(!is_cfi || use_thin_lto, "CFI requires ThinLTO")
