@@ -252,7 +252,7 @@ class LanguageSettingsPrivateGetSpellcheckWordsFunction
       const SpellcheckCustomDictionary::Change& dictionary_change) override;
 
   // Returns the list of words from the loaded custom dictionary.
-  std::unique_ptr<base::ListValue> GetSpellcheckWords() const;
+  base::Value::List GetSpellcheckWords() const;
 };
 
 // Implements the languageSettingsPrivate.addSpellcheckWord method.
