@@ -36,6 +36,7 @@
 #include "media/base/routing_token_callback.h"
 #include "media/base/simple_watch_timer.h"
 #include "media/base/text_track.h"
+#include "media/filters/demuxer_manager.h"
 #include "media/mojo/mojom/media_metrics_provider.mojom.h"
 #include "media/mojo/mojom/playback_events_recorder.mojom.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
@@ -110,6 +111,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
       public WebMediaPlayerDelegate::Observer,
       public media::Pipeline::Client,
       public media::MediaObserverClient,
+      public media::DemuxerManager::Client,
       public WebSurfaceLayerBridgeObserver,
       public SmoothnessHelper::Client {
  public:

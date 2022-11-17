@@ -38,6 +38,8 @@ source_set("filters") {
     "decrypting_media_resource.h",
     "decrypting_video_decoder.cc",
     "decrypting_video_decoder.h",
+    "demuxer_manager.cc",
+    "demuxer_manager.h",
     "file_data_source.cc",
     "file_data_source.h",
     "frame_buffer_pool.cc",
