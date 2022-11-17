@@ -409,7 +409,8 @@ void XRCompositorCommon::GetFrameData(
     // There should only be one outstanding GetFrameData call at a time.  We
     // shouldn't get new ones until this resolves or presentation ends/restarts.
     if (delayed_get_frame_data_callback_) {
-      mojo::ReportBadMessage("Multiple outstanding GetFrameData calls");
+      frame_data_receiver_.ReportBadMessage(
+          "Multiple outstanding GetFrameData calls");
       return;
     }
     delayed_get_frame_data_callback_ = base::BindOnce(
