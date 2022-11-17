@@ -41,11 +41,10 @@ class CheckedNumeric {
 
   // This is not an explicit constructor because we implicitly upgrade regular
   // numerics to CheckedNumerics to make them easier to use.
-  template <typename Src>
+  template <typename Src,
+            typename = std::enable_if_t<std::is_arithmetic<Src>::value>>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr CheckedNumeric(Src value) : state_(value) {
-    static_assert(UnderlyingType<Src>::is_numeric, "Argument must be numeric.");
-  }
+  constexpr CheckedNumeric(Src value) : state_(value) {}
 
   // This is not an explicit constructor because we want a seamless conversion
   // from StrictNumeric types.

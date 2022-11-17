@@ -50,13 +50,10 @@ struct NET_EXPORT WebSocketFrameHeader {
            opcode == kOpCodePong;
   }
 
-  // These values must be a compile-time constant. "enum hack" is used here
-  // to make MSVC happy.
-  enum {
-    kBaseHeaderSize = 2,
-    kMaximumExtendedLengthSize = 8,
-    kMaskingKeyLength = 4
-  };
+  // These values must be compile-time constants.
+  static constexpr size_t kBaseHeaderSize = 2;
+  static constexpr size_t kMaximumExtendedLengthSize = 8;
+  static constexpr size_t kMaskingKeyLength = 4;
 
   // Contains four-byte data representing "masking key" of WebSocket frames.
   struct WebSocketMaskingKey {
