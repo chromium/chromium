@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Nested color-mix function with inner currentColor should inherit unresolved assert_equals: expected "lch(0 0 0)" but got "lch(0 0 0 / 0.75)"
+Harness: the test ran to completion.
+
