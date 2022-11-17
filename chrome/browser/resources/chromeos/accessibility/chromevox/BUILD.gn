@@ -212,12 +212,12 @@ run_jsbundler("chromevox_copied_files") {
   dest_dir = chromevox_out_dir
   sources = [
     "background/background.html",
-    "background/earcons/control.wav",
-    "background/earcons/selection.wav",
-    "background/earcons/selection_reverse.wav",
-    "background/earcons/skim.wav",
-    "background/earcons/small_room_2.wav",
-    "background/earcons/static.wav",
+    "earcons/control.wav",
+    "earcons/selection.wav",
+    "earcons/selection_reverse.wav",
+    "earcons/skim.wav",
+    "earcons/small_room_2.wav",
+    "earcons/static.wav",
     "images/chromevox.svg",
     "images/close-36.png",
     "images/close-hover-36.png",
