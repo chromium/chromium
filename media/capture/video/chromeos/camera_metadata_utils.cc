@@ -73,7 +73,6 @@ void AddOrUpdateMetadataEntry(cros::mojom::CameraMetadataPtr* to,
     (*e)->count = entry->count;
     (*e)->data = std::move(entry->data);
   } else {
-    entry->index = (*to)->entries->size();
     (*to)->entry_count += 1;
     (*to)->entry_capacity = std::max((*to)->entry_capacity, (*to)->entry_count);
     (*to)->data_count += entry->data.size();
@@ -81,6 +80,7 @@ void AddOrUpdateMetadataEntry(cros::mojom::CameraMetadataPtr* to,
     if (!(*to)->entries) {
       (*to)->entries = std::vector<cros::mojom::CameraMetadataEntryPtr>();
     }
+    entry->index = (*to)->entries->size();
     (*to)->entries->push_back(std::move(entry));
     SortCameraMetadata(to);
   }
