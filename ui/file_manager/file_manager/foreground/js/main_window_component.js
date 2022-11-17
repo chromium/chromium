@@ -530,14 +530,8 @@ export class MainWindowComponent {
       if (this.dialogType_ === DialogType.FULL_PAGE) {
         const locationInfo =
             this.volumeManager_.getLocationInfo(event.newDirEntry);
-        if (locationInfo) {
-          const label = util.getEntryLabel(locationInfo, event.newDirEntry);
-          document.title = `${str('FILEMANAGER_APP_NAME')} - ${label}`;
-        } else {
-          console.warn(
-              'Could not find location info for entry: ' +
-              event.newDirEntry.fullPath);
-        }
+        const label = util.getEntryLabel(locationInfo, event.newDirEntry);
+        document.title = `${str('FILEMANAGER_APP_NAME')} - ${label}`;
       }
     }
   }
