@@ -363,9 +363,6 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
           diagram.topRightKey !== topRightKeyByCode.get(keyEvent.keyCode)) {
         const newValue =
             topRightKeyByCode.get(keyEvent.keyCode) as DiagramTopRightKey;
-        console.warn(
-            'Corrected diagram top right key from ' +
-            `${this.diagramTopRightKey_} to ${newValue}`);
         diagram.topRightKey = newValue;
       }
 
@@ -378,9 +375,6 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
       // There may be Chromebooks where hasNumberPad is incorrect, so if we see
       // any number pad key codes we need to adapt on-the-fly.
       if (!diagram.showNumberPad && this.isNumberPadKey_(keyEvent.keyCode)) {
-        console.warn(
-            'Corrected number pad presence due to key code ' +
-            keyEvent.keyCode);
         diagram.showNumberPad = true;
       }
 
@@ -392,7 +386,6 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
    * Implements KeyboardObserver.OnKeyEventsPaused.
    */
   onKeyEventsPaused(): void {
-    console.log('Key events paused');
     const diagram: KeyboardDiagramElement|null =
         this.shadowRoot!.querySelector('#diagram');
     assert(diagram);
@@ -404,7 +397,6 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
    * Implements KeyboardObserver.OnKeyEventsResumed.
    */
   onKeyEventsResumed(): void {
-    console.log('Key events resumed');
     if (this.isOpen()) {
       this.$.dialog.focus();
     }

@@ -64,7 +64,7 @@ const tests = [
   ['InputCard', 'input_card_test.js', 'Input'],
   ['InputList', 'input_list_test.js', 'Input'],
   ['IpConfigInfoDrawer', 'ip_config_info_drawer_test.js'],
-  ['KeyboardTester', 'keyboard_tester_test.js', 'Input', 'DISABLED_All'],
+  ['KeyboardTester', 'keyboard_tester_test.js', 'Input'],
   ['MemoryCard', 'memory_card_test.js'],
   ['NetworkCard', 'network_card_test.js', undefined, 'DISABLED_All'],
   ['NetworkInfo', 'network_info_test.js'],

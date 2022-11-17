@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://diagnostics/keyboard_tester.js';
+import 'chrome://diagnostics/strings.m.js';
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import {ConnectionType, KeyEvent, KeyEventType, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey} from 'chrome://diagnostics/input_data_provider.mojom-webui.js';
@@ -181,7 +183,7 @@ suite('keyboardTesterTestSuite', function() {
     keyboardTesterElement.keyboard = fakeKeyboard;
     await flushTasks();
 
-    keyboardTesterElement.$.dialog.showModal();
+    keyboardTesterElement.show();
     await flushTasks();
     assertTrue(keyboardTesterElement.isOpen());
 
