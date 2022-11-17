@@ -136,7 +136,7 @@ public class KeyboardAccessoryCoordinator {
         mTabLayout = tabLayout;
         mModel = KeyboardAccessoryProperties.defaultModelBuilder().build();
         mMediator = new KeyboardAccessoryMediator(mModel, visibilityDelegate,
-                mTabLayout.getTabSwitchingDelegate(), mTabLayout.getSheetOpenerCallbacks());
+                mTabLayout.getTabSwitchingDelegate(), mTabLayout.getTabLayoutCallbacks());
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
             viewProvider.whenLoaded(barView -> mTabLayout.assignNewView(barView.getTabLayout()));
         }

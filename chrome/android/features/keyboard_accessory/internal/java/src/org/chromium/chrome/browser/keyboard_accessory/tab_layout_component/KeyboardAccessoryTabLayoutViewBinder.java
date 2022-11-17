@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.keyboard_accessory.tab_layout_component;
 
 import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutProperties.ACTIVE_TAB;
-import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutProperties.BUTTON_SELECTION_CALLBACKS;
 import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutProperties.TABS;
 import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutProperties.TAB_SELECTION_CALLBACKS;
 
@@ -79,8 +78,6 @@ class KeyboardAccessoryTabLayoutViewBinder
             // Don't add null as listener. It's a valid state but an invalid argument.
             TabLayout.OnTabSelectedListener listener = model.get(TAB_SELECTION_CALLBACKS);
             if (listener != null) view.setTabSelectionAdapter(listener);
-        } else if (propertyKey == BUTTON_SELECTION_CALLBACKS) {
-            // Do nothing.
         } else {
             assert false : "Every possible property update needs to be handled!";
         }

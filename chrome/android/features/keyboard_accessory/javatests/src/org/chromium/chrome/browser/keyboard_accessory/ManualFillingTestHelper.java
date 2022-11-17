@@ -49,7 +49,6 @@ import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
@@ -57,7 +56,6 @@ import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.CreditCardAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.PasswordAccessorySheetCoordinator;
-import org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryButtonGroupView;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -396,10 +394,6 @@ public class ManualFillingTestHelper {
         return new ViewAction() {
             @Override
             public Matcher<View> getConstraints() {
-                if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
-                    return allOf(isDisplayed(),
-                            isAssignableFrom(KeyboardAccessoryButtonGroupView.class));
-                }
                 return allOf(isDisplayed(), isAssignableFrom(TabLayout.class));
             }
 
@@ -410,18 +404,6 @@ public class ManualFillingTestHelper {
 
             @Override
             public void perform(UiController uiController, View view) {
-                if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
-                    KeyboardAccessoryButtonGroupView buttonGroupView =
-                            (KeyboardAccessoryButtonGroupView) view;
-                    if (tabIndex >= buttonGroupView.getButtons().size()) {
-                        throw new PerformException.Builder()
-                                .withCause(new Throwable("No button at index " + tabIndex))
-                                .build();
-                    }
-                    PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
-                            () -> buttonGroupView.getButtons().get(tabIndex).performClick());
-                    return;
-                }
                 TabLayout tabLayout = (TabLayout) view;
                 if (tabLayout.getTabAt(tabIndex) == null) {
                     throw new PerformException.Builder()
