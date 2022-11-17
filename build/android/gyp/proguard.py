@@ -303,8 +303,15 @@ def _OptimizeWithR8(options,
 
     # R8 OOMs with the default xmx=1G.
     cmd = build_utils.JavaCmd(options.warnings_as_errors, xmx='2G') + [
+        # Allows -whyareyounotinlining, which we don't have by default, but
+        # which is useful for one-off queries.
         '-Dcom.android.tools.r8.experimental.enablewhyareyounotinlining=1',
+        # Restricts horizontal class merging to apply only to classes that
+        # share a .java file (nested classes). https://crbug.com/1363709
         '-Dcom.android.tools.r8.enableSameFilePolicy=1',
+        # Enables API modelling for all classes that need it. Breaks reflection
+        # on SDK versions that we no longer support. http://b/259076765
+        '-Dcom.android.tools.r8.stubNonThrowableClasses=1',
     ]
     if options.dump_inputs:
       cmd += ['-Dcom.android.tools.r8.dumpinputtofile=r8inputs.zip']
