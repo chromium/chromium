@@ -855,6 +855,115 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageSameImageDifferentClients) {
   }
 }
 
+// Verifies that if a client1 has uploaded the image, but haven't had its task
+// mark as completed, a client2 doesn't have a task created. Otherwise, it'll
+// crash while trying to create a decode task, which checks if the image data
+// has already been uploaded.
+TEST_P(GpuImageDecodeCacheTest, DoesNotCreateATaskForAlreadyUploadedImage) {
+  auto cache = CreateCache();
+  const uint32_t kClientId1 = cache->GenerateClientId();
+  const uint32_t kClientId2 = cache->GenerateClientId();
+
+  sk_sp<FakePaintImageGenerator> generator =
+      CreateFakePaintImageGenerator(GetNormalImageSize());
+  PaintImage image =
+      PaintImageBuilder::WithDefault()
+          .set_id(PaintImage::GetNextId())
+          .set_paint_image_generator(generator)
+          .set_decoding_mode(PaintImage::DecodingMode::kUnspecified)
+          .TakePaintImage();
+
+  DrawImage draw_image =
+      CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(1.5f, 1.5f)));
+  EXPECT_EQ(draw_image.frame_index(), PaintImage::kDefaultFrameIndex);
+  ImageDecodeCache::TaskResult result1 = cache->GetTaskForImageAndRef(
+      kClientId1, draw_image, ImageDecodeCache::TracingInfo());
+  EXPECT_TRUE(result1.need_unref);
+  EXPECT_TRUE(result1.task);
+
+  // The tasks are executed in the following order - decode1, upload1,
+  // decode2, upload2. Only the first decode/upload is executed.
+  TestTileTaskRunner::ProcessTask(result1.task->dependencies()[0].get());
+  TestTileTaskRunner::ScheduleTask(result1.task.get());
+  TestTileTaskRunner::RunTask(result1.task.get());
+
+  DrawImage another_draw_image =
+      CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(1.5f, 1.5f)));
+  EXPECT_EQ(another_draw_image.frame_index(), PaintImage::kDefaultFrameIndex);
+  ImageDecodeCache::TaskResult result2 = cache->GetTaskForImageAndRef(
+      kClientId2, another_draw_image, ImageDecodeCache::TracingInfo());
+  EXPECT_TRUE(result2.need_unref);
+  EXPECT_FALSE(result2.task);
+
+  TestTileTaskRunner::CompleteTask(result1.task.get());
+
+  cache->UnrefImage(draw_image);
+  cache->UnrefImage(another_draw_image);
+  cache->ClearCache();
+}
+
+// Almost the same as DoesNotCreateATaskForAlreadyUploadedImage, but with a
+// single client and a second request for a standalone decode task.
+TEST_P(GpuImageDecodeCacheTest, DoesNotCreateATaskForAlreadyUploadedImage2) {
+  auto cache = CreateCache();
+  const uint32_t kClientId1 = cache->GenerateClientId();
+
+  sk_sp<FakePaintImageGenerator> generator =
+      CreateFakePaintImageGenerator(GetNormalImageSize());
+  PaintImage image =
+      PaintImageBuilder::WithDefault()
+          .set_id(PaintImage::GetNextId())
+          .set_paint_image_generator(generator)
+          .set_decoding_mode(PaintImage::DecodingMode::kUnspecified)
+          .TakePaintImage();
+
+  DrawImage draw_image =
+      CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(1.5f, 1.5f)));
+  EXPECT_EQ(draw_image.frame_index(), PaintImage::kDefaultFrameIndex);
+  // Get upload/decode task.
+  ImageDecodeCache::TaskResult result1 = cache->GetTaskForImageAndRef(
+      kClientId1, draw_image, ImageDecodeCache::TracingInfo());
+  EXPECT_TRUE(result1.need_unref);
+  EXPECT_TRUE(result1.task);
+
+  // Get stand-alone decode task.
+  DrawImage another_draw_image =
+      CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(1.5f, 1.5f)));
+  EXPECT_EQ(another_draw_image.frame_index(), PaintImage::kDefaultFrameIndex);
+  ImageDecodeCache::TaskResult result2 =
+      cache->GetOutOfRasterDecodeTaskForImageAndRef(kClientId1,
+                                                    another_draw_image);
+  EXPECT_TRUE(result2.need_unref);
+  // It must be a valid task.
+  EXPECT_TRUE(result2.task);
+
+  // Execute decode/upload, but do not complete.
+  TestTileTaskRunner::ProcessTask(result1.task->dependencies()[0].get());
+  TestTileTaskRunner::ScheduleTask(result1.task.get());
+  TestTileTaskRunner::RunTask(result1.task.get());
+
+  DrawImage yet_another_draw_image =
+      CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(1.5f, 1.5f)));
+  EXPECT_EQ(yet_another_draw_image.frame_index(),
+            PaintImage::kDefaultFrameIndex);
+  // Ask for the decode standalone task again.
+  ImageDecodeCache::TaskResult result3 =
+      cache->GetOutOfRasterDecodeTaskForImageAndRef(kClientId1,
+                                                    yet_another_draw_image);
+  EXPECT_TRUE(result3.need_unref);
+  // It mustn't be created now as we already have image decoded/uploaded.
+  EXPECT_FALSE(result3.task);
+
+  // Complete and process created tasks.
+  TestTileTaskRunner::CompleteTask(result1.task.get());
+  TestTileTaskRunner::ProcessTask(result2.task.get());
+
+  cache->UnrefImage(draw_image);
+  cache->UnrefImage(another_draw_image);
+  cache->UnrefImage(yet_another_draw_image);
+  cache->ClearCache();
+}
+
 TEST_P(GpuImageDecodeCacheTest, GetTaskForImageSmallerScale) {
   auto cache = CreateCache();
   const uint32_t client_id = cache->GenerateClientId();
@@ -2130,6 +2239,55 @@ TEST_P(GpuImageDecodeCacheTest, OutOfRasterDecodeTaskMultipleClients) {
     EXPECT_FALSE(cache->IsInInUseCacheForTesting(draw_image));
     EXPECT_FALSE(cache->IsInInUseCacheForTesting(draw_image2));
   }
+}
+
+TEST_P(GpuImageDecodeCacheTest,
+       DoesNotCreateOutOfRasterDecodeTaskForNonCompletedTask) {
+  auto cache = CreateCache();
+  const uint32_t kClientId1 = cache->GenerateClientId();
+  const uint32_t kClientId2 = cache->GenerateClientId();
+
+  sk_sp<FakePaintImageGenerator> generator =
+      CreateFakePaintImageGenerator(GetNormalImageSize());
+  PaintImage image =
+      PaintImageBuilder::WithDefault()
+          .set_id(PaintImage::GetNextId())
+          .set_paint_image_generator(generator)
+          .set_decoding_mode(PaintImage::DecodingMode::kUnspecified)
+          .TakePaintImage();
+
+  SkM44 matrix = CreateMatrix(SkSize::Make(1.0f, 1.0f));
+  DrawImage draw_image =
+      CreateDrawImageInternal(image, matrix, nullptr /* color_space */,
+                              PaintFlags::FilterQuality::kLow);
+
+  ImageDecodeCache::TaskResult result1 =
+      cache->GetOutOfRasterDecodeTaskForImageAndRef(kClientId1, draw_image);
+  EXPECT_TRUE(result1.need_unref);
+  EXPECT_TRUE(result1.task);
+  EXPECT_TRUE(cache->IsInInUseCacheForTesting(draw_image));
+
+  TestTileTaskRunner::ScheduleTask(result1.task.get());
+  TestTileTaskRunner::RunTask(result1.task.get());
+
+  DrawImage draw_image2 =
+      CreateDrawImageInternal(image, matrix, nullptr /* color_space */,
+                              PaintFlags::FilterQuality::kLow);
+  ImageDecodeCache::TaskResult result2 =
+      cache->GetOutOfRasterDecodeTaskForImageAndRef(kClientId2, draw_image);
+  EXPECT_TRUE(result2.need_unref);
+  EXPECT_FALSE(result2.task);
+  EXPECT_TRUE(cache->IsInInUseCacheForTesting(draw_image2));
+
+  TestTileTaskRunner::CompleteTask(result1.task.get());
+
+  // The image should remain in the cache till we unref it.
+  EXPECT_TRUE(cache->IsInInUseCacheForTesting(draw_image));
+  EXPECT_TRUE(cache->IsInInUseCacheForTesting(draw_image2));
+  cache->UnrefImage(draw_image);
+  cache->UnrefImage(draw_image2);
+  EXPECT_FALSE(cache->IsInInUseCacheForTesting(draw_image));
+  EXPECT_FALSE(cache->IsInInUseCacheForTesting(draw_image2));
 }
 
 TEST_P(GpuImageDecodeCacheTest, ZeroCacheNormalWorkingSet) {

@@ -1109,7 +1109,11 @@ ImageDecodeCache::TaskResult GpuImageDecodeCache::GetTaskForImageAndRefInternal(
     return TaskResult(false /* need_unref */, false /* is_at_raster_decode */,
                       image_data->decode.can_do_hardware_accelerated_decode());
   } else if (task_type == DecodeTaskType::kPartOfUploadTask &&
-             !image_data->upload.task_map.empty()) {
+             !image_data->upload.task_map.empty() &&
+             !image_data->HasUploadedData()) {
+    // If there are pending upload tasks and we haven't had data uploaded yet,
+    // another task can be created.
+
     // We had an existing upload task, ref the image and return the task.
     image_data->ValidateBudgeted();
     RefImage(draw_image, cache_key);
@@ -1131,7 +1135,11 @@ ImageDecodeCache::TaskResult GpuImageDecodeCache::GetTaskForImageAndRefInternal(
     return TaskResult(task,
                       image_data->decode.can_do_hardware_accelerated_decode());
   } else if (task_type == DecodeTaskType::kStandAloneDecodeTask &&
-             !image_data->decode.stand_alone_task_map.empty()) {
+             !image_data->decode.stand_alone_task_map.empty() &&
+             !image_data->HasUploadedData()) {
+    // If there are pending decode tasks and we haven't had decoded data yet,
+    // another task can be created.
+
     // We had an existing out of raster task, ref the image and return the task.
     image_data->ValidateBudgeted();
     RefImage(draw_image, cache_key);
@@ -1150,9 +1158,13 @@ ImageDecodeCache::TaskResult GpuImageDecodeCache::GetTaskForImageAndRefInternal(
       CHECK_EQ(task, found_task);
 #endif
     }
-    DCHECK(task);
     DCHECK(!image_data->decode.can_do_hardware_accelerated_decode());
-    return TaskResult(task, false /* can_do_hardware_accelerated_decode */);
+
+    // This will be null if the image was already decoded.
+    if (task)
+      return TaskResult(task, /*can_do_hardware_accelerated_decode=*/false);
+    return TaskResult(/*need_unref=*/true, /*is_at_raster_decode=*/false,
+                      /*can_do_hardware_accelerated_decode=*/false);
   }
 
   // Ensure that the image we're about to decode/upload will fit in memory, if
