@@ -55,27 +55,12 @@ try_.builder(
     ],
 )
 
-try_.builder(
-    name = "fuchsia-arm64-rel",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    builderless = not settings.is_main,
-    main_list_view = "try",
-    tryjob = try_.job(),
-    mirrors = [
-        "ci/fuchsia-arm64-rel",
-    ],
-    experiments = {
-        "enable_weetbix_queries": 100,
-        "weetbix.retry_weak_exonerations": 100,
-        "weetbix.enable_weetbix_exonerations": 100,
-    },
-)
-
 try_.orchestrator_builder(
-    name = "fuchsia-arm64-rel-orchestrator",
+    name = "fuchsia-arm64-rel",
     compilator = "fuchsia-arm64-rel-compilator",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
     main_list_view = "try",
+    tryjob = try_.job(),
     mirrors = [
         "ci/fuchsia-arm64-rel",
     ],
