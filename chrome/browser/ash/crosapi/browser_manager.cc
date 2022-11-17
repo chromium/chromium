@@ -743,13 +743,13 @@ void BrowserManager::GetActiveTabUrl(GetActiveTabUrlCallback callback) {
   browser_service_->service->GetActiveTabUrl(std::move(callback));
 }
 
-void BrowserManager::GetTabStripModelUrls(
+void BrowserManager::GetBrowserInformation(
     const std::string& window_unique_id,
-    GetTabStripModelUrlsCallback callback) {
+    GetBrowserInformationCallback callback) {
   crosapi::CrosapiManager::Get()
       ->crosapi_ash()
       ->desk_template_ash()
-      ->GetTabStripModelUrls(window_unique_id, std::move(callback));
+      ->GetBrowserInformation(window_unique_id, std::move(callback));
 }
 
 void BrowserManager::AddObserver(BrowserManagerObserver* observer) {

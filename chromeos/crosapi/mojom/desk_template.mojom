@@ -72,7 +72,7 @@ interface DeskTemplateClient {
 
   // Returns state of the tab strip model in the browser window identified by
   // |window_unique_id|.
-  GetTabStripModelUrls@0(uint32 serial, string window_unique_id) => (
+  GetBrowserInformation@0(uint32 serial, string window_unique_id) => (
     uint32 serial, string window_unique_id, DeskTemplateState? state);
 
   // Gets the image of the favicon associated with `url`. Returns an empty

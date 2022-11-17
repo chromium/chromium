@@ -84,10 +84,10 @@ void DeskTemplateClientLacros::CreateBrowserWithRestoredData(
   }
 }
 
-void DeskTemplateClientLacros::GetTabStripModelUrls(
+void DeskTemplateClientLacros::GetBrowserInformation(
     uint32_t serial,
     const std::string& window_unique_id,
-    GetTabStripModelUrlsCallback callback) {
+    GetBrowserInformationCallback callback) {
   Browser* browser = nullptr;
   for (auto* b : *BrowserList::GetInstance()) {
     if (views::DesktopWindowTreeHostLacros::From(

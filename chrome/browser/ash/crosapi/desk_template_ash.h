@@ -29,7 +29,7 @@ class DeskTemplateAsh : public mojom::DeskTemplate {
 
   // Called by ash's internal desk template implementation.
   // Forwarded to Lacros.
-  void GetTabStripModelUrls(
+  void GetBrowserInformation(
       const std::string& window_unique_id,
       base::OnceCallback<void(crosapi::mojom::DeskTemplateStatePtr)> callback);
   void CreateBrowserWithRestoredData(
@@ -68,9 +68,9 @@ class DeskTemplateAsh : public mojom::DeskTemplate {
 
   // Receives the response from the single remote.  If the response contains
   // data, forwards it to Ash.
-  void OnGetTabStripModelUrlsFromRemote(uint32_t serial,
-                                        const std::string& window_unique_id,
-                                        mojom::DeskTemplateStatePtr state);
+  void OnGetBrowserInformationFromRemote(uint32_t serial,
+                                         const std::string& window_unique_id,
+                                         mojom::DeskTemplateStatePtr state);
 
   mojo::ReceiverSet<mojom::DeskTemplate> receivers_;
   // Each separate Lacros process owns its own remote.

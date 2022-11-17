@@ -313,7 +313,7 @@ void ChromeDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
     const std::string* lacros_window_id =
         window->GetProperty(app_restore::kLacrosWindowId);
     DCHECK(lacros_window_id);
-    const_cast<ChromeDesksTemplatesDelegate*>(this)->GetLacrosChromeUrls(
+    const_cast<ChromeDesksTemplatesDelegate*>(this)->GetLacrosChromeInfo(
         std::move(callback), *lacros_window_id, std::move(app_launch_info));
     return;
   }
@@ -438,7 +438,7 @@ std::string ChromeDesksTemplatesDelegate::GetAppShortName(
   return name;
 }
 
-void ChromeDesksTemplatesDelegate::OnLacrosChromeUrlsReturned(
+void ChromeDesksTemplatesDelegate::OnLacrosChromeInfoReturned(
     GetAppLaunchDataCallback callback,
     std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info,
     crosapi::mojom::DeskTemplateStatePtr state) {
@@ -447,7 +447,7 @@ void ChromeDesksTemplatesDelegate::OnLacrosChromeUrlsReturned(
   std::move(callback).Run(std::move(app_launch_info));
 }
 
-void ChromeDesksTemplatesDelegate::GetLacrosChromeUrls(
+void ChromeDesksTemplatesDelegate::GetLacrosChromeInfo(
     GetAppLaunchDataCallback callback,
     const std::string& window_unique_id,
     std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info) {
@@ -459,9 +459,9 @@ void ChromeDesksTemplatesDelegate::GetLacrosChromeUrls(
     return;
   }
 
-  browser_manager->GetTabStripModelUrls(
+  browser_manager->GetBrowserInformation(
       window_unique_id,
-      base::BindOnce(&ChromeDesksTemplatesDelegate::OnLacrosChromeUrlsReturned,
+      base::BindOnce(&ChromeDesksTemplatesDelegate::OnLacrosChromeInfoReturned,
                      weak_factory_.GetWeakPtr(), std::move(callback),
                      std::move(app_launch_info)));
 }

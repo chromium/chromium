@@ -55,15 +55,15 @@ class ChromeDesksTemplatesDelegate : public ash::DesksTemplatesDelegate {
 
  private:
   // Receives the state of the tabstrip from the Lacros window.
-  void OnLacrosChromeUrlsReturned(
+  void OnLacrosChromeInfoReturned(
       GetAppLaunchDataCallback callback,
       std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info,
       crosapi::mojom::DeskTemplateStatePtr state);
 
   // Asynchronously requests the state of the tabstrip from the Lacros window
   // with `window_unique_id`.  The response is handled by
-  // OnLacrosChromeUrlsReturned().
-  void GetLacrosChromeUrls(
+  // OnLacrosChromeInfoReturned().
+  void GetLacrosChromeInfo(
       GetAppLaunchDataCallback callback,
       const std::string& window_unique_id,
       std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info);

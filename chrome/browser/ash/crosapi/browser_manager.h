@@ -257,12 +257,12 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Gets Url of the active tab from lacros if there is any.
   void GetActiveTabUrl(GetActiveTabUrlCallback callback);
 
-  using GetTabStripModelUrlsCallback =
+  using GetBrowserInformationCallback =
       base::OnceCallback<void(crosapi::mojom::DeskTemplateStatePtr)>;
   // Gets URLs and active indices of the tab strip models from the Lacros
   // browser window.
-  void GetTabStripModelUrls(const std::string& window_unique_id,
-                            GetTabStripModelUrlsCallback callback);
+  void GetBrowserInformation(const std::string& window_unique_id,
+                             GetBrowserInformationCallback callback);
 
   void AddObserver(BrowserManagerObserver* observer);
   void RemoveObserver(BrowserManagerObserver* observer);
