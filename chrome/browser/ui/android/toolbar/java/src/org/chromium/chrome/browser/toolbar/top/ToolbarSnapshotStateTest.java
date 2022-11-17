@@ -118,8 +118,13 @@ public class ToolbarSnapshotStateTest {
     @Test
     public void testSameUrlText_DifferentHintText() {
         ToolbarSnapshotState initialToolbarSnapshotState =
-                new ToolbarSnapshotStateBuilder().setVisibleTextPrefixHint("foo").build();
-        ToolbarSnapshotState otherToolbarSnapshotState = new ToolbarSnapshotStateBuilder().build();
+                new ToolbarSnapshotStateBuilder()
+                        .setVisibleTextPrefixHint(DEFAULT_URL_TEXT.substring(0, 2))
+                        .build();
+        ToolbarSnapshotState otherToolbarSnapshotState =
+                new ToolbarSnapshotStateBuilder()
+                        .setVisibleTextPrefixHint(DEFAULT_URL_TEXT.substring(0, 3))
+                        .build();
         Assert.assertEquals(ToolbarSnapshotDifference.NONE,
                 initialToolbarSnapshotState.getAnyDifference(otherToolbarSnapshotState));
     }
@@ -198,6 +203,24 @@ public class ToolbarSnapshotStateTest {
                 new ToolbarSnapshotStateBuilder().setUnfocusedLocationBarLayoutWidth(100).build();
         Assert.assertEquals(ToolbarSnapshotDifference.LOCATION_BAR_WIDTH,
                 otherToolbarSnapshotState.getAnyDifference(mDefaultToolbarSnapshotState));
+    }
+
+    @Test
+    public void testIsValidVisibleTextPrefixHint() {
+        Assert.assertFalse(ToolbarSnapshotState.isValidVisibleTextPrefixHint(null, null));
+        Assert.assertFalse(ToolbarSnapshotState.isValidVisibleTextPrefixHint("foo", null));
+        Assert.assertFalse(ToolbarSnapshotState.isValidVisibleTextPrefixHint(null, "foo"));
+
+        Assert.assertFalse(ToolbarSnapshotState.isValidVisibleTextPrefixHint("", ""));
+        Assert.assertFalse(ToolbarSnapshotState.isValidVisibleTextPrefixHint("foo", ""));
+
+        Assert.assertFalse(ToolbarSnapshotState.isValidVisibleTextPrefixHint("foo", "fooo"));
+        Assert.assertFalse(ToolbarSnapshotState.isValidVisibleTextPrefixHint("foo", "foo/"));
+        Assert.assertFalse(ToolbarSnapshotState.isValidVisibleTextPrefixHint("foo", "o/"));
+        Assert.assertFalse(ToolbarSnapshotState.isValidVisibleTextPrefixHint("foo", "oo"));
+
+        Assert.assertTrue(ToolbarSnapshotState.isValidVisibleTextPrefixHint("foo.com", "foo"));
+        Assert.assertTrue(ToolbarSnapshotState.isValidVisibleTextPrefixHint("foo.com", "foo.com"));
     }
 
     private class ToolbarSnapshotStateBuilder {

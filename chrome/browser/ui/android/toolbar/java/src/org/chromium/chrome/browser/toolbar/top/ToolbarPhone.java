@@ -1619,10 +1619,13 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     private ToolbarSnapshotState generateToolbarSnapshotState() {
         UrlBarData urlBarData = getToolbarDataProvider().getUrlBarData();
+        String displayedUrlText = urlBarData.displayText.toString();
+        CharSequence prefixHint = mLocationBar.getOmniboxVisibleTextPrefixHint();
+        boolean isValidPrefixHint =
+                ToolbarSnapshotState.isValidVisibleTextPrefixHint(displayedUrlText, prefixHint);
         return new ToolbarSnapshotState(getTint().getDefaultColor(),
-                mTabCountProvider.getTabCount(), mButtonData, mVisualState,
-                urlBarData.displayText.toString(),
-                mLocationBar.getOmniboxVisibleTextPrefixHint(),
+                mTabCountProvider.getTabCount(), mButtonData, mVisualState, displayedUrlText,
+                isValidPrefixHint ? prefixHint : null,
                 getToolbarDataProvider().getSecurityIconResource(false),
                 ImageViewCompat.getImageTintList(mHomeButton),
                 getMenuButtonCoordinator().isShowingUpdateBadge(),
