@@ -126,7 +126,8 @@
     },
     'app-base-elevated': {
       light: '$cros.ref.neutralvariant100',
-      dark:  'blend(rgba($black.rgb, 0.4), $cros.ref.neutral10)',
+      /* In dark mode we layer primary80 @ 11% ontop of neutral80 @ 2% ontop of neutral 10. */
+      dark: 'blend(rgba($cros.ref.primary80.rgb, .11), blend(rgba($cros.ref.neutral80.rgb, .02), $cros.ref.neutral10))',
       generate_per_mode: true,
     },
 
