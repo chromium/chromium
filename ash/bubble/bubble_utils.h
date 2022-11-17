@@ -9,8 +9,9 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/font.h"
 
 namespace ui {
@@ -45,8 +46,7 @@ enum class TypographyStyle {
 ASH_EXPORT void ApplyStyle(
     views::Label* label,
     TypographyStyle style,
-    AshColorProvider::ContentLayerType text_color =
-        AshColorProvider::ContentLayerType::kTextColorPrimary);
+    ui::ColorId text_color_id = kColorAshTextColorPrimary);
 
 // Creates a label with optional `text` and `text_color` matching the specified
 // `style`. The label will paint correctly even if it is not added to the view
@@ -54,8 +54,7 @@ ASH_EXPORT void ApplyStyle(
 std::unique_ptr<views::Label> CreateLabel(
     TypographyStyle style,
     const std::u16string& text = std::u16string(),
-    AshColorProvider::ContentLayerType text_color =
-        AshColorProvider::ContentLayerType::kTextColorPrimary);
+    ui::ColorId text_color_id = kColorAshTextColorPrimary);
 
 }  // namespace ash::bubble_utils
 

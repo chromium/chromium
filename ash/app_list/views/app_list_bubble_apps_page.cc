@@ -609,15 +609,6 @@ void AppListBubbleAppsPage::VisibilityChanged(views::View* starting_from,
   }
 }
 
-void AppListBubbleAppsPage::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  if (continue_label_) {
-    bubble_utils::ApplyStyle(
-        continue_label_, bubble_utils::TypographyStyle::kAnnotation1,
-        AshColorProvider::ContentLayerType::kTextColorSecondary);
-  }
-}
-
 void AppListBubbleAppsPage::OnActiveAppListModelsChanged(
     AppListModel* model,
     SearchModel* search_model) {
@@ -691,9 +682,9 @@ void AppListBubbleAppsPage::InitContinueLabelContainer(
   continue_label_ =
       continue_label_container_->AddChildView(std::make_unique<views::Label>(
           l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_CONTINUE_SECTION_LABEL)));
-  bubble_utils::ApplyStyle(
-      continue_label_, bubble_utils::TypographyStyle::kAnnotation1,
-      AshColorProvider::ContentLayerType::kTextColorSecondary);
+  bubble_utils::ApplyStyle(continue_label_,
+                           bubble_utils::TypographyStyle::kAnnotation1,
+                           kColorAshTextColorSecondary);
   continue_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   // Button should be right aligned, so flex label to fill empty space.

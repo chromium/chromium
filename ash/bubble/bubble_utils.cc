@@ -10,9 +10,6 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
-#include "ash/shell.h"
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/check.h"
 #include "ui/aura/window.h"
 #include "ui/events/event.h"
@@ -21,34 +18,6 @@
 
 namespace ash {
 namespace bubble_utils {
-namespace {
-
-// A label which invokes a constructor-specified callback in `OnThemeChanged()`.
-class LabelWithThemeChangedCallback : public views::Label {
- public:
-  using ThemeChangedCallback = base::RepeatingCallback<void(views::Label*)>;
-
-  LabelWithThemeChangedCallback(const std::u16string& text,
-                                ThemeChangedCallback theme_changed_callback)
-      : views::Label(text),
-        theme_changed_callback_(std::move(theme_changed_callback)) {}
-
-  LabelWithThemeChangedCallback(const LabelWithThemeChangedCallback&) = delete;
-  LabelWithThemeChangedCallback& operator=(
-      const LabelWithThemeChangedCallback&) = delete;
-  ~LabelWithThemeChangedCallback() override = default;
-
- private:
-  // views::Label:
-  void OnThemeChanged() override {
-    views::Label::OnThemeChanged();
-    theme_changed_callback_.Run(this);
-  }
-
-  ThemeChangedCallback theme_changed_callback_;
-};
-
-}  // namespace
 
 bool ShouldCloseBubbleForEvent(const ui::LocatedEvent& event) {
   // Should only be called for "press" type events.
@@ -96,10 +65,9 @@ bool ShouldCloseBubbleForEvent(const ui::LocatedEvent& event) {
 
 void ApplyStyle(views::Label* label,
                 TypographyStyle style,
-                AshColorProvider::ContentLayerType text_color) {
+                ui::ColorId text_color_id) {
   label->SetAutoColorReadabilityEnabled(false);
-  label->SetEnabledColor(
-      AshColorProvider::Get()->GetContentLayerColor(text_color));
+  label->SetEnabledColorId(text_color_id);
 
   switch (style) {
     case TypographyStyle::kAnnotation1:
@@ -133,22 +101,11 @@ void ApplyStyle(views::Label* label,
   }
 }
 
-std::unique_ptr<views::Label> CreateLabel(
-    TypographyStyle style,
-    const std::u16string& text,
-    AshColorProvider::ContentLayerType text_color) {
-  auto label = std::make_unique<LabelWithThemeChangedCallback>(
-      text,
-      /*theme_changed_callback=*/base::BindRepeating(
-          [](TypographyStyle style,
-             AshColorProvider::ContentLayerType text_color,
-             views::Label* label) { ApplyStyle(label, style, text_color); },
-          style, text_color));
-  // Apply `style` to `label` manually in case the view is painted without ever
-  // having being added to the view hierarchy. In such cases, the `label` will
-  // not receive an `OnThemeChanged()` event. This occurs, for example, with
-  // holding space drag images.
-  ApplyStyle(label.get(), style, text_color);
+std::unique_ptr<views::Label> CreateLabel(TypographyStyle style,
+                                          const std::u16string& text,
+                                          ui::ColorId text_color_id) {
+  auto label = std::make_unique<views::Label>(text);
+  ApplyStyle(label.get(), style, text_color_id);
   return label;
 }
 
