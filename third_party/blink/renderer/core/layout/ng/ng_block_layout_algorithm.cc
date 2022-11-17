@@ -656,7 +656,8 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
       DCHECK(!container_builder_.FoundColumnSpanner());
       DCHECK(!IsBreakInside(To<NGBlockBreakToken>(child_break_token)));
 
-      if (container_builder_.HasInsertedChildBreak()) {
+      if (ConstraintSpace().IsPastBreak() ||
+          container_builder_.HasInsertedChildBreak()) {
         // Something broke inside (typically in a parallel flow, or we wouldn't
         // be here). Before we can handle the spanner, we need to finish what
         // comes before it.
@@ -2777,6 +2778,15 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
     SetupSpaceBuilderForFragmentation(
         ConstraintSpace(), child, fragmentainer_offset_delta, &builder,
         is_new_fc, container_builder_.RequiresContentBeforeBreaking());
+
+    // If there's a child break inside (typically in a parallel flow, or we
+    // would have finished layout by now), we need to produce more
+    // fragmentainers, before we can insert any column spanners, so that
+    // everything that is supposed to come before the spanner actually ends up
+    // there.
+    if (ConstraintSpace().IsPastBreak() ||
+        container_builder_.HasInsertedChildBreak())
+      builder.SetIsPastBreak();
   }
 
   return builder.ToConstraintSpace();

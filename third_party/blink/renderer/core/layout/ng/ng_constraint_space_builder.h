@@ -250,6 +250,8 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
 
   void SetIsInColumnBfc() { space_.EnsureRareData()->is_in_column_bfc = true; }
 
+  void SetIsPastBreak() { space_.EnsureRareData()->is_past_break = true; }
+
   void SetMinBlockSizeShouldEncompassIntrinsicSize() {
     space_.EnsureRareData()->min_block_size_should_encompass_intrinsic_size =
         true;
