@@ -9,7 +9,9 @@
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_event_filter.h"
+#include "base/memory/ptr_util.h"
 #include "ui/aura/window.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/transient_window_manager.h"
 #include "ui/wm/core/window_util.h"
@@ -18,22 +20,16 @@
 namespace ash {
 
 TrayBubbleWrapper::TrayBubbleWrapper(TrayBackgroundView* tray,
+                                     bool event_handling)
+    : tray_(tray), event_handling_(event_handling) {}
+
+// TODO(b/257129394): Remove this constructor once we migrate to using
+// unique_ptrs for all `TrayBubbleView`s.
+TrayBubbleWrapper::TrayBubbleWrapper(TrayBackgroundView* tray,
                                      TrayBubbleView* bubble_view,
                                      bool event_handling)
     : tray_(tray), bubble_view_(bubble_view), event_handling_(event_handling) {
-  bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
-  bubble_widget_->AddObserver(this);
-
-  TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_);
-  bubble_view_->InitializeAndShowBubble();
-
-  if (!Shell::Get()->tablet_mode_controller()->InTabletMode())
-    Shell::Get()->app_list_controller()->DismissAppList();
-
-  if (event_handling_) {
-    tray->tray_event_filter()->AddBubble(this);
-    Shell::Get()->activation_client()->AddObserver(this);
-  }
+  ShowBubble(base::WrapUnique(bubble_view));
 }
 
 TrayBubbleWrapper::~TrayBubbleWrapper() {
@@ -54,6 +50,29 @@ TrayBubbleWrapper::~TrayBubbleWrapper() {
   CHECK(!IsInObserverList());
 }
 
+void TrayBubbleWrapper::ShowBubble(
+    std::unique_ptr<TrayBubbleView> bubble_view) {
+  // We must ensure `ShowBubble` is only called when there is no existing
+  // `bubble_widget_`.
+  DCHECK(!bubble_widget_);
+
+  bubble_view_ = bubble_view.get();
+  bubble_widget_ =
+      views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
+  bubble_widget_->AddObserver(this);
+
+  TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_);
+  bubble_view_->InitializeAndShowBubble();
+
+  if (!Shell::Get()->tablet_mode_controller()->InTabletMode())
+    Shell::Get()->app_list_controller()->DismissAppList();
+
+  if (event_handling_) {
+    tray_->tray_event_filter()->AddBubble(this);
+    Shell::Get()->activation_client()->AddObserver(this);
+  }
+}
+
 TrayBackgroundView* TrayBubbleWrapper::GetTray() const {
   return tray_;
 }
@@ -69,7 +88,7 @@ views::Widget* TrayBubbleWrapper::GetBubbleWidget() const {
 void TrayBubbleWrapper::OnWidgetDestroying(views::Widget* widget) {
   CHECK_EQ(bubble_widget_, widget);
   bubble_widget_->RemoveObserver(this);
-  bubble_widget_ = NULL;
+  bubble_widget_ = nullptr;
 
   // Although the bubble is already closed, the next mouse release event
   // will invoke PerformAction which reopens the bubble again. To prevent the
