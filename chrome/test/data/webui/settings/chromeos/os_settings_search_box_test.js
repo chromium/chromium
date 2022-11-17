@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {OpenWindowProxyImpl, personalizationSearchMojomWebui, Router, routes, routesMojomWebui, searchMojomWebui, searchResultIconMojomWebui, setPersonalizationSearchHandlerForTesting, setSettingsSearchHandlerForTesting, settingMojomWebui, setUserActionRecorderForTesting, userActionRecorderMojomWebui} from 'chrome://os-settings/chromeos/os_settings.js';
+import {AboutPageBrowserProxyImpl, OpenWindowProxyImpl, personalizationSearchMojomWebui, Router, routes, routesMojomWebui, searchMojomWebui, searchResultIconMojomWebui, setPersonalizationSearchHandlerForTesting, setSettingsSearchHandlerForTesting, settingMojomWebui, setUserActionRecorderForTesting, userActionRecorderMojomWebui} from 'chrome://os-settings/chromeos/os_settings.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -11,6 +12,7 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {FakePersonalizationSearchHandler} from './fake_personalization_search_handler.js';
 import {FakeSettingsSearchHandler} from './fake_settings_search_handler.js';
 import {FakeUserActionRecorder} from './fake_user_action_recorder.js';
+import {TestAboutPageBrowserProxyChromeOS} from './test_about_page_browser_proxy_chromeos.js';
 
 /** @fileoverview Runs tests for the OS settings search box. */
 
@@ -199,7 +201,6 @@ suite('OSSettingsSearchBox', () => {
   }
 
   setup(function() {
-    setupSearchBox();
     Router.getInstance().navigateTo(routes.BASIC);
 
     openWindowProxy = new TestOpenWindowProxy();
@@ -215,6 +216,7 @@ suite('OSSettingsSearchBox', () => {
   });
 
   test('Search availability changed', async () => {
+    setupSearchBox();
     settingsSearchHandler.setFakeResults([fakeSettingsResult('result')]);
     await simulateSearch('test query');
     assertTrue(dropDown.opened);
@@ -269,6 +271,7 @@ suite('OSSettingsSearchBox', () => {
   });
 
   test('User action search event', async () => {
+    setupSearchBox();
     settingsSearchHandler.setFakeResults([]);
 
     assertEquals(userActionRecorder.searchCount, 0);
@@ -279,6 +282,7 @@ suite('OSSettingsSearchBox', () => {
   test(
       'Clicking magnifying glass shows dropdown and selects all text',
       async () => {
+        setupSearchBox();
         settingsSearchHandler.setFakeResults([fakeSettingsResult('a')]);
         await simulateSearch('query');
         await waitForListUpdate();
@@ -287,13 +291,13 @@ suite('OSSettingsSearchBox', () => {
 
         assertFalse(dropDown.opened);
         assertFalse(isTextSelected());
-
         field.$.icon.click();
         assertTrue(isTextSelected());
         assertTrue(dropDown.opened);
       });
 
   test('Dropdown opens correctly when results are fetched', async () => {
+    setupSearchBox();
     // Show no results in dropdown if no results are returned.
     settingsSearchHandler.setFakeResults([]);
     personalizationSearchHandler.setFakeResults([]);
@@ -323,6 +327,7 @@ suite('OSSettingsSearchBox', () => {
   });
 
   test('Restore previous existing search results', async () => {
+    setupSearchBox();
     settingsSearchHandler.setFakeResults([fakeSettingsResult('result 1')]);
     personalizationSearchHandler.setFakeResults(
         [fakePersonalizationResult('personalization')]);
@@ -365,6 +370,7 @@ suite('OSSettingsSearchBox', () => {
   });
 
   test('Search result rows are selected correctly', async () => {
+    setupSearchBox();
     settingsSearchHandler.setFakeResults([fakeSettingsResult('a')]);
     personalizationSearchHandler.setFakeResults(
         [fakePersonalizationResult('b')]);
@@ -415,6 +421,7 @@ suite('OSSettingsSearchBox', () => {
   });
 
   test('Keydown Enter on search box can cause route change', async () => {
+    setupSearchBox();
     settingsSearchHandler.setFakeResults(
         [fakeSettingsResult('WiFi Settings', 'networks?type=WiFi')]);
     await simulateSearch('fake query');
@@ -437,6 +444,7 @@ suite('OSSettingsSearchBox', () => {
   test(
       'Keypress Enter on personalization result opens personalization hub',
       async () => {
+        setupSearchBox();
         personalizationSearchHandler.setFakeResults(
             [fakePersonalizationResult('result', 'test')]);
         settingsSearchHandler.setFakeResults([]);
@@ -461,6 +469,7 @@ suite('OSSettingsSearchBox', () => {
   test(
       'Clicking on personalization result opens personalization hub',
       async () => {
+        setupSearchBox();
         personalizationSearchHandler.setFakeResults(
             [fakePersonalizationResult('Wallpaper', 'test')]);
         await simulateSearch('fake query 1');
@@ -479,6 +488,7 @@ suite('OSSettingsSearchBox', () => {
       });
 
   test('Keypress Enter on row causes route change', async () => {
+    setupSearchBox();
     settingsSearchHandler.setFakeResults(
         [fakeSettingsResult('WiFi Settings', 'networks?type=WiFi')]);
     await simulateSearch('fake query 1');
@@ -500,6 +510,7 @@ suite('OSSettingsSearchBox', () => {
   });
 
   test('Route change when result row is clicked', async () => {
+    setupSearchBox();
     settingsSearchHandler.setFakeResults(
         [fakeSettingsResult('WiFi Settings', 'networks?type=WiFi')]);
     await simulateSearch('fake query 2');
@@ -519,6 +530,7 @@ suite('OSSettingsSearchBox', () => {
   });
 
   test('Selecting result a second time does not deselect it.', async () => {
+    setupSearchBox();
     settingsSearchHandler.setFakeResults(
         [fakeSettingsResult('WiFi Settings', 'networks?type=WiFi')]);
     await simulateSearch('query');
@@ -540,6 +552,7 @@ suite('OSSettingsSearchBox', () => {
   });
 
   test('Test no bolding if not generated from text match', async () => {
+    setupSearchBox();
     settingsSearchHandler.setFakeResults([fakeSettingsResult(
         'Search and Assistant', undefined, undefined,
         /*wasGeneratedFromTextMatch=*/ false)]);
@@ -551,6 +564,7 @@ suite('OSSettingsSearchBox', () => {
   });
 
   test('Tokenize and match result text to query text', async () => {
+    setupSearchBox();
     settingsSearchHandler.setFakeResults(
         [fakeSettingsResult('Search and Assistant')]);
     await simulateSearch(`Assistant Search`);
@@ -561,6 +575,7 @@ suite('OSSettingsSearchBox', () => {
   });
 
   test('Bold result text to matching query', async () => {
+    setupSearchBox();
     settingsSearchHandler.setFakeResults(
         [fakeSettingsResult('Search and Assistant')]);
     await simulateSearch(`a`);
@@ -571,6 +586,7 @@ suite('OSSettingsSearchBox', () => {
   });
 
   test('Bold result including ignored characters', async () => {
+    setupSearchBox();
     settingsSearchHandler.setFakeResults([fakeSettingsResult('Turn on Wi-Fi')]);
     await simulateSearch(`wif`);
     await waitForListUpdate();
@@ -625,6 +641,7 @@ suite('OSSettingsSearchBox', () => {
   });
 
   test('Test query longer than result blocks', async () => {
+    setupSearchBox();
     settingsSearchHandler.setFakeResults([fakeSettingsResult('Turn on Wi-Fi')]);
     await simulateSearch(`onwifi`);
     await waitForListUpdate();
@@ -634,6 +651,7 @@ suite('OSSettingsSearchBox', () => {
   });
 
   test('Test bolding of accented characters', async () => {
+    setupSearchBox();
     settingsSearchHandler.setFakeResults([fakeSettingsResult('Crème Brûlée')]);
     await simulateSearch(`E U`);
     await waitForListUpdate();
@@ -643,6 +661,7 @@ suite('OSSettingsSearchBox', () => {
   });
 
   test('Test no spaces nor characters that have upper/lower case', async () => {
+    setupSearchBox();
     settingsSearchHandler.setFakeResults(
         [fakeSettingsResult('キーボード設定---')]);
     await simulateSearch(`キー設`);
@@ -653,6 +672,7 @@ suite('OSSettingsSearchBox', () => {
   });
 
   test('Test blankspace types in result maintained', async () => {
+    setupSearchBox();
     const resultText = 'Turn\xa0on  \xa0Wi-Fi ';
 
     settingsSearchHandler.setFakeResults([fakeSettingsResult(resultText)]);
@@ -664,6 +684,7 @@ suite('OSSettingsSearchBox', () => {
   });
 
   test('Test longest common substring for mispellings', async () => {
+    setupSearchBox();
     settingsSearchHandler.setFakeResults([fakeSettingsResult('Linux')]);
     await simulateSearch(`Linuux`);
     await waitForListUpdate();
@@ -703,6 +724,7 @@ suite('OSSettingsSearchBox', () => {
   });
 
   test('search results sorted descending', async () => {
+    setupSearchBox();
     personalizationSearchHandler.setFakeResults([
       fakePersonalizationResult(
           'one', /*relativeUrl=*/ '', /*relevanceScore=*/ 0.99),
@@ -746,5 +768,86 @@ suite('OSSettingsSearchBox', () => {
           };
         }),
         'search results sorted in expected order');
+  });
+
+  suite('SearchFeedback_OfficialBuild', () => {
+    suite('when feature flag is enabled', () => {
+      /** @type {?TestAboutPageBrowserProxyChromeOS} */
+      let browserProxy = null;
+
+      setup(() => {
+        loadTimeData.overrideValues({searchFeedbackEnabled: true});
+
+        browserProxy = new TestAboutPageBrowserProxyChromeOS();
+        AboutPageBrowserProxyImpl.setInstanceForTesting(browserProxy);
+
+        setupSearchBox();
+      });
+
+      teardown(() => {
+        PolymerTest.clearBody();
+      });
+
+      test(
+          'feedback button does not appear when search result exists',
+          async () => {
+            settingsSearchHandler.setFakeResults(['assistant']);
+            await simulateSearch('a');
+            assertTrue(dropDown.opened);
+            assertEquals(1, searchBox.searchResults_.length);
+            assertTrue(noResultsSection.hidden);
+            const feedbackReportResults =
+                searchBox.shadowRoot.querySelector('#reportSearchResultButton');
+            assertTrue(!!feedbackReportResults);
+            assertTrue(feedbackReportResults.hidden);
+          });
+
+      test(
+          'feedback button appears when search result does not exist',
+          async () => {
+            settingsSearchHandler.setFakeResults([]);
+            await simulateSearch('query 1');
+            assertTrue(dropDown.opened);
+            assertEquals(0, searchBox.searchResults_.length);
+            assertFalse(noResultsSection.hidden);
+            // feedback button appears when no search results have been found
+            const feedbackReportResults =
+                searchBox.shadowRoot.querySelector('#reportSearchResultButton');
+            assertTrue(!!feedbackReportResults);
+            assertFalse(feedbackReportResults.hidden);
+          });
+
+      test('clicking the button opens feedback dialog', async () => {
+        settingsSearchHandler.setFakeResults([]);
+        await simulateSearch('query 1');
+        const feedbackReportResults =
+            searchBox.shadowRoot.querySelector('#reportSearchResultButton');
+        feedbackReportResults.click();
+        return browserProxy.whenCalled('openFeedbackDialog');
+      });
+    });
+
+    suite('when feature flag is disabled', () => {
+      setup(() => {
+        loadTimeData.overrideValues({searchFeedbackEnabled: false});
+
+        setupSearchBox();
+      });
+
+      teardown(() => {
+        PolymerTest.clearBody();
+      });
+
+      test('feedback button does not render', async () => {
+        settingsSearchHandler.setFakeResults([]);
+        await simulateSearch('query 1');
+        assertTrue(dropDown.opened);
+        assertEquals(0, searchBox.searchResults_.length);
+        assertFalse(noResultsSection.hidden);
+        const feedbackReportResults =
+            searchBox.shadowRoot.querySelector('#reportSearchResultButton');
+        assertEquals(null, feedbackReportResults);
+      });
+    });
   });
 });

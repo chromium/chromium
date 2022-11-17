@@ -6,10 +6,13 @@
  * @fileoverview 'os-settings-search-box' is the container for the search input
  * and settings search results.
  */
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import 'chrome://resources/js/focus_row.js';
 import 'chrome://resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import '../../icons.html.js';
 import '../../settings_shared.css.js';
 import './os_search_result_row.js';
 
@@ -17,6 +20,7 @@ import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_element
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -26,6 +30,7 @@ import {ParentResultBehavior, SearchResultsObserverInterface, SearchResultsObser
 import {Router} from '../../router.js';
 import {castExists} from '../assert_extras.js';
 import {recordSearch} from '../metrics_recorder.js';
+import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl} from '../os_about_page/about_page_browser_proxy.js';
 import {routes} from '../os_route.js';
 import {combinedSearch, getPersonalizationSearchHandler, getSettingsSearchHandler, SearchResult} from '../search/combined_search_handler.js';
 
@@ -165,6 +170,13 @@ class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
         type: Number,
         value: 0,
       },
+
+      showFeedbackButton_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('searchFeedbackEnabled');
+        },
+      },
     };
   }
 
@@ -185,12 +197,14 @@ class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
       null;
   private personalizationSearchResultObserverReceiver_:
       PersonalizationSearchResultsObserverReceiver|null;
+  private aboutPageBrowserProxy_: AboutPageBrowserProxy;
 
   constructor() {
     super();
 
     this.settingsSearchResultObserverReceiver_ = null;
     this.personalizationSearchResultObserverReceiver_ = null;
+    this.aboutPageBrowserProxy_ = AboutPageBrowserProxyImpl.getInstance();
   }
 
   override ready() {
@@ -519,6 +533,12 @@ class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
     // to be scrolled. So scroll the dropdown if necessary.
     this.getSelectedOsSearchResultRow_().scrollIntoViewIfNeeded();
   }
+
+  // <if expr="_google_chrome">
+  private onSendFeedbackClick_() {
+    this.aboutPageBrowserProxy_.openFeedbackDialog();
+  }
+  // </if>
 
   /**
    * Keydown handler to specify how enter-key, arrow-up key, and arrow-down-key

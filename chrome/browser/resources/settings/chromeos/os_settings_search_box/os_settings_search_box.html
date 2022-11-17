@@ -99,10 +99,20 @@
     max-height: 50vh;
   }
 
+  .search-feedback-icon {
+    margin-inline-end: 6px;
+  }
+
   #noSearchResultsContainer {
     height: 24px;
     margin-inline-start: 64px;
     margin-top: var(--separator-height);
+  }
+
+  #reportSearchResult {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0 16px;
   }
 
   /* The separator covers the top box shadow of the dropdown so that
@@ -154,5 +164,20 @@
     <div id="noSearchResultsContainer" hidden="[[searchResultsExist_]]">
       $i18n{searchNoResults}
     </div>
+<if expr="_google_chrome">
+    <template is="dom-if" if="[[showFeedbackButton_]]">
+      <div id="reportSearchResult">
+        <cr-button
+            id="reportSearchResultButton"
+            hidden="[[searchResultsExist_]]"
+            on-click="onSendFeedbackClick_">
+            <iron-icon class="search-feedback-icon"
+                icon="os-settings:feedback">
+            </iron-icon>
+            <span>$i18n{searchFeedbackButton}</span>
+        </cr-button>
+      </div>
+    </template>
+</if>
   </div>
 </iron-dropdown>
