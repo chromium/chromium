@@ -102,8 +102,8 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // missing or erroneous information too.
   virtual const AXNodeData& GetData() const = 0;
 
-  // Get the accessibility tree data for this node.
-  virtual const AXTreeData& GetTreeData() const = 0;
+  // Get some extra data about the accessibility tree that contains this node.
+  virtual const AXTreeData& GetTreeData() const;
 
   // Accessing accessibility attributes:
   //
@@ -120,69 +120,60 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // attribute is not present. In addition, strings can be returned as
   // either std::string or std::u16string, for convenience.
 
-  virtual ax::mojom::Role GetRole() const = 0;
-  virtual bool HasBoolAttribute(ax::mojom::BoolAttribute attribute) const = 0;
-  virtual bool GetBoolAttribute(ax::mojom::BoolAttribute attribute) const = 0;
-  virtual bool GetBoolAttribute(ax::mojom::BoolAttribute attribute,
-                                bool* value) const = 0;
-  virtual bool HasFloatAttribute(ax::mojom::FloatAttribute attribute) const = 0;
-  virtual float GetFloatAttribute(
-      ax::mojom::FloatAttribute attribute) const = 0;
-  virtual bool GetFloatAttribute(ax::mojom::FloatAttribute attribute,
-                                 float* value) const = 0;
-  virtual const std::vector<std::pair<ax::mojom::IntAttribute, int32_t>>&
-  GetIntAttributes() const = 0;
-  virtual bool HasIntAttribute(ax::mojom::IntAttribute attribute) const = 0;
-  virtual int GetIntAttribute(ax::mojom::IntAttribute attribute) const = 0;
-  virtual bool GetIntAttribute(ax::mojom::IntAttribute attribute,
-                               int* value) const = 0;
-  virtual const std::vector<std::pair<ax::mojom::StringAttribute, std::string>>&
-  GetStringAttributes() const = 0;
-  virtual bool HasStringAttribute(
-      ax::mojom::StringAttribute attribute) const = 0;
-  virtual const std::string& GetStringAttribute(
-      ax::mojom::StringAttribute attribute) const = 0;
-  virtual bool GetStringAttribute(ax::mojom::StringAttribute attribute,
-                                  std::string* value) const = 0;
-  virtual std::u16string GetString16Attribute(
-      ax::mojom::StringAttribute attribute) const = 0;
-  virtual bool GetString16Attribute(ax::mojom::StringAttribute attribute,
-                                    std::u16string* value) const = 0;
-  virtual const std::string& GetInheritedStringAttribute(
-      ax::mojom::StringAttribute attribute) const = 0;
-  virtual std::u16string GetInheritedString16Attribute(
-      ax::mojom::StringAttribute attribute) const = 0;
-  virtual const std::vector<
+  ax::mojom::Role GetRole() const;
+  bool HasBoolAttribute(ax::mojom::BoolAttribute attribute) const;
+  bool GetBoolAttribute(ax::mojom::BoolAttribute attribute) const;
+  bool GetBoolAttribute(ax::mojom::BoolAttribute attribute, bool* value) const;
+  bool HasFloatAttribute(ax::mojom::FloatAttribute attribute) const;
+  float GetFloatAttribute(ax::mojom::FloatAttribute attribute) const;
+  bool GetFloatAttribute(ax::mojom::FloatAttribute attribute,
+                         float* value) const;
+  const std::vector<std::pair<ax::mojom::IntAttribute, int32_t>>&
+  GetIntAttributes() const;
+  bool HasIntAttribute(ax::mojom::IntAttribute attribute) const;
+  int GetIntAttribute(ax::mojom::IntAttribute attribute) const;
+  bool GetIntAttribute(ax::mojom::IntAttribute attribute, int* value) const;
+  const std::vector<std::pair<ax::mojom::StringAttribute, std::string>>&
+  GetStringAttributes() const;
+  bool HasStringAttribute(ax::mojom::StringAttribute attribute) const;
+  const std::string& GetStringAttribute(
+      ax::mojom::StringAttribute attribute) const;
+  bool GetStringAttribute(ax::mojom::StringAttribute attribute,
+                          std::string* value) const;
+  std::u16string GetString16Attribute(
+      ax::mojom::StringAttribute attribute) const;
+  bool GetString16Attribute(ax::mojom::StringAttribute attribute,
+                            std::u16string* value) const;
+  const std::string& GetInheritedStringAttribute(
+      ax::mojom::StringAttribute attribute) const;
+  std::u16string GetInheritedString16Attribute(
+      ax::mojom::StringAttribute attribute) const;
+  const std::vector<
       std::pair<ax::mojom::IntListAttribute, std::vector<int32_t>>>&
-  GetIntListAttributes() const = 0;
-  virtual bool HasIntListAttribute(
-      ax::mojom::IntListAttribute attribute) const = 0;
-  virtual const std::vector<int32_t>& GetIntListAttribute(
-      ax::mojom::IntListAttribute attribute) const = 0;
-  virtual bool GetIntListAttribute(ax::mojom::IntListAttribute attribute,
-                                   std::vector<int32_t>* value) const = 0;
-  virtual bool HasStringListAttribute(
-      ax::mojom::StringListAttribute attribute) const = 0;
-  virtual const std::vector<std::string>& GetStringListAttribute(
-      ax::mojom::StringListAttribute attribute) const = 0;
-  virtual bool GetStringListAttribute(
-      ax::mojom::StringListAttribute attribute,
-      std::vector<std::string>* value) const = 0;
-  virtual bool HasHtmlAttribute(const char* attribute) const = 0;
-  virtual const base::StringPairs& GetHtmlAttributes() const = 0;
-  virtual bool GetHtmlAttribute(const char* attribute,
-                                std::string* value) const = 0;
-  virtual bool GetHtmlAttribute(const char* attribute,
-                                std::u16string* value) const = 0;
-  virtual AXTextAttributes GetTextAttributes() const = 0;
-  virtual bool HasState(ax::mojom::State state) const = 0;
-  virtual ax::mojom::State GetState() const = 0;
-  virtual bool HasAction(ax::mojom::Action action) const = 0;
+  GetIntListAttributes() const;
+  bool HasIntListAttribute(ax::mojom::IntListAttribute attribute) const;
+  const std::vector<int32_t>& GetIntListAttribute(
+      ax::mojom::IntListAttribute attribute) const;
+  bool GetIntListAttribute(ax::mojom::IntListAttribute attribute,
+                           std::vector<int32_t>* value) const;
+  bool HasStringListAttribute(ax::mojom::StringListAttribute attribute) const;
+  const std::vector<std::string>& GetStringListAttribute(
+      ax::mojom::StringListAttribute attribute) const;
+  bool GetStringListAttribute(ax::mojom::StringListAttribute attribute,
+                              std::vector<std::string>* value) const;
+  bool HasHtmlAttribute(const char* attribute) const;
+  const base::StringPairs& GetHtmlAttributes() const;
+  bool GetHtmlAttribute(const char* attribute, std::string* value) const;
+  bool GetHtmlAttribute(const char* attribute, std::u16string* value) const;
+  AXTextAttributes GetTextAttributes() const;
+  bool HasState(ax::mojom::State state) const;
+  ax::mojom::State GetState() const;
+  bool HasAction(ax::mojom::Action action) const;
   bool HasDefaultActionVerb() const;
   std::vector<ax::mojom::Action> GetSupportedActions() const;
-  virtual bool HasTextStyle(ax::mojom::TextStyle text_style) const = 0;
-  virtual ax::mojom::NameFrom GetNameFrom() const = 0;
-  virtual ax::mojom::DescriptionFrom GetDescriptionFrom() const = 0;
+  bool HasTextStyle(ax::mojom::TextStyle text_style) const;
+  ax::mojom::NameFrom GetNameFrom() const;
+  ax::mojom::DescriptionFrom GetDescriptionFrom() const;
 
   // Returns the text of this node and all descendant nodes; including text
   // found in embedded objects.
@@ -200,7 +191,7 @@ class AX_EXPORT AXPlatformNodeDelegate {
   virtual std::u16string GetValueForControl() const = 0;
 
   // See `AXNode::GetUnignoredSelection`.
-  virtual const AXSelection GetUnignoredSelection() const = 0;
+  virtual const AXSelection GetUnignoredSelection() const;
 
   // Creates a text position rooted at this object if it's a leaf node, or a
   // tree position otherwise.
@@ -293,11 +284,11 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // Returns true if this is a leaf node, meaning all its
   // children should not be exposed to any platform's native accessibility
   // layer.
-  virtual bool IsLeaf() const = 0;
+  virtual bool IsLeaf() const;
 
   // Returns true if this node is invisible or ignored. (Only relevant for
   // accessibility trees that support ignored nodes.)
-  virtual bool IsInvisibleOrIgnored() const = 0;
+  virtual bool IsInvisibleOrIgnored() const;
 
   // Returns true if this node is focused.
   virtual bool IsFocused() const = 0;
@@ -351,8 +342,10 @@ class AX_EXPORT AXPlatformNodeDelegate {
   virtual std::unique_ptr<AXPlatformNodeDelegate::ChildIterator>
   ChildrenEnd() = 0;
 
-  // Returns the accessible name for the node.
-  virtual const std::string& GetName() const = 0;
+  // Returns the accessible name for this node. This could either be derived
+  // from visible text, such as the node's contents or an associated label, or
+  // be manually set by the node's owner, e.g. via an aria-label in HTML.
+  const std::string& GetName() const;
 
   // Returns the accessible description for the node.
   // An accessible description gives more information about the node in
@@ -466,10 +459,10 @@ class AX_EXPORT AXPlatformNodeDelegate {
   virtual bool IsWebContent() const = 0;
 
   // Get whether this node can be marked as read-only.
-  virtual bool IsReadOnlySupported() const = 0;
+  virtual bool IsReadOnlySupported() const;
 
   // Get whether this node is marked as read-only or is disabled.
-  virtual bool IsReadOnlyOrDisabled() const = 0;
+  virtual bool IsReadOnlyOrDisabled() const;
 
   // See `AXNode::HasVisibleCaretOrSelection`.
   virtual bool HasVisibleCaretOrSelection() const = 0;
@@ -531,58 +524,61 @@ class AX_EXPORT AXPlatformNodeDelegate {
   //
   // Returns empty string if no appropriate language was found or if this node
   // uses the default interface language.
-  virtual std::string GetLanguage() const = 0;
+  std::string GetLanguage() const;
 
   //
-  // Tables. All of these should be called on a node that's a table-like
+  // Tables. All of these should be called on a node that has a table-like
   // role, otherwise they return nullopt.
   //
-  virtual bool IsTable() const = 0;
-  virtual absl::optional<int> GetTableColCount() const = 0;
-  virtual absl::optional<int> GetTableRowCount() const = 0;
+  bool IsTable() const;
+  virtual absl::optional<int> GetTableColCount() const;
+  virtual absl::optional<int> GetTableRowCount() const;
   virtual absl::optional<int> GetTableAriaColCount() const = 0;
   virtual absl::optional<int> GetTableAriaRowCount() const = 0;
-  virtual absl::optional<int> GetTableCellCount() const = 0;
-  virtual absl::optional<bool> GetTableHasColumnOrRowHeaderNode() const = 0;
-  virtual std::vector<int32_t> GetColHeaderNodeIds() const = 0;
-  virtual std::vector<int32_t> GetColHeaderNodeIds(int col_index) const = 0;
-  virtual std::vector<int32_t> GetRowHeaderNodeIds() const = 0;
-  virtual std::vector<int32_t> GetRowHeaderNodeIds(int row_index) const = 0;
+  virtual absl::optional<int> GetTableCellCount() const;
+  virtual absl::optional<bool> GetTableHasColumnOrRowHeaderNode() const;
+  virtual std::vector<int32_t> GetColHeaderNodeIds() const;
+  virtual std::vector<int32_t> GetColHeaderNodeIds(int col_index) const;
+  virtual std::vector<int32_t> GetRowHeaderNodeIds() const;
+  virtual std::vector<int32_t> GetRowHeaderNodeIds(int row_index) const;
   virtual AXPlatformNode* GetTableCaption() const = 0;
 
-  // Table row-like nodes.
-  virtual bool IsTableRow() const = 0;
-  virtual absl::optional<int> GetTableRowRowIndex() const = 0;
+  //
+  // Nodes with a table row-like role.
+  //
+  virtual bool IsTableRow() const;
+  virtual absl::optional<int> GetTableRowRowIndex() const;
 
-  // Table cell-like nodes.
-  virtual bool IsTableCellOrHeader() const = 0;
-  virtual absl::optional<int> GetTableCellIndex() const = 0;
-  virtual absl::optional<int> GetTableCellColIndex() const = 0;
-  virtual absl::optional<int> GetTableCellRowIndex() const = 0;
-  virtual absl::optional<int> GetTableCellColSpan() const = 0;
-  virtual absl::optional<int> GetTableCellRowSpan() const = 0;
-  virtual absl::optional<int> GetTableCellAriaColIndex() const = 0;
-  virtual absl::optional<int> GetTableCellAriaRowIndex() const = 0;
-  virtual absl::optional<int32_t> GetCellId(int row_index,
-                                            int col_index) const = 0;
-  virtual absl::optional<int32_t> CellIndexToId(int cell_index) const = 0;
+  //
+  // Nodes with a table cell-like role.
+  //
+  virtual bool IsTableCellOrHeader() const;
+  virtual absl::optional<int> GetTableCellIndex() const;
+  virtual absl::optional<int> GetTableCellColIndex() const;
+  virtual absl::optional<int> GetTableCellRowIndex() const;
+  virtual absl::optional<int> GetTableCellColSpan() const;
+  virtual absl::optional<int> GetTableCellRowSpan() const;
+  virtual absl::optional<int> GetTableCellAriaColIndex() const;
+  virtual absl::optional<int> GetTableCellAriaRowIndex() const;
+  virtual absl::optional<int32_t> GetCellId(int row_index, int col_index) const;
+  virtual absl::optional<int32_t> CellIndexToId(int cell_index) const;
 
   // Returns true if this node is a cell or a row/column header in an ARIA grid
   // or treegrid.
-  virtual bool IsCellOrHeaderOfAriaGrid() const = 0;
+  virtual bool IsCellOrHeaderOfAriaGrid() const;
 
   // See `AXNode::IsRootWebAreaForPresentationalIframe()`.
   virtual bool IsRootWebAreaForPresentationalIframe() const = 0;
 
   // Ordered-set-like and item-like nodes.
-  virtual bool IsOrderedSetItem() const = 0;
-  virtual bool IsOrderedSet() const = 0;
+  virtual bool IsOrderedSetItem() const;
+  virtual bool IsOrderedSet() const;
   virtual absl::optional<int> GetPosInSet() const = 0;
   virtual absl::optional<int> GetSetSize() const = 0;
 
   // Computed colors, taking blending into account.
-  virtual SkColor GetColor() const = 0;
-  virtual SkColor GetBackgroundColor() const = 0;
+  virtual SkColor GetColor() const;
+  virtual SkColor GetBackgroundColor() const;
 
   //
   // Events.
@@ -639,6 +635,8 @@ class AX_EXPORT AXPlatformNodeDelegate {
   explicit AXPlatformNodeDelegate(AXNode* node);
 
   virtual std::string SubtreeToStringHelper(size_t level) = 0;
+
+  virtual void EnableGlobalAccessibilityModeOnApiUsage() const {}
 
  private:
   // The underlying node. This could change during the lifetime of this object

@@ -426,6 +426,10 @@ class AX_EXPORT AXNode final {
 
   ax::mojom::NameFrom GetNameFrom() const { return data().GetNameFrom(); }
 
+  ax::mojom::DescriptionFrom GetDescriptionFrom() const {
+    return data().GetDescriptionFrom();
+  }
+
   ax::mojom::InvalidState GetInvalidState() const {
     return data().GetInvalidState();
   }

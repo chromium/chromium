@@ -466,10 +466,6 @@ void TestAXNodeWrapper::ReplaceTreeDataTextSelection(int32_t anchor_node_id,
   tree_->UpdateDataForTesting(new_tree_data);
 }
 
-bool TestAXNodeWrapper::IsTable() const {
-  return node_->IsTable();
-}
-
 absl::optional<int> TestAXNodeWrapper::GetTableRowCount() const {
   return node_->GetTableRowCount();
 }

@@ -111,7 +111,6 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegateBase {
   AXPlatformNode* GetFromTreeIDAndNodeID(const ui::AXTreeID& ax_tree_id,
                                          int32_t id) override;
   absl::optional<size_t> GetIndexInParent() override;
-  bool IsTable() const override;
   absl::optional<int> GetTableRowCount() const override;
   absl::optional<int> GetTableColCount() const override;
   absl::optional<int> GetTableAriaColCount() const override;

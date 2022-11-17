@@ -28,198 +28,6 @@ const AXNodeData& AXPlatformNodeDelegateBase::GetData() const {
   return *empty_data;
 }
 
-const AXTreeData& AXPlatformNodeDelegateBase::GetTreeData() const {
-  static base::NoDestructor<AXTreeData> empty_data;
-  return *empty_data;
-}
-
-ax::mojom::Role AXPlatformNodeDelegateBase::GetRole() const {
-  return GetData().role;
-}
-
-bool AXPlatformNodeDelegateBase::HasBoolAttribute(
-    ax::mojom::BoolAttribute attribute) const {
-  return GetData().HasBoolAttribute(attribute);
-}
-
-bool AXPlatformNodeDelegateBase::GetBoolAttribute(
-    ax::mojom::BoolAttribute attribute) const {
-  return GetData().GetBoolAttribute(attribute);
-}
-
-bool AXPlatformNodeDelegateBase::GetBoolAttribute(
-    ax::mojom::BoolAttribute attribute,
-    bool* value) const {
-  return GetData().GetBoolAttribute(attribute, value);
-}
-
-bool AXPlatformNodeDelegateBase::HasFloatAttribute(
-    ax::mojom::FloatAttribute attribute) const {
-  return GetData().HasFloatAttribute(attribute);
-}
-
-float AXPlatformNodeDelegateBase::GetFloatAttribute(
-    ax::mojom::FloatAttribute attribute) const {
-  return GetData().GetFloatAttribute(attribute);
-}
-
-bool AXPlatformNodeDelegateBase::GetFloatAttribute(
-    ax::mojom::FloatAttribute attribute,
-    float* value) const {
-  return GetData().GetFloatAttribute(attribute, value);
-}
-
-const std::vector<std::pair<ax::mojom::IntAttribute, int32_t>>&
-AXPlatformNodeDelegateBase::GetIntAttributes() const {
-  return GetData().int_attributes;
-}
-
-bool AXPlatformNodeDelegateBase::HasIntAttribute(
-    ax::mojom::IntAttribute attribute) const {
-  return GetData().HasIntAttribute(attribute);
-}
-
-int AXPlatformNodeDelegateBase::GetIntAttribute(
-    ax::mojom::IntAttribute attribute) const {
-  return GetData().GetIntAttribute(attribute);
-}
-
-bool AXPlatformNodeDelegateBase::GetIntAttribute(
-    ax::mojom::IntAttribute attribute,
-    int* value) const {
-  return GetData().GetIntAttribute(attribute, value);
-}
-
-const std::vector<std::pair<ax::mojom::StringAttribute, std::string>>&
-AXPlatformNodeDelegateBase::GetStringAttributes() const {
-  return GetData().string_attributes;
-}
-
-bool AXPlatformNodeDelegateBase::HasStringAttribute(
-    ax::mojom::StringAttribute attribute) const {
-  return GetData().HasStringAttribute(attribute);
-}
-
-const std::string& AXPlatformNodeDelegateBase::GetStringAttribute(
-    ax::mojom::StringAttribute attribute) const {
-  return GetData().GetStringAttribute(attribute);
-}
-
-bool AXPlatformNodeDelegateBase::GetStringAttribute(
-    ax::mojom::StringAttribute attribute,
-    std::string* value) const {
-  return GetData().GetStringAttribute(attribute, value);
-}
-
-std::u16string AXPlatformNodeDelegateBase::GetString16Attribute(
-    ax::mojom::StringAttribute attribute) const {
-  return GetData().GetString16Attribute(attribute);
-}
-
-bool AXPlatformNodeDelegateBase::GetString16Attribute(
-    ax::mojom::StringAttribute attribute,
-    std::u16string* value) const {
-  return GetData().GetString16Attribute(attribute, value);
-}
-
-const std::string& AXPlatformNodeDelegateBase::GetInheritedStringAttribute(
-    ax::mojom::StringAttribute attribute) const {
-  NOTIMPLEMENTED();
-  return GetData().GetStringAttribute(attribute);
-}
-
-std::u16string AXPlatformNodeDelegateBase::GetInheritedString16Attribute(
-    ax::mojom::StringAttribute attribute) const {
-  NOTIMPLEMENTED();
-  return GetData().GetString16Attribute(attribute);
-}
-
-const std::vector<std::pair<ax::mojom::IntListAttribute, std::vector<int32_t>>>&
-AXPlatformNodeDelegateBase::GetIntListAttributes() const {
-  return GetData().intlist_attributes;
-}
-
-bool AXPlatformNodeDelegateBase::HasIntListAttribute(
-    ax::mojom::IntListAttribute attribute) const {
-  return GetData().HasIntListAttribute(attribute);
-}
-
-const std::vector<int32_t>& AXPlatformNodeDelegateBase::GetIntListAttribute(
-    ax::mojom::IntListAttribute attribute) const {
-  return GetData().GetIntListAttribute(attribute);
-}
-
-bool AXPlatformNodeDelegateBase::GetIntListAttribute(
-    ax::mojom::IntListAttribute attribute,
-    std::vector<int32_t>* value) const {
-  return GetData().GetIntListAttribute(attribute, value);
-}
-
-bool AXPlatformNodeDelegateBase::HasStringListAttribute(
-    ax::mojom::StringListAttribute attribute) const {
-  return GetData().HasStringListAttribute(attribute);
-}
-
-const std::vector<std::string>&
-AXPlatformNodeDelegateBase::GetStringListAttribute(
-    ax::mojom::StringListAttribute attribute) const {
-  return GetData().GetStringListAttribute(attribute);
-}
-
-bool AXPlatformNodeDelegateBase::GetStringListAttribute(
-    ax::mojom::StringListAttribute attribute,
-    std::vector<std::string>* value) const {
-  return GetData().GetStringListAttribute(attribute, value);
-}
-
-bool AXPlatformNodeDelegateBase::HasHtmlAttribute(const char* attribute) const {
-  return GetData().HasHtmlAttribute(attribute);
-}
-
-const base::StringPairs& AXPlatformNodeDelegateBase::GetHtmlAttributes() const {
-  return GetData().html_attributes;
-}
-
-bool AXPlatformNodeDelegateBase::GetHtmlAttribute(const char* attribute,
-                                                  std::string* value) const {
-  return GetData().GetHtmlAttribute(attribute, value);
-}
-
-bool AXPlatformNodeDelegateBase::GetHtmlAttribute(const char* attribute,
-                                                  std::u16string* value) const {
-  return GetData().GetHtmlAttribute(attribute, value);
-}
-
-AXTextAttributes AXPlatformNodeDelegateBase::GetTextAttributes() const {
-  return GetData().GetTextAttributes();
-}
-
-bool AXPlatformNodeDelegateBase::HasState(ax::mojom::State state) const {
-  return GetData().HasState(state);
-}
-
-ax::mojom::State AXPlatformNodeDelegateBase::GetState() const {
-  return static_cast<ax::mojom::State>(GetData().state);
-}
-
-bool AXPlatformNodeDelegateBase::HasAction(ax::mojom::Action action) const {
-  return GetData().HasAction(action);
-}
-
-bool AXPlatformNodeDelegateBase::HasTextStyle(
-    ax::mojom::TextStyle text_style) const {
-  return GetData().HasTextStyle(text_style);
-}
-
-ax::mojom::NameFrom AXPlatformNodeDelegateBase::GetNameFrom() const {
-  return GetData().GetNameFrom();
-}
-
-ax::mojom::DescriptionFrom AXPlatformNodeDelegateBase::GetDescriptionFrom()
-    const {
-  return GetData().GetDescriptionFrom();
-}
-
 std::u16string AXPlatformNodeDelegateBase::GetTextContentUTF16() const {
   // Unlike in web content The "kValue" attribute always takes precedence,
   // because we assume that users of this base class, such as Views controls,
@@ -265,11 +73,6 @@ std::u16string AXPlatformNodeDelegateBase::GetValueForControl() const {
     value = base::NumberToString16(numeric_value);
   }
   return value;
-}
-
-const AXSelection AXPlatformNodeDelegateBase::GetUnignoredSelection() const {
-  NOTIMPLEMENTED();
-  return AXSelection();
 }
 
 AXNodePosition::AXPositionInstance AXPlatformNodeDelegateBase::CreatePositionAt(
@@ -360,10 +163,6 @@ bool AXPlatformNodeDelegateBase::IsChildOfLeaf() const {
   return parent->IsChildOfLeaf();
 }
 
-bool AXPlatformNodeDelegateBase::IsLeaf() const {
-  return !GetChildCount();
-}
-
 bool AXPlatformNodeDelegateBase::IsFocused() const {
   return false;
 }
@@ -377,10 +176,6 @@ bool AXPlatformNodeDelegateBase::IsIgnored() const {
   // enforced once we switch to using an AXTree of AXNodes in Views.
   return GetRole() == ax::mojom::Role::kNone ||
          HasState(ax::mojom::State::kIgnored);
-}
-
-bool AXPlatformNodeDelegateBase::IsInvisibleOrIgnored() const {
-  return IsIgnored() || GetData().IsInvisible();
 }
 
 bool AXPlatformNodeDelegateBase::IsToplevelBrowserWindow() {
@@ -560,10 +355,6 @@ AXPlatformNodeDelegateBase::ChildrenEnd() {
   return std::make_unique<ChildIteratorBase>(this, GetChildCount());
 }
 
-const std::string& AXPlatformNodeDelegateBase::GetName() const {
-  return GetStringAttribute(ax::mojom::StringAttribute::kName);
-}
-
 const std::string& AXPlatformNodeDelegateBase::GetDescription() const {
   return GetStringAttribute(ax::mojom::StringAttribute::kDescription);
 }
@@ -654,18 +445,6 @@ AXPlatformNodeDelegateBase::GetTargetForNativeAccessibilityEvent() {
   return gfx::kNullAcceleratedWidget;
 }
 
-bool AXPlatformNodeDelegateBase::IsTable() const {
-  return ui::IsTableLike(GetRole());
-}
-
-absl::optional<int> AXPlatformNodeDelegateBase::GetTableRowCount() const {
-  return GetIntAttribute(ax::mojom::IntAttribute::kTableRowCount);
-}
-
-absl::optional<int> AXPlatformNodeDelegateBase::GetTableColCount() const {
-  return GetIntAttribute(ax::mojom::IntAttribute::kTableColumnCount);
-}
-
 absl::optional<int> AXPlatformNodeDelegateBase::GetTableAriaColCount() const {
   int aria_column_count;
   if (!GetIntAttribute(ax::mojom::IntAttribute::kAriaColumnCount,
@@ -684,100 +463,8 @@ absl::optional<int> AXPlatformNodeDelegateBase::GetTableAriaRowCount() const {
   return aria_row_count;
 }
 
-absl::optional<int> AXPlatformNodeDelegateBase::GetTableCellCount() const {
-  return absl::nullopt;
-}
-
-absl::optional<bool>
-AXPlatformNodeDelegateBase::GetTableHasColumnOrRowHeaderNode() const {
-  return absl::nullopt;
-}
-
-std::vector<int32_t> AXPlatformNodeDelegateBase::GetColHeaderNodeIds() const {
-  return {};
-}
-
-std::vector<int32_t> AXPlatformNodeDelegateBase::GetColHeaderNodeIds(
-    int col_index) const {
-  return {};
-}
-
-std::vector<int32_t> AXPlatformNodeDelegateBase::GetRowHeaderNodeIds() const {
-  return {};
-}
-
-std::vector<int32_t> AXPlatformNodeDelegateBase::GetRowHeaderNodeIds(
-    int row_index) const {
-  return {};
-}
-
 AXPlatformNode* AXPlatformNodeDelegateBase::GetTableCaption() const {
   return nullptr;
-}
-
-bool AXPlatformNodeDelegateBase::IsTableRow() const {
-  return ui::IsTableRow(GetRole());
-}
-
-absl::optional<int> AXPlatformNodeDelegateBase::GetTableRowRowIndex() const {
-  return GetIntAttribute(ax::mojom::IntAttribute::kTableRowIndex);
-}
-
-bool AXPlatformNodeDelegateBase::IsTableCellOrHeader() const {
-  return ui::IsCellOrTableHeader(GetRole());
-}
-
-absl::optional<int> AXPlatformNodeDelegateBase::GetTableCellColIndex() const {
-  return GetIntAttribute(ax::mojom::IntAttribute::kTableCellColumnIndex);
-}
-
-absl::optional<int> AXPlatformNodeDelegateBase::GetTableCellRowIndex() const {
-  return GetIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex);
-}
-
-absl::optional<int> AXPlatformNodeDelegateBase::GetTableCellColSpan() const {
-  return GetIntAttribute(ax::mojom::IntAttribute::kTableCellColumnSpan);
-}
-
-absl::optional<int> AXPlatformNodeDelegateBase::GetTableCellRowSpan() const {
-  return GetIntAttribute(ax::mojom::IntAttribute::kTableCellRowSpan);
-}
-
-absl::optional<int> AXPlatformNodeDelegateBase::GetTableCellAriaColIndex()
-    const {
-  if (HasIntAttribute(ax::mojom::IntAttribute::kAriaCellColumnIndex)) {
-    return GetIntAttribute(ax::mojom::IntAttribute::kAriaCellColumnIndex);
-  }
-
-  return absl::nullopt;
-}
-
-absl::optional<int> AXPlatformNodeDelegateBase::GetTableCellAriaRowIndex()
-    const {
-  if (HasIntAttribute(ax::mojom::IntAttribute::kAriaCellRowIndex)) {
-    return GetIntAttribute(ax::mojom::IntAttribute::kAriaCellRowIndex);
-  }
-
-  return absl::nullopt;
-}
-
-absl::optional<int32_t> AXPlatformNodeDelegateBase::GetCellId(
-    int row_index,
-    int col_index) const {
-  return absl::nullopt;
-}
-
-absl::optional<int> AXPlatformNodeDelegateBase::GetTableCellIndex() const {
-  return absl::nullopt;
-}
-
-absl::optional<int32_t> AXPlatformNodeDelegateBase::CellIndexToId(
-    int cell_index) const {
-  return absl::nullopt;
-}
-
-bool AXPlatformNodeDelegateBase::IsCellOrHeaderOfAriaGrid() const {
-  return false;
 }
 
 bool AXPlatformNodeDelegateBase::IsRootWebAreaForPresentationalIframe() const {
@@ -789,28 +476,12 @@ bool AXPlatformNodeDelegateBase::IsRootWebAreaForPresentationalIframe() const {
   return parent->GetRole() == ax::mojom::Role::kIframePresentational;
 }
 
-bool AXPlatformNodeDelegateBase::IsOrderedSetItem() const {
-  return false;
-}
-
-bool AXPlatformNodeDelegateBase::IsOrderedSet() const {
-  return false;
-}
-
 absl::optional<int> AXPlatformNodeDelegateBase::GetPosInSet() const {
   return absl::nullopt;
 }
 
 absl::optional<int> AXPlatformNodeDelegateBase::GetSetSize() const {
   return absl::nullopt;
-}
-
-SkColor AXPlatformNodeDelegateBase::GetColor() const {
-  return SK_ColorBLACK;
-}
-
-SkColor AXPlatformNodeDelegateBase::GetBackgroundColor() const {
-  return SK_ColorWHITE;
 }
 
 bool AXPlatformNodeDelegateBase::AccessibilityPerformAction(
@@ -875,14 +546,6 @@ bool AXPlatformNodeDelegateBase::IsText() const {
 }
 
 bool AXPlatformNodeDelegateBase::IsWebContent() const {
-  return false;
-}
-
-bool AXPlatformNodeDelegateBase::IsReadOnlySupported() const {
-  return false;
-}
-
-bool AXPlatformNodeDelegateBase::IsReadOnlyOrDisabled() const {
   return false;
 }
 
@@ -964,10 +627,6 @@ AXPlatformNodeDelegateBase::GetUIADirectChildrenInRange(
     ui::AXPlatformNodeDelegate* start,
     ui::AXPlatformNodeDelegate* end) {
   return {};
-}
-
-std::string AXPlatformNodeDelegateBase::GetLanguage() const {
-  return std::string();
 }
 
 AXPlatformNodeDelegate* AXPlatformNodeDelegateBase::GetParentDelegate() const {
