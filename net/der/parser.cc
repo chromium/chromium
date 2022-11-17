@@ -21,7 +21,7 @@ bool Parser::PeekTagAndValue(Tag* tag, Input* out) {
   CBS peeker = cbs_;
   CBS tmp_out;
   size_t header_len;
-  unsigned tag_value;
+  CBS_ASN1_TAG tag_value;
   if (!CBS_get_any_asn1_element(&peeker, &tmp_out, &tag_value, &header_len) ||
       !CBS_skip(&tmp_out, header_len)) {
     return false;
