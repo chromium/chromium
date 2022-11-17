@@ -470,7 +470,7 @@ export class OptionsPage {
         const selectedPunctuationEcho = target.options[target.selectedIndex].id;
         const punctuationEcho = AbstractTts.PUNCTUATION_ECHOES.findIndex(
             echo => echo.name === selectedPunctuationEcho);
-        BackgroundBridge.ChromeVoxState.updatePunctuationEcho(punctuationEcho);
+        BackgroundBridge.TtsBackground.updatePunctuationEcho(punctuationEcho);
       } else if (target.classList.contains('pref')) {
         if (target.tagName === 'INPUT' && target.type === 'checkbox') {
           BackgroundBridge.ChromeVoxPrefs.setPref(target.name, target.checked);
