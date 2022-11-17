@@ -263,7 +263,8 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController, B
             @Override
             public void tabClosureUndone(Tab tab) {
                 if (!mIsTabGroupUiVisible) {
-                    resetTabStripWithRelatedTabsForId(tab.getId());
+                    // Reset with the current tab as the undone tab may be in the background.
+                    resetTabStripWithRelatedTabsForId(mTabModelSelector.getCurrentTab().getId());
                 }
             }
         };
