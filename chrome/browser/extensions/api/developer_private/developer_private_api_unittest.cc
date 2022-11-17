@@ -238,7 +238,7 @@ class DeveloperPrivateApiUnitTest : public ExtensionServiceTestWithInstall {
   // A wrapper around extension_function_test_utils::RunFunction that runs with
   // the associated browser, no flags, and can take stack-allocated arguments.
   bool RunFunction(const scoped_refptr<ExtensionFunction>& function,
-                   const base::ListValue& args);
+                   const base::Value::List& args);
 
   // Loads an unpacked extension that is backed by a real directory, allowing
   // it to be reloaded.
@@ -255,7 +255,7 @@ class DeveloperPrivateApiUnitTest : public ExtensionServiceTestWithInstall {
                                 bool expected_default_value);
 
   testing::AssertionResult TestPackExtensionFunction(
-      const base::ListValue& args,
+      const base::Value::List& args,
       api::developer_private::PackStatus expected_status,
       int expected_flags);
 
@@ -294,11 +294,9 @@ class DeveloperPrivateApiUnitTest : public ExtensionServiceTestWithInstall {
 
 bool DeveloperPrivateApiUnitTest::RunFunction(
     const scoped_refptr<ExtensionFunction>& function,
-    const base::ListValue& args) {
+    const base::Value::List& args) {
   return extension_function_test_utils::RunFunction(
-      function.get(),
-      base::ListValue::From(base::Value::ToUniquePtrValue(args.Clone())),
-      browser(), api_test_utils::NONE);
+      function.get(), args.Clone(), browser(), api_test_utils::NONE);
 }
 
 const Extension* DeveloperPrivateApiUnitTest::LoadUnpackedExtension() {
@@ -353,8 +351,8 @@ void DeveloperPrivateApiUnitTest::TestExtensionPrefSetting(
     parameters.Set("extensionId", extension_id);
     parameters.Set(key, true);
 
-    base::ListValue args;
-    args.Append(base::Value(std::move(parameters)));
+    base::Value::List args;
+    args.Append(std::move(parameters));
     auto function = base::MakeRefCounted<
         api::DeveloperPrivateUpdateExtensionConfigurationFunction>();
     EXPECT_FALSE(RunFunction(function, args)) << key;
@@ -378,8 +376,8 @@ void DeveloperPrivateApiUnitTest::TestExtensionPrefSetting(
     parameters.Set("extensionId", extension_id);
     parameters.Set(key, false);
 
-    base::ListValue args;
-    args.Append(base::Value(std::move(parameters)));
+    base::Value::List args;
+    args.Append(std::move(parameters));
 
     ExtensionFunction::ScopedUserGestureForTests scoped_user_gesture;
     auto function = base::MakeRefCounted<
@@ -390,7 +388,7 @@ void DeveloperPrivateApiUnitTest::TestExtensionPrefSetting(
 }
 
 testing::AssertionResult DeveloperPrivateApiUnitTest::TestPackExtensionFunction(
-    const base::ListValue& args,
+    const base::Value::List& args,
     api::developer_private::PackStatus expected_status,
     int expected_flags) {
   auto function =
@@ -423,18 +421,18 @@ void DeveloperPrivateApiUnitTest::UpdateProfileConfigurationDevMode(
     bool dev_mode) {
   auto function = base::MakeRefCounted<
       api::DeveloperPrivateUpdateProfileConfigurationFunction>();
-  std::unique_ptr<base::ListValue> args =
+  base::Value::List args =
       ListBuilder()
           .Append(DictionaryBuilder().Set("inDeveloperMode", dev_mode).Build())
-          .Build();
-  EXPECT_TRUE(RunFunction(function, *args)) << function->GetError();
+          .BuildList();
+  EXPECT_TRUE(RunFunction(function, args)) << function->GetError();
 }
 
 void DeveloperPrivateApiUnitTest::GetProfileConfiguration(
     std::unique_ptr<api::developer_private::ProfileInfo>* profile_info) {
   auto function = base::MakeRefCounted<
       api::DeveloperPrivateGetProfileConfigurationFunction>();
-  base::ListValue args;
+  base::Value::List args;
   EXPECT_TRUE(RunFunction(function, args)) << function->GetError();
 
   ASSERT_TRUE(function->GetResultList());
@@ -526,7 +524,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateReload) {
   const Extension* extension = LoadUnpackedExtension();
   std::string extension_id = extension->id();
   auto function = base::MakeRefCounted<api::DeveloperPrivateReloadFunction>();
-  base::ListValue reload_args;
+  base::Value::List reload_args;
   reload_args.Append(extension_id);
 
   TestExtensionRegistryObserver registry_observer(registry());
@@ -560,7 +558,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivatePackFunction) {
       << "pem should not exist before the test is run!";
 
   // First, test a directory that should pack properly.
-  base::ListValue pack_args;
+  base::Value::List pack_args;
   pack_args.Append(temp_root_path.AsUTF8Unsafe());
   EXPECT_TRUE(TestPackExtensionFunction(
       pack_args, api::developer_private::PACK_STATUS_SUCCESS, 0));
@@ -587,8 +585,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivatePackFunction) {
   // get an error.
   base::DeleteFile(crx_path);
   // Remove the pem key and flags arguments.
-  pack_args.GetList().erase(pack_args.GetList().begin() + 1,
-                            pack_args.GetList().begin() + 3);
+  pack_args.erase(pack_args.begin() + 1, pack_args.begin() + 3);
   EXPECT_TRUE(TestPackExtensionFunction(
       pack_args, api::developer_private::PACK_STATUS_ERROR, 0));
 }
@@ -603,7 +600,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateChoosePath) {
   api::EntryPicker::SkipPickerAndAlwaysSelectPathForTest(&expected_dir_path);
 
   // Try selecting a directory.
-  base::ListValue choose_args;
+  base::Value::List choose_args;
   choose_args.Append("FOLDER");
   choose_args.Append("LOAD");
   auto function =
@@ -622,7 +619,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateChoosePath) {
   base::FilePath expected_file_path =
       data_dir().AppendASCII("simple_with_popup.pem");
   api::EntryPicker::SkipPickerAndAlwaysSelectPathForTest(&expected_file_path);
-  choose_args.ClearList();
+  choose_args.clear();
   choose_args.Append("FILE");
   choose_args.Append("PEM");
   function = base::MakeRefCounted<api::DeveloperPrivateChoosePathFunction>();
@@ -657,7 +654,8 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpacked) {
       base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
   function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
   ExtensionIdSet current_ids = registry()->enabled_extensions().GetIDs();
-  EXPECT_TRUE(RunFunction(function, base::ListValue())) << function->GetError();
+  EXPECT_TRUE(RunFunction(function, base::Value::List()))
+      << function->GetError();
   // We should have added one new extension.
   ExtensionIdSet id_difference = base::STLSetDifference<ExtensionIdSet>(
       registry()->enabled_extensions().GetIDs(), current_ids);
@@ -673,10 +671,10 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpacked) {
   // Try loading a bad extension (it should fail, and we should get an error).
   function = base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
   function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
-  base::ListValue unpacked_args;
+  base::Value::List unpacked_args;
   base::Value::Dict options;
   options.Set("failQuietly", true);
-  unpacked_args.Append(base::Value(std::move(options)));
+  unpacked_args.Append(std::move(options));
   current_ids = registry()->enabled_extensions().GetIDs();
   EXPECT_FALSE(RunFunction(function, unpacked_args));
   EXPECT_EQ(manifest_errors::kManifestUnreadable, function->GetError());
@@ -1129,8 +1127,8 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateRequestFileSource) {
 
   auto function =
       base::MakeRefCounted<api::DeveloperPrivateRequestFileSourceFunction>();
-  base::ListValue file_source_args;
-  file_source_args.Append(base::Value(properties.ToValue()));
+  base::Value::List file_source_args;
+  file_source_args.Append(properties.ToValue());
   EXPECT_TRUE(RunFunction(function, file_source_args)) << function->GetError();
 
   const base::Value& response_value = (*function->GetResultList())[0];
@@ -1155,7 +1153,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateGetExtensionsInfo) {
   {
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateGetExtensionsInfoFunction>();
-    EXPECT_TRUE(RunFunction(function, base::ListValue()))
+    EXPECT_TRUE(RunFunction(function, base::Value::List()))
         << function->GetError();
     const base::Value::List* results = function->GetResultList();
     ASSERT_EQ(1u, results->size());
@@ -1172,7 +1170,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateGetExtensionsInfo) {
   {
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateGetItemsInfoFunction>();
-    base::ListValue args;
+    base::Value::List args;
     args.Append(false);
     args.Append(false);
     EXPECT_TRUE(RunFunction(function, args)) << function->GetError();
@@ -1206,16 +1204,15 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateDeleteExtensionErrors) {
   // Start by removing all errors for the extension of a given type (manifest).
   std::string type_string = api::developer_private::ToString(
       api::developer_private::ERROR_TYPE_MANIFEST);
-  std::unique_ptr<base::ListValue> args =
-      ListBuilder()
-          .Append(DictionaryBuilder()
-                      .Set("extensionId", extension->id())
-                      .Set("type", type_string)
-                      .Build())
-          .Build();
+  base::Value::List args = ListBuilder()
+                               .Append(DictionaryBuilder()
+                                           .Set("extensionId", extension->id())
+                                           .Set("type", type_string)
+                                           .Build())
+                               .BuildList();
   auto function = base::MakeRefCounted<
       api::DeveloperPrivateDeleteExtensionErrorsFunction>();
-  EXPECT_TRUE(RunFunction(function, *args)) << function->GetError();
+  EXPECT_TRUE(RunFunction(function, args)) << function->GetError();
   // Two errors should remain.
   const ErrorList& error_list =
       error_console->GetErrorsForExtension(extension->id());
@@ -1229,10 +1226,10 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateDeleteExtensionErrors) {
                       .Set("extensionId", extension->id())
                       .Set("errorIds", ListBuilder().Append(error_id).Build())
                       .Build())
-          .Build();
+          .BuildList();
   function = base::MakeRefCounted<
       api::DeveloperPrivateDeleteExtensionErrorsFunction>();
-  EXPECT_TRUE(RunFunction(function, *args)) << function->GetError();
+  EXPECT_TRUE(RunFunction(function, args)) << function->GetError();
   // And then there was one.
   EXPECT_EQ(1u, error_console->GetErrorsForExtension(extension->id()).size());
 
@@ -1241,10 +1238,10 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateDeleteExtensionErrors) {
       ListBuilder()
           .Append(
               DictionaryBuilder().Set("extensionId", extension->id()).Build())
-          .Build();
+          .BuildList();
   function = base::MakeRefCounted<
       api::DeveloperPrivateDeleteExtensionErrorsFunction>();
-  EXPECT_TRUE(RunFunction(function, *args)) << function->GetError();
+  EXPECT_TRUE(RunFunction(function, args)) << function->GetError();
   // No more errors!
   EXPECT_TRUE(error_console->GetErrorsForExtension(extension->id()).empty());
 }
@@ -1256,11 +1253,10 @@ TEST_F(DeveloperPrivateApiUnitTest, RepairNotBrokenExtension) {
   const Extension* extension = InstallCRX(extension_path, INSTALL_NEW);
 
   // Attempt to repair the good extension, expect failure.
-  std::unique_ptr<base::ListValue> args =
-      ListBuilder().Append(extension->id()).Build();
+  base::Value::List args = ListBuilder().Append(extension->id()).BuildList();
   auto function =
       base::MakeRefCounted<api::DeveloperPrivateRepairExtensionFunction>();
-  EXPECT_FALSE(RunFunction(function, *args));
+  EXPECT_FALSE(RunFunction(function, args));
   EXPECT_EQ("Cannot repair a healthy extension.", function->GetError());
 }
 
@@ -1287,20 +1283,19 @@ TEST_F(DeveloperPrivateApiUnitTest, RepairPolicyExtension) {
   }
 
   // Attempt to repair the good extension, expect failure.
-  std::unique_ptr<base::ListValue> args =
-      ListBuilder().Append(extension_id).Build();
+  base::Value::List args = ListBuilder().Append(extension_id).BuildList();
   auto function =
       base::MakeRefCounted<api::DeveloperPrivateRepairExtensionFunction>();
-  EXPECT_FALSE(RunFunction(function, *args));
+  EXPECT_FALSE(RunFunction(function, args));
   EXPECT_EQ("Cannot repair a healthy extension.", function->GetError());
 
   // Corrupt the extension , still expect repair failure because this is a
   // policy extension.
   service()->DisableExtension(extension_id, disable_reason::DISABLE_CORRUPTED);
-  args = ListBuilder().Append(extension_id).Build();
+  args = ListBuilder().Append(extension_id).BuildList();
   function =
       base::MakeRefCounted<api::DeveloperPrivateRepairExtensionFunction>();
-  EXPECT_FALSE(RunFunction(function, *args));
+  EXPECT_FALSE(RunFunction(function, args));
   EXPECT_EQ("Cannot repair a policy-installed extension.",
             function->GetError());
 }
@@ -1964,7 +1959,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateGetUserSiteSettings) {
   auto function =
       base::MakeRefCounted<api::DeveloperPrivateGetUserSiteSettingsFunction>();
 
-  base::ListValue args;
+  base::Value::List args;
   EXPECT_TRUE(RunFunction(function, args)) << function->GetError();
   ASSERT_TRUE(function->GetResultList());
   ASSERT_EQ(1u, function->GetResultList()->size());
@@ -2090,7 +2085,8 @@ TEST_F(DeveloperPrivateApiUnitTest,
 
   auto function = base::MakeRefCounted<
       api::DeveloperPrivateGetUserAndExtensionSitesByEtldFunction>();
-  EXPECT_TRUE(RunFunction(function, base::ListValue())) << function->GetError();
+  EXPECT_TRUE(RunFunction(function, base::Value::List()))
+      << function->GetError();
   const base::Value::List* results = function->GetResultList();
   ASSERT_EQ(1u, results->size());
 
@@ -2146,7 +2142,8 @@ TEST_F(DeveloperPrivateApiUnitTest,
 
   auto function = base::MakeRefCounted<
       api::DeveloperPrivateGetUserAndExtensionSitesByEtldFunction>();
-  EXPECT_TRUE(RunFunction(function, base::ListValue())) << function->GetError();
+  EXPECT_TRUE(RunFunction(function, base::Value::List()))
+      << function->GetError();
   const base::Value::List* results = function->GetResultList();
   ASSERT_EQ(1u, results->size());
 
@@ -2223,7 +2220,8 @@ TEST_F(DeveloperPrivateApiUnitTest,
 
   auto function = base::MakeRefCounted<
       api::DeveloperPrivateGetUserAndExtensionSitesByEtldFunction>();
-  EXPECT_TRUE(RunFunction(function, base::ListValue())) << function->GetError();
+  EXPECT_TRUE(RunFunction(function, base::Value::List()))
+      << function->GetError();
   const base::Value::List* results = function->GetResultList();
   ASSERT_EQ(1u, results->size());
 
@@ -2277,7 +2275,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   auto get_user_and_extension_sites = [this](const std::string& expected_json) {
     auto function = base::MakeRefCounted<
         api::DeveloperPrivateGetUserAndExtensionSitesByEtldFunction>();
-    EXPECT_TRUE(RunFunction(function, base::ListValue()))
+    EXPECT_TRUE(RunFunction(function, base::Value::List()))
         << function->GetError();
     const base::Value::List* results = function->GetResultList();
     ASSERT_EQ(1u, results->size());
