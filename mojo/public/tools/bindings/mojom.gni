@@ -110,7 +110,6 @@ mojom_generator_sources =
       "$mojom_generator_root/generators/mojom_java_generator.py",
       "$mojom_generator_root/generators/mojom_js_generator.py",
       "$mojom_generator_root/generators/mojom_mojolpm_generator.py",
-      "$mojom_generator_root/generators/mojom_ts_generator.py",
       "$mojom_generator_script",
     ]
 
@@ -1721,7 +1720,7 @@ template("mojom") {
 
   use_typescript_for_target =
       enable_typescript_bindings && defined(invoker.use_typescript_sources) &&
-      invoker.use_typescript_sources
+      invoker.use_typescript_sources && defined(invoker.webui_module_path)
 
   if (!use_typescript_for_target && defined(invoker.use_typescript_sources)) {
     not_needed(invoker, [ "use_typescript_sources" ])
@@ -1954,39 +1953,14 @@ template("mojom") {
   }
   if ((generate_fuzzing || !defined(invoker.cpp_only) || !invoker.cpp_only) &&
       use_typescript_for_target) {
-    generator_js_target_names = []
-    source_filelist = []
-    foreach(source, sources_list) {
-      source_filelist += [ rebase_path(source, root_build_dir) ]
-    }
-
-    dependency_types = [
-      {
-        name = "regular"
-        ts_extension = ".ts"
-        js_extension = ".js"
-      },
-      {
-        name = "es_modules"
-        ts_extension = ".m.ts"
-        js_extension = ".m.js"
-      },
-    ]
-
-    foreach(dependency_type, dependency_types) {
-      ts_outputs = []
-      js_outputs = []
-
-      foreach(base_path, output_file_base_paths) {
-        ts_outputs +=
-            [ "$root_gen_dir/$base_path-lite${dependency_type.ts_extension}" ]
-        js_outputs +=
-            [ "$root_gen_dir/$base_path-lite${dependency_type.js_extension}" ]
+    if (sources_list != []) {
+      source_filelist = []
+      foreach(source, sources_list) {
+        source_filelist += [ rebase_path(source, root_build_dir) ]
       }
 
       # Generate Typescript bindings.
-      generator_ts_target_name =
-          "${target_name}_${dependency_type.name}__ts__generator"
+      generator_ts_target_name = "${target_name}_ts__generator"
 
       action(generator_ts_target_name) {
         script = mojom_generator_script
@@ -1997,7 +1971,10 @@ template("mojom") {
           "//mojo/public/tools/bindings:precompile_templates",
         ]
 
-        outputs = ts_outputs
+        outputs = []
+        foreach(base_path, output_file_base_paths) {
+          outputs += [ "$root_gen_dir/mojom-webui/$base_path-webui.ts" ]
+        }
         args = common_generator_args
         response_file_contents = source_filelist
 
@@ -2007,78 +1984,23 @@ template("mojom") {
           "typescript",
         ]
 
-        if (dependency_type.name == "es_modules") {
-          args += [ "--ts_use_es_modules" ]
+        if (!defined(invoker.scramble_message_ids) ||
+            invoker.scramble_message_ids) {
+          inputs += message_scrambling_inputs
+          args += message_scrambling_args
         }
 
-        # TODO(crbug.com/1007587): Support scramble_message_ids.
+        # TODO(crbug.com/1007587): Support scramble_message_ids if above is
+        # insufficient.
         # TODO(crbug.com/1007591): Support generate_fuzzing.
-      }
-
-      # Create tsconfig.json for the generated Typescript.
-      tsconfig_filename =
-          "$target_gen_dir/$target_name-${dependency_type.name}-tsconfig.json"
-      tsconfig = {
-      }
-      tsconfig.compilerOptions = {
-        composite = true
-        target = "es6"
-        module = "es6"
-        lib = [
-          "es6",
-          "esnext.bigint",
-        ]
-        strict = true
-      }
-      tsconfig.files = []
-      foreach(base_path, output_file_base_paths) {
-        tsconfig.files += [ rebase_path(
-                "$root_gen_dir/$base_path-lite${dependency_type.ts_extension}",
-                target_gen_dir,
-                root_gen_dir) ]
-      }
-      tsconfig.references = []
-
-      # Get tsconfigs for deps.
-      foreach(d, all_deps) {
-        dep_target_gen_dir = rebase_path(get_label_info(d, "target_gen_dir"))
-        dep_name = get_label_info(d, "name")
-        reference = {
-        }
-        reference.path = "$dep_target_gen_dir/$dep_name-${dependency_type.name}-tsconfig.json"
-        tsconfig.references += [ reference ]
-      }
-      write_file(tsconfig_filename, tsconfig, "json")
-
-      # Compile previously generated Typescript to Javascript.
-      generator_js_target_name =
-          "${target_name}_${dependency_type.name}__js__generator"
-      generator_js_target_names += [ generator_js_target_name ]
-
-      action(generator_js_target_name) {
-        script = "$mojom_generator_root/compile_typescript.py"
-        sources = ts_outputs
-        outputs = js_outputs
-        public_deps = [ ":$generator_ts_target_name" ]
-        foreach(d, all_deps) {
-          full_name = get_label_info(d, "label_no_toolchain")
-          public_deps +=
-              [ "${full_name}_${dependency_type.name}__js__generator" ]
-        }
-
-        absolute_tsconfig_path =
-            rebase_path(tsconfig_filename, "", target_gen_dir)
-        args = [ "--tsconfig_path=$absolute_tsconfig_path" ]
       }
     }
 
-    js_target_name = target_name + "_js"
-    group(js_target_name) {
+    ts_target_name = target_name + "_ts"
+    group(ts_target_name) {
       public_deps = []
       if (sources_list != []) {
-        foreach(generator_js_target_name, generator_js_target_names) {
-          public_deps += [ ":$generator_js_target_name" ]
-        }
+        public_deps += [ ":$generator_ts_target_name" ]
       }
 
       foreach(d, all_deps) {
@@ -2087,17 +2009,11 @@ template("mojom") {
       }
     }
 
-    group(js_data_deps_target_name) {
-      data = js_outputs
-      deps = []
-      foreach(generator_js_target_name, generator_js_target_names) {
-        deps += [ ":$generator_js_target_name" ]
-      }
-      data_deps = []
-      foreach(d, all_deps) {
-        full_name = get_label_info(d, "label_no_toolchain")
-        data_deps += [ "${full_name}_js_data_deps" ]
-      }
+    # Use |js_target_name| to track dependencies since TS targets may depend on
+    # either TS or JS targets.
+    js_target_name = target_name + "_js"
+    group(js_target_name) {
+      public_deps = [ ":$ts_target_name" ]
     }
   }
 }

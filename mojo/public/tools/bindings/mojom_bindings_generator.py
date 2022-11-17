@@ -54,7 +54,6 @@ _BUILTIN_GENERATORS = {
     "javascript": "mojom_js_generator",
     "java": "mojom_java_generator",
     "mojolpm": "mojom_mojolpm_generator",
-    "typescript": "mojom_ts_generator",
 }
 
 _BUILTIN_CHECKS = {
