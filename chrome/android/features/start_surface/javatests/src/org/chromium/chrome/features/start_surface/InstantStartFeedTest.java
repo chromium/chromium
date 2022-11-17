@@ -5,22 +5,16 @@
 package org.chromium.chrome.features.start_surface;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
-import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.Matchers.instanceOf;
 
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.INSTANT_START_TEST_BASE_PARAMS;
+import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.toggleFeedHeader;
 
 import android.view.View;
 
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
@@ -76,8 +70,6 @@ import org.chromium.ui.test.util.ViewUtils;
     UiRestriction.RESTRICTION_TYPE_PHONE})
 public class InstantStartFeedTest {
     // clang-format on
-    private static final int ARTICLE_SECTION_HEADER_POSITION = 0;
-
     @Rule
     public JniMocker mJniMocker = new JniMocker();
 
@@ -149,7 +141,7 @@ public class InstantStartFeedTest {
 
         // Hide articles and verify that FEED_ARTICLES_LIST_VISIBLE and ARTICLES_LIST_VISIBLE are
         // both false.
-        toggleHeader(false);
+        toggleFeedHeader(false);
         CriteriaHelper.pollUiThread(() -> !ReturnToChromeUtil.getFeedArticlesVisibility());
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
@@ -159,7 +151,7 @@ public class InstantStartFeedTest {
 
         // Show articles and verify that FEED_ARTICLES_LIST_VISIBLE and ARTICLES_LIST_VISIBLE are
         // both true.
-        toggleHeader(true);
+        toggleFeedHeader(true);
         CriteriaHelper.pollUiThread(ReturnToChromeUtil::getFeedArticlesVisibility);
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
@@ -195,26 +187,6 @@ public class InstantStartFeedTest {
 
         // When cached Feed articles' visibility is visible, placeholder should be visible too.
         onView(withId(org.chromium.chrome.test.R.id.placeholders_layout))
-                .check(matches(isDisplayed()));
-    }
-
-    /**
-     * Toggles the header and checks whether the header has the right status.
-     *
-     * @param expanded Whether the header should be expanded.
-     */
-    private void toggleHeader(boolean expanded) {
-        onView(allOf(instanceOf(RecyclerView.class),
-                       withId(org.chromium.chrome.test.R.id.feed_stream_recycler_view)))
-                .perform(RecyclerViewActions.scrollToPosition(ARTICLE_SECTION_HEADER_POSITION));
-        onView(withId(org.chromium.chrome.test.R.id.header_menu)).perform(click());
-
-        onView(withText(expanded ? org.chromium.chrome.test.R.string.ntp_turn_on_feed
-                                 : org.chromium.chrome.test.R.string.ntp_turn_off_feed))
-                .perform(click());
-
-        onView(withText(expanded ? org.chromium.chrome.test.R.string.ntp_discover_on
-                                 : org.chromium.chrome.test.R.string.ntp_discover_off))
                 .check(matches(isDisplayed()));
     }
 

@@ -30,6 +30,8 @@ import static org.chromium.chrome.features.start_surface.StartSurfaceMediator.FE
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_TEST_BASE_PARAMS;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_TEST_SINGLE_ENABLED_PARAMS;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.sClassParamsForStartSurfaceTest;
+import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.scrollToolbar;
+import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.scrollToolbarAndVerify;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import static org.chromium.ui.test.util.ViewUtils.waitForStableView;
 import static org.chromium.ui.test.util.ViewUtils.waitForView;
@@ -626,7 +628,7 @@ public class StartSurfaceTest {
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
 
         // Scroll the toolbar.
-        StartSurfaceTestUtils.scrollToolbar(cta);
+        StartSurfaceTestUtils.scrollToolbarAndVerify(cta);
         AppBarLayout taskSurfaceHeader = cta.findViewById(R.id.task_surface_header);
         assertNotEquals(taskSurfaceHeader.getBottom(), taskSurfaceHeader.getHeight());
 
@@ -718,6 +720,54 @@ public class StartSurfaceTest {
     @MediumTest
     @Feature({"StartSurface"})
     // clang-format off
+    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS
+            + "open_ntp_instead_of_start/false/open_start_as_homepage/true"
+            + "/show_last_active_tab_only/true"})
+    public void  testNotScrollableWhenContentIsShorterThanScreen() {
+        // clang-format on
+        if (!mImmediateReturn) {
+            StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
+        }
+
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForOverviewVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
+        StartSurfaceTestUtils.waitForDeferredStartup(mActivityTestRule);
+        int screenHeight = cta.getResources().getDisplayMetrics().heightPixels;
+
+        // If the content is shorter than the screen, the view shouldn't be scrolled.
+        onViewWaiting(allOf(withId(R.id.task_surface_header), isDisplayed()));
+        AppBarLayout taskSurfaceHeader = cta.findViewById(R.id.task_surface_header);
+        int contentHeight = taskSurfaceHeader.getMeasuredHeight()
+                + cta.findViewById(R.id.tasks_surface_body).getMeasuredHeight();
+        if (contentHeight <= screenHeight) {
+            checkContentIsNotScrollable(cta, taskSurfaceHeader);
+            return;
+        }
+
+        //  If the content is larger than the screen, scroll the toolbar.
+        scrollToolbarAndVerify(cta);
+
+        // Turning off Feed should reset Start surface's scroll position.
+        StartSurfaceTestUtils.toggleFeedHeader(false);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> taskSurfaceHeader.getBottom() == taskSurfaceHeader.getHeight());
+        // If the content is shorter than the screen now without Feed, the view shouldn't be
+        // scrolled.
+        contentHeight = taskSurfaceHeader.getMeasuredHeight()
+                + cta.findViewById(R.id.tasks_surface_body).getMeasuredHeight();
+        if (contentHeight <= screenHeight) checkContentIsNotScrollable(cta, taskSurfaceHeader);
+
+        // Turning on Feed makes the content larger than the screen, the view should be
+        // scrollable again.
+        StartSurfaceTestUtils.toggleFeedHeader(true);
+        scrollToolbarAndVerify(cta);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    // clang-format off
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     public void test_DoNotLoadLastSelectedTabOnStartup() {
         // clang-format on
@@ -746,6 +796,15 @@ public class StartSurfaceTest {
         TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
         StartSurfaceTestUtils.waitForCurrentTabLoaded(mActivityTestRule);
         Assert.assertEquals(1, RenderProcessHostUtils.getCurrentRenderProcessCount());
+    }
+
+    private void checkContentIsNotScrollable(
+            ChromeTabbedActivity cta, AppBarLayout taskSurfaceHeader) {
+        scrollToolbar(cta);
+        CriteriaHelper.pollInstrumentationThread(
+                ()
+                        -> taskSurfaceHeader.getBottom() == taskSurfaceHeader.getHeight()
+                        && cta.findViewById(R.id.tab_switcher_toolbar).getTranslationY() == 0);
     }
 
     /**
