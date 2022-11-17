@@ -23,7 +23,7 @@ namespace ash {
 
 namespace {
 
-constexpr int kDistanceFromBottom = 30;
+constexpr int kDistanceFromBottom = 24;
 
 int GetModifierFlagForKeyCode(ui::KeyboardCode key_code) {
   switch (key_code) {

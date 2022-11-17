@@ -6,11 +6,14 @@
 
 #include <memory>
 
-#include "ash/style/ash_color_id.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/font_list.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -21,16 +24,20 @@ namespace ash {
 
 namespace {
 
-constexpr int kKeyItemPadding = 4;
-constexpr gfx::Size kIconSize{26, 26};
-constexpr int kKeyItemCornerRadius = 8;
+constexpr int kKeyItemMinWidth = 64;
+constexpr int kKeyItemHeight = 64;
+constexpr int kKeyItemVerticalPadding = 16;
+constexpr int kKeyItemHorizontalPadding = 24;
+constexpr gfx::Size kIconSize{24, 24};
+constexpr char kGoogleSansFont[] = "Google Sans";
+constexpr int kKeyItemViewFontSize = 24;
+constexpr int kKeyItemViewLineHeight = 32;
 
 }  // namespace
 
 KeyItemView::KeyItemView() {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-  SetBorder(views::CreateEmptyBorder(kKeyItemPadding));
 }
 
 KeyItemView::~KeyItemView() = default;
@@ -38,8 +45,8 @@ KeyItemView::~KeyItemView() = default;
 void KeyItemView::OnThemeChanged() {
   views::View::OnThemeChanged();
   SetBackground(views::CreateRoundedRectBackground(
-      GetColorProvider()->GetColor(kColorAshShieldAndBase80),
-      kKeyItemCornerRadius));
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemBaseElevated),
+      kKeyItemHeight / 2));
 }
 
 void KeyItemView::Layout() {
@@ -52,16 +59,18 @@ void KeyItemView::Layout() {
 }
 
 gfx::Size KeyItemView::CalculatePreferredSize() const {
-  int width = 0;
-  int height = 0;
+  // Return the fixed size if the key item contains icon or label with a single
+  // character.
+  if (icon_ || (label_ && label_->GetText().length() == 1))
+    return gfx::Size(kKeyItemMinWidth, kKeyItemHeight);
 
+  int width = 0;
   for (const auto* child : children()) {
     const auto child_size = child->GetPreferredSize();
-    height = std::max(height, child_size.height());
     width += child_size.width();
   }
-  const auto insets = GetInsets();
-  return gfx::Size(width + insets.width(), height + insets.height());
+  width = std::max(width + 2 * kKeyItemHorizontalPadding, kKeyItemMinWidth);
+  return gfx::Size(width, kKeyItemHeight);
 }
 
 void KeyItemView::SetIcon(const gfx::VectorIcon& icon) {
@@ -72,18 +81,29 @@ void KeyItemView::SetIcon(const gfx::VectorIcon& icon) {
   }
 
   icon_->SetImage(
-      ui::ImageModel::FromVectorIcon(icon, kColorAshButtonIconColor));
+      ui::ImageModel::FromVectorIcon(icon, cros_tokens::kCrosSysOnSurface));
   icon_->SetImageSize(kIconSize);
 }
 
 void KeyItemView::SetText(const std::u16string& text) {
   if (!label_) {
     label_ = AddChildView(std::make_unique<views::Label>());
-    label_->SetEnabledColor(kColorAshTextColorPrimary);
+    label_->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
     label_->SetElideBehavior(gfx::ElideBehavior::NO_ELIDE);
-    label_->SetFontList(views::Label::GetDefaultFontList().Derive(
-        8, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
+    label_->SetFontList(gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL,
+                                      kKeyItemViewFontSize,
+                                      gfx::Font::Weight::MEDIUM));
+    label_->SetLineHeight(kKeyItemViewLineHeight);
   }
+
+  // Set the border only when necessary which is the multi-character case and
+  // clear the border for the single-character case in case the border was set
+  // with the multi-character settings before.
+  SetBorder(text.length() == 1
+                ? nullptr
+                : views::CreateEmptyBorder(gfx::Insets::VH(
+                      kKeyItemVerticalPadding, kKeyItemHorizontalPadding)));
+
   label_->SetText(text);
 }
 
