@@ -1715,7 +1715,7 @@ bool Textfield::ShouldDoLearning() {
   if (should_do_learning_.has_value())
     return should_do_learning_.value();
 
-  NOTIMPLEMENTED_LOG_ONCE() << "A Textfield does not support ShouldDoLearning";
+  NOTIMPLEMENTED_LOG_ONCE();
   DVLOG(1) << "This Textfield instance does not support ShouldDoLearning";
   return false;
 }
