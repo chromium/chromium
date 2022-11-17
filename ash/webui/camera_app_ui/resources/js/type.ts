@@ -128,7 +128,6 @@ export enum Facing {
   VIRTUAL_USER = 'virtual_user',
   VIRTUAL_ENV = 'virtual_environment',
   VIRTUAL_EXT = 'virtual_external',
-  UNKNOWN = 'unknown',
 }
 
 export enum ViewName {
@@ -358,7 +357,6 @@ export enum ErrorType {
   START_CAPTURE_FAILURE = 'start-capture-failure',
   STOP_CAPTURE_FAILURE = 'stop-capture-failure',
   UNCAUGHT_PROMISE = 'uncaught-promise',
-  UNKNOWN_FACING = 'unknown-facing',
   UNSAFE_INTEGER = 'unsafe-integer',
   UNSUPPORTED_PROTOCOL = 'unsupported-protocol',
 }
