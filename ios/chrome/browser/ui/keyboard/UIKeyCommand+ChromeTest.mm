@@ -51,12 +51,11 @@ UIKeyCommand* KeyCommand(NSString* input) {
 // Checks that UIKeyCommand-s are correctly created.
 TEST_F(UIKeyCommandChromeTest, Factories) {
   Verify(UIKeyCommand.cr_openNewTab, @"⌘T", @"keyCommand_openNewTab",
-         IDS_IOS_TOOLS_MENU_NEW_TAB);
+         IDS_IOS_KEYBOARD_NEW_TAB);
   Verify(UIKeyCommand.cr_openNewRegularTab, @"⌘N",
          @"keyCommand_openNewRegularTab");
   Verify(UIKeyCommand.cr_openNewIncognitoTab, @"⇧⌘N",
-         @"keyCommand_openNewIncognitoTab",
-         IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
+         @"keyCommand_openNewIncognitoTab", IDS_IOS_KEYBOARD_NEW_INCOGNITO_TAB);
   Verify(UIKeyCommand.cr_openNewWindow, @"⌥⌘N", @"keyCommand_openNewWindow",
          IDS_IOS_KEYBOARD_NEW_WINDOW);
   Verify(UIKeyCommand.cr_openNewIncognitoWindow, @"⌥⇧⌘N",
@@ -65,7 +64,7 @@ TEST_F(UIKeyCommandChromeTest, Factories) {
   Verify(UIKeyCommand.cr_reopenLastClosedTab, @"⇧⌘T",
          @"keyCommand_reopenLastClosedTab", IDS_IOS_KEYBOARD_REOPEN_CLOSED_TAB);
   Verify(UIKeyCommand.cr_find, @"⌘F", @"keyCommand_find",
-         IDS_IOS_TOOLS_MENU_FIND_IN_PAGE);
+         IDS_IOS_KEYBOARD_FIND_IN_PAGE);
   Verify(UIKeyCommand.cr_findNext, @"⌘G", @"keyCommand_findNext",
          IDS_IOS_KEYBOARD_FIND_NEXT);
   Verify(UIKeyCommand.cr_findPrevious, @"⇧⌘G", @"keyCommand_findPrevious",
@@ -73,7 +72,7 @@ TEST_F(UIKeyCommandChromeTest, Factories) {
   Verify(UIKeyCommand.cr_openLocation, @"⌘L", @"keyCommand_openLocation",
          IDS_IOS_KEYBOARD_OPEN_LOCATION);
   Verify(UIKeyCommand.cr_closeTab, @"⌘W", @"keyCommand_closeTab",
-         IDS_IOS_TOOLS_MENU_CLOSE_TAB);
+         IDS_IOS_KEYBOARD_CLOSE_TAB);
   Verify(UIKeyCommand.cr_showNextTab, @"⌃⇥", @"keyCommand_showNextTab",
          IDS_IOS_KEYBOARD_NEXT_TAB);
   Verify(UIKeyCommand.cr_showPreviousTab, @"⌃⇧⇥", @"keyCommand_showPreviousTab",
@@ -89,7 +88,7 @@ TEST_F(UIKeyCommandChromeTest, Factories) {
   Verify(UIKeyCommand.cr_addToBookmarks, @"⌘D", @"keyCommand_addToBookmarks",
          IDS_IOS_KEYBOARD_ADD_TO_BOOKMARKS);
   Verify(UIKeyCommand.cr_reload, @"⌘R", @"keyCommand_reload",
-         IDS_IOS_ACCNAME_RELOAD);
+         IDS_IOS_KEYBOARD_RELOAD);
   Verify(UIKeyCommand.cr_back, @"⌘[", @"keyCommand_back",
          IDS_IOS_KEYBOARD_HISTORY_BACK);
   Verify(UIKeyCommand.cr_forward, @"⌘]", @"keyCommand_forward",
@@ -99,7 +98,7 @@ TEST_F(UIKeyCommandChromeTest, Factories) {
   Verify(UIKeyCommand.cr_showHistory, @"⌘Y", @"keyCommand_showHistory",
          IDS_IOS_KEYBOARD_SHOW_HISTORY);
   Verify(UIKeyCommand.cr_voiceSearch, @"⇧⌘.", @"keyCommand_voiceSearch",
-         IDS_IOS_VOICE_SEARCH_KEYBOARD_DISCOVERY_TITLE);
+         IDS_IOS_KEYBOARD_VOICE_SEARCH);
   Verify(UIKeyCommand.cr_close, @"⎋", @"keyCommand_close");
   Verify(UIKeyCommand.cr_showSettings, @"⌘,", @"keyCommand_showSettings",
          IDS_IOS_KEYBOARD_SHOW_SETTINGS);

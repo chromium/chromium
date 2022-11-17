@@ -179,6 +179,7 @@ test("ios_chrome_unittests") {
     ":run_all_unittests",
     "//ios/chrome/app:tests_fake_hook",
     "//ios/chrome/app/resources:packed_resources",
+    "//ios/chrome/app/resources:system_strings",
 
     # Use the test implementation of the provider API.
     "//ios/chrome/test/providers",

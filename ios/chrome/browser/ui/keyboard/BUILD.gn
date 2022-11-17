@@ -13,11 +13,7 @@ source_set("keyboard") {
   ]
   deps = [
     "//base",
-    "//components/strings",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/util",
-    "//ui/base",
   ]
 }
 
@@ -40,8 +36,8 @@ source_set("unit_tests") {
   deps = [
     ":keyboard",
     "//base",
+    "//base:i18n",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui/commands",
     "//testing/gtest",
     "//ui/base",
   ]
@@ -55,7 +51,6 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "keyboard_commands_egtest.mm" ]
   deps = [
-    "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/bookmarks:constants",
     "//ios/chrome/browser/ui/popup_menu:constants",
