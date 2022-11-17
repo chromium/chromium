@@ -250,8 +250,10 @@ class V4Store {
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, FailedMmapOnRead);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, MigrateToMmap);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, MigrateToInMemory);
+  FRIEND_TEST_ALL_PREFIXES(V4StoreTest, MigrateFileOffsets);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, MigrateToInMemoryFails);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, CleanUpOldFiles);
+  FRIEND_TEST_ALL_PREFIXES(V4StoreTest, FileSizeIncludesHashFiles);
   FRIEND_TEST_ALL_PREFIXES(V4StorePerftest, StressTest);
 
   friend class V4StoreTest;
@@ -280,12 +282,6 @@ class V4Store {
       const HashPrefixMap& hash_prefix_map,
       const IteratorMap& iterator_map,
       HashPrefix* smallest_hash_prefix);
-
-  // Returns true if |hash_prefix| with PrefixSize |size| exists in |prefixes|.
-  // This small method is exposed in the header so it can be tested separately.
-  static bool HashPrefixMatches(base::StringPiece prefix,
-                                HashPrefixesView prefixes,
-                                const PrefixSize& size);
 
   // For each key in |hash_prefix_map|, sets the iterator at that key
   // |iterator_map| to hash_prefix_map[key].begin().

@@ -15,6 +15,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/core/browser/db/v4_store.pb.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "crypto/sha2.h"
 #include "testing/platform_test.h"
 
@@ -616,39 +617,45 @@ TEST_F(V4StoreTest, TestReadFullResponseWithInvalidHashPrefixMap) {
 }
 
 TEST_F(V4StoreTest, TestHashPrefixExistsAtTheBeginning) {
-  HashPrefixes hash_prefixes = "abcdebbbbbccccc";
+  InMemoryHashPrefixMap map;
+  map.Append(5, "abcdebbbbbccccc");
   HashPrefix hash_prefix = "abcde";
-  EXPECT_TRUE(V4Store::HashPrefixMatches(hash_prefix, hash_prefixes, 5));
+  EXPECT_EQ(map.GetMatchingHashPrefix(hash_prefix), hash_prefix);
 }
 
 TEST_F(V4StoreTest, TestHashPrefixExistsInTheMiddle) {
-  HashPrefixes hash_prefixes = "abcdebbbbbccccc";
+  InMemoryHashPrefixMap map;
+  map.Append(5, "abcdebbbbbccccc");
   HashPrefix hash_prefix = "bbbbb";
-  EXPECT_TRUE(V4Store::HashPrefixMatches(hash_prefix, hash_prefixes, 5));
+  EXPECT_EQ(map.GetMatchingHashPrefix(hash_prefix), hash_prefix);
 }
 
 TEST_F(V4StoreTest, TestHashPrefixExistsAtTheEnd) {
-  HashPrefixes hash_prefixes = "abcdebbbbbccccc";
+  InMemoryHashPrefixMap map;
+  map.Append(5, "abcdebbbbbccccc");
   HashPrefix hash_prefix = "ccccc";
-  EXPECT_TRUE(V4Store::HashPrefixMatches(hash_prefix, hash_prefixes, 5));
+  EXPECT_EQ(map.GetMatchingHashPrefix(hash_prefix), hash_prefix);
 }
 
 TEST_F(V4StoreTest, TestHashPrefixExistsAtTheBeginningOfEven) {
-  HashPrefixes hash_prefixes = "abcdebbbbb";
+  InMemoryHashPrefixMap map;
+  map.Append(5, "abcdebbbbb");
   HashPrefix hash_prefix = "abcde";
-  EXPECT_TRUE(V4Store::HashPrefixMatches(hash_prefix, hash_prefixes, 5));
+  EXPECT_EQ(map.GetMatchingHashPrefix(hash_prefix), hash_prefix);
 }
 
 TEST_F(V4StoreTest, TestHashPrefixExistsAtTheEndOfEven) {
-  HashPrefixes hash_prefixes = "abcdebbbbb";
+  InMemoryHashPrefixMap map;
+  map.Append(5, "abcdebbbbb");
   HashPrefix hash_prefix = "bbbbb";
-  EXPECT_TRUE(V4Store::HashPrefixMatches(hash_prefix, hash_prefixes, 5));
+  EXPECT_EQ(map.GetMatchingHashPrefix(hash_prefix), hash_prefix);
 }
 
 TEST_F(V4StoreTest, TestHashPrefixDoesNotExistInConcatenatedList) {
-  HashPrefixes hash_prefixes = "abcdebbbbb";
+  InMemoryHashPrefixMap map;
+  map.Append(5, "abcdebbbbb");
   HashPrefix hash_prefix = "bbbbc";
-  EXPECT_FALSE(V4Store::HashPrefixMatches(hash_prefix, hash_prefixes, 5));
+  EXPECT_EQ(map.GetMatchingHashPrefix(hash_prefix), "");
 }
 
 TEST_F(V4StoreTest, TestFullHashExistsInMapWithSingleSize) {
@@ -966,23 +973,27 @@ TEST_F(V4StoreTest, FailedMmapOnRead) {
 }
 
 TEST_F(V4StoreTest, MigrateToMmap) {
+  const std::string kFullHash = "abcdefghijklmnopqrstu";
+  const std::string kHash = "abcde";
   InMemoryV4Store write_store(task_runner_, store_path_);
   write_store.state_ = "test_client_state";
-  write_store.hash_prefix_map_->Append(5, "abcde");
+  write_store.hash_prefix_map_->Append(5, kHash);
   EXPECT_EQ(WRITE_SUCCESS, write_store.WriteToDisk(Checksum()));
 
   // Make sure an in-memory store can read correctly.
   InMemoryV4Store in_memory_store(task_runner_, store_path_);
   EXPECT_EQ(READ_SUCCESS, in_memory_store.ReadFromDisk());
   EXPECT_EQ("test_client_state", in_memory_store.state());
-  EXPECT_EQ(in_memory_store.hash_prefix_map_->view()[5], "abcde");
+  EXPECT_EQ(in_memory_store.hash_prefix_map_->view()[5], kHash);
+  EXPECT_EQ(in_memory_store.GetMatchingHashPrefix(kFullHash), kHash);
 
   // Migrate to a mmap store.
   V4Store mmap_store(task_runner_, store_path_,
                      std::make_unique<MmapHashPrefixMap>(store_path_));
   EXPECT_EQ(READ_SUCCESS, mmap_store.ReadFromDisk());
   EXPECT_EQ("test_client_state", mmap_store.state());
-  EXPECT_EQ(mmap_store.hash_prefix_map_->view()[5], "abcde");
+  EXPECT_EQ(mmap_store.hash_prefix_map_->view()[5], kHash);
+  EXPECT_EQ(mmap_store.GetMatchingHashPrefix(kFullHash), kHash);
 
   std::string proto_contents;
   EXPECT_TRUE(base::ReadFileToString(store_path_, &proto_contents));
@@ -995,7 +1006,7 @@ TEST_F(V4StoreTest, MigrateToMmap) {
       MmapHashPrefixMap::GetPath(store_path_,
                                  file_format.hash_files(0).extension()),
       &contents));
-  EXPECT_EQ(contents, "abcde");
+  EXPECT_EQ(contents, kHash);
 
   // Reading again should not migrate.
   base::Time last_modified = GetLastModifiedTime(store_path_);
@@ -1003,25 +1014,30 @@ TEST_F(V4StoreTest, MigrateToMmap) {
                       std::make_unique<MmapHashPrefixMap>(store_path_));
   EXPECT_EQ(READ_SUCCESS, mmap_store2.ReadFromDisk());
   EXPECT_EQ(GetLastModifiedTime(store_path_), last_modified);
+  EXPECT_EQ(mmap_store2.GetMatchingHashPrefix(kFullHash), kHash);
 }
 
 TEST_F(V4StoreTest, MigrateToInMemory) {
+  const std::string kFullHash = "abcdefghijklmnopqrstu";
+  const std::string kHash = "abcde";
   auto mmap_map = std::make_unique<MmapHashPrefixMap>(store_path_);
   auto* mmap_map_raw = mmap_map.get();
   V4Store write_store(task_runner_, store_path_, std::move(mmap_map));
   write_store.state_ = "test_client_state";
-  write_store.hash_prefix_map_->Append(5, "abcde");
+  write_store.hash_prefix_map_->Append(5, kHash);
   base::FilePath hashes_path = MmapHashPrefixMap::GetPath(
       store_path_, mmap_map_raw->GetExtensionForTesting(5));
   EXPECT_EQ(WRITE_SUCCESS, write_store.WriteToDisk(Checksum()));
+  EXPECT_EQ(write_store.GetMatchingHashPrefix(kFullHash), kHash);
 
   // Make sure a mmap store can read correctly.
   V4Store mmap_store(task_runner_, store_path_,
                      std::make_unique<MmapHashPrefixMap>(store_path_));
   EXPECT_EQ(READ_SUCCESS, mmap_store.ReadFromDisk());
   EXPECT_EQ("test_client_state", mmap_store.state());
-  EXPECT_EQ(mmap_store.hash_prefix_map_->view()[5], "abcde");
+  EXPECT_EQ(mmap_store.hash_prefix_map_->view()[5], kHash);
   EXPECT_TRUE(base::PathExists(hashes_path));
+  EXPECT_EQ(mmap_store.GetMatchingHashPrefix(kFullHash), kHash);
 
   write_store.Reset();
   mmap_store.Reset();
@@ -1030,15 +1046,46 @@ TEST_F(V4StoreTest, MigrateToInMemory) {
   InMemoryV4Store in_memory_store(task_runner_, store_path_);
   EXPECT_EQ(READ_SUCCESS, in_memory_store.ReadFromDisk());
   EXPECT_EQ("test_client_state", in_memory_store.state());
-  EXPECT_EQ(in_memory_store.hash_prefix_map_->view()[5], "abcde");
+  EXPECT_EQ(in_memory_store.hash_prefix_map_->view()[5], kHash);
+  EXPECT_EQ(in_memory_store.GetMatchingHashPrefix(kFullHash), kHash);
 
   EXPECT_FALSE(base::PathExists(hashes_path));
 
   // Reading again should not migrate.
   base::Time last_modified = GetLastModifiedTime(store_path_);
   InMemoryV4Store in_memory_store2(task_runner_, store_path_);
-  EXPECT_EQ(READ_SUCCESS, in_memory_store.ReadFromDisk());
+  EXPECT_EQ(READ_SUCCESS, in_memory_store2.ReadFromDisk());
   EXPECT_EQ(GetLastModifiedTime(store_path_), last_modified);
+  EXPECT_EQ(in_memory_store2.GetMatchingHashPrefix(kFullHash), kHash);
+}
+
+TEST_F(V4StoreTest, MigrateFileOffsets) {
+  const std::string kFullHash = "abcdefghijklmnopqrstu";
+  const std::string kHash = "abcd";
+  const std::string kFullHash2 = "zzzzefghijklmnopqrstu";
+  const std::string kHash2 = "zzzz";
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kMmapSafeBrowsingDatabase, {{"store-bytes-per-offset", "8"}});
+  V4Store write_store(task_runner_, store_path_,
+                      std::make_unique<MmapHashPrefixMap>(store_path_));
+  write_store.state_ = "test_client_state";
+  write_store.hash_prefix_map_->Append(4, kHash + kHash2);
+  EXPECT_EQ(WRITE_SUCCESS, write_store.WriteToDisk(Checksum()));
+  EXPECT_EQ(write_store.GetMatchingHashPrefix(kFullHash), kHash);
+  EXPECT_EQ(write_store.GetMatchingHashPrefix(kFullHash2), kHash2);
+
+  feature_list.Reset();
+  feature_list.InitAndEnableFeatureWithParameters(
+      kMmapSafeBrowsingDatabase, {{"store-bytes-per-offset", "4"}});
+
+  V4Store mmap_store(task_runner_, store_path_,
+                     std::make_unique<MmapHashPrefixMap>(store_path_));
+
+  EXPECT_EQ(READ_SUCCESS, mmap_store.ReadFromDisk());
+  EXPECT_EQ("test_client_state", mmap_store.state());
+  EXPECT_EQ(mmap_store.GetMatchingHashPrefix(kFullHash), kHash);
+  EXPECT_EQ(mmap_store.GetMatchingHashPrefix(kFullHash2), kHash2);
 }
 
 TEST_F(V4StoreTest, MigrateToInMemoryFails) {
@@ -1073,6 +1120,26 @@ TEST_F(V4StoreTest, CleanUpOldFiles) {
 
   EXPECT_FALSE(base::PathExists(old_hashes_path));
   EXPECT_TRUE(base::PathExists(other_path));
+}
+
+TEST_F(V4StoreTest, FileSizeIncludesHashFiles) {
+  V4Store write_store(task_runner_, store_path_,
+                      std::make_unique<MmapHashPrefixMap>(store_path_));
+  write_store.hash_prefix_map_->Append(4, "abcd");
+  EXPECT_EQ(WRITE_SUCCESS, write_store.WriteToDisk(Checksum()));
+
+  int64_t original_file_size = write_store.file_size();
+
+  write_store.Reset();
+  write_store.hash_prefix_map_->Append(4, "abcd");
+  write_store.hash_prefix_map_->Append(4, "efgh");
+  EXPECT_EQ(WRITE_SUCCESS, write_store.WriteToDisk(Checksum()));
+  EXPECT_EQ(write_store.file_size(), original_file_size + 4);
+
+  V4Store read_store(task_runner_, store_path_,
+                     std::make_unique<MmapHashPrefixMap>(store_path_));
+  EXPECT_EQ(READ_SUCCESS, read_store.ReadFromDisk());
+  EXPECT_EQ(read_store.file_size(), original_file_size + 4);
 }
 
 }  // namespace safe_browsing

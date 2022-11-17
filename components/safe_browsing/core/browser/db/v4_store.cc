@@ -771,11 +771,8 @@ StoreReadResult V4Store::ReadFromDisk() {
   if (migrate_result == HashPrefixMap::MigrateResult::kFailure)
     return MIGRATION_FAILURE;
 
-  ApplyUpdateResult apply_update_result = APPLY_UPDATE_SUCCESS;
-  // If the migration was not needed, read the file from the disk like normal.
-  if (migrate_result == HashPrefixMap::MigrateResult::kNotNeeded)
-    apply_update_result = hash_prefix_map_->ReadFromDisk(file_format);
-
+  ApplyUpdateResult apply_update_result =
+      hash_prefix_map_->ReadFromDisk(file_format);
   if (apply_update_result == APPLY_UPDATE_SUCCESS) {
     std::unique_ptr<ListUpdateResponse> response(new ListUpdateResponse);
     response->Swap(file_format.mutable_list_update_response());
@@ -792,6 +789,8 @@ StoreReadResult V4Store::ReadFromDisk() {
 
   // Update |file_size_| now because we parsed the file correctly.
   file_size_ = file_size;
+  for (const auto& hash_file : file_format.hash_files())
+    file_size_ += hash_file.file_size();
 
   return READ_SUCCESS;
 }
@@ -838,6 +837,8 @@ StoreWriteResult V4Store::WriteToDisk(V4StoreFileFormat* file_format) {
 
   // Update |file_size_| now because we wrote the file correctly.
   file_size_ = static_cast<int64_t>(written);
+  for (const auto& hash_file : file_format->hash_files())
+    file_size_ += hash_file.file_size();
 
   // No cleanup needed, reset the closure.
   std::ignore = cleanup_on_error.Release();
@@ -856,21 +857,7 @@ HashPrefix V4Store::GetMatchingHashPrefix(base::StringPiece full_hash) {
   // It does not guarantee which one of those will be returned.
   DCHECK(full_hash.size() == 32u || full_hash.size() == 21u);
   checks_attempted_++;
-  for (const auto& pair : hash_prefix_map_->view()) {
-    const PrefixSize& prefix_size = pair.first;
-    base::StringPiece hash_prefix = full_hash.substr(0, prefix_size);
-    if (HashPrefixMatches(hash_prefix, pair.second, prefix_size))
-      return std::string(hash_prefix);
-  }
-  return HashPrefix();
-}
-
-bool V4Store::HashPrefixMatches(base::StringPiece prefix,
-                                HashPrefixesView prefixes,
-                                const PrefixSize& size) {
-  return std::binary_search(
-      PrefixIterator(prefixes, 0, size),
-      PrefixIterator(prefixes, prefixes.size() / size, size), prefix);
+  return hash_prefix_map_->GetMatchingHashPrefix(full_hash);
 }
 
 bool V4Store::VerifyChecksum() {

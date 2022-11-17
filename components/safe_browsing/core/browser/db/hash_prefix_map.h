@@ -101,6 +101,9 @@ class HashPrefixMap {
   // Returns true if the data in this map is valid and can be used.
   virtual ApplyUpdateResult IsValid() const = 0;
 
+  // Returns a hash prefix if it matches the prefixes stored in this map.
+  virtual HashPrefix GetMatchingHashPrefix(base::StringPiece full_hash) = 0;
+
   // Migrates the file format between the different types of HashPrefixMap.
   enum class MigrateResult { kSuccess, kFailure, kNotNeeded };
   virtual MigrateResult MigrateFileFormat(const base::FilePath& store_path,
@@ -121,6 +124,7 @@ class InMemoryHashPrefixMap : public HashPrefixMap {
   ApplyUpdateResult ReadFromDisk(const V4StoreFileFormat& file_format) override;
   bool WriteToDisk(V4StoreFileFormat* file_format) override;
   ApplyUpdateResult IsValid() const override;
+  HashPrefix GetMatchingHashPrefix(base::StringPiece full_hash) override;
   MigrateResult MigrateFileFormat(const base::FilePath& store_path,
                                   V4StoreFileFormat* file_format) override;
 
@@ -144,6 +148,7 @@ class MmapHashPrefixMap : public HashPrefixMap {
   ApplyUpdateResult ReadFromDisk(const V4StoreFileFormat& file_format) override;
   bool WriteToDisk(V4StoreFileFormat* file_format) override;
   ApplyUpdateResult IsValid() const override;
+  HashPrefix GetMatchingHashPrefix(base::StringPiece full_hash) override;
   MigrateResult MigrateFileFormat(const base::FilePath& store_path,
                                   V4StoreFileFormat* file_format) override;
 
@@ -164,6 +169,7 @@ class MmapHashPrefixMap : public HashPrefixMap {
 
     HashPrefixesView GetView() const;
     bool IsReadable() const { return file_.IsValid(); }
+    HashPrefix Matches(base::StringPiece full_hash) const;
     BufferedFileWriter* GetOrCreateWriter(size_t buffer_size);
 
     const std::string& GetExtensionForTesting() const;
@@ -174,6 +180,7 @@ class MmapHashPrefixMap : public HashPrefixMap {
 
     base::MemoryMappedFile file_;
     std::unique_ptr<BufferedFileWriter> writer_;
+    std::vector<uint32_t> offsets_;
   };
 
   FileInfo& GetFileInfo(PrefixSize size);
