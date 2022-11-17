@@ -4736,11 +4736,6 @@
     "expiry_milestone": 111
   },
   {
-    "name": "new-overflow-menu-cbd-action",
-    "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 109
-  },
-  {
     "name": "new-overflow-menu-settings-action",
     "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 109

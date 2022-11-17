@@ -481,11 +481,6 @@ const char kNewMobileIdentityConsistencyFREName[] = "New MICE FRE";
 const char kNewMobileIdentityConsistencyFREDescription[] =
     "New Mobile Identity Consistency FRE";
 
-const char kNewOverflowMenuCBDActionName[] =
-    "Clear Browsing Data action in new overflow menu";
-const char kNewOverflowMenuCBDActionDescription[] =
-    "Adds a Clear Browsing Data action to the new overflow menu";
-
 const char kNewOverflowMenuName[] = "New Overflow Menu";
 const char kNewOverflowMenuDescription[] = "Enables the new overflow menu";
 

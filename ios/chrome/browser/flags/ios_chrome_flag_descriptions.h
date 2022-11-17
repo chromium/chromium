@@ -440,11 +440,6 @@ extern const char kMostVisitedTilesDescription[];
 extern const char kNewMobileIdentityConsistencyFREName[];
 extern const char kNewMobileIdentityConsistencyFREDescription[];
 
-// Title and description for the flag to add a Clear Browsing Data action to
-// the new overflow menu.
-extern const char kNewOverflowMenuCBDActionName[];
-extern const char kNewOverflowMenuCBDActionDescription[];
-
 // Title and description for the flag to enable the new overflow menu.
 extern const char kNewOverflowMenuName[];
 extern const char kNewOverflowMenuDescription[];

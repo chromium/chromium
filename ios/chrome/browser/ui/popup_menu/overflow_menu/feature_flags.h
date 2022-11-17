@@ -10,9 +10,6 @@
 // Feature to enable the new overflow menu.
 BASE_DECLARE_FEATURE(kNewOverflowMenu);
 
-// Feature to add a Clear Browsing Data action to the new overflow menu.
-BASE_DECLARE_FEATURE(kNewOverflowMenuCBDAction);
-
 // Feature to enable smart sorting the new overflow menu.
 BASE_DECLARE_FEATURE(kSmartSortingNewOverflowMenu);
 
@@ -24,9 +21,6 @@ BASE_DECLARE_FEATURE(kNewOverflowMenuAlternateIPH);
 
 // Whether the NewOverflowMenu feature is enabled.
 bool IsNewOverflowMenuEnabled();
-
-// Whether or not the NewOverflowMenuCBDAction feature is enabled.
-bool IsNewOverflowMenuCBDActionEnabled();
 
 // Whether or not the NewOverflowMenuReorderSettings feature is enabled.
 bool IsNewOverflowMenuReorderSettingsEnabled();
