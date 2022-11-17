@@ -236,9 +236,23 @@ void WebSocket::Read() {
 }
 
 void WebSocket::OnRead(bool read_again, int code) {
-  if (code <= 0) {
+  if (code == 0) {
+    // On POSIX and FUCHSIA:
+    //   code >= 0 is the result of POSIX read function call:
+    //     code > 0 denotes the amount of successfully read bytes
+    //     code == 0 means that we have reached EOF.
+    //       The latter one is issued upon receiving a FIN packet.
+    //   code < 0 is an error code
+    // On Windows:
+    //   code >=0 is the result of recv function call (winsocks.h)
+    //     It has the same semantic as in the POSIX case
+    //   code < 0 is an error code
+    code = net::ERR_CONNECTION_CLOSED;
+  }
+
+  if (code < 0) {
     VLOG(4) << "WebSocket::OnRead error " << net::ErrorToShortString(code);
-    Close(code ? code : net::ERR_FAILED);
+    Close(code);
     return;
   }
 
