@@ -184,9 +184,10 @@ def GetCommitDescription(commit):
 
   Needs to be called from inside the git repository dir."""
   git_exe = 'git.bat' if sys.platform.startswith('win') else 'git'
-  return subprocess.check_output(
-      [git_exe, 'describe', '--long', '--abbrev=8', commit],
-      universal_newlines=True).rstrip()
+  return subprocess.check_output([
+      git_exe, 'describe', '--long', '--abbrev=8', '--match=*llvmorg-*-init',
+      commit
+  ], universal_newlines=True).rstrip()
 
 
 def AddCMakeToPath(args):
