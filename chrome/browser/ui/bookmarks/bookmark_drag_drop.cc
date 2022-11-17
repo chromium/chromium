@@ -61,10 +61,13 @@ DragOperation DropBookmarks(Profile* profile,
       for (size_t i = 0; i < dragged_nodes.size(); ++i) {
         if (copy) {
           model->Copy(dragged_nodes[i], parent_node, index);
+          // Increment `index` so that the next copied node ends up after the
+          // one that was just inserted.
+          ++index;
         } else {
           model->Move(dragged_nodes[i], parent_node, index);
+          index = parent_node->GetIndexOf(dragged_nodes[i]).value() + 1;
         }
-        index = parent_node->GetIndexOf(dragged_nodes[i]).value() + 1;
       }
       RecordBookmarkDropped(data, parent_node, is_reorder);
       return copy ? DragOperation::kCopy : DragOperation::kMove;

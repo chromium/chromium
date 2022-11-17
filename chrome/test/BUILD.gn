@@ -6828,6 +6828,7 @@ test("unit_tests") {
       "../browser/ui/autofill_assistant/password_change/apc_utils_unittest.cc",
       "../browser/ui/autofill_assistant/password_change/assistant_onboarding_controller_impl_unittest.cc",
       "../browser/ui/bookmarks/bookmark_context_menu_controller_unittest.cc",
+      "../browser/ui/bookmarks/bookmark_drag_drop_unittest.cc",
       "../browser/ui/bookmarks/bookmark_editor_unittest.cc",
       "../browser/ui/bookmarks/bookmark_ui_utils_desktop_unittest.cc",
       "../browser/ui/bookmarks/bookmark_unittest.cc",
