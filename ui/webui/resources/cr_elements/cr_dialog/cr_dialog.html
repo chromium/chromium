@@ -96,6 +96,10 @@
         padding: 16px 20px;
       }
 
+      :host([hide-backdrop]) dialog::backdrop {
+        opacity: 0;
+      }
+
       @media (prefers-color-scheme: dark) {
         :host ::slotted([slot=footer]) {
           border-top-color: var(--cr-separator-color);

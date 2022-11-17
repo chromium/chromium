@@ -60,7 +60,8 @@ The dialog provides two properties that can be set directly from HTML.
             var(--oobe-modal-dialog-content-slot-padding-start, 20px);
       }
     </style>
-    <cr-dialog id="modalDialog" on-close="onClose_">
+    <cr-dialog hide-backdrop$="[[shouldHideBackdrop]]" id="modalDialog"
+        on-close="onClose_">
       <!-- Title -->
       <div id="modalDialogTitle" slot="title" hidden="[[shouldHideTitleRow]]">
         <slot name="title">

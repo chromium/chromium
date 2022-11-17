@@ -38,6 +38,15 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /**
+     * True if confirmation dialog backdrop should be hidden.
+     * @type {boolean}
+     */
+    shouldHideBackdrop: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   get open() {
@@ -60,5 +69,4 @@ Polymer({
   onClose_() {
     chrome.send('enableShelfButtons', [true]);
   },
-
 });
