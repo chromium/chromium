@@ -50,8 +50,24 @@ int GetModifierFlagForKeyCode(ui::KeyboardCode key_code) {
 // Includes non-modifier keys that can be shown independently without a modifier
 // key being pressed.
 constexpr ui::KeyboardCode kNotNeedingModifierKeys[] = {
-    ui::VKEY_COMMAND, ui::VKEY_RWIN, ui::VKEY_MEDIA_LAUNCH_APP1,
-    ui::VKEY_ESCAPE, ui::VKEY_TAB};
+    ui::VKEY_COMMAND,
+    ui::VKEY_RWIN,
+    ui::VKEY_ESCAPE,
+    ui::VKEY_TAB,
+    ui::VKEY_BROWSER_BACK,
+    ui::VKEY_BROWSER_FORWARD,
+    ui::VKEY_BROWSER_REFRESH,
+    ui::VKEY_ZOOM,
+    ui::VKEY_MEDIA_LAUNCH_APP1,
+    ui::VKEY_BRIGHTNESS_DOWN,
+    ui::VKEY_BRIGHTNESS_UP,
+    ui::VKEY_VOLUME_MUTE,
+    ui::VKEY_VOLUME_DOWN,
+    ui::VKEY_VOLUME_UP,
+    ui::VKEY_UP,
+    ui::VKEY_DOWN,
+    ui::VKEY_LEFT,
+    ui::VKEY_RIGHT};
 
 // Returns true if `key_code` is a non-modifier key for which a `KeyComboViewer`
 // can be shown even if there are no modifier keys are currently pressed.

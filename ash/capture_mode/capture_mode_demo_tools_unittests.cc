@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "ash/accelerators/keyboard_code_util.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
@@ -17,6 +18,7 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/key_combo_view.h"
 #include "ash/constants/ash_features.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
@@ -25,8 +27,28 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/button/toggle_button.h"
+#include "ui/views/controls/image_view.h"
 
 namespace ash {
+
+namespace {
+
+constexpr ui::KeyboardCode kIconKeyCodes[] = {ui::VKEY_BROWSER_BACK,
+                                              ui::VKEY_BROWSER_FORWARD,
+                                              ui::VKEY_BROWSER_REFRESH,
+                                              ui::VKEY_ZOOM,
+                                              ui::VKEY_MEDIA_LAUNCH_APP1,
+                                              ui::VKEY_BRIGHTNESS_DOWN,
+                                              ui::VKEY_BRIGHTNESS_UP,
+                                              ui::VKEY_VOLUME_MUTE,
+                                              ui::VKEY_VOLUME_DOWN,
+                                              ui::VKEY_VOLUME_UP,
+                                              ui::VKEY_UP,
+                                              ui::VKEY_DOWN,
+                                              ui::VKEY_LEFT,
+                                              ui::VKEY_RIGHT};
+
+}  // namespace
 
 class CaptureModeDemoToolsTest : public AshTestBase {
  public:
@@ -331,6 +353,32 @@ TEST_F(CaptureModeDemoToolsTest, DemoToolsHideTimerTest) {
             ui::VKEY_UNKNOWN);
 
   fire_hide_timer_and_verify_widget();
+}
+
+// Tests that all the non-modifier keys with the icon are displayed
+// independently and correctly.
+TEST_F(CaptureModeDemoToolsTest, AllIconKeysTest) {
+  CaptureModeController* controller = StartCaptureSession(
+      CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  controller->EnableDemoTools(true);
+  StartVideoRecordingImmediately();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+  CaptureModeDemoToolsController* demo_tools_controller =
+      GetCaptureModeDemoToolsController();
+  CaptureModeDemoToolsTestApi demo_tools_test_api(demo_tools_controller);
+  auto* event_generator = GetEventGenerator();
+
+  for (const auto key_code : kIconKeyCodes) {
+    event_generator->PressKey(key_code, ui::EF_NONE);
+    EXPECT_EQ(demo_tools_test_api.GetShownNonModifierKeyCode(), key_code);
+    views::ImageView* icon = demo_tools_test_api.GetNonModifierKeyItemIcon();
+    ASSERT_TRUE(icon);
+    const auto image_model = icon->GetImageModel();
+    const gfx::VectorIcon* vector_icon = GetVectorIconForKeyboardCode(key_code);
+    EXPECT_EQ(std::string(vector_icon->name),
+              std::string(image_model.GetVectorIcon().vector_icon()->name));
+    event_generator->ReleaseKey(key_code, ui::EF_NONE);
+  }
 }
 
 class CaptureModeDemoToolsTestWithAllSources

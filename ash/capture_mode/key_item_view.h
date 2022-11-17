@@ -34,6 +34,8 @@ class KeyItemView : public views::View {
   void SetIcon(const gfx::VectorIcon& icon);
   void SetText(const std::u16string& text);
 
+  views::ImageView* icon() const { return icon_; }
+
  private:
   views::ImageView* icon_ = nullptr;
   views::Label* label_ = nullptr;

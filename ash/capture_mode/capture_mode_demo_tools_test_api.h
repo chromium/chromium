@@ -11,6 +11,7 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace views {
+class ImageView;
 class Widget;
 }  // namespace views
 
@@ -49,6 +50,9 @@ class CaptureModeDemoToolsTestApi {
   // Returns the timer to hide the key combo view on key up of the
   // non-modifier key after the expiration.
   base::OneShotTimer* GetKeyComboHideTimer();
+
+  // Returns the `icon_` of the non-modifier component of the key combo.
+  views::ImageView* GetNonModifierKeyItemIcon();
 
  private:
   CaptureModeDemoToolsController* const demo_tools_controller_;

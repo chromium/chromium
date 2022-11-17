@@ -58,4 +58,14 @@ base::OneShotTimer* CaptureModeDemoToolsTestApi::GetKeyComboHideTimer() {
   return &(demo_tools_controller_->hide_timer_);
 }
 
+views::ImageView* CaptureModeDemoToolsTestApi::GetNonModifierKeyItemIcon() {
+  DCHECK(demo_tools_controller_);
+  KeyComboView* key_combo_view = demo_tools_controller_->key_combo_view_;
+
+  if (!key_combo_view || !key_combo_view->non_modifier_view_)
+    return nullptr;
+
+  return key_combo_view->non_modifier_view_->icon();
+}
+
 }  // namespace ash

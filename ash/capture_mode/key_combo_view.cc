@@ -42,7 +42,7 @@ std::vector<ui::KeyboardCode> DecodeModifiers(int modifiers) {
   return modifier_vector;
 }
 
-std::unique_ptr<views::View> CreateKeyItemView(ui::KeyboardCode key_code) {
+std::unique_ptr<KeyItemView> CreateKeyItemView(ui::KeyboardCode key_code) {
   std::unique_ptr key_item_view = std::make_unique<KeyItemView>();
   const gfx::VectorIcon* vector_icon = GetVectorIconForKeyboardCode(key_code);
   if (vector_icon) {

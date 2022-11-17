@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/capture_mode/key_item_view.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/view.h"
 
@@ -42,7 +43,7 @@ class ASH_EXPORT KeyComboView : public views::View {
   int modifiers_ = 0;
   ui::KeyboardCode last_non_modifier_key_ = ui::VKEY_UNKNOWN;
   ModifiersContainerView* modifiers_container_view_ = nullptr;
-  views::View* non_modifier_view_ = nullptr;
+  KeyItemView* non_modifier_view_ = nullptr;
 };
 
 }  // namespace ash
