@@ -13,10 +13,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
-#include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
-#include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
@@ -90,18 +89,17 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
     base::RunLoop run_loop;
 
     auto* provider = WebAppProvider::GetForTest(browser()->profile());
-    provider->command_manager().ScheduleCommand(
-        std::make_unique<InstallFromInfoCommand>(
-            std::move(install_info), &provider->install_finalizer(),
-            /*overwrite_existing_manifest_fields=*/false,
-            webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-            base::BindLambdaForTesting([&app_id, &run_loop](
-                                           const AppId& installed_app_id,
-                                           webapps::InstallResultCode code) {
+    provider->scheduler().InstallFromInfo(
+        std::move(install_info),
+        /*overwrite_existing_manifest_fields=*/false,
+        webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+        base::BindLambdaForTesting(
+            [&app_id, &run_loop](const AppId& installed_app_id,
+                                 webapps::InstallResultCode code) {
               EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
               app_id = installed_app_id;
               run_loop.Quit();
-            })));
+            }));
 
     run_loop.Run();
   }

@@ -9,10 +9,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
-#include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -85,16 +84,15 @@ AppId InstallWebApp(Profile* profile,
   // In unit tests, we do not have Browser or WebContents instances. Hence we
   // use `InstallFromInfoCommand` instead of `FetchManifestAndInstallCommand` or
   // `WebAppInstallCommand` to install the web app.
-  provider->command_manager().ScheduleCommand(
-      std::make_unique<InstallFromInfoCommand>(
-          std::move(web_app_info), &provider->install_finalizer(),
-          overwrite_existing_manifest_fields, install_source,
-          base::BindLambdaForTesting([&](const AppId& installed_app_id,
-                                         webapps::InstallResultCode code) {
+  provider->scheduler().InstallFromInfo(
+      std::move(web_app_info), overwrite_existing_manifest_fields,
+      install_source,
+      base::BindLambdaForTesting(
+          [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
             app_id = installed_app_id;
             run_loop.Quit();
-          })));
+          }));
 
   run_loop.Run();
   // Allow updates to be published to App Service listeners.

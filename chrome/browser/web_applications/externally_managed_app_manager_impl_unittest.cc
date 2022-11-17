@@ -33,7 +33,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -284,7 +284,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
               externally_managed_app_manager_impl->registrar(),
               externally_managed_app_manager_impl->ui_manager(),
               externally_managed_app_manager_impl->finalizer(),
-              externally_managed_app_manager_impl->command_manager(),
+              externally_managed_app_manager_impl->command_scheduler(),
               std::move(install_options)),
           externally_managed_app_manager_impl_(
               externally_managed_app_manager_impl),
@@ -448,7 +448,7 @@ class ExternallyManagedAppManagerImplTest
   }
 
   void TearDown() override {
-    command_manager().Shutdown();
+    command_scheduler().Shutdown();
     WebAppTest::TearDown();
   }
 
@@ -578,9 +578,7 @@ class ExternallyManagedAppManagerImplTest
 
   FakeInstallFinalizer& install_finalizer() { return *install_finalizer_; }
 
-  WebAppCommandManager& command_manager() {
-    return provider().command_manager();
-  }
+  WebAppCommandScheduler& command_scheduler() { return provider().scheduler(); }
 
  private:
   raw_ptr<FakeWebAppProvider> provider_;

@@ -53,14 +53,11 @@
 #include "chrome/browser/ui/webui/extensions/extension_basic_info.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
-#include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
-#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -1308,12 +1305,11 @@ void AppLauncherHandler::OnFaviconForAppInstallFromLink(
   install_params.add_to_quick_launch_bar = false;
   install_params.add_to_applications_menu = true;
 
-  web_app_provider_->command_manager().ScheduleCommand(
-      std::make_unique<web_app::InstallFromInfoCommand>(
-          std::move(web_app), &web_app_provider_->install_finalizer(),
-          /*overwrite_existing_manifest_fields=*/false,
-          webapps::WebappInstallSource::SYNC,
-          std::move(install_complete_callback), install_params));
+  web_app_provider_->scheduler().InstallFromInfoWithParams(
+      std::move(web_app),
+      /*overwrite_existing_manifest_fields=*/false,
+      webapps::WebappInstallSource::SYNC, std::move(install_complete_callback),
+      install_params);
 }
 
 void AppLauncherHandler::OnExtensionPreferenceChanged() {

@@ -321,7 +321,7 @@ void WebAppProvider::ConnectSubsystems() {
       command_scheduler_.get());
   externally_managed_app_manager_->SetSubsystems(
       registrar_.get(), ui_manager_.get(), install_finalizer_.get(),
-      command_manager_.get(), sync_bridge_.get());
+      command_scheduler_.get(), sync_bridge_.get());
   preinstalled_web_app_manager_->SetSubsystems(
       registrar_.get(), ui_manager_.get(),
       externally_managed_app_manager_.get());

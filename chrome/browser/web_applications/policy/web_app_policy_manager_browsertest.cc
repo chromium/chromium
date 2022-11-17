@@ -10,13 +10,12 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -227,11 +226,10 @@ IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest,
                                install_info.get());
 
   auto* provider = WebAppProvider::GetForTest(profile());
-  provider->command_manager().ScheduleCommand(
-      std::make_unique<InstallFromInfoCommand>(
-          std::move(install_info), &provider->install_finalizer(),
-          /*overwrite_existing_manifest_fields=*/true,
-          webapps::WebappInstallSource::EXTERNAL_POLICY, base::DoNothing()));
+  provider->scheduler().InstallFromInfo(
+      std::move(install_info),
+      /*overwrite_existing_manifest_fields=*/true,
+      webapps::WebappInstallSource::EXTERNAL_POLICY, base::DoNothing());
 
   externally_installed_app_prefs().Insert(
       GURL(kInstallUrl), GenerateAppId(absl::nullopt, GURL(kStartUrl)),

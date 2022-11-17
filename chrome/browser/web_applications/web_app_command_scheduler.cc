@@ -7,8 +7,10 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/callback_command.h"
+#include "chrome/browser/web_applications/commands/externally_managed_install_command.h"
 #include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
+#include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_data_fetch_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
@@ -77,6 +79,79 @@ void WebAppCommandScheduler::FetchManifestAndInstall(
           bypass_service_worker_check, std::move(dialog_callback),
           std::move(callback), use_fallback,
           std::make_unique<WebAppDataRetriever>()));
+}
+
+void WebAppCommandScheduler::InstallFromInfo(
+    std::unique_ptr<WebAppInstallInfo> install_info,
+    bool overwrite_existing_manifest_fields,
+    webapps::WebappInstallSource install_surface,
+    OnceInstallCallback install_callback) {
+  if (is_in_shutdown_)
+    return;
+
+  if (!provider_->is_registry_ready()) {
+    provider_->on_registry_ready().Post(
+        FROM_HERE,
+        base::BindOnce(&WebAppCommandScheduler::InstallFromInfo,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(install_info),
+                       overwrite_existing_manifest_fields,
+                       std::move(install_surface),
+                       std::move(install_callback)));
+    return;
+  }
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<InstallFromInfoCommand>(
+          std::move(install_info), overwrite_existing_manifest_fields,
+          std::move(install_surface), std::move(install_callback)));
+}
+
+void WebAppCommandScheduler::InstallFromInfoWithParams(
+    std::unique_ptr<WebAppInstallInfo> install_info,
+    bool overwrite_existing_manifest_fields,
+    webapps::WebappInstallSource install_surface,
+    OnceInstallCallback install_callback,
+    const WebAppInstallParams& install_params) {
+  if (is_in_shutdown_)
+    return;
+
+  if (!provider_->is_registry_ready()) {
+    provider_->on_registry_ready().Post(
+        FROM_HERE,
+        base::BindOnce(&WebAppCommandScheduler::InstallFromInfoWithParams,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(install_info),
+                       overwrite_existing_manifest_fields,
+                       std::move(install_surface), std::move(install_callback),
+                       install_params));
+    return;
+  }
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<InstallFromInfoCommand>(
+          std::move(install_info), overwrite_existing_manifest_fields,
+          std::move(install_surface), std::move(install_callback),
+          install_params));
+}
+
+void WebAppCommandScheduler::InstallExternallyManagedApp(
+    const ExternalInstallOptions& external_install_options,
+    OnceInstallCallback callback,
+    base::WeakPtr<content::WebContents> contents,
+    std::unique_ptr<WebAppDataRetriever> data_retriever) {
+  if (is_in_shutdown_)
+    return;
+
+  if (!provider_->is_registry_ready()) {
+    provider_->on_registry_ready().Post(
+        FROM_HERE,
+        base::BindOnce(&WebAppCommandScheduler::InstallExternallyManagedApp,
+                       weak_ptr_factory_.GetWeakPtr(), external_install_options,
+                       std::move(callback), contents,
+                       std::move(data_retriever)));
+    return;
+  }
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<ExternallyManagedInstallCommand>(
+          external_install_options, std::move(callback), contents,
+          std::move(data_retriever)));
 }
 
 void WebAppCommandScheduler::PersistFileHandlersUserChoice(

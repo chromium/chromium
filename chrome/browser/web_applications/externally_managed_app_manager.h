@@ -26,7 +26,7 @@ namespace web_app {
 
 class WebAppRegistrar;
 class WebAppInstallFinalizer;
-class WebAppCommandManager;
+class WebAppCommandScheduler;
 class WebAppUiManager;
 class WebAppSyncBridge;
 
@@ -92,7 +92,7 @@ class ExternallyManagedAppManager {
   void SetSubsystems(WebAppRegistrar* registrar,
                      WebAppUiManager* ui_manager,
                      WebAppInstallFinalizer* finalizer,
-                     WebAppCommandManager* command_manager,
+                     WebAppCommandScheduler* command_scheduler,
                      WebAppSyncBridge* sync_bridge);
 
   // Queues an installation operation with the highest priority. Essentially
@@ -162,7 +162,7 @@ class ExternallyManagedAppManager {
   WebAppRegistrar* registrar() { return registrar_; }
   WebAppUiManager* ui_manager() { return ui_manager_; }
   WebAppInstallFinalizer* finalizer() { return finalizer_; }
-  WebAppCommandManager* command_manager() { return command_manager_; }
+  WebAppCommandScheduler* command_scheduler() { return command_scheduler_; }
   WebAppSyncBridge* sync_bridge() { return sync_bridge_; }
 
   virtual void OnRegistrationFinished(const GURL& launch_url,
@@ -202,7 +202,8 @@ class ExternallyManagedAppManager {
   raw_ptr<WebAppRegistrar> registrar_ = nullptr;
   raw_ptr<WebAppUiManager, DanglingUntriaged> ui_manager_ = nullptr;
   raw_ptr<WebAppInstallFinalizer> finalizer_ = nullptr;
-  raw_ptr<WebAppCommandManager, DanglingUntriaged> command_manager_ = nullptr;
+  raw_ptr<WebAppCommandScheduler, DanglingUntriaged> command_scheduler_ =
+      nullptr;
   raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
 
   base::flat_map<ExternalInstallSource, SynchronizeRequest>

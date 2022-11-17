@@ -32,9 +32,7 @@
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
-#include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
-#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -287,13 +285,12 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
     auto* provider = web_app::WebAppProvider::GetForWebApps(
         Profile::FromBrowserContext(context));
 
-    provider->command_manager().ScheduleCommand(
-        std::make_unique<web_app::InstallFromInfoCommand>(
-            std::move(web_app_info), &provider->install_finalizer(),
-            /*overwrite_existing_manifest_fields=*/false,
-            webapps::WebappInstallSource::MANAGEMENT_API,
-            base::BindOnce(OnGenerateAppForLinkCompleted,
-                           base::RetainedRef(function))));
+    provider->scheduler().InstallFromInfo(
+        std::move(web_app_info),
+        /*overwrite_existing_manifest_fields=*/false,
+        webapps::WebappInstallSource::MANAGEMENT_API,
+        base::BindOnce(OnGenerateAppForLinkCompleted,
+                       base::RetainedRef(function)));
   }
 
   extensions::api::management::ExtensionInfo CreateExtensionInfoFromWebApp(

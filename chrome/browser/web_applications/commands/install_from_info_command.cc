@@ -24,7 +24,6 @@ namespace web_app {
 
 InstallFromInfoCommand::InstallFromInfoCommand(
     std::unique_ptr<WebAppInstallInfo> install_info,
-    WebAppInstallFinalizer* install_finalizer,
     bool overwrite_existing_manifest_fields,
     webapps::WebappInstallSource install_surface,
     OnceInstallCallback install_callback)
@@ -35,14 +34,12 @@ InstallFromInfoCommand::InstallFromInfoCommand(
       app_id_(
           GenerateAppId(install_info->manifest_id, install_info->start_url)),
       install_info_(std::move(install_info)),
-      install_finalizer_(install_finalizer),
       overwrite_existing_manifest_fields_(overwrite_existing_manifest_fields),
       install_surface_(install_surface),
       install_callback_(std::move(install_callback)) {}
 
 InstallFromInfoCommand::InstallFromInfoCommand(
     std::unique_ptr<WebAppInstallInfo> install_info,
-    WebAppInstallFinalizer* install_finalizer,
     bool overwrite_existing_manifest_fields,
     webapps::WebappInstallSource install_surface,
     OnceInstallCallback install_callback,
@@ -54,7 +51,6 @@ InstallFromInfoCommand::InstallFromInfoCommand(
       app_id_(
           GenerateAppId(install_info->manifest_id, install_info->start_url)),
       install_info_(std::move(install_info)),
-      install_finalizer_(install_finalizer),
       overwrite_existing_manifest_fields_(overwrite_existing_manifest_fields),
       install_surface_(install_surface),
       install_callback_(std::move(install_callback)),
@@ -72,7 +68,9 @@ LockDescription& InstallFromInfoCommand::lock_description() const {
   return *lock_description_;
 }
 
-void InstallFromInfoCommand::Start() {
+void InstallFromInfoCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
+  lock_ = std::move(lock);
+
   PopulateProductIcons(install_info_.get(),
                        /*icons_map=*/nullptr);
   // No IconsMap to populate shortcut item icons from.
@@ -97,7 +95,7 @@ void InstallFromInfoCommand::Start() {
     options.bypass_os_hooks = true;
   }
 
-  install_finalizer_->FinalizeInstall(
+  lock_->install_finalizer().FinalizeInstall(
       *install_info_, options,
       base::BindOnce(&InstallFromInfoCommand::OnInstallCompleted,
                      weak_factory_.GetWeakPtr()));

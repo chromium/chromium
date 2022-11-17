@@ -13,10 +13,9 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
-#include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -211,13 +210,12 @@ void ApkWebAppInstaller::DoInstall() {
     // Doesn't overwrite already existing web app with manifest fields from the
     // apk.
     GURL start_url = web_app_install_info_->start_url;
-    provider->command_manager().ScheduleCommand(
-        std::make_unique<web_app::InstallFromInfoCommand>(
-            std::move(web_app_install_info_), &provider->install_finalizer(),
-            /*overwrite_existing_manifest_fields=*/false,
-            webapps::WebappInstallSource::ARC,
-            base::BindOnce(&ApkWebAppInstaller::OnWebAppCreated,
-                           base::Unretained(this), std::move(start_url))));
+    provider->scheduler().InstallFromInfo(
+        std::move(web_app_install_info_),
+        /*overwrite_existing_manifest_fields=*/false,
+        webapps::WebappInstallSource::ARC,
+        base::BindOnce(&ApkWebAppInstaller::OnWebAppCreated,
+                       base::Unretained(this), std::move(start_url)));
   }
 }
 

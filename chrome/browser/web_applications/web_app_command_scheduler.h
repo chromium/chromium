@@ -12,11 +12,14 @@
 #include "chrome/browser/web_applications/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_data_fetch_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
+#include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 
 class GURL;
 class Profile;
+
+struct WebAppInstallInfo;
 
 namespace content {
 class WebContents;
@@ -25,6 +28,7 @@ class WebContents;
 namespace web_app {
 
 class IsolatedWebAppUrlInfo;
+class WebAppDataRetriever;
 class WebAppProvider;
 struct IsolationData;
 
@@ -59,6 +63,27 @@ class WebAppCommandScheduler {
                                WebAppInstallDialogCallback dialog_callback,
                                OnceInstallCallback callback,
                                bool use_fallback);
+
+  // Install with provided `WebAppInstallInfo` instead of fetching data from
+  // manifest.
+  void InstallFromInfo(std::unique_ptr<WebAppInstallInfo> install_info,
+                       bool overwrite_existing_manifest_fields,
+                       webapps::WebappInstallSource install_surface,
+                       OnceInstallCallback install_callback);
+
+  void InstallFromInfoWithParams(
+      std::unique_ptr<WebAppInstallInfo> install_info,
+      bool overwrite_existing_manifest_fields,
+      webapps::WebappInstallSource install_surface,
+      OnceInstallCallback install_callback,
+      const WebAppInstallParams& install_params);
+
+  // Install web apps managed by `ExternallyInstalledAppsManager`.
+  void InstallExternallyManagedApp(
+      const ExternalInstallOptions& external_install_options,
+      OnceInstallCallback callback,
+      base::WeakPtr<content::WebContents> contents,
+      std::unique_ptr<WebAppDataRetriever> data_retriever);
 
   void PersistFileHandlersUserChoice(const AppId& app_id,
                                      bool allowed,

@@ -34,7 +34,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -303,7 +303,7 @@ class ExternallyManagedAppInstallTaskTest
     auto* provider = FakeWebAppProvider::Get(profile());
     provider->SetDefaultFakeSubsystems();
     registrar_ = &provider->GetRegistrarMutable();
-    command_manager_ = &provider->GetCommandManager();
+    command_scheduler_ = &provider->scheduler();
     ui_manager_ = static_cast<FakeWebAppUiManager*>(&provider->GetUiManager());
 
     auto install_finalizer =
@@ -329,7 +329,7 @@ class ExternallyManagedAppInstallTaskTest
   TestExternallyManagedAppInstallFinalizer* finalizer() {
     return install_finalizer_;
   }
-  WebAppCommandManager* command_manager() { return command_manager_; }
+  WebAppCommandScheduler* command_scheduler() { return command_scheduler_; }
 
   FakeDataRetriever* data_retriever() { return data_retriever_; }
 
@@ -367,7 +367,7 @@ class ExternallyManagedAppInstallTaskTest
 
     auto task = std::make_unique<ExternallyManagedAppInstallTask>(
         profile(), url_loader_.get(), registrar_, ui_manager_,
-        install_finalizer_, command_manager_, std::move(options));
+        install_finalizer_, command_scheduler_, std::move(options));
     task->SetDataRetrieverFactoryForTesting(
         GetFactoryForRetriever(std::move(data_retriever)));
     return task;
@@ -375,7 +375,7 @@ class ExternallyManagedAppInstallTaskTest
 
  private:
   std::unique_ptr<TestWebAppUrlLoader> url_loader_;
-  raw_ptr<WebAppCommandManager> command_manager_ = nullptr;
+  raw_ptr<WebAppCommandScheduler> command_scheduler_ = nullptr;
   raw_ptr<WebAppRegistrar> registrar_ = nullptr;
   raw_ptr<FakeDataRetriever> data_retriever_ = nullptr;
   raw_ptr<TestExternallyManagedAppInstallFinalizer> install_finalizer_ =
@@ -874,7 +874,7 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallURLLoadFailed) {
         ExternalInstallSource::kInternalDefault);
     ExternallyManagedAppInstallTask install_task(
         profile(), &url_loader(), registrar(), ui_manager(), finalizer(),
-        command_manager(), install_options);
+        command_scheduler(), install_options);
     url_loader().SetPrepareForLoadResultLoaded();
     url_loader().SetNextLoadUrlResult(GURL(), result_pair.loader_result);
 
@@ -896,7 +896,7 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallFailedWebContentsDestroyed) {
       ExternalInstallSource::kInternalDefault);
   ExternallyManagedAppInstallTask install_task(
       profile(), &url_loader(), registrar(), ui_manager(), finalizer(),
-      command_manager(), install_options);
+      command_scheduler(), install_options);
   url_loader().SetPrepareForLoadResultLoaded();
   url_loader().SetNextLoadUrlResult(
       GURL(), WebAppUrlLoader::Result::kFailedWebContentsDestroyed);
@@ -924,7 +924,7 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoSucceeds) {
 
   ExternallyManagedAppInstallTask task(profile(), /*url_loader=*/nullptr,
                                        registrar(), ui_manager(), finalizer(),
-                                       command_manager(), std::move(options));
+                                       command_scheduler(), std::move(options));
 
   finalizer()->SetNextFinalizeInstallResult(
       kWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
@@ -971,7 +971,7 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoFails) {
 
   ExternallyManagedAppInstallTask task(profile(), /*url_loader=*/nullptr,
                                        registrar(), ui_manager(), finalizer(),
-                                       command_manager(), std::move(options));
+                                       command_scheduler(), std::move(options));
 
   finalizer()->SetNextFinalizeInstallResult(
       kWebAppUrl, webapps::InstallResultCode::kWriteDataFailed);

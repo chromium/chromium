@@ -13,12 +13,11 @@
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/test/browser_test.h"
 #include "install_from_info_command.h"
@@ -68,16 +67,15 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, SuccessInstall) {
 
   base::RunLoop loop;
   AppId result_app_id;
-  provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallFromInfoCommand>(
-          std::move(info), &provider().install_finalizer(),
-          /*overwrite_existing_manifest_fields=*/false, install_source,
-          base::BindLambdaForTesting(
-              [&](const AppId& app_id, webapps::InstallResultCode code) {
-                EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
-                result_app_id = app_id;
-                loop.Quit();
-              })));
+  provider().scheduler().InstallFromInfo(
+      std::move(info),
+      /*overwrite_existing_manifest_fields=*/false, install_source,
+      base::BindLambdaForTesting(
+          [&](const AppId& app_id, webapps::InstallResultCode code) {
+            EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
+            result_app_id = app_id;
+            loop.Quit();
+          }));
   loop.Run();
 
   EXPECT_TRUE(provider().registrar().IsActivelyInstalled(result_app_id));
@@ -109,18 +107,17 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, InstallWithParams) {
   install_params.add_to_desktop = true;
 
   base::RunLoop loop;
-  provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallFromInfoCommand>(
-          std::move(info), &provider().install_finalizer(),
-          /*overwrite_existing_manifest_fields=*/false,
-          webapps::WebappInstallSource::MENU_BROWSER_TAB,
-          base::BindLambdaForTesting(
-              [&](const AppId& app_id, webapps::InstallResultCode code) {
-                EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
-                EXPECT_TRUE(provider().registrar().IsActivelyInstalled(app_id));
-                loop.Quit();
-              }),
-          install_params));
+  provider().scheduler().InstallFromInfoWithParams(
+      std::move(info),
+      /*overwrite_existing_manifest_fields=*/false,
+      webapps::WebappInstallSource::MENU_BROWSER_TAB,
+      base::BindLambdaForTesting(
+          [&](const AppId& app_id, webapps::InstallResultCode code) {
+            EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
+            EXPECT_TRUE(provider().registrar().IsActivelyInstalled(app_id));
+            loop.Quit();
+          }),
+      install_params);
   loop.Run();
   EXPECT_EQ(provider()
                 .os_integration_manager()

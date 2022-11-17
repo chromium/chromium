@@ -20,10 +20,9 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
-#include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -126,19 +125,17 @@ IN_PROC_BROWSER_TEST_F(WebKioskBrowserControllerAshTest,
 
     base::RunLoop run_loop;
     auto* provider = web_app::WebAppProvider::GetForTest(browser()->profile());
-    provider->command_manager().ScheduleCommand(
-        std::make_unique<web_app::InstallFromInfoCommand>(
-            std::move(install_info), &provider->install_finalizer(),
-            /*overwrite_existing_manifest_fields=*/false,
-            webapps::WebappInstallSource::KIOSK,
-            base::BindLambdaForTesting(
-                [&app_id, &run_loop](const web_app::AppId& installed_app_id,
-                                     webapps::InstallResultCode code) {
-                  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
-                            code);
-                  app_id = installed_app_id;
-                  run_loop.Quit();
-                })));
+    provider->scheduler().InstallFromInfo(
+        std::move(install_info),
+        /*overwrite_existing_manifest_fields=*/false,
+        webapps::WebappInstallSource::KIOSK,
+        base::BindLambdaForTesting(
+            [&app_id, &run_loop](const web_app::AppId& installed_app_id,
+                                 webapps::InstallResultCode code) {
+              EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
+              app_id = installed_app_id;
+              run_loop.Quit();
+            }));
     run_loop.Run();
   }
 
