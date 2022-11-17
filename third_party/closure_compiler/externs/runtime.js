@@ -280,7 +280,7 @@ chrome.runtime.restart = function() {};
 chrome.runtime.restartAfterDelay = function(seconds, callback) {};
 
 /**
- * Attempts to connect to connect listeners within an extension/app (such as the
+ * Attempts to connect listeners within an extension/app (such as the
  * background page), or other extensions/apps. This is useful for content
  * scripts connecting to their extension processes, inter-app/extension
  * communication, and <a href="manifest/externally_connectable.html">web
