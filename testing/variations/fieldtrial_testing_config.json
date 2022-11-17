@@ -3002,15 +3002,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20221108",
+                    "name": "Enabled_20221116",
                     "params": {
                         "compile-in-parallel": "true",
                         "compile-strategy": "eager",
                         "default-parser-budget": "10ms",
                         "inline-script-timeout": "5ms",
                         "long-parser-budget": "50ms",
-                        "num-yields-with-default-budget": "2",
-                        "preload-processing-mode": "immediate"
+                        "num-yields-with-default-budget": "2"
                     },
                     "enable_features": [
                         "BatchImageDecoding",
@@ -3020,11 +3019,7 @@
                         "PrecompileInlineScripts",
                         "PrefetchFontLookupTables",
                         "SplitCompositorTask",
-                        "ThreadedPreloadScanner",
                         "TimedHTMLParserBudget"
-                    ],
-                    "disable_features": [
-                        "PretokenizeCSS"
                     ]
                 }
             ]
@@ -3039,15 +3034,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20221108",
+                    "name": "Enabled_20221116",
                     "params": {
                         "compile-in-parallel": "true",
                         "compile-strategy": "eager",
-                        "default-parser-budget": "20ms",
+                        "default-parser-budget": "10ms",
                         "inline-script-timeout": "5ms",
                         "long-parser-budget": "500ms",
-                        "num-yields-with-default-budget": "2",
-                        "preload-processing-mode": "immediate",
+                        "num-yields-with-default-budget": "6",
                         "prewarm_cursive": "false",
                         "prewarm_fantasy": "false",
                         "prewarm_fixed": "false",
@@ -3061,12 +3055,10 @@
                         "OptimizeDataUrls",
                         "PrecompileInlineScripts",
                         "PrewarmDefaultFontFamilies",
-                        "ThreadedPreloadScanner",
                         "TimedHTMLParserBudget"
                     ],
                     "disable_features": [
-                        "EstablishGpuChannelAsync",
-                        "PretokenizeCSS"
+                        "EstablishGpuChannelAsync"
                     ]
                 }
             ]
@@ -3077,15 +3069,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20221108",
+                    "name": "Enabled_20221116",
                     "params": {
                         "compile-in-parallel": "true",
                         "compile-strategy": "eager",
                         "default-parser-budget": "10ms",
                         "inline-script-timeout": "5ms",
                         "long-parser-budget": "50ms",
-                        "num-yields-with-default-budget": "2",
-                        "preload-processing-mode": "immediate"
+                        "num-yields-with-default-budget": "2"
                     },
                     "enable_features": [
                         "DecodeScriptSourceOffThread",
@@ -3093,11 +3084,7 @@
                         "OptimizeDataUrls",
                         "PrecompileInlineScripts",
                         "PrefetchFontLookupTables",
-                        "ThreadedPreloadScanner",
                         "TimedHTMLParserBudget"
-                    ],
-                    "disable_features": [
-                        "PretokenizeCSS"
                     ]
                 }
             ]
@@ -11159,9 +11146,16 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20221024",
+                    "name": "EnabledMainFrame_20221116",
+                    "params": {
+                        "max-data-to-process": "1",
+                        "pretokenize-main-frame-only": "true",
+                        "scan-main-frame-only": "true"
+                    },
                     "enable_features": [
-                        "ThreadedBodyLoader"
+                        "PretokenizeCSS",
+                        "ThreadedBodyLoader",
+                        "ThreadedPreloadScanner"
                     ]
                 }
             ]
