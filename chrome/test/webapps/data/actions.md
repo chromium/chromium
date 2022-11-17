@@ -150,8 +150,8 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | check_site_handles_file | Site, FileExtension |  | 118 | Implemented |  |  |
 | check_site_not_handles_file | Site, FileExtension |  | 122 | Implemented |  |  |
 | check_file_handling_dialog | IsShown |  | 119 | Not Implemented |  |  |
-| launch_file | FilesOptions |  | 120 | Not Implemented |  |  |
-| file_handling_dialog | AllowDenyOptions, AskAgainOptions |  | 121 | Not Implemented |  |  |
+| launch_file_expect_dialog | Site, FilesOptions, AllowDenyOptions, AskAgainOptions |  | 120 | Implemented |  |  |
+| launch_file_expect_no_dialog | Site, FilesOptions |  | 121 | Implemented |  |  |
 | check_files_loaded_in_site | Site, FilesOptions |  | 126 | Not Implemented | Check that the appropriate file contents have loaded in in PWA windows. |  |
 | add_file_handling_policy_approval | Site |  | 124 | Not Implemented |  |  |
 | remove_file_handling_policy_approval | Site |  | 125 | Not Implemented |  |  |
