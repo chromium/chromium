@@ -915,6 +915,155 @@ TEST_F(VisibleUnitsTest, SnapBackwardWithZeroWidthSpace) {
   EXPECT_EQ("<p>ab\u200B\u200B|cd</p>",
             TestSnapBackward("<p>ab\u200B\u200B|cd</p>"));
 }
+TEST_F(VisibleUnitsTest, SnapForwardWithImg) {
+  SetBodyContent("<img>");
+  const auto& body = *GetDocument().body();
+  const auto& img = *GetDocument().QuerySelector("img");
+
+  EXPECT_EQ(Position::BeforeNode(img),
+            MostForwardCaretPosition(Position::FirstPositionInNode(body)));
+  EXPECT_EQ(Position::BeforeNode(img),
+            MostForwardCaretPosition(Position(body, 0)));
+  EXPECT_EQ(Position::BeforeNode(img),
+            MostForwardCaretPosition(Position::BeforeNode(img)));
+  EXPECT_EQ(Position::BeforeNode(img),
+            MostForwardCaretPosition(Position(img, 0)));
+  EXPECT_EQ(Position::AfterNode(img),
+            MostForwardCaretPosition(Position::LastPositionInNode(img)));
+  EXPECT_EQ(Position::AfterNode(img),
+            MostForwardCaretPosition(Position::AfterNode(img)));
+}
+
+TEST_F(VisibleUnitsTest, SnapForwardWithInput) {
+  SetBodyContent("<input>");
+  const auto& body = *GetDocument().body();
+  const auto& input = *GetDocument().QuerySelector("input");
+
+  EXPECT_EQ(Position::BeforeNode(input),
+            MostForwardCaretPosition(Position::FirstPositionInNode(body)));
+  EXPECT_EQ(Position::BeforeNode(input),
+            MostForwardCaretPosition(Position(body, 0)));
+  EXPECT_EQ(Position::BeforeNode(input),
+            MostForwardCaretPosition(Position::BeforeNode(input)));
+  EXPECT_EQ(Position::BeforeNode(input),
+            MostForwardCaretPosition(Position::FirstPositionInNode(input)));
+  EXPECT_EQ(Position::BeforeNode(input),
+            MostForwardCaretPosition(Position(input, 0)));
+  EXPECT_EQ(Position::AfterNode(input),
+            MostForwardCaretPosition(Position::LastPositionInNode(input)));
+  EXPECT_EQ(Position::AfterNode(input),
+            MostForwardCaretPosition(Position::AfterNode(input)));
+}
+
+TEST_F(VisibleUnitsTest, SnapForwardWithSelect) {
+  SetBodyContent(
+      "<select><option>1</option><option>2</option><option>3</option></"
+      "select>");
+  const auto& body = *GetDocument().body();
+  const auto& select = *GetDocument().QuerySelector("select");
+
+  EXPECT_EQ(Position::BeforeNode(select),
+            MostForwardCaretPosition(Position(body, 0)));
+  EXPECT_EQ(Position::BeforeNode(select),
+            MostForwardCaretPosition(Position::FirstPositionInNode(body)));
+  EXPECT_EQ(Position::BeforeNode(select),
+            MostForwardCaretPosition(Position::BeforeNode(select)));
+  EXPECT_EQ(Position::BeforeNode(select),
+            MostForwardCaretPosition(Position::FirstPositionInNode(select)));
+  EXPECT_EQ(Position::BeforeNode(select),
+            MostForwardCaretPosition(Position(select, 0)));
+
+  // The internal version of `MostForwardCaretPosition()` is called with
+  // `PositionInFlatTree(slot, 1)` and it scans at end of `<select>` then
+  // returns `PositionInFlatTree(slot, 1)` and converts to
+  // `Position(select, 1)`.
+  EXPECT_EQ(Position(select, 1), MostForwardCaretPosition(Position(select, 1)));
+  EXPECT_EQ(Position(select, 2), MostForwardCaretPosition(Position(select, 2)));
+  EXPECT_EQ(Position::AfterNode(select),
+            MostForwardCaretPosition(Position(select, 3)));
+  EXPECT_EQ(Position::AfterNode(select),
+            MostForwardCaretPosition(Position::LastPositionInNode(select)));
+  EXPECT_EQ(Position::AfterNode(select),
+            MostForwardCaretPosition(Position::AfterNode(select)));
+
+  // Flat tree is
+  //  <select>
+  //    <div>""</div>
+  //    <slot><option>1</option><option>2</option></slot>
+  //  </select>
+  EXPECT_EQ(PositionInFlatTree::BeforeNode(select),
+            MostForwardCaretPosition(PositionInFlatTree(body, 0)));
+  EXPECT_EQ(
+      PositionInFlatTree::BeforeNode(select),
+      MostForwardCaretPosition(PositionInFlatTree::FirstPositionInNode(body)));
+  EXPECT_EQ(PositionInFlatTree::BeforeNode(select),
+            MostForwardCaretPosition(PositionInFlatTree::BeforeNode(select)));
+
+  // Note: `PositionIterator::DeprecatedComputePosition()` returns
+  // `BeforeNode(<select>)` for <select>@n where n is 0 to 3, becase
+  // `EditingIgnoresContent(<select>)` is true.
+  EXPECT_EQ(PositionInFlatTree::BeforeNode(select),
+            MostForwardCaretPosition(
+                PositionInFlatTree::FirstPositionInNode(select)));
+  EXPECT_EQ(PositionInFlatTree::BeforeNode(select),
+            MostForwardCaretPosition(PositionInFlatTree(select, 0)));
+  EXPECT_EQ(PositionInFlatTree::BeforeNode(select),
+            MostForwardCaretPosition(PositionInFlatTree(select, 1)));
+  EXPECT_EQ(PositionInFlatTree::AfterNode(select),
+            MostForwardCaretPosition(PositionInFlatTree(select, 2)));
+
+  EXPECT_EQ(
+      PositionInFlatTree::AfterNode(select),
+      MostForwardCaretPosition(PositionInFlatTree::LastPositionInNode(select)));
+  EXPECT_EQ(PositionInFlatTree::AfterNode(select),
+            MostForwardCaretPosition(PositionInFlatTree::AfterNode(select)));
+}
+
+// From ReplaceSelectionCommandTest.TableAndImages)
+TEST_F(VisibleUnitsTest, SnapForwardWithTableAndImages) {
+  SetBodyContent("<table> <tbody></tbody> </table>");
+  const auto& table = *GetDocument().QuerySelector("table");
+  const auto& body = *GetDocument().body();
+  auto& tbody = *GetDocument().QuerySelector("tbody");
+  auto& img1 = *GetDocument().CreateRawElement(html_names::kImgTag);
+  tbody.AppendChild(&img1);
+  auto& img2 = *GetDocument().CreateRawElement(html_names::kImgTag);
+  tbody.AppendChild(&img2);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(Position(body, 0), MostForwardCaretPosition(Position(body, 0)));
+  EXPECT_EQ(Position(body, 0),
+            MostForwardCaretPosition(Position::FirstPositionInNode(body)));
+  EXPECT_EQ(Position(table, 0),
+            MostForwardCaretPosition(Position::BeforeNode(table)));
+  EXPECT_EQ(Position(table, 0),
+            MostForwardCaretPosition(Position::FirstPositionInNode(table)));
+  EXPECT_EQ(Position(table, 0), MostForwardCaretPosition(Position(table, 0)));
+  // The result should be `Position(table, 1)`.
+  EXPECT_EQ(Position(table, 0), MostForwardCaretPosition(Position(table, 1)));
+  EXPECT_EQ(Position::BeforeNode(img1),
+            MostForwardCaretPosition(Position::BeforeNode(tbody)));
+  EXPECT_EQ(Position::BeforeNode(img1),
+            MostForwardCaretPosition(Position(tbody, 0)));
+  EXPECT_EQ(Position::BeforeNode(img1),
+            MostForwardCaretPosition(Position::FirstPositionInNode(tbody)));
+  EXPECT_EQ(Position::BeforeNode(img2),
+            MostForwardCaretPosition(Position(tbody, 1)));
+  EXPECT_EQ(Position::LastPositionInNode(tbody),
+            MostForwardCaretPosition(Position(tbody, 2)));
+  EXPECT_EQ(Position::LastPositionInNode(tbody),
+            MostForwardCaretPosition(Position::LastPositionInNode(tbody)));
+  EXPECT_EQ(Position::LastPositionInNode(tbody),
+            MostForwardCaretPosition(Position::AfterNode(tbody)));
+  // The result should be `Position(table, 2)`.
+  EXPECT_EQ(Position(table, 0), MostForwardCaretPosition(Position(table, 2)));
+  EXPECT_EQ(Position::LastPositionInNode(table),
+            MostForwardCaretPosition(Position(table, 3)));
+  EXPECT_EQ(Position::LastPositionInNode(table),
+            MostForwardCaretPosition(Position::LastPositionInNode(table)));
+  EXPECT_EQ(Position::LastPositionInNode(table),
+            MostForwardCaretPosition(Position::AfterNode(table)));
+}
 
 // http://crbug.com/1134470
 TEST_F(VisibleUnitsTest, SnapForwardWithZeroWidthSpace) {
