@@ -51,7 +51,7 @@ void DecommitPages(uintptr_t address, size_t size) {
 void AddressPoolManager::Add(pool_handle handle, uintptr_t ptr, size_t length) {
   PA_DCHECK(!(ptr & kSuperPageOffsetMask));
   PA_DCHECK(!((ptr + length) & kSuperPageOffsetMask));
-  PA_CHECK(handle > 0 && handle <= std::size(pools_));
+  PA_CHECK(handle > 0 && handle <= std::size(aligned_pools_.pools_));
 
   Pool* pool = GetPool(handle);
   PA_CHECK(!pool->IsInitialized());
@@ -77,8 +77,8 @@ uintptr_t AddressPoolManager::GetPoolBaseAddress(pool_handle handle) {
 }
 
 void AddressPoolManager::ResetForTesting() {
-  for (pool_handle i = 0; i < std::size(pools_); ++i)
-    pools_[i].Reset();
+  for (pool_handle i = 0; i < std::size(aligned_pools_.pools_); ++i)
+    aligned_pools_.pools_[i].Reset();
 }
 
 void AddressPoolManager::Remove(pool_handle handle) {
