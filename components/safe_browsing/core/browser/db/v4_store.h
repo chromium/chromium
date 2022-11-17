@@ -254,6 +254,8 @@ class V4Store {
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, MigrateToInMemoryFails);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, CleanUpOldFiles);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, FileSizeIncludesHashFiles);
+  FRIEND_TEST_ALL_PREFIXES(V4StoreTest, ReserveSpaceInPrefixMap);
+  FRIEND_TEST_ALL_PREFIXES(V4StoreTest, MergeUpdatesWithMmapHashPrefixMap);
   FRIEND_TEST_ALL_PREFIXES(V4StorePerftest, StressTest);
 
   friend class V4StoreTest;
@@ -293,7 +295,9 @@ class V4Store {
   // deletions specified in the update because it is non-trivial to calculate
   // those deletions upfront. This isn't so bad since deletions are supposed to
   // be small and infrequent.
-  static void ReserveSpaceInPrefixMap(const HashPrefixMap& other_prefixes_map,
+  static void ReserveSpaceInPrefixMap(const HashPrefixMap& old_map,
+                                      const HashPrefixMap& additions_map,
+                                      size_t removals_count,
                                       HashPrefixMap* prefix_map_to_update);
 
   // Same as the public GetMatchingHashPrefix method, but takes a StringPiece,

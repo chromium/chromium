@@ -1142,4 +1142,83 @@ TEST_F(V4StoreTest, FileSizeIncludesHashFiles) {
   EXPECT_EQ(read_store.file_size(), original_file_size + 4);
 }
 
+TEST_F(V4StoreTest, ReserveSpaceInPrefixMap) {
+  class ReserveTrackingHashPrefixMap : public InMemoryHashPrefixMap {
+   public:
+    void Reserve(PrefixSize size, size_t capacity) override {
+      reserve_map_[size] = capacity;
+    }
+
+    std::unordered_map<PrefixSize, size_t> reserve_map_;
+  };
+
+  InMemoryHashPrefixMap old_map;
+  InMemoryHashPrefixMap additions_map;
+  old_map.Append(4, "abcdefgh");
+  old_map.Append(5, "abcdefghij");
+  additions_map.Append(4, "123456789012zzzz");
+  additions_map.Append(5, "1234567890");
+
+  ReserveTrackingHashPrefixMap reserve_map;
+  V4Store::ReserveSpaceInPrefixMap(old_map, additions_map, 0, &reserve_map);
+
+  EXPECT_EQ(reserve_map.reserve_map_[4], 24u);
+  EXPECT_EQ(reserve_map.reserve_map_[5], 20u);
+
+  ReserveTrackingHashPrefixMap reserve_map_with_removals;
+  V4Store::ReserveSpaceInPrefixMap(old_map, additions_map, 2,
+                                   &reserve_map_with_removals);
+
+  EXPECT_EQ(reserve_map_with_removals.reserve_map_[4], 16u);
+  EXPECT_EQ(reserve_map_with_removals.reserve_map_[5], 10u);
+}
+
+TEST_F(V4StoreTest, MergeUpdatesWithMmapHashPrefixMap) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kMmapSafeBrowsingDatabase, {{"store-bytes-per-offset", "2"}});
+
+  InMemoryHashPrefixMap prefix_map_old;
+  prefix_map_old.Append(4, "abcdefgh");
+  prefix_map_old.Append(5, "54321abcde");
+
+  InMemoryHashPrefixMap prefix_map_additions;
+  prefix_map_additions.Append(4, "----1111bbbb");
+  prefix_map_additions.Append(5, "22222bcdef");
+
+  V4Store store(task_runner_, store_path_,
+                std::make_unique<MmapHashPrefixMap>(store_path_));
+  // Proof of checksum validity using python:
+  // >>> import hashlib
+  // >>> m = hashlib.sha256()
+  // >>> m.update("----11112222254321abcdabcdebbbbbcdefefgh")
+  // >>> m.digest()
+  // "\xbc\xb3\xedk\xe3x\xd1(\xa9\xedz7]"
+  // "x\x18\xbdn]\xa5\xa8R\xf7\xab\xcf\xc1\xa3\xa3\xc5Z,\xa6o"
+  std::string expected_checksum(
+      "\xBC\xB3\xEDk\xE3x\xD1(\xA9\xEDz7]x\x18\xBDn]"
+      "\xA5\xA8R\xF7\xAB\xCF\xC1\xA3\xA3\xC5Z,\xA6o",
+      crypto::kSHA256Length);
+  EXPECT_EQ(APPLY_UPDATE_SUCCESS,
+            store.MergeUpdate(prefix_map_old, prefix_map_additions, nullptr,
+                              expected_checksum));
+
+  EXPECT_EQ(WRITE_SUCCESS, store.WriteToDisk(Checksum()));
+  EXPECT_EQ(store.hash_prefix_map_->IsValid(), APPLY_UPDATE_SUCCESS);
+
+  HashPrefixMapView prefix_map = store.hash_prefix_map_->view();
+  EXPECT_EQ(2u, prefix_map.size());
+  EXPECT_EQ(prefix_map[4], "----1111abcdbbbbefgh");
+  EXPECT_EQ(prefix_map[5], "2222254321abcdebcdef");
+
+  std::string proto_contents;
+  EXPECT_TRUE(base::ReadFileToString(store_path_, &proto_contents));
+  V4StoreFileFormat file_format;
+  EXPECT_TRUE(file_format.ParseFromString(proto_contents));
+
+  EXPECT_EQ(file_format.hash_files().size(), 2);
+  for (const auto& hash_file : file_format.hash_files())
+    EXPECT_EQ(hash_file.offsets().size(), 10);
+}
+
 }  // namespace safe_browsing

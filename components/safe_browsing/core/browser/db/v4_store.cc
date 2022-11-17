@@ -567,18 +567,23 @@ void V4Store::InitializeIteratorMap(const HashPrefixMap& hash_prefix_map,
 }
 
 // static
-void V4Store::ReserveSpaceInPrefixMap(const HashPrefixMap& other_prefixes_map,
+void V4Store::ReserveSpaceInPrefixMap(const HashPrefixMap& old_map,
+                                      const HashPrefixMap& additions_map,
+                                      size_t removals_count,
                                       HashPrefixMap* prefix_map_to_update) {
-  for (const auto& pair : other_prefixes_map.view()) {
-    PrefixSize prefix_size = pair.first;
-    size_t prefix_length_to_add = pair.second.length();
+  std::unordered_map<PrefixSize, size_t> size_to_reserve;
+  for (const auto& [prefix_size, prefixes] : old_map.view())
+    size_to_reserve[prefix_size] += prefixes.size();
+  for (const auto& [prefix_size, prefixes] : additions_map.view())
+    size_to_reserve[prefix_size] += prefixes.size();
 
-    HashPrefixesView existing_prefixes =
-        prefix_map_to_update->view()[prefix_size];
-    size_t existing_capacity = existing_prefixes.size();
-
-    prefix_map_to_update->Reserve(prefix_size,
-                                  existing_capacity + prefix_length_to_add);
+  for (const auto& [prefix_size, capacity] : size_to_reserve) {
+    // Subtract the removals from capacity. Note this probably overcounts the
+    // removals since we subtract from all prefix sizes, but this shouldn't
+    // matter in practice since we usually only use a single prefix size per
+    // store.
+    size_t removals_size = std::min(capacity, removals_count * prefix_size);
+    prefix_map_to_update->Reserve(prefix_size, capacity - removals_size);
   }
 }
 
@@ -596,8 +601,9 @@ ApplyUpdateResult V4Store::MergeUpdate(const HashPrefixMap& old_prefixes_map,
   }
 
   hash_prefix_map_->Clear();
-  ReserveSpaceInPrefixMap(old_prefixes_map, hash_prefix_map_.get());
-  ReserveSpaceInPrefixMap(additions_map, hash_prefix_map_.get());
+  ReserveSpaceInPrefixMap(old_prefixes_map, additions_map,
+                          raw_removals ? raw_removals->size() : 0,
+                          hash_prefix_map_.get());
 
   IteratorMap old_iterator_map;
   HashPrefix next_smallest_prefix_old;
