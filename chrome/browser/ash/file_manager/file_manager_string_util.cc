@@ -1073,6 +1073,8 @@ void AddFileManagerFeatureStrings(const std::string& locale,
 
   dict->Set("GUEST_OS", true);
 
+  dict->Set("JELLY", base::FeatureList::IsEnabled(chromeos::features::kJelly));
+
   if (base::FeatureList::IsEnabled(features::kDataLeakPreventionPolicy) &&
       base::FeatureList::IsEnabled(
           features::kDataLeakPreventionFilesRestriction)) {

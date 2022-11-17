@@ -1123,6 +1123,14 @@ util.isGuestOsEnabled = () => {
 };
 
 /**
+ * Returns true if Jelly flag is enabled.
+ * @return {boolean}
+ */
+util.isJellyEnabled = () => {
+  return loadTimeData.getBoolean('JELLY');
+};
+
+/**
  * Returns true if DriveFsMirroring flag is enabled.
  * @return {boolean}
  */
