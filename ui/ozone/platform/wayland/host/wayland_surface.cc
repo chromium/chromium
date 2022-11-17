@@ -778,7 +778,11 @@ void WaylandSurface::Enter(void* data,
                 wayland_output->output_id()),
             nullptr);
 
-  surface->entered_outputs_.emplace_back(wayland_output->output_id());
+  if (auto it = base::ranges::find(surface->entered_outputs_,
+                                   wayland_output->output_id());
+      it == surface->entered_outputs_.end()) {
+    surface->entered_outputs_.emplace_back(wayland_output->output_id());
+  }
 
   if (surface->root_window_)
     surface->root_window_->OnEnteredOutput();
@@ -804,8 +808,8 @@ void WaylandSurface::Leave(void* data,
 }
 
 void WaylandSurface::RemoveEnteredOutput(uint32_t output_id) {
-  auto entered_outputs_it_ = base::ranges::find(entered_outputs_, output_id);
-  if (entered_outputs_it_ == entered_outputs_.end())
+  auto it = base::ranges::find(entered_outputs_, output_id);
+  if (it == entered_outputs_.end())
     return;
 
   // In certain use cases, such as switching outputs in the single output
@@ -813,7 +817,7 @@ void WaylandSurface::RemoveEnteredOutput(uint32_t output_id) {
   // another one, send wl_surface::leave event to it, but defer sending
   // wl_surface::enter until the user moves or resizes the surface on the new
   // output.
-  entered_outputs_.erase(entered_outputs_it_);
+  entered_outputs_.erase(it);
 
   if (root_window_)
     root_window_->OnLeftOutput();

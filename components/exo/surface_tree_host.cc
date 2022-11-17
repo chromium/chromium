@@ -258,8 +258,14 @@ void SurfaceTreeHost::UpdateDisplayOnTree() {
       display::Screen::GetScreen()->GetDisplayNearestWindow(host_window());
   if (display_id_ != display.id()) {
     if (root_surface_) {
-      if (root_surface_->UpdateDisplay(display_id_, display.id()))
+      if (root_surface_->UpdateDisplay(display_id_, display.id())) {
         display_id_ = display.id();
+      } else {
+        // The surface failed to update to the new display.
+        // Invalidate cached display id, so the surface always gets updated
+        // next time, even when it gets updated back to the previous display.
+        display_id_ = display::kInvalidDisplayId;
+      }
     }
   }
 }

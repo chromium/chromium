@@ -565,6 +565,7 @@ source_set("wayland_unittests") {
     "host/wayland_pointer_unittest.cc",
     "host/wayland_screen_unittest.cc",
     "host/wayland_serial_tracker_unittest.cc",
+    "host/wayland_surface_unittest.cc",
     "host/wayland_touch_unittest.cc",
     "host/wayland_window_drag_controller_unittest.cc",
     "host/wayland_window_manager_unittests.cc",

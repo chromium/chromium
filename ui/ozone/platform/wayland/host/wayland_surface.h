@@ -45,7 +45,7 @@ class WaylandSurface {
   using ExplicitReleaseCallback =
       base::OnceCallback<void(wl_buffer*, base::ScopedFD)>;
 
-  WaylandSurface(WaylandConnection* connection, WaylandWindow* ro_window);
+  WaylandSurface(WaylandConnection* connection, WaylandWindow* root_window);
   WaylandSurface(const WaylandSurface&) = delete;
   WaylandSurface& operator=(const WaylandSurface&) = delete;
   ~WaylandSurface();

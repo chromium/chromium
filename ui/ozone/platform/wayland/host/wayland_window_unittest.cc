@@ -75,6 +75,7 @@
 
 using ::testing::_;
 using ::testing::DoAll;
+using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Mock;
@@ -2525,141 +2526,127 @@ TEST_P(WaylandWindowTest, GetPreferredOutput) {
   EXPECT_EQ(1, window_->window_scale());
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    // Configure the first output with scale 1.
+    // Update first output.
     wl::TestOutput* output1 = server->output();
     output1->SetRect(gfx::Rect(1920, 1080));
 
-    // Creating an output with scale 2.
+    // Creating a 2nd output.
     wl::TestOutput* output2 = server->CreateAndInitializeOutput();
     output2->SetRect(gfx::Rect(1921, 0, 1920, 1080));
   });
 
-  auto entered_outputs = window_->root_surface()->entered_outputs();
-  EXPECT_EQ(0u, entered_outputs.size());
+  // Client side WaylandOutput ids.
+  ASSERT_EQ(2u, screen_->GetAllDisplays().size());
+  const uint32_t output1_id =
+      screen_->GetOutputIdForDisplayId(screen_->GetAllDisplays().at(0).id());
+  const uint32_t output2_id =
+      screen_->GetOutputIdForDisplayId(screen_->GetAllDisplays().at(1).id());
+
+  // Client side surface.
+  WaylandSurface* wayland_surface = window_->root_surface();
+  EXPECT_THAT(wayland_surface->entered_outputs(), ElementsAre());
 
   auto* output_manager = connection_->wayland_output_manager();
-  EXPECT_EQ(2u, output_manager->GetAllOutputs().size());
+  ASSERT_EQ(2u, output_manager->GetAllOutputs().size());
 
-  const uint32_t main_output_id =
-      GetObjIdForOutput(output_manager->GetAllOutputs().begin()->first);
-  const uint32_t secondary_output_id =
-      GetObjIdForOutput(output_manager->GetAllOutputs().rbegin()->first);
+  // Shared wl_output resource ids.
+  const uint32_t wl_output1_id = GetObjIdForOutput(output1_id);
+  const uint32_t wl_output2_id = GetObjIdForOutput(output2_id);
 
-  PostToServerAndWait([id = surface_id_, main_output_id, secondary_output_id](
-                          wl::TestWaylandServerThread* server) {
+  PostToServerAndWait([id = surface_id_, wl_output1_id,
+                       wl_output2_id](wl::TestWaylandServerThread* server) {
     // Send the window to |output1| and |output2|.
     wl_surface_send_enter(
         server->GetObject<wl::MockSurface>(id)->resource(),
-        server->GetObject<wl::TestOutput>(main_output_id)->resource());
+        server->GetObject<wl::TestOutput>(wl_output1_id)->resource());
     wl_surface_send_enter(
         server->GetObject<wl::MockSurface>(id)->resource(),
-        server->GetObject<wl::TestOutput>(secondary_output_id)->resource());
+        server->GetObject<wl::TestOutput>(wl_output2_id)->resource());
   });
 
   // The window entered two outputs.
-  entered_outputs = window_->root_surface()->entered_outputs();
-  EXPECT_EQ(2u, entered_outputs.size());
+  EXPECT_THAT(wayland_surface->entered_outputs(),
+              ElementsAre(output1_id, output2_id));
 
   // The window must prefer the output that it entered first.
-  uint32_t expected_entered_output_id = *entered_outputs.begin();
-  EXPECT_TRUE(window_->GetPreferredEnteredOutputId());
-  EXPECT_EQ(expected_entered_output_id,
-            *window_->GetPreferredEnteredOutputId());
+  EXPECT_EQ(window_->GetPreferredEnteredOutputId(), output1_id);
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    // Create the third output and pretend the window entered 3 outputs at the
-    // same time.
+    // Create the third output.
     wl::TestOutput* output3 = server->CreateAndInitializeOutput();
     output3->SetRect(gfx::Rect(0, 1081, 1920, 1080));
   });
 
+  ASSERT_EQ(3u, screen_->GetAllDisplays().size());
+  const uint32_t output3_id =
+      screen_->GetOutputIdForDisplayId(screen_->GetAllDisplays().at(2).id());
+
   EXPECT_EQ(3u, output_manager->GetAllOutputs().size());
-  const uint32_t third_output_id =
-      GetObjIdForOutput(output_manager->GetAllOutputs().rbegin()->first);
+  const uint32_t wl_output3_id = GetObjIdForOutput(output3_id);
 
   PostToServerAndWait(
-      [id = surface_id_, third_output_id](wl::TestWaylandServerThread* server) {
+      [id = surface_id_, wl_output3_id](wl::TestWaylandServerThread* server) {
+        // Send window into 3rd output.
         wl_surface_send_enter(
             server->GetObject<wl::MockSurface>(id)->resource(),
-            server->GetObject<wl::TestOutput>(third_output_id)->resource());
+            server->GetObject<wl::TestOutput>(wl_output3_id)->resource());
       });
 
   // The window entered three outputs...
-  entered_outputs = window_->root_surface()->entered_outputs();
-  EXPECT_EQ(3u, entered_outputs.size());
+  EXPECT_THAT(wayland_surface->entered_outputs(),
+              ElementsAre(output1_id, output2_id, output3_id));
 
   // but it still must prefer the output that it entered first.
-  EXPECT_TRUE(window_->GetPreferredEnteredOutputId());
-  EXPECT_EQ(expected_entered_output_id,
-            *window_->GetPreferredEnteredOutputId());
+  EXPECT_EQ(window_->GetPreferredEnteredOutputId(), output1_id);
 
-  PostToServerAndWait(
-      [secondary_output_id](wl::TestWaylandServerThread* server) {
-        wl::TestOutput* output2 =
-            server->GetObject<wl::TestOutput>(secondary_output_id);
-        // Pretend that the output2 has scale factor equals to 2 now.
-        output2->SetScale(2);
-        output2->Flush();
-      });
+  PostToServerAndWait([wl_output2_id](wl::TestWaylandServerThread* server) {
+    wl::TestOutput* output2 = server->GetObject<wl::TestOutput>(wl_output2_id);
+    // Pretend that the output2 has scale factor equals to 2 now.
+    output2->SetScale(2);
+    output2->Flush();
+  });
 
-  entered_outputs = window_->root_surface()->entered_outputs();
-  EXPECT_EQ(3u, entered_outputs.size());
+  // Entered outputs remain the same.
+  EXPECT_THAT(wayland_surface->entered_outputs(),
+              ElementsAre(output1_id, output2_id, output3_id));
 
   // It must be the second entered output now.
-  expected_entered_output_id = *(++entered_outputs.begin());
-  auto* expected_entered_output =
-      connection_->wayland_output_manager()->GetOutput(
-          expected_entered_output_id);
-  EXPECT_EQ(2, expected_entered_output->scale_factor());
+  EXPECT_EQ(2, connection_->wayland_output_manager()
+                   ->GetOutput(output2_id)
+                   ->scale_factor());
 
   // The window_ must return the output with largest scale.
-  EXPECT_TRUE(window_->GetPreferredEnteredOutputId());
-  EXPECT_EQ(expected_entered_output_id,
-            *window_->GetPreferredEnteredOutputId());
+  EXPECT_EQ(window_->GetPreferredEnteredOutputId(), output2_id);
 
-  PostToServerAndWait([main_output_id](wl::TestWaylandServerThread* server) {
-    wl::TestOutput* output1 = server->GetObject<wl::TestOutput>(main_output_id);
+  PostToServerAndWait([wl_output1_id](wl::TestWaylandServerThread* server) {
+    wl::TestOutput* output1 = server->GetObject<wl::TestOutput>(wl_output1_id);
     // Now, the output1 changes its scale factor to 2 as well.
     output1->SetScale(2);
     output1->Flush();
   });
 
   // It must be the very first output now.
-  entered_outputs = window_->root_surface()->entered_outputs();
-  expected_entered_output_id = entered_outputs.front();
-  EXPECT_TRUE(window_->GetPreferredEnteredOutputId());
-  EXPECT_EQ(expected_entered_output_id,
-            *window_->GetPreferredEnteredOutputId());
+  EXPECT_EQ(window_->GetPreferredEnteredOutputId(), output1_id);
 
-  PostToServerAndWait([main_output_id](wl::TestWaylandServerThread* server) {
-    wl::TestOutput* output1 = server->GetObject<wl::TestOutput>(main_output_id);
+  PostToServerAndWait([wl_output1_id](wl::TestWaylandServerThread* server) {
+    wl::TestOutput* output1 = server->GetObject<wl::TestOutput>(wl_output1_id);
     // Now, the output1 changes its scale factor back to 1.
     output1->SetScale(1);
     output1->Flush();
   });
 
   // It must be the very the second output now.
-  entered_outputs = window_->root_surface()->entered_outputs();
-  expected_entered_output_id = *(++entered_outputs.begin());
-  EXPECT_TRUE(window_->GetPreferredEnteredOutputId());
-  EXPECT_EQ(expected_entered_output_id,
-            *window_->GetPreferredEnteredOutputId());
+  EXPECT_EQ(window_->GetPreferredEnteredOutputId(), output2_id);
 
-  PostToServerAndWait(
-      [secondary_output_id](wl::TestWaylandServerThread* server) {
-        wl::TestOutput* output2 =
-            server->GetObject<wl::TestOutput>(secondary_output_id);
-        // All outputs have scale factor of 1. window_ prefers the output that
-        // it entered first again.
-        output2->SetScale(1);
-        output2->Flush();
-      });
+  PostToServerAndWait([wl_output2_id](wl::TestWaylandServerThread* server) {
+    wl::TestOutput* output2 = server->GetObject<wl::TestOutput>(wl_output2_id);
+    // All outputs have scale factor of 1. window_ prefers the output that
+    // it entered first again.
+    output2->SetScale(1);
+    output2->Flush();
+  });
 
-  entered_outputs = window_->root_surface()->entered_outputs();
-  expected_entered_output_id = entered_outputs.front();
-  EXPECT_TRUE(window_->GetPreferredEnteredOutputId());
-  EXPECT_EQ(expected_entered_output_id,
-            *window_->GetPreferredEnteredOutputId());
+  EXPECT_EQ(window_->GetPreferredEnteredOutputId(), output1_id);
 }
 
 TEST_P(WaylandWindowTest, GetChildrenPreferredOutput) {
@@ -2676,96 +2663,101 @@ TEST_P(WaylandWindowTest, GetChildrenPreferredOutput) {
   menu_window->Show(false);
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    // Configure the first output with scale 1.
+    // Update the first output.
     wl::TestOutput* output1 = server->output();
     output1->SetRect(gfx::Rect(1920, 1080));
 
-    // Creating an output with scale 2.
+    // Create a 2nd output.
     wl::TestOutput* output2 = server->CreateAndInitializeOutput();
     output2->SetRect(gfx::Rect(1921, 0, 1920, 1080));
   });
 
-  auto entered_outputs = window_->root_surface()->entered_outputs();
-  EXPECT_EQ(0u, entered_outputs.size());
-
-  auto menu_entered_outputs = menu_window->root_surface()->entered_outputs();
-  EXPECT_EQ(0u, menu_entered_outputs.size());
+  // Client side WaylandOutput ids.
+  ASSERT_EQ(2u, screen_->GetAllDisplays().size());
+  const uint32_t output1_id =
+      screen_->GetOutputIdForDisplayId(screen_->GetAllDisplays().at(0).id());
+  const uint32_t output2_id =
+      screen_->GetOutputIdForDisplayId(screen_->GetAllDisplays().at(1).id());
 
   auto* output_manager = connection_->wayland_output_manager();
-  EXPECT_EQ(2u, output_manager->GetAllOutputs().size());
+  ASSERT_EQ(2u, output_manager->GetAllOutputs().size());
 
-  const uint32_t main_output_id =
-      GetObjIdForOutput(output_manager->GetAllOutputs().begin()->first);
-  const uint32_t secondary_output_id =
-      GetObjIdForOutput(output_manager->GetAllOutputs().rbegin()->first);
+  // Shared wl_output resource ids.
+  const uint32_t wl_output1_id = GetObjIdForOutput(output1_id);
+  const uint32_t wl_output2_id = GetObjIdForOutput(output2_id);
 
-  // Enter |output1|.
+  // Client side surfaces.
+  WaylandSurface* root_surface = window_->root_surface();
+  WaylandSurface* menu_surface = menu_window->root_surface();
+  const uint32_t menu_surface_id = menu_surface->get_surface_id();
+
+  // Neither surface should have entered any output.
+  EXPECT_THAT(root_surface->entered_outputs(), ElementsAre());
+  EXPECT_THAT(menu_surface->entered_outputs(), ElementsAre());
+
+  // Send the toplevel window into output1.
   PostToServerAndWait(
-      [id = surface_id_, main_output_id](wl::TestWaylandServerThread* server) {
+      [id = surface_id_, wl_output1_id](wl::TestWaylandServerThread* server) {
         wl_surface_send_enter(
             server->GetObject<wl::MockSurface>(id)->resource(),
-            server->GetObject<wl::TestOutput>(main_output_id)->resource());
+            server->GetObject<wl::TestOutput>(wl_output1_id)->resource());
       });
 
-  // The window entered the output.
-  entered_outputs = window_->root_surface()->entered_outputs();
-  EXPECT_EQ(1u, entered_outputs.size());
+  // The toplevel window entered the output.
+  EXPECT_THAT(root_surface->entered_outputs(), ElementsAre(output1_id));
+  EXPECT_THAT(menu_surface->entered_outputs(), ElementsAre());
 
   // The menu also thinks it entered the same output.
-  menu_entered_outputs = menu_window->root_surface()->entered_outputs();
-  EXPECT_EQ(0u, menu_entered_outputs.size());
-
+  EXPECT_EQ(window_->GetPreferredEnteredOutputId(), output1_id);
   EXPECT_EQ(window_->GetPreferredEnteredOutputId(),
             menu_window->GetPreferredEnteredOutputId());
 
-  // Pretend Wayland sends that menu entered output2, while the toplevel is on
-  // output1.  Output1 must still be preferred by the menu.
-  const uint32_t menu_surface_id =
-      menu_window->root_surface()->get_surface_id();
-  PostToServerAndWait([menu_surface_id, secondary_output_id](
-                          wl::TestWaylandServerThread* server) {
-    wl_surface_send_enter(
-        server->GetObject<wl::MockSurface>(menu_surface_id)->resource(),
-        server->GetObject<wl::TestOutput>(secondary_output_id)->resource());
-  });
-
-  // The menu surface should be aware of the output that Wayland sent it.
-  EXPECT_EQ(1u, window_->root_surface()->entered_outputs().size());
-  EXPECT_EQ(1u, menu_window->root_surface()->entered_outputs().size());
-
-  EXPECT_EQ(window_->GetPreferredEnteredOutputId(),
-            menu_window->GetPreferredEnteredOutputId());
-
-  // Pretend Wayland sends that toplevel entered output2.
-  PostToServerAndWait([id = surface_id_, secondary_output_id](
-                          wl::TestWaylandServerThread* server) {
-    wl_surface_send_enter(
-        server->GetObject<wl::MockSurface>(id)->resource(),
-        server->GetObject<wl::TestOutput>(secondary_output_id)->resource());
-  });
-
-  EXPECT_EQ(2u, window_->root_surface()->entered_outputs().size());
-  EXPECT_EQ(1u, menu_window->root_surface()->entered_outputs().size());
-
-  EXPECT_EQ(window_->GetPreferredEnteredOutputId(),
-            menu_window->GetPreferredEnteredOutputId());
-
+  // Send the menu window into output2, while the toplevel is still on output1.
   PostToServerAndWait(
-      [secondary_output_id](wl::TestWaylandServerThread* server) {
-        wl::TestOutput* output2 =
-            server->GetObject<wl::TestOutput>(secondary_output_id);
-        // Now, the output2 changes its scale factor to 2.
-        output2->SetScale(2);
-        output2->Flush();
+      [menu_surface_id, wl_output2_id](wl::TestWaylandServerThread* server) {
+        wl_surface_send_enter(
+            server->GetObject<wl::MockSurface>(menu_surface_id)->resource(),
+            server->GetObject<wl::TestOutput>(wl_output2_id)->resource());
       });
 
-  // It must be the very the second output now.
-  entered_outputs = window_->root_surface()->entered_outputs();
-  uint32_t expected_entered_output_id = *(++entered_outputs.begin());
-  EXPECT_TRUE(window_->GetPreferredEnteredOutputId());
-  EXPECT_EQ(expected_entered_output_id,
-            *window_->GetPreferredEnteredOutputId());
+  // The menu surface should be aware of the output that Wayland sent it.
+  EXPECT_THAT(root_surface->entered_outputs(), ElementsAre(output1_id));
+  EXPECT_THAT(menu_surface->entered_outputs(), ElementsAre(output2_id));
 
+  // The menu still prefers output1.
+  EXPECT_EQ(window_->GetPreferredEnteredOutputId(), output1_id);
+  EXPECT_EQ(window_->GetPreferredEnteredOutputId(),
+            menu_window->GetPreferredEnteredOutputId());
+
+  // Send the toplevel window into output2.
+  PostToServerAndWait(
+      [id = surface_id_, wl_output2_id](wl::TestWaylandServerThread* server) {
+        wl_surface_send_enter(
+            server->GetObject<wl::MockSurface>(id)->resource(),
+            server->GetObject<wl::TestOutput>(wl_output2_id)->resource());
+      });
+
+  // The toplevel window has now entered 2 outputs, in chronological order.
+  EXPECT_THAT(root_surface->entered_outputs(),
+              ElementsAre(output1_id, output2_id));
+  EXPECT_THAT(menu_surface->entered_outputs(), ElementsAre(output2_id));
+
+  // With the same scale factor, the toplevel window prefers the earlier output.
+  // The menu window always prefers whatever the parent prefers.
+  EXPECT_EQ(window_->GetPreferredEnteredOutputId(), output1_id);
+  EXPECT_EQ(window_->GetPreferredEnteredOutputId(),
+            menu_window->GetPreferredEnteredOutputId());
+
+  PostToServerAndWait([wl_output2_id](wl::TestWaylandServerThread* server) {
+    wl::TestOutput* output2 = server->GetObject<wl::TestOutput>(wl_output2_id);
+    // Now, the output2 changes its scale factor to 2.
+    output2->SetScale(2);
+    output2->Flush();
+  });
+
+  // The toplevel window prefers the output with higher scale factor.
+  // The menu window still prefers whatever the parent prefers.
+  EXPECT_EQ(window_->GetPreferredEnteredOutputId(), output2_id);
   EXPECT_EQ(window_->GetPreferredEnteredOutputId(),
             menu_window->GetPreferredEnteredOutputId());
 }
