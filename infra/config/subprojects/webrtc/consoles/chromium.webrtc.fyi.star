@@ -31,6 +31,16 @@ luci.console_view(
             short_name = "N",
         ),
         luci.console_view_entry(
+            builder = "webrtc.fyi/WebRTC Chromium FYI Android Tests (dbg)",
+            category = "android|debug|tester",
+            short_name = "P",
+        ),
+        luci.console_view_entry(
+            builder = "webrtc.fyi/WebRTC Chromium FYI Android Tests ARM64 (dbg)",
+            category = "android|debug|tester",
+            short_name = "P",
+        ),
+        luci.console_view_entry(
             builder = "webrtc.fyi/WebRTC Chromium FYI Android Builder",
             category = "android|release",
             short_name = "32",

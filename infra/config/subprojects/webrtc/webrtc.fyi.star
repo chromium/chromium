@@ -73,6 +73,16 @@ builder(
 )
 
 builder(
+    name = "WebRTC Chromium FYI Android Tests (dbg)",
+    triggered_by = ["WebRTC Chromium FYI Android Builder (dbg)"],
+)
+
+builder(
+    name = "WebRTC Chromium FYI Android Tests ARM64 (dbg)",
+    triggered_by = ["WebRTC Chromium FYI Android Builder ARM64 (dbg)"],
+)
+
+builder(
     name = "WebRTC Chromium FYI Linux Builder",
     goma_backend = goma.backend.RBE_PROD,
 )

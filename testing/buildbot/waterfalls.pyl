@@ -5955,6 +5955,15 @@
       },
       'WebRTC Chromium FYI Android Builder (dbg)': {},
       'WebRTC Chromium FYI Android Builder ARM64 (dbg)': {},
+      'WebRTC Chromium FYI Android Tests (dbg)': {
+        'os_type': 'android',
+        'mixins': [
+          'walleye',
+        ],
+        'test_suites': {
+          'gtest_tests': 'webrtc_chromium_simple_gtests',
+        },
+      },
       'WebRTC Chromium FYI Android Tests (dbg) (M Nexus5X)': {
         'os_type': 'android',
         'mixins': [
@@ -5970,6 +5979,15 @@
         'mixins': [
           'nougat_generic',
           'bullhead',
+        ],
+        'test_suites': {
+          'gtest_tests': 'webrtc_chromium_simple_gtests',
+        },
+      },
+      'WebRTC Chromium FYI Android Tests ARM64 (dbg)': {
+        'os_type': 'android',
+        'mixins': [
+          'walleye',
         ],
         'test_suites': {
           'gtest_tests': 'webrtc_chromium_simple_gtests',
