@@ -146,7 +146,7 @@ bool CanChangeChannel(Profile* profile) {
 // Returns the relative path under the chromeos-assets dir
 // to the directory of regulatory labels for a given region, if found
 // (e.g. "regulatory_labels/us"). Must be called from the blocking pool.
-base::FilePath GetRegulatoryLabelDirForRegion(const std::string& region) {
+base::FilePath GetRegulatoryLabelDirForRegion(base::StringPiece region) {
   base::FilePath region_path(kRegulatoryLabelsDirectory);
   const std::string model_subdir =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -169,13 +169,13 @@ base::FilePath GetRegulatoryLabelDirForRegion(const std::string& region) {
 // subdirectory of regulatory labels, using the VPD region code. Also
 // tries "us" as a fallback region. Must be called from the blocking pool.
 base::FilePath FindRegulatoryLabelDir() {
-  std::string region;
   base::FilePath region_path;
   // Use the VPD region code to find the label dir.
-  if (chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
-          "region", &region) &&
-      !region.empty()) {
-    region_path = GetRegulatoryLabelDirForRegion(region);
+  const absl::optional<base::StringPiece> region =
+      chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+          chromeos::system::kRegionKey);
+  if (region && !region->empty()) {
+    region_path = GetRegulatoryLabelDirForRegion(region.value());
   }
 
   // Try the fallback region code if no directory was found.
