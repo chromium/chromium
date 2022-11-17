@@ -38,6 +38,11 @@ const int kCompatibleVersionNumber = 1;
 
 }  // namespace
 
+// See comments at declaration of these variables in dips_database.h
+// for details.
+
+const base::TimeDelta DIPSDatabase::kMaxAge = base::Days(180);
+
 DIPSDatabase::DIPSDatabase(const absl::optional<base::FilePath>& db_path)
     : db_path_(db_path.value_or(base::FilePath())),
       db_(std::make_unique<sql::Database>(
@@ -224,6 +229,22 @@ absl::optional<StateValue> DIPSDatabase::Read(const std::string& site) {
                                    ToOptionalTime(statement.ColumnTime(8))}};
 }
 
+std::vector<std::string> DIPSDatabase::GetAllSitesForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  static constexpr char kReadSql[] =  // clang-format off
+      "SELECT site FROM bounces ORDER BY site";
+  // clang-format on
+
+  DCHECK(db_->IsSQLValid(kReadSql));
+  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kReadSql));
+
+  std::vector<std::string> sites;
+  while (statement.Step()) {
+    sites.push_back(statement.ColumnString(0));
+  }
+  return sites;
+}
+
 std::vector<std::string> DIPSDatabase::GetSitesThatBounced(
     base::Time range_start,
     base::Time last_interaction) const {
@@ -324,9 +345,12 @@ bool DIPSDatabase::RemoveEventsByTime(const base::Time& delete_begin,
   DCHECK(db_->is_open());
 
   sql::Transaction transaction(db_.get());
+  if (!transaction.Begin())
+    return false;
 
-  if (!transaction.Begin() ||
-      !ClearTimestamps(delete_begin, delete_end, type) ||
+  GarbageCollect();
+
+  if (!ClearTimestamps(delete_begin, delete_end, type) ||
       !AdjustFirstTimestamps(delete_begin, delete_end, type) ||
       !AdjustLastTimestamps(delete_begin, delete_end, type))
     return false;
@@ -636,4 +660,78 @@ bool DIPSDatabase::AdjustLastTimestamps(const base::Time& delete_begin,
   }
 
   return true;
+}
+
+size_t DIPSDatabase::GetEntryCount() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  sql::Statement s_entry_count(
+      db_->GetCachedStatement(SQL_FROM_HERE, "SELECT COUNT(*) FROM bounces"));
+  return (s_entry_count.Step() ? s_entry_count.ColumnInt(0) : 0);
+}
+
+size_t DIPSDatabase::GarbageCollect() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  size_t num_entries = GetEntryCount();
+  size_t num_deleted = 0;
+  int purge_goal = num_entries - (max_entries_ - purge_entries_);
+
+  if (num_entries <= max_entries_)
+    return 0;
+
+  DCHECK_GT(purge_goal, 0);
+  num_deleted += GarbageCollectExpired();
+
+  // If expiration did not purge enough entries, remove entries with the oldest
+  // |last_user_interaction_time| until the |purge_goal| is satisfied.
+  if (num_deleted < static_cast<size_t>(purge_goal)) {
+    num_deleted += GarbageCollectOldest(purge_goal - num_deleted);
+  }
+
+  return num_deleted;
+}
+
+size_t DIPSDatabase::GarbageCollectExpired() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::Time safe_date(base::Time::Now() - kMaxAge);
+
+  static constexpr char kExpireByInteractionSql[] =  // clang-format off
+        "DELETE FROM bounces WHERE last_user_interaction_time<? AND "
+                                  "last_user_interaction_time>0";
+  // clang-format on
+  DCHECK(db_->IsSQLValid(kExpireByInteractionSql));
+
+  sql::Statement s_expire_by_interaction(
+      db_->GetCachedStatement(SQL_FROM_HERE, kExpireByInteractionSql));
+  s_expire_by_interaction.BindTime(0, safe_date);
+
+  if (!s_expire_by_interaction.Run())
+    return 0;
+
+  return db_->GetLastChangeCount();
+}
+
+size_t DIPSDatabase::GarbageCollectOldest(int purge_goal) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  static constexpr char kGarbageCollectOldestSql[] =  // clang-format off
+      "DELETE FROM bounces WHERE site "
+          "IN(SELECT site FROM bounces "
+              "ORDER BY "
+                  "MAX(last_user_interaction_time,last_site_storage_time) ASC,"
+                      "last_site_storage_time ASC "
+              "LIMIT ?)";
+  // clang-format on
+  DCHECK(db_->IsSQLValid(kGarbageCollectOldestSql));
+
+  sql::Statement s_garbage_collect_oldest(
+      db_->GetCachedStatement(SQL_FROM_HERE, kGarbageCollectOldestSql));
+  s_garbage_collect_oldest.BindInt(0, purge_goal);
+
+  if (!s_garbage_collect_oldest.Run())
+    return 0;
+
+  return db_->GetLastChangeCount();
 }

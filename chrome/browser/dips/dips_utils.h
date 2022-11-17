@@ -7,6 +7,7 @@
 
 #include <ostream>
 
+#include "base/files/file_path.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
@@ -22,6 +23,11 @@ class TimeDelta;
 // read+write.
 using CookieOperation = network::mojom::CookieAccessDetails::Type;
 
+// Constants:
+// The filename for the DIPS database.
+const base::FilePath::CharType kDIPSFilename[] = FILE_PATH_LITERAL("DIPS");
+
+// CookieAccessType:
 // NOTE: We use this type as a bitfield, and will soon be logging it. Don't
 // change the values or add additional members.
 enum class CookieAccessType {

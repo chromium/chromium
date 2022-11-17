@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/strcat.h"
 #include "base/test/gtest_util.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -382,3 +383,145 @@ TEST_P(DIPSDatabaseQueryTest, GetSitesThatUsedStorage_RangeStartTest) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All, DIPSDatabaseQueryTest, ::testing::Bool());
+
+// A test class that verifies DIPSDatabase garbage collection behavior.
+class DIPSDatabaseGarbageCollectionTest
+    : public DIPSDatabaseTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  DIPSDatabaseGarbageCollectionTest() : DIPSDatabaseTest(true) {}
+
+  void SetUp() override {
+    DIPSDatabaseTest::SetUp();
+
+    DCHECK(db_);
+
+    db_->SetMaxEntriesForTesting(200);
+    db_->SetPurgeEntriesForTesting(20);
+
+    recent_interaction = Time::Now();
+    old_interaction = Time::Now() - DIPSDatabase::kMaxAge - base::Days(1);
+
+    recent_interaction_times = {recent_interaction, recent_interaction};
+    old_interaction_times = {old_interaction, old_interaction};
+  }
+
+  void BloatBouncesForGC(int num_recent_entries, int num_old_entries) {
+    DCHECK(db_);
+
+    for (int i = 0; i < num_recent_entries; i++) {
+      db_->Write(base::StrCat({"https://recent_interaction.test",
+                               base::NumberToString(i)}),
+                 storage_times, recent_interaction_times, stateful_bounce_times,
+                 stateless_bounce_times);
+    }
+
+    for (int i = 0; i < num_old_entries; i++) {
+      db_->Write(base::StrCat(
+                     {"https://old_interaction.test", base::NumberToString(i)}),
+                 storage_times, old_interaction_times, stateful_bounce_times,
+                 stateless_bounce_times);
+    }
+  }
+
+  base::Time recent_interaction;
+  base::Time old_interaction;
+  base::Time storage = Time::FromDoubleT(2);
+  base::Time stateful_bounce = Time::FromDoubleT(3);
+  base::Time stateless_bounce = Time::FromDoubleT(4);
+
+  TimestampRange recent_interaction_times;
+  TimestampRange old_interaction_times;
+  TimestampRange storage_times = {storage, storage};
+  TimestampRange stateful_bounce_times = {stateful_bounce, stateful_bounce};
+  TimestampRange stateless_bounce_times = {stateless_bounce, stateless_bounce};
+};
+
+// More than |max_entries_| entries with recent user interaction; garbage
+// collection should purge down to |max_entries_| - |purge_entries_| entries.
+TEST_P(DIPSDatabaseGarbageCollectionTest, RemovesRecentOverMax) {
+  BloatBouncesForGC(/*num_recent_entries=*/db_->GetMaxEntries() * 2,
+                    /*num_old_entries=*/0);
+
+  EXPECT_EQ(db_->GarbageCollect(),
+            db_->GetMaxEntries() + db_->GetPurgeEntries());
+
+  EXPECT_EQ(db_->GetEntryCount(),
+            db_->GetMaxEntries() - db_->GetPurgeEntries());
+}
+
+// Less than |max_entries_| entries, some with expired user interaction and some
+// with recent; no entries should be garbage collected.
+TEST_P(DIPSDatabaseGarbageCollectionTest, PreservesUnderMax) {
+  BloatBouncesForGC(
+      /*num_recent_entries=*/(db_->GetMaxEntries() - db_->GetPurgeEntries()) /
+          4,
+      /*num_old_entries=*/(db_->GetMaxEntries() - db_->GetPurgeEntries()) / 4);
+
+  EXPECT_EQ(db_->GarbageCollect(), static_cast<size_t>(0));
+
+  EXPECT_EQ(db_->GetEntryCount(),
+            (db_->GetMaxEntries() - db_->GetPurgeEntries()) / 2);
+}
+
+// Exactly |max_entries_| entries, some with expired user interaction and some
+// with recent; no entries should be garbage collected.
+TEST_P(DIPSDatabaseGarbageCollectionTest, PreservesMax) {
+  BloatBouncesForGC(/*num_recent_entries=*/db_->GetMaxEntries() / 2,
+                    /*num_old_entries=*/db_->GetMaxEntries() / 2);
+
+  EXPECT_EQ(db_->GarbageCollect(), static_cast<size_t>(0));
+
+  EXPECT_EQ(db_->GetEntryCount(), db_->GetMaxEntries());
+}
+
+// More than |max_entries_| entries with recent user interaction and a few with
+// expired user interaction; only entries with expired user interaction should
+// be garbage collected by pure expiration.
+TEST_P(DIPSDatabaseGarbageCollectionTest, ExpirationPreservesRecent) {
+  BloatBouncesForGC(/*num_recent_entries=*/db_->GetMaxEntries() * 2,
+                    /*num_old_entries=*/db_->GetMaxEntries() / 2);
+
+  EXPECT_EQ(db_->GarbageCollectExpired(), db_->GetMaxEntries() / 2);
+
+  EXPECT_EQ(db_->GetEntryCount(), db_->GetMaxEntries() * 2);
+}
+
+// The entries with the oldest interaction and storage times should be deleted
+// first.
+TEST_P(DIPSDatabaseGarbageCollectionTest, OldestEntriesRemoved) {
+  db_->Write("https://old_interaction.test", {},
+             /*interaction_times=*/{Time::FromDoubleT(1), Time::FromDoubleT(1)},
+             {}, {});
+  db_->Write("https://old_storage_old_interaction.test",
+             /*storage_times=*/{Time::FromDoubleT(1), Time::FromDoubleT(1)},
+             /*interaction_times=*/{Time::FromDoubleT(2), Time::FromDoubleT(2)},
+             {}, {});
+  db_->Write("https://old_storage.test",
+             /*storage_times=*/{Time::FromDoubleT(3), Time::FromDoubleT(3)}, {},
+             {}, {});
+  db_->Write("https://old_storage_new_interaction.test",
+             /*storage_times=*/{Time::FromDoubleT(1), Time::FromDoubleT(1)},
+             /*interaction_times=*/{Time::FromDoubleT(4), Time::FromDoubleT(4)},
+             {}, {});
+  db_->Write("https://new_storage_old_interaction.test",
+             /*storage_times=*/{Time::FromDoubleT(5), Time::FromDoubleT(5)},
+             /*interaction_times=*/{Time::FromDoubleT(2), Time::FromDoubleT(2)},
+             {}, {});
+  db_->Write("https://new_storage_new_interaction.test",
+             /*storage_times=*/{Time::FromDoubleT(6), Time::FromDoubleT(6)},
+             /*interaction_times=*/{Time::FromDoubleT(7), Time::FromDoubleT(7)},
+             {}, {});
+
+  EXPECT_EQ(db_->GarbageCollectOldest(3), static_cast<size_t>(3));
+  EXPECT_EQ(db_->GetEntryCount(), static_cast<size_t>(3));
+
+  EXPECT_THAT(db_->GetAllSitesForTesting(),
+              testing::ElementsAre("https://new_storage_new_interaction.test",
+                                   "https://new_storage_old_interaction.test",
+                                   "https://old_storage_new_interaction.test"));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DIPSDatabaseGarbageCollectionTest,
+                         ::testing::Bool());

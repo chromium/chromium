@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
+#include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/dips/dips_storage.h"
@@ -85,8 +86,17 @@ constexpr char kTimeToInteraction_OTR_Block3PC[] =
 
 }  // namespace
 
-class DIPSTabHelperBrowserTest : public InProcessBrowserTest {
+class DIPSTabHelperBrowserTest : public InProcessBrowserTest,
+                                 public testing::WithParamInterface<bool> {
  protected:
+  void SetUp() override {
+    if (IsPersistentStorageEnabled()) {
+      scoped_feature_list_.InitAndEnableFeatureWithParameters(
+          dips::kFeature, {{"persist_database", "true"}});
+    }
+    InProcessBrowserTest::SetUp();
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Prevents flakiness by handling clicks even before content is drawn.
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
@@ -142,11 +152,16 @@ class DIPSTabHelperBrowserTest : public InProcessBrowserTest {
     return state;
   }
 
+  bool IsPersistentStorageEnabled() { return GetParam(); }
+
  private:
   base::SimpleTestClock test_clock_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
+INSTANTIATE_TEST_SUITE_P(All, DIPSTabHelperBrowserTest, ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
                        InteractionsRecordedInAncestorFrames) {
   GURL url_a = embedded_test_server()->GetURL("a.test", "/iframe_blank.html");
   GURL url_b = embedded_test_server()->GetURL("b.test", "/title1.html");
@@ -201,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
   EXPECT_FALSE(GetDIPSState(url_b).has_value());
 }
 
-IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
+IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
                        MultipleUserInteractionsRecorded) {
   GURL url = embedded_test_server()->GetURL("a.test", "/title1.html");
   base::Time time = base::Time::FromDoubleT(1);
@@ -245,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
             state_2->user_interaction_times.last);
 }
 
-IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, StorageRecordedInSingleFrame) {
+IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, StorageRecordedInSingleFrame) {
   // We host the iframe content on an HTTPS server, because for it to write a
   // cookie, the cookie needs to be SameSite=None and Secure.
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
@@ -288,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, StorageRecordedInSingleFrame) {
   EXPECT_FALSE(state_b.has_value());
 }
 
-IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, MultipleSiteStoragesRecorded) {
+IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, MultipleSiteStoragesRecorded) {
   GURL url = embedded_test_server()->GetURL("a.test", "/set-cookie?foo=bar");
   base::Time time = base::Time::FromDoubleT(1);
 
@@ -320,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, MultipleSiteStoragesRecorded) {
             state_2->site_storage_times.last);
 }
 
-IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, Histograms_StorageThenClick) {
+IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, Histograms_StorageThenClick) {
   base::HistogramTester histograms;
   GURL url = embedded_test_server()->GetURL("a.test", "/set-cookie?foo=bar");
   base::Time time = base::Time::FromDoubleT(1);
@@ -348,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, Histograms_StorageThenClick) {
   histograms.ExpectUniqueTimeSample(kTimeToInteraction, base::Seconds(10), 1);
 }
 
-IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
+IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
                        Histograms_StorageThenClick_Incognito) {
   base::HistogramTester histograms;
   GURL url = embedded_test_server()->GetURL("a.test", "/set-cookie?foo=bar");
@@ -383,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
                                     base::Seconds(10), 1);
 }
 
-IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, Histograms_ClickThenStorage) {
+IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, Histograms_ClickThenStorage) {
   base::HistogramTester histograms;
   base::Time time = base::Time::FromDoubleT(1);
   content::WebContents* web_contents = GetActiveWebContents();
@@ -414,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, Histograms_ClickThenStorage) {
   histograms.ExpectUniqueTimeSample(kTimeToStorage, base::Seconds(10), 1);
 }
 
-IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
+IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
                        Histograms_MultipleStoragesThenClick) {
   base::HistogramTester histograms;
   GURL url = embedded_test_server()->GetURL("a.test", "/set-cookie?foo=bar");
@@ -460,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
   histograms.ExpectUniqueTimeSample(kTimeToInteraction, base::Seconds(10), 1);
 }
 
-IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
+IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
                        Histograms_MultipleClicksThenStorage) {
   base::HistogramTester histograms;
   GURL url = embedded_test_server()->GetURL("a.test", "/title1.html");
@@ -514,14 +529,14 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
   histograms.ExpectUniqueTimeSample(kTimeToStorage, base::Seconds(7), 1);
 }
 
-IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, PRE_PrepopulateTest) {
+IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, PRE_PrepopulateTest) {
   // Simulate the user typing the URL to visit the page, which will record site
   // engagement.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("a.test", "/title1.html")));
 }
 
-IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, PrepopulateTest) {
+IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, PrepopulateTest) {
   // Since there was previous site engagement, the DIPS DB should be
   // prepopulated with a user interaction timestamp.
   auto state = GetDIPSState(GURL("http://a.test"));
@@ -529,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, PrepopulateTest) {
   EXPECT_TRUE(state->user_interaction_times.first.has_value());
 }
 
-IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
+IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
                        PRE_ChromeBrowsingDataRemover_Basic) {
   // Simulate the user typing the URL to visit the page, which will record site
   // engagement.
@@ -537,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
       browser(), embedded_test_server()->GetURL("a.test", "/title1.html")));
 }
 
-IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
+IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
                        ChromeBrowsingDataRemover_Basic) {
   base::Time time = base::Time::Now();
   uint64_t remove_mask = chrome_browsing_data_remover::DATA_TYPE_HISTORY |
