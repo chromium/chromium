@@ -52,7 +52,7 @@ PrintManagementSystemAppDelegate::GetWebAppInfo() const {
 }
 
 bool PrintManagementSystemAppDelegate::ShouldShowInLauncher() const {
-  return false;
+  return true;
 }
 gfx::Size PrintManagementSystemAppDelegate::GetMinimumWindowSize() const {
   return {600, 320};
