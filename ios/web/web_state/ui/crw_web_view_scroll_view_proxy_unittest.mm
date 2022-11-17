@@ -775,10 +775,6 @@ TEST_F(CRWWebViewScrollViewProxyTest,
 //   - the getter is called after the underlying scroll view is still not set
 TEST_F(CRWWebViewScrollViewProxyTest,
        PreservePropertiesWhileUnderlyingScrollViewIsAbsent) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      web::features::kPreserveScrollViewProperties);
-
   // Recreate CRWWebViewScrollViewProxy with the updated feature flags.
   web_view_scroll_view_proxy_ = [[CRWWebViewScrollViewProxy alloc] init];
 
@@ -803,10 +799,6 @@ TEST_F(CRWWebViewScrollViewProxyTest,
 //   - the getter is called after the underlying scroll view is set
 TEST_F(CRWWebViewScrollViewProxyTest,
        PreservePropertiesWhenUnderlyingScrollViewIsNewlyAssigned) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      web::features::kPreserveScrollViewProperties);
-
   // Recreate CRWWebViewScrollViewProxy with the updated feature flags.
   web_view_scroll_view_proxy_ = [[CRWWebViewScrollViewProxy alloc] init];
 
@@ -836,10 +828,6 @@ TEST_F(CRWWebViewScrollViewProxyTest,
 //   - the getter is called after the underlying scroll view is reassigned
 TEST_F(CRWWebViewScrollViewProxyTest,
        PreservePropertiesWhenUnderlyingScrollViewIsReassigned) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      web::features::kPreserveScrollViewProperties);
-
   // Recreate CRWWebViewScrollViewProxy with the updated feature flags.
   web_view_scroll_view_proxy_ = [[CRWWebViewScrollViewProxy alloc] init];
 
@@ -869,10 +857,6 @@ TEST_F(CRWWebViewScrollViewProxyTest,
 // category of UIScrollView while the underlying scroll view is not set.
 TEST_F(CRWWebViewScrollViewProxyTest,
        UIScrollViewCategoryWithoutUnderlyingScrollView) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      web::features::kPreserveScrollViewProperties);
-
   // Recreate CRWWebViewScrollViewProxy with the updated feature flags.
   web_view_scroll_view_proxy_ = [[CRWWebViewScrollViewProxy alloc] init];
 
@@ -886,10 +870,6 @@ TEST_F(CRWWebViewScrollViewProxyTest,
 // category of UIScrollView while the underlying scroll view is set.
 TEST_F(CRWWebViewScrollViewProxyTest,
        UIScrollViewCategoryWithUnderlyingScrollView) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      web::features::kPreserveScrollViewProperties);
-
   // Recreate CRWWebViewScrollViewProxy with the updated feature flags.
   web_view_scroll_view_proxy_ = [[CRWWebViewScrollViewProxy alloc] init];
 
@@ -903,10 +883,6 @@ TEST_F(CRWWebViewScrollViewProxyTest,
 // Verifies that the scroll view backgound color is not preserved between
 // scroll views.  Used to prevent regression of crbug.com/1078790.
 TEST_F(CRWWebViewScrollViewProxyTest, DontPreserveBackgroundColor) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      web::features::kPreserveScrollViewProperties);
-
   // Recreate CRWWebViewScrollViewProxy with the updated feature flags.
   web_view_scroll_view_proxy_ = [[CRWWebViewScrollViewProxy alloc] init];
 

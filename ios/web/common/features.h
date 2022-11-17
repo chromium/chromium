@@ -29,11 +29,6 @@ BASE_DECLARE_FEATURE(kClearOldNavigationRecordsWorkaround);
 // Feature flag enabling persistent downloads.
 BASE_DECLARE_FEATURE(kEnablePersistentDownloads);
 
-// When enabled, preserves properties of the UIScrollView using CRWPropertyStore
-// when the scroll view is recreated. When disabled, only preserve a small set
-// of properties using hard coded logic.
-BASE_DECLARE_FEATURE(kPreserveScrollViewProperties);
-
 // Records snapshot size of image (IOS.Snapshots.ImageSize histogram) and PDF
 // (IOS.Snapshots.PDFSize histogram) if enabled. Enabling this flag will
 // generate PDF when Page Snapshot is taken just to record PDF size.

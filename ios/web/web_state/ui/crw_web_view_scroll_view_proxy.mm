@@ -75,11 +75,7 @@ static int gAnyContext = 0;
 
 @end
 
-@interface CRWWebViewScrollViewProxy () {
-  std::unique_ptr<UIScrollViewContentInsetAdjustmentBehavior>
-      _storedContentInsetAdjustmentBehavior;
-  std::unique_ptr<BOOL> _storedClipsToBounds;
-}
+@interface CRWWebViewScrollViewProxy ()
 
 // A delegate object of the UIScrollView managed by this class.
 @property(nonatomic, strong, readonly)
@@ -214,26 +210,10 @@ static int gAnyContext = 0;
   scrollView.delegate = self.delegateProxy;
   [self.class startObservingScrollView:scrollView proxy:self];
 
-  if (base::FeatureList::IsEnabled(
-          web::features::kPreserveScrollViewProperties)) {
-    [self preservePropertiesFromOldScrollView:self.underlyingScrollView
-                              toNewScrollView:scrollView];
-  }
+  [self preservePropertiesFromOldScrollView:self.underlyingScrollView
+                            toNewScrollView:scrollView];
 
   self.underlyingScrollView = scrollView;
-
-  // TODO(crbug.com/1023250): Restore these in
-  // -preservePropertiesFromOldScrollView:toNewScrollView: once the feature flag
-  // kPreserveScrollViewProperties is removed.
-  if (_storedClipsToBounds) {
-    scrollView.clipsToBounds = *_storedClipsToBounds;
-  }
-  // Assigns `contentInsetAdjustmentBehavior` which was set before setting the
-  // scroll view.
-  if (_storedContentInsetAdjustmentBehavior) {
-    self.underlyingScrollView.contentInsetAdjustmentBehavior =
-        *_storedContentInsetAdjustmentBehavior;
-  }
 
   [_observers webViewScrollViewProxyDidSetScrollView:self];
 }
@@ -301,6 +281,14 @@ static int gAnyContext = 0;
   newScrollView.userInteractionEnabled = oldScrollView.userInteractionEnabled;
   newScrollView.multipleTouchEnabled = oldScrollView.multipleTouchEnabled;
   newScrollView.exclusiveTouch = oldScrollView.exclusiveTouch;
+  if (newScrollView.clipsToBounds != oldScrollView.clipsToBounds) {
+    newScrollView.clipsToBounds = oldScrollView.clipsToBounds;
+  }
+  if (newScrollView.contentInsetAdjustmentBehavior !=
+      oldScrollView.contentInsetAdjustmentBehavior) {
+    newScrollView.contentInsetAdjustmentBehavior =
+        oldScrollView.contentInsetAdjustmentBehavior;
+  }
 }
 
 - (BOOL)clipsToBounds {
@@ -308,7 +296,6 @@ static int gAnyContext = 0;
 }
 
 - (void)setClipsToBounds:(BOOL)clipsToBounds {
-  _storedClipsToBounds = std::make_unique<BOOL>(clipsToBounds);
   self.underlyingScrollView.clipsToBounds = clipsToBounds;
 }
 
@@ -320,9 +307,6 @@ static int gAnyContext = 0;
     (UIScrollViewContentInsetAdjustmentBehavior)contentInsetAdjustmentBehavior {
   [self.underlyingScrollView
       setContentInsetAdjustmentBehavior:contentInsetAdjustmentBehavior];
-  _storedContentInsetAdjustmentBehavior =
-      std::make_unique<UIScrollViewContentInsetAdjustmentBehavior>(
-          contentInsetAdjustmentBehavior);
 }
 
 - (NSArray<__kindof UIView*>*)subviews {
