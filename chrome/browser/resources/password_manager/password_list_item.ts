@@ -10,6 +10,7 @@ import './shared_style.css.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './password_list_item.html.js';
+import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {Page, Router} from './router.js';
 
 export interface PasswordListItemElement {
@@ -52,8 +53,19 @@ export class PasswordListItemElement extends PolymerElement {
     this.addEventListener('click', this.onRowClick_);
   }
 
-  private onRowClick_() {
-    Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, this.item);
+  private async onRowClick_() {
+    const ids = this.item.entries.map(entry => entry.id);
+    PasswordManagerImpl.getInstance()
+        .requestCredentialsDetails(ids)
+        .then(entries => {
+          const group: chrome.passwordsPrivate.CredentialGroup = {
+            name: this.item.name,
+            iconUrl: this.item.iconUrl,
+            entries: entries,
+          };
+          Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group);
+        })
+        .catch(() => {});
   }
 }
 

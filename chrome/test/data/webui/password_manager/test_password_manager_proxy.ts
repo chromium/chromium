@@ -29,6 +29,9 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     insecureCredentialsListener: CredentialsChangedListener|null,
   };
 
+  private requestCredentialsDetailsResponse_:
+      chrome.passwordsPrivate.PasswordUiEntry[]|null = null;
+
   constructor() {
     super([
       'getBlockedSitesList',
@@ -37,6 +40,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'getPasswordCheckStatus',
       'getSavedPasswordList',
       'recordPasswordCheckInteraction',
+      'requestCredentialsDetails',
       'startBulkPasswordCheck',
     ]);
 
@@ -134,5 +138,18 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   showAddShortcutDialog() {
     this.methodCalled('showAddShortcutDialog');
+  }
+
+  requestCredentialsDetails(ids: number[]) {
+    this.methodCalled('requestCredentialsDetails', ids);
+    if (!this.requestCredentialsDetailsResponse_) {
+      return Promise.reject(new Error('Could not obtain credential details'));
+    }
+    return Promise.resolve(this.requestCredentialsDetailsResponse_);
+  }
+
+  setRequestCredentialsDetailsResponse(
+      credentials: chrome.passwordsPrivate.PasswordUiEntry[]) {
+    this.requestCredentialsDetailsResponse_ = credentials;
   }
 }

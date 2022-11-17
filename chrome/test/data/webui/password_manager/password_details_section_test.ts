@@ -5,11 +5,11 @@
 import 'chrome://password-manager/password_manager.js';
 
 import {Page, PasswordDetailsSectionElement, PasswordManagerImpl, Router} from 'chrome://password-manager/password_manager.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertArrayEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
-import {createCredentialGroup} from './test_util.js';
+import {createCredentialGroup, createPasswordEntry} from './test_util.js';
 
 suite('PasswordDetailsSectionTest', function() {
   let passwordManager: TestPasswordManagerProxy;
@@ -41,15 +41,26 @@ suite('PasswordDetailsSectionTest', function() {
     // Simulate direct navigation.
     Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, 'test.com');
     passwordManager.data.groups = [
-      createCredentialGroup({name: 'test.com'}),
+      createCredentialGroup({
+        name: 'test.com',
+        credentials: [
+          createPasswordEntry({id: 0}),
+          createPasswordEntry({id: 1}),
+        ],
+      }),
       createCredentialGroup({name: 'test1.com'}),
       createCredentialGroup({name: 'test2.com'}),
     ];
+    // Simulate successful reauth.
+    passwordManager.setRequestCredentialsDetailsResponse(
+        passwordManager.data.groups[0]!.entries.slice());
 
     const section: PasswordDetailsSectionElement =
         document.createElement('password-details-section');
     document.body.appendChild(section);
     await passwordManager.whenCalled('getCredentialGroups');
+    assertArrayEquals(
+        [0, 1], await passwordManager.whenCalled('requestCredentialsDetails'));
     await flushTasks();
 
     const title = section.$.title;
@@ -66,6 +77,33 @@ suite('PasswordDetailsSectionTest', function() {
         document.createElement('password-details-section');
     document.body.appendChild(section);
     await passwordManager.whenCalled('getCredentialGroups');
+    await flushTasks();
+
+    assertEquals(Page.PASSWORDS, Router.getInstance().currentRoute.page);
+  });
+
+  test('Navigating directly fails when auth failed', async function() {
+    // Simulate direct navigation.
+    Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, 'test.com');
+    assertEquals(Page.PASSWORD_DETAILS, Router.getInstance().currentRoute.page);
+    passwordManager.data.groups = [
+      createCredentialGroup({
+        name: 'test.com',
+        credentials: [
+          createPasswordEntry({id: 0}),
+          createPasswordEntry({id: 1}),
+        ],
+      }),
+    ];
+
+    const section: PasswordDetailsSectionElement =
+        document.createElement('password-details-section');
+    document.body.appendChild(section);
+    await passwordManager.whenCalled('getCredentialGroups');
+    // Since setRequestCredentialsDetailsResponse was not called, auth has
+    // failed.
+    assertArrayEquals(
+        [0, 1], await passwordManager.whenCalled('requestCredentialsDetails'));
     await flushTasks();
 
     assertEquals(Page.PASSWORDS, Router.getInstance().currentRoute.page);

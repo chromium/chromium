@@ -66,12 +66,18 @@ export class PasswordDetailsSectionElement extends
     const groups =
         await PasswordManagerImpl.getInstance().getCredentialGroups();
     const selectedGroup = groups.find(group => group.name === groupName);
-    if (selectedGroup) {
-      // TODO(crbug.com/1350947): Request passwords and notes.
-      this.selectedGroup_ = selectedGroup;
-    } else {
+    if (!selectedGroup) {
       this.navigateBack_();
+      return;
     }
+    const ids = selectedGroup!.entries.map(entry => entry.id);
+    PasswordManagerImpl.getInstance()
+        .requestCredentialsDetails(ids)
+        .then(entries => {
+          selectedGroup!.entries = entries;
+          this.selectedGroup_ = selectedGroup;
+        })
+        .catch(this.navigateBack_);
   }
 }
 

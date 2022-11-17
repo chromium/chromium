@@ -130,6 +130,14 @@ export interface PasswordManagerProxy {
    * Triggers the shortcut creation dialog.
    */
   showAddShortcutDialog(): void;
+
+  /**
+   * Gets the list of full (with note and password) credentials for given ids.
+   * @param ids The id for the password entries being retrieved.
+   * @return A promise that resolves to |PasswordUiEntry[]|.
+   */
+  requestCredentialsDetails(ids: number[]):
+      Promise<chrome.passwordsPrivate.PasswordUiEntry[]>;
 }
 
 /**
@@ -208,6 +216,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   showAddShortcutDialog() {
     chrome.passwordsPrivate.showAddShortcutDialog();
+  }
+
+  requestCredentialsDetails(ids: number[]) {
+    return chrome.passwordsPrivate.requestCredentialsDetails(ids);
   }
 
   static getInstance(): PasswordManagerProxy {
