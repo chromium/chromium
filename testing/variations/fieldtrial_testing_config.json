@@ -9877,6 +9877,26 @@
             ]
         }
     ],
+    "SearchWebInSidePanel": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SearchWebInSidePanel"
+                    ]
+                }
+            ]
+        }
+    ],
     "SegmentationCompactionFix": [
         {
             "platforms": [
