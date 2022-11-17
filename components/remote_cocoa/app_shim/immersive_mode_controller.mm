@@ -356,30 +356,37 @@ void ImmersiveModeController::OnTopViewBoundsChanged(const gfx::Rect& bounds) {
   size.height = frame.size.height;
   [overlay_view setFrameSize:size];
   PropagateFrameSizeToViewsSubviews(overlay_view);
+  UpdateToolbarVisibility(last_used_style_);
 }
 
-void ImmersiveModeController::UpdateToolbarVisibility(bool always_show) {
-  // Remember the last used always_show for internal use of
-  // UpdateToolbarVisibility.
-  always_show_toolbar_ = always_show;
+void ImmersiveModeController::UpdateToolbarVisibility(
+    mojom::ToolbarVisibilityStyle style) {
+  // Remember the last used style for internal use of UpdateToolbarVisibility.
+  last_used_style_ = style;
 
   // Only make changes if there are no outstanding reveal locks.
   if (revealed_lock_count_ > 0) {
     return;
   }
+  switch (style) {
+    case mojom::ToolbarVisibilityStyle::kAlways:
+      immersive_mode_titlebar_view_controller_.get().fullScreenMinHeight =
+          immersive_mode_titlebar_view_controller_.get().view.frame.size.height;
+      browser_widget_.styleMask &= ~NSWindowStyleMaskFullSizeContentView;
 
-  if (always_show) {
-    immersive_mode_titlebar_view_controller_.get().fullScreenMinHeight =
-        immersive_mode_titlebar_view_controller_.get().view.frame.size.height;
-    browser_widget_.styleMask &= ~NSWindowStyleMaskFullSizeContentView;
-
-    // Toggling the controller will allow the content view to resize below Top
-    // Chrome.
-    immersive_mode_titlebar_view_controller_.get().hidden = YES;
-    immersive_mode_titlebar_view_controller_.get().hidden = NO;
-  } else {
-    immersive_mode_titlebar_view_controller_.get().fullScreenMinHeight = 0;
-    browser_widget_.styleMask |= NSWindowStyleMaskFullSizeContentView;
+      // Toggling the controller will allow the content view to resize below Top
+      // Chrome.
+      immersive_mode_titlebar_view_controller_.get().hidden = YES;
+      immersive_mode_titlebar_view_controller_.get().hidden = NO;
+      break;
+    case mojom::ToolbarVisibilityStyle::kAutohide:
+      immersive_mode_titlebar_view_controller_.get().hidden = NO;
+      immersive_mode_titlebar_view_controller_.get().fullScreenMinHeight = 0;
+      browser_widget_.styleMask |= NSWindowStyleMaskFullSizeContentView;
+      break;
+    case mojom::ToolbarVisibilityStyle::kNone:
+      immersive_mode_titlebar_view_controller_.get().hidden = YES;
+      break;
   }
 
   // Unpin the titlebar.

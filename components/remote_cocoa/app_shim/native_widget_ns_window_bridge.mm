@@ -923,9 +923,10 @@ void NativeWidgetNSWindowBridge::DisableImmersiveFullscreen() {
   immersive_mode_controller_.reset();
 }
 
-void NativeWidgetNSWindowBridge::UpdateToolbarVisibility(bool always_show) {
+void NativeWidgetNSWindowBridge::UpdateToolbarVisibility(
+    remote_cocoa::mojom::ToolbarVisibilityStyle style) {
   if (immersive_mode_controller_) {
-    immersive_mode_controller_->UpdateToolbarVisibility(always_show);
+    immersive_mode_controller_->UpdateToolbarVisibility(style);
   }
 }
 

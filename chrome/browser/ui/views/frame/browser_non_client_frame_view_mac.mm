@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -34,10 +35,12 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/remote_cocoa/common/native_widget_ns_window.mojom-shared.h"
 #include "components/remote_cocoa/common/native_widget_ns_window.mojom.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/canvas.h"
+#include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 
 namespace {
 
@@ -119,8 +122,13 @@ void BrowserNonClientFrameViewMac::OnFullscreenStateChanged() {
   if (browser_view()->UsesImmersiveFullscreenMode()) {
     browser_view()->immersive_mode_controller()->SetEnabled(
         browser_view()->IsFullscreen());
+    UpdateFullscreenTopUI();
+
+    // browser_view()->Layout() is not needed since top chrome is in another
+    // widget.
     return;
   }
+
   if (browser_view()->IsFullscreen()) {
     [fullscreen_toolbar_controller_ enterFullscreenMode];
   } else {
@@ -212,12 +220,6 @@ int BrowserNonClientFrameViewMac::GetThemeBackgroundXInset() const {
 }
 
 void BrowserNonClientFrameViewMac::UpdateFullscreenTopUI() {
-  if (browser_view()->UsesImmersiveFullscreenMode())
-    return;
-
-  FullscreenToolbarStyle old_style =
-      [fullscreen_toolbar_controller_ toolbarStyle];
-
   // Update to the new toolbar style if needed.
   FullscreenToolbarStyle new_style;
   FullscreenController* controller =
@@ -230,11 +232,38 @@ void BrowserNonClientFrameViewMac::UpdateFullscreenTopUI() {
     new_style = GetUserPreferredToolbarStyle(AlwaysShowToolbarInFullscreen());
     browser_view()->UnhideDownloadShelf();
   }
-  [fullscreen_toolbar_controller_ setToolbarStyle:new_style];
 
-  if (![fullscreen_toolbar_controller_ isInFullscreen] ||
-      old_style == new_style)
+  if (browser_view()->UsesImmersiveFullscreenMode()) {
+    remote_cocoa::mojom::NativeWidgetNSWindow* ns_window_mojo =
+        views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(
+            browser_view()->GetWidget()->GetNativeWindow())
+            ->GetNSWindowMojo();
+    static constexpr auto kStyleMap =
+        base::MakeFixedFlatMap<FullscreenToolbarStyle,
+                               remote_cocoa::mojom::ToolbarVisibilityStyle>(
+            {{FullscreenToolbarStyle::TOOLBAR_PRESENT,
+              remote_cocoa::mojom::ToolbarVisibilityStyle::kAlways},
+             {FullscreenToolbarStyle::TOOLBAR_HIDDEN,
+              remote_cocoa::mojom::ToolbarVisibilityStyle::kAutohide},
+             {FullscreenToolbarStyle::TOOLBAR_NONE,
+              remote_cocoa::mojom::ToolbarVisibilityStyle::kNone}});
+    const auto* it = kStyleMap.find(new_style);
+    remote_cocoa::mojom::ToolbarVisibilityStyle mapped_style =
+        it != kStyleMap.end()
+            ? it->second
+            : remote_cocoa::mojom::ToolbarVisibilityStyle::kAutohide;
+    ns_window_mojo->UpdateToolbarVisibility(mapped_style);
+    // The layout changes further down are not needed in immersive fullscreen.
     return;
+  }
+
+  FullscreenToolbarStyle old_style =
+      [fullscreen_toolbar_controller_ toolbarStyle];
+  [fullscreen_toolbar_controller_ setToolbarStyle:new_style];
+  if (![fullscreen_toolbar_controller_ isInFullscreen] ||
+      old_style == new_style) {
+    return;
+  }
 
   // Notify browser that top ui state has been changed so that we can update
   // the bookmark bar state as well.

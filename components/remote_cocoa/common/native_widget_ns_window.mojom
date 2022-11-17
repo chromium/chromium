@@ -91,6 +91,19 @@ enum WindowControlsOverlayNSViewType {
   kWebAppFrameToolbar,
 };
 
+// The visibility style of the toolbar in immersive fullscreen.
+enum ToolbarVisibilityStyle {
+  // No toolbar. Used for content fullscreen.
+  kNone,
+
+  // The toolbar is always shown.
+  kAlways,
+
+  // The toolbar will autohide. It can be revealed by placing the mouse at the
+  // top of the screen.
+  kAutohide,
+};
+
 // The interface through which a NativeWidgetMac may interact with an NSWindow
 // (possibly in a process separate from the browser process).
 interface NativeWidgetNSWindow {
@@ -273,8 +286,9 @@ interface NativeWidgetNSWindow {
 
   // Update the visibility of the toolbar (top chrome) while in immersive
   // fullscreen. Typically this is used in response to the
-  // View -> "Always Show Toolbar in Full Screen" menu changing.
-  UpdateToolbarVisibility(bool always_show);
+  // View -> "Always Show Toolbar in Full Screen" menu changing or content
+  // going fullscreen.
+  UpdateToolbarVisibility(ToolbarVisibilityStyle style);
 
   // Also used during immersive fullscreen. Update the bounds of the AppKit
   // NSWindow hosting top chrome.

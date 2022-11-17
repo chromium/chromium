@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/mac/scoped_nsobject.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
+#include "components/remote_cocoa/common/native_widget_ns_window.mojom-shared.h"
 
 @class ClearTitlebarViewController;
 @class ImmersiveModeMapper;
@@ -37,7 +38,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
 
   void Enable();
   void OnTopViewBoundsChanged(const gfx::Rect& bounds);
-  void UpdateToolbarVisibility(bool always_show);
+  void UpdateToolbarVisibility(mojom::ToolbarVisibilityStyle style);
 
   // Reveal top chrome leaving it visible until all outstanding calls to
   // RevealLock() are balanced with RevealUnlock().
@@ -67,7 +68,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
       immersive_mode_window_observer_;
 
   int revealed_lock_count_ = 0;
-  bool always_show_toolbar_ = false;
+  mojom::ToolbarVisibilityStyle last_used_style_ =
+      mojom::ToolbarVisibilityStyle::kAutohide;
 
   base::WeakPtrFactory<ImmersiveModeController> weak_ptr_factory_;
 };

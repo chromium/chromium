@@ -19,6 +19,7 @@
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_fullscreen_controller.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
+#include "components/remote_cocoa/common/native_widget_ns_window.mojom-shared.h"
 #include "components/remote_cocoa/common/native_widget_ns_window.mojom.h"
 #include "components/remote_cocoa/common/text_input_host.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -288,7 +289,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
       uint64_t fullscreen_overlay_widget_id,
       EnableImmersiveFullscreenCallback callback) override;
   void DisableImmersiveFullscreen() override;
-  void UpdateToolbarVisibility(bool always_show) override;
+  void UpdateToolbarVisibility(
+      remote_cocoa::mojom::ToolbarVisibilityStyle style) override;
   void OnTopContainerViewBoundsChanged(const gfx::Rect& bounds) override;
   void SetCanGoBack(bool can_go_back) override;
   void SetCanGoForward(bool can_go_back) override;
