@@ -355,18 +355,6 @@ void WebStateImpl::RealizedWebState::ShouldAllowRequest(
       num_decisions_requested);
 }
 
-bool WebStateImpl::RealizedWebState::ShouldAllowErrorPageToBeDisplayed(
-    NSURLResponse* response,
-    bool for_main_frame) {
-  for (auto& policy_decider : policy_deciders()) {
-    if (!policy_decider.ShouldAllowErrorPageToBeDisplayed(response,
-                                                          for_main_frame)) {
-      return false;
-    }
-  }
-  return true;
-}
-
 void WebStateImpl::RealizedWebState::ShouldAllowResponse(
     NSURLResponse* response,
     WebStatePolicyDecider::ResponseInfo response_info,

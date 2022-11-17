@@ -394,11 +394,8 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
   // If this is a error navigation, pass through.
   GURL responseURL = net::GURLWithNSURL(WKResponse.response.URL);
   if ([CRWErrorPageHelper isErrorPageFileURL:responseURL]) {
-    if (self.webStateImpl->ShouldAllowErrorPageToBeDisplayed(
-            WKResponse.response, WKResponse.forMainFrame)) {
-      handler(WKNavigationResponsePolicyAllow);
-      return;
-    }
+    handler(WKNavigationResponsePolicyAllow);
+    return;
   }
 
   if (self.pendingNavigationInfo.unsafeRedirect) {

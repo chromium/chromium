@@ -164,13 +164,6 @@ class WebStateImpl final : public WebState {
       WebStatePolicyDecider::RequestInfo request_info,
       WebStatePolicyDecider::PolicyDecisionCallback callback);
 
-  // Decides whether the navigation corresponding to `response` should
-  // be allowed to display an error page if an error occurs, by asking its
-  // policy deciders. If at least one policy decider's decision is false,
-  // returns false; otherwise returns true.
-  bool ShouldAllowErrorPageToBeDisplayed(NSURLResponse* response,
-                                         bool for_main_frame);
-
   // Decides whether the navigation corresponding to `response` should be
   // allowed to continue by asking its policy deciders, and calls `callback`
   // with the decision. Defaults to PolicyDecision::Allow(). If at least one

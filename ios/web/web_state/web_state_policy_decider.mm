@@ -71,12 +71,6 @@ void WebStatePolicyDecider::ShouldAllowRequest(
   std::move(callback).Run(PolicyDecision::Allow());
 }
 
-bool WebStatePolicyDecider::ShouldAllowErrorPageToBeDisplayed(
-    NSURLResponse* response,
-    bool for_main_frame) {
-  return true;
-}
-
 void WebStatePolicyDecider::ShouldAllowResponse(
     NSURLResponse* response,
     ResponseInfo response_info,

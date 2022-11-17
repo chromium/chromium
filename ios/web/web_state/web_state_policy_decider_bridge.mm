@@ -34,17 +34,6 @@ void WebStatePolicyDeciderBridge::ShouldAllowRequest(
   std::move(callback).Run(PolicyDecision::Allow());
 }
 
-bool WebStatePolicyDeciderBridge::ShouldAllowErrorPageToBeDisplayed(
-    NSURLResponse* response,
-    bool for_main_frame) {
-  if ([decider_ respondsToSelector:@selector
-                (shouldAllowErrorPageToBeDisplayed:forMainFrame:)]) {
-    return [decider_ shouldAllowErrorPageToBeDisplayed:response
-                                          forMainFrame:for_main_frame];
-  }
-  return true;
-}
-
 void WebStatePolicyDeciderBridge::ShouldAllowResponse(
     NSURLResponse* response,
     ResponseInfo response_info,

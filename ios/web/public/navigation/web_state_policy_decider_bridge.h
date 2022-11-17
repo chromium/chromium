@@ -21,10 +21,6 @@ typedef void (^PolicyDecisionHandler)(
                requestInfo:(web::WebStatePolicyDecider::RequestInfo)requestInfo
            decisionHandler:(PolicyDecisionHandler)decisionHandler;
 
-// Invoked by `WebStatePolicyDeciderBridge::ShouldAllowRequest`.
-- (bool)shouldAllowErrorPageToBeDisplayed:(NSURLResponse*)response
-                             forMainFrame:(BOOL)forMainFrame;
-
 // Invoked by `WebStatePolicyDeciderBridge::ShouldAllowResponse`.
 - (void)
     decidePolicyForNavigationResponse:(NSURLResponse*)response
@@ -56,9 +52,6 @@ class WebStatePolicyDeciderBridge : public web::WebStatePolicyDecider {
   void ShouldAllowResponse(NSURLResponse* response,
                            ResponseInfo response_info,
                            PolicyDecisionCallback callback) override;
-
-  bool ShouldAllowErrorPageToBeDisplayed(NSURLResponse* response,
-                                         bool for_main_frame) override;
 
  private:
   // CRWWebStatePolicyDecider which receives forwarded calls.

@@ -225,12 +225,6 @@ void WebStateImpl::ShouldAllowRequest(
                                       std::move(callback));
 }
 
-bool WebStateImpl::ShouldAllowErrorPageToBeDisplayed(NSURLResponse* response,
-                                                     bool for_main_frame) {
-  return RealizedState()->ShouldAllowErrorPageToBeDisplayed(response,
-                                                            for_main_frame);
-}
-
 void WebStateImpl::ShouldAllowResponse(
     NSURLResponse* response,
     WebStatePolicyDecider::ResponseInfo response_info,
