@@ -1944,16 +1944,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.Intent.LaunchExternalAppFormSubmitHasUserGesture"
-    enum="Boolean" expires_after="M74">
-  <owner>tedchoc@chromium.org</owner>
-  <owner>thildebr@chromium.org</owner>
-  <summary>
-    When an external application was launched as a result of a form submit, this
-    tracks whether there was a user gesture associated with the submit.
-  </summary>
-</histogram>
-
 <histogram name="Android.Intent.MainFrameIntentLaunch"
     enum="MainFrameIntentLaunch" expires_after="2023-08-16">
   <owner>mthiesse@chromium.org</owner>

@@ -471,16 +471,7 @@ public class ExternalNavigationHandler {
         RecordHistogram.recordTimesHistogram(
                 "Android.StrictMode.OverrideUrlLoadingTime", SystemClock.elapsedRealtime() - time);
 
-        if (result.getResultType() != OverrideUrlLoadingResultType.NO_OVERRIDE) {
-            int pageTransitionCore = params.getPageTransition() & PageTransition.CORE_MASK;
-            boolean isFormSubmit = pageTransitionCore == PageTransition.FORM_SUBMIT;
-            boolean isRedirectFromFormSubmit = isFormSubmit && params.isRedirect();
-            if (isRedirectFromFormSubmit) {
-                RecordHistogram.recordBooleanHistogram(
-                        "Android.Intent.LaunchExternalAppFormSubmitHasUserGesture",
-                        params.hasUserGesture());
-            }
-        } else {
+        if (result.getResultType() == OverrideUrlLoadingResultType.NO_OVERRIDE) {
             result = handleFallbackUrl(params, targetIntent, browserFallbackUrl,
                     canLaunchExternalFallbackResult.get());
         }
