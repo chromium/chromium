@@ -549,22 +549,13 @@ WebAXObject WebAXObject::HitTest(const gfx::Point& point) const {
   if (IsDetached())
     return WebAXObject();
 
+  private_->GetDocument()->View()->CheckDoesNotNeedLayout();
+
   ScopedActionAnnotator annotater(private_.Get(),
                                   ax::mojom::blink::Action::kHitTest);
   gfx::Point contents_point =
       private_->DocumentFrameView()->SoonToBeRemovedUnscaledViewportToContents(
           point);
-
-  Document* document = private_->GetDocument();
-  if (!document || !document->View())
-    return WebAXObject();
-  if (!document->View()->UpdateAllLifecyclePhasesExceptPaint(
-          DocumentUpdateReason::kAccessibility)) {
-    return WebAXObject();
-  }
-
-  if (IsDetached())
-    return WebAXObject();  // Updating lifecycle could detach object.
 
   AXObject* hit = private_->AccessibilityHitTest(contents_point);
 
