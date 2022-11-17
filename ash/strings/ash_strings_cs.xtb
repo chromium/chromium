@@ -175,6 +175,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1862380676329487333">Aktualizovat a odhlásit se</translation>
 <translation id="1864454756846565995">Zařízení USB Type-C (zadní port)</translation>
 <translation id="1869497990620230175">Rychlé soubory</translation>
+<translation id="1871703283152909317">Zapnout oba přístupy</translation>
 <translation id="1879018240766558464">Anonymní okna v současné době nejsou podporována. Ostatní aplikace budou uloženy.</translation>
 <translation id="1882814835921407042">Žádná mobilní síť</translation>
 <translation id="1882897271359938046">Zrcadlení na displej <ph name="DISPLAY_NAME" /></translation>
@@ -923,6 +924,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="6095008505822982596">Rychlost řeči</translation>
 <translation id="6099678161144790572">Upraveno v uplynulém měsíci</translation>
 <translation id="6103838137565245112">systém</translation>
+<translation id="6107292179555508368">Přístup k mikrofonu a fotoaparátu je na tomto zařízení vypnutý</translation>
 <translation id="6114505516289286752">Byly staženy řečové soubory pro jazyk <ph name="LANGUAGE" /></translation>
 <translation id="6116825164611323644">Přístup k fotoaparátu je v tomto zařízení vypnutý</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -951,6 +953,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="6259254695169772643">K výběru použijte dotykové pero</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Probíhá aktivace...</translation>
 <translation id="6274202259872570803">Záznam obrazovky</translation>
+<translation id="6282694724099204652">Pokud aplikacím a webovým stránkám s příslušnými oprávněními chcete povolit používat na tomto zařízení mikrofony a kamery, zapněte tyto přístupy.</translation>
 <translation id="6283712521836204486">Režim Nerušit je vypnutý.</translation>
 <translation id="6284232397434400372">Rozlišení se změnilo</translation>
 <translation id="6288235558961782912">Adresu <ph name="USER_EMAIL_ADDRESS" /> můžete s povolením rodiče přidat později</translation>

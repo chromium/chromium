@@ -2388,6 +2388,7 @@
 <translation id="3143515551205905069">लिंक करना रोक दें</translation>
 <translation id="3143754809889689516">शुरू से चलाएं</translation>
 <translation id="3144647712221361880">लिंक को इस रूप में खोलें</translation>
+<translation id="3144896554017119333">एक्सटेंशन वगैरह</translation>
 <translation id="3149510190863420837">Chrome ऐप्स</translation>
 <translation id="3150693969729403281">अभी सुरक्षा जांच करें</translation>
 <translation id="3150927491400159470">फिर से लोड करना मुश्किल</translation>
@@ -2496,6 +2497,7 @@
 <translation id="3268451620468152448">खुले सत्र</translation>
 <translation id="3269093882174072735">इमेज लोड करें</translation>
 <translation id="326911502853238749"><ph name="MODULE_NAME" /> न दिखाएं</translation>
+<translation id="3269175001434213183">कॉन्टेंट का बैक अप लेने और इसे किसी भी डिवाइस पर इस्तेमाल करने के लिए, सिंक करने की सुविधा चालू करें</translation>
 <translation id="3269612321104318480">हल्का नीला-हरा और सफ़ेद</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{फ़ाइल}one{# फ़ाइल}other{# फ़ाइलें}}</translation>
 <translation id="326999365752735949">अंतर डाउनलोड करना</translation>
@@ -4292,6 +4294,7 @@
 <translation id="4950993567860689081">आपका संगठन, आपके सेशन को मैनेज कर रहा है. एडमिन आपकी प्रोफ़ाइल मिटा सकते हैं और आपके नेटवर्क ट्रैफ़िक की निगरानी भी कर सकते हैं.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{एक फ़ाइल}one{# फ़ाइल}other{# फ़ाइलें}}</translation>
 <translation id="495170559598752135">क्रियाएं</translation>
+<translation id="4951966678293618079">इस साइट के लिए कभी भी पासवर्ड सेव न करें</translation>
 <translation id="4953808748584563296">डिफ़ॉल्ट नारंगी अवतार</translation>
 <translation id="4955710816792587366">अनलॉक करने के लिए अपना पिन चुनें</translation>
 <translation id="4959262764292427323">पासवर्ड आपके Google खाते में सेव किए जाते हैं ताकि आप किसी भी डिवाइस पर उनका इस्तेमाल कर सकें</translation>
@@ -4321,6 +4324,7 @@
 <translation id="4981449534399733132">अपने सभी सिंक किए हुए डिवाइस और अपने 'Google खाते' से ब्राउज़िंग डेटा साफ़ करने के लिए, <ph name="BEGIN_LINK" />साइन इन करें<ph name="END_LINK" />.</translation>
 <translation id="4982111327868342436">किसी भी डिवाइस पर, अपने काम को वहीं से शुरू करें जहां आपने उसे छोड़ा था</translation>
 <translation id="4982236238228587209">डिवाइस का सॉफ़्टवेयर</translation>
+<translation id="4986706507552097681">जब चाहें, तब सेटिंग में जाकर यह चुनें कि क्या सिंक किया जाना चाहिए और क्या नहीं. Google आपके इतिहास के आधार पर, Search और अन्य सेवाओं को आपकी पसंद के मुताबिक बना सकता है.</translation>
 <translation id="4986728572522335985">ऐसा करने से सुरक्षा कुंजी का पिन और उस पर मौजूद पूरा डेटा मिट जाएगा</translation>
 <translation id="4988526792673242964">पेज</translation>
 <translation id="49896407730300355">घड़ी की &amp;विपरीत दिशा में घुमाएं</translation>

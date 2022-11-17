@@ -3755,6 +3755,7 @@
 <translation id="445099924538929605">‏מערכת <ph name="DEVICE_OS" /> זיהתה TPM פעיל שניתן לשמור בו את הנתונים שלך באופן מאובטח יותר.</translation>
 <translation id="4451479197788154834">‏הסיסמה שלך שמורה במכשיר הזה ובחשבון Google שלך</translation>
 <translation id="4451757071857432900">חסומות באתרים שמוצגות בהם מודעות מפריעות או מטעות (מומלץ)</translation>
+<translation id="4452898361839215358">‏או לבחור קובץ PPD חדש. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="4453946976636652378">אפשר לחפש ב-<ph name="SEARCH_ENGINE_NAME" /> או להקליד כתובת אתר</translation>
 <translation id="4458535500699390320">בזמן שהכרטיסייה לא הייתה פעילה, במסגרת מצב החיסכון בזיכרון התפנה זיכרון בשביל משימות אחרות. תמיד אפשר לשנות זאת בהגדרות.</translation>
 <translation id="4459169140545916303">שימוש אחרון: לפני <ph name="DEVICE_LAST_ACTIVATED_TIME" /> ימים</translation>
@@ -8391,6 +8392,7 @@
 <translation id="8823514049557262177">העתקת ט&amp;קסט קישור</translation>
 <translation id="8823559166155093873">‏חסימת קובצי cookie</translation>
 <translation id="8823704566850948458">הצעת סיסמה...</translation>
+<translation id="8823963789776061136">‏אפשר גם לבחור ב-PPD של המדפסת. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">הוספת &amp;דף...</translation>
 <translation id="8827125715368568315">בוצעה חסימה להרשאות <ph name="PERMISSION" /> ועוד <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">הצמדת התוסף</translation>
@@ -8647,6 +8649,7 @@
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> רוצה לקבל גישה לתוכן הבא:</translation>
 <translation id="9057354806206861646">לוח זמנים של עדכונים</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{בערך התראה אחת ביום}two{בערך {NUM_NOTIFICATION} התראות ביום}many{בערך {NUM_NOTIFICATION} התראות ביום}other{בערך {NUM_NOTIFICATION} התראות ביום}}</translation>
+<translation id="9058760336383947367">‏אפשר לראות את קובץ PPD של המדפסת</translation>
 <translation id="9061383912634843744">כניסה אוטומטית לאפליקציות באמצעות פרטי כניסה שמורים. אם התכונה מושבתת, תישלח אליך בקשת אימות בכל פעם לפני כניסה לאתר או לאפליקציה.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">שגיאה משורה <ph name="ERROR_LINE_START" /> עד <ph name="ERROR_LINE_END" /></translation>

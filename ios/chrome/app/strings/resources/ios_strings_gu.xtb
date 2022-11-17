@@ -232,6 +232,7 @@
 <translation id="2815198996063984598">2. ડિફૉલ્ટ બ્રાઉઝર ઍપ પર ટૅપ કરો</translation>
 <translation id="2820289420301699633">તમારા વ્યવસ્થાપક Chrome પર નિયંત્રણ ધરાવે છે અને તેનો ડેટા ઍક્સેસ કરી શકે છે</translation>
 <translation id="2830972654601096923">સરનામા મેનેજ કરો…</translation>
+<translation id="2834399722155632105">3. પાસવર્ડના વિકલ્પો પર ટૅપ કરો</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">અનુવાદ સેટિંગને રીસેટ કરો</translation>
 <translation id="2848086008667475748">સેટિંગમાં ડિફૉલ્ટ બનાવો…</translation>
@@ -632,6 +633,7 @@
 <translation id="5899314093904173337">નજીકના લોકો સાથે શેર કરવા માટે, તેમને તેમના કૅમેરા અથવા QR સ્કૅનર ઍપ વડે આ QR કોડ તપાસવા દો</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5913600720976431809">પેજનો અનુવાદ કરવા માટેના વિકલ્પો</translation>
+<translation id="5933515656458364246">બધા ડિવાઇસ પર તમારો ડેટા સિંક કરો.</translation>
 <translation id="5938160824633642847">તમારું ઉપકરણ લગભગ ભરાઈ ગયું છે. સ્પેસ બનાવો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="5948291296578561264">આ તમને તમારી ફોટો લાઇબ્રેરીમાં ફોટો સાચવવા દે છે.</translation>
 <translation id="5951816930277761335">લિંક શેર કરો</translation>
@@ -713,6 +715,7 @@
 
 તમારો ડેટા <ph name="TIME" />ના રોજ તમારા સિંક પાસફ્રેઝ સાથે એન્ક્રિપ્ટ કરવામાં આવ્યો હતો. સિંક શરૂ કરવા માટે એ દાખલ કરો.</translation>
 <translation id="6418346271604475326">PDF તૈયાર કરી રહ્યાં છે</translation>
+<translation id="6429213933892582367">પાસવર્ડના વિકલ્પો ખોલો</translation>
 <translation id="6434591244308415567">એક ભૂલ આવી છે. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="6435236283694032571">વાંચન સૂચિમાં ઉમેરો</translation>
 <translation id="6439338047467462846">બધાને મંજૂરી આપો</translation>
@@ -828,6 +831,7 @@
 <translation id="7203585745079012652">જવાબો પાછા બોલો</translation>
 <translation id="7207023858769244910">તમારી રુચિઓના આધારે કન્ટેન્ટ મેળવવા માટે સિંક કરો.</translation>
 <translation id="721597782417389033">કાર્ડનું અમાન્ય ઉપનામ</translation>
+<translation id="7221173315674413369">"નવું શું છે" સુવિધામાં નવી સુવિધાઓ અને ટિપ વિશે જાણો</translation>
 <translation id="722454870747268814">નવું છૂપું ટૅબ</translation>
 <translation id="7265758999917665941">આ સાઇટ માટે ક્યારેય નહીં</translation>
 <translation id="7272437679830969316">તમારી ઓળખની ચકાસણી કરી શકાતી નથી. પાસવર્ડ કૉપિ કરેલો નથી.</translation>
@@ -861,6 +865,7 @@
 <translation id="7514365320538308">ડાઉનલોડ કરો</translation>
 <translation id="7531345132340165516">વર્તમાન સાઇટ</translation>
 <translation id="7537586195939242955">માફ કરશો, તમારો પાસ આ સમયે પાસબુક પર ઇન્સ્ટોલ કરી શકાતો નથી.</translation>
+<translation id="7553234618121028547">બંધ કરવા માટે, <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> ખોલો અને પાસવર્ડ સંબંધિત વિકલ્પો પર જાઓ.</translation>
 <translation id="7554791636758816595">નવું ટૅબ</translation>
 <translation id="7561196759112975576">હંમેશાં</translation>
 <translation id="7583004045319035904">તમારી છૂપી ટૅબને અનલૉક કરવા માટે <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />નો ઉપયોગ કરો.</translation>
@@ -942,6 +947,7 @@
 <translation id="8101409298456377967">તમારા પાસવર્ડ બનાવો, સાચવો અને મેનેજ કરો, જેથી તમે સાઇટ અને ઍપમાં સરળતાથી સાઇન ઇન કરી શકો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">બંધ કરો</translation>
 <translation id="8114753159095730575">ફાઇલ ડાઉનલોડ માટે ઉપલબ્ધ છે. સ્ક્રીનના તળિયે વિકલ્પો ઉપલબ્ધ છે.</translation>
+<translation id="81313319706244542">2. પાસવર્ડ પર ટૅપ કરો</translation>
 <translation id="8132598642024322408">હવે <ph name="PRICE" /> છે, પહેલાં <ph name="PREVIOUS_PRICE" /> હતી.</translation>
 <translation id="8136856065410661948">Chrome અને Google Lensમાંથી તમારા Apple Calendarમાં ઇવેન્ટ બનાવવા માટે, આનો ઉપયોગ કરવામાં આવશે.</translation>
 <translation id="8156478151976189188">પાસવર્ડ સિંક કાર્ય કરતું નથી</translation>
@@ -964,6 +970,7 @@
 <translation id="8319076807703933069">નવી શોધ</translation>
 <translation id="8323906514956095947">ટૅબના વધુ વિકલ્પો માટે, ટચ કરીને થોડીવાર દબાવી રાખો</translation>
 <translation id="8328777765163860529">બધું બંધ કરો</translation>
+<translation id="8343993175958086504">તમારી સામગ્રીનું બૅકઅપ લો અને કોઈપણ ડિવાઇસ પર તેનો ઉપયોગ કરો.</translation>
 <translation id="8378714024927312812">તમારી સંસ્થા દ્વારા મેનેજ કરેલ</translation>
 <translation id="8386068868580335421">રીસેટ કરો</translation>
 <translation id="8407669440184693619">આ સાઇટ માટે કોઈ પાસવર્ડ મળ્યાં નથી</translation>

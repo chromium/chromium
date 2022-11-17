@@ -2370,6 +2370,7 @@
 <translation id="3143515551205905069">સિંક કરવાનું રદ કરો</translation>
 <translation id="3143754809889689516">શરૂઆતથી ચલાવો</translation>
 <translation id="3144647712221361880">આ રીતે લિંક ખોલો</translation>
+<translation id="3144896554017119333">એક્સ્ટેન્શન અને બીજું ઘણું</translation>
 <translation id="3149510190863420837">Chrome ઍપ્લિકેશનો</translation>
 <translation id="3150693969729403281">હમણાં જ સલામતી માટે તપાસ ચલાવો</translation>
 <translation id="3150927491400159470">સખત રીતે ફરીથી લોડ કરો</translation>
@@ -2478,6 +2479,7 @@
 <translation id="3268451620468152448">ઓપન ટેબ્સ</translation>
 <translation id="3269093882174072735">છબી લોડ કરો</translation>
 <translation id="326911502853238749"><ph name="MODULE_NAME" /> બતાવશો નહીં</translation>
+<translation id="3269175001434213183">તમારી સામગ્રીનું બૅકઅપ લઈ કોઈપણ ડિવાઇસ પર તેનો ઉપયોગ કરવા માટે સિંકની સુવિધા ચાલુ કરો</translation>
 <translation id="3269612321104318480">આછો મોરપીંછ અને સફેદ</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{ફાઇલ}one{# ફાઇલ}other{# ફાઇલ}}</translation>
 <translation id="326999365752735949">ડાઉનલોડનો તફાવત</translation>
@@ -4275,6 +4277,7 @@
 <translation id="4950993567860689081">તમારું સત્ર તમારી સંસ્થા દ્વારા મેનેજ થાય છે. ઍડમિનિસ્ટ્રેટર તમારી પ્રોફાઇલ ડિલીટ કરી શકે છે અને તમારા નેટવર્કનો ટ્રાફિક પણ મોનિટર કરી શકે છે.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{એક ફાઇલ}one{# ફાઇલ}other{# ફાઇલ}}</translation>
 <translation id="495170559598752135">ક્રિયાઓ</translation>
+<translation id="4951966678293618079">આ સાઇટ માટે ક્યારેય પાસવર્ડ સાચવશો નહીં</translation>
 <translation id="4953808748584563296">ડિફોલ્ટ નારંગી અવતાર</translation>
 <translation id="4955710816792587366">તમારો પિન પસંદ કરો</translation>
 <translation id="4959262764292427323">પાસવર્ડ તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે, જેથી તમે કોઈપણ ઉપકરણ પર તેનો ઉપયોગ કરી શકો</translation>
@@ -4304,6 +4307,7 @@
 <translation id="4981449534399733132">તમારા બધા સિંક કરેલા ડિવાઇસ અને તમારા Google એકાઉન્ટમાંથી બ્રાઉઝિંગ ડેટા સાફ કરવા માટે, <ph name="BEGIN_LINK" />સાઇન ઇન કરો<ph name="END_LINK" />.</translation>
 <translation id="4982111327868342436">કોઈપણ ડિવાઇસ પર તમે જ્યાંથી અધૂરું મૂક્યું હોય, ત્યાંથી શરૂ કરો</translation>
 <translation id="4982236238228587209">ડિવાઇસનું સૉફ્ટવેર</translation>
+<translation id="4986706507552097681">શું સિંક કરવું તે હંમેશાં તમે સેટિંગમાં જઈને પસંદ કરી શકો છો. Google તમારા ઇતિહાસના આધારે Search અને અન્ય સેવાઓને મનગમતી બનાવી શકે છે.</translation>
 <translation id="4986728572522335985">સિક્યુરિટી કીના પિન સહિત, તેના પરના બધા ડેટાને આ ડિલીટ કરશે</translation>
 <translation id="4988526792673242964">પેજ</translation>
 <translation id="49896407730300355">ઘ&amp;ડિયાળની વિપરિત દિશામાં ફેરવો</translation>

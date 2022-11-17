@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">Ще получите сигнал, когато цената в отворен раздел е по-ниска</translation>
 <translation id="3328308545011660196">Предложение: <ph name="NUMBER_OF_TABS" /> раздела изглеждат сродни. Искате ли да ги групирате?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">Миниизобр. на опции за споделяне.</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Свиване на <ph name="TABS_COUNT_ONE" /> раздел.}other{Свиване на групата с раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
 <translation id="3882834874697329510">За да получавате сигнал, когато цената в отворен раздел е по-ниска, включете известията от настройките.</translation>
 <translation id="3940195383040445971">Проследяване на цените в разделите</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">Преглед на информацията за магазина – опцията е близо до горната част на екрана</translation>
 <translation id="5558362125926932819">Затваряне на групата с раздели с(ъс) <ph name="NUMBER_OF_TABS" /> раздела.</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> раздела са групирани</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> връзка от Chrome}other{<ph name="TABS_COUNT_MANY" /> връзки от Chrome}}</translation>
 <translation id="575494663145460764">Искате ли да получавате сигнали за понижение на цените?</translation>
 <translation id="58326064309361797">Преместете с плъзгане разделите, за да ги групирате</translation>
 <translation id="5846292395804797011">Затваряне на групата с раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="NUMBER_OF_TABS" /> раздела.</translation>

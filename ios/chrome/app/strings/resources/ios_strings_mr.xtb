@@ -232,6 +232,7 @@
 <translation id="2815198996063984598">२. डीफॉल्ट ब्राउझर अ‍ॅप वर टॅप करा</translation>
 <translation id="2820289420301699633">तुमच्या अ‍ॅडमिनिस्ट्रेटरचे Chrome वर नियंत्रण आहे आणि तो त्याचा डेटा अ‍ॅक्सेस करू शकतो</translation>
 <translation id="2830972654601096923">पत्ते व्यवस्थापित करा...</translation>
+<translation id="2834399722155632105">३. पासवर्ड पर्याय वर टॅप करा</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">भाषांतर सेटिंग्‍ज रीसेट करा</translation>
 <translation id="2848086008667475748">सेटिंग्ज मध्ये डीफॉल्ट बनवा…</translation>
@@ -633,6 +634,7 @@
 <translation id="5899314093904173337">जवळपासच्या लोकांसोबत शेअर करण्यासाठी, त्यांना त्यांचा कॅमेरा किंवा QR scanner अ‍ॅप वापरून हा QR कोड स्कॅन करू द्या</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5913600720976431809">पेज भाषांतरित करण्यासाठी पर्याय</translation>
+<translation id="5933515656458364246">तुमचा डेटा सर्व डिव्हाइसवर सिंक करा.</translation>
 <translation id="5938160824633642847">तुमचे डिव्हाइस जवळजवळ भरले आहे. जागा मोकळी करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="5948291296578561264">हे तुम्हाला तुमच्या फोटो लायब्ररीवर फोटो सेव्ह करू देते.</translation>
 <translation id="5951816930277761335">लिंक शेअर करा</translation>
@@ -715,6 +717,7 @@
 
 तुमचा डेटा तुमच्या सिंक सांकेतिक पासफ्रेझसह <ph name="TIME" /> वाजता एंक्रिप्ट केलेला होता. सिंक सुरू करण्यासाठी तो एंटर करा.</translation>
 <translation id="6418346271604475326">पीडीएफ तयार करत आहे</translation>
+<translation id="6429213933892582367">पासवर्ड पर्याय उघडा</translation>
 <translation id="6434591244308415567">एरर आली. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="6435236283694032571">वाचन सूची मध्ये जोडा</translation>
 <translation id="6439338047467462846">सर्वांना अनुमती द्या</translation>
@@ -830,6 +833,7 @@
 <translation id="7203585745079012652">उत्तरे वाचून सांगा</translation>
 <translation id="7207023858769244910">तुमच्या स्वारस्यांनुसार आशय मिळवण्यासाठी सिंक करा.</translation>
 <translation id="721597782417389033">कार्डाचे चुकीचे टोपणनाव</translation>
+<translation id="7221173315674413369">नवीन काय आहे मधील नवीन वैशिष्ट्ये आणि टिपा एक्सप्लोर करा</translation>
 <translation id="722454870747268814">नवीन गुप्त टॅब</translation>
 <translation id="7265758999917665941">या साइटसाठी कधीही नाही</translation>
 <translation id="7272437679830969316">तुमच्या ओळखीची पडताळणी करता आली नाही. पासवर्ड कॉपी केला नाही.</translation>
@@ -863,6 +867,7 @@
 <translation id="7514365320538308">डाउनलोड करा</translation>
 <translation id="7531345132340165516">सध्याची साइट</translation>
 <translation id="7537586195939242955">क्षमस्व, यावेळी तुमचा पास पासबुकमध्ये इंस्टॉल केला जाऊ शकत नाही.</translation>
+<translation id="7553234618121028547">बंद करण्यासाठी, <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> उघडा आणि पासवर्ड पर्याय वर जा.</translation>
 <translation id="7554791636758816595">नवीन टॅब</translation>
 <translation id="7561196759112975576">नेहमी</translation>
 <translation id="7583004045319035904">तुमचे गुप्त टॅब अनलॉक करण्यासाठी <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> वापरा.</translation>
@@ -944,6 +949,7 @@
 <translation id="8101409298456377967">तुमचे पासवर्ड तयार, सेव्ह आणि व्यवस्थापित करा, जेणेकरून तुम्ही साइट आणि अ‍ॅप्समध्ये सहजरीत्या साइन इन करू शकाल. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">बंद करा</translation>
 <translation id="8114753159095730575">फाइल डाउनलोड उपलब्ध आहे. स्क्रीनच्या तळाशी पर्याय उपलब्ध आहेत.</translation>
+<translation id="81313319706244542">२. पासवर्ड वर टॅप करा</translation>
 <translation id="8132598642024322408">आता <ph name="PRICE" /> आहे, आधी <ph name="PREVIOUS_PRICE" /> होती.</translation>
 <translation id="8136856065410661948">हे Chrome आणि Google Lens वरून तुमच्या Apple Calendar मध्ये इव्हेंट तयार करण्यासाठी वापरले जाईल.</translation>
 <translation id="8156478151976189188">पासवर्ड सिंक काम करत नाही</translation>
@@ -966,6 +972,7 @@
 <translation id="8319076807703933069">नवीन शोध</translation>
 <translation id="8323906514956095947">आणखी टॅब पर्यायांसाठी स्पर्श करा आणि धरून ठेवा</translation>
 <translation id="8328777765163860529">सर्व बंद करा</translation>
+<translation id="8343993175958086504">तुमच्या आशयाचा बॅकअप घ्या आणि तो कोणत्याही डिव्हाइसवर वापरा.</translation>
 <translation id="8378714024927312812">तुमच्या संस्थेकडून व्यवस्थापित केलेले</translation>
 <translation id="8386068868580335421">रीसेट करा</translation>
 <translation id="8407669440184693619">या साइटसाठी पासवर्ड सापडले नाहीत</translation>

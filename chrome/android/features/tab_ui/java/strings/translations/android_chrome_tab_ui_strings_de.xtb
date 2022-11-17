@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">Du erhältst eine Benachrichtigung, wenn auf einem offenen Tab ein günstigerer Preis verfügbar ist</translation>
 <translation id="3328308545011660196">Vorschlag: <ph name="NUMBER_OF_TABS" /> Tabs scheinen zusammenzugehören. Sollen sie gruppiert werden?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">Vorschau: geteilte Tabelle.</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab minimieren}other{Tabgruppe "<ph name="TITLE_OF_GROUP" />" mit <ph name="TABS_COUNT_MANY" /> Tabs minimieren}}</translation>
 <translation id="3882834874697329510">Falls du benachrichtigt werden möchtest, wenn auf einem offenen Tab ein günstigerer Preis verfügbar ist, aktiviere Benachrichtigungen in den Einstellungen.</translation>
 <translation id="3940195383040445971">Preise auf Tabs beobachten</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">Geschäftsinformationen anzeigen, Option ist oben auf dem Bildschirm verfügbar</translation>
 <translation id="5558362125926932819">Tabgruppe mit <ph name="NUMBER_OF_TABS" /> Tabs schließen</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> Tabs gruppiert</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Link aus Chrome}other{<ph name="TABS_COUNT_MANY" /> Links aus Chrome}}</translation>
 <translation id="575494663145460764">Benachrichtigungen bei Preisnachlässen erhalten?</translation>
 <translation id="58326064309361797">Tabs zum Gruppieren ziehen</translation>
 <translation id="5846292395804797011">Tabgruppe "<ph name="TITLE_OF_GROUP" />" mit <ph name="NUMBER_OF_TABS" /> Tabs schließen</translation>

@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">Դուք ծանուցում կստանաք, երբ բացված ներդիրում ավելի ցածր գին հայտնաբերվի</translation>
 <translation id="3328308545011660196">Հուշում․ <ph name="NUMBER_OF_TABS" /> ներդիր նմանություն ունեն։ Խմբավորե՞լ դրանք։</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">Թերթի նախադիտ․ կիսվելու մանրապատկեր</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Ծալել <ph name="TABS_COUNT_ONE" /> ներդիր։}one{Ծալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։}other{Ծալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։}}</translation>
 <translation id="3882834874697329510">Միացրեք ծանուցումները կարգավորումներում, որպեսզի ծանուցում ստանաք, երբ բացված ներդիրում ավելի ցածր գին հայտնաբերվի։</translation>
 <translation id="3940195383040445971">Հետագծել գները ներդիրներում</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">Դիտել խանութի մասին տեղեկությունները, գործողությունը հասանելի է էկրանի վերին մասում</translation>
 <translation id="5558362125926932819">Փակել <ph name="NUMBER_OF_TABS" /> ներդիրից բաղկացած խումբը</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ներդիր խմբավորվեց</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> հղում Chrome-ից}one{<ph name="TABS_COUNT_MANY" /> հղում Chrome-ից}other{<ph name="TABS_COUNT_MANY" /> հղում Chrome-ից}}</translation>
 <translation id="575494663145460764">Ստանա՞լ ծանուցումներ գների իջեցման մասին</translation>
 <translation id="58326064309361797">Քաշեք ներդիրները՝ դրանք խմբավորելու համար</translation>
 <translation id="5846292395804797011">Փակել <ph name="NUMBER_OF_TABS" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը</translation>

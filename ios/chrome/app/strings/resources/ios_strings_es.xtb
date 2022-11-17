@@ -232,6 +232,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="2815198996063984598">2. Toca Aplicación de navegador predeterminada.</translation>
 <translation id="2820289420301699633">Tu administrador controla Chrome y puede acceder a sus datos</translation>
 <translation id="2830972654601096923">Gestionar tus direcciones...</translation>
+<translation id="2834399722155632105">3. Toca Opciones de las contraseñas</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" /> (<ph name="URL" />)</translation>
 <translation id="2843803966603263712">Restablecer ajustes trad.</translation>
 <translation id="2848086008667475748">Establecer como predeterminado en Ajustes…</translation>
@@ -632,6 +633,7 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="5899314093904173337">Para compartir con personas que estén cerca de ti, pídeles que escaneen este código QR con su aplicación de cámara o de escáner de códigos QR</translation>
 <translation id="5911030830365207728">Traductor de Google</translation>
 <translation id="5913600720976431809">Opciones para traducir la página</translation>
+<translation id="5933515656458364246">Sincroniza tus datos en todos los dispositivos.</translation>
 <translation id="5938160824633642847">Tu dispositivo está casi lleno. Libera espacio y vuelve a intentarlo.</translation>
 <translation id="5948291296578561264">Esta acción te permite guardar fotos en tu biblioteca.</translation>
 <translation id="5951816930277761335">Comparte el enlace</translation>
@@ -713,6 +715,7 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 
 Tus datos se cifraron con tu frase de contraseña de sincronización el <ph name="TIME" />. Introdúcela para iniciar la sincronización.</translation>
 <translation id="6418346271604475326">Preparando PDF</translation>
+<translation id="6429213933892582367">Abre Opciones de las contraseñas</translation>
 <translation id="6434591244308415567">Se ha producido un error. Vuelve a intentarlo más tarde.</translation>
 <translation id="6435236283694032571">Añadir a lista de lectura</translation>
 <translation id="6439338047467462846">Permitir todas</translation>
@@ -828,6 +831,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7203585745079012652">Decir las respuestas</translation>
 <translation id="7207023858769244910">Habilita la sincronización para ver contenido basado en tus intereses.</translation>
 <translation id="721597782417389033">Nombre de la tarjeta no válido</translation>
+<translation id="7221173315674413369">Descubre nuevas funciones y consejos en Novedades</translation>
 <translation id="722454870747268814">Nueva pestaña de Incógnito</translation>
 <translation id="7265758999917665941">Jamás para este sitio web</translation>
 <translation id="7272437679830969316">No se puede verificar tu identidad. No se ha copiado la contraseña.</translation>
@@ -861,6 +865,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7514365320538308">Descargar</translation>
 <translation id="7531345132340165516">Sitio actual</translation>
 <translation id="7537586195939242955">No se puede instalar tu tarjeta en Passbook en este momento.</translation>
+<translation id="7553234618121028547">Para desactivar esta función, abre <ph name="BEGIN_LINK" />Ajustes<ph name="END_LINK" /> y ve a Opciones de las contraseñas.</translation>
 <translation id="7554791636758816595">Nueva pestaña</translation>
 <translation id="7561196759112975576">Siempre</translation>
 <translation id="7583004045319035904">Usa <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> para desbloquear tus pestañas de incógnito.</translation>
@@ -942,6 +947,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8101409298456377967">Crea, guarda y gestiona tus contraseñas para iniciar sesión fácilmente en sitios y aplicaciones. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Desactivar</translation>
 <translation id="8114753159095730575">La descarga de archivos está disponible. Hay opciones disponibles en la parte inferior de la pantalla.</translation>
+<translation id="81313319706244542">2. Toca Contraseñas</translation>
 <translation id="8132598642024322408">Ahora por <ph name="PRICE" />. Antes por <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="8136856065410661948">Se usará para crear eventos en tu calendario de Apple a partir de contenido de Chrome y Google Lens.</translation>
 <translation id="8156478151976189188">Sincronización de contraseñas no funciona</translation>
@@ -964,6 +970,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8319076807703933069">Nueva búsqueda</translation>
 <translation id="8323906514956095947">Mantén pulsado el botón para ver más opciones de pestañas</translation>
 <translation id="8328777765163860529">Cerrar todo</translation>
+<translation id="8343993175958086504">Crea una copia de seguridad de tus cosas y úsala en cualquier dispositivo.</translation>
 <translation id="8378714024927312812">Gestionado por tu organización</translation>
 <translation id="8386068868580335421">Restablecer</translation>
 <translation id="8407669440184693619">No se han encontrado contraseñas para este sitio web</translation>

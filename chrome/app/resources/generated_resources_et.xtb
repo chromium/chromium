@@ -2378,6 +2378,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3143515551205905069">Tühista sünkroonimine</translation>
 <translation id="3143754809889689516">Esita algusest</translation>
 <translation id="3144647712221361880">Ava link kasutajana</translation>
+<translation id="3144896554017119333">Laiendused ja muu</translation>
 <translation id="3149510190863420837">Chrome'i rakendused</translation>
 <translation id="3150693969729403281">Käitage ohutuskontrolli kohe</translation>
 <translation id="3150927491400159470">Põhjalik uuestilaadimine</translation>
@@ -2486,6 +2487,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3268451620468152448">Avatud vahelehed</translation>
 <translation id="3269093882174072735">Laadi kujutis</translation>
 <translation id="326911502853238749">Ära näita järgmist: <ph name="MODULE_NAME" /></translation>
+<translation id="3269175001434213183">Lülitage sünkroonimine sisse, et oma sisu varundada ja seda mis tahes seadmes kasutada</translation>
 <translation id="3269612321104318480">Helesinakasroheline ja valge</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Fail}other{# faili}}</translation>
 <translation id="326999365752735949">Erinevuste allalaadimine</translation>
@@ -4283,6 +4285,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4950993567860689081">Teie seanssi haldab teie organisatsioon. Administraatorid saavad teie profiili kustutada ning ka teie võrguliiklust jälgida.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{fail}other{# faili}}</translation>
 <translation id="495170559598752135">Toimingud</translation>
+<translation id="4951966678293618079">Ära kunagi salvesta sellel saidil paroole</translation>
 <translation id="4953808748584563296">Oranž vaikeavatar</translation>
 <translation id="4955710816792587366">Valige PIN-kood</translation>
 <translation id="4959262764292427323">Paroolid salvestatakse teie Google'i kontole, et saaksite neid kasutada mis tahes seadmes</translation>
@@ -4312,6 +4315,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4981449534399733132">Sirvimisandmete kustutamiseks kõigist sünkroonitud seadmetest ja oma Google'i kontolt <ph name="BEGIN_LINK" />logige sisse<ph name="END_LINK" />.</translation>
 <translation id="4982111327868342436">Jätkake pooleliolevat tegevust mis tahes seadmes</translation>
 <translation id="4982236238228587209">Seadme tarkvara</translation>
+<translation id="4986706507552097681">Jaotises Seaded saate igal ajal valida, mida sünkroonida. Google võib Otsingut ja muid teenuseid teie ajaloo alusel isikupärastada.</translation>
 <translation id="4986728572522335985">See kustutab kõik turvavõtmel olevad andmed, sh selle PIN-koodi</translation>
 <translation id="4988526792673242964">Leheküljed</translation>
 <translation id="49896407730300355">Pööra &amp;vastupäeva</translation>

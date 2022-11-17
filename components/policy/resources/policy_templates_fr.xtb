@@ -4094,6 +4094,7 @@ Il est prévu que cette règle soit supprimée dans la version 113 de <ph name=
 <translation id="5025239932007658691">Si cette règle est activée ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> envoie des requêtes occasionnelles à un serveur Google pour récupérer un horodatage précis.
 
       Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> cesse d'envoyer ces requêtes.</translation>
+<translation id="5033070732967197381">Autoriser les requêtes API WebAuthn sur les sites avec des certificats TLS non fonctionnels.</translation>
 <translation id="5034504101537897433">Activer les rapports d'erreur de l'appareil</translation>
 <translation id="5039110755072335605">Prise en charge des en-têtes de requêtes CORS sans caractères génériques</translation>
 <translation id="504116558738617678">N'afficher des avertissements de type "espace disque insuffisant" que si l'appareil n'est pas géré ou s'il n'a qu'un seul utilisateur</translation>
@@ -5656,6 +5657,7 @@ Si vous sélectionnez les options suivantes :
       - Si cette règle est désactivée, les administrateurs doivent le signaler aux utilisateurs finaux de l'appareil.</translation>
 <translation id="6609867253856597039">Définir l'expérience utilisateur pour les fonctionnalités désactivées</translation>
 <translation id="6614557704487944013">Autoriser les utilisateurs à se servir du navigateur <ph name="LACROS_NAME" /></translation>
+<translation id="661610294649586421">Ne pas autoriser les requêtes API WebAuthn sur les sites avec des certificats TLS non fonctionnels.</translation>
 <translation id="6617589895942747919">Heure de début de l'intervalle (incluse).</translation>
 <translation id="6621830999036927230">Si cette règle est configurée, l'hôte d'accès à distance utilise cette URL pour valider les jetons d'authentification provenant des clients d'accès à distance afin d'accepter les connexions. Si cette règle est définie sur une chaîne vide ou qu'elle n'est pas configurée, elle est désactivée.
 
@@ -5958,6 +5960,9 @@ Si vous sélectionnez les options suivantes :
 <translation id="6907778402784621686">Bloquer le contenu non sécurisé sur ces sites</translation>
 <translation id="6908640907898649429">Configure le moteur de recherche par défaut. Vous pouvez définir le moteur de recherche par défaut dont se servira l'utilisateur ou choisir de désactiver le moteur de recherche par défaut.</translation>
 <translation id="6913068954484253496">Autoriser <ph name="PRODUCT_NAME" /> à se connecter aux appareils Cast sur toutes les adresses IP.</translation>
+<translation id="6915493311660114995">Si cette règle est activée, <ph name="PRODUCT_NAME" /> autorise les requêtes d'authentification Web sur les sites dont les certificats TLS comportent des erreurs (c'est-à-dire les sites Web considérés comme non sécurisés).
+
+Si la règle est désactivée ou n'est pas configurée, le comportement par défaut s'applique et ces requêtes sont bloquées.</translation>
 <translation id="6919819553978815392">Si cette règle est définie sur "true" ou si elle n'est pas configurée, <ph name="PRODUCT_NAME" /> et <ph name="LACROS_NAME" /> autorisent les connexions en mode Invité. Les connexions en mode Invité sont des profils <ph name="PRODUCT_NAME" /> où toutes les fenêtres s'ouvrent en mode navigation privée.
 
       Si elle est définie sur "false", <ph name="PRODUCT_NAME" /> et <ph name="LACROS_NAME" /> n'autorisent pas l'utilisation de profils Invité.
@@ -6871,6 +6876,7 @@ Dans le cas contraire, le moteur de rendu par défaut sera utilisé pour tous le
 <translation id="782661371433719637">Interdire à tous les sites de demander l'accès en lecture aux fichiers et répertoires via l'API File System</translation>
 <translation id="7827127381981620448">Application de plate-forme</translation>
 <translation id="7829436838673974723">Autoriser les pages à envoyer des requêtes XHR synchrones pendant leur fermeture</translation>
+<translation id="782978857350824974">Autoriser les requêtes d'authentification Web sur les sites avec des certificats TLS non fonctionnels.</translation>
 <translation id="7832225468415136704">Empêcher Chrome Cleanup d'analyser périodiquement le système, et désactiver les analyses manuelles</translation>
 <translation id="7833148823006528332">Identifiant d'appli Android (par ex. : "com.google.android.gm" pour Gmail)</translation>
 <translation id="7835218570504220753">Désactiver les clics automatiques</translation>

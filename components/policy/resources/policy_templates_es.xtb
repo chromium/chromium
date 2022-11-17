@@ -4125,6 +4125,7 @@ Se prevé que esta política se quite en la versión 113 de <ph name="PRODUCT_NA
 <translation id="5025239932007658691">Si se habilita la política o no se establece, <ph name="PRODUCT_NAME" /> enviará consultas ocasionales a un servidor de Google para obtener una marca de tiempo precisa.
 
       Si se inhabilita la política, <ph name="PRODUCT_NAME" /> no podrá enviar esas consultas.</translation>
+<translation id="5033070732967197381">Permitir solicitudes de la API WebAuthn en sitios con certificados TLS rotos.</translation>
 <translation id="5034504101537897433">Habilitar los datos de informes sobre fallos del dispositivo</translation>
 <translation id="5039110755072335605">Compatibilidad con encabezados de solicitud CORS sin comodín</translation>
 <translation id="504116558738617678">Solor mostrar advertencias de poco espacio en disco si el dispositivo no está gestionado o si únicamente hay 1 usuario</translation>
@@ -5704,6 +5705,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       - Si se inhabilita esta política, los administradores deberán comunicárselo a los usuarios finales del dispositivo.</translation>
 <translation id="6609867253856597039">Establecer la experiencia de usuario de funciones inhabilitadas</translation>
 <translation id="6614557704487944013">Permitir que los usuarios utilicen el navegador <ph name="LACROS_NAME" /></translation>
+<translation id="661610294649586421">No permitir solicitudes de la API WebAuthn en sitios con certificados TLS rotos.</translation>
 <translation id="6617589895942747919">Hora de inicio del intervalo, inclusiva.</translation>
 <translation id="6621830999036927230">Si se le asigna un valor a esta política, el host de acceso remoto utilizará esta URL para validar los tokens de autenticación de los clientes de acceso remoto y para aceptar las conexiones. Esta función está inhabilitada si está vacía o no se le asigna ningún valor.
 
@@ -6006,6 +6008,9 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6907778402784621686">Permite bloquear el contenido no seguro en estos sitios web</translation>
 <translation id="6908640907898649429">Permite configurar el proveedor de búsquedas predeterminadas. Puedes especificar el proveedor de búsquedas predeterminadas que utilizarán los usuarios o inhabilitar las búsquedas predeterminadas.</translation>
 <translation id="6913068954484253496">Permitir que <ph name="PRODUCT_NAME" /> se conecte a dispositivos de transmisión de todas las direcciones IP.</translation>
+<translation id="6915493311660114995">Si se habilita esta política, <ph name="PRODUCT_NAME" /> permitirá las solicitudes de Web Authentication de los sitios web que tengan certificados TLS con errores (por ejemplo, sitios web que no se consideren seguros).
+
+Si se inhabilita esta política o no se define, se aplicará el comportamiento predeterminado de bloquear dichas solicitudes.</translation>
 <translation id="6919819553978815392">Si se le asigna el valor true a esta política o no se configura, <ph name="PRODUCT_NAME" /> y <ph name="LACROS_NAME" /> habilitarán los inicios de sesión como invitado. Los inicios de sesión como invitado son perfiles de <ph name="PRODUCT_NAME" /> en los que todas las ventanas están en modo Incógnito.
 
       Si se le asigna el valor false, <ph name="PRODUCT_NAME" /> y <ph name="LACROS_NAME" /> no permitirán que se inicien perfiles para invitados.
@@ -6924,6 +6929,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="782661371433719637">No permitir que ningún sitio web solicite acceso de lectura a archivos y directorios a través de la API File System</translation>
 <translation id="7827127381981620448">Aplicación de una plataforma</translation>
 <translation id="7829436838673974723">Permitir que las páginas envíen solicitudes XHR síncronas durante el cierre de la página</translation>
+<translation id="782978857350824974">Permitir solicitudes de Web Authentication en sitios con certificados TLS rotos.</translation>
 <translation id="7832225468415136704">Impedir que Limpiador de Chrome analice periódicamente el sistema e inhabilitar los análisis manuales</translation>
 <translation id="7833148823006528332">Identificador de la aplicación Android (por ejemplo, "com.google.android.gm" para Gmail)</translation>
 <translation id="7835218570504220753">Inhabilitar el clic automático</translation>

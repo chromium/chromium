@@ -2386,6 +2386,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3143515551205905069">Peru synkronointi</translation>
 <translation id="3143754809889689516">Toista alusta</translation>
 <translation id="3144647712221361880">Avaa linkki käyttäjänä</translation>
+<translation id="3144896554017119333">Laajennukset ja paljon muuta</translation>
 <translation id="3149510190863420837">Chrome-sovellukset</translation>
 <translation id="3150693969729403281">Tee turvatarkistus nyt</translation>
 <translation id="3150927491400159470">Pakotettu päivitys</translation>
@@ -2494,6 +2495,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3268451620468152448">Avoimet välilehdet</translation>
 <translation id="3269093882174072735">Lataa kuva</translation>
 <translation id="326911502853238749">Älä näytä: <ph name="MODULE_NAME" /></translation>
+<translation id="3269175001434213183">Laita synkronointi päälle, niin voit varmuuskopioida sisältösi ja käyttää sitä millä tahansa laitteella</translation>
 <translation id="3269612321104318480">Vaalea turkoosi ja valkoinen</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Tiedosto}other{# tiedostoa}}</translation>
 <translation id="326999365752735949">Ladataan muutostiedostoa</translation>
@@ -4289,6 +4291,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4950993567860689081">Organisaatiosi hallinnoi istuntoa. Järjestelmänvalvojat voivat poistaa profiilisi ja seurata verkkoliikennettäsi.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{tiedosto}other{# tiedostoa}}</translation>
 <translation id="495170559598752135">Toiminnot</translation>
+<translation id="4951966678293618079">Älä koskaan tallenna tämän sivuston salasanoja</translation>
 <translation id="4953808748584563296">Oranssi oletusavatar</translation>
 <translation id="4955710816792587366">Valitse PIN-koodi</translation>
 <translation id="4959262764292427323">Salasanat tallennetaan Google-tilillesi, jotta voit käyttää niitä kaikilla laitteilla</translation>
@@ -4318,6 +4321,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4981449534399733132">Jos haluat poistaa selailutiedot kaikilta synkronoiduilta laitteiltasi ja Google-tililtäsi, <ph name="BEGIN_LINK" />kirjaudu sisään<ph name="END_LINK" />.</translation>
 <translation id="4982111327868342436">Jatka millä tahansa laitteella siitä, mihin jäit</translation>
 <translation id="4982236238228587209">Laiteohjelmisto</translation>
+<translation id="4986706507552097681">Voit valita synkronoitavan sisällön asetuksissa. Google voi personoida Hakua ja muita palveluita historiasi perusteella.</translation>
 <translation id="4986728572522335985">Tämä poistaa kaiken suojausavaimen datan, mukaan lukien sen PIN-koodin</translation>
 <translation id="4988526792673242964">Sivut</translation>
 <translation id="49896407730300355">Käännä &amp;vastapäivään</translation>

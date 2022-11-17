@@ -232,6 +232,7 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="2815198996063984598">2. Valitse Oletusselain</translation>
 <translation id="2820289420301699633">Järjestelmänvalvoja hallitsee Chromea ja pääsee sen dataan</translation>
 <translation id="2830972654601096923">Määritä osoitteet…</translation>
+<translation id="2834399722155632105">3. Valitse Salasana-asetukset</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Nollaa käännösasetukset</translation>
 <translation id="2848086008667475748">Muuta oletusselaimeksi asetuksissa…</translation>
@@ -632,6 +633,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5899314093904173337">Jaa lähellä oleville ihmisille antamalla tämä QR-koodi, jonka he voivat skannata kameralla tai QR-skannaussovelluksella</translation>
 <translation id="5911030830365207728">Google Kääntäjä</translation>
 <translation id="5913600720976431809">Sivun käännösvalinnat</translation>
+<translation id="5933515656458364246">Synkronoi datasi kaikilla laitteilla.</translation>
 <translation id="5938160824633642847">Laite on lähes täynnä. Vapauta tilaa ja yritä uudelleen.</translation>
 <translation id="5948291296578561264">Tämän avulla voit tallentaa kuvia kuvakirjastoon.</translation>
 <translation id="5951816930277761335">Jaa linkki</translation>
@@ -713,6 +715,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 
 Tietosi salattiin tunnuslauseesi avulla <ph name="TIME" />. Aloita synkronointi antamalla tunnuslause.</translation>
 <translation id="6418346271604475326">Valmistellaan</translation>
+<translation id="6429213933892582367">Avaa Salasana-asetukset</translation>
 <translation id="6434591244308415567">Tapahtui virhe, yritä myöhemmin uudelleen.</translation>
 <translation id="6435236283694032571">Lisää lukulistalle</translation>
 <translation id="6439338047467462846">Salli kaikki</translation>
@@ -828,6 +831,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7203585745079012652">Puhu vastaukset</translation>
 <translation id="7207023858769244910">Synkronoimalla näet kiinnostuksen kohteidesi mukaista sisältöä.</translation>
 <translation id="721597782417389033">Virheellinen kortin lyhytnimi</translation>
+<translation id="7221173315674413369">Tutustu uusiin ominaisuuksiin ja vinkkeihin Uutta-ominaisuudessa</translation>
 <translation id="722454870747268814">Uusi incognito-välilehti</translation>
 <translation id="7265758999917665941">Ei koskaan tälle sivustolle</translation>
 <translation id="7272437679830969316">Henkilöllisyytesi vahvistaminen ei onnistunut. Salasanaa ei kopioitu.</translation>
@@ -861,6 +865,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7514365320538308">Lataa</translation>
 <translation id="7531345132340165516">Nykyinen sivusto</translation>
 <translation id="7537586195939242955">Passiasi ei voi asentaa Passbookiin tällä hetkellä.</translation>
+<translation id="7553234618121028547">Jos haluat laittaa ominaisuuden pois päältä, avaa <ph name="BEGIN_LINK" />Asetukset<ph name="END_LINK" /> ja sitten Salasana-asetukset.</translation>
 <translation id="7554791636758816595">Uusi välilehti</translation>
 <translation id="7561196759112975576">Aina</translation>
 <translation id="7583004045319035904">Valitse <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> incognito-välilehtien lukituksen avaamiseen.</translation>
@@ -942,6 +947,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8101409298456377967">Luo, tallenna ja ylläpidä salasanoja, jotta voit kirjautua helposti sivustoille ja sovelluksiin <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Poista käytöstä</translation>
 <translation id="8114753159095730575">Ladattava tiedosto on saatavilla. Ruudun alaosassa on käytettävissä valintoja.</translation>
+<translation id="81313319706244542">2. Valitse Salasanat.</translation>
 <translation id="8132598642024322408">Hinta nyt <ph name="PRICE" />, ennen <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="8136856065410661948">Käytetään Apple-kalenterin tapahtumien luomiseen Chromesta ja Google Lensistä.</translation>
 <translation id="8156478151976189188">Salasanojen synkronointi ei toimi</translation>
@@ -964,6 +970,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8319076807703933069">Uusi haku</translation>
 <translation id="8323906514956095947">Katso lisää välilehtiasetuksia painamalla pitkään</translation>
 <translation id="8328777765163860529">Sulje kaikki</translation>
+<translation id="8343993175958086504">Varmuuskopioi sisältösi ja käytä sitä millä tahansa laitteella.</translation>
 <translation id="8378714024927312812">Organisaatiosi ylläpitämä</translation>
 <translation id="8386068868580335421">Nollaa</translation>
 <translation id="8407669440184693619">Tälle sivustolle ei löytynyt salasanoja</translation>

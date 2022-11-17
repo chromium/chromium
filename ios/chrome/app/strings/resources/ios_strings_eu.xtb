@@ -232,6 +232,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2815198996063984598">2. Sakatu Arakatzaile lehenetsia</translation>
 <translation id="2820289420301699633">Administratzaileak Chrome kontrolatu, eta bertako datuak atzitu ahal izango ditu</translation>
 <translation id="2830972654601096923">Kudeatu helbideak…</translation>
+<translation id="2834399722155632105">3. Sakatu Password Options (pasahitzen aukerak).</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Berrezarri Translate ezarpenak</translation>
 <translation id="2848086008667475748">Ezarri aukera lehenetsi gisa Ezarpenak atalean…</translation>
@@ -632,6 +633,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5899314093904173337">Ingurukoekin partekatu nahi izanez gero, eska iezaiezu QR kode hau eskaneatzeko kamera edo QR kodeak eskaneatzeko aplikazio baten bidez</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5913600720976431809">Orria itzultzeko aukerak</translation>
+<translation id="5933515656458364246">Sinkronizatu datuak gailu guztietan.</translation>
 <translation id="5938160824633642847">Gailua ia beteta dago. Egin toki pixka bat eta saiatu berriro.</translation>
 <translation id="5948291296578561264">Honekin, argazkien liburutegian gorde ahalko dituzu argazkiak.</translation>
 <translation id="5951816930277761335">Partekatu esteka</translation>
@@ -713,6 +715,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 
 Sinkronizatzeko pasaesaldiaren bidez enkriptatu dira datuak (<ph name="TIME" />). Idatz ezazu sinkronizatzen hasteko.</translation>
 <translation id="6418346271604475326">Prestatzen</translation>
+<translation id="6429213933892582367">Ireki Password Options (pasahitzen aukerak).</translation>
 <translation id="6434591244308415567">Errore bat gertatu da. Saiatu berriro geroago.</translation>
 <translation id="6435236283694032571">Gehitu irakurketa-zerrendan</translation>
 <translation id="6439338047467462846">Eman baimena guztiei</translation>
@@ -828,6 +831,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7203585745079012652">Erantzun ahots bidez</translation>
 <translation id="7207023858769244910">Interesetan oinarritutako edukia lortzeko, sinkronizatu.</translation>
 <translation id="721597782417389033">Txartelaren goitizenak ez du balio</translation>
+<translation id="7221173315674413369">Arakatu eginbide berriak eta aholkuak Berritasunak atalean</translation>
 <translation id="722454870747268814">Ezkutuko moduko fitxa berria</translation>
 <translation id="7265758999917665941">Inoiz ez webgune honetan</translation>
 <translation id="7272437679830969316">Ezin da egiaztatu identitatea. Ez da kopiatu pasahitza.</translation>
@@ -861,6 +865,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7514365320538308">Deskargatu</translation>
 <translation id="7531345132340165516">Oraingo webgunea</translation>
 <translation id="7537586195939242955">Dokumentua ezin izan da instalatu Passbook-en.</translation>
+<translation id="7553234618121028547">Pasahitzen eremuak automatikoki betetzeko aukera desaktibatzeko, ireki <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> (ezarpenak) eta joan Password Options (pasahitzen aukerak) atalera.</translation>
 <translation id="7554791636758816595">Fitxa berria</translation>
 <translation id="7561196759112975576">Beti</translation>
 <translation id="7583004045319035904">Erabili <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ezkutuko moduko fitxak desblokeatzeko.</translation>
@@ -942,6 +947,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8101409298456377967">Sortu, gorde eta kudeatu pasahitzak, webgune eta aplikazioetan erraz hasteko saioa. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Desaktibatu</translation>
 <translation id="8114753159095730575">Fitxategi bat deskargatzeko prest dago. Pantailaren behealdean agertzen dira horretarako aukerak.</translation>
+<translation id="81313319706244542">2. Sakatu Passwords (pasahitzak).</translation>
 <translation id="8132598642024322408">Orain: <ph name="PRICE" /> (aurreko prezioa: <ph name="PREVIOUS_PRICE" />)</translation>
 <translation id="8136856065410661948">Chrome-ren eta Google Lens-en bidez Apple Calendar-en gertaerak sortzeko erabiliko da hau.</translation>
 <translation id="8156478151976189188">Pasahitzen sinkronizazioa ez dabil</translation>
@@ -964,6 +970,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8319076807703933069">Bilaketa berria</translation>
 <translation id="8323906514956095947">Eduki sakatuta fitxetako aukera gehiago ikusteko</translation>
 <translation id="8328777765163860529">Itxi guztiak</translation>
+<translation id="8343993175958086504">Egin zure gauzen babeskopiak, edozein gailutan erabil ditzazun.</translation>
 <translation id="8378714024927312812">Erakundeak kudeatzen du</translation>
 <translation id="8386068868580335421">Berrezarri</translation>
 <translation id="8407669440184693619">Ez da aurkitu webgune honen pasahitzik</translation>

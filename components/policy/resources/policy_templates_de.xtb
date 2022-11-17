@@ -4085,6 +4085,7 @@ Diese Richtlinie wird voraussichtlich in Version 113 von <ph name="PRODUCT_NAME
 <translation id="5025239932007658691">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, sendet <ph name="PRODUCT_NAME" /> gelegentlich Abfragen an einen Google-Server, um einen korrekten Zeitstempel abzurufen.
 
       Wird die Richtlinie deaktiviert, sendet <ph name="PRODUCT_NAME" /> solche Abfragen nicht mehr.</translation>
+<translation id="5033070732967197381">WebAuthn-API-Anfragen auf Websites mit fehlerhaften TLS-Zertifikaten zulassen.</translation>
 <translation id="5034504101537897433">Melden von Informationen zu Absturzberichten auf Geräten aktivieren</translation>
 <translation id="5039110755072335605">Unterstützung für CORS-Anfrageheader ohne Platzhalter</translation>
 <translation id="504116558738617678">Warnungen bei wenig Speicherplatz nur anzeigen, wenn das Gerät nicht verwaltet wird oder es nur einen Nutzer gibt</translation>
@@ -5636,6 +5637,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
       – Wenn die Richtlinie deaktiviert ist, müssen Administratoren Endnutzer dieses Geräts darüber informieren.</translation>
 <translation id="6609867253856597039">Nutzereinstellungen für deaktivierte Funktionen festlegen</translation>
 <translation id="6614557704487944013">Nutzern erlauben, <ph name="LACROS_NAME" /> zu verwenden</translation>
+<translation id="661610294649586421">WebAuthn-API-Anfragen auf Websites mit fehlerhaften TLS-Zertifikaten nicht zulassen.</translation>
 <translation id="6617589895942747919">Beginn des Intervalls, inklusiv.</translation>
 <translation id="6621830999036927230">Wenn diese Richtlinie konfiguriert ist, verwendet der Host für den Remotezugriff diese URL zur Validierung von Authentifizierungstokens von Clients für den Remotezugriff, um Verbindungen zu akzeptieren. Diese Funktion ist deaktiviert, wenn sie leer oder nicht konfiguriert ist.
 
@@ -5938,6 +5940,9 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
 <translation id="6907778402784621686">Unsichere Inhalte auf diesen Websites blockieren</translation>
 <translation id="6908640907898649429">Konfiguriert die Standardsuchmaschine. Du kannst festlegen, welche Suchmaschine als Standardsuchmaschine für die Nutzer verwendet werden soll, oder die Verwendung einer Standardsuchmaschine deaktivieren.</translation>
 <translation id="6913068954484253496"><ph name="PRODUCT_NAME" /> erlauben, eine Verbindung zu Übertragungsgeräten unter allen IP-Adressen herzustellen.</translation>
+<translation id="6915493311660114995">Wenn die Richtlinie aktiviert ist, erlaubt <ph name="PRODUCT_NAME" /> Webauthentifizierungsanfragen auf Websites mit fehlerhaften TLS-Zertifikaten (d. h. Websites, die als nicht sicher eingestuft werden).
+
+Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, gilt das Standardverhalten zum Blockieren solcher Anfragen.</translation>
 <translation id="6919819553978815392">Wenn diese Richtlinie auf „wahr“ gesetzt oder nicht konfiguriert ist, sind Gastanmeldungen in <ph name="PRODUCT_NAME" /> und <ph name="LACROS_NAME" /> möglich. Gastanmeldungen sind <ph name="PRODUCT_NAME" />-Profile, bei denen alle Fenster im Inkognitomodus geöffnet werden.
 
       Ist die Richtlinie auf „falsch“ gesetzt, sind keine Gastanmeldungen in <ph name="PRODUCT_NAME" /> und <ph name="LACROS_NAME" /> möglich.
@@ -6844,6 +6849,7 @@ werden abgelehnt.</translation>
 <translation id="782661371433719637">Websites dürfen den Nutzer nicht um Lesezugriff auf Dateien und Verzeichnisse über die File System API bitten</translation>
 <translation id="7827127381981620448">Plattform-App</translation>
 <translation id="7829436838673974723">Zulassen, dass Seiten beim Schließen synchrone XHR-Anfragen senden</translation>
+<translation id="782978857350824974">Webauthentifizierungsanfragen auf Websites mit fehlerhaften TLS-Zertifikaten zulassen.</translation>
 <translation id="7832225468415136704">Verhindern, dass das Chrome Cleanup Tool das System regelmäßig scannt, und manuelle Scans deaktivieren</translation>
 <translation id="7833148823006528332">Android-App-ID, z. B. „com.google.android.gm“ für Gmail.</translation>
 <translation id="7835218570504220753">Automatisches Klicken deaktivieren</translation>

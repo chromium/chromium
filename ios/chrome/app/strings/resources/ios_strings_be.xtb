@@ -232,6 +232,7 @@
 <translation id="2815198996063984598">2. Націсніце "Стандартны браўзер".</translation>
 <translation id="2820289420301699633">Ваш адміністратар можа кіраваць браўзерам Chrome і мае доступ да даных у ім</translation>
 <translation id="2830972654601096923">Кіраваць адрасамі...</translation>
+<translation id="2834399722155632105">3. Націсніце Password Options ("Налады пароляў").</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Скін. нал. перакл.</translation>
 <translation id="2848086008667475748">Зрабіць браўзер стандартным у Наладах…</translation>
@@ -632,6 +633,7 @@
 <translation id="5899314093904173337">Каб абагуліць гэта змесціва з карыстальнікамі паблізу, дайце ім адсканіраваць гэты QR-код камерай або з дапамогай праграмы сканіравання QR-кодаў.</translation>
 <translation id="5911030830365207728">Перакладчык Google</translation>
 <translation id="5913600720976431809">Параметры перакладу старонкі</translation>
+<translation id="5933515656458364246">Сінхранізуйце даныя на ўсіх прыладах.</translation>
 <translation id="5938160824633642847">Сховішча прылады амаль запоўнена. Вызваліце месца і паўтарыце спробу.</translation>
 <translation id="5948291296578561264">Гэта дазваляе захоўваць фота ў бібліятэцы.</translation>
 <translation id="5951816930277761335">Абагульце спасылку</translation>
@@ -713,6 +715,7 @@
 
 Вашы даныя былі зашыфраваны з дапамогай фразы-пароля <ph name="TIME" />. Увядзіце яе, каб пачаць сінхранізацыю.</translation>
 <translation id="6418346271604475326">PDF рыхтуецца</translation>
+<translation id="6429213933892582367">Адкрыйце раздзел Password Options ("Налады пароляў").</translation>
 <translation id="6434591244308415567">Адбылася памылка. Паўтарыце спробу пазней.</translation>
 <translation id="6435236283694032571">Дадаць у Спіс на прагляд</translation>
 <translation id="6439338047467462846">Дазволіць усе</translation>
@@ -828,6 +831,7 @@
 <translation id="7203585745079012652">Агучваць атрыманыя адказы</translation>
 <translation id="7207023858769244910">Каб атрымліваць змесціва на падставе сваіх інтарэсаў, уключыце сінхранізацыю.</translation>
 <translation id="721597782417389033">Несапраўдны псеўданім карткі</translation>
+<translation id="7221173315674413369">Знаёмцеся з новымі функцыямі і атрымлівайце парады ў раздзеле "Што новага"</translation>
 <translation id="722454870747268814">Новая ўкладка ў рэжыме інкогніта</translation>
 <translation id="7265758999917665941">Ніколі для гэтага сайта</translation>
 <translation id="7272437679830969316">Не ўдалося спраўдзіць вашу асобу. Пароль не скапіраваны.</translation>
@@ -861,6 +865,7 @@
 <translation id="7514365320538308">Спампаваць</translation>
 <translation id="7531345132340165516">Бягучы сайт</translation>
 <translation id="7537586195939242955">Зараз усталяваць пароль у Passbook не ўдалося.</translation>
+<translation id="7553234618121028547">Каб выключыць аўтазапаўненне, выберыце <ph name="BEGIN_LINK" />Settings ("Налады")<ph name="END_LINK" /> і перайдзіце ў раздзел Password Options ("Параметры пароляў").</translation>
 <translation id="7554791636758816595">Новая ўкладка</translation>
 <translation id="7561196759112975576">Заўсёды</translation>
 <translation id="7583004045319035904">Выкарыстоўвайце <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> для разблакіроўкі ўкладак у рэжыме інкогніта</translation>
@@ -942,6 +947,7 @@
 <translation id="8101409298456377967">Стварайце паролі, захоўвайце іх і кіруйце імі, каб мець магчымасць з лёгкасцю ўваходзіць ва ўліковыя запісы на сайтах і ў праграмах. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Выключыць</translation>
 <translation id="8114753159095730575">Файл даступны для спампоўвання. Параметры знаходзяцца ў ніжняй частцы экрана.</translation>
+<translation id="81313319706244542">2. Націсніце Passwords ("Паролі").</translation>
 <translation id="8132598642024322408">Цяпер: <ph name="PRICE" />, раней: <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="8136856065410661948">Гэта інфармацыя будзе выкарыстоўвацца для стварэння падзей у Apple Calendar непасрэдна з Chrome і Google Аб'ектыва.</translation>
 <translation id="8156478151976189188">Сінхранізацыя пароляў не працуе</translation>
@@ -964,6 +970,7 @@
 <translation id="8319076807703933069">Новы пошук</translation>
 <translation id="8323906514956095947">Каб адкрыць дадатковыя параметры ўкладкі, націсніце і ўтрымлівайце гэту кнопку</translation>
 <translation id="8328777765163860529">Закрыць усе</translation>
+<translation id="8343993175958086504">Стварайце рэзервовыя копіі сваіх даных, каб іх можна было выкарыстоўваць на іншых прыладах.</translation>
 <translation id="8378714024927312812">Пад кіраваннем вашай арганізацыі</translation>
 <translation id="8386068868580335421">Скінуць</translation>
 <translation id="8407669440184693619">Паролі для гэтага сайта не знойдзены</translation>

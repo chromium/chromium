@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">खोले गए टैब में मौजूद किसी आइटम की कीमत में कमी होने पर आपको सूचना मिलेगी</translation>
 <translation id="3328308545011660196">सुझाव: ऐसा लगता है कि <ph name="NUMBER_OF_TABS" /> टैब एक-दूसरे से मिलते-जुलते हैं. इनका ग्रुप बनाएं?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">Share sheet की झलक का थंबनेल.</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब छोटा करें.}one{<ph name="TABS_COUNT_MANY" /> टैब वाले <ph name="TITLE_OF_GROUP" /> टैब ग्रुप को छोटा करें.}other{<ph name="TABS_COUNT_MANY" /> टैब वाले <ph name="TITLE_OF_GROUP" /> टैब ग्रुप को छोटा करें.}}</translation>
 <translation id="3882834874697329510">खोले गए टैब में मौजूद किसी आइटम की कीमत कम होने पर सूचना पाने के लिए, सेटिंग में जाकर सूचनाएं चालू करें.</translation>
 <translation id="3940195383040445971">टैब पर कीमतों को ट्रैक करें</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">स्क्रीन पर सबसे ऊपर मौजूद विकल्प से स्टोर की जानकारी देखें</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> टैब वाला टैब ग्रुप बंद करें</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> टैब ग्रुप में रखे गए</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome का <ph name="TABS_COUNT_ONE" /> लिंक}one{Chrome का <ph name="TABS_COUNT_MANY" /> लिंक}other{Chrome के <ph name="TABS_COUNT_MANY" /> लिंक}}</translation>
 <translation id="575494663145460764">क्या आप कीमत में कमी होने पर सूचनाएं पाना चाहते हैं?</translation>
 <translation id="58326064309361797">टैब को समूह में जोड़ने के लिए उन्हें खींचें और छोड़ें</translation>
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> टैब वाला <ph name="TITLE_OF_GROUP" /> ग्रुप बंद करें</translation>

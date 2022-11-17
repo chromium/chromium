@@ -2386,6 +2386,7 @@
 <translation id="3143515551205905069">सिंक रद्द करा</translation>
 <translation id="3143754809889689516">सुरवातीपासून प्ले करा</translation>
 <translation id="3144647712221361880">लिंक या फॉरमॅटमध्ये उघडा</translation>
+<translation id="3144896554017119333">एक्स्टेंशन आणि आणखी बरेच काही</translation>
 <translation id="3149510190863420837">Chrome Apps</translation>
 <translation id="3150693969729403281">आता सुरक्षा तपासणी रन करा</translation>
 <translation id="3150927491400159470">कठीण रीलोड</translation>
@@ -2494,6 +2495,7 @@
 <translation id="3268451620468152448">उघडे Tabs</translation>
 <translation id="3269093882174072735">इमेज लोड करा</translation>
 <translation id="326911502853238749"><ph name="MODULE_NAME" /> दाखवू नका</translation>
+<translation id="3269175001434213183">तुमच्या आशयाचा बॅकअप घेण्यासाठी आणि तो कोणत्याही डिव्हाइसवर वापरण्यासाठी सिंक सुरू करा</translation>
 <translation id="3269612321104318480">फिकट टील आणि पांढरा</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{फाइल}other{# फाइल}}</translation>
 <translation id="326999365752735949">फरक डाउनलोड करत आहे</translation>
@@ -4290,6 +4292,7 @@
 <translation id="4950993567860689081">तुमचे सेशन हे तुमच्या संस्थेने व्यवस्थापित केले आहे. अ‍ॅडमिनिस्ट्रेटर तुमची प्रोफाइल हटवू शकतात आणि तुमच्या नेटवर्क ट्रॅफिकवरदेखील लक्ष ठेवू शकतात.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{फाइल}other{# फाइल}}</translation>
 <translation id="495170559598752135">क्रिया</translation>
+<translation id="4951966678293618079">या साइटसाठी पासवर्ड कधीही सेव्ह करू नका</translation>
 <translation id="4953808748584563296">डीफॉल्ट नारिंगी अवतार</translation>
 <translation id="4955710816792587366">तुमचा पिन निवडा</translation>
 <translation id="4959262764292427323">तुम्हाला कोणत्याही डिव्हाइसवर वापरता यावे यासाठी तुमच्या Google खात्यामध्ये पासवर्ड सेव्ह केले जातात</translation>
@@ -4319,6 +4322,7 @@
 <translation id="4981449534399733132">तुमच्या सिंक केलेल्या सर्व डिव्हाइसमधून आणि तुमच्या Google खात्यामधून ब्राउझ केलेला डेटा साफ करण्यासाठी, <ph name="BEGIN_LINK" />साइन इन करा<ph name="END_LINK" />.</translation>
 <translation id="4982111327868342436">कोणत्याही डिव्हाइसवर तुम्ही जेथे सोडले तेथून पुढे सुरू करा</translation>
 <translation id="4982236238228587209">डिव्हाइसचे सॉफ्टवेअर</translation>
+<translation id="4986706507552097681">तुम्ही काय सिंक करायचे हे सेटिंग्जमध्ये कधीही निवडू शकता. Google तुमच्या इतिहासाच्या आधारे Search आणि इतर सेवा पर्सनलाइझ करू शकते.</translation>
 <translation id="4986728572522335985">यामुळे सिक्युरिटी कीवरील सर्व डेटा, तिच्या पिनसह, हटवला जाईल</translation>
 <translation id="4988526792673242964">पेज</translation>
 <translation id="49896407730300355">घड्याळाच्या वि&amp;रूद्ध दिशेने फिरवा</translation>

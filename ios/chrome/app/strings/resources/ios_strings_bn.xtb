@@ -232,6 +232,7 @@
 <translation id="2815198996063984598">২. 'ডিফল্ট ব্রাউজার অ্যাপ' বিকল্পে ট্যাপ করুন</translation>
 <translation id="2820289420301699633">আপনার অ্যাডমিনিস্ট্রেটরের কাছে Chrome-এর নিয়ন্ত্রণ আছে এবং তিনি এর ডেটা অ্যাক্সেস করতে পারবেন</translation>
 <translation id="2830972654601096923">ঠিকানাগুলি ম্যানেজ করুন...</translation>
+<translation id="2834399722155632105">৩. পাসওয়ার্ড বিকল্পে ট্যাপ করুন</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">অনুবাদ সেটিংস রিসেট করুন</translation>
 <translation id="2848086008667475748">Settings-এ এটিকে ডিফল্ট হিসেবে সেট করুন…</translation>
@@ -633,6 +634,7 @@
 <translation id="5899314093904173337">কাছাকাছি থাকা লোকেদের সাথে শেয়ার করতে, তাদের ক্যামেরা বা QR স্ক্যানার অ্যাপ দিয়ে এই QR কোড স্ক্যান করতে দিন</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5913600720976431809">পৃষ্ঠা অনুবাদ করার বিকল্প</translation>
+<translation id="5933515656458364246">সব ডিভাইসে আপনার ডেটা সিঙ্ক করুন।</translation>
 <translation id="5938160824633642847">আপনার ডিভাইসে পর্যাপ্ত জায়গা নেই। জায়গা খালি করে আবার চেষ্টা করুন।</translation>
 <translation id="5948291296578561264">এর ফলে আপনি ফটো লাইব্রেরিতে ফটো সেভ করতে পারবেন।</translation>
 <translation id="5951816930277761335">লিঙ্ক শেয়ার করুন</translation>
@@ -714,6 +716,7 @@
 
 আপনার সিঙ্ক পাসফ্রেজের মাধ্যমে আপনার ডেটা <ph name="TIME" /> এ এনক্রিপটেড হয়েছে। সিঙ্ক শুরু করতে এটি লিখুন।</translation>
 <translation id="6418346271604475326">পিডিএফ প্রস্তুত হচ্ছে</translation>
+<translation id="6429213933892582367">পাসওয়ার্ড বিকল্প খুলুন</translation>
 <translation id="6434591244308415567">কোনও সমস্যা হয়েছে। পরে আবার চেষ্টা করুন।</translation>
 <translation id="6435236283694032571">পড়ার তালিকায় যোগ করুন</translation>
 <translation id="6439338047467462846">সব কুকিকে অনুমতি দিন</translation>
@@ -829,6 +832,7 @@
 <translation id="7203585745079012652">আবার উত্তরগুলি বলে</translation>
 <translation id="7207023858769244910">আপনার আগ্রহের উপর ভিত্তি করে কন্টেন্ট পেতে সিঙ্ক করুন।</translation>
 <translation id="721597782417389033">কার্ডের বিশেষ নামটি সঠিক নয়</translation>
+<translation id="7221173315674413369">'নতুন' বিভাগে নতুন ফিচার এবং পরামর্শ এক্সপ্লোর করুন</translation>
 <translation id="722454870747268814">নতুন ছদ্মবেশী ট্যাব</translation>
 <translation id="7265758999917665941">এই সাইটের জন্য কখনই নয়</translation>
 <translation id="7272437679830969316">আপনার পরিচয় যাচাই করা যাবে না। পাসওয়ার্ড কপি করা হয়নি।</translation>
@@ -862,6 +866,7 @@
 <translation id="7514365320538308">ডাউনলোড করুন</translation>
 <translation id="7531345132340165516">বর্তমান সাইট</translation>
 <translation id="7537586195939242955">দুঃখিত, এই সময়ে পাসবুকে আপনার পাস ইনস্টল করা যাবে না৷</translation>
+<translation id="7553234618121028547">বন্ধ করতে, <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> বিকল্প খুলে পাসওয়ার্ড বিকল্পে যান।</translation>
 <translation id="7554791636758816595">নতুন ট্যাব</translation>
 <translation id="7561196759112975576">সবসময়</translation>
 <translation id="7583004045319035904">আপনার ছদ্মবেশী ট্যাব আনলক করতে, <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ব্যবহার করুন।</translation>
@@ -943,6 +948,7 @@
 <translation id="8101409298456377967">পাসওয়ার্ড তৈরি, সেভ ও ম্যানেজ করুন যাতে আপনি সহজেই সাইট ও অ্যাপে সাইন-ইন করতে পারেন। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">বন্ধ করুন</translation>
 <translation id="8114753159095730575">ফাইল ডাউনলোড করা যাবে। স্ক্রিনের নিচের দিকে বিকল্পগুলি উপলভ্য।</translation>
+<translation id="81313319706244542">২. পাসওয়ার্ডে ট্যাপ করুন</translation>
 <translation id="8132598642024322408">আগে <ph name="PREVIOUS_PRICE" /> ছিল এখন <ph name="PRICE" />।</translation>
 <translation id="8136856065410661948">এটি Chrome এবং Google Lens থেকে আপনার Apple ক্যালেন্ডারে ইভেন্ট তৈরি করতে ব্যবহার করা হবে।</translation>
 <translation id="8156478151976189188">'পাসওয়ার্ড সিঙ্ক' ফিচার কাজ করছে না</translation>
@@ -965,6 +971,7 @@
 <translation id="8319076807703933069">নতুন ট্যাবে সার্চ করুন</translation>
 <translation id="8323906514956095947">আরও ট্যাবের বিকল্প দেখতে টাচ করে ধরে থাকুন</translation>
 <translation id="8328777765163860529">সমস্ত বন্ধ করুন</translation>
+<translation id="8343993175958086504">আপনার ডেটার ব্যাক-আপ নিন এবং যেকোনও ডিভাইসে তা ব্যবহার করুন।</translation>
 <translation id="8378714024927312812">আপনার প্রতিষ্ঠানের দ্বারা ম্যানেজ করা</translation>
 <translation id="8386068868580335421">রিসেট করুন</translation>
 <translation id="8407669440184693619">এই সাইটের জন্য কোনও পাসওয়ার্ড পাওয়া যায়নি</translation>

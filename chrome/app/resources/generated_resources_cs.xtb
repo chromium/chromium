@@ -2374,6 +2374,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3143515551205905069">Zrušit synchronizaci</translation>
 <translation id="3143754809889689516">Přehrát od začátku</translation>
 <translation id="3144647712221361880">Otevřít odkaz jako</translation>
+<translation id="3144896554017119333">Rozšíření a další</translation>
 <translation id="3149510190863420837">Aplikace Chrome</translation>
 <translation id="3150693969729403281">Spustit bezpečnostní kontrolu</translation>
 <translation id="3150927491400159470">Úplné opětovné načtení</translation>
@@ -2482,6 +2483,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3268451620468152448">Otevřené karty</translation>
 <translation id="3269093882174072735">Načíst obrázek</translation>
 <translation id="326911502853238749">Nezobrazovat <ph name="MODULE_NAME" /></translation>
+<translation id="3269175001434213183">Pokud si své věci chcete zálohovat a používat je na kterémkoliv zařízení, zapněte synchronizaci</translation>
 <translation id="3269612321104318480">Světle tyrkysová a bílá</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Soubor}few{# soubory}many{# souboru}other{# souborů}}</translation>
 <translation id="326999365752735949">Stahování souboru diff</translation>
@@ -4278,6 +4280,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4950993567860689081">Vaši relaci spravuje vaše organizace. Administrátoři mohou smazat váš profil a také sledovat síťový provoz.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{soubor}few{# soubory}many{# souboru}other{# souborů}}</translation>
 <translation id="495170559598752135">Akce</translation>
+<translation id="4951966678293618079">Pro tento web hesla nikdy neukládat</translation>
 <translation id="4953808748584563296">Výchozí oranžový avatar</translation>
 <translation id="4955710816792587366">Zvolte kód PIN</translation>
 <translation id="4959262764292427323">Hesla se ukládají do vašeho účtu Google, abyste je mohli používat na všech zařízeních</translation>
@@ -4307,6 +4310,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4981449534399733132">Chcete-li vymazat údaje o prohlížení ze všech synchronizovaných zařízení i z účtu Google, <ph name="BEGIN_LINK" />přihlaste se<ph name="END_LINK" />.</translation>
 <translation id="4982111327868342436">Pokračujte v kterémkoli zařízení tam, kde jste přestali</translation>
 <translation id="4982236238228587209">Software zařízení</translation>
+<translation id="4986706507552097681">Synchronizované položky můžete kdykoliv vybrat v nastavení. Google může personalizovat Vyhledávání a další služby na základě vaší historie.</translation>
 <translation id="4986728572522335985">Touto akcí vymažete veškerá data na bezpečnostním klíči, včetně jeho kódu PIN</translation>
 <translation id="4988526792673242964">Stránky</translation>
 <translation id="49896407730300355">Otočit &amp;proti směru hodinových ručiček</translation>

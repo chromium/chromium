@@ -4101,6 +4101,7 @@ Platform tarafından sağlanan sertifika doğrulayıcıyı ve kökleri kullanma 
 <translation id="5025239932007658691">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" />, doğru zaman damgası almak için bir Google sunucusuna ara sıra sorgu gönderir.
 
       Politika, Devre Dışı değerine ayarlanırsa <ph name="PRODUCT_NAME" />, bu sorguları göndermez.</translation>
+<translation id="5033070732967197381">Sorunlu TLS sertifikalarına sahip sitelerde WebAuthn API isteklerine izin ver.</translation>
 <translation id="5034504101537897433">Cihaz kilitlenme raporu bilgi raporlamasını etkinleştir</translation>
 <translation id="5039110755072335605">CORS joker karakter olmayan istek başlıkları desteği</translation>
 <translation id="504116558738617678">Düşük disk alanı uyarılarını, yalnızca cihaz yönetilmiyorsa veya yalnızca 1 kullanıcı varsa göster</translation>
@@ -5666,6 +5667,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       - Bu politika Devre Dışı ise yöneticiler bunu cihazın son kullanıcılarına belirtmelidir.</translation>
 <translation id="6609867253856597039">Devre dışı bırakılan özelliklerle ilgili kullanıcı deneyimini ayarla</translation>
 <translation id="6614557704487944013">Kullanıcıların <ph name="LACROS_NAME" /> tarayıcıyı kullanmalarına izin ver</translation>
+<translation id="661610294649586421">Sorunlu TLS sertifikalarına sahip sitelerde WebAuthn API isteklerine izin verme.</translation>
 <translation id="6617589895942747919">Aranın başlangıç zamanı (girilen tarihler dahil).</translation>
 <translation id="6621830999036927230">Politika ayarlanırsa uzaktan erişim ana makinesi, bağlantıları kabul etmek için uzaktan erişim istemcilerinin kimlik doğrulama jetonlarını doğrulamak üzere bu URL'yi kullanır. Boş bırakılır veya ayarlanmazsa bu özellik devre dışı bırakılır.
 
@@ -5968,6 +5970,12 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="6907778402784621686">Bu sitelerde güvenli olmayan içeriği engelle</translation>
 <translation id="6908640907898649429">Varsayılan arama sağlayıcıyı yapılandırır. Kullanıcının kullanacağı varsayılan arama sağlayıcıyı belirleyebilir veya varsayılan aramayı devre dışı bırakmayı seçebilirsiniz.</translation>
 <translation id="6913068954484253496"><ph name="PRODUCT_NAME" /> ürününün tüm IP adreslerindeki Yayın cihazlarına bağlanmasına izin ver</translation>
+<translation id="6915493311660114995">Politika, Etkin değerine ayarlanırsa <ph name="PRODUCT_NAME" />
+hatalı TLS sertifikası içeren web sitelerinde (yani, güvenli olmadığı düşünülen web sitelerinde)
+web kimlik doğrulama isteklerine izin verir.
+
+Politika, Devre Dışı değerine ayarlanırsa veya ayarlanmadan bırakılırsa varsayılan
+olarak bu tür istekleri engelleme davranışı geçerli olur.</translation>
 <translation id="6919819553978815392">Bu politika doğru değerine ayarlanırsa veya yapılandırılmazsa <ph name="PRODUCT_NAME" /> ve <ph name="LACROS_NAME" />, misafir girişlerini etkinleştirir. Misafir girişleri, tüm pencerelerin gizli modda olduğu <ph name="PRODUCT_NAME" /> profilleridir.
 
       Bu politika yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> ve <ph name="LACROS_NAME" />, misafir profillerinin başlatılmasına izin vermez.
@@ -6885,6 +6893,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="782661371433719637">Hiçbir sitenin File System API üzerinden dosya ve dizinlere okuma erişimi istemesine izin verme</translation>
 <translation id="7827127381981620448">Platform uygulaması</translation>
 <translation id="7829436838673974723">Sayfa kapatma işlemi sırasında sayfaların eş zamanlı XHR istekleri göndermesine izin ver</translation>
+<translation id="782978857350824974">Sorunlu TLS sertifikalarına sahip sitelerde web kimlik doğrulama isteklerine izin ver.</translation>
 <translation id="7832225468415136704">Chrome Temizleme özelliğinin, sistemi düzenli olarak taramasını engelle ve manuel taramaları devre dışı bırak</translation>
 <translation id="7833148823006528332">Android uygulaması tanımlayıcı (ör. Gmail için "com.google.android.gm")</translation>
 <translation id="7835218570504220753">Otomatik tıklamayı devre dışı bırak</translation>

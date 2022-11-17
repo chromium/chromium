@@ -232,6 +232,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="2815198996063984598">2. Kliknij opcję Domyślna przeglądarka.</translation>
 <translation id="2820289420301699633">Twój administrator ma kontrolę nad Chrome i dostęp do danych w Chrome</translation>
 <translation id="2830972654601096923">Zarządzaj adresami...</translation>
+<translation id="2834399722155632105">3. Kliknij Opcje haseł</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Zresetuj ustawienia tłumaczenia</translation>
 <translation id="2848086008667475748">Określ jako domyślną w ustawieniach…</translation>
@@ -632,6 +633,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5899314093904173337">Aby udostępnić ten kod QR osobom w pobliżu, pozwól im go zeskanować za pomocą aparatu lub aplikacji do skanowania kodów QR</translation>
 <translation id="5911030830365207728">Tłumacz Google</translation>
 <translation id="5913600720976431809">Opcje tłumaczenia strony</translation>
+<translation id="5933515656458364246">Synchronizuj dane na wszystkich urządzeniach.</translation>
 <translation id="5938160824633642847">Na urządzeniu brakuje wolnego miejsca. Zwolnij miejsce i spróbuj ponownie.</translation>
 <translation id="5948291296578561264">Umożliwia zapisywanie zdjęć w ich bibliotece.</translation>
 <translation id="5951816930277761335">Udostępnij link</translation>
@@ -713,6 +715,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 
 Twoje dane zostały zaszyfrowane z użyciem hasła synchronizacji w dniu <ph name="TIME" />. Wpisz je, by rozpocząć synchronizację.</translation>
 <translation id="6418346271604475326">Przygotowuję PDF</translation>
+<translation id="6429213933892582367">Otwórz Opcje haseł</translation>
 <translation id="6434591244308415567">Wystąpił błąd. Spróbuj ponownie później.</translation>
 <translation id="6435236283694032571">Dodaj do listy Do przeczytania</translation>
 <translation id="6439338047467462846">Zezwalaj na wszystkie</translation>
@@ -828,6 +831,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7203585745079012652">Odczytuj odpowiedzi</translation>
 <translation id="7207023858769244910">Włącz synchronizację, aby otrzymywać treści związane ze swoimi zainteresowaniami.</translation>
 <translation id="721597782417389033">Nieprawidłowa nazwa karty</translation>
+<translation id="7221173315674413369">Poznaj nowe funkcje i wskazówki przedstawione na stronie Nowe funkcje</translation>
 <translation id="722454870747268814">Nowa karta incognito</translation>
 <translation id="7265758999917665941">Nigdy dla tej witryny</translation>
 <translation id="7272437679830969316">Nie można zweryfikować Twojej tożsamości. Hasło nie zostało skopiowane.</translation>
@@ -861,6 +865,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7514365320538308">Pobierz</translation>
 <translation id="7531345132340165516">Bieżąca witryna</translation>
 <translation id="7537586195939242955">Twojego hasła nie można teraz umieścić w Passbooku.</translation>
+<translation id="7553234618121028547">Aby wyłączyć funkcję, otwórz <ph name="BEGIN_LINK" />Ustawienia<ph name="END_LINK" /> i kliknij Opcje haseł.</translation>
 <translation id="7554791636758816595">Nowa karta</translation>
 <translation id="7561196759112975576">Zawsze</translation>
 <translation id="7583004045319035904">Używaj <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> do odblokowywania kart incognito.</translation>
@@ -942,6 +947,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8101409298456377967">Twórz i zapisuj hasła oraz nimi zarządzaj, aby łatwo logować się na stronach i w aplikacjach. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Wyłącz</translation>
 <translation id="8114753159095730575">Pobrany plik jest dostępny. Opcje są dostępne u dołu ekranu.</translation>
+<translation id="81313319706244542">2. Kliknij Hasła</translation>
 <translation id="8132598642024322408">Teraz <ph name="PRICE" />, wcześniej <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="8136856065410661948">Będziemy z tego korzystać, aby tworzyć wydarzenia z Chrome i Obiektywu Google w kalendarzu Apple.</translation>
 <translation id="8156478151976189188">Funkcja Password Sync nie działa</translation>
@@ -964,6 +970,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8319076807703933069">Nowe wyszukiwanie</translation>
 <translation id="8323906514956095947">Naciśnij i przytrzymaj, by zobaczyć więcej opcji</translation>
 <translation id="8328777765163860529">Zamknij wszystkie</translation>
+<translation id="8343993175958086504">Twórz kopie zapasowe swoich danych i używaj ich na dowolnym urządzeniu.</translation>
 <translation id="8378714024927312812">Zarządzane przez Twoją organizację</translation>
 <translation id="8386068868580335421">Resetuj</translation>
 <translation id="8407669440184693619">Nie znaleziono haseł do tej strony</translation>

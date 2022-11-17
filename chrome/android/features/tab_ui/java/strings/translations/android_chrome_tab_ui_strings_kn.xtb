@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">ತೆರೆದ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಬೆಲೆ ಕಡಿಮೆಯಿದ್ದಾಗ ನೀವು ಎಚ್ಚರಿಕೆಯನ್ನು ಪಡೆಯುತ್ತೀರಿ</translation>
 <translation id="3328308545011660196">ಸಲಹೆ: <ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳು ಸಂಬಂಧಿಸಿರುವ ಹಾಗೆ ಕಾಣುತ್ತಿದೆ. ಅವುಗಳನ್ನು ಗುಂಪು ಮಾಡುವುದೇ?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">ಶೀಟ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳುವ ಕುರಿತ ಪೂರ್ವವೀಕ್ಷಣೆಯ ಥಂಬ್‌ನೇಲ್.</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಕುಗ್ಗಿಸಿ.}one{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳ ಜೊತೆಗೆ <ph name="TITLE_OF_GROUP" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಕುಗ್ಗಿಸಿ.}other{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳ ಜೊತೆಗೆ <ph name="TITLE_OF_GROUP" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಕುಗ್ಗಿಸಿ.}}</translation>
 <translation id="3882834874697329510">ತೆರೆದ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಬೆಲೆ ಕಡಿಮೆಯಿದ್ದಾಗ ನೀವು ಎಚ್ಚರಿಕೆಯನ್ನು ಪಡೆಯಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಅಧಿಸೂಚನೆಗಳನ್ನು ತೆರೆಯಿರಿ.</translation>
 <translation id="3940195383040445971">ಟ್ಯಾಬ್‌ಗಳಲ್ಲಿ ಬೆಲೆಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">ಸ್ಟೋರ್ ಮಾಹಿತಿ ವೀಕ್ಷಿಸಿ, ಆಯ್ಕೆಯು ಸ್ಕ್ರೀನ್ ಮೇಲ್ಭಾಗದಲ್ಲಿ ಲಭ್ಯವಿದೆ</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳ ಜೊತೆಗೆ ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಗುಂಪು ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome ನಿಂದ <ph name="TABS_COUNT_ONE" /> ಲಿಂಕ್}one{Chrome ನಿಂದ <ph name="TABS_COUNT_MANY" /> ಲಿಂಕ್‌ಗಳು}other{Chrome ನಿಂದ <ph name="TABS_COUNT_MANY" /> ಲಿಂಕ್‌ಗಳು}}</translation>
 <translation id="575494663145460764">ಬೆಲೆ ಕುಸಿತಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ಎಚ್ಚರಿಕೆಗಳನ್ನು ಪಡೆಯಬೇಕೆ?</translation>
 <translation id="58326064309361797">ಟ್ಯಾಬ್‍‍ಗಳನ್ನು ಗುಂಪುಗೂಡಿಸಲು ಅವುಗಳನ್ನು ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳ ಜೊತೆಗೆ <ph name="TITLE_OF_GROUP" /> ಗುಂಪನ್ನು ಮುಚ್ಚಿರಿ</translation>

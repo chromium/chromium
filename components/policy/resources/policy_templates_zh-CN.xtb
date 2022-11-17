@@ -4050,6 +4050,7 @@
 <translation id="5025239932007658691">如果此政策已启用或未设置，<ph name="PRODUCT_NAME" /> 会不定时向 Google 服务器发送查询以检索准确的时间戳。
 
       如果此政策已停用，系统会阻止 <ph name="PRODUCT_NAME" /> 发送此类查询。</translation>
+<translation id="5033070732967197381">允许在 TLS 证书已损坏的网站上发出 WebAuthn API 请求。</translation>
 <translation id="5034504101537897433">启用设备崩溃报告信息报告功能</translation>
 <translation id="5039110755072335605">对 CORS 非通配符式请求标头的支持情况</translation>
 <translation id="504116558738617678">仅在相应设备不受管理或只有 1 个用户时显示磁盘空间不足警告</translation>
@@ -5598,6 +5599,7 @@
       - 如果此政策已停用，管理员必须将这项设置告知设备的最终用户。</translation>
 <translation id="6609867253856597039">设置已停用功能的用户体验</translation>
 <translation id="6614557704487944013">允许用户使用 <ph name="LACROS_NAME" /> 浏览器</translation>
+<translation id="661610294649586421">禁止在 TLS 证书已损坏的网站上发出 WebAuthn API 请求。</translation>
 <translation id="6617589895942747919">间隔时段（含端点值）的开始时间。</translation>
 <translation id="6621830999036927230">如果您设置了此政策，远程访问主机会使用该网址来验证远程访问客户端的身份验证令牌，以便确定是否接受连接。如果您未设置此政策或将它留空，系统会停用此功能。
 
@@ -5900,6 +5902,9 @@
 <translation id="6907778402784621686">禁止在这些网站上显示不安全内容</translation>
 <translation id="6908640907898649429">配置默认搜索服务提供商。您可以指定用户会使用的默认搜索服务提供商，或选择停用默认搜索。</translation>
 <translation id="6913068954484253496">允许 <ph name="PRODUCT_NAME" /> 连接到位于所有 IP 地址的 Cast 设备。</translation>
+<translation id="6915493311660114995">如果此政策已启用，<ph name="PRODUCT_NAME" /> 将允许在 TLS 证书含有错误的网站（即，那些被视为不安全的网站）上发出网络身份验证请求。
+
+如果此政策已停用或未设置，系统将会应用默认行为（即，屏蔽这类请求）。</translation>
 <translation id="6919819553978815392">如果此政策设为 true 或未配置，<ph name="PRODUCT_NAME" /> 和 <ph name="LACROS_NAME" /> 将会允许以访客身份登录。访客身份是一类 <ph name="PRODUCT_NAME" /> 个人资料；使用此类个人资料登录后，所有窗口均会处于无痕模式。
 
       如果此政策设为 false，<ph name="PRODUCT_NAME" /> 和 <ph name="LACROS_NAME" /> 将会禁止启用访客个人资料。
@@ -6809,6 +6814,7 @@
 <translation id="782661371433719637">不允许任何网站通过 File System API 请求对文件和目录的读取权限</translation>
 <translation id="7827127381981620448">平台应用</translation>
 <translation id="7829436838673974723">允许页面在关闭期间发送同步 XHR 请求</translation>
+<translation id="782978857350824974">允许在 TLS 证书已损坏的网站上发出网络身份验证请求。</translation>
 <translation id="7832225468415136704">禁止 Chrome 清理功能定期扫描系统并停用人工扫描</translation>
 <translation id="7833148823006528332">Android 应用标识符，例如“com.google.android.gm”是 Gmail 的标识符</translation>
 <translation id="7835218570504220753">禁止自动点击</translation>

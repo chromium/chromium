@@ -2370,6 +2370,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3143515551205905069">Anulo sinkronizimin</translation>
 <translation id="3143754809889689516">Luaj nga fillimi</translation>
 <translation id="3144647712221361880">Hape lidhjen si</translation>
+<translation id="3144896554017119333">Shtesat dhe më shumë</translation>
 <translation id="3149510190863420837">Aplikacionet e Chrome</translation>
 <translation id="3150693969729403281">Ekzekuto tani kontrollin e sigurisë</translation>
 <translation id="3150927491400159470">Ringarkim i detyruar</translation>
@@ -2478,6 +2479,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3268451620468152448">Hap skedat</translation>
 <translation id="3269093882174072735">Ngarko imazhin</translation>
 <translation id="326911502853238749">Mos shfaq: <ph name="MODULE_NAME" /></translation>
+<translation id="3269175001434213183">Aktivizo sinkronizimin për të rezervuar gjërat e tua dhe për t'i përdorur ato në çdo pajisje</translation>
 <translation id="3269612321104318480">Gurkali e çelur dhe e bardhë</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Skedar}other{# skedarë}}</translation>
 <translation id="326999365752735949">Diferenca e shkarkimit</translation>
@@ -4275,6 +4277,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4950993567860689081">Sesioni yt menaxhohet nga organizata jote. Administratorët mund ta fshijnë profilin tënd dhe gjithashtu të monitorojnë trafikun e rrjetit tënd.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{një skedar}other{# skedarë}}</translation>
 <translation id="495170559598752135">Veprimet</translation>
+<translation id="4951966678293618079">Mos i ruaj asnjëherë fjalëkalimet për këtë sajt</translation>
 <translation id="4953808748584563296">Avatari i parazgjedhur portokalli</translation>
 <translation id="4955710816792587366">Zgjidh kodin PIN</translation>
 <translation id="4959262764292427323">Fjalëkalimet ruhen në llogarinë tënde të Google që të mund t'i përdorësh në çdo pajisje</translation>
@@ -4304,6 +4307,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4981449534399733132">Për të pastruar të dhënat e shfletimit nga të gjitha pajisjet e tua të sinkronizuara dhe nga "Llogaria e Google", <ph name="BEGIN_LINK" />identifikohu<ph name="END_LINK" />.</translation>
 <translation id="4982111327868342436">Vazhdo aty ku e ke lënë në çdo pajisje</translation>
 <translation id="4982236238228587209">Softueri i pajisjes</translation>
+<translation id="4986706507552097681">Mund të zgjedhësh gjithmonë se çfarë do të sinkronizosh te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="4986728572522335985">Kjo do të fshijë të gjitha të dhënat në çelësin e sigurisë, duke përfshirë kodin e tij PIN</translation>
 <translation id="4988526792673242964">Faqet</translation>
 <translation id="49896407730300355">Rrotullo k&amp;undër akrepave të orës</translation>

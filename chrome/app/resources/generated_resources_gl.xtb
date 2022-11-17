@@ -2371,6 +2371,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3143515551205905069">Cancelar sincronización</translation>
 <translation id="3143754809889689516">Reproducir desde o principio</translation>
 <translation id="3144647712221361880">Abrir ligazón como</translation>
+<translation id="3144896554017119333">Extensións e máis</translation>
 <translation id="3149510190863420837">Aplicacións de Chrome</translation>
 <translation id="3150693969729403281">Realizar agora a comprobación de seguranza</translation>
 <translation id="3150927491400159470">Volver cargar de maneira forzada</translation>
@@ -2479,6 +2480,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3268451620468152448">Pestanas abertas</translation>
 <translation id="3269093882174072735">Cargar imaxe</translation>
 <translation id="326911502853238749">Non mostrar <ph name="MODULE_NAME" /></translation>
+<translation id="3269175001434213183">Activa a sincronización para facer unha copia de seguranza dos teus datos a fin de poder usalos en calquera dispositivo</translation>
 <translation id="3269612321104318480">Verde azulado claro e branco</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Ficheiro}other{# ficheiros}}</translation>
 <translation id="326999365752735949">Descargando ficheiro diff</translation>
@@ -4276,6 +4278,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4950993567860689081">A túa organización xestiona a túa sesión. Os administradores poden eliminar o teu perfil e tamén supervisar o tráfico da túa rede.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{1 ficheiro}other{# ficheiros}}</translation>
 <translation id="495170559598752135">Accións</translation>
+<translation id="4951966678293618079">Non gardar nunca os contrasinais deste sitio</translation>
 <translation id="4953808748584563296">Avatar laranxa predeterminado</translation>
 <translation id="4955710816792587366">Escolle o PIN</translation>
 <translation id="4959262764292427323">Os contrasinais gárdanse na túa Conta de Google para que poidas usalos en calquera dispositivo</translation>
@@ -4305,6 +4308,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4981449534399733132">Para borrar os datos de navegación de todos os dispositivos sincronizados e da túa Conta de Google, tes que <ph name="BEGIN_LINK" />iniciar sesión<ph name="END_LINK" />.</translation>
 <translation id="4982111327868342436">Continúa en calquera dispositivo desde onde o deixases</translation>
 <translation id="4982236238228587209">Software do dispositivo</translation>
+<translation id="4986706507552097681">Sempre podes escoller na configuración o contido que queres sincronizar. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="4986728572522335985">Con esta opción, eliminaranse todos os datos almacenados na chave de seguranza, incluídos os PIN</translation>
 <translation id="4988526792673242964">Páxinas</translation>
 <translation id="49896407730300355">Xirar cara á es&amp;querda</translation>

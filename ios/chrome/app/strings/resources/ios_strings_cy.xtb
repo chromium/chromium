@@ -232,6 +232,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2815198996063984598">2. Tapiwch Ap Pori Diofyn</translation>
 <translation id="2820289420301699633">Mae gan eich gweinyddwr reolaeth dros Chrome a gall gael mynediad at ei ddata</translation>
 <translation id="2830972654601096923">Rheoli Cyfeiriadau...</translation>
+<translation id="2834399722155632105">3. Tapiwch Opsiynau Cyfrinair</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Ailosod Gosodiadau Translate</translation>
 <translation id="2848086008667475748">Gwneud yn Ddiofyn yn y Gosodiadau…</translation>
@@ -632,6 +633,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5899314093904173337">I rannu â phobl gerllaw, gadewch iddynt sganio'r cod QR hwn gyda'u camera neu ap sganio codau QR</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5913600720976431809">Dewisiadau i Gyfieithu'r dudalen</translation>
+<translation id="5933515656458364246">Cysoni eich data ar bob dyfais.</translation>
 <translation id="5938160824633642847">Mae'ch dyfais bron yn llawn. Crëwch ragor o le a rhowch gynnig arall arni.</translation>
 <translation id="5948291296578561264">Mae hyn yn eich galluogi i gadw lluniau i'ch llyfrgell luniau.</translation>
 <translation id="5951816930277761335">Rhannu'r Ddolen</translation>
@@ -713,6 +715,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 
 Amgryptiwyd eich data â'ch cyfrinair cysoni <ph name="TIME" />. Rhowch eich cyfrinymadrodd i ddechrau cysoni.</translation>
 <translation id="6418346271604475326">Wrthi'n paratoi PDF</translation>
+<translation id="6429213933892582367">Agorwch Opsiynau Cyfrinair</translation>
 <translation id="6434591244308415567">Bu gwall. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="6435236283694032571">Ychwanegu at y Rhestr Ddarllen</translation>
 <translation id="6439338047467462846">Caniatáu Pob Un</translation>
@@ -828,6 +831,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7203585745079012652">Adrodd Atebion yn Ôl</translation>
 <translation id="7207023858769244910">Cysonwch i gael cynnwys yn seiliedig ar eich diddordebau.</translation>
 <translation id="721597782417389033">Llysenw Cerdyn Annilys</translation>
+<translation id="7221173315674413369">Archwiliwch nodweddion ac awgrymiadau newydd yn Beth sy'n Newydd</translation>
 <translation id="722454870747268814">Tab Anhysbys Newydd</translation>
 <translation id="7265758999917665941">Byth ar gyfer y Wefan hon</translation>
 <translation id="7272437679830969316">Methu â chadarnhau'ch hunaniaeth. Ni chopïwyd y cyfrinair.</translation>
@@ -861,6 +865,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7514365320538308">Lawrlwytho</translation>
 <translation id="7531345132340165516">Gwefan Bresennol</translation>
 <translation id="7537586195939242955">Mae'n ddrwg gennym, ni ellir gosod y Passbook ar yr adeg hon.</translation>
+<translation id="7553234618121028547">I'w ddiffodd, agorwch <ph name="BEGIN_LINK" />Gosodiadau<ph name="END_LINK" /> ac ewch i Opsiynau Cyfrinair.</translation>
 <translation id="7554791636758816595">Tab Newydd</translation>
 <translation id="7561196759112975576">Bob tro</translation>
 <translation id="7583004045319035904">Defnyddiwch <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> i ddatgloi eich tabiau Anhysbys.</translation>
@@ -942,6 +947,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8101409298456377967">Creu, cadw a rheoli eich cyfrineiriau fel y gallwch fewngofnodi'n hawdd i wefannau ac apiau. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Diffodd</translation>
 <translation id="8114753159095730575">Mae lawrlwytho ffeiliau ar gael. Mae dewisiadau ar gael ger gwaelod y sgrîn.</translation>
+<translation id="81313319706244542">2. Tapiwch Cyfrineiriau</translation>
 <translation id="8132598642024322408">Bellach yn <ph name="PRICE" />. Roedd yn <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="8136856065410661948">Bydd hwn yn cael ei ddefnyddio i greu digwyddiadau yn eich Apple Calendar o Chrome a Google Lens.</translation>
 <translation id="8156478151976189188">Nid yw Cysoni Cyfrineiriau yn Gweithio</translation>
@@ -964,6 +970,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8319076807703933069">Chwiliad Newydd</translation>
 <translation id="8323906514956095947">Cyffyrddwch a daliwch i weld rhagor o ddewisiadau tab</translation>
 <translation id="8328777765163860529">Cau Pob Un</translation>
+<translation id="8343993175958086504">Gwneud copïau wrth gefn o'ch pethau a'u defnyddio ar unrhyw ddyfais.</translation>
 <translation id="8378714024927312812">Rheolir gan eich sefydliad</translation>
 <translation id="8386068868580335421">Ailosod</translation>
 <translation id="8407669440184693619">Nid ydym wedi dod o hyd i unrhyw gyfrineiriau ar gyfer y wefan hon</translation>

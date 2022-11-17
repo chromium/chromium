@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">उघड्या टॅबमध्ये किंमत कमी असताना तुम्हाला सूचना मिळेल</translation>
 <translation id="3328308545011660196">सूचना: <ph name="NUMBER_OF_TABS" /> टॅब संबंधित वाटतात. त्यांचा गट बनवायचा का?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">शेअर शीट पूर्वावलोकनाची थंबनेल</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब कोलॅप्स करा.}other{<ph name="TABS_COUNT_MANY" /> टॅबचा गट असलेले <ph name="TITLE_OF_GROUP" /> टॅब कोलॅप्स करा.}}</translation>
 <translation id="3882834874697329510">कमी किंमत उपलब्ध असताना उघड्या टॅबमध्ये सूचना मिळवण्यासाठी, सेंटिंग्ज मध्ये सूचना सुरू करा.</translation>
 <translation id="3940195383040445971">टॅबवर किमती ट्रॅक करा</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">स्टोअरची माहिती पहा, पर्याय स्क्रीनच्या सर्वात वर उपलब्ध आहे</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> टॅब असलेला टॅब गट बंद करा</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> टॅबची गटामध्ये विभागणी केली आहे</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome वरील <ph name="TABS_COUNT_ONE" /> लिंक}other{Chrome वरील <ph name="TABS_COUNT_MANY" /> लिंक}}</translation>
 <translation id="575494663145460764">किंमत कमी झाल्याच्या सूचना मिळवायच्या आहेत का?</translation>
 <translation id="58326064309361797">त्यांचा गट बनवण्यासाठी टॅबना ड्रॅग करा</translation>
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> टॅब असलेला <ph name="TITLE_OF_GROUP" /> गट बंद करा</translation>
