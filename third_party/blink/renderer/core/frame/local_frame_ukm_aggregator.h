@@ -388,7 +388,6 @@ class CORE_EXPORT LocalFrameUkmAggregator
   const base::TickClock* clock_;
 
   // Event and metric data
-  const char* const event_name_;
   AbsoluteMetricRecord primary_metric_;
   std::array<AbsoluteMetricRecord, kCount> absolute_metric_records_;
 

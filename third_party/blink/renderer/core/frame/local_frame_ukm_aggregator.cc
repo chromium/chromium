@@ -119,8 +119,7 @@ LocalFrameUkmAggregator::LocalFrameUkmAggregator(int64_t source_id,
                                                  ukm::UkmRecorder* recorder)
     : source_id_(source_id),
       recorder_(recorder),
-      clock_(base::DefaultTickClock::GetInstance()),
-      event_name_("Blink.UpdateTime") {
+      clock_(base::DefaultTickClock::GetInstance()) {
   // All of these are assumed to have one entry per sub-metric.
   DCHECK_EQ(std::size(absolute_metric_records_), metrics_data().size());
   DCHECK_EQ(std::size(current_sample_.sub_metrics_counts),
