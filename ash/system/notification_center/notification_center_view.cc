@@ -28,6 +28,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/linear_animation.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/views/background.h"
@@ -41,6 +42,10 @@
 namespace ash {
 
 namespace {
+
+// Inset the top and the bottom of the scroll bar so it won't be clipped by
+// rounded corners.
+constexpr auto kScrollBarInsets = gfx::Insets::TLBR(16, 0, 16, 0);
 
 constexpr base::TimeDelta kHideStackingBarAnimationDuration =
     base::Milliseconds(330);
@@ -88,10 +93,13 @@ NotificationCenterView::NotificationCenterView(
           features::IsNotificationsRefreshEnabled()),
       animation_(std::make_unique<gfx::LinearAnimation>(this)),
       focus_search_(std::make_unique<views::FocusSearch>(this, false, false)) {
-  if (is_notifications_refresh_enabled_)
-    scroll_bar_ = new RoundedMessageCenterScrollBar(this);
-  else
+  if (is_notifications_refresh_enabled_) {
+    auto* scroll_bar = new RoundedMessageCenterScrollBar(this);
+    scroll_bar->SetInsets(kScrollBarInsets);
+    scroll_bar_ = scroll_bar;
+  } else {
     scroll_bar_ = new MessageCenterScrollBar(this);
+  }
 
   if (is_notifications_refresh_enabled_) {
     layout_manager_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
