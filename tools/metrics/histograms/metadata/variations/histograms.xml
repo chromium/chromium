@@ -281,9 +281,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.PolicyRestriction"
-    enum="VariationsRestrictionPolicyValues" expires_after="2022-04-30">
-  <owner>pastarmovj@chromium.org</owner>
+    enum="VariationsRestrictionPolicyValues" expires_after="2023-06-30">
   <owner>ydago@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     Records the restrictions on how experiment variations are applied on the
