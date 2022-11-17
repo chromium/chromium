@@ -316,7 +316,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   void UpdateCacheAfterNodeIsAttachedWithCleanLayout(Node*);
   void DidShowMenuListPopupWithCleanLayout(Node*);
   void DidHideMenuListPopupWithCleanLayout(Node*);
-  void StyleChangedWithCleanLayout(Node*);
   void HandleScrollPositionChangedWithCleanLayout(Node*);
   void HandleValidationMessageVisibilityChangedWithCleanLayout(const Node*);
   void HandleUpdateActiveMenuOptionWithCleanLayout(Node*);

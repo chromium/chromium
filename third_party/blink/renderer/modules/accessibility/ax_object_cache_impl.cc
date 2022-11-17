@@ -2077,44 +2077,21 @@ void AXObjectCacheImpl::UpdateReverseTextRelations(
 
 void AXObjectCacheImpl::StyleChanged(const LayoutObject* layout_object) {
   DCHECK(layout_object);
-  if (objects_.empty()) {
-    // No objects to mark dirty yet -- there can sometimes be a layout in the
-    // initial empty document, or style has changed before the object cache
+  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
+  Node* node = GetClosestNodeForLayoutObject(layout_object);
+  if (!node)
+    return;
+
+  AXObject* ax_object = SafeGet(node);
+  if (!ax_object) {
+    // No object exists to mark dirty yet -- there can sometimes be a layout in
+    // the initial empty document, or style has changed before the object cache
     // becomes aware that the node exists. It's too early for the style change
     // to be useful.
     return;
   }
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
-  Node* node = GetClosestNodeForLayoutObject(layout_object);
-  if (node)
-    DeferTreeUpdate(&AXObjectCacheImpl::StyleChangedWithCleanLayout, node);
-}
 
-void AXObjectCacheImpl::StyleChangedWithCleanLayout(Node* node) {
-  DCHECK(node);
-  DCHECK(!node->GetDocument().NeedsLayoutTreeUpdateForNode(*node));
-
-  // There is a ton of style change notifications coming from newly-opened
-  // calendar popups for pickers. Solving that problem is what inspired the
-  // approach below, which is likely true for all elements.
-  //
-  // If we don't know about an object, then its style did not change as far as
-  // we (and ATs) are concerned. For this reason, don't call GetOrCreate.
-  AXObject* obj = Get(node);
-  if (!obj)
-    return;
-
-  DCHECK(!obj->IsDetached());
-
-  // If the foreground or background color on an item inside a container which
-  // supports selection changes, it can be the result of the selection changing
-  // as well as the container losing focus. We handle these notifications via
-  // their state changes, so no need to mark them dirty here.
-  AXObject* parent = obj->CachedParentObject();
-  if (parent && ui::IsContainerWithSelectableChildren(parent->RoleValue()))
-    return;
-
-  MarkAXObjectDirtyWithCleanLayout(obj);
+  MarkAXObjectDirty(ax_object);
 }
 
 void AXObjectCacheImpl::TextChanged(Node* node) {
