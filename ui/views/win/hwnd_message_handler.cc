@@ -1845,6 +1845,12 @@ LRESULT HWNDMessageHandler::OnDpiChanged(UINT msg,
   }
 
   dpi_ = dpi;
+  // Make sure the displays have up to date scale factors before updating the
+  // window's scale factor. Otherwise, we can be in an inconsistent state,
+  // in which the display a window is on has a different scale factor than the
+  // window, when the window handles the scale factor change.
+  // See https://crbug.com/1368455 for more info.
+  display::win::ScreenWin::UpdateDisplayInfos();
   SetBoundsInternal(gfx::Rect(*reinterpret_cast<RECT*>(l_param)), false);
   delegate_->HandleWindowScaleFactorChanged(scaling_factor);
   return 0;

@@ -731,6 +731,12 @@ int64_t ScreenWin::DeviceIdFromDeviceName(const wchar_t* device_name) {
       device_name);
 }
 
+// static
+void ScreenWin::UpdateDisplayInfos() {
+  if (g_instance)
+    g_instance->UpdateAllDisplaysAndNotify();
+}
+
 HWND ScreenWin::GetHWNDFromNativeWindow(gfx::NativeWindow window) const {
   NOTREACHED();
   return nullptr;

@@ -158,6 +158,11 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   // Returns the device id for the given `device_name`.
   static int64_t DeviceIdFromDeviceName(const wchar_t* device_name);
 
+  // Updates the display infos to make sure they have the right scale factors.
+  // This is called before handling WM_DPICHANGED messages, to be sure that we
+  // have the right scale factors for the screens.
+  static void UpdateDisplayInfos();
+
   // Returns the HWND associated with the NativeWindow.
   virtual HWND GetHWNDFromNativeWindow(gfx::NativeWindow view) const;
 
