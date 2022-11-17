@@ -168,6 +168,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &history_clusters::internal::kJourneys,
     &kAdaptiveButtonInTopToolbar,
     &kAdaptiveButtonInTopToolbarCustomizationV2,
+    &kAddEduAccountFromAccountSettingsForSupervisedUsers,
     &kAddToHomescreenIPH,
     &kAllowNewIncognitoTabIntents,
     &kAndroidScrollOptimizations,
@@ -459,6 +460,10 @@ BASE_FEATURE(kAdaptiveButtonInTopToolbar,
 BASE_FEATURE(kAdaptiveButtonInTopToolbarCustomizationV2,
              "AdaptiveButtonInTopToolbarCustomizationV2",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAddEduAccountFromAccountSettingsForSupervisedUsers,
+             "AddEduAccountFromAccountSettingsForSupervisedUsers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAddToHomescreenIPH,
              "AddToHomescreenIPH",
