@@ -48,10 +48,6 @@ class BASE_EXPORT BatteryLevelProvider {
     // Fully charged battery capacity. nullopt if `battery_count` != 1.
     absl::optional<uint64_t> full_charged_capacity;
 
-    // The voltage of the battery. Only available on MacOS. nullopt if
-    // `battery_count` != 1.
-    absl::optional<uint64_t> voltage_mv;
-
     // The unit of the battery's charge. Usually kMWh (milliwatt-hour) but can
     // be relative on Windows. nullopt if `battery_count` != 1.
     absl::optional<BatteryLevelUnit> charge_unit;
@@ -102,9 +98,6 @@ class BASE_EXPORT BatteryLevelProvider {
 
     // The battery's fully charged capacity.
     uint64_t full_charged_capacity;
-
-    // The voltage of the battery. Only available on MacOS.
-    absl::optional<uint64_t> voltage_mv;
 
     // The battery's unit of charge.
     BatteryLevelUnit charge_unit;

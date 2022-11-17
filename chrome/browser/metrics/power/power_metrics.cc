@@ -51,21 +51,6 @@ constexpr int kMaxCPUProportion = 2;
 constexpr int kMaxGPUProportion = 1;
 #endif  // BUILDFLAG(IS_MAC)
 
-// Returns the current capacity of |battery_state| in milliwatt-hours.
-uint64_t GetBatteryCapacityinMWh(
-    const base::BatteryLevelProvider::BatteryState& battery_state) {
-  if (battery_state.charge_unit ==
-      base::BatteryLevelProvider::BatteryLevelUnit::kMWh) {
-    return battery_state.current_capacity.value();
-  }
-
-  DCHECK_EQ(battery_state.charge_unit.value(),
-            base::BatteryLevelProvider::BatteryLevelUnit::kMAh);
-  DCHECK(battery_state.voltage_mv.has_value());
-  return battery_state.current_capacity.value() *
-         battery_state.voltage_mv.value() / 1000;
-}
-
 }  // namespace
 
 void ReportAggregatedProcessMetricsHistograms(
@@ -78,22 +63,22 @@ void ReportAggregatedProcessMetricsHistograms(
   }
 }
 
+// Returns the discharge rate in milliwatts.
 int64_t CalculateDischargeRateMilliwatts(
     const absl::optional<base::BatteryLevelProvider::BatteryState>&
         previous_battery_state,
     const absl::optional<base::BatteryLevelProvider::BatteryState>&
         new_battery_state,
     base::TimeDelta interval_duration) {
-  DCHECK(previous_battery_state);
-  DCHECK(new_battery_state);
-  DCHECK_EQ(previous_battery_state->charge_unit.value(),
-            new_battery_state->charge_unit.value());
-
+  DCHECK(previous_battery_state &&
+         previous_battery_state->charge_unit ==
+             base::BatteryLevelProvider::BatteryLevelUnit::kMWh);
+  DCHECK(new_battery_state &&
+         previous_battery_state->charge_unit ==
+             base::BatteryLevelProvider::BatteryLevelUnit::kMWh);
   const uint64_t previous_capacity =
-      GetBatteryCapacityinMWh(previous_battery_state.value());
-  const uint64_t new_capacity =
-      GetBatteryCapacityinMWh(new_battery_state.value());
-
+      previous_battery_state->current_capacity.value();
+  const uint64_t new_capacity = new_battery_state->current_capacity.value();
   // The capacity is in mWh. Divide by hours to get mW. Note that there is no
   // InHoursF() method.
   const double interval_duration_in_hours =
@@ -102,6 +87,8 @@ int64_t CalculateDischargeRateMilliwatts(
   return (previous_capacity - new_capacity) / interval_duration_in_hours;
 }
 
+// Returns the discharge rate in one hundredth of a percent of full capacity per
+// minute.
 int64_t CalculateDischargeRateRelative(
     const absl::optional<base::BatteryLevelProvider::BatteryState>&
         previous_battery_state,
