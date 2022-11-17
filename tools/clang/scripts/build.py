@@ -357,6 +357,12 @@ def BuildLibXml2():
       '-DLLVM_ENABLE_LIBXML2=FORCE_ON',
       '-DLIBXML2_INCLUDE_DIR=' + libxml2_include_dir.replace('\\', '/'),
       '-DLIBXML2_LIBRARIES=' + libxml2_lib.replace('\\', '/'),
+      '-DLIBXML2_LIBRARY=' + libxml2_lib.replace('\\', '/'),
+
+      # This hermetic libxml2 has enough features enabled for lld-link, but not
+      # for the libxml2 usage in libclang. We don't need libxml2 support in
+      # libclang, so just turn that off.
+      '-DCLANG_ENABLE_LIBXML2=NO',
   ]
   extra_cflags = ['-DLIBXML_STATIC']
 
