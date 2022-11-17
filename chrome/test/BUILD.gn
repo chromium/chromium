@@ -5334,6 +5334,7 @@ test("unit_tests") {
     "../browser/download/deferred_client_wrapper_unittest.cc",
     "../browser/download/download_history_unittest.cc",
     "../browser/download/download_item_model_unittest.cc",
+    "../browser/download/download_item_warning_data_unittest.cc",
     "../browser/download/download_offline_content_provider_unittest.cc",
     "../browser/download/download_prefs_unittest.cc",
     "../browser/download/download_query_unittest.cc",
