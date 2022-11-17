@@ -63,6 +63,7 @@
 #include "components/version_info/version_info.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/ax_event_notification_details.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -4577,21 +4578,17 @@ IN_PROC_BROWSER_TEST_P(WebViewTestNoDomAutomationController,
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewAccessibilityTest, LoadWebViewAccessibility) {
+  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   LoadAppWithGuest("web_view/focus_accessibility");
   content::WebContents* web_contents = GetFirstAppWindowWebContents();
-  content::EnableAccessibilityForWebContents(web_contents);
-  content::WebContents* guest_web_contents = GetGuestWebContents();
-  content::EnableAccessibilityForWebContents(guest_web_contents);
   content::WaitForAccessibilityTreeToContainNodeWithName(web_contents,
                                                          "Guest button");
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewAccessibilityTest, FocusAccessibility) {
+  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   LoadAppWithGuest("web_view/focus_accessibility");
   content::WebContents* web_contents = GetFirstAppWindowWebContents();
-  content::EnableAccessibilityForWebContents(web_contents);
-  content::WebContents* guest_web_contents = GetGuestWebContents();
-  content::EnableAccessibilityForWebContents(guest_web_contents);
 
   // Wait for focus to land on the "root web area" role, representing
   // focus on the main document itself.
@@ -4624,11 +4621,9 @@ IN_PROC_BROWSER_TEST_P(WebViewAccessibilityTest, FocusAccessibility) {
 // The test was disabled. See crbug.com/1141313.
 IN_PROC_BROWSER_TEST_P(WebViewAccessibilityTest,
                        DISABLED_FocusAccessibilityNestedFrame) {
+  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   LoadAppWithGuest("web_view/focus_accessibility");
   content::WebContents* web_contents = GetFirstAppWindowWebContents();
-  content::EnableAccessibilityForWebContents(web_contents);
-  content::WebContents* guest_web_contents = GetGuestWebContents();
-  content::EnableAccessibilityForWebContents(guest_web_contents);
 
   // Wait for focus to land on the "root web area" role, representing
   // focus on the main document itself.
@@ -4708,11 +4703,10 @@ class WebContentsAccessibilityEventWatcher
 };
 
 IN_PROC_BROWSER_TEST_P(WebViewAccessibilityTest, DISABLED_TouchAccessibility) {
+  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   LoadAppWithGuest("web_view/touch_accessibility");
   content::WebContents* web_contents = GetFirstAppWindowWebContents();
-  content::EnableAccessibilityForWebContents(web_contents);
   content::WebContents* guest_web_contents = GetGuestWebContents();
-  content::EnableAccessibilityForWebContents(guest_web_contents);
 
   // Listen for accessibility events on both WebContents.
   WebContentsAccessibilityEventWatcher main_event_watcher(
