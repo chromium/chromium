@@ -17,6 +17,29 @@ namespace {
 
 using BookmarkEditViewControllerTest = BookmarkIOSUnitTest;
 
+// Checks that the view controller can become the first responder. This is
+// needed to correctly register key commands.
+TEST_F(BookmarkEditViewControllerTest, CanBecomeFirstResponder) {
+  const bookmarks::BookmarkNode* bookmark =
+      AddBookmark(bookmark_model_->mobile_node(), @"Some Bookmark");
+  BookmarkEditViewController* controller =
+      [[BookmarkEditViewController alloc] initWithBookmark:bookmark
+                                                   browser:browser_.get()];
+
+  EXPECT_TRUE(controller.canBecomeFirstResponder);
+}
+
+// Checks that key commands are registered.
+TEST_F(BookmarkEditViewControllerTest, KeyCommands) {
+  const bookmarks::BookmarkNode* bookmark =
+      AddBookmark(bookmark_model_->mobile_node(), @"Some Bookmark");
+  BookmarkEditViewController* controller =
+      [[BookmarkEditViewController alloc] initWithBookmark:bookmark
+                                                   browser:browser_.get()];
+
+  EXPECT_GT(controller.keyCommands.count, 0u);
+}
+
 // Checks that metrics are correctly reported.
 TEST_F(BookmarkEditViewControllerTest, Metrics) {
   const bookmarks::BookmarkNode* bookmark =
