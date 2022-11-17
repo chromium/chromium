@@ -13,6 +13,7 @@ include_rules = [
   "+components/file_access",
   "+components/filename_generation",
   "+components/permissions/features.h",
+  "+components/power_monitor",
   "+components/services/font",
   "+components/services/filesystem",
   "+components/services/quarantine/test_support.h",

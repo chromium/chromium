@@ -34,6 +34,7 @@ if (current_cpu != "arm64") {
       "//base",
       "//components/nacl/common:minimal",
       "//components/nacl/common:mojo_bindings",
+      "//components/power_monitor",
       "//content/public/common:main_function_params",
       "//crypto",
       "//ipc",

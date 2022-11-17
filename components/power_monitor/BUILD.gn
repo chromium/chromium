@@ -1,0 +1,26 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+source_set("power_monitor") {
+  public = [ "make_power_monitor_device_source.h" ]
+  deps = [ "//base" ]
+
+  if (is_linux && use_dbus) {
+    # Use the D-Bus-based implementation on Linux builds when enabled.
+    sources = [
+      "make_power_monitor_device_source_linux.cc",
+      "power_monitor_device_source_linux.cc",
+      "power_monitor_device_source_linux.h",
+    ]
+    deps += [
+      "//components/dbus/thread_linux",
+      "//dbus",
+    ]
+  } else {
+    # Use the //base implementation everywhere else.
+    sources = [ "make_power_monitor_device_source_default.cc" ]
+  }
+}

@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/power_monitor",
   "+components/nacl",
   "+content/public/app/sandbox_helper_win.h",
   "+content/public/common",

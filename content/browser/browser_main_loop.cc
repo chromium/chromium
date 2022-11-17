@@ -28,7 +28,7 @@
 #include "base/path_service.h"
 #include "base/pending_task.h"
 #include "base/power_monitor/power_monitor.h"
-#include "base/power_monitor/power_monitor_device_source.h"
+#include "base/power_monitor/power_monitor_source.h"
 #include "base/process/process_metrics.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -55,6 +55,7 @@
 #include "cc/base/histograms.h"
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"
 #include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
+#include "components/power_monitor/make_power_monitor_device_source.h"
 #include "components/services/storage/dom_storage/storage_area_impl.h"
 #include "components/tracing/common/trace_startup_config.h"
 #include "components/tracing/common/tracing_switches.h"
@@ -646,10 +647,8 @@ void BrowserMainLoop::PostCreateMainMessageLoop() {
   }
   {
     TRACE_EVENT0("startup", "BrowserMainLoop::Subsystem:PowerMonitor");
-    if (!base::PowerMonitor::IsInitialized()) {
-      base::PowerMonitor::Initialize(
-          std::make_unique<base::PowerMonitorDeviceSource>());
-    }
+    if (!base::PowerMonitor::IsInitialized())
+      base::PowerMonitor::Initialize(MakePowerMonitorDeviceSource());
   }
   {
     TRACE_EVENT0("startup", "BrowserMainLoop::Subsystem:HighResTimerManager");

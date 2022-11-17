@@ -75,6 +75,7 @@ source_set("content_main_runner_app") {
   configs += extra_configs
   deps = content_app_deps + [
            "//components/optimization_guide:machine_learning_tflite_buildflags",
+           "//components/power_monitor",
            "//components/power_scheduler",
            "//content/browser",
            "//content/gpu:gpu_sources",
