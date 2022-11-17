@@ -1,0 +1,71 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/system/phonehub/app_stream_launcher_item.h"
+
+#include "ui/gfx/geometry/insets.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/layout/box_layout.h"
+
+namespace ash {
+
+namespace {
+
+constexpr gfx::Size kEcheAppItemSize(64, 55);
+constexpr int kEcheAppItemSpacing = 6;
+constexpr int kEcheAppNameLabelLineHeight = 14;
+constexpr int kEcheAppNameLabelFontSize = 12;
+
+void ConfigureLabel(views::Label* label, int line_height, int font_size) {
+  label->SetAutoColorReadabilityEnabled(false);
+  label->SetSubpixelRenderingEnabled(false);
+  label->SetCanProcessEventsWithinSubtree(false);
+
+  label->SetLineHeight(line_height);
+  label->SetTruncateLength(36);
+
+  gfx::Font default_font;
+  gfx::Font label_font =
+      default_font.Derive(font_size - default_font.GetFontSize(),
+                          gfx::Font::NORMAL, gfx::Font::Weight::NORMAL);
+  gfx::FontList font_list(label_font);
+  label->SetFontList(font_list);
+}
+
+}  // namespace
+
+AppStreamLauncherItem::AppStreamLauncherItem(
+    views::ImageButton::PressedCallback callback,
+    const phonehub::Notification::AppMetadata& app_metadata) {
+  SetPreferredSize(kEcheAppItemSize);
+  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+      kEcheAppItemSpacing));
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+
+  recent_app_button_ = AddChildView(std::make_unique<PhoneHubRecentAppButton>(
+      app_metadata.icon, app_metadata.visible_app_name, callback));
+
+  label_ = AddChildView(
+      std::make_unique<views::Label>(app_metadata.visible_app_name));
+  ConfigureLabel(label_, kEcheAppNameLabelLineHeight,
+                 kEcheAppNameLabelFontSize);
+}
+
+AppStreamLauncherItem::~AppStreamLauncherItem() = default;
+
+bool AppStreamLauncherItem::HasFocus() const {
+  return recent_app_button_->HasFocus() || label_->HasFocus();
+}
+
+void AppStreamLauncherItem::RequestFocus() {
+  recent_app_button_->RequestFocus();
+}
+
+const char* AppStreamLauncherItem::GetClassName() const {
+  return "AppStreamLauncherItem";
+}
+
+}  // namespace ash
