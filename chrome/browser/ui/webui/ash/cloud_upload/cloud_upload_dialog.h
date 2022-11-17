@@ -45,13 +45,16 @@ class CloudUploadDialog : public SystemWebDialogDelegate {
   // if a new dialog has been effectively created.
   static bool Show(Profile* profile,
                    const std::vector<storage::FileSystemURL>& file_urls,
-                   const mojom::CloudProvider cloud_provider);
+                   const mojom::CloudProvider cloud_provider,
+                   const mojom::DialogPage dialog_page);
 
   void OnDialogShown(content::WebUI* webui) override;
   void OnDialogClosed(const std::string& json_retval) override;
 
  protected:
-  CloudUploadDialog(mojom::DialogArgsPtr args, UploadRequestCallback callback);
+  CloudUploadDialog(mojom::DialogArgsPtr args,
+                    UploadRequestCallback callback,
+                    const mojom::DialogPage dialog_page);
   ~CloudUploadDialog() override;
   bool ShouldShowCloseButton() const override;
   void GetDialogSize(gfx::Size* size) const override;
@@ -59,6 +62,7 @@ class CloudUploadDialog : public SystemWebDialogDelegate {
  private:
   mojom::DialogArgsPtr dialog_args_;
   UploadRequestCallback callback_;
+  mojom::DialogPage dialog_page_;
 };
 
 }  // namespace ash::cloud_upload

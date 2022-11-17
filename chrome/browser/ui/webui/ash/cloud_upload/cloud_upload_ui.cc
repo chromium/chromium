@@ -12,6 +12,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/cloud_upload_resources.h"
 #include "chrome/grit/cloud_upload_resources_map.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
@@ -26,6 +27,11 @@ CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI{web_ui} {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUICloudUploadHost);
+
+  static constexpr webui::LocalizedString kStrings[] = {
+      {"cancel", IDS_CANCEL},
+  };
+  source->AddLocalizedStrings(kStrings);
   webui::SetupWebUIDataSource(
       source, base::make_span(kCloudUploadResources, kCloudUploadResourcesSize),
       IDR_CLOUD_UPLOAD_MAIN_HTML);

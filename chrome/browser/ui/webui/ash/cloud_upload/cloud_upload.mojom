@@ -16,6 +16,16 @@ enum UserAction {
   kUpload,
 };
 
+// Options for which sub-page/flow we want to show.
+enum DialogPage {
+  // The user can choose between apps for handling office files.
+  kFileHandlerDialog,
+  // Set up OneDrive (multi-page).
+  kOneDriveSetup,
+  // Set up Google Drive (one-page confirmation screen).
+  kGoogleDriveSetup,
+};
+
 // Contains the arguments used to set up the dialog.
 struct DialogArgs {
   // The selected cloud provider to transfer Office files to.
@@ -24,6 +34,9 @@ struct DialogArgs {
   // List of files that will be uploaded on dialog close if the user completes
   // the setup. May be empty if the dialog wasn't initiated from a file handler.
   array<string> file_names;
+
+  // Tells the dialog which sub-page/flow we want to show.
+  DialogPage dialog_page;
 };
 
 // Lives in the browser process. A renderer uses this to create a page handler

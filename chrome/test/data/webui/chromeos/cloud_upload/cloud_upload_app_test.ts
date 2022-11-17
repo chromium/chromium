@@ -4,7 +4,7 @@
 
 import 'chrome://cloud-upload/cloud_upload_dialog.js';
 
-import {CloudProvider, DialogArgs, PageHandlerRemote, UserAction} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
+import {CloudProvider, DialogArgs, DialogPage, PageHandlerRemote, UserAction} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browser_proxy.js';
 import {CloudUploadElement} from 'chrome://cloud-upload/cloud_upload_dialog.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -22,6 +22,7 @@ class CloudUploadTestBrowserProxy implements CloudUploadBrowserProxy {
     const args: DialogArgs = {
       cloudProvider: uploadType,
       fileNames: [],
+      dialogPage: DialogPage.kOneDriveSetup,
     };
     if (fileName != null) {
       args.fileNames.push(fileName);
