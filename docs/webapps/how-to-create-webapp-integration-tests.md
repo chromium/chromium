@@ -73,6 +73,8 @@ The output should:
 1. Print new tests that need to be manually copied to the integration browsertest files.
 2. Print out test ids that need to be removed.
 
+Note: The option `--delete-in-place` can be used to remove all tests that aren't disabled by sheriffs.
+
 After you make changes to the integration browsertests, please re-run the above command to verify that all of the changes were performed and no mistakes were made. If all looks right, the script will output nothing to console when run a second time.
 
 Possible issues / Things to know:
