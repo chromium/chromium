@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/controls/rounded_scroll_bar.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -60,6 +61,10 @@ const int kTitleRowSeparatorIndex = 1;
 constexpr int kQsItemBetweenSpacing = 8;
 
 constexpr int kQsScrollViewCornerRadius = 16;
+
+// Inset the scroll bar to avoid the rounded corners at top and bottom.
+constexpr auto kQsScrollBarInsets =
+    gfx::Insets::VH(kQsScrollViewCornerRadius, 0);
 
 // Configures the TriView used for the title in a detailed view.
 void ConfigureTitleTriView(TriView* tri_view, TriView::Container container) {
@@ -432,6 +437,10 @@ void TrayDetailedView::CreateScrollableList() {
   // TODO(varkha): Make the sticky rows work with EnableViewPortLayer().
 
   if (features::IsQsRevampEnabled()) {
+    auto vertical_scroll = std::make_unique<RoundedScrollBar>(
+        /*horizontal=*/false);
+    vertical_scroll->SetInsets(kQsScrollBarInsets);
+    scroller_->SetVerticalScrollBar(std::move(vertical_scroll));
     scroller_->SetProperty(views::kMarginsKey,
                            delegate_->GetScrollViewMargin());
     scroller_->SetPaintToLayer();
