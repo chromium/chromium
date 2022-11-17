@@ -207,6 +207,8 @@ TEST_F(TraceNetLogObserverTest, TracingNotEnabled) {
 
 // This test will result in a deadlock if EnabledStateObserver instead
 // of AsyncEnabledStateObserver is used. Regression test for crbug.com/760817.
+// Perfetto SDK doesn't have this problem, so the test is not necessary.
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 TEST_F(TraceNetLogObserverTest, TracingDisabledDuringOnAddEntry) {
   trace_net_log_observer()->WatchForTraceStart(NetLog::Get());
   TraceLog* trace_log = TraceLog::GetInstance();
@@ -225,6 +227,7 @@ TEST_F(TraceNetLogObserverTest, TracingDisabledDuringOnAddEntry) {
   // Flush now so that TraceLog's buffer is empty in the next test.
   EndTraceAndFlush();
 }
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 TEST_F(TraceNetLogObserverTest, TraceEventCaptured) {
   auto entries = net_log_observer()->GetEntries();

@@ -219,7 +219,10 @@ class BASE_EXPORT TraceLog :
   void RemoveIncrementalStateObserver(IncrementalStateObserver* listener);
 
   TraceLogStatus GetStatus() const;
+
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   bool BufferIsFull() const;
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   // Computes an estimate of the size of the TraceLog including all the retained
   // objects.

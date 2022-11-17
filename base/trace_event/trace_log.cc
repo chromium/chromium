@@ -1293,16 +1293,12 @@ TraceLogStatus TraceLog::GetStatus() const {
   return result;
 }
 
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 bool TraceLog::BufferIsFull() const {
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  // TODO(skyostil): Remove this method since there are no non-test usages.
-  DCHECK(false);
-  return false;
-#else
   AutoLock lock(lock_);
   return logged_events_->IsFull();
-#endif
 }
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 TraceEvent* TraceLog::AddEventToThreadSharedChunkWhileLocked(
     TraceEventHandle* handle,
