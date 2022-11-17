@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/pending_beacon_service.h"
 #include "base/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "content/browser/renderer_host/pending_beacon_host.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/data_element.h"
@@ -103,6 +104,8 @@ void PendingBeaconService::SendBeacons(
     // Send out the |beacon|.
     // The PendingBeaconService is a singleton with a lifetime the same as the
     // browser process', so it's safe to capture it here.
+    UMA_HISTOGRAM_ENUMERATION("PendingBeaconHost.Action",
+                              PendingBeaconHost::Action::kNetworkSend);
     simple_url_loader_ptr->DownloadHeadersOnly(
         shared_url_loader_factory,
         base::BindOnce(
@@ -111,6 +114,9 @@ void PendingBeaconService::SendBeacons(
               // Intentionally left empty, this callback captures the |loader|
               // so it stays alive until the beacon request, i.e.
               // |DownloadHeadersOnly|, completes.
+              UMA_HISTOGRAM_ENUMERATION(
+                  "PendingBeaconHost.Action",
+                  PendingBeaconHost::Action::kNetworkComplete);
             },
             std::move(simple_url_loader)));
   }

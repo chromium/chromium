@@ -79704,6 +79704,22 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Unknown"/>
 </enum>
 
+<enum name="PendingBeaconHostAction">
+  <int value="0" label="None"/>
+  <int value="1" label="Create"/>
+  <int value="2" label="Send"/>
+  <int value="3" label="Delete"/>
+  <int value="4" label="Network Send"/>
+  <int value="5" label="Network Complete"/>
+</enum>
+
+<enum name="PendingBeaconHostBatchAction">
+  <int value="0" label="None"/>
+  <int value="1" label="Send All on Host Destroy"/>
+  <int value="2" label="Send All on Navigation"/>
+  <int value="3" label="Send All on Process Exit"/>
+</enum>
+
 <enum name="PendingInvalidationStatus">
   <int value="0" label="Acknowledged invalidation"/>
   <int value="1" label="Lost invalidation"/>

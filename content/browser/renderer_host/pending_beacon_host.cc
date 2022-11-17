@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/pending_beacon_host.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "content/browser/renderer_host/pending_beacon_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -60,6 +61,7 @@ void PendingBeaconHost::CreateBeacon(
     return;
   }
 
+  UMA_HISTOGRAM_ENUMERATION("PendingBeaconHost.Action", Action::kCreate);
   auto beacon =
       std::make_unique<Beacon>(url, method, this, std::move(receiver));
   beacons_.emplace_back(std::move(beacon));
@@ -77,7 +79,7 @@ PendingBeaconHost::~PendingBeaconHost() {
   // RenderFrameHost (See content::DocumentUserData).
   // In both of the above case, pending beacons should be sent per Case B-1 from
   // https://github.com/WICG/pending-beacon/issues/3#issuecomment-1286397825
-  Send(beacons_);
+  SendAll(BatchAction::kSendAllOnHostDestroy);
 }
 
 void PendingBeaconHost::DeleteBeacon(Beacon* beacon) {
@@ -85,6 +87,7 @@ void PendingBeaconHost::DeleteBeacon(Beacon* beacon) {
       beacons_, beacon,
       [](const std::unique_ptr<Beacon>& b) { return b.get(); });
   if (iter != beacons_.end()) {
+    UMA_HISTOGRAM_ENUMERATION("PendingBeaconHost.Action", Action::kDelete);
     beacons_.erase(iter);
   }
 }
@@ -100,6 +103,20 @@ void PendingBeaconHost::SendBeacon(Beacon* beacon) {
   beacons_.erase(iter);
   std::vector<std::unique_ptr<Beacon>> to_send;
   to_send.emplace_back(std::move(beacon_ptr));
+  UMA_HISTOGRAM_ENUMERATION("PendingBeaconHost.Action", Action::kSend);
+  Send(to_send);
+}
+
+void PendingBeaconHost::SendAll(const BatchAction& action) {
+  if (beacons_.empty()) {
+    return;
+  }
+
+  // Swaps out from private field first to make any potential subsequent send
+  // requests from renderer no-ops.
+  std::vector<std::unique_ptr<Beacon>> to_send;
+  to_send.swap(beacons_);
+  UMA_HISTOGRAM_ENUMERATION("PendingBeaconHost.BatchAction", action);
   Send(to_send);
 }
 
@@ -134,12 +151,7 @@ void PendingBeaconHost::SendAllOnNavigation() {
   // still exist and get sent through the new network, which leaks navigation
   // history to the new network.
   // See https://github.com/WICG/pending-beacon/issues/30.
-
-  // Swaps out from private field first to make any potential subsequent send
-  // requests from renderer no-ops.
-  std::vector<std::unique_ptr<Beacon>> to_send;
-  to_send.swap(beacons_);
-  Send(to_send);
+  SendAll(BatchAction::kSendAllOnNavigation);
 
   // Now all beacons are gone.
   // The renderer-side beacons should update their pending states by themselves.
@@ -148,9 +160,7 @@ void PendingBeaconHost::SendAllOnNavigation() {
 void PendingBeaconHost::RenderProcessExited(
     RenderProcessHost*,
     const ChildProcessTerminationInfo&) {
-  std::vector<std::unique_ptr<Beacon>> to_send;
-  to_send.swap(beacons_);
-  Send(to_send);
+  SendAll(BatchAction::kSendAllOnProcessExit);
 }
 void PendingBeaconHost::RenderProcessHostDestroyed(RenderProcessHost*) {
   render_frame_host().GetProcess()->RemoveObserver(this);
