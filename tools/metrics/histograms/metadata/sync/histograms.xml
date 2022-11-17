@@ -405,8 +405,7 @@ chromium-metrics-reviews@google.com.
     taken every time the Sync data types are (re)configured, which typically
     happens during startup and when the user changes any Sync settings.
 
-    NOTE: this doesn't include OS datatypes once the SplitSettingsSync feature
-    is enabled. Use Sync.CustomOSSync for those.
+    NOTE: this does NOT include OS datatypes. Use Sync.CustomOSSync for those.
   </summary>
 </histogram>
 
