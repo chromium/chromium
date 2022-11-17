@@ -88,8 +88,7 @@ class GPU_GLES2_EXPORT GLImageBacking
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
-      const GLTextureImageBackingHelper::InitializeGLTextureParams& params,
-      bool is_passthrough);
+      const GLTextureImageBackingHelper::InitializeGLTextureParams& params);
 
   // SharedImageBacking:
   scoped_refptr<gfx::NativePixmap> GetNativePixmap() override;
@@ -128,8 +127,6 @@ class GPU_GLES2_EXPORT GLImageBacking
   void GLTextureImageRepresentationEndAccess(bool readonly) override;
   void GLTextureImageRepresentationRelease(bool have_context) override;
 
-  bool IsPassthrough() const { return is_passthrough_; }
-
   scoped_refptr<gl::GLImage> image_;
 
   // If |image_bind_or_copy_needed_| is true, then either bind or copy |image_|
@@ -143,13 +140,10 @@ class GPU_GLES2_EXPORT GLImageBacking
   bool gl_texture_retained_for_legacy_mailbox_ = false;
 
   const GLTextureImageBackingHelper::InitializeGLTextureParams gl_params_;
-  const bool is_passthrough_;
 
-  // This is the cleared rect used by ClearedRect and SetClearedRect when
-  // |texture_| is nullptr.
+  // This is the cleared rect used by ClearedRect and SetClearedRect.
   gfx::Rect cleared_rect_;
 
-  gles2::Texture* texture_ = nullptr;
   scoped_refptr<gles2::TexturePassthrough> passthrough_texture_;
 
   sk_sp<SkPromiseImageTexture> cached_promise_texture_;
