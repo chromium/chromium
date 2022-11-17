@@ -123,6 +123,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private static boolean sHasLoggedImmersiveModeConfirmationSetting;
 
     private @Px int mDisplayHeight;
+    private @Px int mDisplayWidth;
     private @Px int mFullyExpandedAdjustmentHeight;
     private TabAnimator mTabAnimator;
     private int mShadowOffset;
@@ -185,11 +186,12 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     /** A callback to be called once the Custom Tab has been resized. */
     interface OnResizedCallback {
         /** The Custom Tab has been resized. */
-        void onResized(int size);
+        void onResized(int height, int width);
     }
 
-    // The current height used to trigger onResizedCallback when it is resized.
+    // The current height/width used to trigger onResizedCallback when it is resized.
     private int mHeight;
+    private int mWidth;
 
     // Class used to control show / hide nav bar.
     private NavBarTransitionController mNavbarTransitionController =
@@ -210,6 +212,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mActivity = activity;
         mVersionCompat = PartialCustomTabVersionCompat.create(mActivity, this::updatePosition);
         mDisplayHeight = mVersionCompat.getDisplayHeight();
+        mDisplayWidth = mVersionCompat.getDisplayWidth();
         mUnclampedInitialHeight = initialHeight;
         mIsFixedHeight = isFixedHeight;
         mInteractWithBackground = interactWithBackground;
@@ -243,7 +246,8 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
         fullscreenManager.addObserver(this);
         mIsTablet = isTablet;
-
+        mHeight = MATCH_PARENT;
+        mWidth = MATCH_PARENT;
         logImmersiveModeConfirmationSettingValue(ContextUtils.getApplicationContext());
     }
 
@@ -354,12 +358,14 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         boolean isInMultiWindow = MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
         int orientation = newConfig.orientation;
         int displayHeight = mVersionCompat.getDisplayHeight();
+        int displayWidth = mVersionCompat.getDisplayWidth();
 
         if (isInMultiWindow != mIsInMultiWindowMode || orientation != mOrientation
-                || displayHeight != mDisplayHeight) {
+                || displayHeight != mDisplayHeight || displayWidth != mDisplayWidth) {
             mIsInMultiWindowMode = isInMultiWindow;
             mOrientation = orientation;
             mDisplayHeight = displayHeight;
+            mDisplayWidth = displayWidth;
             if (isFullHeight()) {
                 // We should update CCT position before Window#FLAG_LAYOUT_NO_LIMITS is set,
                 // otherwise it is not possible to get the correct content height.
@@ -517,7 +523,6 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         // navigation area now just shows whatever is underneath: 1) loading view/web contents
         // while dragging 2) host app's navigation bar when at rest.
         positionAtHeight(height);
-        mHeight = attrs.height;
         if (!mInitFirstHeight) {
             setCoordinatorLayoutHeight(mDisplayHeight);
             mInitFirstHeight = true;
@@ -593,6 +598,12 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
     private boolean isFixedHeight() {
         return mIsFixedHeight;
+    }
+
+    private boolean isFullscreen() {
+        WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
+        return attrs.x == 0 && attrs.y == 0 && attrs.width == MATCH_PARENT
+                && attrs.height == MATCH_PARENT;
     }
 
     private boolean canInteractWithBackground() {
@@ -770,9 +781,16 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
     private void maybeInvokeResizeCallback() {
         WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
-        if (mHeight != attrs.height && attrs.height > 0) {
-            mOnResizedCallback.onResized(attrs.height);
+        if (isFullHeight() || isFullscreen()) {
+            mOnResizedCallback.onResized(mDisplayHeight, mDisplayWidth);
+            mHeight = mDisplayHeight;
+            mWidth = mDisplayWidth;
+        } else {
+            if ((mHeight != attrs.height && mHeight > 0) || (mWidth != attrs.width && mWidth > 0)) {
+                mOnResizedCallback.onResized(attrs.height, attrs.width);
+            }
             mHeight = attrs.height;
+            mWidth = attrs.width;
         }
     }
 
@@ -902,6 +920,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
     @Override
     public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
+        if (isFullscreen()) return;
         WindowManager.LayoutParams attrs = new WindowManager.LayoutParams();
         attrs.copyFrom(mActivity.getWindow().getAttributes());
         attrs.x = 0;
@@ -910,12 +929,15 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         attrs.width = MATCH_PARENT;
         mActivity.getWindow().setAttributes(attrs);
         setTopMargins(0, 0);
+        maybeInvokeResizeCallback();
     }
 
     @Override
     public void onExitFullscreen(Tab tab) {
+        if (!isFullscreen()) return;
         setTopMargins(mShadowOffset, getHandleHeight() + mShadowOffset);
         initializeHeight();
+        maybeInvokeResizeCallback();
     }
 
     @Override

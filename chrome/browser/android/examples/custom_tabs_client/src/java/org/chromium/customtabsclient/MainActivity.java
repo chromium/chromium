@@ -154,6 +154,11 @@ public class MainActivity
         }
 
         @Override
+        public void onActivityResized(int height, int width, Bundle extras) {
+            Log.w(TAG, "onActivityResized: height = " + height + " width: " + width);
+        }
+
+        @Override
         public void extraCallback(@NonNull String callbackName, @Nullable Bundle args) {
             if (args == null) return;
 

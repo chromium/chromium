@@ -233,6 +233,10 @@ public class CustomTabsConnection {
 
     private volatile ChainedTasks mWarmupTasks;
 
+    // Caches the previous height reported via |onResized|. Used for extraCallback
+    // |ON_RESIZED_CALLLBACK| which cares about height only.
+    private int mPrevHeight;
+
     /**
      * <strong>DO NOT CALL</strong>
      * Public to be instanciable from {@link ChromeApplicationImpl}. This is however
@@ -1188,13 +1192,29 @@ public class CustomTabsConnection {
     /**
      * Called when a resizable Custom Tab is resized.
      */
-    public void onResized(@Nullable CustomTabsSessionToken session, int size) {
+    public void onResized(@Nullable CustomTabsSessionToken session, int height, int width) {
         Bundle args = new Bundle();
-        args.putInt(ON_RESIZED_SIZE_EXTRA, size);
+        if (height != mPrevHeight) {
+            args.putInt(ON_RESIZED_SIZE_EXTRA, height);
 
-        if (safeExtraCallback(session, ON_RESIZED_CALLBACK, args) && mLogRequests) {
-            logCallback("extraCallback(" + ON_RESIZED_CALLBACK + ")", args);
+            // TODO(crbug.com/1366844): Deprecate the extra callback.
+            if (safeExtraCallback(session, ON_RESIZED_CALLBACK, args) && mLogRequests) {
+                logCallback("extraCallback(" + ON_RESIZED_CALLBACK + ")", args);
+            }
+            mPrevHeight = height;
         }
+
+        CustomTabsCallback callback = mClientManager.getCallbackForSession(session);
+        if (callback == null) return;
+        try {
+            callback.onActivityResized(height, width, args);
+        } catch (Exception e) {
+            // Catching all exceptions is really bad, but we need it here,
+            // because Android exposes us to client bugs by throwing a variety
+            // of exceptions. See crbug.com/517023.
+            return;
+        }
+        logCallback("onActivityResized()", "(" + height + "x" + width + ")");
     }
 
     /**

@@ -30,7 +30,8 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
         }
 
         return new PartialCustomTabHeightStrategy(activity, initialHeight,
-                isPartialCustomTabFixedHeight, size -> connection.onResized(session, size),
+                isPartialCustomTabFixedHeight,
+                (height, width) -> connection.onResized(session, height, width),
                 lifecycleDispatcher, fullscreenManager, isTablet, interactWithBackground);
     }
 

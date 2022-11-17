@@ -37,6 +37,9 @@ abstract class PartialCustomTabVersionCompat {
     /** Returns display height */
     abstract @Px int getDisplayHeight();
 
+    /** Returns display width */
+    abstract @Px int getDisplayWidth();
+
     /** Returns the status bar height */
     abstract @Px int getStatusbarHeight();
 
@@ -59,6 +62,12 @@ abstract class PartialCustomTabVersionCompat {
         @Px
         int getDisplayHeight() {
             return mActivity.getWindowManager().getCurrentWindowMetrics().getBounds().height();
+        }
+
+        @Override
+        @Px
+        int getDisplayWidth() {
+            return mActivity.getWindowManager().getCurrentWindowMetrics().getBounds().width();
         }
 
         @Override
@@ -133,6 +142,18 @@ abstract class PartialCustomTabVersionCompat {
                 mActivity.getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);
             }
             return displayMetrics.heightPixels;
+        }
+
+        @Override
+        @Px
+        int getDisplayWidth() {
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            if (MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity)) {
+                mActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+            } else {
+                mActivity.getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);
+            }
+            return displayMetrics.widthPixels;
         }
 
         @Override
