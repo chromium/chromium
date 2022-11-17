@@ -143,7 +143,7 @@ BASE_FEATURE(kAutofillEnableVirtualCard,
 // eligible the user will be prompted to register the virtual card into FIDO.
 BASE_FEATURE(kAutofillEnableVirtualCardFidoEnrollment,
              "AutofillEnableVirtualCardFidoEnrollment",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, in the payments settings page on desktop, virtual card
 // enrollment management will be provided so that the user can enroll/unenroll a

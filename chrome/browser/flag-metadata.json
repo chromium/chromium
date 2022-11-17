@@ -518,7 +518,7 @@
     {
     "name": "autofill-enable-virtual-card-fido-enrollment",
     "owners": [ "vinnypersky@google.com", "siyua", "jsaul@google.com"],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
     {
     "name": "autofill-enable-virtual-card-management-in-desktop-settings-page",
