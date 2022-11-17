@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/shared_image/compound_image_backing.h"
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
@@ -30,6 +31,11 @@
 
 namespace gpu {
 namespace {
+
+// TODO(crbug.com/1293509): Remove after M110 branch.
+BASE_FEATURE(kSkipReadbackToSharedMemory,
+             "SkipReadbackToSharedMemory",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsValidSharedMemoryBufferFormat(const gfx::Size& size,
                                      gfx::BufferFormat buffer_format,
@@ -403,9 +409,11 @@ void CompoundImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
 }
 
 bool CompoundImageBacking::CopyToGpuMemoryBuffer() {
-  // TODO(crbug.com/1293509): Return early if `shm_has_latest_content_` is true
-  // since shared memory should already be up to date. Just need to verify GL
-  // isn't modifying the texture without acquiring write access first.
+  // If shared memory already contains the latest content skip readback.
+  if (shm_has_latest_content_ &&
+      base::FeatureList::IsEnabled(kSkipReadbackToSharedMemory)) {
+    return true;
+  }
 
   auto& wrapper = static_cast<SharedMemoryImageBacking*>(shm_backing_.get())
                       ->shared_memory_wrapper();
