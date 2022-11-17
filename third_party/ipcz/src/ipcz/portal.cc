@@ -210,9 +210,9 @@ IpczResult Portal::Get(IpczGetFlags flags,
                        size_t* num_data_bytes,
                        IpczHandle* handles,
                        size_t* num_handles,
-                       IpczHandle* validator) {
+                       IpczHandle* parcel) {
   return router_->GetNextInboundParcel(flags, data, num_data_bytes, handles,
-                                       num_handles, validator);
+                                       num_handles, parcel);
 }
 
 IpczResult Portal::BeginGet(const void** data,
@@ -236,15 +236,14 @@ IpczResult Portal::BeginGet(const void** data,
 }
 
 IpczResult Portal::CommitGet(size_t num_data_bytes_consumed,
-                             absl::Span<IpczHandle> handles,
-                             IpczHandle* validator) {
+                             absl::Span<IpczHandle> handles) {
   absl::MutexLock lock(&mutex_);
   if (!in_two_phase_get_) {
     return IPCZ_RESULT_FAILED_PRECONDITION;
   }
 
-  IpczResult result = router_->CommitGetNextIncomingParcel(
-      num_data_bytes_consumed, handles, validator);
+  IpczResult result =
+      router_->CommitGetNextIncomingParcel(num_data_bytes_consumed, handles);
   if (result == IPCZ_RESULT_OK) {
     in_two_phase_get_ = false;
   }

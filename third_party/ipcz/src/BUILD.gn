@@ -232,6 +232,7 @@ ipcz_source_set("impl") {
     "ipcz/operation_context.h",
     "ipcz/parcel.h",
     "ipcz/parcel_queue.h",
+    "ipcz/parcel_wrapper.h",
     "ipcz/portal.h",
     "ipcz/ref_counted_fragment.h",
     "ipcz/remote_router_link.h",
@@ -243,7 +244,6 @@ ipcz_source_set("impl") {
     "ipcz/sequenced_queue.h",
     "ipcz/sublink_id.h",
     "ipcz/test_messages.h",
-    "ipcz/validator.h",
   ]
   sources = [
     "ipcz/api_object.cc",
@@ -285,6 +285,7 @@ ipcz_source_set("impl") {
     "ipcz/node_name.cc",
     "ipcz/parcel.cc",
     "ipcz/parcel_queue.cc",
+    "ipcz/parcel_wrapper.cc",
     "ipcz/portal.cc",
     "ipcz/ref_counted_fragment.cc",
     "ipcz/remote_router_link.cc",
@@ -299,7 +300,6 @@ ipcz_source_set("impl") {
     "ipcz/trap_event_dispatcher.h",
     "ipcz/trap_set.cc",
     "ipcz/trap_set.h",
-    "ipcz/validator.cc",
   ]
   public_deps = [
     ":ipcz_header",
@@ -387,6 +387,7 @@ ipcz_source_set("ipcz_tests_sources") {
     "ipcz/router_link_test.cc",
     "ipcz/sequenced_queue_test.cc",
     "merge_portals_test.cc",
+    "parcel_test.cc",
     "queueing_test.cc",
     "reference_drivers/sync_reference_driver_test.cc",
     "remote_portal_test.cc",

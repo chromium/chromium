@@ -62,13 +62,12 @@ class Portal : public APIObjectImpl<Portal, APIObject::kPortal> {
                  size_t* num_data_bytes,
                  IpczHandle* handles,
                  size_t* num_handles,
-                 IpczHandle* validator);
+                 IpczHandle* parcel);
   IpczResult BeginGet(const void** data,
                       size_t* num_data_bytes,
                       size_t* num_handles);
   IpczResult CommitGet(size_t num_data_bytes_consumed,
-                       absl::Span<IpczHandle> handles,
-                       IpczHandle* validator);
+                       absl::Span<IpczHandle> handles);
   IpczResult AbortGet();
 
  private:

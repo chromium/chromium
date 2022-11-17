@@ -269,6 +269,11 @@ TEST_F(APITest, PutGet) {
                        nullptr, nullptr));
   EXPECT_EQ(2u, num_bytes);
 
+  // Invalid arguments: null data but non-zero data capacity.
+  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
+            ipcz().Get(b, IPCZ_NO_FLAGS, nullptr, nullptr, &num_bytes, nullptr,
+                       nullptr, nullptr));
+
   num_bytes = 4;
   EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Get(b, IPCZ_NO_FLAGS, nullptr, data,
                                        &num_bytes, nullptr, nullptr, nullptr));
@@ -299,7 +304,12 @@ TEST_F(APITest, PutGet) {
             ipcz().Get(b, IPCZ_NO_FLAGS, nullptr, nullptr, nullptr, nullptr,
                        nullptr, nullptr));
 
+  // Invalid arguments: null handles but non-zero handle capacity.
   size_t num_handles = 1;
+  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
+            ipcz().Get(b, IPCZ_NO_FLAGS, nullptr, nullptr, nullptr, nullptr,
+                       &num_handles, nullptr));
+
   EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Get(b, IPCZ_NO_FLAGS, nullptr, nullptr,
                                        nullptr, &d, &num_handles, nullptr));
   EXPECT_EQ(1u, num_handles);
@@ -405,23 +415,22 @@ TEST_F(APITest, BeginEndGetFailure) {
   // Invalid handle.
   EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
             ipcz().EndGet(IPCZ_INVALID_HANDLE, 0, 0, IPCZ_NO_FLAGS, nullptr,
-                          nullptr, nullptr));
+                          nullptr));
 
   // Non-zero handle count with null handle buffer.
   EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
-            ipcz().EndGet(a, 0, 1, IPCZ_NO_FLAGS, nullptr, nullptr, nullptr));
+            ipcz().EndGet(a, 0, 1, IPCZ_NO_FLAGS, nullptr, nullptr));
 
   // Data size out of range.
-  EXPECT_EQ(IPCZ_RESULT_OUT_OF_RANGE,
-            ipcz().EndGet(a, num_bytes + 1, 0, IPCZ_NO_FLAGS, nullptr, nullptr,
-                          nullptr));
+  EXPECT_EQ(
+      IPCZ_RESULT_OUT_OF_RANGE,
+      ipcz().EndGet(a, num_bytes + 1, 0, IPCZ_NO_FLAGS, nullptr, nullptr));
 
   // Two-phase Get not in progress.
-  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().EndGet(a, num_bytes, 0, IPCZ_NO_FLAGS,
-                                          nullptr, nullptr, nullptr));
-  EXPECT_EQ(
-      IPCZ_RESULT_FAILED_PRECONDITION,
-      ipcz().EndGet(a, num_bytes, 0, IPCZ_NO_FLAGS, nullptr, nullptr, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            ipcz().EndGet(a, num_bytes, 0, IPCZ_NO_FLAGS, nullptr, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_FAILED_PRECONDITION,
+            ipcz().EndGet(a, num_bytes, 0, IPCZ_NO_FLAGS, nullptr, nullptr));
 
   CloseAll({a, b, node});
 }
@@ -446,15 +455,15 @@ TEST_F(APITest, TwoPhasePutGet) {
   EXPECT_EQ(kMessage[0], *reinterpret_cast<const char*>(in_data));
 
   EXPECT_EQ(IPCZ_RESULT_OK,
-            ipcz().EndGet(b, 1, 0, IPCZ_NO_FLAGS, nullptr, nullptr, nullptr));
+            ipcz().EndGet(b, 1, 0, IPCZ_NO_FLAGS, nullptr, nullptr));
 
   EXPECT_EQ(IPCZ_RESULT_OK, ipcz().BeginGet(b, IPCZ_NO_FLAGS, nullptr, &in_data,
                                             &num_bytes, nullptr));
   EXPECT_EQ(
       kMessage.substr(1),
       std::string_view(reinterpret_cast<const char*>(in_data), num_bytes));
-  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().EndGet(b, num_bytes, 0, IPCZ_NO_FLAGS,
-                                          nullptr, nullptr, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            ipcz().EndGet(b, num_bytes, 0, IPCZ_NO_FLAGS, nullptr, nullptr));
 
   EXPECT_EQ(
       IPCZ_RESULT_UNAVAILABLE,
@@ -521,16 +530,15 @@ TEST_F(APITest, RejectLocal) {
 
   char byte;
   size_t num_bytes = 1;
-  IpczHandle validator;
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            ipcz().Get(b, IPCZ_NO_FLAGS, nullptr, &byte, &num_bytes, nullptr,
-                       nullptr, &validator));
+  IpczHandle parcel;
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Get(b, IPCZ_NO_FLAGS, nullptr, &byte,
+                                       &num_bytes, nullptr, nullptr, &parcel));
   EXPECT_EQ('!', byte);
 
   EXPECT_EQ(IPCZ_RESULT_FAILED_PRECONDITION,
-            ipcz().Reject(validator, 0, IPCZ_NO_FLAGS, nullptr));
+            ipcz().Reject(parcel, 0, IPCZ_NO_FLAGS, nullptr));
 
-  CloseAll({a, b, node, validator});
+  CloseAll({a, b, node, parcel});
 }
 
 TEST_F(APITest, RejectRemote) {
@@ -554,10 +562,9 @@ TEST_F(APITest, RejectRemote) {
   Put(a, "!");
   char byte;
   size_t num_bytes = 1;
-  IpczHandle validator;
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            ipcz().Get(b, IPCZ_NO_FLAGS, nullptr, &byte, &num_bytes, nullptr,
-                       nullptr, &validator));
+  IpczHandle parcel;
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Get(b, IPCZ_NO_FLAGS, nullptr, &byte,
+                                       &num_bytes, nullptr, nullptr, &parcel));
   EXPECT_EQ('!', byte);
 
   constexpr uintptr_t kTestContext = 42;
@@ -569,12 +576,12 @@ TEST_F(APITest, RejectRemote) {
         error_context = context;
       });
   EXPECT_EQ(IPCZ_RESULT_OK,
-            ipcz().Reject(validator, kTestContext, IPCZ_NO_FLAGS, nullptr));
+            ipcz().Reject(parcel, kTestContext, IPCZ_NO_FLAGS, nullptr));
   EXPECT_EQ(transport1, error_transport);
   EXPECT_EQ(kTestContext, error_context);
   reference_drivers::SetBadTransportActivityCallback(nullptr);
 
-  CloseAll({a, b, node_b, node_a, validator});
+  CloseAll({a, b, node_b, node_a, parcel});
 }
 
 TEST_F(APITest, BoxInvalid) {

@@ -92,16 +92,17 @@ struct TrivialMessage;
 // the original Mojo Core implementation.
 struct IpczMessage : public Channel::Message {
   IpczMessage(base::span<const uint8_t> data,
-              std::vector<PlatformHandle> handles)
-      : data_(sizeof(IpczHeader) + data.size()) {
-    size_ = data_.size();
-    IpczHeader& header = *reinterpret_cast<IpczHeader*>(data_.data());
+              std::vector<PlatformHandle> handles) {
+    size_ = sizeof(IpczHeader) + data.size();
+    data_.reset(static_cast<char*>(base::AllocNonScannable(size_)));
+
+    IpczHeader& header = *reinterpret_cast<IpczHeader*>(data_.get());
     header.size = sizeof(IpczHeader);
 
     DCHECK_LE(handles.size(), std::numeric_limits<uint16_t>::max());
-    DCHECK_LE(data_.size(), std::numeric_limits<uint32_t>::max());
+    DCHECK_LE(size_, std::numeric_limits<uint32_t>::max());
     header.num_handles = static_cast<uint16_t>(handles.size());
-    header.num_bytes = static_cast<uint32_t>(data_.size());
+    header.num_bytes = static_cast<uint32_t>(size_);
     memcpy(&header + 1, data.data(), data.size());
 
     handles_.reserve(handles.size());
@@ -121,12 +122,12 @@ struct IpczMessage : public Channel::Message {
   }
   size_t NumHandlesForTransit() const override { return handles_.size(); }
 
-  const void* data() const override { return data_.data(); }
+  const void* data() const override { return data_.get(); }
   void* mutable_data() const override {
     NOTREACHED();
     return nullptr;
   }
-  size_t capacity() const override { return data_.size(); }
+  size_t capacity() const override { return size_; }
 
   bool ExtendPayload(size_t) override {
     NOTREACHED();
@@ -134,7 +135,7 @@ struct IpczMessage : public Channel::Message {
   }
 
  private:
-  std::vector<uint8_t> data_;
+  Channel::AlignedBuffer data_;
   std::vector<PlatformHandleInTransit> handles_;
 };
 

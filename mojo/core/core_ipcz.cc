@@ -214,57 +214,38 @@ MojoResult MojoWriteMessageIpcz(MojoHandle message_pipe_handle,
 MojoResult MojoReadMessageIpcz(MojoHandle message_pipe_handle,
                                const MojoReadMessageOptions* options,
                                MojoMessageHandle* message) {
-  std::vector<uint8_t> data;
-  std::vector<MojoHandle> handles;
-  size_t num_bytes = 0;
-  size_t num_handles = 0;
-  ScopedIpczHandle validator;
+  ScopedIpczHandle parcel;
   IpczResult result = GetIpczAPI().Get(
-      message_pipe_handle, IPCZ_NO_FLAGS, nullptr, nullptr, &num_bytes, nullptr,
-      &num_handles, ScopedIpczHandle::Receiver(validator));
-  if (result == IPCZ_RESULT_OK) {
-    auto new_message = std::make_unique<ipcz_driver::MojoMessage>();
-    new_message->SetContents({}, {}, std::move(validator));
-    *message = new_message.release()->handle();
-    return MOJO_RESULT_OK;
-  }
-
-  if (result != IPCZ_RESULT_RESOURCE_EXHAUSTED) {
-    return GetMojoReadResultForIpczGet(result);
-  }
-
-  data.resize(num_bytes);
-  handles.resize(num_handles);
-  result = GetIpczAPI().Get(
-      message_pipe_handle, IPCZ_NO_FLAGS, nullptr, data.data(), &num_bytes,
-      handles.data(), &num_handles, ScopedIpczHandle::Receiver(validator));
+      message_pipe_handle, IPCZ_GET_PARCEL_ONLY, nullptr, nullptr, nullptr,
+      nullptr, nullptr, ScopedIpczHandle::Receiver(parcel));
   if (result != IPCZ_RESULT_OK) {
     return GetMojoReadResultForIpczGet(result);
   }
 
-  std::unique_ptr<ipcz_driver::MojoMessage> mojo_message;
-  if (num_bytes == 0 && num_handles == 1 &&
-      ipcz_driver::MessageWrapper::FromBox(handles[0])) {
-    // This was an unserialized message at transmission time. It may still be.
-    scoped_refptr<ipcz_driver::MessageWrapper> wrapper =
-        ipcz_driver::MessageWrapper::Unbox(handles[0]);
-    mojo_message = wrapper->TakeMessage();
-    if (!mojo_message) {
-      // If the actual message object is gone, then this was just a sentinel
-      // message sent as a result of lazy serialization. The serialized contents
-      // have been transmitted separately and we ignore this message. Instead,
-      // return the result of a new read attempt.
-      return MojoReadMessageIpcz(message_pipe_handle, options, message);
-    }
-  } else {
-    mojo_message = std::make_unique<ipcz_driver::MojoMessage>();
-    if (!mojo_message->SetContents(std::move(data), std::move(handles),
-                                   std::move(validator))) {
-      return MOJO_RESULT_INVALID_ARGUMENT;
-    }
+  auto new_message = std::make_unique<ipcz_driver::MojoMessage>();
+  new_message->SetParcel(std::move(parcel));
+
+  ipcz_driver::MessageWrapper* wrapper = nullptr;
+  if (new_message->data().empty() && new_message->handles().size() == 1) {
+    wrapper = ipcz_driver::MessageWrapper::FromBox(new_message->handles()[0]);
   }
 
-  *message = mojo_message.release()->handle();
+  if (!wrapper) {
+    *message = new_message.release()->handle();
+    return MOJO_RESULT_OK;
+  }
+
+  std::unique_ptr<ipcz_driver::MojoMessage> wrapped_message =
+      wrapper->TakeMessage();
+  if (!wrapped_message) {
+    // If the actual message object is gone, this was a sentinel message -- a
+    // side-effect of lazy serialization by our peer. The serialized contents
+    // have been transmitted in a subsequent parcel, so we simply return the
+    // result of a second read attempt.
+    return MojoReadMessageIpcz(message_pipe_handle, options, message);
+  }
+
+  *message = wrapped_message.release()->handle();
   return MOJO_RESULT_OK;
 }
 
@@ -388,7 +369,7 @@ MojoResult MojoNotifyBadMessageIpcz(
   }
 
   const std::string error_string(error, error_num_bytes);
-  if (message->validator() != IPCZ_INVALID_HANDLE) {
+  if (message->parcel() != IPCZ_INVALID_HANDLE) {
     // Mojo prefixes bad message reports with this string if they're for
     // messages from a remote node. We duplicate it here since many tests expect
     // observation of prefixed error messages.
@@ -396,7 +377,7 @@ MojoResult MojoNotifyBadMessageIpcz(
     auto prefixed_error_message =
         std::make_unique<std::string>(base::StrCat({kPrefix, error_string}));
     const IpczResult result = GetIpczAPI().Reject(
-        message->validator(),
+        message->parcel(),
         reinterpret_cast<uintptr_t>(prefixed_error_message.get()),
         IPCZ_NO_FLAGS, nullptr);
     if (result == IPCZ_RESULT_OK) {
