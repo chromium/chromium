@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.ark.browser.ui.widget.DialogHeaderLayout
+        android:id="@+id/layout_dialog_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:dialog_header_title="分享"
+        />
+
+    <TextView
+        android:id="@+id/share_link"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="分享链接"
+        android:textSize="14sp"
+        android:textColor="?attr/textColorMajor"
+        android:background="?android:attr/selectableItemBackground"
+        />
+
+    <TextView
+        android:id="@+id/share_screenshot"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="分享网页截图"
+        android:textSize="14sp"
+        android:textColor="?attr/textColorMajor"
+        android:background="?android:attr/selectableItemBackground"
+        />
+
+    <TextView
+        android:id="@+id/share_pdf"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="分享网页PDF"
+        android:textSize="14sp"
+        android:textColor="?attr/textColorMajor"
+        android:background="?android:attr/selectableItemBackground"
+        />
+
+    <TextView
+        android:id="@+id/share_open_by_other"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="用其他软件打开"
+        android:textSize="14sp"
+        android:textColor="?attr/textColorMajor"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginBottom="8dp"
+        />
+
+</LinearLayout>

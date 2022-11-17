@@ -108,7 +108,7 @@ public class MainMenuDialog extends OverDragBottomDialogFragment<MainMenuDialog>
 
         int id = v.getId();
         if (R.id.ib_share == id) {
-//            ShareDialog.start(context);
+            ShareDialog.start(context);
         } else if (R.id.ib_close == id) {
 
         } else if (R.id.ib_setting == id) {

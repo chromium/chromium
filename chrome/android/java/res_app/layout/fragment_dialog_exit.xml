@@ -13,7 +13,37 @@
         app:dialog_header_title="退出"
         />
 
-    <com.ark.browser.ui.widget.CheckLayout
+<!--    <com.ark.browser.ui.widget.ZCheckSettingItem-->
+<!--        android:id="@+id/close_tabs"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:paddingHorizontal="24dp"-->
+<!--        android:paddingVertical="16dp"-->
+<!--        app:z_setting_titleText="关闭未关闭的网页"-->
+<!--        app:z_setting_titleTextColor="?attr/textColorMajor"-->
+<!--        />-->
+
+<!--    <com.ark.browser.ui.widget.ZCheckSettingItem-->
+<!--        android:id="@+id/clear_history"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:paddingHorizontal="24dp"-->
+<!--        android:paddingVertical="16dp"-->
+<!--        app:z_setting_titleText="清除浏览历史"-->
+<!--        app:z_setting_titleTextColor="?attr/textColorMajor"-->
+<!--        />-->
+
+<!--    <com.ark.browser.ui.widget.ZCheckSettingItem-->
+<!--        android:id="@+id/send_background"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:paddingHorizontal="24dp"-->
+<!--        android:paddingVertical="16dp"-->
+<!--        app:z_setting_titleText="保持后台"-->
+<!--        app:z_setting_titleTextColor="?attr/textColorMajor"-->
+<!--        />-->
+
+    <com.ark.browser.ui.widget.CheckBoxItem
         android:id="@+id/close_tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,7 +52,7 @@
         app:title_text_color="?attr/textColorMajor"
         />
 
-    <com.ark.browser.ui.widget.CheckLayout
+    <com.ark.browser.ui.widget.CheckBoxItem
         android:id="@+id/clear_history"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -31,7 +61,7 @@
         app:title_text_color="?attr/textColorMajor"
         />
 
-    <com.ark.browser.ui.widget.CheckLayout
+    <com.ark.browser.ui.widget.CheckBoxItem
         android:id="@+id/send_background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

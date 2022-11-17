@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
 import com.ark.browser.tab.TabListManager;
-import com.ark.browser.ui.widget.CheckLayout;
+import com.ark.browser.ui.widget.CheckBoxItem;
 import com.ark.browser.ui.widget.DialogHeaderLayout;
 import com.zpj.fragmentation.dialog.base.OverDragBottomDialogFragment;
 import com.zpj.skin.SkinEngine;
@@ -46,16 +46,28 @@ public class ExitDialog extends OverDragBottomDialogFragment<ExitDialog> impleme
             }
         });
 
-        CheckLayout close_tabs = findViewById(R.id.close_tabs);
+        CheckBoxItem close_tabs = findViewById(R.id.close_tabs);
         close_tabs.setChecked(closeTabs);
-        CheckLayout clear_history = findViewById(R.id.clear_history);
+        CheckBoxItem clear_history = findViewById(R.id.clear_history);
         clear_history.setChecked(clearHistory);
-        CheckLayout send_background = findViewById(R.id.send_background);
+        CheckBoxItem send_background = findViewById(R.id.send_background);
         send_background.setChecked(sendToBackground);
 
-        close_tabs.setOnCheckedChangeListener((checkLayout, isChecked) -> closeTabs = isChecked);
-        clear_history.setOnCheckedChangeListener((checkLayout, isChecked) -> clearHistory = isChecked);
-        send_background.setOnCheckedChangeListener((checkLayout, isChecked) -> sendToBackground = isChecked);
+        close_tabs.setOnCheckedChangeListener((checkBoxItem, isChecked) -> closeTabs = isChecked);
+        clear_history.setOnCheckedChangeListener((checkBoxItem, isChecked) -> clearHistory = isChecked);
+        send_background.setOnCheckedChangeListener((checkBoxItem, isChecked) -> sendToBackground = isChecked);
+
+//        CheckSettingItem close_tabs = findViewById(R.id.close_tabs);
+//        close_tabs.setChecked(closeTabs);
+//        CheckSettingItem clear_history = findViewById(R.id.clear_history);
+//        clear_history.setChecked(clearHistory);
+//        CheckSettingItem send_background = findViewById(R.id.send_background);
+//        send_background.setChecked(sendToBackground);
+//
+//
+//        close_tabs.setOnItemClickListener(item -> closeTabs = item.isChecked());
+//        clear_history.setOnItemClickListener(item -> clearHistory = item.isChecked());
+//        send_background.setOnItemClickListener(item -> sendToBackground = item.isChecked());
 
         TextView tvCancel = findViewById(R.id.tv_cancel);
         TextView tvOk = findViewById(R.id.tv_ok);

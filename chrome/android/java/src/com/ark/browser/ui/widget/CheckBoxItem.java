@@ -15,6 +15,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 
 import com.zpj.skin.SkinEngine;
+import com.zpj.widget.checkbox.ZCheckBox;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
@@ -23,10 +24,10 @@ import org.chromium.chrome.R;
  * @author Z-P-J
  * @date 2019/5/17 16:14
  */
-public class CheckLayout extends FrameLayout {
+public class CheckBoxItem extends FrameLayout {
 
     public interface OnCheckedChangeListener{
-        void onCheckedChanged(CheckLayout checkLayout, boolean isChecked);
+        void onCheckedChanged(CheckBoxItem checkBoxItem, boolean isChecked);
     }
 
     private ImageView iconView;
@@ -44,23 +45,23 @@ public class CheckLayout extends FrameLayout {
 
     private OnCheckedChangeListener onCheckedChangeListener;
 
-    public CheckLayout(Context context) {
+    public CheckBoxItem(Context context) {
         super(context);
         init(context, null);
     }
 
-    public CheckLayout(Context context, @Nullable AttributeSet attrs) {
+    public CheckBoxItem(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
     }
 
-    public CheckLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public CheckBoxItem(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs);
     }
 
     private void init(Context context, AttributeSet attrs) {
-        View view = LayoutInflater.from(context).inflate(R.layout.layout_check, this, true);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_checkbox, this, true);
         iconView = view.findViewById(R.id.icon_view);
         titleView = view.findViewById(R.id.title_view);
         contentView = view.findViewById(R.id.content_view);
@@ -101,7 +102,7 @@ public class CheckLayout extends FrameLayout {
                 checkBox.setChecked(!checked, true);
                 checked = !checked;
                 if (onCheckedChangeListener != null) {
-                    onCheckedChangeListener.onCheckedChanged(CheckLayout.this, checked);
+                    onCheckedChangeListener.onCheckedChanged(CheckBoxItem.this, checked);
                 }
             }
         });

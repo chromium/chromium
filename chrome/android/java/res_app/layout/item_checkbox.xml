@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?android:attr/selectableItemBackground"
     android:orientation="horizontal"
-    android:layout_gravity="center"
+    android:gravity="center_vertical"
     android:paddingHorizontal="14dp"
     android:paddingVertical="16dp">
 
@@ -14,12 +14,14 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_centerVertical="true"
-        android:layout_marginHorizontal="10dp" />
+        android:layout_marginHorizontal="10dp"
+        />
 
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:layout_toStartOf="@id/check_box"
         android:layout_toEndOf="@id/icon_view"
         android:layout_marginHorizontal="10dp"
@@ -47,7 +49,7 @@
 
     </LinearLayout>
 
-    <com.ark.browser.ui.widget.ZCheckBox
+    <com.zpj.widget.checkbox.ZCheckBox
         android:id="@+id/check_box"
         android:layout_width="20dp"
         android:layout_height="20dp"
@@ -58,4 +60,4 @@
         />
 
 
-</RelativeLayout>
+</LinearLayout>

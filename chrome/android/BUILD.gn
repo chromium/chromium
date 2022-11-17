@@ -199,14 +199,15 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/layout/main.xml",
     "//chrome/android/java/res_app/layout/activity_browser.xml",
 
-    "//chrome/android/java/res_app/layout/fragment_dialog_main_menu.xml",
     "//chrome/android/java/res_app/layout/fragment_dialog_exit.xml",
+    "//chrome/android/java/res_app/layout/fragment_dialog_main_menu.xml",
+    "//chrome/android/java/res_app/layout/fragment_dialog_share.xml",
     "//chrome/android/java/res_app/layout/fragment_main.xml",
 
+    "//chrome/android/java/res_app/layout/item_checkbox.xml",
     "//chrome/android/java/res_app/layout/item_collection.xml",
     "//chrome/android/java/res_app/layout/item_download.xml",
     "//chrome/android/java/res_app/layout/item_menu.xml",
-    "//chrome/android/java/res_app/layout/layout_check.xml",
     "//chrome/android/java/res_app/layout/layout_dialog_header.xml",
     "//chrome/android/java/res_app/layout/layout_menu.xml",
     "//chrome/android/java/res_app/layout/layout_smart_search.xml",
