@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/location.h"
 #include "base/run_loop.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -22,7 +23,7 @@ class AppTypeInitializationWaiter : public apps::AppRegistryCache::Observer {
   AppTypeInitializationWaiter(Profile* profile, apps::AppType app_type);
   ~AppTypeInitializationWaiter() override;
 
-  void Await();
+  void Await(const base::Location& location = base::Location::Current());
 
  private:
   // apps::AppRegistryCache::Observer:
@@ -42,7 +43,7 @@ class AppReadinessWaiter : public apps::AppRegistryCache::Observer {
                      apps::Readiness readiness = apps::Readiness::kReady);
   ~AppReadinessWaiter() override;
 
-  void Await();
+  void Await(const base::Location& location = base::Location::Current());
 
  private:
   // apps::AppRegistryCache::Observer:
@@ -65,7 +66,7 @@ class WebAppScopeWaiter : public apps::AppRegistryCache::Observer {
   // Waits for the web app's scope in the App Service app cache to match the
   // expected scope. Returns immediately if the app already has the expected
   // scope.
-  void Await();
+  void Await(const base::Location& location = base::Location::Current());
 
  private:
   // apps::AppRegistryCache::Observer:
@@ -90,7 +91,7 @@ class AppWindowModeWaiter : public apps::AppRegistryCache::Observer {
   ~AppWindowModeWaiter() override;
 
   // Returns immediately if the app already has the expected window mode.
-  void Await();
+  void Await(const base::Location& location = base::Location::Current());
 
  private:
   // apps::AppRegistryCache::Observer:

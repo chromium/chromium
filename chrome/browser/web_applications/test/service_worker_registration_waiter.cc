@@ -32,8 +32,9 @@ ServiceWorkerRegistrationWaiter::~ServiceWorkerRegistrationWaiter() {
     service_worker_context_->RemoveObserver(this);
 }
 
-void ServiceWorkerRegistrationWaiter::AwaitRegistration() {
-  run_loop_.Run();
+void ServiceWorkerRegistrationWaiter::AwaitRegistration(
+    const base::Location& location) {
+  run_loop_.Run(location);
 }
 
 void ServiceWorkerRegistrationWaiter::OnRegistrationCompleted(

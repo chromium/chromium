@@ -23,8 +23,8 @@ AppTypeInitializationWaiter::AppTypeInitializationWaiter(Profile* profile,
 
 AppTypeInitializationWaiter::~AppTypeInitializationWaiter() = default;
 
-void AppTypeInitializationWaiter::Await() {
-  run_loop_.Run();
+void AppTypeInitializationWaiter::Await(const base::Location& location) {
+  run_loop_.Run(location);
 }
 
 void AppTypeInitializationWaiter::OnAppUpdate(const apps::AppUpdate& update) {}
@@ -53,8 +53,8 @@ AppReadinessWaiter::AppReadinessWaiter(Profile* profile,
 }
 AppReadinessWaiter::~AppReadinessWaiter() = default;
 
-void AppReadinessWaiter::Await() {
-  run_loop_.Run();
+void AppReadinessWaiter::Await(const base::Location& location) {
+  run_loop_.Run(location);
 }
 
 void AppReadinessWaiter::OnAppUpdate(const apps::AppUpdate& update) {
@@ -81,8 +81,8 @@ WebAppScopeWaiter::WebAppScopeWaiter(Profile* profile,
 
 WebAppScopeWaiter::~WebAppScopeWaiter() = default;
 
-void WebAppScopeWaiter::Await() {
-  run_loop_.Run();
+void WebAppScopeWaiter::Await(const base::Location& location) {
+  run_loop_.Run(location);
 }
 
 void WebAppScopeWaiter::OnAppUpdate(const apps::AppUpdate& update) {
@@ -124,8 +124,8 @@ AppWindowModeWaiter::AppWindowModeWaiter(Profile* profile,
 
 AppWindowModeWaiter::~AppWindowModeWaiter() = default;
 
-void AppWindowModeWaiter::Await() {
-  run_loop_.Run();
+void AppWindowModeWaiter::Await(const base::Location& location) {
+  run_loop_.Run(location);
 }
 
 void AppWindowModeWaiter::OnAppUpdate(const apps::AppUpdate& update) {
