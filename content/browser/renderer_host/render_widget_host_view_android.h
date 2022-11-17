@@ -446,6 +446,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
     void LockOrientation(device::mojom::ScreenOrientationLockType orientation);
     void UnlockOrientation();
     void SetHasPersistentVideo(bool has_persistent_video);
+    void WasEvicted();
+    void WasShownAfterEviction();
 
    private:
     // Sets the `current_screen_state_` to be the current values. Clears
@@ -456,13 +458,17 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
     // fullscreen, and Picture-in-Picture mode.
     bool HandleScreenStateChanges(const cc::DeadlinePolicy& deadline_policy);
 
+    // Clears flags used to throttle SurfaceSync.
+    void Unthrottle();
+
     // The ScreenState of the current world, the pending visual properties, or
     // the properties from before we entered Picture-in-Picture mode.
     ScreenState current_screen_state_;
     ScreenState pending_screen_state_;
     ScreenState pre_picture_in_picture_;
 
-   private:
+    base::OneShotTimer throttle_timeout_;
+
     RenderWidgetHostViewAndroid* rwhva_;
   };
 
@@ -540,6 +546,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void EndRotationBatching();
   void BeginRotationEmbed();
   void EndRotationAndSyncIfNecessary();
+  void EvictInternal();
 
   bool is_showing_;
 

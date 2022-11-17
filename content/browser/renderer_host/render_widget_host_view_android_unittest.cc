@@ -912,6 +912,29 @@ TEST_F(RenderWidgetHostViewAndroidRotationTest, PictureInPictureCloses) {
   GetLocalSurfaceIdAndConfirmNewerThan(hidden_local_surface_id);
 }
 
+// Tests that when we are evicted while waiting for fullscreen transition, that
+// we stop throttling, and can successfully re-embed later.
+TEST_F(RenderWidgetHostViewAndroidRotationTest, FullscreenEviction) {
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+  auto local_surface_id = rwhva->GetLocalSurfaceId();
+  EnterFullscreenMode();
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+
+  // When we are evicted while hidden, the viz::LocalSurfaceId should be
+  // invalidated, and we should no longer throttle syncrhonizing.
+  rwhva->Hide();
+  rwhva->WasEvicted();
+  auto evicted_local_surface_id = rwhva->GetLocalSurfaceId();
+  EXPECT_FALSE(evicted_local_surface_id.is_valid());
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+
+  // This shouldn't crash
+  rwhva->ShowWithVisibility(blink::mojom::PageVisibilityState::kVisible);
+  // We should also have a new viz::LocalSurfaceId to become embedded again.
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  GetLocalSurfaceIdAndConfirmNewerThan(local_surface_id);
+}
+
 // Tests rotation and fullscreen cases that are supported by both the visual
 // properties analysis, and the fullscreen killswitch legacy path.
 //
