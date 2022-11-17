@@ -318,7 +318,9 @@ def init_test_result_defaults():
       'path_delimiter': '.',
       'seconds_since_epoch': int(time.time()),
       # This will be overwritten when the tests complete successfully.
-      'interrupted': True
+      'interrupted': True,
+      'num_failures_by_type': {},
+      'tests': {}
   }
 
 
