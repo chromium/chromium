@@ -723,6 +723,10 @@ TEST_F(InterestGroupStorageTest, KAnonDataExpires) {
   groups = storage->GetInterestGroupsForOwner(test_origin);
   ASSERT_EQ(0u, groups.size());
 
+  // Allow enough idle time to trigger maintenance.
+  task_environment().FastForwardBy(InterestGroupStorage::kIdlePeriod +
+                                   base::Seconds(1));
+
   // Join again and expect the default kanon values.
   g.expiry = base::Time::Now() + base::Days(1);
   storage->JoinInterestGroup(g, GURL("https://owner.example.com/join3"));
@@ -858,6 +862,7 @@ TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
                              joining_originA.GetURL());
   storage->JoinInterestGroup(NewInterestGroup(owner_originB, "exampleB"),
                              joining_originB.GetURL());
+  storage->UpdateLastKAnonymityReported(KAnonKeyFor(owner_originA, "example"));
 
   std::vector<url::Origin> origins = storage->GetAllInterestGroupOwners();
   EXPECT_THAT(origins, UnorderedElementsAre(owner_originA, owner_originB,
@@ -896,13 +901,13 @@ TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
   EXPECT_EQ(0u, origins.size());
 
   // DeleteInterestGroupData shouldn't have deleted kanon data.
-  EXPECT_TRUE(storage->GetLastKAnonymityReported(
-      KAnonKeyFor(owner_originA, "example")));
+  EXPECT_NE(base::Time::Min(), storage->GetLastKAnonymityReported(
+                                   KAnonKeyFor(owner_originA, "example")));
 
   storage->DeleteAllInterestGroupData();
   // DeleteAllInterestGroupData should have deleted *everything*.
-  EXPECT_FALSE(storage->GetLastKAnonymityReported(
-      KAnonKeyFor(owner_originA, "example")));
+  EXPECT_EQ(base::Time::Min(), storage->GetLastKAnonymityReported(
+                                   KAnonKeyFor(owner_originA, "example")));
 }
 
 // Maintenance should prune the number of interest groups and interest group
@@ -1614,7 +1619,7 @@ TEST_F(InterestGroupStorageTest, SetGetLastKAnonReported) {
 
   absl::optional<base::Time> last_report =
       storage->GetLastKAnonymityReported(ad1_url.spec());
-  EXPECT_FALSE(last_report);  // Not in the database.
+  EXPECT_EQ(base::Time::Min(), last_report);  // Not in the database.
 
   storage->JoinInterestGroup(g, GURL("https://owner.example.com/join"));
 
@@ -1761,6 +1766,47 @@ TEST_F(InterestGroupStorageTest, UpdatePrioritySignalsOverrides) {
       (base::flat_map<std::string, double>{
           {"key2", 6}, {"key3", 0}, {"key4", 5}}),
       storage_interest_groups[0].interest_group.priority_signals_overrides);
+}
+
+TEST_F(InterestGroupStorageTest, OnlyDeletesExpiredKAnon) {
+  url::Origin test_origin =
+      url::Origin::Create(GURL("https://owner.example.com"));
+  GURL ad1_url = GURL("https://owner.example.com/ad1");
+  GURL ad2_url = GURL("https://owner.example.com/ad2");
+
+  InterestGroup g = NewInterestGroup(test_origin, "name");
+  g.ads.emplace();
+  g.ads->push_back(blink::InterestGroup::Ad(ad1_url, "metadata1"));
+  g.ads->push_back(blink::InterestGroup::Ad(ad2_url, "metadata2"));
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  storage->JoinInterestGroup(g, GURL("https://owner.example.com/join"));
+
+  std::vector<StorageInterestGroup> groups =
+      storage->GetInterestGroupsForOwner(test_origin);
+
+  storage->UpdateLastKAnonymityReported(ad1_url.spec());
+  storage->UpdateLastKAnonymityReported(ad2_url.spec());
+
+  EXPECT_NE(base::Time::Min(),
+            storage->GetLastKAnonymityReported(ad1_url.spec()));
+  EXPECT_NE(base::Time::Min(),
+            storage->GetLastKAnonymityReported(ad2_url.spec()));
+
+  task_environment().FastForwardBy(base::Days(1));
+
+  // fast-forward 30 days.
+  for (int i = 0; i < InterestGroupStorage::kHistoryLength / base::Days(1);
+       i++) {
+    storage->JoinInterestGroup(g, GURL("https://owner.example.com/join"));
+    storage->UpdateLastKAnonymityReported(ad1_url.spec());
+    task_environment().FastForwardBy(base::Days(1));
+  }
+
+  EXPECT_NE(base::Time::Min(),
+            storage->GetLastKAnonymityReported(ad1_url.spec()));
+  EXPECT_EQ(base::Time::Min(),
+            storage->GetLastKAnonymityReported(ad2_url.spec()));
 }
 
 }  // namespace content

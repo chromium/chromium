@@ -179,7 +179,7 @@ TEST_F(InterestGroupKAnonymityManagerTest, QueueUpdatePerformsJoinSetForGroup) {
   std::string group_update_url = kUpdateURL;
 
   auto manager = CreateManager();
-  EXPECT_FALSE(getLastReported(manager.get(), group_name_url));
+  EXPECT_EQ(base::Time::Min(), getLastReported(manager.get(), group_name_url));
   EXPECT_FALSE(getGroup(manager.get(), owner, name));
   base::Time before_join = base::Time::Now();
 
@@ -229,7 +229,7 @@ TEST_F(InterestGroupKAnonymityManagerTest, RegisterAdAsWonPerformsJoinSet) {
 
   auto manager = CreateManager();
   EXPECT_FALSE(getGroup(manager.get(), owner, name));
-  EXPECT_FALSE(getLastReported(manager.get(), kAdURL));
+  EXPECT_EQ(base::Time::Min(), getLastReported(manager.get(), kAdURL));
 
   manager->JoinInterestGroup(MakeInterestGroup(owner, "foo"), top_frame);
   // The group *must* exist when JoinInterestGroup returns.

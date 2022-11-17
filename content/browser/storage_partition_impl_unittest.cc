@@ -265,9 +265,13 @@ class RemoveInterestGroupTester {
     group.owner = origin;
     group.name = "Name";
     group.expiry = base::Time::Now() + base::Days(30);
-    static_cast<InterestGroupManagerImpl*>(
-        storage_partition_->GetInterestGroupManager())
-        ->JoinInterestGroup(group, origin.GetURL());
+    InterestGroupManagerImpl* interest_group_manager =
+        static_cast<InterestGroupManagerImpl*>(
+            storage_partition_->GetInterestGroupManager());
+    interest_group_manager->JoinInterestGroup(group, origin.GetURL());
+    // Update the K-anonymity so that we can tell when it gets removed.
+    interest_group_manager->UpdateLastKAnonymityReported(
+        KAnonKeyFor(origin, "Name"));
   }
 
  private:
@@ -278,7 +282,8 @@ class RemoveInterestGroupTester {
 
   void GetLastKAnonymityReportedCallback(
       absl::optional<base::Time> last_reported) {
-    contains_kanon_ = last_reported.has_value();
+    contains_kanon_ =
+        last_reported.has_value() && last_reported.value() > base::Time::Min();
     await_completion_.Notify();
   }
 
