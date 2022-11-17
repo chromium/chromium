@@ -697,6 +697,8 @@ void AXObjectCacheImpl::RemoveInspectorAgent(
 }
 
 AXObject* AXObjectCacheImpl::Root() {
+  if (AXObject* root = SafeGet(document_))
+    return root;
   return GetOrCreate(document_);
 }
 
@@ -746,7 +748,7 @@ void AXObjectCacheImpl::UpdateAXForAllDocuments() {
 
   // Next flush all accessibility events and dirty objects, for both the main
   // and popup document.
-  if (IsDirty())
+  if (IsDirty() || HasDirtyObjects())
     ProcessDeferredAccessibilityEvents(GetDocument());
 }
 
@@ -2075,6 +2077,13 @@ void AXObjectCacheImpl::UpdateReverseTextRelations(
 
 void AXObjectCacheImpl::StyleChanged(const LayoutObject* layout_object) {
   DCHECK(layout_object);
+  if (objects_.empty()) {
+    // No objects to mark dirty yet -- there can sometimes be a layout in the
+    // initial empty document, or style has changed before the object cache
+    // becomes aware that the node exists. It's too early for the style change
+    // to be useful.
+    return;
+  }
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
   Node* node = GetClosestNodeForLayoutObject(layout_object);
   if (node)
@@ -2292,8 +2301,7 @@ void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout(
 }
 
 void AXObjectCacheImpl::DidInsertChildrenOfNode(Node* node) {
-  // If a node is inserted that is a descendant of a leaf node in the
-  // accessibility tree, notify the root of that subtree that its children have
+  // If a node is inserted, notify its parent that its text/children may have
   // changed.
   DCHECK(node);
   while (node) {
@@ -2516,6 +2524,15 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
       ProcessDeferredAccessibilityEventsImpl(*GetPopupDocumentIfShowing());
     }
     ProcessDeferredAccessibilityEventsImpl(document);
+  }
+
+  // Check whether there are dirty objects ready to be serialized.
+  // TODO(accessibility) It's a bit confusing that this can be true when the
+  // IsDirty() is false, but this is the case for objects marked dirty from
+  // RenderAccessibilityImpl, e.g. for the kEndOfTest event.
+  if (HasDirtyObjects()) {
+    if (auto* client = GetWebLocalFrameClient())
+      client->AXReadyCallback();
   }
 
   // Accessibility is now clean for both documents: AXObjects can be safely
@@ -2909,7 +2926,7 @@ void AXObjectCacheImpl::PostNotification(AXObject* object,
   ScheduleAXUpdate();
 }
 
-void AXObjectCacheImpl::ScheduleAXUpdate() {
+void AXObjectCacheImpl::ScheduleAXUpdate() const {
   // A visual update will force accessibility to be updated as well.
   // Scheduling visual updates before the document is finished loading can
   // interfere with event ordering. In any case, at least one visual update will
@@ -4109,7 +4126,10 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
            "the first place: "
         << obj->ToString(true)
         << "\nParent: " << obj->ParentObjectIncludedInTree()->ToString(true)
-        << "\nIndex in parent: " << obj->IndexInParent();
+        << "\nIndex in parent: "
+        << obj->ParentObjectIncludedInTree()
+               ->CachedChildrenIncludingIgnored()
+               .Find(obj);
 
     updates.push_back(update);
   }
@@ -4337,7 +4357,11 @@ void AXObjectCacheImpl::DidHideMenuListPopupWithCleanLayout(Node* menu_list) {
 
 void AXObjectCacheImpl::HandleLoadStart(Document* document) {
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
-  if (!IsPopup(*document)) {
+  // Popups do not need to fire load start or load complete , because ATs do not
+  // regard popups as documents -- that is an implementation detail of the
+  // browser. The AT regards popups as part of a widget, and a load start or
+  // load complete event would only potentially confuse the AT.
+  if (!IsPopup(*document) && !IsInitialEmptyDocument(*document)) {
     DeferTreeUpdate(&AXObjectCacheImpl::EnsurePostNotification, document,
                     ax::mojom::blink::Event::kLoadStart);
   }
@@ -4346,28 +4370,20 @@ void AXObjectCacheImpl::HandleLoadStart(Document* document) {
 void AXObjectCacheImpl::HandleLoadComplete(Document* document) {
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
 
-  // Popups do not need to fire a load complete message.
-  if (!IsPopup(*document)) {
-    AddPermissionStatusListener();
-    DeferTreeUpdate(&AXObjectCacheImpl::HandleLoadCompleteWithCleanLayout,
-                    document);
-  }
-}
-
-void AXObjectCacheImpl::HandleLoadCompleteWithCleanLayout(Node* document_node) {
-  DCHECK(document_node);
-  const Document* document = To<Document>(document_node);
-#if DCHECK_IS_ON()
-  DCHECK(document->Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean)
-      << "Unclean document at lifecycle " << document->Lifecycle().ToString();
-  DCHECK(document == document_.Get());
-#endif  // DCHECK_IS_ON()
-
-  if (!document->IsLoadCompleted() || IsInitialEmptyDocument(*document))
+  // TODO(accessibility) Change this to a DCHECK, but that would fail right now
+  // in navigation API tests.
+  if (!document->IsLoadCompleted())
     return;
 
-  PostNotification(GetOrCreate(document_node),
-                   ax::mojom::blink::Event::kLoadComplete);
+  // Popups do not need to fire load start or load complete , because ATs do not
+  // regard popups as documents -- that is an implementation detail of the
+  // browser. The AT regards popups as part of a widget, and a load start or
+  // load complete event would only potentially confuse the AT.
+  if (!IsPopup(*document) && !IsInitialEmptyDocument(*document)) {
+    AddPermissionStatusListener();
+    DeferTreeUpdate(&AXObjectCacheImpl::EnsurePostNotification, document,
+                    ax::mojom::blink::Event::kLoadComplete);
+  }
 }
 
 void AXObjectCacheImpl::HandleLayoutComplete(Document* document) {
@@ -4375,10 +4391,6 @@ void AXObjectCacheImpl::HandleLayoutComplete(Document* document) {
   DCHECK(document);
   // Do not fire kLayoutComplete for popup document.
   if (IsPopup(*document))
-    return;
-
-  // Do not fire for initial empty document.
-  if (IsInitialEmptyDocument(*document))
     return;
 
   // TODO(accessibility) Investigate removal of the layout complete event, which

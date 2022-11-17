@@ -627,6 +627,9 @@ class BLINK_EXPORT WebLocalFrameClient {
   // to be serialized again.
   virtual void NotifyWebAXObjectMarkedDirty(const WebAXObject&) {}
 
+  // Called when accessibility is ready to serialize.
+  virtual void AXReadyCallback() {}
+
   // Audio Output Devices API --------------------------------------------
 
   // Checks that the given audio sink exists and is authorized. The result is

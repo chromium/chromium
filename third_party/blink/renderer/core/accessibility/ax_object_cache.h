@@ -213,6 +213,7 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
 
   virtual AXObject* GetPluginRoot() = 0;
 
+  // Serialize entire tree, returning true if successful.
   virtual bool SerializeEntireTree(bool exclude_offscreen,
                                    size_t max_node_count,
                                    base::TimeDelta timeout,
@@ -245,7 +246,7 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
 
   // Note that any pending event also causes its corresponding object to
   // become dirty.
-  virtual bool HasDirtyObjects() = 0;
+  virtual bool HasDirtyObjects() const = 0;
 
   // Adds the event to a list of pending events that is cleared out by
   // a subsequent call to  duplicates are not represented.. Returns false if
@@ -254,7 +255,7 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
                                bool insert_at_beginning) = 0;
 
   // Ensure that a call to ProcessDeferredAccessibilityEvents() will occur soon.
-  virtual void ScheduleAXUpdate() = 0;
+  virtual void ScheduleAXUpdate() const = 0;
 
  protected:
   friend class ScopedBlinkAXEventIntent;

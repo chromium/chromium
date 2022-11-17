@@ -642,6 +642,17 @@ int RenderAccessibilityImpl::GetDeferredEventsDelay() {
                                       : kDelayForDeferredUpdatesBeforePageLoad;
 }
 
+void RenderAccessibilityImpl::AXReadyCallback() {
+  // TODO(aleventhal) Merge crrev.com/c/3914885 which implements this.
+}
+
+void RenderAccessibilityImpl::ScheduleImmediateAXUpdate() {
+  // This method is currently only used for RenderAccessibilityImplTest tests,
+  // which is expected to change in synchronous a11y implementation.
+  event_schedule_mode_ = EventScheduleMode::kProcessEventsImmediately;
+  ScheduleSendPendingAccessibilityEvents(true);
+}
+
 void RenderAccessibilityImpl::ScheduleSendPendingAccessibilityEvents(
     bool scheduling_from_task) {
   // Don't send accessibility events for frames that are not in the frame tree

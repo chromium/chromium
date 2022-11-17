@@ -615,6 +615,7 @@ class CONTENT_EXPORT RenderFrameImpl
       const blink::WebURL& url) override;
   void PostAccessibilityEvent(const ui::AXEvent& event) override;
   void NotifyWebAXObjectMarkedDirty(const blink::WebAXObject& object) override;
+  void AXReadyCallback() override;
   void CheckIfAudioSinkExistsAndIsAuthorized(
       const blink::WebString& sink_id,
       blink::WebSetSinkIdCompleteCallback callback) override;

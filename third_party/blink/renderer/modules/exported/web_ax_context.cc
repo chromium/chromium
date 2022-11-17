@@ -127,7 +127,15 @@ void WebAXContext::UpdateAXForAllDocuments() {
 void WebAXContext::ScheduleAXUpdate() {
   if (!private_->HasActiveDocument())
     return;
-  return private_->GetAXObjectCache().ScheduleAXUpdate();
+
+  const auto& cache = private_->GetAXObjectCache();
+
+  // If no dirty objects are queued, it's not necessary to schedule an extra
+  // visual update.
+  if (!cache.HasDirtyObjects())
+    return;
+
+  return cache.ScheduleAXUpdate();
 }
 
 void WebAXContext::FireLoadCompleteIfLoaded() {

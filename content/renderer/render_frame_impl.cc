@@ -4473,6 +4473,14 @@ void RenderFrameImpl::NotifyWebAXObjectMarkedDirty(
       ->NotifyWebAXObjectMarkedDirty(obj);
 }
 
+void RenderFrameImpl::AXReadyCallback() {
+  if (!IsAccessibilityEnabled())
+    return;
+
+  render_accessibility_manager_->GetRenderAccessibilityImpl()
+      ->AXReadyCallback();
+}
+
 void RenderFrameImpl::AddObserver(RenderFrameObserver* observer) {
   observers_.AddObserver(observer);
 }

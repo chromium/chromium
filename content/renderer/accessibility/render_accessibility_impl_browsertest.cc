@@ -266,42 +266,6 @@ class RenderAccessibilityImplTest : public RenderViewTest {
 
   ~RenderAccessibilityImplTest() override = default;
 
-  void ScheduleSendPendingAccessibilityEvents() {
-    GetRenderAccessibilityImpl()->ScheduleSendPendingAccessibilityEvents();
-  }
-
-  void ExpectScheduleStatusScheduledDeferred() {
-    EXPECT_EQ(GetRenderAccessibilityImpl()->event_schedule_status_,
-              RenderAccessibilityImpl::EventScheduleStatus::kScheduledDeferred);
-  }
-
-  void ExpectScheduleStatusScheduledImmediate() {
-    EXPECT_EQ(
-        GetRenderAccessibilityImpl()->event_schedule_status_,
-        RenderAccessibilityImpl::EventScheduleStatus::kScheduledImmediate);
-  }
-
-  void ExpectScheduleStatusWaitingForAck() {
-    EXPECT_EQ(GetRenderAccessibilityImpl()->event_schedule_status_,
-              RenderAccessibilityImpl::EventScheduleStatus::kWaitingForAck);
-  }
-
-  void ExpectScheduleStatusNotWaiting() {
-    EXPECT_EQ(GetRenderAccessibilityImpl()->event_schedule_status_,
-              RenderAccessibilityImpl::EventScheduleStatus::kNotWaiting);
-  }
-
-  void ExpectScheduleModeDeferEvents() {
-    EXPECT_EQ(GetRenderAccessibilityImpl()->event_schedule_mode_,
-              RenderAccessibilityImpl::EventScheduleMode::kDeferEvents);
-  }
-
-  void ExpectScheduleModeProcessEventsImmediately() {
-    EXPECT_EQ(
-        GetRenderAccessibilityImpl()->event_schedule_mode_,
-        RenderAccessibilityImpl::EventScheduleMode::kProcessEventsImmediately);
-  }
-
  protected:
   RenderFrameImpl* frame() {
     return static_cast<RenderFrameImpl*>(RenderViewTest::GetMainRenderFrame());
@@ -326,8 +290,6 @@ class RenderAccessibilityImplTest : public RenderViewTest {
     EXPECT_FALSE(document.IsNull());
     WebAXObject root_obj = WebAXObject::FromWebDocument(document);
     EXPECT_FALSE(root_obj.IsNull());
-    GetRenderAccessibilityImpl()->HandleAXEvent(
-        ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kLayoutComplete));
     SendPendingAccessibilityEvents();
   }
 
@@ -397,7 +359,8 @@ class RenderAccessibilityImplTest : public RenderViewTest {
     // be able to properly check later on the nodes that have been updated, and
     // also wait for the mojo messages to be processed once they are sent.
     task_environment_.RunUntilIdle();
-    GetRenderAccessibilityImpl()->SendPendingAccessibilityEvents();
+    GetRenderAccessibilityImpl()->ScheduleImmediateAXUpdate();
+    GetRenderAccessibilityImpl()->GetAXContext()->UpdateAXForAllDocuments();
     task_environment_.RunUntilIdle();
   }
 
@@ -429,8 +392,7 @@ TEST_F(RenderAccessibilityImplTest, SendFullAccessibilityTreeOnReload) {
   ClearHandledUpdates();
   WebDocument document = GetMainFrame()->GetDocument();
   WebAXObject root_obj = WebAXObject::FromWebDocument(document);
-  GetRenderAccessibilityImpl()->HandleAXEvent(
-      ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kChildrenChanged));
+  GetRenderAccessibilityImpl()->MarkWebAXObjectDirty(root_obj, false);
   SendPendingAccessibilityEvents();
   EXPECT_EQ(1, CountAccessibilityNodesSentToBrowser());
   {
@@ -446,8 +408,6 @@ TEST_F(RenderAccessibilityImplTest, SendFullAccessibilityTreeOnReload) {
   document = GetMainFrame()->GetDocument();
   root_obj = WebAXObject::FromWebDocument(document);
   ClearHandledUpdates();
-  GetRenderAccessibilityImpl()->HandleAXEvent(
-      ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kLayoutComplete));
   SendPendingAccessibilityEvents();
   EXPECT_EQ(6, CountAccessibilityNodesSentToBrowser());
 
@@ -491,15 +451,15 @@ TEST_F(RenderAccessibilityImplTest, HideAccessibilityObject) {
   WebAXObject node_b = node_a.ChildAt(0);
   WebAXObject node_c = node_b.ChildAt(0);
 
-  // Hide node "B" ("C" stays visible).
-  ExecuteJavaScriptForTests(
-      "document.getElementById('B').style.visibility = 'hidden';");
-  GetRenderAccessibilityImpl()->GetAXContext()->UpdateAXForAllDocuments();
-
   // Send a childrenChanged on "A".
   ClearHandledUpdates();
   GetRenderAccessibilityImpl()->HandleAXEvent(
       ui::AXEvent(node_a.AxID(), ax::mojom::Event::kChildrenChanged));
+
+  // Hide node "B" ("C" stays visible).
+  ExecuteJavaScriptForTests(
+      "document.getElementById('B').style.visibility = 'hidden';");
+
   SendPendingAccessibilityEvents();
   ui::AXTreeUpdate update = GetLastAccUpdate();
   ASSERT_EQ(2U, update.nodes.size());
@@ -541,15 +501,14 @@ TEST_F(RenderAccessibilityImplTest, ShowAccessibilityObject) {
   WebAXObject node_b = node_a.ChildAt(0);
   WebAXObject node_c = node_b.ChildAt(0);
 
-  // Show node "B", then send a childrenChanged on "A".
+  // Send a childrenChanged on "A" and show node "B",
+  GetRenderAccessibilityImpl()->HandleAXEvent(
+      ui::AXEvent(node_a.AxID(), ax::mojom::Event::kChildrenChanged));
   ExecuteJavaScriptForTests(
       "document.getElementById('B').style.visibility = 'visible';");
-  GetRenderAccessibilityImpl()->GetAXContext()->UpdateAXForAllDocuments();
 
   ClearHandledUpdates();
 
-  GetRenderAccessibilityImpl()->HandleAXEvent(
-      ui::AXEvent(node_a.AxID(), ax::mojom::Event::kChildrenChanged));
   SendPendingAccessibilityEvents();
   ui::AXTreeUpdate update = GetLastAccUpdate();
 

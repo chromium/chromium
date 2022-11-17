@@ -1316,6 +1316,8 @@ WebAXObject WebAXObject::FromWebDocument(const WebDocument& web_document) {
   const Document* document = web_document.ConstUnwrap<Document>();
   auto* cache = To<AXObjectCacheImpl>(document->ExistingAXObjectCache());
   DCHECK(cache);
+  if (!cache->Root())
+    return WebAXObject();  // Accessibility not yet active in this cache.
   return WebAXObject(cache->GetOrCreate(document));
 }
 
