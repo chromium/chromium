@@ -272,12 +272,15 @@ void WaylandWindowDragController::OnDragMotion(const gfx::PointF& location) {
     pointer_delegate_->OnPointerMotionEvent(
         location, wl::EventDispatchPolicy::kImmediate);
   } else {
-    base::TimeTicks timestamp = base::TimeTicks::Now();
-    auto touch_pointer_ids = touch_delegate_->GetActiveTouchPointIds();
-    DCHECK_EQ(touch_pointer_ids.size(), 1u);
-    touch_delegate_->OnTouchMotionEvent(location, timestamp,
-                                        touch_pointer_ids[0],
-                                        wl::EventDispatchPolicy::kImmediate);
+    const auto touch_pointer_ids = touch_delegate_->GetActiveTouchPointIds();
+    LOG_IF(WARNING, touch_pointer_ids.size() != 1u)
+        << "Unexpected touch drag motion. Active touch_points: "
+        << touch_pointer_ids.size();
+    if (!touch_pointer_ids.empty()) {
+      touch_delegate_->OnTouchMotionEvent(location, base::TimeTicks::Now(),
+                                          touch_pointer_ids[0],
+                                          wl::EventDispatchPolicy::kImmediate);
+    }
   }
 }
 
@@ -324,18 +327,18 @@ void WaylandWindowDragController::OnDragLeave() {
     pointer_delegate_->OnPointerMotionEvent(
         {pointer_location_.x(), -1}, wl::EventDispatchPolicy::kImmediate);
   } else {
-    base::TimeTicks timestamp = base::TimeTicks::Now();
-    auto touch_pointer_ids = touch_delegate_->GetActiveTouchPointIds();
-    DCHECK_EQ(touch_pointer_ids.size(), 1u);
-
-    // If an user starts dragging a tab horizontally with touch, Chrome enters
-    // in "horizontal snapping" mode (see ScrollSnapController for details).
-    // Hence, in case of touch driven dragging, use a higher negative dy
-    // to work around the threshold in ScrollSnapController otherwise,
-    // the drag event is discarded.
-    touch_delegate_->OnTouchMotionEvent(
-        {pointer_location_.x(), kHorizontalRailExitThreshold}, timestamp,
-        touch_pointer_ids[0], wl::EventDispatchPolicy::kImmediate);
+    const auto touch_pointer_ids = touch_delegate_->GetActiveTouchPointIds();
+    if (!touch_pointer_ids.empty()) {
+      // If an user starts dragging a tab horizontally with touch, Chrome enters
+      // in "horizontal snapping" mode (see ScrollSnapController for details).
+      // Hence, in case of touch driven dragging, use a higher negative dy
+      // to work around the threshold in ScrollSnapController otherwise,
+      // the drag event is discarded.
+      touch_delegate_->OnTouchMotionEvent(
+          {pointer_location_.x(), kHorizontalRailExitThreshold},
+          base::TimeTicks::Now(), touch_pointer_ids[0],
+          wl::EventDispatchPolicy::kImmediate);
+    }
   }
 }
 
@@ -501,11 +504,12 @@ void WaylandWindowDragController::HandleDropAndResetState() {
           wl::EventDispatchPolicy::kImmediate);
     }
   } else {
-    auto touch_pointer_ids = touch_delegate_->GetActiveTouchPointIds();
-    DCHECK_EQ(touch_pointer_ids.size(), 1u);
-    touch_delegate_->OnTouchReleaseEvent(base::TimeTicks::Now(),
-                                         touch_pointer_ids[0],
-                                         wl::EventDispatchPolicy::kImmediate);
+    const auto touch_pointer_ids = touch_delegate_->GetActiveTouchPointIds();
+    if (!touch_pointer_ids.empty()) {
+      touch_delegate_->OnTouchReleaseEvent(base::TimeTicks::Now(),
+                                           touch_pointer_ids[0],
+                                           wl::EventDispatchPolicy::kImmediate);
+    }
   }
 
   pointer_grab_owner_ = nullptr;
