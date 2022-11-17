@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_error_util.h"
 
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_error.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -29,8 +30,12 @@ DOMException* CreateDOMExceptionFromRTCError(const webrtc::RTCError& error) {
     case webrtc::RTCErrorType::UNSUPPORTED_OPERATION:
     case webrtc::RTCErrorType::RESOURCE_EXHAUSTED:
     case webrtc::RTCErrorType::INTERNAL_ERROR:
-      return MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kOperationError, error.message());
+      if (error.error_detail() == webrtc::RTCErrorDetailType::NONE) {
+        return MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kOperationError, error.message());
+      } else {
+        return MakeGarbageCollected<RTCError>(error);
+      }
     case webrtc::RTCErrorType::INVALID_STATE:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kInvalidStateError, error.message());

@@ -393,19 +393,15 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
       webrtc::RtpParameters parameters,
       CrossThreadOnceFunction<void(webrtc::RTCError)> callback) {
     DCHECK(signaling_task_runner_->BelongsToCurrentThread());
-    webrtc::RTCError result = webrtc_sender_->SetParameters(parameters);
-    PostCrossThreadTask(
-        *main_task_runner_.get(), FROM_HERE,
-        CrossThreadBindOnce(
-            &RTCRtpSenderImpl::RTCRtpSenderInternal::SetParametersCallback,
-            WrapRefCounted(this), std::move(result), std::move(callback)));
-  }
 
-  void SetParametersCallback(
-      webrtc::RTCError result,
-      CrossThreadOnceFunction<void(webrtc::RTCError)> callback) {
-    DCHECK(main_task_runner_->BelongsToCurrentThread());
-    std::move(callback).Run(std::move(result));
+    webrtc_sender_->SetParametersAsync(
+        parameters,
+        [callback = std::move(callback),
+         task_runner = main_task_runner_](webrtc::RTCError error) mutable {
+          PostCrossThreadTask(
+              *task_runner.get(), FROM_HERE,
+              CrossThreadBindOnce(std::move(callback), std::move(error)));
+        });
   }
 
   void SetStreamsOnSignalingThread(const Vector<String>& stream_ids) {
