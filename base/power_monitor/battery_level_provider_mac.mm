@@ -133,16 +133,12 @@ BatteryLevelProviderMac::GetBatteryStateImpl() {
   DCHECK_GE(*max_capacity, 0);
   DCHECK_GE(*voltage_mv, 0);
 
-  uint64_t current_capacity_mwh = static_cast<uint64_t>(
-      current_capacity.value() * voltage_mv.value() / 1000);
-  uint64_t max_capacity_mwh =
-      static_cast<uint64_t>(max_capacity.value() * voltage_mv.value() / 1000);
-
-  return MakeBatteryState(
-      {BatteryDetails{.is_external_power_connected = external_connected.value(),
-                      .current_capacity = current_capacity_mwh,
-                      .full_charged_capacity = max_capacity_mwh,
-                      .charge_unit = BatteryLevelUnit::kMWh}});
+  return MakeBatteryState({BatteryDetails{
+      .is_external_power_connected = external_connected.value(),
+      .current_capacity = static_cast<uint64_t>(current_capacity.value()),
+      .full_charged_capacity = static_cast<uint64_t>(max_capacity.value()),
+      .voltage_mv = static_cast<uint64_t>(voltage_mv.value()),
+      .charge_unit = BatteryLevelUnit::kMAh}});
 }
 
 }  // namespace base
