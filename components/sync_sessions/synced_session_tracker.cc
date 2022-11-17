@@ -263,25 +263,19 @@ SyncedSession* SyncedSessionTracker::GetSession(
   return &GetTrackedSession(session_tag)->synced_session;
 }
 
-bool SyncedSessionTracker::DeleteForeignSession(
+void SyncedSessionTracker::DeleteForeignSession(
     const std::string& session_tag) {
   DCHECK_NE(local_session_tag_, session_tag);
 
   auto iter = session_map_.find(session_tag);
   if (iter == session_map_.end()) {
-    return false;
+    return;
   }
 
-  // An implicitly created session that has children tabs but no header node
-  // will have never had the device_type changed from unset.
-  const bool header_existed =
-      iter->second.synced_session.device_type != sync_pb::SyncEnums::TYPE_UNSET;
   // SyncedSession's destructor will trigger deletion of windows which will in
   // turn trigger the deletion of tabs. This doesn't affect the convenience
   // maps.
   session_map_.erase(iter);
-
-  return header_existed;
 }
 
 void SyncedSessionTracker::ResetSessionTracking(

@@ -163,8 +163,7 @@ class SyncedSessionTracker {
   void DeleteForeignTab(const std::string& session_tag, int tab_node_id);
 
   // Deletes the session associated with |session_tag| if it exists.
-  // Returns true if the session existed and was deleted, false otherwise.
-  bool DeleteForeignSession(const std::string& session_tag);
+  void DeleteForeignSession(const std::string& session_tag);
 
   // **** Methods specific to the local session. ****
 

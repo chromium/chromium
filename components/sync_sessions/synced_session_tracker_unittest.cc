@@ -302,7 +302,7 @@ TEST_F(SyncedSessionTrackerTest, Complex) {
   tabs2.push_back(tracker_.GetTab(kTag2, kTab1));
   ASSERT_EQ(1U, tracker_.num_synced_tabs(kTag2));
   ASSERT_EQ(2U, tracker_.num_synced_sessions());
-  ASSERT_FALSE(tracker_.DeleteForeignSession(kTag3));
+  tracker_.DeleteForeignSession(kTag3);
 
   SyncedSession* session = tracker_.GetSession(kTag);
   ASSERT_EQ(2U, tracker_.num_synced_sessions());
@@ -317,7 +317,7 @@ TEST_F(SyncedSessionTrackerTest, Complex) {
   ASSERT_TRUE(session3);
   ASSERT_NE(session, session2);
   ASSERT_NE(session2, session3);
-  ASSERT_TRUE(tracker_.DeleteForeignSession(kTag3));
+  tracker_.DeleteForeignSession(kTag3);
   ASSERT_EQ(2U, tracker_.num_synced_sessions());
 
   tracker_.PutWindowInSession(kTag, kWindow1);     // Create a window.
@@ -388,10 +388,10 @@ TEST_F(SyncedSessionTrackerTest, LookupTabNodeIds) {
   tracker_.PutWindowInSession(kTag3, kWindow2);
   tracker_.PutTabInWindow(kTag3, kWindow2, kTab2);
   EXPECT_THAT(tracker_.LookupTabNodeIds(kTag3), IsEmpty());
-  EXPECT_FALSE(tracker_.DeleteForeignSession(kTag3));
+  tracker_.DeleteForeignSession(kTag3);
   EXPECT_THAT(tracker_.LookupTabNodeIds(kTag3), IsEmpty());
 
-  EXPECT_FALSE(tracker_.DeleteForeignSession(kTag));
+  tracker_.DeleteForeignSession(kTag);
   EXPECT_THAT(tracker_.LookupTabNodeIds(kTag), IsEmpty());
   EXPECT_THAT(tracker_.LookupTabNodeIds(kTag2), ElementsAre(21, 22));
 
@@ -399,7 +399,7 @@ TEST_F(SyncedSessionTrackerTest, LookupTabNodeIds) {
   tracker_.OnTabNodeSeen(kTag2, 23, kTab7);
   EXPECT_THAT(tracker_.LookupTabNodeIds(kTag2), ElementsAre(21, 22, 23));
 
-  EXPECT_FALSE(tracker_.DeleteForeignSession(kTag2));
+  tracker_.DeleteForeignSession(kTag2);
   EXPECT_THAT(tracker_.LookupTabNodeIds(kTag2), IsEmpty());
 }
 
