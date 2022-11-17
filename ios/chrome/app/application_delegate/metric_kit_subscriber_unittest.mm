@@ -60,8 +60,7 @@ class MetricKitSubscriberTest : public PlatformTest {
 };
 
 TEST_F(MetricKitSubscriberTest, Metrics) {
-  base::HistogramTester tester;
-  MXMetricPayload* mock_report = MockMetricPayload(@{
+  NSDictionary* dictionary_report = @{
     @"applicationTimeMetrics" :
         @{@"cumulativeForegroundTime" : @1, @"cumulativeBackgroundTime" : @2},
     @"memoryMetrics" :
@@ -98,43 +97,78 @@ TEST_F(MetricKitSubscriberTest, Metrics) {
         @"cumulativeAppWatchdogExitCount" : @19
       }
     },
-  });
-  NSArray* array = @[ mock_report ];
-  [[MetricKitSubscriber sharedInstance] didReceiveMetricPayloads:array];
-  tester.ExpectUniqueTimeSample("IOS.MetricKit.ForegroundTimePerDay",
-                                base::Seconds(1), 1);
-  tester.ExpectUniqueTimeSample("IOS.MetricKit.BackgroundTimePerDay",
-                                base::Seconds(2), 1);
-  tester.ExpectUniqueSample("IOS.MetricKit.PeakMemoryUsage", 3, 1);
-  tester.ExpectUniqueSample("IOS.MetricKit.AverageSuspendedMemory", 4, 1);
+  };
 
-  tester.ExpectTotalCount("IOS.MetricKit.ApplicationResumeTime", 12);
-  tester.ExpectBucketCount("IOS.MetricKit.ApplicationResumeTime", 25, 5);
-  tester.ExpectBucketCount("IOS.MetricKit.ApplicationResumeTime", 35, 7);
+  {
+    MXMetricPayload* mock_report = MockMetricPayload(dictionary_report);
+    OCMStub([mock_report includesMultipleApplicationVersions]).andReturn(NO);
+    NSArray* array = @[ mock_report ];
 
-  tester.ExpectTotalCount("IOS.MetricKit.TimeToFirstDraw", 6);
-  tester.ExpectBucketCount("IOS.MetricKit.TimeToFirstDraw", 5, 2);
-  tester.ExpectBucketCount("IOS.MetricKit.TimeToFirstDraw", 15, 4);
+    base::HistogramTester tester;
+    [[MetricKitSubscriber sharedInstance] didReceiveMetricPayloads:array];
+    for (const std::string& prefix :
+         {"IOS.MetricKit.IncludingMismatch.", "IOS.MetricKit."}) {
+      tester.ExpectUniqueTimeSample(prefix + "ForegroundTimePerDay",
+                                    base::Seconds(1), 1);
+      tester.ExpectUniqueTimeSample(prefix + "BackgroundTimePerDay",
+                                    base::Seconds(2), 1);
+      tester.ExpectUniqueSample(prefix + "PeakMemoryUsage", 3, 1);
+      tester.ExpectUniqueSample(prefix + "AverageSuspendedMemory", 4, 1);
 
-  tester.ExpectTotalCount("IOS.MetricKit.BackgroundExitData", 71);
-  tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 2, 1);
-  tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 4, 2);
-  tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 1, 5);
-  tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 6, 6);
-  tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 8, 7);
-  tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 5, 8);
-  tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 7, 9);
-  tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 3, 10);
-  tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 9, 11);
-  tester.ExpectBucketCount("IOS.MetricKit.BackgroundExitData", 0, 12);
+      tester.ExpectTotalCount(prefix + "ApplicationResumeTime", 12);
+      tester.ExpectBucketCount(prefix + "ApplicationResumeTime", 25, 5);
+      tester.ExpectBucketCount(prefix + "ApplicationResumeTime", 35, 7);
 
-  tester.ExpectTotalCount("IOS.MetricKit.ForegroundExitData", 95);
-  tester.ExpectBucketCount("IOS.MetricKit.ForegroundExitData", 7, 13);
-  tester.ExpectBucketCount("IOS.MetricKit.ForegroundExitData", 1, 14);
-  tester.ExpectBucketCount("IOS.MetricKit.ForegroundExitData", 4, 15);
-  tester.ExpectBucketCount("IOS.MetricKit.ForegroundExitData", 0, 16);
-  tester.ExpectBucketCount("IOS.MetricKit.ForegroundExitData", 8, 18);
-  tester.ExpectBucketCount("IOS.MetricKit.ForegroundExitData", 2, 19);
+      tester.ExpectTotalCount(prefix + "TimeToFirstDraw", 6);
+      tester.ExpectBucketCount(prefix + "TimeToFirstDraw", 5, 2);
+      tester.ExpectBucketCount(prefix + "TimeToFirstDraw", 15, 4);
+
+      tester.ExpectTotalCount(prefix + "BackgroundExitData", 71);
+      tester.ExpectBucketCount(prefix + "BackgroundExitData", 2, 1);
+      tester.ExpectBucketCount(prefix + "BackgroundExitData", 4, 2);
+      tester.ExpectBucketCount(prefix + "BackgroundExitData", 1, 5);
+      tester.ExpectBucketCount(prefix + "BackgroundExitData", 6, 6);
+      tester.ExpectBucketCount(prefix + "BackgroundExitData", 8, 7);
+      tester.ExpectBucketCount(prefix + "BackgroundExitData", 5, 8);
+      tester.ExpectBucketCount(prefix + "BackgroundExitData", 7, 9);
+      tester.ExpectBucketCount(prefix + "BackgroundExitData", 3, 10);
+      tester.ExpectBucketCount(prefix + "BackgroundExitData", 9, 11);
+      tester.ExpectBucketCount(prefix + "BackgroundExitData", 0, 12);
+
+      tester.ExpectTotalCount(prefix + "ForegroundExitData", 95);
+      tester.ExpectBucketCount(prefix + "ForegroundExitData", 7, 13);
+      tester.ExpectBucketCount(prefix + "ForegroundExitData", 1, 14);
+      tester.ExpectBucketCount(prefix + "ForegroundExitData", 4, 15);
+      tester.ExpectBucketCount(prefix + "ForegroundExitData", 0, 16);
+      tester.ExpectBucketCount(prefix + "ForegroundExitData", 8, 18);
+      tester.ExpectBucketCount(prefix + "ForegroundExitData", 2, 19);
+    }
+  }
+
+  {
+    MXMetricPayload* mock_report = MockMetricPayload(dictionary_report);
+    OCMStub([mock_report includesMultipleApplicationVersions]).andReturn(YES);
+    NSArray* array = @[ mock_report ];
+
+    base::HistogramTester tester;
+    [[MetricKitSubscriber sharedInstance] didReceiveMetricPayloads:array];
+    tester.ExpectTotalCount("IOS.MetricKit.ApplicationResumeTime", 0);
+    tester.ExpectTotalCount("IOS.MetricKit.TimeToFirstDraw", 0);
+    tester.ExpectTotalCount("IOS.MetricKit.BackgroundExitData", 0);
+    tester.ExpectTotalCount("IOS.MetricKit.ForegroundExitData", 0);
+
+    const std::string prefix = "IOS.MetricKit.IncludingMismatch.";
+    tester.ExpectUniqueTimeSample(prefix + "ForegroundTimePerDay",
+                                  base::Seconds(1), 1);
+    tester.ExpectUniqueTimeSample(prefix + "BackgroundTimePerDay",
+                                  base::Seconds(2), 1);
+    tester.ExpectUniqueSample(prefix + "PeakMemoryUsage", 3, 1);
+    tester.ExpectUniqueSample(prefix + "AverageSuspendedMemory", 4, 1);
+    tester.ExpectTotalCount(prefix + "ApplicationResumeTime", 12);
+    tester.ExpectTotalCount(prefix + "TimeToFirstDraw", 6);
+    tester.ExpectTotalCount(prefix + "BackgroundExitData", 71);
+    tester.ExpectTotalCount(prefix + "ForegroundExitData", 95);
+  }
 }
 
 TEST_F(MetricKitSubscriberTest, SaveDiagnosticReport) {

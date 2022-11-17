@@ -22,6 +22,17 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="MXVersion">
+  <variant name=""
+      summary="The default MXPayload, only recorded when the app version
+               number matches."/>
+  <variant name="IncludingMismatch."
+      summary="The processed MXPayload may not match the current app's
+               version. This is very common on app updates, which would
+               otherwise lead to losing multiple days of MetricKit reports.
+               Instead, record them here."/>
+</variants>
+
 <histogram name="IOS.Allocator.ShimInstalled" enum="Boolean"
     expires_after="2023-02-26">
   <owner>rohitrao@chromium.org</owner>
@@ -990,7 +1001,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.MetricKit.ApplicationHangTime" units="ms"
+<histogram name="IOS.MetricKit.{MXVersion}ApplicationHangTime" units="ms"
     expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
 
@@ -1022,9 +1033,10 @@ chromium-metrics-reviews@google.com.
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
   </summary>
+  <token key="MXVersion" variants="MXVersion"/>
 </histogram>
 
-<histogram name="IOS.MetricKit.ApplicationResumeTime" units="ms"
+<histogram name="IOS.MetricKit.{MXVersion}ApplicationResumeTime" units="ms"
     expires_after="2023-03-19">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
@@ -1035,9 +1047,10 @@ chromium-metrics-reviews@google.com.
     Recorded only if user opted in for sharing diagnostic data on iOS device.
     Note: The date the data is reported is later than the day it account for.
   </summary>
+  <token key="MXVersion" variants="MXVersion"/>
 </histogram>
 
-<histogram name="IOS.MetricKit.AverageSuspendedMemory" units="MB"
+<histogram name="IOS.MetricKit.{MXVersion}AverageSuspendedMemory" units="MB"
     expires_after="2023-03-19">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
@@ -1049,10 +1062,11 @@ chromium-metrics-reviews@google.com.
     Recorded only if user opted in for sharing diagnostic data on iOS device.
     Note: The date the data is reported is later than the day it account for.
   </summary>
+  <token key="MXVersion" variants="MXVersion"/>
 </histogram>
 
-<histogram name="IOS.MetricKit.BackgroundExitData" enum="MetricKitExitData"
-    expires_after="never">
+<histogram name="IOS.MetricKit.{MXVersion}BackgroundExitData"
+    enum="MetricKitExitData" expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
 
   <owner>justincohen@chromium.org</owner>
@@ -1075,9 +1089,10 @@ chromium-metrics-reviews@google.com.
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
   </summary>
+  <token key="MXVersion" variants="MXVersion"/>
 </histogram>
 
-<histogram name="IOS.MetricKit.BackgroundTimePerDay" units="ms"
+<histogram name="IOS.MetricKit.{MXVersion}BackgroundTimePerDay" units="ms"
     expires_after="2023-05-14">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
@@ -1090,10 +1105,11 @@ chromium-metrics-reviews@google.com.
     Recorded only if user opted in for sharing diagnostic data on iOS device.
     Note: The date the data is reported is later than the day it account for.
   </summary>
+  <token key="MXVersion" variants="MXVersion"/>
 </histogram>
 
-<histogram name="IOS.MetricKit.ForegroundExitData" enum="MetricKitExitData"
-    expires_after="never">
+<histogram name="IOS.MetricKit.{MXVersion}ForegroundExitData"
+    enum="MetricKitExitData" expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
 
   <owner>justincohen@chromium.org</owner>
@@ -1118,9 +1134,10 @@ chromium-metrics-reviews@google.com.
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
   </summary>
+  <token key="MXVersion" variants="MXVersion"/>
 </histogram>
 
-<histogram name="IOS.MetricKit.ForegroundTimePerDay" units="s"
+<histogram name="IOS.MetricKit.{MXVersion}ForegroundTimePerDay" units="s"
     expires_after="2023-05-14">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
@@ -1136,9 +1153,10 @@ chromium-metrics-reviews@google.com.
     Recorded only if user opted in for sharing diagnostic data on iOS device.
     Note: The date the data is reported is later than the day it account for.
   </summary>
+  <token key="MXVersion" variants="MXVersion"/>
 </histogram>
 
-<histogram name="IOS.MetricKit.PeakMemoryUsage" units="MB"
+<histogram name="IOS.MetricKit.{MXVersion}PeakMemoryUsage" units="MB"
     expires_after="2023-03-19">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
@@ -1155,9 +1173,10 @@ chromium-metrics-reviews@google.com.
     Recorded only if user opted in for sharing diagnostic data on iOS device.
     Note: The date the data is reported is later than the day it account for.
   </summary>
+  <token key="MXVersion" variants="MXVersion"/>
 </histogram>
 
-<histogram name="IOS.MetricKit.TimeToFirstDraw" units="ms"
+<histogram name="IOS.MetricKit.{MXVersion}TimeToFirstDraw" units="ms"
     expires_after="2023-03-19">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
@@ -1168,6 +1187,7 @@ chromium-metrics-reviews@google.com.
     Recorded only if user opted in for sharing diagnostic data on iOS device.
     Note: The date the data is reported is later than the day it account for.
   </summary>
+  <token key="MXVersion" variants="MXVersion"/>
 </histogram>
 
 <histogram name="IOS.MultiWindow.Configuration"
