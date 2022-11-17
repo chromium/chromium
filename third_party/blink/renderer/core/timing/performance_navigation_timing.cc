@@ -332,7 +332,17 @@ ScriptValue PerformanceNavigationTiming::NotRestoredReasonsBuilder(
   if (!reasons)
     return ScriptValue::CreateNull(script_state->GetIsolate());
   V8ObjectBuilder builder(script_state);
-  builder.AddBoolean("blocked", reasons->blocked);
+  switch (reasons->blocked) {
+    case mojom::blink::BFCacheBlocked::kYes:
+    case mojom::blink::BFCacheBlocked::kNo:
+      builder.AddBoolean(
+          "blocked", reasons->blocked == mojom::blink::BFCacheBlocked::kYes);
+      break;
+    case mojom::blink::BFCacheBlocked::kMasked:
+      // |blocked| can be null when masking the value.
+      builder.AddNull("blocked");
+      break;
+  }
   builder.AddString("url", AtomicString(reasons->same_origin_details
                                             ? reasons->same_origin_details->url
                                             : ""));

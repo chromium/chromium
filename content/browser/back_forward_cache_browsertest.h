@@ -130,7 +130,7 @@ class BackForwardCacheBrowserTest
   using SameOriginMatcher = testing::Matcher<
       const blink::mojom::SameOriginBfcacheNotRestoredDetailsPtr&>;
   ReasonsMatcher MatchesNotRestoredReasons(
-      const testing::Matcher<bool>& blocked,
+      const testing::Matcher<blink::mojom::BFCacheBlocked>& blocked,
       const SameOriginMatcher* same_origin_details);
   SameOriginMatcher MatchesSameOriginDetails(
       const testing::Matcher<std::string>& id,

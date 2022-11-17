@@ -3343,27 +3343,6 @@ LocalFrame::GetNotRestoredReasons() {
   return not_restored_reasons_;
 }
 
-bool LocalFrame::HasBlockingReasons() {
-  DCHECK(IsOutermostMainFrame());
-  if (!not_restored_reasons_)
-    return false;
-  return HasBlockingReasonsHelper(not_restored_reasons_);
-}
-
-bool LocalFrame::HasBlockingReasonsHelper(
-    const mojom::blink::BackForwardCacheNotRestoredReasonsPtr& not_restored) {
-  if (not_restored->blocked)
-    return true;
-  if (not_restored->same_origin_details) {
-    for (const auto& child : not_restored->same_origin_details->children) {
-      if (HasBlockingReasonsHelper(child))
-        return true;
-    }
-    return false;
-  }
-  return false;
-}
-
 void LocalFrame::AddScrollSnapshotClient(ScrollSnapshotClient& client) {
   scroll_snapshot_clients_.insert(&client);
   unvalidated_scroll_snapshot_clients_.insert(&client);

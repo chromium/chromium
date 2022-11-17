@@ -390,8 +390,6 @@ class CORE_EXPORT WebLocalFrameImpl final
 
   void SetNotRestoredReasons(
       const mojom::BackForwardCacheNotRestoredReasonsPtr&) override;
-  // Returns if the current frame's NotRestoredReasons has any blocking reasons.
-  bool HasBlockingReasons() override;
 
   const mojom::blink::BackForwardCacheNotRestoredReasonsPtr&
   GetNotRestoredReasons();

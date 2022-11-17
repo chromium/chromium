@@ -614,8 +614,6 @@ class CORE_EXPORT LocalFrame final
       mojom::blink::BackForwardCacheNotRestoredReasonsPtr);
   const mojom::blink::BackForwardCacheNotRestoredReasonsPtr&
   GetNotRestoredReasons();
-  // Returns if the saved NotRestoredReasons has any blocking reasons.
-  bool HasBlockingReasons();
 
   const AtomicString& GetReducedAcceptLanguage() const {
     return reduced_accept_language_;
@@ -922,10 +920,6 @@ class CORE_EXPORT LocalFrame final
                                     String& clip_text,
                                     String& clip_html,
                                     gfx::Rect& clip_rect);
-
-  // Helper function for |HasBlockingReasons()|.
-  bool HasBlockingReasonsHelper(
-      const mojom::blink::BackForwardCacheNotRestoredReasonsPtr&);
 
 #if !BUILDFLAG(IS_ANDROID)
   void SetTitlebarAreaDocumentStyleEnvironmentVariables() const;

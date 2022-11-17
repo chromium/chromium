@@ -595,8 +595,11 @@ class CONTENT_EXPORT BackForwardCacheCanStoreTreeResult {
   }
 
   // Populate NotRestoredReasons mojom struct based on the existing tree of
-  // reason to report to the renderer. This will not contain cross-origin
-  // subtree's information to avoid cross-origin information leak.
+  // reason to report to the renderer. This will only partially contain
+  // cross-origin reasons. See |GetWebExposedNotRestoredReasonsInternal()| for
+  // more explanation.
+  // This should be called only when the root document is outermost main
+  // document.
   blink::mojom::BackForwardCacheNotRestoredReasonsPtr
   GetWebExposedNotRestoredReasons();
 
@@ -624,11 +627,37 @@ class CONTENT_EXPORT BackForwardCacheCanStoreTreeResult {
   CreateEmptyTreeBeforeCommit(NavigationRequest* navigation);
 
  private:
+  friend class BackForwardCacheImplTest;
+  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheImplTest,
+                           CrossOriginReachableFrameCount);
+  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheImplTest, FirstCrossOriginReachable);
+  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheImplTest,
+                           SecondCrossOriginReachable);
   BackForwardCacheCanStoreTreeResult(
       RenderFrameHostImpl* rfh,
       const url::Origin& main_document_origin,
       const GURL& url,
       BackForwardCacheCanStoreDocumentResult& result_for_this_document);
+
+  BackForwardCacheCanStoreTreeResult(
+      BackForwardCacheCanStoreDocumentResult& result_for_this_document,
+      bool is_same_origin,
+      const std::string& id,
+      const std::string& name,
+      const std::string& src,
+      const GURL& url);
+
+  // Helper function for |GetWebExposedNotRestoredReasons()|. |index| is the
+  // random index of the cross-origin iframe that we decided to report
+  // from all the reachable cross-origin iframes. We decrement this count
+  // every time we call this function, and report only when |index| is 0 so
+  // that reporting happens only for randomly picked one of such iframes.
+  blink::mojom::BackForwardCacheNotRestoredReasonsPtr
+  GetWebExposedNotRestoredReasonsInternal(int& index);
+
+  // Count the number of cross-origin frames that are direct children of
+  // same-origin frames, including the main frame, in the tree.
+  uint32_t GetCrossOriginReachableFrameCount();
 
   void FlattenTreeHelper(
       BackForwardCacheCanStoreDocumentResult* document_result);

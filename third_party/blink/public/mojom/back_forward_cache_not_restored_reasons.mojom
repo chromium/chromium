@@ -21,12 +21,21 @@ struct SameOriginBfcacheNotRestoredDetails {
   array<BackForwardCacheNotRestoredReasons> children;
 };
 
+// Enum to indicate whether or not a document blocked back/forward cache.
+enum BFCacheBlocked {
+  kYes = 0,
+  kNo = 1,
+  // This value indicates that the privacy sensitive information (whether or not a document blocked back/forward cache) is masked for a cross-origin iframe.
+  kMasked = 2
+};
+
 // Struct for NotRestoredReasons API to report from browser to renderer.
 struct BackForwardCacheNotRestoredReasons {
   // Indicates whether or not this document blocked back/forward cache. If this
-  // document is cross-origin from the main document, this boolean indicates if
-  // this frame's subtree blocked back/forward cache.
-  bool blocked;
+  // document is cross-origin from the main document, this indicates if this
+  // frame's subtree blocked back/forward cache. This value can be |kMasked| for
+  // privacy reasons.
+  BFCacheBlocked blocked;
   // This will be absl::nullopt when this document is cross-origin from the main
   // document.
   SameOriginBfcacheNotRestoredDetails? same_origin_details;

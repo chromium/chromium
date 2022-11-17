@@ -3093,10 +3093,6 @@ void WebLocalFrameImpl::SetNotRestoredReasons(
       ConvertNotRestoredReasons(not_restored_reasons));
 }
 
-bool WebLocalFrameImpl::HasBlockingReasons() {
-  return GetFrame()->HasBlockingReasons();
-}
-
 const mojom::blink::BackForwardCacheNotRestoredReasonsPtr&
 WebLocalFrameImpl::GetNotRestoredReasons() {
   return GetFrame()->GetNotRestoredReasons();
