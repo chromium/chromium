@@ -17,6 +17,7 @@
 #include "base/synchronization/lock.h"
 #include "media/base/video_decoder_config.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/webrtc/api/video/video_bitrate_allocation.h"
 #include "third_party/webrtc/modules/video_coding/include/video_codec_interface.h"
 #include "ui/gfx/geometry/size.h"
@@ -33,6 +34,7 @@ struct VideoEncoderInfo;
 namespace blink {
 
 namespace features {
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kWebRtcEncoderAsyncEncode);
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kWebRtcScreenshareSwEncoding);
 }
 
@@ -70,6 +72,11 @@ class PLATFORM_EXPORT RTCVideoEncoder : public webrtc::VideoEncoder {
   // Returns true if there's VP9 HW support for spatial layers.
   static bool Vp9HwSupportForSpatialLayers();
 
+  void SetErrorCallbackForTesting(
+      WTF::CrossThreadOnceClosure error_callback_for_testing) {
+    error_callback_for_testing_ = std::move(error_callback_for_testing);
+  }
+
  private:
   class Impl;
   friend class RTCVideoEncoder::Impl;
@@ -77,6 +84,7 @@ class PLATFORM_EXPORT RTCVideoEncoder : public webrtc::VideoEncoder {
   void UpdateEncoderInfo(
       media::VideoEncoderInfo encoder_info,
       std::vector<webrtc::VideoFrameBuffer::Type> preferred_pixel_formats);
+  void SetError();
 
   const media::VideoCodecProfile profile_;
 
@@ -99,6 +107,11 @@ class PLATFORM_EXPORT RTCVideoEncoder : public webrtc::VideoEncoder {
 
   // The sequence on which the webrtc::VideoEncoder functions are executed.
   SEQUENCE_CHECKER(webrtc_sequence_checker_);
+
+  bool has_error_ GUARDED_BY_CONTEXT(webrtc_sequence_checker_){false};
+
+  // Execute in SetError(). This can be valid only in testing.
+  WTF::CrossThreadOnceClosure error_callback_for_testing_;
 
   // The RTCVideoEncoder::Impl that does all the work.
   std::unique_ptr<Impl> impl_;

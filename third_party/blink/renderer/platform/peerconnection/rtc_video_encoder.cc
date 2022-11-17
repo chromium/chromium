@@ -452,13 +452,16 @@ void RecordEncoderShutdownReasonUMA(RTCVideoEncoderShutdownReason reason,
 }  // namespace
 
 namespace features {
+// Make RTCVideoEncoder::Encode() asynchronous.
+BASE_FEATURE(kWebRtcEncoderAsyncEncode,
+             "WebRtcEncoderAsyncEncode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Fallback from hardware encoder (if available) to software, for WebRTC
 // screensharing that uses temporal scalability.
 BASE_FEATURE(kWebRtcScreenshareSwEncoding,
              "WebRtcScreenshareSwEncoding",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace features
 
 // This private class of RTCVideoEncoder does the actual work of communicating
@@ -478,6 +481,7 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
        webrtc::VideoCodecType video_codec_type,
        webrtc::VideoContentType video_content_type,
        UpdateEncoderInfoCallback update_encoder_info_callback,
+       base::RepeatingClosure execute_software_fallback,
        base::WeakPtr<Impl>& weak_this_for_client);
 
   ~Impl() override;
@@ -599,9 +603,9 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   // matching.
   bool failed_timestamp_match_{false};
 
-  // Next input frame chunk. Since there is at most one next frame chunk, a
-  // single-element queue is sufficient.
-  absl::optional<FrameChunk> next_frame_chunk_;
+  // The pending frames to be encoded with the boolean representing whether the
+  // frame must be encoded keyframe.
+  WTF::Deque<FrameChunk> pending_frames_;
 
   // Frame sizes.
   gfx::Size input_frame_coded_size_;
@@ -643,6 +647,9 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
 
   UpdateEncoderInfoCallback update_encoder_info_callback_;
 
+  // Calling this causes a software encoder fallback.
+  base::RepeatingClosure execute_software_fallback_;
+
   // The reslutions of active spatial layer, only used when |Vp9Metadata| is
   // contained in |BitstreamBufferMetadata|. it will be updated when key frame
   // is produced.
@@ -678,11 +685,13 @@ RTCVideoEncoder::Impl::Impl(
     webrtc::VideoCodecType video_codec_type,
     webrtc::VideoContentType video_content_type,
     UpdateEncoderInfoCallback update_encoder_info_callback,
+    base::RepeatingClosure execute_software_fallback,
     base::WeakPtr<Impl>& weak_this_for_client)
     : gpu_factories_(gpu_factories),
       video_codec_type_(video_codec_type),
       video_content_type_(video_content_type),
-      update_encoder_info_callback_(std::move(update_encoder_info_callback)) {
+      update_encoder_info_callback_(std::move(update_encoder_info_callback)),
+      execute_software_fallback_(std::move(execute_software_fallback)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
   preferred_pixel_formats_ = {webrtc::VideoFrameBuffer::Type::kI420};
@@ -804,7 +813,6 @@ void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk,
                frame_chunk.timestamp);
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!next_frame_chunk_);
 
   if (status_ != WEBRTC_VIDEO_CODEC_OK) {
     encode_event.Set(status_);
@@ -837,20 +845,22 @@ void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk,
     encode_event.Signal();
     return;
   }
-  next_frame_chunk_.emplace(std::move(frame_chunk));
+
   async_encode_event_ = ScopedSignaledValue(std::move(encode_event));
 
-  // If |use_native_input_| is true, then we always queue the frame to the
-  // encoder since no intermediate buffer is needed in RTCVideoEncoder.
   if (use_native_input_) {
-    EncodeOneFrameWithNativeInput(std::move(*next_frame_chunk_));
-    next_frame_chunk_.reset();
+    DCHECK(pending_frames_.empty());
+    EncodeOneFrameWithNativeInput(std::move(frame_chunk));
     return;
   }
 
-  if (!input_buffers_free_.empty()) {
-    EncodeOneFrame(std::move(*next_frame_chunk_));
-    next_frame_chunk_.reset();
+  pending_frames_.push_back(std::move(frame_chunk));
+  // When |input_buffers_free_| is empty, EncodeOneFrame() for the frame in
+  // |pending_frames_| will be invoked from InputBufferReleased().
+  while (!pending_frames_.empty() && !input_buffers_free_.empty()) {
+    auto chunk = std::move(pending_frames_.front());
+    pending_frames_.pop_front();
+    EncodeOneFrame(std::move(chunk));
   }
 }
 
@@ -1230,6 +1240,8 @@ void RTCVideoEncoder::Impl::NotifyError(
 
   async_init_event_.SetAndReset(retval);
   async_encode_event_.SetAndReset(retval);
+
+  execute_software_fallback_.Run();
 }
 
 RTCVideoEncoder::Impl::~Impl() {
@@ -1514,9 +1526,11 @@ void RTCVideoEncoder::Impl::InputBufferReleased(int index) {
   DCHECK_GE(index, 0);
   DCHECK_LT(index, static_cast<int>(input_buffers_.size()));
   input_buffers_free_.push_back(index);
-  if (next_frame_chunk_) {
-    EncodeOneFrame(std::move(*next_frame_chunk_));
-    next_frame_chunk_.reset();
+
+  while (!pending_frames_.empty() && !input_buffers_free_.empty()) {
+    auto chunk = std::move(pending_frames_.front());
+    pending_frames_.pop_front();
+    EncodeOneFrame(std::move(chunk));
   }
 }
 
@@ -1603,15 +1617,20 @@ int32_t RTCVideoEncoder::InitEncode(
   if (impl_)
     Release();
 
+  has_error_ = false;
+
   Impl::UpdateEncoderInfoCallback update_encoder_info_callback =
       media::BindToCurrentLoop(
           base::BindRepeating(&RTCVideoEncoder::UpdateEncoderInfo, weak_this_));
+  base::RepeatingClosure execute_software_fallback = media::BindToCurrentLoop(
+      base::BindRepeating(&RTCVideoEncoder::SetError, weak_this_));
+
   impl_ = std::make_unique<Impl>(
       gpu_factories_, ProfileToWebRtcVideoCodecType(profile_),
       (codec_settings->mode == webrtc::VideoCodecMode::kScreensharing)
           ? webrtc::VideoContentType::SCREENSHARE
           : webrtc::VideoContentType::UNSPECIFIED,
-      update_encoder_info_callback, weak_impl_);
+      update_encoder_info_callback, execute_software_fallback, weak_impl_);
 
   std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>
       spatial_layers;
@@ -1660,24 +1679,34 @@ int32_t RTCVideoEncoder::Encode(
     return WEBRTC_VIDEO_CODEC_UNINITIALIZED;
   }
 
+  if (has_error_)
+    return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+
   const bool want_key_frame =
       frame_types && frame_types->size() &&
       frame_types->front() == webrtc::VideoFrameType::kVideoFrameKey;
-  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
-  base::WaitableEvent encode_waiter(
-      base::WaitableEvent::ResetPolicy::MANUAL,
-      base::WaitableEvent::InitialState::NOT_SIGNALED);
-  int32_t encode_retval = WEBRTC_VIDEO_CODEC_UNINITIALIZED;
-  PostCrossThreadTask(
-      *gpu_task_runner_.get(), FROM_HERE,
-      CrossThreadBindOnce(&RTCVideoEncoder::Impl::Enqueue, weak_impl_,
-                          FrameChunk(input_image, want_key_frame),
-                          SignaledValue(&encode_waiter, &encode_retval)));
-
-  // webrtc::VideoEncoder expects this call to be synchronous.
-  encode_waiter.Wait();
-  DVLOG(3) << "Encode(): returning encode_retval=" << encode_retval;
-  return encode_retval;
+  if (base::FeatureList::IsEnabled(features::kWebRtcEncoderAsyncEncode)) {
+    PostCrossThreadTask(
+        *gpu_task_runner_.get(), FROM_HERE,
+        CrossThreadBindOnce(&RTCVideoEncoder::Impl::Enqueue, weak_impl_,
+                            FrameChunk(input_image, want_key_frame),
+                            SignaledValue()));
+    return WEBRTC_VIDEO_CODEC_OK;
+  } else {
+    base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
+    base::WaitableEvent encode_waiter(
+        base::WaitableEvent::ResetPolicy::MANUAL,
+        base::WaitableEvent::InitialState::NOT_SIGNALED);
+    int32_t encode_retval = WEBRTC_VIDEO_CODEC_UNINITIALIZED;
+    PostCrossThreadTask(
+        *gpu_task_runner_.get(), FROM_HERE,
+        CrossThreadBindOnce(&RTCVideoEncoder::Impl::Enqueue, weak_impl_,
+                            FrameChunk(input_image, want_key_frame),
+                            SignaledValue(&encode_waiter, &encode_retval)));
+    encode_waiter.Wait();
+    DVLOG(3) << "Encode(): returning encode_retval=" << encode_retval;
+    return encode_retval;
+  }
 }
 
 int32_t RTCVideoEncoder::RegisterEncodeCompleteCallback(
@@ -1743,6 +1772,9 @@ void RTCVideoEncoder::SetRates(
     return;
   }
 
+  if (has_error_)
+    return;
+
   PostCrossThreadTask(
       *gpu_task_runner_.get(), FROM_HERE,
       CrossThreadBindOnce(
@@ -1789,6 +1821,14 @@ void RTCVideoEncoder::UpdateEncoderInfo(
   }
   encoder_info_.preferred_pixel_formats.assign(preferred_pixel_formats.begin(),
                                                preferred_pixel_formats.end());
+}
+
+void RTCVideoEncoder::SetError() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(webrtc_sequence_checker_);
+  has_error_ = true;
+
+  if (error_callback_for_testing_)
+    std::move(error_callback_for_testing_).Run();
 }
 
 // static
