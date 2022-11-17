@@ -946,7 +946,7 @@ grit("resources") {
     "grit/weblayer_resources.h",
     "weblayer_resources.pak",
   ]
-  deps = [ "//weblayer/browser/webui:mojo_bindings_js__generator" ]
+  deps = [ "//weblayer/browser/webui:mojo_bindings_webui_js" ]
 }
 # TODO(jam): move weblayer_shell_resources_grit and copy_shell_resources here in
 # a way that's shareable?

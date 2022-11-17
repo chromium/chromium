@@ -8012,11 +8012,11 @@ grit("resources") {
 
   deps = [
     ":chrome_internal_resources_gen",
-    "//chrome/browser/ui/webui/usb_internals:mojo_bindings_js__generator",
+    "//chrome/browser/ui/webui/usb_internals:mojo_bindings_webui_js",
     "//device/bluetooth/public/mojom:deprecated_experimental_interfaces_js",
     "//device/bluetooth/public/mojom:mojom_js",
-    "//services/device/public/mojom:usb_js__generator",
-    "//services/device/public/mojom:usb_test_js__generator",
+    "//services/device/public/mojom:usb_test_webui_js",
+    "//services/device/public/mojom:usb_webui_js",
     "//url/mojom:url_mojom_gurl_js",
     "//url/mojom:url_mojom_origin_js",
   ]
@@ -8067,7 +8067,7 @@ grit("resources") {
       "//chrome/browser/ui/webui/ash/crostini_installer:mojo_bindings_js",
       "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings_js",
       "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings_js",
-      "//chrome/browser/ui/webui/ash/vm:mojo_bindings_js__generator",
+      "//chrome/browser/ui/webui/ash/vm:mojo_bindings_webui_js",
       "//chrome/browser/ui/webui/settings/ash:mojom_js",
       "//chrome/browser/ui/webui/settings/ash/os_apps_page/mojom:mojom_js",
       "//ui/webui/resources/cr_components/app_management:mojo_bindings_js",
@@ -8109,14 +8109,14 @@ grit("dev_ui_browser_resources") {
   ]
 
   deps = [
-    "//chrome/browser/media:mojo_bindings",
+    "//chrome/browser/media:mojo_bindings_js",
     "//chrome/browser/resources/accessibility:build_ts",
     "//chrome/browser/resources/components:build_ts",
     "//chrome/browser/resources/engagement:build_ts",
     "//chrome/browser/resources/memory_internals:build_ts",
     "//chrome/browser/resources/predictors:build_ts",
     "//chrome/browser/ui/webui/internals/user_education:mojo_bindings_js",
-    "//components/site_engagement/core/mojom:mojo_bindings_js__generator",
+    "//components/site_engagement/core/mojom:mojo_bindings_webui_js",
   ]
 
   if (is_android || is_linux || is_chromeos || is_win) {
