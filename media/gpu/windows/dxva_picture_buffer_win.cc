@@ -21,11 +21,12 @@ namespace media {
 
 namespace {
 
-// These GLImage subclasses are just used to hold references to the underlying
+// GLImagePbuffer is just used to hold references to the underlying
 // image content so it can be destroyed when the textures are.
-class DummyGLImage : public gl::GLImage {
+class GLImagePbuffer : public gl::GLImage {
  public:
-  DummyGLImage(const gfx::Size& size) : size_(size) {}
+  GLImagePbuffer(const gfx::Size& size, EGLSurface surface)
+      : size_(size), surface_(surface) {}
 
   // gl::GLImage implementation.
   gfx::Size GetSize() override { return size_; }
@@ -51,18 +52,6 @@ class DummyGLImage : public gl::GLImage {
                     const std::string& dump_name) override {}
 
  protected:
-  ~DummyGLImage() override {}
-
- private:
-  gfx::Size size_;
-};
-
-class GLImagePbuffer : public DummyGLImage {
- public:
-  GLImagePbuffer(const gfx::Size& size, EGLSurface surface)
-      : DummyGLImage(size), surface_(surface) {}
-
- private:
   ~GLImagePbuffer() override {
     EGLDisplay egl_display = gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay();
 
@@ -71,6 +60,8 @@ class GLImagePbuffer : public DummyGLImage {
     eglDestroySurface(egl_display, surface_);
   }
 
+ private:
+  gfx::Size size_;
   EGLSurface surface_;
 };
 
