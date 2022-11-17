@@ -123,11 +123,6 @@ void* GetProcessBaseAddress(HANDLE process);
 // change between the return of the list and when you use them.
 absl::optional<ProcessHandleMap> GetCurrentProcessHandles();
 
-// Fallback function for GetCurrentProcessHandles. Should only be needed on
-// Windows 7 which doesn't support the API to query all process handles. This
-// uses a brute force method to get the process handles.
-absl::optional<ProcessHandleMap> GetCurrentProcessHandlesWin7();
-
 }  // namespace sandbox
 
 // Resolves a function name in NTDLL to a function pointer. The second parameter

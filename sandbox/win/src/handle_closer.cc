@@ -11,7 +11,6 @@
 #include "base/check_op.h"
 #include "base/memory/free_deleter.h"
 #include "base/ranges/algorithm.h"
-#include "base/win/windows_version.h"
 #include "sandbox/win/src/win_utils.h"
 
 namespace {

@@ -573,36 +573,6 @@ absl::optional<ProcessHandleMap> GetCurrentProcessHandles() {
   return handle_map;
 }
 
-absl::optional<ProcessHandleMap> GetCurrentProcessHandlesWin7() {
-  DWORD handle_count = UINT_MAX;
-  const int kInvalidHandleThreshold = 100;
-  const size_t kHandleOffset = 4;  // Handles are always a multiple of 4.
-
-  if (!::GetProcessHandleCount(::GetCurrentProcess(), &handle_count))
-    return absl::nullopt;
-  ProcessHandleMap handle_map;
-
-  uint32_t handle_value = 0;
-  int invalid_count = 0;
-
-  // Keep incrementing until we hit the number of handles reported by
-  // GetProcessHandleCount(). If we hit a very long sequence of invalid
-  // handles we assume that we've run past the end of the table.
-  while (handle_count && invalid_count < kInvalidHandleThreshold) {
-    handle_value += kHandleOffset;
-    HANDLE handle = base::win::Uint32ToHandle(handle_value);
-    std::wstring type_name;
-    if (!GetTypeNameFromHandle(handle, &type_name)) {
-      ++invalid_count;
-      continue;
-    }
-
-    --handle_count;
-    handle_map[type_name].push_back(handle);
-  }
-  return handle_map;
-}
-
 }  // namespace sandbox
 
 void ResolveNTFunctionPtr(const char* name, void* ptr) {

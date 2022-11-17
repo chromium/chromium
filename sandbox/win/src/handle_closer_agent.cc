@@ -10,7 +10,6 @@
 #include "base/logging.h"
 #include "base/win/static_constants.h"
 #include "base/win/win_util.h"
-#include "base/win/windows_version.h"
 #include "sandbox/win/src/win_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -151,11 +150,6 @@ bool HandleCloserAgent::CloseHandles() {
   // If the accurate handle enumeration fails then fallback to the old brute
   // force approach. This should only happen on Windows 7 and 8.0.
   absl::optional<ProcessHandleMap> handle_map = GetCurrentProcessHandles();
-  if (!handle_map) {
-    DCHECK(base::win::GetVersion() < base::win::Version::WIN8_1);
-    handle_map = GetCurrentProcessHandlesWin7();
-  }
-
   if (!handle_map)
     return false;
 

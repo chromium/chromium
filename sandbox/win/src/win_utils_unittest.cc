@@ -326,13 +326,7 @@ TEST(WinUtils, GetPathAndTypeFromHandle) {
 }
 
 TEST(WinUtils, GetCurrentProcessHandles) {
-  if (base::win::GetVersion() < base::win::Version::WIN8) {
-    ASSERT_FALSE(GetCurrentProcessHandles());
-    EXPECT_EQ(DWORD{ERROR_INVALID_PARAMETER}, ::GetLastError());
-  } else {
-    TestCurrentProcessHandles(GetCurrentProcessHandles);
-  }
-  TestCurrentProcessHandles(GetCurrentProcessHandlesWin7);
+  TestCurrentProcessHandles(GetCurrentProcessHandles);
 }
 
 }  // namespace sandbox
