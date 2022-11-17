@@ -52,12 +52,6 @@ sqlite_chromium_configuration_flags = [
   # Chrome doesn't use sqlite3_compileoption_{used,get}().
   "SQLITE_OMIT_COMPILEOPTION_DIAGS",
 
-  # Chrome doesn't ship the SQLite shell, so command auto-completion is not
-  # needed. Chrome developers who build the SQLite shell living at
-  # //third_party/sqlite:sqlite_shell for diagnostic purposes will have to
-  # live without auto-completion.
-  "SQLITE_OMIT_COMPLETE",
-
   # EXPLAIN's output is not stable across releases [1], so it should not be
   # used in Chrome. Skipping the EXPLAIN machinery also results in
   # non-trivial binary savings.
