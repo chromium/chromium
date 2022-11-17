@@ -47,8 +47,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  */
 public class CreatorCoordinator
         implements FeedAutoplaySettingsDelegate, FeedContentFirstLoadWatcher {
-    private static final String NATIVE_CONTENT_ID = "0";
-
     private final ViewGroup mViewGroup;
     private CreatorMediator mMediator;
     private Activity mActivity;

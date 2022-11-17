@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:gravity="center" >
+  <ImageView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      tools:ignore="ContentDescription"
+      android:src="@drawable/creator_content_unavailable_error_illustration" />
+  <TextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:padding="16dp"
+      android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+      android:gravity="center"
+      android:text="@string/cormorant_creator_content_unavailable_error_title" />
+  <TextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:paddingLeft="16dp"
+      android:paddingRight="16dp"
+      android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+      android:gravity="center"
+      android:text="@string/cormorant_creator_content_unavailable_error_description" />
+</LinearLayout>
