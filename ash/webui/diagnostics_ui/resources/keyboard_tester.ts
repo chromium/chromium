@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import './strings.m.js';
 
 import {KeyboardDiagramElement, MechanicalLayout as DiagramMechanicalLayout, PhysicalLayout as DiagramPhysicalLayout, TopRightKey as DiagramTopRightKey, TopRowKey as DiagramTopRowKey} from 'chrome://resources/ash/common/keyboard_diagram.js';
 import {KeyboardKeyState} from 'chrome://resources/ash/common/keyboard_key.js';
@@ -14,6 +15,7 @@ import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.j
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {InputDataProviderInterface, KeyboardInfo, KeyboardObserverReceiver, KeyEvent, KeyEventType, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey} from './input_data_provider.mojom-webui.js';
@@ -163,12 +165,18 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
         type: Array,
         computed: 'computeTopRowKeys_(keyboard)',
       },
+
+      isLoggedIn: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('isLoggedIn'),
+      },
     };
   }
 
   keyboard: KeyboardInfo;
   // TODO(crbug.com/1257138): use the proper type annotation instead of
   // string.
+  protected isLoggedIn: boolean;
   protected diagramTopRightKey_: string;
   private layoutIsKnown_: boolean;
   // TODO(crbug.com/1257138): use the proper type annotation instead of
