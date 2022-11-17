@@ -6937,5 +6937,5 @@ crbug.com/1085129 virtual/force-eager/external/wpt/measure-memory/detached.https
 crbug.com/1085129 virtual/force-eager/external/wpt/measure-memory/window-open.mix.https.window.html [ Skip Timeout ]
 crbug.com/1207146 virtual/force-eager/external/wpt/measure-memory/main-frame-and-worker.https.window.html [ Failure Pass ]
 
-crbug.com/1385413 [ Win10.20h2 ] media/controls/overflow-menu-pointer-selection.html [ Failure Pass ]
-crbug.com/1385413 [ Win10.20h2 ] media/controls/text-track-menu-pointer-selection.html [ Failure Pass ]
+crbug.com/1385413 [ Win ] media/controls/overflow-menu-pointer-selection.html [ Failure Pass ]
+crbug.com/1385413 [ Win ] media/controls/text-track-menu-pointer-selection.html [ Failure Pass ]
