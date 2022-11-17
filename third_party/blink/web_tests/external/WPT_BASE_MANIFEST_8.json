@@ -257526,6 +257526,16 @@
    }
   },
   "support": {
+   ".cache": {
+    "gitignore2.json": [
+     "48531bf5259e9c30432667063666c4f8751d0452",
+     []
+    ],
+    "mtime.json": [
+     "711bf7895fb57e893c5a72563560d9a102da8e4d",
+     []
+    ]
+   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -316720,6 +316730,10 @@
       "afbc38724a948f0ccda43812b2d445a6d344e141",
       []
      ],
+     "cssom-getPropertyValue-common-checks-expected.txt": [
+      "7dc527c588063c123b96d477780303c91cd70d48",
+      []
+     ],
      "cssstyledeclaration-cssfontrule.tentative-expected.txt": [
       "3c086eba4b94d008892cbbe3b1b07cda02014efb",
       []
@@ -374178,7 +374192,7 @@
      []
     ],
     "RTCConfiguration-iceServers-expected.txt": [
-     "c333f28867d5e5430064213aaeee4cbcf978315a",
+     "dceb1eea00e83ce54abf2c6583c56ccc01928a99",
      []
     ],
     "RTCConfiguration-iceServers.html.ini": [
@@ -422260,7 +422274,7 @@
        ]
       ],
       "font-variant-valid.html": [
-       "921498d738e030ea2a2fe1e424b9d391e2b69a1b",
+       "19d858189a9dcf3cf6ebf48b564d8752657043a8",
        [
         null,
         {}
@@ -442678,6 +442692,13 @@
      ],
      "cssom-fontfacerule.html": [
       "9a06808e3ae2a032620642ce2d9a0d42670f1f1a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cssom-getPropertyValue-common-checks.html": [
+      "29ca39a88a659bc5a60b3464617235dd30e9d42d",
       [
        null,
        {}
@@ -517012,7 +517033,7 @@
     "semantics": {
      "disabled-elements": {
       "disabled-event-dispatch.tentative.html": [
-       "1728adb11e1ae3aa44b37ca63838b8d0aa24ce02",
+       "66b12b417160ed3e3c9186971043f56bea7b7670",
        [
         null,
         {
