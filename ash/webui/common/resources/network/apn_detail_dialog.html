@@ -1,14 +1,50 @@
+<style include="cr-shared-style">
+  .advanced-settings {
+    font-size: 0.625rem;
+    font-weight: 500;
+    line-height: 10px;
+    --cr-section-padding: 4px;
+    --cr-section-min-height: 36px;
+  }
+
+  .cr-row-line {
+    --cr-section-min-height: 0px;
+  }
+</style>
 <cr-dialog id="apnDetailDialog"
     close-text="[[i18n('close')]]" show-on-attach>
   <div id="apnDetailDialogTitle" slot="title">
     [[i18n('apnDetailAddApnDialogTitle')]]
   </div>
   <div slot="body">
+    <!-- TODO(b/162365553): Add validation for the input box settings. -->
+    <cr-input id="apnInput" label="[[i18n('apn')]]" type="text">
+    </cr-input>
+    <cr-input id="usernameInput"
+        label="[[i18n('OncCellular-APN-Username')]]" type="text">
+    </cr-input>
+    <cr-input id="passwordInput"
+        label="[[i18n('OncCellular-APN-Password')]]" type="password">
+    </cr-input>
+    <cr-expand-button id="advancedSettingsBtn"
+        class="advanced-settings cr-row"
+        expanded="{{advancedSettingsExpanded_}}">
+      <div>[[i18n('apnDetailAdvancedSettings')]]</div>
+    </cr-expand-button>
+    <iron-collapse opened="[[advancedSettingsExpanded_]]">
+      <!-- TODO(b/162365553): Add advanced settings. -->
+    </iron-collapse>
+    <div class="cr-row-line cr-row"></div>
   </div>
   <div slot="button-container">
     <cr-button id="apnDetailCancelBtn" class="cancel-button"
         on-click="onCancelClicked_">
       [[i18n('cancel')]]
+    </cr-button>
+    <!-- TODO(b/162365553): Disable Add button unless validated -->
+    <cr-button id="apnDetailAddBtn" class="action-button"
+        disabled>
+      [[i18n('add')]]
     </cr-button>
   </div>
 </cr-dialog>

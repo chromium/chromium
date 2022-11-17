@@ -9,6 +9,10 @@
 
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.js';
+import '//resources/cr_elements/cr_input/cr_input.js';
+import '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import '//resources/cr_elements/cr_shared_style.css.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -31,6 +35,16 @@ class ApnDetailDialog extends ApnDetailDialogElementBase {
 
   static get template() {
     return getTemplate();
+  }
+
+  static get properties() {
+    return {
+      /** @private */
+      advancedSettingsExpanded_: {
+        type: Boolean,
+        value: false,
+      },
+    };
   }
 
   /**

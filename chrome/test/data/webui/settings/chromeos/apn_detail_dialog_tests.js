@@ -39,6 +39,9 @@ suite('ApnDetailDialog', function() {
         apnDetailDialog.i18n('apnDetailAddApnDialogTitle'),
         apnDetailDialog.shadowRoot.querySelector('#apnDetailDialogTitle')
             .innerText);
+    assertTrue(!!apnDetailDialog.shadowRoot.querySelector('#apnInput'));
+    assertTrue(!!apnDetailDialog.shadowRoot.querySelector('#usernameInput'));
+    assertTrue(!!apnDetailDialog.shadowRoot.querySelector('#passwordInput'));
   });
 
   test('Clicking the cancel button fires the close event', async function() {
@@ -51,4 +54,17 @@ suite('ApnDetailDialog', function() {
     await closeEventPromise;
     assertFalse(!!apnDetailDialog.open);
   });
+
+  test(
+      'Clicking on the advanced settings button expands/collapses section',
+      function() {
+        const isAdvancedSettingShowing = () =>
+            apnDetailDialog.shadowRoot.querySelector('iron-collapse').opened;
+        assertFalse(!!isAdvancedSettingShowing());
+        const advancedSettingsBtn =
+            apnDetailDialog.shadowRoot.querySelector('#advancedSettingsBtn');
+        assertTrue(!!advancedSettingsBtn);
+        advancedSettingsBtn.click();
+        assertTrue(!!isAdvancedSettingShowing());
+      });
 });
