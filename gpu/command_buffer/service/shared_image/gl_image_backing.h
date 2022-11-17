@@ -134,10 +134,7 @@ class GPU_GLES2_EXPORT GLImageBacking
   bool BindOrCopyImageIfNeeded();
   bool image_bind_or_copy_needed_ = true;
 
-  void RetainGLTexture();
   void ReleaseGLTexture(bool have_context);
-  size_t gl_texture_retain_count_ = 0;
-  bool gl_texture_retained_for_legacy_mailbox_ = false;
 
   const GLTextureImageBackingHelper::InitializeGLTextureParams gl_params_;
 

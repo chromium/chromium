@@ -93,8 +93,6 @@ std::unique_ptr<GLImageBacking> GLImageBacking::CreateFromGLTexture(
       alpha_type, usage, params));
 
   shared_image->passthrough_texture_ = std::move(wrapped_gl_texture);
-  shared_image->gl_texture_retained_for_legacy_mailbox_ = true;
-  shared_image->gl_texture_retain_count_ = 1;
   shared_image->image_bind_or_copy_needed_ = false;
 
   return shared_image;
@@ -127,35 +125,10 @@ GLImageBacking::GLImageBacking(scoped_refptr<gl::GLImage> image,
 }
 
 GLImageBacking::~GLImageBacking() {
-  if (gl_texture_retained_for_legacy_mailbox_)
-    ReleaseGLTexture(have_context());
-  DCHECK_EQ(gl_texture_retain_count_, 0u);
-}
-
-void GLImageBacking::RetainGLTexture() {
-  gl_texture_retain_count_ += 1;
-  if (gl_texture_retain_count_ > 1)
-    return;
-
-  // Allocate the GL texture.
-  GLTextureImageBackingHelper::MakeTextureAndSetParameters(
-      gl_params_.target, 0 /* service_id */,
-      gl_params_.framebuffer_attachment_angle, &passthrough_texture_, nullptr);
-
-  // Set the GLImage to be initially unbound from the GL texture.
-  image_bind_or_copy_needed_ = true;
-  passthrough_texture_->SetEstimatedSize(
-      viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size(), format()));
-  passthrough_texture_->SetLevelImage(gl_params_.target, 0, image_.get());
-  passthrough_texture_->set_is_bind_pending(true);
+  ReleaseGLTexture(have_context());
 }
 
 void GLImageBacking::ReleaseGLTexture(bool have_context) {
-  DCHECK_GT(gl_texture_retain_count_, 0u);
-  gl_texture_retain_count_ -= 1;
-  if (gl_texture_retain_count_ > 0)
-    return;
-
   // If the cached promise texture is referencing the GL texture, then it needs
   // to be deleted, too.
   if (cached_promise_texture_) {
@@ -241,9 +214,6 @@ std::unique_ptr<GLTextureImageRepresentation> GLImageBacking::ProduceGLTexture(
 std::unique_ptr<GLTexturePassthroughImageRepresentation>
 GLImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
                                             MemoryTypeTracker* tracker) {
-  // The corresponding release will be done when the returned representation is
-  // destroyed, in GLTextureImageRepresentationRelease.
-  RetainGLTexture();
   DCHECK(passthrough_texture_);
   return std::make_unique<GLTexturePassthroughGLCommonRepresentation>(
       manager, this, this, tracker, passthrough_texture_);
@@ -276,9 +246,6 @@ std::unique_ptr<SkiaImageRepresentation> GLImageBacking::ProduceSkia(
     scoped_refptr<SharedContextState> context_state) {
   GLTextureImageRepresentationClient* gl_client = nullptr;
   if (context_state->GrContextIsGL()) {
-    // The corresponding release will be done when the returned representation
-    // is destroyed, in GLTextureImageRepresentationRelease.
-    RetainGLTexture();
     gl_client = this;
   }
 
@@ -370,7 +337,8 @@ void GLImageBacking::GLTextureImageRepresentationEndAccess(bool readonly) {
 }
 
 void GLImageBacking::GLTextureImageRepresentationRelease(bool has_context) {
-  ReleaseGLTexture(has_context);
+  // No action needed: This class retains the passed-in texture for its
+  // lifetime, and releases it in its destructor.
 }
 
 bool GLImageBacking::BindOrCopyImageIfNeeded() {
