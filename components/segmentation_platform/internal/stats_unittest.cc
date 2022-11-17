@@ -174,7 +174,7 @@ TEST(StatsTest, RecordModelExecutionResult) {
   // Test default case of multiplying result by 100.
   stats::RecordModelExecutionResult(
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES, 0.19,
-      proto::SegmentationModelMetadata::RETURN_TYPE_FLOAT);
+      proto::SegmentationModelMetadata::RETURN_TYPE_PROBABILITY);
   EXPECT_EQ(1,
             tester.GetBucketCount(
                 "SegmentationPlatform.ModelExecution.Result.QueryTiles", 19));
@@ -187,6 +187,14 @@ TEST(StatsTest, RecordModelExecutionResult) {
       1,
       tester.GetBucketCount(
           "SegmentationPlatform.ModelExecution.Result.SearchUserSegment", 75));
+
+  // Test segments that returns an unbound float result, which should be
+  // recorded as int.
+  stats::RecordModelExecutionResult(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE, 75.6,
+      proto::SegmentationModelMetadata::RETURN_TYPE_INTEGER);
+  EXPECT_EQ(1, tester.GetBucketCount(
+                   "SegmentationPlatform.ModelExecution.Result.Share", 75));
 }
 
 }  // namespace stats

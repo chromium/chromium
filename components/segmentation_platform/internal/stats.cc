@@ -374,6 +374,13 @@ void RecordModelExecutionResult(
                                      SegmentIdToHistogramVariant(segment_id),
                                  base::ClampRound(result));
     return;
+  } else if (return_type ==
+             proto::SegmentationModelMetadata::RETURN_TYPE_INTEGER) {
+    // This type of model return an unbound float score.
+    base::UmaHistogramPercentage("SegmentationPlatform.ModelExecution.Result." +
+                                     SegmentIdToHistogramVariant(segment_id),
+                                 static_cast<int>(result));
+    return;
   }
   // All other models type return score between 0 and 1.
   base::UmaHistogramPercentage("SegmentationPlatform.ModelExecution.Result." +
