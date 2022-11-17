@@ -29,13 +29,6 @@ namespace blink {
 
 class ExecutionContext;
 
-constexpr const char* kSRGBImageColorSpaceName = "srgb";
-constexpr const char* kRec2020ImageColorSpaceName = "rec2020";
-constexpr const char* kDisplayP3ImageColorSpaceName = "display-p3";
-
-constexpr const char* kRGBA8ImagePixelFormatName = "uint8";
-constexpr const char* kRGBA16ImagePixelFormatName = "uint16";
-
 class CORE_EXPORT CanvasAsyncBlobCreator
     : public GarbageCollected<CanvasAsyncBlobCreator> {
  public:
@@ -52,7 +45,6 @@ class CORE_EXPORT CanvasAsyncBlobCreator
   };
   enum ToBlobFunctionType {
     kHTMLCanvasToBlobCallback,
-    kHTMLCanvasConvertToBlobPromise,
     kOffscreenCanvasConvertToBlobPromise
   };
 
@@ -80,9 +72,6 @@ class CORE_EXPORT CanvasAsyncBlobCreator
   virtual void SignalTaskSwitchInCompleteTimeoutEventForTesting() {}
 
   virtual void Trace(Visitor*) const;
-
-  static sk_sp<SkColorSpace> BlobColorSpaceToSkColorSpace(
-      String blob_color_space);
 
   bool EncodeImageForConvertToBlobTest();
   Vector<unsigned char> GetEncodedImageForConvertToBlobTest() {

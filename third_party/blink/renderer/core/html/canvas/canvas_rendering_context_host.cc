@@ -329,9 +329,8 @@ ScriptPromise CanvasRenderingContextHost::convertToBlob(
     const ImageEncodeOptions* options,
     ExceptionState& exception_state,
     const CanvasRenderingContext* const context) {
-  WTF::String object_name = "Canvas";
-  if (IsOffscreenCanvas())
-    object_name = "OffscreenCanvas";
+  DCHECK(IsOffscreenCanvas());
+  WTF::String object_name = "OffscreenCanvas";
   std::stringstream error_msg;
 
   if (IsOffscreenCanvas() && IsNeutered()) {
@@ -372,11 +371,7 @@ ScriptPromise CanvasRenderingContextHost::convertToBlob(
   if (image_bitmap) {
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
     CanvasAsyncBlobCreator::ToBlobFunctionType function_type =
-        CanvasAsyncBlobCreator::kHTMLCanvasConvertToBlobPromise;
-    if (IsOffscreenCanvas()) {
-      function_type =
-          CanvasAsyncBlobCreator::kOffscreenCanvasConvertToBlobPromise;
-    }
+        CanvasAsyncBlobCreator::kOffscreenCanvasConvertToBlobPromise;
     auto* execution_context = ExecutionContext::From(script_state);
     auto* async_creator = MakeGarbageCollected<CanvasAsyncBlobCreator>(
         image_bitmap, options, function_type, start_time, execution_context,
