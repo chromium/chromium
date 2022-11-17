@@ -70,7 +70,6 @@
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
-#include "components/lens/lens_features.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -178,9 +177,7 @@ using ::pdf_extension_test_util::ConvertPageCoordToScreenCoord;
 using ::pdf_extension_test_util::GetOnlyMimeHandlerView;
 using ::pdf_extension_test_util::GetPdfPluginFrames;
 using ::pdf_extension_test_util::SetInputFocusOnPlugin;
-using ::testing::Contains;
 using ::testing::IsEmpty;
-using ::testing::Not;
 using ::testing::StartsWith;
 using ::ui::AXTreeFormatter;
 
@@ -2115,66 +2112,6 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PrintButton) {
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #endif  // BUILDFLAG(ENABLE_PRINTING)
-
-class PDFExtensionRegionSearchTest : public PDFExtensionTest {
- protected:
-  std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
-    auto enabled = PDFExtensionTest::GetEnabledFeatures();
-    enabled.push_back(lens::features::kLensStandalone);
-    return enabled;
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(PDFExtensionRegionSearchTest,
-                       NoContextMenuCommandExtensionMainFrame) {
-  content::WebContents* guest_contents =
-      LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));
-
-  // Makes sure that the correct frame invoked the context menu.
-  content::ContextMenuInterceptor menu_interceptor(
-      guest_contents->GetPrimaryMainFrame());
-
-  // Captures the command IDs of the context menu.
-  ContextMenuWaiter menu_observer;
-
-  guest_contents->GetPrimaryMainFrame()
-      ->GetRenderWidgetHost()
-      ->ShowContextMenuAtPoint({1, 1}, ui::MENU_SOURCE_MOUSE);
-
-  menu_observer.WaitForMenuOpenAndClose();
-  menu_interceptor.Wait();
-
-  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
-              Not(Contains(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH)));
-  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
-              Not(Contains(IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH)));
-}
-
-IN_PROC_BROWSER_TEST_F(PDFExtensionRegionSearchTest,
-                       NoContextMenuCommandPluginFrame) {
-  content::WebContents* guest_contents =
-      LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));
-
-  // Makes sure that the correct frame invoked the context menu.
-  content::ContextMenuInterceptor menu_interceptor(
-      GetPluginFrame(guest_contents));
-
-  // Captures the command IDs of the context menu.
-  ContextMenuWaiter menu_observer;
-
-  SetInputFocusOnPlugin(guest_contents);
-  GetPluginFrame(guest_contents)
-      ->GetRenderWidgetHost()
-      ->ShowContextMenuAtPoint({1, 1}, ui::MENU_SOURCE_MOUSE);
-
-  menu_observer.WaitForMenuOpenAndClose();
-  menu_interceptor.Wait();
-
-  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
-              Not(Contains(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH)));
-  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
-              Not(Contains(IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH)));
-}
 
 namespace {
 
