@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog.h"
+#include <memory>
 #include <string>
 
 #include "base/metrics/user_metrics_action.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
 #include "chrome/browser/ui/views/site_data/site_data_row_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/browsing_data/content/browsing_data_model.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -28,19 +30,15 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/cookies/cookie_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_class_properties.h"
+#include "url/origin.h"
 
 namespace {
-
-struct PageSpecificSiteDataDialogSite {
-  url::Origin origin;
-  ContentSetting setting;
-  bool is_fully_partitioned;
-};
 
 struct PageSpecificSiteDataDialogSection {
   std::u16string title;
@@ -145,6 +143,11 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     blocked_cookies_tree_model_ = CreateCookiesTreeModel(
         content_settings->blocked_local_shared_objects());
 
+    allowed_browsing_data_model_ =
+        content_settings->allowed_browsing_data_model();
+    blocked_browsing_data_model_ =
+        content_settings->blocked_browsing_data_model();
+
     Profile* profile =
         Profile::FromBrowserContext(web_contents_->GetBrowserContext());
     favicon_cache_ = std::make_unique<FaviconCache>(
@@ -188,23 +191,67 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
 
   std::vector<PageSpecificSiteDataDialogSite> GetAllSites() {
     std::map<std::string, PageSpecificSiteDataDialogSite> sites_map;
-    for (const auto& node :
+    for (const std::unique_ptr<CookieTreeNode>& node :
          allowed_cookies_tree_model_->GetRoot()->children()) {
+      std::string host_name = node->GetDetailedInfo().origin.host();
+      auto existing_site = sites_map.find(host_name);
+      if (existing_site == sites_map.end()) {
+        sites_map.emplace(
+            host_name,
+            CreateSiteFromHostNode(node.get(), /*from_allowed_tree=*/true));
+      } else {
+        // To display the result entry as fully partitioned, both entries have
+        // to be partitioned.
+        existing_site->second.is_fully_partitioned &=
+            IsCookieTreeNodeFullyPartitioned(node.get());
+      }
       sites_map.emplace(
           node->GetDetailedInfo().origin.host(),
           CreateSiteFromHostNode(node.get(), /*from_allowed_tree=*/true));
     }
-    for (const auto& node :
+    for (const BrowsingDataModel::BrowsingDataEntryView& entry :
+         *allowed_browsing_data_model_) {
+      auto existing_site = sites_map.find(*entry.primary_host);
+      if (existing_site == sites_map.end()) {
+        sites_map.emplace(
+            *entry.primary_host,
+            CreateSiteFromEntryView(entry, /*from_allowed_model=*/true));
+      } else {
+        // To display the result entry as fully partitioned, entries from both
+        // models have to be partitioned.
+        existing_site->second.is_fully_partitioned &=
+            IsBrowsingDataEntryViewFullyPartitioned(entry);
+      }
+    }
+    for (const std::unique_ptr<CookieTreeNode>& node :
          blocked_cookies_tree_model_->GetRoot()->children()) {
-      auto entry = sites_map.find(node->GetDetailedInfo().origin.host());
+      auto existing_site =
+          sites_map.find(node->GetDetailedInfo().origin.host());
       // If there are multiple entries from the same tree, ignore the entry from
       // the blocked tree. It might be caused by partitioned allowed cookies and
       // regular blocked cookies or by cookies being set after creating an
-      // exception and not reloading the page.
-      if (entry == sites_map.end()) {
+      // exception and not reloading the page. Existing site entries doesn't
+      // need to be updated as partitioned state isn't relevant for blocked
+      // entries.
+      if (existing_site == sites_map.end()) {
         sites_map.emplace(
             node->GetDetailedInfo().origin.host(),
             CreateSiteFromHostNode(node.get(), /*from_allowed_tree=*/false));
+      }
+    }
+    for (const BrowsingDataModel::BrowsingDataEntryView& entry :
+         *blocked_browsing_data_model_) {
+      auto existing_site = sites_map.find(*entry.primary_host);
+      if (existing_site == sites_map.end()) {
+        // If there are multiple entries from the same tree, ignore the entry
+        // from the blocked tree. It might be caused by partitioned allowed
+        // cookies and regular blocked cookies or by cookies being set after
+        // creating an exception and not reloading the page. Existing site
+        // entries doesn't need to be updated as partitioned state isn't
+        // relevant for blocked entries.
+        sites_map.emplace(
+            *entry.primary_host,
+            CreateSiteFromEntryView(entry, /*from_allowed_model=*/false));
       }
     }
 
@@ -288,12 +335,53 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
   PageSpecificSiteDataDialogSite CreateSiteFromHostNode(
       CookieTreeNode* node,
       bool from_allowed_tree) {
-    GURL current_url = web_contents_->GetVisibleURL();
+    url::Origin origin = node->GetDetailedInfo().origin;
+    return CreateSite(
+        origin, from_allowed_tree,
+        from_allowed_tree && IsCookieTreeNodeFullyPartitioned(node));
+  }
 
+  PageSpecificSiteDataDialogSite CreateSiteFromEntryView(
+      const BrowsingDataModel::BrowsingDataEntryView& entry,
+      bool from_allowed_model) {
+    GURL current_url = web_contents_->GetVisibleURL();
+    // TODO(crbug.com/1271155): BDM provides host name only while
+    // CookieTreeModel provides url::Origin. This classes works with
+    // url::Origin, so here we convert host name to origin with some assumptions
+    // (which might not be true). We should either convert to work only with
+    // host names or BDM should return origins.
+    GURL site_url = net::cookie_util::CookieOriginToURL(
+        *entry.primary_host, current_url.SchemeIsCryptographic());
+    return CreateSite(url::Origin::Create(site_url), from_allowed_model,
+                      IsBrowsingDataEntryViewFullyPartitioned(entry));
+  }
+
+  bool IsBrowsingDataEntryViewFullyPartitioned(
+      const BrowsingDataModel::BrowsingDataEntryView& entry) {
+    // TODO(crbug.com/1378703): Implement showing partitioned state from
+    // BrowsingDataModel.
+    return false;
+  }
+
+  bool IsCookieTreeNodeFullyPartitioned(CookieTreeNode* node) {
+    GURL current_url = web_contents_->GetVisibleURL();
+    url::Origin origin = node->GetDetailedInfo().origin;
+    // TODO(crbug.com/1344787): Add a test to verify partitioned logic.
+    // TODO(crbug.com/1271155): Consider reporting partitioned storage access
+    // directly and remove this.
+    return GetEtldPlusOne(origin) !=
+               GetEtldPlusOne(url::Origin::Create(current_url)) &&
+           IsOnlyPartitionedStorageAccessAllowed(origin) &&
+           AreAllCookiesPartitioned(node);
+  }
+
+  PageSpecificSiteDataDialogSite CreateSite(url::Origin origin,
+                                            bool from_allowed_model,
+                                            bool is_fully_partitioned) {
     PageSpecificSiteDataDialogSite site;
-    site.origin = node->GetDetailedInfo().origin;
-    if (from_allowed_tree) {
-      // If the entry is in the allowed tree, it should have either allowed or
+    site.origin = origin;
+    if (from_allowed_model) {
+      // If the entry is in the allowed model, it should have either allowed or
       // clear-on-exit state. If the dialog is reopened after making changes but
       // before reloading the page, it will show the state of accesses on the
       // page load.
@@ -306,15 +394,8 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     } else {
       site.setting = CONTENT_SETTING_BLOCK;
     }
+    site.is_fully_partitioned = is_fully_partitioned;
     // TODO(crbug.com/1344787): Handle sources other than SETTING_SOURCE_USER.
-
-    // TODO(crbug.com/1344787): Add a test to verify partitioned logic.
-    site.is_fully_partitioned =
-        GetEtldPlusOne(site.origin) !=
-            GetEtldPlusOne(url::Origin::Create(current_url)) &&
-        IsOnlyPartitionedStorageAccessAllowed(site.origin) &&
-        AreAllCookiesPartitioned(node);
-
     return site;
   }
 
@@ -378,6 +459,8 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
   // the actual content settings to determine the state.
   std::unique_ptr<CookiesTreeModel> allowed_cookies_tree_model_;
   std::unique_ptr<CookiesTreeModel> blocked_cookies_tree_model_;
+  raw_ptr<BrowsingDataModel> allowed_browsing_data_model_;
+  raw_ptr<BrowsingDataModel> blocked_browsing_data_model_;
   std::unique_ptr<FaviconCache> favicon_cache_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   raw_ptr<HostContentSettingsMap> host_content_settings_map_;
@@ -450,6 +533,23 @@ class PageSpecificSiteDataSectionView : public views::BoxLayoutView {
 };
 
 }  // namespace
+
+namespace test {
+
+PageSpecificSiteDataDialogTestApi::PageSpecificSiteDataDialogTestApi(
+    content::WebContents* web_contents)
+    : delegate_(std::make_unique<PageSpecificSiteDataDialogModelDelegate>(
+          web_contents)) {}
+
+PageSpecificSiteDataDialogTestApi::~PageSpecificSiteDataDialogTestApi() =
+    default;
+
+std::vector<PageSpecificSiteDataDialogSite>
+PageSpecificSiteDataDialogTestApi::GetAllSites() {
+  return delegate_->GetAllSites();
+}
+
+}  // namespace test
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogRow);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogFirstPartySection);

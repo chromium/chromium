@@ -19,6 +19,7 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/browsing_data/content/browsing_data_model.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/browsing_data/content/local_shared_objects_container.h"
 #include "components/content_settings/common/content_settings_manager.mojom.h"
@@ -322,6 +323,14 @@ class PageSpecificContentSettings
     return blocked_local_shared_objects_;
   }
 
+  BrowsingDataModel* allowed_browsing_data_model() const {
+    return allowed_browsing_data_model_.get();
+  }
+
+  BrowsingDataModel* blocked_browsing_data_model() const {
+    return blocked_browsing_data_model_.get();
+  }
+
   void OnContentBlocked(ContentSettingsType type);
   void OnContentAllowed(ContentSettingsType type);
 
@@ -342,6 +351,7 @@ class PageSpecificContentSettings
   void OnTopicAccessed(const url::Origin api_origin,
                        bool blocked_by_policy,
                        privacy_sandbox::CanonicalTopic topic);
+  void OnTrustTokenAccessed(const url::Origin api_origin, bool blocked);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   void OnProtectedMediaIdentifierPermissionSet(const GURL& requesting_frame,
@@ -478,6 +488,9 @@ class PageSpecificContentSettings
   // Stores the blocked/allowed cookies.
   browsing_data::LocalSharedObjectsContainer allowed_local_shared_objects_;
   browsing_data::LocalSharedObjectsContainer blocked_local_shared_objects_;
+
+  std::unique_ptr<BrowsingDataModel> allowed_browsing_data_model_;
+  std::unique_ptr<BrowsingDataModel> blocked_browsing_data_model_;
 
   // The origin of the media stream request. Note that we only support handling
   // settings for one request per tab. The latest request's origin will be
