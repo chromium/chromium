@@ -5922,24 +5922,6 @@
             ]
         }
     ],
-    "IOSStaticResourceServing": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_SRS",
-                    "params": {
-                        "DiscoverFeedSRSReconstructedTemplatesEnabled": "true"
-                    },
-                    "enable_features": [
-                        "EnableDiscoverFeedStaticResourceServing"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSTFLiteLanguageDetection": [
         {
             "platforms": [

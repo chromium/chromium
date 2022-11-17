@@ -19,6 +19,7 @@ extern const int kCurrentTrialVersion;
 // Feature to choose between the old Zine feed or the new Discover feed in the
 // Bling new tab page.
 // Use IsDiscoverFeedEnabled() instead of this constant directly.
+// TODO(crbug.com/1385512): Remove this.
 BASE_DECLARE_FEATURE(kDiscoverFeedInNtp);
 
 // Feature to use one NTP for all tabs in a Browser.
@@ -56,9 +57,11 @@ extern const char kTrendingQueriesFlagOverrideFieldTrialName[];
 
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
+// TODO(crbug.com/1385512): Remove this.
 extern const char kDiscoverFeedIsNativeUIEnabled[];
 
 // Whether the Discover feed is enabled instead of the Zine feed.
+// TODO(crbug.com/1385512): Remove this.
 bool IsDiscoverFeedEnabled();
 
 // Whether the Content Suggestions UI Module Refresh feature is enabled.

@@ -11,6 +11,7 @@
 extern const char kDefaultDiscoverReferrer[];
 
 // The feature parameter to specify the referrer for Discover Feed navigations.
+// TODO(crbug.com/1385512): Remove this.
 extern const char kDiscoverReferrerParameter[];
 
 // The width of the feed content. Currently hard coded in Mulder.

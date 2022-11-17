@@ -173,11 +173,6 @@ extern const char kDefaultBrowserIntentsShowSettingsDescription[];
 extern const char kDetectMainThreadFreezeName[];
 extern const char kDetectMainThreadFreezeDescription[];
 
-// Title and description for the flag to replace the Zine feed with the
-// Discover feed in the Bling NTP.
-extern const char kDiscoverFeedInNtpName[];
-extern const char kDiscoverFeedInNtpDescription[];
-
 // Title and description for the flag to enable checking feed visibility on
 // attention log start.
 extern const char kEnableCheckVisibilityOnAttentionLogStartName[];
@@ -237,20 +232,10 @@ extern const char kEnableCBDSignOutDescription[];
 extern const char kEnableDiscoverFeedDiscoFeedEndpointName[];
 extern const char kEnableDiscoverFeedDiscoFeedEndpointDescription[];
 
-// Title and description for the flag to enable the discover feed live preview
-// in long-press feed context menu.
-extern const char kEnableDiscoverFeedPreviewName[];
-extern const char kEnableDiscoverFeedPreviewDescription[];
-
 // Title and description for the flag to show ghost cards when refreshing the
 // discover feed.
 extern const char kEnableDiscoverFeedGhostCardsName[];
 extern const char kEnableDiscoverFeedGhostCardsDescription[];
-
-// Title and description for the flag to enable the discover feed static
-// resource serving.
-extern const char kEnableDiscoverFeedStaticResourceServingName[];
-extern const char kEnableDiscoverFeedStaticResourceServingDescription[];
 
 // Title and description for the flag to remove the Feed from the NTP.
 extern const char kEnableFeedAblationName[];

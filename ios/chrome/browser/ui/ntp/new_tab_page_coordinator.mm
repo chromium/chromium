@@ -816,7 +816,7 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
 
 - (UIViewController*)discoverFeedPreviewWithURL:(const GURL)URL {
   std::string referrerURL = base::GetFieldTrialParamValueByFeature(
-      kEnableDiscoverFeedPreview, kDiscoverReferrerParameter);
+      kOverrideFeedSettings, kFeedSettingDiscoverReferrerParameter);
   if (referrerURL.empty()) {
     referrerURL = kDefaultDiscoverReferrer;
   }

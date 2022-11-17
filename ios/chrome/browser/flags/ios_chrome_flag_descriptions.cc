@@ -202,11 +202,6 @@ const char kDetectMainThreadFreezeDescription[] =
     "A crash report will be uploaded if the main thread is frozen more than "
     "the time specified by this flag.";
 
-const char kDiscoverFeedInNtpName[] = "Enable new content Suggestion Feed";
-const char kDiscoverFeedInNtpDescription[] =
-    "When enabled, replaces articles feed with new content Suggestion Feed in "
-    "the NTP.";
-
 const char kEnableDiscoverFeedTopSyncPromoName[] =
     "Enable the sync promo on top of the feed.";
 const char kEnableDiscoverFeedTopSyncPromoDescription[] =
@@ -252,20 +247,10 @@ const char kEnableDiscoverFeedDiscoFeedEndpointName[] =
 const char kEnableDiscoverFeedDiscoFeedEndpointDescription[] =
     "Enable using the discofeed endpoint for the discover feed.";
 
-const char kEnableDiscoverFeedPreviewName[] = "Enable discover feed preview";
-const char kEnableDiscoverFeedPreviewDescription[] =
-    "Enable showing a live preview for discover feed long-press menu.";
-
 const char kEnableDiscoverFeedGhostCardsName[] =
     "Enable discover feed ghost cards";
 const char kEnableDiscoverFeedGhostCardsDescription[] =
     "Show ghost cards when refreshing the discover feed.";
-
-const char kEnableDiscoverFeedStaticResourceServingName[] =
-    "Enable discover feed static resource serving";
-const char kEnableDiscoverFeedStaticResourceServingDescription[] =
-    "When enabled the discover feed will optimize the request of resources "
-    "coming from the server.";
 
 const char kEnableFREDefaultBrowserPromoScreenName[] =
     "Enable FRE default browser screen";

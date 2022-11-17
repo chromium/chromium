@@ -145,7 +145,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.additional_args.push_back(std::string("--") +
                                    switches::kEnableDiscoverFeed);
-  config.features_enabled.push_back(kDiscoverFeedInNtp);
+  config.features_disabled.push_back(kEnableFeedAblation);
 
   config.features_enabled.push_back(kContentSuggestionsUIModuleRefresh);
   if ([self isRunningTest:@selector(MAYBE_testTrendingQueries)]) {

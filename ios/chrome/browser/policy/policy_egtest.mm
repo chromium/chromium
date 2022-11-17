@@ -388,7 +388,7 @@ NSString* const kDomain2 = @"domain2.com";
   // Relaunch the app with Discover enabled, as it is required for this test.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_enabled.push_back(kDiscoverFeedInNtp);
+  config.features_disabled.push_back(kEnableFeedAblation);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   NSString* feedTitle = l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE);

@@ -2108,19 +2108,9 @@
     "expiry_milestone": 106
   },
   {
-    "name": "enable-discover-feed-preview",
-    "owners": [ "tinazwang", "sczs" ],
-    "expiry_milestone": 101
-  },
-  {
-    "name": "enable-discover-feed-static-resource-serving",
-    "owners": [ "adamta", "sczs" ],
-    "expiry_milestone": 106
-  },
-  {
     "name": "enable-discover-feed-top-sync-promo",
-    "owners": [ "mrefaat", "sczs"],
-    "expiry_milestone": 106
+    "owners": [ "adamta", "mrefaat", "sczs"],
+    "expiry_milestone": 118
   },
   {
     "name": "enable-discover-multi-column",
@@ -2278,7 +2268,7 @@
   {
     "name": "enable-feed-ablation",
     "owners": [ "adamta", "sczs" ],
-    "expiry_milestone": 106
+    "expiry_milestone": 118
   },
   {
     "name": "enable-feed-position-on-ntp",
@@ -4711,11 +4701,6 @@
     "name": "network-service-in-process",
     "owners": [ "yhirano", "network-service-dev" ],
     "expiry_milestone": 120
-  },
-  {
-    "name": "new-content-suggestions-feed",
-    "owners": [ "adamta@google.com", "sczs", "gogerald", "bling-flags@google.com" ],
-    "expiry_milestone": 93
   },
   {
     "name": "new-mobile-identity-consistency-fre",

@@ -243,24 +243,6 @@ const FeatureEntry::FeatureVariation
          std::size(kDefaultBrowserFullscreenPromoExperimentRemindMeLater),
          nullptr}};
 
-const FeatureEntry::FeatureParam kDiscoverFeedInNtpEnableNativeUI[] = {
-    {kDiscoverFeedIsNativeUIEnabled, "true"}};
-const FeatureEntry::FeatureVariation kDiscoverFeedInNtpVariations[] = {
-    {"Native UI", kDiscoverFeedInNtpEnableNativeUI,
-     std::size(kDiscoverFeedInNtpEnableNativeUI), nullptr}};
-
-const FeatureEntry::FeatureParam kDiscoverFeedSRSReconstructedTemplates[] = {
-    {kDiscoverFeedSRSReconstructedTemplatesEnabled, "true"}};
-const FeatureEntry::FeatureParam kDiscoverFeedSRSPreloadTemplates[] = {
-    {kDiscoverFeedSRSPreloadTemplatesEnabled, "true"}};
-const FeatureEntry::FeatureVariation
-    kEnableDiscoverFeedStaticResourceServingVariations[] = {
-        {"Reconstruct Templates", kDiscoverFeedSRSReconstructedTemplates,
-         std::size(kDiscoverFeedSRSReconstructedTemplates), nullptr},
-        {"Preload Templates", kDiscoverFeedSRSPreloadTemplates,
-         std::size(kDiscoverFeedSRSPreloadTemplates), nullptr},
-};
-
 const FeatureEntry::FeatureParam kDiscoverFeedTopSyncPromoFullWithTitle[] = {
     {kDiscoverFeedTopSyncPromoStyleFullWithTitle, "true"},
     {kDiscoverFeedTopSyncPromoStyleCompact, "false"}};
@@ -654,10 +636,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillCreditCardUploadName,
      flag_descriptions::kAutofillCreditCardUploadDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillUpstream)},
-    {"enable-discover-feed-preview",
-     flag_descriptions::kEnableDiscoverFeedPreviewName,
-     flag_descriptions::kEnableDiscoverFeedPreviewDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kEnableDiscoverFeedPreview)},
     {"use-sync-sandbox", flag_descriptions::kSyncSandboxName,
      flag_descriptions::kSyncSandboxDescription, flags_ui::kOsIos,
      SINGLE_VALUE_TYPE_AND_VALUE(
@@ -751,11 +729,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillSaveCardDismissOnNavigation)},
-    {"new-content-suggestions-feed", flag_descriptions::kDiscoverFeedInNtpName,
-     flag_descriptions::kDiscoverFeedInNtpDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kDiscoverFeedInNtp,
-                                    kDiscoverFeedInNtpVariations,
-                                    "IOSDiscoverFeed")},
     {"expanded-tab-strip", flag_descriptions::kExpandedTabStripName,
      flag_descriptions::kExpandedTabStripDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kExpandedTabStrip)},
@@ -910,14 +883,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseLoadSimulatedRequestForOfflinePageDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kUseLoadSimulatedRequestForOfflinePage)},
-    {"enable-discover-feed-static-resource-serving",
-     flag_descriptions::kEnableDiscoverFeedStaticResourceServingName,
-     flag_descriptions::kEnableDiscoverFeedStaticResourceServingDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         kEnableDiscoverFeedStaticResourceServing,
-         kEnableDiscoverFeedStaticResourceServingVariations,
-         "IOSDiscoverFeedStaticResourceServing")},
     {"enable-disco-feed-endpoint",
      flag_descriptions::kEnableDiscoverFeedDiscoFeedEndpointName,
      flag_descriptions::kEnableDiscoverFeedDiscoFeedEndpointDescription,
@@ -954,7 +919,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"ntp-view-hierarchy-repair",
      flag_descriptions::kNTPViewHierarchyRepairName,
      flag_descriptions::kNTPViewHierarchyRepairDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kNTPViewHierarchyRepair)},
+     FEATURE_VALUE_TYPE(kEnableNTPViewHierarchyRepair)},
     {"synthesized-restore-session",
      flag_descriptions::kSynthesizedRestoreSessionName,
      flag_descriptions::kSynthesizedRestoreSessionDescription, flags_ui::kOsIos,
@@ -1139,7 +1104,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"enable-discover-feed-ghost-cards",
      flag_descriptions::kEnableDiscoverFeedGhostCardsName,
      flag_descriptions::kEnableDiscoverFeedGhostCardsDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kDiscoverFeedGhostCardsEnabled)},
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableDiscoverFeedGhostCards)},
     {"dm-token-deletion", flag_descriptions::kDmTokenDeletionName,
      flag_descriptions::kDmTokenDeletionDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(policy::features::kDmTokenDeletion,
@@ -1317,9 +1282,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFollowingFeedDefaultSortTypeName,
      flag_descriptions::kFollowingFeedDefaultSortTypeDescription,
      flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kFollowingFeedDefaultSortType,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableFollowingFeedDefaultSortType,
                                     kFollowingFeedDefaultSortTypeVariations,
-                                    "FollowingFeedDefaultSortType")},
+                                    "EnableFollowingFeedDefaultSortType")},
     {"omnibox-carousel-dynamic-spacing",
      flag_descriptions::kOmniboxCarouselDynamicSpacingName,
      flag_descriptions::kOmniboxCarouselDynamicSpacingDescription,
