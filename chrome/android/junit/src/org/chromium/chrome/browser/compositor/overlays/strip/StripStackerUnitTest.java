@@ -18,6 +18,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.LocalizationUtils;
 
@@ -79,6 +80,7 @@ public class StripStackerUnitTest {
     }
 
     @Test
+    @DisabledTest(message = "https://crbug.com/1385702")
     public void testComputeNewTabButtonOffset() {
         float result = mTarget.computeNewTabButtonOffset(mInput, TAB_OVERLAP, STRIP_LEFT_MARGIN,
                 STRIP_RIGHT_MARGIN, STRIP_WIDTH, BUTTON_WIDTH, TOUCH_OFFSET, CACHED_TAB_WIDTH,
@@ -87,6 +89,7 @@ public class StripStackerUnitTest {
     }
 
     @Test
+    @DisabledTest(message = "https://crbug.com/1385702")
     public void testComputeNewTabButtonOffset_withTabStripImprovements() {
         setTabStripImprovementFeature(true);
         float result = mTarget.computeNewTabButtonOffset(mInput, TAB_OVERLAP, STRIP_LEFT_MARGIN,
