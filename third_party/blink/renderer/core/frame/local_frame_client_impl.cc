@@ -1133,9 +1133,4 @@ void LocalFrameClientImpl::UpdateSubresourceFactory(
   web_frame_->Client()->UpdateSubresourceFactory(std::move(pending_factory));
 }
 
-void LocalFrameClientImpl::DidChangeMobileFriendliness(
-    const MobileFriendliness& mf) {
-  web_frame_->DidChangeMobileFriendliness(mf);
-}
-
 }  // namespace blink

@@ -142,8 +142,7 @@ page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 AMPPageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
-  // This class needs forwarding for the events OnMobileFriendlinessUpdate and
-  // OnSubFrameRenderDataUpdate.
+  // This class needs forwarding for the events OnSubFrameRenderDataUpdate.
   return FORWARD_OBSERVING;
 }
 
@@ -287,26 +286,6 @@ void AMPPageLoadMetricsObserver::OnInputTimingUpdate(
             input_timing_delta.num_interactions,
             *(input_timing_delta.max_event_durations));
   }
-}
-
-void AMPPageLoadMetricsObserver::OnMobileFriendlinessUpdate(
-    const blink::MobileFriendliness& mf) {
-  if (mf == blink::MobileFriendliness() ||
-      current_main_frame_nav_info_ == nullptr ||
-      current_main_frame_nav_info_->subframe_rfh == nullptr)
-    return;
-
-  auto it = amp_subframe_info_.find(current_main_frame_nav_info_->subframe_rfh);
-  if (it == amp_subframe_info_.end())
-    return;
-
-  SubFrameInfo& subframe_info = it->second;
-  if (subframe_info.viewer_url != current_main_frame_nav_info_->url ||
-      !subframe_info.amp_document_loaded) {
-    return;
-  }
-
-  subframe_info.mobile_friendliness = mf;
 }
 
 void AMPPageLoadMetricsObserver::OnSubFrameRenderDataUpdate(
@@ -624,7 +603,6 @@ void AMPPageLoadMetricsObserver::MaybeRecordAmpDocumentMetrics() {
               normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls),
           1, 24000, 50);
     }
-    RecordMobileFriendliness(builder);
   } else {
     UMA_HISTOGRAM_COUNTS_100(
         std::string(kHistogramPrefix)
@@ -735,37 +713,4 @@ void AMPPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics(
       std::string(kHistogramPrefix)
           .append(kHistogramAMPSubframeNumInteractions),
       normalized_responsiveness_metrics.num_user_interactions);
-}
-
-void AMPPageLoadMetricsObserver::RecordMobileFriendliness(
-    ukm::builders::AmpPageLoad& builder) {
-  DCHECK(!GetDelegate().IsInPrerenderingBeforeActivationStart());
-
-  auto it = amp_subframe_info_.find(current_main_frame_nav_info_->subframe_rfh);
-  if (it == amp_subframe_info_.end())
-    return;
-
-  const SubFrameInfo& subframe_info = it->second;
-  if (subframe_info.viewer_url != current_main_frame_nav_info_->url)
-    return;
-
-  if (!subframe_info.amp_document_loaded)
-    return;
-
-  const blink::MobileFriendliness& mf = subframe_info.mobile_friendliness;
-
-  // Make sure at least one MF evaluation happen.
-  if (mf.small_text_ratio == -1)
-    return;
-
-  builder.SetSubFrame_MobileFriendliness_ViewportDeviceWidth(
-      mf.viewport_device_width);
-  builder.SetSubFrame_MobileFriendliness_AllowUserZoom(mf.allow_user_zoom);
-  builder.SetSubFrame_MobileFriendliness_SmallTextRatio(mf.small_text_ratio);
-  builder.SetSubFrame_MobileFriendliness_ViewportInitialScaleX10(
-      page_load_metrics::GetBucketedViewportInitialScale(mf));
-  builder.SetSubFrame_MobileFriendliness_ViewportHardcodedWidth(
-      page_load_metrics::GetBucketedViewportHardcodedWidth(mf));
-  builder.SetSubFrame_MobileFriendliness_TextContentOutsideViewportPercentage(
-      mf.text_content_outside_viewport_percentage);
 }

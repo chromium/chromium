@@ -16,7 +16,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
-#include "third_party/blink/public/common/mobile_metrics/mobile_friendliness.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -49,22 +48,20 @@ class MojoPageTimingSender : public PageTimingSender {
 
   ~MojoPageTimingSender() override = default;
 
-  void SendTiming(
-      const mojom::PageLoadTimingPtr& timing,
-      const mojom::FrameMetadataPtr& metadata,
-      const std::vector<blink::UseCounterFeature>& new_features,
-      std::vector<mojom::ResourceDataUpdatePtr> resources,
-      const mojom::FrameRenderDataUpdate& render_data,
-      const mojom::CpuTimingPtr& cpu_timing,
-      mojom::InputTimingPtr input_timing_delta,
-      const absl::optional<blink::MobileFriendliness>& mobile_friendliness,
-      uint32_t soft_navigation_count) override {
+  void SendTiming(const mojom::PageLoadTimingPtr& timing,
+                  const mojom::FrameMetadataPtr& metadata,
+                  const std::vector<blink::UseCounterFeature>& new_features,
+                  std::vector<mojom::ResourceDataUpdatePtr> resources,
+                  const mojom::FrameRenderDataUpdate& render_data,
+                  const mojom::CpuTimingPtr& cpu_timing,
+                  mojom::InputTimingPtr input_timing_delta,
+                  uint32_t soft_navigation_count) override {
     DCHECK(page_load_metrics_);
     page_load_metrics_->UpdateTiming(
         limited_sending_mode_ ? CreatePageLoadTiming() : timing->Clone(),
         metadata->Clone(), new_features, std::move(resources),
         render_data.Clone(), cpu_timing->Clone(), std::move(input_timing_delta),
-        std::move(mobile_friendliness), soft_navigation_count);
+        soft_navigation_count);
   }
 
   void SetUpSmoothnessReporting(
@@ -392,12 +389,6 @@ void MetricsRenderFrameObserver::OnMainFrameViewportRectangleChanged(
 
 void MetricsRenderFrameObserver::OnFrameDetached() {
   WillDetach();
-}
-
-void MetricsRenderFrameObserver::DidChangeMobileFriendliness(
-    const blink::MobileFriendliness& mf) {
-  if (page_timing_metrics_sender_)
-    page_timing_metrics_sender_->DidObserveMobileFriendlinessChanged(mf);
 }
 
 bool MetricsRenderFrameObserver::SetUpSmoothnessReporting(

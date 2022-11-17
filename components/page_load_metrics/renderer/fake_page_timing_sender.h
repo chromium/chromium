@@ -12,7 +12,6 @@
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/renderer/page_timing_sender.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
-#include "third_party/blink/public/mojom/mobile_metrics/mobile_friendliness.mojom.h"
 
 namespace page_load_metrics {
 
@@ -63,8 +62,6 @@ class FakePageTimingSender : public PageTimingSender {
 
     void VerifyExpectedInputTiming() const;
 
-    void VerifyExpectedMobileFriendliness() const;
-
     // PageLoad features that are expected to be sent through SendTiming()
     // should be passed via UpdateExpectedPageLoadFeatures.
     void UpdateExpectPageLoadFeatures(const blink::UseCounterFeature& feature);
@@ -75,9 +72,6 @@ class FakePageTimingSender : public PageTimingSender {
     }
 
     void UpdateExpectedInputTiming(const base::TimeDelta input_delay);
-
-    void UpdateExpectedMobileFriendliness(
-        const blink::MobileFriendliness& mobile_friendliness);
 
     void UpdateExpectedMainFrameIntersectionRect(
         const gfx::Rect& main_frame_intersection_rect) {
@@ -111,7 +105,6 @@ class FakePageTimingSender : public PageTimingSender {
         const mojom::FrameRenderDataUpdate& render_data,
         const mojom::CpuTimingPtr& cpu_timing,
         const mojom::InputTimingPtr& input_timing,
-        const absl::optional<blink::MobileFriendliness>& mobile_friendliness,
         uint32_t soft_navigation_count);
 
    private:
@@ -129,8 +122,6 @@ class FakePageTimingSender : public PageTimingSender {
     absl::optional<gfx::Rect> actual_main_frame_viewport_rect_;
     mojom::InputTimingPtr expected_input_timing;
     mojom::InputTimingPtr actual_input_timing;
-    absl::optional<blink::MobileFriendliness> expected_mobile_friendliness;
-    absl::optional<blink::MobileFriendliness> actual_mobile_friendliness;
   };
 
   explicit FakePageTimingSender(PageTimingValidator* validator);
@@ -140,16 +131,14 @@ class FakePageTimingSender : public PageTimingSender {
 
   ~FakePageTimingSender() override;
 
-  void SendTiming(
-      const mojom::PageLoadTimingPtr& timing,
-      const mojom::FrameMetadataPtr& metadata,
-      const std::vector<blink::UseCounterFeature>& new_features,
-      std::vector<mojom::ResourceDataUpdatePtr> resources,
-      const mojom::FrameRenderDataUpdate& render_data,
-      const mojom::CpuTimingPtr& cpu_timing,
-      mojom::InputTimingPtr new_input_timing,
-      const absl::optional<blink::MobileFriendliness>& mobile_friendliness,
-      uint32_t soft_navigation_count) override;
+  void SendTiming(const mojom::PageLoadTimingPtr& timing,
+                  const mojom::FrameMetadataPtr& metadata,
+                  const std::vector<blink::UseCounterFeature>& new_features,
+                  std::vector<mojom::ResourceDataUpdatePtr> resources,
+                  const mojom::FrameRenderDataUpdate& render_data,
+                  const mojom::CpuTimingPtr& cpu_timing,
+                  mojom::InputTimingPtr new_input_timing,
+                  uint32_t soft_navigation_count) override;
 
   void SetUpSmoothnessReporting(
       base::ReadOnlySharedMemoryRegion shared_memory) override;

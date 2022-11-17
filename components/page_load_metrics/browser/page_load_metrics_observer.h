@@ -26,14 +26,6 @@
 
 namespace page_load_metrics {
 
-// Get bucketed value of viewport initial scale from given MobileFriendliness
-// metrics.
-int GetBucketedViewportInitialScale(const blink::MobileFriendliness& mf);
-
-// Get bucketed value of hardcoded viewport width from given MobileFriendliness
-// metrics.
-int GetBucketedViewportHardcodedWidth(const blink::MobileFriendliness& mf);
-
 // Information related to whether an associated action, such as a navigation or
 // an abort, was initiated by a user. Clicking a link or tapping on a UI
 // element are examples of user initiation actions.
@@ -167,8 +159,6 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
   void OnTimingUpdate(content::RenderFrameHost* subframe_rfh,
                       const mojom::PageLoadTiming& timing) override {}
   void OnSoftNavigationCountUpdated() override {}
-  void OnMobileFriendlinessUpdate(
-      const blink::MobileFriendliness& mobile_friendliness) override {}
   void OnInputTimingUpdate(
       content::RenderFrameHost* subframe_rfh,
       const mojom::InputTiming& input_timing_delta) override {}

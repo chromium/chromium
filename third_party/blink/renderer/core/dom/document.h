@@ -1961,6 +1961,7 @@ class CORE_EXPORT Document : public ContainerNode,
   friend class NthIndexCache;
   friend class CheckPseudoHasCacheScope;
   friend class CanvasRenderingAPIUkmMetricsTest;
+  friend class MobileFriendlinessCheckerTest;
   friend class OffscreenCanvasRenderingAPIUkmMetricsTest;
   friend class TapFriendlinessCheckerTest;
   FRIEND_TEST_ALL_PREFIXES(LazyLoadAutomaticImagesTest,

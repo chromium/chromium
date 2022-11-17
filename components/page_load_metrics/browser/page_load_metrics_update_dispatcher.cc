@@ -446,7 +446,6 @@ PageLoadMetricsUpdateDispatcher::PageLoadMetricsUpdateDispatcher(
       main_frame_metadata_(mojom::FrameMetadata::New()),
       subframe_metadata_(mojom::FrameMetadata::New()),
       page_input_timing_(mojom::InputTiming::New()),
-      mobile_friendliness_(blink::MobileFriendliness()),
       is_prerendered_page_load_(navigation_handle->IsInPrerenderedMainFrame()) {
 }
 
@@ -476,7 +475,6 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     mojom::FrameRenderDataUpdatePtr render_data,
     mojom::CpuTimingPtr new_cpu_timing,
     mojom::InputTimingPtr input_timing_delta,
-    const absl::optional<blink::MobileFriendliness>& mobile_friendliness,
     uint32_t soft_navigation_count) {
   if (embedder_interface_->IsExtensionUrl(
           render_frame_host->GetLastCommittedURL())) {
@@ -498,17 +496,12 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     UpdateMainFrameMetadata(render_frame_host, std::move(new_metadata));
     UpdateMainFrameTiming(std::move(new_timing));
     UpdateMainFrameRenderData(*render_data);
-    if (mobile_friendliness.has_value()) {
-      UpdateMainFrameMobileFriendliness(*mobile_friendliness);
-    }
     UpdateSoftNavigationCount(soft_navigation_count);
   } else {
     UpdateSubFrameMetadata(render_frame_host, std::move(new_metadata));
     UpdateSubFrameTiming(render_frame_host, std::move(new_timing));
     // This path is just for the AMP metrics.
     UpdateSubFrameInputTiming(render_frame_host, *input_timing_delta);
-    if (mobile_friendliness.has_value())
-      UpdateSubFrameMobileFriendliness(*mobile_friendliness);
   }
   UpdatePageInputTiming(*input_timing_delta);
   UpdatePageRenderData(*render_data);
@@ -640,16 +633,6 @@ void PageLoadMetricsUpdateDispatcher::UpdateSubFrameMetadata(
   client_->OnSubframeMetadataChanged(render_frame_host, *subframe_metadata);
 
   MaybeUpdateMainFrameIntersectionRect(render_frame_host, subframe_metadata);
-}
-
-void PageLoadMetricsUpdateDispatcher::UpdateMainFrameMobileFriendliness(
-    const blink::MobileFriendliness& mobile_friendliness) {
-  mobile_friendliness_ = mobile_friendliness;
-}
-
-void PageLoadMetricsUpdateDispatcher::UpdateSubFrameMobileFriendliness(
-    const blink::MobileFriendliness& mobile_friendliness) {
-  client_->OnSubFrameMobileFriendlinessChanged(mobile_friendliness);
 }
 
 void PageLoadMetricsUpdateDispatcher::UpdateSoftNavigationCount(

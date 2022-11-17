@@ -99,9 +99,6 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
   void SimulateInputTimingUpdate(const mojom::InputTiming& input_timing);
   void SimulateInputTimingUpdate(const mojom::InputTiming& input_timing,
                                  content::RenderFrameHost* rfh);
-  void SimulateMobileFriendlinessUpdate(
-      const blink::MobileFriendliness& mobile_friendliness,
-      content::RenderFrameHost* rfh);
   void SimulateTimingAndMetadataUpdate(const mojom::PageLoadTiming& timing,
                                        const mojom::FrameMetadata& metadata);
   void SimulateMetadataUpdate(const mojom::FrameMetadata& metadata,
@@ -155,9 +152,6 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
   void SimulateMemoryUpdate(content::RenderFrameHost* render_frame_host,
                             int64_t delta_bytes);
 
-  void SimulateMobileFriendlinessUpdate(
-      blink::MobileFriendliness& mobile_friendliness);
-
   MetricsWebContentsObserver* metrics_web_contents_observer() {
     return metrics_web_contents_observer_;
   }
@@ -178,7 +172,6 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
       const mojom::FrameRenderDataUpdate& render_data,
       const mojom::CpuTiming& cpu_timing,
       const mojom::InputTiming& input_timing,
-      const blink::MobileFriendliness& mobile_friendliness,
       content::RenderFrameHost* rfh,
       uint32_t soft_navigation_count = 0);
 

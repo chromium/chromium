@@ -17,7 +17,6 @@
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "third_party/blink/public/common/mobile_metrics/mobile_friendliness.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 
@@ -335,9 +334,6 @@ class PageLoadMetricsObserverInterface {
   // The callback is invoked when a soft navigation is detected.
   // See https://bit.ly/soft-navigation for more details.
   virtual void OnSoftNavigationCountUpdated() = 0;
-
-  virtual void OnMobileFriendlinessUpdate(
-      const blink::MobileFriendliness& mobile_friendliness) = 0;
 
   // OnInputTimingUpdate is triggered when an updated InputTiming is available
   // at the subframe level. This method may be called multiple times over the

@@ -13,7 +13,6 @@ namespace blink {
 class WebFormElement;
 class WebLocalFrame;
 class WebLocalFrameImpl;
-struct MobileFriendliness;
 
 // Base class for objects that want to get notified of changes to the local
 // frame.
@@ -25,9 +24,6 @@ class BLINK_EXPORT WebLocalFrameObserver : public base::CheckedObserver {
   // A form submission has been requested, but the page's submit event handler
   // hasn't yet had a chance to run (and possibly alter/interrupt the submit.)
   virtual void WillSendSubmitEvent(const WebFormElement&) {}
-
-  // Called when a page's mobile friendliness changed.
-  virtual void DidChangeMobileFriendliness(const MobileFriendliness&) {}
 
   // Retrieves the WebLocalFrame that is being observed. Can be null.
   WebLocalFrame* GetWebLocalFrame() const;

@@ -111,7 +111,6 @@ class MetricsRenderFrameObserver
 
   // blink::WebLocalFrameObserver implementation
   void OnFrameDetached() override;
-  void DidChangeMobileFriendliness(const blink::MobileFriendliness&) override;
 
   bool SetUpSmoothnessReporting(
       base::ReadOnlySharedMemoryRegion& shared_memory) override;

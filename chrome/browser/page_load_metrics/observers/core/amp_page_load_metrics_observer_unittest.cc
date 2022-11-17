@@ -348,11 +348,6 @@ TEST_P(AMPPageLoadMetricsObserverTest, SubFrameMetrics) {
       blink::LoadingBehaviorFlag::kLoadingBehaviorAmpDocumentLoaded;
   tester()->SimulateMetadataUpdate(metadata, subframe);
 
-  blink::MobileFriendliness mf;
-  mf.text_content_outside_viewport_percentage = 55;
-  mf.small_text_ratio = 66;
-  tester()->SimulateMobileFriendlinessUpdate(mf, subframe);
-
   page_load_metrics::mojom::PageLoadTiming subframe_timing;
   page_load_metrics::InitPageLoadTimingForTest(&subframe_timing);
   subframe_timing.navigation_start = base::Time::FromDoubleT(2);
@@ -399,11 +394,6 @@ TEST_P(AMPPageLoadMetricsObserverTest, SubFrameMetrics) {
   tester()->test_ukm_recorder().ExpectEntryMetric(
       entry.get(), "SubFrame.PaintTiming.NavigationToLargestContentfulPaint2",
       10);
-  tester()->test_ukm_recorder().ExpectEntryMetric(
-      entry.get(),
-      "SubFrame.MobileFriendliness.TextContentOutsideViewportPercentage", 55);
-  tester()->test_ukm_recorder().ExpectEntryMetric(
-      entry.get(), "SubFrame.MobileFriendliness.SmallTextRatio", 66);
 }
 
 TEST_P(AMPPageLoadMetricsObserverTest, SubFrameMetrics_LayoutInstability) {
@@ -780,10 +770,6 @@ TEST_P(AMPPageLoadMetricsObserverTest, SubFrameRecordOnFullNavigation) {
       blink::LoadingBehaviorFlag::kLoadingBehaviorAmpDocumentLoaded;
   tester()->SimulateMetadataUpdate(metadata, subframe);
 
-  blink::MobileFriendliness mf;
-  mf.small_text_ratio = 75;
-  tester()->SimulateMobileFriendlinessUpdate(mf, subframe);
-
   // Navigate the main frame to trigger metrics recording.
   NavigationSimulator::CreateRendererInitiated(GURL("https://www.example.com/"),
                                                main_rfh())
@@ -802,12 +788,6 @@ TEST_P(AMPPageLoadMetricsObserverTest, SubFrameRecordOnFullNavigation) {
           entry.get(), "SubFrame.MainFrameToSubFrameNavigationDelta");
   EXPECT_NE(nullptr, nav_delta_metric);
   EXPECT_GE(*nav_delta_metric, 0ll);
-
-  const int64_t* small_text_ratio_metric =
-      tester()->test_ukm_recorder().GetEntryMetric(
-          entry.get(), "SubFrame.MobileFriendliness.SmallTextRatio");
-  EXPECT_NE(nullptr, small_text_ratio_metric);
-  EXPECT_EQ(*small_text_ratio_metric, 75ll);
 }
 
 TEST_P(AMPPageLoadMetricsObserverTest, SubFrameRecordOnFrameDeleted) {
@@ -830,9 +810,6 @@ TEST_P(AMPPageLoadMetricsObserverTest, SubFrameRecordOnFrameDeleted) {
   metadata.behavior_flags =
       blink::LoadingBehaviorFlag::kLoadingBehaviorAmpDocumentLoaded;
   tester()->SimulateMetadataUpdate(metadata, subframe);
-
-  blink::MobileFriendliness mf;
-  tester()->SimulateMobileFriendlinessUpdate(mf, subframe);
 
   tester()->histogram_tester().ExpectTotalCount(
       "PageLoad.Clients.AMP.Experimental.PageTiming.InputToNavigation.Subframe",

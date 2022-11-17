@@ -124,12 +124,6 @@ void PageTimingMetricsSender::DidObserveLayoutNg(uint32_t all_block_count,
   EnsureSendTimer();
 }
 
-void PageTimingMetricsSender::DidObserveMobileFriendlinessChanged(
-    const blink::MobileFriendliness& mf) {
-  mobile_friendliness_ = mf;
-  EnsureSendTimer();
-}
-
 void PageTimingMetricsSender::DidStartResponse(
     const url::SchemeHostPort& final_response_url,
     int resource_id,
@@ -325,10 +319,8 @@ void PageTimingMetricsSender::SendNow() {
   }
   sender_->SendTiming(last_timing_, metadata_, std::move(new_features_),
                       std::move(resources), render_data_, last_cpu_timing_,
-                      std::move(input_timing_delta_), mobile_friendliness_,
-                      soft_navigation_count_);
+                      std::move(input_timing_delta_), soft_navigation_count_);
   input_timing_delta_ = mojom::InputTiming::New();
-  mobile_friendliness_ = absl::nullopt;
   InitiateUserInteractionTiming();
   new_features_.clear();
   metadata_->main_frame_intersection_rect.reset();

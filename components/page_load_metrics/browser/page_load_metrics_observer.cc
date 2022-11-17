@@ -8,33 +8,7 @@
 
 #include "net/base/load_timing_info.h"
 
-namespace {
-
-int BucketWithOffsetAndUnit(int num, int offset, int unit) {
-  // Bucketing raw number with `offset` centered.
-  const int grid = (num - offset) / unit;
-  const int bucketed =
-      grid == 0 ? 0
-                : grid > 0 ? std::pow(2, static_cast<int>(std::log2(grid)))
-                           : -std::pow(2, static_cast<int>(std::log2(-grid)));
-  return bucketed * unit + offset;
-}
-
-}  // namespace
-
 namespace page_load_metrics {
-
-int GetBucketedViewportInitialScale(const blink::MobileFriendliness& mf) {
-  return mf.viewport_initial_scale_x10 <= -1
-             ? -1
-             : BucketWithOffsetAndUnit(mf.viewport_initial_scale_x10, 10, 2);
-}
-
-int GetBucketedViewportHardcodedWidth(const blink::MobileFriendliness& mf) {
-  return mf.viewport_hardcoded_width <= -1
-             ? -1
-             : BucketWithOffsetAndUnit(mf.viewport_hardcoded_width, 500, 10);
-}
 
 MemoryUpdate::MemoryUpdate(content::GlobalRenderFrameHostId id, int64_t delta)
     : routing_id(id), delta_bytes(delta) {}

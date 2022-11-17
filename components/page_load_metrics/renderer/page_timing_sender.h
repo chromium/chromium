@@ -22,7 +22,6 @@ class PageTimingSender {
       const mojom::FrameRenderDataUpdate& render_data,
       const mojom::CpuTimingPtr& cpu_timing,
       mojom::InputTimingPtr input_timing_delta,
-      const absl::optional<blink::MobileFriendliness>& mobile_friendliness,
       uint32_t soft_navigation_count) = 0;
   virtual void SetUpSmoothnessReporting(
       base::ReadOnlySharedMemoryRegion shared_memory) = 0;

@@ -45,7 +45,6 @@ mojom("page_load_metrics_mojom") {
   sources = [ "page_load_metrics.mojom" ]
   public_deps = [
     "//mojo/public/mojom/base",
-    "//third_party/blink/public/mojom:mobile_metrics",
     "//third_party/blink/public/mojom:mojom_platform",
     "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_origin",

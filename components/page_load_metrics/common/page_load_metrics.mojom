@@ -9,8 +9,6 @@ import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/request_priority.mojom";
 import "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom";
-import
-  "third_party/blink/public/mojom/mobile_metrics/mobile_friendliness.mojom";
 import "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom";
 
 // TimeDeltas below relative to navigation start.
@@ -378,7 +376,6 @@ interface PageLoadMetrics {
                FrameRenderDataUpdate render_data,
                CpuTiming cpu_load_timing,
                InputTiming input_timing_delta,
-               blink.mojom.MobileFriendliness? mobile_friendliness,
                uint32 soft_navigation_count);
 
   // Set up a shared memory used to transfer smoothness data from the renderer

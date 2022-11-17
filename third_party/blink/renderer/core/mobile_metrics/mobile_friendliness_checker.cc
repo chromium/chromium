@@ -7,8 +7,8 @@
 #include <cmath>
 
 #include "base/metrics/histogram_functions.h"
-#include "third_party/blink/public/common/mobile_metrics/mobile_friendliness.h"
-#include "third_party/blink/public/mojom/mobile_metrics/mobile_friendliness.mojom-blink.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_get_root_node_options.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -41,6 +41,35 @@
 
 namespace blink {
 
+namespace {
+
+int32_t BucketWithOffsetAndUnit(int32_t num, int32_t offset, int32_t unit) {
+  DCHECK_LT(0, unit);
+  // Bucketing raw number with `offset` centered.
+  const int32_t grid = (num - offset) / unit;
+  const int32_t bucketed =
+      grid == 0  ? 0
+      : grid > 0 ? std::pow(2, static_cast<int32_t>(std::log2(grid)))
+                 : -std::pow(2, static_cast<int32_t>(std::log2(-grid)));
+  return bucketed * unit + offset;
+}
+
+// Viewport initial scale x10 metrics is exponentially bucketed by offset of 10
+// (most common initial-scale=1.0 is the center) to preserve user's privacy.
+int32_t GetBucketedViewportInitialScale(int32_t initial_scale_x10) {
+  DCHECK_LE(0, initial_scale_x10);
+  return BucketWithOffsetAndUnit(initial_scale_x10, 10, 2);
+}
+
+// Viewport hardcoded width metrics is exponentially bucketed by offset of 500
+// to preserve user's privacy.
+int32_t GetBucketedViewportHardcodedWidth(int32_t hardcoded_width) {
+  DCHECK_LE(0, hardcoded_width);
+  return BucketWithOffsetAndUnit(hardcoded_width, 500, 10);
+}
+
+}  // namespace
+
 static constexpr int kSmallFontThresholdInDips = 9;
 
 // Values of maximum-scale smaller than this threshold will be considered to
@@ -48,6 +77,13 @@ static constexpr int kSmallFontThresholdInDips = 9;
 static constexpr double kMaximumScalePreventsZoomingThreshold = 1.2;
 
 static constexpr base::TimeDelta kEvaluationInterval = base::Minutes(1);
+static constexpr base::TimeDelta kEvaluationDelay = base::Seconds(5);
+
+// Basically MF evaluation invoked every |kEvaluationInterval|, but its first
+// evaluation invoked |kEvaluationDelay| after initialization of this module.
+// Time offsetting with their difference simplifies these requirements.
+static constexpr base::TimeDelta kFirstEvaluationOffsetTime =
+    kEvaluationInterval - kEvaluationDelay;
 
 MobileFriendlinessChecker::MobileFriendlinessChecker(LocalFrameView& frame_view)
     : frame_view_(&frame_view),
@@ -57,8 +93,7 @@ MobileFriendlinessChecker::MobileFriendlinessChecker(LocalFrameView& frame_view)
                     ->GetChromeClient()
                     .WindowToViewportScalar(&frame_view_->GetFrame(), 1)
               : 1.0),
-      last_evaluated_(base::TimeTicks::Now() - kEvaluationInterval -
-                      base::Seconds(5)) {}
+      last_evaluated_(base::TimeTicks::Now() - kFirstEvaluationOffsetTime) {}
 
 MobileFriendlinessChecker::~MobileFriendlinessChecker() = default;
 
@@ -88,9 +123,9 @@ void MobileFriendlinessChecker::NotifyPaintBegin() {
     const double zoom = viewport.zoom_is_explicit ? viewport.zoom : 1.0;
     viewport_device_width_ = viewport.max_width.IsDeviceWidth();
     if (viewport.max_width.IsFixed()) {
-      viewport_hardcoded_width_ = viewport.max_width.GetFloatValue();
       // Convert value from Blink space to device-independent pixels.
-      viewport_hardcoded_width_ /= viewport_scalar_;
+      viewport_hardcoded_width_ =
+          viewport.max_width.GetFloatValue() / viewport_scalar_;
     }
 
     if (viewport.zoom_is_explicit)
@@ -165,18 +200,27 @@ void MobileFriendlinessChecker::MaybeRecompute() {
 }
 
 void MobileFriendlinessChecker::ComputeNow() {
-  frame_view_->DidChangeMobileFriendliness(MobileFriendliness{
-      .viewport_device_width = viewport_device_width_,
-      .viewport_initial_scale_x10 = viewport_initial_scale_x10_,
-      .viewport_hardcoded_width = viewport_hardcoded_width_,
-      .allow_user_zoom = allow_user_zoom_,
-      .small_text_ratio = area_sizes_.SmallTextRatio(),
-      .text_content_outside_viewport_percentage =
-          area_sizes_.TextContentsOutsideViewportPercentage(
-              // Use SizeF when computing the area to avoid integer overflow.
-              gfx::SizeF(frame_view_->GetPage()->GetVisualViewport().Size())
-                  .GetArea())});
+  ukm::builders::MobileFriendliness builder(
+      frame_view_->GetFrame().GetDocument()->UkmSourceID());
 
+  builder.SetViewportDeviceWidth(viewport_device_width_);
+  builder.SetAllowUserZoom(allow_user_zoom_);
+  if (viewport_initial_scale_x10_) {
+    builder.SetViewportInitialScaleX10(
+        GetBucketedViewportInitialScale(*viewport_initial_scale_x10_));
+  }
+  if (viewport_hardcoded_width_) {
+    builder.SetViewportHardcodedWidth(
+        GetBucketedViewportHardcodedWidth(*viewport_hardcoded_width_));
+  }
+  builder.SetTextContentOutsideViewportPercentage(
+      area_sizes_.TextContentsOutsideViewportPercentage(
+          // Use SizeF when computing the area to avoid integer overflow.
+          gfx::SizeF(frame_view_->GetPage()->GetVisualViewport().Size())
+              .GetArea()));
+  builder.SetSmallTextRatio(area_sizes_.SmallTextRatio());
+
+  builder.Record(frame_view_->GetFrame().GetDocument()->UkmRecorder());
   last_evaluated_ = base::TimeTicks::Now();
 }
 

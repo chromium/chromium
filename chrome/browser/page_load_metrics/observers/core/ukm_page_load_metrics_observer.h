@@ -162,7 +162,6 @@ class UkmPageLoadMetricsObserver
   void RecordSmoothnessMetrics();
   void RecordResponsivenessMetrics();
 
-  void RecordMobileFriendlinessMetrics();
   void RecordPageLoadTimestampMetrics(ukm::builders::PageLoad& builder);
 
   // Captures the site engagement score for the committed URL and

@@ -27,10 +27,6 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 
-namespace blink {
-struct MobileFriendliness;
-}  // namespace blink
-
 namespace content {
 class NavigationHandle;
 class RenderFrameHost;
@@ -155,7 +151,6 @@ class MetricsWebContentsObserver
       mojom::FrameRenderDataUpdatePtr render_data,
       mojom::CpuTimingPtr cpu_timing,
       mojom::InputTimingPtr input_timing_delta,
-      const absl::optional<blink::MobileFriendliness>& mobile_friendliness,
       uint32_t soft_navigation_count);
 
   // Informs the observers of the currently committed primary page load that
@@ -210,16 +205,14 @@ class MetricsWebContentsObserver
       content::NavigationHandle* navigation_handle);
 
   // page_load_metrics::mojom::PageLoadMetrics implementation.
-  void UpdateTiming(
-      mojom::PageLoadTimingPtr timing,
-      mojom::FrameMetadataPtr metadata,
-      const std::vector<blink::UseCounterFeature>& new_features,
-      std::vector<mojom::ResourceDataUpdatePtr> resources,
-      mojom::FrameRenderDataUpdatePtr render_data,
-      mojom::CpuTimingPtr cpu_timing,
-      mojom::InputTimingPtr input_timing,
-      const absl::optional<blink::MobileFriendliness>& mobile_friendliness,
-      uint32_t soft_navigation_count) override;
+  void UpdateTiming(mojom::PageLoadTimingPtr timing,
+                    mojom::FrameMetadataPtr metadata,
+                    const std::vector<blink::UseCounterFeature>& new_features,
+                    std::vector<mojom::ResourceDataUpdatePtr> resources,
+                    mojom::FrameRenderDataUpdatePtr render_data,
+                    mojom::CpuTimingPtr cpu_timing,
+                    mojom::InputTimingPtr input_timing,
+                    uint32_t soft_navigation_count) override;
 
   void SetUpSharedMemoryForSmoothness(
       base::ReadOnlySharedMemoryRegion shared_memory) override;

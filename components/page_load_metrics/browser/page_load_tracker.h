@@ -214,8 +214,6 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   void OnMainFrameMetadataChanged() override;
   void OnSubframeMetadataChanged(content::RenderFrameHost* rfh,
                                  const mojom::FrameMetadata& metadata) override;
-  void OnSubFrameMobileFriendlinessChanged(
-      const blink::MobileFriendliness&) override;
   void OnSoftNavigationCountChanged(uint32_t soft_navigation_count) override;
   void UpdateFeaturesUsage(
       content::RenderFrameHost* rfh,
@@ -261,8 +259,6 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   const NormalizedResponsivenessMetrics& GetNormalizedResponsivenessMetrics()
       const override;
   const mojom::InputTiming& GetPageInputTiming() const override;
-  const absl::optional<blink::MobileFriendliness>& GetMobileFriendliness()
-      const override;
   const PageRenderData& GetMainFrameRenderData() const override;
   const ui::ScopedVisibilityTracker& GetVisibilityTracker() const override;
   const ResourceTracker& GetResourceTracker() const override;
@@ -410,17 +406,15 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   // Checks if this tracker is for outermost pages.
   bool IsOutermostTracker() const { return !parent_tracker_; }
 
-  void UpdateMetrics(
-      content::RenderFrameHost* render_frame_host,
-      mojom::PageLoadTimingPtr new_timing,
-      mojom::FrameMetadataPtr new_metadata,
-      const std::vector<blink::UseCounterFeature>& new_features,
-      const std::vector<mojom::ResourceDataUpdatePtr>& resources,
-      mojom::FrameRenderDataUpdatePtr render_data,
-      mojom::CpuTimingPtr new_cpu_timing,
-      mojom::InputTimingPtr input_timing_delta,
-      const absl::optional<blink::MobileFriendliness>& mobile_friendliness,
-      uint32_t soft_navigation_count);
+  void UpdateMetrics(content::RenderFrameHost* render_frame_host,
+                     mojom::PageLoadTimingPtr new_timing,
+                     mojom::FrameMetadataPtr new_metadata,
+                     const std::vector<blink::UseCounterFeature>& new_features,
+                     const std::vector<mojom::ResourceDataUpdatePtr>& resources,
+                     mojom::FrameRenderDataUpdatePtr render_data,
+                     mojom::CpuTimingPtr new_cpu_timing,
+                     mojom::InputTimingPtr input_timing_delta,
+                     uint32_t soft_navigation_count);
 
   // Set RenderFrameHost for the main frame of the page this tracker instance is
   // bound. This is called on moving the tracker to the active / inactive
@@ -515,7 +509,6 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   absl::optional<base::TimeDelta> activation_start_ = absl::nullopt;
 
   mojom::PageLoadTimingPtr last_dispatched_merged_page_timing_;
-  blink::MobileFriendliness latest_mobile_friendliness_;
 
   absl::optional<content::GlobalRequestID> navigation_request_id_;
 

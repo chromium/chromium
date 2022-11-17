@@ -4726,11 +4726,6 @@ LayoutUnit LocalFrameView::CaretWidth() const {
       1.0f, GetChromeClient()->WindowToViewportScalar(&GetFrame(), 1.0f)));
 }
 
-void LocalFrameView::DidChangeMobileFriendliness(
-    const blink::MobileFriendliness& mf) {
-  GetFrame().Client()->DidChangeMobileFriendliness(mf);
-}
-
 void LocalFrameView::RegisterTapEvent(Element* target) {
   if (tap_friendliness_checker_) {
     tap_friendliness_checker_->RegisterTapEvent(target);
