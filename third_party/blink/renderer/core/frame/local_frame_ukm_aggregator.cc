@@ -17,6 +17,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -52,7 +53,10 @@ LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer::ScopedUkmHierarchicalTimer(
       clock_(clock),
       start_time_(aggregator && aggregator->ShouldMeasureMetric(metric_index)
                       ? clock_->NowTicks()
-                      : base::TimeTicks()) {}
+                      : base::TimeTicks()) {
+  if (aggregator_ && !start_time_.is_null())
+    TRACE_EVENT_BEGIN0("blink", aggregator_->metrics_data()[metric_index].name);
+}
 
 LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer::ScopedUkmHierarchicalTimer(
     ScopedUkmHierarchicalTimer&& other)
@@ -65,10 +69,13 @@ LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer::ScopedUkmHierarchicalTimer(
 
 LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer::
     ~ScopedUkmHierarchicalTimer() {
-  if (aggregator_ && base::TimeTicks::IsHighResolution() &&
-      !start_time_.is_null()) {
-    aggregator_->RecordTimerSample(metric_index_, start_time_,
-                                   clock_->NowTicks());
+  if (aggregator_ && !start_time_.is_null()) {
+    if (base::TimeTicks::IsHighResolution()) {
+      aggregator_->RecordTimerSample(metric_index_, start_time_,
+                                     clock_->NowTicks());
+    }
+    TRACE_EVENT_END1("blink", aggregator_->metrics_data()[metric_index_].name,
+                     "preFCP", aggregator_->fcp_state_ == kBeforeFCPSignal);
   }
 }
 
@@ -140,8 +147,6 @@ LocalFrameUkmAggregator::LocalFrameUkmAggregator(int64_t source_id,
           "Blink.MainFrame.UpdateTime.AggregatedPreFCP", 1, 10000000, 50);
 
   // Set up the substrings to create the UMA names
-  const char* const uma_preamble = "Blink.";
-  const char* const uma_postscript = ".UpdateTime";
   const char* const uma_prefcp_postscript = ".PreFCP";
   const char* const uma_postfcp_postscript = ".PostFCP";
   const char* const uma_pre_fcp_aggregated_postscript = ".AggregatedPreFCP";
@@ -157,24 +162,20 @@ LocalFrameUkmAggregator::LocalFrameUkmAggregator(int64_t source_id,
     absolute_record.reset();
     absolute_record.pre_fcp_aggregate = 0;
     if (metric_data.has_uma) {
-      StringBuilder uma_name;
-      uma_name.Append(uma_preamble);
-      uma_name.Append(metric_data.name);
-      uma_name.Append(uma_postscript);
       StringBuilder pre_fcp_uma_name;
-      pre_fcp_uma_name.Append(uma_name);
+      pre_fcp_uma_name.Append(metric_data.name);
       pre_fcp_uma_name.Append(uma_prefcp_postscript);
       absolute_record.pre_fcp_uma_counter =
           std::make_unique<CustomCountHistogram>(
               pre_fcp_uma_name.ToString().Utf8().c_str(), 1, 10000000, 50);
       StringBuilder post_fcp_uma_name;
-      post_fcp_uma_name.Append(uma_name);
+      post_fcp_uma_name.Append(metric_data.name);
       post_fcp_uma_name.Append(uma_postfcp_postscript);
       absolute_record.post_fcp_uma_counter =
           std::make_unique<CustomCountHistogram>(
               post_fcp_uma_name.ToString().Utf8().c_str(), 1, 10000000, 50);
       StringBuilder aggregated_uma_name;
-      aggregated_uma_name.Append(uma_name);
+      aggregated_uma_name.Append(metric_data.name);
       aggregated_uma_name.Append(uma_pre_fcp_aggregated_postscript);
       absolute_record.uma_aggregate_counter =
           std::make_unique<CustomCountHistogram>(
@@ -310,10 +311,16 @@ void LocalFrameUkmAggregator::RecordCountSample(size_t metric_index,
   }
 }
 
+void LocalFrameUkmAggregator::BeginForcedLayout() {
+  TRACE_EVENT_BEGIN0("blink", metrics_data()[kForcedStyleAndLayout].name);
+}
+
 void LocalFrameUkmAggregator::RecordForcedLayoutSample(
     DocumentUpdateReason reason,
     base::TimeTicks start,
     base::TimeTicks end) {
+  TRACE_EVENT_END1("blink", metrics_data()[kForcedStyleAndLayout].name,
+                   "preFCP", fcp_state_ == kBeforeFCPSignal);
   int64_t count = (end - start).InMicroseconds();
   bool is_pre_fcp = (fcp_state_ != kHavePassedFCP);
 

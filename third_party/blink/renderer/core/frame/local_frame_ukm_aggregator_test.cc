@@ -54,7 +54,18 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
   }
 
   std::string GetMetricName(int index) {
-    return LocalFrameUkmAggregator::metrics_data()[index].name;
+    std::string name = LocalFrameUkmAggregator::metrics_data()[index].name;
+
+    // If `name` is an UMA metric of the form Blink.[MetricName].UpdateTime, the
+    // following code extracts out [MetricName] for building up the UKM metric.
+    const char* const uma_postscript = ".UpdateTime";
+    size_t postscript_pos = name.find(uma_postscript);
+    if (postscript_pos) {
+      const char* const uma_preamble = "Blink.";
+      size_t preamble_length = strlen(uma_preamble);
+      name = name.substr(preamble_length, postscript_pos - preamble_length);
+    }
+    return name;
   }
 
   std::string GetBeginMainFrameMetricName(int index) {
