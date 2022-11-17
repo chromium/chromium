@@ -1504,6 +1504,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.ErrorCodesForIsolatedAppScheme" enum="NetErrorCodes"
+    expires_after="2023-11-08">
+  <owner>cmfcmf@chromium.org</owner>
+  <owner>peletskyi@chromium.org</owner>
+  <summary>
+    Positive net error codes that HTTP requests using the isolated-app: URL
+    scheme end with, including net::OK and net::ERR_ABORTED.
+  </summary>
+</histogram>
+
 <histogram name="Net.ErrorCodesForMainFrame4" enum="NetErrorCodes"
     expires_after="never">
 <!-- expires-never: Core network stack health metric -->
