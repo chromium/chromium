@@ -109,7 +109,7 @@ try_.orchestrator_builder(
     # branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
     tryjob = try_.job(
-        experiment_percentage = 20,
+        experiment_percentage = 50,
     ),
     experiments = {
         "chromium_rts.inverted_rts": 100,
