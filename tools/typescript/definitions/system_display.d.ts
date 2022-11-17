@@ -146,16 +146,12 @@ declare global {
         /**
          * @see https://developer.chrome.com/docs/extensions/reference/system_display/#method-getDisplayLayout
          */
-        export function getDisplayLayout(
-            callback?: (layouts: DisplayLayout[]) => void):
-            Promise<DisplayLayout[]>;
+        export function getDisplayLayout(): Promise<DisplayLayout[]>;
 
         /**
          * @see https://developer.chrome.com/docs/extensions/reference/system_display/#method-getInfo
          */
-        export function getInfo(
-            flags?: GetInfoFlags,
-            callback?: (displayInfo: DisplayUnitInfo[]) => void):
+        export function getInfo(flags?: GetInfoFlags):
             Promise<DisplayUnitInfo[]>;
 
         /**
@@ -182,30 +178,25 @@ declare global {
         /**
          * @see https://developer.chrome.com/docs/extensions/reference/system_display/#method-setDisplayLayout
          */
-        export function setDisplayLayout(
-            layouts: DisplayLayout[],
-            callback?: () => void,
-            ): Promise<void>;
+        export function setDisplayLayout(layouts: DisplayLayout[]):
+            Promise<void>;
 
         /**
          * @see https://developer.chrome.com/docs/extensions/reference/system_display/#method-setDisplayProperties
          */
         export function setDisplayProperties(
-            id: string, info: DisplayProperties,
-            callback?: () => void): Promise<void>;
+            id: string, info: DisplayProperties): Promise<void>;
 
         /**
          * @see https://developer.chrome.com/docs/extensions/reference/system_display/#method-setMirrorMode
          */
-        export function setMirrorMode(
-            info: MirrorModeInfo, callback?: () => void): Promise<void>;
+        export function setMirrorMode(info: MirrorModeInfo): Promise<void>;
 
         /**
          * @see https://developer.chrome.com/extensions/system.display#method-showNativeTouchCalibration
          */
-        export function showNativeTouchCalibration(
-            id: string,
-            callback?: (success: boolean) => void): Promise<boolean>;
+        export function showNativeTouchCalibration(id: string):
+            Promise<boolean>;
 
         /**
          * @see https://developer.chrome.com/extensions/system.display#event-onDisplayChanged

@@ -433,8 +433,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     const flags: GetInfoFlags = {
       singleUnified: true,
     };
-    getDisplayApi().getInfo(
-        flags,
+    getDisplayApi().getInfo(flags).then(
         (displays: DisplayUnitInfo[]) => this.displayInfoFetched_(displays));
   }
 
@@ -442,7 +441,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     if (!displays.length) {
       return;
     }
-    getDisplayApi().getDisplayLayout(
+    getDisplayApi().getDisplayLayout().then(
         (layouts: DisplayLayout[]) =>
             this.displayLayoutFetched_(displays, layouts));
     if (this.isMirrored_(displays)) {
@@ -1110,9 +1109,9 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     const properties: DisplayProperties = {
       isPrimary: true,
     };
-    getDisplayApi().setDisplayProperties(
-        this.selectedDisplay.id, properties,
-        () => this.setPropertiesCallback_());
+    getDisplayApi()
+        .setDisplayProperties(this.selectedDisplay.id, properties)
+        .then(() => this.setPropertiesCallback_());
   }
 
   /**
@@ -1187,9 +1186,9 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
 
     this.refreshRateList_ = castExists(this.parentModeToRefreshRateMap_.get(
         this.selectedParentModePref_.value));
-    getDisplayApi().setDisplayProperties(
-        this.selectedDisplay.id, properties,
-        () => this.setPropertiesCallback_());
+    getDisplayApi()
+        .setDisplayProperties(this.selectedDisplay.id, properties)
+        .then(() => this.setPropertiesCallback_());
   }
 
   /**
@@ -1206,9 +1205,9 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
       displayZoomFactor: this.selectedZoomPref_.value,
     };
 
-    getDisplayApi().setDisplayProperties(
-        this.selectedDisplay.id, properties,
-        () => this.setPropertiesCallback_());
+    getDisplayApi()
+        .setDisplayProperties(this.selectedDisplay.id, properties)
+        .then(() => this.setPropertiesCallback_());
   }
 
   /**
@@ -1230,9 +1229,9 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     const properties: DisplayProperties = {
       rotation: value,
     };
-    getDisplayApi().setDisplayProperties(
-        this.selectedDisplay.id, properties,
-        () => this.setPropertiesCallback_());
+    getDisplayApi()
+        .setDisplayProperties(this.selectedDisplay.id, properties)
+        .then(() => this.setPropertiesCallback_());
   }
 
   private onMirroredTap_(event: Event) {
@@ -1244,7 +1243,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
       mode: this.isMirrored_(this.displays) ? MirrorMode.OFF :
                                               MirrorMode.NORMAL,
     };
-    getDisplayApi().setMirrorMode(mirrorModeInfo, () => {
+    getDisplayApi().setMirrorMode(mirrorModeInfo).then(() => {
       const error = chrome.runtime.lastError;
       if (error) {
         console.error('setMirrorMode Error: ' + error.message);
@@ -1256,8 +1255,9 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     const properties: DisplayProperties = {
       isUnified: !this.unifiedDesktopMode_,
     };
-    getDisplayApi().setDisplayProperties(
-        this.primaryDisplayId, properties, () => this.setPropertiesCallback_());
+    getDisplayApi()
+        .setDisplayProperties(this.primaryDisplayId, properties)
+        .then(() => this.setPropertiesCallback_());
   }
 
   private onOverscanTap_(e: Event) {

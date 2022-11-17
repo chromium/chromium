@@ -207,7 +207,7 @@ export const LayoutMixin = dedupingMixin(
           this.updateOrphans_(orphanIds);
 
           // Send the updated layouts.
-          getDisplayApi().setDisplayLayout(this.layouts, () => {
+          getDisplayApi().setDisplayLayout(this.layouts).then(() => {
             if (chrome.runtime.lastError) {
               console.error(
                   'setDisplayLayout Error: ' +

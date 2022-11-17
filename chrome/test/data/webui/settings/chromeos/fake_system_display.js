@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview Fake implementation of chrome.system.display for testing.
+ */
+
 import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
 import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
 
-
-/**
- * @fileoverview Fake implementation of chrome.system.display for testing.
- */
 /**
  * Fake of the chrome.settings.display API.
  * @constructor
@@ -29,41 +29,43 @@ FakeSystemDisplay.prototype = {
   /**
    * @param {!chrome.system.display.DisplayUnitInfo>} display
    */
-  addDisplayForTest: function(display) {
+  addDisplayForTest(display) {
     this.fakeDisplays.push(display);
     this.updateLayouts_();
   },
 
   // SystemDisplay overrides.
   /** @override */
-  getInfo: function(flags, callback) {
-    setTimeout(function() {
-      // Create a shallow copy to trigger Polymer data binding updates.
-      let displays;
-      if (this.fakeDisplays.length > 0 &&
-          this.fakeDisplays[0].mirroringSourceId) {
-        // When mirroring is enabled, send only the info for the display
-        // being mirrored.
-        const display =
-            this.getFakeDisplay_(this.fakeDisplays[0].mirroringSourceId);
-        assert(!!display);
-        displays = [display];
-      } else {
-        displays = this.fakeDisplays.slice();
-      }
-      callback(displays);
-      this.getInfoCalled.resolve();
-      // Reset the promise resolver.
-      this.getInfoCalled = new PromiseResolver();
-    }.bind(this));
+  getInfo(flags) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        // Create a shallow copy to trigger Polymer data binding updates.
+        let displays;
+        if (this.fakeDisplays.length > 0 &&
+            this.fakeDisplays[0].mirroringSourceId) {
+          // When mirroring is enabled, send only the info for the display
+          // being mirrored.
+          const display =
+              this.getFakeDisplay_(this.fakeDisplays[0].mirroringSourceId);
+          assert(!!display);
+          displays = [display];
+        } else {
+          displays = this.fakeDisplays.slice();
+        }
+        resolve(displays);
+        this.getInfoCalled.resolve();
+        // Reset the promise resolver.
+        this.getInfoCalled = new PromiseResolver();
+      });
+    });
   },
 
   /** @override */
-  setDisplayProperties: function(id, info, callback) {
+  setDisplayProperties(id, info) {
     const display = this.getFakeDisplay_(id);
     if (!display) {
       chrome.runtime.lastError = 'Display not found.';
-      callback();
+      return Promise.reject();
     }
 
     if (info.mirroringSourceId !== undefined) {
@@ -89,27 +91,30 @@ FakeSystemDisplay.prototype = {
     if (info.rotation !== undefined) {
       display.rotation = info.rotation;
     }
+    return Promise.resolve();
   },
 
   /** @override */
-  getDisplayLayout(callback) {
-    setTimeout(function() {
-      // Create a shallow copy to trigger Polymer data binding updates.
-      callback(this.fakeLayouts.slice());
-      this.getLayoutCalled.resolve();
-      // Reset the promise resolver.
-      this.getLayoutCalled = new PromiseResolver();
-    }.bind(this));
+  getDisplayLayout() {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        // Create a shallow copy to trigger Polymer data binding updates.
+        resolve(this.fakeLayouts.slice());
+        this.getLayoutCalled.resolve();
+        // Reset the promise resolver.
+        this.getLayoutCalled = new PromiseResolver();
+      });
+    });
   },
 
   /** @override */
-  setDisplayLayout(layouts, callback) {
+  setDisplayLayout(layouts) {
     this.fakeLayouts = layouts;
-    callback();
+    return Promise.resolve();
   },
 
   /** @override */
-  setMirrorMode(info, callback) {
+  setMirrorMode(info) {
     let mirroringSourceId = '';
     if (info.mode === chrome.system.display.MirrorMode.NORMAL) {
       // Select the primary display as the mirroring source.
@@ -123,7 +128,7 @@ FakeSystemDisplay.prototype = {
     for (const d of this.fakeDisplays) {
       d.mirroringSourceId = mirroringSourceId;
     }
-    callback();
+    return Promise.resolve();
   },
 
   /** @override */
