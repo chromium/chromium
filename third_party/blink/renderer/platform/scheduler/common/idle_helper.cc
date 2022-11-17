@@ -140,6 +140,9 @@ void IdleHelper::EnableLongIdlePeriod() {
   EndIdlePeriod();
 
   if (ShouldWaitForQuiescence()) {
+    // https://linear.app/replay/issue/RUN-818
+    recordreplay::Assert("IdleHelper::EnableLongIdlePeriod #1");
+
     helper_->ControlTaskRunner()->PostDelayedTask(
         FROM_HERE, enable_next_long_idle_period_closure_.GetCallback(),
         required_quiescence_duration_before_long_idle_period_);
@@ -155,6 +158,9 @@ void IdleHelper::EnableLongIdlePeriod() {
     StartIdlePeriod(new_idle_period_state, now,
                     now + next_long_idle_period_delay);
   } else {
+    // https://linear.app/replay/issue/RUN-818
+    recordreplay::Assert("IdleHelper::EnableLongIdlePeriod #2");
+
     // Otherwise wait for the next long idle period delay before trying again.
     helper_->ControlTaskRunner()->PostDelayedTask(
         FROM_HERE, enable_next_long_idle_period_closure_.GetCallback(),
@@ -264,6 +270,9 @@ void IdleHelper::UpdateLongIdlePeriodStateAfterIdleTask() {
     if (next_long_idle_period_delay.is_zero()) {
       EnableLongIdlePeriod();
     } else {
+      // https://linear.app/replay/issue/RUN-818
+      recordreplay::Assert("IdleHelper::UpdateLongIdlePeriodStateAfterIdleTask #1");
+
       helper_->ControlTaskRunner()->PostDelayedTask(
           FROM_HERE, enable_next_long_idle_period_closure_.GetCallback(),
           next_long_idle_period_delay);
@@ -296,6 +305,9 @@ void IdleHelper::OnIdleTaskPostedOnMainThread() {
     return;
   delegate_->OnPendingTasksChanged(true);
   if (state_.idle_period_state() == IdlePeriodState::kInLongIdlePeriodPaused) {
+    // https://linear.app/replay/issue/RUN-818
+    recordreplay::Assert("IdleHelper::OnIdleTaskPostedOnMainThread #1");
+
     // Restart long idle period ticks.
     helper_->ControlTaskRunner()->PostTask(
         FROM_HERE, enable_next_long_idle_period_closure_.GetCallback());
