@@ -96,7 +96,7 @@ async function main() {
       chrome.test.assertEq(secondFileSystemId, fileSystemId);
       const e = await unmountEventPromise;
       chrome.test.assertEq('unmount', e.eventType);
-      chrome.test.assertEq('error_unknown', e.status);
+      chrome.test.assertEq('unknown_error', e.status);
       // For extension based providers, provider id is the same as
       // extension id.
       chrome.test.assertEq(chrome.runtime.id, e.volumeMetadata.providerId);

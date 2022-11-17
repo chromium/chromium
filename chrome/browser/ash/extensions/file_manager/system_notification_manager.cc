@@ -667,7 +667,7 @@ SystemNotificationManager::MakeMountErrorNotification(
       case MOUNT_STATUS_ONLY_PARENT_ERROR:
       case MOUNT_STATUS_CHILD_ERROR:
         if (event.status ==
-            file_manager_private::MOUNT_ERROR_ERROR_UNSUPPORTED_FILESYSTEM) {
+            file_manager_private::MOUNT_ERROR_UNSUPPORTED_FILESYSTEM) {
           if (volume.drive_label().empty()) {
             message = l10n_util::GetStringUTF16(
                 IDS_DEVICE_UNSUPPORTED_DEFAULT_MESSAGE);

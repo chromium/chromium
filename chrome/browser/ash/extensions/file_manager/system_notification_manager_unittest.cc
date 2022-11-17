@@ -718,7 +718,7 @@ TEST_F(SystemNotificationManagerTest, DeviceUnsupportedDefault) {
   file_manager_private::MountCompletedEvent event;
   event.event_type = file_manager_private::MOUNT_COMPLETED_EVENT_TYPE_MOUNT;
   event.should_notify = true;
-  event.status = file_manager_private::MOUNT_ERROR_ERROR_UNSUPPORTED_FILESYSTEM;
+  event.status = file_manager_private::MOUNT_ERROR_UNSUPPORTED_FILESYSTEM;
   GetSystemNotificationManager()->HandleMountCompletedEvent(event,
                                                             *volume.get());
   // Get the number of notifications from the NotificationDisplayService.
@@ -756,7 +756,7 @@ TEST_F(SystemNotificationManagerTest, DeviceUnsupportedNamed) {
   file_manager_private::MountCompletedEvent event;
   event.event_type = file_manager_private::MOUNT_COMPLETED_EVENT_TYPE_MOUNT;
   event.should_notify = true;
-  event.status = file_manager_private::MOUNT_ERROR_ERROR_UNSUPPORTED_FILESYSTEM;
+  event.status = file_manager_private::MOUNT_ERROR_UNSUPPORTED_FILESYSTEM;
   GetSystemNotificationManager()->HandleMountCompletedEvent(event,
                                                             *volume.get());
   // Get the number of notifications from the NotificationDisplayService.
@@ -822,7 +822,7 @@ TEST_F(SystemNotificationManagerTest, MultipartDeviceUnsupportedDefault) {
       VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       "", "unsupported"));
-  event.status = file_manager_private::MOUNT_ERROR_ERROR_UNSUPPORTED_FILESYSTEM;
+  event.status = file_manager_private::MOUNT_ERROR_UNSUPPORTED_FILESYSTEM;
   GetSystemNotificationManager()->HandleMountCompletedEvent(event,
                                                             *volume2.get());
   // Get the number of notifications from the NotificationDisplayService.
@@ -871,7 +871,7 @@ TEST_F(SystemNotificationManagerTest, MultipartDeviceUnsupportedNamed) {
       VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "unsupported"));
-  event.status = file_manager_private::MOUNT_ERROR_ERROR_UNSUPPORTED_FILESYSTEM;
+  event.status = file_manager_private::MOUNT_ERROR_UNSUPPORTED_FILESYSTEM;
   GetSystemNotificationManager()->HandleMountCompletedEvent(event,
                                                             *volume2.get());
   // Get the number of notifications from the NotificationDisplayService.
@@ -912,7 +912,7 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownDefault) {
   file_manager_private::MountCompletedEvent event;
   event.event_type = file_manager_private::MOUNT_COMPLETED_EVENT_TYPE_MOUNT;
   event.should_notify = true;
-  event.status = file_manager_private::MOUNT_ERROR_ERROR_UNKNOWN_FILESYSTEM;
+  event.status = file_manager_private::MOUNT_ERROR_UNKNOWN_FILESYSTEM;
   GetSystemNotificationManager()->HandleMountCompletedEvent(event,
                                                             *volume.get());
   // Get the number of notifications from the NotificationDisplayService.
@@ -955,7 +955,7 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownNamed) {
   file_manager_private::MountCompletedEvent event;
   event.event_type = file_manager_private::MOUNT_COMPLETED_EVENT_TYPE_MOUNT;
   event.should_notify = true;
-  event.status = file_manager_private::MOUNT_ERROR_ERROR_UNKNOWN_FILESYSTEM;
+  event.status = file_manager_private::MOUNT_ERROR_UNKNOWN_FILESYSTEM;
   GetSystemNotificationManager()->HandleMountCompletedEvent(event,
                                                             *volume.get());
   // Get the number of notifications from the NotificationDisplayService.
@@ -1000,7 +1000,7 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownReadOnlyDefault) {
   file_manager_private::MountCompletedEvent event;
   event.event_type = file_manager_private::MOUNT_COMPLETED_EVENT_TYPE_MOUNT;
   event.should_notify = true;
-  event.status = file_manager_private::MOUNT_ERROR_ERROR_UNKNOWN_FILESYSTEM;
+  event.status = file_manager_private::MOUNT_ERROR_UNKNOWN_FILESYSTEM;
   GetSystemNotificationManager()->HandleMountCompletedEvent(event,
                                                             *volume.get());
   // Get the number of notifications from the NotificationDisplayService.
@@ -1038,7 +1038,7 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownReadOnlyNamed) {
   file_manager_private::MountCompletedEvent event;
   event.event_type = file_manager_private::MOUNT_COMPLETED_EVENT_TYPE_MOUNT;
   event.should_notify = true;
-  event.status = file_manager_private::MOUNT_ERROR_ERROR_UNKNOWN_FILESYSTEM;
+  event.status = file_manager_private::MOUNT_ERROR_UNKNOWN_FILESYSTEM;
   GetSystemNotificationManager()->HandleMountCompletedEvent(event,
                                                             *volume.get());
   // Get the number of notifications from the NotificationDisplayService.

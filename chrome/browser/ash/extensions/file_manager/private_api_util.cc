@@ -570,11 +570,11 @@ void VolumeToVolumeMetadata(
       break;
     case ash::MountError::kUnknownFilesystem:
       volume_metadata->mount_condition =
-          file_manager_private::MOUNT_ERROR_ERROR_UNKNOWN_FILESYSTEM;
+          file_manager_private::MOUNT_ERROR_UNKNOWN_FILESYSTEM;
       break;
     case ash::MountError::kUnsupportedFilesystem:
       volume_metadata->mount_condition =
-          file_manager_private::MOUNT_ERROR_ERROR_UNSUPPORTED_FILESYSTEM;
+          file_manager_private::MOUNT_ERROR_UNSUPPORTED_FILESYSTEM;
       break;
   }
 

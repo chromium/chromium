@@ -117,7 +117,7 @@ function runTests() {
 
       var onMountCompleted = chrome.test.callbackPass(function(event) {
         chrome.test.assertEq('unmount', event.eventType);
-        chrome.test.assertEq('error_unknown', event.status);
+        chrome.test.assertEq('unknown_error', event.status);
         // For extension based providers, provider id is the same as
         // extension id.
         chrome.test.assertEq(
