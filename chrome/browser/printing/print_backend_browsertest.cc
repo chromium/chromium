@@ -244,6 +244,16 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     return result;
   }
 
+  void CancelAndWait() {
+    // Safe to use base::Unretained(this) since waiting locally on the callback
+    // forces a shorter lifetime than `this`.
+    GetPrintBackendService()->Cancel(
+        kTestDocumentCookie,
+        base::BindOnce(&PrintBackendBrowserTest::CheckForQuit,
+                       base::Unretained(this)));
+    WaitUntilCallbackReceived();
+  }
+
   // Public callbacks used by tests.
   void OnDidEnumeratePrinters(mojom::PrinterListResultPtr& capture_printer_list,
                               mojom::PrinterListResultPtr printer_list) {
@@ -646,6 +656,19 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, DocumentDone) {
   EXPECT_EQ(result, mojom::ResultCode::kSuccess);
 
   EXPECT_EQ(DocumentDoneAndWait(), mojom::ResultCode::kSuccess);
+}
+
+IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, Cancel) {
+  LaunchService();
+  AddDefaultPrinter();
+  SetPrinterNameForSubsequentContexts(kDefaultPrinterName);
+
+  PrintSettings print_settings;
+  print_settings.set_device_name(kDefaultPrinterName16);
+
+  EXPECT_EQ(StartPrintingAndWait(print_settings), mojom::ResultCode::kSuccess);
+
+  CancelAndWait();
 }
 
 }  // namespace printing

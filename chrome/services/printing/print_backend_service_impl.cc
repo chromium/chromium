@@ -195,6 +195,7 @@ class DocumentContainer {
       mojom::MetafileDataType data_type,
       base::ReadOnlySharedMemoryRegion serialized_document);
   mojom::ResultCode DoDocumentDone();
+  void DoCancel();
 
  private:
   raw_ptr<PrintingContext::Delegate> context_delegate_;
@@ -310,6 +311,13 @@ mojom::ResultCode DocumentContainer::DoDocumentDone() {
 
   DVLOG(1) << "Document done for document " << document_->cookie();
   return context_->DocumentDone();
+}
+
+void DocumentContainer::DoCancel() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  DVLOG(1) << "Canceling document " << document_->cookie();
+  context_->Cancel();
 }
 
 }  // namespace
@@ -779,6 +787,23 @@ void PrintBackendServiceImpl::DocumentDone(
                            std::move(callback)));
 }
 
+void PrintBackendServiceImpl::Cancel(
+    int document_cookie,
+    mojom::PrintBackendService::CancelCallback callback) {
+  DCHECK(print_backend_);
+  DocumentHelper* document_helper = GetDocumentHelper(document_cookie);
+  DCHECK(document_helper);
+
+  // Safe to use `base::Unretained(this)` because `this` outlives the async
+  // call and callback.  The entire service process goes away when `this`
+  // lifetime expires.
+  document_helper->document_container()
+      .AsyncCall(&DocumentContainer::DoCancel)
+      .Then(base::BindOnce(&PrintBackendServiceImpl::OnDidCancel,
+                           base::Unretained(this), std::ref(*document_helper),
+                           std::move(callback)));
+}
+
 void PrintBackendServiceImpl::OnDidStartPrintingReadyDocument(
     DocumentHelper& document_helper,
     mojom::ResultCode result) {
@@ -824,6 +849,15 @@ void PrintBackendServiceImpl::OnDidDocumentDone(
   std::move(callback).Run(result);
 
   // All complete for this document.
+  RemoveDocumentHelper(document_helper);
+}
+
+void PrintBackendServiceImpl::OnDidCancel(
+    DocumentHelper& document_helper,
+    mojom::PrintBackendService::CancelCallback callback) {
+  std::move(callback).Run();
+
+  // Do nothing more with this document.
   RemoveDocumentHelper(document_helper);
 }
 

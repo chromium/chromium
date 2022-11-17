@@ -192,4 +192,8 @@ interface PrintBackendService {
   // processing and cleanup for the print job should be performed.
   DocumentDone(int32 document_cookie)
     => (ResultCode result_code);
+
+  // Signal that the document has been canceled and its resources should
+  // be released.
+  Cancel(int32 document_cookie) => ();
 };

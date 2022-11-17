@@ -197,6 +197,8 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
   void DocumentDone(
       int32_t document_cookie,
       mojom::PrintBackendService::DocumentDoneCallback callback) override;
+  void Cancel(int32_t document_cookie,
+              mojom::PrintBackendService::CancelCallback callback) override;
 
   // Callbacks from worker functions.
   void OnDidStartPrintingReadyDocument(DocumentHelper& document_helper,
@@ -215,6 +217,8 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
       DocumentHelper& document_helper,
       mojom::PrintBackendService::DocumentDoneCallback callback,
       mojom::ResultCode result);
+  void OnDidCancel(DocumentHelper& document_helper,
+                   mojom::PrintBackendService::CancelCallback callback);
 
   // Utility helpers.
   DocumentHelper* GetDocumentHelper(int document_cookie);
