@@ -15,6 +15,9 @@ PaintRecorderBase::PaintRecorderBase()
 PaintRecorderBase::~PaintRecorderBase() = default;
 
 void PaintRecorderBase::beginRecording() {
+  DCHECK(!is_recording_);
+  is_recording_ = true;
+
   // The subclass must create canvas_ before calling this method.
   DCHECK(canvas_);
   display_item_list_->StartPaint();
@@ -22,15 +25,16 @@ void PaintRecorderBase::beginRecording() {
 
 sk_sp<PaintRecord> PaintRecorderBase::finishRecordingAsPicture() {
   DCHECK(canvas_);
+  DCHECK(is_recording_);
+  is_recording_ = false;
 
   // Some users expect that their saves are automatically closed for them.
   // Maybe we could remove this assumption and just have callers do it.
   // canvas_ is not reset in case it can be reused for the next recording.
   canvas_->restoreToCount(1);
 
-  // Some users (e.g. printing) use the existence of the recording canvas
-  // to know if recording is finished, so reset it here.
-  canvas_.reset();
+  if (canvas_->NeedsFlush())
+    canvas_.reset();
 
   // The rect doesn't matter, since we just release the record.
   display_item_list_->EndPaintOfUnpaired(gfx::Rect());
@@ -46,14 +50,18 @@ size_t PaintRecorderBase::num_paint_ops() const {
 }
 
 PaintCanvas* PaintRecorder::beginRecording() {
-  canvas_ = std::make_unique<RecordPaintCanvas>(display_item_list_.get());
+  if (!canvas_)
+    canvas_ = std::make_unique<RecordPaintCanvas>(display_item_list_.get());
   PaintRecorderBase::beginRecording();
   return canvas_.get();
 }
 
 PaintCanvas* InspectablePaintRecorder::beginRecording(const gfx::Size& size) {
-  canvas_ = std::make_unique<InspectableRecordPaintCanvas>(
-      display_item_list_.get(), size);
+  if (!canvas_ || size != size_) {
+    canvas_ = std::make_unique<InspectableRecordPaintCanvas>(
+        display_item_list_.get(), size);
+  }
+  size_ = size;
   PaintRecorderBase::beginRecording();
   return canvas_.get();
 }

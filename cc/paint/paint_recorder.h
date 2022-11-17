@@ -32,7 +32,9 @@ class CC_PAINT_EXPORT PaintRecorderBase {
   size_t OpBytesUsed() const { return display_item_list_->OpBytesUsed(); }
 
   // Only valid while recording.
-  PaintCanvas* getRecordingCanvas() { return canvas_.get(); }
+  PaintCanvas* getRecordingCanvas() {
+    return is_recording_ ? canvas_.get() : nullptr;
+  }
 
  protected:
   PaintRecorderBase();
@@ -41,6 +43,7 @@ class CC_PAINT_EXPORT PaintRecorderBase {
   // The subclass must create `canvas_` before calling this method.
   void beginRecording();
 
+  bool is_recording_ = false;
   scoped_refptr<DisplayItemList> display_item_list_;
   std::unique_ptr<RecordPaintCanvas> canvas_;
 };
@@ -59,6 +62,9 @@ class CC_PAINT_EXPORT InspectablePaintRecorder : public PaintRecorderBase {
   // recorded results because all operations will be recorded regardless of it,
   // but it determines the top-level device clip.
   PaintCanvas* beginRecording(const gfx::Size& size);
+
+ private:
+  gfx::Size size_;
 };
 
 }  // namespace cc
