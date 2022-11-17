@@ -81,11 +81,15 @@ struct FirstPartySetsCacheFilter {
 // This struct must match the class fields defined in
 // //net/first_party_sets/global_first_party_sets.h.
 struct GlobalFirstPartySets {
-  // The mapping from site to FPS entry.
+  // The mapping from site to FPS entry from public sets.
   map<SchemefulSite, FirstPartySetEntry> sets;
 
-  // The mapping from site alias to canonical site.
+  // The mapping from site alias to canonical site from public sets.
   map<SchemefulSite, SchemefulSite> aliases;
+
+  // The mapping of site to FPS entry representing the parsed manually-supplied
+  // set, without taking the underlying public sets into account.
+  map<SchemefulSite, FirstPartySetEntry> manual_entries;
 
   // The config induced by the manually-supplied set.
   FirstPartySetsContextConfig manual_config;

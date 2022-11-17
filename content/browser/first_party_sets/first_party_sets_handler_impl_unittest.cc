@@ -315,7 +315,50 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
-       ClearSiteDataOnChangedSetsForContext_Successful) {
+       ClearSiteDataOnChangedSetsForContext_ManualSet_Successful) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kFirstPartySets,
+      {{features::kFirstPartySetsClearSiteDataOnChangedSets.name, "true"}});
+
+  net::SchemefulSite foo(GURL("https://foo.test"));
+  net::SchemefulSite associated(GURL("https://associatedsite.test"));
+  net::SchemefulSite associated2(GURL("https://associatedsite2.test"));
+
+  const std::string browser_context_id = "profile";
+
+  base::HistogramTester histogram;
+  FirstPartySetsHandlerImpl handler =
+      FirstPartySetsHandlerImpl::CreateForTesting(true, false);
+  const std::string input =
+      R"({"primary": "https://foo.test", )"
+      R"("associatedSites": ["https://associatedsite.test"]})";
+  ASSERT_TRUE(base::JSONReader::Read(input));
+
+  handler.Init(scoped_dir_.GetPath(), LocalSetDeclaration(input));
+
+  // Should not yet be recorded.
+  histogram.ExpectTotalCount(kFirstPartySetsClearSiteDataOutcomeHistogram, 0);
+  ClearSiteDataOnChangedSetsForContextAndWait(
+      handler, context(), browser_context_id,
+      net::FirstPartySetsContextConfig());
+
+  EXPECT_THAT(
+      GetPersistedGlobalSetsAndWait(handler, browser_context_id)
+          ->FindEntries({foo, associated}, net::FirstPartySetsContextConfig()),
+      UnorderedElementsAre(
+          Pair(foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary,
+                                            absl::nullopt)),
+          Pair(associated,
+               net::FirstPartySetEntry(foo, net::SiteType::kAssociated,
+                                       absl::nullopt))));
+  histogram.ExpectUniqueSample(
+      kFirstPartySetsClearSiteDataOutcomeHistogram,
+      FirstPartySetsHandlerImpl::ClearSiteDataOutcomeType::kSuccess, 1);
+}
+
+TEST_F(FirstPartySetsHandlerImplEnabledTest,
+       ClearSiteDataOnChangedSetsForContext_PublicSetsWithDiff_Successful) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kFirstPartySets,

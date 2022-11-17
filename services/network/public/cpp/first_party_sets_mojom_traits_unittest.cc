@@ -125,9 +125,7 @@ TEST(FirstPartySetsTraitsTest, RoundTrips_GlobalFirstPartySets) {
   net::SchemefulSite b_cctld(GURL("https://b.cctld"));
   net::SchemefulSite c(GURL("https://c.test"));
 
-  net::FirstPartySetsContextConfig manual_config({{c, absl::nullopt}});
-
-  const net::GlobalFirstPartySets original(
+  net::GlobalFirstPartySets original(
       /*entries=*/
       {
           {a,
@@ -136,7 +134,11 @@ TEST(FirstPartySetsTraitsTest, RoundTrips_GlobalFirstPartySets) {
           {c,
            net::FirstPartySetEntry(a, net::SiteType::kService, absl::nullopt)},
       },
-      /*aliases=*/{{b_cctld, b}}, manual_config.Clone());
+      /*aliases=*/{{b_cctld, b}});
+
+  original.ApplyManuallySpecifiedSet(
+      {{a, net::FirstPartySetEntry(a, net::SiteType::kPrimary, absl::nullopt)},
+       {b, net::FirstPartySetEntry(a, net::SiteType::kAssociated, 0)}});
 
   net::GlobalFirstPartySets round_tripped;
 
