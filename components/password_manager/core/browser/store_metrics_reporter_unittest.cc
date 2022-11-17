@@ -1109,5 +1109,48 @@ TEST_F(StoreMetricsReporterTest, ReportPasswordNoteMetrics) {
   RunUntilIdle();
 }
 
+TEST_F(StoreMetricsReporterTest, ReportPasswordInsecureCredentialMetrics) {
+  auto profile_store =
+      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
+  profile_store->Init(&prefs_, /*affiliated_match_helper=*/nullptr);
+
+  const std::string kRealm1 = "https://example.com";
+
+  PasswordForm secure_password = CreateForm(kRealm1, "user", "pass");
+  profile_store->AddLogin(secure_password);
+
+  PasswordForm leaked_password = CreateForm(kRealm1, "user2", "pass");
+  leaked_password.password_issues.insert(
+      {InsecureType::kLeaked, InsecurityMetadata()});
+  profile_store->AddLogin(leaked_password);
+
+  PasswordForm phished_and_leaked_password =
+      CreateForm(kRealm1, "user3", "pass");
+  phished_and_leaked_password.password_issues.insert(
+      {InsecureType::kLeaked, InsecurityMetadata()});
+  phished_and_leaked_password.password_issues.insert(
+      {InsecureType::kPhished, InsecurityMetadata()});
+  profile_store->AddLogin(phished_and_leaked_password);
+
+  base::HistogramTester histogram_tester;
+  StoreMetricsReporter reporter(profile_store.get(), /*account_store=*/nullptr,
+                                sync_service(), identity_manager(), &prefs_,
+                                /*password_reuse_manager=*/nullptr,
+                                /*is_under_advanced_protection=*/false,
+                                /*done_callback*/ base::DoNothing());
+
+  RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.CompromisedCredentials3.CountPhished", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.CompromisedCredentials3.CountLeaked", 2, 1);
+
+  profile_store->ShutdownOnUIThread();
+  // Make sure the PasswordStore destruction parts on the background sequence
+  // finish, otherwise we get memory leak reports.
+  RunUntilIdle();
+}
+
 }  // namespace
 }  // namespace password_manager

@@ -329,7 +329,7 @@ void ReportPasswordIssuesMetrics(
     BulkCheckDone bulk_check_done,
     const std::vector<std::unique_ptr<PasswordForm>>& forms) {
   int count_leaked = base::ranges::count_if(forms, [](const auto& form) {
-    return !form->password_issues.contains(InsecureType::kLeaked);
+    return form->password_issues.contains(InsecureType::kLeaked);
   });
   base::UmaHistogramCounts100(
       base::StrCat({kPasswordManager, ".CompromisedCredentials3.CountLeaked"}),
@@ -342,7 +342,7 @@ void ReportPasswordIssuesMetrics(
   }
 
   int count_phished = base::ranges::count_if(forms, [](const auto& form) {
-    return !form->password_issues.contains(InsecureType::kPhished);
+    return form->password_issues.contains(InsecureType::kPhished);
   });
   base::UmaHistogramCounts100(
       base::StrCat({kPasswordManager, ".CompromisedCredentials3.CountPhished"}),
