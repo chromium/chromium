@@ -60,18 +60,18 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   source->AddString("chromeOSVersion", base::SysInfo::OperatingSystemVersion());
   source->AddString("chromeVersion", chrome::kChromeVersion);
   source->AddInteger("channel", static_cast<int>(chrome::GetChannel()));
-  std::string customization_id;
-  std::string hwid;
   chromeos::system::StatisticsProvider* provider =
       chromeos::system::StatisticsProvider::GetInstance();
   // MachineStatistics may not exist for browser tests, but it is fine for these
   // to be empty strings.
-  provider->GetMachineStatistic(chromeos::system::kCustomizationIdKey,
-                                &customization_id);
-  provider->GetMachineStatistic(chromeos::system::kHardwareClassKey, &hwid);
-  source->AddString("customizationId", customization_id);
+  const absl::optional<base::StringPiece> customization_id =
+      provider->GetMachineStatistic(chromeos::system::kCustomizationIdKey);
+  const absl::optional<base::StringPiece> hwid =
+      provider->GetMachineStatistic(chromeos::system::kHardwareClassKey);
+  source->AddString("customizationId",
+                    std::string(customization_id.value_or("")));
   source->AddString("deviceName", ui::GetChromeOSDeviceName());
-  source->AddString("hwid", hwid);
+  source->AddString("hwid", std::string(hwid.value_or("")));
   source->AddString("deviceHelpContentId",
                     base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
                         "device-help-content-id"));
