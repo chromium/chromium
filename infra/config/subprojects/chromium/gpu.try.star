@@ -460,6 +460,7 @@ gpu_win_builder(
         "ci/GPU FYI Win x64 Builder",
         "ci/Win10 FYI x64 Release (Intel HD 630)",
     ],
+    goma_backend = None,
 )
 
 gpu_win_builder(
@@ -469,6 +470,7 @@ gpu_win_builder(
         "ci/GPU FYI Win x64 Builder (dbg)",
         "ci/Win10 FYI x64 Debug (NVIDIA)",
     ],
+    goma_backend = None,
 )
 
 gpu_win_builder(

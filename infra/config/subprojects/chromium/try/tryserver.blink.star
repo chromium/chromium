@@ -115,9 +115,10 @@ try_.builder(
     try_settings = builder_config.try_settings(
         retry_failed_shards = True,
     ),
-    goma_backend = goma.backend.RBE_PROD,
     os = os.WINDOWS_ANY,
     builderless = True,
+    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 blink_mac_builder(

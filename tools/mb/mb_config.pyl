@@ -882,7 +882,7 @@
       'mac12.0-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl',
       'mac12.0.arm64-blink-rel': 'release_bot_blink_arm64_minimal_symbols',
       'win10.20h2-blink-rel': 'release_bot_blink_x86_minimal_symbols',
-      'win11-blink-rel': 'release_bot_blink_x64_minimal_symbols',
+      'win11-blink-rel': 'release_bot_blink_x64_minimal_symbols_reclient',
     },
 
     'tryserver.chrome': {
@@ -943,7 +943,7 @@
       'fuchsia-official': 'fuchsia_official_optimize_goma_trybot',
       'linux-official': 'official_optimize_reclient_trybot',
       'mac-official': 'official_optimize_goma_trybot',
-      'win-official': 'official_optimize_goma_trybot',
+      'win-official': 'official_optimize_reclient_trybot',
       'win32-official': 'x86_official_optimize_goma_trybot',
     },
 
@@ -1097,10 +1097,10 @@
       'dawn-try-win10-x64-asan-rel': 'dawn_tests_asan_release_trybot',
       'dawn-try-win10-x86-rel': 'dawn_tests_release_trybot_x86',
       'dawn-win10-x64-deps-rel': 'dawn_tests_release_trybot',
-      'dawn-win10-x86-deps-rel': 'dawn_tests_release_trybot_x86',
+      'dawn-win10-x86-deps-rel': 'dawn_tests_release_trybot_x86_reclient',
       'linux-dawn-rel': 'dawn_tests_with_desktop_gl_release_trybot',
       'mac-dawn-rel': 'dawn_tests_release_trybot_alloc_none',
-      'win-dawn-rel': 'dawn_tests_release_trybot',
+      'win-dawn-rel': 'dawn_tests_release_trybot_reclient',
     },
 
     'tryserver.chromium.fuchsia': {
@@ -1321,18 +1321,18 @@
     'tryserver.chromium.win': {
       'gpu-fyi-try-win10-amd-rel-64': 'gpu_fyi_tests_release_trybot',
       'gpu-fyi-try-win10-intel-exp-64': 'gpu_fyi_tests_release_trybot',
-      'gpu-fyi-try-win10-intel-rel-64': 'gpu_fyi_tests_release_trybot',
-      'gpu-fyi-try-win10-nvidia-dbg-64': 'gpu_fyi_tests_debug_trybot',
+      'gpu-fyi-try-win10-intel-rel-64': 'gpu_fyi_tests_release_trybot_reclient',
+      'gpu-fyi-try-win10-nvidia-dbg-64': 'gpu_fyi_tests_debug_trybot_reclient',
       'gpu-fyi-try-win10-nvidia-dx12vk-dbg-64': 'gpu_fyi_tests_dx12vk_debug_trybot',
       'gpu-fyi-try-win10-nvidia-dx12vk-rel-64': 'gpu_fyi_tests_dx12vk_release_trybot',
       'gpu-fyi-try-win10-nvidia-exp-64': 'gpu_fyi_tests_release_trybot',
       'gpu-fyi-try-win10-nvidia-rel-32': 'gpu_fyi_tests_release_trybot_x86',
       'gpu-fyi-try-win10-nvidia-rel-64': 'gpu_fyi_tests_release_trybot',
       'win-annotator-rel': 'release_trybot',
-      'win-asan': 'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release',
+      'win-asan': 'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release_reclient',
       'win-celab-try-rel': 'release_bot_minimal_symbols',
       'win-fieldtrial-rel': 'release_bot_minimal_symbols',
-      'win-libfuzzer-asan-rel': 'libfuzzer_windows_asan_release_trybot',
+      'win-libfuzzer-asan-rel': 'libfuzzer_windows_asan_release_trybot_reclient',
       'win-perfetto-rel': 'perfetto_release_trybot',
       'win-rel': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage',
       'win10-wpt-content-shell-fyi-rel': 'release_trybot',
@@ -1344,10 +1344,10 @@
       'win11-x64-fyi-rel': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage',
       'win7-rel': 'gpu_tests_release_trybot_x86_resource_allowlisting',
       'win_archive': 'release_trybot_x86',
-      'win_chromium_compile_dbg_ng': 'gpu_tests_debug_bot_x86_no_symbols',
+      'win_chromium_compile_dbg_ng': 'gpu_tests_debug_bot_x86_no_symbols_reclient',
       'win_chromium_compile_rel_ng': 'gpu_tests_release_trybot_x86_resource_allowlisting',
       'win_chromium_x64_rel_ng': 'gpu_tests_release_trybot',
-      'win_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot',
+      'win_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot_reclient',
       'win_upload_clang': 'release_bot',
       'win_x64_archive': 'release_trybot',
     },
@@ -1794,10 +1794,6 @@
 
     'angle_deqp_release_trybot_x86': [
       'angle_deqp_tests', 'shared_release_trybot', 'x86',
-    ],
-
-    'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release': [
-      'asan', 'fuzzer', 'static', 'v8_heap', 'minimal_symbols', 'release_bot',
     ],
 
     'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release_reclient': [
@@ -2468,8 +2464,16 @@
       'dawn_tests', 'release_trybot', 'padisabled',
     ],
 
+    'dawn_tests_release_trybot_reclient': [
+      'dawn_tests', 'release_trybot_reclient',
+    ],
+
     'dawn_tests_release_trybot_x86': [
       'dawn_tests', 'release_trybot', 'x86',
+    ],
+
+    'dawn_tests_release_trybot_x86_reclient': [
+      'dawn_tests', 'release_trybot_reclient', 'x86',
     ],
 
     'dawn_tests_with_desktop_gl_release_trybot': [
@@ -3169,8 +3173,8 @@
       'libfuzzer', 'asan', 'release_bot_reclient', 'chrome_with_codecs', 'pdf_xfa', 'disable_nacl', 'minimal_symbols', 'mojo_fuzzer',
     ],
 
-    'libfuzzer_windows_asan_release_trybot': [
-      'libfuzzer', 'asan', 'release_trybot', 'chrome_with_codecs', 'pdf_xfa', 'disable_nacl', 'mojo_fuzzer', 'skip_generate_fuzzer_owners', 'no_symbols',
+    'libfuzzer_windows_asan_release_trybot_reclient': [
+      'libfuzzer', 'asan', 'release_trybot_reclient', 'chrome_with_codecs', 'pdf_xfa', 'disable_nacl', 'mojo_fuzzer', 'skip_generate_fuzzer_owners', 'no_symbols',
     ],
 
     'linux_cfm_release_bot_reclient': [
@@ -3484,8 +3488,8 @@
       'release_bot_blink_reclient', 'v8_enable_debugging_features',
     ],
 
-    'release_bot_blink_x64_minimal_symbols': [
-      'release_bot_blink', 'x64', 'minimal_symbols',
+    'release_bot_blink_x64_minimal_symbols_reclient': [
+      'release_bot_blink_reclient', 'x64', 'minimal_symbols',
     ],
 
     'release_bot_blink_x86_minimal_symbols': [

@@ -125,7 +125,7 @@
       "symbol_level": 0,
       "target_cpu": "x86",
       "use_dawn": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-dawn-rel": {
@@ -162,7 +162,7 @@
       "is_debug": false,
       "symbol_level": 0,
       "use_dawn": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   }
 }

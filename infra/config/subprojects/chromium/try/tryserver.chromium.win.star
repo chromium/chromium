@@ -41,8 +41,9 @@ try_.builder(
     mirrors = [
         "ci/win-asan",
     ],
-    goma_jobs = goma.jobs.J150,
     execution_timeout = 6 * time.hour,
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -67,6 +68,7 @@ try_.builder(
 
     # TODO(crbug.com/1366994): remove this.
     omit_python2 = False,
+    goma_backend = None,
 )
 
 try_.orchestrator_builder(
@@ -127,7 +129,7 @@ try_.builder(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
-    goma_jobs = goma.jobs.J150,
+    goma_backend = None,
     main_list_view = "try",
     tryjob = try_.job(
         # TODO(crbug.com/1335555) Remove once cancelling doesn't wipe
@@ -140,6 +142,7 @@ try_.builder(
 
     # TODO(crbug.com/1366994): remove this.
     omit_python2 = False,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -374,4 +377,5 @@ try_.gpu.optional_tests_builder(
             cq.location_filter(path_regexp = "ui/gl/.+"),
         ],
     ),
+    goma_backend = None,
 )

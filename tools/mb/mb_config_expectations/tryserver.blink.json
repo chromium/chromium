@@ -115,7 +115,7 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_cpu": "x64",
-      "use_goma": true
+      "use_remoteexec": true
     }
   }
 }
