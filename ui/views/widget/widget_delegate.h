@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
@@ -23,10 +24,6 @@ namespace gfx {
 class ImageSkia;
 class Rect;
 }  // namespace gfx
-
-namespace ui {
-class ImageModel;
-}  // namespace ui
 
 namespace views {
 class BubbleDialogDelegate;
@@ -81,10 +78,10 @@ class VIEWS_EXPORT WidgetDelegate
     bool enable_arrow_key_traversal = false;
 
     // The widget's icon, if any.
-    gfx::ImageSkia icon;
+    ui::ImageModel icon;
 
     // The widget's app icon, a larger icon used for task bar and Alt-Tab.
-    gfx::ImageSkia app_icon;
+    ui::ImageModel app_icon;
 
     // The widget's initially focused view, if any. This can only be set before
     // this WidgetDelegate is used to initialize a Widget.
@@ -336,8 +333,12 @@ class VIEWS_EXPORT WidgetDelegate
   void SetCanResize(bool can_resize);
   void SetFocusTraversesOut(bool focus_traverses_out);
   void SetEnableArrowKeyTraversal(bool enable_arrow_key_traversal);
+  // TODO(crbug.com/1385470): Remove ImageSkia version of SetIcon().
   void SetIcon(const gfx::ImageSkia& icon);
+  void SetIcon(ui::ImageModel icon);
+  // TODO(crbug.com/1385470): Remove ImageSkia version of SetAppIcon().
   void SetAppIcon(const gfx::ImageSkia& icon);
+  void SetAppIcon(ui::ImageModel icon);
   void SetInitiallyFocusedView(View* initially_focused_view);
   void SetModalType(ui::ModalType modal_type);
   void SetOwnedByWidget(bool delete_self);

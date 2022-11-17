@@ -143,15 +143,15 @@ bool WidgetDelegate::ShouldShowCloseButton() const {
 
 ui::ImageModel WidgetDelegate::GetWindowAppIcon() {
   // Prefer app icon if available.
-  if (!params_.app_icon.isNull())
-    return ui::ImageModel::FromImageSkia(params_.app_icon);
+  if (!params_.app_icon.IsEmpty())
+    return params_.app_icon;
   // Fall back to the window icon.
   return GetWindowIcon();
 }
 
 // Returns the icon to be displayed in the window.
 ui::ImageModel WidgetDelegate::GetWindowIcon() {
-  return ui::ImageModel::FromImageSkia(params_.icon);
+  return params_.icon;
 }
 
 bool WidgetDelegate::ShouldShowWindowIcon() const {
@@ -360,13 +360,21 @@ void WidgetDelegate::SetEnableArrowKeyTraversal(
 }
 
 void WidgetDelegate::SetIcon(const gfx::ImageSkia& icon) {
-  params_.icon = icon;
+  SetIcon(ui::ImageModel::FromImageSkia(icon));
+}
+
+void WidgetDelegate::SetIcon(ui::ImageModel icon) {
+  params_.icon = std::move(icon);
   if (GetWidget())
     GetWidget()->UpdateWindowIcon();
 }
 
 void WidgetDelegate::SetAppIcon(const gfx::ImageSkia& icon) {
-  params_.app_icon = icon;
+  SetAppIcon(ui::ImageModel::FromImageSkia(icon));
+}
+
+void WidgetDelegate::SetAppIcon(ui::ImageModel icon) {
+  params_.app_icon = std::move(icon);
   if (GetWidget())
     GetWidget()->UpdateWindowIcon();
 }

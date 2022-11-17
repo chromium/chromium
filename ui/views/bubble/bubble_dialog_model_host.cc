@@ -247,11 +247,10 @@ class BubbleDialogModelHost::ContentsView : public BoxLayoutView {
         parent_->model_->dark_mode_icon(parent_->GetPassKey());
     if (!dark_mode_icon.IsEmpty() &&
         color_utils::IsDark(parent_->GetBackgroundColor())) {
-      parent_->SetIcon(dark_mode_icon.GetImage().AsImageSkia());
+      parent_->SetIcon(dark_mode_icon);
       return;
     }
-    parent_->SetIcon(
-        parent_->model_->icon(GetPassKey()).GetImage().AsImageSkia());
+    parent_->SetIcon(parent_->model_->icon(GetPassKey()));
   }
 
  private:
