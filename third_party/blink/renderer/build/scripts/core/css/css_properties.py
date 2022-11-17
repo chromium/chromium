@@ -84,6 +84,10 @@ def validate_property(prop, props_by_name):
         'mutable requires field_template:monotonic_flag [%s]' % name
     assert not prop.in_origin_trial or prop.runtime_flag,\
         'Property participates in origin trial, but has no runtime flag'
+    custom_functions = set(prop.computed_style_custom_functions)
+    protected_functions = set(set(prop.computed_style_protected_functions))
+    assert not custom_functions.intersection(protected_functions), \
+        'Functions must be specified as either protected or custom, not both [%s]' % name
 
 # Determines whether or not style builders (i.e. Apply functions)
 # should be generated for the given property.
@@ -156,7 +160,6 @@ class PropertyBase(object):
     def known_exposed(self):
         """True if the property is unconditionally web-exposed."""
         return not self.is_internal and not self.runtime_flag
-
 
 def generate_property_field(default):
     # Must use 'default_factory' rather than 'default' for list/dict.

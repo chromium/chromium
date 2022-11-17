@@ -893,7 +893,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       state.OriginatingElementStyle()) {
     const ComputedStyle* originating_style = state.OriginatingElementStyle();
     if (style.ColorIsCurrentColor())
-      builder.SetColor(originating_style->GetColor());
+      builder.SetColor(originating_style->Color());
     if (style.InternalVisitedColorIsCurrentColor()) {
       builder.SetInternalVisitedColor(
           originating_style->InternalVisitedColor());

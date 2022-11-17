@@ -820,7 +820,7 @@
       type_name: "bool",
       default_value: "true",
       inherited: true,
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
     },
     {
       name: "InternalVisitedColorIsCurrentColor",
@@ -829,7 +829,7 @@
       type_name: "bool",
       default_value: "true",
       inherited: true,
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
     },
     {
       name: "WillChangeProperties",

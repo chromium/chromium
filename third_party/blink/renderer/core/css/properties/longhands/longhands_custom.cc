@@ -1547,7 +1547,7 @@ const blink::Color Color::ColorIncludingFallback(bool visited_link,
                                                  const ComputedStyle& style,
                                                  bool* is_current_color) const {
   DCHECK(!visited_link);
-  if (style.ShouldForceColor(style.GetColor())) {
+  if (style.ShouldForceColor(style.Color())) {
     return To<Longhand>(GetCSSPropertyInternalForcedColor())
         .ColorIncludingFallback(false, style, is_current_color);
   }
@@ -1558,7 +1558,7 @@ const CSSValue* Color::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  if (style.ShouldForceColor(style.GetColor())) {
+  if (style.ShouldForceColor(style.Color())) {
     return GetCSSPropertyInternalForcedColor().CSSValueFromComputedStyle(
         style, nullptr, allow_visited_style);
   }
@@ -1580,7 +1580,7 @@ void Color::ApplyInherit(StyleResolverState& state) const {
     builder.SetColor(StyleColor(
         state.ParentStyle()->VisitedDependentColor(GetCSSPropertyColor())));
   } else {
-    builder.SetColor(state.ParentStyle()->GetColor());
+    builder.SetColor(state.ParentStyle()->Color());
   }
   builder.SetColorIsInherited(true);
   builder.SetColorIsCurrentColor(state.ParentStyle()->ColorIsCurrentColor());
@@ -1596,7 +1596,7 @@ void Color::ApplyValue(StyleResolverState& state, const CSSValue& value) const {
     builder.SetColorIsCurrentColor(true);
     if (state.UsesHighlightPseudoInheritance() &&
         state.OriginatingElementStyle())
-      builder.SetColor(state.OriginatingElementStyle()->GetColor());
+      builder.SetColor(state.OriginatingElementStyle()->Color());
     return;
   }
   if (value.IsInitialColorValue()) {
@@ -3244,7 +3244,7 @@ void InternalVisitedColor::ApplyInherit(StyleResolverState& state) const {
     builder.SetInternalVisitedColor(StyleColor(
         state.ParentStyle()->VisitedDependentColor(GetCSSPropertyColor())));
   } else {
-    builder.SetInternalVisitedColor(state.ParentStyle()->GetColor());
+    builder.SetInternalVisitedColor(state.ParentStyle()->Color());
   }
   builder.SetInternalVisitedColorIsCurrentColor(
       state.ParentStyle()->InternalVisitedColorIsCurrentColor());

@@ -922,7 +922,7 @@ void ComputedStyle::AdjustDiffForClipPath(const ComputedStyle& other,
 void ComputedStyle::AdjustDiffForBackgroundVisuallyEqual(
     const ComputedStyle& other,
     StyleDifference& diff) const {
-  if (BackgroundColorInternal() != other.BackgroundColorInternal()) {
+  if (BackgroundColor() != other.BackgroundColor()) {
     // If the background color change is not due to a composited animation, then
     // paint invalidation is required; but we can defer the decision until we
     // know whether the color change will be rendered by the compositor.
@@ -2039,7 +2039,7 @@ void ComputedStyle::AddAppliedTextDecoration(
   list->data.shrink_to_fit();
 }
 
-void ComputedStyle::OverrideTextDecorationColors(Color override_color) {
+void ComputedStyle::OverrideTextDecorationColors(blink::Color override_color) {
   scoped_refptr<AppliedTextDecorationList>& list =
       MutableAppliedTextDecorationsInternal();
   DCHECK(list);
@@ -2051,7 +2051,7 @@ void ComputedStyle::OverrideTextDecorationColors(Color override_color) {
 }
 
 void ComputedStyle::ApplyTextDecorations(
-    const Color& parent_text_decoration_color,
+    const blink::Color& parent_text_decoration_color,
     bool override_existing_colors) {
   if (GetTextDecorationLine() == TextDecorationLine::kNone &&
       !HasSimpleUnderlineInternal() && !AppliedTextDecorationsInternal())
@@ -2059,7 +2059,7 @@ void ComputedStyle::ApplyTextDecorations(
 
   // If there are any color changes or decorations set by this element, stop
   // using m_hasSimpleUnderline.
-  Color current_text_decoration_color =
+  blink::Color current_text_decoration_color =
       VisitedDependentColor(GetCSSPropertyTextDecorationColor());
   if (HasSimpleUnderlineInternal() &&
       (GetTextDecorationLine() != TextDecorationLine::kNone ||
@@ -2124,7 +2124,8 @@ StyleColor ComputedStyle::DecorationColorIncludingFallback(
     StyleColor text_stroke_style_color =
         visited_link ? InternalVisitedTextStrokeColor() : TextStrokeColor();
     if (!text_stroke_style_color.IsCurrentColor() &&
-        text_stroke_style_color.Resolve(Color(), UsedColorScheme()).Alpha()) {
+        text_stroke_style_color.Resolve(blink::Color(), UsedColorScheme())
+            .Alpha()) {
       return text_stroke_style_color;
     }
   }
@@ -2132,11 +2133,12 @@ StyleColor ComputedStyle::DecorationColorIncludingFallback(
   return visited_link ? InternalVisitedTextFillColor() : TextFillColor();
 }
 
-Color ComputedStyle::VisitedDependentColor(const CSSProperty& color_property,
-                                           bool* is_current_color) const {
+blink::Color ComputedStyle::VisitedDependentColor(
+    const CSSProperty& color_property,
+    bool* is_current_color) const {
   DCHECK(!color_property.IsVisited());
 
-  Color unvisited_color =
+  blink::Color unvisited_color =
       To<Longhand>(color_property)
           .ColorIncludingFallback(false, *this, is_current_color);
   if (InsideLink() != EInsideLink::kInsideVisitedLink)
@@ -2152,7 +2154,7 @@ Color ComputedStyle::VisitedDependentColor(const CSSProperty& color_property,
     visited_property = visited;
 
   // Overwrite is_current_color based on the visited color.
-  Color visited_color =
+  blink::Color visited_color =
       To<Longhand>(*visited_property)
           .ColorIncludingFallback(true, *this, is_current_color);
 
@@ -2169,14 +2171,14 @@ Color ComputedStyle::VisitedDependentColor(const CSSProperty& color_property,
   // the flag when the unvisited color is ‘currentColor’ would break tests like
   // css/css-pseudo/selection-link-001 and css/css-pseudo/target-text-008.
   // TODO(dazabani@igalia.com) improve behaviour where unvisited is currentColor
-  return Color(visited_color.Red(), visited_color.Green(), visited_color.Blue(),
-               unvisited_color.Alpha());
+  return blink::Color(visited_color.Red(), visited_color.Green(),
+                      visited_color.Blue(), unvisited_color.Alpha());
 }
 
-Color ComputedStyle::ResolvedColor(const StyleColor& color,
-                                   bool* is_current_color) const {
+blink::Color ComputedStyle::ResolvedColor(const StyleColor& color,
+                                          bool* is_current_color) const {
   bool visited_link = (InsideLink() == EInsideLink::kInsideVisitedLink);
-  Color current_color =
+  blink::Color current_color =
       visited_link ? GetInternalVisitedCurrentColor() : GetCurrentColor();
   return color.Resolve(current_color, UsedColorScheme(), is_current_color);
 }
@@ -2290,37 +2292,37 @@ void ComputedStyle::CopyChildDependentFlagsFrom(const ComputedStyle& other) {
     SetChildHasExplicitInheritance();
 }
 
-Color ComputedStyle::GetCurrentColor(bool* is_current_color) const {
-  DCHECK(!GetColor().IsCurrentColor());
+blink::Color ComputedStyle::GetCurrentColor(bool* is_current_color) const {
+  DCHECK(!Color().IsCurrentColor());
   if (is_current_color)
     *is_current_color = ColorIsCurrentColor();
-  return GetColor().Resolve(Color(), UsedColorScheme());
+  return Color().Resolve(blink::Color(), UsedColorScheme());
 }
 
-Color ComputedStyle::GetInternalVisitedCurrentColor(
+blink::Color ComputedStyle::GetInternalVisitedCurrentColor(
     bool* is_current_color) const {
   DCHECK(!InternalVisitedColor().IsCurrentColor());
   if (is_current_color)
     *is_current_color = InternalVisitedColorIsCurrentColor();
-  return InternalVisitedColor().Resolve(Color(), UsedColorScheme());
+  return InternalVisitedColor().Resolve(blink::Color(), UsedColorScheme());
 }
 
-Color ComputedStyle::GetInternalForcedCurrentColor(
+blink::Color ComputedStyle::GetInternalForcedCurrentColor(
     bool* is_current_color) const {
   DCHECK(!InternalForcedColor().IsCurrentColor());
-  if (GetColor().IsSystemColorIncludingDeprecated())
+  if (Color().IsSystemColorIncludingDeprecated())
     return GetCurrentColor(is_current_color);
-  return InternalForcedColor().Resolve(Color(), UsedColorScheme(),
+  return InternalForcedColor().Resolve(blink::Color(), UsedColorScheme(),
                                        is_current_color,
                                        /* is_forced_color */ true);
 }
 
-Color ComputedStyle::GetInternalForcedVisitedCurrentColor(
+blink::Color ComputedStyle::GetInternalForcedVisitedCurrentColor(
     bool* is_current_color) const {
   DCHECK(!InternalForcedVisitedColor().IsCurrentColor());
   if (InternalVisitedColor().IsSystemColorIncludingDeprecated())
     return GetInternalVisitedCurrentColor(is_current_color);
-  return InternalForcedVisitedColor().Resolve(Color(), UsedColorScheme(),
+  return InternalForcedVisitedColor().Resolve(blink::Color(), UsedColorScheme(),
                                               is_current_color,
                                               /* is_forced_color */ true);
 }
@@ -2339,7 +2341,7 @@ const AtomicString& ComputedStyle::ListStyleStringValue() const {
   return ListStyleType()->GetStringValue();
 }
 
-absl::optional<Color> ComputedStyle::AccentColorResolved() const {
+absl::optional<blink::Color> ComputedStyle::AccentColorResolved() const {
   const StyleAutoColor& auto_color = AccentColor();
   if (auto_color.IsAutoColor())
     return absl::nullopt;

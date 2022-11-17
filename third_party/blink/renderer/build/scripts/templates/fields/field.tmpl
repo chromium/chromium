@@ -16,6 +16,34 @@ static_cast<{{field.type_name}}>({{value}})
 {%- endif %}
 {% endmacro %}
 
+{% macro getter_method_name(field) -%}
+{% if 'getter' not in field.computed_style_custom_functions -%}
+{{field.getter_method_name}}
+{%- else -%}
+{{field.internal_getter_method_name}}
+{%- endif %}
+{%- endmacro %}
+
+{% macro setter_method_name(field) -%}
+{% if 'setter' not in field.computed_style_custom_functions -%}
+{{field.setter_method_name}}
+{%- else -%}
+{{field.internal_setter_method_name}}
+{%- endif %}
+{%- endmacro %}
+
+{% macro resetter_method_name(field) -%}
+{% if 'resetter' not in field.computed_style_custom_functions -%}
+{{field.resetter_method_name}}
+{%- else -%}
+{{field.internal_resetter_method_name}}
+{%- endif %}
+{%- endmacro %}
+
+{% macro mutable_method_name(field) -%}
+{{field.internal_mutable_method_name}}
+{%- endmacro %}
+
 {% macro accessor_expression_prefix(field) %}
 {% if field.builder -%}
 style_->

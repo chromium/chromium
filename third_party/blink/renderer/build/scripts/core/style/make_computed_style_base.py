@@ -336,6 +336,8 @@ def _create_property_field(property_):
         initial_method_name=property_.initial,
         computed_style_custom_functions=property_.
         computed_style_custom_functions,
+        computed_style_protected_functions=property_.
+        computed_style_protected_functions,
     )
 
 
@@ -366,6 +368,8 @@ def _create_inherited_flag_field(property_):
         initial_method_name=name_source.to_function_name(prefix='initial'),
         computed_style_custom_functions=property_.
         computed_style_custom_functions,
+        computed_style_protected_functions=property_.
+        computed_style_protected_functions,
     )
 
 
@@ -596,6 +600,7 @@ class ComputedStyleBaseWriter(json5_generator.Writer):
             self._css_properties.longhands, json5_file_paths[5],
             self.default_parameters)
         self._properties = properties + self._css_properties.extra_fields
+        self._longhands = [p for p in properties if p.is_longhand]
 
         self._generated_enums = _create_enums(self._properties)
 
@@ -622,7 +627,7 @@ class ComputedStyleBaseWriter(json5_generator.Writer):
         # We create separate groups/fields for generating ComputedStyle-
         # BuilderBase. The only difference between these fields and the regular
         # fields, is that the builder fields have the "builder" flag set, which
-        # us used to weak the code generation in the field templates.
+        # is used to tweak the code generation in the field templates.
         #
         # TODO(crbug.com/1377295): When the builder is fully deployed, we no
         #                          longer need two groups.
@@ -650,6 +655,7 @@ class ComputedStyleBaseWriter(json5_generator.Writer):
         return {
             'input_files': self._input_files,
             'properties': self._properties,
+            'longhands': self._longhands,
             'enums': self._generated_enums,
             'include_paths': self._include_paths,
             'computed_style': self._root_group,

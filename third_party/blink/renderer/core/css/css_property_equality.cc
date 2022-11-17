@@ -138,7 +138,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kClip:
       return a.Clip() == b.Clip();
     case CSSPropertyID::kColor:
-      return a.GetColor() == b.GetColor() &&
+      return a.Color() == b.Color() &&
              a.InternalVisitedColor() == b.InternalVisitedColor();
     case CSSPropertyID::kFill:
       return a.FillPaint().EqualTypeOrColor(b.FillPaint()) &&

@@ -37,7 +37,7 @@ OptionalStyleColor ColorPropertyFunctions::GetUnvisitedColor(
         return nullptr;
       return style.CaretColor().ToStyleColor();
     case CSSPropertyID::kColor:
-      return style.GetColor();
+      return style.Color();
     case CSSPropertyID::kOutlineColor:
       return style.OutlineColor();
     case CSSPropertyID::kColumnRuleColor:

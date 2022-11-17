@@ -3,7 +3,7 @@
 {% from 'templates/macros.tmpl' import print_if %}
 
 {% macro decl_public_methods(field) %}
-{{base.decl_getter_method(field)}}
+{{base.decl_public_getter_method(field)}}
 {% if field.writable or field.mutable %}
 void {{field.setter_method_name}}() {{print_if(field.mutable, "const ")}}{
   {{set_if_changed(field, encode(field, "true"))|indent(2)}}
@@ -12,5 +12,5 @@ void {{field.setter_method_name}}() {{print_if(field.mutable, "const ")}}{
 {% endmacro %}
 
 {% macro decl_protected_methods(field) -%}
-{{base.decl_internal_setter_method(field)}}
+{{base.decl_protected_setter_method(field)}}
 {%- endmacro %}

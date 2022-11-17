@@ -3328,7 +3328,7 @@ const CSSValue* ComputedStyleUtils::ComputedPropertyValue(
           style, style.CaretColor(), CSSValuePhase::kComputedValue);
     case CSSPropertyID::kColor:
       return ComputedStyleUtils::CurrentColorOrValidColor(
-          style, style.GetColor(), CSSValuePhase::kComputedValue);
+          style, style.Color(), CSSValuePhase::kComputedValue);
     case CSSPropertyID::kMinHeight: {
       if (style.MinHeight().IsAuto())
         return CSSIdentifierValue::Create(CSSValueID::kAuto);

@@ -354,13 +354,39 @@
     type_name: {
     },
 
-    // - custom_function: Any function specified in the list is not
-    // automatically generated in ComputedStyle. Use this when a generated
-    // function is not correct.
+    // - computed_style_protected_functions
+    //
+    // Any function specified in the list will be generated with protected
+    // visibility. This is useful if the default-generated getter function is
+    // typically not what clients want to use.
+    //
+    // For example, the Clear getter is protected to force clients to take
+    // TextDirection into account.
+    computed_style_protected_functions: {
+      default: [],
+      valid_type: "list",
+      valid_values: ["getter", "setter", "resetter"],
+    },
+
+    // - computed_style_custom_functions
+    //
+    // Any function specified in the list will be generated with protected
+    // visibility and an "Internal" suffix. A custom accessor (with the suffix-
+    // less name) must be manually provided on ComputedStyle. This is useful for
+    // e.g. properties that have special behavior that affects the computed
+    // value of the property.
+    //
+    // For example, the computed value of border-left-width magically becomes
+    // zero if border-left-style is none or hidden. The generated code can not
+    // express this, hence a custom one is specified.
+    //
+    // Any custom function automatically gets protected visiblity, and therefore
+    // it is not valid to specify a function as both custom and explicitly
+    // protected (using computed_style_protected_functions).
     computed_style_custom_functions: {
       default: [],
       valid_type: "list",
-      valid_values: ["initial", "getter", "setter", "reset", "mutable"],
+      valid_values: ["initial", "getter", "setter", "resetter"],
     },
 
     // - converter: "ConvertRadius"
@@ -928,7 +954,7 @@
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor(Color::kBlack)",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       style_builder_custom_functions: ["initial", "inherit", "value"],
       priority: "High",
       keywords: ["currentcolor"],
@@ -1413,7 +1439,7 @@
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/css/style_auto_color.h"],
       type_name: "StyleAutoColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       keywords: ["auto", "currentcolor"],
       typedom_types: ["Keyword"],
       converter: "ConvertStyleAutoColor",
@@ -1593,7 +1619,7 @@
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor(Color::kTransparent)",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       keywords: ["currentcolor"],
       typedom_types: ["Keyword"],
       converter: "ConvertStyleColor",
@@ -1736,7 +1762,7 @@
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor::CurrentColor()",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       keywords: ["currentcolor"],
       typedom_types: ["Keyword"],
       converter: "ConvertStyleColor",
@@ -1916,7 +1942,7 @@
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor::CurrentColor()",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       keywords: ["currentcolor"],
       typedom_types: ["Keyword"],
       converter: "ConvertStyleColor",
@@ -1979,7 +2005,7 @@
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor::CurrentColor()",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       keywords: ["currentcolor"],
       typedom_types: ["Keyword"],
       converter: "ConvertStyleColor",
@@ -2042,7 +2068,7 @@
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor::CurrentColor()",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       keywords: ["currentcolor"],
       typedom_types: ["Keyword"],
       converter: "ConvertStyleColor",
@@ -2245,7 +2271,7 @@
       include_paths: ["third_party/blink/renderer/core/css/style_auto_color.h"],
       default_value: "StyleAutoColor::AutoColor()",
       type_name: "StyleAutoColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       converter: "ConvertStyleAutoColor",
       keywords: ["auto", "currentcolor"],
       typedom_types: ["Keyword"],
@@ -2255,7 +2281,7 @@
       name: "clear",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_template: "keyword",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       keywords: ["none", "left", "right", "both", "inline-start", "inline-end"],
       typedom_types: ["Keyword"],
       default_value: "none",
@@ -2679,7 +2705,7 @@
       name: "float",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_template: "keyword",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       keywords: ["none", "left", "right", "inline-start", "inline-end"],
       typedom_types: ["Keyword"],
       default_value: "none",
@@ -3502,7 +3528,7 @@
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor::CurrentColor()",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       keywords: ["currentcolor"],
       typedom_types: ["Keyword"],
       converter: "ConvertStyleColor",
@@ -3826,7 +3852,7 @@
     {
       name: "pointer-events",
       property_methods: ["CSSValueFromComputedStyleInternal"],
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       independent: true,
       inherited: true,
       field_template: "keyword",
@@ -3897,7 +3923,7 @@
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "*",
       field_template: "keyword",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       style_builder_custom_functions: ["value"],
       keywords: ["none", "both", "horizontal", "vertical", "block", "inline"],
       typedom_types: ["Keyword"],
@@ -4348,7 +4374,7 @@
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor(Color::kBlack)",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       style_builder_template: "color",
       style_builder_template_args: {
         initial_color: "ComputedStyleInitialValues::InitialStopColor",
@@ -4566,7 +4592,7 @@
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor::CurrentColor()",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       keywords: ["currentcolor"],
       typedom_types: ["Keyword"],
       converter: "ConvertStyleColor",
@@ -5077,7 +5103,7 @@
       field_size: 5,
       field_template: "primitive",
       include_paths: ["third_party/blink/renderer/platform/theme_types.h"],
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       default_value: "kNoControlPart",
       type_name: "ControlPart",
     },
@@ -5254,7 +5280,7 @@
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor::CurrentColor()",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       keywords: ["currentcolor"],
       typedom_types: ["Keyword"],
       converter: "ConvertStyleColor",
@@ -5576,7 +5602,7 @@
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor::CurrentColor()",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       keywords: ["currentcolor"],
       typedom_types: ["Keyword"],
       converter: "ConvertStyleColor",
@@ -5613,7 +5639,7 @@
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor::CurrentColor()",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
       valid_for_highlight_legacy: true,
@@ -5638,7 +5664,7 @@
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor::CurrentColor()",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
       valid_for_highlight_legacy: true,
@@ -5698,7 +5724,7 @@
     {
       name: "-webkit-user-modify",
       property_methods: ["CSSValueFromComputedStyleInternal"],
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       inherited: true,
       field_group: "*",
       field_template: "keyword",
@@ -5708,7 +5734,7 @@
     {
       name: "user-select",
       property_methods: ["CSSValueFromComputedStyleInternal"],
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       inherited: true,
       field_group: "*",
       field_template: "keyword",
@@ -7042,7 +7068,7 @@
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor(Color::kBlack)",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       style_builder_custom_functions: ["initial", "inherit", "value"],
       priority: "High",
       valid_for_first_letter: true,
@@ -7064,7 +7090,7 @@
       default_value: "StyleAutoColor::AutoColor()",
       type_name: "StyleAutoColor",
       converter: "ConvertStyleAutoColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       style_builder_template: "visited_color",
       style_builder_template_args: {
         initial_color: "StyleAutoColor::AutoColor",
@@ -7080,7 +7106,7 @@
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor::CurrentColor()",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
     },
@@ -7093,7 +7119,7 @@
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor(Color::kTransparent)",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
       style_builder_template_args: {
@@ -7115,7 +7141,7 @@
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor::CurrentColor()",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
       valid_for_first_letter: true,
@@ -7133,7 +7159,7 @@
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor::CurrentColor()",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
       valid_for_first_letter: true,
@@ -7151,7 +7177,7 @@
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor::CurrentColor()",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
       valid_for_first_letter: true,
@@ -7169,7 +7195,7 @@
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor::CurrentColor()",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
       valid_for_first_letter: true,
@@ -7246,7 +7272,7 @@
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor::CurrentColor()",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
       valid_for_cue: true,
@@ -7279,7 +7305,7 @@
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor::CurrentColor()",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
       valid_for_first_letter: true,
@@ -7298,7 +7324,7 @@
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor::CurrentColor()",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
       valid_for_highlight_legacy: true,
@@ -7314,7 +7340,7 @@
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor::CurrentColor()",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
       valid_for_highlight_legacy: true,
@@ -7330,7 +7356,7 @@
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor::CurrentColor()",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
       valid_for_highlight_legacy: true,
@@ -7347,7 +7373,7 @@
                       "third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor(CSSValueID::kCanvas)",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
       style_builder_template_args: {
@@ -7365,7 +7391,7 @@
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor::CurrentColor()",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
       valid_for_first_letter: true,
@@ -7380,7 +7406,7 @@
                       "third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor(CSSValueID::kCanvastext)",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       style_builder_custom_functions: ["initial", "inherit", "value"],
       valid_for_first_letter: true,
       valid_for_first_line: true,
@@ -7395,7 +7421,7 @@
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor::CurrentColor()",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
       valid_for_cue: true,
@@ -7411,7 +7437,7 @@
                       "third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor(CSSValueID::kCanvastext)",
       type_name: "StyleColor",
-      computed_style_custom_functions: ["getter"],
+      computed_style_protected_functions: ["getter"],
       style_builder_custom_functions: ["initial", "inherit", "value"],
       valid_for_first_letter: true,
       valid_for_first_line: true,
