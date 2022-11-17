@@ -224,6 +224,26 @@ class InputMethodPrivateHideInputViewFunction : public ExtensionFunction {
                              INPUTMETHODPRIVATE_HIDEINPUTVIEW)
 };
 
+// Implements the inputMethodPrivate.openOptionsPage method.
+class InputMethodPrivateOpenOptionsPageFunction : public ExtensionFunction {
+ public:
+  InputMethodPrivateOpenOptionsPageFunction() {}
+
+  InputMethodPrivateOpenOptionsPageFunction(
+      const InputMethodPrivateOpenOptionsPageFunction&) = delete;
+  InputMethodPrivateOpenOptionsPageFunction& operator=(
+      const InputMethodPrivateOpenOptionsPageFunction&) = delete;
+
+ protected:
+  ~InputMethodPrivateOpenOptionsPageFunction() override {}
+
+  ResponseAction Run() override;
+
+ private:
+  DECLARE_EXTENSION_FUNCTION("inputMethodPrivate.openOptionsPage",
+                             INPUTMETHODPRIVATE_OPENOPTIONSPAGE)
+};
+
 class InputMethodPrivateGetSurroundingTextFunction : public ExtensionFunction {
  public:
   InputMethodPrivateGetSurroundingTextFunction() {}

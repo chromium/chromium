@@ -32,6 +32,8 @@ class MockInputMethodManagerImpl : public MockInputMethodManager {
     GetEnabledInputMethodsSortedByLocalizedDisplayNames() const override;
     std::unique_ptr<InputMethodDescriptors> GetEnabledInputMethods()
         const override;
+    const InputMethodDescriptor* GetInputMethodFromId(
+        const std::string& input_method_id) const override;
     InputMethodDescriptor GetCurrentInputMethod() const override;
 
     // The value GetCurrentInputMethod().id() will return.

@@ -356,6 +356,17 @@
           }
         ]
       }, {
+        "name": "openOptionsPage",
+        "type": "function",
+        "description": "Opens the options page for the input method extension. If the input method does not have options, this function will do nothing.",
+        "parameters": [
+          {
+            "name": "inputMethodId",
+            "type": "string",
+            "description": "ID of the input method to open options for."
+          }
+        ]
+      }, {
         "name": "getCompositionBounds",
         "type": "function",
         "description": "Gets the composition bounds",
