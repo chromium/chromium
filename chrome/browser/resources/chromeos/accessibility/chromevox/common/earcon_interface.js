@@ -4,15 +4,9 @@
 
 /**
  * @fileoverview Base class for implementing earcons.
- *
- * When adding earcons, please add them to getEarconName and getEarconId.
- *
  */
 
-/**
- * Earcon names.
- * @enum {string}
- */
+/** @enum {string} Earcon names. */
 export const Earcon = {
   ALERT_MODAL: 'alert_modal',
   ALERT_NONMODAL: 'alert_nonmodal',
@@ -71,7 +65,7 @@ export const EarconDescription = {
 };
 
 
-export class AbstractEarcons {
+export class EarconInterface {
   /**
    * Plays the specified earcon sound.
    * @param {Earcon} earcon An earcon identifier.
@@ -90,23 +84,17 @@ export class AbstractEarcons {
    * Whether or not earcons are available.
    * @return {boolean} True if earcons are available.
    */
-  earconsAvailable() {
-    return true;
-  }
+  earconsAvailable() {}
 
   /**
    * Whether or not earcons are enabled.
    * @return {boolean} True if earcons are enabled.
    */
-  get enabled() {
-    return localStorage['earcons'] === 'true';
-  }
+  get enabled() {}
 
   /**
    * Set whether or not earcons are enabled.
    * @param {boolean} value True turns on earcons, false turns off earcons.
    */
-  set enabled(value) {
-    localStorage['earcons'] = value;
-  }
+  set enabled(value) {}
 }

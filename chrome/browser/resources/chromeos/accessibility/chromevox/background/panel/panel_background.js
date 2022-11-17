@@ -8,9 +8,9 @@
  */
 import {constants} from '../../../common/constants.js';
 import {CursorRange} from '../../../common/cursors/range.js';
-import {Earcon} from '../../common/abstract_earcons.js';
 import {BridgeConstants} from '../../common/bridge_constants.js';
 import {BridgeHelper} from '../../common/bridge_helper.js';
+import {Earcon} from '../../common/earcon_interface.js';
 import {PanelBridge} from '../../common/panel_bridge.js';
 import {ALL_PANEL_MENU_NODE_DATA} from '../../common/panel_menu_data.js';
 import {QueueMode} from '../../common/tts_types.js';
