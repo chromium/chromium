@@ -110,7 +110,7 @@ PairwiseInterpolationValue CSSVarCycleInterpolationType::MaybeConvertPairwise(
 InterpolationValue CSSVarCycleInterpolationType::MaybeConvertUnderlyingValue(
     const InterpolationEnvironment& environment) const {
   const ComputedStyle& style =
-      To<CSSInterpolationEnvironment>(environment).Style();
+      To<CSSInterpolationEnvironment>(environment).BaseStyle();
   DCHECK(!style.GetVariableData(GetProperty().CustomPropertyName()) ||
          !style.GetVariableData(GetProperty().CustomPropertyName())
               ->NeedsVariableResolution());

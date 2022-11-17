@@ -3111,6 +3111,13 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   // zoom
   CORE_EXPORT bool SetEffectiveZoom(float);
 
+  // BaseData
+  const ComputedStyle* GetBaseComputedStyle() const {
+    if (auto* base_data = BaseData().get())
+      return base_data->GetBaseComputedStyle();
+    return nullptr;
+  }
+
   /// CallbackSelector
   void AddCallbackSelector(const String& selector) {
     if (!CallbackSelectors().Contains(selector))

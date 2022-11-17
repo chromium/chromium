@@ -16,19 +16,23 @@ class StyleCascade;
 
 class CSSInterpolationEnvironment : public InterpolationEnvironment {
  public:
-  explicit CSSInterpolationEnvironment(const InterpolationTypesMap& map,
-                                       StyleResolverState& state,
-                                       StyleCascade* cascade,
-                                       CascadeResolver* cascade_resolver)
+  CSSInterpolationEnvironment(const InterpolationTypesMap& map,
+                              StyleResolverState& state,
+                              StyleCascade* cascade,
+                              CascadeResolver* cascade_resolver)
       : InterpolationEnvironment(map),
         state_(&state),
-        style_(state.Style()),
+        base_style_(state.StyleBuilder().GetBaseComputedStyle()),
         cascade_(cascade),
         cascade_resolver_(cascade_resolver) {}
 
-  explicit CSSInterpolationEnvironment(const InterpolationTypesMap& map,
-                                       const ComputedStyle& style)
-      : InterpolationEnvironment(map), style_(&style) {}
+  CSSInterpolationEnvironment(const InterpolationTypesMap& map,
+                              StyleResolverState& state)
+      : InterpolationEnvironment(map), state_(&state) {}
+
+  CSSInterpolationEnvironment(const InterpolationTypesMap& map,
+                              const ComputedStyle& base_style)
+      : InterpolationEnvironment(map), base_style_(&base_style) {}
 
   bool IsCSS() const final { return true; }
 
@@ -41,9 +45,9 @@ class CSSInterpolationEnvironment : public InterpolationEnvironment {
     return *state_;
   }
 
-  const ComputedStyle& Style() const {
-    DCHECK(style_);
-    return *style_;
+  const ComputedStyle& BaseStyle() const {
+    DCHECK(base_style_);
+    return *base_style_;
   }
 
   // TODO(crbug.com/985023): This effective violates const.
@@ -51,7 +55,7 @@ class CSSInterpolationEnvironment : public InterpolationEnvironment {
 
  private:
   StyleResolverState* state_ = nullptr;
-  const ComputedStyle* style_ = nullptr;
+  const ComputedStyle* base_style_ = nullptr;
   StyleCascade* cascade_ = nullptr;
   CascadeResolver* cascade_resolver_ = nullptr;
 };

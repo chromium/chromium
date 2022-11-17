@@ -47,7 +47,7 @@ void TransitionKeyframe::AddKeyframePropertiesToV8Object(
   StyleResolverState state(document, *element);
   state.SetStyle(document.GetStyleResolver().CreateComputedStyle());
   CSSInterpolationTypesMap map(document.GetPropertyRegistry(), document);
-  CSSInterpolationEnvironment environment(map, state, nullptr, nullptr);
+  CSSInterpolationEnvironment environment(map, state);
   value_->GetType().Apply(value_->GetInterpolableValue(),
                           value_->GetNonInterpolableValue(), environment);
 

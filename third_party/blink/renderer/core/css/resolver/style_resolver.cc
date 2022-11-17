@@ -1749,11 +1749,11 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
 
   CSSAnimations::CalculateCompositorAnimationUpdate(
       state.AnimationUpdate(), *animating_element, element,
-      *state.Style()->GetBaseComputedStyle(), state.ParentStyle(),
+      *state.StyleBuilder().GetBaseComputedStyle(), state.ParentStyle(),
       WasViewportResized(), state.AffectsCompositorSnapshots());
   CSSAnimations::SnapshotCompositorKeyframes(
       *animating_element, state.AnimationUpdate(),
-      *state.Style()->GetBaseComputedStyle(), state.ParentStyle());
+      *state.StyleBuilder().GetBaseComputedStyle(), state.ParentStyle());
   CSSAnimations::UpdateAnimationFlags(
       *animating_element, state.AnimationUpdate(), state.StyleBuilder());
 
@@ -2051,8 +2051,10 @@ scoped_refptr<ComputedStyle> StyleResolver::StyleForInterpolations(
   STACK_UNINITIALIZED StyleCascade cascade(state);
 
   ApplyBaseStyle(&element, style_recalc_context, style_request, state, cascade);
-  ApplyInterpolations(state, cascade, interpolations);
+  state.StyleBuilder().SetBaseData(StyleBaseData::Create(
+      state.StyleBuilder().CloneStyle(), cascade.GetImportantSet()));
 
+  ApplyInterpolations(state, cascade, interpolations);
   return state.TakeStyle();
 }
 
@@ -2085,6 +2087,8 @@ StyleResolver::BeforeChangeStyleForTransitionUpdate(
     state.SetParentStyle(InitialStyleForElement());
     state.SetLayoutParentStyle(state.ParentStyle());
   }
+
+  state.StyleBuilder().SetBaseData(StyleBaseData::Create(&base_style, nullptr));
 
   // TODO(crbug.com/1098937): Include active CSS animations in a separate
   // interpolations map and add each map at the appropriate CascadeOrigin.
