@@ -1585,36 +1585,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Bluetooth.MacOS.Errors{WebBluetoothMacOSAPIs}"
-    enum="MacOSBluetoothOperationsResult" expires_after="2021-01-31">
-  <owner>reillyg@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
-  <summary>
-    Records how many times each macOS GATT error has occured. The results will
-    be used to determine how commun this errors are and if we need to provide
-    better error messages to the users. {WebBluetoothMacOSAPIs}
-  </summary>
-  <token key="WebBluetoothMacOSAPIs">
-    <variant name=".DidDisconnectPeripheral"
-        summary="Disconnected from peripheral"/>
-    <variant name=".DidDiscoverCharacteristics"
-        summary="Discovered characteristics"/>
-    <variant name=".DidDiscoverDescriptors" summary="Discovered descriptors"/>
-    <variant name=".DidDiscoverPrimaryServices"
-        summary="Discovered primary services"/>
-    <variant name=".DidFailToConnectToPeripheral"
-        summary="Failed to connect to peripheral"/>
-    <variant name=".DidUpdateNotificationState"
-        summary="Updated notification state"/>
-    <variant name=".DidUpdateValue" summary="Updated value for characteristic"/>
-    <variant name=".DidUpdateValueForDescriptor"
-        summary="Updated value for descriptor"/>
-    <variant name=".DidWriteValue" summary="Wrote value for characteristic"/>
-    <variant name=".DidWriteValueForDescriptor"
-        summary="Wrote value value for descriptor"/>
-  </token>
-</histogram>
-
 <histogram name="Bluetooth.Mojo.PendingConnectAtShutdown.DurationWaiting"
     units="ms" expires_after="2022-04-21">
   <owner>jonmann@chromium.org</owner>

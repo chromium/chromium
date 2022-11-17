@@ -9,7 +9,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #import "device/bluetooth/bluetooth_adapter_mac.h"
-#include "device/bluetooth/bluetooth_adapter_mac_metrics.h"
 #import "device/bluetooth/bluetooth_remote_gatt_characteristic_mac.h"
 
 using base::mac::ObjCCast;
@@ -135,7 +134,6 @@ void BluetoothRemoteGattDescriptorMac::DidUpdateValueForDescriptor(
     DVLOG(1) << *this << ": Value updated, no read in progress.";
     return;
   }
-  RecordDidUpdateValueForDescriptorResult(error);
   if (error) {
     BluetoothGattService::GattErrorCode error_code =
         BluetoothDeviceMac::GetGattErrorCodeFromNSError(error);
@@ -160,7 +158,6 @@ void BluetoothRemoteGattDescriptorMac::DidWriteValueForDescriptor(
   }
   std::pair<base::OnceClosure, ErrorCallback> callbacks;
   callbacks.swap(write_value_callbacks_);
-  RecordDidWriteValueForDescriptorResult(error);
   if (error) {
     BluetoothGattService::GattErrorCode error_code =
         BluetoothDeviceMac::GetGattErrorCodeFromNSError(error);

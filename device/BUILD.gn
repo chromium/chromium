@@ -64,7 +64,6 @@ test("device_unittests") {
 
   if (is_mac) {
     sources += [
-      "bluetooth/bluetooth_adapter_mac_metrics_unittest.mm",
       "bluetooth/bluetooth_adapter_mac_unittest.mm",
       "bluetooth/bluetooth_low_energy_advertisement_manager_mac_unittest.mm",
       "bluetooth/test/bluetooth_test_mac.h",

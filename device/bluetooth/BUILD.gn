@@ -207,8 +207,6 @@ component("bluetooth") {
     sources += [
       "bluetooth_adapter_mac.h",
       "bluetooth_adapter_mac.mm",
-      "bluetooth_adapter_mac_metrics.h",
-      "bluetooth_adapter_mac_metrics.mm",
       "bluetooth_advertisement_mac.h",
       "bluetooth_advertisement_mac.mm",
       "bluetooth_channel_mac.h",

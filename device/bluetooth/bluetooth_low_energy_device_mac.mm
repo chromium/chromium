@@ -15,7 +15,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "device/bluetooth/bluetooth_adapter_mac.h"
-#include "device/bluetooth/bluetooth_adapter_mac_metrics.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_low_energy_peripheral_delegate.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic_mac.h"
@@ -222,7 +221,6 @@ void BluetoothLowEnergyDeviceMac::DidDiscoverPrimaryServices(NSError* error) {
     discovery_pending_count_ = 0;
     return;
   }
-  RecordDidDiscoverPrimaryServicesResult(error);
   if (error) {
     // TODO(http://crbug.com/609320): Need to pass the error.
     // TODO(http://crbug.com/609844): Decide what to do if discover failed
@@ -269,7 +267,6 @@ void BluetoothLowEnergyDeviceMac::DidDiscoverPrimaryServices(NSError* error) {
 void BluetoothLowEnergyDeviceMac::DidDiscoverCharacteristics(
     CBService* cb_service,
     NSError* error) {
-  RecordDidDiscoverCharacteristicsResult(error);
   if (error) {
     // TODO(http://crbug.com/609320): Need to pass the error.
     // TODO(http://crbug.com/609844): Decide what to do if discover failed
@@ -349,7 +346,6 @@ void BluetoothLowEnergyDeviceMac::DidUpdateNotificationState(
 void BluetoothLowEnergyDeviceMac::DidDiscoverDescriptors(
     CBCharacteristic* cb_characteristic,
     NSError* error) {
-  RecordDidDiscoverDescriptorsResult(error);
   if (error) {
     // TODO(http://crbug.com/609320): Need to pass the error.
     // TODO(http://crbug.com/609844): Decide what to do if discover failed
@@ -511,7 +507,6 @@ BluetoothLowEnergyDeviceMac::GetBluetoothRemoteGattDescriptorMac(
 void BluetoothLowEnergyDeviceMac::DidDisconnectPeripheral(NSError* error) {
   connected_ = false;
   DVLOG(1) << *this << ": Disconnected from peripheral.";
-  RecordDidDisconnectPeripheralResult(error);
   if (error) {
     DVLOG(1) << *this
              << ": Bluetooth error: " << BluetoothAdapterMac::String(error);

@@ -49585,8 +49585,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
       label="DataUse.MessageSize.AllServices.Downstream.Unknown.NotCellular"/>
   <int value="-1607339868"
       label="DataUse.MessageSize.AllServices.Upstream.Unknown.NotCellular"/>
-  <int value="-1592177888"
-      label="Bluetooth.MacOS.Errors.DidDiscoverPrimaryServices"/>
   <int value="-1561887015" label="MediaRouter.Cast.Channel.Error"/>
   <int value="-1554891874"
       label="PageLoad.PageTiming.NavigationToFailedProvisionalLoad"/>
@@ -49611,8 +49609,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-1026485441"
       label="UMA.PersistentAllocator.CrashpadMetrics.Errors"/>
   <int value="-983723378" label="RendererScheduler.TaskDurationPerThreadType"/>
-  <int value="-970685679"
-      label="Bluetooth.MacOS.Errors.DidDiscoverDescriptors"/>
   <int value="-968816650"
       label="PasswordManager.Android.PasswordExceptionEntry.Website"/>
   <int value="-919977005" label="DevTools.DeveloperResourceLoaded"/>
@@ -49628,7 +49624,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-657514887" label="DataUse.MessageSize.AllServices"/>
   <int value="-535820174"
       label="DataUse.MessageSize.AllServices.Downstream.Background.NotCellular"/>
-  <int value="-453454441" label="Bluetooth.MacOS.Errors.DidWriteValue"/>
   <int value="-445016785" label="Crashpad.ExceptionEncountered"/>
   <int value="-436781330"
       label="Net.URLLoaderThrottleExecutionTime.BeforeWillProcessResponse"/>
@@ -49674,8 +49669,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
       label="Android.WebView.ComponentUpdater.CUSDirectorySize"/>
   <int value="628921860"
       label="Network.Shill.Ethernet.LinkMonitorResponseTimeSample"/>
-  <int value="656165878"
-      label="Bluetooth.MacOS.Errors.DidDiscoverCharacteristics"/>
   <int value="657786774" label="PartitionAlloc.CommittedSize"/>
   <int value="662206917"
       label="Network.Shill.Ethernet.ExpiredLeaseLengthSeconds"/>
@@ -49738,8 +49731,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2050720559" label="LocalStorage.MojoTimeToPrime"/>
   <int value="2057863428"
       label="UMA.PersistentAllocator.BrowserMetrics.UsedPct"/>
-  <int value="2060836318"
-      label="Bluetooth.MacOS.Errors.DidDisconnectPeripheral"/>
   <int value="2147480259" label="Sqlite.Vfs_Fetch"/>
 </enum>
 
@@ -65782,44 +65773,6 @@ from previous Chrome versions.
   <int value="268451855" label="MACH_RCV_INVALID_TRAILER">
     trailer type or number of trailer elements not supported
   </int>
-</enum>
-
-<enum name="MacOSBluetoothOperationsResult">
-  <int value="-2" label="Unknown error domain"/>
-  <int value="-1" label="No error"/>
-  <int value="0" label="CBATTErrorSuccess"/>
-  <int value="1" label="CBATTErrorInvalidHandle"/>
-  <int value="2" label="CBATTErrorReadNotPermitted"/>
-  <int value="3" label="CBATTErrorWriteNotPermitted"/>
-  <int value="4" label="CBATTErrorInvalidPdu"/>
-  <int value="5" label="CBATTErrorInsufficientAuthentication"/>
-  <int value="6" label="CBATTErrorRequestNotSupported"/>
-  <int value="7" label="CBATTErrorInvalidOffset"/>
-  <int value="8" label="CBATTErrorInsufficientAuthorization"/>
-  <int value="9" label="CBATTErrorPrepareQueueFull"/>
-  <int value="10" label="CBATTErrorAttributeNotFound"/>
-  <int value="11" label="CBATTErrorAttributeNotLong"/>
-  <int value="12" label="CBATTErrorInsufficientEncryptionKeySize"/>
-  <int value="13" label="CBATTErrorInvalidAttributeValueLength"/>
-  <int value="14" label="CBATTErrorUnlikelyError"/>
-  <int value="15" label="CBATTErrorInsufficientEncryption"/>
-  <int value="16" label="CBATTErrorUnsupportedGroupType"/>
-  <int value="17" label="CBATTErrorInsufficientResources"/>
-  <int value="999" label="Unknown CBATTError code"/>
-  <int value="1000" label="CBErrorUnknown"/>
-  <int value="1001" label="CBErrorInvalidParameters"/>
-  <int value="1002" label="CBErrorInvalidHandle"/>
-  <int value="1003" label="CBErrorNotConnected"/>
-  <int value="1004" label="CBErrorOutOfSpace"/>
-  <int value="1005" label="CBErrorOperationCancelled"/>
-  <int value="1006" label="CBErrorConnectionTimeout"/>
-  <int value="1007" label="CBErrorPeripheralDisconnected"/>
-  <int value="1008" label="CBErrorUUIDNotAllowed"/>
-  <int value="1009" label="CBErrorAlreadyAdvertising"/>
-  <int value="1010" label="CBErrorConnectionFailed"/>
-  <int value="1011" label="CBErrorConnectionLimitReached"/>
-  <int value="1012" label="CBErrorUnknownDevice"/>
-  <int value="1999" label="Unknown CBError code"/>
 </enum>
 
 <enum name="MacThermalState">
