@@ -13,7 +13,6 @@ import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import './reading_list_item.js';
 import '../strings.m.js';
 
-import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {listenOnce} from 'chrome://resources/js/util.js';
@@ -34,8 +33,7 @@ export interface ReadingListAppElement {
   };
 }
 
-export class ReadingListAppElement extends HelpBubbleMixin
-(PolymerElement) {
+export class ReadingListAppElement extends PolymerElement {
   static get is() {
     return 'reading-list-app';
   }
