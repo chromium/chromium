@@ -459,9 +459,10 @@ TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, OnCaptureLostTest) {
 }
 
 TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, OnGestureEventTest) {
-  ui::GestureEvent move(0, 0, 0, ui::EventTimeForNow(),
-                        ui::GestureEventDetails(ui::ET_GESTURE_TAP_DOWN));
-  static_cast<ui::EventHandler*>(desktop_native_widget)->OnGestureEvent(&move);
+  ui::GestureEvent gesture(0, 0, 0, ui::EventTimeForNow(),
+                           ui::GestureEventDetails(ui::ET_GESTURE_TAP_DOWN));
+  static_cast<ui::EventHandler*>(desktop_native_widget)
+      ->OnGestureEvent(&gesture);
 }
 
 TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, OnHostMovedInPixelsTest) {

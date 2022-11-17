@@ -909,7 +909,7 @@ class NativeWidgetAuraWithNoDelegateTest : public NativeWidgetAuraTest {
     params.ownership = views::Widget::InitParams::CLIENT_OWNS_WIDGET;
     params.native_widget = native_widget;
     widget->Init(std::move(params));
-
+    widget->Show();
     // Widget will create a DefaultWidgetDelegate if no delegates are provided.
     // Call Widget::OnNativeWidgetDestroyed() to destroy
     // the WidgetDelegate properly.
@@ -959,9 +959,21 @@ TEST_F(NativeWidgetAuraWithNoDelegateTest, OnCaptureLostTest) {
   native_widget->OnBoundsChanged(gfx::Rect(), gfx::Rect());
 }
 
+TEST_F(NativeWidgetAuraWithNoDelegateTest, OnGestureEventTest) {
+  ui::GestureEvent gesture(0, 0, 0, ui::EventTimeForNow(),
+                           ui::GestureEventDetails(ui::ET_GESTURE_TAP_DOWN));
+  native_widget->OnGestureEvent(&gesture);
+}
+
 TEST_F(NativeWidgetAuraWithNoDelegateTest, OnKeyEventTest) {
   ui::KeyEvent key(ui::ET_KEY_PRESSED, ui::VKEY_0, ui::EF_NONE);
   native_widget->OnKeyEvent(&key);
+}
+
+TEST_F(NativeWidgetAuraWithNoDelegateTest, OnMouseEventTest) {
+  ui::MouseEvent move(ui::ET_MOUSE_MOVED, gfx::Point(), gfx::Point(),
+                      ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+  native_widget->OnMouseEvent(&move);
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, OnPaintTest) {
