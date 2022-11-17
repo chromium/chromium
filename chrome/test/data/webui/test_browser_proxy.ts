@@ -64,7 +64,7 @@ export class TestBrowserProxy<T = any> {
             .filter(methodName => methodName !== 'constructor') as
         Array<keyof T>;
     const proxy = new TestBrowserProxy<T>(methodNames);
-    proxy.mockMethods_(methodNames);
+    proxy.mockMethods_(methodNames, clazz);
     return proxy as unknown as (T & TestBrowserProxy<T>);
   }
 
@@ -74,10 +74,22 @@ export class TestBrowserProxy<T = any> {
    * |setResultFor(methodName)|, or set a result mapper function that will be
    * invoked when a method is called using |setResultMapperFor(methodName)|.
    */
-  private mockMethods_(methodNames: Array<keyof T>) {
+  private mockMethods_(methodNames: Array<keyof T>, clazz: Constructor<T>) {
     methodNames.forEach(methodName => {
-      (this as unknown as {[key in keyof T]: Function})[methodName] =
-          (...args: any[]) => this.methodCalled(methodName, ...args);
+      const descriptor =
+          Object.getOwnPropertyDescriptor(clazz.prototype, methodName)!;
+      const mockedMethod = (...args: any[]) =>
+          this.methodCalled(methodName, ...args);
+      if (descriptor.get) {
+        descriptor.get = mockedMethod;
+      }
+      if (descriptor.set) {
+        descriptor.set = mockedMethod;
+      }
+      if (descriptor.value && descriptor.value instanceof Function) {
+        descriptor.value = mockedMethod;
+      }
+      Object.defineProperty(this, methodName, descriptor);
     });
   }
 
