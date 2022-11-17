@@ -67,13 +67,24 @@ source_set("color_manager_util") {
   ]
 }
 
+source_set("wayland_display_util") {
+  sources = [
+    "wayland_display_util.cc",
+    "wayland_display_util.h",
+  ]
+}
+
 source_set("unittests") {
   testonly = true
 
-  sources = [ "wayland_input_types_unittest.cc" ]
+  sources = [
+    "wayland_display_util_unittest.cc",
+    "wayland_input_types_unittest.cc",
+  ]
 
   deps = [
     ":wayland_client_input_types",
+    ":wayland_display_util",
     ":wayland_server_input_types",
     "//testing/gtest",
     "//ui/base/ime:text_input_types",

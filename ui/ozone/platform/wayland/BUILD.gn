@@ -281,6 +281,7 @@ source_set("wayland") {
     "//ui/base/ime/linux",
     "//ui/base/wayland:color_manager_util",
     "//ui/base/wayland:wayland_client_input_types",
+    "//ui/base/wayland:wayland_display_util",
     "//ui/display",
     "//ui/display/util:gpu_info_util",
     "//ui/display/util:util",

@@ -46,6 +46,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_occlusion_tracker.h"
+#include "ui/base/wayland/wayland_display_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/manager/display_manager.h"
@@ -883,9 +884,8 @@ bool AuraOutput::SendDisplayMetrics(const display::Display& display,
 
   if (wl_resource_get_version(resource_) >=
       ZAURA_OUTPUT_DISPLAY_ID_SINCE_VERSION) {
-    uint32_t display_id_hi = static_cast<uint32_t>(display.id() >> 32);
-    uint32_t display_id_lo = static_cast<uint32_t>(display.id());
-    zaura_output_send_display_id(resource_, display_id_hi, display_id_lo);
+    auto display_id = ui::wayland::ToWaylandDisplayIdPair(display.id());
+    zaura_output_send_display_id(resource_, display_id.high, display_id.low);
   }
 
   if (wl_resource_get_version(resource_) >= ZAURA_OUTPUT_SCALE_SINCE_VERSION) {

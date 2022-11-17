@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "ui/base/wayland/wayland_display_util.h"
 
 namespace ui {
 
@@ -66,8 +67,8 @@ void WaylandZAuraOutput::OnDisplayId(void* data,
                                      uint32_t display_id_hi,
                                      uint32_t display_id_lo) {
   if (auto* aura_output = static_cast<WaylandZAuraOutput*>(data)) {
-    aura_output->display_id_ = static_cast<int64_t>(display_id_hi) << 32 |
-                               static_cast<int64_t>(display_id_lo);
+    aura_output->display_id_ =
+        ui::wayland::FromWaylandDisplayIdPair({display_id_hi, display_id_lo});
   }
 }
 

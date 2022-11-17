@@ -188,6 +188,7 @@ source_set("wayland") {
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/dragdrop/mojom:mojom_shared",
     "//ui/base/wayland:color_manager_util",
+    "//ui/base/wayland:wayland_display_util",
     "//ui/base/wayland:wayland_server_input_types",
     "//ui/display/manager",
     "//ui/events:dom_keycode_converter",
