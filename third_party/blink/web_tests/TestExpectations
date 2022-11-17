@@ -6925,7 +6925,7 @@ crbug.com/1385413 [ Win ] media/controls/overflow-menu-pointer-selection.html [ 
 crbug.com/1385413 media/controls/text-track-menu-pointer-selection.html [ Failure Pass Timeout Skip ]
 
 # Sheriff 2022-11-17
-crbug.com/1385642 [ Linux ] external/wpt/css/css-values/calc-in-media-queries-with-mixed-units.html [ Failure Pass ]
+crbug.com/1385642 [ Linux ] external/wpt/css/css-values/calc-in-media-queries-with-mixed-units.html [ Skip Failure Pass Timeout ]
 crbug.com/1385676 external/wpt/screen-capture/getdisplaymedia.https.html [ Skip Timeout ]
 crbug.com/1385681 external/wpt/web-share/disabled-by-permissions-policy-cross-origin.https.sub.html [ Failure Pass ]
 crbug.com/1372166 fast/spatial-navigation/snav-div-scrollable-but-without-focusable-content.html [ Failure Pass ]
