@@ -110,7 +110,7 @@ bool SoftNavigationHeuristics::IsCurrentTaskDescendantOfClickEventHandler(
 void SoftNavigationHeuristics::ClickEventEnded(ScriptState* script_state) {
   ThreadScheduler* scheduler = ThreadScheduler::Current();
   DCHECK(scheduler);
-  scheduler->GetTaskAttributionTracker()->UnregisterObserver();
+  scheduler->GetTaskAttributionTracker()->UnregisterObserver(this);
   CheckAndReportSoftNavigation(script_state);
   TRACE_EVENT0("scheduler", "SoftNavigationHeuristics::ClickEventEnded");
 }
@@ -232,6 +232,10 @@ void SoftNavigationHeuristics::OnCreateTaskScope(
   TRACE_EVENT1("scheduler", "SoftNavigationHeuristics::OnCreateTaskScope",
                "task_id", task_id.value());
   potential_soft_navigation_task_ids_.insert(task_id.value());
+}
+
+ExecutionContext* SoftNavigationHeuristics::GetExecutionContext() {
+  return GetSupplementable();
 }
 
 }  // namespace blink

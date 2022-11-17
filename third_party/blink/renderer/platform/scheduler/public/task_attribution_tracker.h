@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
+class ExecutionContext;
 class ScriptState;
 }  // namespace blink
 
@@ -51,6 +52,7 @@ class PLATFORM_EXPORT TaskAttributionTracker {
   class Observer : public GarbageCollectedMixin {
    public:
     virtual void OnCreateTaskScope(const TaskAttributionId&) = 0;
+    virtual ExecutionContext* GetExecutionContext() = 0;
   };
 
   virtual ~TaskAttributionTracker() = default;
@@ -73,11 +75,10 @@ class PLATFORM_EXPORT TaskAttributionTracker {
       ScriptState*,
       const WTF::HashSet<scheduler::TaskAttributionIdType>&) = 0;
 
-  // Register an observer to be notified when a task is started. Only one
-  // observer can be set at every point in time.
+  // Register an observer to be notified when a task is started.
   virtual void RegisterObserver(Observer* observer) = 0;
   // Unregister the observer.
-  virtual void UnregisterObserver() = 0;
+  virtual void UnregisterObserver(Observer* observer) = 0;
 };
 
 }  // namespace blink::scheduler
