@@ -12662,6 +12662,18 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Chrome is being controlled by automated test software.
     </message>
 
+    <!-- Chrome for Testing infobar main text -->
+    <message name="IDS_CHROME_FOR_TESTING_DISCLAIMER" desc="An infobar prompt shown whenever Chrome for Testing is launched.">
+      Chrome for Testing v<ph name="BROWSER_VERSION">
+        $1<ex>109.0.5369.0</ex>
+      </ph> is only for automated testing. For regular browsing, use a standard version of Chrome that updates automatically.
+    </message>
+
+    <!-- Chrome for Testing infobar download chrome hyperlink text -->
+    <message name="IDS_DOWNLOAD_CHROME" desc="Hyperlink call-out to download Chrome">
+      Download Chrome
+    </message>
+
     <!-- Security Key permission -->
     <if expr="is_android">
       <message name="IDS_SECURITY_KEY_ATTESTATION_INFOBAR_QUESTION" desc="An infobar prompt shown to a user when a website wants to see information that identifies the user's Security Key, such as make and model number. The 'make' of a device is the brand name of the manufacturer, e.g. Yubikey is a make of Security Key. The 'model' of a device is the specific product, e.g. Yubikey Neo is a model of Security Key.">

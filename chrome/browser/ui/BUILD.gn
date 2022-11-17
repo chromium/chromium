@@ -406,6 +406,7 @@ static_library("ui") {
     "//chrome/browser:resource_prefetch_predictor_proto",
     "//chrome/browser/autofill",
     "//chrome/browser/breadcrumbs",
+    "//chrome/browser/chrome_for_testing:buildflags",
     "//chrome/browser/devtools",
     "//chrome/browser/favicon",
     "//chrome/browser/google",
@@ -1767,6 +1768,13 @@ static_library("ui") {
         "webui/lens/lens_untrusted_ui_config.h",
         "webui/media_router/cast_feedback_ui.cc",
         "webui/media_router/cast_feedback_ui.h",
+      ]
+    }
+
+    if (is_chrome_for_testing_branded) {
+      sources += [
+        "startup/chrome_for_testing_infobar_delegate.cc",
+        "startup/chrome_for_testing_infobar_delegate.h",
       ]
     }
 

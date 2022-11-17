@@ -8,6 +8,7 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chrome_for_testing/buildflags.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -25,6 +26,10 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/common/content_switches.h"
 #include "google_apis/google_api_keys.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+#include "chrome/browser/ui/startup/chrome_for_testing_infobar_delegate.h"
+#endif
 
 namespace {
 bool ShouldShowBadFlagsSecurityWarnings() {
@@ -70,8 +75,22 @@ void AddInfoBarsIfNecessary(Browser* browser,
 
   // Show the Automation info bar unless it has been disabled by policy.
   bool show_bad_flags_security_warnings = ShouldShowBadFlagsSecurityWarnings();
-  if (IsAutomationEnabled() && show_bad_flags_security_warnings) {
-    AutomationInfoBarDelegate::Create();
+
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  DCHECK(web_contents);
+
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+
+  if (show_bad_flags_security_warnings) {
+#if BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+    // TODO(crbug.com/1336611): Switch to a global infobar.
+    ChromeForTestingInfoBarDelegate::Create(infobar_manager);
+#endif
+
+    if (IsAutomationEnabled())
+      AutomationInfoBarDelegate::Create();
   }
 
   // Do not show any other info bars in Kiosk mode, because it's unlikely that
@@ -103,15 +122,8 @@ void AddInfoBarsIfNecessary(Browser* browser,
       return;
     infobars_shown = true;
 
-    content::WebContents* web_contents =
-        browser->tab_strip_model()->GetActiveWebContents();
-    DCHECK(web_contents);
-
     if (show_bad_flags_security_warnings)
       chrome::ShowBadFlagsPrompt(web_contents);
-
-    infobars::ContentInfoBarManager* infobar_manager =
-        infobars::ContentInfoBarManager::FromWebContents(web_contents);
 
     if (!google_apis::HasAPIKeyConfigured())
       GoogleApiKeysInfoBarDelegate::Create(infobar_manager);
