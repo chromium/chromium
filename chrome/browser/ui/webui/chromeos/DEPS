@@ -1,17 +1,5 @@
-# TODO(https://crbug.com/1164001): When this file is edited, same file in
-# //chrome/browser/ui/webui/ash should be updated as well. We need to sync
-# both files until the migration is done.
-
 include_rules = [
-  "+ash/utility",
-  "+ash/system/human_presence",
-  "+ash/system/diagnostics",
-
   # Chrome OS depends on views, so allow code in this directory to depend on
   # ui/views.
   "+chrome/browser/ui/views",
-
-  "+media/audio/sounds",
-  "+services/device/public/mojom",
-  "+services/network",
 ]
