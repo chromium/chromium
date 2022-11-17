@@ -135,6 +135,7 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   friend class AppListBadgeController;
   friend class AppListItemList;
   friend class AppListItemListTest;
+  friend class AppListItemViewPixelTest;
   friend class AppListItemViewTest;
   friend class AppListModel;
 
