@@ -11,11 +11,11 @@ import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
 import org.chromium.base.LocaleUtils;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -48,6 +48,11 @@ public class CrowButtonDelegateImpl implements CrowButtonDelegate {
     private static final String USE_PAGE_OPTIMIZATIONS_STUDY_PARAM = "UsePageOptimizations";
 
     private static final String TAG = "CrowButton";
+
+    private static final MutableFlagWithSafeDefault sShareCrowButton =
+            new MutableFlagWithSafeDefault(ChromeFeatureList.SHARE_CROW_BUTTON, false);
+    private static final MutableFlagWithSafeDefault sShareCrowButtonLaunchTabFlag =
+            new MutableFlagWithSafeDefault(ChromeFeatureList.SHARE_CROW_BUTTON_LAUNCH_TAB, false);
 
     /** Constructs a new {@link CrowButtonDelegateImpl}. */
     public CrowButtonDelegateImpl() {
@@ -106,8 +111,7 @@ public class CrowButtonDelegateImpl implements CrowButtonDelegate {
         String customTabUrl = getUrlForWebFlow(pageUrl, canonicalUrl, isFollowing);
 
         // Experiment flag: open in standard new tab.
-        if (FeatureList.isInitialized()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_CROW_BUTTON_LAUNCH_TAB)) {
+        if (sShareCrowButtonLaunchTabFlag.isEnabled()) {
             // TabLaunchType.FROM_LINK will allow back to navigate back to the
             // current tab.
             LoadUrlParams loadUrlParams = new LoadUrlParams(customTabUrl);
@@ -142,8 +146,7 @@ public class CrowButtonDelegateImpl implements CrowButtonDelegate {
     }
 
     public boolean isCrowEnabled() {
-        return isEnabledForLocaleAndCountry() && FeatureList.isInitialized()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_CROW_BUTTON);
+        return isEnabledForLocaleAndCountry() && sShareCrowButton.isEnabled();
     }
 
     /**
