@@ -110,6 +110,8 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
       SetTrafficCountersAutoResetCallback callback) override;
   void CreateCustomApn(const std::string& network_guid,
                        mojom::ApnPropertiesPtr apn) override;
+  void RemoveCustomApn(const std::string& network_guid,
+                       const std::string& apn_id) override;
 
   // static
   static mojom::TrafficCounterSource GetTrafficCounterEnumForTesting(

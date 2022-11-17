@@ -821,6 +821,11 @@ class CrosNetworkConfigTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void RemoveCustomApn(const std::string& guid, const std::string& apn_id) {
+    cros_network_config()->RemoveCustomApn(guid, apn_id);
+    base::RunLoop().RunUntilIdle();
+  }
+
   bool UserApnsInNetworkMetadataStoreMatch(
       const std::vector<TestApnData*>& expected_apns) {
     if (const base::Value::List* custom_apns =
@@ -868,7 +873,7 @@ class CrosNetworkConfigTest : public testing::Test {
       return false;
     }
     if (!props->type_properties->get_cellular()->custom_apn_list.has_value()) {
-      return false;
+      return expected_apns.empty();
     }
 
     const std::vector<mojom::ApnPropertiesPtr>& mojo_apn_list =
@@ -1747,10 +1752,126 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_EmptyList) {
                              ::onc::cellular_apn::kApnTypeAttach};
   CreateCustomApn(kCellularGuid, test_apn2.AsMojoApn());
 
-  // // Verify that the API called sent the right values to Shill
+  // Verify that the API called sent the right values to Shill
   EXPECT_EQ(2u, network_config_observer.GetOnConfigurationModifiedCallCount());
   {
     std::vector<TestApnData*> expected_apns({&test_apn2, &test_apn1});
+    EXPECT_TRUE(UserApnsInNetworkMetadataStoreMatch(expected_apns));
+    EXPECT_TRUE(
+        UserApnsInCellularConfigMatch(expected_apns, network_config_observer));
+    EXPECT_TRUE(UserApnsInManagedPropertiesMatch(expected_apns));
+  }
+}
+
+TEST_F(CrosNetworkConfigTest, RemoveCustomApn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
+
+  // Register an observer to capture values sent to Shill
+  TestNetworkConfigurationObserver network_config_observer(
+      network_configuration_handler());
+
+  ASSERT_FALSE(network_metadata_store()->GetCustomApnList(kCellularGuid));
+  // Verify RemoveCustomApn reports an error and return when the
+  // network_metadata_store has a nullptr custom APN list
+  size_t expected_network_config_calls = 0u;
+  std::string id_to_delete("apn_id_1");
+  RemoveCustomApn(kCellularGuid, id_to_delete);
+  EXPECT_EQ(expected_network_config_calls,
+            network_config_observer.GetOnConfigurationModifiedCallCount());
+  ASSERT_FALSE(network_metadata_store()->GetCustomApnList(kCellularGuid));
+
+  TestApnData test_apn1;
+  test_apn1.access_point_name = kCellularTestApn1;
+  test_apn1.name = kCellularTestApnName1;
+  test_apn1.username = kCellularTestApnUsername1;
+  test_apn1.password = kCellularTestApnPassword1;
+  test_apn1.attach = kCellularTestApnAttach1;
+  test_apn1.mojo_apn_types = {mojom::ApnType::kDefault,
+                              mojom::ApnType::kAttach};
+  test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault,
+                             ::onc::cellular_apn::kApnTypeAttach};
+
+  TestApnData test_apn2;
+  test_apn2.access_point_name = kCellularTestApn2;
+  test_apn2.name = kCellularTestApnName2;
+  test_apn2.username = kCellularTestApnUsername2;
+  test_apn2.password = kCellularTestApnPassword2;
+  test_apn2.attach = kCellularTestApnAttach2;
+  test_apn2.mojo_apn_types = {mojom::ApnType::kDefault,
+                              mojom::ApnType::kAttach};
+  test_apn2.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault,
+                             ::onc::cellular_apn::kApnTypeAttach};
+
+  // Add two custom APNs using the official API
+  {
+    CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn());
+    EXPECT_EQ(++expected_network_config_calls,
+              network_config_observer.GetOnConfigurationModifiedCallCount());
+    CreateCustomApn(kCellularGuid, test_apn2.AsMojoApn());
+    EXPECT_EQ(++expected_network_config_calls,
+              network_config_observer.GetOnConfigurationModifiedCallCount());
+  }
+
+  // Verify that RemoveCustomApn deletes the first custom APN
+  const base::Value::List* custom_apns =
+      network_metadata_store()->GetCustomApnList(kCellularGuid);
+  ASSERT_TRUE(custom_apns);
+  ASSERT_EQ(2u, custom_apns->size());
+  const std::string* first_apn_id =
+      custom_apns->front().GetDict().FindString(::onc::cellular_apn::kId);
+  ASSERT_TRUE(first_apn_id);
+
+  id_to_delete = std::string(*first_apn_id);
+  RemoveCustomApn(kCellularGuid, id_to_delete);
+  EXPECT_EQ(++expected_network_config_calls,
+            network_config_observer.GetOnConfigurationModifiedCallCount());
+  {
+    std::vector<TestApnData*> expected_apns({&test_apn1});
+    EXPECT_TRUE(UserApnsInNetworkMetadataStoreMatch(expected_apns));
+    EXPECT_TRUE(
+        UserApnsInCellularConfigMatch(expected_apns, network_config_observer));
+    EXPECT_TRUE(UserApnsInManagedPropertiesMatch(expected_apns));
+  }
+
+  // Try to remove an ID not found in the list, API should do nothing
+  RemoveCustomApn(kCellularGuid, id_to_delete);
+  EXPECT_EQ(expected_network_config_calls,
+            network_config_observer.GetOnConfigurationModifiedCallCount());
+  {
+    std::vector<TestApnData*> expected_apns({&test_apn1});
+    EXPECT_TRUE(UserApnsInNetworkMetadataStoreMatch(expected_apns));
+    EXPECT_TRUE(
+        UserApnsInCellularConfigMatch(expected_apns, network_config_observer));
+    EXPECT_TRUE(UserApnsInManagedPropertiesMatch(expected_apns));
+  }
+
+  // Remove the last test APN
+  custom_apns = network_metadata_store()->GetCustomApnList(kCellularGuid);
+  ASSERT_TRUE(custom_apns);
+  ASSERT_EQ(1u, custom_apns->size());
+  first_apn_id =
+      custom_apns->front().GetDict().FindString(::onc::cellular_apn::kId);
+  ASSERT_TRUE(first_apn_id);
+  id_to_delete = std::string(*first_apn_id);
+  RemoveCustomApn(kCellularGuid, id_to_delete);
+  EXPECT_EQ(++expected_network_config_calls,
+            network_config_observer.GetOnConfigurationModifiedCallCount());
+  {
+    std::vector<TestApnData*> expected_apns;
+    EXPECT_TRUE(UserApnsInNetworkMetadataStoreMatch(expected_apns));
+    EXPECT_TRUE(
+        UserApnsInCellularConfigMatch(expected_apns, network_config_observer));
+    EXPECT_TRUE(UserApnsInManagedPropertiesMatch(expected_apns));
+  }
+
+  // Try to delete an APN when the custom APN list is empty, it should do
+  // nothing
+  RemoveCustomApn(kCellularGuid, id_to_delete);
+  EXPECT_EQ(expected_network_config_calls,
+            network_config_observer.GetOnConfigurationModifiedCallCount());
+  {
+    std::vector<TestApnData*> expected_apns;
     EXPECT_TRUE(UserApnsInNetworkMetadataStoreMatch(expected_apns));
     EXPECT_TRUE(
         UserApnsInCellularConfigMatch(expected_apns, network_config_observer));
