@@ -17,7 +17,7 @@ build_webui("build") {
   non_web_component_files = [ "feed_internals.ts" ]
 
   mojo_files_deps =
-      [ "//chrome/browser/ui/webui/feed_internals:mojo_bindings_webui_js" ]
+      [ "//chrome/browser/ui/webui/feed_internals:mojo_bindings_js__generator" ]
   mojo_files = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/feed_internals/feed_internals.mojom-webui.js" ]
 
   ts_deps = [

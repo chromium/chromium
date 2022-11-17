@@ -96,16 +96,16 @@ grit("content_resources") {
   deps = [
     "//components/ukm/debug:build_ts",
     "//content/browser/resources/histograms:build_ts",
-    "//gpu/ipc/common:vulkan_interface_webui_js",
-    "//ui/base/accelerators/mojom:mojom_webui_js",
+    "//gpu/ipc/common:vulkan_interface_js__generator",
+    "//ui/base/accelerators/mojom:mojom_js__generator",
     "//ui/base/mojom:mojom_js",
-    "//ui/events/mojom:mojom_webui_js",
+    "//ui/events/mojom:mojom_js__generator",
     "//ui/gfx/geometry/mojom:mojom_js",
     "//ui/gfx/image/mojom:mojom_js",
     "//ui/gfx/range/mojom:mojom_js",
-    "//ui/latency/mojom:mojom_webui_js",
-    "//url/mojom:url_mojom_origin_js",
-    "//url/mojom:url_mojom_origin_webui_js",
+    "//ui/latency/mojom:mojom_js__generator",
+    "//url/mojom:url_mojom_gurl_js__generator",
+    "//url/mojom:url_mojom_origin_js__generator",
   ]
 }
 
@@ -117,15 +117,15 @@ grit("dev_ui_content_resources") {
     "dev_ui_content_resources.pak",
   ]
   deps = [
-    "//components/attribution_reporting:mojom_webui_js",
-    "//content/browser/aggregation_service:mojo_bindings_webui_js",
-    "//content/browser/attribution_reporting:internals_mojo_bindings_webui_js",
-    "//content/browser/attribution_reporting:mojo_bindings_webui_js",
+    "//components/attribution_reporting:mojom_js__generator",
+    "//content/browser/aggregation_service:mojo_bindings_js__generator",
+    "//content/browser/attribution_reporting:internals_mojo_bindings_js__generator",
+    "//content/browser/attribution_reporting:mojo_bindings_js__generator",
     "//content/browser/resources/aggregation_service:build_ts",
     "//content/browser/resources/attribution_reporting:build_ts",
     "//content/browser/resources/gpu:html_wrapper_files",
     "//content/browser/resources/process:build_ts",
-    "//storage/browser/quota:mojo_bindings_webui_js",
+    "//storage/browser/quota:mojo_bindings_js__generator",
   ]
 }
 

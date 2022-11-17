@@ -17,7 +17,7 @@ mojom("mojom") {
 }
 
 copy("copy_mojom") {
-  deps = [ ":mojom_webui_js" ]
+  deps = [ ":mojom_js__generator" ]
   sources = [ "$root_gen_dir/mojom-webui/ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom-webui.js" ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }

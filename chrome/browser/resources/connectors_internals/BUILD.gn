@@ -14,9 +14,7 @@ build_webui("build") {
     "device_trust_connector.ts",
   ]
   mojo_files = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/connectors_internals/connectors_internals.mojom-webui.js" ]
-  mojo_files_deps = [
-    "//chrome/browser/ui/webui/connectors_internals:mojo_bindings_webui_js",
-  ]
+  mojo_files_deps = [ "//chrome/browser/ui/webui/connectors_internals:mojo_bindings_js__generator" ]
 
   html_to_wrapper_template = "native"
 

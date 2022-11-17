@@ -38,12 +38,12 @@ build_webui("build") {
   ]
 
   mojo_files_deps = [
-    "//$buckets_folder:buckets_webui_js",
-    "//$indexeddb_bucket_folder:mojom_bucket_webui_js",
-    "//$indexeddb_internal_folder:mojo_bindings_webui_js",
-    "//$quota_folder:quota_webui_js",
-    "//$schemeful_site_folder:mojom_schemeful_site_webui_js",
-    "//$storage_key_folder:storage_key_webui_js",
+    "//$buckets_folder:buckets_js__generator",
+    "//$indexeddb_bucket_folder:mojom_bucket_js__generator",
+    "//$indexeddb_internal_folder:mojo_bindings_js__generator",
+    "//$quota_folder:quota_js__generator",
+    "//$schemeful_site_folder:mojom_schemeful_site_js__generator",
+    "//$storage_key_folder:storage_key_js__generator",
   ]
 
   grit_output_dir = "$root_gen_dir/content"

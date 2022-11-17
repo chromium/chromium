@@ -35,7 +35,7 @@ ts_library("build_ts") {
 }
 
 copy("copy_src_and_mojom") {
-  deps = [ ":mojo_bindings_webui_js" ]
+  deps = [ ":mojo_bindings_js__generator" ]
   sources = [
     "$root_gen_dir/mojom-webui/ui/webui/resources/js/metrics_reporter/metrics_reporter.mojom-webui.js",
     "browser_proxy.ts",

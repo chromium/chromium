@@ -33,7 +33,7 @@ copy("copy_ts") {
 }
 
 copy("copy_mojo") {
-  deps = [ "//components/history_clusters/history_clusters_internals/webui:mojo_bindings_webui_js" ]
+  deps = [ "//components/history_clusters/history_clusters_internals/webui:mojo_bindings_js__generator" ]
   mojom_folder = "$root_gen_dir/mojom-webui/components/history_clusters/history_clusters_internals/webui/"
   sources = [ "$mojom_folder/history_clusters_internals.mojom-webui.js" ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]

@@ -10,7 +10,8 @@ assert(safe_browsing_mode == 1)
 # Copy mojo and src files to the same location so that they can be passed to
 # ts_library.
 copy("copy_src_and_mojo") {
-  deps = [ "//chrome/browser/ui/webui/reset_password:mojo_bindings_webui_js" ]
+  deps =
+      [ "//chrome/browser/ui/webui/reset_password:mojo_bindings_js__generator" ]
   sources = [
     "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/reset_password/reset_password.mojom-webui.js",
     "reset_password.ts",

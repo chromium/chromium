@@ -37,7 +37,7 @@ ts_library("build_ts") {
 }
 
 copy("copy_mojom") {
-  deps = [ ":mojo_bindings_webui_js" ]
+  deps = [ ":mojo_bindings_js__generator" ]
   sources = [ "$root_gen_dir/mojom-webui/ui/webui/resources/js/browser_command/browser_command.mojom-webui.js" ]
   outputs = [ "$tmp_folder/{{source_file_part}}" ]
 }

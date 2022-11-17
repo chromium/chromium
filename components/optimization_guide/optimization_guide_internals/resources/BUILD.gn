@@ -35,7 +35,7 @@ copy("copy_ts") {
 copy("copy_mojo") {
   deps = [
     "//components/optimization_guide/core:interfaces_js__generator",
-    "//components/optimization_guide/optimization_guide_internals/webui:mojo_bindings_webui_js",
+    "//components/optimization_guide/optimization_guide_internals/webui:mojo_bindings_js__generator",
   ]
   mojom_folder = "$root_gen_dir/mojom-webui/components/optimization_guide/optimization_guide_internals/webui/"
   core_mojom_folder =

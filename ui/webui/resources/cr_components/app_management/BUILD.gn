@@ -108,7 +108,7 @@ css_to_wrapper("css_wrapper_files") {
 
 copy("copy_mojo") {
   deps = [
-    ":mojo_bindings_webui_js",
+    ":mojo_bindings_js__generator",
     "//components/services/app_service/public/mojom:types_js__generator",
   ]
   sources = [
