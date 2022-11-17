@@ -104,6 +104,7 @@ export class CheckupSectionElement extends I18nMixin
 
       bannerImage_: {
         type: Array,
+        value: 'checkup_result_banner_error',
         computed: 'computeBannerImage_(status_, compromisedPasswords_, ' +
             'reusedPasswords_, weakPasswords_)',
       },
@@ -234,7 +235,7 @@ export class CheckupSectionElement extends I18nMixin
 
   private computeBannerImage_(): string {
     if (!this.status_) {
-      return '';
+      return 'checkup_result_banner_error';
     }
 
     if (this.computeIsCheckRunning_()) {
