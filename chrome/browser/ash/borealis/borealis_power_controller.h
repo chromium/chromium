@@ -17,9 +17,9 @@ class Profile;
 
 namespace borealis {
 
-// Prevents the device from going to sleep/dimming when the VM
-// receives an inhibit message
-// TODO(b/244273692): Add inhibit reason logic once implemented.
+// Prevents the device from going to sleep when the VM
+// receives an inhibit message. Allows screen off if reason is "download"
+// otherwise, keeps screen on.
 class BorealisPowerController : public ash::CiceroneClient::Observer {
  public:
   explicit BorealisPowerController(Profile* profile);
@@ -35,8 +35,6 @@ class BorealisPowerController : public ash::CiceroneClient::Observer {
   void OnUninhibitScreensaver(
       const vm_tools::cicerone::UninhibitScreensaverSignal& signal) override;
 
-  void EnsureWakeLock();
-
   void SetWakeLockProviderForTesting(
       mojo::Remote<device::mojom::WakeLockProvider> provider) {
     wake_lock_provider_ = std::move(provider);
@@ -46,13 +44,18 @@ class BorealisPowerController : public ash::CiceroneClient::Observer {
     if (wake_lock_) {
       wake_lock_.FlushForTesting();
     }
+    if (download_wake_lock_) {
+      download_wake_lock_.FlushForTesting();
+    }
   }
 
  private:
   mojo::Remote<device::mojom::WakeLockProvider> wake_lock_provider_;
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
+  mojo::Remote<device::mojom::WakeLock> download_wake_lock_;
   // Cookies from Inhibit messages that have not yet received uninhibit.
   std::set<u_int32_t> cookies_;
+  std::set<u_int32_t> download_cookies_;
   std::string const owner_id_;
 };
 

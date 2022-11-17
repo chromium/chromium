@@ -15,27 +15,21 @@
 namespace borealis {
 
 constexpr char kBorealisVmName[] = "borealis";
+constexpr char kDownloadInhibitReason[] = "download";
+constexpr char kWakelockReason[] = "Borealis";
+constexpr char kWakelockReasonDownlaod[] = "Borealis game download";
 
 BorealisPowerController::BorealisPowerController(Profile* profile)
     : owner_id_(ash::ProfileHelper::GetUserIdHashFromProfile(profile)) {
   ash::CiceroneClient::Get()->AddObserver(this);
 }
 
-void BorealisPowerController::EnsureWakeLock() {
-  if (!wake_lock_provider_)
-    content::GetDeviceService().BindWakeLockProvider(
-        wake_lock_provider_.BindNewPipeAndPassReceiver());
-  if (!wake_lock_)
-    wake_lock_provider_->GetWakeLockWithoutContext(
-        device::mojom::WakeLockType::kPreventDisplaySleep,
-        device::mojom::WakeLockReason::kOther, /*description=*/"Borealis",
-        wake_lock_.BindNewPipeAndPassReceiver());
-  wake_lock_->RequestWakeLock();
-}
-
 BorealisPowerController::~BorealisPowerController() {
   if (wake_lock_) {
     wake_lock_->CancelWakeLock();
+  }
+  if (download_wake_lock_) {
+    download_wake_lock_->CancelWakeLock();
   }
   ash::CiceroneClient::Get()->RemoveObserver(this);
 }
@@ -45,12 +39,34 @@ void BorealisPowerController::OnInhibitScreensaver(
   if (signal.vm_name() != kBorealisVmName || owner_id_ != signal.owner_id()) {
     return;
   }
-  EnsureWakeLock();
-  // There is currently no wake lock.
-  if (cookies_.empty()) {
-    EnsureWakeLock();
+  if (!wake_lock_provider_)
+    content::GetDeviceService().BindWakeLockProvider(
+        wake_lock_provider_.BindNewPipeAndPassReceiver());
+
+  if (signal.reason() == kDownloadInhibitReason) {
+    // Currently no inhibit active.
+    if (download_cookies_.empty()) {
+      if (!download_wake_lock_) {
+        wake_lock_provider_->GetWakeLockWithoutContext(
+            device::mojom::WakeLockType::kPreventAppSuspension,
+            device::mojom::WakeLockReason::kOther, kWakelockReasonDownlaod,
+            download_wake_lock_.BindNewPipeAndPassReceiver());
+      }
+      download_wake_lock_->RequestWakeLock();
+    }
+    download_cookies_.insert(signal.cookie());
+  } else {
+    if (cookies_.empty()) {
+      if (!wake_lock_) {
+        wake_lock_provider_->GetWakeLockWithoutContext(
+            device::mojom::WakeLockType::kPreventDisplaySleep,
+            device::mojom::WakeLockReason::kOther, kWakelockReason,
+            wake_lock_.BindNewPipeAndPassReceiver());
+      }
+      wake_lock_->RequestWakeLock();
+    }
+    cookies_.insert(signal.cookie());
   }
-  cookies_.insert(signal.cookie());
 }
 
 void BorealisPowerController::OnUninhibitScreensaver(
@@ -58,10 +74,15 @@ void BorealisPowerController::OnUninhibitScreensaver(
   if (signal.vm_name() != kBorealisVmName || owner_id_ != signal.owner_id()) {
     return;
   }
-  cookies_.erase(signal.cookie());
-  // There are no inhibit messages that have not been uninhibited.
-  if (cookies_.empty() && wake_lock_) {
-    wake_lock_->CancelWakeLock();
+  if (download_cookies_.erase(signal.cookie())) {
+    // There are no inhibit messages that have not been uninhibited.
+    if (download_cookies_.empty() && download_wake_lock_)
+      download_wake_lock_->CancelWakeLock();
+  } else if (cookies_.erase(signal.cookie())) {
+    if (cookies_.empty() && wake_lock_)
+      wake_lock_->CancelWakeLock();
+  } else {
+    LOG(ERROR) << "Invalid uninhibit cookie: " << signal.cookie();
   }
 }
 }  // namespace borealis

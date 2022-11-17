@@ -49,11 +49,11 @@ class BorealisPowerControllerTest : public ChromeAshTestBase {
   }
 
   // Returns the number of active wake locks.
-  int CountActiveWakeLocks() {
+  int CountActiveWakeLocks(device::mojom::WakeLockType type) {
     base::RunLoop run_loop;
     int result_count = 0;
     wake_lock_provider_->GetActiveWakeLocksForTests(
-        device::mojom::WakeLockType::kPreventDisplaySleep,
+        type,
         base::BindOnce(
             [](base::RunLoop* run_loop, int* result_count, int32_t count) {
               *result_count = count;
@@ -66,9 +66,10 @@ class BorealisPowerControllerTest : public ChromeAshTestBase {
 
   // Flushes the outstanding messages on the wakelock and returns active wake
   // locks.
-  int FlushAndCountWakeLocks(BorealisPowerController& power_controller) {
+  int FlushAndCountWakeLocks(BorealisPowerController& power_controller,
+                             device::mojom::WakeLockType type) {
     power_controller.FlushForTesting();
-    return CountActiveWakeLocks();
+    return CountActiveWakeLocks(type);
   }
 
   std::string owner_id_;
@@ -83,91 +84,264 @@ class BorealisPowerControllerTest : public ChromeAshTestBase {
 };
 
 TEST_F(BorealisPowerControllerTest, WakeLockToggledByInhibitUninhibit) {
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 0);
+  EXPECT_EQ(
+      FlushAndCountWakeLocks(*power_controller_,
+                             device::mojom::WakeLockType::kPreventDisplaySleep),
+      0);
   vm_tools::cicerone::InhibitScreensaverSignal inhibit;
   inhibit.set_vm_name("borealis");
   inhibit.set_owner_id(owner_id_);
   inhibit.set_cookie(1);
   power_controller_->OnInhibitScreensaver(inhibit);
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 1);
+  EXPECT_EQ(
+      FlushAndCountWakeLocks(*power_controller_,
+                             device::mojom::WakeLockType::kPreventDisplaySleep),
+      1);
 
   vm_tools::cicerone::UninhibitScreensaverSignal uninhibit;
   uninhibit.set_vm_name("borealis");
   uninhibit.set_owner_id(owner_id_);
   uninhibit.set_cookie(1);
   power_controller_->OnUninhibitScreensaver(uninhibit);
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 0);
+  EXPECT_EQ(
+      FlushAndCountWakeLocks(*power_controller_,
+                             device::mojom::WakeLockType::kPreventDisplaySleep),
+      0);
 }
 
 TEST_F(BorealisPowerControllerTest, NonBorealisDoesNotWakeLock) {
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 0);
+  EXPECT_EQ(
+      FlushAndCountWakeLocks(*power_controller_,
+                             device::mojom::WakeLockType::kPreventDisplaySleep),
+      0);
   vm_tools::cicerone::InhibitScreensaverSignal inhibit;
   inhibit.set_vm_name("notborealis");
   inhibit.set_cookie(1);
   power_controller_->OnInhibitScreensaver(inhibit);
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 0);
+  EXPECT_EQ(
+      FlushAndCountWakeLocks(*power_controller_,
+                             device::mojom::WakeLockType::kPreventDisplaySleep),
+      0);
 
   inhibit.set_vm_name("borealis");
   inhibit.set_owner_id(owner_id_);
   inhibit.set_cookie(1);
   power_controller_->OnInhibitScreensaver(inhibit);
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 1);
+  EXPECT_EQ(
+      FlushAndCountWakeLocks(*power_controller_,
+                             device::mojom::WakeLockType::kPreventDisplaySleep),
+      1);
 
   vm_tools::cicerone::UninhibitScreensaverSignal uninhibit;
   uninhibit.set_vm_name("notborealis");
   uninhibit.set_cookie(1);
   power_controller_->OnUninhibitScreensaver(uninhibit);
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 1);
+  EXPECT_EQ(
+      FlushAndCountWakeLocks(*power_controller_,
+                             device::mojom::WakeLockType::kPreventDisplaySleep),
+      1);
 }
 
 TEST_F(BorealisPowerControllerTest, MultipleInhibits) {
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 0);
+  EXPECT_EQ(
+      FlushAndCountWakeLocks(*power_controller_,
+                             device::mojom::WakeLockType::kPreventDisplaySleep),
+      0);
   vm_tools::cicerone::InhibitScreensaverSignal inhibit;
   inhibit.set_vm_name("borealis");
   inhibit.set_owner_id(owner_id_);
   inhibit.set_cookie(1);
   power_controller_->OnInhibitScreensaver(inhibit);
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 1);
+  EXPECT_EQ(
+      FlushAndCountWakeLocks(*power_controller_,
+                             device::mojom::WakeLockType::kPreventDisplaySleep),
+      1);
 
   inhibit.set_cookie(2);
   power_controller_->OnInhibitScreensaver(inhibit);
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 1);
+  EXPECT_EQ(
+      FlushAndCountWakeLocks(*power_controller_,
+                             device::mojom::WakeLockType::kPreventDisplaySleep),
+      1);
 
   vm_tools::cicerone::UninhibitScreensaverSignal uninhibit;
   uninhibit.set_vm_name("borealis");
   uninhibit.set_owner_id(owner_id_);
   uninhibit.set_cookie(1);
   power_controller_->OnUninhibitScreensaver(uninhibit);
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 1);
+  EXPECT_EQ(
+      FlushAndCountWakeLocks(*power_controller_,
+                             device::mojom::WakeLockType::kPreventDisplaySleep),
+      1);
 
   uninhibit.set_cookie(2);
   power_controller_->OnUninhibitScreensaver(uninhibit);
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 0);
+  EXPECT_EQ(
+      FlushAndCountWakeLocks(*power_controller_,
+                             device::mojom::WakeLockType::kPreventDisplaySleep),
+      0);
 }
 
 TEST_F(BorealisPowerControllerTest, UninhibitWithoutInhibit) {
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 0);
+  EXPECT_EQ(
+      FlushAndCountWakeLocks(*power_controller_,
+                             device::mojom::WakeLockType::kPreventDisplaySleep),
+      0);
+  vm_tools::cicerone::UninhibitScreensaverSignal uninhibit;
+  uninhibit.set_vm_name("borealis");
+  uninhibit.set_owner_id(owner_id_);
+  uninhibit.set_cookie(1);
+  power_controller_->OnUninhibitScreensaver(uninhibit);
+  EXPECT_EQ(
+      FlushAndCountWakeLocks(*power_controller_,
+                             device::mojom::WakeLockType::kPreventDisplaySleep),
+      0);
+}
+
+TEST_F(BorealisPowerControllerTest, WakeLockToggledByDownloadInhibitUninhibit) {
+  EXPECT_EQ(FlushAndCountWakeLocks(
+                *power_controller_,
+                device::mojom::WakeLockType::kPreventAppSuspension),
+            0);
+  vm_tools::cicerone::InhibitScreensaverSignal inhibit;
+  inhibit.set_vm_name("borealis");
+  inhibit.set_owner_id(owner_id_);
+  inhibit.set_reason("download");
+  inhibit.set_cookie(1);
+  power_controller_->OnInhibitScreensaver(inhibit);
+  EXPECT_EQ(FlushAndCountWakeLocks(
+                *power_controller_,
+                device::mojom::WakeLockType::kPreventAppSuspension),
+            1);
 
   vm_tools::cicerone::UninhibitScreensaverSignal uninhibit;
   uninhibit.set_vm_name("borealis");
   uninhibit.set_owner_id(owner_id_);
   uninhibit.set_cookie(1);
   power_controller_->OnUninhibitScreensaver(uninhibit);
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 0);
+  EXPECT_EQ(FlushAndCountWakeLocks(
+                *power_controller_,
+                device::mojom::WakeLockType::kPreventAppSuspension),
+            0);
+}
+
+TEST_F(BorealisPowerControllerTest, BothInhibitTypesActive) {
+  EXPECT_EQ(
+      FlushAndCountWakeLocks(*power_controller_,
+                             device::mojom::WakeLockType::kPreventDisplaySleep),
+      0);
+  EXPECT_EQ(FlushAndCountWakeLocks(
+                *power_controller_,
+                device::mojom::WakeLockType::kPreventAppSuspension),
+            0);
+
+  vm_tools::cicerone::InhibitScreensaverSignal inhibit;
+  inhibit.set_vm_name("borealis");
+  inhibit.set_owner_id(owner_id_);
+  inhibit.set_reason("not download");
+  inhibit.set_cookie(1);
+  power_controller_->OnInhibitScreensaver(inhibit);
+  EXPECT_EQ(
+      FlushAndCountWakeLocks(*power_controller_,
+                             device::mojom::WakeLockType::kPreventDisplaySleep),
+      1);
+
+  inhibit.set_reason("download");
+  inhibit.set_cookie(2);
+  power_controller_->OnInhibitScreensaver(inhibit);
+  EXPECT_EQ(FlushAndCountWakeLocks(
+                *power_controller_,
+                device::mojom::WakeLockType::kPreventAppSuspension),
+            1);
+  EXPECT_EQ(
+      FlushAndCountWakeLocks(*power_controller_,
+                             device::mojom::WakeLockType::kPreventDisplaySleep),
+      1);
+
+  vm_tools::cicerone::UninhibitScreensaverSignal uninhibit;
+  uninhibit.set_vm_name("borealis");
+  uninhibit.set_owner_id(owner_id_);
+  uninhibit.set_cookie(1);
+  power_controller_->OnUninhibitScreensaver(uninhibit);
+  EXPECT_EQ(FlushAndCountWakeLocks(
+                *power_controller_,
+                device::mojom::WakeLockType::kPreventAppSuspension),
+            1);
+  EXPECT_EQ(
+      FlushAndCountWakeLocks(*power_controller_,
+                             device::mojom::WakeLockType::kPreventDisplaySleep),
+      0);
+
+  inhibit.set_reason("not download");
+  inhibit.set_cookie(3);
+  power_controller_->OnInhibitScreensaver(inhibit);
+  EXPECT_EQ(FlushAndCountWakeLocks(
+                *power_controller_,
+                device::mojom::WakeLockType::kPreventAppSuspension),
+            1);
+  EXPECT_EQ(
+      FlushAndCountWakeLocks(*power_controller_,
+                             device::mojom::WakeLockType::kPreventDisplaySleep),
+      1);
+
+  uninhibit.set_cookie(2);
+  power_controller_->OnUninhibitScreensaver(uninhibit);
+  EXPECT_EQ(FlushAndCountWakeLocks(
+                *power_controller_,
+                device::mojom::WakeLockType::kPreventAppSuspension),
+            0);
+  EXPECT_EQ(
+      FlushAndCountWakeLocks(*power_controller_,
+                             device::mojom::WakeLockType::kPreventDisplaySleep),
+      1);
+
+  uninhibit.set_cookie(3);
+  power_controller_->OnUninhibitScreensaver(uninhibit);
+  EXPECT_EQ(FlushAndCountWakeLocks(
+                *power_controller_,
+                device::mojom::WakeLockType::kPreventAppSuspension),
+            0);
+  EXPECT_EQ(
+      FlushAndCountWakeLocks(*power_controller_,
+                             device::mojom::WakeLockType::kPreventDisplaySleep),
+      0);
 }
 
 TEST_F(BorealisPowerControllerTest, WakeLockResetWhenBorealisShutsdown) {
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 0);
+  EXPECT_EQ(
+      FlushAndCountWakeLocks(*power_controller_,
+                             device::mojom::WakeLockType::kPreventDisplaySleep),
+      0);
   vm_tools::cicerone::InhibitScreensaverSignal inhibit;
   inhibit.set_vm_name("borealis");
   inhibit.set_owner_id(owner_id_);
   inhibit.set_cookie(1);
   power_controller_->OnInhibitScreensaver(inhibit);
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 1);
+  EXPECT_EQ(
+      FlushAndCountWakeLocks(*power_controller_,
+                             device::mojom::WakeLockType::kPreventDisplaySleep),
+      1);
+
+  EXPECT_EQ(FlushAndCountWakeLocks(
+                *power_controller_,
+                device::mojom::WakeLockType::kPreventAppSuspension),
+            0);
+  inhibit.set_reason("download");
+  inhibit.set_cookie(2);
+  power_controller_->OnInhibitScreensaver(inhibit);
+  EXPECT_EQ(FlushAndCountWakeLocks(
+                *power_controller_,
+                device::mojom::WakeLockType::kPreventAppSuspension),
+            1);
 
   power_controller_.reset();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(CountActiveWakeLocks(), 0);
+  EXPECT_EQ(
+      CountActiveWakeLocks(device::mojom::WakeLockType::kPreventDisplaySleep),
+      0);
+  EXPECT_EQ(
+      CountActiveWakeLocks(device::mojom::WakeLockType::kPreventAppSuspension),
+      0);
 }
 
 }  // namespace
