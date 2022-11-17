@@ -121,6 +121,7 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
           .CopyAddressTo(&window_title_)
           .SetText(location_bar_model_->GetURLForDisplay())
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .SetElideBehavior(gfx::ELIDE_HEAD)
           .Build());
   controls_container_view_->SetFlexForView(window_title_, 1);
 
