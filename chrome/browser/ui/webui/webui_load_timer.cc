@@ -49,7 +49,7 @@ void WebuiLoadTimer::DidStartNavigation(
 void WebuiLoadTimer::DOMContentLoaded(
     content::RenderFrameHost* render_frame_host) {
   // See comment in DocumentOnLoadCompletedInPrimaryMainFrame.
-  if (!timer_ || render_frame_host != web_contents()->GetPrimaryMainFrame())
+  if (!timer_ || !render_frame_host->IsInPrimaryMainFrame())
     return;
   CallUmaHistogramTimes(document_initial_load_uma_id_, timer_->Elapsed());
 }
