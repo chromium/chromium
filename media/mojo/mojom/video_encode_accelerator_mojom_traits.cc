@@ -334,6 +334,45 @@ bool EnumTraits<media::mojom::VideoEncodeAcceleratorConfig_StorageType,
 }
 
 // static
+media::mojom::VideoEncodeAcceleratorConfig_EncoderType
+EnumTraits<media::mojom::VideoEncodeAcceleratorConfig_EncoderType,
+           media::VideoEncodeAccelerator::Config::EncoderType>::
+    ToMojom(media::VideoEncodeAccelerator::Config::EncoderType input) {
+  switch (input) {
+    case media::VideoEncodeAccelerator::Config::EncoderType::kHardware:
+      return media::mojom::VideoEncodeAcceleratorConfig_EncoderType::kHardware;
+    case media::VideoEncodeAccelerator::Config::EncoderType::kSoftware:
+      return media::mojom::VideoEncodeAcceleratorConfig_EncoderType::kSoftware;
+    case media::VideoEncodeAccelerator::Config::EncoderType::kNoPreference:
+      return media::mojom::VideoEncodeAcceleratorConfig_EncoderType::
+          kNoPreference;
+  }
+  NOTREACHED();
+  return media::mojom::VideoEncodeAcceleratorConfig_EncoderType::kHardware;
+}
+
+// static
+bool EnumTraits<media::mojom::VideoEncodeAcceleratorConfig_EncoderType,
+                media::VideoEncodeAccelerator::Config::EncoderType>::
+    FromMojom(media::mojom::VideoEncodeAcceleratorConfig_EncoderType input,
+              media::VideoEncodeAccelerator::Config::EncoderType* output) {
+  switch (input) {
+    case media::mojom::VideoEncodeAcceleratorConfig_EncoderType::kHardware:
+      *output = media::VideoEncodeAccelerator::Config::EncoderType::kHardware;
+      return true;
+    case media::mojom::VideoEncodeAcceleratorConfig_EncoderType::kSoftware:
+      *output = media::VideoEncodeAccelerator::Config::EncoderType::kSoftware;
+      return true;
+    case media::mojom::VideoEncodeAcceleratorConfig_EncoderType::kNoPreference:
+      *output =
+          media::VideoEncodeAccelerator::Config::EncoderType::kNoPreference;
+      return true;
+  }
+  NOTREACHED();
+  return false;
+}
+
+// static
 media::mojom::VideoEncodeAcceleratorConfig_ContentType
 EnumTraits<media::mojom::VideoEncodeAcceleratorConfig_ContentType,
            media::VideoEncodeAccelerator::Config::ContentType>::
@@ -528,12 +567,17 @@ bool StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
   if (!input.ReadInterLayerPred(&inter_layer_pred))
     return false;
 
+  media::VideoEncodeAccelerator::Config::EncoderType required_encoder_type;
+  if (!input.ReadRequiredEncoderType(&required_encoder_type))
+    return false;
+
   *output = media::VideoEncodeAccelerator::Config(
       input_format, input_visible_size, output_profile, bitrate,
       initial_framerate, gop_length, h264_output_level, is_constrained_h264,
       storage_type, content_type, spatial_layers, inter_layer_pred);
 
   output->require_low_delay = input.require_low_delay();
+  output->required_encoder_type = required_encoder_type;
 
   return true;
 }

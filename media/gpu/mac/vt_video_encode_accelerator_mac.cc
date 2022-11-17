@@ -19,6 +19,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/mac/video_frame_mac.h"
@@ -231,8 +232,16 @@ VTVideoEncodeAccelerator::GetSupportedH264Profiles() {
 
   for (const auto& supported_profile : kSupportedProfiles) {
     if (VideoCodecProfileToVideoCodec(supported_profile) == VideoCodec::kH264) {
-      profile.profile = supported_profile;
-      profiles.push_back(profile);
+#if defined(ARCH_CPU_X86_FAMILY)
+      for (const auto& min_resolution : {gfx::Size(640, 1), gfx::Size(1, 480)})
+#else
+      const auto min_resolution = gfx::Size();
+#endif
+      {
+        profile.min_resolution = min_resolution;
+        profile.profile = supported_profile;
+        profiles.push_back(profile);
+      }
     }
   }
   return profiles;
@@ -321,6 +330,12 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
   bitstream_buffer_size_ = config.input_visible_size.GetArea();
   require_low_delay_ = config.require_low_delay;
 
+  if (codec_ == VideoCodec::kH264 || codec_ == VideoCodec::kHEVC) {
+    required_encoder_type_ = config.required_encoder_type;
+  } else {
+    DLOG(ERROR) << "Software encoder selection is only allowed for H264/H265.";
+  }
+
   if (config.HasTemporalLayer())
     num_temporal_layers_ = config.spatial_layers.front().num_of_temporal_layers;
 
@@ -333,6 +348,20 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
   if (!ResetCompressionSession(codec_)) {
     MEDIA_LOG(ERROR, media_log.get()) << "Failed creating compression session.";
     return false;
+  }
+
+  // Report whether hardware decode is being used.
+  bool using_hardware = false;
+  base::ScopedCFTypeRef<CFBooleanRef> cf_using_hardware;
+  if (VTSessionCopyProperty(
+          compression_session_,
+          kVTCompressionPropertyKey_UsingHardwareAcceleratedVideoEncoder,
+          kCFAllocatorDefault, cf_using_hardware.InitializeInto()) == 0) {
+    using_hardware = CFBooleanGetValue(cf_using_hardware);
+  }
+  if (!using_hardware) {
+    MEDIA_LOG(INFO, media_log.get())
+        << "VideoToolbox selected a software encoder.";
   }
 
   client_task_runner_->PostTask(
@@ -711,7 +740,15 @@ bool VTVideoEncodeAccelerator::CreateCompressionSession(
 
   std::vector<CFTypeRef> encoder_keys{
       kVTVideoEncoderSpecification_RequireHardwareAcceleratedVideoEncoder};
-  std::vector<CFTypeRef> encoder_values{kCFBooleanTrue};
+  std::vector<CFTypeRef> encoder_values{required_encoder_type_ ==
+                                                Config::EncoderType::kHardware
+                                            ? kCFBooleanTrue
+                                            : kCFBooleanFalse};
+  if (required_encoder_type_ == Config::EncoderType::kSoftware) {
+    encoder_keys.push_back(
+        kVTVideoEncoderSpecification_EnableHardwareAcceleratedVideoEncoder);
+    encoder_values.push_back(kCFBooleanFalse);
+  }
 
   if (__builtin_available(macOS LOW_LATENCY_FLAG_AVAILABLE_VER, *)) {
     // Remove the validation once HEVC SVC mode is supported on macOS.
@@ -748,7 +785,7 @@ bool VTVideoEncodeAccelerator::CreateCompressionSession(
     // we'll clear it without calling CFRelease() because it can be unsafe
     // to call on a not fully created session.
     (void)compression_session_.release();
-    DVLOG(1) << " VTCompressionSessionCreate failed: " << status;
+    OSSTATUS_DLOG(ERROR, status) << " VTCompressionSessionCreate failed: ";
     return false;
   }
   DVLOG(3) << " VTCompressionSession created with input size="

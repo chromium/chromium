@@ -129,6 +129,13 @@ struct VideoEncodeAcceleratorConfig {
     kGpuMemoryBuffer,
   };
 
+  // See media::VideoEncodeAccelerator::Config::EncoderType
+  enum EncoderType {
+    kHardware,
+    kSoftware,
+    kNoPreference,
+  };
+
   VideoPixelFormat input_format;
   gfx.mojom.Size input_visible_size;
   VideoCodecProfile output_profile;
@@ -146,6 +153,7 @@ struct VideoEncodeAcceleratorConfig {
   array<SpatialLayer> spatial_layers;
   InterLayerPredMode inter_layer_pred;
   bool require_low_delay;
+  EncoderType required_encoder_type;
 };
 
 interface VideoEncodeAccelerator {

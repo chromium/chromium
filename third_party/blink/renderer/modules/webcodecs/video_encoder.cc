@@ -112,7 +112,8 @@ constexpr int kMaxActiveEncodes = 5;
 bool IsAcceleratedConfigurationSupported(
     media::VideoCodecProfile profile,
     const media::VideoEncoder::Options& options,
-    media::GpuVideoAcceleratorFactories* gpu_factories) {
+    media::GpuVideoAcceleratorFactories* gpu_factories,
+    bool allow_software_codecs) {
   if (!gpu_factories || !gpu_factories->IsGpuVideoEncodeAcceleratorEnabled())
     return false;
 
@@ -125,9 +126,14 @@ bool IsAcceleratedConfigurationSupported(
     if (supported_profile.profile != profile)
       continue;
 
-    if (supported_profile.min_resolution.width() > options.frame_size.width() ||
-        supported_profile.min_resolution.height() >
-            options.frame_size.height()) {
+    // TODO(crbug.com/1383643): We should retrieve a separate list of supported
+    // profiles tagged with software capabilities instead of just ignoring the
+    // minimum resolution, but the practical outcome ends up the same, so for
+    // now just do the simple thing.
+    if (!allow_software_codecs && (supported_profile.min_resolution.width() >
+                                       options.frame_size.width() ||
+                                   supported_profile.min_resolution.height() >
+                                       options.frame_size.height())) {
       continue;
     }
 
@@ -469,6 +475,33 @@ bool CanUseGpuMemoryBufferReadback(media::VideoPixelFormat format,
              IsGpuMemoryBufferReadbackFromTextureEnabled();
 }
 
+bool MayHaveOSSoftwareEncoder(media::VideoCodecProfile profile) {
+  // The AV1 and VPx software encoders are fully featured while OpenH264 only
+  // supports H264PROFILE_BASELINE. Allow OS software encoding when we don't
+  // have an equivalent software encoder.
+  //
+  // Note: Since we don't enumerate OS software encoders this may still fail and
+  // trigger fallback to our bundled software encoder (if any).
+  //
+  // Note 2: It's not ideal to have this logic live here, but to move it to the
+  // accelerator we'd need to always wait for GpuFactories enumeration.
+  //
+  // TODO(crbug.com/1383643): Add IS_ANDROID, IS_WIN here once we can force
+  // selection of a software encoder on those platforms.
+#if BUILDFLAG(IS_MAC)
+  const auto codec = media::VideoCodecProfileToVideoCodec(profile);
+  return codec == media::VideoCodec::kHEVC ||
+#if BUILDFLAG(ENABLE_OPENH264)
+         (codec == media::VideoCodec::kH264 &&
+          profile != media::H264PROFILE_BASELINE);
+#else
+         codec == media::VideoCodec::kH264;
+#endif  // BUILDFLAG(ENABLE_OPENH264)
+#else
+  return false;
+#endif  // BUILDFLAG(IS_MAC)
+}
+
 }  // namespace
 
 // static
@@ -526,14 +559,30 @@ std::unique_ptr<media::VideoEncoder>
 VideoEncoder::CreateAcceleratedVideoEncoder(
     media::VideoCodecProfile profile,
     const media::VideoEncoder::Options& options,
-    media::GpuVideoAcceleratorFactories* gpu_factories) {
-  if (!IsAcceleratedConfigurationSupported(profile, options, gpu_factories))
+    media::GpuVideoAcceleratorFactories* gpu_factories,
+    HardwarePreference hw_pref) {
+  bool allow_software_codecs = false;
+  auto required_encoder_type =
+      media::VideoEncodeAccelerator::Config::EncoderType::kHardware;
+  if (hw_pref != HardwarePreference::kPreferHardware &&
+      MayHaveOSSoftwareEncoder(profile)) {
+    required_encoder_type =
+        hw_pref == HardwarePreference::kPreferSoftware
+            ? media::VideoEncodeAccelerator::Config::EncoderType::kSoftware
+            : media::VideoEncodeAccelerator::Config::EncoderType::kNoPreference;
+    allow_software_codecs = true;
+  }
+
+  if (!IsAcceleratedConfigurationSupported(profile, options, gpu_factories,
+                                           allow_software_codecs)) {
     return nullptr;
+  }
 
   return std::make_unique<
       media::AsyncDestroyVideoEncoder<media::VideoEncodeAcceleratorAdapter>>(
       std::make_unique<media::VideoEncodeAcceleratorAdapter>(
-          gpu_factories, logger_->log()->Clone(), callback_runner_));
+          gpu_factories, logger_->log()->Clone(), callback_runner_,
+          required_encoder_type));
 }
 
 std::unique_ptr<media::VideoEncoder> CreateAv1VideoEncoder() {
@@ -593,32 +642,27 @@ std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateSoftwareVideoEncoder(
 std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateMediaVideoEncoder(
     const ParsedConfig& config,
     media::GpuVideoAcceleratorFactories* gpu_factories) {
-  switch (config.hw_pref) {
-    case HardwarePreference::kPreferHardware: {
-      auto result = CreateAcceleratedVideoEncoder(
-          config.profile, config.options, gpu_factories);
-      if (result)
-        OnMediaEncoderCreated("AcceleratedVideoEncoder", true);
-      return result;
-    }
-    case HardwarePreference::kNoPreference:
-      if (auto result = CreateAcceleratedVideoEncoder(
-              config.profile, config.options, gpu_factories)) {
-        OnMediaEncoderCreated("AcceleratedVideoEncoder", true);
-        return std::make_unique<media::VideoEncoderFallback>(
-            std::move(result),
-            ConvertToBaseOnceCallback(CrossThreadBindOnce(
-                &VideoEncoder::CreateSoftwareVideoEncoder,
-                MakeUnwrappingCrossThreadWeakHandle(this), config.codec)));
-      }
-      [[fallthrough]];
-    case HardwarePreference::kPreferSoftware:
-      return CreateSoftwareVideoEncoder(this, config.codec);
+  if (config.hw_pref == HardwarePreference::kPreferHardware ||
+      config.hw_pref == HardwarePreference::kNoPreference ||
+      MayHaveOSSoftwareEncoder(config.profile)) {
+    auto result = CreateAcceleratedVideoEncoder(config.profile, config.options,
+                                                gpu_factories, config.hw_pref);
+    if (result)
+      OnMediaEncoderCreated("AcceleratedVideoEncoder", true);
 
-    default:
-      NOTREACHED();
-      return nullptr;
+    if (config.hw_pref == HardwarePreference::kPreferHardware) {
+      return result;
+    } else if (result) {
+      // 'no-preference' or 'prefer-software' and we have OS software encoders.
+      return std::make_unique<media::VideoEncoderFallback>(
+          std::move(result),
+          ConvertToBaseOnceCallback(CrossThreadBindOnce(
+              &VideoEncoder::CreateSoftwareVideoEncoder,
+              MakeUnwrappingCrossThreadWeakHandle(this), config.codec)));
+    }
   }
+
+  return CreateSoftwareVideoEncoder(this, config.codec);
 }
 
 void VideoEncoder::ContinueConfigureWithGpuFactories(
@@ -917,7 +961,8 @@ void VideoEncoder::ProcessConfigure(Request* request) {
 
   blocking_request_in_progress_ = true;
 
-  if (active_config_->hw_pref == HardwarePreference::kPreferSoftware) {
+  if (active_config_->hw_pref == HardwarePreference::kPreferSoftware &&
+      !MayHaveOSSoftwareEncoder(active_config_->profile)) {
     ContinueConfigureWithGpuFactories(request, nullptr);
     return;
   }
@@ -1150,8 +1195,12 @@ static void isConfigSupportedWithHardwareOnly(
     VideoEncoderSupport* support,
     VideoEncoderTraits::ParsedConfig* config,
     media::GpuVideoAcceleratorFactories* gpu_factories) {
+  const bool allow_software_codecs =
+      config->hw_pref != HardwarePreference::kPreferHardware &&
+      MayHaveOSSoftwareEncoder(config->profile);
+
   bool supported = IsAcceleratedConfigurationSupported(
-      config->profile, config->options, gpu_factories);
+      config->profile, config->options, gpu_factories, allow_software_codecs);
   support->setSupported(supported);
   resolver->Resolve(support);
 }
@@ -1209,7 +1258,8 @@ ScriptPromise VideoEncoder::isConfigSupported(ScriptState* script_state,
   // put them into |promises|. Simultaneously run both versions of
   // isConfigSupported(), each version fulfills its own promise.
   HeapVector<ScriptPromise> promises;
-  if (parsed_config->hw_pref != HardwarePreference::kPreferSoftware) {
+  if (parsed_config->hw_pref != HardwarePreference::kPreferSoftware ||
+      MayHaveOSSoftwareEncoder(parsed_config->profile)) {
     // Hardware support not denied, detect support by hardware encoders.
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
     promises.push_back(resolver->Promise());

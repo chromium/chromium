@@ -144,6 +144,9 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   // Context: https://crbug.com/1195177 https://crbug.com/webrtc/7304
   bool require_low_delay_ = true;
 
+  // Used to control selection of OS software encoders.
+  Config::EncoderType required_encoder_type_ = Config::EncoderType::kHardware;
+
   // Bitstream buffers ready to be used to return encoded output as a FIFO.
   base::circular_deque<std::unique_ptr<BitstreamBufferRef>>
       bitstream_buffer_queue_;

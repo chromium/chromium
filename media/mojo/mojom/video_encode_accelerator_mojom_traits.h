@@ -342,6 +342,17 @@ struct EnumTraits<media::mojom::VideoEncodeAcceleratorConfig_StorageType,
 };
 
 template <>
+struct EnumTraits<media::mojom::VideoEncodeAcceleratorConfig_EncoderType,
+                  media::VideoEncodeAccelerator::Config::EncoderType> {
+  static media::mojom::VideoEncodeAcceleratorConfig_EncoderType ToMojom(
+      media::VideoEncodeAccelerator::Config::EncoderType input);
+
+  static bool FromMojom(
+      media::mojom::VideoEncodeAcceleratorConfig_EncoderType,
+      media::VideoEncodeAccelerator::Config::EncoderType* output);
+};
+
+template <>
 struct EnumTraits<media::mojom::VideoEncodeAcceleratorConfig_InterLayerPredMode,
                   media::VideoEncodeAccelerator::Config::InterLayerPredMode> {
   static media::mojom::VideoEncodeAcceleratorConfig_InterLayerPredMode ToMojom(
@@ -517,6 +528,11 @@ struct StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
   static bool require_low_delay(
       const media::VideoEncodeAccelerator::Config& input) {
     return input.require_low_delay;
+  }
+
+  static media::VideoEncodeAccelerator::Config::EncoderType
+  required_encoder_type(const media::VideoEncodeAccelerator::Config& input) {
+    return input.required_encoder_type;
   }
 
   static bool Read(media::mojom::VideoEncodeAcceleratorConfigDataView input,

@@ -217,6 +217,10 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     // kGpuMemoryBuffer if a video frame has a GpuMemoryBuffer.
     enum class StorageType { kShmem, kGpuMemoryBuffer };
 
+    // Used to require a certain encoder type is selected. The default is that
+    // hardware is required.
+    enum class EncoderType { kHardware, kSoftware, kNoPreference };
+
     struct MEDIA_EXPORT SpatialLayer {
       // The encoder dimension of the spatial layer.
       int32_t width = 0;
@@ -314,6 +318,10 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     // This flag forces the encoder to use low latency mode, suitable for
     // RTC use cases.
     bool require_low_delay = true;
+
+    // Indicates what type of encoder is required. Useful when OS software
+    // encoders may be present and/or superior to built-in encoders.
+    EncoderType required_encoder_type = EncoderType::kHardware;
   };
 
   // Interface for clients that use VideoEncodeAccelerator. These callbacks will

@@ -49,7 +49,9 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   VideoEncodeAcceleratorAdapter(
       GpuVideoAcceleratorFactories* gpu_factories,
       std::unique_ptr<MediaLog> media_log,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      VideoEncodeAccelerator::Config::EncoderType required_encoder_type =
+          VideoEncodeAccelerator::Config::EncoderType::kHardware);
   ~VideoEncodeAcceleratorAdapter() override;
 
   enum class InputBufferKind { Any, GpuMemBuf, CpuMemBuf };
@@ -186,6 +188,9 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   OutputCB output_cb_;
 
   gfx::Size input_coded_size_;
+
+  VideoEncodeAccelerator::Config::EncoderType required_encoder_type_ =
+      VideoEncodeAccelerator::Config::EncoderType::kHardware;
 };
 
 }  // namespace media

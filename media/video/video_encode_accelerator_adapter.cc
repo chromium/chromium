@@ -87,7 +87,8 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
     const VideoEncoder::Options& opts,
     VideoPixelFormat format,
     VideoFrame::StorageType storage_type,
-    VideoEncodeAccelerator::SupportedRateControlMode supported_rc_modes) {
+    VideoEncodeAccelerator::SupportedRateControlMode supported_rc_modes,
+    VideoEncodeAccelerator::Config::EncoderType required_encoder_type) {
   absl::optional<uint32_t> initial_framerate;
   if (opts.framerate.has_value())
     initial_framerate = static_cast<uint32_t>(opts.framerate.value());
@@ -125,6 +126,7 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
 
   config.require_low_delay =
       opts.latency_mode == VideoEncoder::LatencyMode::Realtime;
+  config.required_encoder_type = required_encoder_type;
 
   const bool is_rgb =
       format == PIXEL_FORMAT_XBGR || format == PIXEL_FORMAT_XRGB ||
@@ -300,12 +302,14 @@ VideoEncodeAcceleratorAdapter::PendingOp::~PendingOp() = default;
 VideoEncodeAcceleratorAdapter::VideoEncodeAcceleratorAdapter(
     GpuVideoAcceleratorFactories* gpu_factories,
     std::unique_ptr<MediaLog> media_log,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+    VideoEncodeAccelerator::Config::EncoderType required_encoder_type)
     : output_pool_(base::MakeRefCounted<base::UnsafeSharedMemoryPool>()),
       gpu_factories_(gpu_factories),
       media_log_(std::move(media_log)),
       accelerator_task_runner_(gpu_factories_->GetTaskRunner()),
-      callback_task_runner_(std::move(callback_task_runner)) {
+      callback_task_runner_(std::move(callback_task_runner)),
+      required_encoder_type_(required_encoder_type) {
   DETACH_FROM_SEQUENCE(accelerator_sequence_checker_);
 }
 
@@ -451,7 +455,7 @@ void VideoEncodeAcceleratorAdapter::InitializeInternalOnAcceleratorThread() {
 
   auto vea_config =
       SetUpVeaConfig(profile_, options_, format, first_frame->storage_type(),
-                     supported_rc_modes_);
+                     supported_rc_modes_, required_encoder_type_);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Linux/ChromeOS require a special configuration to use dmabuf storage.

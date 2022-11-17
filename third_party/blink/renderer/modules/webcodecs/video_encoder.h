@@ -128,7 +128,8 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
   std::unique_ptr<media::VideoEncoder> CreateAcceleratedVideoEncoder(
       media::VideoCodecProfile profile,
       const media::VideoEncoder::Options& options,
-      media::GpuVideoAcceleratorFactories* gpu_factories);
+      media::GpuVideoAcceleratorFactories* gpu_factories,
+      HardwarePreference hw_pref);
   bool CanReconfigure(ParsedConfig& original_config,
                       ParsedConfig& new_config) override;
 
