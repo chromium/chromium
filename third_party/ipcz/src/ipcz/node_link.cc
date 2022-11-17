@@ -500,7 +500,7 @@ bool NodeLink::OnAddBlockBuffer(msg::AddBlockBuffer& add) {
 }
 
 bool NodeLink::OnAcceptParcel(msg::AcceptParcel& accept) {
-  absl::Span<const uint8_t> parcel_data =
+  absl::Span<uint8_t> parcel_data =
       accept.GetArrayView<uint8_t>(accept.params().parcel_data);
   absl::Span<const HandleType> handle_types =
       accept.GetArrayView<HandleType>(accept.params().handle_types);
@@ -583,9 +583,10 @@ bool NodeLink::OnAcceptParcel(msg::AcceptParcel& accept) {
       return false;
     }
   } else {
-    // The parcel's data was inlined within the AcceptParcel message.
-    parcel.SetInlinedData(
-        std::vector<uint8_t>(parcel_data.begin(), parcel_data.end()));
+    // The parcel's data was inlined within the AcceptParcel message. Adopt the
+    // Message contents so our local Parcel doesn't need to copy any data.
+    parcel.SetDataFromMessage(std::move(accept).TakeReceivedData(),
+                              parcel_data);
   }
 
   if (is_split_parcel) {
