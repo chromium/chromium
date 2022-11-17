@@ -259,7 +259,13 @@ class OzonePlatformWayland : public OzonePlatform,
   }
 
   void InitializeGPU(const InitParams& args) override {
-    buffer_manager_ = std::make_unique<WaylandBufferManagerGpu>();
+    base::FilePath drm_node_path;
+#if defined(WAYLAND_GBM)
+    drm_node_path = path_finder_.GetDrmRenderNodePath();
+    if (drm_node_path.empty())
+      LOG(WARNING) << "Failed to find drm render node path.";
+#endif
+    buffer_manager_ = std::make_unique<WaylandBufferManagerGpu>(drm_node_path);
     surface_factory_ = std::make_unique<WaylandSurfaceFactory>(
         connection_.get(), buffer_manager_.get());
     overlay_manager_ =

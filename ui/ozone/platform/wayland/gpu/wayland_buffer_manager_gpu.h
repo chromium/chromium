@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/files/file_path.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_checker.h"
@@ -40,6 +41,7 @@ class WaylandWindow;
 class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
  public:
   WaylandBufferManagerGpu();
+  explicit WaylandBufferManagerGpu(const base::FilePath& drm_node_path);
   WaylandBufferManagerGpu(const WaylandBufferManagerGpu&) = delete;
   WaylandBufferManagerGpu& operator=(const WaylandBufferManagerGpu&) = delete;
 
@@ -230,9 +232,9 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   void DestroyBufferTask(uint32_t buffer_id);
 
 #if defined(WAYLAND_GBM)
-  // Finds drm render node, opens it and stores the handle into
+  // Uses |drm_node_path| to open the handle and store it into
   // |drm_render_node_fd|.
-  void OpenAndStoreDrmRenderNodeFd();
+  void OpenAndStoreDrmRenderNodeFd(const base::FilePath& drm_node_path);
   // Used by the gbm_device for self creation.
   base::ScopedFD drm_render_node_fd_;
   // A DRM render node based gbm device.
