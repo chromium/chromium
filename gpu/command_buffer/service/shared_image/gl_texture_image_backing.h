@@ -19,6 +19,7 @@ namespace gpu {
 class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
  public:
   static bool SupportsPixelUploadWithFormat(viz::SharedImageFormat format);
+  static bool SupportsPixelReadbackWithFormat(viz::SharedImageFormat format);
 
   GLTextureImageBacking(const Mailbox& mailbox,
                         viz::SharedImageFormat format,
@@ -68,6 +69,7 @@ class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
       scoped_refptr<SharedContextState> context_state) override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
   bool UploadFromMemory(const SkPixmap& pixmap) override;
+  bool ReadbackToMemory(SkPixmap& pixmap) override;
 
   bool IsPassthrough() const { return is_passthrough_; }
 

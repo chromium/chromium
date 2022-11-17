@@ -9,6 +9,8 @@
 #include "base/bits.h"
 #include "base/command_line.h"
 #include "build/build_config.h"
+#include "cc/test/pixel_comparator.h"
+#include "cc/test/pixel_test_utils.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
@@ -188,6 +190,9 @@ class GLTextureImageBackingFactoryWithUploadTest
   }
   viz::SharedImageFormat get_format() { return GetParam(); }
 };
+
+using GLTextureImageBackingFactoryWithReadbackTest =
+    GLTextureImageBackingFactoryWithUploadTest;
 
 TEST_F(GLTextureImageBackingFactoryTest, InvalidFormat) {
   auto format = viz::SharedImageFormat::SinglePlane(
@@ -571,6 +576,91 @@ TEST_P(GLTextureImageBackingFactoryWithUploadTest, UploadFromMemory) {
   EXPECT_TRUE(backing->UploadFromMemory(larger_bitmap.pixmap()));
 }
 
+TEST_P(GLTextureImageBackingFactoryWithReadbackTest, ReadbackToMemory) {
+  viz::SharedImageFormat format = get_format();
+
+  if (!IsFormatSupport(format)) {
+    GTEST_SKIP();
+  }
+
+  auto mailbox = Mailbox::GenerateForSharedImage();
+  gfx::Size size(9, 9);
+  auto color_space = gfx::ColorSpace::CreateSRGB();
+  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
+  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  uint32_t usage = SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_CPU_UPLOAD;
+  gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
+
+  bool supported =
+      backing_factory_->IsSupported(usage, format, size, /*thread_safe=*/false,
+                                    gfx::EMPTY_BUFFER, GrContextType::kGL, {});
+  ASSERT_TRUE(supported);
+
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox, format, surface_handle, size, color_space, surface_origin,
+      alpha_type, usage, false /* is_thread_safe */);
+  ASSERT_TRUE(backing);
+
+  SkColorType color_type =
+      viz::ResourceFormatToClosestSkColorType(true, format);
+
+  // Allocate a bitmap with red pixels and upload from it. RED_8 will be filled
+  // with 0xFF repeating and RG_88 will be filled with OxFF00 repeating.
+  SkBitmap bitmap;
+  SkImageInfo info =
+      SkImageInfo::Make(size.width(), size.height(), color_type, alpha_type);
+  size_t stride = base::bits::AlignUp<size_t>(info.minRowBytes(), 4);
+  bitmap.allocPixels(info, stride);
+  bitmap.eraseColor(SK_ColorRED);
+
+  EXPECT_TRUE(backing->UploadFromMemory(bitmap.pixmap()));
+
+  {
+    SkBitmap result_bitmap;
+    result_bitmap.allocPixels(info, stride);
+    SkPixmap result_pixmap;
+    ASSERT_TRUE(result_bitmap.peekPixels(&result_pixmap));
+
+    // Do readback and validate pixels match what was uploaded.
+    ASSERT_TRUE(backing->ReadbackToMemory(result_pixmap));
+    EXPECT_TRUE(cc::MatchesBitmap(result_bitmap, bitmap,
+                                  cc::ExactPixelComparator(false)));
+  }
+
+  {
+    SkBitmap result_bitmap;
+    result_bitmap.allocPixels(info, stride + 80);
+    SkPixmap result_pixmap;
+    ASSERT_TRUE(result_bitmap.peekPixels(&result_pixmap));
+
+    // Do readback into a bitmap with larger than required stride and validate
+    // pixels match what was uploaded.
+    ASSERT_TRUE(backing->ReadbackToMemory(result_pixmap));
+    EXPECT_TRUE(cc::MatchesBitmap(result_bitmap, bitmap,
+                                  cc::ExactPixelComparator(false)));
+  }
+}
+
+std::string TestParamToString(
+    const testing::TestParamInfo<viz::SharedImageFormat>& param_info) {
+  return param_info.param.ToString();
+}
+
+const auto kInitialDataFormats = ::testing::Values(
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::ETC1),
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888),
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRA_8888),
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_4444),
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RED_8),
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RG_88),
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRA_1010102),
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_1010102));
+
+INSTANTIATE_TEST_SUITE_P(,
+                         GLTextureImageBackingFactoryInitialDataTest,
+                         kInitialDataFormats,
+                         TestParamToString);
+
 const auto kSharedImageFormats = ::testing::Values(
     viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888),
     viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRA_8888),
@@ -582,25 +672,6 @@ const auto kSharedImageFormats = ::testing::Values(
     viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBX_8888),
     viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRX_8888));
 
-std::string TestParamToString(
-    const testing::TestParamInfo<viz::SharedImageFormat>& param_info) {
-  return param_info.param.ToString();
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    GLTextureImageBackingFactoryInitialDataTest,
-    ::testing::Values(
-        viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::ETC1),
-        viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888),
-        viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRA_8888),
-        viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_4444),
-        viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RED_8),
-        viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RG_88),
-        viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRA_1010102),
-        viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_1010102)),
-    TestParamToString);
-
 INSTANTIATE_TEST_SUITE_P(,
                          GLTextureImageBackingFactoryWithFormatTest,
                          kSharedImageFormats,
@@ -609,6 +680,19 @@ INSTANTIATE_TEST_SUITE_P(,
 INSTANTIATE_TEST_SUITE_P(,
                          GLTextureImageBackingFactoryWithUploadTest,
                          kSharedImageFormats,
+                         TestParamToString);
+
+const auto kReadbackFormats = ::testing::Values(
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888),
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRA_8888),
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RED_8),
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RG_88),
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBX_8888),
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRX_8888));
+
+INSTANTIATE_TEST_SUITE_P(,
+                         GLTextureImageBackingFactoryWithReadbackTest,
+                         kReadbackFormats,
                          TestParamToString);
 
 }  // anonymous namespace

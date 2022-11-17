@@ -2,4 +2,7 @@ specific_include_rules = {
   "external_vk_image_backing_factory_unittest\.cc": [
     "+components/viz/common/gpu/vulkan_in_process_context_provider.h",
   ],
+  ".*_unittest\.cc": [
+    "+cc/test",
+  ],
 }

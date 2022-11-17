@@ -5,6 +5,8 @@
 #include "gpu/command_buffer/service/shared_image/gl_repack_utils.h"
 
 #include "base/strings/stringprintf.h"
+#include "cc/test/pixel_comparator.h"
+#include "cc/test/pixel_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -166,6 +168,51 @@ TEST(RepackUtilsTest, RepackStride) {
       RepackPixelDataWithStride(size, bitmap.pixmap(), expected_stride);
 
   ValidateRgbaPixelsRed(size, expected_stride, repacked_data);
+}
+
+TEST(RepackUtilsTest, UnpackStride) {
+  constexpr gfx::Size size(10, 10);
+  // RGBA stride should be 10*4 = 40 but make src bitmap stride larger.
+  constexpr size_t expected_stride = 40;
+  constexpr size_t src_stride = 48;
+
+  SkBitmap source_bitmap = MakeSolidColorBitmapWithStride(
+      size, kRGBA_8888_SkColorType, SK_ColorRED, src_stride);
+
+  auto repacked_data =
+      RepackPixelDataWithStride(size, source_bitmap.pixmap(), expected_stride);
+
+  // Result starts with green pixels.
+  SkBitmap result_bitmap = MakeSolidColorBitmapWithStride(
+      size, kRGBA_8888_SkColorType, SK_ColorGREEN, src_stride);
+
+  SkPixmap pixmap;
+  ASSERT_TRUE(result_bitmap.peekPixels(&pixmap));
+
+  // Result bitmap should have red pixels after.
+  UnpackPixelDataWithStride(size, repacked_data, expected_stride, pixmap);
+
+  EXPECT_TRUE(
+      cc::MatchesBitmap(result_bitmap, source_bitmap,
+                        cc::ExactPixelComparator(/*discard_alpha=*/false)));
+}
+
+TEST(RepackUtilsTest, SwizzleRedAndBlue) {
+  constexpr gfx::Size size(10, 10);
+  SkBitmap swizzled_bitmap =
+      MakeSolidColorBitmap(size, kRGBA_8888_SkColorType, SK_ColorRED);
+
+  SkPixmap pixmap;
+  ASSERT_TRUE(swizzled_bitmap.peekPixels(&pixmap));
+
+  SwizzleRedAndBlue(pixmap);
+
+  SkBitmap expected_bitmap =
+      MakeSolidColorBitmap(size, kRGBA_8888_SkColorType, SK_ColorBLUE);
+
+  EXPECT_TRUE(
+      cc::MatchesBitmap(swizzled_bitmap, expected_bitmap,
+                        cc::ExactPixelComparator(/*discard_alpha=*/false)));
 }
 
 }  // namespace

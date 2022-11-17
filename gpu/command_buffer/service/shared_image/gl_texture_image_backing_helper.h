@@ -13,7 +13,27 @@
 
 namespace gpu {
 
-// Object used to restore state around GL upload and copy.
+// Sets GL state for readback.
+class ScopedPackState {
+ public:
+  explicit ScopedPackState(int pack_row_length = 0);
+
+  ScopedPackState(const ScopedPackState&) = delete;
+  ScopedPackState& operator=(const ScopedPackState&) = delete;
+
+  ~ScopedPackState();
+
+ private:
+  const raw_ptr<gl::GLApi> api_;
+
+  GLint pack_buffer_ = 0;
+  absl::optional<gl::ScopedPixelStore> pack_alignment_;
+  absl::optional<gl::ScopedPixelStore> pack_row_length_;
+  absl::optional<gl::ScopedPixelStore> pack_skip_pixels_;
+  absl::optional<gl::ScopedPixelStore> pack_skip_rows_;
+};
+
+// Sets GL state for upload and copy.
 class ScopedUnpackState {
  public:
   explicit ScopedUnpackState(bool uploading_data, int unpack_row_length = 0);
