@@ -141,50 +141,54 @@ void RegistryHandler(void* data,
 
   if (strcmp(interface, "wl_compositor") == 0) {
     globals->compositor.reset(static_cast<wl_compositor*>(
-        wl_registry_bind(registry, id, &wl_compositor_interface, 3)));
+        wl_registry_bind(registry, id, &wl_compositor_interface, version)));
   } else if (strcmp(interface, "wl_shm") == 0) {
     globals->shm.reset(static_cast<wl_shm*>(
-        wl_registry_bind(registry, id, &wl_shm_interface, 1)));
+        wl_registry_bind(registry, id, &wl_shm_interface, version)));
   } else if (strcmp(interface, "wl_shell") == 0) {
     globals->shell.reset(static_cast<wl_shell*>(
-        wl_registry_bind(registry, id, &wl_shell_interface, 1)));
+        wl_registry_bind(registry, id, &wl_shell_interface, version)));
   } else if (strcmp(interface, "wl_seat") == 0) {
     globals->seat.reset(static_cast<wl_seat*>(
-        wl_registry_bind(registry, id, &wl_seat_interface, 5)));
+        wl_registry_bind(registry, id, &wl_seat_interface, version)));
   } else if (strcmp(interface, "wp_presentation") == 0) {
     globals->presentation.reset(static_cast<wp_presentation*>(
-        wl_registry_bind(registry, id, &wp_presentation_interface, 1)));
+        wl_registry_bind(registry, id, &wp_presentation_interface, version)));
   } else if (strcmp(interface, "zaura_shell") == 0) {
     globals->aura_shell.reset(static_cast<zaura_shell*>(
-        wl_registry_bind(registry, id, &zaura_shell_interface, 34)));
+        wl_registry_bind(registry, id, &zaura_shell_interface, version)));
   } else if (strcmp(interface, "zwp_linux_dmabuf_v1") == 0) {
     globals->linux_dmabuf.reset(static_cast<zwp_linux_dmabuf_v1*>(
         wl_registry_bind(registry, id, &zwp_linux_dmabuf_v1_interface,
                          std::min(params.linux_dmabuf_version, version))));
   } else if (strcmp(interface, "wl_subcompositor") == 0) {
     globals->subcompositor.reset(static_cast<wl_subcompositor*>(
-        wl_registry_bind(registry, id, &wl_subcompositor_interface, 1)));
+        wl_registry_bind(registry, id, &wl_subcompositor_interface, version)));
   } else if (strcmp(interface, "zcr_color_manager_v1") == 0) {
-    globals->color_manager.reset(static_cast<zcr_color_manager_v1*>(
-        wl_registry_bind(registry, id, &zcr_color_manager_v1_interface, 1)));
+    globals->color_manager.reset(
+        static_cast<zcr_color_manager_v1*>(wl_registry_bind(
+            registry, id, &zcr_color_manager_v1_interface, version)));
   } else if (strcmp(interface, "zwp_input_timestamps_manager_v1") == 0) {
     globals->input_timestamps_manager.reset(
         static_cast<zwp_input_timestamps_manager_v1*>(wl_registry_bind(
-            registry, id, &zwp_input_timestamps_manager_v1_interface, 1)));
+            registry, id, &zwp_input_timestamps_manager_v1_interface,
+            version)));
   } else if (strcmp(interface, "zwp_fullscreen_shell_v1") == 0) {
-    globals->fullscreen_shell.reset(static_cast<zwp_fullscreen_shell_v1*>(
-        wl_registry_bind(registry, id, &zwp_fullscreen_shell_v1_interface, 1)));
+    globals->fullscreen_shell.reset(
+        static_cast<zwp_fullscreen_shell_v1*>(wl_registry_bind(
+            registry, id, &zwp_fullscreen_shell_v1_interface, version)));
   } else if (strcmp(interface, "wl_output") == 0) {
     globals->output.reset(static_cast<wl_output*>(
-        wl_registry_bind(registry, id, &wl_output_interface, 1)));
+        wl_registry_bind(registry, id, &wl_output_interface, version)));
   } else if (strcmp(interface, "zwp_linux_explicit_synchronization_v1") == 0) {
     globals->linux_explicit_synchronization.reset(
         static_cast<zwp_linux_explicit_synchronization_v1*>(wl_registry_bind(
             registry, id, &zwp_linux_explicit_synchronization_v1_interface,
-            1)));
+            version)));
   } else if (strcmp(interface, "zcr_vsync_feedback_v1") == 0) {
-    globals->vsync_feedback.reset(static_cast<zcr_vsync_feedback_v1*>(
-        wl_registry_bind(registry, id, &zcr_vsync_feedback_v1_interface, 1)));
+    globals->vsync_feedback.reset(
+        static_cast<zcr_vsync_feedback_v1*>(wl_registry_bind(
+            registry, id, &zcr_vsync_feedback_v1_interface, version)));
   } else if (strcmp(interface, "zxdg_shell_v6") == 0) {
     globals->xdg_shell_v6.reset(static_cast<zxdg_shell_v6*>(
         wl_registry_bind(registry, id, &zxdg_shell_v6_interface, version)));
@@ -1311,6 +1315,8 @@ void ClientBase::SetupAuraShellIfAvailable() {
       [](void* data, struct zaura_output* zaura_output, int32_t transform) {
         CastToClientBase(data)->HandleLogicalTransform(transform);
       },
+      [](void* data, struct zaura_output* zaura_output, uint32_t display_id_hi,
+         uint32_t display_id_lo) {},
   };
 
   std::unique_ptr<zaura_output> aura_output(zaura_shell_get_aura_output(
