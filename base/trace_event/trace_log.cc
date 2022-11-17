@@ -1363,7 +1363,7 @@ void TraceLog::FlushInternal(const TraceLog::OutputCallback& cb,
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY) && !BUILDFLAG(IS_NACL)
   perfetto::TrackEvent::Flush();
 
-  if (discard_events) {
+  if (!tracing_session_ || discard_events) {
     tracing_session_.reset();
     scoped_refptr<RefCountedString> empty_result = new RefCountedString;
     cb.Run(empty_result, /*has_more_events=*/false);
