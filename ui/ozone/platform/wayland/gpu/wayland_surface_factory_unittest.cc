@@ -784,6 +784,9 @@ TEST_P(WaylandSurfaceFactoryTest,
         gl::FrameData());
   }
 
+  // Give mojo messages chance to reach host.
+  base::RunLoop().RunUntilIdle();
+
   PostToServerAndWait([main_surface_id = surface_id_, overlay_surface_id,
                        primary_subsurface_id](
                           wl::TestWaylandServerThread* server) {
