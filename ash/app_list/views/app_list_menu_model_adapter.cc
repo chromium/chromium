@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "ash/app_list/app_list_metrics.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/metrics/histogram_macros.h"

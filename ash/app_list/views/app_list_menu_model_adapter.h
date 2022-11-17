@@ -14,7 +14,6 @@
 #include "ash/ash_export.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/views/controls/menu/menu_types.h"
 
 namespace ash {
 
