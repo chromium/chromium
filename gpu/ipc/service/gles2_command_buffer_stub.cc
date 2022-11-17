@@ -150,8 +150,9 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
     // We hit this code path when creating the onscreen render context
     // used for compositing on low-end Android devices.
     //
-    // TODO(klausw): explicitly copy rgba sizes? Currently the formats
-    // supported are only RGB565 and default (RGBA8888).
+    // Currently the only formats supported are RGB565 and default (RGBA8888).
+    // See also comments in ui/gl/gl_surface_format.h in case there's
+    // a use case requiring more fine-grained control.
     surface_format.SetRGB565();
     DVLOG(1) << __FUNCTION__ << ": Choosing RGB565 mode.";
   }
@@ -222,9 +223,8 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
       }
       // Currently, we can't separately control alpha channel for surfaces,
       // it's generally enabled by default except for RGB565 and (on desktop)
-      // smaller-than-32bit formats.
-      //
-      // TODO(klausw): use init_params.attribs.alpha_size here if possible.
+      // smaller-than-32bit formats. If there's a future use case that
+      // requires this, it should use init_params.attribs.alpha_size here.
     }
     if (!surface_format.IsCompatible(default_surface->GetFormat())) {
       DVLOG(1) << __FUNCTION__ << ": Hit the OwnOffscreenSurface path";
