@@ -373,19 +373,14 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
 
   ui::AXTreeUpdate GetAccessibilityTreeSnapshotForPdf(
       WebContents* web_contents) {
-    ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshot(web_contents);
+    content::FindAccessibilityNodeCriteria find_criteria;
+    find_criteria.role = ax::mojom::Role::kPdfRoot;
+    ui::AXPlatformNodeDelegate* pdf_root =
+        content::FindAccessibilityNode(web_contents, find_criteria);
+    ui::AXTreeID pdf_tree_id = pdf_root->GetTreeData().tree_id;
+    EXPECT_NE(pdf_tree_id, ui::AXTreeIDUnknown());
 
-    ui::AXTreeID child_tree_id;
-    for (const ui::AXNodeData& node : ax_tree.nodes) {
-      if (node.HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId)) {
-        child_tree_id = ui::AXTreeID::FromString(
-            node.GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId));
-        break;
-      }
-    }
-
-    EXPECT_NE(child_tree_id, ui::AXTreeIDUnknown());
-    return content::GetAccessibilityTreeSnapshotFromId(child_tree_id);
+    return content::GetAccessibilityTreeSnapshotFromId(pdf_tree_id);
   }
 
   // Hooks to set up feature flags.
@@ -2192,13 +2187,14 @@ constexpr char kExpectedPDFAXTree[] =
 IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibility) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
 
-  WebContents* guest_contents = LoadPdfGetGuestContents(
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
-  ASSERT_TRUE(guest_contents);
+  ASSERT_TRUE(guest);
 
-  WaitForAccessibilityTreeToContainNodeWithName(guest_contents,
+  WaitForAccessibilityTreeToContainNodeWithName(GetActiveWebContents(),
                                                 "1 First Section\r\n");
-  ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(guest_contents);
+  ui::AXTreeUpdate ax_tree =
+      GetAccessibilityTreeSnapshotForPdf(GetActiveWebContents());
   std::string ax_tree_dump = DumpPdfAccessibilityTree(ax_tree);
 
   ASSERT_MULTILINE_STREQ(kExpectedPDFAXTree, ax_tree_dump);
