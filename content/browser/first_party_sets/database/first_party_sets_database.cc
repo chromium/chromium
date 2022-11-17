@@ -157,8 +157,11 @@ bool FirstPartySetsDatabase::PersistSets(
   if (!transaction.Begin())
     return false;
 
-  if (!SetPublicSets(browser_context_id, public_sets_version, sets))
+  // Only persist public sets if the version is valid.
+  if (public_sets_version.IsValid() &&
+      !SetPublicSets(browser_context_id, public_sets_version, sets)) {
     return false;
+  }
 
   if (!InsertManualSets(browser_context_id, sets.manual_sets()))
     return false;
@@ -175,9 +178,8 @@ bool FirstPartySetsDatabase::SetPublicSets(
     const net::GlobalFirstPartySets& sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(db_status_, InitStatus::kSuccess);
+  DCHECK(sets_version.IsValid());
 
-  if (!sets_version.IsValid())
-    return false;
   const std::string& version = sets_version.GetString();
   // Checks if the version of the current public sets is referenced by *any*
   // browser context in the public_sets_version table. If so, that means the
@@ -365,6 +367,8 @@ net::GlobalFirstPartySets FirstPartySetsDatabase::GetGlobalSets(
   if (!LazyInit())
     return {};
 
+  // Query public sets entries.
+  std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> entries;
   static constexpr char kVersionSql[] =
       "SELECT public_sets_version FROM browser_context_sets_version "
       "WHERE browser_context_id=?";
@@ -372,39 +376,40 @@ net::GlobalFirstPartySets FirstPartySetsDatabase::GetGlobalSets(
       db_->GetCachedStatement(SQL_FROM_HERE, kVersionSql));
   version_statement.BindString(0, browser_context_id);
 
-  if (!version_statement.Step())
-    return {};
+  if (version_statement.Step()) {
+    const std::string version = version_statement.ColumnString(0);
 
-  const std::string version = version_statement.ColumnString(0);
+    static constexpr char kSelectSql[] =
+        "SELECT site,primary_site,site_type FROM public_sets WHERE version=?";
+    sql::Statement statement(
+        db_->GetCachedStatement(SQL_FROM_HERE, kSelectSql));
+    statement.BindString(0, version);
 
-  std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> entries;
-  static constexpr char kSelectSql[] =
-      "SELECT site,primary_site,site_type FROM public_sets WHERE version=?";
-  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSelectSql));
-  statement.BindString(0, version);
+    while (statement.Step()) {
+      absl::optional<net::SchemefulSite> site =
+          FirstPartySetParser::CanonicalizeRegisteredDomain(
+              statement.ColumnString(0), /*emit_errors=*/false);
 
-  while (statement.Step()) {
-    absl::optional<net::SchemefulSite> site =
-        FirstPartySetParser::CanonicalizeRegisteredDomain(
-            statement.ColumnString(0), /*emit_errors=*/false);
+      absl::optional<net::SchemefulSite> primary =
+          FirstPartySetParser::CanonicalizeRegisteredDomain(
+              statement.ColumnString(1), /*emit_errors=*/false);
 
-    absl::optional<net::SchemefulSite> primary =
-        FirstPartySetParser::CanonicalizeRegisteredDomain(
-            statement.ColumnString(1), /*emit_errors=*/false);
+      absl::optional<net::SiteType> site_type =
+          net::FirstPartySetEntry::DeserializeSiteType(statement.ColumnInt(2));
 
-    absl::optional<net::SiteType> site_type =
-        net::FirstPartySetEntry::DeserializeSiteType(statement.ColumnInt(2));
-
-    // TODO(crbug.com/1314039): Invalid entries should be rare case but
-    // possible. Consider deleting them from DB.
-    if (site.has_value() && primary.has_value() && site_type.has_value()) {
-      entries.emplace_back(
-          std::move(site.value()),
-          net::FirstPartySetEntry(primary.value(), site_type.value(),
-                                  /*site_index=*/absl::nullopt));
+      // TODO(crbug.com/1314039): Invalid entries should be rare case but
+      // possible. Consider deleting them from DB.
+      if (site.has_value() && primary.has_value() && site_type.has_value()) {
+        entries.emplace_back(
+            std::move(site.value()),
+            net::FirstPartySetEntry(primary.value(), site_type.value(),
+                                    /*site_index=*/absl::nullopt));
+      }
     }
+    if (!statement.Succeeded())
+      return {};
   }
-  if (!statement.Succeeded())
+  if (!version_statement.Succeeded())
     return {};
 
   // Aliases are merged with entries inside of the public sets table so it is

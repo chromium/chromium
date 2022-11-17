@@ -233,8 +233,8 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // The version of the public First-Party Sets. It is invalid until the
   // `SetPublicFirstPartySets()` is called with a valid version.
   //
-  // TODO(crbug.com/1219656): bundle `version_` with `global_sets_` to
-  // guarantee that we have both or neither.
+  // TODO(crbug.com/1384184): move `version_` into GlobalFirstPartySets class to
+  // guarantee that we don't use public sets content if version is invalid.
   base::Version version_;
 
   bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_);
