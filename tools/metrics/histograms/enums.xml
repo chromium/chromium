@@ -26167,7 +26167,8 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="64" label="importantDOMProperties"/>
   <int value="65" label="justMyCode"/>
   <int value="66" label="breakpointView"/>
-  <int value="67" label="preloadingStatusPanel"/>
+  <int value="67" label="timelineAsConsoleProfileResultPanel"/>
+  <int value="68" label="preloadingStatusPanel"/>
 </enum>
 
 <enum name="DevToolsGridOverlayOpenedFrom">
