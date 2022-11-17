@@ -912,17 +912,16 @@ void PrintBackendServiceManager::OnRemoteDisconnected(
   RunSavedCallbacksStructResult(
       GetRemoteSavedUpdatePrintSettingsCallbacks(sandboxed), remote_id,
       mojom::PrintSettingsResult::NewResultCode(mojom::ResultCode::kFailed));
-  RunSavedCallbacksResult(GetRemoteSavedStartPrintingCallbacks(sandboxed),
-                          remote_id, mojom::ResultCode::kFailed);
+  RunSavedCallbacks(GetRemoteSavedStartPrintingCallbacks(sandboxed), remote_id,
+                    mojom::ResultCode::kFailed);
 #if BUILDFLAG(IS_WIN)
-  RunSavedCallbacksResult(GetRemoteSavedRenderPrintedPageCallbacks(sandboxed),
-                          remote_id, mojom::ResultCode::kFailed);
+  RunSavedCallbacks(GetRemoteSavedRenderPrintedPageCallbacks(sandboxed),
+                    remote_id, mojom::ResultCode::kFailed);
 #endif
-  RunSavedCallbacksResult(
-      GetRemoteSavedRenderPrintedDocumentCallbacks(sandboxed), remote_id,
-      mojom::ResultCode::kFailed);
-  RunSavedCallbacksResult(GetRemoteSavedDocumentDoneCallbacks(sandboxed),
-                          remote_id, mojom::ResultCode::kFailed);
+  RunSavedCallbacks(GetRemoteSavedRenderPrintedDocumentCallbacks(sandboxed),
+                    remote_id, mojom::ResultCode::kFailed);
+  RunSavedCallbacks(GetRemoteSavedDocumentDoneCallbacks(sandboxed), remote_id,
+                    mojom::ResultCode::kFailed);
 }
 
 PrintBackendServiceManager::RemoteSavedEnumeratePrintersCallbacks&
@@ -1019,33 +1018,33 @@ PrintBackendServiceManager::GetServiceAndCallbackContext(
   return GetService(printer_name, client_type, &context.is_sandboxed);
 }
 
-template <class T, class X>
+template <class... T, class... X>
 void PrintBackendServiceManager::SaveCallback(
-    RemoteSavedCallbacks<T>& saved_callbacks,
+    RemoteSavedCallbacks<T...>& saved_callbacks,
     const std::string& remote_id,
     const base::UnguessableToken& saved_callback_id,
-    base::OnceCallback<void(X)> callback) {
+    base::OnceCallback<void(X...)> callback) {
   saved_callbacks[remote_id].emplace(saved_callback_id, std::move(callback));
 }
 
-template <class T, class X>
+template <class... T, class... X>
 void PrintBackendServiceManager::ServiceCallbackDone(
-    RemoteSavedCallbacks<T>& saved_callbacks,
+    RemoteSavedCallbacks<T...>& saved_callbacks,
     const std::string& remote_id,
     const base::UnguessableToken& saved_callback_id,
-    X data) {
+    X... data) {
   auto found_callback_map = saved_callbacks.find(remote_id);
   DCHECK(found_callback_map != saved_callbacks.end());
 
-  SavedCallbacks<T>& callback_map = found_callback_map->second;
+  SavedCallbacks<T...>& callback_map = found_callback_map->second;
 
   auto callback_entry = callback_map.find(saved_callback_id);
   DCHECK(callback_entry != callback_map.end());
-  base::OnceCallback<void(X)> callback = std::move(callback_entry->second);
+  base::OnceCallback<void(X...)> callback = std::move(callback_entry->second);
   callback_map.erase(callback_entry);
 
   // Done disconnect wrapper management, propagate the callback.
-  std::move(callback).Run(std::move(data));
+  std::move(callback).Run(std::forward<X>(data)...);
 }
 
 void PrintBackendServiceManager::OnDidEnumeratePrinters(
@@ -1143,6 +1142,7 @@ void PrintBackendServiceManager::OnDidRenderPrintedDocument(
       GetRemoteSavedRenderPrintedDocumentCallbacks(context.is_sandboxed),
       context.remote_id, context.saved_callback_id, result);
 }
+
 void PrintBackendServiceManager::OnDidDocumentDone(
     const CallbackContext& context,
     mojom::ResultCode result) {
@@ -1177,16 +1177,16 @@ void PrintBackendServiceManager::RunSavedCallbacksStructResult(
   callbacks_map.clear();
 }
 
-template <class T>
-void PrintBackendServiceManager::RunSavedCallbacksResult(
-    RemoteSavedCallbacks<T>& saved_callbacks,
+template <class... T>
+void PrintBackendServiceManager::RunSavedCallbacks(
+    RemoteSavedCallbacks<T...>& saved_callbacks,
     const std::string& remote_id,
-    T result) {
+    T... result) {
   auto found_callbacks_map = saved_callbacks.find(remote_id);
   if (found_callbacks_map == saved_callbacks.end())
     return;  // No callbacks to run.
 
-  SavedCallbacks<T>& callbacks_map = found_callbacks_map->second;
+  SavedCallbacks<T...>& callbacks_map = found_callbacks_map->second;
   for (auto& iter : callbacks_map) {
     const base::UnguessableToken& saved_callback_id = iter.first;
     DVLOG(1) << "Propagating print backend callback, saved callback ID "
@@ -1194,8 +1194,8 @@ void PrintBackendServiceManager::RunSavedCallbacksResult(
 
     // Don't remove entries from the map while we are iterating through it,
     // just run the callbacks.
-    base::OnceCallback<void(T)>& callback = iter.second;
-    std::move(callback).Run(result);
+    base::OnceCallback<void(T...)>& callback = iter.second;
+    std::move(callback).Run(result...);
   }
 
   // Now that we're done iterating we can safely delete all of the callbacks.

@@ -191,16 +191,18 @@ class PrintBackendServiceManager {
   // callback that can be discarded once a service call succeeds normally.
 
   // Key is a callback ID.
-  template <class T>
+  template <class... T>
   using SavedCallbacks =
-      base::flat_map<base::UnguessableToken, base::OnceCallback<void(T)>>;
+      base::flat_map<base::UnguessableToken, base::OnceCallback<void(T...)>>;
 
   // Key is the remote ID that enables finding the correct remote.  Note that
   // the remote ID does not necessarily mean the printer name.
-  template <class T>
-  using RemoteSavedCallbacks = base::flat_map<std::string, SavedCallbacks<T>>;
-  template <class T>
-  using RemoteSavedStructCallbacks = RemoteSavedCallbacks<mojo::StructPtr<T>>;
+  template <class... T>
+  using RemoteSavedCallbacks =
+      base::flat_map<std::string, SavedCallbacks<T...>>;
+  template <class... T>
+  using RemoteSavedStructCallbacks =
+      RemoteSavedCallbacks<mojo::StructPtr<T...>>;
 
   using RemoteSavedEnumeratePrintersCallbacks =
       RemoteSavedStructCallbacks<mojom::PrinterListResult>;
@@ -369,19 +371,19 @@ class PrintBackendServiceManager {
       ClientType client_type,
       CallbackContext& context);
 
-  // Helper function to save outstanding callbacks.
-  template <class T, class X>
-  void SaveCallback(RemoteSavedCallbacks<T>& saved_callbacks,
+  // Helper functions to save outstanding callbacks.
+  template <class... T, class... X>
+  void SaveCallback(RemoteSavedCallbacks<T...>& saved_callbacks,
                     const std::string& remote_id,
                     const base::UnguessableToken& saved_callback_id,
-                    base::OnceCallback<void(X)> callback);
+                    base::OnceCallback<void(X...)> callback);
 
-  // Helper function for local callback wrappers for mojom calls.
-  template <class T, class X>
-  void ServiceCallbackDone(RemoteSavedCallbacks<T>& saved_callbacks,
+  // Helper functions for local callback wrappers for mojom calls.
+  template <class... T, class... X>
+  void ServiceCallbackDone(RemoteSavedCallbacks<T...>& saved_callbacks,
                            const std::string& remote_id,
                            const base::UnguessableToken& saved_callback_id,
-                           X data);
+                           X... data);
 
   // Local callback wrappers for mojom calls.
   void OnDidEnumeratePrinters(const CallbackContext& context,
@@ -421,10 +423,10 @@ class PrintBackendServiceManager {
       RemoteSavedStructCallbacks<T>& saved_callbacks,
       const std::string& remote_id,
       mojo::StructPtr<T> result_to_clone);
-  template <class T>
-  void RunSavedCallbacksResult(RemoteSavedCallbacks<T>& saved_callbacks,
-                               const std::string& remote_id,
-                               T result);
+  template <class... T>
+  void RunSavedCallbacks(RemoteSavedCallbacks<T...>& saved_callbacks,
+                         const std::string& remote_id,
+                         T... result);
 
   // Test support for client ID management.
   static void SetClientsForTesting(
