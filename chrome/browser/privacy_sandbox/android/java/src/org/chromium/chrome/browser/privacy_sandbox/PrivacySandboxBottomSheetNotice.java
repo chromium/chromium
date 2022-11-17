@@ -82,7 +82,7 @@ public class PrivacySandboxBottomSheetNotice implements BottomSheetContent {
             PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_OPEN_SETTINGS);
             mBottomSheetController.hideContent(this, /* animate= */ true,
                     BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
-            PrivacySandboxSettingsFragmentV3.launchPrivacySandboxSettings(
+            PrivacySandboxSettingsBaseFragment.launchPrivacySandboxSettings(
                     mContext, mSettingsLauncher, PrivacySandboxReferrer.PRIVACY_SANDBOX_NOTICE);
         });
     }

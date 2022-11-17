@@ -15,7 +15,7 @@ import java.lang.annotation.RetentionPolicy;
  * enums.xml.
  */
 @IntDef({PrivacySandboxReferrer.PRIVACY_SETTINGS, PrivacySandboxReferrer.COOKIES_SNACKBAR,
-        PrivacySandboxReferrer.PRIVACY_SANDBOX_NOTICE})
+        PrivacySandboxReferrer.PRIVACY_SANDBOX_NOTICE, PrivacySandboxReferrer.COUNT})
 @Retention(RetentionPolicy.SOURCE)
 public @interface PrivacySandboxReferrer {
     /**

@@ -57,7 +57,7 @@ found in the LICENSE file.
     <Preference
         android:key="privacy_sandbox"
         android:title="@string/prefs_privacy_sandbox"
-        android:fragment="org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsFragment"/>
+        android:fragment="org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsFragmentV3"/>
     <Preference
         android:key="phone_as_a_security_key"
         android:title="@string/cablev2_paask_title"

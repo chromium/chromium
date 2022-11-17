@@ -24,8 +24,7 @@ import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsFragmen
 import org.chromium.chrome.browser.privacy.secure_dns.SecureDnsSettings;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxReferrer;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsFragment;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsFragmentV3;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
@@ -79,15 +78,13 @@ public class PrivacySettings
         }
 
         Preference sandboxPreference = findPreference(PREF_PRIVACY_SANDBOX);
-        // Hide the Privacy Sandbox if it is restricted.
         if (PrivacySandboxBridge.isPrivacySandboxRestricted()) {
+            // Hide the Privacy Sandbox if it is restricted.
             getPreferenceScreen().removePreference(sandboxPreference);
         } else {
-            sandboxPreference.setSummary(
-                    PrivacySandboxSettingsFragment.getStatusString(getContext()));
             // Overwrite the click listener to pass a correct referrer to the fragment.
             sandboxPreference.setOnPreferenceClickListener(preference -> {
-                PrivacySandboxSettingsFragmentV3.launchPrivacySandboxSettings(getContext(),
+                PrivacySandboxSettingsBaseFragment.launchPrivacySandboxSettings(getContext(),
                         new SettingsLauncherImpl(), PrivacySandboxReferrer.PRIVACY_SETTINGS);
                 return true;
             });
@@ -238,9 +235,10 @@ public class PrivacySettings
         }
 
         Preference privacySandboxPreference = findPreference(PREF_PRIVACY_SANDBOX);
-        if (privacySandboxPreference != null) {
+        if (privacySandboxPreference != null
+                && !ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)) {
             privacySandboxPreference.setSummary(
-                    PrivacySandboxSettingsFragment.getStatusString(getContext()));
+                    PrivacySandboxSettingsBaseFragment.getStatusString(getContext()));
         }
 
         mIncognitoLockSettings.updateIncognitoReauthPreferenceIfNeeded(getActivity());

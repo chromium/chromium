@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.preference.Preference;
@@ -38,12 +37,6 @@ public class PrivacySandboxSettingsFragment extends PrivacySandboxSettingsBaseFr
     public static final String FLOC_PREFERENCE = "floc_page";
 
     private @PrivacySandboxReferrer int mPrivacySandboxReferrer;
-
-    public static CharSequence getStatusString(Context context) {
-        return context.getString(PrivacySandboxBridge.isPrivacySandboxEnabled()
-                        ? R.string.privacy_sandbox_status_enabled
-                        : R.string.privacy_sandbox_status_disabled);
-    }
 
     /**
      * Initializes all the objects related to the preferences page.

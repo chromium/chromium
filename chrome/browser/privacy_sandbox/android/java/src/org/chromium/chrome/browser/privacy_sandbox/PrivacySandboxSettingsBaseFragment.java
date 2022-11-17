@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,6 +18,11 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxSettingsFragmentV4;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
  * Base class for PrivacySandboxSettings related Fragments. Initializes the options menu to
@@ -25,7 +31,31 @@ import org.chromium.base.IntentUtils;
  * Subclasses have to call super.onCreatePreferences(bundle, s) when overriding onCreatePreferences.
  */
 public abstract class PrivacySandboxSettingsBaseFragment extends PreferenceFragmentCompat {
+    // Key for the argument with which the PrivacySandbox fragment will be launched. The value for
+    // this argument should be part of the PrivacySandboxReferrer enum, which contains all points of
+    // entry to the Privacy Sandbox UI.
+    public static final String PRIVACY_SANDBOX_REFERRER = "privacy-sandbox-referrer";
+
     private PrivacySandboxHelpers.CustomTabIntentHelper mCustomTabHelper;
+
+    /**
+     * Launches the right version of PrivacySandboxSettings depending on feature flags.
+     */
+    public static void launchPrivacySandboxSettings(Context context,
+            SettingsLauncher settingsLauncher, @PrivacySandboxReferrer int referrer) {
+        Bundle fragmentArgs = new Bundle();
+        fragmentArgs.putInt(PRIVACY_SANDBOX_REFERRER, referrer);
+        var fragment = ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+                ? PrivacySandboxSettingsFragmentV4.class
+                : PrivacySandboxSettingsFragmentV3.class;
+        settingsLauncher.launchSettingsActivity(context, fragment, fragmentArgs);
+    }
+
+    public static CharSequence getStatusString(Context context) {
+        return context.getString(PrivacySandboxBridge.isPrivacySandboxEnabled()
+                        ? R.string.privacy_sandbox_status_enabled
+                        : R.string.privacy_sandbox_status_disabled);
+    }
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
@@ -74,5 +104,22 @@ public abstract class PrivacySandboxSettingsBaseFragment extends PreferenceFragm
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, getContext().getPackageName());
         IntentUtils.addTrustedIntentExtras(intent);
         IntentUtils.safeStartActivity(getContext(), intent);
+    }
+
+    protected void parseAndRecordReferrer() {
+        Bundle extras = getArguments();
+        assert (extras != null)
+                && extras.containsKey(PRIVACY_SANDBOX_REFERRER)
+            : "PrivacySandboxSettingsFragment must be launched with a privacy-sandbox-referrer "
+                        + "fragment argument, but none was provided.";
+        int referrer = extras.getInt(PRIVACY_SANDBOX_REFERRER);
+        // Record all the referrer metrics.
+        RecordHistogram.recordEnumeratedHistogram("Settings.PrivacySandbox.PrivacySandboxReferrer",
+                referrer, PrivacySandboxReferrer.COUNT);
+        if (referrer == PrivacySandboxReferrer.PRIVACY_SETTINGS) {
+            RecordUserAction.record("Settings.PrivacySandbox.OpenedFromSettingsParent");
+        } else if (referrer == PrivacySandboxReferrer.COOKIES_SNACKBAR) {
+            RecordUserAction.record("Settings.PrivacySandbox.OpenedFromCookiesPageToast");
+        }
     }
 }

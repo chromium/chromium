@@ -51,7 +51,7 @@ public class PrivacySandboxDialogNotice extends Dialog implements View.OnClickLi
         } else if (id == R.id.settings_button) {
             PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_OPEN_SETTINGS);
             dismiss();
-            PrivacySandboxSettingsFragmentV3.launchPrivacySandboxSettings(
+            PrivacySandboxSettingsBaseFragment.launchPrivacySandboxSettings(
                     mContext, mSettingsLauncher, PrivacySandboxReferrer.PRIVACY_SANDBOX_NOTICE);
         }
     }

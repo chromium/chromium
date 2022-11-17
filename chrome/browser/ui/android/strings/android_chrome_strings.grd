@@ -817,6 +817,12 @@ CHAR_LIMIT guidelines:
       <message name="IDS_SECURITY_SECTION_TITLE" desc="Title for the Security settings section.">
         Security
       </message>
+      <message name="IDS_AD_PRIVACY_LINK_ROW_LABEL" translateable="false" desc="Label for the ad privacy row.">
+        Lorem ipsum
+      </message>
+      <message name="IDS_AD_PRIVACY_LINK_ROW_SUB_LABEL" translateable="false" desc="Sublabel for the ad privacy row.">
+        Lorem ipsum Lorem ipsum
+      </message>
       <message name="IDS_CONTEXTUAL_SEARCH_TITLE" desc="Name for the Contextual Search feature, which allows users to search for a term in a web page by tapping on it.">
         Touch to Search
       </message>
@@ -1149,6 +1155,11 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
       </message>
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_LEARN_MORE_BULLET_3" translateable="false" desc="Privacy Sandbox dialog notice EEA: Third bullet point in expand.">
         <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Lorem ipsum:<ph name="END_BOLD">&lt;/b&gt;</ph> Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum
+      </message>
+
+      <!-- Privacy Sandbox v4 - Ad Privacy Page-->
+      <message name="IDS_AD_PRIVACY_PAGE_TITLE" translateable="false" desc="Title on page.">
+        Lorem Ipsum
       </message>
 
       <!-- Secure DNS Settings.  Used by //chrome/browser/privacy. -->

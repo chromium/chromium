@@ -55,7 +55,7 @@ public class PrivacySandboxSnackbarController implements SnackbarManager.Snackba
     // Implement SnackbarController.
     @Override
     public void onAction(Object actionData) {
-        PrivacySandboxSettingsFragmentV3.launchPrivacySandboxSettings(
+        PrivacySandboxSettingsBaseFragment.launchPrivacySandboxSettings(
                 mContext, mSettingsLauncher, PrivacySandboxReferrer.COOKIES_SNACKBAR);
     }
 

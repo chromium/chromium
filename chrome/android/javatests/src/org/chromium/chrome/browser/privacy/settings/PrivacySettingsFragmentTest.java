@@ -60,6 +60,10 @@ import java.io.IOException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(PER_CLASS)
 public class PrivacySettingsFragmentTest {
+    // Index of the Privacy Sandbox row entry in the settings list when PRIVACY_SANDBOX_SETTINGS_4
+    // is enabled.
+    public static final int PRIVACY_SANDBOX_V4_POS_IDX = 4;
+
     @ClassRule
     public static final ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
@@ -145,22 +149,8 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
-    public void testPrivacySandboxView() throws IOException {
-        mSettingsActivityTestRule.startSettingsActivity();
-        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
-        // Scroll down and open Privacy Sandbox page.
-        scrollToSetting(withText(R.string.prefs_privacy_sandbox));
-        onView(withText(R.string.prefs_privacy_sandbox)).perform(click());
-        // Verify that the right view is shown depending on feature state.
-        scrollToSetting(withText(R.string.privacy_sandbox_toggle));
-        onView(withText(R.string.privacy_sandbox_toggle)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
-    public void testPrivacySandboxViewV3() throws IOException {
+    @Features.DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    public void testPrivacySandboxV3View() throws IOException {
         mSettingsActivityTestRule.startSettingsActivity();
         PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
         // Scroll down and open Privacy Sandbox page.
@@ -173,8 +163,21 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
-    public void testPrivacySandboxViewV3Restricted() throws IOException {
+    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    public void testPrivacySandboxV4View() throws IOException {
+        mSettingsActivityTestRule.startSettingsActivity();
+        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
+        // Scroll down and open Privacy Sandbox page.
+        scrollToSetting(withText(R.string.ad_privacy_link_row_label));
+        onView(withText(R.string.ad_privacy_link_row_label)).perform(click());
+        // Verify that the right view is shown depending on feature state.
+        onView(withText(R.string.ad_privacy_page_title)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @LargeTest
+    @Features.DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    public void testPrivacySandboxV3ViewRestricted() throws IOException {
         mFakePrivacySandboxBridge.setPrivacySandboxRestricted(true);
         mSettingsActivityTestRule.startSettingsActivity();
         PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
@@ -184,6 +187,21 @@ public class PrivacySettingsFragmentTest {
             recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
         });
         onView(withText(R.string.prefs_privacy_sandbox)).check(doesNotExist());
+    }
+
+    @Test
+    @LargeTest
+    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    public void testPrivacySandboxV4ViewRestricted() throws IOException {
+        mFakePrivacySandboxBridge.setPrivacySandboxRestricted(true);
+        mSettingsActivityTestRule.startSettingsActivity();
+        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
+        // Scroll down and verify that the Privacy Sandbox is not there.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
+            recyclerView.scrollToPosition(PRIVACY_SANDBOX_V4_POS_IDX);
+        });
+        onView(withText(R.string.ad_privacy_link_row_label)).check(doesNotExist());
     }
 
     @Test
