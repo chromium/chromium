@@ -58,9 +58,6 @@ SBOX_TESTS_COMMAND int CheckDeath(int argc, wchar_t** argv) {
 }
 
 TEST(ProcessMitigationsDeathTest, CheckRatchetDownOrderMatters) {
-  if (base::win::GetVersion() < base::win::Version::WIN8)
-    GTEST_SKIP() << "Skipping test due to unsupported Windows version";
-
   std::wstring test_command = L"CheckDeath ";
   test_command += base::NumberToWString(kRatchetDown);
   test_command += L" ";
@@ -73,9 +70,6 @@ TEST(ProcessMitigationsDeathTest, CheckRatchetDownOrderMatters) {
 }
 
 TEST(ProcessMitigationsDeathTest, CheckRatchetDownAndLockdownExclusive) {
-  if (base::win::GetVersion() < base::win::Version::WIN8)
-    GTEST_SKIP() << "Skipping test due to unsupported Windows version";
-
   std::wstring test_command = L"CheckDeath ";
   test_command += base::NumberToWString(kRatchetDown);
   test_command += L" ";
@@ -88,9 +82,6 @@ TEST(ProcessMitigationsDeathTest, CheckRatchetDownAndLockdownExclusive) {
 }
 
 TEST(ProcessMitigationsDeathTest, CheckRatchetDownAndLockdownExclusive2) {
-  if (base::win::GetVersion() < base::win::Version::WIN8)
-    GTEST_SKIP() << "Skipping test due to unsupported Windows version";
-
   std::wstring test_command = L"CheckDeath ";
   test_command += base::NumberToWString(kLockdown);
   test_command += L" ";
@@ -103,9 +94,6 @@ TEST(ProcessMitigationsDeathTest, CheckRatchetDownAndLockdownExclusive2) {
 }
 
 TEST(ProcessMitigationsDeathTest, CheckSetStartAndLockdownExclusive) {
-  if (base::win::GetVersion() < base::win::Version::WIN8)
-    GTEST_SKIP() << "Skipping test due to unsupported Windows version";
-
   std::wstring test_command = L"CheckDeath ";
   test_command += base::NumberToWString(kLockdown);
   test_command += L" ";
@@ -118,9 +106,6 @@ TEST(ProcessMitigationsDeathTest, CheckSetStartAndLockdownExclusive) {
 }
 
 TEST(ProcessMitigationsDeathTest, CheckSetStartAndLockdownExclusive2) {
-  if (base::win::GetVersion() < base::win::Version::WIN8)
-    GTEST_SKIP() << "Skipping test due to unsupported Windows version";
-
   std::wstring test_command = L"CheckDeath ";
   test_command += base::NumberToWString(kSetStart);
   test_command += L" ";

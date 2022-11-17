@@ -24,9 +24,6 @@ namespace sandbox {
 // the target process causes the launch to fail in process initialization.
 // The test process itself links against user32/gdi32.
 TEST(ProcessMitigationsWin32kTest, CheckWin8LockDownFailure) {
-  if (base::win::GetVersion() < base::win::Version::WIN8)
-    return;
-
   std::wstring test_policy_command = L"CheckPolicy ";
   test_policy_command += std::to_wstring(TESTPOLICY_WIN32K);
 
@@ -44,9 +41,6 @@ TEST(ProcessMitigationsWin32kTest, CheckWin8LockDownFailure) {
 // The test process itself links against user32/gdi32.
 
 TEST(ProcessMitigationsWin32kTest, CheckWin8LockDownSuccess) {
-  if (base::win::GetVersion() < base::win::Version::WIN8)
-    return;
-
   std::wstring test_policy_command = L"CheckPolicy ";
   test_policy_command += std::to_wstring(TESTPOLICY_WIN32K);
 

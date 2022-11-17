@@ -362,9 +362,7 @@ ResultCode AddDefaultConfigForSandboxedProcess(TargetConfig* config) {
 
   config->SetLockdownDefaultDacl();
 
-  // Win8+ adds a device DeviceApi that we don't need.
-  if (base::win::GetVersion() >= base::win::Version::WIN8)
-    result = config->AddKernelObjectToClose(L"File", L"\\Device\\DeviceApi");
+  result = config->AddKernelObjectToClose(L"File", L"\\Device\\DeviceApi");
   if (result != SBOX_ALL_OK)
     return result;
 
@@ -907,10 +905,6 @@ ResultCode SandboxWin::AddAppContainerPolicy(TargetConfig* config,
 ResultCode SandboxWin::AddWin32kLockdownPolicy(TargetConfig* config) {
   DCHECK(!config->IsConfigured());
 #if !defined(NACL_WIN64)
-  // Win32k Lockdown is supported on Windows 8+.
-  if (base::win::GetVersion() < base::win::Version::WIN8)
-    return SBOX_ALL_OK;
-
   MitigationFlags flags = config->GetProcessMitigations();
   // Check not enabling twice. Should not happen.
   DCHECK_EQ(0U, flags & MITIGATION_WIN32K_DISABLE);

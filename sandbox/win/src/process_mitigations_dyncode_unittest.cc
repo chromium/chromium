@@ -413,9 +413,6 @@ SBOX_TESTS_COMMAND int TestWin10DynamicCodeWithOptOut(int argc,
 // This test validates that setting the MITIGATION_DYNAMIC_CODE_DISABLE
 // mitigation enables the setting on a process.
 TEST(ProcessMitigationsTest, CheckWin81DynamicCodePolicySuccess) {
-  if (base::win::GetVersion() < base::win::Version::WIN8_1)
-    return;
-
 // TODO(crbug.com/805414): Windows ASan hotpatching requires dynamic code.
 #if !defined(ADDRESS_SANITIZER)
   std::wstring test_command = L"CheckPolicy ";
@@ -453,9 +450,6 @@ TEST(ProcessMitigationsTest, CheckWin81DynamicCodePolicySuccess) {
 // This test validates that we can meddle with dynamic code if the
 // MITIGATION_DYNAMIC_CODE_DISABLE mitigation is NOT set.
 TEST(ProcessMitigationsTest, CheckWin81DynamicCode_BaseCase) {
-  if (base::win::GetVersion() < base::win::Version::WIN8_1)
-    return;
-
   ScopedTestMutex mutex(hooking_dll::g_hooking_dll_mutex);
 
   // Expect success, no mitigation.
@@ -467,9 +461,6 @@ TEST(ProcessMitigationsTest, CheckWin81DynamicCode_BaseCase) {
 // This test validates that setting the MITIGATION_DYNAMIC_CODE_DISABLE
 // mitigation prevents meddling with dynamic code.
 TEST(ProcessMitigationsTest, CheckWin81DynamicCode_TestMitigation) {
-  if (base::win::GetVersion() < base::win::Version::WIN8_1)
-    return;
-
   ScopedTestMutex mutex(hooking_dll::g_hooking_dll_mutex);
 
   // Expect failure, with mitigation.

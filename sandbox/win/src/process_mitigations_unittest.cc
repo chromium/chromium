@@ -659,28 +659,6 @@ SBOX_TESTS_COMMAND int TestChildProcess(int argc, wchar_t** argv) {
 
 //------------------------------------------------------------------------------
 // DEP (MITIGATION_DEP and MITIGATION_DEP_NO_ATL_THUNK)
-// Win7 x86
-//------------------------------------------------------------------------------
-
-#if !defined(_WIN64)
-// DEP is always enabled on 64-bit.  Only test on x86.
-TEST(ProcessMitigationsTest, CheckDepWin7) {
-  if (base::win::GetVersion() > base::win::Version::WIN7)
-    return;
-
-  TestRunner runner;
-  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
-
-  EXPECT_EQ(config->SetProcessMitigations(MITIGATION_DEP |
-                                          MITIGATION_DEP_NO_ATL_THUNK |
-                                          MITIGATION_SEHOP),
-            SBOX_ALL_OK);
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"CheckDep"));
-}
-#endif  // !defined(_WIN64)
-
-//------------------------------------------------------------------------------
-// DEP (MITIGATION_DEP and MITIGATION_DEP_NO_ATL_THUNK)
 // >= Win8 x86
 //------------------------------------------------------------------------------
 
@@ -690,9 +668,6 @@ TEST(ProcessMitigationsTest, CheckDepWin7) {
 // This test validates that setting the MITIGATION_DEP*
 // mitigations enables the setting on a process.
 TEST(ProcessMitigationsTest, CheckDepWin8PolicySuccess) {
-  if (base::win::GetVersion() < base::win::Version::WIN8)
-    return;
-
   std::wstring test_command = L"CheckPolicy ";
   test_command += std::to_wstring(TESTPOLICY_DEP);
 
@@ -731,9 +706,6 @@ TEST(ProcessMitigationsTest, CheckDepWin8PolicySuccess) {
 //------------------------------------------------------------------------------
 
 TEST(ProcessMitigationsTest, CheckWin8AslrPolicySuccess) {
-  if (base::win::GetVersion() < base::win::Version::WIN8)
-    return;
-
   std::wstring test_command = L"CheckPolicy ";
   test_command += std::to_wstring(TESTPOLICY_ASLR);
 
@@ -759,9 +731,6 @@ TEST(ProcessMitigationsTest, CheckWin8AslrPolicySuccess) {
 //------------------------------------------------------------------------------
 
 TEST(ProcessMitigationsTest, CheckWin8StrictHandlePolicySuccess) {
-  if (base::win::GetVersion() < base::win::Version::WIN8)
-    return;
-
   std::wstring test_command = L"CheckPolicy ";
   test_command += std::to_wstring(TESTPOLICY_STRICTHANDLE);
 
@@ -786,9 +755,6 @@ TEST(ProcessMitigationsTest, CheckWin8StrictHandlePolicySuccess) {
 // This test validates that setting the MITIGATION_NON_SYSTEM_FONTS_DISABLE
 // mitigation enables the setting on a process.
 TEST(ProcessMitigationsTest, CheckWin10NonSystemFontLockDownPolicySuccess) {
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return;
-
   std::wstring test_command = L"CheckPolicy ";
   test_command += std::to_wstring(TESTPOLICY_NONSYSFONT);
 
@@ -817,18 +783,12 @@ TEST(ProcessMitigationsTest, CheckWin10NonSystemFontLockDownPolicySuccess) {
 // This test validates that we can load a non-system font if the
 // MITIGATION_NON_SYSTEM_FONTS_DISABLE mitigation is NOT set.
 TEST(ProcessMitigationsTest, CheckWin10NonSystemFontLockDownLoadSuccess) {
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return;
-
   TestWin10NonSystemFont(true /* is_success_test */);
 }
 
 // This test validates that setting the MITIGATION_NON_SYSTEM_FONTS_DISABLE
 // mitigation prevents the loading of a non-system font.
 TEST(ProcessMitigationsTest, CheckWin10NonSystemFontLockDownLoadFailure) {
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return;
-
   TestWin10NonSystemFont(false /* is_success_test */);
 }
 
@@ -1436,9 +1396,6 @@ TEST(ProcessMitigationsTest, SetPreAndPostStartupSamePolicy_ImageLoad) {
 // This test validates setting a pre-startup mitigation and a post startup
 // mitigation on the same windows policy works in release and crashes in debug.
 TEST(ProcessMitigationsTest, SetPreAndPostStartupSamePolicy_ProcessDep) {
-  if (base::win::GetVersion() < base::win::Version::WIN8)
-    return;
-
   std::wstring test_command = L"CheckPolicy ";
   test_command += base::NumberToWString(TESTPOLICY_DEP);
 
@@ -1461,9 +1418,6 @@ TEST(ProcessMitigationsTest, SetPreAndPostStartupSamePolicy_ProcessDep) {
 // This test validates setting a pre-startup mitigation and a post startup
 // mitigation on the same windows policy works in release and crashes in debug.
 TEST(ProcessMitigationsTest, SetPreAndPostStartupSamePolicy_ASLR) {
-  if (base::win::GetVersion() < base::win::Version::WIN8)
-    return;
-
   std::wstring test_command = L"CheckPolicy ";
   test_command += base::NumberToWString(TESTPOLICY_ASLR);
 
