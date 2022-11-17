@@ -76,9 +76,6 @@ class PositionIteratorAlgorithm {
   bool AtEndOfNode() const;
 
  private:
-  PositionIteratorAlgorithm(Node* anchor_node, int offset_in_anchor_node);
-  PositionIteratorAlgorithm();
-
   bool IsValid() const {
     return !anchor_node_ ||
            dom_tree_version_ == anchor_node_->GetDocument().DomTreeVersion();
