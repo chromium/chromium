@@ -129,6 +129,14 @@ class PrintJobWorkerOop : public PrintJobWorker {
   // thread.
   std::u16string document_name_;
 
+  // The printed document. Only has read-only access.  This reference separate
+  // from the one already in the base class provides a guarantee that the
+  // `PrintedDocument` will persist until OOP processing completes, even if
+  // the `PrintJob` should drop its reference as part of failure/cancel
+  // processing.  Named differently than base (even though both are private)
+  // to avoid any potential confusion between them.
+  scoped_refptr<PrintedDocument> document_oop_;
+
   // The type of target to print to.  Used only from the UI thread.
   mojom::PrintTargetType print_target_type_ =
       mojom::PrintTargetType::kDirectToDevice;

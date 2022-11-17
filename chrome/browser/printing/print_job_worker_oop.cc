@@ -83,9 +83,15 @@ void PrintJobWorkerOop::StartPrinting(PrintedDocument* new_document) {
     return;
   }
 
+  // Keep another reference to the document just for OOP.  This reference
+  // ensures the document object is retained even if the job cancels out and
+  // the reference to it from `PrintJobWorker` is dropped.  This guarantees
+  // that it can still be used in the various asynchronous callbacks.
+  document_oop_ = new_document;
+
   std::string device_name =
-      base::UTF16ToUTF8(document()->settings().device_name());
-  VLOG(1) << "Start printing document " << document()->cookie() << " to "
+      base::UTF16ToUTF8(document_oop_->settings().device_name());
+  VLOG(1) << "Start printing document " << document_oop_->cookie() << " to "
           << device_name;
 
   // `PrintBackendServiceManager` interactions must happen on the UI thread.
@@ -147,13 +153,13 @@ void PrintJobWorkerOop::OnDidStartPrinting(mojom::ResultCode result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (result != mojom::ResultCode::kSuccess) {
     PRINTER_LOG(ERROR) << "Error initiating printing via service for document "
-                       << document()->cookie() << ": " << result;
+                       << document_oop_->cookie() << ": " << result;
     if (result != mojom::ResultCode::kAccessDenied || !TryRestartPrinting())
       NotifyFailure(result);
     return;
   }
   VLOG(1) << "Printing initiated with service for document "
-          << document()->cookie();
+          << document_oop_->cookie();
   task_runner()->PostTask(FROM_HERE,
                           base::BindOnce(&PrintJobWorker::OnNewPage,
                                          worker_weak_factory_.GetWeakPtr()));
@@ -166,21 +172,22 @@ void PrintJobWorkerOop::OnDidRenderPrintedPage(uint32_t page_index,
   if (result != mojom::ResultCode::kSuccess) {
     PRINTER_LOG(ERROR)
         << "Error rendering printed page via service for document "
-        << document()->cookie() << ": " << result;
+        << document_oop_->cookie() << ": " << result;
     NotifyFailure(result);
     return;
   }
-  scoped_refptr<PrintedPage> page = document()->GetPage(page_index);
+  scoped_refptr<PrintedPage> page = document_oop_->GetPage(page_index);
   if (!page) {
     PRINTER_LOG(ERROR) << "Unable to get page " << page_index
-                       << " via service for document " << document()->cookie();
+                       << " via service for document "
+                       << document_oop_->cookie();
     task_runner()->PostTask(FROM_HERE,
                             base::BindOnce(&PrintJobWorkerOop::OnFailure,
                                            worker_weak_factory_.GetWeakPtr()));
     return;
   }
   VLOG(1) << "Rendered printed page via service for document "
-          << document()->cookie() << " page " << page_index;
+          << document_oop_->cookie() << " page " << page_index;
 
   // Signal everyone that the page is printed.
   print_job()->PostTask(
@@ -189,7 +196,7 @@ void PrintJobWorkerOop::OnDidRenderPrintedPage(uint32_t page_index,
                      base::RetainedRef(page)));
 
   ++pages_printed_count_;
-  if (pages_printed_count_ == document()->page_count()) {
+  if (pages_printed_count_ == document_oop_->page_count()) {
     // The last page has printed, can proceed to document done processing.
     VLOG(1) << "All pages printed for document";
     SendDocumentDone();
@@ -202,12 +209,12 @@ void PrintJobWorkerOop::OnDidRenderPrintedDocument(mojom::ResultCode result) {
   if (result != mojom::ResultCode::kSuccess) {
     PRINTER_LOG(ERROR)
         << "Error rendering printed document via service for document "
-        << document()->cookie() << ": " << result;
+        << document_oop_->cookie() << ": " << result;
     NotifyFailure(result);
     return;
   }
   VLOG(1) << "Rendered printed document via service for document "
-          << document()->cookie();
+          << document_oop_->cookie();
   SendDocumentDone();
 }
 
@@ -215,20 +222,23 @@ void PrintJobWorkerOop::OnDidDocumentDone(int job_id,
                                           mojom::ResultCode result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 #if BUILDFLAG(IS_WIN)
-  DCHECK_EQ(pages_printed_count_, document()->page_count());
+  DCHECK_EQ(pages_printed_count_, document_oop_->page_count());
 #endif
   if (result != mojom::ResultCode::kSuccess) {
     PRINTER_LOG(ERROR) << "Error completing printing via service for document "
-                       << document()->cookie() << ": " << result;
+                       << document_oop_->cookie() << ": " << result;
     NotifyFailure(result);
     return;
   }
   PRINTER_LOG(EVENT) << "Printing completed via service for document "
-                     << document()->cookie();
+                     << document_oop_->cookie();
   UnregisterServiceManagerClient();
   base::UmaHistogramEnumeration(kPrintOopPrintResultHistogramName,
                                 PrintOopResult::kSuccessful);
   FinishDocumentDone(job_id);
+
+  // Also done with private document reference.
+  document_oop_ = nullptr;
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -237,7 +247,7 @@ bool PrintJobWorkerOop::SpoolPage(PrintedPage* page) {
   DCHECK_NE(page_number(), PageNumber::npos());
 
 #if !defined(NDEBUG)
-  DCHECK(document()->IsPageInList(*page));
+  DCHECK(document_oop_->IsPageInList(*page));
 #endif
 
   const MetafilePlayer* metafile = page->metafile();
@@ -268,7 +278,7 @@ bool PrintJobWorkerOop::SpoolPage(PrintedPage* page) {
 bool PrintJobWorkerOop::SpoolDocument() {
   DCHECK(task_runner()->RunsTasksInCurrentSequence());
 
-  const MetafilePlayer* metafile = document()->GetMetafile();
+  const MetafilePlayer* metafile = document_oop_->GetMetafile();
   DCHECK(metafile);
   base::MappedReadOnlyRegion region_mapping =
       metafile->GetDataAsSharedMemoryRegion();
@@ -500,7 +510,7 @@ void PrintJobWorkerOop::SendStartPrinting(const std::string& device_name,
   // failure.
   document_name_ = document_name;
 
-  const int32_t document_cookie = document()->cookie();
+  const int32_t document_cookie = document_oop_->cookie();
   PRINTER_LOG(DEBUG) << "Starting printing via service for to `" << device_name_
                      << "` for document " << document_cookie;
 
@@ -513,7 +523,7 @@ void PrintJobWorkerOop::SendStartPrinting(const std::string& device_name,
 
   service_mgr.StartPrinting(
       device_name_, document_cookie, document_name_, print_target_type_,
-      document()->settings(),
+      document_oop_->settings(),
       base::BindOnce(&PrintJobWorkerOop::OnDidStartPrinting,
                      ui_weak_factory_.GetWeakPtr()));
 }
@@ -527,7 +537,7 @@ void PrintJobWorkerOop::SendRenderPrintedPage(
 
   // Page numbers are 0-based for the printing context.
   const uint32_t page_index = page->page_number() - 1;
-  const int32_t document_cookie = document()->cookie();
+  const int32_t document_cookie = document_oop_->cookie();
   VLOG(1) << "Sending page " << page_index << " of document " << document_cookie
           << " to `" << device_name_ << "` for printing";
   PrintBackendServiceManager& service_mgr =
@@ -545,13 +555,13 @@ void PrintJobWorkerOop::SendRenderPrintedDocument(
     base::ReadOnlySharedMemoryRegion serialized_data) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  const int32_t document_cookie = document()->cookie();
+  const int32_t document_cookie = document_oop_->cookie();
   VLOG(1) << "Sending document " << document_cookie << " to `" << device_name_
           << "` for printing";
   PrintBackendServiceManager& service_mgr =
       PrintBackendServiceManager::GetInstance();
   service_mgr.RenderPrintedDocument(
-      device_name_, document_cookie, document()->page_count(), data_type,
+      device_name_, document_cookie, document_oop_->page_count(), data_type,
       std::move(serialized_data),
       base::BindOnce(&PrintJobWorkerOop::OnDidRenderPrintedDocument,
                      ui_weak_factory_.GetWeakPtr()));
@@ -560,7 +570,7 @@ void PrintJobWorkerOop::SendRenderPrintedDocument(
 void PrintJobWorkerOop::SendDocumentDone() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  const int32_t document_cookie = document()->cookie();
+  const int32_t document_cookie = document_oop_->cookie();
   VLOG(1) << "Sending document done for document " << document_cookie;
 
   PrintBackendServiceManager& service_mgr =

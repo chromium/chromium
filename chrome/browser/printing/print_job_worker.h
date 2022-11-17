@@ -160,7 +160,6 @@ class PrintJobWorker {
   virtual void UseDefaultSettings(SettingsCallback callback);
 
   PrintingContext* printing_context() { return printing_context_.get(); }
-  PrintedDocument* document() { return document_.get(); }
   PrintJob* print_job() { return print_job_; }
   const PageNumber& page_number() { return page_number_; }
   base::SequencedTaskRunner* task_runner() { return task_runner_.get(); }
