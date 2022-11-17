@@ -44,13 +44,13 @@ enum class VideoDecoderType : int {
   kDav1d = 7,       // Dav1dVideoDecoder
   kFuchsia = 8,     // FuchsiaVideoDecoder
   kMediaCodec = 9,  // MediaCodecVideoDecoder (Android)
-  kGav1 = 10,       // Gav1VideoDecoder
-  kD3D11 = 11,      // D3D11VideoDecoder
-  kVaapi = 12,      // VaapiVideoDecoder
-  kBroker = 13,     // VideoDecoderBroker (Webcodecs)
-  kVda = 14,        // VDAVideoDecoder
+  // kGav1 = 10,    // Gav1VideoDecoder. (DEPRECATED)
+  kD3D11 = 11,   // D3D11VideoDecoder
+  kVaapi = 12,   // VaapiVideoDecoder
+  kBroker = 13,  // VideoDecoderBroker (Webcodecs)
+  kVda = 14,     // VDAVideoDecoder
   // kChromeOs = 15,  // DEPRECATED, should be kVaapi or kV4L2 instead.
-  kV4L2 = 16,       // V4L2VideoDecoder
+  kV4L2 = 16,  // V4L2VideoDecoder
 
   kTesting = 17,  // Never send this to UKM, for tests only.
 

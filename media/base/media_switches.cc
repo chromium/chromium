@@ -486,11 +486,6 @@ BASE_FEATURE(kFallbackAfterDecodeError,
              "FallbackAfterDecodeError",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Use Gav1VideoDecoder to decode AV1 streams.
-BASE_FEATURE(kGav1VideoDecoder,
-             "Gav1VideoDecoder",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Show toolbar button that opens dialog for controlling media sessions.
 BASE_FEATURE(kGlobalMediaControls,
              "GlobalMediaControls",
