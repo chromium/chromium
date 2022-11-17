@@ -1611,15 +1611,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Bluetooth.PairingMethod" enum="BluetoothPairingMethod"
-    expires_after="2020-11-08">
-  <owner>adlr@chromium.org</owner>
-  <summary>
-    Records the method used to pair each Bluetooth Device. Used to direct our
-    testing efforts.
-  </summary>
-</histogram>
-
 <histogram name="Bluetooth.StackName" enum="BluetoothStackName"
     expires_after="2023-03-16">
   <owner>michaelfsun@google.com</owner>

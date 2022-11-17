@@ -11407,15 +11407,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="7" label="Not Supported"/>
 </enum>
 
-<enum name="BluetoothPairingMethod">
-  <int value="0" label="No user interaction required"/>
-  <int value="1" label="PIN Code requested from user"/>
-  <int value="2" label="Passkey requested from user"/>
-  <int value="3" label="PIN Code entered into device"/>
-  <int value="4" label="Passkey entered into device"/>
-  <int value="5" label="Passkey confirmed on both devices"/>
-</enum>
-
 <enum name="BluetoothPairingResult">
   <int value="0" label="Success"/>
   <int value="1" label="Connection already in-progress"/>
