@@ -182,6 +182,7 @@
   X("weblayer")                                                          \
   X("WebCore")                                                           \
   X("webrtc")                                                            \
+  X("webrtc_stats")                                                      \
   X("xr")                                                                \
   X(TRACE_DISABLED_BY_DEFAULT("android_view_hierarchy"))                 \
   X(TRACE_DISABLED_BY_DEFAULT("animation-worklet"))                      \
