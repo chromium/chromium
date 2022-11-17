@@ -126,8 +126,7 @@ export function testModel() {
   // Trash is displayed as a root when feature is enabled.
   loadTimeData.overrideValues({FILES_TRASH_ENABLED: true});
   model.fakeTrashItem = new NavigationModelFakeItem(
-      'trash-label', NavigationModelItemType.TRASH,
-      new TrashRootEntry(volumeManager));
+      'trash-label', NavigationModelItemType.TRASH, new TrashRootEntry());
   model.reorderNavigationItems_();
   assertEquals(7, model.length);
   assertEquals(

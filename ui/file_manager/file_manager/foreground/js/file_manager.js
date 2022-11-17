@@ -1681,7 +1681,7 @@ export class FileManager extends EventTarget {
       if (!this.fakeTrashItem_) {
         this.fakeTrashItem_ = new NavigationModelFakeItem(
             str('TRASH_ROOT_LABEL'), NavigationModelItemType.TRASH,
-            new TrashRootEntry(this.volumeManager_));
+            new TrashRootEntry());
       }
       this.directoryTree.dataModel.fakeTrashItem = this.fakeTrashItem_;
       return;

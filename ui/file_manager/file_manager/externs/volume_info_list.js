@@ -11,7 +11,7 @@ import {VolumeInfo} from './volume_info.js';
 export class VolumeInfoList {
   constructor() {
     /** @const {number} */
-    this.length;
+    this.length = 0;
   }
 
   /**

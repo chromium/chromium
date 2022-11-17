@@ -41,7 +41,6 @@ group("js_modules") {
     ":progress_center_common",
     ":recent_date_bucket",
     ":storage_adapter",
-    ":trash",
     ":ui",
     ":url_constants",
     ":util",
@@ -72,7 +71,6 @@ js_type_check("closure_compile_jsmodules") {
     ":progress_center_common",
     ":recent_date_bucket",
     ":storage_adapter",
-    ":trash",
     ":ui",
     ":url_constants",
     ":util",
@@ -306,17 +304,6 @@ js_library("xfm") {
   deps = [
     ":notifications_browser_proxy",
     ":storage_adapter",
-  ]
-}
-
-js_library("trash") {
-  deps = [
-    ":files_app_entry_types",
-    ":metrics",
-    ":util",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
-    "//ui/file_manager/file_manager/externs:volume_manager",
   ]
 }
 

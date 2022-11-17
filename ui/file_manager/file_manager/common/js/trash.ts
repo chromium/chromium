@@ -6,6 +6,9 @@
  * @fileoverview Trash implementation is based on
  * https://specifications.freedesktop.org/trash-spec/trashspec-1.0.html.
  *
+ * This file is checked via TS, so we suppress Closure checks.
+ * @suppress {checkTypes}
+ *
  * When you move /dir/hello.txt to trash, you get:
  *  .Trash/files/hello.txt
  *  .Trash/info/hello.trashinfo
@@ -19,10 +22,10 @@
  * TrashEntry combines both files for display.
  */
 
-import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {parseTrashInfoFiles, startIOTask} from './api.js';
+import {isFileSystemDirectoryEntry, isFileSystemFileEntry} from './entry_utils.js';
 import {FakeEntryImpl} from './files_app_entry_types.js';
 import {metrics} from './metrics.js';
 import {util} from './util.js';
@@ -33,48 +36,29 @@ import {VolumeManagerCommon} from './volume_manager_types.js';
  */
 export class TrashConfig {
   /**
-   * @param {VolumeManagerCommon.VolumeType} volumeType
-   * @param {string} topDir Top directory of volume. Must end with a slash to
-   *     make comparisons simpler.
-   * @param {string} trashDir Trash directory. Must end with a slash to make
-   *     comparisons simpler.
-   * @param {string} rootLabel Root label for items in trash.
-   * @param {Object<string>=} pathMap map of substitutions for first path
-   *     segment.  Used by Drive to map 'root' => 'My Drive', etc.
-   * @param {boolean=} prefixPathWithRemoteMount Optional, if true, 'Path=' in
-   *     *.trashinfo is prefixed with the volume.remoteMountPath. For crostini,
-   *     this is the user's homedir (/home/<username>).
+   * The id represetngin this specific TrashConfig.
    */
+  readonly id: string;
+
   constructor(
-      volumeType, topDir, trashDir, rootLabel, pathMap = {},
-      prefixPathWithRemoteMount = false) {
+      readonly volumeType: VolumeManagerCommon.VolumeType,
+      readonly topDir: string, readonly trashDir: string) {
     this.id = `${volumeType}-${topDir}`;
-    this.volumeType = volumeType;
-    this.topDir = topDir;
-    this.trashDir = trashDir;
-    this.rootLabel = rootLabel;
-    this.pathMap = pathMap;
-    this.prefixPathWithRemoteMount = prefixPathWithRemoteMount;
-    this.pathPrefix = '';
   }
 }
 
 /**
  * Volumes supported for Trash, and location of Trash dir. Items will be
  * searched in order.
- *
- * @type {!Array<!TrashConfig>}
  */
-TrashConfig.CONFIG = [
+const TRASH_CONFIG = [
   // MyFiles/Downloads is a separate volume on a physical device, and doing a
   // move from MyFiles/Downloads/<path> to MyFiles/.Trash actually does a
   // copy across volumes, so we have a dedicated MyFiles/Downloads/.Trash.
   new TrashConfig(
       VolumeManagerCommon.VolumeType.DOWNLOADS, '/Downloads/',
-      '/Downloads/.Trash/', 'MY_FILES_ROOT_LABEL'),
-  new TrashConfig(
-      VolumeManagerCommon.VolumeType.DOWNLOADS, '/', '/.Trash/',
-      'MY_FILES_ROOT_LABEL'),
+      '/Downloads/.Trash/'),
+  new TrashConfig(VolumeManagerCommon.VolumeType.DOWNLOADS, '/', '/.Trash/'),
 ];
 
 /**
@@ -85,23 +69,19 @@ export const AUTO_DELETE_INTERVAL_MS = 30 * 24 * 60 * 60 * 1000;
 /**
  * Returns a list of strings that represent volumes that are enabled for Trash.
  * Used to validate drag drop data without resolving the URLs to Entry's.
- * @param {!VolumeManager} volumeManager
- * @param {boolean} includeTrashPath True if URLs should have the .Trash folder
- *     suffix.
- * @returns {!Array<!string>}
  */
 export function getEnabledTrashVolumeURLs(
-    volumeManager, includeTrashPath = false) {
-  const urls = [];
+    volumeManager: VolumeManager, includeTrashPath = false) {
+  const urls: string[] = [];
   for (let i = 0; i < volumeManager.volumeInfoList.length; i++) {
     const volumeInfo = volumeManager.volumeInfoList.item(i);
-    for (const config of TrashConfig.CONFIG) {
+    for (const config of TRASH_CONFIG) {
       if (volumeInfo.volumeType === config.volumeType) {
         if (!includeTrashPath) {
-          urls.push(volumeInfo.fileSystem.root.toURL());
+          urls.push(volumeInfo.fileSystem.root.toURL() as string);
           continue;
         }
-        let fileSystemRootURL = volumeInfo.fileSystem.root.toURL();
+        let fileSystemRootURL = volumeInfo.fileSystem.root.toURL() as string;
         if (fileSystemRootURL.endsWith('/')) {
           fileSystemRootURL =
               fileSystemRootURL.substring(0, fileSystemRootURL.length - 1);
@@ -115,15 +95,12 @@ export function getEnabledTrashVolumeURLs(
 
 /**
  * Returns true if all supplied entries reside at a known trash location.
- * @param {!Array<!Entry>} entries List of entries to verify.
- * @param {!VolumeManager} volumeManager Volume manager used to get trash
- *     location URLs.
- * @returns {boolean} True if all entries are trash
  */
-export function isAllTrashEntries(entries, volumeManager) {
+export function isAllTrashEntries(
+    entries: FileSystemEntry[], volumeManager: VolumeManager): boolean {
   const enabledTrashVolumeURLs =
       getEnabledTrashVolumeURLs(volumeManager, /*includeTrashPath=*/ true);
-  return entries.every(e => {
+  return entries.every((e: FileSystemEntry) => {
     for (const volumeURL of enabledTrashVolumeURLs) {
       if (e.toURL().startsWith(volumeURL)) {
         return true;
@@ -136,19 +113,16 @@ export function isAllTrashEntries(entries, volumeManager) {
 /**
  * Returns true if all entries are on a trashable volume and they aren't already
  * trashed.
- * @param {!Array<!Entry>} entries List of entries to verify.
- * @param {!VolumeManager} volumeManager Volume manager used to get trash
- *     location URLs.
- * @returns {boolean} True if all entries can be sent to trash.
  */
-export function shouldMoveToTrash(entries, volumeManager) {
+export function shouldMoveToTrash(
+    entries: FileSystemEntry[], volumeManager: VolumeManager): boolean {
   if (!util.isTrashEnabled()) {
     return false;
   }
-  const urls = [];
+  const urls: Array<{volume: string, volumeAndTrashPath: string}> = [];
   for (let i = 0; i < volumeManager.volumeInfoList.length; i++) {
     const volumeInfo = volumeManager.volumeInfoList.item(i);
-    for (const config of TrashConfig.CONFIG) {
+    for (const config of TRASH_CONFIG) {
       if (volumeInfo.volumeType === config.volumeType) {
         let fileSystemRootURL = volumeInfo.fileSystem.root.toURL();
         if (fileSystemRootURL.endsWith('/')) {
@@ -182,41 +156,29 @@ export function shouldMoveToTrash(entries, volumeManager) {
  * Wrapper for /.Trash/files and /.Trash/info directories.
  */
 export class TrashDirs {
-  /**
-   * @param {!DirectoryEntry} files /.Trash/files directory entry.
-   * @param {!DirectoryEntry} info /.Trash/info directory entry.
-   */
-  constructor(files, info) {
-    this.files = files;
-    this.info = info;
-  }
+  constructor(
+      readonly files: FileSystemDirectoryEntry,
+      readonly info: FileSystemDirectoryEntry) {}
 
   /**
    * Promise wrapper for FileSystemDirectoryEntry.getDirectory().
-   *
-   * @param {!DirectoryEntry} dirEntry current directory.
-   * @param {string} path name of directory within dirEntry.
-   * @param {boolean} create if true, directory is created if it does not exist.
-   * @return {!Promise<?DirectoryEntry>} Promise which resolves with
-   *     <dirEntry>/<path> or null if entry does not exist and create is false.
    */
-  static getDirectory(dirEntry, path, create) {
-    return new Promise((resolve, reject) => {
-      dirEntry.getDirectory(path, {create}, resolve, () => resolve(null));
+  static getDirectory(
+      dirEntry: FileSystemDirectoryEntry, path: string,
+      create: boolean): Promise<FileSystemDirectoryEntry|null> {
+    return new Promise((resolve) => {
+      dirEntry.getDirectory(path, {create}, (entry: FileSystemEntry) => {
+        resolve(entry as FileSystemDirectoryEntry);
+      }, () => resolve(null));
     });
   }
 
   /**
    * Get trash dirs from file system as specified in config.
-   *
-   * @param {!FileSystem} fileSystem File system from volume with trash.
-   * @param {!TrashConfig} config Config specifying trash dir location.
-   * @param {boolean} create if true, dirs are created if they do not exist.
-   * @return {!Promise<?TrashDirs>} Promise which resolves with trash dirs, or
-   *     null if dirs do not exist and create is false.
    */
-  static async getTrashDirs(fileSystem, config, create) {
-    let trashRoot = fileSystem.root;
+  static async getTrashDirs(
+      fileSystem: FileSystem, config: TrashConfig, create: boolean) {
+    let trashRoot: FileSystemDirectoryEntry|null = fileSystem.root;
     const parts = config.trashDir.split('/');
     for (const part of parts) {
       if (part) {
@@ -235,52 +197,54 @@ export class TrashDirs {
 /**
  * Represents a file moved to trash. Combines the info from both .Trash/info and
  * ./Trash/files.
- *
- * @implements {FilesAppEntry}
  */
-export class TrashEntry {
+export class TrashEntry implements Entry {
   /**
-   * @param {string} name Name of the file deleted.
-   * @param {!Date} deletionDate DeletionDate of deleted file from infoEntry.
-   * @param {!Entry} filesEntry trash files entry.
-   * @param {!FileEntry} infoEntry trash info entry.
-   * @param {!Entry} restoreEntry The entry to restore the item.
+   * The underlying filesystem for the volume the .Trash folder resides on.
    */
-  constructor(name, deletionDate, filesEntry, infoEntry, restoreEntry) {
-    this.name = name;
-    this.filesEntry = filesEntry;
-    this.infoEntry = infoEntry;
-    this.restoreEntry = restoreEntry;
+  readonly filesystem: FileSystem;
 
-    /** @private */
-    this.deletionDate_ = deletionDate;
+  /**
+   * The trash root type.
+   */
+  readonly rootType = VolumeManagerCommon.RootType.TRASH;
 
-    /** @override Entry */
+  /**
+   * The type name of TrashEntry.
+   */
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  readonly type_name = 'TrashEntry';
+
+  /**
+   * True if the trashed item is a file, false otherwise.
+   */
+  readonly isFile: boolean;
+
+  /**
+   * True if the trashed item is a directory, false otherwise.
+   */
+  readonly isDirectory: boolean;
+
+  /**
+   * The full path of the trashed item.
+   */
+  readonly fullPath: string;
+
+  constructor(
+      readonly name: string, private deletionDate_: Date,
+      readonly filesEntry: FileSystemEntry, readonly infoEntry: FileSystemEntry,
+      readonly restoreEntry: FileSystemEntry) {
     this.filesystem = filesEntry.filesystem;
-
-    /** @override Entry */
     this.fullPath = filesEntry.fullPath;
-
-    /** @override Entry */
     this.isDirectory = filesEntry.isDirectory;
-
-    /** @override Entry  */
     this.isFile = filesEntry.isFile;
-
-    /** @override FilesAppEntry */
-    this.rootType = VolumeManagerCommon.RootType.TRASH;
-
-    /** @override FilesAppEntry */
-    this.type_name = 'TrashEntry';
   }
 
   /**
    * Use filesEntry toURL() so this entry can be used as that file to view,
    * copy, etc.
-   *
-   * @override Entry
    */
-  toURL() {
+  toURL(): string {
     return this.filesEntry.toURL();
   }
 
@@ -290,90 +254,71 @@ export class TrashEntry {
    *
    * @override Entry
    */
-  getMetadata(success, error) {
+  getMetadata(success: MetadataCallback, error: ErrorCallback) {
     this.filesEntry.getMetadata(m => {
       success({modificationTime: this.deletionDate_, size: m.size});
     }, error);
   }
 
-  /** @override Entry */
-  getParent() {}
-
   /**
    * Remove filesEntry first, then remove infoEntry. Overrides Entry.
-   *
-   * @param {function()} success
-   * @param {function(!FileError)=} error
    */
-  remove(success, error) {
+  remove(success: VoidCallback, error: ErrorCallback) {
     this.filesEntry.remove(() => this.infoEntry.remove(success, error), error);
   }
 
   /**
    * Pass through to filesEntry. Overrides FileEntry.
-   *
-   * @param {function(!File)} success
-   * @param {function(!FileError)=} error
    */
-  file(success, error) {
-    this.filesEntry.file(success, error);
+  file(success: FileCallback, error: ErrorCallback) {
+    if (isFileSystemFileEntry(this.filesEntry)) {
+      this.filesEntry.file(success, error);
+      return;
+    }
+    console.error('file attempted on FileSystemDirectoryEntry');
   }
 
   /**
    * Pass through to filesEntry. Overrides DirectoryEntry.
-   *
-   * @return {!DirectoryReader}
    */
-  createReader() {
-    return this.filesEntry.createReader();
-  }
-
-  /**
-   * Pass through to filesEntry. Overrides DirectoryEntry.
-   *
-   * @param {string} path
-   * @param {!Object} options
-   * @param {function(!File)} success
-   * @param {function(!FileError)=} error
-   */
-  getDirectory(path, options, success, error) {
-    this.filesEntry.createReader(path, options, success, error);
-  }
-
-  /**
-   * Pass through to filesEntry. Overrides DirectoryEntry.
-   *
-   * @param {string} path
-   * @param {!Object} options
-   * @param {function(!File)} success
-   * @param {function(!FileError)=} error
-   */
-  getFile(path, options, success, error) {
-    this.filesEntry.getFile(path, options, success, error);
+  getFile(
+      path: string, options: FileSystemFlags, success: FileSystemEntryCallback,
+      error: ErrorCallback) {
+    if (isFileSystemDirectoryEntry(this.filesEntry)) {
+      this.filesEntry.getFile(path, options, success, error);
+      return;
+    }
+    console.error('getFile attempted on FileSystemFileEntry');
   }
 
   /**
    * Remove filesEntry first, then remove infoEntry. Overrides DirectoryEntry.
-   *
-   * @param {function()} success
-   * @param {function(!FileError)=} error
    */
-  removeRecursively(success, error) {
-    this.filesEntry.removeRecursively(
-        () => this.infoEntry.remove(success, error), error);
+  removeRecursively(success: VoidCallback, error: ErrorCallback) {
+    if (isFileSystemDirectoryEntry(this.filesEntry)) {
+      this.filesEntry.removeRecursively(
+          () => this.infoEntry.remove(success, error), error);
+      return;
+    }
+    console.error('removeRecursively attempted on FileSystemFileEntry');
   }
+
+  /**
+   * Trash entries should not allow the following methods, specifically `moveTo`
+   * and `copyTo` should be handled by the restore IO task.
+   */
+  getParent() {}
+  moveTo() {}
+  copyTo() {}
 
   /**
    * We must set entry.isNativeType to true, so that this is not considered a
    * FakeEntry, and we are allowed to delete the item.
-   *
-   * @override FilesAppEntry
    */
   get isNativeType() {
     return true;
   }
 
-  /** @override FilesAppEntry */
   getNativeEntry() {
     return this.filesEntry;
   }
@@ -382,39 +327,27 @@ export class TrashEntry {
 /**
  * Reads all entries in each of .Trash/info and .Trash/files and produces a
  * single stream of TrashEntry.
- *
- * @extends {DirectoryReader}
  */
-class TrashDirectoryReader {
+class TrashDirectoryReader implements FileSystemDirectoryReader {
   /**
-   * @param {!FileSystem} fileSystem trash file system.
-   * @param {!TrashConfig} config trash config.
+   * The entries that exist in this .Trash directory.
    */
-  constructor(fileSystem, config) {
-    this.fileSystem_ = fileSystem;
-    this.config_ = config;
+  private filesEntries_: {[key: string]: FileSystemEntry} = {};
 
-    /** @private {!Object<!Entry>} all entries in .Trash/files keyed by name. */
-    this.filesEntries_ = {};
+  /**
+   * A directory reader used to read the items out of the .Trash/info directory.
+   */
+  private infoReader_: FileSystemDirectoryReader|null = null;
 
-    /**
-     * DirectoryReader of .Trash/info which needs to be persisted across calls
-     * to readEntries().
-     *
-     * @private {?DirectoryReader}
-     */
-    this.infoReader_ = null;
-  }
+  constructor(private fileSystem_: FileSystem, private config_: TrashConfig) {}
 
   /**
    * Create a trash entry if infoEntry and matching files entry are valid, else
    * return null.
-   *
-   * @param {!chrome.fileManagerPrivate.ParsedTrashInfoFile} parsedEntry
-   * @param {!FileEntry} infoEntry trash info entry.
-   * @return {?TrashEntry}
    */
-  createTrashEntry_(parsedEntry, infoEntry) {
+  private createTrashEntry_(
+      parsedEntry: chrome.fileManagerPrivate.ParsedTrashInfoFile,
+      infoEntry: FileSystemEntry) {
     const filesEntry = this.getFilesEntry(parsedEntry.trashInfoFileName);
 
     // Ignore any .trashinfo file with no matching file entry.
@@ -423,8 +356,7 @@ class TrashDirectoryReader {
       return null;
     }
 
-    const deletionDate = /** @type {!Date} */ (parsedEntry.deletionDate);
-
+    const deletionDate = parsedEntry.deletionDate;
     return new TrashEntry(
         parsedEntry.restoreEntry.name, deletionDate, filesEntry, infoEntry,
         parsedEntry.restoreEntry);
@@ -432,11 +364,8 @@ class TrashDirectoryReader {
 
   /**
    * Returns the Entry from the cached files entries.
-   * @param {string} trashInfoFileName The .trashinfo filename that keys the
-   *     files entry.
-   * @returns {?Entry} The files entry if one exists, null otherwise.
    */
-  getFilesEntry(trashInfoFileName) {
+  getFilesEntry(trashInfoFileName: string) {
     const filesEntry = this.filesEntries_[trashInfoFileName];
     delete this.filesEntries_[trashInfoFileName];
     return filesEntry;
@@ -449,12 +378,11 @@ class TrashDirectoryReader {
    * Reads all items in .Trash/files on first call and caches them. Then reads
    * 1 or more batches of infoReader until we have at least 1 valid result to
    * send, or reader is exhausted.
-   *
-   * @param {function(!Array<!Entry>)} success
-   * @param {function(!FileError)=} error
    */
-  async readEntriesAsync_(success, error) {
-    const ls = (reader) => {
+  private async readEntriesAsync_(
+      success: FileSystemEntriesCallback, error: ErrorCallback) {
+    const ls = (reader:
+                    FileSystemDirectoryReader): Promise<FileSystemEntry[]> => {
       return new Promise((resolve, reject) => {
         reader.readEntries(results => resolve(results), error => reject(error));
       });
@@ -464,7 +392,7 @@ class TrashDirectoryReader {
     if (!this.infoReader_) {
       const trashDirs = await TrashDirs.getTrashDirs(
           this.fileSystem_, this.config_, /*create=*/ false);
-      // If trash dirs do not yet exist, then return succesful empty read.
+      // If trash dirs do not yet exist, then return successful empty read.
       if (!trashDirs) {
         return success([]);
       }
@@ -480,7 +408,7 @@ class TrashDirectoryReader {
           entries.forEach(
               entry => this.filesEntries_[entry.name + '.trashinfo'] = entry);
         }
-      } catch (e) {
+      } catch (e: any) {
         console.warn('Error reading trash files entries', e);
         error(e);
         return;
@@ -491,14 +419,14 @@ class TrashDirectoryReader {
 
     // Consume infoReader which is initialized in the first call. Read from
     // .Trash/info until we have at least 1 result, or end of stream.
-    const result = [];
-    const entriesToDelete = [];
+    const result: TrashEntry[] = [];
+    const entriesToDelete: FileSystemEntry[] = [];
     const dateNow = Date.now();
     while (true) {
-      let entries = [];
+      let entries: FileSystemEntry[] = [];
       try {
         entries = await ls(this.infoReader_);
-      } catch (e) {
+      } catch (e: any) {
         console.warn('Error reading trash info entries', e);
         error(e);
         return;
@@ -506,34 +434,38 @@ class TrashDirectoryReader {
       if (!entries.length) {
         break;
       }
-      const infoEntryMap = {};
+      const infoEntryMap: {[key: string]: FileSystemEntry} = {};
       for (const e of entries) {
         if (!e.isFile || !e.name.endsWith('.trashinfo')) {
           continue;
         }
         infoEntryMap[e.name] = e;
       }
-      let parsedEntries = [];
+      let parsedEntries: chrome.fileManagerPrivate.ParsedTrashInfoFile[] = [];
       try {
         parsedEntries = await parseTrashInfoFiles(entries);
-      } catch (e) {
+      } catch (e: any) {
         console.warn('Error parsing trash info entries', e);
         error(e);
         return;
       }
       for (const parsedEntry of parsedEntries) {
+        const infoEntry = infoEntryMap[parsedEntry.trashInfoFileName];
+        if (!infoEntry) {
+          continue;
+        }
         // In the event the parsed entry was deleted more than 30 days ago,
         // schedule them for deletion and don't render them in the view.
-        if (parsedEntry.deletionDate < (dateNow - AUTO_DELETE_INTERVAL_MS)) {
-          entriesToDelete.push(infoEntryMap[parsedEntry.trashInfoFileName]);
+        if (parsedEntry.deletionDate.getTime() <
+            (dateNow - AUTO_DELETE_INTERVAL_MS)) {
+          entriesToDelete.push(infoEntry);
           const trashEntry = this.getFilesEntry(parsedEntry.trashInfoFileName);
           if (trashEntry) {
             entriesToDelete.push(trashEntry);
           }
           continue;
         }
-        const trashEntry = this.createTrashEntry_(
-            parsedEntry, infoEntryMap[parsedEntry.trashInfoFileName]);
+        const trashEntry = this.createTrashEntry_(parsedEntry, infoEntry);
         if (trashEntry) {
           result.push(trashEntry);
         }
@@ -543,8 +475,11 @@ class TrashDirectoryReader {
 
     if (entriesToDelete.length > 0) {
       startIOTask(
-          chrome.fileManagerPrivate.IOTaskType.DELETE, entriesToDelete,
-          {showNotification: false});
+          chrome.fileManagerPrivate.IOTaskType.DELETE, entriesToDelete, {
+            showNotification: false,
+            destinationFolder: undefined,
+            password: undefined,
+          });
     }
 
     // Record the amount of files seen for this particularly directory reader.
@@ -552,8 +487,7 @@ class TrashDirectoryReader {
         /*name=*/ `TrashFiles.${this.config_.volumeType}`, result.length);
   }
 
-  /** @override */
-  readEntries(success, error) {
+  readEntries(success: FileSystemEntriesCallback, error: ErrorCallback) {
     this.readEntriesAsync_(success, error);
   }
 }
@@ -563,23 +497,17 @@ class TrashDirectoryReader {
  * trashes defined in TrashConfig.
  */
 export class TrashRootEntry extends FakeEntryImpl {
-  /**
-   * @param {!VolumeManager} volumeManager
-   */
-  constructor(volumeManager) {
+  constructor() {
     super('Trash', VolumeManagerCommon.RootType.TRASH);
-    this.volumeManager_ = volumeManager;
   }
 }
 
 /**
  * Returns all the Trash directory readers.
- * @param {!VolumeManager} volumeManager
- * @returns {!Array<DirectoryReader>} Trash directory readers combined.
  */
-export function createTrashReaders(volumeManager) {
-  const readers = [];
-  TrashConfig.CONFIG.forEach(c => {
+export function createTrashReaders(volumeManager: VolumeManager) {
+  const readers: FileSystemDirectoryReader[] = [];
+  TRASH_CONFIG.forEach(c => {
     const info = volumeManager.getCurrentProfileVolumeInfo(c.volumeType);
     if (info && info.fileSystem) {
       readers.push(new TrashDirectoryReader(info.fileSystem, c));
