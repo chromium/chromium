@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "ash/components/phonehub/phone_hub_manager_impl.h"
+#include <memory>
 
+#include "ash/components/phonehub/app_stream_launcher_data_model.h"
 #include "ash/components/phonehub/app_stream_manager.h"
 #include "ash/components/phonehub/browser_tabs_metadata_fetcher.h"
 #include "ash/components/phonehub/browser_tabs_model_controller.h"
@@ -112,6 +114,8 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           feature_status_provider_.get(),
           multidevice_setup_client,
           show_multidevice_setup_dialog_callback)),
+      app_stream_launcher_data_model_(
+          std::make_unique<AppStreamLauncherDataModel>()),
       notification_processor_(
           std::make_unique<NotificationProcessor>(notification_manager_.get())),
       recent_apps_interaction_handler_(
@@ -212,6 +216,11 @@ NotificationManager* PhoneHubManagerImpl::GetNotificationManager() {
 
 OnboardingUiTracker* PhoneHubManagerImpl::GetOnboardingUiTracker() {
   return onboarding_ui_tracker_.get();
+}
+
+AppStreamLauncherDataModel*
+PhoneHubManagerImpl::GetAppStreamLauncherDataModel() {
+  return app_stream_launcher_data_model_.get();
 }
 
 PhoneModel* PhoneHubManagerImpl::GetPhoneModel() {

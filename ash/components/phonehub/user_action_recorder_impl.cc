@@ -49,6 +49,10 @@ void UserActionRecorderImpl::RecordCameraRollDownloadAttempt() {
   HandleUserAction(UserAction::kCameraRollDownload);
 }
 
+void UserActionRecorderImpl::RecordAppStreamLauncherOpened() {
+  HandleUserAction(UserAction::kAppStreamLauncherOpened);
+}
+
 void UserActionRecorderImpl::HandleUserAction(UserAction action) {
   base::UmaHistogramEnumeration("PhoneHub.CompletedUserAction", action);
 }

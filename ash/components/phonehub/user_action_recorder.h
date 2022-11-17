@@ -44,6 +44,9 @@ class UserActionRecorder {
   // been attempted.
   virtual void RecordCameraRollDownloadAttempt() = 0;
 
+  // Records opening of app stream launher.
+  virtual void RecordAppStreamLauncherOpened() = 0;
+
  protected:
   UserActionRecorder() = default;
 };

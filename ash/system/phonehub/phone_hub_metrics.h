@@ -31,7 +31,8 @@ enum class Screen {
   kInvalid = 8,
   kPhoneConnecting = 9,
   kTetherConnectionPending = 10,
-  kMaxValue = kTetherConnectionPending
+  kMiniLauncher = 11,
+  kMaxValue = kMiniLauncher
 };
 
 // Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.

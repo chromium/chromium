@@ -5,6 +5,7 @@
 #ifndef ASH_COMPONENTS_PHONEHUB_FAKE_PHONE_HUB_MANAGER_H_
 #define ASH_COMPONENTS_PHONEHUB_FAKE_PHONE_HUB_MANAGER_H_
 
+#include "ash/components/phonehub/app_stream_launcher_data_model.h"
 #include "ash/components/phonehub/app_stream_manager.h"
 #include "ash/components/phonehub/fake_browser_tabs_model_provider.h"
 #include "ash/components/phonehub/fake_camera_roll_manager.h"
@@ -63,6 +64,10 @@ class FakePhoneHubManager : public PhoneHubManager {
     return &fake_onboarding_ui_tracker_;
   }
 
+  AppStreamLauncherDataModel* fake_app_stream_launcher_data_model() {
+    return &app_stream_launcher_data_model_;
+  }
+
   FakeRecentAppsInteractionHandler* fake_recent_apps_interaction_handler() {
     return &fake_recent_apps_interaction_handler_;
   }
@@ -109,6 +114,7 @@ class FakePhoneHubManager : public PhoneHubManager {
   NotificationInteractionHandler* GetNotificationInteractionHandler() override;
   NotificationManager* GetNotificationManager() override;
   OnboardingUiTracker* GetOnboardingUiTracker() override;
+  AppStreamLauncherDataModel* GetAppStreamLauncherDataModel() override;
   PhoneModel* GetPhoneModel() override;
   RecentAppsInteractionHandler* GetRecentAppsInteractionHandler() override;
   ScreenLockManager* GetScreenLockManager() override;
@@ -127,6 +133,7 @@ class FakePhoneHubManager : public PhoneHubManager {
   FakeNotificationInteractionHandler fake_notification_interaction_handler_;
   FakeNotificationManager fake_notification_manager_;
   FakeOnboardingUiTracker fake_onboarding_ui_tracker_;
+  AppStreamLauncherDataModel app_stream_launcher_data_model_;
   MutablePhoneModel mutable_phone_model_;
   FakeRecentAppsInteractionHandler fake_recent_apps_interaction_handler_;
   FakeScreenLockManager fake_screen_lock_manager_;

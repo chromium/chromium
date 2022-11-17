@@ -5,6 +5,7 @@
 #ifndef ASH_COMPONENTS_PHONEHUB_PHONE_HUB_MANAGER_H_
 #define ASH_COMPONENTS_PHONEHUB_PHONE_HUB_MANAGER_H_
 
+#include "ash/components/phonehub/app_stream_launcher_data_model.h"
 #include "ash/components/phonehub/app_stream_manager.h"
 #include "base/callback.h"
 #include "base/time/time.h"
@@ -53,6 +54,7 @@ class PhoneHubManager {
   GetNotificationInteractionHandler() = 0;
   virtual NotificationManager* GetNotificationManager() = 0;
   virtual OnboardingUiTracker* GetOnboardingUiTracker() = 0;
+  virtual AppStreamLauncherDataModel* GetAppStreamLauncherDataModel() = 0;
   virtual PhoneModel* GetPhoneModel() = 0;
   virtual RecentAppsInteractionHandler* GetRecentAppsInteractionHandler() = 0;
   virtual ScreenLockManager* GetScreenLockManager() = 0;

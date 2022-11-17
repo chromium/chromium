@@ -58,6 +58,7 @@ class EcheRecentAppClickHandler
  private:
   bool IsClickable(FeatureStatus status);
 
+  phonehub::PhoneHubManager* phone_hub_manager_;
   phonehub::NotificationInteractionHandler* notification_handler_;
   phonehub::RecentAppsInteractionHandler* recent_apps_handler_;
   FeatureStatusProvider* feature_status_provider_;

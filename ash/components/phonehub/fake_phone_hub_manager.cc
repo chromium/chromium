@@ -4,6 +4,7 @@
 
 #include "ash/components/phonehub/fake_phone_hub_manager.h"
 
+#include "ash/components/phonehub/app_stream_launcher_data_model.h"
 #include "ash/constants/ash_features.h"
 
 namespace ash {
@@ -51,6 +52,11 @@ NotificationManager* FakePhoneHubManager::GetNotificationManager() {
 
 OnboardingUiTracker* FakePhoneHubManager::GetOnboardingUiTracker() {
   return &fake_onboarding_ui_tracker_;
+}
+
+AppStreamLauncherDataModel*
+FakePhoneHubManager::GetAppStreamLauncherDataModel() {
+  return &app_stream_launcher_data_model_;
 }
 
 PhoneModel* FakePhoneHubManager::GetPhoneModel() {

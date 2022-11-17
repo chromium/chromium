@@ -8,6 +8,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/eche/eche_tray.h"
+#include "ash/system/phonehub/phone_hub_ui_controller.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/metrics/histogram_functions.h"
@@ -20,7 +21,8 @@ EcheRecentAppClickHandler::EcheRecentAppClickHandler(
     FeatureStatusProvider* feature_status_provider,
     LaunchAppHelper* launch_app_helper,
     EcheStreamStatusChangeHandler* stream_status_change_handler)
-    : feature_status_provider_(feature_status_provider),
+    : phone_hub_manager_(phone_hub_manager),
+      feature_status_provider_(feature_status_provider),
       launch_app_helper_(launch_app_helper),
       stream_status_change_handler_(stream_status_change_handler) {
   notification_handler_ =
@@ -49,6 +51,7 @@ EcheRecentAppClickHandler::~EcheRecentAppClickHandler() {
 void EcheRecentAppClickHandler::HandleNotificationClick(
     int64_t notification_id,
     const phonehub::Notification::AppMetadata& app_metadata) {
+  DCHECK(phone_hub_manager_);
   // Add the notification’s `app_metadata` that the user clicks to recents list
   // if the stream is already started. If the stream hasn't started yet, we keep
   // this notification’s `app_metadata` until this notification is streaming

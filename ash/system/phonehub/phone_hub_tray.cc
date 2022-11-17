@@ -154,6 +154,7 @@ void PhoneHubTray::HideBubble(const TrayBubbleView* bubble_view) {
 
 void PhoneHubTray::OnPhoneHubUiStateChanged() {
   UpdateVisibility();
+  UpdateHeaderVisibility();
 
   if (!bubble_)
     return;
@@ -236,6 +237,7 @@ void PhoneHubTray::ShowBubble() {
   phone_status_view_ = phone_status.get();
   DCHECK(phone_status_view_);
   bubble_view->AddChildView(std::move(phone_status));
+  UpdateHeaderVisibility();
 
   // Other contents, i.e. the connected view and the interstitial views,
   // will be positioned underneath the phone status view and updated based
@@ -367,6 +369,18 @@ void PhoneHubTray::UpdateVisibility() {
   DCHECK(ui_controller_.get());
   auto ui_state = ui_controller_->ui_state();
   SetVisiblePreferred(ui_state != PhoneHubUiController::UiState::kHidden);
+}
+
+void PhoneHubTray::UpdateHeaderVisibility() {
+  if (!features::IsEcheSWAEnabled())
+    return;
+  if (!phone_status_view_)
+    return;
+
+  DCHECK(ui_controller_.get());
+  auto ui_state = ui_controller_->ui_state();
+  phone_status_view_->SetVisible(ui_state !=
+                                 PhoneHubUiController::UiState::kMiniLauncher);
 }
 
 void PhoneHubTray::TemporarilyDisableAnimation() {

@@ -16,6 +16,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/eche/eche_tray.h"
+#include "ash/system/phonehub/app_stream_launcher_view.h"
 #include "ash/system/phonehub/bluetooth_disabled_view.h"
 #include "ash/system/phonehub/onboarding_view.h"
 #include "ash/system/phonehub/phone_connected_view.h"
@@ -62,6 +63,9 @@ phone_hub_metrics::Screen GetMetricsScreen(
     case PhoneHubUiController::UiState::kTetherConnectionPending:
       return phone_hub_metrics::Screen::kTetherConnectionPending;
 
+    case PhoneHubUiController::UiState::kMiniLauncher:
+      return phone_hub_metrics::Screen::kMiniLauncher;
+
     case PhoneHubUiController::UiState::kHidden:
       return phone_hub_metrics::Screen::kInvalid;
   }
@@ -89,6 +93,9 @@ std::string PhoneHubUIStateToString(PhoneHubUiController::UiState ui_state) {
 
     case PhoneHubUiController::UiState::kTetherConnectionPending:
       return "[kTetherConnectionPending]";
+
+    case PhoneHubUiController::UiState::kMiniLauncher:
+      return "[kMiniLauncher]";
 
     case PhoneHubUiController::UiState::kHidden:
       return "[kHidden]";
@@ -144,6 +151,8 @@ void PhoneHubUiController::SetPhoneHubManager(
   if (phone_hub_manager_) {
     phone_hub_manager_->GetFeatureStatusProvider()->AddObserver(this);
     phone_hub_manager_->GetOnboardingUiTracker()->AddObserver(this);
+    if (features::IsEcheSWAEnabled())
+      phone_hub_manager_->GetAppStreamLauncherDataModel()->AddObserver(this);
     phone_hub_manager_->GetPhoneModel()->AddObserver(this);
   }
 
@@ -187,6 +196,8 @@ std::unique_ptr<PhoneHubContentView> PhoneHubUiController::CreateContentView(
           phone_hub_manager_->GetConnectionScheduler());
     case UiState::kPhoneConnected:
       return std::make_unique<PhoneConnectedView>(phone_hub_manager_);
+    case UiState::kMiniLauncher:
+      return std::make_unique<AppStreamLauncherView>(phone_hub_manager_);
   }
 }
 
@@ -242,6 +253,7 @@ void PhoneHubUiController::RecordStatusOnBubbleOpened() {
     case UiState::kTetherConnectionPending:
       return;
 
+    case UiState::kMiniLauncher:
     case UiState::kPhoneConnected:
       base::UmaHistogramEnumeration("PhoneHub.BubbleOpened.Connectable.Page",
                                     phone_hub_metrics::Screen::kPhoneConnected);
@@ -290,6 +302,12 @@ void PhoneHubUiController::OnShouldShowOnboardingUiChanged() {
   UpdateUiState(GetUiStateFromPhoneHubManager());
 }
 
+void PhoneHubUiController::OnShouldShowMiniLauncherChanged() {
+  if (!features::IsEcheSWAEnabled())
+    return;
+  UpdateUiState(GetUiStateFromPhoneHubManager());
+}
+
 void PhoneHubUiController::OnModelChanged() {
   UpdateUiState(GetUiStateFromPhoneHubManager());
 }
@@ -314,6 +332,21 @@ void PhoneHubUiController::UpdateUiState(
 
 PhoneHubUiController::UiState
 PhoneHubUiController::GetUiStateFromPhoneHubManager() {
+  PhoneHubUiController::UiState ui_state =
+      GetUiStateFromPhoneHubManagerInternal();
+  if (features::IsEcheSWAEnabled() &&
+      (ui_state != PhoneHubUiController::UiState::kMiniLauncher) &&
+      phone_hub_manager_ &&
+      phone_hub_manager_->GetAppStreamLauncherDataModel()) {
+    // Make sure the next time we go back to the "Phone Connected" state
+    // we do not show the Mini Launcher.
+    phone_hub_manager_->GetAppStreamLauncherDataModel()->ResetState();
+  }
+  return ui_state;
+}
+
+PhoneHubUiController::UiState
+PhoneHubUiController::GetUiStateFromPhoneHubManagerInternal() {
   if (!Shell::Get()->session_controller()->IsUserPrimary() ||
       !phone_hub_manager_)
     return UiState::kHidden;
@@ -369,8 +402,15 @@ PhoneHubUiController::GetUiStateFromPhoneHubManager() {
         connecting_view_grace_period_timer_.Reset();
 
       // Delay displaying the connected view until the phone model is ready.
-      if (phone_model->phone_status_model().has_value())
-        return UiState::kPhoneConnected;
+      if (phone_model->phone_status_model().has_value()) {
+        // Decide to show the Mini Launcher or the main connected phone view.
+        return phone_hub_manager_->GetAppStreamLauncherDataModel()
+                           ->GetShouldShowMiniLauncher() &&
+                       features::IsEcheSWAEnabled() &&
+                       features::IsEcheLauncherEnabled()
+                   ? UiState::kMiniLauncher
+                   : UiState::kPhoneConnected;
+      }
 
       // If the the |ui_state_| was UiState::kTetherConnectionPending, continue
       // returning the UiState::kTetherConnectionPending state.
@@ -405,6 +445,8 @@ void PhoneHubUiController::CleanUpPhoneHubManager() {
 
   phone_hub_manager_->GetFeatureStatusProvider()->RemoveObserver(this);
   phone_hub_manager_->GetOnboardingUiTracker()->RemoveObserver(this);
+  if (features::IsEcheSWAEnabled())
+    phone_hub_manager_->GetAppStreamLauncherDataModel()->RemoveObserver(this);
   phone_hub_manager_->GetPhoneModel()->RemoveObserver(this);
 }
 

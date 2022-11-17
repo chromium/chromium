@@ -1,0 +1,66 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_SYSTEM_PHONEHUB_APP_STREAM_LAUNCHER_VIEW_H_
+#define ASH_SYSTEM_PHONEHUB_APP_STREAM_LAUNCHER_VIEW_H_
+
+#include <memory>
+#include "ash/ash_export.h"
+#include "ash/system/phonehub/phone_hub_content_view.h"
+#include "ui/gfx/vector_icon_types.h"
+#include "ui/views/controls/button/button.h"
+#include "ui/views/view.h"
+
+namespace views {
+class Button;
+}
+namespace ash {
+
+namespace phonehub {
+class PhoneHubManager;
+}
+
+// A view of the Phone Hub panel, displaying the apps that user can launch for
+// app streaming.
+class ASH_EXPORT AppStreamLauncherView : public PhoneHubContentView {
+ public:
+  explicit AppStreamLauncherView(phonehub::PhoneHubManager* phone_hub_manager);
+  ~AppStreamLauncherView() override;
+
+  // views::View:
+  void ChildPreferredSizeChanged(View* child) override;
+  void ChildVisibilityChanged(View* child) override;
+  const char* GetClassName() const override;
+
+  // PhoneHubContentView:
+  phone_hub_metrics::Screen GetScreenForMetrics() const override;
+
+ private:
+  friend class AppStreamLauncherViewTest;
+  FRIEND_TEST_ALL_PREFIXES(AppStreamLauncherViewTest, OpenView);
+
+  std::unique_ptr<views::View> CreateAppListView();
+  std::unique_ptr<views::View> CreateHeaderView();
+  std::unique_ptr<views::Button> CreateButton(
+      views::Button::PressedCallback callback,
+      const gfx::VectorIcon& icon,
+      int message_id);
+  std::unique_ptr<views::View> CreateViewForItemAtIndex(size_t index);
+  void AppIconActivated();
+
+  // Handles the click on the "back" arrow in the header.
+  void OnArrowBackActivated();
+
+  views::Button* arrow_back_button_ = nullptr;
+  phonehub::PhoneHubManager* phone_hub_manager_;
+
+  // Contains all the apps
+  views::View* items_container_;
+
+  base::WeakPtrFactory<AppStreamLauncherView> weak_factory_{this};
+};
+
+}  // namespace ash
+
+#endif  // ASH_SYSTEM_PHONEHUB_APP_STREAM_LAUNCHER_VIEW_H_

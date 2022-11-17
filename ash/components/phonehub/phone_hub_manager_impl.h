@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/components/phonehub/app_stream_launcher_data_model.h"
 #include "ash/components/phonehub/app_stream_manager.h"
 #include "ash/components/phonehub/feature_setup_response_processor.h"
 #include "ash/components/phonehub/icon_decoder.h"
@@ -72,6 +73,7 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   NotificationInteractionHandler* GetNotificationInteractionHandler() override;
   NotificationManager* GetNotificationManager() override;
   OnboardingUiTracker* GetOnboardingUiTracker() override;
+  AppStreamLauncherDataModel* GetAppStreamLauncherDataModel() override;
   PhoneModel* GetPhoneModel() override;
   RecentAppsInteractionHandler* GetRecentAppsInteractionHandler() override;
   ScreenLockManager* GetScreenLockManager() override;
@@ -105,6 +107,7 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
       notification_interaction_handler_;
   std::unique_ptr<NotificationManager> notification_manager_;
   std::unique_ptr<OnboardingUiTracker> onboarding_ui_tracker_;
+  std::unique_ptr<AppStreamLauncherDataModel> app_stream_launcher_data_model_;
   std::unique_ptr<NotificationProcessor> notification_processor_;
   std::unique_ptr<RecentAppsInteractionHandler>
       recent_apps_interaction_handler_;

@@ -1,0 +1,263 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/system/phonehub/app_stream_launcher_view.h"
+#include "ash/controls/rounded_scroll_bar.h"
+#include "ash/resources/vector_icons/vector_icons.h"
+
+#include <cmath>
+#include <memory>
+
+#include "ash/components/phonehub/multidevice_feature_access_manager.h"
+#include "ash/components/phonehub/phone_hub_manager.h"
+#include "ash/components/phonehub/user_action_recorder.h"
+#include "ash/constants/ash_features.h"
+#include "ash/style/ash_color_provider.h"
+#include "ash/system/phonehub/camera_roll_view.h"
+#include "ash/system/phonehub/multidevice_feature_opt_in_view.h"
+#include "ash/system/phonehub/phone_hub_recent_apps_view.h"
+#include "ash/system/phonehub/phone_hub_view_ids.h"
+#include "ash/system/phonehub/phone_status_view.h"
+#include "ash/system/phonehub/quick_actions_view.h"
+#include "ash/system/phonehub/task_continuation_view.h"
+#include "ash/system/phonehub/ui_constants.h"
+#include "ash/system/tray/tray_constants.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/text_constants.h"
+#include "ui/strings/grit/ui_strings.h"
+#include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/separator.h"
+#include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/layout_types.h"
+#include "ui/views/layout/table_layout.h"
+#include "ui/views/view.h"
+
+namespace ash {
+
+namespace {
+
+// Insets for the vertical scroll bar.
+constexpr auto kVerticalScrollInsets = gfx::Insets::TLBR(1, 0, 1, 1);
+
+constexpr auto kBubblePadding = gfx::Insets::VH(8, 8);
+constexpr int kHeaderHeight = 40;
+constexpr auto kHeaderDefaultSpacing = gfx::Insets::VH(0, 6);
+
+// The horizontal interior margin for the apps page container - i.e. the margin
+// between the apps page bounds and the page content.
+constexpr int kHorizontalInteriorMargin = 16;
+
+// Number of columns of apps in the grid
+constexpr int kColumns = 5;
+
+constexpr int kRowHeight = 60;
+
+// The padding between different sections within the apps page. Also used for
+// interior apps page container margin.
+constexpr int kVerticalPaddingBetweenSections = 16;
+
+}  // namespace
+
+AppStreamLauncherView::AppStreamLauncherView(
+    phonehub::PhoneHubManager* phone_hub_manager)
+    : phone_hub_manager_(phone_hub_manager) {
+  SetID(PhoneHubViewID::kAppStreamLauncherView);
+
+  auto* layout_manager =
+      SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout_manager->SetInteriorMargin(gfx::Insets::VH(0, 0))
+      .SetOrientation(views::LayoutOrientation::kVertical)
+      .SetCollapseMargins(false)
+      .SetDefault(views::kMarginsKey, kHeaderDefaultSpacing)
+      .SetInteriorMargin(kBubblePadding)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+
+  AddChildView(CreateHeaderView());
+
+  auto* app_list_view = AddChildView(CreateAppListView());
+  app_list_view->SetPreferredSize(gfx::Size(400, 400));
+  app_list_view->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kPreferred,
+                               /*adjust_height_for_width =*/false)
+          .WithWeight(1));
+
+  phone_hub_manager->GetUserActionRecorder()->RecordUiOpened();
+}
+
+AppStreamLauncherView::~AppStreamLauncherView() = default;
+
+// The behavior is inspired from ash/app_list/views/app_list_bubble_apps_page.cc
+std::unique_ptr<views::View> AppStreamLauncherView::CreateAppListView() {
+  // The entire page scrolls.
+  auto scroll_view = std::make_unique<views::ScrollView>(
+      views::ScrollView::ScrollWithLayers::kEnabled);
+  scroll_view->ClipHeightTo(0, std::numeric_limits<int>::max());
+  scroll_view->SetDrawOverflowIndicator(false);
+  // Don't paint a background. The bubble already has one.
+  scroll_view->SetBackgroundColor(absl::nullopt);
+  // Arrow keys are used to select app icons.
+  scroll_view->SetAllowKeyboardScrolling(false);
+
+  // Scroll view will have a gradient mask layer.
+  scroll_view->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+
+  // Set up scroll bars.
+  scroll_view->SetHorizontalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kDisabled);
+  auto vertical_scroll =
+      std::make_unique<RoundedScrollBar>(/*horizontal=*/false);
+  vertical_scroll->SetInsets(kVerticalScrollInsets);
+  vertical_scroll->SetSnapBackOnDragOutside(false);
+  scroll_view->SetVerticalScrollBar(std::move(vertical_scroll));
+
+  auto scroll_contents = std::make_unique<views::View>();
+  scroll_contents->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kUnbounded,
+                               /*adjust_height_for_width =*/false)
+          .WithWeight(1));
+
+  auto* layout =
+      scroll_contents->SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
+      .SetInteriorMargin(gfx::Insets::VH(kVerticalPaddingBetweenSections,
+                                         kHorizontalInteriorMargin));
+  //.SetDefault(views::kMarginsKey, kVerticalPaddingBetweenSections);
+
+  // All apps section.
+  items_container_ =
+      scroll_contents->AddChildView(std::make_unique<views::View>());
+  items_container_->SetPaintToLayer();
+  items_container_->layer()->SetFillsBoundsOpaquely(false);
+  auto* table_layout = items_container_->SetLayoutManager(
+      std::make_unique<views::TableLayout>());
+  for (int i = 0; i < kColumns; i++) {
+    table_layout->AddColumn(
+        views::LayoutAlignment::kStretch, views::LayoutAlignment::kStretch, 1.0,
+        views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
+  }
+  int n_apps = 107;
+  table_layout->AddRows(ceil((double)n_apps / kColumns),
+                        views::TableLayout::kFixedSize, kRowHeight);
+
+  for (int i = 0; i < n_apps; i++) {
+    std::unique_ptr<View> view = CreateViewForItemAtIndex(i);
+    view->SetPreferredSize(gfx::Size(50, 50));
+    items_container_->AddChildView(std::move(view));
+  }
+  scroll_view->SetContents(std::move(scroll_contents));
+
+  return scroll_view;
+}
+
+std::unique_ptr<views::View> AppStreamLauncherView::CreateViewForItemAtIndex(
+    size_t index) {
+  // TODO(nayebi): Replace this plceholder with the real implementation of the
+  //  icon+text.
+  auto view = std::make_unique<views::LabelButton>(
+      base::BindRepeating(&AppStreamLauncherView::AppIconActivated,
+                          base::Unretained(this)),
+      u"ICON");
+  view->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
+  return view;
+}
+
+void AppStreamLauncherView::AppIconActivated() {}
+
+std::unique_ptr<views::View> AppStreamLauncherView::CreateHeaderView() {
+  auto header = std::make_unique<views::View>();
+  header->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetInteriorMargin(gfx::Insets::VH(0, 0))
+      .SetCollapseMargins(false)
+      .SetMinimumCrossAxisSize(kHeaderHeight)
+      .SetDefault(views::kMarginsKey, kHeaderDefaultSpacing)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+
+  // Add arrowback button
+  arrow_back_button_ = header->AddChildView(CreateButton(
+      base::BindRepeating(&AppStreamLauncherView::OnArrowBackActivated,
+                          weak_factory_.GetWeakPtr()),
+      kEcheArrowBackIcon, IDS_APP_ACCNAME_BACK));
+
+  views::Label* title = header->AddChildView(std::make_unique<views::Label>(
+      std::u16string(), views::style::CONTEXT_DIALOG_TITLE,
+      views::style::STYLE_PRIMARY,
+      gfx::DirectionalityMode::DIRECTIONALITY_AS_URL));
+  title->SetMultiLine(true);
+  title->SetAllowCharacterBreak(true);
+  title->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded,
+                               /*adjust_height_for_width =*/true)
+          .WithWeight(1));
+  title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  // TODO(b/259299246) Finalize the text and read from the resource
+  title->SetText(u"Apps on your phone");
+
+  return header;
+}
+
+// Creates a button with the given callback, icon, and tooltip text.
+// `message_id` is the resource id of the tooltip text of the icon.
+std::unique_ptr<views::Button> AppStreamLauncherView::CreateButton(
+    views::Button::PressedCallback callback,
+    const gfx::VectorIcon& icon,
+    int message_id) {
+  SkColor color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kIconColorPrimary);
+  SkColor disabled_color = SkColorSetA(color, gfx::kDisabledControlAlpha);
+  auto button = views::CreateVectorImageButton(std::move(callback));
+  views::SetImageFromVectorIconWithColor(button.get(), icon, color,
+                                         disabled_color);
+  button->SetTooltipText(l10n_util::GetStringUTF16(message_id));
+  button->SizeToPreferredSize();
+
+  views::InstallCircleHighlightPathGenerator(button.get());
+
+  return button;
+}
+
+void AppStreamLauncherView::OnArrowBackActivated() {
+  phone_hub_manager_->GetAppStreamLauncherDataModel()
+      ->SetShouldShowMiniLauncher(false);
+}
+
+void AppStreamLauncherView::ChildPreferredSizeChanged(View* child) {
+  // Resize the bubble when the child change its size.
+  PreferredSizeChanged();
+}
+
+void AppStreamLauncherView::ChildVisibilityChanged(View* child) {
+  // Resize the bubble when the child change its visibility.
+  PreferredSizeChanged();
+}
+
+const char* AppStreamLauncherView::GetClassName() const {
+  return "AppStreamLauncherView";
+}
+
+phone_hub_metrics::Screen AppStreamLauncherView::GetScreenForMetrics() const {
+  return phone_hub_metrics::Screen::kMiniLauncher;
+}
+
+}  // namespace ash

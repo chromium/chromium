@@ -36,7 +36,8 @@ class UserActionRecorderImpl : public UserActionRecorder {
     kNotificationDismissal = 5,
     kNotificationReply = 6,
     kCameraRollDownload = 7,
-    kMaxValue = kCameraRollDownload,
+    kAppStreamLauncherOpened = 8,
+    kMaxValue = kAppStreamLauncherOpened,
   };
 
   // UserActionRecorder:
@@ -48,6 +49,7 @@ class UserActionRecorderImpl : public UserActionRecorder {
   void RecordNotificationDismissAttempt() override;
   void RecordNotificationReplyAttempt() override;
   void RecordCameraRollDownloadAttempt() override;
+  void RecordAppStreamLauncherOpened() override;
 
   void HandleUserAction(UserAction action);
 

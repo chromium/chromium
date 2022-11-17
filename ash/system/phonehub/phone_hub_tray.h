@@ -129,6 +129,7 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   // Updates the visibility of the tray in the shelf based on the feature is
   // enabled.
   void UpdateVisibility();
+  void UpdateHeaderVisibility();
 
   // Disables the animation and enables it back after a 5s delay. This tray's
   // visibility can be updated when the connection is complete. After a session

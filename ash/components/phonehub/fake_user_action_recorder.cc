@@ -43,5 +43,9 @@ void FakeUserActionRecorder::RecordCameraRollDownloadAttempt() {
   ++num_camera_roll_downloads_;
 }
 
+void FakeUserActionRecorder::RecordAppStreamLauncherOpened() {
+  ++app_stream_launcher_opened_;
+}
+
 }  // namespace phonehub
 }  // namespace ash

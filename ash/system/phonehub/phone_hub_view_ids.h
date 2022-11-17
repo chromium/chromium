@@ -49,6 +49,7 @@ enum PhoneHubViewID {
 
   // Camera roll view and its components.
   kCameraRollView,
+  kAppStreamLauncherView,
 };
 
 }  // namespace ash
