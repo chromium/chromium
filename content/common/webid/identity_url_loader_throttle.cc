@@ -28,10 +28,14 @@ static constexpr char kIdpSigninStatusHeader[] = "IdP-SignIn-Status";
 static constexpr char kIdpHeaderValueSignin[] = "action=signin";
 static constexpr char kIdpHeaderValueSignout[] = "action=signout";
 
-bool IsFedCmIdpSigninStatusEnabled() {
+bool IsFedCmIdpSigninStatusThrottleEnabled() {
   return GetFieldTrialParamByFeatureAsBool(
-      features::kFedCm, features::kFedCmIdpSigninStatusFieldTrialParamName,
-      false);
+             features::kFedCm,
+             features::kFedCmIdpSigninStatusFieldTrialParamName, false) ||
+         GetFieldTrialParamByFeatureAsBool(
+             features::kFedCm,
+             features::kFedCmIdpSigninStatusMetricsOnlyFieldTrialParamName,
+             true);
 }
 
 }  // namespace
@@ -40,7 +44,7 @@ namespace content {
 
 std::unique_ptr<blink::URLLoaderThrottle> MaybeCreateIdentityUrlLoaderThrottle(
     SetIdpStatusCallback cb) {
-  if (!IsFedCmIdpSigninStatusEnabled())
+  if (!IsFedCmIdpSigninStatusThrottleEnabled())
     return nullptr;
   return std::make_unique<IdentityUrlLoaderThrottle>(std::move(cb));
 }

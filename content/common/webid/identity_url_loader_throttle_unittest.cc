@@ -33,7 +33,6 @@ class IdentityUrlLoaderThrottleTest : public testing::Test {
     cb_signin_status_ = status;
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   int cb_num_calls_ = 0;
   url::Origin cb_origin_;
@@ -45,7 +44,13 @@ class IdentityUrlLoaderThrottleTestParameterized
       public testing::WithParamInterface<
           std::tuple<IdpSigninStatus, bool, bool>> {};
 
-TEST_F(IdentityUrlLoaderThrottleTest, OffByDefault) {
+TEST_F(IdentityUrlLoaderThrottleTest, DisabledByKillSwitch) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeatureWithParameters(
+      features::kFedCm,
+      {{features::kFedCmIdpSigninStatusMetricsOnlyFieldTrialParamName,
+        "false"}});
+
   std::unique_ptr<blink::URLLoaderThrottle> throttle =
       MaybeCreateIdentityUrlLoaderThrottle(CreateCallback());
   EXPECT_EQ(nullptr, throttle);
@@ -55,10 +60,6 @@ TEST_P(IdentityUrlLoaderThrottleTestParameterized, Headers) {
   IdpSigninStatus signin_status = std::get<0>(GetParam());
   bool has_user_gesture = std::get<1>(GetParam());
   bool is_google_header = std::get<2>(GetParam());
-
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      features::kFedCm,
-      {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
 
   std::unique_ptr<blink::URLLoaderThrottle> throttle =
       MaybeCreateIdentityUrlLoaderThrottle(CreateCallback());
@@ -113,10 +114,6 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::Values(false, true)));
 
 TEST_F(IdentityUrlLoaderThrottleTest, NoRelevantHeader) {
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      features::kFedCm,
-      {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
-
   std::unique_ptr<blink::URLLoaderThrottle> throttle =
       MaybeCreateIdentityUrlLoaderThrottle(CreateCallback());
   ASSERT_NE(nullptr, throttle);

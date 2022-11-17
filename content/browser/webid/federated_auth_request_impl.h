@@ -94,6 +94,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
     blink::mojom::IdentityProvider provider;
     Endpoints endpoints;
+    bool has_failing_idp_signin_status{false};
     bool manifest_list_checked{false};
     absl::optional<IdentityProviderMetadata> metadata;
   };

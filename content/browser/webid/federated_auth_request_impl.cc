@@ -306,20 +306,17 @@ std::string FormatOriginForDisplay(const url::Origin& origin) {
   return FormatUrlForDisplay(origin.GetURL());
 }
 
-bool ShouldFailIfNotSignedInWithIdp(
+bool ShouldFailBecauseNotSignedInWithIdp(
     const GURL& idp_url,
     FederatedIdentitySharingPermissionContextDelegate*
         sharing_permission_delegate) {
-  if (!IsFedCmIdpSigninStatusEnabled())
+  if (GetFedCmIdpSigninStatusMode() == FedCmIdpSigninStatusMode::DISABLED)
     return false;
 
   const url::Origin idp_origin = url::Origin::Create(idp_url);
   const absl::optional<bool> idp_signin_status =
       sharing_permission_delegate->GetIdpSigninStatus(idp_origin);
-  if (!idp_signin_status.value_or(true))
-    return true;
-
-  return false;
+  return !idp_signin_status.value_or(true);
 }
 
 FederatedAuthRequestWebContentsData* GetWebContentsData(
@@ -526,8 +523,13 @@ void FederatedAuthRequestImpl::RequestToken(
 
       // TODO(crbug.com/1382545): Handle ShouldFailIfNotSignedInWithIdp in the
       // multi IDP use case.
-      if (ShouldFailIfNotSignedInWithIdp(idp_ptr->config_url,
-                                         sharing_permission_delegate_)) {
+      IdentityProviderInfo& idp_info = idp_info_[idp_ptr->config_url];
+      idp_info.has_failing_idp_signin_status =
+          ShouldFailBecauseNotSignedInWithIdp(idp_ptr->config_url,
+                                              sharing_permission_delegate_);
+
+      if (idp_info.has_failing_idp_signin_status &&
+          GetFedCmIdpSigninStatusMode() == FedCmIdpSigninStatusMode::ENABLED) {
         CompleteRequestWithError(FederatedAuthRequestResult::kError,
                                  TokenStatus::kNotSignedInWithIdp,
                                  /*should_delay_callback=*/true);
@@ -830,8 +832,11 @@ void FederatedAuthRequestImpl::OnManifestReady(
 
   // Make sure that we don't fetch accounts if the IDP sign-in bit is reset to
   // false during the API call. e.g. by the login/logout HEADER.
-  if (ShouldFailIfNotSignedInWithIdp(idp_info.provider.config_url,
-                                     sharing_permission_delegate_)) {
+  idp_info_[idp_info.provider.config_url].has_failing_idp_signin_status =
+      ShouldFailBecauseNotSignedInWithIdp(idp_info.provider.config_url,
+                                          sharing_permission_delegate_);
+  if (idp_info.has_failing_idp_signin_status &&
+      GetFedCmIdpSigninStatusMode() == FedCmIdpSigninStatusMode::ENABLED) {
     CompleteRequestWithError(FederatedAuthRequestResult::kError,
                              TokenStatus::kNotSignedInWithIdp,
                              /*should_delay_callback=*/true);
@@ -926,7 +931,7 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
     const url::Origin& idp_origin,
     blink::mojom::FederatedAuthRequestResult result,
     absl::optional<TokenStatus> token_status) {
-  if (!IsFedCmIdpSigninStatusEnabled()) {
+  if (GetFedCmIdpSigninStatusMode() == FedCmIdpSigninStatusMode::DISABLED) {
     CompleteRequestWithError(result, token_status,
                              /*should_delay_callback=*/true);
     return;
@@ -934,15 +939,17 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
 
   const absl::optional<bool> idp_signin_status =
       sharing_permission_delegate_->GetIdpSigninStatus(idp_origin);
+
   // Ensures that we only fetch accounts unconditionally once.
-  if (!idp_signin_status.has_value()) {
-    sharing_permission_delegate_->SetIdpSigninStatus(idp_origin, false);
+  sharing_permission_delegate_->SetIdpSigninStatus(idp_origin, false);
+
+  if (!idp_signin_status.has_value() ||
+      GetFedCmIdpSigninStatusMode() == FedCmIdpSigninStatusMode::METRICS_ONLY) {
     CompleteRequestWithError(result, token_status,
                              /*should_delay_callback=*/true);
     return;
   }
 
-  sharing_permission_delegate_->SetIdpSigninStatus(idp_origin, false);
   // TODO(crbug.com/1357790): we should figure out how to handle multiple IDP
   // w.r.t. showing a static failure UI. e.g. one IDP is always successful and
   // one always returns 404.
@@ -966,11 +973,13 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
     IdpNetworkRequestManager::AccountList accounts) {
   url::Origin idp_origin = url::Origin::Create(idp_info.provider.config_url);
 
-  // Record metrics on effect of IDP sign-in status API.
-  const absl::optional<bool> idp_signin_status =
-      sharing_permission_delegate_->GetIdpSigninStatus(idp_origin);
-  fedcm_metrics_->RecordIdpSigninMatchStatus(idp_signin_status,
-                                             status.parse_status);
+  if (GetFedCmIdpSigninStatusMode() != FedCmIdpSigninStatusMode::DISABLED) {
+    // Record metrics on effect of IDP sign-in status API.
+    const absl::optional<bool> idp_signin_status =
+        sharing_permission_delegate_->GetIdpSigninStatus(idp_origin);
+    fedcm_metrics_->RecordIdpSigninMatchStatus(idp_signin_status,
+                                               status.parse_status);
+  }
 
   constexpr char kAccountsUrl[] = "accounts endpoint";
   switch (status.parse_status) {
@@ -1001,7 +1010,12 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
     case IdpNetworkRequestManager::ParseStatus::kSuccess: {
       ComputeLoginStateAndReorderAccounts(idp_info.provider, accounts);
 
-      sharing_permission_delegate_->SetIdpSigninStatus(idp_origin, true);
+      if (!idp_info.has_failing_idp_signin_status) {
+        // This scenario occurs in FedCmIdpSigninStatusMode::METRICS_ONLY mode.
+        // Don't set the IDP sign-in status because we would not get here in
+        // FedCmIdpSigninStatusMode::ENABLED mode.
+        sharing_permission_delegate_->SetIdpSigninStatus(idp_origin, true);
+      }
 
       bool need_client_metadata = false;
       for (const IdentityRequestAccount& account : accounts) {

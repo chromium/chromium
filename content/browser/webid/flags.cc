@@ -26,10 +26,19 @@ bool IsFedCmMultipleIdentityProvidersEnabled() {
       features::kFedCmMultipleIdentityProviders);
 }
 
-bool IsFedCmIdpSigninStatusEnabled() {
-  return GetFieldTrialParamByFeatureAsBool(
-      features::kFedCm, features::kFedCmIdpSigninStatusFieldTrialParamName,
-      false);
+FedCmIdpSigninStatusMode GetFedCmIdpSigninStatusMode() {
+  if (GetFieldTrialParamByFeatureAsBool(
+          features::kFedCm, features::kFedCmIdpSigninStatusFieldTrialParamName,
+          false)) {
+    return FedCmIdpSigninStatusMode::ENABLED;
+  }
+  if (GetFieldTrialParamByFeatureAsBool(
+          features::kFedCm,
+          features::kFedCmIdpSigninStatusMetricsOnlyFieldTrialParamName,
+          true)) {
+    return FedCmIdpSigninStatusMode::METRICS_ONLY;
+  }
+  return FedCmIdpSigninStatusMode::DISABLED;
 }
 
 bool IsFedCmMetricsEndpointEnabled() {
