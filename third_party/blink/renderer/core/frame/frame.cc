@@ -610,31 +610,6 @@ Frame* Frame::Top() {
   return parent;
 }
 
-Frame* Frame::FirstChild() const {
-  Frame* first_child = first_child_;
-  while (first_child && first_child->Owner()->GetFramePolicy().is_fenced) {
-    first_child = first_child->next_sibling_;
-  }
-  return first_child;
-}
-
-Frame* Frame::NextSibling() const {
-  // When respecting fenced frame boundaries, a fenced frame root is always
-  // considered as having no siblings.
-  if (Owner() && Owner()->GetFramePolicy().is_fenced) {
-    return nullptr;
-  }
-
-  // Skip over siblings that are the root of a fenced subtree (and therefore
-  // on the other side of a fenced frame boundary).
-  Frame* sibling = next_sibling_;
-  while (sibling && sibling->Owner()->GetFramePolicy().is_fenced) {
-    sibling = sibling->next_sibling_;
-  }
-
-  return sibling;
-}
-
 bool Frame::AllowFocusWithoutUserActivation() {
   if (!features::IsFencedFramesEnabled())
     return true;

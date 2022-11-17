@@ -377,13 +377,13 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   Frame* Top();
 
   // Returns the first child frame.
-  Frame* FirstChild() const;
+  Frame* FirstChild() const { return first_child_; }
 
   // Returns the previous sibling frame.
   Frame* PreviousSibling() const { return previous_sibling_; }
 
   // Returns the next sibling frame.
-  Frame* NextSibling() const;
+  Frame* NextSibling() const { return next_sibling_; }
 
   // Returns the last child frame.
   Frame* LastChild() const { return last_child_; }

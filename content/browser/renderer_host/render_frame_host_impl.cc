@@ -3733,16 +3733,6 @@ void RenderFrameHostImpl::CreateChildFrame(
     return;
   }
 
-  // Cannot create a fenced frame in a sandbox iframe which doesn't allow
-  // features that need to be allowed in the fenced frame. This is for Shadow
-  // DOM Fenced Frame.
-  if (IsSandboxed(blink::kFencedFrameMandatoryUnsandboxedFlags) &&
-      frame_policy.is_fenced) {
-    bad_message::ReceivedBadMessage(
-        GetProcess(), bad_message::RFH_CREATE_FENCED_FRAME_IN_SANDBOXED_FRAME);
-    return;
-  }
-
   // TODO(crbug.com/1145708). The interface exposed to tests should
   // match the mojo interface.
   OnCreateChildFrame(new_routing_id, std::move(frame_remote),

@@ -1292,11 +1292,7 @@ Element* LocalDOMWindow::frameElement() const {
   if (!GetFrame())
     return nullptr;
 
-  FrameOwner* owner = GetFrame()->Owner();
-  if (owner && owner->GetFramePolicy().is_fenced)
-    return nullptr;
-
-  return DynamicTo<HTMLFrameOwnerElement>(owner);
+  return DynamicTo<HTMLFrameOwnerElement>(GetFrame()->Owner());
 }
 
 void LocalDOMWindow::print(ScriptState* script_state) {

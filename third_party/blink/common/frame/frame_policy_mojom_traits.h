@@ -17,15 +17,6 @@ template <>
 class BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::FramePolicyDataView, blink::FramePolicy> {
  public:
-  static bool is_fenced(const blink::FramePolicy& frame_policy) {
-    return frame_policy.is_fenced;
-  }
-
-  static blink::mojom::FencedFrameMode fenced_frame_mode(
-      const blink::FramePolicy& frame_policy) {
-    return frame_policy.fenced_frame_mode;
-  }
-
   static const std::vector<blink::ParsedPermissionsPolicyDeclaration>&
   container_policy(const blink::FramePolicy& frame_policy) {
     return frame_policy.container_policy;
