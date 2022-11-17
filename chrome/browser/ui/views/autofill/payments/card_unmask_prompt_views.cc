@@ -114,9 +114,11 @@ void CardUnmaskPromptViews::GotVerificationResult(
         // invalid since we don't know the location of the problem.
         cvc_input_->SetInvalid(true);
 
-        // Show a "New card?" link, which when clicked will cause us to ask
-        // for expiration date.
-        ShowNewCardLink();
+        // For non-virtual cards, show a "Update card" link that triggers the UI
+        // to update the expiration date. This isn't relevant for virtual cards
+        // since they never expire.
+        if (!controller_->IsVirtualCard())
+          ShowNewCardLink();
       }
 
       // TODO(estade): When do we hide |error_label_|?

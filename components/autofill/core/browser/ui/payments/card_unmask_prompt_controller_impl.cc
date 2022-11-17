@@ -105,9 +105,8 @@ void CardUnmaskPromptControllerImpl::OnVerificationResult(
 
   unmasking_result_ = result;
   AutofillClient::PaymentsRpcCardType card_type =
-      card_.record_type() == CreditCard::VIRTUAL_CARD
-          ? AutofillClient::PaymentsRpcCardType::kVirtualCard
-          : AutofillClient::PaymentsRpcCardType::kServerCard;
+      IsVirtualCard() ? AutofillClient::PaymentsRpcCardType::kVirtualCard
+                      : AutofillClient::PaymentsRpcCardType::kServerCard;
 
   AutofillMetrics::LogRealPanResult(result, card_type);
   AutofillMetrics::LogUnmaskingDuration(
@@ -268,6 +267,11 @@ int CardUnmaskPromptControllerImpl::GetCvcImageRid() const {
 }
 
 bool CardUnmaskPromptControllerImpl::ShouldRequestExpirationDate() const {
+  // We should not display the request to update the expiration date in the
+  // virtual card retrieval flow.
+  if (IsVirtualCard())
+    return false;
+
   return card_.ShouldUpdateExpiration() ||
          new_card_link_clicked_;
 }
@@ -370,6 +374,10 @@ base::TimeDelta CardUnmaskPromptControllerImpl::GetSuccessMessageDuration()
 AutofillClient::PaymentsRpcResult
 CardUnmaskPromptControllerImpl::GetVerificationResult() const {
   return unmasking_result_;
+}
+
+bool CardUnmaskPromptControllerImpl::IsVirtualCard() const {
+  return card_.record_type() == CreditCard::VIRTUAL_CARD;
 }
 
 bool CardUnmaskPromptControllerImpl::AllowsRetry(

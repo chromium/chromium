@@ -75,6 +75,7 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
   bool IsChallengeOptionPresent() const override;
   base::TimeDelta GetSuccessMessageDuration() const override;
   AutofillClient::PaymentsRpcResult GetVerificationResult() const override;
+  bool IsVirtualCard() const override;
 
  protected:
   // Exposed for testing.
