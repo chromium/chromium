@@ -252,8 +252,8 @@ test(function(t) {
     headers.set('a', '1');
     headers.set('b', '2');
     headers.set('c', '3');
-    headers.append('a', '2');
-    headers.append('a', '3');
+    headers.append('b', '3');
+    headers.append('b', '4');
 
     const iterator = headers.entries();
 
@@ -266,10 +266,9 @@ test(function(t) {
         keys.push(key);
         values.push(value);
     }
-    assert_array_equals(keys, ['a', 'b', 'c'],
-                        'The pairs to iterate over should be the return ' +
-                        'value of an algorithm that implicitly makes a copy.');
-    assert_array_equals(values, ['1, 2, 3', '2', '3'],
+    assert_array_equals(keys, ['b', 'c', 'd'],
+                        'The pairs to iterate over should reflect the current Headers object.');
+    assert_array_equals(values, ['2, 3, 4', '3', '4'],
                         "The values should be combined and separated by ','.");
 }, 'Iteration mutation');
 

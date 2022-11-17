@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fetch/fetch_header_list.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -79,6 +80,30 @@ class CORE_EXPORT Headers final
   void Trace(Visitor*) const override;
 
  private:
+  class HeadersIterationSource final
+      : public PairIterable<String, IDLString, String, IDLString>::
+            IterationSource {
+   public:
+    explicit HeadersIterationSource(Headers* headers);
+    ~HeadersIterationSource() override;
+
+    bool Next(ScriptState* script_state,
+              String& key,
+              String& value,
+              ExceptionState& exception) override;
+
+    void Trace(Visitor*) const override;
+
+    void ResetHeaderList();
+
+   private:
+    // https://webidl.spec.whatwg.org/#dfn-value-pairs-to-iterate-over
+    Vector<std::pair<String, String>> headers_list_;
+    // https://webidl.spec.whatwg.org/#default-iterator-object-index
+    wtf_size_t current_ = 0;
+    Member<Headers> headers_;
+  };
+
   // These methods should only be called when size() would return 0.
   void FillWith(ScriptState* script_state,
                 const Vector<Vector<String>>&,
@@ -91,6 +116,8 @@ class CORE_EXPORT Headers final
   Guard guard_;
 
   IterationSource* StartIteration(ScriptState*, ExceptionState&) override;
+
+  HeapHashSet<WeakMember<HeadersIterationSource>> iterators_;
 };
 
 }  // namespace blink
