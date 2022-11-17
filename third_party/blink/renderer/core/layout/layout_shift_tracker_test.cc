@@ -1281,4 +1281,43 @@ TEST_F(LayoutShiftTrackerTest, NeedsToTrack) {
   EXPECT_TRUE(tracker.NeedsToTrack(*GetLayoutObjectByElementId("hr")));
 }
 
+TEST_F(LayoutShiftTrackerTest, AnimatingTransformCreatesLayoutShiftRoot) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes move {
+        to { translate: 10px; }
+      }
+      #animation {
+        animation: move 10s infinite;
+        position: absolute;
+        width: 0;
+        height: 0;
+        top: 0;
+      }
+      #child {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        background: blue;
+      }
+    </style>
+    <div id="animation">
+      <div id="child"></div>
+    </div>
+  )HTML");
+
+  EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
+
+  GetDocument()
+      .getElementById("animation")
+      ->setAttribute(html_names::kStyleAttr, "top: 400px");
+  // `animation` creates a layout shift root, so `child`'s shift doesn't
+  // include the shift of `animation`. The 2px shift is below the threshold of
+  // reporting a layout shift.
+  GetDocument().getElementById("child")->setAttribute(html_names::kStyleAttr,
+                                                      "top: 2px");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
+}
+
 }  // namespace blink

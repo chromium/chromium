@@ -259,7 +259,6 @@ class FragmentPaintPropertyTreeBuilder {
       void (*compute_matrix)(const ComputedStyle& style,
                              const PhysicalSize& size,
                              gfx::Transform& matrix),
-      CompositingReasons active_animation_reason,
       CompositingReasons compositing_reasons_for_property,
       CompositorElementIdNamespace compositor_namespace,
       bool (ComputedStyle::*running_on_compositor_test)() const,
@@ -1096,7 +1095,6 @@ static bool UpdateBoxSizeAndCheckActiveAnimationAxisAlignment(
 static TransformPaintPropertyNode::TransformAndOrigin TransformAndOriginState(
     const LayoutBox& box,
     const PhysicalSize& size,
-    bool has_transform_animation_compositing_reasons,
     void (*compute_matrix)(const ComputedStyle& style,
                            const PhysicalSize& size,
                            gfx::Transform& matrix)) {
@@ -1105,12 +1103,18 @@ static TransformPaintPropertyNode::TransformAndOrigin TransformAndOriginState(
   return {matrix, GetTransformOrigin(box, size)};
 }
 
+static bool IsLayoutShiftRootTransform(
+    const TransformPaintPropertyNode& transform) {
+  // This is to keep the layout shift behavior before crrev.com/c/4024030.
+  return transform.HasActiveTransformAnimation() ||
+         !transform.IsIdentityOr2dTranslation();
+}
+
 void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
     bool (*needs_property)(const LayoutObject&, CompositingReasons),
     void (*compute_matrix)(const ComputedStyle& style,
                            const PhysicalSize& size,
                            gfx::Transform& matrix),
-    CompositingReasons active_animation_reason,
     CompositingReasons compositing_reasons_for_property,
     CompositorElementIdNamespace compositor_namespace,
     bool (ComputedStyle::*running_on_compositor_test)() const,
@@ -1152,10 +1156,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
         // to the compositor, in case later animated values will use the origin.
         // See http://crbug.com/937929 for why we are not using
         // style.IsRunningTransformAnimationOnCompositor() etc. here.
-        state.transform_and_origin = TransformAndOriginState(
-            box, size,
-            full_context_.direct_compositing_reasons & active_animation_reason,
-            compute_matrix);
+        state.transform_and_origin =
+            TransformAndOriginState(box, size, compute_matrix);
 
         // TODO(trchen): transform-style should only be respected if a
         // PaintLayer is created. If a node with transform-style: preserve-3d
@@ -1224,7 +1226,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
       // this in the caller.)
       context_.should_flatten_inherited_transform = false;
     }
-    if (transform->IsIdentityOr2dTranslation()) {
+    if (!IsLayoutShiftRootTransform(*transform)) {
       context_.translation_2d_to_layout_shift_root_delta +=
           transform->Get2dTranslation();
     }
@@ -1239,7 +1241,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateTranslate() {
         if (style.Translate())
           style.Translate()->Apply(matrix, gfx::SizeF(size));
       },
-      CompositingReason::kActiveTranslateAnimation,
       CompositingReason::kDirectReasonsForTranslateProperty,
       CompositorElementIdNamespace::kTranslateTransform,
       &ComputedStyle::IsRunningTranslateAnimationOnCompositor,
@@ -1256,7 +1257,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateRotate() {
         if (style.Rotate())
           style.Rotate()->Apply(matrix, gfx::SizeF(size));
       },
-      CompositingReason::kActiveRotateAnimation,
       CompositingReason::kDirectReasonsForRotateProperty,
       CompositorElementIdNamespace::kRotateTransform,
       &ComputedStyle::IsRunningRotateAnimationOnCompositor,
@@ -1272,7 +1272,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateScale() {
         if (style.Scale())
           style.Scale()->Apply(matrix, gfx::SizeF(size));
       },
-      CompositingReason::kActiveScaleAnimation,
       CompositingReason::kDirectReasonsForScaleProperty,
       CompositorElementIdNamespace::kScaleTransform,
       &ComputedStyle::IsRunningScaleAnimationOnCompositor,
@@ -1292,7 +1291,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOffset() {
             ComputedStyle::kIncludeMotionPath,
             ComputedStyle::kExcludeIndependentTransformProperties);
       },
-      CompositingReason::kNone, CompositingReason::kNone,
+      CompositingReason::kNone,
       // TODO(dbaron): When we support animating offset on the
       // compositor, we need to use an element ID specific to offset.
       // This is currently unused.
@@ -1313,7 +1312,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
             ComputedStyle::kExcludeMotionPath,
             ComputedStyle::kExcludeIndependentTransformProperties);
       },
-      CompositingReason::kActiveTransformAnimation,
       CompositingReasonsForTransformProperty(),
       CompositorElementIdNamespace::kPrimaryTransform,
       &ComputedStyle::IsRunningTransformAnimationOnCompositor,
@@ -3041,7 +3039,7 @@ static bool IsLayoutShiftRoot(const LayoutObject& object,
     return true;
   for (const TransformPaintPropertyNode* transform :
        properties->AllCSSTransformPropertiesOutsideToInside()) {
-    if (transform && !transform->IsIdentityOr2dTranslation())
+    if (transform && IsLayoutShiftRootTransform(*transform))
       return true;
   }
   if (properties->ReplacedContentTransform())
@@ -3232,12 +3230,11 @@ void PaintPropertyTreeBuilder::InitFragmentPaintProperties(
     for (const TransformPaintPropertyNode* transform :
          properties->AllCSSTransformPropertiesOutsideToInside()) {
       if (transform) {
-        if (transform->IsIdentityOr2dTranslation()) {
-          translation2d += transform->Get2dTranslation();
-        } else {
+        if (IsLayoutShiftRootTransform(*transform)) {
           translation2d = gfx::Vector2dF();
           break;
         }
+        translation2d += transform->Get2dTranslation();
       }
     }
     context.translation_2d_to_layout_shift_root_delta -= translation2d;
@@ -4260,7 +4257,7 @@ void PaintPropertyTreeBuilder::DirectlyUpdateTransformMatrix(
   auto* properties = fragment_data->PaintProperties();
   auto* transform = properties->Transform();
   auto transform_and_origin = TransformAndOriginState(
-      box, size, transform->HasActiveTransformAnimation(),
+      box, size,
       [](const ComputedStyle& style, const PhysicalSize& size,
          gfx::Transform& matrix) {
         style.ApplyTransform(
