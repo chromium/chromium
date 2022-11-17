@@ -13,7 +13,10 @@
 
 #include "base/files/scoped_file.h"
 #include "base/strings/stringprintf.h"
-#include "ui/gfx/linux/scoped_gbm_device.h"
+
+#if defined(WAYLAND_GBM)
+#include "ui/gfx/linux/scoped_gbm_device.h"  // nogncheck
+#endif
 
 namespace ui {
 
@@ -59,11 +62,13 @@ void DrmRenderNodePathFinder::FindDrmRenderNodePath() {
     if (drm_fd.get() < 0)
       continue;
 
+#if defined(WAYLAND_GBM)
     // In case the first node /dev/dri/renderD128 can be opened but fails to
     // create gbm device on certain driver (E.g. PowerVR). Skip such paths.
     ScopedGbmDevice device(gbm_create_device(drm_fd.get()));
     if (!device)
       continue;
+#endif
 
     drm_render_node_path_ = base::FilePath(dri_render_node);
     break;
