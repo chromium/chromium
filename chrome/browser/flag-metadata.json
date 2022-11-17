@@ -4011,7 +4011,7 @@
   {
     "name": "history-journeys-content-clustering",
     "owners": [ "sophiechang", "chrome-journeys@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 115
   },
   {
     "name": "history-journeys-images",
@@ -4034,24 +4034,14 @@
     "expiry_milestone": 115
   },
   {
-    "name": "history-journeys-on-device-clustering",
-    "owners": [ "sophiechang", "chrome-journeys@google.com", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 110
-  },
-  {
-    "name": "history-journeys-on-device-clustering-keyword-filtering",
-    "owners": [ "sophiechang", "chrome-journeys@google.com", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "history-journeys-show-all-clusters",
     "owners": [ "sophiechang", "chrome-journeys@google.com", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 115
   },
   {
     "name": "history-journeys-visit-deduping",
     "owners": [ "sophiechang", "chrome-journeys@google.com", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 115
   },
   {
     "name": "hotspot",

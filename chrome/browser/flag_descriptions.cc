@@ -1756,17 +1756,6 @@ const char kJourneysOmniboxHistoryClusterProviderDescription[] =
     "Enables the History Journeys Omnibox History Cluster Provider to surface "
     "Journeys as a suggestion row instead of an action chip.";
 
-const char kJourneysOnDeviceClusteringBackendName[] =
-    "History Journeys On-Device Clustering Backend";
-const char kJourneysOnDeviceClusteringBackendDescription[] =
-    "Enables variations for the on-device clustering backend";
-
-const char kJourneysOnDeviceClusteringKeywordFilteringName[] =
-    "History Journeys On-Device Clustering Keyword Filtering";
-const char kJourneysOnDeviceClusteringKeywordFilteringDescription[] =
-    "Enables variations for the keywords output by the on-device clustering "
-    "for Journeys";
-
 const char kJourneysShowAllClustersName[] =
     "History Journeys Show All Clusters";
 const char kJourneysShowAllClustersDescription[] =

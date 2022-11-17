@@ -1273,69 +1273,6 @@ const FeatureEntry::FeatureVariation kJourneysLabelsVariations[] = {
      kJourneysLabelsWithEntitiesNoHostnamesParams,
      std::size(kJourneysLabelsWithEntitiesNoHostnamesParams), nullptr},
 };
-const FeatureEntry::FeatureParam kJourneysShowSingleDomainClustersParams[] = {
-    {"hide_single_domain_clusters_on_prominent_ui_surfaces", "false"},
-};
-const FeatureEntry::FeatureParam kJourneysHideSingleDomainClustersParams[] = {
-    {"hide_single_domain_clusters_on_prominent_ui_surfaces", "true"},
-};
-const FeatureEntry::FeatureVariation kJourneysOnDeviceClusteringVariations[] = {
-    {"Show Single Domain Journeys", kJourneysShowSingleDomainClustersParams,
-     std::size(kJourneysShowSingleDomainClustersParams), nullptr},
-    {"Hide Single Domain Journeys", kJourneysHideSingleDomainClustersParams,
-     std::size(kJourneysHideSingleDomainClustersParams), nullptr},
-};
-const FeatureEntry::FeatureParam
-    kJourneysOnDeviceClusteringKeywordFilteringAllVariationsParams[] = {
-        {"keyword_filter_on_categories", "false"},
-        {"keyword_filter_on_noisy_visits", "false"},
-        {"keyword_filter_on_visit_hosts", "false"},
-        {"keyword_filter_on_search_terms", "true"},
-};
-const FeatureEntry::FeatureParam
-    kJourneysOnDeviceClusteringKeywordFilteringNoCategoriesParams[] = {
-        {"keyword_filter_on_categories", "false"},
-};
-const FeatureEntry::FeatureParam
-    kJourneysOnDeviceClusteringKeywordFilteringNoNoisyVisitsParams[] = {
-        {"keyword_filter_on_noisy_visits", "false"},
-};
-const FeatureEntry::FeatureParam
-    kJourneysOnDeviceClusteringKeywordFilteringNoVisitHostsParams[] = {
-        {"keyword_filter_on_visit_hosts", "false"},
-};
-const FeatureEntry::FeatureParam
-    kJourneysOnDeviceClusteringKeywordFilteringWithSearchTermsParams[] = {
-        {"keyword_filter_on_search_terms", "true"},
-};
-const FeatureEntry::FeatureVariation
-    kJourneysOnDeviceClusteringKeywordFilteringVariations[] = {
-        {"All Variations",
-         kJourneysOnDeviceClusteringKeywordFilteringAllVariationsParams,
-         std::size(
-             kJourneysOnDeviceClusteringKeywordFilteringAllVariationsParams),
-         nullptr},
-        {"No Categories",
-         kJourneysOnDeviceClusteringKeywordFilteringNoCategoriesParams,
-         std::size(
-             kJourneysOnDeviceClusteringKeywordFilteringNoCategoriesParams),
-         nullptr},
-        {"No Noisy Visits",
-         kJourneysOnDeviceClusteringKeywordFilteringNoNoisyVisitsParams,
-         std::size(
-             kJourneysOnDeviceClusteringKeywordFilteringNoNoisyVisitsParams),
-         nullptr},
-        {"No Visit Hosts",
-         kJourneysOnDeviceClusteringKeywordFilteringNoVisitHostsParams,
-         std::size(
-             kJourneysOnDeviceClusteringKeywordFilteringNoVisitHostsParams),
-         nullptr},
-        {"With Search Terms",
-         kJourneysOnDeviceClusteringKeywordFilteringWithSearchTermsParams,
-         std::size(
-             kJourneysOnDeviceClusteringKeywordFilteringWithSearchTermsParams),
-         nullptr},
-};
 const FeatureEntry::FeatureParam kJourneysVisitDedupingUseHostParams[] = {
     {"use_host_for_visit_deduping", "true"},
 };
@@ -5839,24 +5776,6 @@ const FeatureEntry kFeatureEntries[] = {
          history_clusters::internal::kOmniboxHistoryClusterProvider,
          kJourneysOmniboxHistoryClusterProviderVariations,
          "JourneysOmniboxTriggering")},
-
-    {"history-journeys-on-device-clustering",
-     flag_descriptions::kJourneysOnDeviceClusteringBackendName,
-     flag_descriptions::kJourneysOnDeviceClusteringBackendDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         history_clusters::features::kOnDeviceClustering,
-         kJourneysOnDeviceClusteringVariations,
-         "HistoryJourneysOnDeviceClusteringBackend")},
-
-    {"history-journeys-on-device-clustering-keyword-filtering",
-     flag_descriptions::kJourneysOnDeviceClusteringKeywordFilteringName,
-     flag_descriptions::kJourneysOnDeviceClusteringKeywordFilteringDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         history_clusters::features::kOnDeviceClusteringKeywordFiltering,
-         kJourneysOnDeviceClusteringKeywordFilteringVariations,
-         "HistoryJourneysKeywordFiltering")},
 
     {"history-journeys-show-all-clusters",
      flag_descriptions::kJourneysShowAllClustersName,

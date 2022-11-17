@@ -993,12 +993,6 @@ extern const char kJourneysOmniboxActionDescription[];
 extern const char kJourneysOmniboxHistoryClusterProviderName[];
 extern const char kJourneysOmniboxHistoryClusterProviderDescription[];
 
-extern const char kJourneysOnDeviceClusteringBackendName[];
-extern const char kJourneysOnDeviceClusteringBackendDescription[];
-
-extern const char kJourneysOnDeviceClusteringKeywordFilteringName[];
-extern const char kJourneysOnDeviceClusteringKeywordFilteringDescription[];
-
 extern const char kJourneysShowAllClustersName[];
 extern const char kJourneysShowAllClustersDescription[];
 
