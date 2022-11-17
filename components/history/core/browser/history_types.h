@@ -895,6 +895,9 @@ struct ClusterVisit {
   // as well as deleted when the whole cluster is deleted. This is computed in
   // the UI code, and should not be persisted.
   bool hidden = false;
+
+  // The URL of the representative image, which may be empty.
+  GURL image_url;
 };
 
 // Additional data for a cluster keyword.

@@ -73,7 +73,8 @@ TEST_F(FileClusteringBackendTest, Success) {
               {
                 "visitId": "3",
                 "score": 0.5,
-                "duplicateVisitIds": ["10", "11"]
+                "duplicateVisitIds": ["10", "11"],
+                "imageUrl": "https://publicimage.com/image.jpg"
               },
               {
                 "score": 0.5
@@ -154,6 +155,9 @@ TEST_F(FileClusteringBackendTest, Success) {
       EXPECT_FALSE(result_visit.url_for_display.empty());
     }
   }
+  // Make sure image URL was parsed.
+  EXPECT_EQ(result_clusters[1].visits[0].image_url.possibly_invalid_spec(),
+            "https://publicimage.com/image.jpg");
 }
 
 }  // namespace

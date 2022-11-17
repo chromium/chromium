@@ -110,10 +110,8 @@ std::vector<history::Cluster> GetClustersFromFile() {
       const base::Value::List* duplicate_visit_ids =
           json_visit_dict.FindList("duplicateVisitIds");
       if (duplicate_visit_ids) {
-        LOG(ERROR) << "Found duplicate visit";
         for (const auto& json_duplicate_visit_id : *duplicate_visit_ids) {
           int64_t duplicate_visit_id;
-          LOG(ERROR) << "Serializing " << json_duplicate_visit_id.GetString();
           if (base::StringToInt64(json_duplicate_visit_id.GetString(),
                                   &duplicate_visit_id)) {
             cluster_visit.duplicate_visits.push_back({duplicate_visit_id});
@@ -121,6 +119,11 @@ std::vector<history::Cluster> GetClustersFromFile() {
         }
       }
 
+      const std::string* image_url_string =
+          json_visit_dict.FindString("imageUrl");
+      if (image_url_string) {
+        cluster_visit.image_url = GURL(*image_url_string);
+      }
       cluster.visits.push_back(cluster_visit);
     }
 
