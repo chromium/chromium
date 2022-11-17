@@ -73,6 +73,7 @@ class SpellChecker : public QuickAnswersStateObserver {
   void CollectResults(const std::string& word,
                       CheckSpellingCallback callback,
                       SpellCheckLanguageIterator iterator,
+                      const std::string& language,
                       int languages_list_version,
                       bool is_correct);
 
