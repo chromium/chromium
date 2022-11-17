@@ -25,6 +25,7 @@
     bottom: var(--travel);
     color: var(--foreground-color-unpressed);
     display: grid;
+    font-size: calc(max(1.25vw, 13px));
     grid-auto-columns: 1fr;
     grid-auto-flow: column;
     grid-template-columns: 1fr;
@@ -74,7 +75,7 @@
 
   #mainGlyph {
     left: 0;
-    overflow: hidden;
+    overflow: clip visible;
     position: absolute;
     right: 0;
     text-overflow: ellipsis;
