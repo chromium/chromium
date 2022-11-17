@@ -680,30 +680,6 @@ export class Output {
   }
 
   /** @override */
-  formatFind_(data, token, tree) {
-    const buff = data.outputBuffer;
-    const formatLog = data.outputFormatLogger;
-    let node = data.node;
-
-    // Find takes two arguments: JSON query string and format string.
-    if (tree.firstChild) {
-      const jsonQuery = tree.firstChild.value;
-      node = node.find(
-          /** @type {chrome.automation.FindParams}*/ (JSON.parse(jsonQuery)));
-      const formatString = tree.firstChild.nextSibling || '';
-      if (node) {
-        formatLog.writeToken(token);
-        this.format_({
-          node,
-          outputFormat: formatString,
-          outputBuffer: buff,
-          outputFormatLogger: formatLog,
-        });
-      }
-    }
-  }
-
-  /** @override */
   formatDescendants_(data, token) {
     const buff = data.outputBuffer;
     const node = data.node;
