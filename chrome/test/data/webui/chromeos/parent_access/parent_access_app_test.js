@@ -7,6 +7,7 @@ import 'chrome://parent-access/parent_access_app.js';
 import 'chrome://parent-access/strings.m.js';
 
 import {Screens} from 'chrome://parent-access/parent_access_app.js';
+import {GetOAuthTokenStatus} from 'chrome://parent-access/parent_access_ui.mojom-webui.js';
 import {setParentAccessUIHandlerForTest} from 'chrome://parent-access/parent_access_ui_handler.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -22,6 +23,7 @@ parent_access_app_tests.suiteName = 'ParentAccessAppTest';
 parent_access_app_tests.TestNames = {
   TestShowWebApprovalsAfterFlow:
       'Tests that the web approvals after flow is shown',
+  TestShowErrorScreenOnOAuthFailure: 'Tests that the error screen is shown',
 };
 
 suite(parent_access_app_tests.suiteName, function() {
@@ -32,9 +34,10 @@ suite(parent_access_app_tests.suiteName, function() {
   test(
       parent_access_app_tests.TestNames.TestShowWebApprovalsAfterFlow,
       async () => {
-        // Set up the ParentAccessParams for the web approvals flow.
+        // Set up the TestParentAccessUIHandler
         const handler = new TestParentAccessUIHandler();
         handler.setParentAccessParams(buildWebApprovalsParams());
+        handler.setOAuthTokenStatus('token', GetOAuthTokenStatus.kSuccess);
         setParentAccessUIHandlerForTest(handler);
 
         // Create app element.
@@ -55,5 +58,23 @@ suite(parent_access_app_tests.suiteName, function() {
         const webApprovalsAfter = parentAccessAfter.shadowRoot.querySelector(
             'local-web-approvals-after');
         assertNotEquals(null, webApprovalsAfter);
+      });
+
+  test(
+      parent_access_app_tests.TestNames.TestShowErrorScreenOnOAuthFailure,
+      async () => {
+        // Set up the TestParentAccessUIHandler
+        const handler = new TestParentAccessUIHandler();
+        handler.setParentAccessParams(buildWebApprovalsParams());
+        handler.setOAuthTokenStatus('token', GetOAuthTokenStatus.kError);
+        setParentAccessUIHandlerForTest(handler);
+
+        // Create app element.
+        const parentAccessApp = document.createElement('parent-access-app');
+        document.body.appendChild(parentAccessApp);
+        await flushTasks();
+
+        // Verify error screen is showing.
+        assertEquals(parentAccessApp.currentScreen_, Screens.ERROR);
       });
 });

@@ -7,15 +7,20 @@
 // into |window.loadTimeData|.
 import './strings.m.js';
 import './parent_access_after.js';
+import './parent_access_error.js';
 import './parent_access_ui.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ParentAccessResult} from './parent_access_ui.mojom-webui.js';
+import {getParentAccessUIHandler} from './parent_access_ui_handler.js';
+
 /** @enum {string} */
 export const Screens = {
   ONLINE_FLOW: 'parent-access-ui',
   AFTER_FLOW: 'parent-access-after',
+  ERROR: 'parent-access-error',
 };
 
 class ParentAccessApp extends PolymerElement {
@@ -50,10 +55,25 @@ class ParentAccessApp extends PolymerElement {
       this.shadowRoot.querySelector('parent-access-after').onShowAfterScreen();
     });
 
+    this.addEventListener('show-error', () => {
+      this.onError_();
+    });
+
     // TODO(b/200187536): Show offline screen if device is offline.
     this.currentScreen_ = Screens.ONLINE_FLOW;
     /** @type {CrViewManagerElement} */ (this.$.viewManager)
         .switchView(this.currentScreen_);
+  }
+
+  /**
+   * Shows an error screen, which is a terminal state for the flow.
+   * @private
+   */
+  onError_() {
+    this.currentScreen_ = Screens.ERROR;
+    /** @type {CrViewManagerElement} */ (this.$.viewManager)
+        .switchView(this.currentScreen_);
+    getParentAccessUIHandler().onParentAccessDone(ParentAccessResult.kError);
   }
 }
 customElements.define(ParentAccessApp.is, ParentAccessApp);

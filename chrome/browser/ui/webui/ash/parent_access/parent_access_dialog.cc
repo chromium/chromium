@@ -93,7 +93,9 @@ void ParentAccessDialog::SetCanceled() {
 void ParentAccessDialog::SetError() {
   auto result = std::make_unique<ParentAccessDialog::Result>();
   result->status = ParentAccessDialog::Result::Status::kError;
-  CloseWithResult(std::move(result));
+  // Don't close dialog on error state, as user will close the dialog manually
+  // after seeing the error.
+  result_ = std::move(result);
 }
 
 parent_access_ui::mojom::ParentAccessParams*

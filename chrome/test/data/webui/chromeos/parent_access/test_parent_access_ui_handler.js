@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ParentAccessParams} from 'chrome://parent-access/parent_access_ui.mojom-webui.js';
+import {GetOAuthTokenStatus, ParentAccessParams} from 'chrome://parent-access/parent_access_ui.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 /** @implements {ParentAccessUIHandlerInterface} */
@@ -16,15 +16,23 @@ export class TestParentAccessUIHandler extends TestBrowserProxy {
       'onParentAccessDone',
     ]);
 
-    /**
-     * @private {?ParentAccessParams}}
-     */
+    /** @private {?ParentAccessParams} */
     this.params_ = null;
+
+    /** @private {?string} */
+    this.oAuthToken_ = null;
+
+    /** @private {?GetOAuthTokenStatus} */
+    this.oAuthTokenStatus_ = null;
   }
 
   /** @override */
   getOAuthToken() {
     this.methodCalled('getOAuthToken');
+    return Promise.resolve({
+      oauthToken: this.oAuthToken_,
+      status: this.oAuthTokenStatus_,
+    });
   }
 
   /** @override */
@@ -54,5 +62,14 @@ export class TestParentAccessUIHandler extends TestBrowserProxy {
    */
   setParentAccessParams(params) {
     this.params_ = params;
+  }
+
+  /**
+   * @param {string} token
+   * @param {!GetOAuthTokenStatus} status
+   */
+  setOAuthTokenStatus(token, status) {
+    this.oAuthToken_ = token;
+    this.oAuthTokenStatus_ = status;
   }
 }

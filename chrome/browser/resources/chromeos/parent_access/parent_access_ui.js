@@ -99,7 +99,10 @@ class ParentAccessUi extends PolymerElement {
         });
     this.configureUi().then(
         () => {/* success */},
-        origin => {/* TODO(b/200187536): show error page. */});
+        (error) => {
+          this.showErrorPage_();
+        },
+    );
   }
 
   async configureUi() {
@@ -117,8 +120,7 @@ class ParentAccessUi extends PolymerElement {
 
       const oauthFetchResult = await this.parentAccessUIHandler.getOAuthToken();
       if (oauthFetchResult.status != GetOAuthTokenStatus.kSuccess) {
-        // TODO(b/200187536): show error page.
-        return;
+        throw new Error('OAuth token was not successfully fetched.');
       }
 
       const webview =
@@ -139,13 +141,18 @@ class ParentAccessUi extends PolymerElement {
       const url = new URL(this.webviewUrl_);
       webview.src = url.toString();
 
+      webview.addEventListener('loadabort', () => {
+        this.webviewLoading = false;
+        this.showErrorPage_();
+      });
+
       // Set up the controller. It will automatically start the initialization
       // handshake with the hosted content.
       this.server = new ParentAccessController(
           webview, url.toString(), eventOriginFilter);
 
     } catch (e) {
-      // TODO(b/200187536): show error page.
+      this.showErrorPage_();
       return;
     }
 
@@ -173,7 +180,7 @@ class ParentAccessUi extends PolymerElement {
       // the server.
       if (!(parentAccessServerMessage instanceof Object)) {
         console.error('Error initializing ParentAccessController');
-        // TODO(b/200187536): show error page
+        this.showErrorPage_();
         break;
       }
 
@@ -187,18 +194,22 @@ class ParentAccessUi extends PolymerElement {
           }));
           break;
 
-        case ParentAccessServerMessageType.kError:
-          // TODO(b/200187536): show error page
-          break;
-
         case ParentAccessServerMessageType.kIgnore:
           continue;
 
+        case ParentAccessServerMessageType.kError:
         default:
-          // TODO(b/200187536): show error page
+          this.showErrorPage_();
           break;
       }
     }
+  }
+
+  showErrorPage_() {
+    this.dispatchEvent(new CustomEvent('show-error', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 }
 customElements.define(ParentAccessUi.is, ParentAccessUi);

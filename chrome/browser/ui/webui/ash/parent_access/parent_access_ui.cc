@@ -78,6 +78,7 @@ void ParentAccessUI::SetUpResources() {
   source->AddResourcePath("parent_access_ui_handler.js",
                           IDR_PARENT_ACCESS_UI_HANDLER_JS);
   source->AddResourcePath("parent_access_after.js", IDR_PARENT_ACCESS_AFTER_JS);
+  source->AddResourcePath("parent_access_error.js", IDR_PARENT_ACCESS_ERROR_JS);
   source->AddResourcePath("flows/local_web_approvals_after.js",
                           IDR_LOCAL_WEB_APPROVALS_AFTER_JS);
   source->AddResourcePath("parent_access_ui.mojom-webui.js",
@@ -99,6 +100,8 @@ void ParentAccessUI::SetUpResources() {
       {"localWebApprovalsAfterDetails",
        IDS_PARENT_ACCESS_LOCAL_WEB_APPROVALS_AFTER_DETAILS},
       {"webviewLoadingMessage", IDS_PARENT_ACCESS_WEBVIEW_LOADING_MESSAGE},
+      {"errorTitle", IDS_PARENT_ACCESS_ERROR_TITLE},
+      {"errorDescription", IDS_PARENT_ACCESS_ERROR_DESCRIPTION},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 

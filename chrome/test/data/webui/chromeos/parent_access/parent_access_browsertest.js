@@ -48,6 +48,11 @@ TEST_F('ParentAccessAppTest', 'TestShowWebApprovalsAfterFlow', function() {
       parent_access_app_tests.TestNames.TestShowWebApprovalsAfterFlow);
 });
 
+TEST_F('ParentAccessAppTest', 'TestShowErrorScreenOnOAuthFailure', function() {
+  this.runMochaTest(
+      parent_access_app_tests.TestNames.TestShowErrorScreenOnOAuthFailure);
+});
+
 var ParentAccessControllerTest = class extends testing.Test {
   /** @override */
   get browsePreload() {

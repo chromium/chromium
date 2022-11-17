@@ -210,10 +210,12 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, SetError) {
   // Set the result.
   ParentAccessDialog::GetInstance()->SetError();
 
-  run_loop.Run();
+  // The dialog instance should not be closed in the error state.
+  EXPECT_NE(ParentAccessDialog::GetInstance(), nullptr);
+  // Ensure that the callback is run when the dialog is manually closed.
+  ParentAccessDialog::GetInstance()->Close();
 
-  // The dialog instance should be gone after SetResult() is called.
-  EXPECT_EQ(ParentAccessDialog::GetInstance(), nullptr);
+  run_loop.Run();
 }
 
 // Verify that if dialog is destroyed without a Result,  it reports being
