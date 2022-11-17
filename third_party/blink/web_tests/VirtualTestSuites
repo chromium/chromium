@@ -1492,5 +1492,11 @@
       "external/wpt/mediacapture-streams/parallel-capture-requests.https.html"
     ],
     "args": ["--enable-features=SplitUserMediaQueues"]
+  },
+  {
+    "prefix": "enable-persistent-origin-trials",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [ "http/tests/persistent-origin-trials/" ],
+    "args": ["--enable-features=PersistentOriginTrials"]
   }
 ]

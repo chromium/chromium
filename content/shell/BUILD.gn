@@ -249,6 +249,8 @@ static_library("content_shell_lib") {
     "//components/network_hints/browser:browser",
     "//components/network_hints/renderer",
     "//components/network_session_configurator/common",
+    "//components/origin_trials:browser",
+    "//components/origin_trials:common",
     "//components/performance_manager",
     "//components/permissions",
     "//components/prefs",

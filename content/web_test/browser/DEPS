@@ -3,6 +3,7 @@ include_rules = [
   "+components/download",
   "+components/keyed_service/core",
   "+components/network_session_configurator/common",
+  "+components/origin_trials",
   "+components/viz/common",
   "+content/public/browser",
   "+content/public/common",

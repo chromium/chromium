@@ -6,6 +6,7 @@ include_rules = [
   "+components/nacl/browser",
   "+components/nacl/common",
   "+components/network_session_configurator/common",
+  "+components/origin_trials",
   "+components/pref_registry",
   "+components/sessions",
   "+components/update_client",

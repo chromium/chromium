@@ -142,6 +142,11 @@ int ShellBrowserMainParts::PreEarlyInitialization() {
 void ShellBrowserMainParts::InitializeBrowserContexts() {
   set_browser_context(new ShellBrowserContext(false));
   set_off_the_record_browser_context(new ShellBrowserContext(true));
+  // Persistent Origin Trials needs to be instantiated as soon as possible
+  // during browser startup, to ensure data is available prior to the first
+  // request.
+  browser_context_->GetOriginTrialsControllerDelegate();
+  off_the_record_browser_context_->GetOriginTrialsControllerDelegate();
 }
 
 void ShellBrowserMainParts::InitializeMessageLoopContext() {

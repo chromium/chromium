@@ -64,6 +64,9 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
       RenderProcessHost* render_process_host) override;
   void OverrideWebkitPrefs(WebContents* web_contents,
                            blink::web_pref::WebPreferences* prefs) override;
+  std::vector<std::unique_ptr<content::NavigationThrottle>>
+  CreateThrottlesForNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
                                       int child_process_id) override;
   std::unique_ptr<BrowserMainParts> CreateBrowserMainParts(

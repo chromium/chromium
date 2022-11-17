@@ -20,8 +20,12 @@
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "components/keyed_service/core/simple_key_map.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/origin_trials/browser/leveldb_persistence_provider.h"
+#include "components/origin_trials/browser/origin_trials.h"
+#include "components/origin_trials/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
 #include "content/shell/browser/shell_content_browser_client.h"
@@ -33,6 +37,7 @@
 #include "content/shell/common/shell_switches.h"
 #include "content/test/mock_background_sync_controller.h"
 #include "content/test/mock_reduce_accept_language_controller_delegate.h"
+#include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 
 namespace content {
 
@@ -228,6 +233,22 @@ ShellBrowserContext::GetReduceAcceptLanguageControllerDelegate() {
             GetShellLanguage());
   }
   return reduce_accept_lang_controller_delegate_.get();
+}
+
+OriginTrialsControllerDelegate*
+ShellBrowserContext::GetOriginTrialsControllerDelegate() {
+  if (!origin_trials::features::IsPersistentOriginTrialsEnabled())
+    return nullptr;
+
+  if (!origin_trials_controller_delegate_) {
+    origin_trials_controller_delegate_ =
+        std::make_unique<origin_trials::OriginTrials>(
+            std::make_unique<origin_trials::LevelDbPersistenceProvider>(
+                GetPath(),
+                GetDefaultStoragePartition()->GetProtoDatabaseProvider()),
+            std::make_unique<blink::TrialTokenValidator>());
+  }
+  return origin_trials_controller_delegate_.get();
 }
 
 }  // namespace content

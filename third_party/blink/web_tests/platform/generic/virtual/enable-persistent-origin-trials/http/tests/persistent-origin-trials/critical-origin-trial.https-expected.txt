@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+PASS PersistentOriginTrial using Critical header
+Harness: the test ran to completion.
+

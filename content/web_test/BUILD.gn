@@ -128,6 +128,8 @@ static_library("web_test_browser") {
     "browser/web_test_first_device_bluetooth_chooser.h",
     "browser/web_test_javascript_dialog_manager.cc",
     "browser/web_test_javascript_dialog_manager.h",
+    "browser/web_test_origin_trial_throttle.cc",
+    "browser/web_test_origin_trial_throttle.h",
     "browser/web_test_permission_manager.cc",
     "browser/web_test_permission_manager.h",
     "browser/web_test_push_messaging_service.cc",
@@ -169,6 +171,7 @@ static_library("web_test_browser") {
     "//components/download/public/background_service:public",
     "//components/download/public/common:public",
     "//components/network_session_configurator/common",
+    "//components/origin_trials:common",
     "//components/proxy_config",
     "//content/browser:for_content_tests",  # For non-component builds.
     "//content/public/browser",  # For component builds.

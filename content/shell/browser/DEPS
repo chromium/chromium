@@ -6,6 +6,7 @@ include_rules = [
   "+components/network_hints/browser",
   "+components/network_session_configurator/common",
   "+components/prefs",
+  "+components/origin_trials",
   "+components/variations",
   "+services/device/public/cpp",
   "+services/network/public",

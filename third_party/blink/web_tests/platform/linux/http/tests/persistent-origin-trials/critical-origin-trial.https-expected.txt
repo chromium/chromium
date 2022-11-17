@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL PersistentOriginTrial using Critical header assert_equals: expected "FrobulatePersistent" but got ""
+Harness: the test ran to completion.
+
