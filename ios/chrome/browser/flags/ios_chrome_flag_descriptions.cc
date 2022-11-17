@@ -179,6 +179,12 @@ const char kCrashpadIOSDescription[] =
     "When enabled use Crashpad to generate crash reports crash collection. "
     "When disabled use Breakpad. This flag takes two restarts to take effect";
 
+const char kCredentialProviderExtensionPromoName[] =
+    "Enable the Credential Provider Extension promo.";
+const char kCredentialProviderExtensionPromoDescription[] =
+    "When enabled, Credential Provider Extension promo will be "
+    "presented to eligible users.";
+
 const char kDefaultBrowserFullscreenPromoExperimentName[] =
     "Default Browser Fullscreen modal experiment";
 const char kDefaultBrowserFullscreenPromoExperimentDescription[] =

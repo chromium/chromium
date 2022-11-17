@@ -81,6 +81,7 @@
 #import "ios/chrome/browser/ui/autofill/features.h"
 #import "ios/chrome/browser/ui/bubble/bubble_features.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
+#import "ios/chrome/browser/ui/credential_provider_promo/features.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/download/features.h"
 #import "ios/chrome/browser/ui/first_run/field_trial_constants.h"
@@ -1337,7 +1338,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"remove-crash-infobar", flag_descriptions::kRemoveCrashInfobarName,
      flag_descriptions::kRemoveCrashInfobarDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kRemoveCrashInfobar)},
-
+    {"credential-provider-extension-promo",
+     flag_descriptions::kCredentialProviderExtensionPromoName,
+     flag_descriptions::kCredentialProviderExtensionPromoDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kCredentialProviderExtensionPromo)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

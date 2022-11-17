@@ -152,6 +152,11 @@ extern const char kContentSuggestionsUIModuleRefreshDescription[];
 extern const char kCrashpadIOSName[];
 extern const char kCrashpadIOSDescription[];
 
+// Title and description for the flag to enable the Credential
+// Provider Extension promo.
+extern const char kCredentialProviderExtensionPromoName[];
+extern const char kCredentialProviderExtensionPromoDescription[];
+
 // Title and description for the flag to show a modified fullscreen modal promo
 // with a button that would send the users in the Settings.app to update the
 // default browser.

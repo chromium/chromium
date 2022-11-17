@@ -68,6 +68,7 @@ source_set("flags") {
     "//ios/chrome/browser/ui/autofill:features",
     "//ios/chrome/browser/ui/bubble:features",
     "//ios/chrome/browser/ui/content_suggestions:feature_flags",
+    "//ios/chrome/browser/ui/credential_provider_promo:features",
     "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/download:features",
     "//ios/chrome/browser/ui/first_run:field_trial",

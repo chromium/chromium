@@ -1128,6 +1128,11 @@
     "expiry_milestone": 107
   },
   {
+    "name": "credential-provider-extension-promo",
+    "owners": [ "huitingyu", "hiramahmood", "bling-flags@google.com" ],
+    "expiry_milestone": 114
+  },
+  {
     "name": "cros-labs-float-window",
     "owners": [ "shidi", "afakhry" ],
     "expiry_milestone": 110
