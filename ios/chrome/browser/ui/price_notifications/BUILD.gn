@@ -5,8 +5,8 @@
 source_set("price_notifications") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "price_notifications_primary_mediator.h",
-    "price_notifications_primary_mediator.mm",
+    "price_notifications_price_tracking_mediator.h",
+    "price_notifications_price_tracking_mediator.mm",
     "price_notifications_view_coordinator.h",
     "price_notifications_view_coordinator.mm",
   ]

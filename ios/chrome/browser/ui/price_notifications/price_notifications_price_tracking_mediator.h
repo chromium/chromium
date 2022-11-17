@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_PRICE_NOTIFICATIONS_PRICE_NOTIFICATIONS_PRIMARY_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_UI_PRICE_NOTIFICATIONS_PRICE_NOTIFICATIONS_PRIMARY_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_UI_PRICE_NOTIFICATIONS_PRICE_NOTIFICATIONS_PRICE_TRACKING_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_UI_PRICE_NOTIFICATIONS_PRICE_NOTIFICATIONS_PRICE_TRACKING_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
 #import <memory>
@@ -26,7 +26,7 @@ namespace web {
 class WebState;
 }  // namespace web
 
-@interface PriceNotificationsPrimaryMediator : NSObject
+@interface PriceNotificationsPriceTrackingMediator : NSObject
 
 // The designated initializer. `ShoppingService`, `BookmarkModel`,
 // `ImageDataFetcher` and `WebState` must not be nil.
@@ -43,4 +43,4 @@ class WebState;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_PRICE_NOTIFICATIONS_PRICE_NOTIFICATIONS_PRIMARY_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_UI_PRICE_NOTIFICATIONS_PRICE_NOTIFICATIONS_PRICE_TRACKING_MEDIATOR_H_

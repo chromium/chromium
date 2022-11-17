@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/commerce/shopping_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/price_notifications/price_notifications_primary_mediator.h"
+#import "ios/chrome/browser/ui/price_notifications/price_notifications_price_tracking_mediator.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
@@ -33,7 +33,7 @@
 @property(nonatomic, strong)
     PriceNotificationsTableViewController* tableViewController;
 // The mediator being managed by this coordinator.
-@property(nonatomic, strong) PriceNotificationsPrimaryMediator* mediator;
+@property(nonatomic, strong) PriceNotificationsPriceTrackingMediator* mediator;
 
 @end
 
@@ -56,7 +56,7 @@
   std::unique_ptr<image_fetcher::ImageDataFetcher> imageFetcher =
       std::make_unique<image_fetcher::ImageDataFetcher>(
           self.browser->GetBrowserState()->GetSharedURLLoaderFactory());
-  self.mediator = [[PriceNotificationsPrimaryMediator alloc]
+  self.mediator = [[PriceNotificationsPriceTrackingMediator alloc]
       initWithShoppingService:shoppingService
                 bookmarkModel:bookmarkModel
                  imageFetcher:std::move(imageFetcher)

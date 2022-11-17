@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/price_notifications/price_notifications_primary_mediator.h"
+#import "ios/chrome/browser/ui/price_notifications/price_notifications_price_tracking_mediator.h"
 
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -22,7 +22,7 @@
 using PriceNotificationItems =
     NSMutableArray<PriceNotificationsTableViewItem*>*;
 
-@interface PriceNotificationsPrimaryMediator () {
+@interface PriceNotificationsPriceTrackingMediator () {
   // The service responsible for fetching a product's image data.
   std::unique_ptr<image_fetcher::ImageDataFetcher> _imageFetcher;
 }
@@ -36,7 +36,7 @@ using PriceNotificationItems =
 
 @end
 
-@implementation PriceNotificationsPrimaryMediator
+@implementation PriceNotificationsPriceTrackingMediator
 
 - (instancetype)
     initWithShoppingService:(commerce::ShoppingService*)service
@@ -85,7 +85,7 @@ using PriceNotificationItems =
     }
   }
 
-  __weak PriceNotificationsPrimaryMediator* weakSelf = self;
+  __weak PriceNotificationsPriceTrackingMediator* weakSelf = self;
 
   self.shoppingService->GetProductInfoForUrl(
       URL, base::BindOnce(
@@ -117,7 +117,7 @@ using PriceNotificationItems =
 
   [self.consumer setTrackableItem:item currentlyTracking:NO];
 
-  __weak PriceNotificationsPrimaryMediator* weakSelf = self;
+  __weak PriceNotificationsPriceTrackingMediator* weakSelf = self;
   // Fetches the current item's trackable image.
   _imageFetcher->FetchImageData(
       productInfo->image_url,
