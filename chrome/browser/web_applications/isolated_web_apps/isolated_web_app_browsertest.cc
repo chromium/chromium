@@ -320,6 +320,40 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, NoOpenInChrome) {
   EXPECT_FALSE(found);
 }
 
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, WasmLoadableFromFile) {
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server().GetOrigin());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  content::EvalJsResult result = EvalJs(app_frame, R"(
+    (async function() {
+      const response = await fetch('empty.wasm');
+      await WebAssembly.instantiateStreaming(response);
+      return 'loaded';
+    })();
+  )");
+
+  EXPECT_EQ("loaded", result);
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, WasmLoadableFromBytes) {
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server().GetOrigin());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  content::EvalJsResult result = EvalJs(app_frame, R"(
+    (async function() {
+      // The smallest possible Wasm module. Just the header (0, "A", "S", "M"),
+      // and the version (0x1).
+      const bytes = new Uint8Array([0, 0x61, 0x73, 0x6d, 0x1, 0, 0, 0]);
+      await WebAssembly.instantiate(bytes);
+      return 'loaded';
+    })();
+  )");
+
+  EXPECT_EQ("loaded", result);
+}
+
 class IsolatedWebAppBrowserCookieTest : public IsolatedWebAppBrowserTest {
  public:
   using CookieHeaders = std::vector<std::string>;
