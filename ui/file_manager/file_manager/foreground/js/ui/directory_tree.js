@@ -1574,8 +1574,13 @@ export class DriveVolumeItem extends VolumeItem {
       });
       return;
     }
-    // Must be under "My Drive", which is always the first item.
-    this.items[0].updateItemByEntry(changedDirectoryEntry);
+
+    // NOTE: It's possible that the DriveVolumeItem hasn't populated its
+    // children yet.
+    if (this.items[0]) {
+      // Must be under "My Drive", which is always the first item.
+      this.items[0].updateItemByEntry(changedDirectoryEntry);
+    }
   }
 
   /**
