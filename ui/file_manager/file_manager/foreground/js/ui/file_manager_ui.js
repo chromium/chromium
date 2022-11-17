@@ -239,7 +239,8 @@ export class FileManagerUI {
      * @const
      */
     this.searchContainer = new SearchContainer(
-        queryRequiredElement('#search-wrapper', this.element));
+        queryRequiredElement('#search-wrapper', this.element),
+        queryRequiredElement('#search-options-container', this.element));
 
     /**
      * Toggle-view button.

@@ -39,6 +39,16 @@ export const PropStatus = {
 };
 
 /**
+ * The additional property states understood by the search container. When the
+ * user actions cause search elements to be hidden, the search state in the
+ * store becomes INACTIVE.
+ * @enum {string}
+ */
+export const SearchStatus = {
+  INACTIVE: 'INACTIVE',
+};
+
+/**
  * The current directory.
  * The directory is only effectively active when the `status` is SUCCESS.
  * @typedef {{
@@ -50,10 +60,58 @@ export const PropStatus = {
 export let CurrentDirectory;
 
 /**
+ * Enumeration of all supported search locations. If new location is added,
+ * please update this enum.
+ * @enum {string}
+ */
+export const SearchLocation = {
+  EVERYWHERE: 'everywhere',
+  THIS_CHROMEBOOK: 'this_chromebook',
+  THIS_FOLDER: 'this_folder',
+};
+
+/**
+ * Enumeration of all supported how-recent time spans.
+ * @enum{string}
+ */
+export const SearchRecency = {
+  ANYTIME: 'anytime',
+  TODAY: 'today',
+  YESTERDAY: 'yesterday',
+  LAST_WEEK: 'last_week',
+  LAST_MONTH: 'last_month',
+  LAST_YEAR: 'last_year',
+};
+
+/**
+ * Enumeration of all supported file types. We use generic buckets such as
+ * Images, to denote all "*.jpg", "*.gif", "*.png", etc., file types.
+ * @enum{string}
+ */
+export const SearchFileType = {
+  ALL_TYPES: 'all_types',
+  AUDIO: 'audio',
+  DOCUMENTS: 'documents',
+  IMAGES: 'images',
+  VIDEOS: 'videos',
+};
+
+/**
+ * The options used by the file search operation.
+ * @typedef {{
+ *   location: SearchLocation,
+ *   recency: SearchRecency,
+ *   type: SearchFileType,
+ * }}
+ */
+export let SearchOptions;
+
+/**
  * Data for search. It should be empty `{}` when the user isn't searching.
  * @typedef {{
- *   status: (PropStatus|undefined),
+ *   status: (PropStatus|SearchStatus|undefined),
  *   query: (string|undefined),
+ *   options: (!SearchOptions|undefined),
  * }}
  */
 export let SearchData;

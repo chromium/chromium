@@ -44,6 +44,7 @@ export function getEmptyState(): State {
     search: {
       query: undefined,
       status: undefined,
+      options: undefined,
     },
   };
 }

@@ -9,6 +9,7 @@ export function search(state: State, action: SearchAction): State {
   const search = {
     query: action.payload.query,
     status: action.payload.status,
+    options: action.payload.options,
   };
   return {...state, search};
 }

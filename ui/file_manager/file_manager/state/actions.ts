@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PropStatus} from '../externs/ts/state.js';
+import {PropStatus, SearchOptions} from '../externs/ts/state.js';
 import {BaseAction} from '../lib/base_store.js';
 
 import {FileKey} from './file_key.js';
@@ -44,6 +44,7 @@ export interface SearchAction extends BaseAction {
   payload: {
     query?: string,
     status?: PropStatus,
+    options?: SearchOptions,
   };
 }
 
@@ -62,13 +63,15 @@ export function changeDirectory(
 }
 
 export function searchAction(
-    {query: query, status}: {query?: string, status?: PropStatus}):
+    {query, status, options}:
+        {query?: string, status?: PropStatus, options?: SearchOptions}):
     SearchAction {
   return {
     type: ActionType.SEARCH,
     payload: {
       query: query,
       status,
+      options,
     },
   };
 }

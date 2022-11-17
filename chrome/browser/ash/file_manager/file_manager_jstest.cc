@@ -294,6 +294,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfBreadcrumbs) {
   RunTestURL("widgets/xf_breadcrumb_unittest.js");
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfSearchOptions) {
+  RunTestURL("widgets/xf_search_options_unittest.js");
+}
+
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileGridTest) {
   RunTestURL("foreground/js/ui/file_grid_unittest.js");
 }

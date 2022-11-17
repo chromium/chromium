@@ -310,3 +310,17 @@ testcase.searchQueryLaunchParam = async () => {
     }
   });
 };
+
+/**
+ * Checks that the search options are shown as expected.
+ */
+testcase.searchOptions = async () => {
+  // Open Files app on Downloads.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+
+  // Enter some text in the search box. Minimum one character is needed.
+  await remoteCall.typeSearchText(appId, 'x');
+
+  // Verify that the search options are visible.
+  await remoteCall.waitForElement(appId, 'xf-search-options:not([hidden])');
+};

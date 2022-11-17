@@ -5,7 +5,12 @@
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import {queryRequiredElement} from '../common/js/dom_utils.js';
+import {util} from '../common/js/util.js';
+import {PropStatus, SearchData, SearchFileType, SearchLocation, SearchOptions, SearchRecency, SearchStatus, State} from '../externs/ts/state.js';
 import {SearchAutocompleteList} from '../foreground/js/ui/search_autocomplete_list.js';
+import {searchAction} from '../state/actions.js';
+import {getStore, Store} from '../state/store.js';
+import {OptionKind, SEARCH_OPTIONS_CHANGED, SearchOptionsChangedEvent, XfSearchOptionsElement} from '../widgets/xf_search_options.js';
 
 /**
  * @fileoverview
@@ -48,17 +53,38 @@ export class SearchContainer extends EventTarget {
   // A component that shows potential matches for the text the user typed so
   // far.
   private autocompleteList_: SearchAutocompleteList;
+  // The current value of search options, initialized to some sensible default.
+  private currentOptions_: SearchOptions = {
+    location: SearchLocation.THIS_FOLDER,
+    recency: SearchRecency.ANYTIME,
+    type: SearchFileType.ALL_TYPES,
+  };
+  // The store which updates us about state changes.
+  private store_: Store;
+  // The cached state of the store; store may post events if other parts of the
+  // state change. However, we just want to react to changes related to search.
+  // We use the cached search state to check if the state change was related to
+  // search state change or some other part of the state.
+  private searchState_: SearchData|undefined = undefined;
+  // The container with search options widget.
+  private optionsContainer_: HTMLElement;
+  // The UI widget that allows users to manipulate search options. This is used
+  // mostly to cache the access to the actual element, rather than accessing it
+  // via querySelector.
+  private searchOptions_: XfSearchOptionsElement|null = null;
+
 
   /**
    * Builds a search container that creates and manages UI elements. This
-   * container receives a reference to a container, |searchWrapper| that
-   * contains other UI elements. It uses the container to fetch them by IDs.
-   * Once the UI elements are found, this container makes itself the listener of
-   * the events that are posted to by the UI elements and converts them to
-   * business logic. This includes notifying listeners when the the search query
-   * changes or the auto-complete item is selected.
+   * container receives a reference to `searchWrapper` that contains query
+   * UI elements and `optionsContainer` that has search options UI element.
+   * It uses `searchWrapper` to fetch them by IDs. Once the UI elements are
+   * found, this container makes itself the listener of the events that are
+   * posted to by the UI elements and converts them to business logic. This
+   * includes notifying listeners when the the search query changes or the
+   * auto-complete item is selected.
    */
-  constructor(searchWrapper: HTMLElement) {
+  constructor(searchWrapper: HTMLElement, optionsContainer: HTMLElement) {
     super();
 
     // The "box" around the search button, query input, and clear button.
@@ -85,6 +111,12 @@ export class SearchContainer extends EventTarget {
     this.autocompleteList_ =
         new SearchAutocompleteList(this.searchBox_.ownerDocument);
     this.searchWrapper_.parentNode!.appendChild(this.autocompleteList_);
+
+    this.optionsContainer_ = optionsContainer;
+    this.store_ = getStore();
+    if (util.isSearchV2Enabled()) {
+      this.store_.subscribe(this);
+    }
 
     this.setupEventHandlers();
   }
@@ -175,6 +207,126 @@ export class SearchContainer extends EventTarget {
   }
 
   /**
+   * A method invoked every time the store state changes.
+   */
+  onStateChanged(state: State) {
+    const {search} = state;
+    if (this.searchState_ === search) {
+      // Bail out early if the search part of the state has not changed.
+      return;
+    }
+    this.searchState_ = search;
+    if (search && search.status) {
+      const status = search.status;
+      if (status === PropStatus.STARTED && search.query) {
+        this.showOptions_();
+      } else if (status === SearchStatus.INACTIVE) {
+        this.hideOptions_();
+      }
+    }
+  }
+
+  private hideOptions_() {
+    const element = this.getSearchOptionsElement_();
+    if (element) {
+      element.hidden = true;
+    }
+  }
+
+  private showOptions_() {
+    let element = this.getSearchOptionsElement_();
+    if (!element) {
+      element = this.createSearchOptionsElement_();
+    }
+    element.hidden = false;
+  }
+
+  /**
+   * Returns the search options element by either retuning the cached instance,
+   * or fetching it by its tag. May return null.
+   */
+  private getSearchOptionsElement_(): XfSearchOptionsElement|null {
+    if (!this.searchOptions_) {
+      this.searchOptions_ = document.querySelector('xf-search-options');
+    }
+    return this.searchOptions_;
+  }
+
+  private createSearchOptionsElement_(): XfSearchOptionsElement {
+    const element = document.createElement('xf-search-options');
+    this.optionsContainer_.appendChild(element);
+
+    element.id = 'search-options';
+    // TODO(majewski): Get strings from loadTimeData.
+    element.getLocationSelector().setOptions([
+      {value: SearchLocation.EVERYWHERE, text: 'Everywhere'},
+      {value: SearchLocation.THIS_CHROMEBOOK, text: 'This Chromebook'},
+      {value: SearchLocation.THIS_FOLDER, text: 'This folder', default: true},
+    ]);
+    element.getRecencySelector().setOptions([
+      {value: SearchRecency.ANYTIME, text: 'Anytime'},
+      {value: SearchRecency.TODAY, text: 'Today'},
+      {value: SearchRecency.YESTERDAY, text: 'Yesterday'},
+      {value: SearchRecency.LAST_WEEK, text: 'Last week'},
+      {value: SearchRecency.LAST_MONTH, text: 'Last month'},
+      {value: SearchRecency.LAST_YEAR, text: 'Last year'},
+    ]);
+    element.getFileTypeSelector().setOptions([
+      {value: SearchFileType.ALL_TYPES, text: 'Any'},
+      {value: SearchFileType.AUDIO, text: 'Audio'},
+      {value: SearchFileType.DOCUMENTS, text: 'Documents'},
+      {value: SearchFileType.IMAGES, text: 'Images'},
+      {value: SearchFileType.VIDEOS, text: 'Videos'},
+    ]);
+    element.addEventListener(
+        SEARCH_OPTIONS_CHANGED, this.onOptionsChanged_.bind(this));
+    this.searchOptions_ = element;
+    return element;
+  }
+
+  private onOptionsChanged_(event: SearchOptionsChangedEvent) {
+    const kind = event.detail.kind;
+    const value = event.detail.value;
+    switch (kind) {
+      case OptionKind.LOCATION: {
+        const location = value as unknown as SearchLocation;
+        if (location !== this.currentOptions_.location) {
+          this.currentOptions_.location = location;
+          this.updateState_();
+        }
+        break;
+      }
+      case OptionKind.RECENCY: {
+        const recency = value as unknown as SearchRecency;
+        if (recency !== this.currentOptions_.recency) {
+          this.currentOptions_.recency = recency;
+          this.updateState_();
+        }
+        break;
+      }
+      case OptionKind.FILE_TYPE: {
+        const type = value as unknown as SearchFileType;
+        if (type !== this.currentOptions_.type) {
+          this.currentOptions_.type = type;
+          this.updateState_();
+        }
+        break;
+      }
+      default:
+        console.error(`Unhandled search option kind: ${kind}`);
+        break;
+    }
+  }
+
+  /**
+   * Updates the store state.
+   */
+  private updateState_() {
+    // TODO(majewski): Update the store.
+    console.debug('Search options event', JSON.stringify(this.currentOptions_));
+  }
+
+  /**
    * Attaches all necessary event listeners to the UI elements that make the
    * search interface. This method must be called as the last statement of the
    * constructor.
@@ -262,6 +414,9 @@ export class SearchContainer extends EventTarget {
     // Do not initiate close transition if we are not open. This would leave us
     // in the CLOSING state, without ever getting to CLOSED state.
     if (this.inputState_ === SearchInputState.OPEN) {
+      if (util.isSearchV2Enabled()) {
+        this.store_.dispatch(searchAction({status: SearchStatus.INACTIVE}));
+      }
       this.inputState_ = SearchInputState.CLOSING;
       this.inputElement_.tabIndex = -1;
       this.inputElement_.disabled = true;

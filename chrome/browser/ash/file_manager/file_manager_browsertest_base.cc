@@ -1992,6 +1992,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(features::kFileTransferEnterpriseConnector);
   }
 
+  if (options.enable_search_v2) {
+    enabled_features.push_back(chromeos::features::kFilesSearchV2);
+  } else {
+    disabled_features.push_back(chromeos::features::kFilesSearchV2);
+  }
+
   // This is destroyed in |TearDown()|. We cannot initialize this in the
   // constructor due to this feature values' above dependence on virtual
   // method calls, but by convention subclasses of this fixture may initialize

@@ -1608,6 +1608,8 @@ export class DirectoryModel extends EventTarget {
         return;
       }
 
+      this.store_.dispatch(
+          searchAction({query: query, status: PropStatus.STARTED}));
       this.onSearchCompleted_ = (...args) => {
         // Notify the caller via callback, for non-store based callers.
         onSearchRescan(...args);

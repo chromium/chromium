@@ -182,6 +182,11 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& EnableSearchV2() {
+    options.enable_search_v2 = true;
+    return *this;
+  }
+
   std::string GetFullName() const {
     std::string full_name = name;
 
@@ -226,6 +231,9 @@ struct TestCase {
 
     if (options.file_transfer_connector_report_only)
       full_name += "_ReportOnly";
+
+    if (options.enable_search_v2)
+      full_name += "_SearchV2";
 
     return full_name;
   }
@@ -1651,7 +1659,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
                       TestCase("searchDownloadsClearSearch"),
                       TestCase("searchHidingViaTab"),
                       TestCase("searchHidingTextEntryField"),
-                      TestCase("searchButtonToggles")
+                      TestCase("searchButtonToggles"),
+                      TestCase("searchOptions").EnableSearchV2()
                       // TODO(b/189173190): Enable
                       // TestCase("searchQueryLaunchParam")
                       ));
