@@ -2528,7 +2528,7 @@
   {
     "name": "enable-lens-image-format-optimizations",
     "owners": ["mercerd@google.com", "stanfield@google.com", "lens-chrome@google.com"],
-    "expiry_milestone": 110
+    "expiry_milestone": 112
   },
   {
     "name": "enable-lens-in-home-screen-widget",
@@ -2553,12 +2553,12 @@
   {
     "name": "enable-lens-instruction-chip-improvements",
     "owners": [ "schechter@google.com", "juanmojica@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 112
   },
   {
     "name": "enable-lens-region-search-static-page",
     "owners": ["juanmojica@google.com", "stanfield@google.com", "lens-chrome@google.com"],
-    "expiry_milestone": 110
+    "expiry_milestone": 112
   },
   {
     "name": "enable-lens-standalone",
