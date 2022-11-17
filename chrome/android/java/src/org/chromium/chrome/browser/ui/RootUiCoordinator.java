@@ -1501,10 +1501,9 @@ public class RootUiCoordinator
     }
 
     private void initDirectActionInitializer() {
-        mDirectActionInitializer = new DirectActionInitializer(mActivity, mActivityType,
+        mDirectActionInitializer = new DirectActionInitializer(mActivityType,
                 mMenuOrKeyboardActionController, mActivity::onBackPressed,
-                mTabModelSelectorSupplier.get(), mFindToolbarManager, getBottomSheetController(),
-                mBrowserControlsManager, mCompositorViewHolderSupplier.get(), mActivityTabProvider);
+                mTabModelSelectorSupplier.get(), mFindToolbarManager);
         mActivityLifecycleDispatcher.register(mDirectActionInitializer);
     }
 
