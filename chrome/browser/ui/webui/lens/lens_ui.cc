@@ -21,6 +21,7 @@ LensUI::LensUI(content::WebUI* web_ui) : WebUIController(web_ui) {
   webui::SetupWebUIDataSource(
       html_source, base::make_span(kLensResources, kLensResourcesSize),
       IDR_LENS_REGION_SEARCH_HTML);
+  webui::EnableTrustedTypesCSP(html_source);
 
   // Set up Content Security Policy (CSP) for chrome-untrusted://lens iframe.
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);

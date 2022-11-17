@@ -46,6 +46,7 @@ HistoryClustersSidePanelUI::HistoryClustersSidePanelUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       source, kHistoryClustersResources,
       IDR_SIDE_PANEL_HISTORY_CLUSTERS_HISTORY_CLUSTERS_HTML);
+  webui::EnableTrustedTypesCSP(source);
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 source);
 }

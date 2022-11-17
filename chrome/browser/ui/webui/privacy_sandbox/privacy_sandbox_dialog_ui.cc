@@ -31,6 +31,7 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
       source,
       base::make_span(kPrivacySandboxResources, kPrivacySandboxResourcesSize),
       IDR_PRIVACY_SANDBOX_PRIVACY_SANDBOX_DIALOG_HTML);
+  webui::EnableTrustedTypesCSP(source);
 
   source->AddResourcePath(
       chrome::kChromeUIPrivacySandboxDialogCombinedPath,

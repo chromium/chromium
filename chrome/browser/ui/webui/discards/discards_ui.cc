@@ -255,6 +255,7 @@ DiscardsUI::DiscardsUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       source.get(), base::make_span(kDiscardsResources, kDiscardsResourcesSize),
       IDR_DISCARDS_DISCARDS_HTML);
+  webui::EnableTrustedTypesCSP(source.get());
 
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource::Add(profile, source.release());

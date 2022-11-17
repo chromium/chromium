@@ -24,6 +24,7 @@ SegmentationInternalsUI::SegmentationInternalsUI(content::WebUI* web_ui)
       base::make_span(kSegmentationInternalsResources,
                       kSegmentationInternalsResourcesSize),
       IDR_SEGMENTATION_INTERNALS_SEGMENTATION_INTERNALS_HTML);
+  webui::EnableTrustedTypesCSP(source.get());
 
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();

@@ -92,6 +92,7 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       source, base::make_span(kSidePanelResources, kSidePanelResourcesSize),
       resource);
+  webui::EnableTrustedTypesCSP(source);
 
   // Add a handler to provide pluralized strings.
   auto plural_string_handler = std::make_unique<PluralStringHandler>();

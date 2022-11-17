@@ -172,6 +172,7 @@ CastFeedbackUI::CastFeedbackUI(content::WebUI* web_ui)
       base::make_span(kMediaRouterFeedbackResources,
                       kMediaRouterFeedbackResourcesSize),
       IDR_MEDIA_ROUTER_FEEDBACK_FEEDBACK_HTML);
+  webui::EnableTrustedTypesCSP(source);
 
   content::WebUIDataSource::Add(profile_, source);
 

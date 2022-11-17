@@ -23,6 +23,7 @@ content::WebUIDataSource* CreateWebuiGalleryUIHtmlSource(Profile* profile) {
       source,
       base::make_span(kWebuiGalleryResources, kWebuiGalleryResourcesSize),
       IDR_WEBUI_GALLERY_WEBUI_GALLERY_HTML);
+  webui::EnableTrustedTypesCSP(source);
 
   source->DisableTrustedTypesCSP();
   source->OverrideContentSecurityPolicy(

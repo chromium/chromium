@@ -31,6 +31,7 @@ AccessCodeCastUI::AccessCodeCastUI(content::WebUI* web_ui)
       source.get(),
       base::make_span(kAccessCodeCastResources, kAccessCodeCastResourcesSize),
       IDR_ACCESS_CODE_CAST_INDEX_HTML);
+  webui::EnableTrustedTypesCSP(source.get());
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"accessCodeMessage", IDS_ACCESS_CODE_CAST_ACCESS_CODE_MESSAGE},

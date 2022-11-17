@@ -34,6 +34,7 @@ CommanderUI::CommanderUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       source, base::make_span(kCommanderResources, kCommanderResourcesSize),
       IDR_COMMANDER_COMMANDER_HTML);
+  webui::EnableTrustedTypesCSP(source);
 
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource::Add(profile, source);

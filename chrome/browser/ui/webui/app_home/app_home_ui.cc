@@ -20,6 +20,7 @@ AppHomeUI::AppHomeUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   webui::SetupWebUIDataSource(
       source, base::make_span(kAppHomeResources, kAppHomeResourcesSize),
       IDR_APP_HOME_APP_HOME_HTML);
+  webui::EnableTrustedTypesCSP(source);
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource::Add(profile, source);
 }

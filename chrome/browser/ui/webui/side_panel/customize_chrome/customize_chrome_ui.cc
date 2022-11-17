@@ -42,6 +42,7 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       base::make_span(kSidePanelCustomizeChromeResources,
                       kSidePanelCustomizeChromeResourcesSize),
       IDR_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_HTML);
+  webui::EnableTrustedTypesCSP(source);
 
   content::WebUIDataSource::Add(profile_, source);
 }

@@ -38,6 +38,8 @@ content::WebUIDataSource* CreateWhatsNewUIHtmlSource(Profile* profile) {
   webui::SetupWebUIDataSource(
       source, base::make_span(kWhatsNewResources, kWhatsNewResourcesSize),
       IDR_WHATS_NEW_WHATS_NEW_HTML);
+  webui::EnableTrustedTypesCSP(source);
+
   static constexpr webui::LocalizedString kStrings[] = {
       {"title", IDS_WHATS_NEW_TITLE},
   };

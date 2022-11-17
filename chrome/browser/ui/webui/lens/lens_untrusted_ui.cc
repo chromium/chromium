@@ -40,6 +40,7 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
       html_source,
       base::make_span(kLensUntrustedResources, kLensUntrustedResourcesSize),
       IDR_LENS_UNTRUSTED_REGION_SEARCH_UNTRUSTED_HTML);
+  webui::EnableTrustedTypesCSP(html_source);
   html_source->AddFrameAncestor(GURL(chrome::kChromeUILensURL));
   // Allows chrome:://lens to load this page in an iframe.
   html_source->OverrideCrossOriginOpenerPolicy("same-origin");
