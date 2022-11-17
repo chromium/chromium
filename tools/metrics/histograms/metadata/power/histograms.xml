@@ -813,18 +813,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Power.BatteryDischargeMode2{UsageScenario}"
-    enum="BatteryDischargeMode" expires_after="2023-03-31">
-  <owner>etiennep@chromium.org</owner>
-  <owner>olivierli@chromium.org</owner>
-  <summary>
-    Battery discharge mode describing whether BatteryDischargeRate2 could be
-    reported or not, and why. This is recorded every 2 minutes for
-    {UsageScenario} (see go/chrome_power_use_per_scenario).
-  </summary>
-  <token key="UsageScenario" variants="UsageScenario"/>
-</histogram>
-
 <histogram name="Power.BatteryDischargeMode5{UsageScenario}{IntervalType}"
     enum="BatteryDischargeMode" expires_after="2023-03-31">
   <owner>etiennep@chromium.org</owner>
@@ -841,11 +829,6 @@ chromium-metrics-reviews@google.com.
     This is recorded for {UsageScenario}.
 
     This contains {IntervalType}.
-
-    There are 2 differences with Power.BatteryDischargeRate2. 1: When possible,
-    the intervals are aligned with battery discharge notifications from the OS
-    (MacOS only for now), and 2: Intervals represents only 1 minute of Chrome
-    runtime (as opposed to 2 minutes).
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
   <token key="IntervalType" variants="IntervalType"/>
@@ -859,23 +842,6 @@ chromium-metrics-reviews@google.com.
     Chrome OS battery discharge rate in mW sampled every 30 seconds while the
     device runs on battery.
   </summary>
-</histogram>
-
-<histogram name="Power.BatteryDischargeRate2{UsageScenario}"
-    units="hundredth of percent" expires_after="2023-03-31">
-  <owner>etiennep@chromium.org</owner>
-  <owner>olivierli@chromium.org</owner>
-  <owner>lgrey@chromium.org</owner>
-  <summary>
-    Battery discharge rate per minute, with 1/10000 of full charge resolution,
-    example: - Battery capacity = 4000 mAh; - Battery charge at the beginning of
-    the interval: 3900 mAh; - Battery charge at the end of the interval: 3700
-    mAh; - Discharge proportion: (3900-3700) / 4000 = 0.05 - Reported value:
-    500. This metric is only recorded when on battery power. This is reported on
-    Mac and Windows. This is recorded every 2 minutes for {UsageScenario} (see
-    go/chrome_power_use_per_scenario).
-  </summary>
-  <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
 
 <histogram
@@ -897,12 +863,6 @@ chromium-metrics-reviews@google.com.
     This is recorded for {UsageScenario}.
 
     This contains {IntervalType}.
-
-    There are 3 differences with Power.BatteryDischargeRate2. 1: When possible,
-    the intervals are aligned with battery discharge notifications from the OS
-    (MacOS only for now), 2: Intervals represents only 1 minute of Chrome
-    runtime (as opposed to 2 minutes), and 3: The discharge rate is emitted in
-    milliwatts instead of hundredth of a percent.
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
   <token key="IntervalType" variants="IntervalType"/>
@@ -929,11 +889,6 @@ chromium-metrics-reviews@google.com.
     This is recorded for {UsageScenario}.
 
     This contains {IntervalType}.
-
-    There are 2 differences with Power.BatteryDischargeRate2. 1: When possible,
-    the intervals are aligned with battery discharge notifications from the OS
-    (MacOS only for now), and 2: Intervals represents only 1 minute of Chrome
-    runtime (as opposed to 2 minutes).
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
   <token key="IntervalType" variants="IntervalType"/>

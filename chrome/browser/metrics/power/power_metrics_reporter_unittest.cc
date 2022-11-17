@@ -29,14 +29,6 @@
 
 namespace {
 
-constexpr const char* kBatteryDischargeRateHistogramName =
-    "Power.BatteryDischargeRate2";
-constexpr const char* kBatteryDischargeModeHistogramName =
-    "Power.BatteryDischargeMode2";
-
-constexpr double kTolerableTimeElapsedRatio = 0.10;
-constexpr double kTolerablePositiveDrift = 1 + kTolerableTimeElapsedRatio;
-
 base::BatteryLevelProvider::BatteryState MakeBatteryDischargingState(
     int battery_percent) {
   return base::BatteryLevelProvider::BatteryState{
@@ -327,43 +319,6 @@ TEST_F(PowerMetricsReporterUnitTest, ResourceCoalitionHistograms_EndToEnd) {
 }
 #endif
 
-TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsTooLate) {
-  ProcessMonitor::Metrics aggregated_process_metrics = {};
-  process_monitor_.SetMetricsToReturn(aggregated_process_metrics);
-
-  // Pretend that the battery has dropped by 2%.
-  battery_states_.push(MakeBatteryDischargingState(48));
-
-  const base::TimeDelta kTooLate =
-      kLongPowerMetricsIntervalDuration * kTolerablePositiveDrift +
-      base::Microseconds(1);
-  process_monitor_.ForceSampleAllProcessesIn(power_metrics_reporter_.get(),
-                                             &task_environment_, kTooLate);
-
-  histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
-  histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
-                                       BatteryDischargeMode::kInvalidInterval,
-                                       1);
-}
-
-TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsLate) {
-  ProcessMonitor::Metrics aggregated_process_metrics = {};
-  process_monitor_.SetMetricsToReturn(aggregated_process_metrics);
-
-  // Pretend that the battery has dropped by 2%.
-  battery_states_.push(MakeBatteryDischargingState(48));
-
-  const base::TimeDelta kLate =
-      kLongPowerMetricsIntervalDuration * kTolerablePositiveDrift -
-      base::Microseconds(1);
-  process_monitor_.ForceSampleAllProcessesIn(power_metrics_reporter_.get(),
-                                             &task_environment_, kLate);
-
-  histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 1);
-  histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
-                                       BatteryDischargeMode::kDischarging, 1);
-}
-
 TEST_F(PowerMetricsReporterUnitTest, UKMs) {
   int fake_value = 42;
 
@@ -490,11 +445,6 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
           fake_interval_data.longest_visible_origin_duration));
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kDeviceSleptDuringIntervalName, false);
-
-  histogram_tester_.ExpectUniqueSample(kBatteryDischargeRateHistogramName, 2500,
-                                       1);
-  histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
-                                       BatteryDischargeMode::kDischarging, 1);
 }
 
 TEST_F(PowerMetricsReporterUnitTest, UKMsBrowserShuttingDown) {
@@ -565,10 +515,6 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsPluggedIn) {
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kBatteryDischargeModeName,
       static_cast<int64_t>(BatteryDischargeMode::kPluggedIn));
-
-  histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
-  histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
-                                       BatteryDischargeMode::kPluggedIn, 1);
 }
 
 TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateChanges) {
@@ -599,10 +545,6 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateChanges) {
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kBatteryDischargeModeName,
       static_cast<int64_t>(BatteryDischargeMode::kStateChanged));
-
-  histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
-  histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
-                                       BatteryDischargeMode::kStateChanged, 1);
 }
 
 TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateUnavailable) {
@@ -626,11 +568,6 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateUnavailable) {
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kBatteryDischargeModeName,
       static_cast<int64_t>(BatteryDischargeMode::kRetrievalError));
-
-  histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
-  histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
-                                       BatteryDischargeMode::kRetrievalError,
-                                       1);
 }
 
 TEST_F(PowerMetricsReporterUnitTest, UKMsNoBattery) {
@@ -664,10 +601,6 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsNoBattery) {
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kBatteryDischargeModeName,
       static_cast<int64_t>(BatteryDischargeMode::kNoBattery));
-
-  histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
-  histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
-                                       BatteryDischargeMode::kNoBattery, 1);
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -695,11 +628,6 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsMacFullyCharged) {
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kBatteryDischargeModeName,
       static_cast<int64_t>(BatteryDischargeMode::kMacFullyCharged));
-
-  histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
-  histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
-                                       BatteryDischargeMode::kMacFullyCharged,
-                                       1);
 }
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -725,11 +653,6 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateIncrease) {
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kBatteryDischargeModeName,
       static_cast<int64_t>(BatteryDischargeMode::kBatteryLevelIncreased));
-
-  histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
-  histogram_tester_.ExpectUniqueSample(
-      kBatteryDischargeModeHistogramName,
-      BatteryDischargeMode::kBatteryLevelIncreased, 1);
 }
 
 TEST_F(PowerMetricsReporterUnitTest, UKMsNoTab) {

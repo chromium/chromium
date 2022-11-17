@@ -104,6 +104,33 @@ class BatteryDischargeReporterTest : public testing::Test {
       const BatteryDischargeReporterTest& rhs) = delete;
   ~BatteryDischargeReporterTest() override = default;
 
+  // Tests that the right BatteryDischargeMode histogram sample is emitted given
+  // the battery states before and after an interval.
+  void TestBatteryDischargeMode(
+      const absl::optional<base::BatteryLevelProvider::BatteryState>&
+          previous_battery_state,
+      const absl::optional<base::BatteryLevelProvider::BatteryState>&
+          new_battery_state,
+      BatteryDischargeMode expected_mode) {
+    TestUsageScenarioDataStoreImpl usage_scenario_data_store;
+
+    base::BatteryStateSampler battery_state_sampler(
+        std::make_unique<NoopSamplingEventSource>(),
+        std::make_unique<NoopBatteryLevelProvider>());
+    BatteryDischargeReporter battery_discharge_reporter(
+        &battery_state_sampler, &usage_scenario_data_store);
+
+    battery_discharge_reporter.OnBatteryStateSampled(previous_battery_state);
+    task_environment_.FastForwardBy(base::Minutes(1));
+    battery_discharge_reporter.OnBatteryStateSampled(new_battery_state);
+
+    const std::vector<const char*> suffixes(
+        {"", ".Initial", ".ZeroWindow", ".ZeroWindow.Initial"});
+    ExpectHistogramSamples(&histogram_tester_, suffixes,
+                           {{kBatteryDischargeModeHistogramName,
+                             static_cast<int>(expected_mode)}});
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -252,4 +279,146 @@ TEST_F(BatteryDischargeReporterTest, BatteryDischargeCaptureIsEarly) {
       kBatteryDischargeRateMilliwattsHistogramName, 1);
   histogram_tester_.ExpectTotalCount(kBatteryDischargeRateRelativeHistogramName,
                                      1);
+}
+
+TEST_F(BatteryDischargeReporterTest, RetrievalError) {
+  TestBatteryDischargeMode(absl::nullopt, absl::nullopt,
+                           BatteryDischargeMode::kRetrievalError);
+}
+
+TEST_F(BatteryDischargeReporterTest, StateChanged_Battery) {
+  TestBatteryDischargeMode(
+      base::BatteryLevelProvider::BatteryState{
+          .battery_count = 0,
+      },
+      base::BatteryLevelProvider::BatteryState{
+          .battery_count = 1,
+      },
+      BatteryDischargeMode::kStateChanged);
+}
+
+TEST_F(BatteryDischargeReporterTest, StateChanged_PluggedIn) {
+  TestBatteryDischargeMode(
+      base::BatteryLevelProvider::BatteryState{
+          .battery_count = 1,
+          .is_external_power_connected = true,
+      },
+      base::BatteryLevelProvider::BatteryState{
+          .battery_count = 1,
+          .is_external_power_connected = false,
+      },
+      BatteryDischargeMode::kStateChanged);
+}
+
+TEST_F(BatteryDischargeReporterTest, NoBattery) {
+  TestBatteryDischargeMode(
+      base::BatteryLevelProvider::BatteryState{
+          .battery_count = 0,
+      },
+      base::BatteryLevelProvider::BatteryState{
+          .battery_count = 0,
+      },
+      BatteryDischargeMode::kNoBattery);
+}
+
+TEST_F(BatteryDischargeReporterTest, PluggedIn) {
+  TestBatteryDischargeMode(
+      base::BatteryLevelProvider::BatteryState{
+          .battery_count = 1,
+          .is_external_power_connected = true,
+      },
+      base::BatteryLevelProvider::BatteryState{
+          .battery_count = 1,
+          .is_external_power_connected = true,
+      },
+      BatteryDischargeMode::kPluggedIn);
+}
+
+TEST_F(BatteryDischargeReporterTest, MultipleBatteries) {
+  TestBatteryDischargeMode(
+      base::BatteryLevelProvider::BatteryState{
+          .battery_count = 2,
+          .is_external_power_connected = false,
+      },
+      base::BatteryLevelProvider::BatteryState{
+          .battery_count = 2,
+          .is_external_power_connected = false,
+      },
+      BatteryDischargeMode::kMultipleBatteries);
+}
+
+TEST_F(BatteryDischargeReporterTest, InsufficientResolution) {
+  TestBatteryDischargeMode(
+      base::BatteryLevelProvider::BatteryState{
+          .battery_count = 1,
+          .is_external_power_connected = false,
+          .charge_unit =
+              base::BatteryLevelProvider::BatteryLevelUnit::kRelative,
+      },
+      base::BatteryLevelProvider::BatteryState{
+          .battery_count = 1,
+          .is_external_power_connected = false,
+          .charge_unit =
+              base::BatteryLevelProvider::BatteryLevelUnit::kRelative,
+      },
+      BatteryDischargeMode::kInsufficientResolution);
+}
+
+#if BUILDFLAG(IS_MAC)
+TEST_F(BatteryDischargeReporterTest, MacFullyCharged) {
+  TestBatteryDischargeMode(
+      base::BatteryLevelProvider::BatteryState{
+          .battery_count = 1,
+          .is_external_power_connected = false,
+          .current_capacity = 100,
+          .full_charged_capacity = 100,
+          .charge_unit = base::BatteryLevelProvider::BatteryLevelUnit::kMWh,
+      },
+      base::BatteryLevelProvider::BatteryState{
+          .battery_count = 1,
+          .is_external_power_connected = false,
+          .current_capacity = 99,
+          .full_charged_capacity = 100,
+          .charge_unit = base::BatteryLevelProvider::BatteryLevelUnit::kMWh,
+      },
+      BatteryDischargeMode::kMacFullyCharged);
+}
+#endif  // BUILDFLAG(IS_MAC)
+
+TEST_F(BatteryDischargeReporterTest, FullChargedCapacityIsZero) {
+  TestBatteryDischargeMode(
+      base::BatteryLevelProvider::BatteryState{
+          .battery_count = 1,
+          .is_external_power_connected = false,
+          .current_capacity = 10,
+          .full_charged_capacity = 0,
+          .charge_unit = base::BatteryLevelProvider::BatteryLevelUnit::kMWh,
+      },
+      base::BatteryLevelProvider::BatteryState{
+          .battery_count = 1,
+          .is_external_power_connected = false,
+          .current_capacity = 10,
+          .full_charged_capacity = 0,
+          .charge_unit = base::BatteryLevelProvider::BatteryLevelUnit::kMWh,
+      },
+      BatteryDischargeMode::kFullChargedCapacityIsZero);
+}
+
+TEST_F(BatteryDischargeReporterTest, BatteryLevelIncreased) {
+  TestBatteryDischargeMode(
+      base::BatteryLevelProvider::BatteryState{
+          .battery_count = 1,
+          .is_external_power_connected = false,
+          .current_capacity = 40,
+          .full_charged_capacity = 100,
+          .charge_unit = base::BatteryLevelProvider::BatteryLevelUnit::kMWh,
+      },
+      base::BatteryLevelProvider::BatteryState{
+          .battery_count = 1,
+          .is_external_power_connected = false,
+          .current_capacity = 50,
+          .full_charged_capacity = 100,
+          .charge_unit = base::BatteryLevelProvider::BatteryLevelUnit::kMWh,
+      },
+      BatteryDischargeMode::kBatteryLevelIncreased);
 }
