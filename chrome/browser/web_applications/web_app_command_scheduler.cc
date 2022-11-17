@@ -63,16 +63,6 @@ void WebAppCommandScheduler::FetchManifestAndInstall(
   if (is_in_shutdown_)
     return;
 
-  if (!provider_->is_registry_ready()) {
-    provider_->on_registry_ready().Post(
-        FROM_HERE,
-        base::BindOnce(&WebAppCommandScheduler::FetchManifestAndInstall,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::move(install_surface), std::move(contents),
-                       bypass_service_worker_check, std::move(dialog_callback),
-                       std::move(callback), use_fallback));
-    return;
-  }
   provider_->command_manager().ScheduleCommand(
       std::make_unique<FetchManifestAndInstallCommand>(
           std::move(install_surface), std::move(contents),
@@ -89,16 +79,6 @@ void WebAppCommandScheduler::InstallFromInfo(
   if (is_in_shutdown_)
     return;
 
-  if (!provider_->is_registry_ready()) {
-    provider_->on_registry_ready().Post(
-        FROM_HERE,
-        base::BindOnce(&WebAppCommandScheduler::InstallFromInfo,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(install_info),
-                       overwrite_existing_manifest_fields,
-                       std::move(install_surface),
-                       std::move(install_callback)));
-    return;
-  }
   provider_->command_manager().ScheduleCommand(
       std::make_unique<InstallFromInfoCommand>(
           std::move(install_info), overwrite_existing_manifest_fields,
@@ -114,16 +94,6 @@ void WebAppCommandScheduler::InstallFromInfoWithParams(
   if (is_in_shutdown_)
     return;
 
-  if (!provider_->is_registry_ready()) {
-    provider_->on_registry_ready().Post(
-        FROM_HERE,
-        base::BindOnce(&WebAppCommandScheduler::InstallFromInfoWithParams,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(install_info),
-                       overwrite_existing_manifest_fields,
-                       std::move(install_surface), std::move(install_callback),
-                       install_params));
-    return;
-  }
   provider_->command_manager().ScheduleCommand(
       std::make_unique<InstallFromInfoCommand>(
           std::move(install_info), overwrite_existing_manifest_fields,
@@ -139,15 +109,6 @@ void WebAppCommandScheduler::InstallExternallyManagedApp(
   if (is_in_shutdown_)
     return;
 
-  if (!provider_->is_registry_ready()) {
-    provider_->on_registry_ready().Post(
-        FROM_HERE,
-        base::BindOnce(&WebAppCommandScheduler::InstallExternallyManagedApp,
-                       weak_ptr_factory_.GetWeakPtr(), external_install_options,
-                       std::move(callback), contents,
-                       std::move(data_retriever)));
-    return;
-  }
   provider_->command_manager().ScheduleCommand(
       std::make_unique<ExternallyManagedInstallCommand>(
           external_install_options, std::move(callback), contents,
@@ -161,15 +122,6 @@ void WebAppCommandScheduler::PersistFileHandlersUserChoice(
   if (is_in_shutdown_)
     return;
 
-  if (!provider_->is_registry_ready()) {
-    provider_->on_registry_ready().Post(
-        FROM_HERE,
-        base::BindOnce(&WebAppCommandScheduler::PersistFileHandlersUserChoice,
-                       weak_ptr_factory_.GetWeakPtr(), app_id, allowed,
-                       std::move(callback)));
-    return;
-  }
-
   provider_->command_manager().ScheduleCommand(
       UpdateFileHandlerCommand::CreateForPersistUserChoice(
           app_id, allowed, std::move(callback)));
@@ -180,15 +132,6 @@ void WebAppCommandScheduler::UpdateFileHandlerOsIntegration(
     base::OnceClosure callback) {
   if (is_in_shutdown_)
     return;
-
-  if (!provider_->is_registry_ready()) {
-    provider_->on_registry_ready().Post(
-        FROM_HERE,
-        base::BindOnce(&WebAppCommandScheduler::UpdateFileHandlerOsIntegration,
-                       weak_ptr_factory_.GetWeakPtr(), app_id,
-                       std::move(callback)));
-    return;
-  }
 
   provider_->command_manager().ScheduleCommand(
       UpdateFileHandlerCommand::CreateForUpdate(app_id, std::move(callback)));
@@ -201,15 +144,6 @@ void WebAppCommandScheduler::ScheduleManifestUpdateDataFetch(
     ManifestFetchCallback callback) {
   if (is_in_shutdown_)
     return;
-
-  if (!provider_->is_registry_ready()) {
-    provider_->on_registry_ready().Post(
-        FROM_HERE,
-        base::BindOnce(&WebAppCommandScheduler::ScheduleManifestUpdateDataFetch,
-                       weak_ptr_factory_.GetWeakPtr(), url, app_id, contents,
-                       std::move(callback)));
-    return;
-  }
 
   provider_->command_manager().ScheduleCommand(
       std::make_unique<ManifestUpdateDataFetchCommand>(
@@ -228,17 +162,6 @@ void WebAppCommandScheduler::ScheduleManifestUpdateFinalize(
   if (is_in_shutdown_)
     return;
 
-  if (!provider_->is_registry_ready()) {
-    provider_->on_registry_ready().Post(
-        FROM_HERE,
-        base::BindOnce(&WebAppCommandScheduler::ScheduleManifestUpdateFinalize,
-                       weak_ptr_factory_.GetWeakPtr(), url, app_id,
-                       std::move(install_info), app_identity_update_allowed,
-                       std::move(keep_alive), std::move(profile_keep_alive),
-                       std::move(callback)));
-    return;
-  }
-
   provider_->command_manager().ScheduleCommand(
       std::make_unique<ManifestUpdateFinalizeCommand>(
           url, app_id, std::move(install_info), app_identity_update_allowed,
@@ -252,16 +175,6 @@ void WebAppCommandScheduler::FetchInstallabilityForChromeManagement(
     FetchInstallabilityForChromeManagementCallback callback) {
   if (is_in_shutdown_)
     return;
-
-  if (!provider_->is_registry_ready()) {
-    provider_->on_registry_ready().Post(
-        FROM_HERE,
-        base::BindOnce(
-            &WebAppCommandScheduler::FetchInstallabilityForChromeManagement,
-            weak_ptr_factory_.GetWeakPtr(), url, web_contents,
-            std::move(callback)));
-    return;
-  }
 
   provider_->command_manager().ScheduleCommand(
       std::make_unique<web_app::FetchInstallabilityForChromeManagement>(
@@ -277,15 +190,6 @@ void WebAppCommandScheduler::InstallIsolatedWebApp(
   if (is_in_shutdown_)
     return;
 
-  if (!provider_->is_registry_ready()) {
-    provider_->on_registry_ready().Post(
-        FROM_HERE,
-        base::BindOnce(&WebAppCommandScheduler::InstallIsolatedWebApp,
-                       weak_ptr_factory_.GetWeakPtr(), url_info, isolation_data,
-                       std::move(callback)));
-    return;
-  }
-
   provider_->command_manager().ScheduleCommand(
       std::make_unique<InstallIsolatedWebAppCommand>(
           url_info, isolation_data, CreateIsolatedWebAppWebContents(*profile_),
@@ -298,14 +202,6 @@ void WebAppCommandScheduler::SetRunOnOsLoginMode(const AppId& app_id,
   if (is_in_shutdown_)
     return;
 
-  if (!provider_->is_registry_ready()) {
-    provider_->on_registry_ready().Post(
-        FROM_HERE, base::BindOnce(&WebAppCommandScheduler::SetRunOnOsLoginMode,
-                                  weak_ptr_factory_.GetWeakPtr(), app_id,
-                                  std::move(login_mode), std::move(callback)));
-    return;
-  }
-
   provider_->command_manager().ScheduleCommand(
       RunOnOsLoginCommand::CreateForSetLoginMode(app_id, std::move(login_mode),
                                                  std::move(callback)));
@@ -315,14 +211,6 @@ void WebAppCommandScheduler::SyncRunOnOsLoginMode(const AppId& app_id,
                                                   base::OnceClosure callback) {
   if (is_in_shutdown_)
     return;
-
-  if (!provider_->is_registry_ready()) {
-    provider_->on_registry_ready().Post(
-        FROM_HERE, base::BindOnce(&WebAppCommandScheduler::SyncRunOnOsLoginMode,
-                                  weak_ptr_factory_.GetWeakPtr(), app_id,
-                                  std::move(callback)));
-    return;
-  }
 
   provider_->command_manager().ScheduleCommand(
       RunOnOsLoginCommand::CreateForSyncLoginMode(app_id, std::move(callback)));
@@ -334,16 +222,6 @@ void WebAppCommandScheduler::ScheduleCallbackWithLock(
     base::OnceCallback<void(LockType& lock)> callback) {
   if (is_in_shutdown_)
     return;
-
-  if (!provider_->is_registry_ready()) {
-    provider_->on_registry_ready().Post(
-        FROM_HERE,
-        base::BindOnce(
-            &WebAppCommandScheduler::ScheduleCallbackWithLock<LockType>,
-            weak_ptr_factory_.GetWeakPtr(), std::move(lock_description),
-            std::move(callback)));
-    return;
-  }
 
   provider_->command_manager().ScheduleCommand(
       std::make_unique<CallbackCommand<LockType>>(std::move(lock_description),
