@@ -56,7 +56,7 @@ void ReportExitReason(base::HistogramBase* histogram,
   histogram->AddCount(bucket, count);
 }
 
-void ReportLongDuration(const std::string& histogram_name,
+void ReportLongDuration(const char* histogram_name,
                         NSMeasurement* measurement) {
   if (!measurement) {
     return;
@@ -69,8 +69,7 @@ void ReportLongDuration(const std::string& histogram_name,
                                 base::Seconds(86400 /* secs per day */), 50);
 }
 
-void ReportMemory(const std::string& histogram_name,
-                  NSMeasurement* measurement) {
+void ReportMemory(const char* histogram_name, NSMeasurement* measurement) {
   if (!measurement) {
     return;
   }
@@ -139,16 +138,6 @@ void ProcessDiagnosticPayloads(NSArray<MXDiagnosticPayload*>* payloads) {
   }
 }
 
-// Record MXPayload data even when the version is mismatched.
-const char kHistogramPrefixIncludingMismatch[] =
-    "IOS.MetricKit.IncludingMismatch.";
-const char kHistogramPrefix[] = "IOS.MetricKit.";
-
-std::string HistogramPrefix(bool include_mismatch) {
-  return include_mismatch ? kHistogramPrefixIncludingMismatch
-                          : kHistogramPrefix;
-}
-
 }  // namespace
 
 @implementation MetricKitSubscriber
@@ -177,7 +166,7 @@ std::string HistogramPrefix(bool include_mismatch) {
 }
 
 - (void)logStartupDurationMXHistogram:(MXHistogram*)histogram
-                       toUMAHistogram:(const std::string&)histogramUMAName {
+                       toUMAHistogram:(const char*)histogramUMAName {
   if (!histogram || !histogram.totalBucketCount) {
     return;
   }
@@ -186,7 +175,9 @@ std::string HistogramPrefix(bool include_mismatch) {
   base::HistogramBase* histogramUMA = base::Histogram::FactoryTimeGet(
       histogramUMAName, base::Milliseconds(1), base::Minutes(1), 50,
       base::HistogramBase::kUmaTargetedHistogramFlag);
-  for (MXHistogramBucket* bucket in [histogram bucketEnumerator]) {
+  MXHistogramBucket* bucket;
+  NSEnumerator* enumerator = [histogram bucketEnumerator];
+  while (bucket = [enumerator nextObject]) {
     // MXHistogram structure is linear and the bucket size is not guaranteed to
     // never change. As the granularity is small in the current iOS version,
     // (10ms) they are reported using a representative value of the bucket.
@@ -212,10 +203,9 @@ std::string HistogramPrefix(bool include_mismatch) {
   }
 }
 
-- (void)logForegroundExit:(MXForegroundExitData*)exitData
-          histogramPrefix:(const std::string&)prefix {
+- (void)logForegroundExit:(MXForegroundExitData*)exitData {
   base::HistogramBase* histogramUMA = base::LinearHistogram::FactoryGet(
-      prefix + "ForegroundExitData", 1, kMetricKitExitReasonCount,
+      "IOS.MetricKit.ForegroundExitData", 1, kMetricKitExitReasonCount,
       kMetricKitExitReasonCount + 1,
       base::HistogramBase::kUmaTargetedHistogramFlag);
   ReportExitReason(histogramUMA, kNormalAppExit,
@@ -232,10 +222,9 @@ std::string HistogramPrefix(bool include_mismatch) {
                    exitData.cumulativeIllegalInstructionExitCount);
 }
 
-- (void)logBackgroundExit:(MXBackgroundExitData*)exitData
-          histogramPrefix:(const std::string&)prefix {
+- (void)logBackgroundExit:(MXBackgroundExitData*)exitData {
   base::HistogramBase* histogramUMA = base::LinearHistogram::FactoryGet(
-      prefix + "BackgroundExitData", 1, kMetricKitExitReasonCount,
+      "IOS.MetricKit.BackgroundExitData", 1, kMetricKitExitReasonCount,
       kMetricKitExitReasonCount + 1,
       base::HistogramBase::kUmaTargetedHistogramFlag);
   ReportExitReason(histogramUMA, kNormalAppExit,
@@ -261,44 +250,41 @@ std::string HistogramPrefix(bool include_mismatch) {
 }
 
 - (void)processPayload:(MXMetricPayload*)payload {
-  if (!payload.includesMultipleApplicationVersions &&
-      base::SysNSStringToUTF8(payload.metaData.applicationBuildVersion) ==
+  if (payload.includesMultipleApplicationVersions ||
+      base::SysNSStringToUTF8(payload.metaData.applicationBuildVersion) !=
           version_info::GetVersionNumber()) {
-    [self processPayload:payload withHistogramPrefix:HistogramPrefix(false)];
+    // The metrics will be reported on the current version of Chrome.
+    // Ignore any report that contains data from another version to avoid
+    // confusion.
+    return;
   }
-  [self processPayload:payload withHistogramPrefix:HistogramPrefix(true)];
-}
 
-- (void)processPayload:(MXMetricPayload*)payload
-    withHistogramPrefix:(const std::string&)prefix {
-  ReportLongDuration(prefix + "ForegroundTimePerDay",
+  ReportLongDuration("IOS.MetricKit.ForegroundTimePerDay",
                      payload.applicationTimeMetrics.cumulativeForegroundTime);
-  ReportLongDuration(prefix + "BackgroundTimePerDay",
+  ReportLongDuration("IOS.MetricKit.BackgroundTimePerDay",
                      payload.applicationTimeMetrics.cumulativeBackgroundTime);
-  ReportMemory(prefix + "AverageSuspendedMemory",
+  ReportMemory("IOS.MetricKit.AverageSuspendedMemory",
                payload.memoryMetrics.averageSuspendedMemory.averageMeasurement);
-  ReportMemory(prefix + "PeakMemoryUsage",
+  ReportMemory("IOS.MetricKit.PeakMemoryUsage",
                payload.memoryMetrics.peakMemoryUsage);
 
   MXHistogram* histogrammedApplicationResumeTime =
       payload.applicationLaunchMetrics.histogrammedApplicationResumeTime;
   [self logStartupDurationMXHistogram:histogrammedApplicationResumeTime
-                       toUMAHistogram:prefix + "ApplicationResumeTime"];
+                       toUMAHistogram:"IOS.MetricKit.ApplicationResumeTime"];
 
   MXHistogram* histogrammedTimeToFirstDraw =
       payload.applicationLaunchMetrics.histogrammedTimeToFirstDraw;
   [self logStartupDurationMXHistogram:histogrammedTimeToFirstDraw
-                       toUMAHistogram:prefix + "TimeToFirstDraw"];
+                       toUMAHistogram:"IOS.MetricKit.TimeToFirstDraw"];
 
   MXHistogram* histogrammedApplicationHangTime =
       payload.applicationResponsivenessMetrics.histogrammedApplicationHangTime;
   [self logStartupDurationMXHistogram:histogrammedApplicationHangTime
-                       toUMAHistogram:prefix + "ApplicationHangTime"];
+                       toUMAHistogram:"IOS.MetricKit.ApplicationHangTime"];
 
-  [self logForegroundExit:payload.applicationExitMetrics.foregroundExitData
-          histogramPrefix:prefix];
-  [self logBackgroundExit:payload.applicationExitMetrics.backgroundExitData
-          histogramPrefix:prefix];
+  [self logForegroundExit:payload.applicationExitMetrics.foregroundExitData];
+  [self logBackgroundExit:payload.applicationExitMetrics.backgroundExitData];
 }
 
 - (void)didReceiveDiagnosticPayloads:(NSArray<MXDiagnosticPayload*>*)payloads {

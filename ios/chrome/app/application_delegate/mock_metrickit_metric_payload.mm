@@ -95,13 +95,7 @@ id MockMXHistogram(NSDictionary* dictionary, int delta) {
     OCMStub([bucket bucketCount]).andReturn(value.intValue);
     [buckets addObject:bucket];
   }
-
-  // This uses `andDo` rather than `andReturn` since the objectEnumerator it
-  // returns needs to change each time it's called.
-  OCMStub([histogram bucketEnumerator]).andDo(^(NSInvocation* invocation) {
-    NSEnumerator* enumerator = buckets.objectEnumerator;
-    [invocation setReturnValue:&enumerator];
-  });
+  OCMStub([histogram bucketEnumerator]).andReturn(buckets.objectEnumerator);
   return histogram;
 }
 
