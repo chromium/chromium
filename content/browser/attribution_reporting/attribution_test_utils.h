@@ -61,7 +61,7 @@
 
 namespace attribution_reporting {
 class AggregatableTriggerData;
-class TriggerRegistration;
+struct TriggerRegistration;
 }  // namespace attribution_reporting
 
 namespace mojo {

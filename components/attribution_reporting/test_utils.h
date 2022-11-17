@@ -20,10 +20,10 @@ class AggregationKeys;
 class FilterData;
 class Filters;
 class SuitableOrigin;
-class TriggerRegistration;
 
 struct EventTriggerData;
 struct SourceRegistration;
+struct TriggerRegistration;
 
 bool operator==(const AggregationKeys&, const AggregationKeys&);
 

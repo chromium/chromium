@@ -22,8 +22,7 @@
 
 namespace attribution_reporting {
 
-class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
- public:
+struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
   static base::expected<TriggerRegistration, mojom::TriggerRegistrationError>
   Parse(base::Value::Dict, SuitableOrigin reporting_origin);
 
