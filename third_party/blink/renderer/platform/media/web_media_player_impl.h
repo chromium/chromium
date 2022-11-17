@@ -427,6 +427,9 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // completes.
   void MultiBufferDataSourceInitialized(bool success);
 
+  // Called after synchronous or asynchronous MemoryDataSource initialization.
+  void MemoryDataSourceInitialized(bool success, size_t data_size);
+
   // Called if the |MultiBufferDataSource| is redirected.
   void OnDataSourceRedirected();
 

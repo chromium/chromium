@@ -913,19 +913,13 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
     std::string mime_type, charset, data;
     if (!net::DataURL::Parse(loaded_url_, &mime_type, &charset, &data) ||
         data.empty()) {
-      DataSourceInitialized(false);
+      MemoryDataSourceInitialized(false, 0);
       return;
     }
 
-    // Replace `loaded_url_` with an empty data:// URL since it may be large.
-    loaded_url_ = GURL("data:,");
-
-    // Mark all the data as buffered.
-    buffered_data_source_host_->SetTotalBytes(data.size());
-    buffered_data_source_host_->AddBufferedByteRange(0, data.size());
-
+    size_t data_size = data.size();
     data_source_ = std::make_unique<media::MemoryDataSource>(std::move(data));
-    DataSourceInitialized(true);
+    MemoryDataSourceInitialized(true, data_size);
     return;
   }
 
@@ -2759,6 +2753,19 @@ void WebMediaPlayerImpl::OnRemotePlayStateChange(
 
 void WebMediaPlayerImpl::SetPoster(const WebURL& poster) {
   has_poster_ = !poster.IsEmpty();
+}
+
+void WebMediaPlayerImpl::MemoryDataSourceInitialized(bool success,
+                                                     size_t data_size) {
+  if (success) {
+    // Replace `loaded_url_` with an empty data:// URL since it may be large.
+    loaded_url_ = GURL("data:,");
+
+    // Mark all the data as buffered.
+    buffered_data_source_host_->SetTotalBytes(data_size);
+    buffered_data_source_host_->AddBufferedByteRange(0, data_size);
+  }
+  DataSourceInitialized(success);
 }
 
 void WebMediaPlayerImpl::DataSourceInitialized(bool success) {
