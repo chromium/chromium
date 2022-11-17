@@ -884,6 +884,13 @@ const base::FeatureParam<ServiceWorkerBypassFetchHandlerTarget>
         ServiceWorkerBypassFetchHandlerTarget::kMainResource,
         &service_worker_bypass_fetch_handler_target_options};
 
+// Define the allowed websites to bypass ServiceWorker. Allowed origins are
+// expected to be passed as a comma separated string.
+// e.g. https://example1.test,https://example2.test
+const base::FeatureParam<std::string>
+    kServiceWorkerBypassFetchHandlerAllowedOrigins{
+        &kServiceWorkerBypassFetchHandler, "allowed_origins", ""};
+
 // Enables skipping the service worker fetch handler if the fetch handler is
 // identified as ignorable.
 BASE_FEATURE(kServiceWorkerSkipIgnorableFetchHandler,

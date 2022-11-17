@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_split.h"
 #include "base/trace_event/trace_event.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "content/browser/loader/navigation_url_loader_impl.h"
@@ -81,6 +82,44 @@ const char* FetchHandlerTypeToString(
     case ServiceWorkerVersion::FetchHandlerType::kEmptyFetchHandler:
       return "empty fetch handler";
   }
+}
+
+// Returns the list of origins in which fetch handlers are allowed to be
+// bypassed.
+const std::vector<url::Origin> BypassingFetchHandlerAllowedOrigins() {
+  std::vector<url::Origin> origins;
+  std::vector<std::string> parsed_params = base::SplitString(
+      features::kServiceWorkerBypassFetchHandlerAllowedOrigins.Get(), ",",
+      base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  for (const auto& it : parsed_params) {
+    const GURL url = GURL(it);
+    if (url.is_valid()) {
+      origins.push_back(url::Origin::Create(url));
+    }
+  }
+
+  return origins;
+}
+
+bool ShouldBypassFetchHandlerForMainResource(const GURL& stripped_url) {
+  // If the feature is enabled, the main resource request bypasses ServiceWorker
+  // and starts the worker in parallel for subsequent subresources.
+  if (base::FeatureList::IsEnabled(
+          features::kServiceWorkerBypassFetchHandler) &&
+      features::kServiceWorkerBypassFetchHandlerTarget.Get() ==
+          features::ServiceWorkerBypassFetchHandlerTarget::kMainResource) {
+    // When the url is in the allowlist, fetch handlers for the main resource
+    // are bypassed.
+    // TODO(crbug.com/1371756) Consider using `static`. Since having `static`
+    // led some test failures, we tentatively removed it.
+    const std::vector<url::Origin> allowed_origins(
+        BypassingFetchHandlerAllowedOrigins());
+    for (const auto& it : allowed_origins) {
+      if (it.IsSameOriginWith(stripped_url))
+        return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace
@@ -471,10 +510,7 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
 
   // If the feature is enabled, the main resource request bypasses ServiceWorker
   // and starts the worker in parallel for subsequent subresources.
-  if (base::FeatureList::IsEnabled(
-          features::kServiceWorkerBypassFetchHandler) &&
-      features::kServiceWorkerBypassFetchHandlerTarget.Get() ==
-          features::ServiceWorkerBypassFetchHandlerTarget::kMainResource) {
+  if (ShouldBypassFetchHandlerForMainResource(stripped_url_)) {
     CompleteWithoutLoader();
     if (registration->active_version()->running_status() ==
             EmbeddedWorkerStatus::STARTING ||

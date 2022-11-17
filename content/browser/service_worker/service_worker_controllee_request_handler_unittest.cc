@@ -24,6 +24,7 @@
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/test/test_content_browser_client.h"
 #include "net/cookies/site_for_cookies.h"
@@ -714,20 +715,22 @@ TEST_F(ServiceWorkerSkipEmptyFetchHandlerTest,
   test_resources.ResetHandler();
 }
 
-class ServiceWorkerBypassMainResourceTest
+class ServiceWorkerBypassMainResourceWithAllowListTest
     : public ServiceWorkerControlleeRequestHandlerTest {
  public:
-  ServiceWorkerBypassMainResourceTest() {
-    scoped_feature_list_.InitFromCommandLine("ServiceWorkerBypassFetchHandler",
-                                             "");
+  ServiceWorkerBypassMainResourceWithAllowListTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kServiceWorkerBypassFetchHandler,
+          {{"allowed_origins", "https://host"}}}},
+        {});
   }
-  ~ServiceWorkerBypassMainResourceTest() override = default;
+  ~ServiceWorkerBypassMainResourceWithAllowListTest() override = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(ServiceWorkerBypassMainResourceTest, BypassServiceWorker) {
+TEST_F(ServiceWorkerBypassMainResourceWithAllowListTest, UrlInAllowList) {
   // Store an activated worker.
   version_->set_fetch_handler_type(
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
@@ -751,14 +754,68 @@ TEST_F(ServiceWorkerBypassMainResourceTest, BypassServiceWorker) {
 
   test_resources.WaitLoader();
 
-  // The loader should be false since the interceptor doesn't handle the main
-  // resource request.
+  // If the url is in the allowlist, ServiceWorker the interceptor doesn't
+  // handle the main resource request.
   EXPECT_FALSE(test_resources.loader());
   EXPECT_TRUE(version_->HasControllee());
 
   // Use RunUntilIdle() to wait for the ServiceWorker to start.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(version_->running_status(), EmbeddedWorkerStatus::RUNNING);
+
+  test_resources.ResetHandler();
+}
+
+class ServiceWorkerBypassMainResourceWithAnotherAllowListTest
+    : public ServiceWorkerControlleeRequestHandlerTest {
+ public:
+  ServiceWorkerBypassMainResourceWithAnotherAllowListTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kServiceWorkerBypassFetchHandler,
+          {{"allowed_origins", "https://another-host"}}}},
+        {});
+  }
+  ~ServiceWorkerBypassMainResourceWithAnotherAllowListTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ServiceWorkerBypassMainResourceWithAnotherAllowListTest,
+       UrlNotInAllowList) {
+  // Prepare a valid version and registration.
+  version_->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
+  version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
+  registration_->SetActiveVersion(version_);
+  {
+    base::RunLoop loop;
+    context()->registry()->StoreRegistration(
+        registration_.get(), version_.get(),
+        base::BindOnce(
+            [](base::OnceClosure closure,
+               blink::ServiceWorkerStatusCode status) {
+              ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
+              std::move(closure).Run();
+            },
+            loop.QuitClosure()));
+    loop.Run();
+  }
+
+  // Conduct a main resource load.
+  ServiceWorkerRequestTestResources test_resources(
+      this, GURL("https://host/scope/doc"),
+      network::mojom::RequestDestination::kDocument);
+  test_resources.MaybeCreateLoader();
+
+  EXPECT_FALSE(test_resources.loader());
+  EXPECT_FALSE(version_->HasControllee());
+
+  test_resources.WaitLoader();
+
+  // If the url is not in the allowlist, ServiceWorker handles fetch handler.
+  EXPECT_TRUE(test_resources.loader());
+  EXPECT_TRUE(version_->HasControllee());
 
   test_resources.ResetHandler();
 }

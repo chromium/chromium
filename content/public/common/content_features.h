@@ -216,6 +216,8 @@ enum class ServiceWorkerBypassFetchHandlerTarget {
 CONTENT_EXPORT extern const base::FeatureParam<
     ServiceWorkerBypassFetchHandlerTarget>
     kServiceWorkerBypassFetchHandlerTarget;
+CONTENT_EXPORT extern const base::FeatureParam<std::string>
+    kServiceWorkerBypassFetchHandlerAllowedOrigins;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerSkipIgnorableFetchHandler);
 CONTENT_EXPORT extern const base::FeatureParam<bool> kSkipEmptyFetchHandler;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserMediaCaptureOnFocus);
