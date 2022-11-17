@@ -15,10 +15,6 @@
 
 namespace ui::test {
 
-namespace {
-DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kEnsureNotPresentCheckEvent);
-}
-
 using internal::kInteractiveTestPivotElementId;
 
 InteractiveTestApi::InteractiveTestApi(
@@ -174,28 +170,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::WaitForEvent(
 InteractiveTestApi::MultiStep InteractiveTestApi::EnsureNotPresent(
     ElementIdentifier element_to_check,
     bool in_any_context) {
-  MultiStep steps;
-  steps.emplace_back(WithElement(
-      kInteractiveTestPivotElementId,
-      base::BindOnce([](TrackedElement* element) {
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                [](ElementIdentifier id, ElementContext context) {
-                  auto* const element =
-                      ElementTracker::GetElementTracker()
-                          ->GetFirstMatchingElement(id, context);
-                  if (element) {
-                    ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
-                        element, kEnsureNotPresentCheckEvent);
-                  }
-                  // Note: if the element is no longer present, the sequence was
-                  // already aborted; there is no need to send further errors.
-                },
-                element->identifier(), element->context()));
-      })));
-  steps.emplace_back(AfterEvent(
-      kInteractiveTestPivotElementId, kEnsureNotPresentCheckEvent,
+  return internal::InteractiveTestPrivate::PostTask(
       base::BindOnce(
           [](ElementIdentifier element_to_check, bool in_any_context,
              InteractionSequence* seq, TrackedElement* reference) {
@@ -212,8 +187,12 @@ InteractiveTestApi::MultiStep InteractiveTestApi::EnsureNotPresent(
               seq->FailForTesting();
             }
           },
-          element_to_check, in_any_context)));
-  return steps;
+          element_to_check, in_any_context));
+}
+
+// static
+InteractiveTestApi::MultiStep InteractiveTestApi::FlushEvents() {
+  return internal::InteractiveTestPrivate::PostTask(base::DoNothing());
 }
 
 // static

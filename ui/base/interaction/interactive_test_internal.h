@@ -9,6 +9,8 @@
 
 #include "base/logging.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/test/rectify_callback.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -26,11 +28,14 @@ namespace internal {
 // Element that is present during interactive tests that actions can bounce
 // events off of.
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kInteractiveTestPivotElementId);
+DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kInteractiveTestPivotEventType);
 
 // Class that implements functionality for InteractiveTest* that should be
 // hidden from tests that inherit the API.
 class InteractiveTestPrivate {
  public:
+  using MultiStep = std::vector<InteractionSequence::StepBuilder>;
+
   explicit InteractiveTestPrivate(
       std::unique_ptr<InteractionTestUtil> test_util);
   virtual ~InteractiveTestPrivate();
@@ -65,6 +70,11 @@ class InteractiveTestPrivate {
       InteractionSequence::AbortedCallback aborted_callback_for_testing) {
     aborted_callback_for_testing_ = std::move(aborted_callback_for_testing);
   }
+
+  // Places a callback in the message queue to bounce an event off of the pivot
+  // element, then responds by executing `task`.
+  template <typename T>
+  static MultiStep PostTask(T&& task);
 
  private:
   friend class ui::test::InteractiveTestApi;
@@ -103,6 +113,43 @@ bool MatchAndExplain(const base::StringPiece& test_name,
   oss << "\nActual: " << testing::PrintToString(value);
   LOG(ERROR) << oss.str();
   return false;
+}
+
+// static
+template <typename T>
+InteractiveTestPrivate::MultiStep InteractiveTestPrivate::PostTask(T&& task) {
+  MultiStep result;
+  result.emplace_back(std::move(
+      InteractionSequence::StepBuilder()
+          .SetElementID(kInteractiveTestPivotElementId)
+          .SetStartCallback(base::BindOnce([](ui::TrackedElement* el) {
+            base::ThreadTaskRunnerHandle::Get()->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    [](ElementIdentifier id, ElementContext context) {
+                      auto* const el =
+                          ui::ElementTracker::GetElementTracker()
+                              ->GetFirstMatchingElement(id, context);
+                      if (el) {
+                        ui::ElementTracker::GetFrameworkDelegate()
+                            ->NotifyCustomEvent(el,
+                                                kInteractiveTestPivotEventType);
+                      }
+                      // If there is no pivot element, the test sequence has
+                      // been aborted and there's no need to send an additional
+                      // error.
+                    },
+                    el->identifier(), el->context()));
+          }))));
+  result.emplace_back(std::move(
+      InteractionSequence::StepBuilder()
+          .SetElementID(kInteractiveTestPivotElementId)
+          .SetType(InteractionSequence::StepType::kCustomEvent,
+                   kInteractiveTestPivotEventType)
+          .SetStartCallback(
+              base::RectifyCallback<InteractionSequence::StepStartCallback>(
+                  std::move(task)))));
+  return result;
 }
 
 // Converts an ElementSpecifier to an element ID or name and sets it onto

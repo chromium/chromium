@@ -872,6 +872,13 @@ void WebContentsInteractionTestUtil::OnTabStripModelChanged(
         Observe(nullptr);
       }
     }
+  } else if (change.type() == TabStripModelChange::Type::kReplaced) {
+    auto* const replace = change.GetReplace();
+    if (web_contents() == replace->old_contents) {
+      DiscardCurrentElement();
+      Observe(replace->new_contents);
+      MaybeCreateElement(false);
+    }
   }
 }
 

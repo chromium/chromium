@@ -138,6 +138,9 @@ Verbs fall into a number of different categories:
    - `ExecuteJsAt()` [Browser]
    - `CheckJsResult()` [Browser]
    - `CheckJsResultAt()` [Browser]
+- Utility verbs modify how the test sequence is executed. Currently there is
+  only `FlushEvents()`, which ensures that the next step happens on a fresh
+  message loop rather than being able to chain successive steps.
 
 Example with mouse input:
 ```cpp

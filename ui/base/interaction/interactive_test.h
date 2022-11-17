@@ -48,7 +48,7 @@ class InteractiveTestApi {
 
  protected:
   using InputType = InteractionTestUtil::InputType;
-  using MultiStep = std::vector<InteractionSequence::StepBuilder>;
+  using MultiStep = internal::InteractiveTestPrivate::MultiStep;
   using StepBuilder = InteractionSequence::StepBuilder;
 
   // Construct a MultiStep from one or more StepBuilders and/or MultiSteps.
@@ -172,6 +172,14 @@ class InteractiveTestApi {
   [[nodiscard]] static MultiStep EnsureNotPresent(
       ElementIdentifier element_to_check,
       bool in_any_context = false);
+
+  // Ensures that the next step does not piggyback on the previous step(s), but
+  // rather, executes on a fresh message loop. Normally, steps will continue to
+  // trigger on the same call stack until a start condition is not met.
+  //
+  // Use sparingly, and only when e.g. re-entrancy issues prevent the test from
+  // otherwise working properly.
+  [[nodiscard]] static MultiStep FlushEvents();
 
   // Provides syntactic sugar so you can put "in any context" before an action
   // or test step rather than after. For example the following are equivalent:
