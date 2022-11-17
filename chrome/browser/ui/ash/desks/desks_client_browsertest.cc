@@ -385,6 +385,32 @@ class BrowsersAddedObserver : public BrowserListObserver {
   base::RunLoop run_loop_;
 };
 
+class BrowsersRemovedObserver : public BrowserListObserver {
+ public:
+  explicit BrowsersRemovedObserver(int browser_removes_expected)
+      : browser_removes_left_(browser_removes_expected) {
+    BrowserList::AddObserver(this);
+  }
+  BrowsersRemovedObserver(const BrowsersRemovedObserver&) = delete;
+  BrowsersRemovedObserver& operator=(const BrowsersRemovedObserver&) = delete;
+  ~BrowsersRemovedObserver() override { BrowserList::RemoveObserver(this); }
+
+  void Wait() { run_loop_.Run(); }
+
+  // BrowserListObserver:
+  void OnBrowserAdded(Browser* browser) override {}
+
+  void OnBrowserRemoved(Browser* browser) override {
+    --browser_removes_left_;
+    if (browser_removes_left_ == 0)
+      run_loop_.Quit();
+  }
+
+ private:
+  int browser_removes_left_;
+  base::RunLoop run_loop_;
+};
+
 }  // namespace
 
 // Scoped class that temporarily sets a new app launch handler for testing
@@ -2789,8 +2815,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientLacrosTest, SystemUILaunchBrowser) {
 using SaveAndRecallBrowserTest = DesksClientTest;
 
 IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
-                       // TODO(crbug.com/1360326): Re-enable this test
-                       DISABLED_SystemUIBlockingDialogAccepted) {
+                       SystemUIBlockingDialogAccepted) {
   SetupBrowserToConfirmClose(browser());
 
   // We'll now save the desk as Save & Recall. After saving desks, this
@@ -2805,8 +2830,9 @@ IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Send a key to OK the close dialog.
+  BrowsersRemovedObserver browsers_removed(/*browser_removes_expected=*/1);
   ash::SendKey(ui::VKEY_RETURN);
-  content::RunAllTasksUntilIdle();
+  browsers_removed.Wait();
 
   EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
 
