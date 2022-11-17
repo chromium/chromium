@@ -44,8 +44,7 @@ class StartupInformationHelper {
   //        PROC_THREAD_ATTRIBUTE_ALL_APPLICATION_PACKAGES_POLICY
   // based on |container|. |container| should be valid.
   void SetAppContainer(scoped_refptr<AppContainer> container);
-  // Creates PROC_THREAD_ATTRIBUTE_JOB_LIST with |job_handle|. Not valid before
-  // Windows 10.
+  // Creates PROC_THREAD_ATTRIBUTE_JOB_LIST with |job_handle|.
   void AddJobToAssociate(HANDLE job_handle);
 
   // Will one or more jobs be associated via the wrapped StartupInformation.

@@ -276,50 +276,6 @@ std::wstring PrependWindowsSessionPath(const wchar_t* object) {
   return base::StringPrintf(L"\\Sessions\\%lu%ls", s_session_id, object);
 }
 
-// Checks if the sandbox can be let to run without a job object assigned.
-// Returns true if the job object has to be applied to the sandbox and false
-// otherwise.
-bool ShouldSetJobLevel(bool allow_no_sandbox_job) {
-  // Windows 8 allows nested jobs so we don't need to check if we are in other
-  // job.
-  if (base::win::GetVersion() >= base::win::Version::WIN8)
-    return true;
-
-  BOOL in_job = true;
-  // Either there is no job yet associated so we must add our job,
-  if (!::IsProcessInJob(::GetCurrentProcess(), NULL, &in_job))
-    NOTREACHED() << "IsProcessInJob failed. " << GetLastError();
-  if (!in_job)
-    return true;
-
-  // ...or there is a job but the JOB_OBJECT_LIMIT_BREAKAWAY_OK limit is set.
-  JOBOBJECT_EXTENDED_LIMIT_INFORMATION job_info = {};
-  if (!::QueryInformationJobObject(NULL, JobObjectExtendedLimitInformation,
-                                   &job_info, sizeof(job_info), NULL)) {
-    NOTREACHED() << "QueryInformationJobObject failed. " << GetLastError();
-    return true;
-  }
-  if (job_info.BasicLimitInformation.LimitFlags & JOB_OBJECT_LIMIT_BREAKAWAY_OK)
-    return true;
-
-  // Lastly in place of the flag which was supposed to be used only for running
-  // Chrome in remote sessions we do this check explicitly here.
-  // According to MS this flag can be false for a remote session only on Windows
-  // Server 2012 and newer so if we do the check last we should be on the safe
-  // side. See: https://msdn.microsoft.com/en-us/library/aa380798.aspx.
-  if (!::GetSystemMetrics(SM_REMOTESESSION)) {
-    // TODO(pastarmovj): Even though the number are low, this flag is still
-    // necessary in some limited set of cases. Remove it once Windows 7 is no
-    // longer supported together with the rest of the checks in this function.
-    return !allow_no_sandbox_job;
-  }
-
-  // Allow running without the sandbox in this case. This slightly reduces the
-  // ability of the sandbox to protect its children from spawning new processes
-  // or preventing them from shutting down Windows or accessing the clipboard.
-  return false;
-}
-
 // Adds the generic config rules to a sandbox TargetConfig.
 ResultCode AddGenericConfig(sandbox::TargetConfig* config) {
   DCHECK(!config->IsConfigured());
@@ -863,22 +819,13 @@ ResultCode LaunchWithoutSandbox(
   // on process shutdown, in which case TerminateProcess can fail. See
   // https://crbug.com/820996.
   if (delegate->ShouldUnsandboxedRunInJob()) {
-    BOOL in_job = true;
-    // Prior to Windows 8 nested jobs aren't possible.
-    if (base::win::GetVersion() >= base::win::Version::WIN8 ||
-        (::IsProcessInJob(::GetCurrentProcess(), nullptr, &in_job) &&
-         !in_job)) {
-      static Job* job_object = nullptr;
-      if (!job_object) {
-        job_object = new Job;
-        DWORD result = job_object->Init(JobLevel::kUnprotected, nullptr, 0, 0);
-        if (result != ERROR_SUCCESS) {
-          job_object = nullptr;
-          return SBOX_ERROR_CANNOT_INIT_JOB;
-        }
-      }
-      options.job_handle = job_object->GetHandle();
+    static base::NoDestructor<Job> job_object;
+    if (!job_object->IsValid()) {
+      DWORD result = job_object->Init(JobLevel::kUnprotected, 0, 0);
+      if (result != ERROR_SUCCESS)
+        return SBOX_ERROR_CANNOT_INIT_JOB;
     }
+    options.job_handle = job_object->GetHandle();
   }
 
   // Chromium binaries are marked as CET Compatible but some processes
@@ -919,8 +866,6 @@ ResultCode SandboxWin::SetJobLevel(Sandbox sandbox_type,
                                    uint32_t ui_exceptions,
                                    TargetConfig* config) {
   DCHECK(!config->IsConfigured());
-  if (!ShouldSetJobLevel(config->GetAllowNoSandboxJob()))
-    return config->SetJobLevel(JobLevel::kNone, 0);
 
   ResultCode ret = config->SetJobLevel(job_level, ui_exceptions);
   if (ret != SBOX_ALL_OK)

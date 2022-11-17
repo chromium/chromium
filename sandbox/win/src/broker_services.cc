@@ -546,11 +546,8 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
   if (container)
     startup_info->SetAppContainer(container);
 
-  // On Win10, jobs are associated via startup_info.
-  if (base::win::GetVersion() >= base::win::Version::WIN10 &&
-      policy_base->HasJob()) {
+  if (policy_base->HasJob())
     startup_info->AddJobToAssociate(policy_base->GetJobHandle());
-  }
 
   if (!startup_info->BuildStartupInformation())
     return SBOX_ERROR_PROC_THREAD_ATTRIBUTES;
@@ -566,8 +563,8 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
     }
   }
   std::unique_ptr<TargetProcess> target = std::make_unique<TargetProcess>(
-      std::move(initial_token), std::move(lockdown_token),
-      policy_base->GetJobHandle(), thread_pool_, imp_caps);
+      std::move(initial_token), std::move(lockdown_token), thread_pool_,
+      imp_caps);
 
   result = target->Create(exe_path, command_line, std::move(startup_info),
                           &process_info, last_error);
@@ -612,6 +609,13 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
     JobTracker* tracker =
         new JobTracker(std::move(policy_base), process_info.process_id());
 
+    // Verify that the process is actually in the specified job. This should
+    // only fail if something has gone wrong during process creation.
+    BOOL in_job;
+    CHECK(
+        job_handle &&
+        ::IsProcessInJob(process_info.process_handle(), job_handle, &in_job) &&
+        in_job);
     // Post the tracker to the tracking thread, then associate the job with
     // the tracker. The worker thread takes ownership of these objects.
     CHECK(::PostQueuedCompletionStatus(

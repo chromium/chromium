@@ -15,8 +15,7 @@ enum class JobLevel;
 // Handles the creation of job objects based on a security profile.
 // Sample usage:
 //   Job job;
-//   job.Init(JobLevel::kLockdown, nullptr);  //no job name
-//   job.AssignProcessToJob(process_handle);
+//   job.Init(JobLevel::kLockdown, 0, 0);
 class Job {
  public:
   Job();
@@ -28,29 +27,12 @@ class Job {
 
   // Initializes and creates the job object. The security of the job is based
   // on the security_level parameter.
-  // job_name can be nullptr if the job is unnamed.
   // If the chosen profile has too many ui restrictions, you can disable some
   // by specifying them in the ui_exceptions parameters.
   // If the function succeeds, the return value is ERROR_SUCCESS. If the
   // function fails, the return value is the win32 error code corresponding to
   // the error.
-  DWORD Init(JobLevel security_level,
-             const wchar_t* job_name,
-             DWORD ui_exceptions,
-             size_t memory_limit);
-
-  // Assigns the process referenced by process_handle to the job.
-  // If the function succeeds, the return value is ERROR_SUCCESS. If the
-  // function fails, the return value is the win32 error code corresponding to
-  // the error.
-  DWORD AssignProcessToJob(HANDLE process_handle);
-
-  // Grants access to "handle" to the job. All processes in the job can
-  // subsequently recognize and use the handle.
-  // If the function succeeds, the return value is ERROR_SUCCESS. If the
-  // function fails, the return value is the win32 error code corresponding to
-  // the error.
-  DWORD UserHandleGrantAccess(HANDLE handle);
+  DWORD Init(JobLevel security_level, DWORD ui_exceptions, size_t memory_limit);
 
   // True if the job has been initialized and has a valid handle.
   bool IsValid();

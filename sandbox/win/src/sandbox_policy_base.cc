@@ -493,8 +493,8 @@ ResultCode PolicyBase::InitJob() {
     return SBOX_ALL_OK;
 
   // Create the Windows job object.
-  DWORD result = job_.Init(config()->GetJobLevel(), nullptr,
-                           config()->ui_exceptions(), config()->memory_limit());
+  DWORD result = job_.Init(config()->GetJobLevel(), config()->ui_exceptions(),
+                           config()->memory_limit());
   if (ERROR_SUCCESS != result)
     return SBOX_ERROR_CANNOT_INIT_JOB;
 

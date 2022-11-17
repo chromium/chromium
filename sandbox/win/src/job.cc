@@ -14,20 +14,17 @@
 
 namespace sandbox {
 
-Job::Job() : job_handle_(nullptr) {}
-
-Job::~Job() {}
+Job::Job() = default;
+Job::~Job() = default;
 
 DWORD Job::Init(JobLevel security_level,
-                const wchar_t* job_name,
                 DWORD ui_exceptions,
                 size_t memory_limit) {
-  if (job_handle_.IsValid())
+  if (job_handle_.is_valid())
     return ERROR_ALREADY_INITIALIZED;
 
-  job_handle_.Set(::CreateJobObject(nullptr,  // No security attribute
-                                    job_name));
-  if (!job_handle_.IsValid())
+  job_handle_.Set(::CreateJobObject(nullptr, nullptr));
+  if (!job_handle_.is_valid())
     return ::GetLastError();
 
   JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli = {};
@@ -90,42 +87,20 @@ DWORD Job::Init(JobLevel security_level,
 }
 
 bool Job::IsValid() {
-  return job_handle_.IsValid();
+  return job_handle_.is_valid();
 }
 
 HANDLE Job::GetHandle() {
-  return job_handle_.Get();
-}
-
-DWORD Job::UserHandleGrantAccess(HANDLE handle) {
-  if (!job_handle_.IsValid())
-    return ERROR_NO_DATA;
-
-  if (!::UserHandleGrantAccess(handle, job_handle_.Get(),
-                               true)) {  // Access allowed.
-    return ::GetLastError();
-  }
-
-  return ERROR_SUCCESS;
-}
-
-DWORD Job::AssignProcessToJob(HANDLE process_handle) {
-  if (!job_handle_.IsValid())
-    return ERROR_NO_DATA;
-
-  if (!::AssignProcessToJobObject(job_handle_.Get(), process_handle))
-    return ::GetLastError();
-
-  return ERROR_SUCCESS;
+  return job_handle_.get();
 }
 
 DWORD Job::SetActiveProcessLimit(DWORD processes) {
   JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli = {};
 
-  if (!job_handle_.IsValid())
+  if (!job_handle_.is_valid())
     return ERROR_NO_DATA;
 
-  if (!::QueryInformationJobObject(job_handle_.Get(),
+  if (!::QueryInformationJobObject(job_handle_.get(),
                                    JobObjectExtendedLimitInformation, &jeli,
                                    sizeof(jeli), nullptr)) {
     return ::GetLastError();
@@ -133,7 +108,7 @@ DWORD Job::SetActiveProcessLimit(DWORD processes) {
   jeli.BasicLimitInformation.LimitFlags |= JOB_OBJECT_LIMIT_ACTIVE_PROCESS;
   jeli.BasicLimitInformation.ActiveProcessLimit = processes;
 
-  if (!::SetInformationJobObject(job_handle_.Get(),
+  if (!::SetInformationJobObject(job_handle_.get(),
                                  JobObjectExtendedLimitInformation, &jeli,
                                  sizeof(jeli))) {
     return ::GetLastError();

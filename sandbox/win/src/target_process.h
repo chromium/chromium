@@ -36,7 +36,6 @@ class TargetProcess {
   // The constructor takes ownership of |initial_token| and |lockdown_token|
   TargetProcess(base::win::ScopedHandle initial_token,
                 base::win::ScopedHandle lockdown_token,
-                HANDLE job,
                 ThreadPool* thread_pool,
                 const std::vector<base::win::Sid>& impersonation_capabilities);
 
@@ -70,9 +69,6 @@ class TargetProcess {
 
   // Returns the handle to the target process.
   HANDLE Process() const { return sandbox_process_info_.process_handle(); }
-
-  // Returns the handle to the job object that the target process belongs to.
-  HANDLE Job() const { return job_; }
 
   // Returns the address of the target main exe. This is used by the
   // interceptions framework.
@@ -112,10 +108,6 @@ class TargetProcess {
   base::win::ScopedHandle initial_token_;
   // Kernel handle to the shared memory used by the IPC server.
   base::win::ScopedHandle shared_section_;
-  // Job object containing the target process. This is used during
-  // process creation prior to Windows 10 and to identify the process in
-  // broker_services.cc.
-  HANDLE job_;
   // Reference to the IPC subsystem.
   std::unique_ptr<SharedMemIPCServer> ipc_server_;
   // Provides the threads used by the IPC. This class does not own this pointer.
