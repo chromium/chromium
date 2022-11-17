@@ -92,8 +92,6 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
               "requested storage access permission"};
     case WebSchedulerTrackedFeature::kWebNfc:
       return {"WebNfc", "WebNfc"};
-    case WebSchedulerTrackedFeature::kAppBanner:
-      return {"AppBanner", "AppBanner"};
     case WebSchedulerTrackedFeature::kPrinting:
       return {"Printing", "Printing"};
     case WebSchedulerTrackedFeature::kWebDatabase:
@@ -203,7 +201,6 @@ WebSchedulerTrackedFeatures StickyFeatures() {
       WebSchedulerTrackedFeature::kWebLocks,
       WebSchedulerTrackedFeature::kRequestedStorageAccessGrant,
       WebSchedulerTrackedFeature::kWebNfc,
-      WebSchedulerTrackedFeature::kAppBanner,
       WebSchedulerTrackedFeature::kPrinting,
       WebSchedulerTrackedFeature::kPictureInPicture,
       WebSchedulerTrackedFeature::kIdleManager,

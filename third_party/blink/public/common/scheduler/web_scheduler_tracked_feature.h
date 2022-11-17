@@ -99,8 +99,8 @@ enum class WebSchedulerTrackedFeature : uint32_t {
 
   kOutstandingNetworkRequestFetch = 40,
   kOutstandingNetworkRequestXHR = 41,
-
-  kAppBanner = 42,
+  // kAppBanner = 42. Removed after support added for back/forward cache.
+  // See https://crbug.com/1276864.
   kPrinting = 43,
   kWebDatabase = 44,
   kPictureInPicture = 45,

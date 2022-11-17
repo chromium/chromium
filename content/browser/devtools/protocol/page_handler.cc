@@ -1655,8 +1655,6 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestXHR:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           OutstandingNetworkRequestXHR;
-    case WebSchedulerTrackedFeature::kAppBanner:
-      return Page::BackForwardCacheNotRestoredReasonEnum::AppBanner;
     case WebSchedulerTrackedFeature::kPrinting:
       return Page::BackForwardCacheNotRestoredReasonEnum::Printing;
     case WebSchedulerTrackedFeature::kWebDatabase:
@@ -1752,9 +1750,6 @@ DisableForRenderFrameHostReasonToProtocol(
         case back_forward_cache::DisabledReasonId::kSafeBrowsingThreatDetails:
           return Page::BackForwardCacheNotRestoredReasonEnum::
               EmbedderSafeBrowsingThreatDetails;
-        case back_forward_cache::DisabledReasonId::kAppBannerManager:
-          return Page::BackForwardCacheNotRestoredReasonEnum::
-              EmbedderAppBannerManager;
         case back_forward_cache::DisabledReasonId::kDomDistillerViewerSource:
           return Page::BackForwardCacheNotRestoredReasonEnum::
               EmbedderDomDistillerViewerSource;
@@ -1892,7 +1887,6 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kPrinting:
     case WebSchedulerTrackedFeature::kPictureInPicture:
     case WebSchedulerTrackedFeature::kWebLocks:
-    case WebSchedulerTrackedFeature::kAppBanner:
     case WebSchedulerTrackedFeature::kWebSocket:
     case WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet:
     case WebSchedulerTrackedFeature::kSpeechSynthesis:

@@ -19,7 +19,8 @@ enum class DisabledReasonId : uint16_t {
   kPopupBlockerTabHelper = 1,
   kSafeBrowsingTriggeredPopupBlocker = 2,
   kSafeBrowsingThreatDetails = 3,
-  kAppBannerManager = 4,
+  // Unblocked by https://crbug.com/1276864
+  // kAppBannerManager = 4,
   kDomDistillerViewerSource = 5,
   kDomDistiller_SelfDeletingRequestDelegate = 6,
   kOomInterventionTabHelper = 7,

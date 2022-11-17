@@ -17,8 +17,6 @@ std::string ReasonIdToString(DisabledReasonId reason_id) {
       return "SafeBrowsingTriggeredPopupBlocker";
     case DisabledReasonId::kSafeBrowsingThreatDetails:
       return "safe_browsing::ThreatDetails";
-    case DisabledReasonId::kAppBannerManager:
-      return "banners::AppBannerManager";
     case DisabledReasonId::kDomDistillerViewerSource:
       return "DomDistillerViewerSource";
     case DisabledReasonId::kDomDistiller_SelfDeletingRequestDelegate:
