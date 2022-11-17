@@ -303,12 +303,6 @@ try_.builder(
     goma_jobs = goma.jobs.J300,
     main_list_view = "try",
     ssd = True,
-    tryjob = try_.job(
-        location_filters = [
-            "sandbox/win/.+",
-            "sandbox/policy/win/.+",
-        ],
-    ),
 )
 
 try_.builder(
