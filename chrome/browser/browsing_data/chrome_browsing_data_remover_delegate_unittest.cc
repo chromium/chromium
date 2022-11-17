@@ -1219,35 +1219,33 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
     // that initialize a ScopedFeatureList in their constructors can do so
     // before the code below potentially kicks off tasks on other threads that
     // check if a feature is enabled, to avoid tsan data races.
-    TestingProfile::Builder profile_builder;
-    profile_builder.AddTestingFactory(
-        StatefulSSLHostStateDelegateFactory::GetInstance(),
-        StatefulSSLHostStateDelegateFactory::GetDefaultFactoryForTesting());
-    profile_builder.AddTestingFactory(
-        BookmarkModelFactory::GetInstance(),
-        BookmarkModelFactory::GetDefaultFactory());
-    profile_builder.AddTestingFactory(
-        HistoryServiceFactory::GetInstance(),
-        HistoryServiceFactory::GetDefaultFactory());
-    profile_builder.AddTestingFactory(
-        FaviconServiceFactory::GetInstance(),
-        FaviconServiceFactory::GetDefaultFactory());
-    profile_builder.AddTestingFactory(
-        SpellcheckServiceFactory::GetInstance(),
-        base::BindRepeating([](content::BrowserContext* profile)
-                                -> std::unique_ptr<KeyedService> {
-          return std::make_unique<SpellcheckService>(
-              static_cast<Profile*>(profile));
-        }));
-    profile_builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                                      SyncServiceFactory::GetDefaultFactory());
-    profile_builder.AddTestingFactory(
-        ChromeSigninClientFactory::GetInstance(),
-        base::BindRepeating(&signin::BuildTestSigninClient));
-    profile_builder.AddTestingFactory(
-        WebDataServiceFactory::GetInstance(),
-        WebDataServiceFactory::GetDefaultFactory());
-    profile_ = profile_builder.Build();
+    profile_ =
+        TestingProfile::Builder()
+            .AddTestingFactory(
+                StatefulSSLHostStateDelegateFactory::GetInstance(),
+                StatefulSSLHostStateDelegateFactory::
+                    GetDefaultFactoryForTesting())
+            .AddTestingFactory(BookmarkModelFactory::GetInstance(),
+                               BookmarkModelFactory::GetDefaultFactory())
+            .AddTestingFactory(HistoryServiceFactory::GetInstance(),
+                               HistoryServiceFactory::GetDefaultFactory())
+            .AddTestingFactory(FaviconServiceFactory::GetInstance(),
+                               FaviconServiceFactory::GetDefaultFactory())
+            .AddTestingFactory(
+                SpellcheckServiceFactory::GetInstance(),
+                base::BindRepeating([](content::BrowserContext* profile)
+                                        -> std::unique_ptr<KeyedService> {
+                  return std::make_unique<SpellcheckService>(
+                      static_cast<Profile*>(profile));
+                }))
+            .AddTestingFactory(SyncServiceFactory::GetInstance(),
+                               SyncServiceFactory::GetDefaultFactory())
+            .AddTestingFactory(
+                ChromeSigninClientFactory::GetInstance(),
+                base::BindRepeating(&signin::BuildTestSigninClient))
+            .AddTestingFactory(WebDataServiceFactory::GetInstance(),
+                               WebDataServiceFactory::GetDefaultFactory())
+            .Build();
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
     web_app_provider_ = web_app::FakeWebAppProvider::Get(profile_.get());
