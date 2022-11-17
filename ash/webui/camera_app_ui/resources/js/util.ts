@@ -6,12 +6,10 @@ import * as animate from './animation.js';
 import {assert, assertInstanceof} from './assert.js';
 import * as dom from './dom.js';
 import {I18nString} from './i18n_string.js';
-import * as Comlink from './lib/comlink.js';
 import * as loadTimeData from './models/load_time_data.js';
 import * as state from './state.js';
 import * as tooltip from './tooltip.js';
 import {AspectRatioSet, Facing, Resolution} from './type.js';
-import {WaitableEvent} from './waitable_event.js';
 
 /**
  * Creates a canvas element for 2D drawing.
@@ -264,35 +262,6 @@ export function instantiateTemplate(selector: string): DocumentFragment {
       document.importNode(tpl.content, true), DocumentFragment);
   setupI18nElements(doc);
   return doc;
-}
-
-/**
- * Creates JS module by given |scriptUrl| under untrusted context with given
- * origin and returns its proxy.
- *
- * @param scriptUrl The URL of the script to load.
- */
-export async function createUntrustedJSModule<T>(scriptUrl: string):
-    Promise<Comlink.Remote<T>> {
-  const untrustedPageReady = new WaitableEvent();
-  const iFrame = document.createElement('iframe');
-  iFrame.addEventListener('load', () => untrustedPageReady.signal());
-  iFrame.setAttribute(
-      'src',
-      'chrome-untrusted://camera-app/views/untrusted_script_loader.html');
-  iFrame.hidden = true;
-  document.body.appendChild(iFrame);
-  await untrustedPageReady.wait();
-
-  assert(iFrame.contentWindow !== null);
-  // TODO(pihsun): actually get correct type from the function definition.
-  const untrustedRemote =
-      Comlink.wrap<{loadScript(url: string): Promise<void>}>(
-          Comlink.windowEndpoint(iFrame.contentWindow, self));
-  await untrustedRemote.loadScript(scriptUrl);
-  // loadScript adds the script exports to what's exported by the
-  // untrustedRemote, so we manually cast it to the expected type.
-  return untrustedRemote as unknown as Comlink.Remote<T>;
 }
 
 /**

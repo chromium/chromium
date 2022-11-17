@@ -80,6 +80,7 @@ compile_js_files = [
   "unload.ts",
   "untrusted_ga_helper.ts",
   "untrusted_script_loader.ts",
+  "untrusted_scripts.ts",
   "untrusted_video_processor_helper.ts",
   "util.ts",
   "views/camera_intent.ts",

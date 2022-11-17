@@ -8,10 +8,7 @@ import {
   MimeType,
   Resolution,
 } from '../type.js';
-import {
-  VideoProcessorHelper,
-} from '../untrusted_video_processor_helper.js';
-import * as util from '../util.js';
+import {getVideoProcessorHelper} from '../untrusted_scripts.js';
 
 import {AsyncWriter} from './async_writer.js';
 import {
@@ -29,9 +26,7 @@ import {FileAccessEntry} from './file_system_access_entry.js';
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const FFMpegVideoProcessor = (async () => {
   const workerChannel = new MessageChannel();
-  const videoProcessorHelper =
-      await util.createUntrustedJSModule<VideoProcessorHelper>(
-          '/js/untrusted_video_processor_helper.js');
+  const videoProcessorHelper = await getVideoProcessorHelper();
   await videoProcessorHelper.connectToWorker(
       Comlink.transfer(workerChannel.port2, [workerChannel.port2]));
   return Comlink.wrap<VideoProcessorConstructor>(workerChannel.port1);
