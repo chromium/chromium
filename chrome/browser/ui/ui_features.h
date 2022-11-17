@@ -91,6 +91,8 @@ BASE_DECLARE_FEATURE(kClobberAllSideSearchSidePanels);
 BASE_DECLARE_FEATURE(kSideSearchAutoTriggering);
 extern const base::FeatureParam<int> kSideSearchAutoTriggeringReturnCount;
 
+BASE_DECLARE_FEATURE(kTabGroupsCollapseFreezing);
+
 BASE_DECLARE_FEATURE(kTabGroupsNewBadgePromo);
 
 BASE_DECLARE_FEATURE(kTabGroupsSave);
