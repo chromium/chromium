@@ -65,13 +65,40 @@ cast_source_set("cast_crash_client") {
     sources += [
       "android/cast_crash_reporter_client_android.cc",
       "android/cast_crash_reporter_client_android.h",
-      "android/crash_handler.cc",
-      "android/crash_handler.h",
     ]
     deps += [
       "//chromecast/base:android_create_sys_info",
       "//chromecast/base:cast_version",
       "//chromecast/browser:jni_headers",
+    ]
+  }
+}
+
+cast_source_set("crash_uploader") {
+  sources = [ "cast_crash_uploader.h" ]
+  public_deps = [ "//components/prefs:prefs" ]
+  if (is_android) {
+    sources += [
+      "android/cast_crash_uploader_android.cc",
+      "android/cast_crash_uploader_android.h",
+    ]
+
+    deps = [
+      ":cast_crash_client",
+      "//base",
+      "//chromecast/base",
+      "//chromecast/base:android_create_sys_info",
+      "//chromecast/base:cast_version",
+      "//chromecast/browser:jni_headers",
+      "//components/crash/core/app",
+      "//components/crash/core/common:crash_key",
+      "//components/minidump_uploader",
+      "//content/public/common",
+    ]
+  } else {
+    sources += [
+      "cast_crash_uploader_default.cc",
+      "cast_crash_uploader_default.h",
     ]
   }
 }

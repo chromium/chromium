@@ -98,8 +98,6 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chromecast/app/android/crash_handler.h"
-#include "chromecast/base/pref_names.h"
 #include "components/crash/content/browser/child_exit_observer_android.h"
 #include "components/crash/content/browser/child_process_crash_observer_android.h"
 #include "net/android/network_change_notifier_factory_android.h"
@@ -566,13 +564,6 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
   cast_content_browser_client_->SetPersistentCookieAccessSettings(
       cast_browser_process_->pref_service());
 
-#if BUILDFLAG(IS_ANDROID)
-  crash_reporter_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-  StartPeriodicCrashReportUpload();
-#endif  // BUILDFLAG(IS_ANDROID)
-
   cast_browser_process_->SetBrowserContext(
       std::make_unique<CastBrowserContext>());
 
@@ -689,36 +680,6 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
 
   return content::RESULT_CODE_NORMAL_EXIT;
 }
-
-#if BUILDFLAG(IS_ANDROID)
-void CastBrowserMainParts::StartPeriodicCrashReportUpload() {
-  OnStartPeriodicCrashReportUpload();
-  crash_reporter_timer_.reset(new base::RepeatingTimer());
-  crash_reporter_timer_->Start(
-      FROM_HERE, base::Minutes(20), this,
-      &CastBrowserMainParts::OnStartPeriodicCrashReportUpload);
-}
-
-void CastBrowserMainParts::OnStartPeriodicCrashReportUpload() {
-  crash_reporter_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CastBrowserMainParts::UploadCrashReport,
-                     weak_factory_.GetWeakPtr(),
-                     cast_browser_process_->pref_service()->GetBoolean(
-                         prefs::kOptInStats)));
-}
-
-void CastBrowserMainParts::UploadCrashReport(bool opt_in_stats) {
-  DCHECK(crash_reporter_runner_->RunsTasksInCurrentSequence());
-  base::FilePath crash_dir;
-  if (!CrashHandler::GetCrashDumpLocation(&crash_dir))
-    return;
-  base::FilePath reports_dir;
-  if (!CrashHandler::GetCrashReportsLocation(&reports_dir))
-    return;
-  CrashHandler::UploadDumps(crash_dir, reports_dir, "", "", opt_in_stats);
-}
-#endif  // BUILDFLAG(IS_ANDROID)
 
 void CastBrowserMainParts::WillRunMainMessageLoop(
     std::unique_ptr<base::RunLoop>& run_loop) {

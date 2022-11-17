@@ -43,7 +43,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/apk_assets.h"
 #include "chromecast/app/android/cast_crash_reporter_client_android.h"
-#include "chromecast/app/android/crash_handler.h"
 #include "ui/base/resource/resource_bundle_android.h"
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "chromecast/app/linux/cast_crash_reporter_client.h"
@@ -178,23 +177,18 @@ void CastMainDelegate::PreSandboxStartup() {
   std::string process_type =
       command_line->GetSwitchValueASCII(switches::kProcessType);
 
-  bool enable_crash_reporter = !command_line->HasSwitch(
-      switches::kDisableCrashReporter);
+  bool enable_crash_reporter =
+      !command_line->HasSwitch(switches::kDisableCrashReporter);
   if (enable_crash_reporter) {
     // TODO(crbug.com/1226159): Complete crash reporting integration on Fuchsia.
-#if BUILDFLAG(IS_ANDROID)
-    base::FilePath log_file;
-    base::PathService::Get(FILE_CAST_ANDROID_LOG, &log_file);
-    chromecast::CrashHandler::Initialize(process_type, log_file);
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     crash_reporter::SetCrashReporterClient(GetCastCrashReporter());
 
     if (process_type != switches::kZygoteProcess) {
       CastCrashReporterClient::InitCrashReporter(process_type);
     }
-#endif  // BUILDFLAG(IS_ANDROID)
-
     crash_reporter::InitializeCrashKeys();
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   }
 
   InitializeResourceBundle();
