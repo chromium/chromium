@@ -28,11 +28,11 @@ import androidx.core.view.ViewCompat;
 import com.google.android.material.appbar.AppBarLayout;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.FeatureList;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.FeedStreamViewResizer;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ntp.IncognitoDescriptionView;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
@@ -47,6 +47,8 @@ import org.chromium.ui.base.WindowAndroid;
  */
 public class TasksView extends CoordinatorLayoutForPointer {
     private static final int OMNIBOX_BOTTOM_PADDING_DP = 4;
+    private static final MutableFlagWithSafeDefault sIncognitoRevampFlag =
+            new MutableFlagWithSafeDefault(ChromeFeatureList.INCOGNITO_NTP_REVAMP, false);
 
     private final Context mContext;
     private FrameLayout mCarouselTabSwitcherContainer;
@@ -224,8 +226,7 @@ public class TasksView extends CoordinatorLayoutForPointer {
 
         ViewStub incognitoDescriptionViewStub =
                 (ViewStub) findViewById(R.id.task_view_incognito_layout_stub);
-        if (FeatureList.isInitialized()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_NTP_REVAMP)) {
+        if (sIncognitoRevampFlag.isEnabled()) {
             incognitoDescriptionViewStub.setLayoutResource(
                     R.layout.revamped_incognito_description_layout);
         } else {
