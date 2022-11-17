@@ -456,7 +456,7 @@ inline FuchsiaLogSeverity LogSeverityToFuchsiaLogSeverity(
   // LOGGING_VERBOSE levels 3 and higher, or incorrect levels.
   return FUCHSIA_LOG_TRACE;
 }
-#endif  // defined (OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 void WriteToFd(int fd, const char* data, size_t length) {
   size_t bytes_written = 0;

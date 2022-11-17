@@ -520,7 +520,7 @@ BASE_EXPORT int GetDisableAllVLogLevel();
   LAZY_STREAM(VLOG_STREAM(verbose_level), \
       VLOG_IS_ON(verbose_level) && (condition))
 
-#if defined (OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define VPLOG_STREAM(verbose_level) \
   ::logging::Win32ErrorLogMessage(__FILE__, __LINE__, -(verbose_level), \
     ::logging::GetLastSystemErrorCode()).stream()
