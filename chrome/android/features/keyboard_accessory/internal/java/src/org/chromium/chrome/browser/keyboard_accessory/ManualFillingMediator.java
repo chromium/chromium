@@ -411,8 +411,8 @@ class ManualFillingMediator
     private void transitionIntoState(@KeyboardExtensionState int extensionState) {
         if (!meetsStatePreconditions(extensionState)) return;
         TraceEvent.begin("ManualFillingMediator#transitionIntoState");
+        enforceStateProperties(extensionState);
         changeBottomControlSpaceForState(extensionState);
-        enforceStateProperties(extensionState); // Triggers a relayout. Call after changing insets.
         updateKeyboard(extensionState);
         TraceEvent.end("ManualFillingMediator#transitionIntoState");
     }
@@ -557,11 +557,6 @@ class ManualFillingMediator
         } else if (is(FLOATING_SHEET)) {
             mModel.set(KEYBOARD_EXTENSION_STATE, FLOATING_BAR);
         }
-    }
-
-    @Override
-    public void onBarFadeInAnimationEnd() {
-        mActivity.getCurrentWebContents().scrollFocusedEditableNodeIntoView();
     }
 
     /**

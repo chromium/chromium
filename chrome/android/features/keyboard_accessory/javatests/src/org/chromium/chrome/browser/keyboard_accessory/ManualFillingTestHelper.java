@@ -12,12 +12,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static org.hamcrest.core.AllOf.allOf;
 
 import static org.chromium.autofill.mojom.FocusedFieldType.FILLABLE_NON_SEARCH_FIELD;
-import static org.chromium.base.test.util.CriteriaHelper.pollInstrumentationThread;
-import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryStartedHiding;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryStartedShowing;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryViewFullyHidden;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryViewFullyShown;
 import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabTestHelper.isKeyboardAccessoryTabLayout;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
@@ -43,6 +37,7 @@ import androidx.test.espresso.matcher.BoundedMatcher;
 
 import com.google.android.material.tabs.TabLayout;
 
+import org.chromium.ui.widget.ChromeImageButton;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -50,6 +45,7 @@ import org.junit.Assert;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
@@ -73,7 +69,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.DropdownPopupWindowInterface;
-import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -244,7 +239,7 @@ public class ManualFillingTestHelper {
     // ---------------------------------
 
     public void waitForKeyboardToDisappear() {
-        pollUiThread(() -> {
+        CriteriaHelper.pollUiThread(() -> {
             Activity activity = mActivityTestRule.getActivity();
             return !getKeyboard().isAndroidSoftKeyboardShowing(
                     activity, activity.getCurrentFocus());
@@ -252,8 +247,15 @@ public class ManualFillingTestHelper {
     }
 
     public void waitForKeyboardAccessoryToDisappear() {
-        pollInstrumentationThread(() -> accessoryStartedHiding(getKeyboardAccessoryBar()));
-        pollUiThread(() -> accessoryViewFullyHidden(mActivityTestRule.getActivity()));
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            KeyboardAccessoryCoordinator accessory =
+                    getManualFillingCoordinator().getMediatorForTesting().getKeyboardAccessory();
+            return accessory != null && !accessory.isShown();
+        });
+        CriteriaHelper.pollUiThread(() -> {
+            View accessory = mActivityTestRule.getActivity().findViewById(R.id.keyboard_accessory);
+            return accessory != null && !accessory.isShown();
+        });
     }
 
     public void waitForKeyboardAccessoryToBeShown() {
@@ -261,12 +263,19 @@ public class ManualFillingTestHelper {
     }
 
     public void waitForKeyboardAccessoryToBeShown(boolean waitForSuggestionsToLoad) {
-        pollInstrumentationThread(() -> accessoryStartedShowing(getKeyboardAccessoryBar()));
-        pollUiThread(() -> accessoryViewFullyShown(mActivityTestRule.getActivity()));
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            KeyboardAccessoryCoordinator accessory =
+                    getManualFillingCoordinator().getMediatorForTesting().getKeyboardAccessory();
+            return accessory != null && accessory.isShown();
+        });
+        CriteriaHelper.pollUiThread(() -> {
+            View accessory = mActivityTestRule.getActivity().findViewById(R.id.keyboard_accessory);
+            return accessory != null && accessory.isShown();
+        });
         if (waitForSuggestionsToLoad) {
-            pollUiThread(() -> {
-                return getFirstAccessorySuggestion() != null;
-            }, "Waited for suggestions that never appeared.");
+            CriteriaHelper.pollUiThread(()
+                                                -> getFirstAccessorySuggestion() != null,
+                    "Waited for suggestions that never appeared.");
         }
     }
 
@@ -275,14 +284,14 @@ public class ManualFillingTestHelper {
         final View view = webContents.getViewAndroidDelegate().getContainerView();
 
         // Wait for InputConnection to be ready and fill the filterInput. Then wait for the anchor.
-        pollUiThread(() -> {
+        CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(
                     mInputMethodManagerWrapper.getShowSoftInputCounter(), Matchers.is(1));
         });
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ImeAdapter.fromWebContents(webContents).setComposingTextForTest(filterInput, 4);
         });
-        pollUiThread(() -> {
+        CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat("Autofill Popup anchor view was never added.",
                     view.findViewById(R.id.dropdown_popup_window), Matchers.notNullValue());
         });
@@ -291,7 +300,7 @@ public class ManualFillingTestHelper {
         Assert.assertTrue(anchorView.getTag() instanceof DropdownPopupWindowInterface);
         final DropdownPopupWindowInterface popup =
                 (DropdownPopupWindowInterface) anchorView.getTag();
-        pollUiThread(() -> {
+        CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(popup.isShowing(), Matchers.is(true));
             Criteria.checkThat(popup.getListView(), Matchers.notNullValue());
             Criteria.checkThat(popup.getListView().getHeight(), Matchers.not(0));
@@ -315,10 +324,6 @@ public class ManualFillingTestHelper {
         return (CreditCardAccessorySheetCoordinator) getManualFillingCoordinator()
                 .getMediatorForTesting()
                 .getOrCreateSheet(mWebContentsRef.get(), AccessoryTabType.CREDIT_CARDS);
-    }
-
-    private KeyboardAccessoryCoordinator getKeyboardAccessoryBar() {
-        return getManualFillingCoordinator().getMediatorForTesting().getKeyboardAccessory();
     }
 
     // ----------------------------------
@@ -439,7 +444,7 @@ public class ManualFillingTestHelper {
         return new ViewAction() {
             @Override
             public Matcher<View> getConstraints() {
-                return allOf(isDisplayed(), isKeyboardAccessoryTabLayout());
+                return allOf(isDisplayed(), isAssignableFrom(TabLayout.class));
             }
 
             @Override

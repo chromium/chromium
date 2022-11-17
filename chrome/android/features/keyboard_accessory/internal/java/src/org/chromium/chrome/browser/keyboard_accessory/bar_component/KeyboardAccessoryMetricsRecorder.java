@@ -78,8 +78,7 @@ class KeyboardAccessoryMetricsRecorder {
                     || propertyKey == KeyboardAccessoryProperties.DISABLE_ANIMATIONS_FOR_TESTING
                     || propertyKey == KeyboardAccessoryProperties.SHOW_SWIPING_IPH
                     || propertyKey == KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK
-                    || propertyKey == KeyboardAccessoryProperties.HAS_SUGGESTIONS
-                    || propertyKey == KeyboardAccessoryProperties.ANIMATION_LISTENER) {
+                    || propertyKey == KeyboardAccessoryProperties.HAS_SUGGESTIONS) {
                 return;
             }
             assert false : "Every property update needs to be handled explicitly!";

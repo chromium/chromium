@@ -62,12 +62,6 @@ public class KeyboardAccessoryCoordinator {
          * Called when the sheet needs to be hidden.
          */
         void onCloseAccessorySheet();
-
-        /**
-         * Signals that the accessory bar has completed the fade-in. This may be relevant to the
-         * keyboard extensions state to adjust the scroll position.
-         */
-        void onBarFadeInAnimationEnd();
     }
 
     /**
@@ -251,7 +245,6 @@ public class KeyboardAccessoryCoordinator {
      * while the view might still be in progress of being updated accordingly.
      * @return True if the accessory should be visible, false otherwise.
      */
-    // TODO(crbug/1385400): Hide because it's only used in tests.
     public boolean isShown() {
         return mMediator.isShown();
     }
