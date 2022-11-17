@@ -4584,14 +4584,15 @@
         'browser_config': 'release_x64',
         'mixins': [
           'limited_capacity_bot',
-          'win10_intel_hd_630_experimental',
+          'win10_intel_uhd_630_experimental',
         ],
         # When the experimental driver is identical to the stable driver, this
         # should be running the gpu_noop_sleep_telemetry_test. Otherwise, it
         # should be running the same test_suites as
         # 'Win10 FYI x64 Release (Intel HD 630)'
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+          'gtest_tests': 'gpu_fyi_win_gtests',
+          'gpu_telemetry_tests': 'gpu_fyi_win_intel_release_telemetry_tests',
         },
       },
       'Win10 FYI x64 Exp Release (NVIDIA)': {

@@ -1286,15 +1286,6 @@
       },
     },
   },
-  'win10_intel_hd_630_experimental': {
-    'swarming': {
-      'dimensions': {
-        'gpu': '8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141',
-        'os': 'Windows-10',
-        'pool': 'chromium.tests.gpu',
-      },
-    },
-  },
   'win10_intel_hd_630_stable': {
     'swarming': {
       'dimensions': {
@@ -1316,6 +1307,15 @@
           'pool': 'chromium.tests.gpu',
         },
       ],
+    },
+  },
+  'win10_intel_uhd_630_experimental': {
+    'swarming': {
+      'dimensions': {
+        'gpu': '8086:9bc5-31.0.101.2111',
+        'os': 'Windows-10',
+        'pool': 'chromium.tests.gpu',
+      },
     },
   },
   'win10_nvidia_gtx_1660_experimental': {

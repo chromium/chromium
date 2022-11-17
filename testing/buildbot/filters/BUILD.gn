@@ -270,8 +270,10 @@ source_set("gl_tests_filters") {
 source_set("gl_unittests_filters") {
   testonly = true
 
-  data =
-      [ "//testing/buildbot/filters/android.emulator_12.gl_unittests.filter" ]
+  data = [
+    "//testing/buildbot/filters/android.emulator_12.gl_unittests.filter",
+    "//testing/buildbot/filters/win.intel.gl_unittests.filter",
+  ]
 }
 
 source_set("interactive_ui_tests_filters") {

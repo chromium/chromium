@@ -2306,6 +2306,11 @@
       'Linux MSan Focal',
     ],
     'modifications': {
+      'Win10 FYI x64 Exp Release (Intel HD 630)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/win.intel.gl_unittests.filter',
+        ],
+      },
       'android-12-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.gl_unittests.filter',
@@ -3166,6 +3171,11 @@
         },
       },
     },
+  },
+  'power_measurement_test': {
+    'remove_from': [
+      'Win10 FYI x64 Exp Release (Intel HD 630)',  # https://crbug.com/1376082
+    ],
   },
   'sandbox_linux_unittests': {
     'modifications': {

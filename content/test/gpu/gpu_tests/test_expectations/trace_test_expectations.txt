@@ -153,6 +153,7 @@ TraceTest_MediaFoundationClearDirectComposition [ Skip ]
 
 # VP9 videos fail to trigger zero copy video presentation path.
 crbug.com/930343 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Video_VP9_Fullsize [ Failure ]
+crbug.com/1385486 [ win10 intel-0x9bc5 ] VideoPathTraceTest_DirectComposition_Video_VP9_Fullsize [ Failure ]
 
 # Incorrectly reporting SCALING instead of DIRECT on Windows 10 UHD 630 GPUs.
 crbug.com/1079393 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Underlay [ Failure ]
@@ -179,7 +180,9 @@ crbug.com/1136971 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_
 
 # Zero copy also needs scaling to work.
 crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Underlay_Fullsize [ Failure ]
+crbug.com/1385486 [ win10 intel-0x9bc5 ] VideoPathTraceTest_DirectComposition_Underlay_Fullsize [ Failure ]
 crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Video_MP4_Fullsize [ Failure ]
+crbug.com/1385486 [ win10 intel-0x9bc5 ] VideoPathTraceTest_DirectComposition_Video_MP4_Fullsize [ Failure ]
 
 # Using YUY2 instead of NV12 on Windows 10 HD 630 GPUs due to NV12 support
 # showing up as SOFTWARE which causes zero copy to fail.
