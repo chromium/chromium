@@ -1426,6 +1426,8 @@ source_set("ash") {
     "login/auth/chrome_safe_mode_delegate.h",
     "login/challenge_response_auth_keys_loader.cc",
     "login/challenge_response_auth_keys_loader.h",
+    "login/choobe_flow_controller.cc",
+    "login/choobe_flow_controller.h",
     "login/chrome_restart_request.cc",
     "login/chrome_restart_request.h",
     "login/configuration_keys.cc",

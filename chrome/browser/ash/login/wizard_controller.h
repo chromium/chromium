@@ -16,6 +16,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/login/choobe_flow_controller.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
@@ -185,6 +186,10 @@ class WizardController : public OobeUI::Observer {
   DemoSetupController* demo_setup_controller() const {
     return demo_setup_controller_.get();
   }
+
+  // Returns CHOOBE flow controller (lazily initialized one if it doesn't exist
+  // already).
+  ChoobeFlowController* GetChoobeFlowController();
 
   // Returns a pointer to the current screen or nullptr if there's no such
   // screen.
@@ -488,6 +493,7 @@ class WizardController : public OobeUI::Observer {
   void MaybeTakeTPMOwnership();
 
   std::unique_ptr<AutoEnrollmentController> auto_enrollment_controller_;
+  std::unique_ptr<ChoobeFlowController> choobe_flow_controller_;
   std::unique_ptr<ScreenManager> screen_manager_;
 
   // The `BaseScreen*` here point to the objects owned by the `screen_manager_`.

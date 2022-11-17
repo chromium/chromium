@@ -39,6 +39,7 @@
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/customization/customization_document.h"
+#include "chrome/browser/ash/login/choobe_flow_controller.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
@@ -2628,6 +2629,12 @@ AutoEnrollmentController* WizardController::GetAutoEnrollmentController() {
   if (!auto_enrollment_controller_)
     auto_enrollment_controller_ = std::make_unique<AutoEnrollmentController>();
   return auto_enrollment_controller_.get();
+}
+
+ChoobeFlowController* WizardController::GetChoobeFlowController() {
+  if (!choobe_flow_controller_)
+    choobe_flow_controller_ = std::make_unique<ChoobeFlowController>();
+  return choobe_flow_controller_.get();
 }
 
 void WizardController::MaybeTakeTPMOwnership() {
