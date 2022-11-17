@@ -74,6 +74,14 @@
 
 namespace media {
 
+namespace {
+
+// Size of the timestamp cache. We don't want the cache to grow without bounds.
+// The maximum size is chosen to be the same as in the VaapiVideoDecoder.
+constexpr size_t kTimestampCacheSize = 128;
+
+}  // namespace
+
 // static
 std::unique_ptr<VideoDecoderMixin> OOPVideoDecoder::Create(
     mojo::PendingRemote<stable::mojom::StableVideoDecoder>
@@ -98,6 +106,7 @@ OOPVideoDecoder::OOPVideoDecoder(
     : VideoDecoderMixin(std::move(media_log),
                         std::move(decoder_task_runner),
                         std::move(client)),
+      fake_timestamp_to_real_timestamp_cache_(kTimestampCacheSize),
       remote_decoder_(std::move(pending_remote_decoder)),
       weak_this_factory_(this) {
   VLOGF(2);
@@ -256,13 +265,31 @@ void OOPVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
         base::BindOnce(std::move(decode_cb), DecoderStatus::Codes::kFailed));
     return;
   }
-  const uint64_t decode_id = decode_counter_++;
 
+  CHECK(buffer);
+  if (!buffer->end_of_stream()) {
+    const base::TimeDelta next_fake_timestamp =
+        current_fake_timestamp_ + base::Microseconds(1u);
+    if (next_fake_timestamp == current_fake_timestamp_) {
+      // We've reached the maximum base::TimeDelta.
+      decoder_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(decode_cb), DecoderStatus::Codes::kFailed));
+      return;
+    }
+    current_fake_timestamp_ = next_fake_timestamp;
+    DCHECK(
+        fake_timestamp_to_real_timestamp_cache_.Peek(current_fake_timestamp_) ==
+        fake_timestamp_to_real_timestamp_cache_.end());
+    fake_timestamp_to_real_timestamp_cache_.Put(current_fake_timestamp_,
+                                                buffer->timestamp());
+    buffer->set_timestamp(current_fake_timestamp_);
+  }
+
+  const uint64_t decode_id = decode_counter_++;
   pending_decodes_.insert({decode_id, std::move(decode_cb)});
 
   const bool is_flushing = buffer->end_of_stream();
-
-  CHECK(buffer);
 
   mojom::DecoderBufferPtr mojo_buffer =
       mojo_decoder_buffer_writer_->WriteDecoderBuffer(buffer);
@@ -293,12 +320,20 @@ void OOPVideoDecoder::OnDecodeDone(uint64_t decode_id,
     return;
   }
 
-  // Check that the |decode_cb| corresponding to the flush is not called until
-  // the decode callback has been called for each pending decode.
-  if (is_flushing && pending_decodes_.size() != 1) {
-    VLOGF(2) << "Received a flush callback while having pending decodes";
-    Stop();
-    return;
+  if (is_flushing) {
+    // Check that the |decode_cb| corresponding to the flush is not called until
+    // the decode callback has been called for each pending decode.
+    if (pending_decodes_.size() != 1) {
+      VLOGF(2) << "Received a flush callback while having pending decodes";
+      Stop();
+      return;
+    }
+
+    // After a flush is completed, we shouldn't receive decoded frames
+    // corresponding to Decode() calls that came in prior to the flush. The
+    // clearing of the cache together with the validation in
+    // OnVideoFrameDecoded() should guarantee this.
+    fake_timestamp_to_real_timestamp_cache_.Clear();
   }
 
   auto it = pending_decodes_.begin();
@@ -359,6 +394,7 @@ void OOPVideoDecoder::Stop() {
   remote_decoder_.reset();
   mojo_decoder_buffer_writer_.reset();
   stable_video_frame_handle_releaser_remote_.reset();
+  fake_timestamp_to_real_timestamp_cache_.Clear();
 
   if (init_cb_)
     std::move(init_cb_).Run(DecoderStatus::Codes::kFailed);
@@ -439,6 +475,16 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
     Stop();
     return;
   }
+
+  base::TimeDelta timestamp = frame->timestamp();
+  auto it = fake_timestamp_to_real_timestamp_cache_.Get(timestamp);
+  if (it == fake_timestamp_to_real_timestamp_cache_.end()) {
+    // The remote decoder is misbehaving.
+    VLOGF(2) << "Received an unexpected decoded frame";
+    Stop();
+    return;
+  }
+  frame->set_timestamp(it->second);
 
   // The destruction observer will be called after the client releases the
   // video frame. BindToCurrentLoop() is used to make sure that the WeakPtr
