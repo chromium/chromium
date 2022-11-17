@@ -198,8 +198,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      * {@link CustomTabsIntent#EXTRA_INITIAL_ACTIVITY_HEIGHT_PX}, defines the resize behavior of
      * the Custom Tab Activity’s height when it behaves as a bottom sheet.
      */
-    public static final String EXTRA_ACTIVITY_RESIZE_BEHAVIOR =
-            "androidx.browser.customtabs.extra.ACTIVITY_RESIZE_BEHAVIOR";
+    public static final String EXTRA_ACTIVITY_HEIGHT_RESIZE_BEHAVIOR =
+            "androidx.browser.customtabs.extra.ACTIVITY_HEIGHT_RESIZE_BEHAVIOR";
 
     /**
      * Extra that, if set, makes the toolbar's top corner radii to be x pixels. This will only have
@@ -457,12 +457,12 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         mInitialActivityHeight = getInitialActivityHeightFromIntent(intent);
         mPartialTabToolbarCornerRadius = getToolbarCornerRadiusFromIntent(context, intent);
 
-        // The default behavior is that the pcct is resizable.
-        @ActivityResizeBehavior
-        int activityResizeBehavior = IntentUtils.safeGetIntExtra(
-                intent, EXTRA_ACTIVITY_RESIZE_BEHAVIOR, ACTIVITY_HEIGHT_DEFAULT);
+        // The default behavior is that the PCCT's height is resizable.
+        @ActivityHeightResizeBehavior
+        int activityHeightResizeBehavior = IntentUtils.safeGetIntExtra(
+                intent, EXTRA_ACTIVITY_HEIGHT_RESIZE_BEHAVIOR, ACTIVITY_HEIGHT_DEFAULT);
         mIsPartialCustomTabFixedHeight =
-                activityResizeBehavior == ACTIVITY_HEIGHT_FIXED ? true : false;
+                activityHeightResizeBehavior == ACTIVITY_HEIGHT_FIXED ? true : false;
 
         @BackgroundInteractBehavior
         int backgroundInteractBehavior = IntentUtils.safeGetIntExtra(

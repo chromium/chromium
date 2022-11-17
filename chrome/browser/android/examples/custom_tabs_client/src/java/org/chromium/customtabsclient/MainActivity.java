@@ -73,7 +73,7 @@ public class MainActivity
     private static final String SHARED_PREF_COLOR = "Color";
     private static final String SHARED_PREF_HEIGHT = "Height";
     private static final String SHARED_PREF_PROGRESS = "Progress";
-    private static final String SHARED_PREF_RESIZABLE = "Resizable";
+    private static final String SHARED_PREF_HEIGHT_RESIZABLE = "HeightResizable";
     private static final String SHARED_PREF_SITES = "Sites";
     private static final String SHARED_PREF_SHOW_TITLE = "ShowTitle";
     private static final String SHARED_PREF_THEME = "Theme";
@@ -110,7 +110,7 @@ public class MainActivity
     private TextView mToolbarCornerRadiusLabel;
     private SeekBar mToolbarCornerRadiusSlider;
     private CheckBox mBottomToolbarCheckbox;
-    private CheckBox mPcctResizableCheckbox;
+    private CheckBox mPcctHeightResizableCheckbox;
     private CheckBox mShowTitleCheckbox;
     private CheckBox mUrlHidingCheckbox;
     private CheckBox mBackgroundInteractCheckbox;
@@ -371,8 +371,9 @@ public class MainActivity
     }
 
     private void initializeCheckBoxes() {
-        mPcctResizableCheckbox = findViewById(R.id.pcct_resizable_checkbox);
-        mPcctResizableCheckbox.setChecked(mSharedPref.getInt(SHARED_PREF_RESIZABLE, CHECKED) == CHECKED);
+        mPcctHeightResizableCheckbox = findViewById(R.id.pcct_height_resizable_checkbox);
+        mPcctHeightResizableCheckbox.setChecked(
+                mSharedPref.getInt(SHARED_PREF_HEIGHT_RESIZABLE, CHECKED) == CHECKED);
         mBottomToolbarCheckbox = findViewById(R.id.bottom_toolbar_checkbox);
         mBottomToolbarCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_BOTTOM_TOOLBAR, UNCHECKED) == CHECKED);
@@ -614,9 +615,9 @@ public class MainActivity
                             "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_HEIGHT_IN_PIXEL",
                             pcctInitialHeightPx);
                 }
-                if (!mPcctResizableCheckbox.isChecked()) {
+                if (!mPcctHeightResizableCheckbox.isChecked()) {
                     customTabsIntent.intent.putExtra(
-                            "androidx.browser.customtabs.extra.ACTIVITY_RESIZE_BEHAVIOR",
+                            "androidx.browser.customtabs.extra.ACTIVITY_HEIGHT_RESIZE_BEHAVIOR",
                             ACTIVITY_HEIGHT_FIXED);
                 }
                 if (!mBackgroundInteractCheckbox.isChecked()) {
@@ -650,7 +651,8 @@ public class MainActivity
                     session != null && mBottomToolbarCheckbox.isChecked() ? CHECKED : UNCHECKED;
             editor.putInt(SHARED_PREF_BOTTOM_TOOLBAR, toolbarCheck);
             editor.putInt(SHARED_PREF_CLOSE_POSITION, closeButtonPosition);
-            editor.putInt(SHARED_PREF_RESIZABLE, mPcctResizableCheckbox.isChecked() ? CHECKED : UNCHECKED);
+            editor.putInt(SHARED_PREF_HEIGHT_RESIZABLE,
+                    mPcctHeightResizableCheckbox.isChecked() ? CHECKED : UNCHECKED);
             editor.apply();
         }
     }
