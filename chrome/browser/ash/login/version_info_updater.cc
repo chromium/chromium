@@ -161,27 +161,27 @@ std::string VersionInfoUpdater::GetDeviceIdsLabel() {
   std::string device_ids_text;
 
   // Get the attested device ID and add the ZTE indication and the ID if needed.
-  const absl::optional<base::StringPiece> attested_device_id =
-      system::StatisticsProvider::GetInstance()->GetMachineStatistic(
-          chromeos::system::kAttestedDeviceIdKey);
+  std::string attested_device_id;
+  system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+      chromeos::system::kAttestedDeviceIdKey, &attested_device_id);
   // Start with the ZTE indication and the attested device ID if it exists.
-  if (attested_device_id && !attested_device_id->empty()) {
+  if (!attested_device_id.empty()) {
     device_ids_text.append(kZteReady);
     // Always append the attested device ID.
     device_ids_text.append(" ");
     device_ids_text.append(kAttestedDeviceIdPrefix);
-    device_ids_text.append(std::string(attested_device_id.value()));
+    device_ids_text.append(attested_device_id);
   }
 
   // Get the serial number and add it.
-  const absl::optional<base::StringPiece> serial_number =
-      system::StatisticsProvider::GetInstance()->GetMachineID();
-  if (serial_number && !serial_number->empty()) {
+  std::string serial_number =
+      system::StatisticsProvider::GetInstance()->GetEnterpriseMachineID();
+  if (!serial_number.empty()) {
     if (!device_ids_text.empty())
       device_ids_text.append(" ");
     // Append the serial number.
     device_ids_text.append(kSerialNumberPrefix);
-    device_ids_text.append(std::string(serial_number.value()));
+    device_ids_text.append(serial_number);
   }
 
   return device_ids_text;
