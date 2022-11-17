@@ -1908,6 +1908,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="IOS.TextSelection.EntityDetection.FullPageTFLiteModelEvaluationDuration"
+    units="ms" expires_after="2023-03-19">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the time taken for the TFLite text classifier model to extract
+    entities given a full web page text (up to 64k characters).
+  </summary>
+</histogram>
+
+<histogram
     name="IOS.TextSelection.EntityDetection.TFLiteModelEvaluationDuration"
     units="ms" expires_after="2023-03-19">
   <owner>rajendrant@chromium.org</owner>
