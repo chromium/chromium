@@ -29,6 +29,10 @@
 #include "services/network/test/test_udp_socket.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace content::test {
 
 // Mock Host Resolver for Direct Sockets browsertests.
@@ -197,6 +201,9 @@ std::string WrapAsync(const std::string& script);
 // for isolated apps.
 class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
  public:
+  explicit IsolatedWebAppContentBrowserClient(
+      const url::Origin& isolated_app_origin);
+
   bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
                                              const GURL& url,
                                              bool origin_matches_flag) override;
@@ -205,6 +212,9 @@ class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
   GetPermissionsPolicyForIsolatedWebApp(
       content::BrowserContext* browser_context,
       const url::Origin& app_origin) override;
+
+ private:
+  url::Origin isolated_app_origin_;
 };
 
 }  // namespace content::test

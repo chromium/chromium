@@ -12,11 +12,11 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/browser/direct_sockets/direct_sockets_service_impl.h"
 #include "content/browser/direct_sockets/direct_sockets_test_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -176,7 +176,13 @@ class DirectSocketsOpenBrowserTest : public ContentBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
-    EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
+
+    client_ = std::make_unique<test::IsolatedWebAppContentBrowserClient>(
+        url::Origin::Create(GetTestOpenPageURL()));
+    scoped_client_ =
+        std::make_unique<ScopedContentBrowserClientSetting>(client_.get());
+
+    ASSERT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
   }
 
   void SetUp() override {
@@ -186,12 +192,11 @@ class DirectSocketsOpenBrowserTest : public ContentBrowserTest {
     ContentBrowserTest::SetUp();
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
-    std::string origin_list = GetTestOpenPageURL().spec();
+ private:
+  base::test::ScopedFeatureList feature_list_{features::kIsolatedWebApps};
 
-    command_line->AppendSwitchASCII(switches::kIsolatedAppOrigins, origin_list);
-  }
+  std::unique_ptr<test::IsolatedWebAppContentBrowserClient> client_;
+  std::unique_ptr<ScopedContentBrowserClientSetting> scoped_client_;
 };
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_Success_Hostname) {

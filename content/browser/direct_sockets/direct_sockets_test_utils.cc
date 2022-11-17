@@ -14,6 +14,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/web_contents_tester.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
+#include "url/origin.h"
 
 namespace content::test {
 
@@ -206,11 +207,15 @@ std::string AsyncJsRunner::MakeScriptSendResultToDomQueue(
       script.c_str(), token_.ToString().c_str()));
 }
 
+IsolatedWebAppContentBrowserClient::IsolatedWebAppContentBrowserClient(
+    const url::Origin& isolated_app_origin)
+    : isolated_app_origin_(isolated_app_origin) {}
+
 bool IsolatedWebAppContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
     BrowserContext* browser_context,
     const GURL& url,
     bool origin_matches_flag) {
-  return origin_matches_flag;
+  return isolated_app_origin_ == url::Origin::Create(url);
 }
 
 absl::optional<blink::ParsedPermissionsPolicy>

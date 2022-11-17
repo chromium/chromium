@@ -19,7 +19,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -286,9 +285,15 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
-    ASSERT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
+
+    client_ = std::make_unique<test::IsolatedWebAppContentBrowserClient>(
+        url::Origin::Create(GetTestPageURL()));
+    scoped_client_ =
+        std::make_unique<ScopedContentBrowserClientSetting>(client_.get());
     runner_ =
         std::make_unique<content::test::AsyncJsRunner>(shell()->web_contents());
+
+    ASSERT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
   }
 
   void SetUp() override {
@@ -297,26 +302,18 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
     ContentBrowserTest::SetUp();
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
-    std::string origin_list =
-        GetTestOpenPageURL().spec() + "," + GetTestPageURL().spec();
-
-    command_line->AppendSwitchASCII(switches::kIsolatedAppOrigins, origin_list);
-  }
-
  private:
   BrowserContext* browser_context() {
     return shell()->web_contents()->GetBrowserContext();
   }
 
  private:
-  test::IsolatedWebAppContentBrowserClient client_;
-  ScopedContentBrowserClientSetting setting{&client_};
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{features::kIsolatedWebApps};
   mojo::Remote<network::mojom::MdnsResponder> mdns_responder_;
   mojo::Remote<network::mojom::TCPServerSocket> tcp_server_socket_;
 
+  std::unique_ptr<test::IsolatedWebAppContentBrowserClient> client_;
+  std::unique_ptr<ScopedContentBrowserClientSetting> scoped_client_;
   std::unique_ptr<content::test::AsyncJsRunner> runner_;
 };
 
