@@ -2457,6 +2457,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.Float.FloatWindowCountsPerSession" units="windows"
+    expires_after="2023-11-20">
+  <owner>nupurjain@google.com</owner>
+  <owner>shidi@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    The number of floating windows per session, which is from the time a user
+    logs in to the time they log off. This counts how many times any window
+    enters float state. If the same window is floated twice in the same session,
+    it will get recorded twice.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Glanceables.SignoutScreenshotDuration" units="ms"
     expires_after="2023-04-30">
   <owner>jamescook@chromium.org</owner>

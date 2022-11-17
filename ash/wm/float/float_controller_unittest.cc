@@ -644,6 +644,23 @@ TEST_F(WindowFloatTest, FloatWindowUpdatedOnOverview) {
   EXPECT_EQ(window.get(), overview_items[0]->GetWindow());
 }
 
+// Tests the float window counts.
+TEST_F(WindowFloatTest, FloatWindowCountPerSession) {
+  // Float a window, Tests that it counts properly.
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
+
+  // Unfloat and float the window again, it should count 2.
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_FALSE(WindowState::Get(window.get())->IsFloated());
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
+  // Float a new window on a new desk, it should count 3.
+  NewDesk();
+  std::unique_ptr<aura::Window> window_2 = CreateFloatedWindow();
+  // Check total counts.
+  DCHECK_EQ(Shell::Get()->float_controller()->floated_window_counter_, 3);
+}
+
 class TabletWindowFloatTest : public WindowFloatTest {
  public:
   TabletWindowFloatTest() = default;

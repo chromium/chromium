@@ -26,6 +26,7 @@
 #include "ash/wm/workspace/workspace_event_handler.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/wm/constants.h"
 #include "chromeos/ui/wm/window_util.h"
@@ -192,7 +193,11 @@ FloatController::FloatController() {
     OnRootWindowAdded(root);
 }
 
-FloatController::~FloatController() = default;
+FloatController::~FloatController() {
+  // Record how many windows are floated per session.
+  base::UmaHistogramCounts100(kFloatWindowCountsPerSessionHistogramName,
+                              floated_window_counter_);
+}
 
 // static
 gfx::Rect FloatController::GetPreferredFloatWindowClamshellBounds(
@@ -637,6 +642,11 @@ void FloatController::FloatImpl(aura::Window* window) {
 
   if (!desk->is_active())
     HideFloatedWindow(window);
+
+  // Update floated window counts.
+  // Note that if the same window gets floated 2 times in the same session, it's
+  // counted as 2 floated windows.
+  ++floated_window_counter_;
 
   if (!tablet_mode_observation_.IsObserving())
     tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
