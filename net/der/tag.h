@@ -20,7 +20,7 @@ namespace net::der {
 // numbers. Instead, constants are provided for universal class types, and
 // functions are provided for building context specific tags. Tags can also be
 // built from the provided constants and bitmasks.
-using Tag = CBS_ASN1_TAG;
+using Tag = unsigned;
 
 // Universal class primitive types
 const Tag kBool = CBS_ASN1_BOOLEAN;
@@ -45,19 +45,19 @@ const Tag kSequence = CBS_ASN1_SEQUENCE;
 const Tag kSet = CBS_ASN1_SET;
 
 // Primitive/constructed bits
-const Tag kTagPrimitive = 0x00;
-const Tag kTagConstructed = CBS_ASN1_CONSTRUCTED;
+const unsigned kTagPrimitive = 0x00;
+const unsigned kTagConstructed = CBS_ASN1_CONSTRUCTED;
 
 // Tag classes
-const Tag kTagUniversal = 0x00;
-const Tag kTagApplication = CBS_ASN1_APPLICATION;
-const Tag kTagContextSpecific = CBS_ASN1_CONTEXT_SPECIFIC;
-const Tag kTagPrivate = CBS_ASN1_PRIVATE;
+const unsigned kTagUniversal = 0x00;
+const unsigned kTagApplication = CBS_ASN1_APPLICATION;
+const unsigned kTagContextSpecific = CBS_ASN1_CONTEXT_SPECIFIC;
+const unsigned kTagPrivate = CBS_ASN1_PRIVATE;
 
 // Masks for the 3 components of a tag (class, primitive/constructed, number)
-const Tag kTagNumberMask = CBS_ASN1_TAG_NUMBER_MASK;
-const Tag kTagConstructionMask = CBS_ASN1_CONSTRUCTED;
-const Tag kTagClassMask = CBS_ASN1_CLASS_MASK;
+const unsigned kTagNumberMask = CBS_ASN1_TAG_NUMBER_MASK;
+const unsigned kTagConstructionMask = CBS_ASN1_CONSTRUCTED;
+const unsigned kTagClassMask = CBS_ASN1_CLASS_MASK;
 
 // Creates the value for the outer tag of an explicitly tagged type.
 //
