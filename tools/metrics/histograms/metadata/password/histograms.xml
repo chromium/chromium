@@ -820,24 +820,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.ApplySyncChanges.UpdateLoginSyncError"
-    enum="PasswordUpdateLoginSyncError" expires_after="2021-07-31">
+    enum="PasswordUpdateLoginSyncError" expires_after="2023-03-05">
   <owner>mamir@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
     Records different results upon updating a remote password to the password
     manager. It is recorded every time after receiving remote password
-    incremental updates from the server.
+    incremental updates from the server. Warning: this histogram was expired
+    from 2021-07-31 to 2022-11-17; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="PasswordManager.ApplySyncChangesState"
-    enum="PasswordApplySyncChangesState" expires_after="2021-07-31">
+    enum="PasswordApplySyncChangesState" expires_after="2023-03-05">
   <owner>mamir@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
     Records different states upon applying remote sync changes to the password
     manager. It recorded every time after receiving remote password incremental
-    updates from the server.
+    updates from the server. Warning: this histogram was expired from 2021-07-31
+    to 2022-11-17; data may be missing.
   </summary>
 </histogram>
 
@@ -2014,13 +2016,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.MergeSyncData.UpdateLoginSyncError"
-    enum="PasswordUpdateLoginSyncError" expires_after="2021-07-31">
+    enum="PasswordUpdateLoginSyncError" expires_after="2023-03-19">
   <owner>mamir@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
     Records different results upon updating a remote password in the password
     manager. It is recorded during the initial sync when merging remote and
-    local data.
+    local data. Warning: this histogram was expired from 2021-07-31 to
+    2022-11-17; data may be missing.
   </summary>
 </histogram>
 
