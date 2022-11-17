@@ -12,8 +12,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/pill_button.h"
 #include "ash/system/phonehub/phone_hub_recent_app_button.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/phonehub/ui_constants.h"
@@ -22,6 +22,10 @@
 #include "base/ranges/algorithm.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/background.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -50,6 +54,10 @@ constexpr int kHeaderTextFontSizeDip = 15;
 
 // Max number of apps can be shown with more apps button
 constexpr int kMaxAppsWithMoreAppsButton = 5;
+
+// Sizing of more apps button.
+constexpr gfx::Rect kMoreAppsButtonArea = gfx::Rect(57, 32);
+constexpr int kMoreAppsButtonRadius = 16;
 
 class HeaderView : public views::Label {
  public:
@@ -215,18 +223,9 @@ void PhoneHubRecentAppsView::Update() {
       for (const auto& recent_app : recent_apps_list) {
         if (features::IsEcheLauncherEnabled() &&
             recent_app_button_list_.size() == kMaxAppsWithMoreAppsButton) {
-          auto moreAppsButton = std::make_unique<PillButton>(
-              base::BindRepeating(&PhoneHubRecentAppsView::SwitchToFullAppsList,
-                                  base::Unretained(this)),
-              std::u16string(), PillButton::Type::kDefaultWithIconLeading,
-              &kPhoneHubFullAppsListIcon);
-          moreAppsButton->SetTooltipText(l10n_util::GetStringUTF16(
-              IDS_ASH_PHONE_HUB_FULL_APPS_LIST_BUTTON_TITLE));
-          moreAppsButton->SetAccessibleName(l10n_util::GetStringUTF16(
-              IDS_ASH_PHONE_HUB_FULL_APPS_LIST_BUTTON_TITLE));
           recent_app_button_list_.push_back(
               recent_app_buttons_view_->AddRecentAppButton(
-                  std::move(moreAppsButton)));
+                  GenerateMoreAppsButton()));
           break;
         }
 
@@ -250,5 +249,28 @@ void PhoneHubRecentAppsView::Update() {
 
 // TODO(b/259160267): Add function when full apps list view is ready.
 void PhoneHubRecentAppsView::SwitchToFullAppsList() {}
+
+std::unique_ptr<views::ImageButton>
+PhoneHubRecentAppsView::GenerateMoreAppsButton() {
+  auto more_apps_button = std::make_unique<views::ImageButton>(
+      base::BindRepeating(&PhoneHubRecentAppsView::SwitchToFullAppsList,
+                          base::Unretained(this)));
+
+  gfx::ImageSkia image = gfx::CreateVectorIcon(
+      kPhoneHubFullAppsListIcon,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kButtonIconColor));
+  more_apps_button->SetImage(
+      views::Button::STATE_NORMAL,
+      gfx::ImageSkiaOperations::ExtractSubset(image, kMoreAppsButtonArea));
+  more_apps_button->SetBackground(views::CreateRoundedRectBackground(
+      AshColorProvider::Get()->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive),
+      kMoreAppsButtonRadius));
+  more_apps_button->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_FULL_APPS_LIST_BUTTON_TITLE));
+
+  return more_apps_button;
+}
 
 }  // namespace ash

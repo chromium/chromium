@@ -5,9 +5,11 @@
 #ifndef ASH_SYSTEM_PHONEHUB_PHONE_HUB_RECENT_APPS_VIEW_H_
 #define ASH_SYSTEM_PHONEHUB_PHONE_HUB_RECENT_APPS_VIEW_H_
 
+#include <memory>
 #include "ash/ash_export.h"
 #include "ash/components/phonehub/recent_apps_interaction_handler.h"
 #include "base/gtest_prod_util.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
 
@@ -64,6 +66,9 @@ class ASH_EXPORT PhoneHubRecentAppsView
 
   // Switch to full apps list view.
   void SwitchToFullAppsList();
+
+  // Generate more apps button.
+  std::unique_ptr<views::ImageButton> GenerateMoreAppsButton();
 
   RecentAppButtonsView* recent_app_buttons_view_ = nullptr;
   std::vector<views::View*> recent_app_button_list_;

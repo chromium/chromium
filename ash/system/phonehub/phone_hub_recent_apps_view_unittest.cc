@@ -7,13 +7,13 @@
 #include "ash/components/phonehub/fake_recent_apps_interaction_handler.h"
 #include "ash/components/phonehub/notification.h"
 #include "ash/constants/ash_features.h"
-#include "ash/style/pill_button.h"
 #include "ash/system/phonehub/phone_hub_recent_app_button.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "ui/events/test/test_event.h"
 #include "ui/gfx/image/image.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/test/button_test_api.h"
 
 namespace ash {
@@ -154,7 +154,8 @@ TEST_F(RecentAppButtonsViewTest,
        i++) {
     auto* child = recent_apps_view()->recent_app_buttons_view_->children()[i];
     if (i == 5) {
-      PillButton* more_apps_button = static_cast<PillButton*>(child);
+      views::ImageButton* more_apps_button =
+          static_cast<views::ImageButton*>(child);
       views::test::ButtonTestApi(more_apps_button)
           .NotifyClick(ui::test::TestEvent());
       break;
