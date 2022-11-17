@@ -35,7 +35,9 @@ std::string NumberToString(uint32_t number) {
 // to sync will hang.  That is why we run "bare" lambdas in all tests of this
 // suite instead of using `PostToServerAndWait()`: that helper syncs the
 // connection after running the server task.  Due to the same reason we disable
-// the sync on the test tear down.
+// the sync on the test tear down.  To ensure that the error message is caught
+// by the crash reporter, we wait until idle in the end of each test before
+// checking the crash key value.
 class WaylandEventWatcherTest : public WaylandTest {
  public:
   WaylandEventWatcherTest() : WaylandTest(TestServerMode::kAsync) {}
@@ -81,6 +83,8 @@ TEST_P(WaylandEventWatcherTest, CrashKeyResourceError) {
                                kTestErrorString.c_str());
       }));
 
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_EQ(text, crash_reporter::GetCrashKeyValue("wayland_error"));
 }
 
@@ -101,6 +105,8 @@ TEST_P(WaylandEventWatcherTest, CrashKeyResourceNoMemory) {
         wl_resource_post_no_memory(xdg_surface);
       }));
 
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_EQ(expected_error_code,
             crash_reporter::GetCrashKeyValue("wayland_error"));
 }
@@ -115,6 +121,8 @@ TEST_P(WaylandEventWatcherTest, CrashKeyClientNoMemoryError) {
       base::BindLambdaForTesting([](wl::TestWaylandServerThread* server) {
         wl_client_post_no_memory(server->client());
       }));
+
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(expected_error_code,
             crash_reporter::GetCrashKeyValue("wayland_error"));
@@ -133,6 +141,8 @@ TEST_P(WaylandEventWatcherTest, CrashKeyClientImplementationError) {
                                             kError.c_str());
       }));
 
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_EQ(expected_error_code,
             crash_reporter::GetCrashKeyValue("wayland_error"));
 }
@@ -148,6 +158,8 @@ TEST_P(WaylandEventWatcherTest, CrashKeyCompositorNameSet) {
                                             "stub error");
       }));
 
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_EQ(kTestWaylandCompositor,
             crash_reporter::GetCrashKeyValue("wayland_compositor"));
 }
@@ -160,6 +172,8 @@ TEST_P(WaylandEventWatcherTest, CrashKeyCompositorNameUnset) {
         wl_client_post_implementation_error(server->client(), "%s",
                                             "stub error");
       }));
+
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ("Unknown", crash_reporter::GetCrashKeyValue("wayland_compositor"));
 }
