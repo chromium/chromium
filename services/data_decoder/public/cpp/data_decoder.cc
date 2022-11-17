@@ -130,7 +130,7 @@ void BindInProcessService(
 }
 #endif
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(BUILD_RUST_JSON_PARSER)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(BUILD_RUST_JSON_READER)
 
 void ParsingComplete(scoped_refptr<DataDecoder::CancellationFlag> is_cancelled,
                      DataDecoder::ValueParseCallback callback,
@@ -184,7 +184,7 @@ mojom::DataDecoderService* DataDecoder::GetService() {
 
 void DataDecoder::ParseJson(const std::string& json,
                             ValueParseCallback callback) {
-#if BUILDFLAG(BUILD_RUST_JSON_PARSER)
+#if BUILDFLAG(BUILD_RUST_JSON_READER)
   // Parses JSON directly in the calling process using the memory-safe
   // Rust parser.
   base::ThreadPool::PostTaskAndReplyWithResult(

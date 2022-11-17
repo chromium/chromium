@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/containers/span_rust.h"
+#include "build/rust/rust_buildflags.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(TOOLCHAIN_HAS_RUST)
 
 namespace base {
 namespace {
@@ -19,3 +22,5 @@ TEST(BaseSpanRustTest, SliceConstruct) {
 
 }  // namespace
 }  // namespace base
+
+#endif  // BUILDFLAG(TOOLCHAIN_HAS_RUST)

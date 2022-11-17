@@ -66,7 +66,7 @@ TEST_F(DataDecoderTest, Isolation) {
   EXPECT_EQ(2u, service().receivers().size());
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(BUILD_RUST_JSON_PARSER)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(BUILD_RUST_JSON_READER)
 
 class DataDecoderMultiThreadTest : public testing::Test {
  protected:
@@ -98,6 +98,6 @@ TEST_F(DataDecoderMultiThreadTest, JSONDecode) {
   EXPECT_EQ(122.416294033786585, list[0].GetDouble());
 }
 
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(BUILD_RUST_JSON_PARSER)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(BUILD_RUST_JSON_READER)
 
 }  // namespace data_decoder

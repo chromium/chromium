@@ -2,58 +2,68 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-config("edition_2021") {
-  rustflags = [ "--edition=2021" ]
+import("//build/buildflag_header.gni")
+import("//build/config/rust.gni")
+
+buildflag_header("rust_buildflags") {
+  header = "rust_buildflags.h"
+  flags = [ "TOOLCHAIN_HAS_RUST=$toolchain_has_rust" ]
 }
 
-config("edition_2018") {
-  rustflags = [ "--edition=2018" ]
-}
-
-config("edition_2015") {
-  rustflags = [ "--edition=2015" ]
-}
-
-# The required dependencies for cxx-generated bindings, that must be included
-# on the C++ side.
-static_library("cxx_cppdeps") {
-  sources = [
-    "//third_party/rust/cxx/v1/crate/include/cxx.h",
-    "//third_party/rust/cxx/v1/crate/src/cxx.cc",
-  ]
-
-  defines = [ "RUST_CXX_NO_EXCEPTIONS" ]
-
-  if (is_win) {
-    defines += [ "CXX_RS_EXPORT=__declspec(dllexport)" ]
-  } else {
-    defines += [ "CXX_RS_EXPORT=__attribute__((visibility(\"default\")))" ]
+if (toolchain_has_rust) {
+  config("edition_2021") {
+    rustflags = [ "--edition=2021" ]
   }
 
-  # Depending on the C++ bindings side of cxx then requires also depending
-  # on the Rust bindings, since one calls the other. And the Rust bindings
-  # require the Rust standard library.
-  # Normally the Rust stdlib is brought in as a dependency by depending
-  # on any first-party Rust target. But in this case, it's conceivable
-  # that pure-C++ targets will not depend on any 1p Rust code so we'll add
-  # the Rust stdlib explicitly.
-  deps = [
-    ":cxx_rustdeps",
-    "//build/rust/std",
-  ]
-}
+  config("edition_2018") {
+    rustflags = [ "--edition=2018" ]
+  }
 
-# The required dependencies for cxx-generated bindings, that must be included
-# on the Rust side.
-group("cxx_rustdeps") {
-  public_deps = [ "//third_party/rust/cxx/v1:lib" ]
-}
+  config("edition_2015") {
+    rustflags = [ "--edition=2015" ]
+  }
 
-# Enables code behind #[cfg(test)]. This should only be used for targets where
-# testonly=true.
-config("test") {
-  rustflags = [
-    "--cfg",
-    "test",
-  ]
+  # The required dependencies for cxx-generated bindings, that must be included
+  # on the C++ side.
+  static_library("cxx_cppdeps") {
+    sources = [
+      "//third_party/rust/cxx/v1/crate/include/cxx.h",
+      "//third_party/rust/cxx/v1/crate/src/cxx.cc",
+    ]
+
+    defines = [ "RUST_CXX_NO_EXCEPTIONS" ]
+
+    if (is_win) {
+      defines += [ "CXX_RS_EXPORT=__declspec(dllexport)" ]
+    } else {
+      defines += [ "CXX_RS_EXPORT=__attribute__((visibility(\"default\")))" ]
+    }
+
+    # Depending on the C++ bindings side of cxx then requires also depending
+    # on the Rust bindings, since one calls the other. And the Rust bindings
+    # require the Rust standard library.
+    # Normally the Rust stdlib is brought in as a dependency by depending
+    # on any first-party Rust target. But in this case, it's conceivable
+    # that pure-C++ targets will not depend on any 1p Rust code so we'll add
+    # the Rust stdlib explicitly.
+    deps = [
+      ":cxx_rustdeps",
+      "//build/rust/std",
+    ]
+  }
+
+  # The required dependencies for cxx-generated bindings, that must be included
+  # on the Rust side.
+  group("cxx_rustdeps") {
+    public_deps = [ "//third_party/rust/cxx/v1:lib" ]
+  }
+
+  # Enables code behind #[cfg(test)]. This should only be used for targets where
+  # testonly=true.
+  config("test") {
+    rustflags = [
+      "--cfg",
+      "test",
+    ]
+  }
 }

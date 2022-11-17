@@ -88,15 +88,6 @@ enum JSONParserOptions {
 class BASE_EXPORT JSONReader {
  public:
   struct BASE_EXPORT Error {
-    Error();
-    Error(Error&& other);
-    Error& operator=(Error&& other);
-
-    Error(const Error&) = delete;
-    Error& operator=(const Error&) = delete;
-
-    ~Error();
-
     std::string message;
     int line = 0;
     int column = 0;

@@ -16,6 +16,11 @@ declare_args() {
   # is false.
   enable_rust = false
 
+  # Individual Rust components.
+  #
+  # The base::JSONReader implementation.
+  enable_rust_json = true
+
   # Use experimental Rust toolchain built in-tree. See //tools/rust. For now,
   # only use it for linux targets. The package only has prebuilt libs for linux.
   # More targets will be added later.
@@ -47,11 +52,10 @@ declare_args() {
   # Rust toolchain. Typically used with 'use_unverified_rust_toolchain' = true
   removed_rust_stdlib_libs = []
 
-  # Use LTO when using rustc to link binaries. Experimental. Currently incompatible
-  # with the options we use in our C++ toolchain to split LTO units.
-  # This has no effect on the production of normal Chrome binaries, which are
-  # linked by clang/lld rather than rustc.
-  # https://crbug.com/1229419
+  # Use LTO when using rustc to link binaries. Experimental. Currently
+  # incompatible with the options we use in our C++ toolchain to split LTO
+  # units. This has no effect on the production of normal Chrome binaries, which
+  # are linked by clang/lld rather than rustc. https://crbug.com/1229419
   use_lto_in_rustc_linking = false
 
   # Use goma for Rust builds. Experimental. The only known problem is
