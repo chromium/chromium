@@ -171,6 +171,12 @@ class CORE_EXPORT ViewTransition : public ScriptWrappable,
     return creation_type_ == CreationType::kForSnapshot;
   }
 
+  // Returns true if this object was created for transitions in the same
+  // Document via document.startViewTransition(...).
+  bool IsCreatedViaScriptAPI() const {
+    return creation_type_ == CreationType::kScript;
+  }
+
   // Notifies before the compositor associated with this frame will initiate a
   // lifecycle update.
   void WillBeginMainFrame();

@@ -51,9 +51,9 @@ ViewTransition* ViewTransitionSupplement::StartTransition(
     Document& document,
     V8ViewTransitionCallback* callback,
     ExceptionState& exception_state) {
-  // TODO(khushalsagar): Script initiates a transition request during
-  // navigation?
-  if (transition_ && transition_->IsForNavigationSnapshot())
+  // Disallow script initiated transitions during a navigation initiated
+  // transition.
+  if (transition_ && !transition_->IsCreatedViaScriptAPI())
     return nullptr;
 
   if (transition_)
@@ -70,6 +70,7 @@ ViewTransition* ViewTransitionSupplement::StartTransition(
 void ViewTransitionSupplement::SnapshotDocumentForNavigation(
     Document& document,
     ViewTransition::ViewTransitionStateCallback callback) {
+  DCHECK(RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled());
   auto* supplement = From(document);
   supplement->StartTransition(document, std::move(callback));
 }
@@ -78,7 +79,9 @@ void ViewTransitionSupplement::StartTransition(
     Document& document,
     ViewTransition::ViewTransitionStateCallback callback) {
   if (transition_) {
-    DCHECK(!transition_->IsForNavigationSnapshot());
+    // We may have a transition which was created to animate to this Document at
+    // this point if another navigation starts before the animations finish.
+    DCHECK(transition_->IsForNavigationSnapshot());
     transition_->skipTransition();
   }
   DCHECK(!transition_)
@@ -92,6 +95,7 @@ void ViewTransitionSupplement::StartTransition(
 void ViewTransitionSupplement::CreateFromSnapshotForNavigation(
     Document& document,
     ViewTransitionState transition_state) {
+  DCHECK(RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled());
   auto* supplement = From(document);
   supplement->StartTransition(document, std::move(transition_state));
 }
