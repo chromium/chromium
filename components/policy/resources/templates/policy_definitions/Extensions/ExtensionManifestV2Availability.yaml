@@ -1,7 +1,7 @@
 owners:
 - zmin@chromium.org
 - file://components/policy/OWNERS
-caption: Control manifest v2 extension availability.
+caption: Control manifest v2 extension availability
 desc: |-
   Control if manifest v2 extensions can be used by browser.
 
