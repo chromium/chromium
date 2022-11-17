@@ -73,7 +73,7 @@ let mockSpeechRecognition: MockSpeechRecognition;
 
 suite('NewTabPageVoiceSearchOverlayTest', () => {
   let voiceSearchOverlay: VoiceSearchOverlayElement;
-  let windowProxy: TestBrowserProxy;
+  let windowProxy: TestBrowserProxy<WindowProxy>;
   let metrics: MetricsTracker;
 
   setup(async () => {

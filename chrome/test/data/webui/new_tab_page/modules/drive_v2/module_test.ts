@@ -14,7 +14,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 import {installMock} from '../../test_support.js';
 
 suite('NewTabPageModulesDriveModuleTest', () => {
-  let handler: TestBrowserProxy;
+  let handler: TestBrowserProxy<DriveHandlerRemote>;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

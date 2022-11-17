@@ -15,10 +15,10 @@ import {fakeMetricsPrivate, MetricsTracker} from '../../metrics_test_support.js'
 import {assertNotStyle, assertStyle, capture, createElement, initNullModule, installMock, render} from '../test_support.js';
 
 suite('NewTabPageModulesModulesTest', () => {
-  let handler: TestBrowserProxy;
+  let handler: TestBrowserProxy<PageHandlerRemote>;
   let callbackRouterRemote: PageRemote;
   let metrics: MetricsTracker;
-  let moduleRegistry: TestBrowserProxy;
+  let moduleRegistry: TestBrowserProxy<ModuleRegistry>;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

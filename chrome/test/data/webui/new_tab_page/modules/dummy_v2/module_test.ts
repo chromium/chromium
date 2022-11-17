@@ -14,7 +14,7 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 import {installMock} from '../../test_support.js';
 
 suite('NewTabPageModulesDummyModuleTest', () => {
-  let handler: TestBrowserProxy;
+  let handler: TestBrowserProxy<FooHandlerRemote>;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

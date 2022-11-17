@@ -18,11 +18,11 @@ import {fakeMetricsPrivate, MetricsTracker} from './../metrics_test_support.js';
 import {assertNotStyle, assertStyle, installMock} from './test_support.js';
 
 suite('NewTabPageCustomizeModulesTest', () => {
-  let handler: TestBrowserProxy;
+  let handler: TestBrowserProxy<PageHandlerRemote>;
   let callbackRouterRemote: PageRemote;
-  let moduleRegistry: TestBrowserProxy;
+  let moduleRegistry: TestBrowserProxy<ModuleRegistry>;
   let metrics: MetricsTracker;
-  let cartHandler: TestBrowserProxy;
+  let cartHandler: TestBrowserProxy<CartHandlerRemote>;
 
   async function createCustomizeModules(
       allDisabled: boolean,

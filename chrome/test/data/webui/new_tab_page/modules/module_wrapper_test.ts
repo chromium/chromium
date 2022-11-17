@@ -17,7 +17,7 @@ import {createElement, initNullModule, installMock} from '../test_support.js';
 suite('NewTabPageModulesModuleWrapperTest', () => {
   let moduleWrapper: ModuleWrapperElement;
   let metrics: MetricsTracker;
-  let windowProxy: TestBrowserProxy;
+  let windowProxy: TestBrowserProxy<WindowProxy>;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

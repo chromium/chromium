@@ -17,8 +17,8 @@ import {fakeMetricsPrivate, MetricsTracker} from '../../metrics_test_support.js'
 import {createElement, initNullModule, installMock} from '../test_support.js';
 
 suite('NewTabPageModulesModuleRegistryTest', () => {
-  let windowProxy: TestBrowserProxy;
-  let handler: TestBrowserProxy;
+  let windowProxy: TestBrowserProxy<WindowProxy>;
+  let handler: TestBrowserProxy<PageHandlerRemote>;
   let callbackRouterRemote: PageRemote;
   let metrics: MetricsTracker;
 

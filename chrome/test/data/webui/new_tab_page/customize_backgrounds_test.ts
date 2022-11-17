@@ -22,8 +22,8 @@ function createCollection(
 }
 
 suite('NewTabPageCustomizeBackgroundsTest', () => {
-  let windowProxy: TestBrowserProxy;
-  let handler: TestBrowserProxy;
+  let windowProxy: TestBrowserProxy<WindowProxy>;
+  let handler: TestBrowserProxy<PageHandlerRemote>;
 
   async function createCustomizeBackgrounds():
       Promise<CustomizeBackgroundsElement> {

@@ -8,8 +8,8 @@ import {counterfactualLoad, LensUploadDialogElement, Module, ModuleDescriptor, M
 import {$$, AppElement, BackgroundManager, BrowserCommandProxy, CustomizeDialogPage, NewTabPageProxy, NtpElement, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageCallbackRouter, PageHandlerRemote, PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {Command, CommandHandlerRemote} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';
-import {isMac} from 'chrome://resources/js/platform.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {isMac} from 'chrome://resources/js/platform.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -21,12 +21,12 @@ import {assertNotStyle, assertStyle, createBackgroundImage, createTheme, install
 
 suite('NewTabPageAppTest', () => {
   let app: AppElement;
-  let windowProxy: TestBrowserProxy;
-  let handler: TestBrowserProxy;
+  let windowProxy: TestBrowserProxy<WindowProxy>;
+  let handler: TestBrowserProxy<PageHandlerRemote>;
   let callbackRouterRemote: PageRemote;
   let metrics: MetricsTracker;
-  let moduleRegistry: TestBrowserProxy;
-  let backgroundManager: TestBrowserProxy;
+  let moduleRegistry: TestBrowserProxy<ModuleRegistry>;
+  let backgroundManager: TestBrowserProxy<BackgroundManager>;
   let moduleResolver: PromiseResolver<Module[]>;
 
   const url: URL = new URL(location.href);

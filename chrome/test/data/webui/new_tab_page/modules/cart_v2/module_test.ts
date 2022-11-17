@@ -17,7 +17,7 @@ import {fakeMetricsPrivate, MetricsTracker} from '../../../metrics_test_support.
 import {assertNotStyle, installMock} from '../../test_support.js';
 
 suite('NewTabPageModulesChromeCartModuleTest', () => {
-  let handler: TestBrowserProxy;
+  let handler: TestBrowserProxy<CartHandlerRemote>;
   let metrics: MetricsTracker;
 
   setup(() => {

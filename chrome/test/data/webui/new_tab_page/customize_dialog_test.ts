@@ -16,7 +16,7 @@ import {createBackgroundImage, createTheme, installMock} from './test_support.js
 
 suite('NewTabPageCustomizeDialogTest', () => {
   let customizeDialog: CustomizeDialogElement;
-  let handler: TestBrowserProxy;
+  let handler: TestBrowserProxy<PageHandlerRemote>;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

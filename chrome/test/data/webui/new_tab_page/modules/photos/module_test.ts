@@ -16,7 +16,7 @@ import {fakeMetricsPrivate, MetricsTracker} from '../../../metrics_test_support.
 import {installMock} from '../../test_support.js';
 
 suite('NewTabPageModulesPhotosModuleTest', () => {
-  let handler: TestBrowserProxy;
+  let handler: TestBrowserProxy<PhotosHandlerRemote>;
   let metrics: MetricsTracker;
 
   setup(() => {

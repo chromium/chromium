@@ -80,8 +80,8 @@ function createImageDoodle(width: number = 500, height: number = 200): Doodle {
 }
 
 suite('NewTabPageLogoTest', () => {
-  let windowProxy: TestBrowserProxy;
-  let handler: TestBrowserProxy;
+  let windowProxy: TestBrowserProxy<WindowProxy>;
+  let handler: TestBrowserProxy<PageHandlerRemote>;
 
   async function createLogo(doodle: Doodle|null = null): Promise<LogoElement> {
     handler.setResultFor('getDoodle', Promise.resolve({

@@ -16,7 +16,7 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {installMock} from '../../test_support.js';
 
 suite('NewTabPageModulesRecipesTest', () => {
-  let handler: TestBrowserProxy;
+  let handler: TestBrowserProxy<RecipesHandlerRemote>;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

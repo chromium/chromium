@@ -45,7 +45,7 @@ type Constructor<T> = new (...args: any[]) => T;
 type Installer<T> = (instance: T) => void;
 
 export function installMock<T extends object>(
-    clazz: Constructor<T>, installer?: Installer<T>): TestBrowserProxy {
+    clazz: Constructor<T>, installer?: Installer<T>): TestBrowserProxy<T> {
   installer = installer ||
       (clazz as unknown as {setInstance: Installer<T>}).setInstance;
   const mock = TestBrowserProxy.fromClass(clazz);

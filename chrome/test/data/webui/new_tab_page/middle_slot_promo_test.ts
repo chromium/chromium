@@ -19,8 +19,8 @@ import {fakeMetricsPrivate, MetricsTracker} from './../metrics_test_support.js';
 import {installMock} from './test_support.js';
 
 suite('NewTabPageMiddleSlotPromoTest', () => {
-  let newTabPageHandler: TestBrowserProxy;
-  let promoBrowserCommandHandler: TestBrowserProxy;
+  let newTabPageHandler: TestBrowserProxy<PageHandlerRemote>;
+  let promoBrowserCommandHandler: TestBrowserProxy<CommandHandlerRemote>;
   let callbackRouterRemote: PageRemote;
   let metrics: MetricsTracker;
 
