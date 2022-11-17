@@ -1011,13 +1011,12 @@ void WebBluetoothServiceImpl::RemoteServerConnect(
   // TODO(ortuno): CHECK that this never happens once the platform
   // abstraction allows to check for pending connections.
   // http://crbug.com/583544
-  const base::TimeTicks start_time = base::TimeTicks::Now();
   mojo::AssociatedRemote<blink::mojom::WebBluetoothServerClient>
       web_bluetooth_server_client(std::move(client));
 
   query_result.device->CreateGattConnection(base::BindOnce(
       &WebBluetoothServiceImpl::OnCreateGATTConnection,
-      weak_ptr_factory_.GetWeakPtr(), device_id, start_time,
+      weak_ptr_factory_.GetWeakPtr(), device_id,
       std::move(web_bluetooth_server_client), std::move(callback)));
 }
 
@@ -1061,7 +1060,6 @@ void WebBluetoothServiceImpl::RemoteServerGetPrimaryServices(
   }
 
   if (query_result.outcome != CacheQueryOutcome::SUCCESS) {
-    RecordGetPrimaryServicesOutcome(quantity, query_result.outcome);
     std::move(callback).Run(query_result.GetWebResult(),
                             absl::nullopt /* service */);
     return;
@@ -1901,8 +1899,6 @@ void WebBluetoothServiceImpl::RemoteServerGetPrimaryServicesImpl(
     // The device disconnected while discovery was pending. The returned error
     // does not matter because the renderer ignores the error if the device
     // disconnected.
-    RecordGetPrimaryServicesOutcome(
-        quantity, UMAGetPrimaryServiceOutcome::DEVICE_DISCONNECTED);
     std::move(callback).Run(blink::mojom::WebBluetoothResult::NO_SERVICES_FOUND,
                             absl::nullopt /* services */);
     return;
@@ -1952,17 +1948,12 @@ void WebBluetoothServiceImpl::RemoteServerGetPrimaryServicesImpl(
 
   if (!response_services.empty()) {
     DVLOG(1) << "Services found in device.";
-    RecordGetPrimaryServicesOutcome(quantity,
-                                    UMAGetPrimaryServiceOutcome::SUCCESS);
     std::move(callback).Run(blink::mojom::WebBluetoothResult::SUCCESS,
                             std::move(response_services));
     return;
   }
 
   DVLOG(1) << "Services not found in device.";
-  RecordGetPrimaryServicesOutcome(
-      quantity, services_uuid ? UMAGetPrimaryServiceOutcome::NOT_FOUND
-                              : UMAGetPrimaryServiceOutcome::NO_SERVICES);
   std::move(callback).Run(
       services_uuid ? blink::mojom::WebBluetoothResult::SERVICE_NOT_FOUND
                     : blink::mojom::WebBluetoothResult::NO_SERVICES_FOUND,
@@ -2018,18 +2009,15 @@ void WebBluetoothServiceImpl::OnGetDevice(
 
 void WebBluetoothServiceImpl::OnCreateGATTConnection(
     const blink::WebBluetoothDeviceId& device_id,
-    base::TimeTicks start_time,
     mojo::AssociatedRemote<blink::mojom::WebBluetoothServerClient> client,
     RemoteServerConnectCallback callback,
     std::unique_ptr<BluetoothGattConnection> connection,
     absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (error_code.has_value()) {
-    RecordConnectGATTTimeFailed(base::TimeTicks::Now() - start_time);
     std::move(callback).Run(TranslateConnectErrorAndRecord(error_code.value()));
     return;
   }
-  RecordConnectGATTTimeSuccess(base::TimeTicks::Now() - start_time);
   RecordConnectGATTOutcome(UMAConnectGATTOutcome::SUCCESS);
 
   if (connected_devices_->IsConnectedToDeviceWithId(device_id)) {

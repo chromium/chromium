@@ -337,7 +337,6 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
   // Callbacks for BluetoothDevice::CreateGattConnection.
   void OnCreateGATTConnection(
       const blink::WebBluetoothDeviceId& device_id,
-      base::TimeTicks start_time,
       mojo::AssociatedRemote<blink::mojom::WebBluetoothServerClient> client,
       RemoteServerConnectCallback callback,
       std::unique_ptr<device::BluetoothGattConnection> connection,

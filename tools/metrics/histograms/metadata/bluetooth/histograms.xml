@@ -1687,26 +1687,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Bluetooth.Web.ConnectGATT.TimeFailed" units="ms"
-    expires_after="2021-01-31">
-  <owner>reillyg@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
-  <summary>
-    Records how long it takes for a connection attempt to fail. Use to let
-    developers know how to better wait for and handle connection errors.
-  </summary>
-</histogram>
-
-<histogram name="Bluetooth.Web.ConnectGATT.TimeSuccess" units="ms"
-    expires_after="2021-01-31">
-  <owner>reillyg@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
-  <summary>
-    Records how long it takes for a device to successfully connect. Use to let
-    developers know how long it should take to connect to a BLE device.
-  </summary>
-</histogram>
-
 <histogram name="Bluetooth.Web.GetCharacteristic.Characteristic"
     enum="GATTCharacteristicHash" expires_after="2023-04-25">
   <owner>reillyg@chromium.org</owner>
@@ -1729,17 +1709,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Bluetooth.Web.GetPrimaryService.Outcome"
-    enum="WebBluetoothGetPrimaryServiceOutcome" expires_after="2021-01-31">
-  <owner>reillyg@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
-  <summary>
-    Records the result of a GATTServer.getPrimaryService() call. Used to
-    understand what errors developers are getting so we can target efforts
-    toward the most common ones.
-  </summary>
-</histogram>
-
 <histogram name="Bluetooth.Web.GetPrimaryService.Services"
     enum="GATTServiceHash" expires_after="2023-04-25">
   <owner>reillyg@chromium.org</owner>
@@ -1748,17 +1717,6 @@ chromium-metrics-reviews@google.com.
     Records what GATT Services are used when connected. The record value is a
     31-bit hash of the Service UUID. This will help us know if we should build
     an API for specific services rather than a general Bluetooth API.
-  </summary>
-</histogram>
-
-<histogram name="Bluetooth.Web.GetPrimaryServices.Outcome"
-    enum="WebBluetoothGetPrimaryServiceOutcome" expires_after="2021-01-31">
-  <owner>reillyg@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
-  <summary>
-    Records the result of a GATTServer.getPrimaryServices() call. Used to
-    understand what errors developers are getting so we can target efforts
-    toward the most common ones.
   </summary>
 </histogram>
 
