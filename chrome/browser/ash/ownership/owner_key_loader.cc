@@ -6,6 +6,7 @@
 
 #include "base/check_is_test.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/ownership/ownership_histograms.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
@@ -141,6 +142,22 @@ void GetCertDbAndPostOnWorkerThread(
                                 std::move(worker_task)));
 }
 
+inline bool IsKeyPresent(
+    const scoped_refptr<ownership::PublicKey>& public_key) {
+  return public_key && !public_key->is_empty();
+}
+
+inline bool IsKeyPresent(
+    const scoped_refptr<ownership::PrivateKey>& public_key) {
+  return public_key && public_key->key();
+}
+
+inline bool AreKeysPresent(
+    const scoped_refptr<ownership::PublicKey>& public_key,
+    const scoped_refptr<ownership::PrivateKey>& private_key) {
+  return IsKeyPresent(public_key) && IsKeyPresent(private_key);
+}
+
 }  // namespace
 
 OwnerKeyLoader::OwnerKeyLoader(
@@ -170,6 +187,8 @@ void OwnerKeyLoader::Run() {
 
   if (!device_settings_service_) {
     CHECK_IS_TEST();
+    RecordOwnerKeyEvent(OwnerKeyEvent::kDeviceSettingsServiceIsNull,
+                        /*success=*/false);
     return std::move(callback_).Run(/*public_key=*/nullptr,
                                     /*private_key=*/nullptr);
     // `this` might be deleted here.
@@ -192,12 +211,14 @@ void OwnerKeyLoader::OnPublicKeyLoaded(
   public_key_ = std::move(public_key);
 
   if (is_enterprise_managed_) {
+    RecordOwnerKeyEvent(OwnerKeyEvent::kManagedDevice,
+                        /*success=*/IsKeyPresent(public_key_));
     // Managed devices don't have private owner keys.
     return std::move(callback_).Run(std::move(public_key_), nullptr);
     // `this` might be deleted here.
   }
 
-  if (public_key_ && !public_key_->is_empty()) {
+  if (IsKeyPresent(public_key_)) {
     // Now check whether the current user has access to the private key
     // associated with the public key.
     return GetCertDbAndPostOnWorkerThread(
@@ -216,7 +237,9 @@ void OwnerKeyLoader::OnPublicKeyLoaded(
 void OwnerKeyLoader::OnPrivateKeyLoaded(
     scoped_refptr<ownership::PrivateKey> private_key) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (private_key && private_key->key()) {
+  if (IsKeyPresent(private_key)) {
+    RecordOwnerKeyEvent(OwnerKeyEvent::kOwnerHasKeys,
+                        /*success=*/AreKeysPresent(public_key_, private_key));
     // Success: both keys were loaded, the current user is the owner.
     return std::move(callback_).Run(std::move(public_key_),
                                     std::move(private_key));
@@ -233,6 +256,10 @@ void OwnerKeyLoader::MaybeGenerateNewKey() {
   // device_settings_service_ indicates that the current user should become the
   // owner, generate a new owner key pair for them.
   if (device_settings_service_->GetWillEstablishConsumerOwnership()) {
+    // This should only happen on the first sign in when there's no previous
+    // public key.
+    RecordOwnerKeyEvent(OwnerKeyEvent::kEstablishingConsumerOwnership,
+                        /*success=*/!IsKeyPresent(public_key_));
     LOG(WARNING) << "Establishing consumer ownership.";
     return GenerateNewKey();
   }
@@ -247,9 +274,15 @@ void OwnerKeyLoader::MaybeGenerateNewKey() {
     // If the policy says that the current user is the owner, generate a new key
     // pair for them.
     if (policy_data->username() == profile_->GetProfileUserName()) {
+      // Expect public key to be present. It's not likely to lose private and
+      // public keys simultaneously, they are stored independently.
+      RecordOwnerKeyEvent(OwnerKeyEvent::kRegeneratingOwnerKeyBasedOnPolicy,
+                          /*success=*/IsKeyPresent(public_key_));
       LOG(WARNING) << "The owner key was lost. Generating a new one.";
       return GenerateNewKey();
     } else {
+      RecordOwnerKeyEvent(OwnerKeyEvent::kUserNotAnOwnerBasedOnPolicy,
+                          /*success=*/IsKeyPresent(public_key_));
       // The current user is not the owner, just return the public key.
       return std::move(callback_).Run(std::move(public_key_), nullptr);
       // `this` might be deleted here.
@@ -261,10 +294,21 @@ void OwnerKeyLoader::MaybeGenerateNewKey() {
       user_manager::UserManager::Get()->GetOwnerEmail();
   if (owner_email.has_value() &&
       owner_email.value() == profile_->GetProfileUserName()) {
+    // This brunch is more likely to be used before device policies are created
+    // for the first time, so expect the public key to not be present.
+    RecordOwnerKeyEvent(OwnerKeyEvent::kRegeneratingOwnerKeyBasedOnLocalState,
+                        /*success=*/!IsKeyPresent(public_key_));
     LOG(WARNING) << "Generating new owner key based on local state data.";
     return GenerateNewKey();
+  } else if (owner_email.has_value() &&
+             owner_email.value() != profile_->GetProfileUserName()) {
+    RecordOwnerKeyEvent(OwnerKeyEvent::kUserNotAnOwnerBasedOnLocalState,
+                        /*success=*/IsKeyPresent(public_key_));
+    return std::move(callback_).Run(std::move(public_key_), nullptr);
   }
 
+  RecordOwnerKeyEvent(OwnerKeyEvent::kUnsureUserNotAnOwner,
+                      /*success=*/IsKeyPresent(public_key_));
   // The current user doesn't seem to be the owner, just return the public key
   // (or nullptr, if it wasn't successfully loaded earlier).
   return std::move(callback_).Run(std::move(public_key_), nullptr);
@@ -283,7 +327,10 @@ void OwnerKeyLoader::OnNewKeyGenerated(
     scoped_refptr<ownership::PublicKey> public_key,
     scoped_refptr<ownership::PrivateKey> private_key) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (private_key && private_key->key()) {
+  if (AreKeysPresent(public_key, private_key)) {
+    RecordOwnerKeyEvent(OwnerKeyEvent::kOwnerKeyGenerated,
+                        /*success=*/(generate_attempt_counter_ == 0));
+
     LOG(WARNING) << "New owner key pair was generated.";
     return std::move(callback_).Run(std::move(public_key),
                                     std::move(private_key));
@@ -296,6 +343,10 @@ void OwnerKeyLoader::OnNewKeyGenerated(
     return GenerateNewKey();
   }
 
+  // This case is not a success in general, but record whether the user will at
+  // least get the old public key.
+  RecordOwnerKeyEvent(OwnerKeyEvent::kFailedToGenerateOwnerKey,
+                      /*success=*/IsKeyPresent(public_key_));
   LOG(ERROR) << "Failed to generate new owner key.";
   // Return at least the public key, if it was loaded. If Chrome is taking
   // ownership for the first time, it should be null. If recovering from a lost

@@ -7,7 +7,9 @@
 #include <memory>
 #include <vector>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/ownership/ownership_histograms.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/net/fake_nss_service.h"
@@ -23,6 +25,8 @@
 
 using PublicKeyRefPtr = scoped_refptr<ownership::PublicKey>;
 using PrivateKeyRefPtr = scoped_refptr<ownership::PrivateKey>;
+using base::Bucket;
+using testing::ElementsAre;
 
 namespace ash {
 
@@ -85,6 +89,7 @@ class OwnerKeyLoaderTest : public testing::Test {
   ash::DeviceSettingsService device_settings_service_;
   std::unique_ptr<OwnerKeyLoader> key_loader_;
   base::test::TestFuture<PublicKeyRefPtr, PrivateKeyRefPtr> result_observer_;
+  base::HistogramTester histogram_tester_;
 };
 
 // Test that the first user generates a new owner key.
@@ -99,6 +104,12 @@ TEST_F(OwnerKeyLoaderTest, FirstUserGeneratesOwnerKey) {
   EXPECT_TRUE(!result_observer_.Get<PublicKeyRefPtr>()->is_empty());
   ASSERT_TRUE(result_observer_.Get<PrivateKeyRefPtr>());
   EXPECT_TRUE(result_observer_.Get<PrivateKeyRefPtr>()->key());
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
+      ElementsAre(
+          Bucket(OwnerKeyUmaEvent::kEstablishingConsumerOwnershipSuccess, 1),
+          Bucket(OwnerKeyUmaEvent::kOwnerKeyGeneratedSuccess, 1)));
 }
 
 // Test that the first user generates owner key after a crash. If during the
@@ -117,6 +128,14 @@ TEST_F(OwnerKeyLoaderTest, FirstUserGeneratesOwnerKeyAfterCrash) {
   EXPECT_TRUE(!result_observer_.Get<PublicKeyRefPtr>()->is_empty());
   ASSERT_TRUE(result_observer_.Get<PrivateKeyRefPtr>());
   EXPECT_TRUE(result_observer_.Get<PrivateKeyRefPtr>()->key());
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
+      ElementsAre(
+          Bucket(
+              OwnerKeyUmaEvent::kRegeneratingOwnerKeyBasedOnLocalStateSuccess,
+              1),
+          Bucket(OwnerKeyUmaEvent::kOwnerKeyGeneratedSuccess, 1)));
 }
 
 // Test that the second user doesn't try to generate a new owner key.
@@ -134,6 +153,10 @@ TEST_F(OwnerKeyLoaderTest, SecondUserDoesNotTakeOwnership) {
   EXPECT_EQ(result_observer_.Get<PublicKeyRefPtr>()->data(),
             ExtractBytes(signing_key));
   EXPECT_FALSE(result_observer_.Get<PrivateKeyRefPtr>());
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
+              ElementsAre(Bucket(
+                  OwnerKeyUmaEvent::kUserNotAnOwnerBasedOnPolicySuccess, 1)));
 }
 
 // Test that an owner user gets recognized as the owner when it's mentioned in
@@ -152,6 +175,9 @@ TEST_F(OwnerKeyLoaderTest, OwnerUserLoadsExistingKey) {
             ExtractBytes(signing_key));
   ASSERT_TRUE(result_observer_.Get<PrivateKeyRefPtr>());
   EXPECT_TRUE(result_observer_.Get<PrivateKeyRefPtr>()->key());
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
+              ElementsAre(Bucket(OwnerKeyUmaEvent::kOwnerHasKeysSuccess, 1)));
 }
 
 // Test that even without existing device policies the owner key gets loaded
@@ -170,6 +196,9 @@ TEST_F(OwnerKeyLoaderTest, OwnerUserLoadsExistingKeyWithoutPolicies) {
             ExtractBytes(signing_key));
   ASSERT_TRUE(result_observer_.Get<PrivateKeyRefPtr>());
   EXPECT_TRUE(result_observer_.Get<PrivateKeyRefPtr>()->key());
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
+              ElementsAre(Bucket(OwnerKeyUmaEvent::kOwnerHasKeysSuccess, 1)));
 }
 
 // Test that the second user is not falsely recognized as the owner even if
@@ -187,6 +216,10 @@ TEST_F(OwnerKeyLoaderTest, SecondaryUserWithoutPolicies) {
   EXPECT_EQ(result_observer_.Get<PublicKeyRefPtr>()->data(),
             ExtractBytes(signing_key));
   EXPECT_FALSE(result_observer_.Get<PrivateKeyRefPtr>());
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
+      ElementsAre(Bucket(OwnerKeyUmaEvent::kUnsureUserNotAnOwnerSuccess, 1)));
 }
 
 // Test that an owner user still gets recognized as the owner when it's
@@ -207,6 +240,13 @@ TEST_F(OwnerKeyLoaderTest, OwnerUserRegeneratesMissingKeyBasedOnPolicies) {
             ExtractBytes(signing_key));
   ASSERT_TRUE(result_observer_.Get<PrivateKeyRefPtr>());
   EXPECT_TRUE(result_observer_.Get<PrivateKeyRefPtr>()->key());
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
+      ElementsAre(
+          Bucket(OwnerKeyUmaEvent::kRegeneratingOwnerKeyBasedOnPolicySuccess,
+                 1),
+          Bucket(OwnerKeyUmaEvent::kOwnerKeyGeneratedSuccess, 1)));
 }
 
 // Test that an owner user still gets recognized as the owner when it's
@@ -230,6 +270,14 @@ TEST_F(OwnerKeyLoaderTest, OwnerUserRegeneratesMissingKeyBasedOnLocalState) {
             ExtractBytes(signing_key));
   ASSERT_TRUE(result_observer_.Get<PrivateKeyRefPtr>());
   EXPECT_TRUE(result_observer_.Get<PrivateKeyRefPtr>()->key());
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
+      ElementsAre(
+          // "Fail" means that the existence of the public key is unexpected.
+          Bucket(OwnerKeyUmaEvent::kRegeneratingOwnerKeyBasedOnLocalStateFail,
+                 1),
+          Bucket(OwnerKeyUmaEvent::kOwnerKeyGeneratedSuccess, 1)));
 }
 
 // Test that OwnerKeyLoader makes several attempts to generate the owner key
@@ -245,6 +293,13 @@ TEST_F(OwnerKeyLoaderTest, KeyGenerationRetriedSuccessfully) {
   ASSERT_TRUE(!result_observer_.Get<PublicKeyRefPtr>()->is_empty());
   ASSERT_TRUE(result_observer_.Get<PrivateKeyRefPtr>());
   EXPECT_TRUE(result_observer_.Get<PrivateKeyRefPtr>()->key());
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
+      ElementsAre(
+          Bucket(OwnerKeyUmaEvent::kEstablishingConsumerOwnershipSuccess, 1),
+          // "Fail" means that there were generation errors before it succeeded.
+          Bucket(OwnerKeyUmaEvent::kOwnerKeyGeneratedFail, 1)));
 }
 
 // Test that OwnerKeyLoader gives up to generate the owner key pair after a
@@ -258,6 +313,12 @@ TEST_F(OwnerKeyLoaderTest, KeyGenerationRetriedUnsuccessfully) {
 
   EXPECT_FALSE(result_observer_.Get<PublicKeyRefPtr>());
   EXPECT_FALSE(result_observer_.Get<PrivateKeyRefPtr>());
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
+      ElementsAre(
+          Bucket(OwnerKeyUmaEvent::kEstablishingConsumerOwnershipSuccess, 1),
+          Bucket(OwnerKeyUmaEvent::kFailedToGenerateOwnerKeyFail, 1)));
 }
 
 // Test that enterprise devices don't attempt to load private key. The signing
@@ -281,6 +342,9 @@ TEST_F(OwnerKeyLoaderTest, EnterpriseDevicesDontNeedPrivateKey) {
   ASSERT_TRUE(!result_observer_.Get<PublicKeyRefPtr>()->is_empty());
   // Check that the private key wasn't loaded.
   EXPECT_FALSE(result_observer_.Get<PrivateKeyRefPtr>());
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
+              ElementsAre(Bucket(OwnerKeyUmaEvent::kManagedDeviceSuccess, 1)));
 }
 
 }  // namespace ash

@@ -16,6 +16,7 @@
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
+#include "chrome/browser/ash/ownership/ownership_histograms.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/common/chrome_paths.h"
@@ -27,6 +28,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace em = enterprise_management;
+using base::Bucket;
+using testing::ElementsAre;
 
 namespace ash {
 
@@ -95,10 +98,8 @@ bool FindInListValue(const std::string& needle, const base::Value* haystack) {
 class OwnerSettingsServiceAshTest : public DeviceSettingsTestBase {
  public:
   OwnerSettingsServiceAshTest()
-      : service_(nullptr),
-        local_state_(TestingBrowserProcess::GetGlobal()),
-        user_data_dir_override_(chrome::DIR_USER_DATA),
-        management_settings_set_(false) {}
+      : local_state_(TestingBrowserProcess::GetGlobal()),
+        user_data_dir_override_(chrome::DIR_USER_DATA) {}
 
   OwnerSettingsServiceAshTest(const OwnerSettingsServiceAshTest&) = delete;
   OwnerSettingsServiceAshTest& operator=(const OwnerSettingsServiceAshTest&) =
@@ -153,17 +154,28 @@ class OwnerSettingsServiceAshTest : public DeviceSettingsTestBase {
   }
 
  protected:
-  OwnerSettingsServiceAsh* service_;
+  OwnerSettingsServiceAsh* service_ = nullptr;
   ScopedTestingLocalState local_state_;
   std::unique_ptr<DeviceSettingsProvider> provider_;
   base::ScopedPathOverride user_data_dir_override_;
-  bool management_settings_set_;
+  bool management_settings_set_ = false;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(OwnerSettingsServiceAshTest, SingleSetTest) {
   TestSingleSet(service_, kReleaseChannel, base::Value("dev-channel"));
   TestSingleSet(service_, kReleaseChannel, base::Value("beta-channel"));
   TestSingleSet(service_, kReleaseChannel, base::Value("stable-channel"));
+
+  EXPECT_LE(1, histogram_tester_.GetBucketCount(
+                   kOwnerKeyHistogramName,
+                   OwnerKeyUmaEvent::kStartSigningPolicySuccess));
+  EXPECT_LE(
+      1, histogram_tester_.GetBucketCount(
+             kOwnerKeyHistogramName, OwnerKeyUmaEvent::kSignedPolicySuccess));
+  EXPECT_LE(
+      1, histogram_tester_.GetBucketCount(
+             kOwnerKeyHistogramName, OwnerKeyUmaEvent::kStoredPolicySuccess));
 }
 
 TEST_F(OwnerSettingsServiceAshTest, MultipleSetTest) {

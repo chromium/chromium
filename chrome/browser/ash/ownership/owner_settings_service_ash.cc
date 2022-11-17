@@ -26,6 +26,7 @@
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
+#include "chrome/browser/ash/ownership/ownership_histograms.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/about_flags.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -774,12 +775,16 @@ void OwnerSettingsServiceAsh::StorePendingChanges() {
       task_runner.get(), std::move(policy),
       base::BindOnce(&OwnerSettingsServiceAsh::OnPolicyAssembledAndSigned,
                      store_settings_factory_.GetWeakPtr()));
+  RecordOwnerKeyEvent(OwnerKeyEvent::kStartSigningPolicy, /*success=*/rv);
   if (!rv)
     ReportStatusAndContinueStoring(false /* success */);
 }
 
 void OwnerSettingsServiceAsh::OnPolicyAssembledAndSigned(
     std::unique_ptr<em::PolicyFetchResponse> policy_response) {
+  RecordOwnerKeyEvent(OwnerKeyEvent::kSignedPolicy,
+                      /*success=*/policy_response.get());
+
   if (!policy_response.get() || !device_settings_service_) {
     ReportStatusAndContinueStoring(false /* success */);
     return;
@@ -791,6 +796,8 @@ void OwnerSettingsServiceAsh::OnPolicyAssembledAndSigned(
 }
 
 void OwnerSettingsServiceAsh::OnSignedPolicyStored(bool success) {
+  RecordOwnerKeyEvent(OwnerKeyEvent::kStoredPolicy, success);
+
   CHECK(device_settings_service_);
   ReportStatusAndContinueStoring(success &&
                                  device_settings_service_->status() ==

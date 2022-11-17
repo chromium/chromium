@@ -2034,6 +2034,8 @@ source_set("ash") {
     "ownership/owner_settings_service_ash.h",
     "ownership/owner_settings_service_ash_factory.cc",
     "ownership/owner_settings_service_ash_factory.h",
+    "ownership/ownership_histograms.cc",
+    "ownership/ownership_histograms.h",
     "pcie_peripheral/ash_usb_detector.cc",
     "pcie_peripheral/ash_usb_detector.h",
     "phonehub/browser_tabs_metadata_fetcher_impl.cc",

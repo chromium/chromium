@@ -77024,6 +77024,103 @@ Called by update_net_trust_anchors.py.-->
   <int value="9" label="Entering overview in tests"/>
 </enum>
 
+<enum name="OwnerKeyUmaEvent">
+  <int value="0" label="DeviceSettingsServiceIsNull">
+    DeviceSettingsService was null, owner key was not loaded.
+  </int>
+  <int value="1" label="ManagedDeviceSuccess">
+    Managed device successfully loaded the public owner key.
+  </int>
+  <int value="2" label="ManagedDeviceFail">
+    Managed device failed to load the public owner key.
+  </int>
+  <int value="3" label="OwnerHasKeysSuccess">
+    Consumer owner user successfully loaded both public and private keys.
+  </int>
+  <int value="4" label="OwnerHasKeysFail">
+    Consumer owner received both public and private keys, but at least one of
+    them wasn't actually loaded.
+  </int>
+  <int value="5" label="EstablishingConsumerOwnershipSuccess">
+    ChromeOS decided to establish consumer ownership when there was no existing
+    public key.
+  </int>
+  <int value="6" label="EstablishingConsumerOwnershipFail">
+    ChromeOS decided to establish consumer ownership when there was an existing
+    public key.
+  </int>
+  <int value="7" label="RegeneratingOwnerKeyBasedOnPolicySuccess">
+    ChromeOS decided to re-generate the lost owner key based on the data from
+    device policies after the public key was found (the private part is what was
+    lost).
+  </int>
+  <int value="8" label="RegeneratingOwnerKeyBasedOnPolicyFail">
+    ChromeOS decided to re-generate the lost owner key based on the data from
+    device policies and the public key was also not found. (Strictly speaking
+    not a failure, but still an unusual situation).
+  </int>
+  <int value="9" label="UserNotAnOwnerBasedOnPolicySuccess">
+    A user was categorized as not an owner based on the data from device
+    policies, the public key was successfully loaded.
+  </int>
+  <int value="10" label="UserNotAnOwnerBasedOnPolicyFail">
+    A user was categorized as not an owner based on the data from device
+    policies, the public key failed to load.
+  </int>
+  <int value="11" label="RegeneratingOwnerKeyBasedOnLocalStateSuccess">
+    ChromeOS decided to re-generate the lost owner key based on the data from
+    local state and the public key was not present.
+  </int>
+  <int value="12" label="RegeneratingOwnerKeyBasedOnLocalStateFail">
+    ChromeOS decided to re-generate the lost owner key based on the data from
+    local state after the public key was found (in such a case device policies
+    should be used, relying on local state is unexpected).
+  </int>
+  <int value="13" label="UserNotAnOwnerBasedOnLocalStateSuccess">
+    A user was categorized as not an owner based on the data from local state,
+    the public key was successfully loaded.
+  </int>
+  <int value="14" label="UserNotAnOwnerBasedOnLocalStateFail">
+    A user was categorized as not an owner based on the data from local state,
+    the public key failed to load.
+  </int>
+  <int value="15" label="UnsureUserNotAnOwnerSuccess">
+    ChromeOS assumed that a user is not an owner based on the lack of data, the
+    public key was successfully loaded.
+  </int>
+  <int value="16" label="UnsureUserNotAnOwnerFail">
+    ChromeOS assumed that a user is not an owner based on the lack of data, the
+    public key failed to load.
+  </int>
+  <int value="17" label="OwnerKeyGeneratedSuccess">
+    New owner key was generated on the first attempt.
+  </int>
+  <int value="18" label="OwnerKeyGeneratedFail">
+    New owner key was generated after 1+ failures.
+  </int>
+  <int value="19" label="FailedToGenerateOwnerKeySuccess">
+    Failed to generate new owner key, at least the old public key was returned.
+  </int>
+  <int value="20" label="FailedToGenerateOwnerKeyFail">
+    Failed to generate new owner key, the old public key also failed to load (or
+    was not present).
+  </int>
+  <int value="21" label="StartSigningPolicySuccess">
+    Successfully started signing policies.
+  </int>
+  <int value="22" label="StartSigningPolicyFail">
+    Failed to start signing policies.
+  </int>
+  <int value="23" label="SignedPolicySuccess">
+    Successfully signed policies.
+  </int>
+  <int value="24" label="SignedPolicyFail">Failed to sign policies.</int>
+  <int value="25" label="StoredPolicySuccess">
+    Successfully stored policies.
+  </int>
+  <int value="26" label="StoredPolicyFail">Failed to store policies.</int>
+</enum>
+
 <enum name="P2PLookupResult">
   <int value="0" label="Found"/>
   <int value="1" label="Not Found"/>
