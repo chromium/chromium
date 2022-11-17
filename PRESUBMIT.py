@@ -252,6 +252,32 @@ _BANNED_JAVA_FUNCTIONS : Sequence[BanRule] = (
     ),
 )
 
+_BANNED_JAVASCRIPT_FUNCTIONS : Sequence [BanRule] = (
+    BanRule(
+      r'/\bchrome\.send\b',
+      (
+       'The use of chrome.send is disallowed in Chrome (context: https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/security/handling-messages-from-web-content.md).',
+       'Please use mojo instead for new webuis. https://docs.google.com/document/d/1RF-GSUoveYa37eoyZ9EhwMtaIwoW7Z88pIgNZ9YzQi4/edit#heading=h.gkk22wgk6wff',
+      ),
+      True,
+      (
+          r'^(?!ash\/webui).+',
+          # TODO(crbug.com/1385601): pre-existing violations still need to be
+          # cleaned up.
+          'ash/webui/common/resources/multidevice_setup/multidevice_setup_browser_proxy.js',
+          'ash/webui/common/resources/quick_unlock/lock_screen_constants.js',
+          'ash/webui/common/resources/smb_shares/smb_browser_proxy.js',
+          'ash/webui/connectivity_diagnostics/resources/connectivity_diagnostics.js',
+          'ash/webui/diagnostics_ui/resources/diagnostics_browser_proxy.ts',
+          'ash/webui/multidevice_debug/resources/logs.js',
+          'ash/webui/multidevice_debug/resources/webui.js',
+          'ash/webui/projector_app/resources/annotator/trusted/annotator_browser_proxy.js',
+          'ash/webui/projector_app/resources/app/trusted/projector_browser_proxy.js',
+          'ash/webui/scanning/resources/scanning_browser_proxy.js',
+      ),
+    ),
+)
+
 _BANNED_OBJC_FUNCTIONS : Sequence[BanRule] = (
     BanRule(
       'addTrackingRect:',
@@ -2112,6 +2138,12 @@ def CheckNoBannedFunctions(input_api, output_api):
     for f in input_api.AffectedFiles(file_filter=file_filter):
         for line_num, line in f.ChangedContents():
             for ban_rule in _BANNED_JAVA_FUNCTIONS:
+                CheckForMatch(f, line_num, line, ban_rule)
+
+    file_filter = lambda f: f.LocalPath().endswith(('.js', '.ts'))
+    for f in input_api.AffectedFiles(file_filter=file_filter):
+        for line_num, line in f.ChangedContents():
+            for ban_rule in _BANNED_JAVASCRIPT_FUNCTIONS:
                 CheckForMatch(f, line_num, line, ban_rule)
 
     file_filter = lambda f: f.LocalPath().endswith(('.mm', '.m', '.h'))

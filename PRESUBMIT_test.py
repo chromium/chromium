@@ -2767,6 +2767,20 @@ class SecurityChangeTest(_SecurityOwnersTestCase):
 
 
 class BannedTypeCheckTest(unittest.TestCase):
+  def testBannedJsFunctions(self):
+    input_api = MockInputApi()
+    input_api.files = [
+      MockFile('ash/webui/file.js',
+                ['chrome.send(something);']),
+      MockFile('some/js/ok/file.js',
+                ['chrome.send(something);']),
+    ]
+
+    results = PRESUBMIT.CheckNoBannedFunctions(input_api, MockOutputApi())
+
+    self.assertEqual(1, len(results))
+    self.assertTrue('ash/webui/file.js' in results[0].message)
+    self.assertFalse('some/js/ok/file.js' in results[0].message)
 
   def testBannedCppFunctions(self):
     input_api = MockInputApi()
