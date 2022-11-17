@@ -624,6 +624,11 @@ BASE_FEATURE(kDriveFsChromeNetworking,
              "DriveFsChromeNetworking",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables DriveFS' bulk pinning functionality.
+BASE_FEATURE(kDriveFsBulkPinning,
+             "DriveFsBulkPinning",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables authenticating to Wi-Fi networks using EAP-GTC.
 BASE_FEATURE(kEapGtcWifiAuthentication,
              "EapGtcWifiAuthentication",
@@ -2409,6 +2414,10 @@ bool IsDragWindowToNewDeskEnabled() {
 
 bool IsDriveFsMirroringEnabled() {
   return base::FeatureList::IsEnabled(kDriveFsMirroring);
+}
+
+bool IsDriveFsBulkPinningEnabled() {
+  return base::FeatureList::IsEnabled(kDriveFsBulkPinning);
 }
 
 bool IsInlineSyncStatusEnabled() {
