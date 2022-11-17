@@ -151,6 +151,8 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
   mixer[kColorNewTabPageOnThemeForeground] = themed_foreground_color;
   mixer[kColorNewTabPagePrimaryForeground] = primary_foreground_color;
   mixer[kColorNewTabPagePromoBackground] = element_background_color;
+  mixer[kColorNewTabPagePromoImageBackground] = SelectBasedOnDarkInput(
+      element_background_color, {gfx::kGoogleGrey200}, {SK_ColorWHITE});
   mixer[kColorNewTabPageSecondaryForeground] = SelectBasedOnDarkInput(
       element_background_color,
       ui::PickGoogleColor({gfx::kGoogleGrey700}, element_background_color,
@@ -410,6 +412,8 @@ void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
                                /* 40% opacity */ 0.4 * SK_AlphaOPAQUE);
   mixer[kColorNewTabPagePromoBackground] = {dark_mode ? gfx::kGoogleGrey900
                                                       : SK_ColorWHITE};
+  mixer[kColorNewTabPagePromoImageBackground] = {dark_mode ? gfx::kGoogleGrey200
+                                                           : SK_ColorWHITE};
   mixer[kColorNewTabPageIconButtonBackground] = {
       dark_mode ? SK_ColorWHITE : gfx::kGoogleGrey600};
   mixer[kColorNewTabPageIconButtonBackgroundActive] = {

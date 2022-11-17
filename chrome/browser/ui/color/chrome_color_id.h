@@ -160,6 +160,7 @@
   E_CPONLY(kColorNewTabPageFocusShadow) \
   E_CPONLY(kColorNewTabPageHeader) \
   E_CPONLY(kColorNewTabPagePromoBackground) \
+  E_CPONLY(kColorNewTabPagePromoImageBackground) \
   E_CPONLY(kColorNewTabPageIconButtonBackground) \
   E_CPONLY(kColorNewTabPageIconButtonBackgroundActive) \
   E_CPONLY(kColorNewTabPageLink) \
