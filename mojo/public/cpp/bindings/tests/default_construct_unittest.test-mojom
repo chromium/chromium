@@ -10,6 +10,10 @@ struct TestStruct {
   int32 value;
 };
 
+struct TestStructContainer {
+  TestStruct test_struct;
+};
+
 interface TestInterface {
   TestMethod(TestStruct in) => (TestStruct out);
 };

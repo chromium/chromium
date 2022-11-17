@@ -544,6 +544,9 @@ class Generator(generator.Generator):
 
   def _DefaultValue(self, field):
     if not field.default:
+      if self._IsTypemappedKind(field.kind):
+        return "mojo::DefaultConstructTraits::CreateInstance<%s>()" % (
+            self._GetCppWrapperType(field.kind))
       return ""
 
     if mojom.IsStructKind(field.kind):
