@@ -39,7 +39,6 @@ class FinchStarterHeuristicConfigTest : public testing::Test {
           "denylistedDomains":["example.com"],
           "enabledInCustomTabs":true,
           "enabledInRegularTabs":true,
-          "enabledInWeblayer": true,
           "enabledForSignedOutUsers": true,
           "heuristics":[
             {
@@ -197,7 +196,6 @@ TEST_F(FinchStarterHeuristicConfigTest, DenylistDefaultsToEmpty) {
   FinchStarterHeuristicConfig config(base::FeatureParam<std::string>{
       &features::kAutofillAssistantUrlHeuristic1, "some_key", ""});
 
-  fake_platform_delegate_.is_web_layer_ = false;
   fake_platform_delegate_.is_tab_created_by_gsa_ = true;
   fake_platform_delegate_.is_custom_tab_ = true;
   EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
@@ -227,7 +225,6 @@ TEST_F(FinchStarterHeuristicConfigTest, InvalidDenylistBreaksConfig) {
   FinchStarterHeuristicConfig config(base::FeatureParam<std::string>{
       &features::kAutofillAssistantUrlHeuristic1, "some_key", ""});
 
-  fake_platform_delegate_.is_web_layer_ = false;
   fake_platform_delegate_.is_tab_created_by_gsa_ = true;
   fake_platform_delegate_.is_custom_tab_ = true;
   EXPECT_THAT(config.GetDenylistedDomains(), IsEmpty());
@@ -295,7 +292,6 @@ TEST_F(FinchStarterHeuristicConfigTest, InvalidFieldTrialParamNoIntent) {
           ],
           "enabledInCustomTabs":true,
           "enabledInRegularTabs":true,
-          "enabledInWeblayer":true
         }
         )"}}}},
       /* disabled_features = */ {});
@@ -337,7 +333,6 @@ TEST_F(FinchStarterHeuristicConfigTest, MultipleConditionSets) {
   FinchStarterHeuristicConfig config(base::FeatureParam<std::string>{
       &features::kAutofillAssistantUrlHeuristic1, "some_key", ""});
 
-  fake_platform_delegate_.is_web_layer_ = false;
   fake_platform_delegate_.is_custom_tab_ = true;
   EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
                                                     &context_),
@@ -422,12 +417,11 @@ TEST_P(FinchStarterHeuristicConfigParametrizedTest, RegularTabHeuristic) {
       &features::kAutofillAssistantUrlHeuristic1, "some_key", ""});
 
   // - Must not be a supervised user
-  // - Must be a regular tab, not a weblayer
+  // - Must be a regular tab
   // - Proactive help and MSBB must be turned on
-  bool expected_result = !GetParam().is_supervised_user &&
-                         !GetParam().is_custom_tab && !GetParam().is_weblayer &&
-                         GetParam().proactive_help_enabled &&
-                         GetParam().msbb_enabled;
+  bool expected_result =
+      !GetParam().is_supervised_user && !GetParam().is_custom_tab &&
+      GetParam().proactive_help_enabled && GetParam().msbb_enabled;
   EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
                                                     &context_),
               SizeIs(expected_result ? 1 : 0));
@@ -442,7 +436,6 @@ TEST_P(FinchStarterHeuristicConfigParametrizedTest, MostLenientHeuristic) {
           "denylistedDomains":["example.com"],
           "enabledInCustomTabs":true,
           "enabledInRegularTabs":true,
-          "enabledInWeblayer":true,
           "enabledForSignedOutUsers":true,
           "enabledWithoutMsbb":true,
           "heuristics":[

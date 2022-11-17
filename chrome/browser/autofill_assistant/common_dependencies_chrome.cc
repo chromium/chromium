@@ -128,10 +128,6 @@ CommonDependenciesChrome::GetOrCreateAnnotateDomModelService() const {
   return AnnotateDomModelServiceFactory::GetForBrowserContext(browser_context_);
 }
 
-bool CommonDependenciesChrome::IsWebLayer() const {
-  return false;
-}
-
 signin::IdentityManager* CommonDependenciesChrome::GetIdentityManager() const {
   return IdentityManagerFactory::GetForProfile(GetProfile());
 }

@@ -18,8 +18,10 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.AccessibilityUtil;
 /**
- * Generic static dependencies interface. The concrete implementation will depend on the browser
- * framework, i.e., WebLayer vs. Chrome.
+ * Generic static dependencies interface. This is
+ * legacy and can likely be removed - at the time of creation, this layer of
+ * abstraction was needed to support different implementations between Chrome
+ * and WebLayer.
  */
 @JNINamespace("autofill_assistant")
 public interface AssistantStaticDependencies {

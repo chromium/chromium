@@ -22,8 +22,7 @@ namespace autofill_assistant {
 // Wrapper for all dependencies needed in android flows using legacy UI.
 //
 // Provides the right implementation of |CommonDependencies| and
-// |PlatformDependencies| depending on platform and whether we are in Chrome or
-// Weblayer.
+// |PlatformDependencies| depending on platform.
 class DependenciesAndroid {
  public:
   static std::unique_ptr<DependenciesAndroid> CreateFromJavaStaticDependencies(

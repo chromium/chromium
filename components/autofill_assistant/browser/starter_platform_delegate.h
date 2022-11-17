@@ -92,8 +92,6 @@ class StarterPlatformDelegate {
   virtual bool GetIsAllowedForMachineLearning() = 0;
   // Returns whether this is a custom tab or not.
   virtual bool GetIsCustomTab() const = 0;
-  // Returns whether this is running in WebLayer or not.
-  virtual bool GetIsWebLayer() const = 0;
   // Returns whether the tab was created by GSA or not.
   virtual bool GetIsTabCreatedByGSA() const = 0;
   // Creates the util for registering synthetic field trials.

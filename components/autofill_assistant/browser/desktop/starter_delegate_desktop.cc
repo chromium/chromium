@@ -108,10 +108,6 @@ bool StarterDelegateDesktop::GetIsCustomTab() const {
   return platform_dependencies_->IsCustomTab(GetWebContents());
 }
 
-bool StarterDelegateDesktop::GetIsWebLayer() const {
-  return false;
-}
-
 bool StarterDelegateDesktop::GetIsTabCreatedByGSA() const {
   return false;
 }

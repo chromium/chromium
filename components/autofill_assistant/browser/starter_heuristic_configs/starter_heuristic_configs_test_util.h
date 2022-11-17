@@ -15,7 +15,6 @@ namespace starter_heuristic_configs_test_util {
 // Used to parametrize tests.
 struct ClientState {
   bool is_custom_tab = false;
-  bool is_weblayer = false;
   bool is_logged_in = false;
   bool msbb_enabled = false;
   bool is_supervised_user = false;
@@ -143,40 +142,11 @@ constexpr ClientState kRelevantClientStates[] = {
      .msbb_enabled = true,
      .is_supervised_user = false,
      .proactive_help_enabled = false},
-
-    // Weblayer
-    {.is_custom_tab = false,
-     .is_weblayer = true,
-     .msbb_enabled = true,
-     .is_supervised_user = false,
-     .proactive_help_enabled = true},
-
-    // Weblayer, no msbb
-    {.is_custom_tab = true,
-     .is_weblayer = true,
-     .msbb_enabled = false,
-     .is_supervised_user = false,
-     .proactive_help_enabled = true},
-
-    // Weblayer, supervised user
-    {.is_custom_tab = false,
-     .is_weblayer = true,
-     .msbb_enabled = true,
-     .is_supervised_user = true,
-     .proactive_help_enabled = true},
-
-    // Weblayer, proactive help disabled
-    {.is_custom_tab = false,
-     .is_weblayer = true,
-     .msbb_enabled = true,
-     .is_supervised_user = false,
-     .proactive_help_enabled = false},
 };
 
 inline void ApplyClientState(FakeStarterPlatformDelegate* platform_delegate,
                              const ClientState& client_state) {
   platform_delegate->is_custom_tab_ = client_state.is_custom_tab;
-  platform_delegate->is_web_layer_ = client_state.is_weblayer;
   platform_delegate->is_logged_in_ = client_state.is_logged_in;
   platform_delegate->fake_common_dependencies_->msbb_enabled_ =
       client_state.msbb_enabled;

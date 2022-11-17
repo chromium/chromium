@@ -6,8 +6,10 @@ package org.chromium.components.autofill_assistant;
 import org.chromium.base.Callback;
 
 /**
- * Factory for creating snackbars. Implementations might differ depending on where Autofill
- * Assistant is running (e.g. WebLayer, Chrome).
+ * Factory for creating snackbars. This is
+ * legacy and can likely be removed - at the time of creation, this layer of
+ * abstraction was needed to support different implementations between Chrome
+ * and WebLayer.
  */
 public interface AssistantSnackbarFactory {
     /**

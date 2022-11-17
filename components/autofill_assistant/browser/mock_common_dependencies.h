@@ -52,7 +52,6 @@ class MockCommonDependencies : public CommonDependencies {
               GetOrCreateAnnotateDomModelService,
               (),
               (const override));
-  MOCK_METHOD(bool, IsWebLayer, (), (const override));
   MOCK_METHOD(signin::IdentityManager*,
               GetIdentityManager,
               (),

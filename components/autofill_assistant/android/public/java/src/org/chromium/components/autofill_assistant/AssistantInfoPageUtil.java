@@ -7,8 +7,10 @@ package org.chromium.components.autofill_assistant;
 import android.content.Context;
 
 /**
- * Utility class for showing info pages to the user. Implementations might differ depending on where
- * Autofill Assistant is running (e.g. WebLayer, Chrome).
+ * Utility class for showing info pages to the user. This is
+ * legacy and can likely be removed - at the time of creation, this layer of
+ * abstraction was needed to support different implementations between Chrome
+ * and WebLayer.
  */
 public interface AssistantInfoPageUtil {
     /**

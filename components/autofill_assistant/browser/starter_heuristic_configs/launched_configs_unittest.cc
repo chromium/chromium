@@ -39,7 +39,6 @@ class LaunchedConfigsTest : public testing::Test {
 
 TEST_F(LaunchedConfigsTest, ShoppingAndCouponsLaunchedForCct) {
   fake_platform_delegate_.is_custom_tab_ = true;
-  fake_platform_delegate_.is_web_layer_ = false;
   fake_platform_delegate_.is_tab_created_by_gsa_ = true;
   fake_platform_delegate_.is_logged_in_ = false;
   fake_platform_delegate_.fake_common_dependencies_->msbb_enabled_ = true;
@@ -85,7 +84,6 @@ TEST_F(LaunchedConfigsTest, ShoppingAndCouponsCanBeDisabledWithFeature) {
       features::kAutofillAssistantInCCTTriggering);
 
   fake_platform_delegate_.is_custom_tab_ = true;
-  fake_platform_delegate_.is_web_layer_ = false;
   fake_platform_delegate_.is_tab_created_by_gsa_ = true;
   fake_platform_delegate_.is_logged_in_ = false;
   fake_platform_delegate_.fake_common_dependencies_->msbb_enabled_ = true;

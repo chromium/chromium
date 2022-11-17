@@ -43,7 +43,6 @@ class FakeCommonDependencies : public CommonDependencies {
   bool IsSupervisedUser() const override;
   bool IsAllowedForMachineLearning() const override;
   AnnotateDomModelService* GetOrCreateAnnotateDomModelService() const override;
-  bool IsWebLayer() const override;
   signin::IdentityManager* GetIdentityManager() const override;
   consent_auditor::ConsentAuditor* GetConsentAuditor() const override;
   version_info::Channel GetChannel() const override;
@@ -57,7 +56,6 @@ class FakeCommonDependencies : public CommonDependencies {
   std::string signed_in_email_;
   bool is_supervised_user_ = false;
   bool is_allowed_for_machine_learning_ = true;
-  bool is_weblayer_ = false;
   version_info::Channel channel_ = version_info::Channel::UNKNOWN;
   bool msbb_enabled_ = true;
   bool uma_enabled_ = true;

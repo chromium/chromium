@@ -116,10 +116,6 @@ bool FakeStarterPlatformDelegate::GetIsCustomTab() const {
   return is_custom_tab_;
 }
 
-bool FakeStarterPlatformDelegate::GetIsWebLayer() const {
-  return is_web_layer_;
-}
-
 bool FakeStarterPlatformDelegate::GetIsTabCreatedByGSA() const {
   return is_tab_created_by_gsa_;
 }

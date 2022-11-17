@@ -46,7 +46,6 @@ const char kSharedShoppingConfigWithoutIntent[] = R"(
     ],
     "enabledInCustomTabs":true,
     "enabledInRegularTabs":false,
-    "enabledInWeblayer":false,
     "enabledForSignedOutUsers":true,
     "enabledWithoutMsbb":false
   )";

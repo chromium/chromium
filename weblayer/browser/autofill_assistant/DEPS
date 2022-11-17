@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/autofill_assistant",
-  "+components/password_manager/core/browser",
-]
-

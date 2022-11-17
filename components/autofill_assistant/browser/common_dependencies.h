@@ -44,7 +44,7 @@ class AssistantFieldTrialUtil;
 // Interface for platform delegates that provide dependencies to the starter.
 //
 // This interface contains all methods with a common implementation across
-// platforms (desktop and Android) but a different implementation on WebLayer.
+// platforms (desktop and Android).
 class CommonDependencies {
  public:
   virtual ~CommonDependencies();
@@ -76,8 +76,6 @@ class CommonDependencies {
 
   virtual AnnotateDomModelService* GetOrCreateAnnotateDomModelService()
       const = 0;
-
-  virtual bool IsWebLayer() const = 0;
 
   virtual signin::IdentityManager* GetIdentityManager() const = 0;
 

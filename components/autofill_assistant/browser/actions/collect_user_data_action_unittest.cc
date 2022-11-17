@@ -2608,7 +2608,7 @@ TEST_F(CollectUserDataActionTest, ConfirmButtonFallbackText) {
   action.ProcessAction(callback_.Get());
 }
 
-TEST_F(CollectUserDataActionTest, FailsForWebLayerRunsWithoutBackendData) {
+TEST_F(CollectUserDataActionTest, FailsIfBackendDataRequiredButMissing) {
   ON_CALL(mock_action_delegate_, MustUseBackendData)
       .WillByDefault(Return(true));
   EXPECT_CALL(mock_action_delegate_, CollectUserData).Times(0);

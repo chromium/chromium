@@ -968,7 +968,6 @@ TEST_F(StarterTest, ImplicitStartupOnSupportedDomainWithoutLogin) {
   fake_platform_delegate_.fake_common_dependencies_->msbb_enabled_ = true;
   fake_platform_delegate_.proactive_help_enabled_ = true;
   fake_platform_delegate_.is_logged_in_ = false;
-  fake_platform_delegate_.is_web_layer_ = false;
   starter_->Init();
 
   EXPECT_CALL(
@@ -1053,19 +1052,6 @@ TEST_F(StarterTest, DoNotStartImplicitlyIfSettingDisabled) {
 TEST_F(StarterTest, DoNotStartImplicitlyForNonAgaCct) {
   SetupPlatformDelegateForReturningUser();
   fake_platform_delegate_.is_tab_created_by_gsa_ = false;
-  starter_->Init();
-
-  EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest)
-      .Times(0);
-  SimulateNavigateToUrl(GURL("https://www.some-website.com/cart"));
-  task_environment()->RunUntilIdle();
-  EXPECT_THAT(GetUkmInChromeTriggering(ukm_recorder_), IsEmpty());
-}
-
-TEST_F(StarterTest, DoNotStartImplicitlyForWebLayer) {
-  SetupPlatformDelegateForReturningUser();
-  fake_platform_delegate_.is_custom_tab_ = false;
-  fake_platform_delegate_.is_web_layer_ = true;
   starter_->Init();
 
   EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest)

@@ -66,7 +66,6 @@ class CommonDependenciesChrome : public CommonDependencies {
   // The AnnotateDomModelService is a KeyedService. There is only one per
   // BrowserContext.
   AnnotateDomModelService* GetOrCreateAnnotateDomModelService() const override;
-  bool IsWebLayer() const override;
   signin::IdentityManager* GetIdentityManager() const override;
   consent_auditor::ConsentAuditor* GetConsentAuditor() const override;
   version_info::Channel GetChannel() const override;

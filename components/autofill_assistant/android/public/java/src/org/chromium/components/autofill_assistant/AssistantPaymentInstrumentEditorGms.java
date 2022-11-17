@@ -13,7 +13,7 @@ import org.chromium.components.autofill_assistant.user_data.GmsIntegrator;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * Editor for payment instruments in Chrome/WebLayer using a GMS intent.
+ * Editor for payment instruments using a GMS intent.
  */
 public class AssistantPaymentInstrumentEditorGms implements AssistantPaymentInstrumentEditor {
     private final WindowAndroid mWindowAndroid;

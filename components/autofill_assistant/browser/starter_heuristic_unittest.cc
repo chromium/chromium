@@ -32,7 +32,6 @@ class StarterHeuristicTest : public testing::Test {
   StarterHeuristicTest() {
     // Settings that satisfy the shopping config requirements.
     fake_platform_delegate_.is_custom_tab_ = true;
-    fake_platform_delegate_.is_web_layer_ = false;
     fake_platform_delegate_.is_logged_in_ = true;
     fake_platform_delegate_.fake_common_dependencies_->msbb_enabled_ = true;
     fake_platform_delegate_.is_supervised_user_ = false;
@@ -196,7 +195,6 @@ TEST_F(StarterHeuristicTest,
                                                      &finch_config_2};
   auto starter_heuristic = base::MakeRefCounted<StarterHeuristic>();
   fake_platform_delegate_.is_custom_tab_ = true;
-  fake_platform_delegate_.is_web_layer_ = false;
   starter_heuristic->InitFromHeuristicConfigs(configs, &fake_platform_delegate_,
                                               &context_);
 

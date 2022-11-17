@@ -18,8 +18,10 @@ import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * Generic dependencies interface. The concrete implementation will depend on the browser framework,
- * i.e., WebLayer vs. Chrome.
+ * Generic dependencies interface. This is
+ * legacy and can likely be removed - at the time of creation, this layer of
+ * abstraction was needed to support different implementations between Chrome
+ * and WebLayer.
  *
  * WebContents should not be returned in this interface as objects should stay valid when
  * WebContents change.

@@ -261,10 +261,6 @@ bool StarterDelegateAndroid::GetIsCustomTab() const {
       GetWebContents());
 }
 
-bool StarterDelegateAndroid::GetIsWebLayer() const {
-  return GetCommonDependencies()->IsWebLayer();
-}
-
 bool StarterDelegateAndroid::GetIsTabCreatedByGSA() const {
   if (!java_object_) {
     // Failsafe, should never happen.

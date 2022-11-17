@@ -7,8 +7,10 @@ package org.chromium.components.autofill_assistant;
 import org.chromium.base.lifetime.Destroyable;
 
 /**
- * An interface for retrieving and monitoring browser controls state.. Implementations might differ
- * depending on where Autofill Assistant is running (e.g. WebLayer, Chrome).
+ * An interface for retrieving and monitoring browser controls state. This is
+ * legacy and can likely be removed - at the time of creation, this layer of
+ * abstraction was needed to support different implementations between Chrome
+ * and WebLayer.
  */
 public interface AssistantBrowserControls extends Destroyable {
     /**

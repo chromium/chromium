@@ -13,7 +13,7 @@ import org.chromium.components.autofill_assistant.user_data.GmsIntegrator;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * Editor for addresses in Chrome/WebLayer using a GMS intent.
+ * Editor for addresses using a GMS intent.
  */
 public class AssistantAddressEditorGms implements AssistantAddressEditor {
     private final WindowAndroid mWindowAndroid;

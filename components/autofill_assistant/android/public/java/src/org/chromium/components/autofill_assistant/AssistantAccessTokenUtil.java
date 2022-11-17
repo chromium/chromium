@@ -9,8 +9,10 @@ import android.accounts.Account;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
 /**
- * Utility class for retrieving and invalidating access tokens. Implementations might differ
- * depending on where Autofill Assistant is running (e.g. WebLayer, Chrome).
+ * Utility interface for retrieving and invalidating access tokens. This is
+ * legacy and can likely be removed - at the time of creation, this layer of
+ * abstraction was needed to support different implementations between Chrome
+ * and WebLayer.
  */
 public interface AssistantAccessTokenUtil {
     /**

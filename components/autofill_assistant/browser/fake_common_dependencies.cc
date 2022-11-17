@@ -70,10 +70,6 @@ FakeCommonDependencies::GetOrCreateAnnotateDomModelService() const {
   return nullptr;
 }
 
-bool FakeCommonDependencies::IsWebLayer() const {
-  return is_weblayer_;
-}
-
 signin::IdentityManager* FakeCommonDependencies::GetIdentityManager() const {
   return identity_manager_;
 }

@@ -7,8 +7,10 @@ package org.chromium.components.autofill_assistant;
 import android.content.Context;
 
 /**
- * Utility class for launching the settings activity. Implementations might differ depending on
- * where Autofill Assistant is running (e.g. WebLayer, Chrome).
+ * Utility class for launching the settings activity. This is
+ * legacy and can likely be removed - at the time of creation, this layer of
+ * abstraction was needed to support different implementations between Chrome
+ * and WebLayer.
  */
 public interface AssistantSettingsUtil {
     /** Launches the settings activity. */

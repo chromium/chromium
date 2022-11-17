@@ -628,11 +628,11 @@ ScriptExecutorUiDelegate* ClientAndroid::GetScriptExecutorUiDelegate() {
 }
 
 bool ClientAndroid::MustUseBackendData() const {
-  // For WebLayer flows the client does not have access to Chrome's Autofill
-  // data and must use data from our backend. Similarly the client can not use
-  // e.g. Autofill's data editors and must rely on GMS Core provided
-  // replacements.
-  return dependencies_->GetCommonDependencies()->IsWebLayer();
+  // Legacy, can be removed. In the past, WebLayer flows did not have access
+  // to Chrome's Autofill data and thus those flows had to enforce the use of
+  // backend data. Since WebLayer is no longer supported, we no longer need to
+  // enforce this condition.
+  return false;
 }
 
 void ClientAndroid::GetAnnotateDomModelVersion(

@@ -9,8 +9,10 @@ import android.app.Activity;
 import org.chromium.content_public.browser.WebContents;
 
 /**
- * Utility class for showing feedback forms. Implementations might differ depending on where
- * Autofill Assistant is running (e.g. WebLayer, Chrome).
+ * Utility class for showing feedback forms. This is
+ * legacy and can likely be removed - at the time of creation, this layer of
+ * abstraction was needed to support different implementations between Chrome
+ * and WebLayer.
  */
 public interface AssistantFeedbackUtil {
     /**

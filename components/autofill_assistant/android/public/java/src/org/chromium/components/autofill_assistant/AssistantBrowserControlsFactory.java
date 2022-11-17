@@ -5,8 +5,10 @@
 package org.chromium.components.autofill_assistant;
 
 /**
- * Interface for instantiating browser control objects. Implementations might differ depending on
- * where Autofill Assistant is running (e.g. WebLayer, Chrome).
+ * Interface for instantiating browser control objects. This is
+ * legacy and can likely be removed - at the time of creation, this layer of
+ * abstraction was needed to support different implementations between Chrome
+ * and WebLayer.
  */
 public interface AssistantBrowserControlsFactory {
     /**

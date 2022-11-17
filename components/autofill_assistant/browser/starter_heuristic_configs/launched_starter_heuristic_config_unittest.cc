@@ -29,7 +29,6 @@ const char kRegularConfig[] = R"(
     ],
     "enabledInCustomTabs":true,
     "enabledInRegularTabs":false,
-    "enabledInWeblayer":false,
     "enabledForSignedOutUsers":true,
     "enabledWithoutMsbb":false
   }
@@ -38,7 +37,6 @@ const char kRegularConfig[] = R"(
 // Sets up the platform delegate to satisfy the conditions in |kRegularConfig|.
 void SetupForRegularConfig(FakeStarterPlatformDelegate* fake_delegate) {
   fake_delegate->is_custom_tab_ = true;
-  fake_delegate->is_web_layer_ = false;
   fake_delegate->is_tab_created_by_gsa_ = true;
   fake_delegate->is_logged_in_ = false;
   fake_delegate->fake_common_dependencies_->msbb_enabled_ = true;

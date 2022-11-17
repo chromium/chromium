@@ -23,7 +23,6 @@ const char kIntentKey[] = "intent";
 // Note that only custom tabs created by GSA are supported.
 const char kEnabledInCustomTabsKey[] = "enabledInCustomTabs";
 const char kEnabledInRegularTabsKey[] = "enabledInRegularTabs";
-const char kEnabledInWeblayerKey[] = "enabledInWeblayer";
 // Note: signed-in users default to true and need not be configured.
 const char kEnabledForSignedOutUsers[] = "enabledForSignedOutUsers";
 // Whether 'make searches and browsing better' is required or not. By default,
@@ -43,7 +42,6 @@ const char kEnabledWithoutMsbb[] = "enabledWithoutMsbb";
     ],
     "enabledInCustomTabs":true,
     "enabledInRegularTabs":false,
-    "enabledInWeblayer":false,
     "enabledForSignedOutUsers":true
     "enabledWithoutMsbb":false
   }
@@ -81,7 +79,6 @@ class FinchStarterHeuristicConfig : public StarterHeuristicConfig {
 
   bool enabled_in_custom_tabs_ = false;
   bool enabled_in_regular_tabs_ = false;
-  bool enabled_in_weblayer_ = false;
   bool enabled_for_signed_out_users_ = false;
   bool enabled_without_msbb_ = false;
   std::string intent_;

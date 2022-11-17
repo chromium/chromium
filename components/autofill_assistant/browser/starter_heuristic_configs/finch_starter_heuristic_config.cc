@@ -41,12 +41,7 @@ FinchStarterHeuristicConfig::GetConditionSetsForClientState(
     return empty_list->GetList();
   }
 
-  if (!platform_delegate->GetIsCustomTab() &&
-      !platform_delegate->GetIsWebLayer() && !enabled_in_regular_tabs_) {
-    return empty_list->GetList();
-  }
-
-  if (platform_delegate->GetIsWebLayer() && !enabled_in_weblayer_) {
+  if (!platform_delegate->GetIsCustomTab() && !enabled_in_regular_tabs_) {
     return empty_list->GetList();
   }
 
@@ -140,8 +135,6 @@ void FinchStarterHeuristicConfig::InitFromString(
       dict->GetDict().FindBool(kEnabledInCustomTabsKey).value_or(false);
   enabled_in_regular_tabs_ =
       dict->GetDict().FindBool(kEnabledInRegularTabsKey).value_or(false);
-  enabled_in_weblayer_ =
-      dict->GetDict().FindBool(kEnabledInWeblayerKey).value_or(false);
   enabled_for_signed_out_users_ =
       dict->GetDict().FindBool(kEnabledForSignedOutUsers).value_or(false);
   enabled_without_msbb_ =

@@ -64,7 +64,6 @@ class StarterDelegateDesktop
   bool GetIsSupervisedUser() override;
   bool GetIsAllowedForMachineLearning() override;
   bool GetIsCustomTab() const override;
-  bool GetIsWebLayer() const override;
   bool GetIsTabCreatedByGSA() const override;
   std::unique_ptr<AssistantFieldTrialUtil> CreateFieldTrialUtil() override;
   bool IsAttached() override;
