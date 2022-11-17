@@ -105,16 +105,8 @@ TEST_F(SafeBrowsingPrefsTest, EnhancedProtection) {
   EXPECT_FALSE(IsEnhancedProtectionEnabled(prefs_));
 
   SetEnhancedProtectionPrefForTests(&prefs_, true);
+  EXPECT_TRUE(IsEnhancedProtectionEnabled(prefs_));
   {
-    base::test::ScopedFeatureList scoped_feature_list;
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(kEnhancedProtection);
-    EXPECT_TRUE(IsEnhancedProtectionEnabled(prefs_));
-  }
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(kEnhancedProtection);
     prefs_.SetBoolean(prefs::kSafeBrowsingEnabled, false);
     EXPECT_FALSE(IsEnhancedProtectionEnabled(prefs_));
   }

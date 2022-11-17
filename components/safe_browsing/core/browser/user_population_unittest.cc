@@ -35,10 +35,6 @@ std::unique_ptr<PrefService> CreatePrefService() {
 TEST(GetUserPopulationTest, PopulatesPopulation) {
   base::test::TaskEnvironment task_environment;
   auto pref_service = CreatePrefService();
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /* enabled_features */ {safe_browsing::kEnhancedProtection},
-      /* disabled_features */ {});
 
   SetSafeBrowsingState(pref_service.get(),
                        SafeBrowsingState::STANDARD_PROTECTION);

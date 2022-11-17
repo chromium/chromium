@@ -81,8 +81,6 @@ class PrivacySafeBrowsingMediatorTest : public PlatformTest {
 };
 
 TEST_F(PrivacySafeBrowsingMediatorTest, TurnOnEnhancedProtection) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(safe_browsing::kEnhancedProtection);
   TableViewItem* enhanced_safe_browsing_item =
       itemWithItemType(ItemTypeSafeBrowsingEnhancedProtection);
   [mediator_ didSelectItem:enhanced_safe_browsing_item];

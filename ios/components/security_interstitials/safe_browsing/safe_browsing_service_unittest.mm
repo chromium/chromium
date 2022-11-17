@@ -369,9 +369,6 @@ TEST_F(SafeBrowsingServiceTest, RealTimeSafeAndUnsafePages) {
 
 TEST_F(SafeBrowsingServiceTest,
        RealTimeSafeAndUnsafePagesWithEnhancedProtection) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(safe_browsing::kEnhancedProtection);
-
   TestUrlCheckerClient client(safe_browsing_service_.get(),
                               browser_state_.get(), &safe_browsing_client_);
 
