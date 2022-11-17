@@ -61,6 +61,7 @@
 #include "ui/gfx/color_transform.h"
 #include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/test/icc_profiles.h"
 #include "ui/gfx/video_types.h"
 
@@ -3433,8 +3434,8 @@ TEST_P(GPURendererPixelTest, TrilinearFiltering) {
   blue->SetNew(blue_shared_state, child_pass_rect, child_pass_rect,
                SkColors::kBlue, false);
 
-  auto child_to_root_transform = gfx::SkMatrixToTransform(SkMatrix::RectToRect(
-      RectToSkRect(child_pass_rect), RectToSkRect(viewport_rect)));
+  auto child_to_root_transform = gfx::TransformBetweenRects(
+      gfx::RectF(child_pass_rect), gfx::RectF(viewport_rect));
   SharedQuadState* child_pass_shared_state = CreateTestSharedQuadState(
       child_to_root_transform, child_pass_rect, root_pass.get(), gfx::MaskFilterInfo());
   auto* child_pass_quad =

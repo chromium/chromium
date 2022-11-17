@@ -112,6 +112,54 @@ bool FormatHasAlpha(gfx::BufferFormat format) {
   }
 }
 
+Transform InvertY(Transform transform) {
+  switch (transform) {
+    case Transform::NORMAL:
+      return Transform::FLIPPED_ROTATE_180;
+    case Transform::ROTATE_90:
+      return Transform::FLIPPED_ROTATE_270;
+    case Transform::ROTATE_180:
+      return Transform::FLIPPED;
+    case Transform::ROTATE_270:
+      return Transform::FLIPPED_ROTATE_90;
+    case Transform::FLIPPED:
+      return Transform::ROTATE_180;
+    case Transform::FLIPPED_ROTATE_90:
+      return Transform::ROTATE_270;
+    case Transform::FLIPPED_ROTATE_180:
+      return Transform::NORMAL;
+    case Transform::FLIPPED_ROTATE_270:
+      return Transform::ROTATE_90;
+  }
+  NOTREACHED();
+}
+
+// Returns a gfx::Transform that can transform a (0,0 1x1) rect to the same
+// rect while rotate/flip the contents about (0.5, 0.5) origin. It's equivalent
+// to rotating/flipping about (0, 0) origin then translating by
+// (0 or 1, 0 or 1). Note that the rotations are counter-clockwise.
+gfx::Transform ToBufferTransformMatrix(Transform transform, bool invert_y) {
+  switch (invert_y ? InvertY(transform) : transform) {
+    case Transform::NORMAL:
+      return gfx::Transform();
+    case Transform::ROTATE_90:
+      return gfx::Transform::Affine(0, -1, 1, 0, 0, 1);
+    case Transform::ROTATE_180:
+      return gfx::Transform::Affine(-1, 0, 0, -1, 1, 1);
+    case Transform::ROTATE_270:
+      return gfx::Transform::Affine(0, 1, -1, 0, 1, 0);
+    case Transform::FLIPPED:
+      return gfx::Transform::Affine(-1, 0, 0, 1, 1, 0);
+    case Transform::FLIPPED_ROTATE_90:
+      return gfx::Transform::Affine(0, 1, 1, 0, 0, 0);
+    case Transform::FLIPPED_ROTATE_180:
+      return gfx::Transform::Affine(1, 0, 0, -1, 0, 1);
+    case Transform::FLIPPED_ROTATE_270:
+      return gfx::Transform::Affine(0, -1, -1, 0, 1, 1);
+  }
+  NOTREACHED();
+}
+
 // Helper function that returns |size| after adjusting for |transform|.
 gfx::Size ToTransformedSize(const gfx::Size& size, Transform transform) {
   switch (transform) {
@@ -1263,43 +1311,12 @@ void Surface::UpdateResource(FrameSinkResourceManager* resource_manager) {
 }
 
 void Surface::UpdateBufferTransform(bool y_invert) {
-  SkMatrix buffer_matrix;
-  Transform transform = state_.basic_state.buffer_transform;
-  switch (transform) {
-    case Transform::ROTATE_90:
-    case Transform::FLIPPED_ROTATE_90:
-      buffer_matrix.setSinCos(-1, 0, 0.5f, 0.5f);
-      break;
-    case Transform::ROTATE_180:
-    case Transform::FLIPPED_ROTATE_180:
-      buffer_matrix.setSinCos(0, -1, 0.5f, 0.5f);
-      break;
-    case Transform::ROTATE_270:
-    case Transform::FLIPPED_ROTATE_270:
-      buffer_matrix.setSinCos(1, 0, 0.5f, 0.5f);
-      break;
-    default:
-      break;
+  buffer_transform_ =
+      ToBufferTransformMatrix(state_.basic_state.buffer_transform, y_invert);
+  if (state_.basic_state.buffer_scale != 0) {
+    buffer_transform_.PostScale(1.0f / state_.basic_state.buffer_scale,
+                                1.0f / state_.basic_state.buffer_scale);
   }
-  bool x_invert = false;
-  switch (transform) {
-    case Transform::FLIPPED:
-    case Transform::FLIPPED_ROTATE_90:
-    case Transform::FLIPPED_ROTATE_180:
-    case Transform::FLIPPED_ROTATE_270:
-      x_invert = true;
-      break;
-    default:
-      break;
-  }
-  if (x_invert)
-    buffer_matrix.preScale(-1, 1, 0.5f, 0.5f);
-  if (y_invert)
-    buffer_matrix.preScale(1, -1, 0.5f, 0.5f);
-  if (state_.basic_state.buffer_scale != 0)
-    buffer_matrix.postScale(1.0f / state_.basic_state.buffer_scale,
-                            1.0f / state_.basic_state.buffer_scale);
-  buffer_transform_ = gfx::SkMatrixToTransform(buffer_matrix);
 }
 
 // Try to share the |SharedQuadState| (sqs) when a single layer can be
@@ -1396,7 +1413,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
 
   state_.damage.Clear();
 
-  gfx::PointF scale(content_size_.width(), content_size_.height());
+  gfx::Vector2dF scale(content_size_.width(), content_size_.height());
 
   gfx::Vector2dF translate(0.0f, 0.0f);
 
@@ -1404,7 +1421,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
   // use the shared quad clip rect.
   if (get_current_surface_id_) {
     quad_rect = gfx::Rect(embedded_surface_size_);
-    scale = gfx::PointF(1.0f, 1.0f);
+    scale = gfx::Vector2dF(1.0f, 1.0f);
 
     if (!state_.basic_state.crop.IsEmpty()) {
       // In order to crop an AxB rect to CxD we need to scale by A/C, B/D.
@@ -1423,18 +1440,16 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
 
   // Compute the total transformation from post-transform buffer coordinates to
   // target coordinates.
-  SkMatrix viewport_to_target_matrix;
   // Scale and offset the normalized space to fit the content size rectangle.
-  viewport_to_target_matrix.setScale(scale.x(), scale.y());
-
-  gfx::PointF target = gfx::PointF(origin) + translate;
-  viewport_to_target_matrix.postTranslate(target.x(), target.y());
+  gfx::AxisTransform2d viewport_to_target_transform =
+      gfx::AxisTransform2d::FromScaleAndTranslation(
+          scale, origin.OffsetFromOrigin() + translate);
   // Convert from DPs to pixels.
-  viewport_to_target_matrix.postScale(device_scale_factor, device_scale_factor);
+  viewport_to_target_transform.PostScale(
+      gfx::Vector2dF(device_scale_factor, device_scale_factor));
 
   gfx::Transform quad_to_target_transform(buffer_transform_);
-  quad_to_target_transform.PostConcat(
-      gfx::SkMatrixToTransform(viewport_to_target_matrix));
+  quad_to_target_transform.PostConcat(viewport_to_target_transform);
 
   bool are_contents_opaque =
       !current_resource_has_alpha_ ||
