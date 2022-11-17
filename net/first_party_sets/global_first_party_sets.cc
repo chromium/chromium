@@ -277,13 +277,12 @@ FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
   for (const auto& [member, set_entry] : flattened_replacements) {
     if (member == set_entry.primary())
       continue;
-    if (auto existing_entry = FindEntry(member, /*config=*/nullptr);
-        existing_entry.has_value() && existing_entry->primary() != member) {
-      if (!addition_intersected_owners.contains(existing_entry->primary()) &&
-          !flattened_additions.contains(existing_entry->primary()) &&
-          !flattened_replacements.contains(existing_entry->primary())) {
-        potential_singletons[existing_entry->primary()].insert(member);
-      }
+    if (const auto existing_entry = FindEntry(member, /*config=*/nullptr);
+        existing_entry.has_value() && existing_entry->primary() != member &&
+        !addition_intersected_owners.contains(existing_entry->primary()) &&
+        !flattened_additions.contains(existing_entry->primary()) &&
+        !flattened_replacements.contains(existing_entry->primary())) {
+      potential_singletons[existing_entry->primary()].insert(member);
     }
   }
 
@@ -300,48 +299,53 @@ FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
     }
   }
 
-  // Find out which potential singletons are actually singletons; delete
-  // members whose owners left; and reparent the sets that intersected with
-  // an addition set.
-  // Note: use a null config here, to avoid taking unrelated policy sets into
-  // account.
-  ForEachEffectiveSetEntry(/*config=*/nullptr, [&](const SchemefulSite& member,
-                                                   const FirstPartySetEntry&
-                                                       set_entry) {
-    // Reparent all sites in any intersecting addition sets.
-    if (auto entry = addition_intersected_owners.find(set_entry.primary());
-        entry != addition_intersected_owners.end() &&
-        !flattened_replacements.contains(member)) {
-      site_to_entry.emplace_back(
-          member, FirstPartySetEntry(entry->second.primary(),
-                                     member == entry->second.primary()
-                                         ? SiteType::kPrimary
-                                         : SiteType::kAssociated,
-                                     absl::nullopt));
-    }
-    if (member == set_entry.primary())
-      return true;
-    // Remove non-singletons from the potential list.
-    if (auto entry = potential_singletons.find(set_entry.primary());
-        entry != potential_singletons.end() &&
-        !entry->second.contains(member)) {
-      // This owner lost members, but it still has at least one (`member`),
-      // so it's not a singleton.
-      potential_singletons.erase(entry);
-    }
-    // Remove members from sets whose owner left.
-    if (replaced_existing_owners.contains(set_entry.primary()) &&
-        !flattened_replacements.contains(member) &&
-        !addition_intersected_owners.contains(set_entry.primary())) {
-      site_to_entry.emplace_back(member, absl::nullopt);
-    }
+  if (!addition_intersected_owners.empty() || !potential_singletons.empty() ||
+      !replaced_existing_owners.empty()) {
+    // Find out which potential singletons are actually singletons; delete
+    // members whose owners left; and reparent the sets that intersected with
+    // an addition set.
+    // Note: use a null config here, to avoid taking unrelated policy sets into
+    // account.
+    ForEachEffectiveSetEntry(
+        /*config=*/nullptr,
+        [&](const SchemefulSite& member, const FirstPartySetEntry& set_entry) {
+          // Reparent all sites in any intersecting addition sets.
+          if (const auto entry =
+                  addition_intersected_owners.find(set_entry.primary());
+              entry != addition_intersected_owners.end() &&
+              !flattened_replacements.contains(member)) {
+            site_to_entry.emplace_back(
+                member, FirstPartySetEntry(entry->second.primary(),
+                                           member == entry->second.primary()
+                                               ? SiteType::kPrimary
+                                               : SiteType::kAssociated,
+                                           absl::nullopt));
+          }
+          if (member == set_entry.primary())
+            return true;
+          // Remove non-singletons from the potential list.
+          if (const auto entry = potential_singletons.find(set_entry.primary());
+              entry != potential_singletons.end() &&
+              !entry->second.contains(member)) {
+            // This owner lost members, but it still has at least one
+            // (`member`), so it's not a singleton.
+            potential_singletons.erase(entry);
+          }
+          // Remove members from sets whose owner left.
+          if (replaced_existing_owners.contains(set_entry.primary()) &&
+              !flattened_replacements.contains(member) &&
+              !addition_intersected_owners.contains(set_entry.primary())) {
+            site_to_entry.emplace_back(member, absl::nullopt);
+          }
 
-    return true;
-  });
-  // Any owner remaining in `potential_singleton` is a real singleton, so delete
-  // it:
-  for (auto& [owner, members] : potential_singletons) {
-    site_to_entry.emplace_back(owner, absl::nullopt);
+          return true;
+        });
+
+    // Any owner remaining in `potential_singleton` is a real singleton, so
+    // delete it:
+    for (const auto& [owner, members] : potential_singletons) {
+      site_to_entry.emplace_back(owner, absl::nullopt);
+    }
   }
 
   // For every public alias that would now refer to a site in the overlay, which
@@ -370,7 +374,8 @@ GlobalFirstPartySets::NormalizeAdditionSets(
   base::flat_map<SchemefulSite, base::flat_set<size_t>> addition_set_overlaps;
   for (size_t set_idx = 0; set_idx < addition_sets.size(); set_idx++) {
     for (const auto& site_and_entry : addition_sets[set_idx]) {
-      if (auto entry = FindEntry(site_and_entry.first, /*config=*/nullptr);
+      if (const auto entry =
+              FindEntry(site_and_entry.first, /*config=*/nullptr);
           entry.has_value()) {
         addition_set_overlaps[entry->primary()].insert(set_idx);
       }
@@ -379,7 +384,8 @@ GlobalFirstPartySets::NormalizeAdditionSets(
 
   // Union together all transitively-overlapping addition sets.
   AdditionOverlapsUnionFind union_finder(addition_sets.size());
-  for (auto& [public_site, addition_set_indices] : addition_set_overlaps) {
+  for (const auto& [public_site, addition_set_indices] :
+       addition_set_overlaps) {
     for (size_t representative : addition_set_indices) {
       union_finder.Union(*addition_set_indices.begin(), representative);
     }
@@ -387,7 +393,7 @@ GlobalFirstPartySets::NormalizeAdditionSets(
 
   // Now build the new addition sets, with all transitive overlaps eliminated.
   std::vector<SingleSet> normalized_additions;
-  for (auto& [rep, children] : union_finder.SetsMapping()) {
+  for (const auto& [rep, children] : union_finder.SetsMapping()) {
     SingleSet normalized = addition_sets[rep];
     const SchemefulSite& rep_primary =
         addition_sets[rep].begin()->second.primary();
