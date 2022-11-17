@@ -319,6 +319,7 @@ void IOSTranslateDriver::OnTranslateComplete(TranslateErrors error_type,
                         pending_page_seq_no_, source_language,
                         translation_time);
   pending_page_seq_no_ = -1;
+  timeout_timer_.Stop();
 }
 
 void IOSTranslateDriver::StopObservingWebState() {
