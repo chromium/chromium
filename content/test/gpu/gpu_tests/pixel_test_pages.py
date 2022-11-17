@@ -395,6 +395,9 @@ class PixelTestPages():
                       test_rect=[0, 0, 400, 400],
                       optional_action='ScrollOutAndBack',
                       grace_period_end=date(2022, 8, 29)),
+        PixelTestPage('pixel_webgl_display_p3.html',
+                      base_name + '_WebGLDisplayP3',
+                      test_rect=[0, 0, 300, 300]),
     ]
 
   @staticmethod
