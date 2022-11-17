@@ -18,6 +18,8 @@ namespace {
 
 constexpr gfx::Size kToggleButtonSize{40, 20};
 
+constexpr int kSpaceBetweenChildView = 16;
+
 }  // namespace
 
 CaptureModeMenuToggleButton::CaptureModeMenuToggleButton(
@@ -41,6 +43,7 @@ CaptureModeMenuToggleButton::CaptureModeMenuToggleButton(
   capture_mode_util::ConfigLabelView(label_view_);
   auto* box_layout = capture_mode_util::CreateAndInitBoxLayoutForView(this);
   box_layout->SetFlexForView(label_view_, 1);
+  box_layout->set_between_child_spacing(kSpaceBetweenChildView);
 }
 
 CaptureModeMenuToggleButton::~CaptureModeMenuToggleButton() = default;
