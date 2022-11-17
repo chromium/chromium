@@ -226,11 +226,12 @@ class Reconfigurer {
         return false;
       }
 
+      let facing = c.deviceId !== null ?
+          cameraInfo.getCamera3DeviceInfo(c.deviceId)?.facing ?? null :
+          null;
       this.listener.onTryingNewConfig({
         deviceId: c.deviceId,
-        facing: c.deviceId !== null ?
-            cameraInfo.getCamera3DeviceInfo(c.deviceId)?.facing ?? null :
-            null,
+        facing,
         mode: c.mode,
         captureCandidate: c.captureCandidate,
       });
@@ -243,7 +244,7 @@ class Reconfigurer {
         await this.preview.open(c.constraints);
         // For non-ChromeOS VCD, the facing and device id can only be known
         // after preview is actually opened.
-        const facing = this.preview.getFacing();
+        facing = this.preview.getFacing();
         const deviceId = assertString(this.preview.getDeviceId());
 
         await this.checkEnablePTZ(c);
@@ -271,6 +272,13 @@ class Reconfigurer {
         let errorToReport: Error;
         // Since OverconstrainedError is not an Error instance.
         if (e instanceof OverconstrainedError) {
+          if (facing === Facing.EXTERNAL && e.constraint === 'deviceId') {
+            // External camera configuration failed with OverconstrainedError
+            // of deviceId means that the device is no longer available and is
+            // likely caused by external camera disconnected. Ignore this
+            // error.
+            continue;
+          }
           errorToReport =
               new Error(`${e.message} (constraint = ${e.constraint})`);
           errorToReport.name = 'OverconstrainedError';
