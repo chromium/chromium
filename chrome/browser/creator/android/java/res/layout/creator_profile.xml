@@ -27,22 +27,24 @@
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.TextSmall.Primary" />
   </LinearLayout>
-  <org.chromium.ui.widget.ButtonCompat
-      android:id="@+id/creator_follow_button"
+  <FrameLayout
       android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginEnd="16dp"
-      android:paddingHorizontal="60dp"
-      style="@style/FilledButton"
-      android:text="@string/menu_follow"
-      android:visibility="gone" />
-  <org.chromium.ui.widget.ButtonCompat
-      android:id="@+id/creator_following_button"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginEnd="16dp"
-      android:paddingHorizontal="60dp"
-      style="@style/FilledButton"
-      android:text="@string/menu_following"
-      android:visibility="gone" />
+      android:layout_height="wrap_content" >
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/creator_follow_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/CreatorFollowFilledButton"
+        android:text="@string/menu_follow"
+        android:drawableStart="@drawable/follow_add"
+        android:visibility="gone" />
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/creator_following_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/CreatorFollowReverseButton"
+        android:text="@string/menu_following"
+        android:drawableStart="@drawable/following_checkmark"
+        android:visibility="gone" />
+  </FrameLayout>
 </org.chromium.chrome.browser.creator.CreatorProfileView>
