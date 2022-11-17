@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/size.h"
 #include "v8/include/v8.h"
@@ -689,6 +690,12 @@ const KURL& ImageResourceContent::Url() const {
 
 bool ImageResourceContent::IsDataUrl() const {
   return Url().ProtocolIsData();
+}
+
+AtomicString ImageResourceContent::MediaType() const {
+  if (!image_)
+    return AtomicString();
+  return AtomicString(image_->FilenameExtension());
 }
 
 base::TimeTicks ImageResourceContent::LoadResponseEnd() const {

@@ -38,13 +38,11 @@ class ImageRecord : public base::SupportsWeakPtr<ImageRecord> {
   ImageRecord(DOMNodeId new_node_id,
               const MediaTiming* new_media_timing,
               uint64_t new_recorded_size,
-              const String& media_type,
               const gfx::Rect& frame_visual_rect,
               const gfx::RectF& root_visual_rect)
       : node_id(new_node_id),
         media_timing(new_media_timing),
-        recorded_size(new_recorded_size),
-        media_type_(media_type) {
+        recorded_size(new_recorded_size) {
     static unsigned next_insertion_index_ = 1;
     insertion_index = next_insertion_index_++;
     if (PaintTimingVisualizer::IsTracingEnabled()) {
@@ -85,10 +83,6 @@ class ImageRecord : public base::SupportsWeakPtr<ImageRecord> {
   // Images that come from origin-dirty styles should have some limitations on
   // what they report.
   bool origin_clean = true;
-
-  // The string representation of the type of the decoded content as returned
-  // by Image::FilenameExtension().
-  String media_type_;
 };
 
 typedef std::pair<const LayoutObject*, const MediaTiming*> RecordId;
@@ -131,7 +125,6 @@ class CORE_EXPORT ImageRecordsManager {
   // Returns whether an image was added to |pending_images_|.
   bool RecordFirstPaintAndReturnIsPending(const RecordId& record_id,
                                           const uint64_t& visual_size,
-                                          const String& media_type,
                                           const gfx::Rect& frame_visual_rect,
                                           const gfx::RectF& root_visual_rect,
                                           double bpp);
@@ -165,7 +158,6 @@ class CORE_EXPORT ImageRecordsManager {
   // larger size.
   void MaybeUpdateLargestIgnoredImage(const RecordId&,
                                       const uint64_t& visual_size,
-                                      const String& media_type,
                                       const gfx::Rect& frame_visual_rect,
                                       const gfx::RectF& root_visual_rect);
   void ReportLargestIgnoredImage(unsigned current_frame_index);
@@ -184,7 +176,6 @@ class CORE_EXPORT ImageRecordsManager {
       const LayoutObject& object,
       const MediaTiming* media_timing,
       const uint64_t& visual_size,
-      const String& media_type,
       const gfx::Rect& frame_visual_rect,
       const gfx::RectF& root_visual_rect);
   inline void QueueToMeasurePaintTime(const RecordId& record_id,
@@ -273,8 +264,7 @@ class CORE_EXPORT ImagePaintTimingDetector final
                    const MediaTiming&,
                    const PropertyTreeStateOrAlias& current_paint_properties,
                    const StyleFetchedImage*,
-                   const gfx::Rect& image_border,
-                   const String& media_type);
+                   const gfx::Rect& image_border);
   void NotifyImageFinished(const LayoutObject&, const MediaTiming*);
   void OnPaintFinished();
   void NotifyImageRemoved(const LayoutObject&, const MediaTiming*);

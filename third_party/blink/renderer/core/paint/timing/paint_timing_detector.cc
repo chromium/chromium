@@ -66,12 +66,12 @@ bool IsBackgroundImageContentful(const LayoutObject& object,
 }
 
 LargestContentfulPaintType GetLargestContentfulPaintTypeFromString(
-    const String& type_string) {
+    const AtomicString& type_string) {
   if (type_string.empty())
     return LargestContentfulPaintType::kNone;
 
   using LargestContentfulPaintTypeMap =
-      HashMap<String, LargestContentfulPaintType>;
+      HashMap<AtomicString, LargestContentfulPaintType>;
 
   DEFINE_STATIC_LOCAL(LargestContentfulPaintTypeMap,
                       largest_contentful_paint_type_map,
@@ -161,8 +161,7 @@ bool PaintTimingDetector::NotifyBackgroundImagePaint(
 
   return image_paint_timing_detector.RecordImage(
       *object, image.Size(), *cached_image, current_paint_chunk_properties,
-      &style_image, image_border,
-      cached_image->GetImage()->FilenameExtension());
+      &style_image, image_border);
 }
 
 // static
@@ -171,8 +170,7 @@ bool PaintTimingDetector::NotifyImagePaint(
     const gfx::Size& intrinsic_size,
     const MediaTiming& media_timing,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
-    const gfx::Rect& image_border,
-    const String& media_type) {
+    const gfx::Rect& image_border) {
   if (IgnorePaintTimingScope::ShouldIgnore())
     return false;
   LocalFrameView* frame_view = object.GetFrameView();
@@ -185,7 +183,7 @@ bool PaintTimingDetector::NotifyImagePaint(
 
   return image_paint_timing_detector.RecordImage(
       object, intrinsic_size, media_timing, current_paint_chunk_properties,
-      nullptr, image_border, media_type);
+      nullptr, image_border);
 }
 
 void PaintTimingDetector::NotifyImageFinished(const LayoutObject& object,
@@ -324,7 +322,8 @@ bool PaintTimingDetector::NotifyIfChangedLargestImagePaint(
 
       // Set specific type of the image.
       lcp_details_.largest_contentful_paint_type_ |=
-          GetLargestContentfulPaintTypeFromString(image_record->media_type_);
+          GetLargestContentfulPaintTypeFromString(
+              image_record->media_timing->MediaType());
 
       // Set DataURI type.
       if (image_record->media_timing->IsDataUrl()) {
