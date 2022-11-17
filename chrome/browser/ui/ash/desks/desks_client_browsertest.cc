@@ -2698,6 +2698,18 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SwitchToDifferentDesk) {
   EXPECT_EQ(desk_uuid_, desk_uuid);
 }
 
+// Tests that floating workspace template can be captured with fixed uuid.
+IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureFloatingWorkspaceTemplateTest) {
+  // Create a new browser and add a few tabs to it.
+  CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
+  std::unique_ptr<ash::DeskTemplate> desk_template =
+      CaptureActiveDeskAndSaveTemplate(
+          ash::DeskTemplateType::kFloatingWorkspace);
+  EXPECT_TRUE(desk_template->uuid().is_valid());
+  EXPECT_EQ(desk_template->uuid(),
+            base::GUID::ParseLowercase(ash::kFloatingWorkspaceTemplateUuid));
+}
+
 class DesksTemplatesClientLacrosTest : public InProcessBrowserTest {
  public:
   DesksTemplatesClientLacrosTest() {

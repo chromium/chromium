@@ -145,8 +145,13 @@ void RestoreDataCollector::SendDeskTemplate(uint32_t serial) {
   DCHECK(call_it != calls_.end());
   Call& call = call_it->second;
 
+  base::GUID desk_template_guid =
+      call.template_type == DeskTemplateType::kFloatingWorkspace
+          ? base::GUID::ParseLowercase(kFloatingWorkspaceTemplateUuid)
+          : base::GUID::GenerateRandomV4();
+
   auto desk_template = std::make_unique<DeskTemplate>(
-      base::GUID::GenerateRandomV4(), DeskTemplateSource::kUser,
+      std::move(desk_template_guid), DeskTemplateSource::kUser,
       call.template_name, base::Time::Now(), call.template_type);
   desk_template->set_desk_restore_data(std::move(call.data));
 
