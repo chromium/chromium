@@ -257,30 +257,6 @@ suite('Multidevice', function() {
       });
 
   test(
-      'SmartLock item routes to subpage with isSmartLockSignInRemoved disabled',
-      function() {
-        multideviceSubpage.remove();
-        loadTimeData.overrideValues({'isSmartLockSignInRemoved': false});
-        browserProxy = new TestMultideviceBrowserProxy();
-        MultiDeviceBrowserProxyImpl.setInstanceForTesting(browserProxy);
-
-        PolymerTest.clearBody();
-        multideviceSubpage =
-            document.createElement('settings-multidevice-subpage');
-        multideviceSubpage.pageContentData = {hostDeviceName: 'Pixel XL'};
-        setMode(MultiDeviceSettingsMode.HOST_SET_VERIFIED);
-        setSupportedFeatures(Object.values(MultiDeviceFeature));
-
-        document.body.appendChild(multideviceSubpage);
-        flush();
-
-        multideviceSubpage.shadowRoot.querySelector('#smartLockItem')
-            .shadowRoot.querySelector('.link-wrapper')
-            .click();
-        assertEquals(Router.getInstance().getCurrentRoute(), routes.SMART_LOCK);
-      });
-
-  test(
       'setting isSmartLockSignInRemoved flag removes SmartLock subpage route',
       function() {
         multideviceSubpage.remove();

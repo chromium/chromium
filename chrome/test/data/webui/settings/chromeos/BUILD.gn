@@ -105,7 +105,6 @@ test_files = [
   "multidevice_page_tests.js",
   "multidevice_permissions_setup_dialog_tests.js",
   "multidevice_smartlock_item_test.js",
-  "multidevice_smartlock_subpage_test.js",
   "multidevice_subpage_tests.js",
   "multidevice_task_continuation_disabled_link_tests.js",
   "multidevice_task_continuation_item_tests.js",

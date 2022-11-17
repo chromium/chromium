@@ -346,7 +346,6 @@ generated_web_component_files = [
   "chromeos/multidevice_page/multidevice_radio_button.js",
   "chromeos/multidevice_page/multidevice_screen_lock_subpage.js",
   "chromeos/multidevice_page/multidevice_smartlock_item.js",
-  "chromeos/multidevice_page/multidevice_smartlock_subpage.js",
   "chromeos/multidevice_page/multidevice_subpage.js",
   "chromeos/multidevice_page/multidevice_task_continuation_disabled_link.js",
   "chromeos/multidevice_page/multidevice_task_continuation_item.js",

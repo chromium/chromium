@@ -54,7 +54,8 @@ enum Setting {
   kVerifyMultiDeviceSetup = 201,
   kMultiDeviceOnOff = 202,
   kSmartLockOnOff = 203,
-  kSmartLockUnlockOrSignIn = 204,
+  // Note: Value 204 was for deprecated kSmartLockUnlockOrSignIn -
+  // see b/227674947. Do not reuse.
   kMessagesSetUp = 205,
   kMessagesOnOff = 206,
   kForgetPhone = 207,

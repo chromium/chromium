@@ -91,9 +91,6 @@ function createOSSettingsRoutes() {
     r.MULTIDEVICE_FEATURES = createSubpage(
         r.MULTIDEVICE, routesMojomWebui.MULTI_DEVICE_FEATURES_SUBPAGE_PATH,
         Subpage.kMultiDeviceFeatures);
-    r.SMART_LOCK = createSubpage(
-        r.MULTIDEVICE_FEATURES, routesMojomWebui.SMART_LOCK_SUBPAGE_PATH,
-        Subpage.kSmartLock);
     if (loadTimeData.getBoolean('isNearbyShareSupported')) {
       r.NEARBY_SHARE = createSubpage(
           r.MULTIDEVICE, routesMojomWebui.NEARBY_SHARE_SUBPAGE_PATH,

@@ -193,18 +193,6 @@ suite('Multidevice', function() {
         assertFalse(!!featureItem);
       });
 
-  // TODO(b/227674947): Delete this test case when Sign in with Smart Lock is
-  // removed.
-  test('clicking item with verified host opens subpage', function() {
-    initializeElement();
-    const featureItem =
-        smartLockItem.shadowRoot.querySelector('#smartLockItem');
-    assertTrue(!!featureItem);
-    expectRouteOnClick(
-        featureItem.shadowRoot.querySelector('#linkWrapper'),
-        routes.SMART_LOCK);
-  });
-
   test('feature toggle click event handled', function() {
     initializeElement();
     simulateFeatureStateChangeRequest(false).then(function() {

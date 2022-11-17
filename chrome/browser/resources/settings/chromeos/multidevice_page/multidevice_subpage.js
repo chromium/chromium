@@ -246,19 +246,6 @@ class SettingsMultideviceSubpageElement extends
   }
 
   /**
-   * TODO(b/227674947): Delete method when Sign in with Smart Lock is removed.
-   * If Smart Lock Sign in is removed there is no subpage to navigate to, so we
-   * set the subpageRoute to undefined.
-   * @return {undefined | Object}
-   * @private
-   */
-  getSmartLockSubpageRoute_() {
-    return loadTimeData.getBoolean('isSmartLockSignInRemoved') ?
-        undefined :
-        routes.SMART_LOCK;
-  }
-
-  /**
    * @return {boolean}
    * @private
    */

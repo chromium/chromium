@@ -95,7 +95,6 @@ import {Route} from '../router.js';
  *   PRIVACY_HUB: !Route,
  *   SEARCH: !Route,
  *   SEARCH_SUBPAGE: !Route,
- *   SMART_LOCK: !Route,
  *   SMART_PRIVACY: !Route,
  *   SMB_SHARES: !Route,
  *   STORAGE: !Route,

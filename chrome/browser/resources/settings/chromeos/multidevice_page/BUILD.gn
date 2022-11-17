@@ -22,7 +22,6 @@ js_type_check("closure_compile_module") {
     ":multidevice_permissions_setup_dialog",
     ":multidevice_radio_button",
     ":multidevice_screen_lock_subpage",
-    ":multidevice_smartlock_subpage",
     ":multidevice_subpage",
     ":multidevice_task_continuation_disabled_link",
     ":multidevice_task_continuation_item",
@@ -115,27 +114,6 @@ js_library("multidevice_radio_button") {
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_radio_button/cr_radio_button_externs.js",
     "//ui/webui/resources/cr_elements/policy/cr_policy_indicator_externs.js",
-  ]
-}
-
-js_library("multidevice_smartlock_subpage") {
-  deps = [
-    ":multidevice_constants",
-    ":multidevice_feature_behavior",
-    ":multidevice_metrics_logger",
-    "..:deep_linking_behavior",
-    "..:metrics_recorder",
-    "..:os_route",
-    "..:os_settings_routes",
-    "..:prefs_behavior",
-    "..:route_observer_behavior",
-    "../..:router",
-    "//ash/webui/common/resources:web_ui_listener_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "$externs_path/quick_unlock_private.js",
-    "//ui/webui/resources/cr_elements/cr_radio_button/cr_radio_button_externs.js",
   ]
 }
 
@@ -271,7 +249,6 @@ html_to_js("web_components") {
     "multidevice_radio_button.js",
     "multidevice_screen_lock_subpage.js",
     "multidevice_smartlock_item.js",
-    "multidevice_smartlock_subpage.js",
     "multidevice_subpage.js",
     "multidevice_task_continuation_disabled_link.js",
     "multidevice_task_continuation_item.js",
