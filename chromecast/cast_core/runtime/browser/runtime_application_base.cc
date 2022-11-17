@@ -226,11 +226,10 @@ void RuntimeApplicationBase::StopApplication(
   }
   is_application_running_ = false;
 
-  if (delegate_->GetWebContents()) {
-    auto* cast_web_contents =
-        CastWebContents::FromWebContents(delegate_->GetWebContents());
-    DCHECK(cast_web_contents);
-    cast_web_contents->ClosePage();
+  auto* web_contents = delegate_->GetWebContents();
+  if (web_contents) {
+    web_contents->DispatchBeforeUnload(false /* auto_cancel */);
+    web_contents->ClosePage();
 
     // Check if window is still available as page might have been closed before.
     auto* window_controls = delegate_->GetContentWindowControls();
