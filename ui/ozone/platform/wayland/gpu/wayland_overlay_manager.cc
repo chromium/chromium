@@ -61,6 +61,9 @@ bool WaylandOverlayManager::CanHandleCandidate(
   if (candidate.buffer_size.IsEmpty())
     return false;
 
+  if (!manager_gpu_->SupportsFormat(candidate.format))
+    return false;
+
   // Setting the OverlayCandidate::|uv_rect| will eventually result in setting
   // the |crop_rect_| in wayland. If this results in an empty pixel scale the
   // wayland connection will be terminated. See: wayland_surface.cc

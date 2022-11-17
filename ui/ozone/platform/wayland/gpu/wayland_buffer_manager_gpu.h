@@ -164,6 +164,9 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // Allocates a unique buffer ID.
   uint32_t AllocateBufferID();
 
+  // Returns if a format is supported by current Wayland implementation.
+  bool SupportsFormat(gfx::BufferFormat buffer_format) const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandSurfaceFactoryTest, CreateSurfaceCheckGbm);
   FRIEND_TEST_ALL_PREFIXES(WaylandSurfaceFactoryTest,

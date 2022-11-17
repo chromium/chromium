@@ -345,6 +345,11 @@ uint32_t WaylandBufferManagerGpu::AllocateBufferID() {
   return ++next_buffer_id_ ? next_buffer_id_ : ++next_buffer_id_;
 }
 
+bool WaylandBufferManagerGpu::SupportsFormat(
+    gfx::BufferFormat buffer_format) const {
+  return supported_buffer_formats_with_modifiers_.contains(buffer_format);
+}
+
 void WaylandBufferManagerGpu::BindHostInterface(
     mojo::PendingRemote<ozone::mojom::WaylandBufferManagerHost> remote_host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
