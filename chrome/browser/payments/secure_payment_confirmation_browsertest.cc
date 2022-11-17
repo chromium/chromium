@@ -67,13 +67,14 @@ void SecurePaymentConfirmationTest::OnWebDataServiceRequestDone(
 namespace {
 
 std::string GetIconDownloadErrorMessage() {
-  return "The payment method \"secure-payment-confirmation\" is not supported. "
+  return "NotSupportedError: The payment method "
+         "\"secure-payment-confirmation\" is not supported. "
          "The \"instrument.icon\" either could not be downloaded or decoded.";
 }
 
 std::string GetWebAuthnErrorMessage() {
-  return "The operation either timed out or was not allowed. See: "
-         "https://www.w3.org/TR/webauthn-2/"
+  return "NotAllowedError: The operation either timed out or was not allowed. "
+         "See: https://www.w3.org/TR/webauthn-2/"
          "#sctn-privacy-considerations-client.";
 }
 
@@ -282,7 +283,8 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDisabledTest,
 
   // EvalJs waits for JavaScript promise to resolve.
   EXPECT_EQ(
-      "The payment method \"secure-payment-confirmation\" is not supported.",
+      "NotSupportedError: The payment method \"secure-payment-confirmation\" "
+      "is not supported.",
       content::EvalJs(GetActiveWebContents(),
                       "getSecurePaymentConfirmationStatus()"));
 }
@@ -328,7 +330,8 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDisabledByFinchTest,
 
   // EvalJs waits for JavaScript promise to resolve.
   EXPECT_EQ(
-      "The payment method \"secure-payment-confirmation\" is not supported.",
+      "NotSupportedError: The payment method \"secure-payment-confirmation\" "
+      "is not supported.",
       content::EvalJs(GetActiveWebContents(),
                       "getSecurePaymentConfirmationStatus()"));
 }

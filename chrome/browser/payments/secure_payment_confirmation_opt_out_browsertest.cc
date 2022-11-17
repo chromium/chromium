@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutEnabledTest,
   // the PaymentRequest to be aborted.
   EXPECT_TRUE(test_controller()->ClickOptOut());
   EXPECT_EQ(
-      "User opted out of the process.",
+      "OptOutError: User opted out of the process.",
       content::EvalJs(GetActiveWebContents(), "getOutstandingStatusPromise()"));
 }
 

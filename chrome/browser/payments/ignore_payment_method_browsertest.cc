@@ -73,9 +73,9 @@ IN_PROC_BROWSER_TEST_F(IgnorePaymentMethodTest, InstalledPHCannotBeLaunched) {
 
   GetFinder()->IgnorePaymentMethodForTest(method_name_);
 
-  VerifyFunctionOutput(
-      "The payment method \"" + method_name_ + "\" is not supported.",
-      "getStatus($1)");
+  VerifyFunctionOutput("NotSupportedError: The payment method \"" +
+                           method_name_ + "\" is not supported.",
+                       "getStatus($1)");
 }
 
 IN_PROC_BROWSER_TEST_F(IgnorePaymentMethodTest,
@@ -111,9 +111,9 @@ IN_PROC_BROWSER_TEST_F(
 
   GetFinder()->IgnorePaymentMethodForTest(method_name_);
 
-  VerifyFunctionOutput(
-      "The payment method \"" + method_name_ + "\" is not supported.",
-      "getStatus($1)");
+  VerifyFunctionOutput("NotSupportedError: The payment method \"" +
+                           method_name_ + "\" is not supported.",
+                       "getStatus($1)");
 }
 
 }  // namespace

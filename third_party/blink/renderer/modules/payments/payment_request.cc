@@ -1541,7 +1541,7 @@ void PaymentRequest::OnError(PaymentErrorReason error,
       break;
 
     case PaymentErrorReason::USER_OPT_OUT:
-      exception_code = DOMExceptionCode::kAbortError;
+      exception_code = DOMExceptionCode::kOptOutError;
       break;
 
     case PaymentErrorReason::UNKNOWN:

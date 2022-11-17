@@ -89,6 +89,7 @@ enum class DOMExceptionCode : ExceptionCode {
   kVersionError,
   kOperationError,
   kNotAllowedError,
+  kOptOutError,
 
   // The rest of entries are defined out of scope of Web IDL.
 

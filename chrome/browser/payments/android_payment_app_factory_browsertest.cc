@@ -114,8 +114,8 @@ IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest, PlayBillingPaymentMethod) {
   std::string expected_response = response;
 #else
   std::string expected_response =
-      "The payment method \"https://play.google.com/billing\" is not "
-      "supported.";
+      "NotSupportedError: The payment method "
+      "\"https://play.google.com/billing\" is not supported.";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   NavigateTo("b.com", "/payment_handler_status.html");
@@ -139,8 +139,8 @@ IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest,
   std::string expected_response = response;
 #else
   std::string expected_response =
-      "The payment method \"https://play.google.com/billing\" is not "
-      "supported.";
+      "NotSupportedError: The payment method "
+      "\"https://play.google.com/billing\" is not supported.";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   NavigateTo("b.com", "/payment_handler_status.html");
@@ -166,8 +166,8 @@ IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest,
   std::string expected_response = response;
 #else
   std::string expected_response =
-      "The payment method \"https://play.google.com/billing\" is not "
-      "supported.";
+      "NotSupportedError: The payment method "
+      "\"https://play.google.com/billing\" is not supported.";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   NavigateTo("b.com", "/payment_handler_status.html");

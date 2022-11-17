@@ -63,7 +63,7 @@ async function getStatusForMethodDataAfterCanMakePayment(
     }
     return response.details.status;
   } catch (e) {
-    return e.message;
+    return e.toString();
   }
 }
 
@@ -88,7 +88,7 @@ async function getStatusForMethodDataWithShowPromise(methodData) {
     }
     return response.details.status;
   } catch (e) {
-    return e.message;
+    return e.toString();
   }
 }
 
@@ -111,6 +111,6 @@ async function getStatusForMethodDataWithEmptyShowPromise(methodData) {
     }
     return response.details.status;
   } catch (e) {
-    return e.message;
+    return e.toString();
   }
 }

@@ -50,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerInstallFailedTest, Test) {
       "PaymentRequest.PaymentHandlerInstallSuccess", 0);
 
   NavigateTo("b.com", "/payment_handler_status.html");
-  EXPECT_EQ("Failed to install the payment handler.",
+  EXPECT_EQ("AbortError: Failed to install the payment handler.",
             content::EvalJs(GetActiveWebContents(),
                             content::JsReplace("getStatus($1)", method_name)));
 

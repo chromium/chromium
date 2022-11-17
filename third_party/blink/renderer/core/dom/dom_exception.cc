@@ -127,6 +127,8 @@ const struct DOMExceptionEntry {
     {DOMExceptionCode::kNotAllowedError, "NotAllowedError",
      "The request is not allowed by the user agent or the platform in the "
      "current context."},
+    {DOMExceptionCode::kOptOutError, "OptOutError",
+     "The user opted out of the process."},
 
     // DOMError (obsolete, not DOMException) defined in File system (obsolete).
     // https://www.w3.org/TR/2012/WD-file-system-api-20120417/
