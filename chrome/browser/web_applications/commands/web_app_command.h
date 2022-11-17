@@ -45,12 +45,13 @@ using WebAppCommandQueueId = absl::optional<AppId>;
 // re-use each other easily.
 //
 // Invariants:
-// * Destruction can occur without `Start()` being called. If the system shuts
+// * Destruction can occur without `StartWithLock()` being called. If the system
+// shuts
 //   down and the command was never started, then it will simply be destructed.
 // * `OnShutdown()` and `OnSyncSourceRemoved()` are only called if
 //   the command has been started.
-// * `SignalCompletionAndSelfDestruct()` can ONLY be called if `Start()` has
-//   been called. Otherwise it will CHECK-fail.
+// * `SignalCompletionAndSelfDestruct()` can ONLY be called if `StartWithLock()`
+//    has been called. Otherwise it will CHECK-fail.
 class WebAppCommand {
  public:
   using Id = int;
@@ -82,15 +83,13 @@ class WebAppCommand {
 
   // Triggered by the WebAppCommandManager. Request lock and start the command
   // after the lock is acquired.
-  // TODO(https://crbug.com/1375870): remove the implementation here after all
-  // commands migrate to use `WebAppCommandTemplate`.
   virtual void RequestLock(WebAppCommandManager* command_manager,
                            WebAppLockManager* lock_manager,
-                           LockAcquiredCallback on_lock_acquired);
+                           LockAcquiredCallback on_lock_acquired) = 0;
 
   // This is called when the sync system has triggered an uninstall for an app
-  // id that is relevant to this command and this command is running (`Start()
-  // has been called). Relevance is determined by the
+  // id that is relevant to this command and this command is running
+  // (`StartWithLock()` has been called). Relevance is determined by the
   // `WebAppCommandLock::IsAppLocked()` function for this command's lock). The
   // web app should still be in the registry, but it will no longer have the
   // `WebAppManagement::kSync` source and `is_uninstalling()` will return true.
@@ -109,47 +108,23 @@ class WebAppCommand {
   //                           command, it can be passed here to ensure it is
   //                           called after this  command is destructed and any
   //                           chained  commands are queued.
-  // Note: This can ONLY be called if `Start()` has been called (`IsStarted()`
-  // is true). Otherwise it will CHECK-fail.
+  // Note: This can ONLY be called if `StartWithLock()` has been called
+  // (`IsStarted()` is true). Otherwise it will CHECK-fail.
   void SignalCompletionAndSelfDestruct(
       CommandResult result,
       base::OnceClosure call_after_destruction);
 
   virtual WebAppCommandManager* command_manager() const;
 
-  // If the `lock()` includes the lock for the kBackgroundWebContents, then this
-  // will be populated when `Start()` is called.
-  // Commands can assume that this WebContents will outlive them.
-  content::WebContents* shared_web_contents() const {
-    return shared_web_contents_;
-  }
-
   SEQUENCE_CHECKER(command_sequence_checker_);
 
  private:
   friend class WebAppCommandManager;
 
-  // Start called by the WebAppCommandManager.
-  void PrepareForStart(WebAppCommandManager* command_manager);
-
-  // Triggered after lock is acquired. Signals that this command can
-  // start its operations. When this command is complete, it should call
-  // `SignalCompletionAndSelfDestruct` to signal it's completion and destruct
-  // itself. Note: It is not guaranteed that the web app this command was
-  // created for is still installed. All state must be re-checked when method
-  // this is called.
-  virtual void Start() = 0;
-
   base::WeakPtr<WebAppCommand> AsWeakPtr();
 
   Id id_;
   raw_ptr<WebAppCommandManager> command_manager_ = nullptr;
-  // Because this is owned by the command manager, it will always outlive this
-  // object. Thus a raw pointer is save.
-  //
-  // TODO(crbug.com/1298696): unit_tests breaks with MTECheckedPtr
-  // enabled. Triage.
-  raw_ptr<content::WebContents, DegradeToNoOpWhenMTE> shared_web_contents_;
 
   base::WeakPtrFactory<WebAppCommand> weak_factory_{this};
 };
@@ -160,6 +135,12 @@ class WebAppCommandTemplate : public WebAppCommand {
   WebAppCommandTemplate() = default;
   ~WebAppCommandTemplate() override = default;
 
+  // Triggered after lock is acquired. Signals that this command can
+  // start its operations. When this command is complete, it should call
+  // `SignalCompletionAndSelfDestruct` to signal it's completion and destruct
+  // itself. Note: It is not guaranteed that the web app this command was
+  // created for is still installed. All state must be re-checked when this
+  // method is called.
   virtual void StartWithLock(std::unique_ptr<LockType> lock) = 0;
 
  protected:
@@ -168,10 +149,6 @@ class WebAppCommandTemplate : public WebAppCommand {
   }
 
  private:
-  //  TODO(https://crbug.com/1375870): remove after all commands are migrated to
-  //  use the template.
-  void Start() override {}
-
   void RequestLock(WebAppCommandManager* command_manager,
                    WebAppLockManager* lock_manager,
                    LockAcquiredCallback on_lock_acquired) override;

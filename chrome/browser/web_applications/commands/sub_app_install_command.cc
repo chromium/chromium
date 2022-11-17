@@ -215,7 +215,7 @@ void SubAppInstallCommand::StartNextInstall() {
   }
 
   url_loader_->LoadUrl(
-      install_url, shared_web_contents(),
+      install_url, &lock_->shared_web_contents(),
       WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
       base::BindOnce(
           &SubAppInstallCommand::OnWebAppUrlLoadedGetWebAppInstallInfo,
@@ -250,7 +250,7 @@ void SubAppInstallCommand::OnWebAppUrlLoadedGetWebAppInstallInfo(
   }
 
   data_retriever_->GetWebAppInstallInfo(
-      shared_web_contents(),
+      &lock_->shared_web_contents(),
       base::BindOnce(&SubAppInstallCommand::OnGetWebAppInstallInfo,
                      weak_ptr_factory_.GetWeakPtr(), unhashed_app_id));
 }
@@ -275,7 +275,7 @@ void SubAppInstallCommand::OnGetWebAppInstallInfo(
   install_info->user_display_mode = UserDisplayMode::kStandalone;
 
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
-      shared_web_contents(), /*bypass_service_worker_check=*/false,
+      &lock_->shared_web_contents(), /*bypass_service_worker_check=*/false,
       base::BindOnce(&SubAppInstallCommand::OnDidPerformInstallableCheck,
                      weak_ptr_factory_.GetWeakPtr(), unhashed_app_id,
                      std::move(install_info)));
@@ -326,7 +326,7 @@ void SubAppInstallCommand::OnDidPerformInstallableCheck(
   base::flat_set<GURL> icon_urls = GetValidIconUrlsToDownload(*web_app_info);
 
   data_retriever_->GetIcons(
-      shared_web_contents(), std::move(icon_urls), skip_page_favicons,
+      &lock_->shared_web_contents(), std::move(icon_urls), skip_page_favicons,
       base::BindOnce(&SubAppInstallCommand::OnIconsRetrievedShowDialog,
                      weak_ptr_factory_.GetWeakPtr(), unhashed_app_id,
                      std::move(web_app_info)));
@@ -386,7 +386,7 @@ void SubAppInstallCommand::OnInstallFinalized(
 
   RecordWebAppInstallationTimestamp(profile_->GetPrefs(), app_id,
                                     webapps::WebappInstallSource::SUB_APP);
-  RecordAppBanner(shared_web_contents(), start_url);
+  RecordAppBanner(&lock_->shared_web_contents(), start_url);
   MaybeFinishInstall(unhashed_app_id,
                      webapps::InstallResultCode::kSuccessNewInstall);
 }
@@ -465,7 +465,7 @@ void SubAppInstallCommand::AddResultAndRemoveFromPendingInstalls(
 }
 
 bool SubAppInstallCommand::IsWebContentsDestroyed() {
-  return !shared_web_contents() || shared_web_contents()->IsBeingDestroyed();
+  return lock_->shared_web_contents().IsBeingDestroyed();
 }
 
 void SubAppInstallCommand::AddResultToDebugData(

@@ -35,10 +35,11 @@ enum class WebAppUrlLoaderResult;
 // from the WebAppProvider system. To use, simply call `ScheduleCommand` to
 // schedule the given command or a CallbackCommand with given callback.
 //
-// Commands will be executed (`Start()` will be called) in-order based on
-// command's `WebAppCommandLock`, the `WebAppCommandLock` specifies which apps
-// or particular entities it wants to lock on. The next command will not execute
-// until `SignalCompletionAndSelfDestruct()` was called by the last command.
+// Commands will be executed (`StartWithLock()` will be called) in-order based
+// on command's `WebAppCommandLock`, the `WebAppCommandLock` specifies which
+// apps or particular entities it wants to lock on. The next command will not
+// execute until `SignalCompletionAndSelfDestruct()` was called by the last
+// command.
 class WebAppCommandManager {
  public:
   using PassKey = base::PassKey<WebAppCommandManager>;
@@ -50,7 +51,7 @@ class WebAppCommandManager {
   void Start();
 
   // Enqueues the given command in the queue corresponding to the command's
-  // `queue_id()`. `Start()` will always be called asynchronously.
+  // `lock_description()`. `Start()` will always be called asynchronously.
   void ScheduleCommand(std::unique_ptr<WebAppCommand> command);
 
   // Called on system shutdown. This call is also forwarded to any commands that
@@ -58,9 +59,9 @@ class WebAppCommandManager {
   void Shutdown();
 
   // Called by the sync integration when a list of apps have had their sync
-  // sources removed and `is_uninstalling()` set to true. Any commands that
-  // whose `queue_id()`s match an id in `app_id` who have also been `Start()`ed
-  // will also be notified.
+  // sources removed and `is_uninstalling()` set to true. Any commands
+  // whose `lock_description().app_ids()` match an id in `app_id` who have also
+  // been `StartWithLock()`ed will also be notified.
   void NotifySyncSourceRemoved(const std::vector<AppId>& app_ids);
 
   // Outputs a debug value of the state of the commands system, including

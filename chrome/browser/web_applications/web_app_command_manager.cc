@@ -125,9 +125,11 @@ void WebAppCommandManager::StartCommandOrPrepareForLoad(
   DCHECK(command_it != commands_.end());
 #endif
   if (command->lock_description().IncludesSharedWebContents()) {
-    command->shared_web_contents_ = EnsureWebContentsCreated();
+    CHECK(shared_web_contents_);
     url_loader_->PrepareForLoad(
-        command->shared_web_contents(),
+        // web_contents is created by `WebAppLockManager` when lock is granted,
+        // this grabs the same web_contents.
+        shared_web_contents_.get(),
         base::BindOnce(&WebAppCommandManager::OnAboutBlankLoadedForCommandStart,
                        weak_ptr_factory_.GetWeakPtr(), command,
                        std::move(start_command)));
@@ -200,9 +202,9 @@ void WebAppCommandManager::NotifySyncSourceRemoved(
   // commands. The main complications that can occur are a command calling
   // `CompleteAndDestruct` or `ScheduleCommand` inside of the
   // `OnSyncSourceRemoved` call. Because all commands are
-  // `Start()`ed asynchronously, we will never have to notify any commands that
-  // are newly scheduled. So at most one command needs to be notified per queue,
-  // and that command can be destroyed before we notify it.
+  // `StartWithLock()`ed asynchronously, we will never have to notify any
+  // commands that are newly scheduled. So at most one command needs to be
+  // notified per queue, and that command can be destroyed before we notify it.
   std::vector<base::WeakPtr<WebAppCommand>> commands_to_notify;
   for (const AppId& app_id : app_ids) {
     for (const auto& [id, command] : commands_) {

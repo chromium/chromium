@@ -48,21 +48,6 @@ WebAppCommandManager* WebAppCommand::command_manager() const {
   return command_manager_;
 }
 
-void WebAppCommand::RequestLock(WebAppCommandManager* command_manager,
-                                WebAppLockManager* lock_manager,
-                                LockAcquiredCallback on_lock_acquired) {
-  lock_manager->AcquireLock(
-      lock_description(),
-      base::BindOnce(std::move(on_lock_acquired),
-                     base::BindOnce(&WebAppCommand::PrepareForStart,
-                                    AsWeakPtr(), command_manager)));
-}
-
-void WebAppCommand::PrepareForStart(WebAppCommandManager* command_manager) {
-  command_manager_ = command_manager;
-  Start();
-}
-
 base::WeakPtr<WebAppCommand> WebAppCommand::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
