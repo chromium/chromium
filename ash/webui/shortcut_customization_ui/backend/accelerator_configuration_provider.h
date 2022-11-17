@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
@@ -21,7 +22,8 @@ namespace shortcut_ui {
 
 class AcceleratorConfigurationProvider
     : public shortcut_customization::mojom::AcceleratorConfigurationProvider,
-      public ui::InputDeviceEventObserver {
+      public ui::InputDeviceEventObserver,
+      public input_method::InputMethodManager::Observer {
  public:
   using AcceleratorConfigurationMap =
       base::flat_map<mojom::AcceleratorSource,
@@ -50,6 +52,11 @@ class AcceleratorConfigurationProvider
 
   // ui::InputDeviceEventObserver:
   void OnInputDeviceConfigurationChanged(uint8_t input_device_types) override;
+
+  // InputMethodManager::Observer:
+  void InputMethodChanged(input_method::InputMethodManager* manager,
+                          Profile* profile,
+                          bool show_message) override;
 
   void BindInterface(
       mojo::PendingReceiver<

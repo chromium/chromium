@@ -20,6 +20,7 @@
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "base/bind.h"
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -28,6 +29,8 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/base/ime/ash/mock_input_method_manager.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
@@ -53,6 +56,8 @@ class FakeAcceleratorsUpdatedObserver
   }
 
   int num_times_notified() { return num_times_notified_; }
+
+  void clear_num_times_notified() { num_times_notified_ = 0; }
 
   shortcut_ui::AcceleratorConfigurationProvider::AcceleratorConfigurationMap
   config() {
@@ -164,11 +169,35 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
   AcceleratorConfigurationProviderTest() = default;
   ~AcceleratorConfigurationProviderTest() override = default;
 
+  class TestInputMethodManager : public input_method::MockInputMethodManager {
+   public:
+    void AddObserver(
+        input_method::InputMethodManager::Observer* observer) override {
+      observers_.AddObserver(observer);
+    }
+
+    void RemoveObserver(
+        input_method::InputMethodManager::Observer* observer) override {
+      observers_.RemoveObserver(observer);
+    }
+
+    // Calls all observers with Observer::InputMethodChanged
+    void NotifyInputMethodChanged() {
+      for (auto& observer : observers_) {
+        observer.InputMethodChanged(
+            /*manager=*/this, /*profile=*/nullptr, /*show_message=*/false);
+      }
+    }
+
+    base::ObserverList<InputMethodManager::Observer>::Unchecked observers_;
+  };
+
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {::features::kImprovedKeyboardShortcuts}, {});
-    // ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ENGLISH_US);
+    input_method_manager_ = new TestInputMethodManager();
+    input_method::InputMethodManager::Initialize(input_method_manager_);
 
     ui::ResourceBundle::CleanupSharedInstance();
     AshTestSuite::LoadTestResources();
@@ -178,7 +207,13 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
-  void TearDown() override { AshTestBase::TearDown(); }
+  void TearDown() override {
+    AshTestBase::TearDown();
+    // `provider_` has a dependency on `input_method_manager_`.
+    provider_.reset();
+    input_method::InputMethodManager::Shutdown();
+    input_method_manager_ = nullptr;
+  }
 
  protected:
   const std::vector<ui::InputDevice>& GetConnectedKeyboards() {
@@ -192,6 +227,8 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
 
   std::unique_ptr<AcceleratorConfigurationProvider> provider_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  // Test global singleton. Delete is handled by InputMethodManager::Shutdown().
+  base::raw_ptr<TestInputMethodManager> input_method_manager_;
 };
 
 TEST_F(AcceleratorConfigurationProviderTest, ResetReceiverOnBindInterface) {
@@ -225,6 +262,19 @@ TEST_F(AcceleratorConfigurationProviderTest, AshIsMutable) {
                          EXPECT_TRUE(is_mutable);
                        }));
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(AcceleratorConfigurationProviderTest, InitialAccelInitCalls) {
+  FakeAcceleratorsUpdatedObserver observer;
+  SetUpObserver(&observer);
+  EXPECT_EQ(0, observer.num_times_notified());
+
+  Shell::Get()->ash_accelerator_configuration()->Initialize();
+  base::RunLoop().RunUntilIdle();
+
+  // Observer is initially notified twice, one for ash accelerators and the
+  // other for deprecated accelerators.
+  EXPECT_EQ(2, observer.num_times_notified());
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, AshAcceleratorsUpdated) {
@@ -487,6 +537,22 @@ TEST_F(AcceleratorConfigurationProviderTest, SixPackKeyAcceleratorRemapped) {
   // Verify observer received the correct remapped accelerators.
   ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh, expected_data,
                                observer.config());
+}
+
+TEST_F(AcceleratorConfigurationProviderTest, InputMethodChanged) {
+  FakeAcceleratorsUpdatedObserver observer;
+  SetUpObserver(&observer);
+  EXPECT_EQ(0, observer.num_times_notified());
+  Shell::Get()->ash_accelerator_configuration()->Initialize();
+  base::RunLoop().RunUntilIdle();
+  // Clear extraneous observer calls.
+  observer.clear_num_times_notified();
+  EXPECT_EQ(0, observer.num_times_notified());
+
+  // Change input method, expect observer to be called.
+  input_method_manager_->NotifyInputMethodChanged();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, observer.num_times_notified());
 }
 
 }  // namespace shortcut_ui

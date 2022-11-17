@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
@@ -137,6 +138,9 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider()
   // Observe connected keyboard events.
   ui::DeviceDataManager::GetInstance()->AddObserver(this);
 
+  // Observe keyboard input method changes.
+  input_method::InputMethodManager::Get()->AddObserver(this);
+
   ash_accelerator_configuration_->AddAcceleratorsUpdatedCallback(
       base::BindRepeating(
           &AcceleratorConfigurationProvider::OnAcceleratorsUpdated,
@@ -152,7 +156,11 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider()
 }
 
 AcceleratorConfigurationProvider::~AcceleratorConfigurationProvider() {
+  DCHECK(ui::DeviceDataManager::GetInstance());
+  DCHECK(input_method::InputMethodManager::Get());
+
   ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
+  input_method::InputMethodManager::Get()->RemoveObserver(this);
 }
 
 void AcceleratorConfigurationProvider::IsMutable(
@@ -186,6 +194,15 @@ void AcceleratorConfigurationProvider::OnInputDeviceConfigurationChanged(
   if (input_device_types & (ui::InputDeviceEventObserver::kKeyboard)) {
     UpdateKeyboards();
   }
+}
+
+void AcceleratorConfigurationProvider::InputMethodChanged(
+    input_method::InputMethodManager* manager,
+    Profile* profile,
+    bool show_message) {
+  // Accelerators are updated to match the current input method, e.g. positional
+  // shortcuts.
+  NotifyAcceleratorsUpdated();
 }
 
 void AcceleratorConfigurationProvider::GetAcceleratorLayoutInfos(

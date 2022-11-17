@@ -18,6 +18,7 @@ static_library("backend") {
     "//ash/public/mojom",
     "//ash/webui/shortcut_customization_ui/mojom",
     "//components/prefs:prefs",
+    "//ui/base/ime/ash",
     "//ui/events/devices",
   ]
 }
@@ -38,6 +39,8 @@ source_set("unit_tests") {
     "//chromeos/ash/components:test_support",
     "//content/test:test_support",
     "//testing/gtest",
+    "//ui/base:test_support",
+    "//ui/base/ime/ash",
     "//ui/events/devices",
     "//ui/events/devices:test_support",
   ]
