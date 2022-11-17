@@ -247,7 +247,6 @@ template("rust_target") {
                  "_test_deps",
                  "_testonly",
                  "_visibility",
-                 "proc_macro_target",
                ])
   } else {
     group(_target_name) {

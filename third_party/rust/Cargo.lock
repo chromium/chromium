@@ -46,7 +46,7 @@ version = "1.1.0"
 
 [[package]]
 name = "autocxx"
-version = "0.23.0"
+version = "0.23.1"
 dependencies = [
  "aquamarine",
  "autocxx-macro",
@@ -77,7 +77,7 @@ dependencies = [
 
 [[package]]
 name = "autocxx-engine"
-version = "0.23.0"
+version = "0.23.1"
 dependencies = [
  "aquamarine",
  "autocxx-bindgen",
@@ -104,7 +104,7 @@ dependencies = [
 
 [[package]]
 name = "autocxx-gen"
-version = "0.23.0"
+version = "0.23.1"
 dependencies = [
  "autocxx-engine",
  "clap",
@@ -117,7 +117,7 @@ dependencies = [
 
 [[package]]
 name = "autocxx-macro"
-version = "0.23.0"
+version = "0.23.1"
 dependencies = [
  "autocxx-parser",
  "proc-macro-error",
@@ -128,7 +128,7 @@ dependencies = [
 
 [[package]]
 name = "autocxx-parser"
-version = "0.23.0"
+version = "0.23.1"
 dependencies = [
  "indexmap",
  "itertools 0.10.3",
@@ -223,17 +223,22 @@ dependencies = [
  "autocxx-bindgen",
  "autocxx-gen",
  "bindgen",
+ "bitflags",
  "cargo-platform",
  "cargo_metadata",
  "clap",
  "cxx",
  "cxxbridge-cmd",
+ "lazy_static",
  "memoffset",
  "once_cell",
+ "proc-macro2",
+ "quote",
  "rstest",
  "rustversion",
  "semver",
  "serde",
+ "serde_json",
  "serde_json_lenient",
  "small_ctor",
  "static_assertions",
@@ -285,7 +290,6 @@ dependencies = [
 name = "cxx"
 version = "1.0.81"
 dependencies = [
- "cxxbridge-flags",
  "cxxbridge-macro",
  "link-cplusplus",
 ]
@@ -310,10 +314,6 @@ dependencies = [
  "quote",
  "syn",
 ]
-
-[[package]]
-name = "cxxbridge-flags"
-version = "1.0.81"
 
 [[package]]
 name = "cxxbridge-macro"

@@ -126,9 +126,25 @@ template("cargo_crate") {
                               ]) ]
   }
 
-  # The main target, either a Rust source set or an executable
+  # The main target, either a Rust source set or an executable.
   rust_target(target_name) {
-    # Work out what we're building
+    forward_variables_from(invoker,
+                           "*",
+                           TESTONLY_AND_VISIBILITY + [
+                                 "build_root",
+                                 "build_deps",
+                                 "build_sources",
+                                 "build_script_inputs",
+                                 "build_script_outputs",
+                                 "output_dir",
+                                 "unit_test_target",
+                                 "target_type",
+                                 "configs",
+                                 "rustenv",
+                               ])
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+
+    # Work out what we're building.
     crate_type = "rlib"
     if (defined(invoker.crate_type)) {
       crate_type = invoker.crate_type
@@ -161,22 +177,6 @@ template("cargo_crate") {
     # The unit tests for each target, if generated, should be unique as well,
     # and needs to be unique within the name of the binary itself.
     unit_test_target = "${_crate_name}_${orig_target_name}_unittests"
-
-    forward_variables_from(invoker,
-                           "*",
-                           [
-                             "build_root",
-                             "build_deps",
-                             "build_sources",
-                             "build_script_inputs",
-                             "build_script_outputs",
-                             "output_dir",
-                             "unit_test_target",
-                             "target_type",
-                             "visibility",
-                             "testonly",
-                             "configs",
-                           ])
 
     if (defined(invoker.build_root)) {
       # Uh-oh, we have a build script
