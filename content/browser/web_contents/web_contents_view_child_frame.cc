@@ -17,9 +17,25 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "content/browser/renderer_host/popup_menu_helper_mac.h"
+#endif
+
 using blink::DragOperationsMask;
 
 namespace content {
+
+namespace {
+#if BUILDFLAG(IS_MAC)
+class NoOpPopupMenuHelperDelegate : public PopupMenuHelper::Delegate {
+ public:
+  void OnMenuClosed() final {
+    // Nothing to clean up, as `PopupMenuHelper` deletes itself at the end of
+    // `WebContentsViewChildFrame::ShowPopupMenu`.
+  }
+};
+#endif
+}  // namespace
 
 WebContentsViewChildFrame::WebContentsViewChildFrame(
     WebContentsImpl* web_contents,
@@ -156,6 +172,27 @@ void WebContentsViewChildFrame::ShowContextMenu(
     const ContextMenuParams& params) {
   NOTREACHED();
 }
+
+#if BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
+void WebContentsViewChildFrame::ShowPopupMenu(
+    RenderFrameHost* render_frame_host,
+    mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
+    const gfx::Rect& bounds,
+    int item_height,
+    double item_font_size,
+    int selected_item,
+    std::vector<blink::mojom::MenuItemPtr> menu_items,
+    bool right_aligned,
+    bool allow_multiple_selection) {
+#if BUILDFLAG(IS_MAC)
+  NoOpPopupMenuHelperDelegate delegate;
+  PopupMenuHelper helper(&delegate, render_frame_host, std::move(popup_client));
+  helper.ShowPopupMenu(bounds, item_height, item_font_size, selected_item,
+                       std::move(menu_items), right_aligned,
+                       allow_multiple_selection);
+#endif  // BUILDFLAG(IS_MAC)
+}
+#endif  // BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
 
 void WebContentsViewChildFrame::StartDragging(
     const DropData& drop_data,

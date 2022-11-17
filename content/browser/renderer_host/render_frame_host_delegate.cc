@@ -179,14 +179,7 @@ RenderWidgetHostImpl* RenderFrameHostDelegate::CreateNewPopupWidget(
 
 bool RenderFrameHostDelegate::ShowPopupMenu(
     RenderFrameHostImpl* render_frame_host,
-    mojo::PendingRemote<blink::mojom::PopupMenuClient>* popup_client,
-    const gfx::Rect& bounds,
-    int32_t item_height,
-    double font_size,
-    int32_t selected_item,
-    std::vector<blink::mojom::MenuItemPtr>* menu_items,
-    bool right_aligned,
-    bool allow_multiple_selection) {
+    const gfx::Rect& bounds) {
   return false;
 }
 

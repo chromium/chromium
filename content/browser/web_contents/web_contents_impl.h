@@ -768,16 +768,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
           blink_widget_host,
       mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget)
       override;
-  bool ShowPopupMenu(
-      RenderFrameHostImpl* render_frame_host,
-      mojo::PendingRemote<blink::mojom::PopupMenuClient>* popup_client,
-      const gfx::Rect& bounds,
-      int32_t item_height,
-      double font_size,
-      int32_t selected_item,
-      std::vector<blink::mojom::MenuItemPtr>* menu_items,
-      bool right_aligned,
-      bool allow_multiple_selection) override;
+  bool ShowPopupMenu(RenderFrameHostImpl* render_frame_host,
+                     const gfx::Rect& bounds) override;
   void DidLoadResourceFromMemoryCache(
       RenderFrameHostImpl* source,
       const GURL& url,

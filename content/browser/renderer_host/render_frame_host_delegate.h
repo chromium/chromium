@@ -575,19 +575,12 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
           blink_widget_host,
       mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget);
 
-  // Return true if the popup is shown through WebContentsObserver.
-  // BrowserPluginGuest for the guest WebContents will show the popup on Mac,
-  // then, we should skip to show the popup at RenderViewHostDelegateView.
-  virtual bool ShowPopupMenu(
-      RenderFrameHostImpl* render_frame_host,
-      mojo::PendingRemote<blink::mojom::PopupMenuClient>* popup_client,
-      const gfx::Rect& bounds,
-      int32_t item_height,
-      double font_size,
-      int32_t selected_item,
-      std::vector<blink::mojom::MenuItemPtr>* menu_items,
-      bool right_aligned,
-      bool allow_multiple_selection);
+  // Returns true if the popup is shown through WebContentsObserver. Else, the
+  // Android / Mac flavors of `RenderViewHostDelegateView` will show the popup
+  // menu correspondingly, and `WebContentsViewChildFrame` will show the popup
+  // for Mac's GuestView.
+  virtual bool ShowPopupMenu(RenderFrameHostImpl* render_frame_host,
+                             const gfx::Rect& bounds);
 
   virtual void DidLoadResourceFromMemoryCache(
       RenderFrameHostImpl* source,

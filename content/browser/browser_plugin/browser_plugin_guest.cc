@@ -21,10 +21,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "content/browser/browser_plugin/browser_plugin_popup_menu_helper_mac.h"
-#endif
-
 namespace content {
 
 BrowserPluginGuest::BrowserPluginGuest(WebContentsImpl* web_contents,
@@ -142,28 +138,5 @@ void BrowserPluginGuest::PrimaryMainFrameRenderProcessGone(
       break;
   }
 }
-
-#if BUILDFLAG(IS_MAC)
-void BrowserPluginGuest::ShowPopupMenu(
-    RenderFrameHost* render_frame_host,
-    mojo::PendingRemote<blink::mojom::PopupMenuClient>* popup_client,
-    const gfx::Rect& bounds,
-    int32_t item_height,
-    double font_size,
-    int32_t selected_item,
-    std::vector<blink::mojom::MenuItemPtr>* menu_items,
-    bool right_aligned,
-    bool allow_multiple_selection) {
-  gfx::Rect translated_bounds(bounds);
-  auto* guest_rwhv = render_frame_host->GetView();
-  translated_bounds.set_origin(
-      guest_rwhv->TransformPointToRootCoordSpace(translated_bounds.origin()));
-  BrowserPluginPopupMenuHelper popup_menu_helper(render_frame_host,
-                                                 std::move(*popup_client));
-  popup_menu_helper.ShowPopupMenu(translated_bounds, item_height, font_size,
-                                  selected_item, std::move(*menu_items),
-                                  right_aligned, allow_multiple_selection);
-}
-#endif
 
 }  // namespace content

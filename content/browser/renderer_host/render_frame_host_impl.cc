@@ -6799,9 +6799,7 @@ void RenderFrameHostImpl::ShowPopupMenu(
     return;
   }
 
-  if (delegate()->ShowPopupMenu(this, &popup_client, bounds, item_height,
-                                font_size, selected_item, &menu_items,
-                                right_aligned, allow_multiple_selection)) {
+  if (delegate()->ShowPopupMenu(this, bounds)) {
     return;
   }
 

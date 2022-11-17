@@ -9078,16 +9078,8 @@ void WebContentsImpl::DidChangeScreenOrientation() {
   last_screen_orientation_change_time_ = ui::EventTimeForNow();
 }
 
-bool WebContentsImpl::ShowPopupMenu(
-    RenderFrameHostImpl* render_frame_host,
-    mojo::PendingRemote<blink::mojom::PopupMenuClient>* popup_client,
-    const gfx::Rect& bounds,
-    int32_t item_height,
-    double font_size,
-    int32_t selected_item,
-    std::vector<blink::mojom::MenuItemPtr>* menu_items,
-    bool right_aligned,
-    bool allow_multiple_selection) {
+bool WebContentsImpl::ShowPopupMenu(RenderFrameHostImpl* render_frame_host,
+                                    const gfx::Rect& bounds) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::ShowPopupMenu",
                         "render_frame_host", render_frame_host);
   DCHECK(render_frame_host->IsActive());
@@ -9095,14 +9087,6 @@ bool WebContentsImpl::ShowPopupMenu(
     std::move(show_poup_menu_callback_).Run(bounds);
     return true;
   }
-#if BUILDFLAG(IS_MAC)
-  if (browser_plugin_guest_) {
-    browser_plugin_guest_->ShowPopupMenu(
-        render_frame_host, popup_client, bounds, item_height, font_size,
-        selected_item, menu_items, right_aligned, allow_multiple_selection);
-    return true;
-  }
-#endif
   return false;
 }
 
