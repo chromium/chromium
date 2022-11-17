@@ -4,5 +4,27 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<!-- TODO(http://b/254413937): Populate page with required elements/toggles. -->
-<PreferenceScreen></PreferenceScreen>
+<!-- TODO(http://b/259525182): Implement logic for dynamic sub-labels. -->
+<!-- TODO(http://b/254414138): Add correct links to the Preference fragments. -->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="topics"
+        android:title="@string/ad_privacy_page_topics_link_row_label"
+        android:summary="@string/ad_privacy_page_topics_link_row_sub_label_enabled"
+        android:icon="@drawable/ic_interests_24dp"
+        app:iconTint="@macro/default_icon_color" />
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="fledge"
+        android:title="@string/ad_privacy_page_fledge_link_row_label"
+        android:summary="@string/ad_privacy_page_fledge_link_row_sub_label_enabled"
+        android:icon="@drawable/ic_checklist_24dp"
+        app:iconTint="@macro/default_icon_color" />
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="ad_measurement"
+        android:title="@string/ad_privacy_page_ad_measurement_link_row_label"
+        android:summary="@string/ad_privacy_page_ad_measurement_link_row_sub_label_enabled"
+        android:icon="@drawable/ic_bar_chart_24dp"
+        app:iconTint="@macro/default_icon_color"
+        app:allowDividerBelow="false" />
+</PreferenceScreen>

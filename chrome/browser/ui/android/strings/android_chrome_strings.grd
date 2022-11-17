@@ -818,10 +818,10 @@ CHAR_LIMIT guidelines:
         Security
       </message>
       <message name="IDS_AD_PRIVACY_LINK_ROW_LABEL" translateable="false" desc="Label for the ad privacy row.">
-        Lorem ipsum
+        Donec semper
       </message>
       <message name="IDS_AD_PRIVACY_LINK_ROW_SUB_LABEL" translateable="false" desc="Sublabel for the ad privacy row.">
-        Lorem ipsum Lorem ipsum
+        Fusce purus nibh, dictum sit amet mi in, fringilla ullamcorper tortor
       </message>
       <message name="IDS_CONTEXTUAL_SEARCH_TITLE" desc="Name for the Contextual Search feature, which allows users to search for a term in a web page by tapping on it.">
         Touch to Search
@@ -1157,9 +1157,27 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
         <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Lorem ipsum:<ph name="END_BOLD">&lt;/b&gt;</ph> Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum
       </message>
 
-      <!-- Privacy Sandbox v4 - Ad Privacy Page-->
-      <message name="IDS_AD_PRIVACY_PAGE_TITLE" translateable="false" desc="Title on page.">
-        Lorem Ipsum
+      <!-- Privacy Sandbox v4 - Ad Privacy Page -->
+      <message name="IDS_AD_PRIVACY_PAGE_TITLE" translateable="false" desc="Title for the Ad Privacy preferences.">
+        Donec semper
+      </message>
+      <message name="IDS_AD_PRIVACY_PAGE_TOPICS_LINK_ROW_LABEL" translateable="false" desc="Title for topics preference.">
+        Mauris interdum lectus vitae lacinia
+      </message>
+      <message name="IDS_AD_PRIVACY_PAGE_TOPICS_LINK_ROW_SUB_LABEL_ENABLED" translateable="false" desc="Description for topics preference when enabled.">
+        Enabled Nulla eros tortor, placerat blandit dictum a, interdum id metus
+      </message>
+      <message name="IDS_AD_PRIVACY_PAGE_FLEDGE_LINK_ROW_LABEL" translateable="false" desc="Title for the fledge preference when enabled.">
+        Aenean erat leo
+      </message>
+      <message name="IDS_AD_PRIVACY_PAGE_FLEDGE_LINK_ROW_SUB_LABEL_ENABLED" translateable="false" desc="Description for the fledge preference when enabled.">
+        Enabled Duis scelerisque a mi eget ultricies
+      </message>
+      <message name="IDS_AD_PRIVACY_PAGE_AD_MEASUREMENT_LINK_ROW_LABEL" translateable="false" desc="Title for the ad measurement preference.">
+        Vestibulum augue erat
+      </message>
+      <message name="IDS_AD_PRIVACY_PAGE_AD_MEASUREMENT_LINK_ROW_SUB_LABEL_ENABLED" translateable="false" desc="Description for the ad measurement preference when enabled.">
+        Enabled Vivamus id lacus et lacus porttitor vulputate. Sed semper egestas orci vel maximus.
       </message>
 
       <!-- Secure DNS Settings.  Used by //chrome/browser/privacy. -->
