@@ -6,9 +6,11 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 14
+// Next MinVersion: 15
 
 module ash.ime.mojom;
+
+import "chromeos/ash/services/ime/public/mojom/japanese_settings.mojom";
 
 // Do not modify this enum. If new values are needed, deprecate the entire enum.
 [Stable, Extensible, RenamedFrom="chromeos.ime.mojom.KeyEventType"]
@@ -259,17 +261,17 @@ struct InputFieldInfo {
   [MinVersion=10] TextPredictionMode text_prediction@3;
 };
 
-// Next ordinal: 4
-//
-// TODO(crbug.com/1261313): Note that this type must be marked [Extensible] in
-// all deployed versions before new ordinals can be introduced, and [Extensible]
-// requires specifying a [Default] field.
-[Stable, RenamedFrom="chromeos.ime.mojom.InputMethodSettings"]
+// Next ordinal: 6
+[Stable, Extensible, RenamedFrom="chromeos.ime.mojom.InputMethodSettings"]
 union InputMethodSettings {
+  // The default value for forward compatibility. All unknown types will be
+  // mapped to this.
+  [Default, MinVersion=14] bool null_settings@5;
   KoreanSettings korean_settings@0;
   LatinSettings latin_settings@1;
   PinyinSettings pinyin_settings@2;
   ZhuyinSettings zhuyin_settings@3;
+  [MinVersion=14] JapaneseSettings japanese_settings@4;
 };
 
 // Next ordinal: 9
@@ -325,6 +327,13 @@ struct FuzzyPinyinSettings {
   bool l_n@9;
   bool s_sh@10;
   bool z_zh@11;
+};
+
+// Next ordinal: 1
+[Stable]
+struct JapaneseSettings {
+  JapaneseConfig japanese_config@0;
+  // TODO(b/232341104): Add the Japanese user dictionary here.
 };
 
 // Next ordinal: 3
