@@ -10,6 +10,7 @@ if [[ -z "$cipd_hash" ]]; then
   cipd_hash=$(gclient getdep -r src/third_party/r8:chromium/third_party/r8)
 fi
 echo "CIPD instance: $cipd_hash"
-r8_commit=$(cipd describe chromium/third_party/r8 -version "$cipd_hash" | grep "version:" | grep -P --only-matching '(?<=@).*(?=-)')
+# Multiple version tags can exist when 3pp bot runs again but R8.jar doesn't change.
+r8_commit=$(cipd describe chromium/third_party/r8 -version "$cipd_hash" | grep --max-count=1 "version:" | grep -P --only-matching '(?<=@).*(?=-)')
 echo "R8 commit: $r8_commit"
 echo "Recent commits: https://r8.googlesource.com/r8/+log/$r8_commit"
