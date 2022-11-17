@@ -188,7 +188,7 @@ class BASE_EXPORT CheckOpResult {
   constexpr ::logging::CheckOpResult Check##name##Impl(                     \
       bool is_dcheck, const char* file, int line, const T& v1, const U& v2, \
       const char* expr_str) {                                               \
-    if (ANALYZER_ASSUME_TRUE(v1 op v2))                                     \
+    if (LIKELY(ANALYZER_ASSUME_TRUE(v1 op v2)))                             \
       return ::logging::CheckOpResult();                                    \
     return CheckOpResult(CheckOpResult::CreateLogMessage(                   \
         is_dcheck, file, line, expr_str, CheckOpValueStr(v1),               \
@@ -201,7 +201,7 @@ class BASE_EXPORT CheckOpResult {
   constexpr ::logging::CheckOpResult Check##name##Impl(                     \
       bool is_dcheck, const char* file, int line, T v1, U v2,               \
       const char* expr_str) {                                               \
-    if (ANALYZER_ASSUME_TRUE(v1 op v2))                                     \
+    if (LIKELY(ANALYZER_ASSUME_TRUE(v1 op v2)))                             \
       return ::logging::CheckOpResult();                                    \
     return CheckOpResult(CheckOpResult::CreateLogMessage(                   \
         is_dcheck, file, line, expr_str, CheckOpValueStr(v1),               \
