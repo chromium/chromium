@@ -183,10 +183,6 @@ source_set("encoding") {
 
     deps += [ "//third_party/libaom" ]
   }
-
-  if (is_chromeos) {
-    deps += [ "//third_party/re2" ]
-  }
 }
 
 # TODO(https://crbug.com/1327074): should be split into multiple source sets
