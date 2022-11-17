@@ -288,7 +288,7 @@
   {
     "name": "ash-bento-bar",
     "owners": [ "minch", "janetmac" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 116
   },
   {
     "name": "ash-debug-shortcuts",
