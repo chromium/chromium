@@ -74917,6 +74917,35 @@
        ]
       ]
      },
+     "background-attachment-local-hidden.html": [
+      "cbe3440e3894e79223d4f647397a32da60411420",
+      [
+       null,
+       [
+        [
+         "/css/css-backgrounds/reference/background-attachment-local-hidden-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            60
+           ],
+           [
+            0,
+            394
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
      "background-attachment-margin-root-001.html": [
       "88bc2845e8b6a6e24ca33547e704deab28e046bb",
       [
@@ -216788,6 +216817,32 @@
        {}
       ]
      ],
+     "dialog-in-top-layer-during-transition-new.html": [
+      "d5135be3d0f515c5defb9fdefd875522108612f2",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/dialog-in-top-layer-during-transition-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "dialog-in-top-layer-during-transition-old.html": [
+      "da4bcf13afff991c172e8e21400abf565c6b7634",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/dialog-in-top-layer-during-transition-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "element-with-overflow.html": [
       "188e00d309677b26d4a05a8f6395fdcf2ee8952d",
       [
@@ -258316,7 +258371,7 @@
     ],
     "import_export": {
      "okp_importKey.https.any-expected.txt": [
-      "b0584f5102cd80046a3ab60df20078c692c373de",
+      "bb30f153f14d0b3617e4b6eeb60337d8e1358ed5",
       []
      ],
      "okp_importKey.https.any.js.ini": [
@@ -258324,7 +258379,35 @@
       []
      ],
      "okp_importKey.https.any.worker-expected.txt": [
-      "b0584f5102cd80046a3ab60df20078c692c373de",
+      "bb30f153f14d0b3617e4b6eeb60337d8e1358ed5",
+      []
+     ],
+     "okp_importKey_failures.js": [
+      "4e2d717595127b4e7cccc3efe651a2a3d12cfcaf",
+      []
+     ],
+     "okp_importKey_failures_Ed448.https.any-expected.txt": [
+      "be6595891399f47f983792e303fee9b26f71e491",
+      []
+     ],
+     "okp_importKey_failures_Ed448.https.any.worker-expected.txt": [
+      "be6595891399f47f983792e303fee9b26f71e491",
+      []
+     ],
+     "okp_importKey_failures_X25519.https.any-expected.txt": [
+      "f491ded965aa1ff64efe6b21bfc48174b85875dc",
+      []
+     ],
+     "okp_importKey_failures_X25519.https.any.worker-expected.txt": [
+      "f491ded965aa1ff64efe6b21bfc48174b85875dc",
+      []
+     ],
+     "okp_importKey_failures_X448.https.any-expected.txt": [
+      "f8e95ade006a1757f4db37ed07666f52c60b6037",
+      []
+     ],
+     "okp_importKey_failures_X448.https.any.worker-expected.txt": [
+      "f8e95ade006a1757f4db37ed07666f52c60b6037",
       []
      ],
      "symmetric_importKey.https.any-expected.txt": [
@@ -259682,10 +259765,6 @@
     ],
     "META.yml": [
      "4bd94e32064c78553666424e1d0ee30bca4987fb",
-     []
-    ],
-    "OWNERS": [
-     "c82b6c02247630966ddd2c05b0db1c9321350d20",
      []
     ],
     "beacon-common.sub.js": [
@@ -274326,6 +274405,10 @@
       ],
       "background-334-ref.xht": [
        "2b568109db28719bc2973d350874f0685a630185",
+       []
+      ],
+      "background-attachment-local-hidden-ref.html": [
+       "fc593c23cd048af09b6ddc053524ca4ef8281e3d",
        []
       ],
       "background-clip-002-ref.html": [
@@ -313659,6 +313742,10 @@
       "659d1d52786ff8ce473cfdb2a162b9fb612b0544",
       []
      ],
+     "dialog-in-top-layer-during-transition-ref.html": [
+      "41467678a31ab07b3ceb639ccf8ecee27761a45f",
+      []
+     ],
      "element-with-overflow-ref.html": [
       "523c8616a6666ddfab4dcf3b02dced31523a92b5",
       []
@@ -326326,6 +326413,22 @@
      "resources": {
       "bad-gzip-body.py": [
        "a79b94ed041d0e0852e71bdd5cdba57897a1f198",
+       []
+      ],
+      "foo.octetstream.gz": [
+       "f3df4cb89b5d0b78bc76d0ce03ab0c205c5211fa",
+       []
+      ],
+      "foo.octetstream.gz.headers": [
+       "27d4f401f1b601446854810b65f5e130d561aa65",
+       []
+      ],
+      "foo.text.gz": [
+       "05a5cce07b514365d9c468f4a1763b8173cfecfc",
+       []
+      ],
+      "foo.text.gz.headers": [
+       "7def3ddc148d1c2457240a9741ed4a2b8b3a5927",
        []
       ]
      }
@@ -361672,7 +361775,7 @@
       []
      ],
      "idlharness.window-expected.txt": [
-      "16f27e1cf3eb8feac1fc6f75f156953c82db9d33",
+      "3d69232843028d94d7eaec33fe6678c82ff7fa2c",
       []
      ],
      "idlharness.window.js.ini": [
@@ -361690,7 +361793,7 @@
     },
     "view-timelines": {
      "testcommon.js": [
-      "ba275763db4533bf8d31c6ddc001aeba8995f9bb",
+      "41341cf6fb80c2cfa89ac0f1aeafed74f606d002",
       []
      ]
     }
@@ -394552,6 +394655,210 @@
        }
       ]
      ],
+     "okp_importKey_failures_Ed25519.https.any.js": [
+      "7d6ec6171c3e8faf69d3ed0c3d2d4f583ea429f1",
+      [
+       "WebCryptoAPI/import_export/okp_importKey_failures_Ed25519.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: importKey() for Failures"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "okp_importKey_failures.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/import_export/okp_importKey_failures_Ed25519.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: importKey() for Failures"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "okp_importKey_failures.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "okp_importKey_failures_Ed448.https.any.js": [
+      "6b9598008c5a89787724d0f25f9f075b036a2a42",
+      [
+       "WebCryptoAPI/import_export/okp_importKey_failures_Ed448.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: importKey() for Failures"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "okp_importKey_failures.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/import_export/okp_importKey_failures_Ed448.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: importKey() for Failures"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "okp_importKey_failures.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "okp_importKey_failures_X25519.https.any.js": [
+      "fe5fd54da53d2ddbfaf95332d8381fb2d09cb77c",
+      [
+       "WebCryptoAPI/import_export/okp_importKey_failures_X25519.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: importKey() for Failures"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "okp_importKey_failures.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/import_export/okp_importKey_failures_X25519.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: importKey() for Failures"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "okp_importKey_failures.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "okp_importKey_failures_X448.https.any.js": [
+      "3b08cfe788fe80bc35c11ebe2f10765a935b9b02",
+      [
+       "WebCryptoAPI/import_export/okp_importKey_failures_X448.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: importKey() for Failures"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "okp_importKey_failures.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/import_export/okp_importKey_failures_X448.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: importKey() for Failures"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "okp_importKey_failures.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "rsa_importKey.https.any.js": [
       "9f9d38a9554be98f256e6f6d30642242185e29b8",
       [
@@ -394902,7 +395209,7 @@
     },
     "wrapKey_unwrapKey": {
      "wrapKey_unwrapKey.https.any.js": [
-      "f7e135c8532e14b0ac49071ffe54fdf26acc197e",
+      "65e640a258452f796e3066739bef1032e76393e9",
       [
        "WebCryptoAPI/wrapKey_unwrapKey/wrapKey_unwrapKey.https.any.html",
        {
@@ -477115,6 +477422,53 @@
         ]
        }
       ]
+     ],
+     "gzip-body.any.js": [
+      "37758b7d91775fad80cc8297470a4ba18f8928b8",
+      [
+       "fetch/content-encoding/gzip-body.any.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/content-encoding/gzip-body.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/content-encoding/gzip-body.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/content-encoding/gzip-body.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ]
      ]
     },
     "content-length": {
@@ -542248,6 +542602,13 @@
        "timeout": "long"
       }
      ]
+    ],
+    "parallel-capture-requests.https.html": [
+     "01b7f32e358e7cac8493f36096ded172a5896a4a",
+     [
+      null,
+      {}
+     ]
     ]
    },
    "mediasession": {
@@ -571286,14 +571647,14 @@
       ]
      ],
      "view-timeline-delay.html": [
-      "8d28137066b176daddcd272cf2ba699929735946",
+      "1377dc339c3da8a21fc83d27e0be11a7dceb0817",
       [
        null,
        {}
       ]
      ],
      "view-timeline-inset.html": [
-      "45e21f758fbe1d50fb22a2640fc9eab72d603523",
+      "4864d63b386a5fc4f6ec94247fe0984a3bf2f00a",
       [
        null,
        {}
@@ -601446,7 +601807,7 @@
      ]
     ],
     "full-cycle-test.https.any.js": [
-     "d56bb0b2a1f8eca2a9c5dc71191fd950337669da",
+     "943de6724f8460403cf6fd8751858c7de9574847",
      [
       "webcodecs/full-cycle-test.https.any.html?av1",
       {
