@@ -151,7 +151,7 @@ export class FileTableColumnModel extends TableColumnModel {
    */
   getHitColumn(x) {
     let i = 0;
-    for (; x >= this.columns_[i].width; i++) {
+    for (; i < this.columns_.length && x >= this.columns_[i].width; i++) {
       x -= this.columns_[i].width;
     }
     if (i >= this.columns_.length) {
