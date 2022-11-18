@@ -620,6 +620,8 @@ class StorageQueueTest
     // TODO(b/254418902): The next line is not logically necessary, but for
     // unknown reason the tests becomes flaky without it, keeping it for now.
     task_environment_.RunUntilIdle();
+    // All expected uploads should have happened.
+    EXPECT_THAT(expected_uploads_count_, Eq(0u));
     // Make sure all memory is deallocated.
     EXPECT_THAT(options_.memory_resource()->GetUsed(), Eq(0u));
     // Make sure all disk is not reserved (files remain, but Storage is not
@@ -788,6 +790,21 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndReopen) {
 
   ResetTestStorageQueue();
 
+  // Init resume upload upon non-empty queue restart.
+  test::TestCallbackAutoWaiter waiter;
+  EXPECT_CALL(set_mock_uploader_expectations_,
+              Call(Eq(UploaderInterface::UploadReason::INIT_RESUME)))
+      .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+        return TestUploader::SetUp(&waiter, this)
+            .Required(0, kData[0])
+            .Required(1, kData[1])
+            .Required(2, kData[2])
+            .Complete();
+      }))
+      .RetiresOnSaturation();
+
+  // Reopening will cause INIT_RESUME
+  SetExpectedUploadsCount();
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
 }
 
@@ -799,7 +816,26 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenAndWriteMore) {
 
   ResetTestStorageQueue();
 
-  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  // Init resume upload upon non-empty queue restart.
+  {
+    test::TestCallbackAutoWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_,
+                Call(Eq(UploaderInterface::UploadReason::INIT_RESUME)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(0, kData[0])
+                  .Required(1, kData[1])
+                  .Required(2, kData[2])
+                  .Complete();
+            }))
+        .RetiresOnSaturation();
+
+    // Reopening will cause INIT_RESUME
+    SetExpectedUploadsCount();
+    CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  }
+
   WriteStringOrDie(kMoreData[0]);
   WriteStringOrDie(kMoreData[1]);
   WriteStringOrDie(kMoreData[2]);
@@ -864,8 +900,26 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndUpload) {
 
   ResetTestStorageQueue();
 
-  // Set uploader expectations.
-  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  // Init resume upload upon non-empty queue restart.
+  {
+    test::TestCallbackAutoWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_,
+                Call(Eq(UploaderInterface::UploadReason::INIT_RESUME)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(0, kData[0])
+                  .Required(1, kData[1])
+                  .Required(2, kData[2])
+                  .Complete();
+            }))
+        .RetiresOnSaturation();
+
+    // Reopening will cause INIT_RESUME
+    SetExpectedUploadsCount();
+    CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  }
+
   WriteStringOrDie(kMoreData[0]);
   WriteStringOrDie(kMoreData[1]);
   WriteStringOrDie(kMoreData[2]);
@@ -908,8 +962,23 @@ TEST_P(StorageQueueTest,
                       /*recursive=*/false, base::FileEnumerator::FILES,
                       base::StrCat({METADATA_NAME, FILE_PATH_LITERAL(".*")}));
 
-  // Reopen, starting a new generation.
-  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  // Avoid init resume upload upon non-empty queue restart.
+  {
+    test::TestCallbackAutoWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_,
+                Call(Eq(UploaderInterface::UploadReason::INIT_RESUME)))
+        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason) {
+          waiter.Signal();
+          return Status(error::UNAVAILABLE, "Skipped upload in test");
+        }))
+        .RetiresOnSaturation();
+
+    // Reopening will cause INIT_RESUME
+    SetExpectedUploadsCount();
+    // Reopen, starting a new generation.
+    CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  }
+
   WriteStringOrDie(kMoreData[0]);
   WriteStringOrDie(kMoreData[1]);
   WriteStringOrDie(kMoreData[2]);
@@ -966,8 +1035,23 @@ TEST_P(
         << "Failed to delete " << full_name;
   }
 
-  // Reopen, starting a new generation.
-  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  // Avoid init resume upload upon non-empty queue restart.
+  {
+    test::TestCallbackAutoWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_,
+                Call(Eq(UploaderInterface::UploadReason::INIT_RESUME)))
+        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason) {
+          waiter.Signal();
+          return Status(error::UNAVAILABLE, "Skipped upload in test");
+        }))
+        .RetiresOnSaturation();
+
+    // Reopening will cause INIT_RESUME
+    SetExpectedUploadsCount();
+    // Reopen, starting a new generation.
+    CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  }
+
   WriteStringOrDie(kMoreData[0]);
   WriteStringOrDie(kMoreData[1]);
   WriteStringOrDie(kMoreData[2]);
@@ -1005,8 +1089,22 @@ TEST_P(StorageQueueTest,
 
   ResetTestStorageQueue();
 
-  // Reopen with the same generation and sequencing information.
-  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  // Avoid init resume upload upon non-empty queue restart.
+  {
+    test::TestCallbackAutoWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_,
+                Call(Eq(UploaderInterface::UploadReason::INIT_RESUME)))
+        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason) {
+          waiter.Signal();
+          return Status(error::UNAVAILABLE, "Skipped upload in test");
+        }))
+        .RetiresOnSaturation();
+
+    // Reopening will cause INIT_RESUME
+    SetExpectedUploadsCount();
+    // Reopen with the same generation and sequencing information.
+    CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  }
 
   // Delete the data files *.generation.0
   EnsureDeletingFiles(
@@ -1113,7 +1211,22 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndFlush) {
 
   ResetTestStorageQueue();
 
-  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsOnlyManual());
+  // Avoid init resume upload upon non-empty queue restart.
+  {
+    test::TestCallbackAutoWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_,
+                Call(Eq(UploaderInterface::UploadReason::INIT_RESUME)))
+        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason) {
+          waiter.Signal();
+          return Status(error::UNAVAILABLE, "Skipped upload in test");
+        }))
+        .RetiresOnSaturation();
+
+    // Reopening will cause INIT_RESUME
+    SetExpectedUploadsCount();
+    CreateTestStorageQueueOrDie(BuildStorageQueueOptionsOnlyManual());
+  }
+
   WriteStringOrDie(kMoreData[0]);
   WriteStringOrDie(kMoreData[1]);
   WriteStringOrDie(kMoreData[2]);
@@ -1388,7 +1501,22 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
   }
 
   ResetTestStorageQueue();
-  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+
+  // Avoid init resume upload upon non-empty queue restart.
+  {
+    test::TestCallbackAutoWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_,
+                Call(Eq(UploaderInterface::UploadReason::INIT_RESUME)))
+        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason) {
+          waiter.Signal();
+          return Status(error::UNAVAILABLE, "Skipped upload in test");
+        }))
+        .RetiresOnSaturation();
+
+    // Reopening will cause INIT_RESUME
+    SetExpectedUploadsCount();
+    CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  }
 
   // Add more data and verify that #2 and new data are returned.
   WriteStringOrDie(kMoreData[0]);
@@ -1508,7 +1636,22 @@ TEST_P(StorageQueueTest,
   }
 
   ResetTestStorageQueue();
-  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+
+  // Avoid init resume upload upon non-empty queue restart.
+  {
+    test::TestCallbackAutoWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_,
+                Call(Eq(UploaderInterface::UploadReason::INIT_RESUME)))
+        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason) {
+          waiter.Signal();
+          return Status(error::UNAVAILABLE, "Skipped upload in test");
+        }))
+        .RetiresOnSaturation();
+
+    // Reopening will cause INIT_RESUME
+    SetExpectedUploadsCount();
+    CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  }
 
   // Add more data and verify that #2 and new data are returned.
   WriteStringOrDie(kMoreData[0]);
