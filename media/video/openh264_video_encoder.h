@@ -39,6 +39,7 @@ class MEDIA_EXPORT OpenH264VideoEncoder : public VideoEncoder {
   EncoderStatus DrainOutputs(const SFrameBSInfo& frame_info,
                              base::TimeDelta timestamp,
                              gfx::ColorSpace color_space);
+  void UpdateEncoderColorSpace();
 
   class ISVCEncoderDeleter {
    public:

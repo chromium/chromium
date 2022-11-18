@@ -109,6 +109,7 @@ class MEDIA_EXPORT VideoColorSpace {
   static VideoColorSpace JPEG();
 
   gfx::ColorSpace ToGfxColorSpace() const;
+  std::string ToString() const;
 
   static VideoColorSpace FromGfxColorSpace(const gfx::ColorSpace& color_space);
 

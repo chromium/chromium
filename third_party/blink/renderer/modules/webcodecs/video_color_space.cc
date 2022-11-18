@@ -52,6 +52,7 @@ VideoColorSpace::VideoColorSpace(const gfx::ColorSpace& color_space) {
 
   switch (color_space.GetTransferID()) {
     case gfx::ColorSpace::TransferID::BT709:
+    case gfx::ColorSpace::TransferID::BT709_APPLE:
       transfer_ = V8VideoTransferCharacteristics(
           V8VideoTransferCharacteristics::Enum::kBt709);
       break;

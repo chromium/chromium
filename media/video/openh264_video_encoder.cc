@@ -21,6 +21,7 @@ namespace media {
 namespace {
 
 void SetUpOpenH264Params(const VideoEncoder::Options& options,
+                         const VideoColorSpace& itu_cs,
                          SEncParamExt* params) {
   params->bEnableFrameSkip = false;
   params->iPaddingFlag = 0;
@@ -70,7 +71,35 @@ void SetUpOpenH264Params(const VideoEncoder::Options& options,
   params->sSpatialLayers[0].iVideoHeight = params->iPicHeight;
   params->sSpatialLayers[0].iVideoWidth = params->iPicWidth;
   params->sSpatialLayers[0].sSliceArgument.uiSliceMode = SM_SINGLE_SLICE;
+
+  if (!itu_cs.IsSpecified())
+    return;
+
+  params->sSpatialLayers[0].bVideoSignalTypePresent = true;
+  params->sSpatialLayers[0].bColorDescriptionPresent = true;
+
+  if (itu_cs.primaries != VideoColorSpace::PrimaryID::INVALID &&
+      itu_cs.primaries != VideoColorSpace::PrimaryID::UNSPECIFIED) {
+    params->sSpatialLayers[0].uiColorPrimaries =
+        static_cast<unsigned char>(itu_cs.primaries);
+  }
+  if (itu_cs.transfer != VideoColorSpace::TransferID::INVALID &&
+      itu_cs.transfer != VideoColorSpace::TransferID::UNSPECIFIED) {
+    params->sSpatialLayers[0].uiTransferCharacteristics =
+        static_cast<unsigned char>(itu_cs.transfer);
+  }
+  if (itu_cs.matrix != VideoColorSpace::MatrixID::INVALID &&
+      itu_cs.matrix != VideoColorSpace::MatrixID::UNSPECIFIED) {
+    params->sSpatialLayers[0].uiColorMatrix =
+        static_cast<unsigned char>(itu_cs.matrix);
+  }
+  if (itu_cs.range == gfx::ColorSpace::RangeID::FULL ||
+      itu_cs.range == gfx::ColorSpace::RangeID::LIMITED) {
+    params->sSpatialLayers[0].bFullRange =
+        itu_cs.range == gfx::ColorSpace::RangeID::FULL;
+  }
 }
+
 }  // namespace
 
 OpenH264VideoEncoder::ISVCEncoderDeleter::ISVCEncoderDeleter() = default;
@@ -138,7 +167,9 @@ void OpenH264VideoEncoder::Initialize(VideoCodecProfile profile,
                       "Unsupported frame size which is less than 16"));
     return;
   }
-  SetUpOpenH264Params(options, &params);
+  SetUpOpenH264Params(
+      options, VideoColorSpace::FromGfxColorSpace(last_frame_color_space_),
+      &params);
 
   if (int err = codec->InitializeExt(&params)) {
     std::move(done_cb).Run(
@@ -309,6 +340,7 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   if (last_frame_color_space_ != frame->ColorSpace()) {
     last_frame_color_space_ = frame->ColorSpace();
     key_frame = true;
+    UpdateEncoderColorSpace();
   }
 
   SSourcePicture picture = {};
@@ -367,7 +399,9 @@ void OpenH264VideoEncoder::ChangeOptions(const Options& options,
     return;
   }
 
-  SetUpOpenH264Params(options, &params);
+  SetUpOpenH264Params(
+      options, VideoColorSpace::FromGfxColorSpace(last_frame_color_space_),
+      &params);
 
   if (int err =
           codec_->SetOption(ENCODER_OPTION_SVC_ENCODE_PARAM_EXT, &params)) {
@@ -400,6 +434,25 @@ void OpenH264VideoEncoder::Flush(EncoderStatusCB done_cb) {
 
   // Nothing to do really.
   std::move(done_cb).Run(EncoderStatus::Codes::kOk);
+}
+
+void OpenH264VideoEncoder::UpdateEncoderColorSpace() {
+  auto itu_cs = VideoColorSpace::FromGfxColorSpace(last_frame_color_space_);
+  if (!itu_cs.IsSpecified())
+    return;
+
+  SEncParamExt params = {};
+  if (int err = codec_->GetDefaultParams(&params)) {
+    DLOG(ERROR) << "Failed to GetDefaultParams to set color space: " << err;
+    return;
+  }
+
+  SetUpOpenH264Params(options_, itu_cs, &params);
+
+  // It'd be nice if SetOption(ENCODER_OPTION_SVC_ENCODE_PARAM_EXT) worked, but
+  // alas it doesn't seem to, so we must reinitialize.
+  if (int err = codec_->InitializeExt(&params))
+    DLOG(ERROR) << "Failed to reinitialize codec to set color space: " << err;
 }
 
 }  // namespace media
