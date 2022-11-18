@@ -55,7 +55,6 @@ ci/chromeos-amd64-generic-rel
 ci/chromeos-arm-generic-dbg
 ci/chromeos-arm-generic-rel
 ci/chromeos-arm64-generic-rel
-ci/chromeos-kevin-rel
 ci/fuchsia-arm64-cast-receiver-rel
 ci/fuchsia-arm64-rel
 ci/fuchsia-x64-cast-receiver-rel

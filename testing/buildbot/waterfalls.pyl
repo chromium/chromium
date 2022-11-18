@@ -1379,18 +1379,6 @@
         },
         'os_type': 'chromeos',
       },
-      'chromeos-kevin-rel': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-        'mixins': [
-          'chromeos-kevin',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromeos_device_gtests',
-        },
-        'os_type': 'chromeos',
-      },
       'chromeos-octopus-rel': {
         'additional_compile_targets': [
           'chromiumos_preflight',
