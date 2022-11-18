@@ -345,6 +345,56 @@ public class MessageAnimationCoordinatorUnitTest {
         Assert.assertEquals(1, d2.getDelta());
     }
 
+    /**
+     * Test messages are hidden before #onStartShow is done.
+     */
+    @Test
+    @SmallTest
+    public void testHideBeforeFullyShow() {
+        mAnimationCoordinator.setMessageQueueDelegate(new MessageQueueDelegate() {
+            @Override
+            public void onStartShowing(Runnable callback) {}
+
+            @Override
+            public void onFinishHiding() {}
+
+            @Override
+            public void onAnimationStart() {}
+
+            @Override
+            public void onAnimationEnd() {}
+        });
+        var currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
+        Assert.assertArrayEquals(new MessageState[] {null, null}, currentMessages.toArray());
+        HistogramDelta d1 = new HistogramDelta(MessagesMetrics.STACKING_HISTOGRAM_NAME,
+                MessagesMetrics.StackingAnimationType.SHOW_ALL);
+        HistogramDelta d2 = new HistogramDelta(MessagesMetrics.STACKING_ACTION_HISTOGRAM_PREFIX
+                        + MessagesMetrics.stackingAnimationActionToHistogramSuffix(
+                                MessagesMetrics.StackingAnimationAction.INSERT_AT_FRONT),
+                1);
+        HistogramDelta d3 = new HistogramDelta(MessagesMetrics.STACKING_ACTION_HISTOGRAM_PREFIX
+                        + MessagesMetrics.stackingAnimationActionToHistogramSuffix(
+                                MessagesMetrics.StackingAnimationAction.INSERT_AT_BACK),
+                2);
+        MessageState m1 = buildMessageState();
+        setMessageIdentifier(m1, 1);
+        MessageState m2 = buildMessageState();
+        setMessageIdentifier(m2, 2);
+        mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m2), false, () -> {});
+
+        Assert.assertEquals(1, d1.getDelta());
+        Assert.assertEquals(1, d2.getDelta());
+        Assert.assertEquals(1, d3.getDelta());
+        verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
+        verify(m2.handler).show(Position.FRONT, Position.BACK);
+        currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
+        Assert.assertArrayEquals(new MessageState[] {m1, m2}, currentMessages.toArray());
+
+        mAnimationCoordinator.updateWithStacking(Arrays.asList(null, null), false, () -> {});
+        verify(m1.handler).hide(anyInt(), anyInt(), anyBoolean());
+        verify(m2.handler).hide(anyInt(), anyInt(), anyBoolean());
+    }
+
     private void setMessageIdentifier(MessageState message, int messageIdentifier) {
         doReturn(messageIdentifier).when(message.handler).getMessageIdentifier();
     }
