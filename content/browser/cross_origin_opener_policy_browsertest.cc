@@ -144,6 +144,17 @@ RedirectToTargetOnSecondNavigation(
   return http_response;
 }
 
+std::unique_ptr<net::test_server::HttpResponse> ServeCoopOnSecondNavigation(
+    unsigned int& navigation_counter,
+    const net::test_server::HttpRequest& request) {
+  ++navigation_counter;
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HttpStatusCode::HTTP_OK);
+  if (navigation_counter > 1)
+    http_response->AddCustomHeader("Cross-Origin-Opener-Policy", "same-origin");
+  return http_response;
+}
+
 class CrossOriginOpenerPolicyBrowserTest
     : public ContentBrowserTest,
       public ::testing::WithParamInterface<std::tuple<std::string, bool>> {
@@ -213,6 +224,11 @@ class CrossOriginOpenerPolicyBrowserTest
         &net::test_server::HandlePrefixedRequest,
         "/redirect-to-target-on-second-navigation",
         base::BindRepeating(&RedirectToTargetOnSecondNavigation,
+                            base::OwnedRef(navigation_counter))));
+    https_server_.RegisterDefaultHandler(base::BindRepeating(
+        &net::test_server::HandlePrefixedRequest,
+        "/serve-coop-on-second-navigation",
+        base::BindRepeating(&ServeCoopOnSecondNavigation,
                             base::OwnedRef(navigation_counter))));
 
     ASSERT_TRUE(https_server()->Start());
@@ -3328,6 +3344,25 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   // Reload. This time we should be redirected to a COOP: same-origin page.
   ReloadBlockUntilNavigationsComplete(shell(), 1);
   EXPECT_EQ(current_frame_host()->GetLastCommittedURL(), coop_page);
+
+  // We should have swapped BrowsingInstance.
+  EXPECT_FALSE(
+      main_si->IsRelatedSiteInstance(current_frame_host()->GetSiteInstance()));
+}
+
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       ReloadPageWithUpdatedCoopHeader) {
+  GURL changing_coop_page(
+      https_server()->GetURL("a.test", "/serve-coop-on-second-navigation"));
+
+  // Navigate to the page. On the first navigation, this is a simple empty page
+  // with no headers.
+  EXPECT_TRUE(NavigateToURL(shell(), changing_coop_page));
+  scoped_refptr<SiteInstanceImpl> main_si =
+      current_frame_host()->GetSiteInstance();
+
+  // Reload. This time the page should be served with COOP: same-origin.
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
 
   // We should have swapped BrowsingInstance.
   EXPECT_FALSE(
