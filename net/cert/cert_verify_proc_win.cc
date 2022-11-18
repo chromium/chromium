@@ -71,6 +71,7 @@ int MapSecurityError(SECURITY_STATUS err) {
       return ERR_CERT_REVOKED;
     case SEC_E_CERT_UNKNOWN:
     case CERT_E_ROLE:
+    case NTE_BAD_ALGID:
       return ERR_CERT_INVALID;
     case CERT_E_WRONG_USAGE:
       // TODO(wtc): Should we add ERR_CERT_WRONG_USAGE?
