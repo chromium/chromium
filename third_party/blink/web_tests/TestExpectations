@@ -211,6 +211,9 @@ crbug.com/1380112 external/wpt/html/semantics/popovers/popover-anchor-display.te
 
 # ====== Popover and Anchor Positioning failures to here ======
 
+# Disabled to revert devtools-frontend change:
+crbug.com/1383296 http/tests/devtools/elements/elements-tab-stops.js [ Failure Pass ]
+
 # Sheriff on 2020-09-03
 crbug.com/1124352 media/picture-in-picture/clear-after-request.html [ Crash Pass ]
 crbug.com/1124352 media/picture-in-picture/controls/picture-in-picture-button.html [ Crash Pass ]
