@@ -20,6 +20,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/core/browser/about_signin_internals.h"
 #include "components/signin/core/browser/signin_header_helper.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
@@ -323,8 +324,14 @@ void DiceResponseHandler::ProcessDiceSignoutHeader(
     const std::vector<signin::DiceResponseParams::AccountInfo>& account_infos) {
   VLOG(1) << "Start processing Dice signout response";
 
-  CoreAccountId primary_account =
-      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync);
+  // If there is a restriction on removing the primary account. Do not remove
+  // the account regardless of the consent level. Else, the sync account can
+  // only be invalidated.
+  signin::ConsentLevel level = signin_client_->IsClearPrimaryAccountAllowed()
+                                   ? signin::ConsentLevel::kSync
+                                   : signin::ConsentLevel::kSignin;
+
+  CoreAccountId primary_account = identity_manager_->GetPrimaryAccountId(level);
   bool primary_account_signed_out = false;
   auto* accounts_mutator = identity_manager_->GetAccountsMutator();
   for (const auto& account_info : account_infos) {
