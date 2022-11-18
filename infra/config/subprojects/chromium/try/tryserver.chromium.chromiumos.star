@@ -20,6 +20,9 @@ try_.defaults.set(
     goma_backend = goma.backend.RBE_PROD,
     os = os.LINUX_DEFAULT,
     pool = try_.DEFAULT_POOL,
+    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+    compilator_reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
 )
 
@@ -268,8 +271,6 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "linux-chromeos-rel-reclient-compilator",
     builderless = True,
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
 try_.builder(
