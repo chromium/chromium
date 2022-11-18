@@ -191,6 +191,22 @@ void ReadingListUI::BindInterface(
   shopping_list_factory_receiver_.Bind(std::move(receiver));
 }
 
+void ReadingListUI::BindInterface(
+    mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
+        pending_receiver) {
+  if (help_bubble_handler_factory_receiver_.is_bound())
+    help_bubble_handler_factory_receiver_.reset();
+  help_bubble_handler_factory_receiver_.Bind(std::move(pending_receiver));
+}
+
+void ReadingListUI::CreateHelpBubbleHandler(
+    mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
+    mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler) {
+  help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
+      std::move(handler), std::move(client), web_ui()->GetWebContents(),
+      std::vector<ui::ElementIdentifier>{});
+}
+
 void ReadingListUI::CreateShoppingListHandler(
     mojo::PendingRemote<shopping_list::mojom::Page> page,
     mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandler> receiver) {
