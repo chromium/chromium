@@ -2,14 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/rust/rust_static_library.gni")
+import("//build/rust/cargo_crate.gni")
 
-rust_static_library("test_lib") {
+cargo_crate("test_lib") {
+  # This crate has the same name as v2/test_lib, but a different epoch. The GN
+  # target for the unit tests should not collide.
   epoch = "1"
   sources = [ "src/lib.rs" ]
-
-  # TODO(crbug.com/1304751): This should be true to test that we avoid collision
-  # between v1 and v2 unit tests. The output binary should be versioned or
-  # renamed somehow.
-  build_native_rust_unit_tests = false
 }

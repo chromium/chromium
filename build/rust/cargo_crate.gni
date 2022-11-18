@@ -174,9 +174,21 @@ template("cargo_crate") {
     # for Cargo crates which includes the GN target name to disambiguate them.
     output_dir = "${target_out_dir}/${orig_target_name}"
 
-    # The unit tests for each target, if generated, should be unique as well,
-    # and needs to be unique within the name of the binary itself.
-    unit_test_target = "${_crate_name}_${orig_target_name}_unittests"
+    # The unit tests for each target, if generated, should be unique as well.
+    # a) It needs to be unique even if multiple build targets have the same
+    #    `crate_name`, but different target names.
+    # b) It needs to be unique even if multiple build targets have the same
+    #    `crate_name` and target name, but different epochs.
+    _unit_test_unique_target_name = ""
+    if (_crate_name != orig_target_name) {
+      _unit_test_unique_target_name = "${orig_target_name}_"
+    }
+    _unit_test_unique_epoch = ""
+    if (defined(invoker.epoch)) {
+      _epoch_str = string_replace(invoker.epoch, ".", "_")
+      _unit_test_unique_epoch = "v${_epoch_str}_"
+    }
+    unit_test_target = "${_unit_test_unique_target_name}${_crate_name}_${_unit_test_unique_epoch}unittests"
 
     if (defined(invoker.build_root)) {
       # Uh-oh, we have a build script
