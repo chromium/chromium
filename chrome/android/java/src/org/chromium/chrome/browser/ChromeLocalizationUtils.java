@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser;
 
-import android.os.Build;
 import android.os.LocaleList;
 import android.text.TextUtils;
 
@@ -107,11 +106,9 @@ public class ChromeLocalizationUtils {
 
         // The default locale is the first Android locale with translated Chromium resources. On N+
         // the top system language can be retrieved, even if it is not an option for Chromium's UI.
-        String topAndroidLanguage = defaultLanguage;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            topAndroidLanguage =
-                    LocaleUtils.toLanguage(LocaleList.getDefault().get(0).toLanguageTag());
-        }
+        String topAndroidLanguage =
+                LocaleUtils.toLanguage(LocaleList.getDefault().get(0).toLanguageTag());
+
         boolean isDefaultLanguageAvailable = AppLocaleUtils.isSupportedUiLanguage(defaultLanguage);
         boolean isTopAndroidLanguageAvailable =
                 AppLocaleUtils.isSupportedUiLanguage(topAndroidLanguage);
