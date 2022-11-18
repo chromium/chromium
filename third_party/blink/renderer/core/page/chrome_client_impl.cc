@@ -112,6 +112,13 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_concatenate.h"
 
+namespace mojo {
+  namespace internal {
+    extern void RecordReplayAssertBufferAllocationsBegin();
+    extern void RecordReplayAssertBufferAllocationsEnd();
+  }
+}
+
 namespace blink {
 
 namespace {
@@ -327,9 +334,15 @@ void ChromeClientImpl::AddMessageToConsole(LocalFrame* local_frame,
                                            const String& source_id,
                                            const String& stack_trace) {
   if (!message.IsNull()) {
+    // https://linear.app/replay/issue/RUN-824
+    mojo::internal::RecordReplayAssertBufferAllocationsBegin();
+
     local_frame->GetLocalFrameHostRemote().DidAddMessageToConsole(
         level, message, static_cast<int32_t>(line_number), source_id,
         stack_trace);
+
+    // https://linear.app/replay/issue/RUN-824
+    mojo::internal::RecordReplayAssertBufferAllocationsEnd();
   }
 
   WebLocalFrameImpl* frame = WebLocalFrameImpl::FromFrame(local_frame);
