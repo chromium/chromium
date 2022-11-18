@@ -6,47 +6,37 @@ package org.chromium.chrome.browser.privacy_sandbox.v4;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.text.SpannableString;
-import android.text.style.StyleSpan;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
-import android.widget.TextView;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxReferrer;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.privacy_sandbox.R;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.CheckableImageView;
-import org.chromium.ui.widget.ChromeBulletSpan;
 
 /**
  * Dialog in the form of a notice shown for the Privacy Sandbox.
  */
-public class PrivacySandboxDialogNoticeEEAV4 extends Dialog implements View.OnClickListener {
+public class PrivacySandboxDialogNoticeROWV4 extends Dialog implements View.OnClickListener {
     private SettingsLauncher mSettingsLauncher;
     private View mContentView;
 
     private final CheckableImageView mExpandArrowView;
     private LinearLayout mDropdownContainer;
+    private LinearLayout mDropdownElement;
 
-    public PrivacySandboxDialogNoticeEEAV4(
+    public PrivacySandboxDialogNoticeROWV4(
             Context context, @NonNull SettingsLauncher settingsLauncher) {
         super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
-
         mSettingsLauncher = settingsLauncher;
         mContentView =
-                LayoutInflater.from(context).inflate(R.layout.privacy_sandbox_notice_eea_v4, null);
+                LayoutInflater.from(context).inflate(R.layout.privacy_sandbox_notice_row_v4, null);
         setContentView(mContentView);
 
         ButtonCompat ackButton = mContentView.findViewById(R.id.ack_button);
@@ -55,14 +45,12 @@ public class PrivacySandboxDialogNoticeEEAV4 extends Dialog implements View.OnCl
         settingsButton.setOnClickListener(this);
 
         // Controls for the expanding section.
-        LinearLayout dropdownElement = mContentView.findViewById(R.id.dropdown_element);
-        dropdownElement.setOnClickListener(this);
+        mDropdownElement = mContentView.findViewById(R.id.dropdown_element);
+        mDropdownElement.setOnClickListener(this);
         mDropdownContainer = mContentView.findViewById(R.id.dropdown_container);
         mExpandArrowView = mContentView.findViewById(R.id.expand_arrow);
         mExpandArrowView.setImageDrawable(PrivacySandboxDialogUtils.createExpandDrawable(context));
         mExpandArrowView.setChecked(isDropdownExpanded());
-
-        setBulletsDescription();
     }
 
     @Override
@@ -85,70 +73,40 @@ public class PrivacySandboxDialogNoticeEEAV4 extends Dialog implements View.OnCl
             PrivacySandboxSettingsBaseFragment.launchPrivacySandboxSettings(
                     getContext(), mSettingsLauncher, PrivacySandboxReferrer.PRIVACY_SANDBOX_NOTICE);
         } else if (id == R.id.dropdown_element) {
-            var content = mContentView.findViewById(R.id.privacy_sandbox_notice_eea_content);
+            var content = mContentView.findViewById(R.id.privacy_sandbox_notice_row_content);
             ScrollView scrollView =
-                    mContentView.findViewById(R.id.privacy_sandbox_notice_eea_scroll_view);
+                    mContentView.findViewById(R.id.privacy_sandbox_notice_row_scroll_view);
 
             if (isDropdownExpanded()) {
-                // TODO(b/254408752): Report notice eea more info section closed action.
+                // TODO(b/254408752): Report notice row more info section closed action.
                 mDropdownContainer.setVisibility(View.GONE);
                 mDropdownContainer.removeAllViews();
-
-                ((FrameLayout.LayoutParams) content.getLayoutParams()).gravity =
-                        Gravity.CENTER_VERTICAL;
+                scrollView.post(() -> { scrollView.fullScroll(ScrollView.FOCUS_UP); });
             } else {
                 mDropdownContainer.setVisibility(View.VISIBLE);
-                // TODO(b/254408752): Report notice eea more info section opened action.
+                // TODO(b/254408752): Report notice row more info section opened action.
                 LayoutInflater.from(getContext())
-                        .inflate(R.layout.privacy_sandbox_notice_eea_dropdown_v4,
+                        .inflate(R.layout.privacy_sandbox_notice_row_dropdown_v4,
                                 mDropdownContainer);
 
-                setDropdownDescription(mDropdownContainer,
-                        R.id.privacy_sandbox_m1_notice_eea_learn_more_bullet_one,
-                        R.string.privacy_sandbox_m1_notice_eea_learn_more_bullet_1);
-                setDropdownDescription(mDropdownContainer,
-                        R.id.privacy_sandbox_m1_notice_eea_learn_more_bullet_two,
-                        R.string.privacy_sandbox_m1_notice_eea_learn_more_bullet_2);
-                setDropdownDescription(mDropdownContainer,
-                        R.id.privacy_sandbox_m1_notice_eea_learn_more_bullet_three,
-                        R.string.privacy_sandbox_m1_notice_eea_learn_more_bullet_3);
+                PrivacySandboxDialogUtils.setBulletText(getContext(), mContentView,
+                        R.id.privacy_sandbox_m1_notice_row_learn_more_bullet_one,
+                        R.string.privacy_sandbox_m1_notice_row_learn_more_bullet_1);
+                PrivacySandboxDialogUtils.setBulletText(getContext(), mContentView,
+                        R.id.privacy_sandbox_m1_notice_row_learn_more_bullet_two,
+                        R.string.privacy_sandbox_m1_notice_row_learn_more_bullet_2);
 
-                ((FrameLayout.LayoutParams) content.getLayoutParams()).gravity = Gravity.TOP;
-
-                scrollView.post(() -> {
-                    scrollView.setSmoothScrollingEnabled(true);
-                    scrollView.fullScroll(ScrollView.FOCUS_DOWN);
-                });
+                scrollView.post(() -> { scrollView.scrollTo(0, mDropdownElement.getTop()); });
             }
 
             mExpandArrowView.setChecked(isDropdownExpanded());
             PrivacySandboxDialogUtils.updateDropdownControlContentDescription(getContext(), view,
                     isDropdownExpanded(),
-                    R.string.privacy_sandbox_m1_notice_eea_learn_more_expand_label);
+                    R.string.privacy_sandbox_m1_notice_row_learn_more_expand_label);
             view.announceForAccessibility(getContext().getResources().getString(isDropdownExpanded()
                             ? R.string.accessibility_expanded_group
                             : R.string.accessibility_collapsed_group));
         }
-    }
-
-    private void setDropdownDescription(
-            ViewGroup container, @IdRes int viewId, @StringRes int stringRes) {
-        TextView view = container.findViewById(viewId);
-        SpannableString spannableString =
-                SpanApplier.applySpans(getContext().getResources().getString(stringRes),
-                        new SpanApplier.SpanInfo(
-                                "<b>", "</b>", new StyleSpan(android.graphics.Typeface.BOLD)));
-        spannableString.setSpan(new ChromeBulletSpan(getContext()), 0, spannableString.length(), 0);
-        view.setText(spannableString);
-    }
-
-    private void setBulletsDescription() {
-        PrivacySandboxDialogUtils.setBulletText(getContext(), mContentView,
-                R.id.privacy_sandbox_m1_notice_eea_bullet_one,
-                R.string.privacy_sandbox_m1_notice_eea_bullet_1);
-        PrivacySandboxDialogUtils.setBulletText(getContext(), mContentView,
-                R.id.privacy_sandbox_m1_notice_eea_bullet_two,
-                R.string.privacy_sandbox_m1_notice_eea_bullet_2);
     }
 
     private boolean isDropdownExpanded() {

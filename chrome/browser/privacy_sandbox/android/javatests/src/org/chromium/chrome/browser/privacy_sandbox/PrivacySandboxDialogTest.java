@@ -43,6 +43,8 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxDialogNoticeEEAV4;
+import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxDialogNoticeROWV4;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -188,6 +190,32 @@ public final class PrivacySandboxDialogTest {
             mDialog.show();
         });
         renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_notice_dialog");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    public void testRenderEEANotice() throws IOException {
+        PrivacySandboxDialogNotice notice = null;
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mDialog = new PrivacySandboxDialogNoticeEEAV4(
+                    sActivityTestRule.getActivity(), mSettingsLauncher);
+            mDialog.show();
+        });
+        renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_eea_notice_dialog");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    public void testRenderROWNotice() throws IOException {
+        PrivacySandboxDialogNotice notice = null;
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mDialog = new PrivacySandboxDialogNoticeROWV4(
+                    sActivityTestRule.getActivity(), mSettingsLauncher);
+            mDialog.show();
+        });
+        renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_row_notice_dialog");
     }
 
     @Test

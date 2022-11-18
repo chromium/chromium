@@ -1115,46 +1115,105 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 
       <!-- Privacy Sandbox v4 - Notice EEA. -->
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_TITLE" translateable="false" desc="Privacy Sandbox dialog notice EEA: title.">
-        Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lore
+        Lorem ipsum Notice EEA
       </message>
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_DESCRIPTION_1" translateable="false" desc="Privacy Sandbox dialog notice EEA: First section of the body, above the bullet points.">
-        Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lore Lorem ipsum
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis pretium pulvinar metus non mollis. Quisque placerat eget nisl sit amet facilisis.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_BULLET_1" translateable="false" desc="Privacy Sandbox dialog notice EEA: First bullet point (outside expand).">
-        Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lore Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum
+        Nulla in tortor: a ligula scelerisque laoreet. Sed sem velit, varius non purus vitae, imperdiet porttitor elit.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_BULLET_2" translateable="false" desc="Privacy Sandbox dialog notice EEA: Second bullet point (outside expand).">
-        Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lore Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum
+        Sed purus vestibulum: velit convallis suscipit. Aenean aliquam ut velit eget dapibus. Vestibulum orci risus, consectetur non odio vulputate, mattis dignissim purus. Cras id tempor mi.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_LEARN_MORE_EXPAND_LABEL" translateable="false" desc="Privacy Sandbox dialog notice EEA: Text user clicks to expand the collapsed section.">
-        Lorem ipsum Lorem ipsum
+        Vestibulum orci risus, consectetur
       </message>
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_DESCRIPTION_2" translateable="false" desc="Privacy Sandbox dialog notice EEA: Second section of text, below the expand label.">
-        Lorem ipsum Lorem ipsum Lorem ipsum
+        Consectetur adipiscing elit duis pretium pulvinar metus non mollis
       </message>
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_ACK_BUTTON" translateable="false" desc="Privacy Sandbox dialog notice EEA: Got it button.">
-        Lorem ipsum
+        Sed
       </message>
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_SETTINGS_BUTTON" translateable="false" desc="Privacy Sandbox dialog notice EEA: Settings button.">
-        Lorem ipsum
+        Cras id
       </message>
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_LEARN_MORE_HEADING_1" translateable="false" desc="Privacy Sandbox dialog notice EEA: First header in learn more expand.">
-        Lorem ipsum
+        Esed purus vestibulum velit convalli
       </message>
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_LEARN_MORE_DESCRIPTION" translateable="false" desc="Privacy Sandbox dialog notice EEA: First description block in expand.">
-        Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum
+        Nulla in tortor a ligula scelerisque laoreet. Sed sem velit, varius non purus vitae, imperdiet porttitor elit. Integer et libero id metus egestas consequat non a ipsum.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_LEARN_MORE_HEADING_2" translateable="false" desc="Privacy Sandbox dialog notice EEA: Second header in learn more expand.">
-        Lorem ipsum Lorem ipsum Lorem
+        Proin sed purus vestibulum velit velit eget dapibus.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_LEARN_MORE_BULLET_1" translateable="false" desc="Privacy Sandbox dialog notice EEA: First bullet point in expand.">
-        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Lorem ipsum:<ph name="END_BOLD">&lt;/b&gt;</ph> Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Nulla in tortor:<ph name="END_BOLD">&lt;/b&gt;</ph> a ligula scelerisque laoreet. Sed sem velit, varius non purus vitae, imperdiet porttitor elit.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_LEARN_MORE_BULLET_2" translateable="false" desc="Privacy Sandbox dialog notice EEA: Second bullet point in expand.">
-        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Lorem ipsum:<ph name="END_BOLD">&lt;/b&gt;</ph> Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Consectetur adipiscing elit:<ph name="END_BOLD">&lt;/b&gt;</ph> Duis pretium pulvinar metus non mollis
       </message>
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_LEARN_MORE_BULLET_3" translateable="false" desc="Privacy Sandbox dialog notice EEA: Third bullet point in expand.">
-        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Lorem ipsum:<ph name="END_BOLD">&lt;/b&gt;</ph> Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Sed purus vestibulum: <ph name="END_BOLD">&lt;/b&gt;</ph> velit convallis suscipit. Aenean aliquam ut velit eget dapibus. Vestibulum orci risus, consectetur non odio vulputate, mattis dignissim purus. Cras id tempor mi.
+      </message>
+
+      <!-- Privacy Sandbox v4 - Notice ROW. -->
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_TITLE" translateable="false" desc="Privacy Sandbox dialog notice ROW: title.">
+        Lorem ipsum Notice ROW
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_DESCRIPTION_1" translateable="false" desc="Privacy Sandbox dialog notice ROW: First section of the body, above the image.">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis pretium pulvinar metus non mollis.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_DESCRIPTION_2" translateable="false" desc="Privacy Sandbox dialog notice ROW: Second section of the body, above the image.">
+        Nulla in tortor a ligula scelerisque laoreet. Sed sem velit, varius non purus vitae, imperdiet porttitor elit. Integer et libero id metus egestas consequat non a ipsum. Quisque placerat eget nisl sit amet facilisis.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_DESCRIPTION_3" translateable="false" desc="Privacy Sandbox dialog notice ROW: Third section of the body, below the image.">
+        Vestibulum pretium placerat justo vel suscipit. Quisque urna arcu, elementum ut venenatis ornare, consequat ac turpis. Vestibulum orci risus, consectetur non odio vulputate, mattis dignissim purus. Cras id tempor mi.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_DESCRIPTION_4" translateable="false" desc="Privacy Sandbox dialog notice ROW: Fourth section of the body, below the expand label.">
+        Proin sed purus vestibulum velit convallis suscipit eget dapibus.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_ACK_BUTTON" translateable="false" desc="Privacy Sandbox dialog notice ROW: Got it button on notice in eea.">
+        Sed
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_SETTINGS_BUTTON" translateable="false" desc="Privacy Sandbox dialog notice ROW: Settings button in notice.">
+        Cras id
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_EXPAND_LABEL" translateable="false" desc="Privacy Sandbox dialog notice ROW: Expand text.">
+        Vestibulum orci risus consectetur
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_HEADING_1" translateable="false" desc="Privacy Sandbox dialog notice ROW: First header inside expand section.">
+        Esed purus vestibulum velit convalli
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_1" translateable="false" desc="Privacy Sandbox dialog notice ROW: First description text in body, underneath first header.">
+        Etiam dictum sem et neque molestie lobortis. Morbi quam tellus, tincidunt eget dapibus ac, lobortis et lacus. Integer nec egestas elit. Nulla venenatis facilisis dui eget suscipit.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_HEADING_2" translateable="false" desc="Privacy Sandbox dialog notice ROW: Second heading inside expand section.">
+        Class aptent taciti sociosqu ad
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_2" translateable="false" desc="Privacy Sandbox dialog notice ROW: Second description text in body, underneath second header.">
+        Vestibulum pretium placerat justo vel suscipit. Quisque urna arcu.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_BULLET_1" translateable="false" desc="Privacy Sandbox dialog notice ROW: First bullet point in ROW notice expand.">
+        Sed elementum tellus condimentum quam vestibulum lacinia. Ut eu lobortis massa, venenatis sodales lacus. Nulla elementum magna et tortor efficitur, at volutpat metus varius.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_BULLET_2" translateable="false" desc="Privacy Sandbox dialog notice ROW: Second bullet point in ROW notice expand.">
+        Duis tempor nulla nisi, ac bibendum lorem tempus sit amet. Proin non blandit risus. Maecenas facilisis enim nec tristique tristique. Eelementum ut venenatis ornare, consequat ac turpis. Vestibulum orci risus, consectetur non odio vulputate, mattis dignissim purus. Cras id tempor mi.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_3" translateable="false" desc="Privacy Sandbox dialog notice ROW: Third section in body, below bullet points.">
+        Etiam hendrerit turpis nibh, ac maximus lectus placerat at. Vivamus ligula quam, posuere luctus felis eu, dictum egestas arcu. per conubia nostra, per inceptos himenaeos. Cras ut metus vel est molestie finibus nec ut orci.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_4" translateable="false" desc="Privacy Sandbox dialog notice ROW: Fourth section in body, immediately below third.">
+        Aliquam euismod scelerisque metus, in aliquet est vehicula ut. Curabitur sit amet ligula quis ante maximus gravida non id magna. Pellentesque interdum venenatis leo, at ultrices felis mollis nec. Integer vulputate velit eget mauris lacinia, ut ullamcorper mauris vehicula.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_HEADING_3" translateable="false" desc="Privacy Sandbox dialog notice ROW: Third header inside learn more expand.">
+        Orci varius natoque penatibus et
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_5" translateable="false" desc="Privacy Sandbox dialog notice ROW: Fifth section in body below header 3.">
+        Suspendisse at dui pulvinar, rhoncus orci at, porttitor nibh. Curabitur lacinia nulla sem, eu euismod dolor vulputate quis. Duis mattis eros et arcu elementum tempor. Duis pharetra eleifend sagittis.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_6" translateable="false" desc="Privacy Sandbox dialog notice ROW: Sixth section in body, immediately below fifth.">
+        Cras sed lacus suscipit, efficitur erat nec, semper sapien. Fusce at nunc molestie, elementum augue at, auctor nunc. Sed dui nisi, consectetur sit amet urna vitae, facilisis scelerisque justo.
       </message>
 
       <!-- Privacy Sandbox v4 - Ad Privacy Page -->

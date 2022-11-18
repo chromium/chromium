@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/privacy_sandbox_notice_row_dropdown"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_marginBottom="@dimen/promo_between_text_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/privacy_sandbox_m1_notice_row_learn_more_heading_1"
+        style="@style/TextAppearance.TextMediumThick.Primary" />
+
+    <TextView
+        android:layout_marginBottom="@dimen/promo_between_text_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/privacy_sandbox_m1_notice_row_learn_more_description_1"
+        style="@style/TextAppearance.TextMedium.Secondary" />
+
+    <TextView
+        android:layout_marginBottom="@dimen/promo_between_text_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/privacy_sandbox_m1_notice_row_learn_more_heading_2"
+        style="@style/TextAppearance.TextMediumThick.Primary" />
+
+    <TextView
+        android:layout_marginBottom="@dimen/promo_between_text_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/privacy_sandbox_m1_notice_row_learn_more_description_2"
+        style="@style/TextAppearance.TextMedium.Secondary" />
+
+    <TextView
+        android:id="@+id/privacy_sandbox_m1_notice_row_learn_more_bullet_one"
+        android:layout_marginBottom="@dimen/promo_between_text_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/TextAppearance.TextMedium.Secondary" />
+
+    <TextView
+        android:id="@+id/privacy_sandbox_m1_notice_row_learn_more_bullet_two"
+        android:layout_marginBottom="@dimen/promo_between_text_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/TextAppearance.TextMedium.Secondary" />
+
+    <TextView
+        android:layout_marginBottom="@dimen/promo_between_text_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/privacy_sandbox_m1_notice_row_learn_more_description_3"
+        style="@style/TextAppearance.TextMedium.Secondary" />
+
+    <TextView
+        android:layout_marginBottom="@dimen/promo_between_text_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/privacy_sandbox_m1_notice_row_learn_more_description_4"
+        style="@style/TextAppearance.TextMedium.Secondary" />
+
+    <TextView
+        android:layout_marginBottom="@dimen/promo_between_text_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/privacy_sandbox_m1_notice_row_learn_more_heading_3"
+        style="@style/TextAppearance.TextMediumThick.Primary" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/privacy_sandbox_m1_notice_row_learn_more_description_5"
+        style="@style/TextAppearance.TextMedium.Secondary" />
+
+    <TextView
+        android:layout_marginBottom="@dimen/promo_between_text_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/privacy_sandbox_m1_notice_row_learn_more_description_6"
+        style="@style/TextAppearance.TextMedium.Secondary" />
+
+</LinearLayout>
