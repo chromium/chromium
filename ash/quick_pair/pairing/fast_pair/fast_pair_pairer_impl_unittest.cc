@@ -391,7 +391,8 @@ class FastPairPairerImplTest : public AshTestBase {
   // This is done on-demand to enable setting up mock expectations first.
   void CreatePairer() {
     pairer_ = std::make_unique<FastPairPairerImpl>(
-        adapter_, device_, paired_callback_.Get(),
+        adapter_, device_, handshake_complete_callback_.Get(),
+        paired_callback_.Get(),
         base::BindOnce(&FastPairPairerImplTest::PairFailedCallback,
                        weak_ptr_factory_.GetWeakPtr()),
         account_key_failure_callback_.Get(), pairing_procedure_complete_.Get());
@@ -399,7 +400,8 @@ class FastPairPairerImplTest : public AshTestBase {
 
   void CreatePairerAsFactory() {
     pairer_ = FastPairPairerImpl::Factory::Create(
-        adapter_, device_, paired_callback_.Get(),
+        adapter_, device_, handshake_complete_callback_.Get(),
+        paired_callback_.Get(),
         base::BindOnce(&FastPairPairerImplTest::PairFailedCallback,
                        weak_ptr_factory_.GetWeakPtr()),
         account_key_failure_callback_.Get(), pairing_procedure_complete_.Get());
@@ -438,6 +440,8 @@ class FastPairPairerImplTest : public AshTestBase {
   FakeBluetoothDevice* fake_bluetooth_device_ptr_ = nullptr;
   scoped_refptr<FakeBluetoothAdapter> adapter_;
   scoped_refptr<Device> device_;
+  base::MockCallback<base::OnceCallback<void(scoped_refptr<Device>)>>
+      handshake_complete_callback_;
   base::MockCallback<base::OnceCallback<void(scoped_refptr<Device>)>>
       paired_callback_;
   base::MockCallback<

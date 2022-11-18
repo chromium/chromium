@@ -46,6 +46,8 @@ constexpr char kFastPairEngagementFlowMetricInitial[] =
 constexpr char kFastPairEngagementFlowMetricSubsequent[] =
     "Bluetooth.ChromeOS.FastPair.EngagementFunnel.Steps."
     "SubsequentPairingProtocol";
+constexpr char kSubsequentSuccessFunnelMetric[] =
+    "ChromeOS.FastPair.SubsequentPairing";
 const char kFastPairRetroactiveEngagementFlowMetric[] =
     "Bluetooth.ChromeOS.FastPair.RetroactiveEngagementFunnel.Steps";
 constexpr char kFastPairPairTimeMetricInitial[] =
@@ -270,6 +272,21 @@ class QuickPairMetricsLoggerTest : public testing::Test {
       case Protocol::kFastPairRetroactive:
         retroactive_device_->set_classic_address(kTestAddress);
         mock_pairer_broker_->NotifyDevicePaired(retroactive_device_);
+        break;
+    }
+  }
+
+  void SimulatePairingFlow(Protocol protocol) {
+    switch (protocol) {
+      case Protocol::kFastPairSubsequent:
+        mock_ui_broker_->NotifyDiscoveryAction(subsequent_device_,
+                                               DiscoveryAction::kPairToDevice);
+        mock_pairer_broker_->NotifyPairingStart(subsequent_device_);
+        mock_pairer_broker_->NotifyHandshakeComplete(subsequent_device_);
+        mock_pairer_broker_->NotifyPairComplete(subsequent_device_);
+        break;
+      case Protocol::kFastPairInitial:
+      case Protocol::kFastPairRetroactive:
         break;
     }
   }
@@ -907,6 +924,28 @@ TEST_F(QuickPairMetricsLoggerTest, LogPairingSucceeded_Subsequent) {
                 kFastPairEngagementFlowMetricSubsequent,
                 FastPairEngagementFlowEvent::kDiscoveryUiDismissedByUser),
             0);
+}
+
+TEST_F(QuickPairMetricsLoggerTest, LogSuccessFunnel_Subseqent) {
+  SimulatePairingFlow(Protocol::kFastPairSubsequent);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kSubsequentSuccessFunnelMetric,
+                FastPairSubsequentSuccessFunnelEvent::kNotificationsClicked),
+            1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kSubsequentSuccessFunnelMetric,
+                FastPairSubsequentSuccessFunnelEvent::kInitializationStarted),
+            1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kSubsequentSuccessFunnelMetric,
+                FastPairSubsequentSuccessFunnelEvent::kPairingStarted),
+            1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kSubsequentSuccessFunnelMetric,
+                FastPairSubsequentSuccessFunnelEvent::kProcessComplete),
+            1);
 }
 
 TEST_F(QuickPairMetricsLoggerTest, LogErrorUiDismissed_Initial) {

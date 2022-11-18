@@ -100,6 +100,7 @@ FastPairPairerImpl::Factory* FastPairPairerImpl::Factory::g_test_factory_ =
 std::unique_ptr<FastPairPairer> FastPairPairerImpl::Factory::Create(
     scoped_refptr<device::BluetoothAdapter> adapter,
     scoped_refptr<Device> device,
+    base::OnceCallback<void(scoped_refptr<Device>)> handshake_complete_callback,
     base::OnceCallback<void(scoped_refptr<Device>)> paired_callback,
     base::OnceCallback<void(scoped_refptr<Device>, PairFailure)>
         pair_failed_callback,
@@ -109,13 +110,15 @@ std::unique_ptr<FastPairPairer> FastPairPairerImpl::Factory::Create(
         pairing_procedure_complete) {
   if (g_test_factory_)
     return g_test_factory_->CreateInstance(
-        std::move(adapter), std::move(device), std::move(paired_callback),
+        std::move(adapter), std::move(device),
+        std::move(handshake_complete_callback), std::move(paired_callback),
         std::move(pair_failed_callback),
         std::move(account_key_failure_callback),
         std::move(pairing_procedure_complete));
 
   return base::WrapUnique(new FastPairPairerImpl(
-      std::move(adapter), std::move(device), std::move(paired_callback),
+      std::move(adapter), std::move(device),
+      std::move(handshake_complete_callback), std::move(paired_callback),
       std::move(pair_failed_callback), std::move(account_key_failure_callback),
       std::move(pairing_procedure_complete)));
 }
@@ -131,6 +134,7 @@ FastPairPairerImpl::Factory::~Factory() = default;
 FastPairPairerImpl::FastPairPairerImpl(
     scoped_refptr<device::BluetoothAdapter> adapter,
     scoped_refptr<Device> device,
+    base::OnceCallback<void(scoped_refptr<Device>)> handshake_complete_callback,
     base::OnceCallback<void(scoped_refptr<Device>)> paired_callback,
     base::OnceCallback<void(scoped_refptr<Device>, PairFailure)>
         pair_failed_callback,
@@ -139,6 +143,7 @@ FastPairPairerImpl::FastPairPairerImpl(
     base::OnceCallback<void(scoped_refptr<Device>)> pairing_procedure_complete)
     : adapter_(std::move(adapter)),
       device_(std::move(device)),
+      handshake_complete_callback_(std::move(handshake_complete_callback)),
       paired_callback_(std::move(paired_callback)),
       pair_failed_callback_(std::move(pair_failed_callback)),
       account_key_failure_callback_(std::move(account_key_failure_callback)),
@@ -206,6 +211,8 @@ void FastPairPairerImpl::OnHandshakeComplete(
 
   DCHECK(fast_pair_handshake_);
   DCHECK(fast_pair_handshake_->completed_successfully());
+
+  std::move(handshake_complete_callback_).Run(device_);
 
   fast_pair_gatt_service_client_ =
       fast_pair_handshake_->fast_pair_gatt_service_client();

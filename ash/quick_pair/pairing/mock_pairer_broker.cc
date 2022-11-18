@@ -39,5 +39,20 @@ void MockPairerBroker::NotifyAccountKeyWrite(
     obs.OnAccountKeyWrite(device, failure);
 }
 
+void MockPairerBroker::NotifyPairingStart(scoped_refptr<Device> device) {
+  for (auto& obs : observers_)
+    obs.OnPairingStart(device);
+}
+
+void MockPairerBroker::NotifyHandshakeComplete(scoped_refptr<Device> device) {
+  for (auto& obs : observers_)
+    obs.OnHandshakeComplete(device);
+}
+
+void MockPairerBroker::NotifyPairComplete(scoped_refptr<Device> device) {
+  for (auto& obs : observers_)
+    obs.OnPairingComplete(device);
+}
+
 }  // namespace quick_pair
 }  // namespace ash

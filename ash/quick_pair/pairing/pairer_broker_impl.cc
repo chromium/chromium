@@ -94,9 +94,15 @@ void PairerBrokerImpl::PairFastPairDevice(scoped_refptr<Device> device) {
 
   QP_LOG(INFO) << __func__ << ": " << device;
 
+  for (auto& observer : observers_) {
+    observer.OnPairingStart(device);
+  }
+
   DCHECK(adapter_);
   fast_pair_pairers_[device->ble_address] = FastPairPairerImpl::Factory::Create(
       adapter_, device,
+      base::BindOnce(&PairerBrokerImpl::OnFastPairHandshakeComplete,
+                     weak_pointer_factory_.GetWeakPtr()),
       base::BindOnce(&PairerBrokerImpl::OnFastPairDevicePaired,
                      weak_pointer_factory_.GetWeakPtr()),
       base::BindOnce(&PairerBrokerImpl::OnFastPairPairingFailure,
@@ -105,6 +111,14 @@ void PairerBrokerImpl::PairFastPairDevice(scoped_refptr<Device> device) {
                      weak_pointer_factory_.GetWeakPtr()),
       base::BindOnce(&PairerBrokerImpl::OnFastPairProcedureComplete,
                      weak_pointer_factory_.GetWeakPtr()));
+}
+
+void PairerBrokerImpl::OnFastPairHandshakeComplete(
+    scoped_refptr<Device> device) {
+  QP_LOG(INFO) << __func__ << ": Device=" << device;
+  for (auto& observer : observers_) {
+    observer.OnHandshakeComplete(device);
+  }
 }
 
 void PairerBrokerImpl::OnFastPairDevicePaired(scoped_refptr<Device> device) {
@@ -155,6 +169,10 @@ void PairerBrokerImpl::OnAccountKeyFailure(scoped_refptr<Device> device,
 void PairerBrokerImpl::OnFastPairProcedureComplete(
     scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": Device=" << device;
+
+  for (auto& observer : observers_) {
+    observer.OnPairingComplete(device);
+  }
 
   // If we get to this point in the flow for the initial and retroactive pairing
   // scenarios, this means that the account key has successfully been written

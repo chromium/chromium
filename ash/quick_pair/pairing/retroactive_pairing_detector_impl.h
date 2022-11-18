@@ -82,10 +82,10 @@ class RetroactivePairingDetectorImpl final
 
   // PairerBroker::Observer
   void OnDevicePaired(scoped_refptr<Device> device) override;
-  void OnPairFailure(scoped_refptr<Device> device,
-                     PairFailure failure) override;
   void OnAccountKeyWrite(scoped_refptr<Device> device,
                          absl::optional<AccountKeyFailure> error) override;
+  void OnPairFailure(scoped_refptr<Device> device,
+                     PairFailure failure) override;
 
   // MessageStreamLookup::Observer
   void OnMessageStreamConnected(const std::string& device_address,

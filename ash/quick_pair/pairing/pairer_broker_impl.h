@@ -48,6 +48,7 @@ class PairerBrokerImpl final : public PairerBroker {
 
  private:
   void PairFastPairDevice(scoped_refptr<Device> device);
+  void OnFastPairHandshakeComplete(scoped_refptr<Device> device);
   void OnFastPairDevicePaired(scoped_refptr<Device> device);
   void OnFastPairPairingFailure(scoped_refptr<Device> device,
                                 PairFailure failure);

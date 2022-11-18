@@ -41,11 +41,14 @@ class QuickPairMetricsLogger : public PairerBroker::Observer,
 
  private:
   // PairerBroker::Observer
+  void OnPairingStart(scoped_refptr<Device> device) override;
+  void OnHandshakeComplete(scoped_refptr<Device> device) override;
   void OnDevicePaired(scoped_refptr<Device> device) override;
-  void OnPairFailure(scoped_refptr<Device> device,
-                     PairFailure failure) override;
   void OnAccountKeyWrite(scoped_refptr<Device> device,
                          absl::optional<AccountKeyFailure> error) override;
+  void OnPairingComplete(scoped_refptr<Device> device) override;
+  void OnPairFailure(scoped_refptr<Device> device,
+                     PairFailure failure) override;
 
   // UIBroker::Observer
   void OnDiscoveryAction(scoped_refptr<Device> device,

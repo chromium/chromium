@@ -43,6 +43,8 @@ class FastPairPairerImpl : public FastPairPairer,
     static std::unique_ptr<FastPairPairer> Create(
         scoped_refptr<device::BluetoothAdapter> adapter,
         scoped_refptr<Device> device,
+        base::OnceCallback<void(scoped_refptr<Device>)>
+            handshake_complete_callback,
         base::OnceCallback<void(scoped_refptr<Device>)> paired_callback,
         base::OnceCallback<void(scoped_refptr<Device>, PairFailure)>
             pair_failed_callback,
@@ -59,6 +61,8 @@ class FastPairPairerImpl : public FastPairPairer,
     virtual std::unique_ptr<FastPairPairer> CreateInstance(
         scoped_refptr<device::BluetoothAdapter> adapter,
         scoped_refptr<Device> device,
+        base::OnceCallback<void(scoped_refptr<Device>)>
+            handshake_complete_callback,
         base::OnceCallback<void(scoped_refptr<Device>)> paired_callback,
         base::OnceCallback<void(scoped_refptr<Device>, PairFailure)>
             pair_failed_callback,
@@ -74,6 +78,8 @@ class FastPairPairerImpl : public FastPairPairer,
   FastPairPairerImpl(
       scoped_refptr<device::BluetoothAdapter> adapter,
       scoped_refptr<Device> device,
+      base::OnceCallback<void(scoped_refptr<Device>)>
+          handshake_complete_callback,
       base::OnceCallback<void(scoped_refptr<Device>)> paired_callback,
       base::OnceCallback<void(scoped_refptr<Device>, PairFailure)>
           pair_failed_callback,
@@ -156,6 +162,7 @@ class FastPairPairerImpl : public FastPairPairer,
   scoped_refptr<Device> device_;
   FastPairGattServiceClient* fast_pair_gatt_service_client_;
   std::string pairing_device_address_;
+  base::OnceCallback<void(scoped_refptr<Device>)> handshake_complete_callback_;
   base::OnceCallback<void(scoped_refptr<Device>)> paired_callback_;
   base::OnceCallback<void(scoped_refptr<Device>, PairFailure)>
       pair_failed_callback_;

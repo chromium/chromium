@@ -37761,6 +37761,13 @@ Called by update_extension_permission.py.-->
       label="Settings - remove confirmed on remove saved device dialog"/>
 </enum>
 
+<enum name="FastPairSubsequentSuccessFunnelEvent">
+  <int value="0" label="Notification clicked"/>
+  <int value="1" label="Initialization started"/>
+  <int value="2" label="Pairing started"/>
+  <int value="3" label="Process complete"/>
+</enum>
+
 <enum name="FastPairTrackedModelID">
   <int value="0" label="Other"/>
   <int value="1" label="JBLTUNE125TWS"/>

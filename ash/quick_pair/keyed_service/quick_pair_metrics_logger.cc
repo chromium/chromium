@@ -99,6 +99,16 @@ void QuickPairMetricsLogger::OnDiscoveryAction(scoped_refptr<Device> device,
                                                DiscoveryAction action) {
   switch (action) {
     case DiscoveryAction::kPairToDevice:
+      switch (device->protocol) {
+        case Protocol::kFastPairSubsequent:
+          RecordSubsequentSuccessFunnelFlow(
+              FastPairSubsequentSuccessFunnelEvent::kNotificationsClicked);
+          break;
+        case Protocol::kFastPairInitial:
+        case Protocol::kFastPairRetroactive:
+          break;
+      }
+
       if (base::Contains(discovery_learn_more_devices_, device)) {
         AttemptRecordingFastPairEngagementFlow(
             *device, FastPairEngagementFlowEvent::
@@ -175,6 +185,42 @@ void QuickPairMetricsLogger::OnPairingFailureAction(
 void QuickPairMetricsLogger::OnDeviceFound(scoped_refptr<Device> device) {
   AttemptRecordingFastPairEngagementFlow(
       *device, FastPairEngagementFlowEvent::kDiscoveryUiShown);
+}
+
+void QuickPairMetricsLogger::OnPairingStart(scoped_refptr<Device> device) {
+  switch (device->protocol) {
+    case Protocol::kFastPairSubsequent:
+      RecordSubsequentSuccessFunnelFlow(
+          FastPairSubsequentSuccessFunnelEvent::kInitializationStarted);
+      break;
+    case Protocol::kFastPairInitial:
+    case Protocol::kFastPairRetroactive:
+      break;
+  }
+}
+
+void QuickPairMetricsLogger::OnHandshakeComplete(scoped_refptr<Device> device) {
+  switch (device->protocol) {
+    case Protocol::kFastPairSubsequent:
+      RecordSubsequentSuccessFunnelFlow(
+          FastPairSubsequentSuccessFunnelEvent::kPairingStarted);
+      break;
+    case Protocol::kFastPairInitial:
+    case Protocol::kFastPairRetroactive:
+      break;
+  }
+}
+
+void QuickPairMetricsLogger::OnPairingComplete(scoped_refptr<Device> device) {
+  switch (device->protocol) {
+    case Protocol::kFastPairSubsequent:
+      RecordSubsequentSuccessFunnelFlow(
+          FastPairSubsequentSuccessFunnelEvent::kProcessComplete);
+      break;
+    case Protocol::kFastPairInitial:
+    case Protocol::kFastPairRetroactive:
+      break;
+  }
 }
 
 void QuickPairMetricsLogger::OnRetroactivePairFound(

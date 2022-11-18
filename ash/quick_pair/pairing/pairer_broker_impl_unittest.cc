@@ -36,6 +36,8 @@ class FakeFastPairPairer : public ash::quick_pair::FastPairPairer {
       scoped_refptr<device::BluetoothAdapter> adapter,
       scoped_refptr<ash::quick_pair::Device> device,
       base::OnceCallback<void(scoped_refptr<ash::quick_pair::Device>)>
+          handshake_complete_callback,
+      base::OnceCallback<void(scoped_refptr<ash::quick_pair::Device>)>
           paired_callback,
       base::OnceCallback<void(scoped_refptr<ash::quick_pair::Device>,
                               ash::quick_pair::PairFailure)>
@@ -47,12 +49,18 @@ class FakeFastPairPairer : public ash::quick_pair::FastPairPairer {
           pairing_procedure_complete)
       : adapter_(adapter),
         device_(device),
+        handshake_complete_callback_(std::move(handshake_complete_callback)),
         paired_callback_(std::move(paired_callback)),
         pair_failed_callback_(std::move(pair_failed_callback)),
         account_key_failure_callback_(std::move(account_key_failure_callback)),
         pairing_procedure_complete_(std::move(pairing_procedure_complete)) {}
 
   ~FakeFastPairPairer() override = default;
+
+  void TriggerHandshakeCompleteCallback() {
+    EXPECT_TRUE(handshake_complete_callback_);
+    std::move(handshake_complete_callback_).Run(device_);
+  }
 
   void TriggerPairedCallback() {
     EXPECT_TRUE(paired_callback_);
@@ -79,6 +87,8 @@ class FakeFastPairPairer : public ash::quick_pair::FastPairPairer {
   scoped_refptr<device::BluetoothAdapter> adapter_;
   scoped_refptr<ash::quick_pair::Device> device_;
   base::OnceCallback<void(scoped_refptr<ash::quick_pair::Device>)>
+      handshake_complete_callback_;
+  base::OnceCallback<void(scoped_refptr<ash::quick_pair::Device>)>
       paired_callback_;
   base::OnceCallback<void(scoped_refptr<ash::quick_pair::Device>,
                           ash::quick_pair::PairFailure)>
@@ -97,6 +107,8 @@ class FakeFastPairPairerFactory
       scoped_refptr<device::BluetoothAdapter> adapter,
       scoped_refptr<ash::quick_pair::Device> device,
       base::OnceCallback<void(scoped_refptr<ash::quick_pair::Device>)>
+          handshake_complete_callback,
+      base::OnceCallback<void(scoped_refptr<ash::quick_pair::Device>)>
           paired_callback,
       base::OnceCallback<void(scoped_refptr<ash::quick_pair::Device>,
                               ash::quick_pair::PairFailure)>
@@ -107,7 +119,8 @@ class FakeFastPairPairerFactory
       base::OnceCallback<void(scoped_refptr<ash::quick_pair::Device>)>
           pairing_procedure_complete) override {
     auto fake_fast_pair_pairer = std::make_unique<FakeFastPairPairer>(
-        std::move(adapter), std::move(device), std::move(paired_callback),
+        std::move(adapter), std::move(device),
+        std::move(handshake_complete_callback), std::move(paired_callback),
         std::move(pair_failed_callback),
         std::move(account_key_failure_callback),
         std::move(pairing_procedure_complete));
@@ -166,10 +179,25 @@ class PairerBrokerImplTest : public AshTestBase, public PairerBroker::Observer {
     ++account_key_write_count_;
   }
 
+  void OnPairingStart(scoped_refptr<Device> device) override {
+    pairing_started_ = true;
+  }
+
+  void OnHandshakeComplete(scoped_refptr<Device> device) override {
+    handshake_complete_ = true;
+  }
+
+  void OnPairingComplete(scoped_refptr<Device> device) override {
+    device_pair_complete_ = true;
+  }
+
  protected:
   int device_paired_count_ = 0;
   int pair_failure_count_ = 0;
   int account_key_write_count_ = 0;
+  bool pairing_started_ = false;
+  bool handshake_complete_ = false;
+  bool device_pair_complete_ = false;
 
   base::HistogramTester histogram_tester_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> adapter_;
@@ -205,8 +233,14 @@ TEST_F(PairerBrokerImplTest, PairDevice_Subsequent) {
                                              Protocol::kFastPairSubsequent);
 
   pairer_broker_->PairDevice(device);
+  EXPECT_TRUE(pairing_started_);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(pairer_broker_->IsPairing());
+
+  fast_pair_pairer_factory_->fake_fast_pair_pairer()
+      ->TriggerHandshakeCompleteCallback();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(handshake_complete_);
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()->TriggerPairedCallback();
   base::RunLoop().RunUntilIdle();
@@ -219,6 +253,7 @@ TEST_F(PairerBrokerImplTest, PairDevice_Subsequent) {
       ->TriggerPairingProcedureCompleteCallback();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(pairer_broker_->IsPairing());
+  EXPECT_TRUE(device_pair_complete_);
 }
 
 TEST_F(PairerBrokerImplTest, PairDevice_Retroactive) {
