@@ -88,9 +88,11 @@ artifact_zip("updater_zip") {
   inputs = [
              "$root_build_dir/UpdaterSetup.exe",
              "$root_build_dir/UpdaterSetup_test.exe",
+             "$root_build_dir/qualification_app.exe",
            ] + get_target_outputs(":signing")
   deps = [
     ":signing",
+    "//chrome/updater/test/qualification_app",
     "//chrome/updater/win/installer",
     "//chrome/updater/win/installer:installer_test",
   ]

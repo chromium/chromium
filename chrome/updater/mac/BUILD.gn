@@ -439,6 +439,7 @@ artifact_zip("updater_zip") {
     "$root_build_dir/Updater Packaging/sign_updater.py",
     "$root_build_dir/chrome/updater/.install",
     "$root_build_dir/UpdaterSetup",
+    "$root_build_dir/qualification_app",
   ]
   deps = [
     ":updater_bundle",
@@ -446,5 +447,6 @@ artifact_zip("updater_zip") {
     ":updater_install_script",
     "//chrome/updater/mac/installer:metainstaller",
     "//chrome/updater/mac/signing",
+    "//chrome/updater/test/qualification_app",
   ]
 }

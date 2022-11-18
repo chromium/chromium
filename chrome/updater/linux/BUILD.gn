@@ -2,9 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/updater/zip.gni")
+
 # This target builds the updater executable and unittests.
 group("linux") {
-  deps = [ ":updater" ]
+  deps = [
+    ":updater",
+    ":updater_zip",
+  ]
 }
 
 executable("updater") {
@@ -14,4 +19,10 @@ executable("updater") {
     "//chrome/updater:base",
     "//chrome/updater:constants_prod",
   ]
+}
+
+artifact_zip("updater_zip") {
+  output = "$root_build_dir/updater.zip"
+  inputs = [ "$root_build_dir/qualification_app" ]
+  deps = [ "//chrome/updater/test/qualification_app" ]
 }
