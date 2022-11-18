@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "chrome/test/chromedriver/capabilities.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/command_listener.h"
@@ -52,6 +53,9 @@ class PerformanceLogger : public DevToolsEventListener, public CommandListener {
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
                  const base::DictionaryValue& params) override;
+  Status OnEvent(DevToolsClient* client,
+                 const std::string& method,
+                 const base::Value::Dict& params);
 
   // Before allowed commands, if tracing enabled, calls CollectTraceEvents.
   Status BeforeCommand(const std::string& command_name) override;
@@ -60,11 +64,11 @@ class PerformanceLogger : public DevToolsEventListener, public CommandListener {
   void AddLogEntry(Log::Level level,
                    const std::string& webview,
                    const std::string& method,
-                   const base::DictionaryValue& params);
+                   const base::Value::Dict& params);
 
   void AddLogEntry(const std::string& webview,
                    const std::string& method,
-                   const base::DictionaryValue& params);
+                   const base::Value::Dict& params);
 
   // Enables Network and Page domains according to |PerfLoggingPrefs|.
   Status EnableInspectorDomains(DevToolsClient* client);
@@ -72,12 +76,12 @@ class PerformanceLogger : public DevToolsEventListener, public CommandListener {
   // Logs Network and Page events.
   Status HandleInspectorEvents(DevToolsClient* client,
                                const std::string& method,
-                               const base::DictionaryValue& params);
+                               const base::Value::Dict& params);
 
   // Logs trace events and monitors trace buffer usage.
   Status HandleTraceEvents(DevToolsClient* client,
                            const std::string& method,
-                           const base::DictionaryValue& params);
+                           const base::Value::Dict& params);
 
   bool ShouldReportTracingError();
   Status StartTrace();  // Must not call before browser-wide client connects.
