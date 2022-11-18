@@ -3359,7 +3359,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       inForegroundWithCompletion:(ProceduralBlock)completion {
   // Create the new page image, and load with the new tab snapshot except if
   // it is the NTP.
-  UIView* newPage = nil;
+  UIView* newPage = [self viewForWebState:webState];
   GURL tabURL = webState->GetVisibleURL();
   // Toolbar snapshot is only used for the UIRefresh animation.
   UIView* toolbarSnapshot;
@@ -3378,33 +3378,33 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     toolbarSnapshot.frame = [self.contentArea convertRect:toolbarSnapshot.frame
                                                  fromView:self.view];
     [self.contentArea addSubview:toolbarSnapshot];
-    newPage = [self viewForWebState:webState];
-    newPage.userInteractionEnabled = NO;
     newPage.frame = self.view.bounds;
-    [newPage layoutIfNeeded];
   } else {
     if (self.isNTPActiveForCurrentWebState && self.webUsageEnabled) {
-      [self viewForWebState:webState].frame =
-          [self ntpFrameForWebState:self.currentWebState];
+      newPage.frame = [self ntpFrameForWebState:self.currentWebState];
     } else {
-      [self viewForWebState:webState].frame = self.contentArea.bounds;
+      newPage.frame = self.contentArea.bounds;
     }
-    // Setting the frame here doesn't trigger a layout pass. Trigger it manually
-    // if needed. Not triggering it can create problem if the previous frame
-    // wasn't the right one, for example in https://crbug.com/852106.
-    [[self viewForWebState:webState] layoutIfNeeded];
-    newPage = [self viewForWebState:webState];
-    newPage.userInteractionEnabled = NO;
   }
-
+  [newPage layoutIfNeeded];
+  newPage.userInteractionEnabled = NO;
   NSInteger currentAnimationIdentifier = ++_NTPAnimationIdentifier;
 
   // Cleanup steps needed for both UI Refresh and stack-view style animations.
   UIView* webStateView = [self viewForWebState:webState];
+  __weak __typeof(self) weakSelf = self;
   auto commonCompletion = ^{
-    webStateView.frame = self.contentArea.bounds;
+    __strong __typeof(self) strongSelf = weakSelf;
     newPage.userInteractionEnabled = YES;
-    if (currentAnimationIdentifier != self->_NTPAnimationIdentifier) {
+
+    // Check for nil because we need to access an ivar below.
+    if (!strongSelf) {
+      return;
+    }
+
+    webStateView.frame = strongSelf.contentArea.bounds;
+
+    if (currentAnimationIdentifier != strongSelf->_NTPAnimationIdentifier) {
       // Prevent the completion block from being executed if a new animation has
       // started in between. `self.foregroundTabWasAddedCompletionBlock` isn't
       // called because it is overridden when a new animation is started.
@@ -3413,24 +3413,21 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       return;
     }
 
-    self.inNewTabAnimation = NO;
+    strongSelf.inNewTabAnimation = NO;
     // Use the model's currentWebState here because it is possible that it can
     // be reset to a new value before the new Tab animation finished (e.g.
     // if another Tab shows a dialog via `dialogPresenter`). However, that
     // webState's view hasn't been displayed yet because it was in a new tab
     // animation.
-    web::WebState* currentWebState = self.currentWebState;
+    web::WebState* currentWebState = strongSelf.currentWebState;
 
     if (currentWebState) {
-      [self webStateSelected:currentWebState notifyToolbar:NO];
+      [strongSelf webStateSelected:currentWebState notifyToolbar:NO];
     }
     if (completion)
       completion();
 
-    if (self.foregroundTabWasAddedCompletionBlock) {
-      self.foregroundTabWasAddedCompletionBlock();
-      self.foregroundTabWasAddedCompletionBlock = nil;
-    }
+    [strongSelf executeAndClearForegroundTabWasAddedCompletionBlock:YES];
   };
 
   CGPoint origin = [self lastTapPoint];
