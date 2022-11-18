@@ -70,8 +70,6 @@ js_library("app_detail_view") {
     "../..:os_route",
     "../..:route_observer_behavior",
     "../../..:router",
-    "./borealis_page:borealis_detail_view",
-    "./plugin_vm_page:plugin_vm_detail_view",
     "//ui/webui/resources/js:assert",
   ]
 }

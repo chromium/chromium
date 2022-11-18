@@ -9,30 +9,29 @@ import '../shared_style.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppManagementPermissionItemElement} from 'chrome://resources/cr_components/app_management/permission_item.js';
 import {getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Router} from '../../../../router.js';
+import {cast} from '../../../assert_extras.js';
 import {routes} from '../../../os_route.js';
 import {AppManagementStoreClient, AppManagementStoreClientInterface} from '../store_client.js';
-import {AppManagementPermissionItemElement} from '../types.js';
 
 import {PluginVmBrowserProxy, PluginVmBrowserProxyImpl} from './plugin_vm_browser_proxy.js';
+import {getTemplate} from './plugin_vm_detail_view.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {AppManagementStoreClientInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const AppManagementPluginVmDetailViewElementBase = mixinBehaviors(
-    [AppManagementStoreClient, WebUIListenerBehavior], PolymerElement);
+const AppManagementPluginVmDetailViewElementBase =
+    mixinBehaviors(
+        [AppManagementStoreClient], WebUiListenerMixin(PolymerElement)) as {
+      new (): PolymerElement & WebUiListenerMixinInterface &
+          AppManagementStoreClientInterface,
+    };
 
-/** @polymer */
 class AppManagementPluginVmDetailViewElement extends
     AppManagementPluginVmDetailViewElementBase {
   static get is() {
@@ -40,38 +39,37 @@ class AppManagementPluginVmDetailViewElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /**
-       * @private {App}
-       */
       app_: Object,
 
-      /** @private {boolean} */
       showDialog_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {string} */
       dialogText_: String,
 
-      /** @private {Element} */
       pendingPermissionItem_: Object,
     };
   }
 
+  private app_: App;
+  private dialogText_: string;
+  private pendingPermissionItem_: AppManagementPermissionItemElement;
+  private pluginVmBrowserProxy_: PluginVmBrowserProxy;
+  private showDialog_: boolean;
+
   constructor() {
     super();
 
-    /** @private {!PluginVmBrowserProxy}  */
     this.pluginVmBrowserProxy_ = PluginVmBrowserProxyImpl.getInstance();
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     // When the state is changed, get the new selected app and assign it to
@@ -80,28 +78,22 @@ class AppManagementPluginVmDetailViewElement extends
     this.updateFromStore();
   }
 
-  /** @private */
-  onSharedPathsClick_() {
+  private onSharedPathsClick_(): void {
     Router.getInstance().navigateTo(
         routes.APP_MANAGEMENT_PLUGIN_VM_SHARED_PATHS,
         new URLSearchParams({'id': this.app_.id}));
   }
 
-  /** @private */
-  onSharedUsbDevicesClick_() {
+  private onSharedUsbDevicesClick_(): void {
     Router.getInstance().navigateTo(
         routes.APP_MANAGEMENT_PLUGIN_VM_SHARED_USB_DEVICES,
         new URLSearchParams({'id': this.app_.id}));
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  async onPermissionChanged_(e) {
+  private async onPermissionChanged_(e: Event): Promise<void> {
     this.pendingPermissionItem_ =
-        /** @type {AppManagementPermissionItemElement} */ (e.target);
-    switch (e.target.permissionType) {
+        cast(e.target, AppManagementPermissionItemElement);
+    switch (this.pendingPermissionItem_.permissionType) {
       case 'kCamera':
         this.dialogText_ =
             loadTimeData.getString('pluginVmPermissionDialogCameraLabel');
@@ -123,17 +115,22 @@ class AppManagementPluginVmDetailViewElement extends
     }
   }
 
-  /** @private */
-  onRelaunchTap_() {
+  private onRelaunchTap_(): void {
     this.pendingPermissionItem_.syncPermission();
     this.pluginVmBrowserProxy_.relaunchPluginVm();
     this.showDialog_ = false;
   }
 
-  /** @private */
-  onCancel_() {
+  private onCancel_(): void {
     this.pendingPermissionItem_.resetToggle();
     this.showDialog_ = false;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'app-management-plugin-vm-detail-view':
+        AppManagementPluginVmDetailViewElement;
   }
 }
 

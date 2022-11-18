@@ -64,6 +64,8 @@ export class AppManagementStoreClientInterface {
    * @return {!Store<AppManagementPageState>}
    */
   getStore() {}
+
+  updateFromStore() {}
 }
 
 /**

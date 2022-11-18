@@ -10,23 +10,21 @@ import 'chrome://resources/cr_elements/icons.html.js';
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Router} from '../../../../router.js';
 import {routes} from '../../../os_route.js';
 import {AppManagementStoreClient, AppManagementStoreClientInterface} from '../store_client.js';
 
+import {getTemplate} from './borealis_detail_view.html.js';
+
 const kBorealisClientAppId = 'epfhbkiklgmlkhfpbcdleadnhcfdjfmo';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {AppManagementStoreClientInterface}
- */
 const AppManagementBorealisDetailViewElementBase =
-    mixinBehaviors([AppManagementStoreClient], PolymerElement);
+    mixinBehaviors([AppManagementStoreClient], PolymerElement) as {
+      new (): PolymerElement & AppManagementStoreClientInterface,
+    };
 
-/** @polymer */
 class AppManagementBorealisDetailViewElement extends
     AppManagementBorealisDetailViewElementBase {
   static get is() {
@@ -34,19 +32,20 @@ class AppManagementBorealisDetailViewElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /** @private {App} */
       app_: {
         type: Object,
       },
     };
   }
 
-  connectedCallback() {
+  private app_: App;
+
+  override connectedCallback() {
     super.connectedCallback();
 
     // When the state is changed, get the new selected app and assign it to
@@ -55,23 +54,22 @@ class AppManagementBorealisDetailViewElement extends
     this.updateFromStore();
   }
 
-  /**
-   * @return {boolean}
-   * @protected
-   */
-  isMainApp_() {
+  private isMainApp_(): boolean {
     return this.app_.id === kBorealisClientAppId;
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onBorealisLinkClicked_(event) {
+  private onBorealisLinkClicked_(event: CustomEvent<{event: Event}>): void {
     event.detail.event.preventDefault();
     const params = new URLSearchParams();
     params.append('id', kBorealisClientAppId);
     Router.getInstance().navigateTo(routes.APP_MANAGEMENT_DETAIL, params);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'app-management-borealis-detail-view':
+        AppManagementBorealisDetailViewElement;
   }
 }
 
