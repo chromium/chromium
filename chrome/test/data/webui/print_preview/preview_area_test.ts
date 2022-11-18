@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {Destination, DestinationOrigin, Error, Margins, MeasurementSystem, MeasurementSystemUnitType, NativeLayerImpl, PluginProxyImpl, PreviewAreaState, PrintPreviewPreviewAreaElement, Size, State} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -58,7 +57,7 @@ suite(preview_area_test.suiteName, function() {
   });
 
   /** Validate some preview area state transitions work as expected. */
-  test(assert(preview_area_test.TestNames.StateChanges), function() {
+  test(preview_area_test.TestNames.StateChanges, function() {
     // Simulate starting the preview.
     const whenPreviewStarted = nativeLayer.whenCalled('getPreview');
     previewArea.state = State.READY;
@@ -99,7 +98,7 @@ suite(preview_area_test.suiteName, function() {
   });
 
   /** Validate preview area sets tabindex correctly based on viewport size. */
-  test(assert(preview_area_test.TestNames.ViewportSizeChanges), function() {
+  test(preview_area_test.TestNames.ViewportSizeChanges, function() {
     // Simulate starting the preview.
     const whenPreviewStarted = nativeLayer.whenCalled('getPreview');
     previewArea.state = State.READY;

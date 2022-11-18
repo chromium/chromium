@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 import {PrintServerStore, PrintServerStoreEventType} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {addWebUiListener, removeWebUiListener, WebUiListener, webUIListenerCallback} from 'chrome://resources/js/cr.js';
-
 import {assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -47,8 +45,7 @@ suite(print_server_store_test.suiteName, function() {
   // Tests that print servers with the selected name are selected by ID is the
   // native layer choosePrintServers is called.
   test(
-      assert(print_server_store_test.TestNames.ChoosePrintServers),
-      async () => {
+      print_server_store_test.TestNames.ChoosePrintServers, async () => {
         const printServers = [
           {id: 'user-server1', name: 'Print Server 1'},
           {id: 'device-server2', name: 'Print Server 2'},
@@ -73,8 +70,7 @@ suite(print_server_store_test.suiteName, function() {
   // Tests that print servers and fetching mode are updated when
   // PRINT_SERVERS_CHANGED occurs.
   test(
-      assert(print_server_store_test.TestNames.PrintServersChanged),
-      async () => {
+      print_server_store_test.TestNames.PrintServersChanged, async () => {
         const printServers = [
           {id: 'server1', name: 'Print Server 1'},
           {id: 'server2', name: 'Print Server 2'},
@@ -100,8 +96,7 @@ suite(print_server_store_test.suiteName, function() {
   // getPrintServersConfig is called and an update to the print servers config
   // occurs.
   test(
-      assert(print_server_store_test.TestNames.GetPrintServersConfig),
-      async () => {
+      print_server_store_test.TestNames.GetPrintServersConfig, async () => {
         const printServers = [
           {id: 'server1', name: 'Print Server 1'},
           {id: 'server2', name: 'Print Server 2'},
@@ -125,16 +120,13 @@ suite(print_server_store_test.suiteName, function() {
 
   // Tests that an event is dispatched are updated when SERVER_PRINTERS_LOADING
   // is called.
-  test(
-      assert(print_server_store_test.TestNames.ServerPrintersLoading),
-      async () => {
-        const whenServerPrintersLoadedEvent = eventToPromise(
-            PrintServerStoreEventType.SERVER_PRINTERS_LOADING,
-            printServerStore);
+  test(print_server_store_test.TestNames.ServerPrintersLoading, async () => {
+    const whenServerPrintersLoadedEvent = eventToPromise(
+        PrintServerStoreEventType.SERVER_PRINTERS_LOADING, printServerStore);
 
-        webUIListenerCallback('server-printers-loading', true);
+    webUIListenerCallback('server-printers-loading', true);
 
-        const serverPrintersLoadedEvent = await whenServerPrintersLoadedEvent;
-        assertTrue(serverPrintersLoadedEvent.detail);
-      });
+    const serverPrintersLoadedEvent = await whenServerPrintersLoadedEvent;
+    assertTrue(serverPrintersLoadedEvent.detail);
+  });
 });

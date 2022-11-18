@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 import {DuplexMode, NativeInitialSettings, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 // <if expr="is_chromeos">
@@ -82,7 +80,7 @@ suite(print_preview_app_test.suiteName, function() {
     PluginProxyImpl.setInstance(pluginProxy);
   });
 
-  test(assert(print_preview_app_test.TestNames.PrintPresets), async () => {
+  test(print_preview_app_test.TestNames.PrintPresets, async () => {
     await initialize();
     assertEquals(1, page.settings.copies.value);
     assertFalse(page.settings.duplex.value);
@@ -97,37 +95,28 @@ suite(print_preview_app_test.suiteName, function() {
     assertFalse(page.getSetting('copies').setFromUi);
   });
 
-  test(
-      assert(print_preview_app_test.TestNames.DestinationsManaged),
-      async () => {
-        initialSettings.destinationsManaged = true;
-        await initialize();
-        const sidebar =
-            page.shadowRoot!.querySelector('print-preview-sidebar')!;
-        assertTrue(sidebar.controlsManaged);
-      });
+  test(print_preview_app_test.TestNames.DestinationsManaged, async () => {
+    initialSettings.destinationsManaged = true;
+    await initialize();
+    const sidebar = page.shadowRoot!.querySelector('print-preview-sidebar')!;
+    assertTrue(sidebar.controlsManaged);
+  });
 
-  test(
-      assert(print_preview_app_test.TestNames.HeaderFooterManaged),
-      async () => {
-        initialSettings.policies = {headerFooter: {allowedMode: true}};
-        await initialize();
-        const sidebar =
-            page.shadowRoot!.querySelector('print-preview-sidebar')!;
-        assertTrue(sidebar.controlsManaged);
-      });
+  test(print_preview_app_test.TestNames.HeaderFooterManaged, async () => {
+    initialSettings.policies = {headerFooter: {allowedMode: true}};
+    await initialize();
+    const sidebar = page.shadowRoot!.querySelector('print-preview-sidebar')!;
+    assertTrue(sidebar.controlsManaged);
+  });
 
-  test(
-      assert(print_preview_app_test.TestNames.CssBackgroundManaged),
-      async () => {
-        initialSettings.policies = {cssBackground: {allowedMode: 1}};
-        await initialize();
-        const sidebar =
-            page.shadowRoot!.querySelector('print-preview-sidebar')!;
-        assertTrue(sidebar.controlsManaged);
-      });
+  test(print_preview_app_test.TestNames.CssBackgroundManaged, async () => {
+    initialSettings.policies = {cssBackground: {allowedMode: 1}};
+    await initialize();
+    const sidebar = page.shadowRoot!.querySelector('print-preview-sidebar')!;
+    assertTrue(sidebar.controlsManaged);
+  });
 
-  test(assert(print_preview_app_test.TestNames.SheetsManaged), async () => {
+  test(print_preview_app_test.TestNames.SheetsManaged, async () => {
     initialSettings.policies = {sheets: {value: 2}};
     await initialize();
     const sidebar = page.shadowRoot!.querySelector('print-preview-sidebar')!;

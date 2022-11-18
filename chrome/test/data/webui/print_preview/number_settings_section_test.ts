@@ -5,7 +5,6 @@
 import 'chrome://print/print_preview.js';
 
 import {PrintPreviewNumberSettingsSectionElement} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -42,8 +41,7 @@ suite(number_settings_section_test.suiteName, function() {
 
   // Test that key events that would result in invalid values are blocked.
   test(
-      assert(number_settings_section_test.TestNames.BlocksInvalidKeys),
-      function() {
+      number_settings_section_test.TestNames.BlocksInvalidKeys, function() {
         const input = numberSettings.$.userValue;
         /**
          * @param key Key name for the keyboard event that will be fired.
@@ -85,8 +83,7 @@ suite(number_settings_section_test.suiteName, function() {
       });
 
   test(
-      assert(number_settings_section_test.TestNames.UpdatesErrorMessage),
-      function() {
+      number_settings_section_test.TestNames.UpdatesErrorMessage, function() {
         const input = numberSettings.$.userValue;
 
         // The error message should be empty initially, since the input is

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {PrintPreviewModelElement, PrintPreviewScalingSettingsElement, ScalingType} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
@@ -42,8 +41,7 @@ suite(scaling_settings_interactive_test.suiteName, function() {
   });
 
   test(
-      assert(scaling_settings_interactive_test.TestNames.AutoFocusInput),
-      async () => {
+      scaling_settings_interactive_test.TestNames.AutoFocusInput, async () => {
         const scalingInput =
             scalingSection.shadowRoot!
                 .querySelector('print-preview-number-settings-section')!.$

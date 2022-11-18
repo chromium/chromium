@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {Destination, DestinationOrigin, NativeLayerCrosImpl, NativeLayerImpl, PrinterStatusReason, PrinterStatusSeverity, PrintPreviewDestinationDropdownCrosElement, PrintPreviewDestinationSelectCrosElement} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockController} from 'chrome://webui-test/mock_controller.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -177,8 +176,7 @@ suite(printer_status_test_cros.suiteName, function() {
   });
 
   test(
-      assert(printer_status_test_cros.TestNames.PrinterStatusUpdatesColor),
-      function() {
+      printer_status_test_cros.TestNames.PrinterStatusUpdatesColor, function() {
         const destination1 =
             createDestination('ID1', 'One', DestinationOrigin.CROS);
         const destination2 =
@@ -273,8 +271,7 @@ suite(printer_status_test_cros.suiteName, function() {
       });
 
   test(
-      assert(printer_status_test_cros.TestNames.SendStatusRequestOnce),
-      function() {
+      printer_status_test_cros.TestNames.SendStatusRequestOnce, function() {
         return waitBeforeNextRender(destinationSelect).then(() => {
           const destination1 =
               createDestination('ID1', 'One', DestinationOrigin.CROS);
@@ -303,7 +300,7 @@ suite(printer_status_test_cros.suiteName, function() {
         });
       });
 
-  test(assert(printer_status_test_cros.TestNames.HiddenStatusText), function() {
+  test(printer_status_test_cros.TestNames.HiddenStatusText, function() {
     const destinationStatus =
         destinationSelect.shadowRoot!.querySelector<HTMLElement>(
             '.destination-additional-info')!;
@@ -342,7 +339,7 @@ suite(printer_status_test_cros.suiteName, function() {
         });
   });
 
-  test(assert(printer_status_test_cros.TestNames.ChangeIcon), function() {
+  test(printer_status_test_cros.TestNames.ChangeIcon, function() {
     return waitBeforeNextRender(destinationSelect).then(() => {
       const localCrosPrinter =
           createDestination('ID1', 'One', DestinationOrigin.CROS);
@@ -386,8 +383,7 @@ suite(printer_status_test_cros.suiteName, function() {
   });
 
   test(
-      assert(
-          printer_status_test_cros.TestNames.SuccessfulPrinterStatusAfterRetry),
+      printer_status_test_cros.TestNames.SuccessfulPrinterStatusAfterRetry,
       function() {
         nativeLayerCros.simulateStatusRetrySuccesful();
 

@@ -94,8 +94,7 @@ suite(destination_dropdown_cros_test.suiteName, function() {
   });
 
   test(
-      assert(destination_dropdown_cros_test.TestNames.CorrectListItems),
-      function() {
+      destination_dropdown_cros_test.TestNames.CorrectListItems, function() {
         setItemList([
           createDestination('One', DestinationOrigin.CROS),
           createDestination('Two', DestinationOrigin.CROS),
@@ -109,31 +108,29 @@ suite(destination_dropdown_cros_test.suiteName, function() {
         assertEquals('Three', itemList[2]!.textContent!.trim());
       });
 
-  test(
-      assert(destination_dropdown_cros_test.TestNames.ClickCloses), function() {
-        const destinationOne = createDestination('One', DestinationOrigin.CROS);
-        setItemList([destinationOne]);
-        dropdown.value = destinationOne;
-        const ironDropdown =
-            dropdown.shadowRoot!.querySelector('iron-dropdown')!;
+  test(destination_dropdown_cros_test.TestNames.ClickCloses, function() {
+    const destinationOne = createDestination('One', DestinationOrigin.CROS);
+    setItemList([destinationOne]);
+    dropdown.value = destinationOne;
+    const ironDropdown = dropdown.shadowRoot!.querySelector('iron-dropdown')!;
 
-        clickDropdownFocus();
-        assertTrue(ironDropdown.opened);
+    clickDropdownFocus();
+    assertTrue(ironDropdown.opened);
 
-        getList()[0]!.click();
-        assertFalse(ironDropdown.opened);
+    getList()[0]!.click();
+    assertFalse(ironDropdown.opened);
 
-        clickDropdownFocus();
-        assertTrue(ironDropdown.opened);
+    clickDropdownFocus();
+    assertTrue(ironDropdown.opened);
 
-        // Clicking outside the dropdown will cause it to lose focus and close.
-        // This will verify on-blur closes the dropdown.
-        clickOutsideDropdown();
-        assertFalse(ironDropdown.opened);
-      });
+    // Clicking outside the dropdown will cause it to lose focus and close.
+    // This will verify on-blur closes the dropdown.
+    clickOutsideDropdown();
+    assertFalse(ironDropdown.opened);
+  });
 
   test(
-      assert(destination_dropdown_cros_test.TestNames.HighlightedAfterUpDown),
+      destination_dropdown_cros_test.TestNames.HighlightedAfterUpDown,
       function() {
         const destinationOne = createDestination('One', DestinationOrigin.CROS);
         setItemList([destinationOne]);
@@ -161,8 +158,7 @@ suite(destination_dropdown_cros_test.suiteName, function() {
       });
 
   test(
-      assert(destination_dropdown_cros_test.TestNames
-                 .DestinationChangeAfterUpDown),
+      destination_dropdown_cros_test.TestNames.DestinationChangeAfterUpDown,
       function() {
         const destinationOne = createDestination('One', DestinationOrigin.CROS);
         const pdfDestination = getSaveAsPdfDestination();
@@ -191,24 +187,20 @@ suite(destination_dropdown_cros_test.suiteName, function() {
         });
       });
 
-  test(
-      assert(destination_dropdown_cros_test.TestNames.EnterOpensCloses),
-      function() {
-        const destinationOne = createDestination('One', DestinationOrigin.CROS);
-        setItemList([destinationOne]);
-        dropdown.value = destinationOne;
+  test(destination_dropdown_cros_test.TestNames.EnterOpensCloses, function() {
+    const destinationOne = createDestination('One', DestinationOrigin.CROS);
+    setItemList([destinationOne]);
+    dropdown.value = destinationOne;
 
-        assertFalse(
-            dropdown.shadowRoot!.querySelector('iron-dropdown')!.opened);
-        enter();
-        assertTrue(dropdown.shadowRoot!.querySelector('iron-dropdown')!.opened);
-        enter();
-        assertFalse(
-            dropdown.shadowRoot!.querySelector('iron-dropdown')!.opened);
-      });
+    assertFalse(dropdown.shadowRoot!.querySelector('iron-dropdown')!.opened);
+    enter();
+    assertTrue(dropdown.shadowRoot!.querySelector('iron-dropdown')!.opened);
+    enter();
+    assertFalse(dropdown.shadowRoot!.querySelector('iron-dropdown')!.opened);
+  });
 
   test(
-      assert(destination_dropdown_cros_test.TestNames.HighlightedFollowsMouse),
+      destination_dropdown_cros_test.TestNames.HighlightedFollowsMouse,
       function() {
         const destinationOne = createDestination('One', DestinationOrigin.CROS);
         setItemList([
@@ -234,7 +226,7 @@ suite(destination_dropdown_cros_test.suiteName, function() {
         assertEquals('One', getHighlightedElementText());
       });
 
-  test(assert(destination_dropdown_cros_test.TestNames.Disabled), function() {
+  test(destination_dropdown_cros_test.TestNames.Disabled, function() {
     const destinationOne = createDestination('One', DestinationOrigin.CROS);
     setItemList([destinationOne]);
     dropdown.value = destinationOne;
@@ -251,7 +243,7 @@ suite(destination_dropdown_cros_test.suiteName, function() {
   });
 
   test(
-      assert(destination_dropdown_cros_test.TestNames.HighlightedWhenOpened),
+      destination_dropdown_cros_test.TestNames.HighlightedWhenOpened,
       function() {
         const destinationTwo = createDestination('Two', DestinationOrigin.CROS);
         const destinationThree =

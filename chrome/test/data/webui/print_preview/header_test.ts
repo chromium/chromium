@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {Destination, DestinationOrigin, GooglePromotedDestinationId, PrintPreviewHeaderElement, PrintPreviewPluralStringProxyImpl, State} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
@@ -60,7 +59,7 @@ suite(header_test.suiteName, function() {
 
   // Tests that the 4 different messages (non-virtual printer singular and
   // plural, virtual printer singular and plural) all show up as expected.
-  test(assert(header_test.TestNames.HeaderPrinterTypes), async function() {
+  test(header_test.TestNames.HeaderPrinterTypes, async function() {
     const summary = header.shadowRoot!.querySelector('.summary')!;
     {
       const {messageName, itemCount} =
@@ -101,7 +100,7 @@ suite(header_test.suiteName, function() {
 
   // Tests that the correct message is shown for non-READY states, and that
   // the print button is disabled appropriately.
-  test(assert(header_test.TestNames.HeaderChangesForState), async function() {
+  test(header_test.TestNames.HeaderChangesForState, async function() {
     const summary = header.shadowRoot!.querySelector('.summary')!;
     await pluralString.whenCalled('getPluralString');
     assertEquals('1 sheet of paper', summary.textContent!.trim());
@@ -120,7 +119,7 @@ suite(header_test.suiteName, function() {
   });
 
   // Tests that enterprise badge shows up if any setting is managed.
-  test(assert(header_test.TestNames.EnterprisePolicy), function() {
+  test(header_test.TestNames.EnterprisePolicy, function() {
     assertTrue(header.shadowRoot!.querySelector('iron-icon')!.hidden);
     header.managed = true;
     assertFalse(header.shadowRoot!.querySelector('iron-icon')!.hidden);

@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import 'chrome://print/print_preview.js';
+
 import {PrintPreviewNumberSettingsSectionElement} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {triggerInputEvent} from './print_preview_test_utils.js';
@@ -38,8 +38,7 @@ suite(number_settings_section_interactive_test.suiteName, function() {
   // Verifies that blurring the input will reset it to the default if it is
   // empty, but not if it contains an invalid value.
   test(
-      assert(number_settings_section_interactive_test.TestNames
-                 .BlurResetsEmptyInput),
+      number_settings_section_interactive_test.TestNames.BlurResetsEmptyInput,
       async () => {
         // Initial value is 10.
         const crInput = numberSettings.getInput();

@@ -5,7 +5,6 @@
 import 'chrome://print/print_preview.js';
 
 import {PrintPreviewAdvancedSettingsItemElement, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
@@ -52,7 +51,7 @@ suite(advanced_item_test.suiteName, function() {
   });
 
   // Test that a select capability is displayed correctly.
-  test(assert(advanced_item_test.TestNames.DisplaySelect), function() {
+  test(advanced_item_test.TestNames.DisplaySelect, function() {
     const label = item.shadowRoot!.querySelector('.label')!;
     assertEquals('Paper Type', label.textContent);
 
@@ -70,7 +69,7 @@ suite(advanced_item_test.suiteName, function() {
         item.shadowRoot!.querySelector('cr-checkbox')!.parentElement!.hidden);
   });
 
-  test(assert(advanced_item_test.TestNames.DisplayInput), function() {
+  test(advanced_item_test.TestNames.DisplayInput, function() {
     // Create capability
     item.capability = getCddTemplateWithAdvancedSettings(3, 'FooDevice')
                           .capabilities!.printer.vendor_capability![2]!;
@@ -90,7 +89,7 @@ suite(advanced_item_test.suiteName, function() {
         item.shadowRoot!.querySelector('cr-checkbox')!.parentElement!.hidden);
   });
 
-  test(assert(advanced_item_test.TestNames.DisplayCheckbox), function() {
+  test(advanced_item_test.TestNames.DisplayCheckbox, function() {
     // Create capability
     item.capability = getCddTemplateWithAdvancedSettings(4, 'FooDevice')
                           .capabilities!.printer.vendor_capability![3]!;
@@ -112,7 +111,7 @@ suite(advanced_item_test.suiteName, function() {
 
   // Test that a select capability updates correctly when the setting is
   // updated (e.g. when sticky settings are set).
-  test(assert(advanced_item_test.TestNames.UpdateSelect), function() {
+  test(advanced_item_test.TestNames.UpdateSelect, function() {
     // Check that the default option is selected.
     const select = item.shadowRoot!.querySelector('select')!;
     assertEquals(0, select.selectedIndex);
@@ -124,7 +123,7 @@ suite(advanced_item_test.suiteName, function() {
 
   // Test that an input capability updates correctly when the setting is
   // updated (e.g. when sticky settings are set).
-  test(assert(advanced_item_test.TestNames.UpdateInput), function() {
+  test(advanced_item_test.TestNames.UpdateInput, function() {
     // Create capability
     item.capability = getCddTemplateWithAdvancedSettings(3, 'FooDevice')
                           .capabilities!.printer.vendor_capability![2]!;
@@ -141,7 +140,7 @@ suite(advanced_item_test.suiteName, function() {
 
   // Test that an checkbox capability updates correctly when the setting is
   // updated (e.g. when sticky settings are set).
-  test(assert(advanced_item_test.TestNames.UpdateCheckbox), function() {
+  test(advanced_item_test.TestNames.UpdateCheckbox, function() {
     // Create capability
     item.capability = getCddTemplateWithAdvancedSettings(4, 'FooDevice')
                           .capabilities!.printer.vendor_capability![3]!;
@@ -158,7 +157,7 @@ suite(advanced_item_test.suiteName, function() {
 
   // Test that the setting is displayed correctly when the search query
   // matches its display name.
-  test(assert(advanced_item_test.TestNames.QueryName), function() {
+  test(advanced_item_test.TestNames.QueryName, function() {
     const query = /(Type)/ig;
     assertTrue(item.hasMatch(query));
     item.updateHighlighting(query, new Map());
@@ -181,7 +180,7 @@ suite(advanced_item_test.suiteName, function() {
 
   // Test that the setting is displayed correctly when the search query
   // matches one of the select options.
-  test(assert(advanced_item_test.TestNames.QueryOption), function() {
+  test(advanced_item_test.TestNames.QueryOption, function() {
     const query = /(cycle)/ig;
     assertTrue(item.hasMatch(query));
     item.updateHighlighting(query, new Map());

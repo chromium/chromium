@@ -6,7 +6,6 @@ import {Destination, DestinationErrorType, DestinationStore, DestinationStoreEve
 // <if expr="not is_chromeos">
 import {RecentDestination} from 'chrome://print/print_preview.js';
 // </if>
-import {assert} from 'chrome://resources/js/assert.js';
 // <if expr="not is_chromeos">
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // </if>
@@ -120,8 +119,7 @@ suite(destination_store_test.suiteName, function() {
    * destination is automatically reselected.
    */
   test(
-      assert(destination_store_test.TestNames.SingleRecentDestination),
-      function() {
+      destination_store_test.TestNames.SingleRecentDestination, function() {
         const recentDestination = makeRecentDestination(destinations[0]!);
         initialSettings.serializedAppStateStr = JSON.stringify({
           version: 2,
@@ -141,8 +139,7 @@ suite(destination_store_test.suiteName, function() {
    * fetched.
    */
   test(
-      assert(destination_store_test.TestNames.MultipleRecentDestinations),
-      function() {
+      destination_store_test.TestNames.MultipleRecentDestinations, function() {
         const recentDestinations = destinations.slice(0, 3).map(
             destination => makeRecentDestination(destination));
 
@@ -173,8 +170,7 @@ suite(destination_store_test.suiteName, function() {
    * PDF.
    */
   test(
-      assert(destination_store_test.TestNames.RecentDestinationsFallback),
-      function() {
+      destination_store_test.TestNames.RecentDestinationsFallback, function() {
         initialSettings.serializedAppStateStr = JSON.stringify({
           version: 2,
           recentDestinations: [],
@@ -194,8 +190,7 @@ suite(destination_store_test.suiteName, function() {
    * For crbug.com/666595.
    */
   test(
-      assert(destination_store_test.TestNames
-                 .MultipleRecentDestinationsOneRequest),
+      destination_store_test.TestNames.MultipleRecentDestinationsOneRequest,
       function() {
         const recentDestinations = destinations.slice(0, 3).map(
             destination => makeRecentDestination(destination));
@@ -235,7 +230,7 @@ suite(destination_store_test.suiteName, function() {
    * respected and a matching destination is automatically selected.
    */
   test(
-      assert(destination_store_test.TestNames.DefaultDestinationSelectionRules),
+      destination_store_test.TestNames.DefaultDestinationSelectionRules,
       function() {
         initialSettings.serializedDefaultDestinationSelectionRulesStr =
             JSON.stringify({namePattern: '.*Four.*'});
@@ -256,8 +251,7 @@ suite(destination_store_test.suiteName, function() {
    * destinations.
    */
   test(
-      assert(destination_store_test.TestNames.SystemDefaultPrinterPolicy),
-      function() {
+      destination_store_test.TestNames.SystemDefaultPrinterPolicy, function() {
         // Set the policy in loadTimeData.
         loadTimeData.overrideValues({useSystemDefaultPrinter: true});
 
@@ -296,7 +290,7 @@ suite(destination_store_test.suiteName, function() {
    * from printer fetch is selected.
    */
   test(
-      assert(destination_store_test.TestNames.KioskModeSelectsFirstPrinter),
+      destination_store_test.TestNames.KioskModeSelectsFirstPrinter,
       function() {
         initialSettings.serializedDefaultDestinationSelectionRulesStr = '';
         initialSettings.serializedAppStateStr = '';
@@ -321,8 +315,7 @@ suite(destination_store_test.suiteName, function() {
    * destination is null.
    */
   test(
-      assert(destination_store_test.TestNames.NoPrintersShowsError),
-      function() {
+      destination_store_test.TestNames.NoPrintersShowsError, function() {
         initialSettings.serializedDefaultDestinationSelectionRulesStr = '';
         initialSettings.serializedAppStateStr = '';
         initialSettings.pdfPrinterDisabled = true;
@@ -348,7 +341,7 @@ suite(destination_store_test.suiteName, function() {
    * store (PDF printer), the DestinationStore does not try to select a
    * printer again later. Regression test for https://crbug.com/927162.
    */
-  test(assert(destination_store_test.TestNames.RecentSaveAsPdf), function() {
+  test(destination_store_test.TestNames.RecentSaveAsPdf, function() {
     const pdfPrinter = getSaveAsPdfDestination();
     const recentDestination = makeRecentDestination(pdfPrinter);
     initialSettings.serializedAppStateStr = JSON.stringify({
@@ -376,8 +369,7 @@ suite(destination_store_test.suiteName, function() {
    * destination is automatically reselected.
    */
   test(
-      assert(destination_store_test.TestNames.LoadAndSelectDestination),
-      function() {
+      destination_store_test.TestNames.LoadAndSelectDestination, function() {
         destinations = getDestinations(localDestinations);
         initialSettings.printerName = '';
         const id1 = 'ID1';
@@ -423,7 +415,7 @@ suite(destination_store_test.suiteName, function() {
   // <if expr="is_chromeos">
   /** Tests that the SAVE_TO_DRIVE_CROS destination is loaded on Chrome OS. */
   test(
-      assert(destination_store_test.TestNames.LoadSaveToDriveCros), function() {
+      destination_store_test.TestNames.LoadSaveToDriveCros, function() {
         return setInitialSettings(false).then(() => {
           assertTrue(!!destinationStore.destinations().find(
               destination => destination.id ===
@@ -433,7 +425,7 @@ suite(destination_store_test.suiteName, function() {
 
   // Tests that the SAVE_TO_DRIVE_CROS destination is not loaded on Chrome OS
   // when Google Drive is not mounted.
-  test(assert(destination_store_test.TestNames.DriveNotMounted), function() {
+  test(destination_store_test.TestNames.DriveNotMounted, function() {
     initialSettings.isDriveMounted = false;
     return setInitialSettings(false).then(() => {
       assertFalse(!!destinationStore.destinations().find(

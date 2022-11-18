@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 import {Destination, DestinationOrigin, DestinationStore, DestinationStoreEventType, NativeLayerImpl, PrintPreviewDestinationDialogElement} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -86,7 +84,7 @@ suite(destination_search_test.suiteName, function() {
   // Tests that a destination is selected if the user clicks on it and
   // capabilities fetch succeeds.
   test(
-      assert(destination_search_test.TestNames.GetCapabilitiesSucceeds),
+      destination_search_test.TestNames.GetCapabilitiesSucceeds,
       async function() {
         const destId = '00112233DEADBEEF';
         nativeLayer.setLocalDestinationCapabilities(getCddTemplate(destId));
@@ -107,8 +105,7 @@ suite(destination_search_test.suiteName, function() {
   // Tests what happens when capabilities cannot be retrieved for the chosen
   // destination. The destination will still be selected in this case.
   test(
-      assert(destination_search_test.TestNames.GetCapabilitiesFails),
-      async function() {
+      destination_search_test.TestNames.GetCapabilitiesFails, async function() {
         const destId = '001122DEADBEEF';
         nativeLayer.setLocalDestinationCapabilities(
             getCddTemplate(destId), true);

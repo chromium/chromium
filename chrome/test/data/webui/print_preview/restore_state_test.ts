@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {getInstance, MarginsType, NativeInitialSettings, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement, ScalingType, SerializedSettings, Settings, SettingsMixinInterface} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 // <if expr="is_chromeos">
@@ -113,7 +112,7 @@ suite(restore_state_test.suiteName, function() {
    * 90, dpi = 100, custom square paper, and custom margins.
    */
   test(
-      assert(restore_state_test.TestNames.RestoreTrueValues), async function() {
+      restore_state_test.TestNames.RestoreTrueValues, async function() {
         const stickySettings: SerializedSettings = {
           version: 2,
           recentDestinations: [],
@@ -158,8 +157,7 @@ suite(restore_state_test.suiteName, function() {
    * 120, dpi = 200, letter paper and default margins.
    */
   test(
-      assert(restore_state_test.TestNames.RestoreFalseValues),
-      async function() {
+      restore_state_test.TestNames.RestoreFalseValues, async function() {
         const stickySettings: SerializedSettings = {
           version: 2,
           recentDestinations: [],
@@ -198,7 +196,7 @@ suite(restore_state_test.suiteName, function() {
    * Tests that setting the settings values results in the correct serialized
    * values being sent to the native layer.
    */
-  test(assert(restore_state_test.TestNames.SaveValues), async function() {
+  test(restore_state_test.TestNames.SaveValues, async function() {
     interface TestCase {
       section: string;
       settingName: string;

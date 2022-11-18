@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {NativeLayerImpl, PrintPreviewModelElement, PrintPreviewSidebarElement} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -58,8 +57,7 @@ suite(print_preview_sidebar_test.suiteName, function() {
   });
 
   test(
-      assert(print_preview_sidebar_test.TestNames
-                 .SettingsSectionsVisibilityChange),
+      print_preview_sidebar_test.TestNames.SettingsSectionsVisibilityChange,
       function() {
         const moreSettingsElement =
             sidebar.shadowRoot!.querySelector('print-preview-more-settings')!;
@@ -84,35 +82,29 @@ suite(print_preview_sidebar_test.suiteName, function() {
 
   // Tests that number of sheets is correctly calculated if duplex setting is
   // enabled.
-  test(
-      assert(print_preview_sidebar_test.TestNames.SheetCountWithDuplex),
-      function() {
-        const header =
-            sidebar.shadowRoot!.querySelector('print-preview-header')!;
-        assertEquals(1, header.sheetCount);
-        sidebar.setSetting('pages', [1, 2, 3]);
-        assertEquals(3, header.sheetCount);
-        sidebar.setSetting('duplex', true);
-        assertEquals(2, header.sheetCount);
-        sidebar.setSetting('pages', [1, 2]);
-        assertEquals(1, header.sheetCount);
-      });
+  test(print_preview_sidebar_test.TestNames.SheetCountWithDuplex, function() {
+    const header = sidebar.shadowRoot!.querySelector('print-preview-header')!;
+    assertEquals(1, header.sheetCount);
+    sidebar.setSetting('pages', [1, 2, 3]);
+    assertEquals(3, header.sheetCount);
+    sidebar.setSetting('duplex', true);
+    assertEquals(2, header.sheetCount);
+    sidebar.setSetting('pages', [1, 2]);
+    assertEquals(1, header.sheetCount);
+  });
 
   // Tests that number of sheets is correctly calculated if multiple copies
   // setting is enabled.
-  test(
-      assert(print_preview_sidebar_test.TestNames.SheetCountWithCopies),
-      function() {
-        const header =
-            sidebar.shadowRoot!.querySelector('print-preview-header')!;
-        assertEquals(1, header.sheetCount);
-        sidebar.setSetting('copies', 4);
-        assertEquals(4, header.sheetCount);
-        sidebar.setSetting('duplex', true);
-        assertEquals(4, header.sheetCount);
-        sidebar.setSetting('pages', [1, 2]);
-        assertEquals(4, header.sheetCount);
-        sidebar.setSetting('duplex', false);
-        assertEquals(8, header.sheetCount);
-      });
+  test(print_preview_sidebar_test.TestNames.SheetCountWithCopies, function() {
+    const header = sidebar.shadowRoot!.querySelector('print-preview-header')!;
+    assertEquals(1, header.sheetCount);
+    sidebar.setSetting('copies', 4);
+    assertEquals(4, header.sheetCount);
+    sidebar.setSetting('duplex', true);
+    assertEquals(4, header.sheetCount);
+    sidebar.setSetting('pages', [1, 2]);
+    assertEquals(4, header.sheetCount);
+    sidebar.setSetting('duplex', false);
+    assertEquals(8, header.sheetCount);
+  });
 });

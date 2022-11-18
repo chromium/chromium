@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {Destination, DestinationOrigin, NativeLayerCrosImpl, PrinterStatusReason, PrinterStatusSeverity, PrintPreviewDestinationListItemElement} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {MockController} from 'chrome://webui-test/mock_controller.js';
@@ -92,8 +91,7 @@ suite(destination_item_test_cros.suiteName, function() {
   });
 
   test(
-      assert(destination_item_test_cros.TestNames.NewStatusUpdatesIcon),
-      function() {
+      destination_item_test_cros.TestNames.NewStatusUpdatesIcon, function() {
         const icon = listItem.shadowRoot!.querySelector('iron-icon')!;
         assertEquals('print-preview:printer-status-grey', icon.icon);
 
@@ -103,8 +101,7 @@ suite(destination_item_test_cros.suiteName, function() {
       });
 
   test(
-      assert(
-          destination_item_test_cros.TestNames.ChangingDestinationUpdatesIcon),
+      destination_item_test_cros.TestNames.ChangingDestinationUpdatesIcon,
       function() {
         const icon = listItem.shadowRoot!.querySelector('iron-icon')!;
         assertEquals('print-preview:printer-status-grey', icon.icon);
@@ -122,8 +119,7 @@ suite(destination_item_test_cros.suiteName, function() {
   // destination key in the printer status response matches the current
   // destination.
   test(
-      assert(
-          destination_item_test_cros.TestNames.OnlyUpdateMatchingDestination),
+      destination_item_test_cros.TestNames.OnlyUpdateMatchingDestination,
       function() {
         const icon = listItem.shadowRoot!.querySelector('iron-icon')!;
         assertEquals('print-preview:printer-status-grey', icon.icon);

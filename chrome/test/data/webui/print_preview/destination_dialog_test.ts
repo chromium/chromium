@@ -10,7 +10,6 @@ import {Destination, DestinationStore, GooglePromotedDestinationId, LocalDestina
         PrintPreviewDestinationDialogElement,
         // </if>
         PrintPreviewDestinationListItemElement} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
@@ -106,7 +105,7 @@ suite(destination_dialog_test.suiteName, function() {
   }
 
   // Test that destinations are correctly displayed in the lists.
-  test(assert(destination_dialog_test.TestNames.PrinterList), async () => {
+  test(destination_dialog_test.TestNames.PrinterList, async () => {
     // Native printers are fetched at startup, since the recent printer is set
     // as native.
     let whenPrinterListReady = nativeLayer.waitForGetPrinters(1);
@@ -128,8 +127,7 @@ suite(destination_dialog_test.suiteName, function() {
   // printers have been preloaded before the dialog is opened. Regression test
   // for https://crbug.com/1330678.
   test(
-      assert(destination_dialog_test.TestNames.PrinterListPreloaded),
-      async () => {
+      destination_dialog_test.TestNames.PrinterListPreloaded, async () => {
         // All printers are fetched at startup since both native and extension
         // printers are recent.
         const whenAllPreloaded = nativeLayer.waitForGetPrinters(2);

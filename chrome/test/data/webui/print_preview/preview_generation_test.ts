@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 import {ColorMode, Destination, DestinationOrigin, DestinationState, Margins, MarginsType, NativeInitialSettings, NativeLayerImpl, PluginProxyImpl, PreviewTicket, PrintPreviewAppElement, PrintPreviewDestinationSettingsElement, Range, ScalingType} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 // <if expr="is_chromeos">
@@ -148,30 +146,30 @@ suite(preview_generation_test.suiteName, function() {
   }
 
   /** Validate changing the color updates the preview. */
-  test(assert(preview_generation_test.TestNames.Color), function() {
+  test(preview_generation_test.TestNames.Color, function() {
     return testSimpleSetting(
         'color', true, false, 'color', ColorMode.COLOR, ColorMode.GRAY);
   });
 
   /** Validate changing the background setting updates the preview. */
-  test(assert(preview_generation_test.TestNames.CssBackground), function() {
+  test(preview_generation_test.TestNames.CssBackground, function() {
     return testSimpleSetting(
         'cssBackground', false, true, 'shouldPrintBackgrounds', false, true);
   });
 
   /** Validate changing the header/footer setting updates the preview. */
-  test(assert(preview_generation_test.TestNames.HeaderFooter), function() {
+  test(preview_generation_test.TestNames.HeaderFooter, function() {
     return testSimpleSetting(
         'headerFooter', true, false, 'headerFooterEnabled', true, false);
   });
 
   /** Validate changing the orientation updates the preview. */
-  test(assert(preview_generation_test.TestNames.Layout), function() {
+  test(preview_generation_test.TestNames.Layout, function() {
     return testSimpleSetting('layout', false, true, 'landscape', false, true);
   });
 
   /** Validate changing the margins updates the preview. */
-  test(assert(preview_generation_test.TestNames.Margins), function() {
+  test(preview_generation_test.TestNames.Margins, function() {
     return testSimpleSetting(
         'margins', MarginsType.DEFAULT, MarginsType.MINIMUM, 'marginsType',
         MarginsType.DEFAULT, MarginsType.MINIMUM);
@@ -181,7 +179,7 @@ suite(preview_generation_test.suiteName, function() {
    * Validate changing the custom margins updates the preview, only after all
    * values have been set.
    */
-  test(assert(preview_generation_test.TestNames.CustomMargins), function() {
+  test(preview_generation_test.TestNames.CustomMargins, function() {
     return initialize()
         .then(function(args) {
           const originalTicket: PreviewTicket = JSON.parse(args.printTicket);
@@ -246,7 +244,7 @@ suite(preview_generation_test.suiteName, function() {
    * margins to MarginsType.DEFAULT.
    */
   test(
-      assert(preview_generation_test.TestNames.ChangeMarginsByPagesPerSheet),
+      preview_generation_test.TestNames.ChangeMarginsByPagesPerSheet,
       function() {
         return initialize()
             .then(function(args) {
@@ -284,7 +282,7 @@ suite(preview_generation_test.suiteName, function() {
       });
 
   /** Validate changing the paper size updates the preview. */
-  test(assert(preview_generation_test.TestNames.MediaSize), function() {
+  test(preview_generation_test.TestNames.MediaSize, function() {
     const mediaSizeCapability =
         getCddTemplate('FooDevice').capabilities!.printer!.media_size!;
     const letterOption = mediaSizeCapability.option[0]!;
@@ -327,7 +325,7 @@ suite(preview_generation_test.suiteName, function() {
   });
 
   /** Validate changing the page range updates the preview. */
-  test(assert(preview_generation_test.TestNames.PageRange), function() {
+  test(preview_generation_test.TestNames.PageRange, function() {
     return initialize()
         .then(function(args) {
           const originalTicket: PreviewTicket = JSON.parse(args.printTicket);
@@ -351,7 +349,7 @@ suite(preview_generation_test.suiteName, function() {
   });
 
   /** Validate changing the selection only setting updates the preview. */
-  test(assert(preview_generation_test.TestNames.SelectionOnly), function() {
+  test(preview_generation_test.TestNames.SelectionOnly, function() {
     // Set has selection to true so that the setting is available.
     initialSettings.documentHasSelection = true;
     return testSimpleSetting(
@@ -359,12 +357,12 @@ suite(preview_generation_test.suiteName, function() {
   });
 
   /** Validate changing the pages per sheet updates the preview. */
-  test(assert(preview_generation_test.TestNames.PagesPerSheet), function() {
+  test(preview_generation_test.TestNames.PagesPerSheet, function() {
     return testSimpleSetting('pagesPerSheet', 1, 2, 'pagesPerSheet', 1, 2);
   });
 
   /** Validate changing the scaling updates the preview. */
-  test(assert(preview_generation_test.TestNames.Scaling), function() {
+  test(preview_generation_test.TestNames.Scaling, function() {
     return initialize()
         .then(function(args) {
           validateScalingChange({
@@ -440,7 +438,7 @@ suite(preview_generation_test.suiteName, function() {
   });
 
   /** Validate changing the scalingTypePdf setting updates the preview. */
-  test(assert(preview_generation_test.TestNames.ScalingPdf), function() {
+  test(preview_generation_test.TestNames.ScalingPdf, function() {
     // Set PDF document so setting is available.
     initialSettings.previewModifiable = false;
     return initialize()
@@ -578,7 +576,7 @@ suite(preview_generation_test.suiteName, function() {
    * always available on Linux and CrOS.  Availability on Windows and macOS
    * depends upon policy (see policy_test.js).
    */
-  test(assert(preview_generation_test.TestNames.Rasterize), function() {
+  test(preview_generation_test.TestNames.Rasterize, function() {
     // Set PDF document so setting is available.
     initialSettings.previewModifiable = false;
     return testSimpleSetting(
@@ -589,7 +587,7 @@ suite(preview_generation_test.suiteName, function() {
    * Validate changing the destination updates the preview, if it results
    * in a settings change.
    */
-  test(assert(preview_generation_test.TestNames.Destination), function() {
+  test(preview_generation_test.TestNames.Destination, function() {
     let destinationSettings: PrintPreviewDestinationSettingsElement;
     return initialize()
         .then(function(args) {
@@ -632,8 +630,7 @@ suite(preview_generation_test.suiteName, function() {
    * header/footer setting is set to false.
    */
   test(
-      assert(preview_generation_test.TestNames
-                 .ZeroDefaultMarginsClearsHeaderFooter),
+      preview_generation_test.TestNames.ZeroDefaultMarginsClearsHeaderFooter,
       async () => {
         /**
          * @param ticket The parsed print ticket

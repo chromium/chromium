@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {NativeLayerImpl, PrintPreviewDestinationDialogElement, State} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
@@ -66,8 +65,7 @@ suite(destination_dialog_interactive_test.suiteName, function() {
   // Tests that the search input text field is automatically focused when the
   // dialog is shown.
   test(
-      assert(destination_dialog_interactive_test.TestNames.FocusSearchBox),
-      function() {
+      destination_dialog_interactive_test.TestNames.FocusSearchBox, function() {
         const searchInput = dialog.$.searchBox.getSearchInput();
         assertTrue(!!searchInput);
         const whenFocusDone = eventToPromise('focus', searchInput);
@@ -79,7 +77,7 @@ suite(destination_dialog_interactive_test.suiteName, function() {
   // Tests that pressing the escape key while the search box is focused
   // closes the dialog if and only if the query is empty.
   test(
-      assert(destination_dialog_interactive_test.TestNames.EscapeSearchBox),
+      destination_dialog_interactive_test.TestNames.EscapeSearchBox,
       function() {
         const searchBox = dialog.$.searchBox;
         const searchInput = searchBox.getSearchInput();

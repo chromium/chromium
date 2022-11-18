@@ -7,7 +7,6 @@ import {BackgroundGraphicsModeRestriction, CrButtonElement, CrCheckboxElement, N
 import {ColorModeRestriction, DuplexMode, DuplexModeRestriction, PinModeRestriction} from 'chrome://print/print_preview.js';
 // </if>
 
-import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
@@ -165,7 +164,7 @@ suite(policy_tests.suiteName, function() {
   }
 
   // Tests different scenarios of applying header/footer policy.
-  test(assert(policy_tests.TestNames.HeaderFooterPolicy), async () => {
+  test(policy_tests.TestNames.HeaderFooterPolicy, async () => {
     const tests = [
       {
         // No policies.
@@ -218,7 +217,7 @@ suite(policy_tests.suiteName, function() {
   });
 
   // Tests different scenarios of applying background graphics policy.
-  test(assert(policy_tests.TestNames.CssBackgroundPolicy), async () => {
+  test(policy_tests.TestNames.CssBackgroundPolicy, async () => {
     const tests = [
       {
         // No policies.
@@ -273,7 +272,7 @@ suite(policy_tests.suiteName, function() {
   });
 
   // Tests different scenarios of applying default paper policy.
-  test(assert(policy_tests.TestNames.MediaSizePolicy), async () => {
+  test(policy_tests.TestNames.MediaSizePolicy, async () => {
     const tests = [
       {
         // No policies.
@@ -310,7 +309,7 @@ suite(policy_tests.suiteName, function() {
     }
   });
 
-  test(assert(policy_tests.TestNames.SheetsPolicy), async () => {
+  test(policy_tests.TestNames.SheetsPolicy, async () => {
     const pluralString = new PolicyTestPluralStringProxy();
     PrintPreviewPluralStringProxyImpl.setInstance(pluralString);
     pluralString.text = 'Exceeds limit of 1 sheet of paper';
@@ -384,7 +383,7 @@ suite(policy_tests.suiteName, function() {
 
   // <if expr="is_chromeos">
   // Tests different scenarios of color printing policy.
-  test(assert(policy_tests.TestNames.ColorPolicy), async () => {
+  test(policy_tests.TestNames.ColorPolicy, async () => {
     const tests = [
       {
         // No policies.
@@ -461,7 +460,7 @@ suite(policy_tests.suiteName, function() {
   });
 
   // Tests different scenarios of duplex printing policy.
-  test(assert(policy_tests.TestNames.DuplexPolicy), async () => {
+  test(policy_tests.TestNames.DuplexPolicy, async () => {
     const tests = [
       {
         // No policies.
@@ -597,7 +596,7 @@ suite(policy_tests.suiteName, function() {
   });
 
   // Tests different scenarios of pin printing policy.
-  test(assert(policy_tests.TestNames.PinPolicy), async () => {
+  test(policy_tests.TestNames.PinPolicy, async () => {
     const tests = [
       {
         // No policies.
@@ -715,7 +714,7 @@ suite(policy_tests.suiteName, function() {
   // Tests different scenarios of PDF print as image option policy.
   // Should be available only for PDF when the policy explicitly allows print
   // as image, and hidden the rest of the cases.
-  test(assert(policy_tests.TestNames.PrintPdfAsImageAvailability), async () => {
+  test(policy_tests.TestNames.PrintPdfAsImageAvailability, async () => {
     const tests = [
       {
         // No policies with modifiable content.
@@ -777,7 +776,7 @@ suite(policy_tests.suiteName, function() {
   // The policy controls if it defaults to set.Test behavior varies by platform
   // since the option's availability is policy controlled for Windows and macOS
   // but is always available for Linux and ChromeOS.
-  test(assert(policy_tests.TestNames.PrintPdfAsImageDefault), async () => {
+  test(policy_tests.TestNames.PrintPdfAsImageDefault, async () => {
     const tests = [
       // <if expr="is_linux or chromeos_ash or chromeos_lacros">
       {

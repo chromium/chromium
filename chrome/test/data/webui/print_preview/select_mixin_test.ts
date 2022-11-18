@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {SelectMixin, SelectMixinInterface} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -61,7 +60,7 @@ suite(select_mixin_test.suiteName, function() {
 
   // Tests that onProcessSelectChange() is called when the select value is
   // set programmatically or by changing the select element.
-  test(assert(select_mixin_test.TestNames.CallProcessSelectChange), function() {
+  test(select_mixin_test.TestNames.CallProcessSelectChange, function() {
     const select = testSelect.shadowRoot!.querySelector('select')!;
     assertEquals('0', testSelect.selectedValue);
     assertEquals('0', select.value);

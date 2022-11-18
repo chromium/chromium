@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {CrButtonElement, NativeLayerImpl, PluginProxyImpl, PrintPreviewLinkContainerElement, PrintPreviewSidebarElement, ScalingType, whenReady} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -81,8 +80,7 @@ suite(system_dialog_browsertest.suiteName, function() {
   });
 
   test(
-      assert(system_dialog_browsertest.TestNames.LinkTriggersLocalPrint),
-      function() {
+      system_dialog_browsertest.TestNames.LinkTriggersLocalPrint, function() {
         assertFalse(linkContainer.disabled);
         assertFalse(link.hidden);
         link.click();
@@ -94,7 +92,7 @@ suite(system_dialog_browsertest.suiteName, function() {
       });
 
   test(
-      assert(system_dialog_browsertest.TestNames.InvalidSettingsDisableLink),
+      system_dialog_browsertest.TestNames.InvalidSettingsDisableLink,
       function() {
         assertFalse(linkContainer.disabled);
         assertFalse(link.hidden);

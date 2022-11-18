@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 import {Destination, DestinationOrigin, PrintPreviewLinkContainerElement} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.js';
+// <if expr="is_macosx">
+import {assert} from 'chrome://resources/js/assert_ts.js';
+// </if>
 import {isWindows} from 'chrome://resources/js/platform.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -42,7 +43,7 @@ suite(link_container_test.suiteName, function() {
   });
 
   /** Tests that the system dialog link is hidden in App Kiosk mode. */
-  test(assert(link_container_test.TestNames.HideInAppKioskMode), function() {
+  test(link_container_test.TestNames.HideInAppKioskMode, function() {
     const systemDialogLink = linkContainer.$.systemDialogLink;
     assertFalse(systemDialogLink.hidden);
     linkContainer.set('appKioskMode', true);
@@ -53,7 +54,7 @@ suite(link_container_test.suiteName, function() {
    * Test that clicking the system dialog link click results in an event
    * firing, and the throbber appears on non-Windows.
    */
-  test(assert(link_container_test.TestNames.SystemDialogLinkClick), function() {
+  test(link_container_test.TestNames.SystemDialogLinkClick, function() {
     const promise = eventToPromise('print-with-system-dialog', linkContainer);
     const throbber = linkContainer.$.systemDialogThrobber;
     assertTrue(throbber.hidden);
@@ -70,7 +71,7 @@ suite(link_container_test.suiteName, function() {
    * (if it exists), and that the system dialog link is disabled on Windows
    * and enabled on other platforms.
    */
-  test(assert(link_container_test.TestNames.InvalidState), function() {
+  test(link_container_test.TestNames.InvalidState, function() {
     const systemDialogLink = linkContainer.$.systemDialogLink;
 
     function validateLinkState(link: HTMLDivElement, disabled: boolean) {
@@ -90,7 +91,8 @@ suite(link_container_test.suiteName, function() {
     linkContainer.disabled = true;
     validateLinkState(systemDialogLink, isWindows);
     // <if expr="is_macosx">
-    validateLinkState(assert(openInPreviewLink), true);
+    assert(openInPreviewLink);
+    validateLinkState(openInPreviewLink, true);
     // </if>
   });
 
@@ -100,7 +102,7 @@ suite(link_container_test.suiteName, function() {
    * property change and that the throbber appears. Mac only.
    */
   test(
-      assert(link_container_test.TestNames.OpenInPreviewLinkClick), function() {
+      link_container_test.TestNames.OpenInPreviewLinkClick, function() {
         const throbber = linkContainer.$.openPdfInPreviewThrobber;
         assertTrue(throbber.hidden);
         const promise = eventToPromise('open-pdf-in-preview', linkContainer);

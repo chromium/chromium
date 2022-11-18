@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {Destination, DestinationStore, LocalDestinationInfo, makeRecentDestination, NativeLayerImpl, PrintPreviewDestinationDialogCrosElement, RecentDestination} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -83,7 +82,7 @@ suite(destination_dialog_cros_test.suiteName, function() {
   // destinations dialog, and that the escape key closes only the provisional
   // dialog when it is open, not the destinations dialog.
   test(
-      assert(destination_dialog_cros_test.TestNames.ShowProvisionalDialog),
+      destination_dialog_cros_test.TestNames.ShowProvisionalDialog,
       async () => {
         const provisionalDestination = {
           extensionId: 'ABC123',
@@ -132,8 +131,7 @@ suite(destination_dialog_cros_test.suiteName, function() {
   // Test that checks that print server searchable input and its selections are
   // updated according to the PRINT_SERVERS_CHANGED event.
   test(
-      assert(destination_dialog_cros_test.TestNames.PrintServersChanged),
-      async () => {
+      destination_dialog_cros_test.TestNames.PrintServersChanged, async () => {
         await finishSetup();
 
         const printServers = [
@@ -163,8 +161,7 @@ suite(destination_dialog_cros_test.suiteName, function() {
   // Tests that choosePrintServers is called when the print server searchable
   // input value is changed.
   test(
-      assert(destination_dialog_cros_test.TestNames.PrintServerSelected),
-      async () => {
+      destination_dialog_cros_test.TestNames.PrintServerSelected, async () => {
         await finishSetup();
         const printServers = [
           {id: 'user-print-server-1', name: 'Print Server 1'},

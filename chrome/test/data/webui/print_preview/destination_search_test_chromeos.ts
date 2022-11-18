@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 import {Destination, DestinationOrigin, DestinationStore, DestinationStoreEventType, NativeLayerCrosImpl, NativeLayerImpl, PrintPreviewDestinationDialogCrosElement} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -95,7 +93,7 @@ suite(destination_search_test_chromeos.suiteName, function() {
   // Tests that a destination is selected if the user clicks on it and setup
   // (for CrOS) or capabilities fetch (for non-Cros) succeeds.
   test(
-      assert(destination_search_test_chromeos.TestNames.ReceiveSuccessfulSetup),
+      destination_search_test_chromeos.TestNames.ReceiveSuccessfulSetup,
       async function() {
         const destId = '00112233DEADBEEF';
         const response = {
@@ -119,7 +117,7 @@ suite(destination_search_test_chromeos.suiteName, function() {
 
   // Test what happens when the setupPrinter request is rejected.
   test(
-      assert(destination_search_test_chromeos.TestNames.ResolutionFails),
+      destination_search_test_chromeos.TestNames.ResolutionFails,
       async function() {
         const destId = '001122DEADBEEF';
         const originalDestination = destinationStore.selectedDestination;
