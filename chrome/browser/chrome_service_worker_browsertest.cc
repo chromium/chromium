@@ -37,6 +37,7 @@
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "components/nacl/common/buildflags.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -58,6 +59,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "ppapi/shared_impl/ppapi_switches.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -312,6 +314,82 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
                        StartServiceWorkerWithModuleScriptAndDispatchMessage) {
   TestStartServiceWorkerAndDispatchMessage(
       kInstallAndWaitForActivatedPageWithModuleScript);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, SubresourceCount) {
+  base::RunLoop ukm_loop;
+  ukm::TestAutoSetUkmRecorder test_recorder;
+  test_recorder.SetOnAddEntryCallback(
+      ukm::builders::ServiceWorker_OnLoad::kEntryName, ukm_loop.QuitClosure());
+
+  WriteFile(FILE_PATH_LITERAL("fallback.css"), "");
+  WriteFile(FILE_PATH_LITERAL("nofallback.css"), "");
+  WriteFile(FILE_PATH_LITERAL("subresources.html"),
+            "<link href='./fallback.css' rel='stylesheet'>"
+            "<link href='./nofallback.css' rel='stylesheet'>");
+  WriteFile(FILE_PATH_LITERAL("sw.js"),
+            "this.onactivate = function(event) {"
+            "  event.waitUntil(self.clients.claim());"
+            "};"
+            "this.onfetch = function(event) {"
+            // We will fallback fallback.css.
+            "  if (event.request.url.endsWith('/fallback.css')) {"
+            "    return;"
+            "  }"
+            "  event.respondWith(fetch(event.request));"
+            "};");
+  WriteFile(FILE_PATH_LITERAL("test.html"),
+            "<script>"
+            "navigator.serviceWorker.register('./sw.js', {scope: './'})"
+            "  .then(function(reg) {"
+            "      reg.addEventListener('updatefound', function() {"
+            "          var worker = reg.installing;"
+            "          worker.addEventListener('statechange', function() {"
+            "              if (worker.state == 'activated')"
+            "                document.title = 'READY';"
+            "            });"
+            "        });"
+            "    });"
+            "</script>");
+
+  InitializeServer();
+
+  {
+    // The message "READY" will be sent when the service worker is activated.
+    const std::u16string expected_title = u"READY";
+    content::TitleWatcher title_watcher(
+        browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/test.html")));
+    EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+  }
+
+  // Navigate to the service worker controlled page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/subresources.html")));
+
+  // Navigate away to record metrics.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  // Wait until the UKM record is updated.
+  ukm_loop.Run();
+  auto entries = test_recorder.GetEntriesByName(
+      ukm::builders::ServiceWorker_OnLoad::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  test_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::ServiceWorker_OnLoad::kMainAndSubResourceLoadLocationName,
+      6 /* = kMainResourceNotFallbackAndSubResourceMixed */);
+  test_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::ServiceWorker_OnLoad::kTotalSubResourceLoadName, 2);
+  test_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::ServiceWorker_OnLoad::kTotalSubResourceFallbackName, 1);
+  test_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::ServiceWorker_OnLoad::kSubResourceFallbackRatioName, 50);
 }
 
 class ChromeServiceWorkerFetchTest : public ChromeServiceWorkerTest {

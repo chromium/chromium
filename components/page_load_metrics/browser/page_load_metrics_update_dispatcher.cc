@@ -475,6 +475,7 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     mojom::FrameRenderDataUpdatePtr render_data,
     mojom::CpuTimingPtr new_cpu_timing,
     mojom::InputTimingPtr input_timing_delta,
+    mojom::SubresourceLoadMetricsPtr subresource_load_metrics,
     uint32_t soft_navigation_count) {
   if (embedder_interface_->IsExtensionUrl(
           render_frame_host->GetLastCommittedURL())) {
@@ -496,6 +497,9 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     UpdateMainFrameMetadata(render_frame_host, std::move(new_metadata));
     UpdateMainFrameTiming(std::move(new_timing));
     UpdateMainFrameRenderData(*render_data);
+    if (subresource_load_metrics) {
+      UpdateMainFrameSubresourceLoadMetrics(*subresource_load_metrics);
+    }
     UpdateSoftNavigationCount(soft_navigation_count);
   } else {
     UpdateSubFrameMetadata(render_frame_host, std::move(new_metadata));
@@ -633,6 +637,11 @@ void PageLoadMetricsUpdateDispatcher::UpdateSubFrameMetadata(
   client_->OnSubframeMetadataChanged(render_frame_host, *subframe_metadata);
 
   MaybeUpdateMainFrameIntersectionRect(render_frame_host, subframe_metadata);
+}
+
+void PageLoadMetricsUpdateDispatcher::UpdateMainFrameSubresourceLoadMetrics(
+    const mojom::SubresourceLoadMetrics& subresource_load_metrics) {
+  subresource_load_metrics_ = subresource_load_metrics;
 }
 
 void PageLoadMetricsUpdateDispatcher::UpdateSoftNavigationCount(

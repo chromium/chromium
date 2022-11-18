@@ -55,13 +55,14 @@ class MojoPageTimingSender : public PageTimingSender {
                   const mojom::FrameRenderDataUpdate& render_data,
                   const mojom::CpuTimingPtr& cpu_timing,
                   mojom::InputTimingPtr input_timing_delta,
+                  mojom::SubresourceLoadMetricsPtr subresource_load_metrics,
                   uint32_t soft_navigation_count) override {
     DCHECK(page_load_metrics_);
     page_load_metrics_->UpdateTiming(
         limited_sending_mode_ ? CreatePageLoadTiming() : timing->Clone(),
         metadata->Clone(), new_features, std::move(resources),
         render_data.Clone(), cpu_timing->Clone(), std::move(input_timing_delta),
-        soft_navigation_count);
+        std::move(subresource_load_metrics), soft_navigation_count);
   }
 
   void SetUpSmoothnessReporting(
@@ -131,6 +132,15 @@ void MetricsRenderFrameObserver::DidObserveLoadingBehavior(
     blink::LoadingBehaviorFlag behavior) {
   if (page_timing_metrics_sender_)
     page_timing_metrics_sender_->DidObserveLoadingBehavior(behavior);
+}
+
+void MetricsRenderFrameObserver::DidObserveSubresourceLoad(
+    uint32_t number_of_subresources_loaded,
+    uint32_t number_of_subresource_loads_handled_by_service_worker) {
+  if (page_timing_metrics_sender_)
+    page_timing_metrics_sender_->DidObserveSubresourceLoad(
+        number_of_subresources_loaded,
+        number_of_subresource_loads_handled_by_service_worker);
 }
 
 void MetricsRenderFrameObserver::DidObserveNewFeatureUsage(

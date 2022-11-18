@@ -62,6 +62,8 @@ class FakePageTimingSender : public PageTimingSender {
 
     void VerifyExpectedInputTiming() const;
 
+    void VerifyExpectedSubresourceLoadMetrics() const;
+
     // PageLoad features that are expected to be sent through SendTiming()
     // should be passed via UpdateExpectedPageLoadFeatures.
     void UpdateExpectPageLoadFeatures(const blink::UseCounterFeature& feature);
@@ -72,6 +74,9 @@ class FakePageTimingSender : public PageTimingSender {
     }
 
     void UpdateExpectedInputTiming(const base::TimeDelta input_delay);
+
+    void UpdateExpectedSubresourceLoadMetrics(
+        const mojom::SubresourceLoadMetrics& subresource_load_metrics);
 
     void UpdateExpectedMainFrameIntersectionRect(
         const gfx::Rect& main_frame_intersection_rect) {
@@ -105,6 +110,7 @@ class FakePageTimingSender : public PageTimingSender {
         const mojom::FrameRenderDataUpdate& render_data,
         const mojom::CpuTimingPtr& cpu_timing,
         const mojom::InputTimingPtr& input_timing,
+        const mojom::SubresourceLoadMetricsPtr& subresource_load_metrics,
         uint32_t soft_navigation_count);
 
    private:
@@ -122,6 +128,8 @@ class FakePageTimingSender : public PageTimingSender {
     absl::optional<gfx::Rect> actual_main_frame_viewport_rect_;
     mojom::InputTimingPtr expected_input_timing;
     mojom::InputTimingPtr actual_input_timing;
+    mojom::SubresourceLoadMetricsPtr expected_subresource_load_metrics_;
+    mojom::SubresourceLoadMetricsPtr actual_subresource_load_metrics_;
   };
 
   explicit FakePageTimingSender(PageTimingValidator* validator);
@@ -138,6 +146,7 @@ class FakePageTimingSender : public PageTimingSender {
                   const mojom::FrameRenderDataUpdate& render_data,
                   const mojom::CpuTimingPtr& cpu_timing,
                   mojom::InputTimingPtr new_input_timing,
+                  mojom::SubresourceLoadMetricsPtr subresource_load_metrics,
                   uint32_t soft_navigation_count) override;
 
   void SetUpSmoothnessReporting(

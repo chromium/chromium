@@ -176,6 +176,11 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
 
   // Returns if the request context is for prerendering or not.
   virtual bool IsPrerendering() const { return false; }
+
+  // Update SubresourceLoad metrics.
+  virtual void UpdateSubresourceLoadMetrics(
+      uint32_t number_of_subresources_loaded,
+      uint32_t number_of_subresource_loads_handled_by_service_worker) {}
 };
 
 }  // namespace blink

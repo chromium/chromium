@@ -10,6 +10,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "net/http/http_response_headers.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
@@ -116,6 +117,19 @@ bool IsDocsSite(const GURL& url) {
 bool IsForwardBackLoad(ui::PageTransition transition) {
   return transition & ui::PAGE_TRANSITION_FORWARD_BACK;
 }
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ServiceWorkerResourceLoadStatus {
+  kMainResourceFallbackAndSubResourceFallback = 0,
+  kMainResourceFallbackAndSubResourceNotFallback = 1,
+  kMainResourceFallbackAndSubResourceMixed = 2,
+  kMainResourceFallbackAndNoSubResource = 3,
+  kMainResourceNotFallbackAndSubResourceFallback = 4,
+  kMainResourceNotFallbackAndSubResourceNotFallback = 5,
+  kMainResourceNotFallbackAndSubResourceMixed = 6,
+  kMainResourceNotFallbackAndNoSubResource = 7,
+};
 
 }  // namespace
 
@@ -382,6 +396,7 @@ void ServiceWorkerPageLoadMetricsObserver::RecordTimingHistograms() {
           all_frames_largest_contentful_paint.Time().value());
     }
   }
+  RecordSubresourceLoad();
 }
 
 bool ServiceWorkerPageLoadMetricsObserver::IsServiceWorkerControlled() {
@@ -396,4 +411,77 @@ bool ServiceWorkerPageLoadMetricsObserver::
   return (GetDelegate().GetMainFrameMetadata().behavior_flags &
           blink::LoadingBehaviorFlag::
               kLoadingBehaviorServiceWorkerFetchHandlerSkippable) != 0;
+}
+
+void ServiceWorkerPageLoadMetricsObserver::RecordSubresourceLoad() {
+  const auto& optional_metrics = GetDelegate().GetSubresourceLoadMetrics();
+  if (!optional_metrics) {
+    return;
+  }
+  auto metrics = *optional_metrics;
+  // serviceworker's subresource load must always be smaller than
+  // or equals to total subresource loads.
+  if (metrics.number_of_subresource_loads_handled_by_service_worker >
+      metrics.number_of_subresources_loaded) {
+    // If the data is not set or invalid, it should not be worth recording.
+    return;
+  }
+
+  ServiceWorkerResourceLoadStatus status;
+  if (GetDelegate().GetMainFrameMetadata().behavior_flags &
+      blink::LoadingBehaviorFlag::
+          kLoadingBehaviorServiceWorkerMainResourceFetchFallback) {
+    if (metrics.number_of_subresource_loads_handled_by_service_worker == 0) {
+      status = ServiceWorkerResourceLoadStatus::
+          kMainResourceFallbackAndSubResourceFallback;
+    } else if (metrics.number_of_subresources_loaded ==
+               metrics.number_of_subresource_loads_handled_by_service_worker) {
+      if (metrics.number_of_subresources_loaded == 0) {
+        status = ServiceWorkerResourceLoadStatus::
+            kMainResourceFallbackAndSubResourceNotFallback;
+      } else {
+        status = ServiceWorkerResourceLoadStatus::
+            kMainResourceFallbackAndNoSubResource;
+      }
+    } else {
+      status = ServiceWorkerResourceLoadStatus::
+          kMainResourceFallbackAndSubResourceMixed;
+    }
+  } else {
+    if (metrics.number_of_subresource_loads_handled_by_service_worker == 0) {
+      status = ServiceWorkerResourceLoadStatus::
+          kMainResourceNotFallbackAndSubResourceFallback;
+    } else if (metrics.number_of_subresources_loaded ==
+               metrics.number_of_subresource_loads_handled_by_service_worker) {
+      if (metrics.number_of_subresources_loaded == 0) {
+        status = ServiceWorkerResourceLoadStatus::
+            kMainResourceNotFallbackAndSubResourceNotFallback;
+      } else {
+        status = ServiceWorkerResourceLoadStatus::
+            kMainResourceNotFallbackAndNoSubResource;
+      }
+    } else {
+      status = ServiceWorkerResourceLoadStatus::
+          kMainResourceNotFallbackAndSubResourceMixed;
+    }
+  }
+
+  // We calculate the number of fallbacks here.
+  uint32_t number_of_fallback =
+      metrics.number_of_subresources_loaded -
+      metrics.number_of_subresource_loads_handled_by_service_worker;
+  int64_t fallback_ratio = -1;
+  if (metrics.number_of_subresources_loaded > 0) {
+    fallback_ratio =
+        100 * number_of_fallback / metrics.number_of_subresources_loaded;
+  }
+
+  ukm::builders::ServiceWorker_OnLoad(GetDelegate().GetPageUkmSourceId())
+      .SetMainAndSubResourceLoadLocation(static_cast<int64_t>(status))
+      .SetTotalSubResourceLoad(ukm::GetExponentialBucketMinForCounts1000(
+          metrics.number_of_subresources_loaded))
+      .SetTotalSubResourceFallback(
+          ukm::GetExponentialBucketMinForCounts1000(number_of_fallback))
+      .SetSubResourceFallbackRatio(fallback_ratio)
+      .Record(ukm::UkmRecorder::Get());
 }

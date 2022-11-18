@@ -189,6 +189,8 @@ class PageLoadMetricsObserverDelegate {
   virtual const PageRenderData& GetMainFrameRenderData() const = 0;
   virtual const ui::ScopedVisibilityTracker& GetVisibilityTracker() const = 0;
   virtual const ResourceTracker& GetResourceTracker() const = 0;
+  virtual const absl::optional<mojom::SubresourceLoadMetrics>&
+  GetSubresourceLoadMetrics() const = 0;
 
   // Returns a shared LargestContentfulPaintHandler for page load metrics.
   virtual const LargestContentfulPaintHandler&

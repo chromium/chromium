@@ -91817,6 +91817,31 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Received on uninstalled service worker."/>
 </enum>
 
+<enum name="ServiceWorkerResourceLoadStatus">
+  <int value="0"
+      label="falled back for loading both main resource and sub resource."/>
+  <int value="1"
+      label="falled back for loading main resource, but did not fallback for
+             sub resource."/>
+  <int value="2"
+      label="falled back for loading main resource, and some sub resource
+             fallbacks and the others are not."/>
+  <int value="3"
+      label="falled back for loading main resource, and no sub resource are
+             loaded."/>
+  <int value="4"
+      label="not falled back for loading main resource, but falled back for
+             sub resource."/>
+  <int value="5"
+      label="not falled back for both main resource and sub resource."/>
+  <int value="6"
+      label="not falled back for main resource, but sub resource has both
+             fallback case and non-fallback cases."/>
+  <int value="7"
+      label="not falled back for main resource, and no sub resource are
+             loaded."/>
+</enum>
+
 <enum name="ServiceWorkerResponseError">
   <obsolete>
     No longer recorded since NetS13nSW shipped on Dec 2018.

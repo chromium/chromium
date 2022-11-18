@@ -138,6 +138,10 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
 
   ExecutionContext* GetExecutionContext() const override;
 
+  void UpdateSubresourceLoadMetrics(
+      uint32_t number_of_subresources_loaded,
+      uint32_t number_of_subresource_loads_handled_by_service_worker) override;
+
  private:
   friend class FrameFetchContextTest;
 

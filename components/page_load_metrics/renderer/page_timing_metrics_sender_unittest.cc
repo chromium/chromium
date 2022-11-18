@@ -163,6 +163,24 @@ TEST_F(PageTimingMetricsSenderTest, SendInputEvents) {
   validator_.VerifyExpectedInputTiming();
 }
 
+TEST_F(PageTimingMetricsSenderTest, SendSubresourceLoadMetrics) {
+  mojom::PageLoadTiming timing;
+  InitPageLoadTimingForTest(&timing);
+  metrics_sender_->Update(timing.Clone(),
+                          PageTimingMetadataRecorder::MonotonicTiming());
+  validator_.ExpectPageLoadTiming(timing);
+
+  metrics_sender_->DidObserveSubresourceLoad(5, 2);
+
+  mojom::SubresourceLoadMetricsPtr expected =
+      mojom::SubresourceLoadMetrics::New();
+  expected->number_of_subresources_loaded = 5;
+  expected->number_of_subresource_loads_handled_by_service_worker = 2;
+  validator_.UpdateExpectedSubresourceLoadMetrics(*expected);
+  metrics_sender_->mock_timer()->Fire();
+  validator_.VerifyExpectedSubresourceLoadMetrics();
+}
+
 TEST_F(PageTimingMetricsSenderTest, SendSingleFeature) {
   mojom::PageLoadTiming timing;
   InitPageLoadTimingForTest(&timing);

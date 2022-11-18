@@ -69,6 +69,9 @@ enum LoadingBehaviorFlag {
   // Indicates that the page is controlled by a Service Worker, but
   // the fetch handler is considered skippable.
   kLoadingBehaviorServiceWorkerFetchHandlerSkippable = 1 << 20,
+  // Indicates that the main resource fetch for the page controlled by
+  // a service worker at the navigation time fallback to network.
+  kLoadingBehaviorServiceWorkerMainResourceFetchFallback = 1 << 21,
 };
 
 }  // namespace blink

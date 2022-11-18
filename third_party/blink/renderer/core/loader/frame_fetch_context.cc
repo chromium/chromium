@@ -888,4 +888,12 @@ CoreProbeSink* FrameFetchContext::Probe() const {
   return probe::ToCoreProbeSink(GetFrame()->GetDocument());
 }
 
+void FrameFetchContext::UpdateSubresourceLoadMetrics(
+    uint32_t number_of_subresources_loaded,
+    uint32_t number_of_subresource_loads_handled_by_service_worker) {
+  document_loader_->UpdateSubresourceLoadMetrics(
+      number_of_subresources_loaded,
+      number_of_subresource_loads_handled_by_service_worker);
+}
+
 }  // namespace blink

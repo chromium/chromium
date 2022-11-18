@@ -1966,6 +1966,17 @@ void ResourceFetcher::HandleLoaderFinish(Resource* resource,
                                          bool should_report_corb_blocking) {
   DCHECK(resource);
 
+  // kRaw might not be subresource, and we do not need them.
+  if (resource->GetType() != ResourceType::kRaw) {
+    ++number_of_subresources_loaded_;
+    if (resource->GetResponse().WasFetchedViaServiceWorker()) {
+      ++number_of_subresource_loads_handled_by_service_worker_;
+    }
+  }
+  context_->UpdateSubresourceLoadMetrics(
+      number_of_subresources_loaded_,
+      number_of_subresource_loads_handled_by_service_worker_);
+
   DCHECK_LE(inflight_keepalive_bytes, inflight_keepalive_bytes_);
   inflight_keepalive_bytes_ -= inflight_keepalive_bytes;
 

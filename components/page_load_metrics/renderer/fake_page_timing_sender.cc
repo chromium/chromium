@@ -25,10 +25,11 @@ void FakePageTimingSender::SendTiming(
     const mojom::FrameRenderDataUpdate& render_data,
     const mojom::CpuTimingPtr& cpu_timing,
     const mojom::InputTimingPtr new_input_timing,
+    const mojom::SubresourceLoadMetricsPtr subresource_load_metrics,
     uint32_t soft_navigation_count) {
   validator_->UpdateTiming(timing, metadata, new_features, resources,
                            render_data, cpu_timing, new_input_timing,
-                           soft_navigation_count);
+                           subresource_load_metrics, soft_navigation_count);
 }
 
 void FakePageTimingSender::SetUpSmoothnessReporting(
@@ -84,6 +85,18 @@ void FakePageTimingSender::PageTimingValidator::VerifyExpectedInputTiming()
             actual_input_timing->total_adjusted_input_delay);
 }
 
+void FakePageTimingSender::PageTimingValidator::
+    UpdateExpectedSubresourceLoadMetrics(
+        const mojom::SubresourceLoadMetrics& subresource_load_metrics) {
+  expected_subresource_load_metrics_ = subresource_load_metrics.Clone();
+}
+
+void FakePageTimingSender::PageTimingValidator::
+    VerifyExpectedSubresourceLoadMetrics() const {
+  ASSERT_EQ(expected_subresource_load_metrics_,
+            actual_subresource_load_metrics_);
+}
+
 void FakePageTimingSender::PageTimingValidator::VerifyExpectedCpuTimings()
     const {
   ASSERT_EQ(actual_cpu_timings_.size(), expected_cpu_timings_.size());
@@ -132,6 +145,7 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
     const mojom::FrameRenderDataUpdate& render_data,
     const mojom::CpuTimingPtr& cpu_timing,
     const mojom::InputTimingPtr& new_input_timing,
+    const mojom::SubresourceLoadMetricsPtr& subresource_load_metrics,
     uint32_t soft_navigation_count) {
   actual_timings_.push_back(timing.Clone());
   if (!cpu_timing->task_time.is_zero()) {
@@ -152,6 +166,7 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
   actual_input_timing->total_input_delay += new_input_timing->total_input_delay;
   actual_input_timing->total_adjusted_input_delay +=
       new_input_timing->total_adjusted_input_delay;
+  actual_subresource_load_metrics_ = subresource_load_metrics.Clone();
 
   VerifyExpectedTimings();
   VerifyExpectedCpuTimings();
@@ -159,6 +174,7 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
   VerifyExpectedRenderData();
   VerifyExpectedMainFrameIntersectionRect();
   VerifyExpectedMainFrameViewportRect();
+  VerifyExpectedSubresourceLoadMetrics();
   // TODO(yoav): Verify that soft nav count matches expectations.
 }
 

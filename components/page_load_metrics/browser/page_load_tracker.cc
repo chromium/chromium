@@ -1093,6 +1093,11 @@ const mojom::InputTiming& PageLoadTracker::GetPageInputTiming() const {
   return metrics_update_dispatcher_.page_input_timing();
 }
 
+const absl::optional<mojom::SubresourceLoadMetrics>&
+PageLoadTracker::GetSubresourceLoadMetrics() const {
+  return metrics_update_dispatcher_.subresource_load_metrics();
+}
+
 const PageRenderData& PageLoadTracker::GetMainFrameRenderData() const {
   return metrics_update_dispatcher_.main_frame_render_data();
 }
@@ -1198,18 +1203,20 @@ void PageLoadTracker::UpdateMetrics(
     mojom::FrameRenderDataUpdatePtr render_data,
     mojom::CpuTimingPtr cpu_timing,
     mojom::InputTimingPtr input_timing_delta,
+    mojom::SubresourceLoadMetricsPtr subresource_load_metrics,
     uint32_t soft_navigation_count) {
   if (parent_tracker_) {
     parent_tracker_->UpdateMetrics(
         render_frame_host, timing.Clone(), metadata.Clone(), features,
         resources, render_data.Clone(), cpu_timing.Clone(),
-        input_timing_delta.Clone(), soft_navigation_count);
+        input_timing_delta.Clone(), subresource_load_metrics.Clone(),
+        soft_navigation_count);
   }
   metrics_update_dispatcher_.UpdateMetrics(
       render_frame_host, std::move(timing), std::move(metadata),
       std::move(features), resources, std::move(render_data),
       std::move(cpu_timing), std::move(input_timing_delta),
-      soft_navigation_count);
+      std::move(subresource_load_metrics), soft_navigation_count);
 }
 
 void PageLoadTracker::SetPageMainFrame(content::RenderFrameHost* rfh) {

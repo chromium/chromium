@@ -2697,6 +2697,11 @@ void DocumentLoader::CreateParserPostCommit() {
           loading_behavior |
           kLoadingBehaviorServiceWorkerFetchHandlerSkippable);
     }
+    if (!response_.WasFetchedViaServiceWorker()) {
+      loading_behavior = static_cast<LoadingBehaviorFlag>(
+          loading_behavior |
+          kLoadingBehaviorServiceWorkerMainResourceFetchFallback);
+    }
     GetLocalFrameClient().DidObserveLoadingBehavior(loading_behavior);
   }
 
@@ -3205,6 +3210,14 @@ WebArchiveInfo DocumentLoader::GetArchiveInfo() const {
 // static
 void DocumentLoader::DisableCodeCacheForTesting() {
   GetDisableCodeCacheForTesting() = true;
+}
+
+void DocumentLoader::UpdateSubresourceLoadMetrics(
+    uint32_t number_of_subresources_loaded,
+    uint32_t number_of_subresource_loads_handled_by_service_worker) {
+  GetLocalFrameClient().DidObserveSubresourceLoad(
+      number_of_subresources_loaded,
+      number_of_subresource_loads_handled_by_service_worker);
 }
 
 DEFINE_WEAK_IDENTIFIER_MAP(DocumentLoader)

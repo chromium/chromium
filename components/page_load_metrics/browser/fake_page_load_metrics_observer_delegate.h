@@ -63,6 +63,8 @@ class FakePageLoadMetricsObserverDelegate
   const NormalizedResponsivenessMetrics& GetNormalizedResponsivenessMetrics()
       const override;
   const mojom::InputTiming& GetPageInputTiming() const override;
+  const absl::optional<mojom::SubresourceLoadMetrics>&
+  GetSubresourceLoadMetrics() const override;
   const PageRenderData& GetMainFrameRenderData() const override;
   const ui::ScopedVisibilityTracker& GetVisibilityTracker() const override;
   const ResourceTracker& GetResourceTracker() const override;
@@ -94,6 +96,7 @@ class FakePageLoadMetricsObserverDelegate
   NormalizedCLSData normalized_cls_data_;
   NormalizedResponsivenessMetrics normalized_responsiveness_metrics_;
   mojom::InputTiming page_input_timing_;
+  absl::optional<mojom::SubresourceLoadMetrics> subresource_load_metrics_;
   PageRenderData main_frame_render_data_;
   ui::ScopedVisibilityTracker visibility_tracker_;
   ResourceTracker resource_tracker_;

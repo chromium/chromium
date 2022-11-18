@@ -19583,6 +19583,40 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="ServiceWorker.OnLoad">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Events taken at the end of the loading pages controlled by the service
+    workers.
+  </summary>
+  <metric name="MainAndSubResourceLoadLocation"
+      enum="ServiceWorkerResourceLoadStatus">
+    <summary>
+      Enum value to represent how main / sub resource are loaded.
+    </summary>
+  </metric>
+  <metric name="SubResourceFallbackRatio">
+    <summary>
+      An integer ratio (0 - 100) to represent the ratio of network fallbacks
+      from the total subresource load.
+    </summary>
+  </metric>
+  <metric name="TotalSubResourceFallback">
+    <summary>
+      The number of network fallbacks during sub resource load. This is rounded
+      down to the nearest exponential bucket (with a bucket ratio on 1.15).
+    </summary>
+  </metric>
+  <metric name="TotalSubResourceLoad">
+    <summary>
+      The number of all sub resource load of the page controlled by the service
+      worker. This is rounded down to the nearest exponential bucket (with a
+      bucket ratio on 1.15).
+    </summary>
+  </metric>
+</event>
+
 <event name="SharedHighlights.LinkGenerated">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
