@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -56,11 +57,19 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
   void TaskScopeCompleted(ScriptState*, TaskAttributionId);
 
   void RegisterObserver(TaskAttributionTracker::Observer* observer) override {
-    DCHECK(!observer_ || observer == observer_);
-    observer_ = observer;
+    if (observers_.find(observer) == observers_.end()) {
+      observers_.insert(observer);
+    }
   }
 
-  void UnregisterObserver() override { observer_.Clear(); }
+  void UnregisterObserver(TaskAttributionTracker::Observer* observer) override {
+    auto it = observers_.find(observer);
+    // It's possible for the observer to not be registered if it already
+    // unregistered itself in the past.
+    if (it != observers_.end()) {
+      observers_.erase(it);
+    }
+  }
 
  private:
   struct TaskAttributionIdPair {
@@ -151,7 +160,7 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
   WTF::Vector<TaskAttributionIdPair> task_container_ =
       WTF::Vector<TaskAttributionIdPair>(kVectorSize);
 
-  WeakPersistent<TaskAttributionTracker::Observer> observer_;
+  WTF::HashSet<WeakPersistent<TaskAttributionTracker::Observer>> observers_;
 };
 
 }  // namespace blink::scheduler

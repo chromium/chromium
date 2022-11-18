@@ -46,6 +46,7 @@ class SoftNavigationHeuristics
 
   // TaskAttributionTracker::Observer's implementation.
   void OnCreateTaskScope(const scheduler::TaskAttributionId&) override;
+  ExecutionContext* GetExecutionContext() override;
 
  private:
   void CheckAndReportSoftNavigation(ScriptState*);

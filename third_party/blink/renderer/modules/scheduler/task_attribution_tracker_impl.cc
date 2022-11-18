@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_script_wrappable_task_attribution_id.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/scheduler/script_wrappable_task_attribution_id.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
@@ -163,8 +164,11 @@ TaskAttributionTrackerImpl::CreateTaskScope(
   running_task_id_ = next_task_id_;
 
   InsertTaskAttributionIdPair(next_task_id_, parent_task_id);
-  if (observer_) {
-    observer_->OnCreateTaskScope(next_task_id_);
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  for (Observer* observer : observers_) {
+    if (observer->GetExecutionContext() == execution_context) {
+      observer->OnCreateTaskScope(next_task_id_);
+    }
   }
 
   SaveTaskIdStateInV8(script_state, next_task_id_);
