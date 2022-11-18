@@ -818,10 +818,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   std::unique_ptr<SoftNavigationEventScope> soft_navigation_scope;
   auto* soft_navigation_heuristics = SoftNavigationHeuristics::From(*window_);
   if (soft_navigation_heuristics && init->userInitiated() &&
-      !init->hashChange() && !init->downloadRequest() && init->canIntercept()) {
-    // TODO(https://crbug.com/1376597): We need to also treat hash based soft
-    // navigations as such.
-
+      !init->downloadRequest() && init->canIntercept()) {
     // If these conditions are met, create a SoftNavigationEventScope to
     // consider this a "user initiated click", and the dispatched event handlers
     // as potential soft navigation tasks.

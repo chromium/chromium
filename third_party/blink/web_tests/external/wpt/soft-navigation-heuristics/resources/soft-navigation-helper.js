@@ -2,7 +2,7 @@ var counter = 0;
 var clicked;
 var timestamps = []
 const MAX_CLICKS = 50;
-const URL = "/foobar.html";
+const URL = "foobar.html";
 const readValue = (value, defaultValue) => {
   return value != undefined ? value : defaultValue;
 }

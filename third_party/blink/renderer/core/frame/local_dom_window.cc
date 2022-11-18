@@ -128,6 +128,7 @@
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_type_policy_factory.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
@@ -915,6 +916,14 @@ void LocalDOMWindow::DispatchPagehideEvent(
 
 void LocalDOMWindow::EnqueueHashchangeEvent(const String& old_url,
                                             const String& new_url) {
+  DCHECK(GetFrame());
+  if (GetFrame()->IsMainFrame()) {
+    auto* script_state = ToScriptStateForMainWorld(GetFrame());
+    DCHECK(script_state);
+    SoftNavigationHeuristics* heuristics =
+        SoftNavigationHeuristics::From(*this);
+    heuristics->SawURLChange(script_state, new_url);
+  }
   // https://html.spec.whatwg.org/C/#history-traversal
   EnqueueWindowEvent(*HashChangeEvent::Create(old_url, new_url),
                      TaskType::kDOMManipulation);
