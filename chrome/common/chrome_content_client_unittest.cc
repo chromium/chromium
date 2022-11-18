@@ -69,7 +69,7 @@ TEST(ChromeContentClientTest, AdditionalSchemes) {
 
   GURL chrome_url(content::GetWebUIURL("dummyurl"));
   EXPECT_TRUE(network::IsUrlPotentiallyTrustworthy(chrome_url));
-  EXPECT_FALSE(content::OriginCanAccessServiceWorkers(chrome_url));
+  EXPECT_TRUE(content::OriginCanAccessServiceWorkers(chrome_url));
   EXPECT_TRUE(
       network::IsOriginPotentiallyTrustworthy(url::Origin::Create(chrome_url)));
 }

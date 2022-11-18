@@ -14,7 +14,7 @@ namespace service_worker_security_utils {
 
 bool OriginCanRegisterServiceWorkerFromJavascript(const GURL& url) {
   // WebUI service workers are always registered in C++.
-  if (url.SchemeIs(kChromeUIUntrustedScheme))
+  if (url.SchemeIs(kChromeUIUntrustedScheme) || url.SchemeIs(kChromeUIScheme))
     return false;
 
   return OriginCanAccessServiceWorkers(url);

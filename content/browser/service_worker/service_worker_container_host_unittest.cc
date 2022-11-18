@@ -930,6 +930,58 @@ TEST_F(ServiceWorkerContainerHostTest,
   EXPECT_EQ(3u, bad_messages_.size());
 }
 
+class WebUIUntrustedServiceWorkerContainerHostTest
+    : public ServiceWorkerContainerHostTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  WebUIUntrustedServiceWorkerContainerHostTest() {
+    if (GetParam()) {
+      features_.InitAndEnableFeature(
+          features::kEnableServiceWorkersForChromeUntrusted);
+    } else {
+      features_.InitAndDisableFeature(
+          features::kEnableServiceWorkersForChromeUntrusted);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+// Test that chrome:// webuis can't register service workers even if the
+// chrome-untrusted:// SW flag is on.
+TEST_P(WebUIUntrustedServiceWorkerContainerHostTest,
+       Register_RegistrationShouldFail) {
+  ServiceWorkerRemoteContainerEndpoint remote_endpoint =
+      PrepareServiceWorkerContainerHost(GURL("chrome://testwebui/"));
+
+  ASSERT_TRUE(bad_messages_.empty());
+  Register(remote_endpoint.host_remote()->get(), GURL("chrome://testwebui/"),
+           GURL("chrome://testwebui/sw.js"));
+  EXPECT_EQ(1u, bad_messages_.size());
+}
+
+TEST_P(WebUIUntrustedServiceWorkerContainerHostTest,
+       Register_UntrustedRegistrationShouldFail) {
+  ServiceWorkerRemoteContainerEndpoint remote_endpoint =
+      PrepareServiceWorkerContainerHost(GURL("chrome-untrusted://testwebui/"));
+
+  ASSERT_TRUE(bad_messages_.empty());
+  Register(remote_endpoint.host_remote()->get(),
+           GURL("chrome-untrusted://testwebui/"),
+           GURL("chrome-untrusted://testwebui/sw.js"));
+  EXPECT_EQ(1u, bad_messages_.size());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WebUIUntrustedServiceWorkerContainerHostTest,
+                         testing::Bool(),
+                         [](const ::testing::TestParamInfo<bool>& info) {
+                           if (info.param)
+                             return "ServiceWorkersForChromeUntrustedEnabled";
+                           return "ServiceWorkersForChromeUntrustedDisabled";
+                         });
+
 class WebUIServiceWorkerContainerHostTest
     : public ServiceWorkerContainerHostTest,
       public testing::WithParamInterface<bool> {
@@ -937,10 +989,10 @@ class WebUIServiceWorkerContainerHostTest
   WebUIServiceWorkerContainerHostTest() {
     if (GetParam()) {
       features_.InitAndEnableFeature(
-          features::kEnableServiceWorkersForChromeUntrusted);
+          features::kEnableServiceWorkersForChromeScheme);
     } else {
       features_.InitAndDisableFeature(
-          features::kEnableServiceWorkersForChromeUntrusted);
+          features::kEnableServiceWorkersForChromeScheme);
     }
   }
 
@@ -958,6 +1010,8 @@ TEST_P(WebUIServiceWorkerContainerHostTest, Register_RegistrationShouldFail) {
   EXPECT_EQ(1u, bad_messages_.size());
 }
 
+// Test that chrome-untrusted:// service workers are disallowed with the
+// chrome:// flag turned on.
 TEST_P(WebUIServiceWorkerContainerHostTest,
        Register_UntrustedRegistrationShouldFail) {
   ServiceWorkerRemoteContainerEndpoint remote_endpoint =
@@ -975,8 +1029,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Bool(),
                          [](const ::testing::TestParamInfo<bool>& info) {
                            if (info.param)
-                             return "ServiceWorkersForChromeUntrustedEnabled";
-                           return "ServiceWorkersForChromeUntrustedDisabled";
+                             return "ServiceWorkersForChromeEnabled";
+                           return "ServiceWorkersForChromeDisabled";
                          });
 
 TEST_F(ServiceWorkerContainerHostTest, EarlyContextDeletion) {

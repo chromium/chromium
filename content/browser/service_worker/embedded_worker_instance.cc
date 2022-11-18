@@ -870,16 +870,25 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
 
   ContentBrowserClient::NonNetworkURLLoaderFactoryMap non_network_factories;
   non_network_factories[url::kDataScheme] = DataURLLoaderFactory::Create();
+  // Allow service workers for chrome:// or chrome-untrusted:// based on flags.
   if (base::FeatureList::IsEnabled(
-          features::kEnableServiceWorkersForChromeUntrusted)) {
-    if (origin.scheme() == content::kChromeUIUntrustedScheme) {
-      non_network_factories.emplace(
-          content::kChromeUIUntrustedScheme,
-          CreateWebUIServiceWorkerLoaderFactory(
-              rph->GetBrowserContext(), content::kChromeUIUntrustedScheme,
-              base::flat_set<std::string>()));
-    }
+          features::kEnableServiceWorkersForChromeScheme) &&
+      origin.scheme() == content::kChromeUIScheme) {
+    non_network_factories.emplace(
+        content::kChromeUIScheme,
+        CreateWebUIServiceWorkerLoaderFactory(rph->GetBrowserContext(),
+                                              content::kChromeUIScheme,
+                                              base::flat_set<std::string>()));
+  } else if (base::FeatureList::IsEnabled(
+                 features::kEnableServiceWorkersForChromeUntrusted) &&
+             origin.scheme() == content::kChromeUIUntrustedScheme) {
+    non_network_factories.emplace(
+        content::kChromeUIUntrustedScheme,
+        CreateWebUIServiceWorkerLoaderFactory(rph->GetBrowserContext(),
+                                              content::kChromeUIUntrustedScheme,
+                                              base::flat_set<std::string>()));
   }
+
   GetContentClient()
       ->browser()
       ->RegisterNonNetworkSubresourceURLLoaderFactories(

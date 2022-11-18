@@ -108,11 +108,13 @@ void RegisterContentSchemes(bool should_lock_registry) {
     url::AddPredefinedHandlerScheme(scheme.c_str(), handler.c_str());
 
   // This should only be registered if the
-  // kEnableServiceWorkerForChromeUntrusted feature is enabled but checking
-  // it here causes a crash when --no-sandbox is enabled. See crbug.com/1313812
+  // kEnableServiceWorkerForChrome or
+  // kEnableServiceWorkerForChromeUntrusted feature is enabled but checking it
+  // here causes a crash when --no-sandbox is enabled. See crbug.com/1313812
   // There are other render side checks and browser side checks that ensure
-  // service workers don't work for chrome-untrusted:// when the flag is not
+  // service workers don't work for chrome[-untrusted]:// when the flag is not
   // enabled.
+  schemes.service_worker_schemes.push_back(kChromeUIScheme);
   schemes.service_worker_schemes.push_back(kChromeUIUntrustedScheme);
 
   // Prevent future modification of the scheme lists. This is to prevent

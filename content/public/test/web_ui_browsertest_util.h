@@ -9,7 +9,10 @@
 #include <string>
 #include <utility>
 
+#include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_controller_factory.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/bindings_policy.h"
 #include "services/network/public/mojom/cross_origin_opener_policy.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -40,6 +43,16 @@ void AddUntrustedDataSource(
 
 // Returns chrome-untrusted://|host_and_path| as a GURL.
 GURL GetChromeUntrustedUIURL(const std::string& host_and_path);
+
+class TestWebUIConfig : public content::WebUIConfig {
+ public:
+  explicit TestWebUIConfig(base::StringPiece host);
+
+  ~TestWebUIConfig() override = default;
+
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui) override;
+};
 
 // Returns WebUIControllers whose CSPs and headers can be controlled through
 // query parameters.
