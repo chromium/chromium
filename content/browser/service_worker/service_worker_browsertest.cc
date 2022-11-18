@@ -394,12 +394,7 @@ class ServiceWorkerBrowserTest : public ContentBrowserTest {
 
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    StoragePartition* partition = shell()
-                                      ->web_contents()
-                                      ->GetBrowserContext()
-                                      ->GetDefaultStoragePartition();
-    wrapper_ = static_cast<ServiceWorkerContextWrapper*>(
-        partition->GetServiceWorkerContext());
+    SetServiceWorkerContextWrapper();
     ShellContentBrowserClient::Get()
         ->browser_context()
         ->set_client_hints_controller_delegate(
@@ -415,6 +410,15 @@ class ServiceWorkerBrowserTest : public ContentBrowserTest {
         .FlushForTesting();
     content::RunAllTasksUntilIdle();
     wrapper_ = nullptr;
+  }
+
+  void SetServiceWorkerContextWrapper() {
+    StoragePartition* partition = shell()
+                                      ->web_contents()
+                                      ->GetBrowserContext()
+                                      ->GetDefaultStoragePartition();
+    wrapper_ = static_cast<ServiceWorkerContextWrapper*>(
+        partition->GetServiceWorkerContext());
   }
 
   // Starts the test server and navigates the renderer to an empty page. Call
@@ -4233,6 +4237,121 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSpeculativeStartupBrowserTest,
   histogram_tester().ExpectBucketCount(
       "ServiceWorker.StartWorker.StatusByPurpose_NAVIGATION_HINT",
       static_cast<int>(blink::ServiceWorkerStatusCode::kOk), 1);
+}
+
+enum class ServiceWorkerBypassFetchHandlerAllowedOriginType {
+  kAllowed,
+  kNotAllowed
+};
+
+class ServiceWorkerBypassFetchHandlerTest
+    : public ServiceWorkerBrowserTest,
+      public testing::WithParamInterface<
+          ServiceWorkerBypassFetchHandlerAllowedOriginType> {
+ public:
+  ServiceWorkerBypassFetchHandlerTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kServiceWorkerBypassFetchHandler,
+          {{"allowed_origins", "https://a.test"}}}},
+        {});
+  }
+  ~ServiceWorkerBypassFetchHandlerTest() override = default;
+
+  void SetUpOnMainThread() override {
+    SetServiceWorkerContextWrapper();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    net::test_server::RegisterDefaultHandlers(&https_server_);
+    ASSERT_TRUE(https_server()->Start());
+  }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+  WebContents* web_contents() const { return shell()->web_contents(); }
+
+  RenderFrameHost* GetPrimaryMainFrame() {
+    return web_contents()->GetPrimaryMainFrame();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ServiceWorkerBypassFetchHandlerTest,
+    testing::Values(
+        ServiceWorkerBypassFetchHandlerAllowedOriginType::kAllowed,
+        ServiceWorkerBypassFetchHandlerAllowedOriginType::kNotAllowed));
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerBypassFetchHandlerTest, UrlInAllowList) {
+  std::string origin;
+  switch (GetParam()) {
+    case ServiceWorkerBypassFetchHandlerAllowedOriginType::kAllowed:
+      origin = "a.test";
+      break;
+    case ServiceWorkerBypassFetchHandlerAllowedOriginType::kNotAllowed:
+      origin = "b.test";
+      break;
+  }
+
+  const GURL create_service_worker_url(https_server()->GetURL(
+      origin, "/service_worker/create_service_worker.html"));
+  const GURL out_scope_url(https_server()->GetURL(origin, "/empty.html"));
+  const GURL in_scope_url(
+      https_server()->GetURL(origin, "/service_worker/empty.html"));
+
+  // Register a service worker.
+  WorkerRunningStatusObserver observer1(public_context());
+  EXPECT_TRUE(NavigateToURL(shell(), create_service_worker_url));
+  EXPECT_EQ("DONE",
+            EvalJs(GetPrimaryMainFrame(),
+                   "register('/service_worker/fetch_event_pass_through.js')"));
+  observer1.WaitUntilRunning();
+  scoped_refptr<ServiceWorkerVersion> version =
+      wrapper()->GetLiveVersion(observer1.version_id());
+  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+
+  // Stop the current running service worker.
+  StopServiceWorker(version.get());
+  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+
+  // Navigate away from the service worker's scope.
+  EXPECT_TRUE(NavigateToURL(shell(), out_scope_url));
+  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+
+  // This script asks the service worker what fetch events it saw.
+  const std::string script = R"(
+      (async () => {
+        const saw_message = new Promise(resolve => {
+          navigator.serviceWorker.onmessage = event => {
+            resolve(event.data);
+          };
+        });
+        const registration = await navigator.serviceWorker.ready;
+        registration.active.postMessage('');
+        const message = await saw_message;
+        return message.length;
+      })();
+  )";
+
+  // Navigate to the service worker's scope.
+  EXPECT_TRUE(NavigateToURL(shell(), in_scope_url));
+
+  switch (GetParam()) {
+    case ServiceWorkerBypassFetchHandlerAllowedOriginType::kAllowed:
+      // If bypassing is allowed, the service worker was bypassed and the
+      // navigation request shouldn't be handled by the fetch handler.
+      EXPECT_EQ(0, EvalJs(GetPrimaryMainFrame(), script));
+      break;
+    case ServiceWorkerBypassFetchHandlerAllowedOriginType::kNotAllowed:
+      // If bypassing is not allowed, the navigation request should be handled
+      // by the fetch handler.
+      EXPECT_EQ(1, EvalJs(GetPrimaryMainFrame(), script));
+      break;
+  }
 }
 
 }  // namespace content

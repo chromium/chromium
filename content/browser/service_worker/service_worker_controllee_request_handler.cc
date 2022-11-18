@@ -115,7 +115,10 @@ bool ShouldBypassFetchHandlerForMainResource(const GURL& stripped_url) {
     const std::vector<url::Origin> allowed_origins(
         BypassingFetchHandlerAllowedOrigins());
     for (const auto& it : allowed_origins) {
-      if (it.IsSameOriginWith(stripped_url))
+      // Skip comparing port numbers because some tests run the mock HTTP server
+      // with a random port number.
+      if (it.scheme() == stripped_url.scheme() &&
+          it.host() == stripped_url.host())
         return true;
     }
   }
