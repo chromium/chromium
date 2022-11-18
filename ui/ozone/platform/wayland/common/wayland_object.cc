@@ -46,7 +46,12 @@ namespace wl {
 namespace {
 
 void delete_gtk_surface1(gtk_surface1* surface) {
-  gtk_surface1_release(surface);
+  if (wl::get_version_of_object(surface) >=
+      GTK_SURFACE1_RELEASE_SINCE_VERSION) {
+    gtk_surface1_release(surface);
+  } else {
+    gtk_surface1_destroy(surface);
+  }
 }
 
 void delete_data_device(wl_data_device* data_device) {
