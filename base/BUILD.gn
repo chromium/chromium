@@ -362,6 +362,7 @@ component("base") {
     "functional/callback_internal.cc",
     "functional/callback_internal.h",
     "functional/callback_tags.h",
+    "functional/disallow_unretained.h",
     "functional/function_ref.h",
     "functional/identity.h",
     "functional/invoke.h",

@@ -87,9 +87,32 @@ namespace internal {
 template <typename Functor, typename SFINAE = void>
 struct FunctorTraits;
 
+// Helpers for detecting the tag created by the `DISALLOW_UNRETAINED()` macro
+// from base/functional/disallow_unretained.h. Intentionally separate to avoid
+// including <type_traits> in a header that otherwise doesn't need it.
+template <typename T, typename SFINAE = void>
+struct TypeSupportsUnretained {
+  static constexpr inline bool kValue = true;
+};
+
+template <typename T>
+struct TypeSupportsUnretained<T,
+                              std::void_t<typename T::DisallowBaseUnretained>> {
+  static constexpr inline bool kValue = false;
+};
+
+template <typename T>
+static inline constexpr bool TypeSupportsUnretainedV =
+    TypeSupportsUnretained<T>::kValue;
+
 template <typename T, typename RawPtrType = base::RawPtrBanDanglingIfSupported>
 class UnretainedWrapper {
  public:
+  static_assert(TypeSupportsUnretainedV<T>,
+                "Callback cannot capture an unprotected C++ pointer since this "
+                "Type is annotated with DISALLOW_UNRETAINED(). Please see "
+                "base/functional/disallow_unretained.h for alternatives.");
+
   explicit UnretainedWrapper(T* o) : ptr_(o) {}
 
   // Trick to only instantiate these constructors if they are used. Otherwise,
@@ -161,6 +184,12 @@ class UnretainedWrapper {
 template <typename T, bool = raw_ptr_traits::IsSupportedType<T>::value>
 class UnretainedRefWrapper {
  public:
+  static_assert(
+      TypeSupportsUnretainedV<T>,
+      "Callback cannot capture an unprotected C++ reference since this "
+      "type is annotated with DISALLOW_UNRETAINED(). Please see "
+      "base/functional/disallow_unretained.h for alternatives.");
+
   explicit UnretainedRefWrapper(T& o) : ref_(o) {}
   T& get() const { return ref_; }
 
@@ -173,6 +202,11 @@ class UnretainedRefWrapper {
 template <typename T>
 class UnretainedRefWrapper<T, true> {
  public:
+  static_assert(TypeSupportsUnretainedV<T>,
+                "Callback cannot capture an unprotected C++ pointer since this "
+                "type is annotated with DISALLOW_UNRETAINED(). Please see "
+                "base/functional/disallow_unretained.h for alternatives.");
+
   explicit UnretainedRefWrapper(T& o) : ref_(o) {}
   T& get() const {
     // We can't use operator* here, we need to use raw_ptr's GetForExtraction
@@ -191,6 +225,12 @@ class UnretainedRefWrapper<T, true> {
 template <typename T, typename I, bool b>
 class UnretainedRefWrapper<raw_ref<T, I>, b> {
  public:
+  static_assert(
+      TypeSupportsUnretainedV<T>,
+      "Callback cannot capture an unprotected C++ reference since this "
+      "Type is annotated with DISALLOW_UNRETAINED(). Please see "
+      "base/functional/disallow_unretained.h for alternatives.");
+
   explicit UnretainedRefWrapper(const raw_ref<T, I>& ref) : ref_(ref) {}
   explicit UnretainedRefWrapper(raw_ref<T, I>&& ref) : ref_(std::move(ref)) {}
   T& get() const {

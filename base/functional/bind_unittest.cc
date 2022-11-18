@@ -14,6 +14,7 @@
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/functional/callback.h"
+#include "base/functional/disallow_unretained.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -36,6 +37,24 @@ using ::testing::StrictMock;
 
 namespace base {
 namespace {
+
+class AllowsUnretained {};
+
+class BansUnretained {
+ public:
+  DISALLOW_UNRETAINED();
+};
+
+class BansUnretainedInPrivate {
+  DISALLOW_UNRETAINED();
+};
+
+class DerivedButBaseBansUnretained : public BansUnretained {};
+
+static_assert(internal::TypeSupportsUnretainedV<AllowsUnretained>);
+static_assert(!internal::TypeSupportsUnretainedV<BansUnretained>);
+static_assert(!internal::TypeSupportsUnretainedV<BansUnretainedInPrivate>);
+static_assert(!internal::TypeSupportsUnretainedV<DerivedButBaseBansUnretained>);
 
 class IncompleteType;
 
