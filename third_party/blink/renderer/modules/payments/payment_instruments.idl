@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://w3c.github.io/webpayments-payment-apps-api/#payment-instruments
+// https://w3c.github.io/payment-handler/#paymentinstruments-interface
 
 [
-    RuntimeEnabled=PaymentApp,
+    RuntimeEnabled=PaymentInstruments,
     Exposed=(Window,Worker)
 ] interface PaymentInstruments {
     [CallWith=ScriptState, RaisesException, ImplementedAs=deleteInstrument, Measure] Promise<boolean> delete(DOMString instrumentKey);

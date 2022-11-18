@@ -2016,6 +2016,12 @@
       status: "experimental",
     },
     {
+      name: "PaymentInstruments",
+      depends_on: ["PaymentApp"],
+      public: true,
+      status: "stable",
+    },
+    {
       name: "PaymentMethodChangeEvent",
       depends_on: ["PaymentRequest"],
       status: "stable",
