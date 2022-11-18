@@ -124,7 +124,7 @@ class PermissionsAPIUnitTest : public ExtensionServiceTestWithInstall {
         function.get(), args_string, browser(), api_test_utils::NONE);
     EXPECT_TRUE(run_result) << function->GetError();
 
-    const auto& args_list = *function->GetResultList();
+    const auto& args_list = *function->GetResultListForTest();
     if (args_list.empty()) {
       ADD_FAILURE() << "Result unexpectedly empty.";
       return false;
@@ -233,7 +233,7 @@ TEST_F(PermissionsAPIUnitTest, ContainsAndGetAllWithRuntimeHostPermissions) {
       ADD_FAILURE() << "Running function failed: " << function->GetError();
     }
 
-    return (*function->GetResultList())[0].GetBool();
+    return (*function->GetResultListForTest())[0].GetBool();
   };
 
   auto get_all = [this, &extension]() {
@@ -247,7 +247,7 @@ TEST_F(PermissionsAPIUnitTest, ContainsAndGetAllWithRuntimeHostPermissions) {
       return origins;
     }
 
-    const base::Value::List* results = function->GetResultList();
+    const base::Value::List* results = function->GetResultListForTest();
     if (results->size() != 1u || !(*results)[0].is_dict()) {
       ADD_FAILURE() << "Invalid result value";
       return origins;

@@ -111,7 +111,7 @@ std::string RunFunctionAndReturnError(
   RunFunction(function, args, browser, flags);
   // When sending a response, the function will set an empty list value if there
   // is no specified result.
-  const base::Value::List* results = function->GetResultList();
+  const base::Value::List* results = function->GetResultListForTest();
   CHECK(results);
   EXPECT_TRUE(results->empty()) << "Did not expect a result";
   CHECK(function->response_type());
@@ -137,9 +137,10 @@ std::unique_ptr<base::Value> RunFunctionAndReturnSingleResult(
   RunFunction(function, args, browser, flags);
   EXPECT_TRUE(function->GetError().empty()) << "Unexpected error: "
       << function->GetError();
-  if (function->GetResultList() && !function->GetResultList()->empty()) {
+  if (function->GetResultListForTest() &&
+      !function->GetResultListForTest()->empty()) {
     return base::Value::ToUniquePtrValue(
-        (*function->GetResultList())[0].Clone());
+        (*function->GetResultListForTest())[0].Clone());
   }
   return nullptr;
 }

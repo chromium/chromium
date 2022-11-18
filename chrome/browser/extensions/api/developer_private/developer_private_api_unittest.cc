@@ -196,7 +196,7 @@ void GetMatchingExtensionsForSite(
   EXPECT_TRUE(api_test_utils::RunFunction(
       function.get(), base::StringPrintf(R"(["%s"])", site.c_str()), profile))
       << function->GetError();
-  const base::Value::List* results = function->GetResultList();
+  const base::Value::List* results = function->GetResultListForTest();
   ASSERT_EQ(1u, results->size());
   ASSERT_TRUE((*results)[0].is_list());
 
@@ -398,7 +398,7 @@ testing::AssertionResult DeveloperPrivateApiUnitTest::TestPackExtensionFunction(
 
   // Extract the result. We don't have to test this here, since it's verified as
   // part of the general extension api system.
-  const base::Value& response_value = (*function->GetResultList())[0];
+  const base::Value& response_value = (*function->GetResultListForTest())[0];
   std::unique_ptr<api::developer_private::PackDirectoryResponse> response =
       api::developer_private::PackDirectoryResponse::FromValue(response_value);
   CHECK(response);
@@ -435,9 +435,9 @@ void DeveloperPrivateApiUnitTest::GetProfileConfiguration(
   base::Value::List args;
   EXPECT_TRUE(RunFunction(function, args)) << function->GetError();
 
-  ASSERT_TRUE(function->GetResultList());
-  ASSERT_EQ(1u, function->GetResultList()->size());
-  const base::Value& response_value = (*function->GetResultList())[0];
+  ASSERT_TRUE(function->GetResultListForTest());
+  ASSERT_EQ(1u, function->GetResultListForTest()->size());
+  const base::Value& response_value = (*function->GetResultListForTest())[0];
   *profile_info =
       api::developer_private::ProfileInfo::FromValue(response_value);
 }
@@ -608,7 +608,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateChoosePath) {
   function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
   EXPECT_TRUE(RunFunction(function, choose_args)) << function->GetError();
   std::string path;
-  const base::Value::List* result_list = function->GetResultList();
+  const base::Value::List* result_list = function->GetResultListForTest();
   ASSERT_TRUE(result_list);
   ASSERT_GT(result_list->size(), 0u);
   ASSERT_TRUE((*result_list)[0].is_string());
@@ -625,7 +625,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateChoosePath) {
   function = base::MakeRefCounted<api::DeveloperPrivateChoosePathFunction>();
   function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
   EXPECT_TRUE(RunFunction(function, choose_args)) << function->GetError();
-  result_list = function->GetResultList();
+  result_list = function->GetResultListForTest();
   ASSERT_TRUE(result_list);
   ASSERT_GT(result_list->size(), 0u);
   ASSERT_TRUE((*result_list)[0].is_string());
@@ -1131,7 +1131,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateRequestFileSource) {
   file_source_args.Append(properties.ToValue());
   EXPECT_TRUE(RunFunction(function, file_source_args)) << function->GetError();
 
-  const base::Value& response_value = (*function->GetResultList())[0];
+  const base::Value& response_value = (*function->GetResultListForTest())[0];
   std::unique_ptr<api::developer_private::RequestFileSourceResponse> response =
       api::developer_private::RequestFileSourceResponse::FromValue(
           response_value);
@@ -1155,7 +1155,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateGetExtensionsInfo) {
         base::MakeRefCounted<api::DeveloperPrivateGetExtensionsInfoFunction>();
     EXPECT_TRUE(RunFunction(function, base::Value::List()))
         << function->GetError();
-    const base::Value::List* results = function->GetResultList();
+    const base::Value::List* results = function->GetResultListForTest();
     ASSERT_EQ(1u, results->size());
     ASSERT_TRUE((*results)[0].is_list());
     const base::Value::List& list = (*results)[0].GetList();
@@ -1174,7 +1174,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateGetExtensionsInfo) {
     args.Append(false);
     args.Append(false);
     EXPECT_TRUE(RunFunction(function, args)) << function->GetError();
-    const base::Value::List* results = function->GetResultList();
+    const base::Value::List* results = function->GetResultListForTest();
     ASSERT_EQ(1u, results->size());
     ASSERT_TRUE((*results)[0].is_list());
     const base::Value::List& list = (*results)[0].GetList();
@@ -1956,9 +1956,9 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateGetUserSiteSettings) {
 
   base::Value::List args;
   EXPECT_TRUE(RunFunction(function, args)) << function->GetError();
-  ASSERT_TRUE(function->GetResultList());
-  ASSERT_EQ(1u, function->GetResultList()->size());
-  const base::Value& response_value = (*function->GetResultList())[0];
+  ASSERT_TRUE(function->GetResultListForTest());
+  ASSERT_EQ(1u, function->GetResultListForTest()->size());
+  const base::Value& response_value = (*function->GetResultListForTest())[0];
   std::unique_ptr<api::developer_private::UserSiteSettings> settings =
       api::developer_private::UserSiteSettings::FromValue(response_value);
 
@@ -2082,7 +2082,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
       api::DeveloperPrivateGetUserAndExtensionSitesByEtldFunction>();
   EXPECT_TRUE(RunFunction(function, base::Value::List()))
       << function->GetError();
-  const base::Value::List* results = function->GetResultList();
+  const base::Value::List* results = function->GetResultListForTest();
   ASSERT_EQ(1u, results->size());
 
   EXPECT_THAT((*results)[0], base::test::IsJson(R"([{
@@ -2139,7 +2139,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
       api::DeveloperPrivateGetUserAndExtensionSitesByEtldFunction>();
   EXPECT_TRUE(RunFunction(function, base::Value::List()))
       << function->GetError();
-  const base::Value::List* results = function->GetResultList();
+  const base::Value::List* results = function->GetResultListForTest();
   ASSERT_EQ(1u, results->size());
 
   // asdf.com and http://www.asdf.com should not have any extensions counted
@@ -2217,7 +2217,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
       api::DeveloperPrivateGetUserAndExtensionSitesByEtldFunction>();
   EXPECT_TRUE(RunFunction(function, base::Value::List()))
       << function->GetError();
-  const base::Value::List* results = function->GetResultList();
+  const base::Value::List* results = function->GetResultListForTest();
   ASSERT_EQ(1u, results->size());
 
   // `extension_2` should not be counted for https://*.google.ca/* as it cannot
@@ -2272,7 +2272,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
         api::DeveloperPrivateGetUserAndExtensionSitesByEtldFunction>();
     EXPECT_TRUE(RunFunction(function, base::Value::List()))
         << function->GetError();
-    const base::Value::List* results = function->GetResultList();
+    const base::Value::List* results = function->GetResultListForTest();
     ASSERT_EQ(1u, results->size());
     EXPECT_THAT((*results)[0], base::test::IsJson(expected_json));
   };

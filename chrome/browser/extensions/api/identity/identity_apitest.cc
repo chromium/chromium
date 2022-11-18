@@ -182,9 +182,9 @@ class AsyncFunctionRunner {
     RunMessageLoopUntilResponse();
     EXPECT_TRUE(function->GetError().empty())
         << "Unexpected error: " << function->GetError();
-    EXPECT_NE(nullptr, function->GetResultList());
+    EXPECT_NE(nullptr, function->GetResultListForTest());
 
-    const auto& result_list = *function->GetResultList();
+    const auto& result_list = *function->GetResultListForTest();
     EXPECT_EQ(1ul, result_list.size());
 
     *result = result_list[0].Clone();
@@ -587,7 +587,8 @@ class IdentityGetAccountsFunctionTest : public IdentityTestWithSignin {
       return GenerateFailureResult(gaia_ids, nullptr)
              << "getAccounts did not return a result.";
     }
-    const base::Value::List* callback_arguments_list = func->GetResultList();
+    const base::Value::List* callback_arguments_list =
+        func->GetResultListForTest();
     if (!callback_arguments_list)
       return GenerateFailureResult(gaia_ids, nullptr) << "NULL result";
 

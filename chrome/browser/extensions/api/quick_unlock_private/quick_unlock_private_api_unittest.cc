@@ -669,7 +669,7 @@ class QuickUnlockPrivateUnitTest
     auto dispatcher = std::make_unique<ExtensionFunctionDispatcher>(profile());
     api_test_utils::RunFunction(func.get(), std::move(params),
                                 std::move(dispatcher), api_test_utils::NONE);
-    EXPECT_TRUE(func->GetResultList()->empty());
+    EXPECT_TRUE(func->GetResultListForTest()->empty());
     base::RunLoop().RunUntilIdle();
     return func->GetError();
   }

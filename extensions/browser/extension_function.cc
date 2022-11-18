@@ -554,7 +554,7 @@ void ExtensionFunction::SetArgs(base::Value args) {
   args_ = std::move(args).TakeList();
 }
 
-const base::Value::List* ExtensionFunction::GetResultList() const {
+const base::Value::List* ExtensionFunction::GetResultListForTest() const {
   return results_ ? &(*results_) : nullptr;
 }
 

@@ -137,7 +137,7 @@ absl::optional<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
   RunFunction(function.get(), std::move(args), std::move(dispatcher), flags);
   EXPECT_TRUE(function->GetError().empty())
       << "Unexpected error: " << function->GetError();
-  const base::Value::List* results = function->GetResultList();
+  const base::Value::List* results = function->GetResultListForTest();
   if (!results || results->empty())
     return absl::nullopt;
   return (*results)[0].Clone();
@@ -179,7 +179,7 @@ std::string RunFunctionAndReturnError(ExtensionFunction* function,
   RunFunction(function, args, std::move(dispatcher), flags);
   // When sending a response, the function will set an empty list value if there
   // is no specified result.
-  const base::Value::List* results = function->GetResultList();
+  const base::Value::List* results = function->GetResultListForTest();
   CHECK(results);
   EXPECT_TRUE(results->empty()) << "Did not expect a result";
   CHECK(function->response_type());

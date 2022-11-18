@@ -234,8 +234,9 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // base::Value of type LIST.
   void SetArgs(base::Value args);
 
-  // Retrieves the results of the function as a base::Value::List.
-  const base::Value::List* GetResultList() const;
+  // Retrieves the results of the function as a base::Value::List for testing
+  // purposes.
+  const base::Value::List* GetResultListForTest() const;
 
   // Retrieves any error string from the function.
   virtual const std::string& GetError() const;
@@ -605,8 +606,8 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // SendResponseImpl() moves the results out of |this| through
   // ResponseCallback, and calling this method avoids that. This is nececessary
   // for tests that use test_utils::RunFunction*(), as those tests typically
-  // retrieve the result afterwards through GetResultList().
-  // TODO(https://crbug.com/1268112): Remove this once GetResultList() is
+  // retrieve the result afterwards through GetResultListForTest().
+  // TODO(https://crbug.com/1268112): Remove this once GetResultListForTest() is
   // removed after ensuring consumers only use RunFunctionAndReturnResult() to
   // retrieve the results.
   bool preserve_results_for_testing_ = false;
