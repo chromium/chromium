@@ -325,7 +325,6 @@ crbug.com/1213542 [ renderer-skia-gl linux nvidia-0x2184 passthrough ] Pixel_Vid
 crbug.com/1288134 [ win10 amd-0x7340 renderer-skia-gl ] Pixel_DirectComposition_Video_VP9_YUY2 [ Failure ]
 
 # Pixel 4 Flaky Failures - Passthrough, WebView and Validating
-crbug.com/1273033 [ android android-pixel-4 ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ Failure ]
 
 # Pixel 4 Flaky Failures - Passthrough and Validating on Chromium
 
