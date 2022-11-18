@@ -5,8 +5,6 @@
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -17,8 +15,6 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/controls/styled_label.h"
-#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
@@ -103,10 +99,11 @@ RichHoverButton::RichHoverButton(
   table_layout->SetChildViewIgnoredByLayout(ink_drop_container(), true);
 
   AddChildView(CreateIconView(main_image_icon));
-  auto title_label = std::make_unique<views::StyledLabel>();
+  auto title_label = std::make_unique<views::Label>();
   title_label->SetTextContext(text_context);
 
   title_ = AddChildView(std::move(title_label));
+  title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetCanProcessEventsWithinSubtree(false);
 
   auto secondary_label = std::make_unique<views::Label>(
@@ -176,10 +173,10 @@ void RichHoverButton::SetSubtitleText(const std::u16string& subtitle_text) {
 }
 
 void RichHoverButton::SetSubtitleMultiline(bool is_multiline) {
-  subtitle()->SetMultiLine(is_multiline);
+  subtitle_->SetMultiLine(is_multiline);
 }
 
-const views::StyledLabel* RichHoverButton::GetTitleViewForTesting() const {
+const views::Label* RichHoverButton::GetTitleViewForTesting() const {
   return title_;
 }
 
@@ -190,13 +187,13 @@ const views::Label* RichHoverButton::GetSubTitleViewForTesting() const {
 void RichHoverButton::UpdateAccessibleName() {
   const std::u16string title_text =
       secondary_label_ == nullptr
-          ? title()->GetText()
-          : base::JoinString({title()->GetText(), secondary_label_->GetText()},
+          ? title_->GetText()
+          : base::JoinString({title_->GetText(), secondary_label_->GetText()},
                              u" ");
   const std::u16string accessible_name =
-      subtitle() == nullptr
+      subtitle_ == nullptr
           ? title_text
-          : base::JoinString({title_text, subtitle()->GetText()}, u"\n");
+          : base::JoinString({title_text, subtitle_->GetText()}, u"\n");
   HoverButton::SetAccessibleName(accessible_name);
 }
 

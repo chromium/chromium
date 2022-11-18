@@ -20,7 +20,6 @@ class ImageModel;
 
 namespace views {
 class Label;
-class StyledLabel;
 class View;
 }  // namespace views
 
@@ -69,12 +68,10 @@ class RichHoverButton : public HoverButton {
 
   views::Label* secondary_label() { return secondary_label_; }
 
-  const views::StyledLabel* GetTitleViewForTesting() const;
+  const views::Label* GetTitleViewForTesting() const;
   const views::Label* GetSubTitleViewForTesting() const;
 
  protected:
-  views::StyledLabel* title() const { return title_; }
-  views::Label* subtitle() const { return subtitle_; }
   // HoverButton:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
@@ -84,7 +81,7 @@ class RichHoverButton : public HoverButton {
  private:
   void UpdateAccessibleName();
 
-  raw_ptr<views::StyledLabel> title_ = nullptr;
+  raw_ptr<views::Label> title_ = nullptr;
   raw_ptr<views::Label> secondary_label_ = nullptr;
   raw_ptr<views::Label> subtitle_ = nullptr;
 };
