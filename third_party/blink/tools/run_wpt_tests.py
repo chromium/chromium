@@ -239,10 +239,10 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
 
     def _create_extra_run_info(self):
         run_info = {
-            # This property should always be present so that the metadata
+            # This property should always be a string so that the metadata
             # updater works, even when wptrunner is not running a flag-specific
             # suite.
-            'flag_specific': self.options.flag_specific,
+            'flag_specific': self.options.flag_specific or '',
             'used_upstream': self.options.use_upstream_wpt,
         }
         if self.options.use_upstream_wpt:
