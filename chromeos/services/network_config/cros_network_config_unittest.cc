@@ -828,6 +828,11 @@ class CrosNetworkConfigTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void ModifyCustomApn(const std::string& guid, mojom::ApnPropertiesPtr apn) {
+    cros_network_config()->ModifyCustomApn(guid, std::move(apn));
+    base::RunLoop().RunUntilIdle();
+  }
+
   bool UserApnsInNetworkMetadataStoreMatch(
       const std::string& guid,
       const std::vector<TestApnData*>& expected_apns) {
@@ -1938,6 +1943,121 @@ TEST_F(CrosNetworkConfigTest, RemoveCustomApn) {
     EXPECT_TRUE(UserApnsInCellularConfigMatch(kCellularGuid, expected_apns,
                                               network_config_observer));
     EXPECT_TRUE(UserApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
+  }
+}
+
+TEST_F(CrosNetworkConfigTest, ModifyCustomApn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
+
+  // Register an observer to capture values sent to Shill
+  TestNetworkConfigurationObserver network_config_observer(
+      network_configuration_handler());
+
+  ASSERT_FALSE(network_metadata_store()->GetCustomApnList(kCellularGuid));
+  // Verify ModifyCustomApn reports an error and return when the
+  // network_metadata_store has a nullptr custom APN list
+  size_t expected_network_config_calls = 0u;
+  TestApnData test_apn1;
+  test_apn1.access_point_name = kCellularTestApn1;
+  test_apn1.name = kCellularTestApnName1;
+  test_apn1.username = kCellularTestApnUsername1;
+  test_apn1.password = kCellularTestApnPassword1;
+  test_apn1.attach = kCellularTestApnAttach1;
+  test_apn1.mojo_apn_types = {mojom::ApnType::kDefault,
+                              mojom::ApnType::kAttach};
+  test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault,
+                             ::onc::cellular_apn::kApnTypeAttach};
+  test_apn1.id = "apn_id_1";
+  ModifyCustomApn(kCellularGuid, test_apn1.AsMojoApn());
+  EXPECT_EQ(expected_network_config_calls,
+            network_config_observer.GetOnConfigurationModifiedCallCount());
+  ASSERT_FALSE(network_metadata_store()->GetCustomApnList(kCellularGuid));
+
+  // Try to replace an APN when the custom APN list is empty, it should do
+  // nothing
+  network_metadata_store()->SetCustomApnList(kCellularGuid,
+                                             base::Value::List());
+  ModifyCustomApn(kCellularGuid, test_apn1.AsMojoApn());
+  EXPECT_EQ(expected_network_config_calls,
+            network_config_observer.GetOnConfigurationModifiedCallCount());
+  EXPECT_TRUE(UserApnsInNetworkMetadataStoreMatch({}));
+
+  TestApnData test_apn2;
+  test_apn2.access_point_name = kCellularTestApn2;
+  test_apn2.name = kCellularTestApnName2;
+  test_apn2.username = kCellularTestApnUsername2;
+  test_apn2.password = kCellularTestApnPassword2;
+  test_apn2.attach = kCellularTestApnAttach2;
+  test_apn2.mojo_apn_types = {mojom::ApnType::kDefault,
+                              mojom::ApnType::kAttach};
+  test_apn2.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault,
+                             ::onc::cellular_apn::kApnTypeAttach};
+
+  // Add two custom APNs using the official API
+  {
+    CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn());
+    EXPECT_EQ(++expected_network_config_calls,
+              network_config_observer.GetOnConfigurationModifiedCallCount());
+    CreateCustomApn(kCellularGuid, test_apn2.AsMojoApn());
+    EXPECT_EQ(++expected_network_config_calls,
+              network_config_observer.GetOnConfigurationModifiedCallCount());
+  }
+
+  // Verify that ModifyCustomApn replaces the first custom APN
+  const base::Value::List* custom_apns =
+      network_metadata_store()->GetCustomApnList(kCellularGuid);
+  ASSERT_TRUE(custom_apns);
+  ASSERT_EQ(2u, custom_apns->size());
+  const std::string* first_apn_id =
+      custom_apns->front().GetDict().FindString(::onc::cellular_apn::kId);
+  ASSERT_TRUE(first_apn_id);
+
+  TestApnData test_apn3;
+  test_apn3.access_point_name = kCellularTestApn3;
+  test_apn3.name = kCellularTestApnName3;
+  test_apn3.username = kCellularTestApnUsername3;
+  test_apn3.password = kCellularTestApnPassword3;
+  test_apn3.attach = kCellularTestApnAttach3;
+  test_apn3.mojo_apn_types = {mojom::ApnType::kAttach};
+  test_apn3.onc_apn_types = {::onc::cellular_apn::kApnTypeAttach};
+
+  // Verify that ModifyCustomApn does nothing if the input APN does not have an
+  // ID.
+  ModifyCustomApn(kCellularGuid, test_apn3.AsMojoApn());
+  EXPECT_EQ(expected_network_config_calls,
+            network_config_observer.GetOnConfigurationModifiedCallCount());
+  {
+    std::vector<TestApnData*> expected_apns({&test_apn2, &test_apn1});
+    EXPECT_TRUE(UserApnsInNetworkMetadataStoreMatch(expected_apns));
+    EXPECT_TRUE(
+        UserApnsInCellularConfigMatch(expected_apns, network_config_observer));
+    EXPECT_TRUE(UserApnsInManagedPropertiesMatch(expected_apns));
+  }
+
+  test_apn3.id = *first_apn_id;
+  ModifyCustomApn(kCellularGuid, test_apn3.AsMojoApn());
+  EXPECT_EQ(++expected_network_config_calls,
+            network_config_observer.GetOnConfigurationModifiedCallCount());
+  {
+    std::vector<TestApnData*> expected_apns({&test_apn3, &test_apn1});
+    EXPECT_TRUE(UserApnsInNetworkMetadataStoreMatch(expected_apns));
+    EXPECT_TRUE(
+        UserApnsInCellularConfigMatch(expected_apns, network_config_observer));
+    EXPECT_TRUE(UserApnsInManagedPropertiesMatch(expected_apns));
+  }
+
+  // Try to update an ID not found in the list, API should do nothing
+  test_apn3.id = "invalid_apn_id";
+  ModifyCustomApn(kCellularGuid, test_apn3.AsMojoApn());
+  EXPECT_EQ(expected_network_config_calls,
+            network_config_observer.GetOnConfigurationModifiedCallCount());
+  {
+    std::vector<TestApnData*> expected_apns({&test_apn3, &test_apn1});
+    EXPECT_TRUE(UserApnsInNetworkMetadataStoreMatch(expected_apns));
+    EXPECT_TRUE(
+        UserApnsInCellularConfigMatch(expected_apns, network_config_observer));
+    EXPECT_TRUE(UserApnsInManagedPropertiesMatch(expected_apns));
   }
 }
 
