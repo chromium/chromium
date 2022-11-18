@@ -364,7 +364,7 @@ ResponseAction PasswordsPrivateRefreshScriptsIfNecessaryFunction::Run() {
   GetDelegate(browser_context())
       ->RefreshScriptsIfNecessary(base::BindOnce(
           &PasswordsPrivateRefreshScriptsIfNecessaryFunction::OnRefreshed,
-          base::RetainedRef(this)));
+          this));
 
   // OnRefreshed() might respond before we reach this point.
   return did_respond() ? AlreadyResponded() : RespondLater();
@@ -430,7 +430,7 @@ ResponseAction PasswordsPrivateStartAutomatedPasswordChangeFunction::Run() {
           parameters->credential,
           base::BindOnce(&PasswordsPrivateStartAutomatedPasswordChangeFunction::
                              OnResultReceived,
-                         base::RetainedRef(this)));
+                         this));
 
   // `OnResultReceived()` might respond before we reach this point.
   return did_respond() ? AlreadyResponded() : RespondLater();

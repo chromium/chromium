@@ -169,7 +169,7 @@ ExtensionFunction::ResponseAction PermissionsRemoveFunction::Run() {
       .RevokeOptionalPermissions(
           *extension(), *permissions_to_revoke, PermissionsUpdater::REMOVE_SOFT,
           base::BindOnce(
-              &PermissionsRemoveFunction::Respond, base::RetainedRef(this),
+              &PermissionsRemoveFunction::Respond, this,
               ArgumentList(api::permissions::Remove::Results::Create(true))));
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
@@ -339,8 +339,7 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
   install_ui_ = std::make_unique<ExtensionInstallPrompt>(
       Profile::FromBrowserContext(browser_context()), native_window);
   install_ui_->ShowDialog(
-      base::BindOnce(&PermissionsRequestFunction::OnInstallPromptDone,
-                     base::RetainedRef(this)),
+      base::BindOnce(&PermissionsRequestFunction::OnInstallPromptDone, this),
       extension(), nullptr,
       std::make_unique<ExtensionInstallPrompt::Prompt>(
           ExtensionInstallPrompt::PERMISSIONS_PROMPT),
@@ -367,14 +366,13 @@ void PermissionsRequestFunction::OnInstallPromptDone(
     permissions_updater.GrantRuntimePermissions(
         *extension(), *requested_withheld_,
         base::BindOnce(&PermissionsRequestFunction::OnRuntimePermissionsGranted,
-                       base::RetainedRef(this)));
+                       this));
   }
   if (requesting_optional_permissions_) {
     permissions_updater.GrantOptionalPermissions(
         *extension(), *requested_optional_,
         base::BindOnce(
-            &PermissionsRequestFunction::OnOptionalPermissionsGranted,
-            base::RetainedRef(this)));
+            &PermissionsRequestFunction::OnOptionalPermissionsGranted, this));
   }
 
   // Grant{Runtime|Optional}Permissions calls above can finish synchronously.

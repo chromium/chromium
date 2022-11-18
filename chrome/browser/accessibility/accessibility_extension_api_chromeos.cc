@@ -152,7 +152,7 @@ AccessibilityPrivateGetDlcContentsFunction::Run() {
       dlc,
       base::BindOnce(
           &AccessibilityPrivateGetDlcContentsFunction::OnDlcContentsRetrieved,
-          base::RetainedRef(this)));
+          this));
   return RespondLater();
 }
 
@@ -229,7 +229,7 @@ AccessibilityPrivateInstallPumpkinForDictationFunction::Run() {
   AccessibilityManager::Get()->InstallPumpkinForDictation(
       base::BindOnce(&AccessibilityPrivateInstallPumpkinForDictationFunction::
                          OnPumpkinInstallFinished,
-                     base::RetainedRef(this)));
+                     this));
   return RespondLater();
 }
 
@@ -775,13 +775,13 @@ AccessibilityPrivateShowConfirmationDialogFunction::Run() {
       title, description,
       base::BindOnce(
           &AccessibilityPrivateShowConfirmationDialogFunction::OnDialogResult,
-          base::RetainedRef(this), /* confirmed */ true),
+          this, /* confirmed */ true),
       base::BindOnce(
           &AccessibilityPrivateShowConfirmationDialogFunction::OnDialogResult,
-          base::RetainedRef(this), /* not confirmed */ false),
+          this, /* not confirmed */ false),
       base::BindOnce(
           &AccessibilityPrivateShowConfirmationDialogFunction::OnDialogResult,
-          base::RetainedRef(this), /* not confirmed */ false));
+          this, /* not confirmed */ false));
 
   return RespondLater();
 }

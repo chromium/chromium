@@ -70,14 +70,13 @@ ParentProcess::~ParentProcess() {}
 void ParentProcess::CreateImplOnIPCThread(
     mojo::ScopedMessagePipeHandle mojo_pipe) {
   mojo_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&ParentProcess::CreateImpl,
-                                base::RetainedRef(this), std::move(mojo_pipe)));
+      FROM_HERE,
+      base::BindOnce(&ParentProcess::CreateImpl, this, std::move(mojo_pipe)));
 }
 
 void ParentProcess::DestroyImplOnIPCThread() {
   mojo_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ParentProcess::DestroyImpl, base::RetainedRef(this)));
+      FROM_HERE, base::BindOnce(&ParentProcess::DestroyImpl, this));
 }
 
 void ParentProcess::AppendSwitch(const std::string& switch_string) {

@@ -147,11 +147,10 @@ ChromeCleanerRunner::ProcessStatus
 ChromeCleanerRunner::LaunchAndWaitForExitOnBackgroundThread() {
   TRACE_EVENT0("safe_browsing",
                "ChromeCleanerRunner::LaunchAndWaitForExitOnBackgroundThread");
-  auto on_connection_closed = base::BindOnce(
-      &ChromeCleanerRunner::OnConnectionClosed, base::RetainedRef(this));
+  auto on_connection_closed =
+      base::BindOnce(&ChromeCleanerRunner::OnConnectionClosed, this);
   auto actions = std::make_unique<ChromePromptActions>(
-      base::BindOnce(&ChromeCleanerRunner::OnPromptUser,
-                     base::RetainedRef(this)));
+      base::BindOnce(&ChromeCleanerRunner::OnPromptUser, this));
 
   // The channel will make blocking calls to ::WriteFile.
   scoped_refptr<base::SequencedTaskRunner> channel_task_runner =

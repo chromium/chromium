@@ -190,10 +190,9 @@ void PrintJobWorkerOop::OnDidRenderPrintedPage(uint32_t page_index,
           << document_oop_->cookie() << " page " << page_index;
 
   // Signal everyone that the page is printed.
-  print_job()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PrintJob::OnPageDone, base::RetainedRef(print_job()),
-                     base::RetainedRef(page)));
+  print_job()->PostTask(FROM_HERE,
+                        base::BindOnce(&PrintJob::OnPageDone, print_job(),
+                                       base::RetainedRef(page)));
 
   ++pages_printed_count_;
   if (pages_printed_count_ == document_oop_->page_count()) {

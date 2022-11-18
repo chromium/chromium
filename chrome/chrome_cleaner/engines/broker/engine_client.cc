@@ -222,10 +222,10 @@ uint32_t EngineClient::ScanningWatchdogTimeoutInSeconds() const {
 void EngineClient::PostBindEngineCommandsRemote(
     mojo::ScopedMessagePipeHandle pipe) {
   mojo_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&EngineClient::BindEngineCommandsRemote,
-                                base::RetainedRef(this), std::move(pipe),
-                                base::BindOnce(connection_error_callback_,
-                                               SandboxType::kEngine)));
+      FROM_HERE,
+      base::BindOnce(
+          &EngineClient::BindEngineCommandsRemote, this, std::move(pipe),
+          base::BindOnce(connection_error_callback_, SandboxType::kEngine)));
 }
 
 void EngineClient::BindEngineCommandsRemote(mojo::ScopedMessagePipeHandle pipe,

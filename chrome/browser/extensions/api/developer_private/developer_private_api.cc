@@ -874,8 +874,7 @@ ExtensionFunction::ResponseAction DeveloperPrivateAutoUpdateFunction::Run() {
     params.fetch_priority = DownloadFetchPriority::kForeground;
     params.install_immediately = true;
     params.callback =
-        base::BindOnce(&DeveloperPrivateAutoUpdateFunction::OnComplete,
-                       base::RetainedRef(this));
+        base::BindOnce(&DeveloperPrivateAutoUpdateFunction::OnComplete, this);
     updater->CheckNow(std::move(params));
   }
   return RespondLater();
@@ -912,8 +911,7 @@ DeveloperPrivateGetExtensionsInfoFunction::Run() {
   info_generator_->CreateExtensionsInfo(
       include_disabled, include_terminated,
       base::BindOnce(
-          &DeveloperPrivateGetExtensionsInfoFunction::OnInfosGenerated,
-          base::RetainedRef(this)));
+          &DeveloperPrivateGetExtensionsInfoFunction::OnInfosGenerated, this));
 
   return RespondLater();
 }
@@ -941,8 +939,7 @@ DeveloperPrivateGetExtensionInfoFunction::Run() {
   info_generator_->CreateExtensionInfo(
       params->id,
       base::BindOnce(
-          &DeveloperPrivateGetExtensionInfoFunction::OnInfosGenerated,
-          base::RetainedRef(this)));
+          &DeveloperPrivateGetExtensionInfoFunction::OnInfosGenerated, this));
 
   return RespondLater();
 }
@@ -973,8 +970,7 @@ DeveloperPrivateGetExtensionSizeFunction::Run() {
   extensions::path_util::CalculateAndFormatExtensionDirectorySize(
       extension->path(), IDS_APPLICATION_INFO_SIZE_SMALL_LABEL,
       base::BindOnce(
-          &DeveloperPrivateGetExtensionSizeFunction::OnSizeCalculated,
-          base::RetainedRef(this)));
+          &DeveloperPrivateGetExtensionSizeFunction::OnSizeCalculated, this));
 
   return RespondLater();
 }
@@ -996,7 +992,7 @@ ExtensionFunction::ResponseAction DeveloperPrivateGetItemsInfoFunction::Run() {
   info_generator_->CreateExtensionsInfo(
       params->include_disabled, params->include_terminated,
       base::BindOnce(&DeveloperPrivateGetItemsInfoFunction::OnInfosGenerated,
-                     base::RetainedRef(this)));
+                     this));
 
   return RespondLater();
 }
@@ -2211,7 +2207,7 @@ DeveloperPrivateAddHostPermissionFunction::Run() {
                         new_host_permissions.Clone()),
           base::BindOnce(&DeveloperPrivateAddHostPermissionFunction::
                              OnRuntimePermissionsGranted,
-                         base::RetainedRef(this)));
+                         this));
 
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
@@ -2260,7 +2256,7 @@ DeveloperPrivateRemoveHostPermissionFunction::Run() {
           *extension, *permissions_to_remove,
           base::BindOnce(&DeveloperPrivateRemoveHostPermissionFunction::
                              OnRuntimePermissionsRevoked,
-                         base::RetainedRef(this)));
+                         this));
 
   return did_respond() ? AlreadyResponded() : RespondLater();
 }

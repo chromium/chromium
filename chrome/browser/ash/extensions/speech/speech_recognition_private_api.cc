@@ -38,8 +38,7 @@ ExtensionFunction::ResponseAction SpeechRecognitionPrivateStartFunction::Run() {
   const std::string key = manager->CreateKey(extension_id(), client_id);
   manager->HandleStart(
       key, locale, interim_results,
-      base::BindOnce(&SpeechRecognitionPrivateStartFunction::OnStart,
-                     base::RetainedRef(this)));
+      base::BindOnce(&SpeechRecognitionPrivateStartFunction::OnStart, this));
   return RespondLater();
 }
 
@@ -72,8 +71,7 @@ ExtensionFunction::ResponseAction SpeechRecognitionPrivateStopFunction::Run() {
       SpeechRecognitionPrivateManager::Get(browser_context());
   const std::string key = manager->CreateKey(extension_id(), client_id);
   manager->HandleStop(
-      key, base::BindOnce(&SpeechRecognitionPrivateStopFunction::OnStop,
-                          base::RetainedRef(this)));
+      key, base::BindOnce(&SpeechRecognitionPrivateStopFunction::OnStop, this));
   return RespondLater();
 }
 

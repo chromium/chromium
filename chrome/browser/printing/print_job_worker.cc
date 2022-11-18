@@ -514,10 +514,9 @@ bool PrintJobWorker::SpoolPage(PrintedPage* page) {
 
   // Signal everyone that the page is printed.
   DCHECK(print_job_);
-  print_job_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PrintJob::OnPageDone, base::RetainedRef(print_job_.get()),
-                     base::RetainedRef(page)));
+  print_job_->PostTask(FROM_HERE,
+                       base::BindOnce(&PrintJob::OnPageDone, print_job_,
+                                      base::RetainedRef(page)));
   return true;
 }
 #endif  // BUILDFLAG(IS_WIN)

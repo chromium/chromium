@@ -47,13 +47,13 @@ void WebFeedPageInformationFetcher::Start(
   auto self = base::MakeRefCounted<WebFeedPageInformationFetcher>(
       page_info, std::move(callback));
 
-  FetchRssLinks(page_info.url, page_info.web_contents,
-                base::BindOnce(&WebFeedPageInformationFetcher::OnRssFetched,
-                               base::RetainedRef(self.get())));
+  FetchRssLinks(
+      page_info.url, page_info.web_contents,
+      base::BindOnce(&WebFeedPageInformationFetcher::OnRssFetched, self));
   FetchPageCanonicalUrl(
       page_info,
       base::BindOnce(&WebFeedPageInformationFetcher::OnCanonicalUrlFetched,
-                     base::RetainedRef(self.get())));
+                     self));
 }
 
 WebFeedPageInformationFetcher::WebFeedPageInformationFetcher(

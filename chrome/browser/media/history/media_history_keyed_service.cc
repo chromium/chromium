@@ -36,8 +36,8 @@ class MediaHistoryKeyedService::StoreHolder {
         local_(new MediaHistoryStore(profile, db_task_runner)),
         db_task_runner_(db_task_runner) {
     local_->db_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&MediaHistoryStore::Initialize,
-                                  base::RetainedRef(local_), should_reset));
+        FROM_HERE,
+        base::BindOnce(&MediaHistoryStore::Initialize, local_, should_reset));
   }
 
   explicit StoreHolder(Profile* profile, MediaHistoryKeyedService* remote)
