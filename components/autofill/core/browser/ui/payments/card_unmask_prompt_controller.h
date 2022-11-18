@@ -41,6 +41,7 @@ class CardUnmaskPromptController {
 #endif
   virtual base::TimeDelta GetSuccessMessageDuration() const = 0;
   virtual AutofillClient::PaymentsRpcResult GetVerificationResult() const = 0;
+  virtual bool IsVirtualCard() const = 0;
 
   // Utilities.
   virtual bool InputCvcIsValid(const std::u16string& input_text) const = 0;
