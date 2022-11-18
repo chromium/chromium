@@ -125,6 +125,9 @@ mojom::URLVisitPtr VisitToMojom(Profile* profile,
   auto visit_mojom = mojom::URLVisit::New();
   visit_mojom->normalized_url = visit.normalized_url;
   visit_mojom->url_for_display = base::UTF16ToUTF8(visit.url_for_display);
+  if (!visit.image_url.is_empty()) {
+    visit_mojom->image_url = visit.image_url;
+  }
 
   // Add the raw URLs and visit times so the UI can perform deletion.
   auto& annotated_visit = visit.annotated_visit;

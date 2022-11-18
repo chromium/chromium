@@ -114,7 +114,8 @@
 <div id="header" on-click="onClick_" on-auxclick="onAuxClick_"
     on-keydown="onKeydown_" on-contextmenu="onContextMenu_">
   <a id="link-container" href="[[visit.normalizedUrl.url]]">
-    <page-favicon url="[[visit.normalizedUrl]]"></page-favicon>
+    <page-favicon url="[[visit.normalizedUrl]]" image-url="[[visit.imageUrl]]">
+    </page-favicon>
     <div id="page-info">
       <div id="title-and-annotations">
         <span id="title" class="truncate"></span>

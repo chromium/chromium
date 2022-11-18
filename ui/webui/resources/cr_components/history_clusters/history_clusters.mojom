@@ -113,6 +113,9 @@ struct URLVisit {
   // Whether a related visit is initially hidden.
   bool hidden;
 
+  // The image URL associated with this visit.
+  url.mojom.Url? image_url;
+
   // A key-value dictionary of additional debug info to show. This is not
   // visible in production, and used for development only. Disabled by default,
   // but can be enabled by the 'JourneysUserVisibleDebug' flag.

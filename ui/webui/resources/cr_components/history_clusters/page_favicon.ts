@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './shared_vars.css.js';
+import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -22,6 +23,11 @@ declare global {
   }
 }
 
+/**
+ * TODO(tommycli): This element should be renamed to reflect the reality that
+ * it's used to both render the visit's "important image" if it exists, and
+ * falls back to the favicon if it doesn't exist.
+ */
 class PageFavicon extends PolymerElement {
   static get is() {
     return 'page-favicon';
@@ -47,7 +53,7 @@ class PageFavicon extends PolymerElement {
        */
       style: {
         type: String,
-        computed: `computeStyle_(url)`,
+        computed: `computeStyle_(url, imageUrl)`,
         reflectToAttribute: true,
       },
 
@@ -55,6 +61,12 @@ class PageFavicon extends PolymerElement {
        * The URL for which the favicon is shown.
        */
       url: Object,
+
+      /**
+       * The URL of the representative image for the page. Not every page has
+       * this defined, in which case we fallback to the favicon.
+       */
+      imageUrl: Object,
     };
   }
 
@@ -63,12 +75,18 @@ class PageFavicon extends PolymerElement {
   //============================================================================
 
   url: Url;
+  imageUrl: Url;
 
   //============================================================================
   // Helper methods
   //============================================================================
 
   private computeStyle_(): string {
+    if (this.imageUrl && this.imageUrl.url) {
+      // Pages with a pre-set image URL don't show the favicon.
+      return '';
+    }
+
     if (!this.url) {
       return '';
     }

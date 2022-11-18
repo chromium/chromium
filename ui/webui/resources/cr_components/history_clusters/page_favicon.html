@@ -11,4 +11,15 @@
   :host([in-side-panel_]) {
     margin-inline: 8px 16px;
   }
+
+  #page-image {
+    height: auto;
+    /* TODO(tommycli): This is just a hack to get the page image to a visible
+       size without disturbing the layout. Replace with real sizing logic. */
+    width: 300%;
+  }
 </style>
+
+<template is="dom-if" if="[[imageUrl]]">
+  <img id="page-image" is="cr-auto-img" auto-src="[[imageUrl.url]]">
+</template>
