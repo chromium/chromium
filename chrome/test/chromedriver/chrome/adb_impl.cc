@@ -246,10 +246,17 @@ Status AdbImpl::Launch(
     const std::string& device_serial, const std::string& package,
     const std::string& activity) {
   std::string response;
+  ExecuteHostShellCommand(device_serial, "getprop ro.build.version.release",
+                          &response);
+  int android_version = stoi(response);
+  if (android_version >= 13) {
+    ExecuteHostShellCommand(
+        device_serial,
+        "pm grant " + package + " android.permission.POST_NOTIFICATIONS",
+        &response);
+  }
   Status status = ExecuteHostShellCommand(
-      device_serial,
-      "am start -W -n " + package + "/" + activity + " -d data:,",
-      &response);
+      device_serial, "am start -W -n " + package + "/" + activity, &response);
   if (!status.IsOk())
     return status;
   if (response.find("Complete") == std::string::npos)
