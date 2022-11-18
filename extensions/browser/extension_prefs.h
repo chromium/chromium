@@ -509,6 +509,14 @@ class ExtensionPrefs : public KeyedService {
   // Sets/Gets the value indicating if an extension should be granted all the
   // requested host permissions without requiring explicit runtime-granted
   // permissions from the user.
+  // Note: any callers that want to determine if an extension has withheld host
+  // permissions should call PermissionsManager::HasWithheldHostPermissions
+  // instead. This is because host permission prefs are only used if host
+  // permissions can affect the extension. E.g. Say user installs extension with
+  // host permissions and withhelds them (pref is set). Then the extension
+  // updates to no longer need host permissions. Pref still appears as
+  // witholding permissions, but extension cannot be affected by host
+  // permissions.
   void SetWithholdingPermissions(const ExtensionId& extension_id,
                                  bool should_withhold);
   bool GetWithholdingPermissions(const ExtensionId& extension_id) const;

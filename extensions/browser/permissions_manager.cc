@@ -18,6 +18,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -277,12 +278,12 @@ void PermissionsManager::AddUserPermittedSite(const url::Origin& origin) {
 void PermissionsManager::UpdatePermissionsWithUserSettings(
     const Extension& extension,
     const PermissionSet& user_permitted_set) {
-  // If either user cannot withhold permissions from the extension (as is the
-  // case for e.g. policy-installed extensions) or the user has not withheld
-  // any permissions for the extension, then we don't need to do anything - the
-  // extension already has all its requested permissions.
-  if (!util::CanWithholdPermissionsFromExtension(extension) ||
-      !HasWithheldHostPermissions(extension.id())) {
+  // If either user cannot be affected by hbe affected by host permissions
+  // policy-installed extensions) or the user has not withheld any permissions
+  // for the extension, then we don't need to do anything - the extension
+  // already has all its requested permissions.
+  if (!CanAffectExtension(extension) ||
+      !HasWithheldHostPermissions(extension)) {
     return;
   }
 
@@ -331,12 +332,16 @@ PermissionsManager::ExtensionSiteAccess PermissionsManager::GetSiteAccess(
     const GURL& url) const {
   PermissionsManager::ExtensionSiteAccess extension_access;
 
+  // Extension that cannot be affected by host permissions has no access.
+  if (!CanAffectExtension(extension))
+    return extension_access;
+
   // Awkward holder object because permission sets are immutable, and when
   // return from prefs, ownership is passed.
   std::unique_ptr<const PermissionSet> permission_holder;
 
   const PermissionSet* granted_permissions = nullptr;
-  if (!HasWithheldHostPermissions(extension.id())) {
+  if (!HasWithheldHostPermissions(extension)) {
     // If the extension doesn't have any withheld permissions, we look at the
     // current active permissions.
     // TODO(devlin): This is clunky. It would be nice to have runtime-granted
@@ -429,8 +434,9 @@ bool PermissionsManager::HasBroadGrantedHostPermissions(
 }
 
 bool PermissionsManager::HasWithheldHostPermissions(
-    const ExtensionId& extension_id) const {
-  return extension_prefs_->GetWithholdingPermissions(extension_id);
+    const Extension& extension) const {
+  DCHECK(CanAffectExtension(extension));
+  return extension_prefs_->GetWithholdingPermissions(extension.id());
 }
 
 std::unique_ptr<PermissionSet>
@@ -565,7 +571,7 @@ PermissionsManager::GetEffectivePermissionsToGrant(
   if (extension.creation_flags() & Extension::WITHHOLD_PERMISSIONS)
     should_withhold = true;
   else
-    should_withhold = HasWithheldHostPermissions(extension.id());
+    should_withhold = HasWithheldHostPermissions(extension);
 
   if (!should_withhold)
     return desired_permissions.Clone();

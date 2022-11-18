@@ -427,13 +427,12 @@ TEST_F(ScriptingPermissionsModifierUnitTest, SwitchBehavior) {
   EXPECT_TRUE(
       permissions_data->withheld_permissions().effective_hosts().is_empty());
   PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
-  EXPECT_FALSE(
-      permissions_manager->HasWithheldHostPermissions(extension->id()));
+  EXPECT_FALSE(permissions_manager->HasWithheldHostPermissions(*extension));
 
   // Revoke access.
   ScriptingPermissionsModifier modifier(profile(), extension);
   modifier.SetWithholdHostPermissions(true);
-  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(*extension));
   EXPECT_THAT(GetEffectivePatternsAsStrings(*extension), testing::IsEmpty());
   EXPECT_THAT(GetPatternsAsStrings(
                   permissions_data->withheld_permissions().effective_hosts()),

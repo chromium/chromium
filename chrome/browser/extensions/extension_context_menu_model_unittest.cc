@@ -1335,7 +1335,7 @@ TEST_F(ExtensionContextMenuModelTest,
       PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
                     URLPatternSet({pattern}), URLPatternSet()));
   PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
-  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(*extension));
 
   const GURL kActiveUrl("http://www.example.com/");
   const GURL kOtherUrl("http://www.google.com/");
@@ -1410,7 +1410,7 @@ TEST_F(ExtensionContextMenuModelTest,
   // Also explicitly grant google.com.
   modifier.GrantHostPermission(kOtherUrl);
   PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
-  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(*extension));
 
   // Navigate to a url that should have "customize by extension" site
   // permissions by default (which allows us to test the page access submenu).
@@ -1505,8 +1505,7 @@ TEST_F(ExtensionContextMenuModelTest,
   prefs->AddGrantedPermissions(extension->id(), b_com_permissions);
 
   PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
-  EXPECT_FALSE(
-      permissions_manager->HasWithheldHostPermissions(extension->id()));
+  EXPECT_FALSE(permissions_manager->HasWithheldHostPermissions(*extension));
 
   const GURL a_com("https://a.com");
   content::WebContents* web_contents = AddTab(a_com);
@@ -1612,8 +1611,7 @@ TEST_F(ExtensionContextMenuModelTest,
   InitializeAndAddExtension(*extension);
 
   PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
-  EXPECT_FALSE(
-      permissions_manager->HasWithheldHostPermissions(extension->id()));
+  EXPECT_FALSE(permissions_manager->HasWithheldHostPermissions(*extension));
 
   const GURL a_com("https://a.com");
   content::WebContents* web_contents = AddTab(a_com);
@@ -1664,8 +1662,7 @@ TEST_F(ExtensionContextMenuModelTest, TestClickingPageAccessLearnMore) {
   InitializeAndAddExtension(*extension);
 
   PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
-  EXPECT_FALSE(
-      permissions_manager->HasWithheldHostPermissions(extension->id()));
+  EXPECT_FALSE(permissions_manager->HasWithheldHostPermissions(*extension));
 
   const GURL a_com("https://a.com");
   AddTab(a_com);
@@ -2098,7 +2095,7 @@ TEST_P(ExtensionContextMenuModelWithUserHostControlsTest,
   InitializeAndAddExtension(*extension);
 
   EXPECT_FALSE(PermissionsManager::Get(profile())->HasWithheldHostPermissions(
-      extension->id()));
+      *extension));
 
   AddTab(GURL("https://a.com"));
 

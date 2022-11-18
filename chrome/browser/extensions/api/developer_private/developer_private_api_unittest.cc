@@ -1495,8 +1495,7 @@ TEST_F(DeveloperPrivateApiUnitTest, GrantHostPermission) {
   service()->AddExtension(extension.get());
 
   PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
-  EXPECT_FALSE(
-      permissions_manager->HasWithheldHostPermissions(extension->id()));
+  EXPECT_FALSE(permissions_manager->HasWithheldHostPermissions(*extension));
 
   ScriptingPermissionsModifier modifier(profile(), extension.get());
   modifier.SetWithholdHostPermissions(true);
@@ -1549,8 +1548,7 @@ TEST_F(DeveloperPrivateApiUnitTest, RemoveHostPermission) {
   service()->AddExtension(extension.get());
 
   PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
-  EXPECT_FALSE(
-      permissions_manager->HasWithheldHostPermissions(extension->id()));
+  EXPECT_FALSE(permissions_manager->HasWithheldHostPermissions(*extension));
 
   ScriptingPermissionsModifier modifier(profile(), extension.get());
   modifier.SetWithholdHostPermissions(true);
@@ -1625,18 +1623,16 @@ TEST_F(DeveloperPrivateApiUnitTest, UpdateHostAccess) {
 
   PermissionsManager* permissions_manager =
       PermissionsManager::Get(browser()->profile());
-  EXPECT_FALSE(
-      permissions_manager->HasWithheldHostPermissions(extension->id()));
+  EXPECT_FALSE(permissions_manager->HasWithheldHostPermissions(*extension));
 
   RunUpdateHostAccess(*extension, "ON_CLICK");
-  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(*extension));
 
   RunUpdateHostAccess(*extension, "ON_ALL_SITES");
-  EXPECT_FALSE(
-      permissions_manager->HasWithheldHostPermissions(extension->id()));
+  EXPECT_FALSE(permissions_manager->HasWithheldHostPermissions(*extension));
 
   RunUpdateHostAccess(*extension, "ON_SPECIFIC_SITES");
-  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(*extension));
 }
 
 TEST_F(DeveloperPrivateApiUnitTest,
@@ -1653,12 +1649,12 @@ TEST_F(DeveloperPrivateApiUnitTest,
       PermissionsManager::Get(browser()->profile());
 
   RunUpdateHostAccess(*extension, "ON_SPECIFIC_SITES");
-  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(*extension));
   EXPECT_TRUE(
       permissions_manager->HasGrantedHostPermission(*extension, example_com));
 
   RunUpdateHostAccess(*extension, "ON_CLICK");
-  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(*extension));
   EXPECT_FALSE(
       permissions_manager->HasGrantedHostPermission(*extension, example_com));
 
@@ -1680,7 +1676,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   // transitions between states. Since this is definitely a power-user surface,
   // this is likely okay.
   RunUpdateHostAccess(*extension, "ON_SPECIFIC_SITES");
-  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(*extension));
   EXPECT_FALSE(
       permissions_manager->HasGrantedHostPermission(*extension, example_com));
 }
@@ -1699,18 +1695,17 @@ TEST_F(DeveloperPrivateApiUnitTest,
 
   RunUpdateHostAccess(*extension, "ON_SPECIFIC_SITES");
   modifier.GrantHostPermission(example_com);
-  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(*extension));
   EXPECT_TRUE(
       permissions_manager->HasGrantedHostPermission(*extension, example_com));
 
   RunUpdateHostAccess(*extension, "ON_ALL_SITES");
-  EXPECT_FALSE(
-      permissions_manager->HasWithheldHostPermissions(extension->id()));
+  EXPECT_FALSE(permissions_manager->HasWithheldHostPermissions(*extension));
   EXPECT_TRUE(
       permissions_manager->HasGrantedHostPermission(*extension, example_com));
 
   RunUpdateHostAccess(*extension, "ON_SPECIFIC_SITES");
-  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(*extension));
   EXPECT_FALSE(
       permissions_manager->HasGrantedHostPermission(*extension, example_com));
 }
@@ -1744,7 +1739,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   // permissions.
   PermissionsManager* permissions_manager =
       PermissionsManager::Get(browser()->profile());
-  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(*extension));
   EXPECT_TRUE(
       permissions_manager->HasGrantedHostPermission(*extension, kGoogleCom));
   EXPECT_TRUE(
@@ -1753,7 +1748,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   // Changing to specific sites should now remove the broad pattern, leaving
   // only the google match pattern.
   RunUpdateHostAccess(*extension, "ON_SPECIFIC_SITES");
-  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(*extension));
   EXPECT_TRUE(
       permissions_manager->HasGrantedHostPermission(*extension, kGoogleCom));
   EXPECT_FALSE(
@@ -2285,7 +2280,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   get_user_and_extension_sites(R"([])");
 
   EXPECT_FALSE(PermissionsManager::Get(browser()->profile())
-                   ->HasWithheldHostPermissions(extension_1->id()));
+                   ->HasWithheldHostPermissions(*extension_1));
 
   ScriptingPermissionsModifier modifier(profile(), extension_1.get());
   modifier.SetWithholdHostPermissions(true);
@@ -2394,7 +2389,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
                          extension->id(),
                          developer::HostAccess::HOST_ACCESS_ON_ALL_SITES)));
   EXPECT_FALSE(PermissionsManager::Get(browser()->profile())
-                   ->HasWithheldHostPermissions(extension->id()));
+                   ->HasWithheldHostPermissions(*extension));
 
   ScriptingPermissionsModifier modifier(profile(), extension.get());
   modifier.SetWithholdHostPermissions(true);

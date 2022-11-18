@@ -672,7 +672,7 @@ void InstalledLoader::RecordExtensionsMetrics() {
     if (scripting_modifier.CanAffectExtension()) {
       bool extension_has_withheld_hosts =
           PermissionsManager::Get(profile)->HasWithheldHostPermissions(
-              extension->id());
+              *extension);
       UMA_HISTOGRAM_BOOLEAN(
           "Extensions.RuntimeHostPermissions.ExtensionHasWithheldHosts",
           extension_has_withheld_hosts);

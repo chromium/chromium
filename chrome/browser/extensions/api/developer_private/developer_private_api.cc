@@ -358,7 +358,7 @@ std::unique_ptr<const PermissionSet> GetExtensionGrantedPermissions(
     const scoped_refptr<const Extension>& extension) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(context);
   if (PermissionsManager::Get(context)->HasWithheldHostPermissions(
-          extension->id())) {
+          *extension)) {
     return prefs->GetRuntimeGrantedPermissions(extension->id());
   } else {
     return prefs->GetGrantedPermissions(extension->id());

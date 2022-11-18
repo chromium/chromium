@@ -1147,7 +1147,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionCrxInstallerTestWithWithholdingUI,
   PermissionsManager* permissions_manager =
       PermissionsManager::Get(browser()->profile());
   EXPECT_EQ(should_withhold_permissions,
-            permissions_manager->HasWithheldHostPermissions(extension->id()));
+            permissions_manager->HasWithheldHostPermissions(*extension));
 
   const PermissionsManager::ExtensionSiteAccess site_access =
       PermissionsManager::Get(profile())->GetSiteAccess(

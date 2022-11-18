@@ -173,10 +173,9 @@ class PermissionsManager : public KeyedService {
   bool HasBroadGrantedHostPermissions(const Extension& extension);
 
   // Returns whether Chrome has withheld host permissions from the extension.
-  // TODO(crbug.com/1289441): Add DCHECK to verify this is only be called for
-  // extensions that can be affected (i.e., for which
-  // ScriptingPermissionsModifier::CanAffectExtension() returns true).
-  bool HasWithheldHostPermissions(const ExtensionId& extension_id) const;
+  // This may only be called for extensions that can be affected (i.e., for
+  // which CanAffectExtension() returns true). Anything else will DCHECK.
+  bool HasWithheldHostPermissions(const Extension& extension) const;
 
   // Returns the effective list of runtime-granted permissions for a given
   // `extension` from its prefs. ExtensionPrefs doesn't store the valid schemes

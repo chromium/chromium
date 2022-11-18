@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_P(WebstoreInstallerWithWithholdingUIBrowserTest,
   // Host permissions should be withheld only when the params indicate so.
   PermissionsManager* permissions_manager =
       PermissionsManager::Get(browser()->profile());
-  EXPECT_EQ(permissions_manager->HasWithheldHostPermissions(extension->id()),
+  EXPECT_EQ(permissions_manager->HasWithheldHostPermissions(*extension),
             shoud_withhold_permissions);
 
   // Access to google.com should be withheld only when the params indicate so.

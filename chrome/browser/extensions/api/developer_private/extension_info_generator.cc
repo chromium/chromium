@@ -281,7 +281,7 @@ developer::RuntimeHostPermissions CreateRuntimeHostPermissionsInfo(
   // Add the host access data, including the mode and any runtime-granted
   // hosts.
   if (!PermissionsManager::Get(browser_context)
-           ->HasWithheldHostPermissions(extension.id())) {
+           ->HasWithheldHostPermissions(extension)) {
     granted_permissions =
         extension_prefs->GetGrantedPermissions(extension.id());
     runtime_host_permissions.host_access = developer::HOST_ACCESS_ON_ALL_SITES;

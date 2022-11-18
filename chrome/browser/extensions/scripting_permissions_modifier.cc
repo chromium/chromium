@@ -34,7 +34,7 @@ void ScriptingPermissionsModifier::SetWithholdHostPermissions(
     bool should_withhold) {
   DCHECK(CanAffectExtension());
 
-  if (permissions_manager_->HasWithheldHostPermissions(extension_->id()) ==
+  if (permissions_manager_->HasWithheldHostPermissions(*extension_) ==
       should_withhold) {
     return;
   }
