@@ -527,9 +527,9 @@ void EcheTray::InitBubble() {
     web_view->Navigate(url_);
   web_view_ = bubble_view->AddChildView(std::move(web_view));
 
-  bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view.release(),
+  bubble_ = std::make_unique<TrayBubbleWrapper>(this,
                                                 /*event_handling=*/false);
-
+  bubble_->ShowBubble(std::move(bubble_view));
   SetIsActive(true);
   bubble_->GetBubbleView()->UpdateBubble();
 }

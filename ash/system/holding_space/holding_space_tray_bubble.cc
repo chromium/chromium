@@ -439,7 +439,7 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
   init_params.transparent = !features::IsHoldingSpaceRefreshEnabled();
 
   // Create top-level bubble.
-  TrayBubbleView* bubble_view = new TrayBubbleView(init_params);
+  auto bubble_view = std::make_unique<TrayBubbleView>(init_params);
 
   // Add header.
   if (features::IsHoldingSpaceRefreshEnabled()) {
@@ -475,9 +475,8 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
     child_bubble->Init();
 
   // Show the bubble.
-  bubble_wrapper_ =
-      std::make_unique<TrayBubbleWrapper>(holding_space_tray, bubble_view);
-
+  bubble_wrapper_ = std::make_unique<TrayBubbleWrapper>(holding_space_tray);
+  bubble_wrapper_->ShowBubble(std::move(bubble_view));
   event_handler_ =
       std::make_unique<HoldingSpaceTrayBubbleEventHandler>(this, &delegate_);
 
@@ -492,7 +491,7 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
 
   // Record visible holding space items.
   std::vector<const HoldingSpaceItem*> visible_items;
-  FindVisibleHoldingSpaceItems(bubble_view, &visible_items);
+  FindVisibleHoldingSpaceItems(bubble_wrapper_->bubble_view(), &visible_items);
   holding_space_metrics::RecordVisibleItemCounts(visible_items);
 
   shelf_observation_.Observe(holding_space_tray_->shelf());

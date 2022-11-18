@@ -27,12 +27,6 @@ class ASH_EXPORT TrayBubbleWrapper : public TrayBubbleBase,
   explicit TrayBubbleWrapper(TrayBackgroundView* tray,
                              bool event_handling = true);
 
-  // TODO(b/257129394): Remove this constructor once we migrate to using
-  // unique_ptrs for all `TrayBubbleView`s.
-  TrayBubbleWrapper(TrayBackgroundView* tray,
-                    TrayBubbleView* bubble_view,
-                    bool event_handling = true);
-
   TrayBubbleWrapper(const TrayBubbleWrapper&) = delete;
   TrayBubbleWrapper& operator=(const TrayBubbleWrapper&) = delete;
 

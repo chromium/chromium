@@ -94,8 +94,9 @@ void VideoConferenceTray::ShowBubble() {
   init_params.translucent = true;
 
   // Create top-level bubble.
-  TrayBubbleView* bubble_view = new VideoConferenceBubbleView(init_params);
-  bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view);
+  auto bubble_view = std::make_unique<VideoConferenceBubbleView>(init_params);
+  bubble_ = std::make_unique<TrayBubbleWrapper>(this);
+  bubble_->ShowBubble(std::move(bubble_view));
 
   SetIsActive(true);
   UpdateExpandIndicator();

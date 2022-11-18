@@ -412,11 +412,10 @@ TEST_F(TrayBackgroundViewTest, OnAnyBubbleVisibilityChanged) {
   init_params.preferred_width = 200;
   auto bubble_view = std::make_unique<TrayBubbleView>(init_params);
   bubble_view->SetCanActivate(true);
-  auto bubble_ = std::make_unique<TrayBubbleWrapper>(
-      test_tray_background_view(), bubble_view.release(),
-      /*event_handling=*/false);
-
-  bubble_->GetBubbleWidget()->Show();
+  auto bubble_ =
+      std::make_unique<TrayBubbleWrapper>(test_tray_background_view(),
+                                          /*event_handling=*/false);
+  bubble_->ShowBubble(std::move(bubble_view));
   bubble_->GetBubbleWidget()->Activate();
   bubble_->bubble_view()->SetVisible(true);
 

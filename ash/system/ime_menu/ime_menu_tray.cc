@@ -4,6 +4,8 @@
 
 #include "ash/system/ime_menu/ime_menu_tray.h"
 
+#include <memory>
+
 #include "ash/accessibility/a11y_feature_type.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_features.h"
@@ -404,7 +406,8 @@ void ImeMenuTray::ShowImeMenuBubbleInternal() {
     view->layer()->SetFillsBoundsOpaquely(false);
   };
 
-  TrayBubbleView* bubble_view = new TrayBubbleView(init_params);
+  std::unique_ptr<TrayBubbleView> bubble_view =
+      std::make_unique<TrayBubbleView>(init_params);
   bubble_view->set_margins(GetSecondaryBubbleInsets());
 
   // Add a title item with a separator on the top of the IME menu.
@@ -425,7 +428,8 @@ void ImeMenuTray::ShowImeMenuBubbleInternal() {
             is_voice_enabled_)));
   }
 
-  bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view);
+  bubble_ = std::make_unique<TrayBubbleWrapper>(this);
+  bubble_->ShowBubble(std::move(bubble_view));
   SetIsActive(true);
 }
 

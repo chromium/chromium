@@ -9,7 +9,6 @@
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_event_filter.h"
-#include "base/memory/ptr_util.h"
 #include "ui/aura/window.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
@@ -22,15 +21,6 @@ namespace ash {
 TrayBubbleWrapper::TrayBubbleWrapper(TrayBackgroundView* tray,
                                      bool event_handling)
     : tray_(tray), event_handling_(event_handling) {}
-
-// TODO(b/257129394): Remove this constructor once we migrate to using
-// unique_ptrs for all `TrayBubbleView`s.
-TrayBubbleWrapper::TrayBubbleWrapper(TrayBackgroundView* tray,
-                                     TrayBubbleView* bubble_view,
-                                     bool event_handling)
-    : tray_(tray), bubble_view_(bubble_view), event_handling_(event_handling) {
-  ShowBubble(base::WrapUnique(bubble_view));
-}
 
 TrayBubbleWrapper::~TrayBubbleWrapper() {
   if (event_handling_) {

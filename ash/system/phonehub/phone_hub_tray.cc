@@ -229,7 +229,7 @@ void PhoneHubTray::ShowBubble() {
   init_params.reroute_event_handler = true;
   init_params.corner_radius = kTrayItemCornerRadius;
 
-  TrayBubbleView* bubble_view = new TrayBubbleView(init_params);
+  auto bubble_view = std::make_unique<TrayBubbleView>(init_params);
   bubble_view->SetBorder(views::CreateEmptyBorder(kBubblePadding));
 
   // Creates header view on top for displaying phone status and settings icon.
@@ -252,7 +252,8 @@ void PhoneHubTray::ShowBubble() {
 
   bubble_view->AddChildView(std::move(content_view));
 
-  bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view);
+  bubble_ = std::make_unique<TrayBubbleWrapper>(this);
+  bubble_->ShowBubble(std::move(bubble_view));
 
   SetIsActive(true);
 

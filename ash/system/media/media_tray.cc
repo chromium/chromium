@@ -282,7 +282,7 @@ void MediaTray::ShowBubble() {
   init_params.corner_radius = kTrayItemCornerRadius;
   init_params.reroute_event_handler = true;
 
-  TrayBubbleView* bubble_view = new TrayBubbleView(init_params);
+  auto bubble_view = std::make_unique<TrayBubbleView>(init_params);
 
   auto* title_view = bubble_view->AddChildView(
       std::make_unique<GlobalMediaControlsTitleView>());
@@ -294,7 +294,8 @@ void MediaTray::ShowBubble() {
       MediaNotificationProvider::Get()->GetMediaNotificationListView(
           kMenuSeparatorWidth));
 
-  bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view);
+  bubble_ = std::make_unique<TrayBubbleWrapper>(this);
+  bubble_->ShowBubble(std::move(bubble_view));
   SetIsActive(true);
 
   base::UmaHistogramBoolean("Media.CrosGlobalMediaControls.RepeatUsageOnShelf",
