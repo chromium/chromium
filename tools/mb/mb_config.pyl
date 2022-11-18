@@ -1030,7 +1030,7 @@
       'ios-angle-try-intel': 'angle_deqp_release_trybot_ios',
       'linux-angle-chromium-try': 'gpu_tests_release_trybot_reclient',
       'mac-angle-chromium-try': 'gpu_tests_release_trybot',
-      'win-angle-chromium-x64-try': 'gpu_tests_release_trybot',
+      'win-angle-chromium-x64-try': 'gpu_tests_release_trybot_reclient',
       'win-angle-chromium-x86-try': 'gpu_tests_release_trybot_x86',
     },
 
@@ -1292,7 +1292,7 @@
       'win-swangle-try-tot-swiftshader-x64': 'angle_deqp_release_trybot',
       'win-swangle-try-tot-swiftshader-x86': 'angle_deqp_release_trybot_x86',
       'win-swangle-try-x64': 'angle_deqp_release_trybot',
-      'win-swangle-try-x86': 'angle_deqp_release_trybot_x86',
+      'win-swangle-try-x86': 'angle_deqp_release_trybot_x86_reclient',
     },
 
     'tryserver.chromium.tricium': {
@@ -1789,6 +1789,10 @@
 
     'angle_deqp_release_trybot_x86': [
       'angle_deqp_tests', 'shared_release_trybot', 'x86',
+    ],
+
+    'angle_deqp_release_trybot_x86_reclient': [
+      'angle_deqp_tests', 'shared_release_trybot_reclient', 'x86',
     ],
 
     'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release_reclient': [

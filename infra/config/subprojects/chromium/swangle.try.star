@@ -162,4 +162,5 @@ swangle_windows_builder(
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
+    goma_backend = None,
 )
