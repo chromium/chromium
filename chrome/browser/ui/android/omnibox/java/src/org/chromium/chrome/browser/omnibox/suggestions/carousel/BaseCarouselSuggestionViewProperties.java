@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 
+import androidx.recyclerview.widget.RecyclerView.RecycledViewPool;
+
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -30,8 +32,12 @@ public class BaseCarouselSuggestionViewProperties {
     public static final WritableBooleanPropertyKey HORIZONTAL_FADE =
             new WritableBooleanPropertyKey();
 
+    /** The recycler view pool to be appled to the carousel recycler view. */
+    public static final WritableObjectPropertyKey<RecycledViewPool> RECYCLED_VIEW_POOL =
+            new WritableObjectPropertyKey<>();
+
     public static final PropertyKey[] ALL_UNIQUE_KEYS =
-            new PropertyKey[] {TITLE, SHOW_TITLE, TILES, HORIZONTAL_FADE};
+            new PropertyKey[] {TITLE, SHOW_TITLE, TILES, HORIZONTAL_FADE, RECYCLED_VIEW_POOL};
 
     public static final PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(ALL_UNIQUE_KEYS, SuggestionCommonProperties.ALL_KEYS);

@@ -1,0 +1,105 @@
+#!/bin/env plantuml -tpng
+
+@startuml most-visited-tiles-recycled-view-flow
+scale 1
+
+skinparam shadowing false
+skinparam monochrome true
+
+participant Owner as O
+participant Processor as P
+participant RecycledViewPool as RVP
+participant ViewBinder as VB
+participant RecyclerView as RV
+participant TileView as TV
+
+group Common initialization
+activate O
+O-> P : Create
+activate P
+
+group RecycledViewPool\ncreation and ownership
+P -> RVP : Create
+activate RVP
+P <-- RVP
+end
+
+O -> VB : Create
+activate VB
+O <-- VB
+end
+
+...
+
+group Received suggestions with Most Visited Tiles
+O -> P : //doesProcessSuggestion()//
+O <-- P : //true//
+O -> P : //getViewTypeId()//
+O <-- P : //TILE_NAVSUGGEST//
+O -> RV : Create
+activate RV
+O <-- RV
+
+O -> P : //populateModel()//
+
+group RecycledViewPool application
+P -> VB: apply recycled view pool
+VB -> RV : //setRecycledViewPool()//
+end
+end
+
+...
+
+group Recycled view in action
+
+group No views in RecycledViewPool
+RV -> RVP : //getRecycledView()//
+RV <-- RVP : //null//
+RV -> TV : Create
+activate TV
+RV <-- TV
+end
+
+...
+
+Group TileView reuse via RecycledViewPool
+RV -> RVP : //putRecycledView(TileView)//
+activate RVP #ccc
+RV <-- RVP
+
+...
+
+RV -> RVP : //getRecycledView()//
+RV <-- RVP : //TileView//
+deactivate RVP
+end
+
+end
+
+...
+
+group Received sugggestions without Most Visited Tiles
+O -> P : //doesProcessSuggestion()//
+O <-- P : //false//
+O -X RV: remove view
+RV -> RVP : //putRecycledView(TileView)//
+activate RVP #ccc
+RV <-- RVP
+O <-- RV
+destroy RV
+end
+
+...
+
+group Omnibox focus lost
+O -> P : //onUrlFocusChange(false)//
+P -> RVP : //clear()//
+RVP -> TV : release
+RVP <-- TV
+destroy TV
+P <-- RVP
+deactivate RVP
+O <-- P
+end
+
+@enduml

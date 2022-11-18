@@ -1128,6 +1128,9 @@ extern const char kOmniboxMatchToolbarAndStatusBarColorDescription[];
 extern const char kOmniboxMostVisitedTilesName[];
 extern const char kOmniboxMostVisitedTilesDescription[];
 
+extern const char kOmniboxMostVisitedTilesAddRecycledViewPoolName[];
+extern const char kOmniboxMostVisitedTilesAddRecycledViewPoolDescription[];
+
 extern const char kOmniboxMostVisitedTilesDynamicSpacingName[];
 extern const char kOmniboxMostVisitedTilesDynamicSpacingDescription[];
 

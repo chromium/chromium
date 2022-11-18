@@ -62475,6 +62475,8 @@ from previous Chrome versions.
   <int value="594756372" label="MyFilesVolume:disabled"/>
   <int value="595168244" label="NotificationExpansionAnimation:enabled"/>
   <int value="595371145" label="OmniboxRichEntitySuggestions:disabled"/>
+  <int value="595372984"
+      label="OmniboxMostVisitedTilesAddRecycledViewPool:disabled"/>
   <int value="596106994" label="CustomFeedbackUi:enabled"/>
   <int value="597542937" label="TabbedAppOverflowMenuRegroup:enabled"/>
   <int value="598312195" label="DestroySystemProfiles:disabled"/>
@@ -63417,6 +63419,8 @@ from previous Chrome versions.
   <int value="1147703885" label="SecondaryGoogleAccountUsage:enabled"/>
   <int value="1147924185" label="enable-navigation-predictor-renderer-warmup"/>
   <int value="1148284632" label="NewTabPageUIMd:disabled"/>
+  <int value="1148731895"
+      label="OmniboxMostVisitedTilesAddRecycledViewPool:enabled"/>
   <int value="1149417604" label="StreamlinedUsbPrinterSetup:disabled"/>
   <int value="1149731024" label="MultiDisplayOverviewAndSplitView:enabled"/>
   <int value="1149823105" label="enable-input-ime-api"/>

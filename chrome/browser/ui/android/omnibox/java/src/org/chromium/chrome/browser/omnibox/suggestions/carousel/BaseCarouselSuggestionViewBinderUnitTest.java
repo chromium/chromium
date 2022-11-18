@@ -19,6 +19,8 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView.RecycledViewPool;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -279,5 +281,16 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
 
         mModel.set(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE, false);
         verify(mView, times(1)).setCarouselHorizontalFade(false);
+    }
+
+    @Test
+    public void recyclerView_setCarouselRecycledViewPool() {
+        RecycledViewPool testRecycledViewPool = new RecycledViewPool();
+
+        mModel.set(BaseCarouselSuggestionViewProperties.RECYCLED_VIEW_POOL, testRecycledViewPool);
+        verify(mView, times(1)).setCarouselRecycledViewPool(testRecycledViewPool);
+
+        mModel.set(BaseCarouselSuggestionViewProperties.RECYCLED_VIEW_POOL, testRecycledViewPool);
+        verify(mView, times(1)).setCarouselRecycledViewPool(testRecycledViewPool);
     }
 }

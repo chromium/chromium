@@ -5449,6 +5449,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxMostVisitedTilesDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kMostVisitedTiles)},
 
+    {"omnibox-most-visited-tiles-add-recycled-view-poll",
+     flag_descriptions::kOmniboxMostVisitedTilesAddRecycledViewPoolName,
+     flag_descriptions::kOmniboxMostVisitedTilesAddRecycledViewPoolDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxMostVisitedTilesAddRecycledViewPool)},
+
     {"omnibox-most-visited-tiles-dynamic-spacing",
      flag_descriptions::kOmniboxMostVisitedTilesDynamicSpacingName,
      flag_descriptions::kOmniboxMostVisitedTilesDynamicSpacingDescription,

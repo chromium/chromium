@@ -404,6 +404,8 @@ public abstract class ChromeFeatureList {
     public static final String OMNIBOX_MATCH_TOOLBAR_AND_STATUS_BAR_COLOR =
             "OmniboxMatchToolbarAndStatusBarColor";
     public static final String OMNIBOX_MODERNIZE_VISUAL_UPDATE = "OmniboxModernizeVisualUpdate";
+    public static final String OMNIBOX_MOST_VISITED_TILES_ADD_RECYCLED_VIEW_POOL =
+            "OmniboxMostVisitedTilesAddRecycledViewPool";
     public static final String OMNIBOX_MOST_VISITED_TILES_FADING_ON_TABLET =
             "OmniboxMostVisitedTilesFadingOnTablet";
     public static final String OMNIBOX_MOST_VISITED_TILES_DYNAMIC_SPACING =
@@ -673,6 +675,8 @@ public abstract class ChromeFeatureList {
             new CachedFlag(OMNIBOX_MATCH_TOOLBAR_AND_STATUS_BAR_COLOR, false);
     public static final CachedFlag sOmniboxModernizeVisualUpdate =
             new CachedFlag(OMNIBOX_MODERNIZE_VISUAL_UPDATE, false);
+    public static final CachedFlag sOmniboxMostVisitedTilesAddRecycledViewPool =
+            new CachedFlag(OMNIBOX_MOST_VISITED_TILES_ADD_RECYCLED_VIEW_POOL, false);
     public static final CachedFlag sOmniboxRemoveExcessiveRecycledViewClearCalls =
             new CachedFlag(OMNIBOX_REMOVE_EXCESSIVE_RECYCLED_VIEW_CLEAR_CALLS, false);
     public static final CachedFlag sOptimizationGuidePushNotifications =

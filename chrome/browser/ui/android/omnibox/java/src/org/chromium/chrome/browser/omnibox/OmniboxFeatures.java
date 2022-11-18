@@ -75,11 +75,17 @@ public class OmniboxFeatures {
     public static boolean shouldRemoveExcessiveRecycledViewClearCalls() {
         return ChromeFeatureList.sOmniboxRemoveExcessiveRecycledViewClearCalls.isEnabled();
     }
-
     /**
-     * Returns whether we the toolbar snd status bar color should be matched.
+     * Returns whether the toolbar and status bar color should be matched.
      */
     public static boolean shouldMatchToolbarAndStatusBarColor() {
         return ChromeFeatureList.sOmniboxMatchToolbarAndStatusBarColor.isEnabled();
+    }
+
+    /**
+     * Returns whether we need to add a RecycledViewPool to MostVisitedTiles.
+     */
+    public static boolean shouldAddMostVisitedTilesRecycledViewPool() {
+        return ChromeFeatureList.sOmniboxMostVisitedTilesAddRecycledViewPool.isEnabled();
     }
 }

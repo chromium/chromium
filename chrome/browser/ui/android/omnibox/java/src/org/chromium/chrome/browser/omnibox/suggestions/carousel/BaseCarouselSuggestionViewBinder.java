@@ -67,6 +67,9 @@ public final class BaseCarouselSuggestionViewBinder {
         } else if (key == BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE) {
             view.setCarouselHorizontalFade(
                     model.get(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE));
+        } else if (key == BaseCarouselSuggestionViewProperties.RECYCLED_VIEW_POOL) {
+            view.setCarouselRecycledViewPool(
+                    model.get(BaseCarouselSuggestionViewProperties.RECYCLED_VIEW_POOL));
         }
     }
 
