@@ -507,7 +507,7 @@ void EnrollmentHandler::StartAttestationBasedEnrollmentFlow(
   attestation_flow_->GetCertificate(
       ash::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
       EmptyAccountId(), /*request_origin=*/std::string(), force_new_key,
-      ::attestation::KEY_TYPE_ECC, /*=key_name=*/std::string(),
+      ::attestation::KEY_TYPE_RSA, /*=key_name=*/std::string(),
       std::move(callback));
 }
 
