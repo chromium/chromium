@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -29,7 +30,7 @@ class CheckWaiter {
   CheckWaiter(base::RepeatingCallback<bool()> callback, bool expected)
       : callback_(callback),
         expected_(expected),
-        timeout_(base::Time::NowFromSystemTime() + base::Seconds(1)) {}
+        timeout_(base::TimeTicks::Now() + base::Seconds(1)) {}
 
   CheckWaiter(const CheckWaiter&) = delete;
   CheckWaiter& operator=(const CheckWaiter&) = delete;
@@ -48,11 +49,16 @@ class CheckWaiter {
 
  private:
   bool Check() {
-    if (callback_.Run() != expected_ &&
-        base::Time::NowFromSystemTime() < timeout_) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(base::IgnoreResult(&CheckWaiter::Check),
-                                    base::Unretained(this)));
+    if (callback_.Run() != expected_ && base::TimeTicks::Now() < timeout_) {
+      // Check again after a short timeout. Important: Don't use an immediate
+      // task to check again, because the pump would be allowed to run it
+      // immediately without processing system events (system events are
+      // required for the state to change).
+      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(base::IgnoreResult(&CheckWaiter::Check),
+                         base::Unretained(this)),
+          TestTimeouts::tiny_timeout());
       return false;
     }
 
@@ -64,7 +70,7 @@ class CheckWaiter {
 
   base::RepeatingCallback<bool()> callback_;
   bool expected_;
-  base::Time timeout_;
+  const base::TimeTicks timeout_;
   // The waiter's RunLoop quit closure.
   base::RepeatingClosure quit_;
 };

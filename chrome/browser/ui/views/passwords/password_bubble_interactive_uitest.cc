@@ -401,13 +401,14 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, AutoSigninNoFocus) {
   SetupAutoSignin(std::move(local_credentials));
   EXPECT_TRUE(IsBubbleShowing());
 
-  // Bring the first window back. The toast closes by timeout.
-  focused_window->window()->Close();
+  // Bring the first window back.
+  ui_test_utils::BrowserDeactivationWaiter waiter(focused_window);
   browser()->window()->Activate();
-  content::RunAllPendingInMessageLoop();
-  ui_test_utils::BrowserActivationWaiter waiter(browser());
-  waiter.WaitForActivation();
+  waiter.WaitForDeactivation();
 
+  // Let asynchronous tasks run until the bubble stops showing.
+  while (IsBubbleShowing())
+    base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(IsBubbleShowing());
 }
 
