@@ -824,6 +824,11 @@ void Av1Decoder::SetupFrameParams(
                   frm_header.buffer_removal_time);
   v4l2_frame_params->refresh_frame_flags = frm_header.refresh_frame_flags;
 
+  if (frm_header.frame_type == libgav1::kFrameKey && frm_header.show_frame) {
+    for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes; i++)
+      ref_order_hint_[i] = 0;
+  }
+
   // The first slot in |order_hints| is reserved for intra frame, so it is not
   // used and will always be 0.
   static_assert(std::size(decltype(v4l2_frame_params->order_hints){}) ==
