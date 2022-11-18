@@ -11,7 +11,6 @@ import android.view.Window;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.CallbackController;
@@ -83,6 +82,7 @@ public class StatusBarColorController
     private final @ColorInt int mStandardDefaultThemeColor;
     private final @ColorInt int mIncognitoDefaultThemeColor;
     private final @ColorInt int mActiveOmniboxDefaultColor;
+    private @ColorInt int mToolbarColor;
 
     private @Nullable TabModelSelector mTabModelSelector;
     private CallbackController mCallbackController = new CallbackController();
@@ -91,6 +91,7 @@ public class StatusBarColorController
     private boolean mIsInOverviewMode;
     private boolean mIsIncognito;
     private boolean mIsOmniboxFocused;
+    private boolean mToolbarAnimationInProgress;
 
     private @ColorInt int mScrimColor;
     private float mStatusBarScrimFraction;
@@ -142,14 +143,7 @@ public class StatusBarColorController
 
             @Override
             public void onDidChangeThemeColor(Tab tab, int color) {
-                if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
-                    // The theme color change assignment will override the feature flag which
-                    // matches the toolbar and the status bar color, specifically for custom tabs
-                    // with theme colors.
-                    updateStatusBarColor(color);
-                } else {
-                    updateStatusBarColor();
-                }
+                updateStatusBarColor();
             }
 
             @Override
@@ -249,8 +243,9 @@ public class StatusBarColorController
 
     // TopToolbarCoordinator.UrlExpansionObserver implementation.
     @Override
-    public void onUrlExpansionProgressChanged(float fraction) {
+    public void onUrlExpansionProgressChanged(float fraction, boolean changeInProgress) {
         mToolbarUrlExpansionPercentage = fraction;
+        mToolbarAnimationInProgress = changeInProgress;
         if (mShouldUpdateStatusBarColorForNTP) updateStatusBarColor();
     }
 
@@ -266,8 +261,8 @@ public class StatusBarColorController
             return;
         }
 
-        // The status indicator will override the toolbar color match if available.
-        updateStatusBarColor(color);
+        mToolbarColor = color;
+        updateStatusBarColor();
     }
 
     // StatusIndicatorCoordinator.StatusIndicatorObserver implementation.
@@ -275,13 +270,7 @@ public class StatusBarColorController
     @Override
     public void onStatusIndicatorColorChanged(@ColorInt int newColor) {
         mStatusIndicatorColor = newColor;
-        if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
-            // The status indicator color assignment will override the feature flag which matches
-            // the toolbar and the status bar color.
-            updateStatusBarColor(calculateBaseStatusBarColor());
-        } else {
-            updateStatusBarColor();
-        }
+        updateStatusBarColor();
     }
 
     @Override
@@ -296,13 +285,7 @@ public class StatusBarColorController
      */
     public void setStatusBarScrimFraction(float fraction) {
         mStatusBarScrimFraction = fraction;
-        if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
-            // The scrim fraction color assignment will override the feature flag which matches
-            // the toolbar and the status bar color.
-            updateStatusBarColor(calculateBaseStatusBarColor());
-        } else {
-            updateStatusBarColor();
-        }
+        updateStatusBarColor();
     }
 
     /**
@@ -319,22 +302,7 @@ public class StatusBarColorController
      * Calculate and update the status bar's color.
      */
     public void updateStatusBarColor() {
-        // We will synchronize the status bar's color with toolbar's color if the feature flag is
-        // toggled, so we skip the original color assignment here.
-        if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
-            return;
-        }
-        updateStatusBarColor(calculateBaseStatusBarColor());
-    }
-
-    /**
-     * Update the status bar's color with provided color.
-     * @param color The color to be applied to status bar.
-     */
-    @VisibleForTesting
-    public void updateStatusBarColor(@ColorInt int color) {
-        mStatusBarColorWithoutStatusIndicator = color;
-
+        mStatusBarColorWithoutStatusIndicator = calculateBaseStatusBarColor();
         int statusBarColor = applyStatusBarIndicatorColor(mStatusBarColorWithoutStatusIndicator);
         statusBarColor = applyCurrentScrimToColor(statusBarColor);
         setStatusBarColor(mWindow, statusBarColor);
@@ -365,7 +333,14 @@ public class StatusBarColorController
 
         // When Omnibox gains focus, we want to clear the status bar theme color.
         // The theme should be restored when Omnibox focus clears.
-        if (mIsOmniboxFocused) return calculateDefaultStatusBarColor();
+        if (mIsOmniboxFocused) {
+            // If the flag is enabled, we will use the toolbar color.
+            if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()
+                    && mToolbarAnimationInProgress) {
+                return mToolbarColor;
+            }
+            return calculateDefaultStatusBarColor();
+        }
 
         // Return status bar color in overview mode.
         if (mIsInOverviewMode) {
@@ -384,6 +359,10 @@ public class StatusBarColorController
         }
 
         // Return status bar color to match the toolbar.
+        // If the flag is enabled, we will use the toolbar color.
+        if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor() && mToolbarAnimationInProgress) {
+            return mToolbarColor;
+        }
         return mTopUiThemeColor.getThemeColorOrFallback(
                 mCurrentTab, calculateDefaultStatusBarColor());
     }

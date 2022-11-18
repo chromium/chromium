@@ -67,8 +67,10 @@ public class TopToolbarCoordinator implements Toolbar {
          * @param fraction The toolbar expansion progress. 0 indicates that the URL bar is not
          *                   expanded. 1 indicates that the URL bar is expanded to the maximum
          *                   width.
+         *
+         * @param changeInProgress Whether the toolbar animation is still in progress or not.
          */
-        void onUrlExpansionProgressChanged(float fraction);
+        void onUrlExpansionProgressChanged(float fraction, boolean changeInProgress);
     }
 
     /**

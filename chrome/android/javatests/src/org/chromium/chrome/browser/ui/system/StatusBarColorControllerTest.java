@@ -49,6 +49,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.ThemeTestUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.util.ColorUtils;
 
@@ -66,6 +67,9 @@ import java.util.concurrent.TimeoutException;
 @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
 public class StatusBarColorControllerTest {
     // clang-format on
+    @ClassRule
+    public static DisableAnimationsTestRule sEnableAnimationsRule =
+            new DisableAnimationsTestRule(false);
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
@@ -237,13 +241,16 @@ public class StatusBarColorControllerTest {
                 "/chrome/test/data/android/theme_color_test.html");
         sActivityTestRule.loadUrl(pageWithBrandColorUrl);
         ThemeTestUtils.waitForThemeColor(activity, Color.RED);
+        mOmniboxUtils.waitAnimationsComplete();
         waitForStatusBarColor(activity, Color.RED);
         waitForStatusBarColorToMatchToolbarColor(activity);
 
         mOmniboxUtils.requestFocus();
+        mOmniboxUtils.waitAnimationsComplete();
         waitForStatusBarColor(activity, expectedDefaultStandardColor);
         waitForStatusBarColorToMatchToolbarColor(activity);
         mOmniboxUtils.clearFocus();
+        mOmniboxUtils.waitAnimationsComplete();
         waitForStatusBarColor(activity, Color.RED);
         waitForStatusBarColorToMatchToolbarColor(activity);
     }
