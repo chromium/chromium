@@ -18,7 +18,7 @@
 #include "components/cast_receiver/browser/public/application_client.h"
 #include "components/cast_receiver/browser/public/application_config.h"
 #include "components/cast_receiver/browser/public/runtime_application_dispatcher.h"
-#include "third_party/openscreen/src/cast/common/public/cast_streaming_app_ids.h"
+#include "components/cast_streaming/public/app_ids.h"
 
 namespace chromecast {
 
@@ -68,7 +68,7 @@ RuntimeApplicationDispatcherImpl<TEmbedderApplication>::CreateApplication(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::unique_ptr<RuntimeApplicationBase> app;
-  if (openscreen::cast::IsCastStreamingReceiverAppId(app_config.app_id)) {
+  if (cast_streaming::IsStreamingReceiverAppId(app_config.app_id)) {
     app = std::make_unique<StreamingRuntimeApplication>(
         session_id, std::move(app_config), *application_client_);
   } else {

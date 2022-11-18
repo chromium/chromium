@@ -8,12 +8,12 @@
 #include "components/cast_receiver/browser/public/application_client.h"
 #include "components/cast_receiver/browser/public/embedder_application.h"
 #include "components/cast_receiver/browser/public/message_port_service.h"
+#include "components/cast_streaming/public/app_ids.h"
 #include "components/cast_streaming/public/cast_streaming_url.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/openscreen/src/cast/common/public/cast_streaming_app_ids.h"
 
 namespace chromecast {
 namespace {
@@ -85,7 +85,7 @@ void StreamingRuntimeApplication::Launch(StatusCallback callback) {
       std::move(server_port), embedder_application().GetWebContents(), this,
       embedder_application().GetStreamingConfigManager(),
       /* supports_audio= */ GetAppId() !=
-          openscreen::cast::GetIosAppStreamingAudioVideoAppId(),
+          cast_streaming::GetIosAppStreamingAudioVideoAppId(),
       /* supports_video= */ true);
   receiver_session_client_->LaunchStreamingReceiverAsync();
 

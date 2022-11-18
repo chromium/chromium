@@ -11,10 +11,12 @@ visibility = [ ":*" ]
 source_set("public") {
   visibility += [ "*" ]
   public = [
+    "app_ids.h",
     "cast_streaming_url.h",
     "features.h",
   ]
   sources = [
+    "app_ids.cc",
     "cast_streaming_url.cc",
     "features.cc",
   ]
@@ -22,6 +24,7 @@ source_set("public") {
   deps = [
     "//base",
     "//components/cast_streaming:buildflags",
+    "//third_party/openscreen/src/cast/common:public",
   ]
 }
 

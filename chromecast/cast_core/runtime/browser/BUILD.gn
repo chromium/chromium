@@ -144,7 +144,6 @@ cast_source_set("runtime_application_dispatcher") {
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//third_party/blink/public/common:headers",
-    "//third_party/openscreen/src/cast/common:public",
     "//url",
   ]
 }
