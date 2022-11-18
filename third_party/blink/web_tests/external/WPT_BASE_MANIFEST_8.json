@@ -3556,13 +3556,6 @@
        null,
        {}
       ]
-     ],
-     "uncontained-transition-crash.html": [
-      "98632508aedc849999c760625f45ad2b54a829d0",
-      [
-       null,
-       {}
-      ]
      ]
     },
     "css-writing-modes": {
@@ -217161,7 +217154,7 @@
       ]
      ],
      "new-content-element-writing-modes.html": [
-      "4c2268ffc0de78dbd82a253443789ff3b50b5d52",
+      "0c50e22fc0dea2d2f1a4325895086f83ebeabafc",
       [
        null,
        [
@@ -217234,7 +217227,7 @@
       ]
      ],
      "new-content-object-fit-fill.html": [
-      "47c7f77cd0f31232c60041abd57e5db3e9237c02",
+      "5b1941aa3e6f7e6bce6b54ae4bcf823a76d581c7",
       [
        null,
        [
@@ -217267,7 +217260,7 @@
       ]
      ],
      "new-content-object-fit-none.html": [
-      "be477691013fd76c0959848372c4d4a03ac07149",
+      "d3e4d2dc3def3527de5fd10a3a2540c9a16ab64d",
       [
        null,
        [
@@ -217689,7 +217682,7 @@
       ]
      ],
      "old-content-object-fit-fill.html": [
-      "587c05c0cb189e03d6966f7f7ed0080a282434f5",
+      "75dc628f944d49e19c98a95e5fc03f57c2434a39",
       [
        null,
        [
@@ -217722,7 +217715,7 @@
       ]
      ],
      "old-content-object-fit-none.html": [
-      "71f3f5474876e533c297f08b454fe8a9635f4a42",
+      "c40ad13435a773cb48b3454705ea8955cdcadbee",
       [
        null,
        [
@@ -276221,6 +276214,10 @@
      ],
      "mossgreensquare-ref.html": [
       "06f866c02dd04724a35cf5032b1d40e6783c3389",
+      []
+     ],
+     "nested-color-mix-with-currentcolor-expected.txt": [
+      "13c385b073f45c5648976704d28d8284392f8049",
       []
      ],
      "oklab-004-ref.html": [
@@ -352188,7 +352185,7 @@
       []
      ],
      "util.js": [
-      "d6f54bcfc7ebd16caf1414e828e3b7b8ecfc3f9e",
+      "1b3c82d7d68da9b2f94159db850d1951dadd33f6",
       []
      ]
     }
@@ -361581,7 +361578,7 @@
      []
     ],
     "META.yml": [
-     "b8c0b9741d4a22ac42a995ca04b3df2c96cfc16f",
+     "633c917b0e60783c41db597695e22c499080a95d",
      []
     ],
     "active-lock-expected.txt": [
@@ -417527,6 +417524,13 @@
        {}
       ]
      ],
+     "nested-color-mix-with-currentcolor.html": [
+      "a4dd687dd5814af2e4660586a2c97c09ba34ffe4",
+      [
+       null,
+       {}
+      ]
+     ],
      "parsing": {
       "color-computed-color-contrast-function.html": [
        "74be5ced3748dcaa9b86d99938390cd7de122de0",
@@ -441797,8 +441801,15 @@
      ]
     },
     "css-view-transitions": {
-     "duplicate_tag_rejects.html": [
-      "c7aef2aa1a45183a8ddfa5d0ca19647f3d81d838",
+     "duplicate-tag-rejects-capture.html": [
+      "517502b6741818d84e9faeb81a9ce69bb5c0b6cc",
+      [
+       null,
+       {}
+      ]
+     ],
+     "duplicate-tag-rejects-start.html": [
+      "2d99717df446b210fcc47f4992d980e0c8ce8e73",
       [
        null,
        {}
@@ -441829,6 +441840,27 @@
      ],
      "mix-blend-mode-only-on-transition.html": [
       "a9b9cb7afd3a5f918efb98126663544c689b4cff",
+      [
+       null,
+       {}
+      ]
+     ],
+     "no-containment-on-new-element-mid-transition.html": [
+      "869fd24f42c34740809aa075be96a73b6ee465ef",
+      [
+       null,
+       {}
+      ]
+     ],
+     "no-containment-on-new-element.html": [
+      "ecb05373b3e653686a3d724fc5418aa28ffb2979",
+      [
+       null,
+       {}
+      ]
+     ],
+     "no-containment-on-old-element.html": [
+      "22cad098c76c21b424fef72db5e4db2d8b8dbf7f",
       [
        null,
        {}
@@ -441875,6 +441907,13 @@
        ]
       ]
      },
+     "pseudo-computed-style-stays-in-sync-with-new-element.html": [
+      "b1ed783b0af4875abb2d381986797059c054b192",
+      [
+       null,
+       {}
+      ]
+     ],
      "pseudo-get-computed-style.html": [
       "e837d52a5709eb71e80a1dfc5c0a35f6a17a14c4",
       [
@@ -441891,6 +441930,48 @@
      ],
      "style-inheritance.html": [
       "f896f23be515484cf0ed1db9921274e9957b3dbf",
+      [
+       null,
+       {}
+      ]
+     ],
+     "synchronous-callback-skipped-before-run.html": [
+      "1bda243449c564134bf8fb1d1d93f7858460a533",
+      [
+       null,
+       {}
+      ]
+     ],
+     "transition-skipped-after-animation-started.html": [
+      "78f32def3e58b59a5568d2e25806d77ad8ee84a2",
+      [
+       null,
+       {}
+      ]
+     ],
+     "transition-skipped-from-invalid-callback.html": [
+      "4a56f81efe0f9c8512db85230b7da6713be33223",
+      [
+       null,
+       {}
+      ]
+     ],
+     "unset-and-initial-view-transition-name.html": [
+      "93c8eb64d79ac8c24995a8a54442d71b31ae6fe6",
+      [
+       null,
+       {}
+      ]
+     ],
+     "view-transition-name-on-added-element.html": [
+      "cd957973b7d9a9c67574c5ced363cf4e18e4eaa3",
+      [
+       null,
+       {}
+      ]
+     ],
+     "view-transition-name-on-removed-element.html": [
+      "4a26a8154f5dbaa407eec0a074cf8f56bb53c94e",
       [
        null,
        {}
@@ -538419,7 +538500,7 @@
      ]
     ],
     "simple-block-movement.html": [
-     "837b438ef6b87e177c65ebbcd381d378d372ba24",
+     "10261f7d81d0f04eedc4fa1f7998bcf09d866d2a",
      [
       null,
       {}
