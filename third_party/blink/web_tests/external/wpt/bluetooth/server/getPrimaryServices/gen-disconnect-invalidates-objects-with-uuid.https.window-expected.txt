@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Calls on services after we disconnect and connect again. Should reject with InvalidStateError. assert_equals: Unexpected Error Message: expected "Service with UUID 00001809-0000-1000-8000-00805f9b34fb is no longer valid. Remember to retrieve the service again after reconnecting." but got "Failed to execute 'getCharacteristic' on 'BluetoothRemoteGATTService': Service with UUID 00001809-0000-1000-8000-00805f9b34fb is no longer valid. Remember to retrieve the service again after reconnecting."
+Harness: the test ran to completion.
+

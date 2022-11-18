@@ -36,7 +36,7 @@ PASS fetch with method "PUT" should fail
 PASS fetch with method "CUSTOM" should fail
 PASS fetch should return Content-Type from Blob
 FAIL Revoke blob URL after creating Request, will fetch promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
-FAIL Revoke blob URL after creating Request, then clone Request, will fetch promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
+FAIL Revoke blob URL after creating Request, then clone Request, will fetch promise_test: Unhandled rejection with value: object "ReferenceError: garbageCollect is not defined"
 PASS Revoke blob URL after calling fetch, fetch should succeed
 Harness: the test ran to completion.
 

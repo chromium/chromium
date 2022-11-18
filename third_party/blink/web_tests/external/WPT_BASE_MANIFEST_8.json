@@ -13245,7 +13245,7 @@
      ]
     ],
     "local_FileSystemDirectoryHandle-iteration-manual.https.html": [
-     "8537ca02ba501ac022fc5dbf756be9233b07ed74",
+     "e8c293266c4f132d114474ec6965ae56886be621",
      [
       null,
       {}
@@ -253486,7 +253486,20 @@
     "struct": {
      "reftests": {
       "currentScale-change-repaint.html": [
-       "bd2773b5902bb5e8ab5383526412337eaf45a31a",
+       "aa3939c1bef7778dd6bc7c420605582232d06e10",
+       [
+        null,
+        [
+         [
+          "/svg/struct/reftests/reference/green-100x100.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "currentScale.svg": [
+       "926117b6d5ae446dd801b7021ec7befc5b0565bd",
        [
         null,
         [
@@ -257578,6 +257591,16 @@
    }
   },
   "support": {
+   ".cache": {
+    "gitignore2.json": [
+     "7edd9b53df87ffdd019b739766aaa57b5aaaf757",
+     []
+    ],
+    "mtime.json": [
+     "e74844ae7f9db1a221511dafb37f67e004e5fa12",
+     []
+    ]
+   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -257785,7 +257808,7 @@
       ]
      },
      "sandboxed-iframe-expected.txt": [
-      "5820516e0ae46767b132b8a0410acbb592da9755",
+      "f6c862bb23289428843c4f25ccc9234543ed45a9",
       []
      ],
      "sandboxed-iframe.html.ini": [
@@ -259893,7 +259916,7 @@
       []
      ],
      "bluetooth-test.js": [
-      "fda52206b591597df50a92a1e1b67837bec8a113",
+      "7ad1b937e1f5d1ca4a1e20da410e969ba229227e",
       []
      ],
      "health-thermometer-iframe.html": [
@@ -259903,7 +259926,7 @@
     },
     "script-tests": {
      "base_test_js.template": [
-      "e677f00f087d2d4bb4071543a2cee9a7da0ae851",
+      "04c7a70ba4f3b84a38a91d1be971f0ec0d4843ff",
       []
      ],
      "characteristic": {
@@ -259960,11 +259983,11 @@
        []
       ],
       "garbage-collection-ran-during-error.js": [
-       "35e838e92e76f26024d0a11cbc24ee9e1a796f54",
+       "cf508a928ee72fbd97816d2f2f2b66004de9423c",
        []
       ],
       "garbage-collection-ran-during-success.js": [
-       "7976bbd990b24495b182608cb8259834a69488bc",
+       "bb472fcca4ef2437b03bed6762131ebfefa6c2da",
        []
       ],
       "get-different-service-after-reconnection.js": [
@@ -260006,7 +260029,7 @@
        []
       ],
       "garbage-collection-ran-during-error.js": [
-       "33c61096794ca33e29a29da69c3e8f4ceca2c58a",
+       "7ed4aaa9622313c2479ac7ff9d6a9dd5c0cf6288",
        []
       ],
       "get-same-object.js": [
@@ -260023,6 +260046,48 @@
       ],
       "service-is-removed.js": [
        "aaf0f14436742c04848749b5acf6d52b7bb2e98c",
+       []
+      ]
+     }
+    },
+    "server": {
+     "getPrimaryService": {
+      "gen-disconnect-called-before.https.window-expected.txt": [
+       "7c6f6f87ffed690282332b1787519e291dac6ae8",
+       []
+      ],
+      "gen-disconnect-invalidates-objects.https.window-expected.txt": [
+       "0679c29433efaadbf9d8c4c974545baa78e676aa",
+       []
+      ],
+      "gen-disconnected-device.https.window-expected.txt": [
+       "9e3396eb5e2c4cc316bdc431071c7bfca841587b",
+       []
+      ]
+     },
+     "getPrimaryServices": {
+      "gen-disconnect-called-before-with-uuid.https.window-expected.txt": [
+       "59a80a07b22d08f83e67ce23cd1c9db9f5e4e001",
+       []
+      ],
+      "gen-disconnect-called-before.https.window-expected.txt": [
+       "59a80a07b22d08f83e67ce23cd1c9db9f5e4e001",
+       []
+      ],
+      "gen-disconnect-invalidates-objects-with-uuid.https.window-expected.txt": [
+       "0679c29433efaadbf9d8c4c974545baa78e676aa",
+       []
+      ],
+      "gen-disconnect-invalidates-objects.https.window-expected.txt": [
+       "0679c29433efaadbf9d8c4c974545baa78e676aa",
+       []
+      ],
+      "gen-disconnected-device-with-uuid.https.window-expected.txt": [
+       "92f2b124cb2ebe1db7544b8dc170651399efe56e",
+       []
+      ],
+      "gen-disconnected-device.https.window-expected.txt": [
+       "92f2b124cb2ebe1db7544b8dc170651399efe56e",
        []
       ]
      }
@@ -260887,6 +260952,10 @@
     ],
     "echo.py": [
      "911b54a0b488b9c148a29d5d1cd942d4fbca57b4",
+     []
+    ],
+    "gc.js": [
+     "ac43a4cfaf7735a08dfd1be177918167f815e800",
      []
     ],
     "get-host-info.sub.js": [
@@ -264188,14 +264257,6 @@
      ],
      "form-post-blank.https.html.ini": [
       "bd832bf21156a28b1665d46363dd12d92b1f06cc",
-      []
-     ],
-     "get_all_cookies-default-samesite.html.ini": [
-      "6219d6e45af9c605556167585e993cd8a2512698",
-      []
-     ],
-     "get_named_cookie-default-samesite.html.ini": [
-      "a08ca555f96e2e390e46c2d1aee306ce107c379c",
       []
      ],
      "resources": {
@@ -277145,6 +277206,10 @@
       ],
       "top-layer-dialog-backdrop-ref.html": [
        "49c46974c9de23284852d302b57b0ad206158d0f",
+       []
+      ],
+      "transition-style-change-event-002-expected.txt": [
+       "3b126fc6ba31c414db348249246bae0fdab850c4",
        []
       ]
      },
@@ -319792,10 +319857,6 @@
       "eaca3f49fd15840a3688a10a91b56524566893c5",
       []
      ],
-     "garbage-collect.js": [
-      "d2e3449c05e298836444c9e6fce903158bb0bed8",
-      []
-     ],
      "my-custom-element-html-document.html": [
       "b9bfdf90a2d9ae6f2731451b45554ecb70f366d6",
       []
@@ -327981,7 +328042,7 @@
       []
      ],
      "test-helpers.js": [
-      "7326fd0fe916145631163deeedbff358d0bbf32f",
+      "893cd198483ca46fd4431e84e8ca91315f34986b",
       []
      ]
     },
@@ -329671,7 +329732,7 @@
       []
      ],
      "test-helpers.js": [
-      "20735664f11622dfc35aec23c130b23f0574a2b9",
+      "d2e09504d3f6116564ad2527f0ac476db04b6cf8",
       []
      ]
     },
@@ -352247,7 +352308,7 @@
     ]
    },
    "lint.ignore": [
-    "7ac79fc36ba68b7d02ae99fc482269a9e20f88e6",
+    "7267be72b0e043466379465325c560aceab1ed57",
     []
    ],
    "loading": {
@@ -367285,7 +367346,7 @@
       []
      ],
      "test-utils.js": [
-      "b5da3c85bae0bccbf2b36614832dba15e015d1c0",
+      "5ff8fc8cec939a4de8a608077aa3c57af03b50c4",
       []
      ]
     },
@@ -374022,7 +374083,7 @@
        []
       ],
       "worker.js": [
-       "df23072bc99f95d09f7cd1a6550595e43039e7b8",
+       "ee2d51a254256761626e9d3e7743dad89caf0233",
        []
       ]
      }
@@ -375977,7 +376038,7 @@
       []
      ],
      "usb-helpers.js": [
-      "1197c43e44e6727b9f3c8fe709bc0fc7c6dd6b6f",
+      "cb6aaadf985a97f4bff3de882796d8d3b1a3d454",
       []
      ]
     },
@@ -382030,7 +382091,7 @@
       ]
      ],
      "Blob-stream.any.js": [
-      "08cca8dbe687b8d5e31cbee6a877886ef9c09324",
+      "8f1d5c555aded300e240bf7873ce415cc51785d8",
       [
        "FileAPI/blob/Blob-stream.any.html",
        {
@@ -382045,7 +382106,7 @@
          ],
          [
           "script",
-          "../../streams/resources/test-utils.js"
+          "/common/gc.js"
          ]
         ]
        }
@@ -382064,7 +382125,7 @@
          ],
          [
           "script",
-          "../../streams/resources/test-utils.js"
+          "/common/gc.js"
          ]
         ]
        }
@@ -382823,7 +382884,7 @@
       ]
      ],
      "url-with-fetch.any.js": [
-      "9b1699c0612b99d7e3d2b22babe015191d2ce069",
+      "54e6a3da5afe9e9283a7d2a9fe7b8dbda4dea761",
       [
        "FileAPI/url/url-with-fetch.any.html",
        {
@@ -382831,6 +382892,10 @@
          [
           "script",
           "resources/fetch-tests.js"
+         ],
+         [
+          "script",
+          "/common/gc.js"
          ]
         ]
        }
@@ -382842,6 +382907,10 @@
          [
           "script",
           "resources/fetch-tests.js"
+         ],
+         [
+          "script",
+          "/common/gc.js"
          ]
         ]
        }
@@ -395740,7 +395809,7 @@
      ]
     ],
     "removeTrack-after-setSinkId.https.html": [
-     "393082052b10f5a63f19dda7151d25d27b7fe486",
+     "97db5f81e29ade84871f816a982724359da5e105",
      [
       null,
       {
@@ -396696,7 +396765,7 @@
      ],
      "getDescriptor": {
       "detachedIframe.https.window.js": [
-       "2722a153c8e6b72e1d7654fa8aadf62fa1e8f625",
+       "de7d0b0b7ce79ffc4391a1aa476b88beb8be2c27",
        [
         "bluetooth/characteristic/getDescriptor/detachedIframe.https.window.html",
         {
@@ -396711,6 +396780,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -396722,7 +396795,7 @@
        ]
       ],
       "gen-characteristic-is-removed.https.window.js": [
-       "7789f4b7c4693a89c8f9a41e5d3c613ff43ba12a",
+       "9e48a7caabc29a610f72fef370cc4ee6571220ea",
        [
         "bluetooth/characteristic/getDescriptor/gen-characteristic-is-removed.https.window.html",
         {
@@ -396737,6 +396810,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -396748,7 +396825,7 @@
        ]
       ],
       "gen-descriptor-get-same-object.https.window.js": [
-       "01d4e8f30f82d7f87af7ee6ae5168e36d87bafcf",
+       "708f67da6a8c38738c6ddb2d1990b6440426627f",
        [
         "bluetooth/characteristic/getDescriptor/gen-descriptor-get-same-object.https.window.html",
         {
@@ -396763,6 +396840,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -396774,7 +396855,7 @@
        ]
       ],
       "gen-service-is-removed.https.window.js": [
-       "16b34dc09124ea7be5777fbd5040eb96b84171c7",
+       "c256050b0fc4dfe84ad174d1e62c54a0dfa49686",
        [
         "bluetooth/characteristic/getDescriptor/gen-service-is-removed.https.window.html",
         {
@@ -396786,6 +396867,10 @@
           [
            "script",
            "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
           ],
           [
            "script",
@@ -396802,7 +396887,7 @@
      },
      "getDescriptors": {
       "detachedIframe.https.window.js": [
-       "73c5f3c9a0f432f39f92ef7f36fa6eac291ae702",
+       "45dd23752f2fd836b751c4700f910ddb1de26e2c",
        [
         "bluetooth/characteristic/getDescriptors/detachedIframe.https.window.html",
         {
@@ -396817,6 +396902,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -396828,7 +396917,7 @@
        ]
       ],
       "gen-characteristic-is-removed-with-uuid.https.window.js": [
-       "b924f052d37dc4ba1a91d41fa7605862543d2dc8",
+       "a0424c01106ac6f9ab921b0cbea3c2b960c8f938",
        [
         "bluetooth/characteristic/getDescriptors/gen-characteristic-is-removed-with-uuid.https.window.html",
         {
@@ -396843,6 +396932,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -396854,7 +396947,7 @@
        ]
       ],
       "gen-characteristic-is-removed.https.window.js": [
-       "ae8127c87b3c41f5dae6f3793e6ebdf5b5e05fcd",
+       "29325c3bb527996a7bbb8b7bdaff17f7dc39e256",
        [
         "bluetooth/characteristic/getDescriptors/gen-characteristic-is-removed.https.window.html",
         {
@@ -396869,6 +396962,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -396880,7 +396977,7 @@
        ]
       ],
       "gen-descriptor-get-same-object.https.window.js": [
-       "11dd8bee80a77d132cc15c4662d81270fe1e513c",
+       "7f1001f3eee795307dfac2899f4dac78e2f2de23",
        [
         "bluetooth/characteristic/getDescriptors/gen-descriptor-get-same-object.https.window.html",
         {
@@ -396895,6 +396992,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -396906,7 +397007,7 @@
        ]
       ],
       "gen-service-is-removed-with-uuid.https.window.js": [
-       "13e2e3751a8843ca5054f48192aa92abf2a153c4",
+       "b7c4bff32d91b46e2f70c3181d617c8aac5d5480",
        [
         "bluetooth/characteristic/getDescriptors/gen-service-is-removed-with-uuid.https.window.html",
         {
@@ -396921,6 +397022,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -396932,7 +397037,7 @@
        ]
       ],
       "gen-service-is-removed.https.window.js": [
-       "99056cf209a78f34732a64299b6feb871864a66b",
+       "22dc30f6d825736f0ed6a48e2e794fcb0bca4258",
        [
         "bluetooth/characteristic/getDescriptors/gen-service-is-removed.https.window.html",
         {
@@ -396944,6 +397049,10 @@
           [
            "script",
            "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
           ],
           [
            "script",
@@ -397066,7 +397175,7 @@
        ]
       ],
       "detachedIframe.https.window.js": [
-       "a47ce231112e58d28b9b86578da2d2fa834f89fe",
+       "6e2510b58d6af5117144fb21b2e7049ad9120d02",
        [
         "bluetooth/characteristic/readValue/detachedIframe.https.window.html",
         {
@@ -397078,6 +397187,10 @@
           [
            "script",
            "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
           ],
           [
            "script",
@@ -397118,7 +397231,7 @@
        ]
       ],
       "gen-characteristic-is-removed.https.window.js": [
-       "e2599a16faec6c9cdcfa3b27a206f6488e1909d1",
+       "5bee6db1076bdbc57462ab9298c50c2542a0f702",
        [
         "bluetooth/characteristic/readValue/gen-characteristic-is-removed.https.window.html",
         {
@@ -397130,6 +397243,10 @@
           [
            "script",
            "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
           ],
           [
            "script",
@@ -397276,7 +397393,7 @@
      ],
      "startNotifications": {
       "detachedIframe.https.window.js": [
-       "6cb33772d32b005b401e3ab45767c9066f74fef7",
+       "f09c52d32822e1dc412e158c18e9cafa0a931e29",
        [
         "bluetooth/characteristic/startNotifications/detachedIframe.https.window.html",
         {
@@ -397291,6 +397408,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -397302,7 +397423,7 @@
        ]
       ],
       "gen-characteristic-is-removed.https.window.js": [
-       "62d0d15d10b57992bdf2f60c5582cdb06e8f1673",
+       "c2a23d7f44191fc3a64a397aac447801f3c6ce47",
        [
         "bluetooth/characteristic/startNotifications/gen-characteristic-is-removed.https.window.html",
         {
@@ -397314,6 +397435,10 @@
           [
            "script",
            "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
           ],
           [
            "script",
@@ -397330,7 +397455,7 @@
      },
      "stopNotifications": {
       "detachedIframe.https.window.js": [
-       "1f3e616e01d2102e5f1970191691af4a8f7f9152",
+       "a459a5b15d9fa7f87b27fda23f8edaa547584e71",
        [
         "bluetooth/characteristic/stopNotifications/detachedIframe.https.window.html",
         {
@@ -397342,6 +397467,10 @@
           [
            "script",
            "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
           ],
           [
            "script",
@@ -397410,7 +397539,7 @@
        ]
       ],
       "detachedIframe.https.window.js": [
-       "7647a8734c873efda2db7f2d44bb827278b74c98",
+       "eb243a3508c3de75d29f3df91060040da231e1a6",
        [
         "bluetooth/characteristic/writeValue/detachedIframe.https.window.html",
         {
@@ -397425,6 +397554,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -397436,7 +397569,7 @@
        ]
       ],
       "gen-characteristic-is-removed.https.window.js": [
-       "2ceeabdb145db08b4ad481eb3dbff94e36f3b6d0",
+       "5750cb82c7f848dba7fd4f3783f6a340636a3661",
        [
         "bluetooth/characteristic/writeValue/gen-characteristic-is-removed.https.window.html",
         {
@@ -397448,6 +397581,10 @@
           [
            "script",
            "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
           ],
           [
            "script",
@@ -397568,7 +397705,7 @@
        ]
       ],
       "gen-characteristic-is-removed.https.window.js": [
-       "05749943c1196bc63e113492324d06513b83dfe6",
+       "e202376da7c64fa3a906e6f169a76e61d1e6a916",
        [
         "bluetooth/characteristic/writeValueWithResponse/gen-characteristic-is-removed.https.window.html",
         {
@@ -397580,6 +397717,10 @@
           [
            "script",
            "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
           ],
           [
            "script",
@@ -397700,7 +397841,7 @@
        ]
       ],
       "gen-characteristic-is-removed.https.window.js": [
-       "fea561c0fb7a1587f3333565144336af7364470c",
+       "b88246aae834f0ea54e72ec9a292c6b93eafb3cc",
        [
         "bluetooth/characteristic/writeValueWithoutResponse/gen-characteristic-is-removed.https.window.html",
         {
@@ -397712,6 +397853,10 @@
           [
            "script",
            "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
           ],
           [
            "script",
@@ -397782,7 +397927,7 @@
     "descriptor": {
      "readValue": {
       "detachedIframe.https.window.js": [
-       "17bdbf1f1ddc176f6613df7db459902409823205",
+       "47765a13159b7facc753e7951b94377abc8b54b9",
        [
         "bluetooth/descriptor/readValue/detachedIframe.https.window.html",
         {
@@ -397797,6 +397942,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -397808,7 +397957,7 @@
        ]
       ],
       "gen-service-is-removed.https.window.js": [
-       "2c46b99fd1de291992ca8f4d13364bfad9f43b02",
+       "d6c73ba60e6a1e5d8d10c80796729baf039ee702",
        [
         "bluetooth/descriptor/readValue/gen-service-is-removed.https.window.html",
         {
@@ -397820,6 +397969,10 @@
           [
            "script",
            "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
           ],
           [
            "script",
@@ -397888,7 +398041,7 @@
        ]
       ],
       "detachedIframe.https.window.js": [
-       "c198177fa3704c4d270fd90f8e99dd2cd95a9328",
+       "aa143ca8e53e993273a6887b67566ff3265992d4",
        [
         "bluetooth/descriptor/writeValue/detachedIframe.https.window.html",
         {
@@ -397903,6 +398056,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -397914,7 +398071,7 @@
        ]
       ],
       "gen-service-is-removed.https.window.js": [
-       "c681bcee419b33c6faa52ea40fc8ccf86c3f4113",
+       "c7f6d6efe3e3a19f5c954a3ca83aa87f0386c98c",
        [
         "bluetooth/descriptor/writeValue/gen-service-is-removed.https.window.html",
         {
@@ -397926,6 +398083,10 @@
           [
            "script",
            "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
           ],
           [
            "script",
@@ -397970,7 +398131,7 @@
        ]
       ],
       "detachedIframe.https.window.js": [
-       "c34a3c41f25099defe0f3c63b9f8a122add41a9c",
+       "f4803542fbb30c2aff401fd0951271e5e39bc999",
        [
         "bluetooth/device/forget/detachedIframe.https.window.html",
         {
@@ -397982,6 +398143,10 @@
           [
            "script",
            "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
           ],
           [
            "script",
@@ -398050,7 +398215,7 @@
        ]
       ],
       "disconnected_gc.https.window.js": [
-       "a2c20ea4620aa620b0b12cbef642a785f32285f2",
+       "0cf4973e2167766ece047cbcac8034d089482acc",
        [
         "bluetooth/device/gattserverdisconnected-event/disconnected_gc.https.window.html",
         {
@@ -398062,6 +398227,10 @@
           [
            "script",
            "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
           ],
           [
            "script",
@@ -398312,7 +398481,7 @@
        ]
       ],
       "detachedIframe.https.window.js": [
-       "6bee7292e024de980778c1797b2e73e98fda36c3",
+       "202a8dab7da3efdefc01089695f402cff7bb3309",
        [
         "bluetooth/device/watchAdvertisements/detachedIframe.https.window.html",
         {
@@ -398324,6 +398493,10 @@
           [
            "script",
            "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
           ],
           [
            "script",
@@ -399877,7 +400050,7 @@
        ]
       ],
       "detachedIframe.https.window.js": [
-       "1acd1562228abd75225983df843c94d85ba1a635",
+       "2332cef7070baddc84573120edb0f0dc1fc83efa",
        [
         "bluetooth/server/connect/detachedIframe.https.window.html",
         {
@@ -399892,6 +400065,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -399903,7 +400080,7 @@
        ]
       ],
       "garbage-collection-ran-during-success.https.window.js": [
-       "bae9ff78f342832c77975a297ca358fb249333ba",
+       "2d2211dec30f87a988acf24fc4a283ed174405f8",
        [
         "bluetooth/server/connect/garbage-collection-ran-during-success.https.window.html",
         {
@@ -399915,6 +400092,10 @@
           [
            "script",
            "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
           ],
           [
            "script",
@@ -400009,7 +400190,7 @@
        ]
       ],
       "detach-gc.https.window.js": [
-       "4951fd07c5e92dced89408ba4b859d00951244d4",
+       "b934b3797325a255b77e5cf39011ab2803bbb90b",
        [
         "bluetooth/server/disconnect/detach-gc.https.window.html",
         {
@@ -400024,6 +400205,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -400035,7 +400220,7 @@
        ]
       ],
       "detachedIframe.https.window.js": [
-       "7a8f2aa0d727d06e8daeef4abe4006c101f476d1",
+       "04e0ca0117fcc2974e02bde54802ee8d279e234a",
        [
         "bluetooth/server/disconnect/detachedIframe.https.window.html",
         {
@@ -400047,6 +400232,10 @@
           [
            "script",
            "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
           ],
           [
            "script",
@@ -400087,7 +400276,7 @@
        ]
       ],
       "gc-detach.https.window.js": [
-       "6f9055a73acf1ccce9365aaa7be7736ff20a9a61",
+       "1c062a775903bf0396a33592231851e2da2b7660",
        [
         "bluetooth/server/disconnect/gc-detach.https.window.html",
         {
@@ -400099,6 +400288,10 @@
           [
            "script",
            "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
           ],
           [
            "script",
@@ -400115,7 +400308,7 @@
      },
      "getPrimaryService": {
       "gen-disconnect-called-before.https.window.js": [
-       "6f4f076110a8824c5bc1d5ce84f98b879d589e7e",
+       "631545a38542689762605f53af4ed7a7753a9134",
        [
         "bluetooth/server/getPrimaryService/gen-disconnect-called-before.https.window.html",
         {
@@ -400130,6 +400323,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -400141,7 +400338,7 @@
        ]
       ],
       "gen-disconnect-called-during-error.https.window.js": [
-       "24184ea8ba48ca281b86931f5c5c51317bb1662b",
+       "bcf19665d5fcf2cd720717f3f602f9d9795a6a33",
        [
         "bluetooth/server/getPrimaryService/gen-disconnect-called-during-error.https.window.html",
         {
@@ -400156,6 +400353,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -400167,7 +400368,7 @@
        ]
       ],
       "gen-disconnect-called-during-success.https.window.js": [
-       "8a8714bca579698346b6eb26694c30e343c98aac",
+       "0d2fc1044a5bbb4c205741db61a3946d5b37c724",
        [
         "bluetooth/server/getPrimaryService/gen-disconnect-called-during-success.https.window.html",
         {
@@ -400182,6 +400383,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -400193,7 +400398,7 @@
        ]
       ],
       "gen-disconnect-discovery-timeout.https.window.js": [
-       "d060e32ba7c164c9f4dcaf3397bfd431b396b7b4",
+       "03b0c9d0f382c3462beed1ee282321a7d91d94f1",
        [
         "bluetooth/server/getPrimaryService/gen-disconnect-discovery-timeout.https.window.html",
         {
@@ -400208,6 +400413,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -400219,7 +400428,7 @@
        ]
       ],
       "gen-disconnect-invalidates-objects.https.window.js": [
-       "52699ee0a089ac5529164ca9ceedcb4016404da7",
+       "56468b24eabf2d99a3f4a10eef7cdbc0c2594ebc",
        [
         "bluetooth/server/getPrimaryService/gen-disconnect-invalidates-objects.https.window.html",
         {
@@ -400234,6 +400443,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -400245,7 +400458,7 @@
        ]
       ],
       "gen-disconnected-device.https.window.js": [
-       "e0a31f6136e46a0d7bcbd7cf4d52255caa0d0950",
+       "741b2db5ee82e8f268fca71143fd419bda0af87b",
        [
         "bluetooth/server/getPrimaryService/gen-disconnected-device.https.window.html",
         {
@@ -400260,6 +400473,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -400271,7 +400488,7 @@
        ]
       ],
       "gen-discovery-complete-no-permission-absent-service.https.window.js": [
-       "52875b185489c50adb8c39fa78f8b4a694470258",
+       "e2f5c87630559a7a5fef08bf37b68e84d3356648",
        [
         "bluetooth/server/getPrimaryService/gen-discovery-complete-no-permission-absent-service.https.window.html",
         {
@@ -400286,6 +400503,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -400297,7 +400518,7 @@
        ]
       ],
       "gen-discovery-complete-service-not-found.https.window.js": [
-       "56362f20bfc38d7012e87bd5e2b29274ec5f3452",
+       "8e9166b41a140832ccc121b6ec63415fccb5bbca",
        [
         "bluetooth/server/getPrimaryService/gen-discovery-complete-service-not-found.https.window.html",
         {
@@ -400312,6 +400533,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -400323,7 +400548,7 @@
        ]
       ],
       "gen-garbage-collection-ran-during-error.https.window.js": [
-       "06d6a31eeb5ffc8b4bc9ff08cae550ee9fc17e87",
+       "df182fe8fff6b3001d355fe4c70b67b9b64bdc56",
        [
         "bluetooth/server/getPrimaryService/gen-garbage-collection-ran-during-error.https.window.html",
         {
@@ -400338,6 +400563,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -400349,7 +400578,7 @@
        ]
       ],
       "gen-garbage-collection-ran-during-success.https.window.js": [
-       "cd4a0d39f28ab582cf8dfca727f58cb2dd7b78f3",
+       "8e278af224234f1ab005e52cfff0fafcfe729537",
        [
         "bluetooth/server/getPrimaryService/gen-garbage-collection-ran-during-success.https.window.html",
         {
@@ -400364,6 +400593,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -400375,7 +400608,7 @@
        ]
       ],
       "gen-get-different-service-after-reconnection.https.window.js": [
-       "6cd60732879a502b147c0f3e1a835ea22e2d4ba8",
+       "d4557f67535001a64a0b7347e336f95db547fe6c",
        [
         "bluetooth/server/getPrimaryService/gen-get-different-service-after-reconnection.https.window.html",
         {
@@ -400390,6 +400623,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -400401,7 +400638,7 @@
        ]
       ],
       "gen-get-same-object.https.window.js": [
-       "f05adce27b1e877223684e00fce45bdbf5c92361",
+       "b43cefb567f01d0b7cdb8b53bc3da40e785fe007",
        [
         "bluetooth/server/getPrimaryService/gen-get-same-object.https.window.html",
         {
@@ -400416,6 +400653,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -400427,7 +400668,7 @@
        ]
       ],
       "gen-invalid-service-name.https.window.js": [
-       "b30e4cc48f443d72e680ecc5420fe25eb1571758",
+       "cf4ab6c665d6a9605507b01e1e0c3e1a807376ba",
        [
         "bluetooth/server/getPrimaryService/gen-invalid-service-name.https.window.html",
         {
@@ -400442,6 +400683,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -400453,7 +400698,7 @@
        ]
       ],
       "gen-no-permission-absent-service.https.window.js": [
-       "6df58222e0aec9623433e9939295161a55d41362",
+       "3466ded4f9e910d30c3f5a55dd3e1172addeb3d8",
        [
         "bluetooth/server/getPrimaryService/gen-no-permission-absent-service.https.window.html",
         {
@@ -400468,6 +400713,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -400479,7 +400728,7 @@
        ]
       ],
       "gen-no-permission-for-any-service.https.window.js": [
-       "d6ae0b6dc8f001c95155024244d9db607722d196",
+       "6576ef20a3de120529c4bf2997b13b40d7ce3f26",
        [
         "bluetooth/server/getPrimaryService/gen-no-permission-for-any-service.https.window.html",
         {
@@ -400494,6 +400743,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -400505,7 +400758,7 @@
        ]
       ],
       "gen-no-permission-present-service.https.window.js": [
-       "e11ed9e41e210216b16412dd06e203dd557ef1bd",
+       "3d0b460bc33b9e246dfa59d30248edefd7d13d6a",
        [
         "bluetooth/server/getPrimaryService/gen-no-permission-present-service.https.window.html",
         {
@@ -400520,6 +400773,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -400531,7 +400788,7 @@
        ]
       ],
       "gen-service-not-found.https.window.js": [
-       "0b8419a8042b0706c941e259ae7c2eb6b85acb35",
+       "6e0d2c446ba90199f1bab1158e6147ed632deda6",
        [
         "bluetooth/server/getPrimaryService/gen-service-not-found.https.window.html",
         {
@@ -400543,6 +400800,10 @@
           [
            "script",
            "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
           ],
           [
            "script",
@@ -400689,7 +400950,7 @@
        ]
       ],
       "gen-disconnect-called-before-with-uuid.https.window.js": [
-       "ea0c16160508aacf9845f45264c3e58ee6b9a895",
+       "21b561375dfed914f011a4de18148053087a6c4f",
        [
         "bluetooth/server/getPrimaryServices/gen-disconnect-called-before-with-uuid.https.window.html",
         {
@@ -400704,6 +400965,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -400715,7 +400980,7 @@
        ]
       ],
       "gen-disconnect-called-before.https.window.js": [
-       "04dc61083b87c0297b79d012575738e8c335954d",
+       "8e5fea83ab4e53299ed6f5c78bd5d0322d2cf410",
        [
         "bluetooth/server/getPrimaryServices/gen-disconnect-called-before.https.window.html",
         {
@@ -400730,6 +400995,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -400741,7 +401010,7 @@
        ]
       ],
       "gen-disconnect-called-during-error-with-uuid.https.window.js": [
-       "3223049d2a8625ca0c10814053364371b3cfd05f",
+       "5c28716b90bf32e0e25e5e16ac37fc085f50fb9a",
        [
         "bluetooth/server/getPrimaryServices/gen-disconnect-called-during-error-with-uuid.https.window.html",
         {
@@ -400756,6 +401025,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -400767,7 +401040,7 @@
        ]
       ],
       "gen-disconnect-called-during-error.https.window.js": [
-       "646db21586fe6d237ac6e7431695af4346391c15",
+       "ddc31247911d64f1995cdae41af9da15a11bb890",
        [
         "bluetooth/server/getPrimaryServices/gen-disconnect-called-during-error.https.window.html",
         {
@@ -400782,6 +401055,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -400793,7 +401070,7 @@
        ]
       ],
       "gen-disconnect-called-during-success-with-uuid.https.window.js": [
-       "472eb991ece339dc64c59d7a100e50f2863b4de3",
+       "13e3806d313e40ffc1d69503ad9ebb18cf4630ba",
        [
         "bluetooth/server/getPrimaryServices/gen-disconnect-called-during-success-with-uuid.https.window.html",
         {
@@ -400808,6 +401085,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -400819,7 +401100,7 @@
        ]
       ],
       "gen-disconnect-called-during-success.https.window.js": [
-       "86d56889325b2a139e624f60e94eac0a3f46e873",
+       "d6b31936c60a9a17af6a4764ac16b7580b3649a9",
        [
         "bluetooth/server/getPrimaryServices/gen-disconnect-called-during-success.https.window.html",
         {
@@ -400834,6 +401115,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -400845,7 +401130,7 @@
        ]
       ],
       "gen-disconnect-discovery-timeout-with-uuid.https.window.js": [
-       "0eaf5d7119e003cc579933279764b31ec6ad7358",
+       "77f7bc81d99cc2f0b7f72e5a5866d0d89e625dce",
        [
         "bluetooth/server/getPrimaryServices/gen-disconnect-discovery-timeout-with-uuid.https.window.html",
         {
@@ -400860,6 +401145,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -400871,7 +401160,7 @@
        ]
       ],
       "gen-disconnect-discovery-timeout.https.window.js": [
-       "c95b13a409b2d4a85c42dcbda23ce8f3f7ecab6d",
+       "ea55b7b495259c58027ac24be4b918585cb44fed",
        [
         "bluetooth/server/getPrimaryServices/gen-disconnect-discovery-timeout.https.window.html",
         {
@@ -400886,6 +401175,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -400897,7 +401190,7 @@
        ]
       ],
       "gen-disconnect-invalidates-objects-with-uuid.https.window.js": [
-       "0a5e07310faf9efbf0eb1f2b2f05c3974d9662c7",
+       "8cdb83e3ad7a2fea327c45b67388082c4e58e09e",
        [
         "bluetooth/server/getPrimaryServices/gen-disconnect-invalidates-objects-with-uuid.https.window.html",
         {
@@ -400912,6 +401205,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -400923,7 +401220,7 @@
        ]
       ],
       "gen-disconnect-invalidates-objects.https.window.js": [
-       "e87339d59d07470f98eac4feb2d54619769119ba",
+       "9fd536f05161e0582e88ecbf2f5987a92214a4ba",
        [
         "bluetooth/server/getPrimaryServices/gen-disconnect-invalidates-objects.https.window.html",
         {
@@ -400938,6 +401235,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -400949,7 +401250,7 @@
        ]
       ],
       "gen-disconnected-device-with-uuid.https.window.js": [
-       "bb440a7caa2d309468bb72eb9b27cd37b60986f0",
+       "e0393d5e69ca867e09b049576c33efbbc397866d",
        [
         "bluetooth/server/getPrimaryServices/gen-disconnected-device-with-uuid.https.window.html",
         {
@@ -400964,6 +401265,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -400975,7 +401280,7 @@
        ]
       ],
       "gen-disconnected-device.https.window.js": [
-       "26f3269a0c96d3fc029499adb952dff5dae38598",
+       "87d74c6ab14083fdd6ed32aa74d01e5b1206b53d",
        [
         "bluetooth/server/getPrimaryServices/gen-disconnected-device.https.window.html",
         {
@@ -400990,6 +401295,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -401001,7 +401310,7 @@
        ]
       ],
       "gen-discovery-complete-no-permission-absent-service-with-uuid.https.window.js": [
-       "b52dac0385f47c463d2302838e57425d0e8fc5c4",
+       "6e179dc5d9a373a6a10c17a8083116e464264658",
        [
         "bluetooth/server/getPrimaryServices/gen-discovery-complete-no-permission-absent-service-with-uuid.https.window.html",
         {
@@ -401016,6 +401325,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -401027,7 +401340,7 @@
        ]
       ],
       "gen-discovery-complete-service-not-found-with-uuid.https.window.js": [
-       "f944f72583ff6a9f4fbf1876246face6538486d9",
+       "66cfb491c078d7ca378cb4418d399a0b33a9d07b",
        [
         "bluetooth/server/getPrimaryServices/gen-discovery-complete-service-not-found-with-uuid.https.window.html",
         {
@@ -401042,6 +401355,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -401053,7 +401370,7 @@
        ]
       ],
       "gen-garbage-collection-ran-during-error-with-uuid.https.window.js": [
-       "455bd47a040727ceed3f435a6fc6b469c892c539",
+       "a235cf5d189bebdaf2d8e6b04e5796075fb34098",
        [
         "bluetooth/server/getPrimaryServices/gen-garbage-collection-ran-during-error-with-uuid.https.window.html",
         {
@@ -401068,6 +401385,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -401079,7 +401400,7 @@
        ]
       ],
       "gen-garbage-collection-ran-during-error.https.window.js": [
-       "2e832d89e175d46c78d8468ddf6d3fb29bd0524a",
+       "f174d4aef98dbe1fb3fa148992cab34b8a475263",
        [
         "bluetooth/server/getPrimaryServices/gen-garbage-collection-ran-during-error.https.window.html",
         {
@@ -401094,6 +401415,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -401105,7 +401430,7 @@
        ]
       ],
       "gen-garbage-collection-ran-during-success-with-uuid.https.window.js": [
-       "4555242ae823060dfcc56ea8965eb93b0af92242",
+       "cf5dfb246fbd12ef3a4597926cdbf877bae2cc4a",
        [
         "bluetooth/server/getPrimaryServices/gen-garbage-collection-ran-during-success-with-uuid.https.window.html",
         {
@@ -401120,6 +401445,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -401131,7 +401460,7 @@
        ]
       ],
       "gen-garbage-collection-ran-during-success.https.window.js": [
-       "0eb78ba1b32de808f10450c04061254b397ab86b",
+       "f1c080a9463b79462bab70dbe611ee01ea6880b8",
        [
         "bluetooth/server/getPrimaryServices/gen-garbage-collection-ran-during-success.https.window.html",
         {
@@ -401146,6 +401475,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -401157,7 +401490,7 @@
        ]
       ],
       "gen-get-different-service-after-reconnection-with-uuid.https.window.js": [
-       "11671cbf7b3aae978cd943485aa2197b1b560876",
+       "2e40d580f3399ddccd7b84d60f9ffa87b0fb2d51",
        [
         "bluetooth/server/getPrimaryServices/gen-get-different-service-after-reconnection-with-uuid.https.window.html",
         {
@@ -401172,6 +401505,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -401183,7 +401520,7 @@
        ]
       ],
       "gen-get-different-service-after-reconnection.https.window.js": [
-       "efda6cf4a4150ea58f895671d0e286105d7af883",
+       "ee1fc971bfa942e4f0c204acb80b055f311dc611",
        [
         "bluetooth/server/getPrimaryServices/gen-get-different-service-after-reconnection.https.window.html",
         {
@@ -401198,6 +401535,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -401209,7 +401550,7 @@
        ]
       ],
       "gen-get-same-object-with-uuid.https.window.js": [
-       "d84ca0aa7fc9b98dd3621d203b4d9e1050ffec23",
+       "b589056a23a9e67ad9673713bab2cd2e93c1b8f9",
        [
         "bluetooth/server/getPrimaryServices/gen-get-same-object-with-uuid.https.window.html",
         {
@@ -401224,6 +401565,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -401235,7 +401580,7 @@
        ]
       ],
       "gen-get-same-object.https.window.js": [
-       "3f876f5b76b29df00b85a5ec1e44a2d74e8ff249",
+       "63739add912351f1da86a4cfdcd02d4cfd8567fa",
        [
         "bluetooth/server/getPrimaryServices/gen-get-same-object.https.window.html",
         {
@@ -401250,6 +401595,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -401261,7 +401610,7 @@
        ]
       ],
       "gen-invalid-service-name.https.window.js": [
-       "d26c0aa20a6f48073d71b2b63c252acbffbfdaee",
+       "a9b1262e6a181d1017ead79b1972ecd85e942098",
        [
         "bluetooth/server/getPrimaryServices/gen-invalid-service-name.https.window.html",
         {
@@ -401276,6 +401625,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -401287,7 +401640,7 @@
        ]
       ],
       "gen-no-permission-absent-service-with-uuid.https.window.js": [
-       "4aefb9955b384f6d5a762a2b6d09e1685a1f58a7",
+       "27ad9f008ee0d296dcbcf1c27199ce11a45e6fdd",
        [
         "bluetooth/server/getPrimaryServices/gen-no-permission-absent-service-with-uuid.https.window.html",
         {
@@ -401302,6 +401655,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -401313,7 +401670,7 @@
        ]
       ],
       "gen-no-permission-for-any-service-with-uuid.https.window.js": [
-       "a5006e6da846c599297638ca0cfc04b9d8c7c91f",
+       "d5f06c23da6660566fbbbdbf8a5dccaaa14904fe",
        [
         "bluetooth/server/getPrimaryServices/gen-no-permission-for-any-service-with-uuid.https.window.html",
         {
@@ -401328,6 +401685,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -401339,7 +401700,7 @@
        ]
       ],
       "gen-no-permission-for-any-service.https.window.js": [
-       "e7d20bd3f230b3e69d0d2720edb168ddf1f478f1",
+       "8aa730d2ed2d8de1868d705e026a6a8a2376ee27",
        [
         "bluetooth/server/getPrimaryServices/gen-no-permission-for-any-service.https.window.html",
         {
@@ -401354,6 +401715,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -401365,7 +401730,7 @@
        ]
       ],
       "gen-no-permission-present-service-with-uuid.https.window.js": [
-       "8f4811fe08b2f12c5cb5a03c7dda72787e9f5373",
+       "a2047a0e8f0e2236cc968b309aa5340ee5b97a90",
        [
         "bluetooth/server/getPrimaryServices/gen-no-permission-present-service-with-uuid.https.window.html",
         {
@@ -401380,6 +401745,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -401391,7 +401760,7 @@
        ]
       ],
       "gen-service-not-found-with-uuid.https.window.js": [
-       "8bf9d8c0b6b43a13773a24d261ea60881cdc6b79",
+       "a2db1edc4b9f30d73b39eb530894983323135090",
        [
         "bluetooth/server/getPrimaryServices/gen-service-not-found-with-uuid.https.window.html",
         {
@@ -401403,6 +401772,10 @@
           [
            "script",
            "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
           ],
           [
            "script",
@@ -401498,7 +401871,7 @@
     },
     "service": {
      "detachedIframe.https.window.js": [
-      "d83e03737dd726b07f4d129e0bcf449a5d0adca4",
+      "f75fc225a791b57bff086fa8acad026521e22ce4",
       [
        "bluetooth/service/detachedIframe.https.window.html",
        {
@@ -401510,6 +401883,10 @@
          [
           "script",
           "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
+          "/common/gc.js"
          ],
          [
           "script",
@@ -401603,7 +401980,7 @@
        ]
       ],
       "detachedIframe.https.window.js": [
-       "8bdf406273eda66bbba21272d2e26d517b261e74",
+       "ea8c96160ff9dfa2498fd9d51f167ddc80e4aa6a",
        [
         "bluetooth/service/getCharacteristic/detachedIframe.https.window.html",
         {
@@ -401618,6 +401995,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -401629,7 +402010,7 @@
        ]
       ],
       "gen-blocklisted-characteristic.https.window.js": [
-       "fb96df568ff19eb786ff92b39fb05e8e85c24f92",
+       "cce302d6504f51db4d67553d8f57b915d5ffc645",
        [
         "bluetooth/service/getCharacteristic/gen-blocklisted-characteristic.https.window.html",
         {
@@ -401644,6 +402025,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -401655,7 +402040,7 @@
        ]
       ],
       "gen-characteristic-not-found.https.window.js": [
-       "c0987c68f5924f07442c52993487695935706ffd",
+       "2ed48eb5c68798e402193ca195c74c86dbf8909e",
        [
         "bluetooth/service/getCharacteristic/gen-characteristic-not-found.https.window.html",
         {
@@ -401670,6 +402055,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -401681,7 +402070,7 @@
        ]
       ],
       "gen-garbage-collection-ran-during-error.https.window.js": [
-       "1c429fc49451473332704f5a4b8863bf37bf5a76",
+       "1fd70c8fad4b454cb0687d48645117edb801c4de",
        [
         "bluetooth/service/getCharacteristic/gen-garbage-collection-ran-during-error.https.window.html",
         {
@@ -401696,6 +402085,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -401707,7 +402100,7 @@
        ]
       ],
       "gen-get-same-object.https.window.js": [
-       "636ba9de773a39cf033e04c4efe719278204e071",
+       "c5176cdc5e0a7a310c60e1d4ed15b07dbeb5e7bb",
        [
         "bluetooth/service/getCharacteristic/gen-get-same-object.https.window.html",
         {
@@ -401722,6 +402115,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -401733,7 +402130,7 @@
        ]
       ],
       "gen-invalid-characteristic-name.https.window.js": [
-       "2331f86c4ae418cdd9cc0a49ea5b4ef2cfb2c164",
+       "da0f5bda28080f7486e95a3f14ee1f8838c3bc62",
        [
         "bluetooth/service/getCharacteristic/gen-invalid-characteristic-name.https.window.html",
         {
@@ -401748,6 +402145,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -401759,7 +402160,7 @@
        ]
       ],
       "gen-reconnect-during.https.window.js": [
-       "bc96ce5eefd6b66a23cf2cdda03c5cdb3e0fb449",
+       "8801c152e931ef3e631cc7ec649c83254c59b3a2",
        [
         "bluetooth/service/getCharacteristic/gen-reconnect-during.https.window.html",
         {
@@ -401774,6 +402175,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -401785,7 +402190,7 @@
        ]
       ],
       "gen-service-is-removed.https.window.js": [
-       "d04967e3a8c611c1f6941770d1cac6986adbc449",
+       "bfeb318c46ea54136137f390adaae0a7322dd827",
        [
         "bluetooth/service/getCharacteristic/gen-service-is-removed.https.window.html",
         {
@@ -401797,6 +402202,10 @@
           [
            "script",
            "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
           ],
           [
            "script",
@@ -401917,7 +402326,7 @@
        ]
       ],
       "gen-blocklisted-characteristic-with-uuid.https.window.js": [
-       "c39a29c845bf59d68a4c8754e0c34217ba259972",
+       "79cd01032b580debd840d885c350d44aa7b5e974",
        [
         "bluetooth/service/getCharacteristics/gen-blocklisted-characteristic-with-uuid.https.window.html",
         {
@@ -401932,6 +402341,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -401943,7 +402356,7 @@
        ]
       ],
       "gen-characteristic-not-found-with-uuid.https.window.js": [
-       "ccaa7388e7e339bc223f57d90603fa1aa3fa512b",
+       "8a5e2ab4e4ac8e1534f0ccb3666fe5ee71645ec9",
        [
         "bluetooth/service/getCharacteristics/gen-characteristic-not-found-with-uuid.https.window.html",
         {
@@ -401958,6 +402371,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -401969,7 +402386,7 @@
        ]
       ],
       "gen-garbage-collection-ran-during-error-with-uuid.https.window.js": [
-       "ad4ab9f3f5067b8b042c3ec8a9225c39382beb57",
+       "683b93e352d0e59fce29c48585d419febd850fb6",
        [
         "bluetooth/service/getCharacteristics/gen-garbage-collection-ran-during-error-with-uuid.https.window.html",
         {
@@ -401984,6 +402401,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -401995,7 +402416,7 @@
        ]
       ],
       "gen-garbage-collection-ran-during-error.https.window.js": [
-       "844814508f927f91b46f2035c365737220eab62e",
+       "c964781ab44634e0677e5ce46ac5d5b816dff0be",
        [
         "bluetooth/service/getCharacteristics/gen-garbage-collection-ran-during-error.https.window.html",
         {
@@ -402010,6 +402431,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -402021,7 +402446,7 @@
        ]
       ],
       "gen-get-same-object-with-uuid.https.window.js": [
-       "35d277e3839c8375190f7e65dd60214bdc2a6fef",
+       "64b53f4eb31f0740e0f5c8c591c183ded92ffa79",
        [
         "bluetooth/service/getCharacteristics/gen-get-same-object-with-uuid.https.window.html",
         {
@@ -402036,6 +402461,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -402047,7 +402476,7 @@
        ]
       ],
       "gen-get-same-object.https.window.js": [
-       "4326ee29079606daef6b6e1dda1eff08dec6c449",
+       "6aad17c1e689e7f910698a84f3505226dc77deff",
        [
         "bluetooth/service/getCharacteristics/gen-get-same-object.https.window.html",
         {
@@ -402062,6 +402491,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -402073,7 +402506,7 @@
        ]
       ],
       "gen-invalid-characteristic-name.https.window.js": [
-       "14b2e509be4f4941bc96f40cb6da3d3b08879765",
+       "c7d439e13affcbac37a872023cd76738a922dd13",
        [
         "bluetooth/service/getCharacteristics/gen-invalid-characteristic-name.https.window.html",
         {
@@ -402088,6 +402521,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -402099,7 +402536,7 @@
        ]
       ],
       "gen-reconnect-during-with-uuid.https.window.js": [
-       "34207a2f60d2af6dcb74e0e43f4c486d00f92226",
+       "db373fbca1581019eada6740e49c0e8fc624ea94",
        [
         "bluetooth/service/getCharacteristics/gen-reconnect-during-with-uuid.https.window.html",
         {
@@ -402114,6 +402551,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -402125,7 +402566,7 @@
        ]
       ],
       "gen-reconnect-during.https.window.js": [
-       "4354cfc0671e4f008c1702f8f727ee22cae47fdb",
+       "8b3ba7cc6baa1f6f3a37536aeb51fd066a682da0",
        [
         "bluetooth/service/getCharacteristics/gen-reconnect-during.https.window.html",
         {
@@ -402140,6 +402581,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -402151,7 +402596,7 @@
        ]
       ],
       "gen-service-is-removed-with-uuid.https.window.js": [
-       "8d0e7c2fc333c58b5fbbf3f25daad08a35208a8e",
+       "2d4db52822d7e44e50a38876747b989a4b5c5017",
        [
         "bluetooth/service/getCharacteristics/gen-service-is-removed-with-uuid.https.window.html",
         {
@@ -402166,6 +402611,10 @@
           ],
           [
            "script",
+           "/common/gc.js"
+          ],
+          [
+           "script",
            "/bluetooth/resources/bluetooth-test.js"
           ],
           [
@@ -402177,7 +402626,7 @@
        ]
       ],
       "gen-service-is-removed.https.window.js": [
-       "dff0d3d93975b31f3698bf3c004f92e387489438",
+       "f922b45cdcca6844772681663fb303f3ba430051",
        [
         "bluetooth/service/getCharacteristics/gen-service-is-removed.https.window.html",
         {
@@ -402189,6 +402638,10 @@
           [
            "script",
            "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/common/gc.js"
           ],
           [
            "script",
@@ -412853,7 +413306,7 @@
       ]
      ],
      "get_all_cookies-default-samesite.html": [
-      "099ac5112e1cbfb105171dcbe06e967d5b87f0f2",
+      "3b1606b7f825bf377302f451a4479f97b0c88297",
       [
        null,
        {
@@ -412862,7 +413315,7 @@
       ]
      ],
      "get_named_cookie-default-samesite.html": [
-      "405473cc3a891ea53b0a8f52d3a4c342a71e6299",
+      "2ee5d0f29ceb57f48853929284b9d78d115e115d",
       [
        null,
        {
@@ -418628,6 +419081,13 @@
       ],
       "transition-scrollbars.html": [
        "60d82d26b4a850a41fc5c8eee39dfad60bbbe1a4",
+       [
+        null,
+        {}
+       ]
+      ],
+      "transition-style-change-event-002.html": [
+       "dc9297004d7c04ee86d2013272dc5c53b09c4b43",
        [
         null,
         {}
@@ -446863,7 +447323,7 @@
    },
    "custom-elements": {
     "CustomElementRegistry-constructor-and-callbacks-are-held-strongly.html": [
-     "5e741eba67e92b41105685ea14248df9b1b4b127",
+     "fb6af32fe1caa76ec09d88f009b21918c3b5e146",
      [
       null,
       {}
@@ -447041,7 +447501,7 @@
       ]
      ],
      "ElementInternals-target-element-is-held-strongly.html": [
-      "7119d5f9ebe95eced4b550dd8c394f685103e7a8",
+      "a747c04c5c92b0ac681960a054f13b08cb846ddc",
       [
        null,
        {}
@@ -482818,11 +483278,15 @@
      ]
     ],
     "FileSystemDirectoryHandle-iteration.https.any.js": [
-     "3961ea3ea86cd209d69485e8301850db193f5c8d",
+     "b337d61d76819b89b93be3cacbdc12bd0a8b0e5b",
      [
       "fs/FileSystemDirectoryHandle-iteration.https.any.html",
       {
        "script_metadata": [
+        [
+         "script",
+         "/common/gc.js"
+        ],
         [
          "script",
          "resources/test-helpers.js"
@@ -482842,6 +483306,10 @@
       "fs/FileSystemDirectoryHandle-iteration.https.any.worker.html",
       {
        "script_metadata": [
+        [
+         "script",
+         "/common/gc.js"
+        ],
         [
          "script",
          "resources/test-helpers.js"
@@ -525416,7 +525884,7 @@
        ]
       ],
       "popover-animated-hide-cleanup.tentative.html": [
-       "ee1239e05f2c94d146d93442070e4d4faa99ced8",
+       "9310acc4ff209807a36b75c543edad64f4318f39",
        [
         null,
         {
@@ -536432,7 +536900,7 @@
       ]
      ],
      "get_all_cookies.sub.html": [
-      "a145e5232d4d01e25ccbf93ae7cdab8ffb08c3f0",
+      "84f93af0a310de777baccb9038b11b5ce0e8c7b6",
       [
        null,
        {
@@ -536441,7 +536909,7 @@
       ]
      ],
      "get_all_cookies.sub.https.html": [
-      "e340278031583032630624f264794befcad41181",
+      "e94167133b3aa852a54f06b49e850e66e2873f65",
       [
        null,
        {
@@ -536450,7 +536918,7 @@
       ]
      ],
      "get_named_cookie.sub.html": [
-      "3cbc784f763fd7c2b8d3d1d1424e5db62382f81c",
+      "28950e253609f16ee8b345712ae309c87e785ca8",
       [
        null,
        {
@@ -536459,7 +536927,7 @@
       ]
      ],
      "get_named_cookie.sub.https.html": [
-      "d0d8612ac23f003c35f37b9aaa37fa410c338fac",
+      "8e8f44338128b9f110c22861b067cd6af1ef2e09",
       [
        null,
        {
@@ -542743,10 +543211,12 @@
      ]
     ],
     "parallel-capture-requests.https.html": [
-     "01b7f32e358e7cac8493f36096ded172a5896a4a",
+     "301515d1bd36ac294299f0a41e92b3abf01f1eb2",
      [
       null,
-      {}
+      {
+       "testdriver": true
+      }
      ]
     ]
    },
@@ -548005,15 +548475,22 @@
        {}
       ]
      ],
+     "navigate-from-initial-about-blank-gc.html": [
+      "d35121ec819a7074ce3673a88f56e75f2007ec1b",
+      [
+       null,
+       {}
+      ]
+     ],
      "navigate-from-initial-about-blank-src.html": [
-      "2044b33cf027271bbedcff7462114c3b63e0d69b",
+      "8e54943669989d4c839ff74066d3c865bb99ec76",
       [
        null,
        {}
       ]
      ],
      "navigate-from-initial-about-blank.html": [
-      "d494ec468cebf87a33ab9c5f1de6d0f3184a3879",
+      "00b2216166a6f904119546131041057cb6b32faf",
       [
        null,
        {}
@@ -552529,7 +553006,7 @@
      ]
     ],
     "permissions-cg.https.html": [
-     "d8f63eba5eca3e80b1861259377cf99c8a03d2fa",
+     "7a2d8dcbb4d557196af1f8020ce212958d96985e",
      [
       null,
       {
@@ -582897,7 +583374,7 @@
       ]
      ],
      "garbage-collection.any.js": [
-      "f7e2d06ae5cdf362591699f52a938da7c714ecd9",
+      "e578176777adafe6ec370be6dd88337af083b3f0",
       [
        "streams/readable-streams/garbage-collection.any.html",
        {
@@ -582909,6 +583386,10 @@
          [
           "script",
           "../resources/test-utils.js"
+         ],
+         [
+          "script",
+          "/common/gc.js"
          ]
         ]
        }
@@ -582924,6 +583405,10 @@
          [
           "script",
           "../resources/test-utils.js"
+         ],
+         [
+          "script",
+          "/common/gc.js"
          ]
         ]
        }
@@ -582939,6 +583424,10 @@
          [
           "script",
           "../resources/test-utils.js"
+         ],
+         [
+          "script",
+          "/common/gc.js"
          ]
         ]
        }
@@ -582954,6 +583443,10 @@
          [
           "script",
           "../resources/test-utils.js"
+         ],
+         [
+          "script",
+          "/common/gc.js"
          ]
         ]
        }
@@ -604555,7 +605048,7 @@
    },
    "webmessaging": {
     "Channel_postMessage_Blob.any.js": [
-     "485dd23f5357a32b630099d2d64310215c3060ab",
+     "fce814f5887ad186789331d4cc071a06e03e2127",
      [
       "webmessaging/Channel_postMessage_Blob.any.html",
       {
@@ -604563,6 +605056,10 @@
         [
          "title",
          "postMessage() with a Blob"
+        ],
+        [
+         "script",
+         "/common/gc.js"
         ]
        ]
       }
@@ -604574,6 +605071,10 @@
         [
          "title",
          "postMessage() with a Blob"
+        ],
+        [
+         "script",
+         "/common/gc.js"
         ]
        ]
       }
@@ -604924,7 +605425,7 @@
       ]
      ],
      "blobs.html": [
-      "1f0e2f1f1d6050136910c17e460a70ed15874aa5",
+      "ab5096b63c19b0792b60746ff416fda92a4bbed3",
       [
        null,
        {}
@@ -605089,7 +605590,7 @@
       ]
      ],
      "detached-iframe.window.js": [
-      "c1effaf141b7246320883e293b58dabbc3572123",
+      "c19f50ff9317e2ecab65647a5da2b2464e295a52",
       [
        "webmessaging/message-channels/detached-iframe.window.html",
        {
@@ -605101,6 +605602,10 @@
          [
           "script",
           "/service-workers/service-worker/resources/test-helpers.sub.js"
+         ],
+         [
+          "script",
+          "/common/gc.js"
          ]
         ]
        }
@@ -620606,7 +621111,7 @@
      ]
     ],
     "usb-garbage-collection.https.window.js": [
-     "26c99786c37ba23a7ceec7cbd514cd0103f4460b",
+     "5c153eb0a90abd3f937502eb80a4800b8687e5aa",
      [
       "webusb/usb-garbage-collection.https.window.html",
       {
@@ -620622,6 +621127,10 @@
         [
          "script",
          "/webusb/resources/usb-helpers.js"
+        ],
+        [
+         "script",
+         "/common/gc.js"
         ]
        ]
       }
