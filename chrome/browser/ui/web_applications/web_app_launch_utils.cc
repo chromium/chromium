@@ -57,6 +57,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_types.h"
@@ -492,19 +493,33 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
   return web_contents;
 }
 
-void RecordAppWindowLaunchMetric(Profile* profile, const std::string& app_id) {
+void RecordAppWindowLaunchMetric(Profile* profile,
+                                 const std::string& app_id,
+                                 extensions::AppLaunchSource launch_source) {
   WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
   if (!provider)
     return;
 
-  DisplayMode display =
-      provider->registrar().GetEffectiveDisplayModeFromManifest(app_id);
-  if (display == DisplayMode::kUndefined)
+  const WebApp* web_app = provider->registrar().GetAppById(app_id);
+  if (!web_app)
     return;
 
-  DCHECK_LT(DisplayMode::kUndefined, display);
-  DCHECK_LE(display, DisplayMode::kMaxValue);
-  UMA_HISTOGRAM_ENUMERATION("Launch.WebAppDisplayMode", display);
+  DisplayMode display =
+      provider->registrar().GetEffectiveDisplayModeFromManifest(app_id);
+  if (display != DisplayMode::kUndefined) {
+    DCHECK_LT(DisplayMode::kUndefined, display);
+    DCHECK_LE(display, DisplayMode::kMaxValue);
+    UMA_HISTOGRAM_ENUMERATION("Launch.WebAppDisplayMode", display);
+  }
+
+  // Reparenting launches don't respect the launch_handler setting.
+  if (launch_source != extensions::AppLaunchSource::kSourceReparenting &&
+      base::FeatureList::IsEnabled(
+          blink::features::kWebAppEnableLaunchHandler)) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Launch.WebAppLaunchHandlerClientMode",
+        web_app->launch_handler().value_or(LaunchHandler()).client_mode);
+  }
 }
 
 void RecordLaunchMetrics(const AppId& app_id,
@@ -524,7 +539,7 @@ void RecordLaunchMetrics(const AppId& app_id,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (container == apps::LaunchContainer::kLaunchContainerWindow)
-    RecordAppWindowLaunchMetric(profile, app_id);
+    RecordAppWindowLaunchMetric(profile, app_id, launch_source);
 
   // TODO(crbug.com/1014328): Populate WebApp metrics instead of Extensions.
   UMA_HISTOGRAM_ENUMERATION("Extensions.BookmarkAppLaunchSource",

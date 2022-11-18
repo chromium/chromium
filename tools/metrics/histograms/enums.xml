@@ -105880,6 +105880,17 @@ others/histograms.xml -->
   <int value="2" label="Error">Launching the Chrome process failed.</int>
 </enum>
 
+<enum name="WebAppLaunchHandlerClientMode">
+  <summary>
+    The manifest launch_handler.client_mode of a web app as defined in:
+    https://wicg.github.io/web-app-launch/
+  </summary>
+  <int value="0" label="Auto"/>
+  <int value="1" label="NavigateNew"/>
+  <int value="2" label="NavigateExisting"/>
+  <int value="3" label="FocusExisting"/>
+</enum>
+
 <enum name="WebAppManifestUpdateResult">
   <int value="0" label="No app in scope"/>
   <int value="1" label="Updating throttled"/>
