@@ -525,6 +525,10 @@ void Desk::Activate(bool update_window_activation) {
     if (!base::Contains(windows_, window))
       continue;
 
+    // Do not activate minimized windows, otherwise they will unminimize.
+    if (WindowState::Get(window)->IsMinimized())
+      continue;
+
     if (features::IsPerDeskZOrderEnabled() &&
         desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
       // If per-desk z-order is enabled, then we will activate an all-desk
@@ -541,10 +545,6 @@ void Desk::Activate(bool update_window_activation) {
 
       continue;
     }
-
-    // Do not activate minimized windows, otherwise they will unminimize.
-    if (WindowState::Get(window)->IsMinimized())
-      continue;
 
     wm::ActivateWindow(window);
     return;
