@@ -755,7 +755,7 @@ void AboutHandler::SetUpdateStatus(VersionUpdater::Status status,
   event.Set("rollback", rollback);
   event.Set("powerwash", powerwash);
   event.Set("version", version);
-  // DictionaryValue does not support int64_t, so convert to string.
+  // `base::Value::Dict` does not support int64_t, so convert to string.
   event.Set("size", base::NumberToString(size));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (status == VersionUpdater::FAILED_OFFLINE ||

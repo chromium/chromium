@@ -9,10 +9,6 @@
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
-namespace base {
-class DictionaryValue;
-}
-
 namespace ash {
 
 // Interface between HWDataCollection screen and its representation, either

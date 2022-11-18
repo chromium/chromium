@@ -20,10 +20,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-namespace base {
-class DictionaryValue;
-}
-
 namespace settings {
 
 class MetricsReportingHandler : public SettingsPageUIHandler {
@@ -46,7 +42,7 @@ class MetricsReportingHandler : public SettingsPageUIHandler {
   void HandleGetMetricsReporting(const base::Value::List& args);
 
  private:
-  // Describes the state of metrics reporting in a base::DictionaryValue.
+  // Describes the state of metrics reporting in a `base::Value::Dict`.
   // Friends with ChromeMetricsServiceAccessor.
   base::Value::Dict CreateMetricsReportingDict();
 

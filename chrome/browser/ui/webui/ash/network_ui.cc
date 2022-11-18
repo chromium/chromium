@@ -501,14 +501,6 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     NetworkHandler::Get()->network_state_handler()->SetHostname(hostname);
   }
 
-  void ErrorCallback(const std::string& callback_id,
-                     const std::string& guid_or_type,
-                     const std::string& function_name,
-                     const std::string& error_name,
-                     std::unique_ptr<base::DictionaryValue> /* error_data */) {
-    RunErrorCallback(callback_id, guid_or_type, function_name, error_name);
-  }
-
   void RunErrorCallback(const std::string& callback_id,
                         const std::string& guid_or_type,
                         const std::string& function_name,

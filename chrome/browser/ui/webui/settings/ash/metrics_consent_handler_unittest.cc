@@ -102,8 +102,8 @@ class TestMetricsConsentHandler : public MetricsConsentHandler {
     base::ListValue args;
     args.Append(base::Value("callback-id"));
 
-    base::DictionaryValue dict;
-    dict.SetBoolKey("consent", metrics_consent);
+    base::Value::Dict dict;
+    dict.Set("consent", metrics_consent);
     args.Append(std::move(dict));
 
     HandleUpdateMetricsConsent(args.GetList());

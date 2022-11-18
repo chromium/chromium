@@ -45,7 +45,7 @@ namespace {
 
 // Helper class for building a Value representation of a certificate. The class
 // gathers data for a single node of the representation tree and builds a
-// DictionaryValue out of that.
+// `base::Value::Dict` out of that.
 class CertNodeBuilder {
  public:
   // Starts the node with "label" set to |label|.

@@ -24,7 +24,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_ui.h"
 
-using base::DictionaryValue;
 using sync_pb::UserEventSpecifics;
 using syncer::FakeUserEventService;
 using syncer::SyncService;

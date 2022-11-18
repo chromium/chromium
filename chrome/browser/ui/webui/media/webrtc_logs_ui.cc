@@ -132,7 +132,7 @@ class WebRtcLogsDOMHandler final : public WebUIMessageHandler {
   base::Value EventLogUploadInfoToValue(
       const UploadList::UploadInfo& info) const;
 
-  // Helpers for EventLogUploadInfoToDictionaryValue().
+  // Helpers for `EventLogUploadInfoToValue()`.
   base::Value FromPendingLog(const UploadList::UploadInfo& info) const;
   base::Value FromActivelyUploadedLog(const UploadList::UploadInfo& info) const;
   base::Value FromNotUploadedLog(const UploadList::UploadInfo& info) const;

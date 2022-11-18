@@ -197,7 +197,7 @@ base::Value::List ComponentsHandler::LoadComponents() {
   const std::vector<std::string> component_ids =
       component_updater_->GetComponentIDs();
 
-  // Construct DictionaryValues to return to UI.
+  // Construct `base::Value::Dict` to return to UI.
   base::Value::List component_list;
   for (const auto& component_id : component_ids) {
     update_client::CrxUpdateItem item;
