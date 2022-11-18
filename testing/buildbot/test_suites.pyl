@@ -4925,6 +4925,8 @@
       },
       'updater_tests_win_uac': {
         'args': [
+          '--test-launcher-bot-mode',
+          '--cfi-diag=0',
           '--gtest_shuffle',
           # Timeouts based on empirical observations of test runtimes, 2021-07.
           '--test-launcher-timeout=90000',

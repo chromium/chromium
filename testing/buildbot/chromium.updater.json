@@ -674,6 +674,8 @@
       },
       {
         "args": [
+          "--test-launcher-bot-mode",
+          "--cfi-diag=0",
           "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
@@ -786,6 +788,8 @@
       },
       {
         "args": [
+          "--test-launcher-bot-mode",
+          "--cfi-diag=0",
           "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
