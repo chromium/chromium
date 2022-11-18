@@ -449,6 +449,9 @@ static base::TimeDelta FreshnessLifetime(const ResourceResponse& response,
 static bool CanUseResponse(const ResourceResponse& response,
                            bool allow_stale,
                            base::Time response_timestamp) {
+  // https://linear.app/replay/issue/RUN-820
+  recordreplay::Assert("CanUseResponse Start");
+
   if (response.IsNull())
     return false;
 
@@ -473,6 +476,9 @@ static bool CanUseResponse(const ResourceResponse& response,
   base::TimeDelta max_life = FreshnessLifetime(response, response_timestamp);
   if (allow_stale)
     max_life += response.CacheControlStaleWhileRevalidate();
+
+  // https://linear.app/replay/issue/RUN-820
+  recordreplay::Assert("CanUseResponse Done");
 
   return CurrentAge(response, response_timestamp) <= max_life;
 }

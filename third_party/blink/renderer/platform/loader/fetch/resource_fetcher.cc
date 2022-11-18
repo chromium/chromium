@@ -1031,6 +1031,9 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   if (!is_stale_revalidation && is_static_data) {
     resource = CreateResourceForStaticData(params, factory);
     if (resource) {
+      // https://linear.app/replay/issue/RUN-820
+      recordreplay::Assert("ResourceFetcher::RequestResource #5");
+
       policy =
           DetermineRevalidationPolicy(resource_type, params, *resource, true);
     } else if (!is_data_url && archive_) {
@@ -1063,6 +1066,9 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
             params.Url(), GetCacheIdentifier(params.Url()));
       }
       if (resource) {
+        // https://linear.app/replay/issue/RUN-820
+        recordreplay::Assert("ResourceFetcher::RequestResource #8");
+
         policy = DetermineRevalidationPolicy(resource_type, params, *resource,
                                              is_static_data);
         scoped_refptr<const SecurityOrigin> top_frame_origin =
@@ -1083,6 +1089,8 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
       GetMemoryCache()->Remove(resource);
       FALLTHROUGH;
     case RevalidationPolicy::kLoad:
+      // https://linear.app/replay/issue/RUN-820
+      recordreplay::Assert("ResourceFetcher::RequestResource #10");
       resource = CreateResourceForLoading(params, factory);
       break;
     case RevalidationPolicy::kRevalidate:
@@ -1098,6 +1106,9 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   }
   DCHECK(resource);
   DCHECK_EQ(resource->GetType(), resource_type);
+
+  // https://linear.app/replay/issue/RUN-820
+  recordreplay::Assert("ResourceFetcher::RequestResource #11");
 
   if (policy != RevalidationPolicy::kUse)
     resource->VirtualTimePauser() = std::move(pauser);
@@ -1283,6 +1294,9 @@ Resource* ResourceFetcher::CreateResourceForLoading(
 
   RESOURCE_LOADING_DVLOG(1) << "Loading Resource for "
                             << params.GetResourceRequest().Url().ElidedString();
+
+  // https://linear.app/replay/issue/RUN-820
+  recordreplay::Assert("ResourceFetcher::CreateResourceForLoading #1");
 
   Resource* resource = factory.Create(
       params.GetResourceRequest(), params.Options(), params.DecoderOptions());
