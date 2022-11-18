@@ -817,9 +817,9 @@
     'internal.chrome.fyi': {
       'chromeos-arm-generic-cfi-thin-lto-chrome-reclient': 'chromeos_arm-generic_cfi_thin_lto_official_reclient',
       'lacros-arm-generic-chrome-fyi-reclient': 'chromeos_arm-generic_lacros_official_skylab_reclient',
-      'linux-autofill-captured-sites-rel': 'release_bot_reclient',
+      'linux-autofill-captured-sites-rel': 'release_bot',
       'linux-finch-smoke-chrome': 'official_reclient',
-      'linux-password-manager-captured-sites-rel': 'release_bot_reclient',
+      'linux-password-manager-captured-sites-rel': 'release_bot',
       'lorenz-graph-dbg': 'android_debug_static_external_bot_reclient',
       'mac-arm64-finch-smoke-chrome': 'official_reclient_mac_arm',
       # b/248132996: for siso experiments.
