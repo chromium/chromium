@@ -80,6 +80,25 @@ class ServiceWorkerLiveVersionRefImpl
   mojo::ReceiverSet<mojom::ServiceWorkerLiveVersionRef> receivers_;
 };
 
+// static
+mojo::SelfOwnedReceiverRef<mojom::ServiceWorkerStorageControl>
+ServiceWorkerStorageControlImpl::Create(
+    mojo::PendingReceiver<mojom::ServiceWorkerStorageControl> receiver,
+    const base::FilePath& user_data_directory,
+    scoped_refptr<base::SequencedTaskRunner> database_task_runner) {
+  return mojo::MakeSelfOwnedReceiver(
+      base::WrapUnique(new ServiceWorkerStorageControlImpl(
+          user_data_directory, std::move(database_task_runner))),
+      std::move(receiver));
+}
+
+ServiceWorkerStorageControlImpl::ServiceWorkerStorageControlImpl(
+    const base::FilePath& user_data_directory,
+    scoped_refptr<base::SequencedTaskRunner> database_task_runner)
+    : storage_(ServiceWorkerStorage::Create(user_data_directory,
+                                            std::move(database_task_runner))),
+      receiver_(this) {}
+
 ServiceWorkerStorageControlImpl::ServiceWorkerStorageControlImpl(
     const base::FilePath& user_data_directory,
     scoped_refptr<base::SequencedTaskRunner> database_task_runner,

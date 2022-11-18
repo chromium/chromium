@@ -481,6 +481,12 @@
     "args": ["--enable-features=PlzDedicatedWorker"]
   },
   {
+    "prefix": "service-worker-storage-control-on-thread-pool",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/service-workers/service-worker/fetch-event.https.html"],
+    "args": ["--enable-features=ServiceWorkerStorageControlOnThreadPool"]
+  },
+  {
     "prefix": "direct-sockets",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/direct-sockets",

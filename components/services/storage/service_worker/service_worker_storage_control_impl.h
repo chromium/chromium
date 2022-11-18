@@ -15,6 +15,7 @@
 #include "components/services/storage/service_worker/service_worker_storage.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace blink {
 class StorageKey;
@@ -26,11 +27,24 @@ class ServiceWorkerLiveVersionRefImpl;
 
 // This class wraps ServiceWorkerStorage to implement mojo interface defined by
 // the storage service, i.e., ServiceWorkerStorageControl.
+// If kServiceWorkerStorageControlOnThreadPool is enabled,
+// ServiceWorkerStorageControlImpl is created on database_task_runner (thread
+// pool) and retained by mojo::SelfOwnedReceiver. If
+// kServiceWorkerStorageControlOnIOThread is enabled on Android,
+// ServiceWorkerStorageControlImpl is created on the IO thread and owned by
+// PartitionImpl. Otherwise, this is created on the UI thread and owned by
+// ServiceWorkerContextWrapper. In the near future,
+// kServiceWorkerStorageControlOnThreadPool will be the default for all
+// platforms.
 // TODO(crbug.com/1055677): Merge this implementation into ServiceWorkerStorage
 // and move the merged class to components/services/storage.
 class ServiceWorkerStorageControlImpl
     : public mojom::ServiceWorkerStorageControl {
  public:
+  static mojo::SelfOwnedReceiverRef<mojom::ServiceWorkerStorageControl> Create(
+      mojo::PendingReceiver<mojom::ServiceWorkerStorageControl> receiver,
+      const base::FilePath& user_data_directory,
+      scoped_refptr<base::SequencedTaskRunner> database_task_runner);
   ServiceWorkerStorageControlImpl(
       const base::FilePath& user_data_directory,
       scoped_refptr<base::SequencedTaskRunner> database_task_runner,
@@ -48,6 +62,9 @@ class ServiceWorkerStorageControlImpl
   void LazyInitializeForTest();
 
  private:
+  ServiceWorkerStorageControlImpl(
+      const base::FilePath& user_data_directory,
+      scoped_refptr<base::SequencedTaskRunner> database_task_runner);
   // mojom::ServiceWorkerStorageControl implementations:
   void Disable(DisableCallback callback) override;
   void Delete(DeleteCallback callback) override;
