@@ -56,8 +56,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/page_load_metrics/observers/android_page_load_metrics_observer.h"
-#else
-#include "chrome/browser/page_load_metrics/observers/session_restore_page_load_metrics_observer.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -184,10 +182,6 @@ void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
                 web_contents());
     if (loading_predictor_observer)
       tracker->AddObserver(std::move(loading_predictor_observer));
-#if !BUILDFLAG(IS_ANDROID)
-    tracker->AddObserver(
-        std::make_unique<SessionRestorePageLoadMetricsObserver>());
-#endif
     tracker->AddObserver(
         std::make_unique<LocalNetworkRequestsPageLoadMetricsObserver>());
   }

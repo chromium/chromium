@@ -20498,6 +20498,9 @@ be describing additional metrics about the same event.
 
 <event name="TabManager.Experimental.SessionRestore.ForegroundTab.PageLoad"
     singular="True">
+  <obsolete>
+    Removed 11/2022 because it wasn't actively used.
+  </obsolete>
   <owner>zhenw@chromium.org</owner>
   <summary>
     Collects the tab counts for the foreground tab page load during session
