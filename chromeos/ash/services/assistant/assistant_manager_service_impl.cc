@@ -235,6 +235,12 @@ void AssistantManagerServiceImpl::Stop() {
   weak_factory_.InvalidateWeakPtrs();
   SetStateAndInformObservers(State::STOPPING);
 
+  // We stop observing media events before we destroy `AssistantManagerImpl`,
+  // otherwise notification may happen any time after it is destroyed.
+  media_host_->Stop();
+  // For similar reason, stop observing app_list events.
+  scoped_app_list_event_subscriber_.Reset();
+
   // When user disables the feature, we also delete all data.
   if (!assistant_state()->settings_enabled().value())
     service_controller().ResetAllDataAndStop();
