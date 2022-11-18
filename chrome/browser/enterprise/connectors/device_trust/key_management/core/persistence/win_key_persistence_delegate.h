@@ -28,14 +28,6 @@ class WinKeyPersistenceDelegate : public KeyPersistenceDelegate {
                     std::vector<uint8_t> wrapped) override;
   std::unique_ptr<SigningKeyPair> LoadKeyPair() override;
   std::unique_ptr<SigningKeyPair> CreateKeyPair() override;
-
- private:
-  friend class WinKeyPersistenceDelegateTest;
-
-  // static
-  void SetAcceptableKeyAlgorithmForTesting(
-      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms);
 };
 
 }  // namespace enterprise_connectors

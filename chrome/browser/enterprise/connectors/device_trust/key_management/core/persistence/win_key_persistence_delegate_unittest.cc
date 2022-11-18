@@ -94,17 +94,6 @@ class WinKeyPersistenceDelegateTest : public testing::Test {
                 ERROR_SUCCESS);
   }
 
-  // Sets an ECDSA_SHA256 key algorithm for generating an unexportable key.
-  // This is used because it is the only algorithm the scoped unexportable key
-  // provider supports.
-  void SetAcceptableTestingAlgorithm() {
-    auto acceptable_algorithms = {
-        crypto::SignatureVerifier::ECDSA_SHA256,
-    };
-    persistence_delegate_->SetAcceptableKeyAlgorithmForTesting(
-        acceptable_algorithms);
-  }
-
   std::unique_ptr<WinKeyPersistenceDelegate> persistence_delegate_;
   std::wstring key_path_;
   crypto::ScopedMockUnexportableKeyProvider scoped_key_provider_;
@@ -192,38 +181,12 @@ TEST_F(WinKeyPersistenceDelegateTest, LoadKeyPair_InvalidSigningKey) {
       KeyPersistenceError::kInvalidSigningKey, 1);
 }
 
-// Tests creating an OS key pair when the EC key algorithm is not set and the
-// TPM key provider fails to create a TPM key. By design we fall back on to the
-// OS key provider and create an OS key pair. Also tests storing and loading the
-// key pair.
-TEST_F(WinKeyPersistenceDelegateTest, ValidOsKeyPair_Success) {
-  base::HistogramTester histogram_tester;
-
-  auto key_pair = persistence_delegate_->CreateKeyPair();
-  auto trust_level = BPKUR::CHROME_BROWSER_OS_KEY;
-  ValidateSigningKey(key_pair.get(), trust_level);
-
-  SetRegistryKeyInfo();
-  EXPECT_TRUE(persistence_delegate_->StoreKeyPair(
-      trust_level, key_pair->key()->GetWrappedKey()));
-
-  SetRegistryKeyInfo(trust_level, key_pair->key()->GetWrappedKey());
-  auto loaded_key_pair = persistence_delegate_->LoadKeyPair();
-  EXPECT_EQ(key_pair.get()->key()->GetWrappedKey(),
-            loaded_key_pair.get()->key()->GetWrappedKey());
-
-  // Should expect no failure metrics.
-  histogram_tester.ExpectTotalCount(
-      base::StringPrintf(kErrorHistogramFormat, "LoadKeyPair"), 0);
-}
-
 // Tests creating a hardware key pair when the EC key algorithm is set and the
 // TPM key provider successfully creates the hardware generated key. Also tests
 // storing and loading the key pair.
 TEST_F(WinKeyPersistenceDelegateTest, ValidHardwareKeyPair_Success) {
   base::HistogramTester histogram_tester;
 
-  SetAcceptableTestingAlgorithm();
   auto key_pair = persistence_delegate_->CreateKeyPair();
   auto trust_level = BPKUR::CHROME_BROWSER_HW_KEY;
   ValidateSigningKey(key_pair.get(), trust_level);

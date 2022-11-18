@@ -134,10 +134,28 @@ absl::optional<std::vector<uint8_t>> GetP256ECDSASPKI(NCRYPT_KEY_HANDLE key) {
   memcpy(&header, pub_key->data(), sizeof(header));
   // |cbKey| is documented[1] as "the length, in bytes, of the key". It is
   // not. For ECDSA public keys it is the length of a field element.
-  if (header.dwMagic != BCRYPT_ECDSA_PUBLIC_P256_MAGIC ||
+  if ((header.dwMagic != BCRYPT_ECDSA_PUBLIC_P256_MAGIC &&
+       header.dwMagic != BCRYPT_ECDSA_PUBLIC_GENERIC_MAGIC) ||
       header.cbKey != 256 / 8 ||
       pub_key->size() - sizeof(BCRYPT_ECCKEY_BLOB) != 64) {
     return absl::nullopt;
+  }
+
+  // Sometimes NCrypt will return a generic dwMagic even when asked for a P-256
+  // key. In that case, do extra validation to make sure that `key` is in fact
+  // a P-256 key.
+  if (header.dwMagic == BCRYPT_ECDSA_PUBLIC_GENERIC_MAGIC) {
+    const absl::optional<std::vector<uint8_t>> curve_name =
+        GetKeyProperty(key, NCRYPT_ECC_CURVE_NAME_PROPERTY);
+    if (!curve_name) {
+      return absl::nullopt;
+    }
+
+    if (curve_name->size() != sizeof(BCRYPT_ECC_CURVE_NISTP256) ||
+        memcmp(curve_name->data(), BCRYPT_ECC_CURVE_NISTP256,
+               sizeof(BCRYPT_ECC_CURVE_NISTP256)) != 0) {
+      return absl::nullopt;
+    }
   }
 
   uint8_t x962[1 + 32 + 32];

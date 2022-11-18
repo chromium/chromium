@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/win_key_persistence_delegate.h"
 
+#include <array>
 #include <string>
 #include <utility>
 
@@ -29,38 +30,6 @@ bool RecordFailure(KeyPersistenceOperation operation,
   return false;
 }
 
-base::span<const crypto::SignatureVerifier::SignatureAlgorithm>&
-GetTestAcceptableAlgorithmStorage() {
-  static base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-      storage;
-  return storage;
-}
-
-// Returns the acceptable signature algorithms used for generating a signing
-// key. Uses the `trust_level` to determine which algorithms are acceptable for
-// the key.
-base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-GetAcceptableAlgorithms(KeyPersistenceDelegate::KeyTrustLevel trust_level) {
-  auto& test_instance = GetTestAcceptableAlgorithmStorage();
-  if (!test_instance.empty())
-    return std::move(test_instance);
-
-  auto acceptable_algorithms = {
-      crypto::SignatureVerifier::ECDSA_SHA256,
-      crypto::SignatureVerifier::RSA_PKCS1_SHA256,
-  };
-
-  if (trust_level == BPKUR::CHROME_BROWSER_HW_KEY) {
-    acceptable_algorithms = {
-        // This is a temporary fix to bug b/240187326 where The unexportable key
-        // when given the span of acceptable algorithms fails to create a TPM
-        // key using the ECDSA_SHA256 algorithm but works for the RSA algorithm.
-        crypto::SignatureVerifier::RSA_PKCS1_SHA256,
-    };
-  }
-  return acceptable_algorithms;
-}
-
 // Creates the unexportable signing key given the key `trust_level`.
 std::unique_ptr<crypto::UnexportableSigningKey> CreateSigningKey(
     KeyPersistenceDelegate::KeyTrustLevel trust_level) {
@@ -71,8 +40,11 @@ std::unique_ptr<crypto::UnexportableSigningKey> CreateSigningKey(
   } else if (trust_level == BPKUR::CHROME_BROWSER_OS_KEY) {
     provider = std::make_unique<ECSigningKeyProvider>();
   }
-  return provider ? provider->GenerateSigningKeySlowly(
-                        GetAcceptableAlgorithms(trust_level))
+
+  static constexpr std::array<crypto::SignatureVerifier::SignatureAlgorithm, 2>
+      kAcceptableAlgorithms = {crypto::SignatureVerifier::ECDSA_SHA256,
+                               crypto::SignatureVerifier::RSA_PKCS1_SHA256};
+  return provider ? provider->GenerateSigningKeySlowly(kAcceptableAlgorithms)
                   : nullptr;
 }
 
@@ -229,14 +201,6 @@ std::unique_ptr<SigningKeyPair> WinKeyPersistenceDelegate::CreateKeyPair() {
   }
 
   return std::make_unique<SigningKeyPair>(std::move(signing_key), trust_level);
-}
-
-// static
-void WinKeyPersistenceDelegate::SetAcceptableKeyAlgorithmForTesting(
-    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-        acceptable_algorithms) {
-  auto& storage = GetTestAcceptableAlgorithmStorage();
-  storage = std::move(acceptable_algorithms);
 }
 
 }  // namespace enterprise_connectors
