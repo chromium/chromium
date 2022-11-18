@@ -222,17 +222,21 @@ struct v4l2_ctrl_vp8_frame SetupFrameHeaders(
 
   return v4l2_frame_headers;
 }
+
 }  // namespace
 namespace media {
 namespace v4l2_test {
 
 // TODO(b/256252128): Find optimal number of CAPTURE buffers
-constexpr uint32_t kNumberOfBuffersInCaptureQueue = 10;
+constexpr uint32_t kNumberOfBuffersInCaptureQueue = 6;
 constexpr uint32_t kNumberOfBuffersInOutputQueue = 1;
 
-constexpr uint32_t kOutputQueueBufferIndex = 0;
-
 constexpr uint32_t kNumberOfPlanesInOutputQueue = 1;
+
+// MM21 is an uncompressed opaque format that is produced by MediaTek
+// video decoders.
+// TODO(b/256174196): Extend decoder format options to support non-MTK devices
+constexpr uint32_t kMm21Fourcc = v4l2_fourcc('M', 'M', '2', '1');
 
 static_assert(kNumberOfBuffersInCaptureQueue <= 16,
               "Too many CAPTURE buffers are used. The number of CAPTURE "
@@ -256,6 +260,8 @@ Vp8Decoder::Vp8Decoder(std::unique_ptr<IvfParser> ivf_parser,
       vp8_parser_(std::make_unique<Vp8Parser>()) {
   DCHECK(v4l2_ioctl_);
   DCHECK(v4l2_ioctl_->QueryCtrl(V4L2_CID_STATELESS_VP8_FRAME));
+
+  std::fill(ref_frames_.begin(), ref_frames_.end(), nullptr);
 }
 
 Vp8Decoder::~Vp8Decoder() = default;
@@ -286,11 +292,6 @@ std::unique_ptr<Vp8Decoder> Vp8Decoder::Create(
             << media::FourccToString(kDriverCodecFourcc) << ").";
     return nullptr;
   }
-
-  // MM21 is an uncompressed opaque format that is produced by MediaTek
-  // video decoders.
-  // TODO(b/256174196): Extend decoder format options to support non-MTK devices
-  const uint32_t kMm21Fourcc = v4l2_fourcc('M', 'M', '2', '1');
 
   auto v4l2_ioctl = std::make_unique<V4L2IoctlShim>();
 
@@ -323,6 +324,76 @@ std::unique_ptr<Vp8Decoder> Vp8Decoder::Create(
                      std::move(OUTPUT_queue), std::move(CAPTURE_queue)));
 }
 
+std::set<int> Vp8Decoder::RefreshReferenceSlots(
+    Vp8FrameHeader const& frame_hdr,
+    MmapedBuffer* buffer,
+    std::set<uint32_t> queued_buffer_indexes) {
+  std::set<int> reusable_buffer_slots = {};
+
+  if (frame_hdr.IsKeyframe()) {
+    // For key frames, all referenced frame are refreshed/replaced by the
+    // current reconstructed frame. Then all CAPTURE buffers can be reused
+    // except the CAPTURE buffer holding the key frame.
+    for (size_t i = 0; i < kNumberOfBuffersInCaptureQueue; i++) {
+      if (!queued_buffer_indexes.count(i))
+        reusable_buffer_slots.insert(i);
+    }
+    reusable_buffer_slots.erase(buffer->buffer_id());
+
+    ref_frames_.fill(buffer);
+    return reusable_buffer_slots;
+  }
+
+  if (frame_hdr.refresh_alternate_frame) {
+    ref_frames_[VP8_FRAME_ALTREF] = buffer;
+  } else {
+    switch (frame_hdr.copy_buffer_to_alternate) {
+      case Vp8FrameHeader::COPY_LAST_TO_ALT:
+        DCHECK(ref_frames_[VP8_FRAME_LAST]);
+        ref_frames_[VP8_FRAME_ALTREF] = ref_frames_[VP8_FRAME_LAST];
+        break;
+      case Vp8FrameHeader::COPY_GOLDEN_TO_ALT:
+        DCHECK(ref_frames_[VP8_FRAME_GOLDEN]);
+        ref_frames_[VP8_FRAME_ALTREF] = ref_frames_[VP8_FRAME_GOLDEN];
+        break;
+      case Vp8FrameHeader::NO_ALT_REFRESH:
+        DCHECK(ref_frames_[VP8_FRAME_ALTREF]);
+        break;
+      default:
+        NOTREACHED() << "Invalid flag to refresh altenate frame: "
+                     << frame_hdr.copy_buffer_to_alternate;
+    }
+  }
+
+  if (frame_hdr.refresh_golden_frame) {
+    ref_frames_[VP8_FRAME_GOLDEN] = buffer;
+  } else {
+    switch (frame_hdr.copy_buffer_to_golden) {
+      case Vp8FrameHeader::COPY_LAST_TO_GOLDEN:
+        DCHECK(ref_frames_[VP8_FRAME_LAST]);
+        ref_frames_[VP8_FRAME_GOLDEN] = ref_frames_[VP8_FRAME_LAST];
+        break;
+      case Vp8FrameHeader::COPY_ALT_TO_GOLDEN:
+        DCHECK(ref_frames_[VP8_FRAME_ALTREF]);
+        ref_frames_[VP8_FRAME_GOLDEN] = ref_frames_[VP8_FRAME_ALTREF];
+        break;
+      case Vp8FrameHeader::NO_GOLDEN_REFRESH:
+        DCHECK(ref_frames_[VP8_FRAME_GOLDEN]);
+        break;
+      default:
+        NOTREACHED() << "Invalid flag to refresh golden frame: "
+                     << frame_hdr.copy_buffer_to_golden;
+    }
+  }
+
+  if (frame_hdr.refresh_last)
+    ref_frames_[VP8_FRAME_LAST] = buffer;
+
+  DCHECK(ref_frames_[VP8_FRAME_LAST]);
+
+  return reusable_buffer_slots;
+}
+
 Vp8Decoder::ParseResult Vp8Decoder::ReadNextFrame(
     Vp8FrameHeader& vp8_frame_header) {
   IvfFrameHeader ivf_frame_header{};
@@ -353,14 +424,18 @@ VideoDecoder::Result Vp8Decoder::DecodeNextFrame(std::vector<char>& y_plane,
       break;
   }
 
+  VLOG_IF(2, !frame_hdr.show_frame) << "Not displaying frame";
+  last_decoded_frame_visible_ = frame_hdr.show_frame;
+
+  uint32_t OUTPUT_index = 0;
   // Copies the frame data into the V4L2 buffer of OUTPUT |queue|.
   scoped_refptr<MmapedBuffer> OUTPUT_queue_buffer =
-      OUTPUT_queue_->GetBuffer(kOutputQueueBufferIndex);
+      OUTPUT_queue_->GetBuffer(OUTPUT_index);
   OUTPUT_queue_buffer->mmaped_planes()[0].CopyIn(frame_hdr.data,
                                                  frame_hdr.frame_size);
   OUTPUT_queue_buffer->set_frame_number(frame_number);
 
-  if (!v4l2_ioctl_->QBuf(OUTPUT_queue_, 0))
+  if (!v4l2_ioctl_->QBuf(OUTPUT_queue_, OUTPUT_index))
     LOG(FATAL) << "VIDIOC_QBUF failed for OUTPUT queue.";
 
   struct v4l2_ctrl_vp8_frame v4l2_frame_headers =
@@ -379,8 +454,51 @@ VideoDecoder::Result Vp8Decoder::DecodeNextFrame(std::vector<char>& y_plane,
   if (!v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_))
     LOG(FATAL) << "MEDIA_REQUEST_IOC_QUEUE failed.";
 
+  uint32_t CAPTURE_index;
+
+  if (v4l2_ioctl_->DQBuf(CAPTURE_queue_, &CAPTURE_index))
+    CAPTURE_queue_->DequeueBufferIndex(CAPTURE_index);
+  else
+    LOG(FATAL) << "VIDIOC_DQBUF failed for CAPTURE queue.";
+
+  scoped_refptr<MmapedBuffer> buffer = CAPTURE_queue_->GetBuffer(CAPTURE_index);
+  CHECK_EQ(buffer->mmaped_planes().size(), 2u)
+      << "MM21 should have exactly 2 planes but CAPTURE queue does not.";
+
+  CHECK_EQ(CAPTURE_queue_->fourcc(), kMm21Fourcc);
+  size = CAPTURE_queue_->display_size();
+  ConvertMM21ToYUV(y_plane, u_plane, v_plane, size,
+                   static_cast<char*>(buffer->mmaped_planes()[0].start_addr),
+                   static_cast<char*>(buffer->mmaped_planes()[1].start_addr),
+                   CAPTURE_queue_->coded_size());
+
+  const std::set<int> reusable_buffer_slots = RefreshReferenceSlots(
+      frame_hdr, CAPTURE_queue_->GetBuffer(CAPTURE_index).get(),
+      CAPTURE_queue_->queued_buffer_indexes());
+
+  for (const auto reusable_buffer_slot : reusable_buffer_slots) {
+    if (v4l2_ioctl_->QBuf(CAPTURE_queue_, reusable_buffer_slot)) {
+      // After decoding a key frame, all CAPTURE buffer slots can be reused and
+      // queued, except the buffer holding the key frame. We want to avoid
+      // queuing the CAPTURE buffer slots that are already queued from the
+      // previous key frame. So we need to keep track of which buffers are
+      // queued for all frames.
+      CAPTURE_queue_->QueueBufferIndex(reusable_buffer_slot);
+    } else {
+      LOG(ERROR) << "VIDIOC_QBUF failed for CAPTURE queue.";
+    }
+  }
+
+  if (!v4l2_ioctl_->DQBuf(OUTPUT_queue_, &OUTPUT_index))
+    LOG(FATAL) << "VIDIOC_DQBUF failed for OUTPUT queue.";
+
+  CHECK_EQ(OUTPUT_index, uint32_t(0))
+      << "Index for OUTPUT queue greater than size";
+
+  if (!v4l2_ioctl_->MediaRequestIocReinit(OUTPUT_queue_))
+    LOG(FATAL) << "MEDIA_REQUEST_IOC_REINIT failed.";
+
   return VideoDecoder::kOk;
 }
-
 }  // namespace v4l2_test
 }  // namespace media

@@ -5,6 +5,8 @@
 #ifndef MEDIA_GPU_V4L2_TEST_VP8_DECODER_H_
 #define MEDIA_GPU_V4L2_TEST_VP8_DECODER_H_
 
+#include <set>
+
 #include "base/files/memory_mapped_file.h"
 #include "media/filters/ivf_parser.h"
 #include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
@@ -41,7 +43,14 @@ class Vp8Decoder : public VideoDecoder {
              std::unique_ptr<V4L2Queue> CAPTURE_queue);
   enum ParseResult { kOk, kEOStream, kError };
 
+  // Reads next frame from IVF stream into |vp8_frame_header|
   ParseResult ReadNextFrame(Vp8FrameHeader& vp8_frame_header);
+
+  // Refreshes |ref_frames_| slots and returns the CAPTURE buffers that
+  // can be reused for VIDIOC_QBUF ioctl call.
+  std::set<int> RefreshReferenceSlots(Vp8FrameHeader const& frame_hdr,
+                                      MmapedBuffer* buffer,
+                                      std::set<uint32_t> queued_buffer_indexes);
 
   // Parser for the IVF stream to decode.
   const std::unique_ptr<IvfParser> ivf_parser_;

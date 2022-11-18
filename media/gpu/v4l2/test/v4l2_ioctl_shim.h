@@ -8,6 +8,8 @@
 #include <linux/videodev2.h>
 #include <string.h>
 
+#include <set>
+
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -118,6 +120,18 @@ class V4L2Queue {
     media_request_fd_ = media_request_fd;
   }
 
+  std::set<uint32_t> queued_buffer_indexes() const {
+    return queued_buffer_indexes_;
+  }
+
+  void QueueBufferIndex(uint32_t last_queued_buffer_index) {
+    queued_buffer_indexes_.insert(last_queued_buffer_index);
+  }
+
+  void DequeueBufferIndex(uint32_t index) {
+    queued_buffer_indexes_.erase(index);
+  }
+
  private:
   const enum v4l2_buf_type type_;
   const uint32_t fourcc_;
@@ -135,6 +149,7 @@ class V4L2Queue {
   int media_request_fd_;
   // Tracks which CAPTURE buffer was queued in the previous frame.
   uint32_t last_queued_buffer_index_;
+  std::set<uint32_t> queued_buffer_indexes_;
 };
 
 // V4L2IoctlShim is a shallow wrapper which wraps V4L2 ioctl requests
