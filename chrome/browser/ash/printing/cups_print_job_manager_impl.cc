@@ -205,7 +205,7 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager {
     const int job_id = job->job_id();
     const std::string printer_id = job->printer().id();
 
-    // Stop montioring jobs after we cancel them.  The user no longer cares.
+    // Stop monitoring jobs after we cancel them.  The user no longer cares.
     jobs_.erase(job->GetUniqueId());
 
     cups_wrapper_->CancelJob(printer_id, job_id);

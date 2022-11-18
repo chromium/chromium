@@ -123,8 +123,8 @@ void ParseJobsResponse(ipp_t* response,
 void ParsePrinterStatus(ipp_t* response, PrinterStatus* printer_status);
 
 // Queries the printer at `address` on `port` with a Get-Printer-Attributes
-// request to populate `printer_info`. If `encrypted` is true, request is made
-// using ipps, otherwise, ipp is used. Returns false if the request failed.
+// request to populate `printer_info` and `printer_status`. If `encrypted` is
+// true, request is made using ipps, otherwise, ipp is used.
 PrinterQueryResult COMPONENT_EXPORT(PRINT_BACKEND)
     GetPrinterInfo(const std::string& address,
                    int port,

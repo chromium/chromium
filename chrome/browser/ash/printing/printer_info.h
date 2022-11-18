@@ -26,14 +26,16 @@ namespace ash {
 // the raw printer-make-and-model value from the printer. |autoconf| indicates
 // if we think we can compute the printer capabilities without a PPD.
 // |auth_info| holds the information about authentication required by the
-// printer.
+// printer. |client_info_supported| indicates whether the printer supports all
+// members of the 'client-info' IPP attribute.
 using PrinterInfoCallback = base::OnceCallback<void(
     ::printing::PrinterQueryResult result,
     const ::printing::PrinterStatus& status,
     const std::string& make_and_model,
     const std::vector<std::string>& document_formats,
     bool autoconf,
-    const chromeos::PrinterAuthenticationInfo& auth_info)>;
+    const chromeos::PrinterAuthenticationInfo& auth_info,
+    bool client_info_supported)>;
 
 // Dispatch an IPP request to |host| on |port| for |path| to obtain
 // basic printer information.
@@ -44,11 +46,5 @@ void QueryIppPrinter(const std::string& host,
                      PrinterInfoCallback callback);
 
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-using ::ash::PrinterInfoCallback;
-using ::ash::QueryIppPrinter;
-}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_PRINTER_INFO_H_

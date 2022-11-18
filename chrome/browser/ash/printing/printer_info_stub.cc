@@ -20,11 +20,13 @@ void QueryIppPrinter(const std::string& host,
   DCHECK(!host.empty());
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback),
-                                printing::PrinterQueryResult::kUnknownFailure,
-                                printing::PrinterStatus(), "Foo Bar",
-                                std::vector<std::string>{}, false,
-                                chromeos::PrinterAuthenticationInfo{}));
+      FROM_HERE,
+      base::BindOnce(
+          std::move(callback), printing::PrinterQueryResult::kUnknownFailure,
+          printing::PrinterStatus(), /*make_and_model=*/"Foo Bar",
+          /*document_formats=*/std::vector<std::string>{},
+          /*ipp_everywhere=*/false, chromeos::PrinterAuthenticationInfo{},
+          /*client_info_supported=*/false));
 }
 
 }  // namespace ash

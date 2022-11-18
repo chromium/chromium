@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
@@ -15,6 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "chromeos/printing/cups_printer_status.h"
+#include "printing/backend/cups_ipp_constants.h"
 #include "printing/backend/cups_jobs.h"
 #include "printing/printer_status.h"
 
@@ -102,6 +104,18 @@ bool IsAutoconf(const ::printing::PrinterInfo& info) {
                                  SupportsRequiredPDLS(info.document_formats));
 }
 
+// Returns true if all sub-attributes of 'client-info' are in
+// |client_info_supported|.
+bool IsClientInfoFullySupported(
+    const std::vector<std::string>& client_info_supported) {
+  return base::Contains(client_info_supported, printing::kIppClientName) &&
+         base::Contains(client_info_supported, printing::kIppClientPatches) &&
+         base::Contains(client_info_supported,
+                        printing::kIppClientStringVersion) &&
+         base::Contains(client_info_supported, printing::kIppClientType) &&
+         base::Contains(client_info_supported, printing::kIppClientVersion);
+}
+
 // Dispatches an IPP request to |host| to retrieve printer information.  Returns
 // a nullptr if the request fails.
 QueryResult QueryPrinterImpl(const std::string& host,
@@ -128,8 +142,11 @@ void OnPrinterQueried(ash::PrinterInfoCallback callback,
   const ::printing::PrinterStatus& printer_status = query_result.printer_status;
   if (result != ::printing::PrinterQueryResult::kSuccess) {
     VLOG(1) << "Could not reach printer";
-    std::move(callback).Run(result, ::printing::PrinterStatus(), std::string(),
-                            {}, false, {});
+    std::move(callback).Run(result, ::printing::PrinterStatus(),
+                            /*make_and_model=*/std::string(),
+                            /*document_formats=*/{}, /*ipp_everywhere=*/false,
+                            chromeos::PrinterAuthenticationInfo{},
+                            /*client_info_supported=*/false);
     return;
   }
 
@@ -140,11 +157,12 @@ void OnPrinterQueried(ash::PrinterInfoCallback callback,
       ToIppVersion(*std::max_element(printer_info.ipp_versions.begin(),
                                      printer_info.ipp_versions.end())));
 
-  std::move(callback).Run(result, printer_status, printer_info.make_and_model,
-                          printer_info.document_formats,
-                          IsAutoconf(printer_info),
-                          {.oauth_server = printer_info.oauth_server,
-                           .oauth_scope = printer_info.oauth_scope});
+  std::move(callback).Run(
+      result, printer_status, printer_info.make_and_model,
+      printer_info.document_formats, IsAutoconf(printer_info),
+      {.oauth_server = printer_info.oauth_server,
+       .oauth_scope = printer_info.oauth_scope},
+      IsClientInfoFullySupported(printer_info.client_info_supported));
 }
 
 }  // namespace

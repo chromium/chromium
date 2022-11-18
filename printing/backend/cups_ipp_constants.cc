@@ -36,6 +36,11 @@ constexpr char kOptionFalse[] = "false";
 constexpr char kOptionTrue[] = "true";
 
 constexpr char kIppClientInfo[] = "client-info";
+constexpr char kIppClientName[] = "client-name";
+constexpr char kIppClientPatches[] = "client-patches";
+constexpr char kIppClientStringVersion[] = "client-string-version";
+constexpr char kIppClientType[] = "client-type";
+constexpr char kIppClientVersion[] = "client-version";
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
