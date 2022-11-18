@@ -656,7 +656,12 @@ void QuickAnswersView::UpdateBounds() {
   }
 
   gfx::Rect bounds = {{anchor_view_bounds_.x(), y}, {GetBoundsWidth(), height}};
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // For Ash, convert the position relative to the screen.
+  // For Lacros, `bounds` is already relative to the toplevel window and the
+  // position will be calculated on server side.
   wm::ConvertRectFromScreen(GetWidget()->GetNativeWindow()->parent(), &bounds);
+#endif
   GetWidget()->SetBounds(bounds);
 }
 

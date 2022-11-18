@@ -83,7 +83,10 @@ class QuickAnswersView : public views::View {
   void OnPhoneticsAudioButtonPressed(
       const quick_answers::PhoneticsInfo& phonetics_info);
 
+  // The relative position to the screen for Ash and to the toplevel window for
+  // Lacros.
   gfx::Rect anchor_view_bounds_;
+
   base::WeakPtr<QuickAnswersUiController> controller_;
   bool has_second_row_answer_ = false;
   std::string title_;
