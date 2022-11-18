@@ -68,8 +68,8 @@ class UserEducationInternalsElement extends UserEducationInternalsElementBase {
     // register the anchor element.
     this.$.promos.addEventListener(
         'rendered-item-count-changed', (_: Event) => {
-          this.registerHelpBubbleIdentifier(
-              'kWebUIIPHDemoElementIdentifier', 'IPH_WebUiHelpBubbleTest');
+          this.registerHelpBubble(
+              'kWebUIIPHDemoElementIdentifier', '#IPH_WebUiHelpBubbleTest');
         }, {
           once: true,
         });

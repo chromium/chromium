@@ -231,8 +231,8 @@ export class SettingsSecurityPageElement extends
       }
     });
 
-    this.registerHelpBubbleIdentifier(
-        'kEnhancedProtectionSettingElementId', 'safeBrowsingEnhanced');
+    this.registerHelpBubble(
+        'kEnhancedProtectionSettingElementId', '#safeBrowsingEnhanced');
   }
 
   /**

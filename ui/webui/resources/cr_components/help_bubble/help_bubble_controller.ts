@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
 import {HelpBubbleElement} from './help_bubble.js';
 import {HelpBubbleParams} from './help_bubble.mojom-webui.js';
+
+export type Trackable = string|HTMLElement;
 
 /**
  * HelpBubble controller class
@@ -47,13 +49,22 @@ export class HelpBubbleController {
     return this.nativeId_;
   }
 
-  trackId(idString: string): boolean {
+  track(trackable: Trackable): boolean {
     assert(!this.anchor_);
 
-    const anchor = this.root_.querySelector<HTMLElement>(`#${idString}`);
+    let anchor: HTMLElement|null = null;
+    if (typeof trackable === 'string') {
+      anchor = this.root_.querySelector<HTMLElement>(trackable);
+    } else if (trackable instanceof HTMLElement) {
+      anchor = trackable;
+    } else {
+      assertNotReached('HelpBubbleController.track() - anchor is unrecognized');
+    }
+
     if (!anchor) {
       return false;
     }
+
     anchor.dataset['nativeId'] = this.nativeId_;
     this.anchor_ = anchor;
     return true;

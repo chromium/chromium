@@ -24,7 +24,7 @@ import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/pol
 
 import {HELP_BUBBLE_DISMISSED_EVENT, HELP_BUBBLE_TIMED_OUT_EVENT, HelpBubbleDismissedEvent, HelpBubbleElement} from './help_bubble.js';
 import {HelpBubbleClientCallbackRouter, HelpBubbleClosedReason, HelpBubbleHandlerInterface, HelpBubbleParams} from './help_bubble.mojom-webui.js';
-import {HelpBubbleController} from './help_bubble_controller.js';
+import {HelpBubbleController, Trackable} from './help_bubble_controller.js';
 import {HelpBubbleProxyImpl} from './help_bubble_proxy.js';
 
 type Constructor<T> = new (...args: any[]) => T;
@@ -102,22 +102,28 @@ export const HelpBubbleMixin = dedupingMixin(
 
         /**
          * Maps `nativeId`, which should be the name of a ui::ElementIdentifier
-         * referenced by the WebUIController, with the `htmlId` of an element in
-         * this component.
+         * referenced by the WebUIController, with either an `htmlId` of
+         * an element in this component or an arbitrary HTMLElement.
          *
          * Example:
          *   registerHelpBubbleIdentifier(
          *       'kMyComponentTitleLabelElementIdentifier',
-         *       'title');
+         *       '#title');
+         *
+         * Example:
+         *   registerHelpBubbleIdentifier(
+         *       'kMyComponentTitleLabelElementIdentifier',
+         *       this.$.list.childNodes[0]);
+         *
          *
          * See README.md for full instructions.
          */
-        registerHelpBubbleIdentifier(nativeId: string, htmlId: string):
+        registerHelpBubble(nativeId: string, trackable: Trackable):
             HelpBubbleController {
           assert(!this.helpBubbleControllerById_.has(nativeId));
           const controller =
               new HelpBubbleController(nativeId, this.shadowRoot!);
-          controller.trackId(htmlId);
+          controller.track(trackable);
           this.helpBubbleControllerById_.set(nativeId, controller);
           // This can be called before or after `connectedCallback()`, so if the
           // component isn't connected and the observer set up yet, delay
@@ -358,7 +364,7 @@ export const HelpBubbleMixin = dedupingMixin(
     });
 
 export interface HelpBubbleMixinInterface {
-  registerHelpBubbleIdentifier(nativeId: string, htmlId: string):
+  registerHelpBubble(nativeId: string, trackable: Trackable):
       HelpBubbleController;
   isHelpBubbleShowing(): boolean;
   isHelpBubbleShowingForTesting(id: string): boolean;

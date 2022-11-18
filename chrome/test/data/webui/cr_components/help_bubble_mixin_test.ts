@@ -20,6 +20,7 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 const TITLE_NATIVE_ID: string = 'kHelpBubbleMixinTestTitleElementId';
 const PARAGRAPH_NATIVE_ID: string = 'kHelpBubbleMixinTestParagraphElementId';
 const LIST_NATIVE_ID: string = 'kHelpBubbleMixinTestListElementId';
+const SPAN_NATIVE_ID: string = 'kHelpBubbleMixinTestSpanElementId';
 const EVENT1_NAME: string = 'kFirstExampleCustomEvent';
 const EVENT2_NAME: string = 'kSecondExampleCustomEvent';
 const CLOSE_BUTTON_ALT_TEXT: string = 'Close help bubble.';
@@ -42,6 +43,7 @@ export interface HelpBubbleMixinTestElement {
 let titleBubble: HelpBubbleController;
 let p1Bubble: HelpBubbleController;
 let bulletListBubble: HelpBubbleController;
+let spanBubble: HelpBubbleController;
 
 export class HelpBubbleMixinTestElement extends HelpBubbleMixinTestElementBase {
   static get is() {
@@ -57,15 +59,20 @@ export class HelpBubbleMixinTestElement extends HelpBubbleMixinTestElementBase {
         <li>List item 1</li>
         <li>List item 2</li>
       </ul>
+      <span>Span text</span>
     </div>`;
   }
 
   override connectedCallback() {
     super.connectedCallback();
-    titleBubble = this.registerHelpBubbleIdentifier(TITLE_NATIVE_ID, 'title');
-    p1Bubble = this.registerHelpBubbleIdentifier(PARAGRAPH_NATIVE_ID, 'p1');
-    bulletListBubble =
-        this.registerHelpBubbleIdentifier(LIST_NATIVE_ID, 'bulletList');
+
+    const spanEl = this.shadowRoot!.querySelector('span');
+    assertTrue(spanEl !== null, 'connectedCallback: span element exists');
+
+    titleBubble = this.registerHelpBubble(TITLE_NATIVE_ID, '#title');
+    p1Bubble = this.registerHelpBubble(PARAGRAPH_NATIVE_ID, '#p1');
+    bulletListBubble = this.registerHelpBubble(LIST_NATIVE_ID, '#bulletList');
+    spanBubble = this.registerHelpBubble(SPAN_NATIVE_ID, spanEl);
   }
 }
 
@@ -241,6 +248,15 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     assertTrue(container.isHelpBubbleShowingForTesting('p1'));
   });
 
+  test(
+      'help bubble mixin shows bubble anchored to arbitrary HTMLElment', () => {
+        assertFalse(container.isHelpBubbleShowing());
+        assertFalse(spanBubble.isShowing());
+        container.showHelpBubble(spanBubble, defaultParams);
+        assertTrue(container.isHelpBubbleShowing());
+        assertTrue(spanBubble.isShowing());
+      });
+
   test('help bubble mixin reports not open for other elements', () => {
     // Valid but not open.
     assertFalse(container.isHelpBubbleShowingForTesting('title'));
@@ -290,11 +306,13 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
       'help bubble mixin shows help bubble when called via proxy', async () => {
         testProxy.getCallbackRouterRemote().showHelpBubble(defaultParams);
         await waitAfterNextRender(container);
-        assertTrue(container.isHelpBubbleShowing(), 'here');
+        assertTrue(container.isHelpBubbleShowing(), 'a bubble is showing');
         const bubble = container.getHelpBubbleForTesting('p1');
-        assertTrue(!!bubble, 'now here');
-        assertEquals(container.$.p1, bubble.getAnchorElement(), 'f');
-        assertTrue(isVisible(bubble), 'now f');
+        assertTrue(!!bubble, 'bubble exists');
+        assertEquals(
+            container.$.p1, bubble.getAnchorElement(),
+            'bubble has correct anchor');
+        assertTrue(isVisible(bubble), 'bubble is visible');
       });
 
   test('help bubble mixin uses close button alt text', async () => {
@@ -392,9 +410,9 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
 
   test('help bubble mixin sends events on initially visible', async () => {
     await waitAfterNextRender(container);
-    // Since we're watching three elements, we get events for all three.
+    // Since we're watching four elements, we get events for all four.
     assertEquals(
-        3,
+        4,
         testProxy.getHandler().getCallCount(
             'helpBubbleAnchorVisibilityChanged'));
     assertDeepEquals(
@@ -402,6 +420,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
           [TITLE_NATIVE_ID, true],
           [PARAGRAPH_NATIVE_ID, true],
           [LIST_NATIVE_ID, true],
+          [SPAN_NATIVE_ID, true],
         ],
         testProxy.getHandler().getArgs('helpBubbleAnchorVisibilityChanged'));
   });
@@ -410,7 +429,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     container.style.display = 'none';
     await waitForVisibilityEvents();
     assertEquals(
-        6,
+        8,
         testProxy.getHandler().getCallCount(
             'helpBubbleAnchorVisibilityChanged'));
     assertDeepEquals(
@@ -418,9 +437,11 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
           [TITLE_NATIVE_ID, true],
           [PARAGRAPH_NATIVE_ID, true],
           [LIST_NATIVE_ID, true],
+          [SPAN_NATIVE_ID, true],
           [TITLE_NATIVE_ID, false],
           [PARAGRAPH_NATIVE_ID, false],
           [LIST_NATIVE_ID, false],
+          [SPAN_NATIVE_ID, false],
         ],
         testProxy.getHandler().getArgs('helpBubbleAnchorVisibilityChanged'));
   });
@@ -686,7 +707,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     await waitAfterNextRender(container);
     assertEquals(
         0, testProxy.getHandler().getCallCount('helpBubbleClosed'),
-        'helpBubbleClosed should not be called');
+        'helpBubbleClosed has not be called');
     assertTrue(container.isHelpBubbleShowing());
   });
 
@@ -708,11 +729,12 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
       totalMs: 1500,
       assertionFn: () => assertEquals(
           1, testProxy.getHandler().getCallCount('helpBubbleClosed'),
-          'helpBubbleClosed should be called called'),
+          'helpBubbleClosed has been called'),
     }) as number;
     assertDeepEquals(
         [[PARAGRAPH_NATIVE_ID, HelpBubbleClosedReason.kTimedOut]],
-        testProxy.getHandler().getArgs('helpBubbleClosed'), 'im here');
-    assertFalse(container.isHelpBubbleShowing(), 'or here');
+        testProxy.getHandler().getArgs('helpBubbleClosed'),
+        'helpBubbleClosed is called with correct arguments');
+    assertFalse(container.isHelpBubbleShowing(), 'no bubbles are showing');
   });
 });
