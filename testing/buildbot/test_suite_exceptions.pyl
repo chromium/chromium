@@ -1676,16 +1676,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter',
         ],
       },
-      'WebRTC Chromium FYI Android Tests (dbg) (M Nexus5X)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter',
-        ],
-      },
-      'WebRTC Chromium FYI Android Tests (dbg) (N Nexus5X)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter',
-        ],
-      },
       'WebRTC Chromium FYI Android Tests ARM64 (dbg)': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter',

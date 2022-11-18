@@ -1050,13 +1050,6 @@
       ]
     },
   },
-  'nougat_generic': {
-    'swarming': {
-      'dimensions': {
-        'device_os': 'N',
-      },
-    },
-  },
   'oreo-x86-emulator': {
     '$mixin_append': {
       'args': [
