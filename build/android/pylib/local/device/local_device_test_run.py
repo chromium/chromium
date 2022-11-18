@@ -294,17 +294,8 @@ class LocalDeviceTestRun(test_run.TestRun):
     partitions = []
 
 
-    def CountTestsIndividually(test):
-      if not isinstance(test, list):
-        return False
-      annotations = test[0]['annotations']
-      # UnitTests tests are really fast, so to balance shards better, count
-      # UnitTests Batches as single tests.
-      return ('Batch' not in annotations
-              or annotations['Batch']['value'] != 'UnitTests')
-
     num_not_yet_allocated = sum(
-        [len(test) - 1 for test in tests if CountTestsIndividually(test)])
+        [len(test) - 1 for test in tests if self._CountTestsIndividually(test)])
     num_not_yet_allocated += len(tests)
 
     # Fast linear partition approximation capped by max_partition_size. We
@@ -315,7 +306,7 @@ class LocalDeviceTestRun(test_run.TestRun):
     partitions.append([])
     last_partition_size = 0
     for test in tests:
-      test_count = len(test) if CountTestsIndividually(test) else 1
+      test_count = len(test) if self._CountTestsIndividually(test) else 1
       # Make a new shard whenever we would overfill the previous one. However,
       # if the size of the test group is larger than the max partition size on
       # its own, just put the group in its own shard instead of splitting up the
@@ -343,6 +334,16 @@ class LocalDeviceTestRun(test_run.TestRun):
     if not partitions[-1]:
       partitions.pop()
     return partitions
+
+  def _CountTestsIndividually(self, test):
+    # pylint: disable=no-self-use
+    if not isinstance(test, list):
+      return False
+    annotations = test[0]['annotations']
+    # UnitTests tests are really fast, so to balance shards better, count
+    # UnitTests Batches as single tests.
+    return ('Batch' not in annotations
+            or annotations['Batch']['value'] != 'UnitTests')
 
   def GetTool(self, device):
     if str(device) not in self._tools:
