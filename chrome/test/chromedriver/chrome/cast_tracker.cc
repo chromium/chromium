@@ -4,7 +4,6 @@
 
 #include "chrome/test/chromedriver/chrome/cast_tracker.h"
 
-#include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 
@@ -24,12 +23,18 @@ bool CastTracker::ListensToConnections() const {
 Status CastTracker::OnEvent(DevToolsClient* client,
                             const std::string& method,
                             const base::DictionaryValue& params) {
+  return OnEvent(client, method, params.GetDict());
+}
+
+Status CastTracker::OnEvent(DevToolsClient* client,
+                            const std::string& method,
+                            const base::Value::Dict& params) {
   if (method == "Cast.sinksUpdated") {
-    const base::Value* sinks = params.FindKey("sinks");
+    const base::Value* sinks = params.Find("sinks");
     if (sinks)
       sinks_ = sinks->Clone();
   } else if (method == "Cast.issueUpdated") {
-    const base::Value* issue = params.FindKey("issueMessage");
+    const base::Value* issue = params.Find("issueMessage");
     if (issue)
       issue_ = issue->Clone();
   }

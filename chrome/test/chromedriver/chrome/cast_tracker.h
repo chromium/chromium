@@ -28,6 +28,9 @@ class CastTracker : public DevToolsEventListener {
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
                  const base::DictionaryValue& params) override;
+  Status OnEvent(DevToolsClient* client,
+                 const std::string& method,
+                 const base::Value::Dict& params);
 
   const base::Value& sinks() const { return sinks_; }
   const base::Value& issue() const { return issue_; }
