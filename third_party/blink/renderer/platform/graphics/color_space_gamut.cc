@@ -18,10 +18,10 @@ ColorSpaceGamut GetColorSpaceGamut(const display::ScreenInfo& screen_info) {
   if (!color_space.IsValid())
     return ColorSpaceGamut::kUnknown;
 
-  // TODO(crbug.com/1049334): Change this function to operate on a
-  // gfx::DisplayColorSpaces structure.
+  // TODO(crbug.com/1385853): Perform a better computation, using the available
+  // SkColorSpacePrimaries.
   if (color_space.IsHDR())
-    return ColorSpaceGamut::BT2020;
+    return ColorSpaceGamut::P3;
 
   sk_sp<SkColorSpace> sk_color_space = color_space.ToSkColorSpace();
   if (!sk_color_space)
