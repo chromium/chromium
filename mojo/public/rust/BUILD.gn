@@ -103,7 +103,7 @@ if (rustc_can_link) {
       ":c_test_support",
       ":mojo_rust",
       "//mojo/public/c/system",
-      "//third_party/rust/lazy_static/v1:lib",
+      "//third_party/rust/lazy_static/v1:test_support",
     ]
   }
 }

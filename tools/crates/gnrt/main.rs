@@ -65,7 +65,8 @@ fn main() -> ExitCode {
 fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> ExitCode {
     let manifest_contents =
         String::from_utf8(fs::read(paths.third_party.join("third_party.toml")).unwrap()).unwrap();
-    let third_party_manifest: ThirdPartyManifest = match toml::de::from_str(&manifest_contents) {
+    let mut third_party_manifest: ThirdPartyManifest = match toml::de::from_str(&manifest_contents)
+    {
         Ok(m) => m,
         Err(e) => {
             eprintln!("Failed to parse 'third_party.toml': {e}");
@@ -76,17 +77,10 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
     // Collect special fields from third_party.toml.
     //
     // TODO(crbug.com/1291994): handle visibility separately for each kind.
-    let mut pub_deps = HashSet::<ChromiumVendoredCrate>::new();
+    let mut deps_visibility = HashMap::<ChromiumVendoredCrate, crates::Visibility>::new();
     let mut build_script_outputs = HashMap::<ChromiumVendoredCrate, Vec<String>>::new();
 
-    for (dep_name, dep_spec) in [
-        &third_party_manifest.dependency_spec.dependencies,
-        &third_party_manifest.dependency_spec.dev_dependencies,
-        &third_party_manifest.dependency_spec.build_dependencies,
-    ]
-    .into_iter()
-    .flatten()
-    {
+    let mut walk_deps = |dep_name: &str, dep_spec: &Dependency, visibility: crates::Visibility| {
         let (version_req, is_public, dep_outputs): (&_, bool, &[_]) = match dep_spec {
             Dependency::Short(version_req) => (version_req, true, &[]),
             Dependency::Full(dep) => (
@@ -96,17 +90,35 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
             ),
         };
         let epoch = crates::Epoch::from_version_req_str(&version_req.0);
-        let crate_id = crates::ChromiumVendoredCrate { name: dep_name.clone(), epoch };
-        if is_public {
-            pub_deps.insert(crate_id.clone());
-        }
+        let crate_id = ChromiumVendoredCrate { name: dep_name.to_string(), epoch };
+        deps_visibility.insert(
+            crate_id.clone(),
+            if is_public { visibility } else { crates::Visibility::ThirdParty },
+        );
         if !dep_outputs.is_empty() {
             build_script_outputs.insert(crate_id, dep_outputs.to_vec());
         }
+    };
+
+    for (dep_name, dep_spec) in &third_party_manifest.dependency_spec.dev_dependencies {
+        walk_deps(dep_name, dep_spec, crates::Visibility::TestOnlyAndThirdParty)
     }
+    for (dep_name, dep_spec) in &third_party_manifest.dependency_spec.dependencies {
+        walk_deps(dep_name, dep_spec, crates::Visibility::Public)
+    }
+    // [build-dependencies] is not used in third_party.toml.
+
+    // For crates used in first-party tests, we do not build a separate library from production
+    // (unlike standard Rust tests, and those found in third-party crates.) So we merge the
+    // dev_dependencies from third_party.toml into the regular dependencies.
+    third_party_manifest
+        .dependency_spec
+        .dependencies
+        .extend(std::mem::take(&mut third_party_manifest.dependency_spec.dev_dependencies));
 
     // Rebind as immutable.
-    let (pub_deps, build_script_outputs) = (pub_deps, build_script_outputs);
+    let (third_party_manifest, deps_visibility, build_script_outputs) =
+        (third_party_manifest, deps_visibility, build_script_outputs);
 
     // Traverse our third-party directory to collect the set of vendored crates.
     // Used to generate Cargo.toml [patch] sections, and later to check against
@@ -214,7 +226,7 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
         &paths,
         &crates.iter().cloned().collect(),
         &build_script_outputs,
-        &pub_deps,
+        &deps_visibility,
     );
 
     // Before modifying anything make sure we have a one-to-one mapping of

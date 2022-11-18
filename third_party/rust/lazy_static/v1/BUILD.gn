@@ -8,6 +8,10 @@ cargo_crate("lib") {
   crate_name = "lazy_static"
   epoch = "1"
   crate_type = "rlib"
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
 
   # Unit tests skipped. Generate with --with-tests to include them.
@@ -20,20 +24,7 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "A macro for declaring lazily evaluated statics in Rust."
 }
-cargo_crate("test_support") {
-  crate_name = "lazy_static"
-  epoch = "1"
-  crate_type = "rlib"
+group("test_support") {
+  public_deps = [ ":lib" ]
   testonly = true
-  crate_root = "crate/src/lib.rs"
-
-  # Unit tests skipped. Generate with --with-tests to include them.
-  build_native_rust_unit_tests = false
-  sources = [ "crate/src/lib.rs" ]
-  edition = "2015"
-  cargo_pkg_version = "1.4.0"
-  cargo_pkg_authors = "Marvin Löbel <loebel.marvin@gmail.com>"
-  cargo_pkg_name = "lazy_static"
-  cargo_pkg_description =
-      "A macro for declaring lazily evaluated statics in Rust."
 }

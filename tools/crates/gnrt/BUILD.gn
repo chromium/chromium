@@ -34,11 +34,11 @@ rust_static_library("gnrt_lib") {
     # resolved. We don't want to export this library for production use, but due
     # to a linking issue we must depend on the lib target which shouldn't exist
     # in the first place, but does due to a crates.py bug.
-    "//third_party/rust/cargo_platform/v0_1:lib",
-    "//third_party/rust/once_cell/v1:lib",
-    "//third_party/rust/semver/v1:lib",
+    "//third_party/rust/cargo_platform/v0_1:test_support",
+    "//third_party/rust/once_cell/v1:test_support",
+    "//third_party/rust/semver/v1:test_support",
     "//third_party/rust/serde/v1:lib",
-    "//third_party/rust/serde_json/v1:lib",
+    "//third_party/rust/serde_json/v1:test_support",
     "//third_party/rust/toml/v0_5:test_support",
   ]
 }
@@ -57,16 +57,11 @@ test("gnrt_unittests") {
     "//base/test:run_all_unittests",
     "//testing/gtest",
     "//third_party/rust/cargo_metadata/v0_14:test_support",
-
-    # TODO(crbug.com/1338658): Depend on test_support target once issue is
-    # resolved. We don't want to export this library for production use, but due
-    # to a linking issue we must depend on the lib target which shouldn't exist
-    # in the first place, but does due to a crates.py bug.
-    "//third_party/rust/cargo_platform/v0_1:lib",
-    "//third_party/rust/semver/v1:lib",
+    "//third_party/rust/cargo_platform/v0_1:test_support",
+    "//third_party/rust/semver/v1:test_support",
     "//third_party/rust/serde/v1:lib",
-    "//third_party/rust/serde_json/v1:lib",
-    "//third_party/rust/tempfile/v3:lib",
+    "//third_party/rust/serde_json/v1:test_support",
+    "//third_party/rust/tempfile/v3:test_support",
     "//third_party/rust/toml/v0_5:test_support",
   ]
 }
@@ -85,9 +80,9 @@ if (rustc_can_link) {
       ":gnrt_lib",
       "//third_party/rust/cargo_metadata/v0_14:test_support",
       "//third_party/rust/clap/v3:test_support",
-      "//third_party/rust/semver/v1:lib",
+      "//third_party/rust/semver/v1:test_support",
       "//third_party/rust/serde/v1:lib",
-      "//third_party/rust/serde_json/v1:lib",
+      "//third_party/rust/serde_json/v1:test_support",
       "//third_party/rust/toml/v0_5:test_support",
     ]
 

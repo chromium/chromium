@@ -4,11 +4,14 @@
 
 import("//build/rust/cargo_crate.gni")
 
-cargo_crate("test_support") {
+cargo_crate("lib") {
   crate_name = "rstest"
   epoch = "0.12"
   crate_type = "proc-macro"
-  testonly = true
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
 
   # Unit tests skipped. Generate with --with-tests to include them.
@@ -28,4 +31,8 @@ cargo_crate("test_support") {
   build_deps = [ "//third_party/rust/rustc_version/v0_4:buildrs_support" ]
   build_root = "crate/build.rs"
   build_sources = [ "crate/build.rs" ]
+}
+group("test_support") {
+  public_deps = [ ":lib" ]
+  testonly = true
 }

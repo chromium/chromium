@@ -4,11 +4,14 @@
 
 import("//build/rust/cargo_crate.gni")
 
-cargo_crate("test_support") {
+cargo_crate("lib") {
   crate_name = "toml"
   epoch = "0.5"
   crate_type = "rlib"
-  testonly = true
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
 
   # Unit tests skipped. Generate with --with-tests to include them.
@@ -27,4 +30,8 @@ cargo_crate("test_support") {
     "indexmap",
     "preserve_order",
   ]
+}
+group("test_support") {
+  public_deps = [ ":lib" ]
+  testonly = true
 }

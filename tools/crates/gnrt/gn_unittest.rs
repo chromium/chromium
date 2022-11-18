@@ -16,34 +16,37 @@ fn test() {
     let build_file = BuildFile {
         rules: vec![(
             "lib".to_string(),
-            Rule {
-                crate_name: Some("foo".to_string()),
-                epoch: Some(Epoch::Major(1)),
-                crate_type: "rlib".to_string(),
-                testonly: false,
-                crate_root: "crate/src/lib.rs".to_string(),
-                edition: "2021".to_string(),
-                cargo_pkg_version: "1.2.3".to_string(),
-                cargo_pkg_authors: Some("Somebody <somebody@foo.org>".to_string()),
-                cargo_pkg_name: "foo".to_string(),
-                cargo_pkg_description: Some("A generic framework for foo\nNewline\"".to_string()),
-                deps: vec![RuleDep::construct_for_testing(
-                    Condition::Always,
-                    "//third_party/rust/bar:lib".to_string(),
-                )],
-                // dev_deps should *not* show up in the output currently.
-                dev_deps: vec![RuleDep::construct_for_testing(
-                    Condition::Always,
-                    "//third_party/rust/rstest:lib".to_string(),
-                )],
-                build_deps: vec![RuleDep::construct_for_testing(
-                    Condition::Always,
-                    "//third_party/rust/bindgen:lib".to_string(),
-                )],
-                features: vec!["std".to_string()],
-                build_root: Some("crate/build.rs".to_string()),
-                build_script_outputs: vec!["binding.rs".to_string()],
-                public_visibility: true,
+            Rule::Concrete {
+                common: RuleCommon { testonly: false, public_visibility: true },
+                details: RuleConcrete {
+                    crate_name: Some("foo".to_string()),
+                    epoch: Some(Epoch::Major(1)),
+                    crate_type: "rlib".to_string(),
+                    crate_root: "crate/src/lib.rs".to_string(),
+                    edition: "2021".to_string(),
+                    cargo_pkg_version: "1.2.3".to_string(),
+                    cargo_pkg_authors: Some("Somebody <somebody@foo.org>".to_string()),
+                    cargo_pkg_name: "foo".to_string(),
+                    cargo_pkg_description: Some(
+                        "A generic framework for foo\nNewline\"".to_string(),
+                    ),
+                    deps: vec![RuleDep::construct_for_testing(
+                        Condition::Always,
+                        "//third_party/rust/bar:lib".to_string(),
+                    )],
+                    // dev_deps should *not* show up in the output currently.
+                    dev_deps: vec![RuleDep::construct_for_testing(
+                        Condition::Always,
+                        "//third_party/rust/rstest:lib".to_string(),
+                    )],
+                    build_deps: vec![RuleDep::construct_for_testing(
+                        Condition::Always,
+                        "//third_party/rust/bindgen:lib".to_string(),
+                    )],
+                    features: vec!["std".to_string()],
+                    build_root: Some("crate/build.rs".to_string()),
+                    build_script_outputs: vec!["binding.rs".to_string()],
+                },
             },
         )],
     };
@@ -92,48 +95,33 @@ build_script_outputs = [
         rules: vec![
             (
                 "lib".to_string(),
-                Rule {
-                    crate_name: Some("foo".to_string()),
-                    epoch: Some(Epoch::Major(1)),
-                    crate_type: "rlib".to_string(),
-                    testonly: false,
-                    crate_root: "crate/src/lib.rs".to_string(),
-                    edition: "2021".to_string(),
-                    cargo_pkg_version: "1.2.3".to_string(),
-                    cargo_pkg_authors: None,
-                    cargo_pkg_name: "foo".to_string(),
-                    cargo_pkg_description: None,
-                    deps: vec![],
-                    // dev_deps should *not* show up in the output currently.
-                    dev_deps: vec![],
-                    build_deps: vec![],
-                    features: vec![],
-                    build_root: None,
-                    build_script_outputs: vec![],
-                    public_visibility: false,
+                Rule::Concrete {
+                    common: RuleCommon { testonly: false, public_visibility: false },
+                    details: RuleConcrete {
+                        crate_name: Some("foo".to_string()),
+                        epoch: Some(Epoch::Major(1)),
+                        crate_type: "rlib".to_string(),
+                        crate_root: "crate/src/lib.rs".to_string(),
+                        edition: "2021".to_string(),
+                        cargo_pkg_version: "1.2.3".to_string(),
+                        cargo_pkg_authors: None,
+                        cargo_pkg_name: "foo".to_string(),
+                        cargo_pkg_description: None,
+                        deps: vec![],
+                        // dev_deps should *not* show up in the output currently.
+                        dev_deps: vec![],
+                        build_deps: vec![],
+                        features: vec![],
+                        build_root: None,
+                        build_script_outputs: vec![],
+                    },
                 },
             ),
             (
                 "test_support".to_string(),
-                Rule {
-                    crate_name: Some("foo".to_string()),
-                    epoch: Some(Epoch::Major(1)),
-                    crate_type: "rlib".to_string(),
-                    testonly: true,
-                    crate_root: "crate/src/lib.rs".to_string(),
-                    edition: "2021".to_string(),
-                    cargo_pkg_version: "1.2.3".to_string(),
-                    cargo_pkg_authors: None,
-                    cargo_pkg_name: "foo".to_string(),
-                    cargo_pkg_description: None,
-                    deps: vec![],
-                    // dev_deps should *not* show up in the output currently.
-                    dev_deps: vec![],
-                    build_deps: vec![],
-                    features: vec![],
-                    build_root: None,
-                    build_script_outputs: vec![],
-                    public_visibility: true,
+                Rule::Group {
+                    concrete_target: "lib".to_string(),
+                    common: RuleCommon { testonly: true, public_visibility: true },
                 },
             ),
         ],
@@ -163,19 +151,9 @@ edition = "2021"
 cargo_pkg_version = "1.2.3"
 cargo_pkg_name = "foo"
 }
-cargo_crate("test_support") {
-crate_name = "foo"
-epoch = "1"
-crate_type = "rlib"
+group("test_support") {
+public_deps = [ ":lib" ]
 testonly = true
-crate_root = "crate/src/lib.rs"
-
-# Unit tests skipped. Generate with --with-tests to include them.
-build_native_rust_unit_tests = false
-sources = [ "crate/src/lib.rs" ]
-edition = "2021"
-cargo_pkg_version = "1.2.3"
-cargo_pkg_name = "foo"
 }
 "#,
     );
@@ -184,48 +162,49 @@ cargo_pkg_name = "foo"
     let build_file = BuildFile {
         rules: vec![(
             "lib".to_string(),
-            Rule {
-                crate_name: Some("foo".to_string()),
-                epoch: Some(Epoch::Major(1)),
-                crate_type: "rlib".to_string(),
-                testonly: false,
-                crate_root: "crate/src/lib.rs".to_string(),
-                edition: "2021".to_string(),
-                cargo_pkg_version: "1.2.3".to_string(),
-                cargo_pkg_authors: None,
-                cargo_pkg_name: "foo".to_string(),
-                cargo_pkg_description: None,
-                deps: vec![
-                    RuleDep::construct_for_testing(
+            Rule::Concrete {
+                common: RuleCommon { testonly: false, public_visibility: true },
+                details: RuleConcrete {
+                    crate_name: Some("foo".to_string()),
+                    epoch: Some(Epoch::Major(1)),
+                    crate_type: "rlib".to_string(),
+                    crate_root: "crate/src/lib.rs".to_string(),
+                    edition: "2021".to_string(),
+                    cargo_pkg_version: "1.2.3".to_string(),
+                    cargo_pkg_authors: None,
+                    cargo_pkg_name: "foo".to_string(),
+                    cargo_pkg_description: None,
+                    deps: vec![
+                        RuleDep::construct_for_testing(
+                            Condition::Always,
+                            "//third_party/rust/bar:lib".to_string(),
+                        ),
+                        RuleDep::construct_for_testing(
+                            Condition::If("foo".to_string()),
+                            "//third_party/rust/dep1:lib".to_string(),
+                        ),
+                        RuleDep::construct_for_testing(
+                            Condition::If("foo".to_string()),
+                            "//third_party/rust/dep2:lib".to_string(),
+                        ),
+                        RuleDep::construct_for_testing(
+                            Condition::If("bar".to_string()),
+                            "//third_party/rust/dep3:lib".to_string(),
+                        ),
+                    ],
+                    // dev_deps should *not* show up in the output currently.
+                    dev_deps: vec![RuleDep::construct_for_testing(
                         Condition::Always,
-                        "//third_party/rust/bar:lib".to_string(),
-                    ),
-                    RuleDep::construct_for_testing(
-                        Condition::If("foo".to_string()),
-                        "//third_party/rust/dep1:lib".to_string(),
-                    ),
-                    RuleDep::construct_for_testing(
-                        Condition::If("foo".to_string()),
-                        "//third_party/rust/dep2:lib".to_string(),
-                    ),
-                    RuleDep::construct_for_testing(
-                        Condition::If("bar".to_string()),
-                        "//third_party/rust/dep3:lib".to_string(),
-                    ),
-                ],
-                // dev_deps should *not* show up in the output currently.
-                dev_deps: vec![RuleDep::construct_for_testing(
-                    Condition::Always,
-                    "//third_party/rust/rstest:lib".to_string(),
-                )],
-                build_deps: vec![RuleDep::construct_for_testing(
-                    Condition::Always,
-                    "//third_party/rust/bindgen:lib".to_string(),
-                )],
-                features: vec!["std".to_string()],
-                build_root: Some("crate/build.rs".to_string()),
-                build_script_outputs: vec!["binding.rs".to_string()],
-                public_visibility: true,
+                        "//third_party/rust/rstest:lib".to_string(),
+                    )],
+                    build_deps: vec![RuleDep::construct_for_testing(
+                        Condition::Always,
+                        "//third_party/rust/bindgen:lib".to_string(),
+                    )],
+                    features: vec!["std".to_string()],
+                    build_root: Some("crate/build.rs".to_string()),
+                    build_script_outputs: vec!["binding.rs".to_string()],
+                },
             },
         )],
     };

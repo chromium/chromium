@@ -15,6 +15,16 @@ use std::str::FromStr;
 
 use semver::Version;
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum Visibility {
+    /// The crate can be used by any build targets.
+    Public,
+    /// The crate can be used by only third-party crates.
+    ThirdParty,
+    /// The crate can be used by any test target, and in production by third-party crates.
+    TestOnlyAndThirdParty,
+}
+
 /// A normalized version as used in third_party/rust crate paths.
 ///
 /// A crate version is identified by the major version, if it's >= 1, or the
