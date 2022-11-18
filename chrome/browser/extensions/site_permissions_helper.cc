@@ -6,7 +6,6 @@
 
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/web_contents.h"
@@ -36,19 +35,18 @@ SitePermissionsHelper::SiteAccess SitePermissionsHelper::GetSiteAccess(
   DCHECK(
       !extension.permissions_data()->IsRestrictedUrl(gurl, /*error=*/nullptr));
 
-  ScriptingPermissionsModifier modifier(profile_,
-                                        base::WrapRefCounted(&extension));
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile_);
 
   // Extension with no host permissions but with active tab permission has "on
   // click" access.
-  if (!modifier.CanAffectExtension() &&
+  if (!permissions_manager->CanAffectExtension(extension) &&
       HasActiveTabAndCanAccess(extension, gurl))
     return SiteAccess::kOnClick;
 
-  DCHECK(modifier.CanAffectExtension());
+  DCHECK(permissions_manager->CanAffectExtension(extension));
 
   PermissionsManager::ExtensionSiteAccess site_access =
-      PermissionsManager::Get(profile_)->GetSiteAccess(extension, gurl);
+      permissions_manager->GetSiteAccess(extension, gurl);
   if (site_access.has_all_sites_access)
     return SiteAccess::kOnAllSites;
   if (site_access.has_site_access)
@@ -147,13 +145,12 @@ bool SitePermissionsHelper::CanSelectSiteAccess(const Extension& extension,
       HasActiveTabAndCanAccess(extension, url))
     return true;
 
-  ScriptingPermissionsModifier modifier(profile_,
-                                        base::WrapRefCounted(&extension));
-  if (!modifier.CanAffectExtension())
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile_);
+  if (!permissions_manager->CanAffectExtension(extension))
     return false;
 
   PermissionsManager::ExtensionSiteAccess extension_access =
-      PermissionsManager(profile_).GetSiteAccess(extension, url);
+      permissions_manager->GetSiteAccess(extension, url);
   switch (site_access) {
     case SitePermissionsHelper::SiteAccess::kOnClick:
       // The "on click" option is only enabled if the extension has active tab,

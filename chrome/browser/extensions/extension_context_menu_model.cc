@@ -17,13 +17,11 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/chrome_extension_browser_constants.h"
 #include "chrome/browser/extensions/context_menu_matcher.h"
-#include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/menu_manager.h"
-#include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -457,7 +455,7 @@ void ExtensionContextMenuModel::InitMenu(const Extension* extension,
   // wants site access (either by requesting host permissions or active tab).
   auto* web_contents = GetActiveWebContents();
   if (web_contents &&
-      (ScriptingPermissionsModifier(profile_, extension).CanAffectExtension() ||
+      (PermissionsManager::Get(profile_)->CanAffectExtension(*extension) ||
        SitePermissionsHelper(profile_).HasActiveTabAndCanAccess(
            *extension, web_contents->GetLastCommittedURL()))) {
     CreatePageAccessItems(extension, web_contents);
@@ -558,8 +556,7 @@ bool ExtensionContextMenuModel::IsPageAccessCommandEnabled(
       SitePermissionsHelper permissions(profile_);
       DCHECK(
           permissions.HasActiveTabAndCanAccess(extension, url) ||
-          (ScriptingPermissionsModifier(profile_, &extension)
-               .CanAffectExtension() &&
+          (PermissionsManager::Get(profile_)->CanAffectExtension(extension) &&
            permissions.CanSelectSiteAccess(
                extension, url, SitePermissionsHelper::SiteAccess::kOnClick)));
 

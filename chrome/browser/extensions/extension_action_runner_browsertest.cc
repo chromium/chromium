@@ -183,10 +183,10 @@ const Extension* ExtensionActionRunnerBrowserTest::CreateExtension(
     test_extension_dirs_.push_back(std::move(dir));
     extensions_.push_back(extension);
 
-    ScriptingPermissionsModifier modifier(profile(), extension);
     if (withhold_permissions == WITHHOLD_PERMISSIONS &&
-        modifier.CanAffectExtension()) {
-      modifier.SetWithholdHostPermissions(true);
+        PermissionsManager::Get(profile())->CanAffectExtension(*extension)) {
+      ScriptingPermissionsModifier(profile(), extension)
+          .SetWithholdHostPermissions(true);
     }
   }
 

@@ -22,7 +22,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
-#include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/chrome_manifest_url_handlers.h"
@@ -30,7 +29,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/allowlist_state.h"
 #include "extensions/browser/event_router.h"
@@ -666,13 +664,12 @@ void InstalledLoader::RecordExtensionsMetrics() {
     if (!extension_management->UpdatesFromWebstore(*extension))
       ++off_store_item_count;
 
-    ScriptingPermissionsModifier scripting_modifier(profile, extension);
+    PermissionsManager* permissions_manager = PermissionsManager::Get(profile);
     // NOTE: CanAffectExtension() returns false in all cases when the
     // RuntimeHostPermissions feature is disabled.
-    if (scripting_modifier.CanAffectExtension()) {
+    if (permissions_manager->CanAffectExtension(*extension)) {
       bool extension_has_withheld_hosts =
-          PermissionsManager::Get(profile)->HasWithheldHostPermissions(
-              *extension);
+          permissions_manager->HasWithheldHostPermissions(*extension);
       UMA_HISTOGRAM_BOOLEAN(
           "Extensions.RuntimeHostPermissions.ExtensionHasWithheldHosts",
           extension_has_withheld_hosts);

@@ -87,6 +87,7 @@
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/browser/path_util.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/ui_util.h"
@@ -1091,20 +1092,19 @@ DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
         extension->id(), *update.error_collection);
   }
   if (update.host_access != developer::HOST_ACCESS_NONE) {
-    ScriptingPermissionsModifier modifier(browser_context(), extension);
-    if (!modifier.CanAffectExtension())
+    PermissionsManager* manager = PermissionsManager::Get(browser_context());
+    if (!manager->CanAffectExtension(*extension))
       return RespondNow(Error(kCannotChangeHostPermissions));
 
+    ScriptingPermissionsModifier modifier(browser_context(), extension);
     switch (update.host_access) {
       case developer::HOST_ACCESS_ON_CLICK:
         modifier.SetWithholdHostPermissions(true);
         modifier.RemoveAllGrantedHostPermissions();
         break;
       case developer::HOST_ACCESS_ON_SPECIFIC_SITES:
-        if (PermissionsManager::Get(browser_context())
-                ->HasBroadGrantedHostPermissions(*extension)) {
+        if (manager->HasBroadGrantedHostPermissions(*extension))
           modifier.RemoveBroadGrantedHostPermissions();
-        }
         modifier.SetWithholdHostPermissions(true);
         break;
       case developer::HOST_ACCESS_ON_ALL_SITES:
@@ -2193,8 +2193,8 @@ DeveloperPrivateAddHostPermissionFunction::Run() {
   if (!extension)
     return RespondNow(Error(kNoSuchExtensionError));
 
-  if (!ScriptingPermissionsModifier(browser_context(), extension)
-           .CanAffectExtension()) {
+  if (!PermissionsManager::Get(browser_context())
+           ->CanAffectExtension(*extension)) {
     return RespondNow(Error(kCannotChangeHostPermissions));
   }
 
@@ -2236,11 +2236,12 @@ DeveloperPrivateRemoveHostPermissionFunction::Run() {
   if (!extension)
     return RespondNow(Error(kNoSuchExtensionError));
 
-  ScriptingPermissionsModifier scripting_modifier(browser_context(), extension);
-  if (!scripting_modifier.CanAffectExtension())
+  PermissionsManager* manager = PermissionsManager::Get(browser_context());
+  if (!manager->CanAffectExtension(*extension))
     return RespondNow(Error(kCannotChangeHostPermissions));
 
   URLPatternSet host_permissions_to_remove({*pattern});
+  ScriptingPermissionsModifier scripting_modifier(browser_context(), extension);
   std::unique_ptr<const PermissionSet> permissions_to_remove =
       PermissionSet::CreateIntersection(
           PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
@@ -2390,10 +2391,9 @@ DeveloperPrivateGetUserAndExtensionSitesByEtldFunction::Run() {
     // the user cannot modify their permissions. These also need to be added to
     // another list so the frontend knows that their site access cannot be
     // modified.
-    ScriptingPermissionsModifier permissions_modifier(browser_context(),
-                                                      extension);
+    PermissionsManager* manager = PermissionsManager::Get(browser_context());
     if (!ui_util::ShouldDisplayInExtensionSettings(*extension) ||
-        !permissions_modifier.CanAffectExtension()) {
+        !manager->CanAffectExtension(*extension)) {
       continue;
     }
 

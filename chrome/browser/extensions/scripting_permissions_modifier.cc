@@ -32,7 +32,7 @@ ScriptingPermissionsModifier::~ScriptingPermissionsModifier() = default;
 
 void ScriptingPermissionsModifier::SetWithholdHostPermissions(
     bool should_withhold) {
-  DCHECK(CanAffectExtension());
+  DCHECK(permissions_manager_->CanAffectExtension(*extension_));
 
   if (permissions_manager_->HasWithheldHostPermissions(*extension_) ==
       should_withhold) {
@@ -50,12 +50,8 @@ void ScriptingPermissionsModifier::SetWithholdHostPermissions(
     GrantWithheldHostPermissions();
 }
 
-bool ScriptingPermissionsModifier::CanAffectExtension() const {
-  return permissions_manager_->CanAffectExtension(*extension_);
-}
-
 void ScriptingPermissionsModifier::GrantHostPermission(const GURL& url) {
-  DCHECK(CanAffectExtension());
+  DCHECK(permissions_manager_->CanAffectExtension(*extension_));
   // Check that we don't grant host permission to a restricted URL.
   DCHECK(
       !extension_->permissions_data()->IsRestrictedUrl(url, /*error=*/nullptr))
@@ -76,7 +72,7 @@ void ScriptingPermissionsModifier::GrantHostPermission(const GURL& url) {
 
 void ScriptingPermissionsModifier::RemoveGrantedHostPermission(
     const GURL& url) {
-  DCHECK(CanAffectExtension());
+  DCHECK(permissions_manager_->CanAffectExtension(*extension_));
   DCHECK(permissions_manager_->HasGrantedHostPermission(*extension_, url));
 
   std::unique_ptr<const PermissionSet> runtime_permissions =
@@ -102,7 +98,7 @@ void ScriptingPermissionsModifier::RemoveGrantedHostPermission(
 }
 
 void ScriptingPermissionsModifier::RemoveBroadGrantedHostPermissions() {
-  DCHECK(CanAffectExtension());
+  DCHECK(permissions_manager_->CanAffectExtension(*extension_));
 
   std::unique_ptr<const PermissionSet> runtime_permissions =
       permissions_manager_->GetRuntimePermissionsFromPrefs(*extension_);
@@ -129,7 +125,7 @@ void ScriptingPermissionsModifier::RemoveBroadGrantedHostPermissions() {
 }
 
 void ScriptingPermissionsModifier::RemoveAllGrantedHostPermissions() {
-  DCHECK(CanAffectExtension());
+  DCHECK(permissions_manager_->CanAffectExtension(*extension_));
   WithholdHostPermissions();
 }
 

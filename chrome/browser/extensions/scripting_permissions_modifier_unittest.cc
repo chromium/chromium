@@ -114,9 +114,8 @@ TEST_F(ScriptingPermissionsModifierUnitTest, GrantAndWithholdHostPermissions) {
             .Build();
 
     PermissionsUpdater(profile()).InitializePermissions(extension.get());
-
-    ScriptingPermissionsModifier modifier(profile(), extension);
-    ASSERT_TRUE(modifier.CanAffectExtension());
+    ASSERT_TRUE(
+        PermissionsManager::Get(profile())->CanAffectExtension(*extension));
 
     // By default, all permissions are granted.
     {
@@ -126,6 +125,7 @@ TEST_F(ScriptingPermissionsModifierUnitTest, GrantAndWithholdHostPermissions) {
     }
 
     // Then, withhold host permissions.
+    ScriptingPermissionsModifier modifier(profile(), extension);
     modifier.SetWithholdHostPermissions(true);
     {
       SCOPED_TRACE("After setting to withhold");
@@ -167,8 +167,8 @@ TEST_F(ScriptingPermissionsModifierUnitTest, WithholdHostPermissionsOnInstall) {
   ExtensionPrefs::Get(profile())->OnExtensionInstalled(
       extension.get(), Extension::State::ENABLED, syncer::StringOrdinal(), "");
 
-  ScriptingPermissionsModifier modifier(profile(), extension);
-  ASSERT_TRUE(modifier.CanAffectExtension());
+  ASSERT_TRUE(
+      PermissionsManager::Get(profile())->CanAffectExtension(*extension));
 
   // With the flag present, permissions should have been withheld.
   {
@@ -179,6 +179,7 @@ TEST_F(ScriptingPermissionsModifierUnitTest, WithholdHostPermissionsOnInstall) {
   }
 
   // Grant one of the permissions manually.
+  ScriptingPermissionsModifier modifier(profile(), extension);
   modifier.GrantHostPermission(GURL(kHostChromium));
 
   {
@@ -524,9 +525,9 @@ TEST_F(ScriptingPermissionsModifierUnitTest, CanAffectExtensionByLocation) {
             .SetLocation(test_case.location)
             .AddPermission("<all_urls>")
             .Build();
-    EXPECT_EQ(test_case.can_be_affected,
-              ScriptingPermissionsModifier(profile(), extension.get())
-                  .CanAffectExtension())
+    EXPECT_EQ(
+        test_case.can_be_affected,
+        PermissionsManager::Get(profile())->CanAffectExtension(*extension))
         << test_case.location;
   }
 }

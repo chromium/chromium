@@ -41,12 +41,6 @@ class ScriptingPermissionsModifier {
   // which CanAffectExtension() returns true). Anything else will DCHECK.
   void SetWithholdHostPermissions(bool withhold);
 
-  // Returns true if the associated extension can be affected by
-  // runtime host permissions.
-  // TODO(crbug.com/1289441): Migrate callers to
-  // PermissionsManager::CanAffectExtension.
-  bool CanAffectExtension() const;
-
   // Grants the extension permission to run on the origin of |url|.
   // This may only be called for extensions that can be affected (i.e., for
   // which CanAffectExtension() returns true). Anything else will DCHECK.
