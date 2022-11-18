@@ -29,10 +29,6 @@
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/autofill_assistant/browser/public/headless_onboarding_result.h"
-#include "components/autofill_assistant/browser/public/mock_headless_script_controller.h"
-#include "components/autofill_assistant/browser/public/mock_runtime_manager.h"
-#include "components/autofill_assistant/browser/public/public_script_parameters.h"
 #include "ui/gfx/native_widget_types.h"
 
 using ::autofill::AutofillDriver;
@@ -168,17 +164,6 @@ class TestFastCheckoutClientImpl : public FastCheckoutClientImpl {
   explicit TestFastCheckoutClientImpl(content::WebContents* web_contents)
       : FastCheckoutClientImpl(web_contents) {}
 
-  std::unique_ptr<autofill_assistant::HeadlessScriptController>
-  CreateHeadlessScriptController() override {
-    return std::move(external_script_controller_);
-  }
-
-  void InjectHeadlessScriptControllerForTesting(
-      std::unique_ptr<autofill_assistant::HeadlessScriptController>
-          external_script_controller) {
-    external_script_controller_ = std::move(external_script_controller);
-  }
-
   std::unique_ptr<FastCheckoutController> CreateFastCheckoutController()
       override {
     return std::move(fast_checkout_controller_);
@@ -187,16 +172,6 @@ class TestFastCheckoutClientImpl : public FastCheckoutClientImpl {
   void InjectFastCheckoutController(
       std::unique_ptr<FastCheckoutController> fast_checkout_controller) {
     fast_checkout_controller_ = std::move(fast_checkout_controller);
-  }
-
-  autofill_assistant::RuntimeManager* GetRuntimeManager() override {
-    return runtime_manager_;
-  }
-
-  // Allows setting an RunTimeManager.
-  void InjectRunTimeManagerForTesting(
-      autofill_assistant::RuntimeManager* runtime_manager) {
-    runtime_manager_ = runtime_manager;
   }
 
   std::unique_ptr<FastCheckoutExternalActionDelegate>
@@ -211,11 +186,8 @@ class TestFastCheckoutClientImpl : public FastCheckoutClientImpl {
   }
 
  private:
-  std::unique_ptr<autofill_assistant::HeadlessScriptController>
-      external_script_controller_;
   std::unique_ptr<FastCheckoutController> fast_checkout_controller_;
   std::unique_ptr<FastCheckoutExternalActionDelegate> external_action_delegate_;
-  autofill_assistant::RuntimeManager* runtime_manager_;
 };
 
 // static
@@ -244,13 +216,6 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
     test_client_ =
         TestFastCheckoutClientImpl::CreateForWebContents(web_contents());
 
-    // Prepare the HeadlessScriptController.
-    auto external_script_controller =
-        std::make_unique<autofill_assistant::MockHeadlessScriptController>();
-    external_script_controller_ = external_script_controller.get();
-    test_client_->InjectHeadlessScriptControllerForTesting(
-        std::move(external_script_controller));
-
     // Prepare the FastCheckoutController.
     auto fast_checkout_controller =
         std::make_unique<MockFastCheckoutController>();
@@ -270,12 +235,6 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
     fast_checkout_delegate_ =
         std::make_unique<MockFastCheckoutDelegate>(autofill_driver_.get());
 
-    mock_runtime_manager_ =
-        std::make_unique<autofill_assistant::MockRuntimeManager>();
-
-    // Prepare the RunTimeManager.
-    test_client_->InjectRunTimeManagerForTesting(mock_runtime_manager_.get());
-
     // Set AutofillManager on AutofillDriver.
     auto test_autofill_client =
         std::make_unique<autofill::TestAutofillClient>();
@@ -293,11 +252,6 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
 
   TestFastCheckoutClientImpl* fast_checkout_client() { return test_client_; }
 
-  autofill_assistant::MockHeadlessScriptController*
-  external_script_controller() {
-    return external_script_controller_;
-  }
-
   MockFastCheckoutController* fast_checkout_controller() {
     return fast_checkout_controller_;
   }
@@ -312,21 +266,14 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
     return fast_checkout_delegate_->GetWeakPtr();
   }
 
-  autofill_assistant::MockRuntimeManager* runtime_manager() {
-    return mock_runtime_manager_.get();
-  }
-
  protected:
   base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
 
-  raw_ptr<autofill_assistant::MockHeadlessScriptController>
-      external_script_controller_;
   raw_ptr<MockFastCheckoutController> fast_checkout_controller_;
   raw_ptr<MockFastCheckoutExternalActionDelegate> external_action_delegate_;
   std::unique_ptr<MockAutofillDriver> autofill_driver_;
   std::unique_ptr<MockFastCheckoutDelegate> fast_checkout_delegate_;
-  std::unique_ptr<autofill_assistant::MockRuntimeManager> mock_runtime_manager_;
   raw_ptr<TestFastCheckoutClientImpl> test_client_;
 };
 
@@ -413,34 +360,7 @@ TEST_P(FastCheckoutClientImplTestParametrized,
   // `FastCheckoutClient` is not running initially.
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
 
-  // Prepare to extract the callbacks to the external script controller.
-  base::OnceCallback<void(
-      autofill_assistant::HeadlessScriptController::ScriptResult)>
-      external_script_controller_callback;
-  base::OnceCallback<void()> onboarding_successful_callback;
-  base::flat_map<std::string, std::string> script_params;
-
   EXPECT_CALL(*autofill_driver(), SetShouldSuppressKeyboard(true));
-  EXPECT_CALL(*external_script_controller(),
-              StartScript(_, _, /*use_autofill_assistant_onboarding=*/
-                          !GetParam().run_consentless, _,
-                          /*suppress_browsing_features=*/false))
-      .Times(1)
-      .WillOnce(
-          [&](const base::flat_map<std::string, std::string>& script_parameters,
-              base::OnceCallback<void(
-                  autofill_assistant::HeadlessScriptController::ScriptResult)>
-                  script_ended_callback,
-              bool use_autofill_assistant_onboarding,
-              base::OnceCallback<void()>
-                  onboarding_successful_callback_parameter,
-              bool suppress_browsing_features) {
-            external_script_controller_callback =
-                std::move(script_ended_callback);
-            onboarding_successful_callback =
-                std::move(onboarding_successful_callback_parameter);
-            script_params = script_parameters;
-          });
 
   // Expect bottomsheet to show up.
   EXPECT_CALL(
@@ -453,121 +373,12 @@ TEST_P(FastCheckoutClientImplTestParametrized,
   EXPECT_TRUE(fast_checkout_client()->Start(
       delegate(), GURL(kUrl), GetParam().script_supports_consentless));
 
-  // By default script parameters should not include "DISABLE_RPC_SIGNING".
-  EXPECT_FALSE(
-      script_params.contains(autofill_assistant::public_script_parameters::
-                                 kDisableRpcSigningParameterName));
-
   // `FastCheckoutClient` is running.
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
 
   // Cannot start another run.
   EXPECT_FALSE(fast_checkout_client()->Start(
       delegate(), GURL(kUrl), GetParam().script_supports_consentless));
-
-  // After the bottom sheet is dismissed, keyboard suppression is disabled.
-  // Normally `OnHidden` would get called, but it is also stopped on script end.
-  EXPECT_CALL(*autofill_driver(), SetShouldSuppressKeyboard(false)).Times(2);
-
-  // Successful onboarding.
-  EXPECT_CALL(*runtime_manager(),
-              SetUIState(autofill_assistant::UIState::
-                             kShownWithoutBrowsingFeatureSuppression));
-  std::move(onboarding_successful_callback).Run();
-
-  // Successful run.
-  EXPECT_CALL(*runtime_manager(),
-              SetUIState(autofill_assistant::UIState::kNotShown));
-  autofill_assistant::HeadlessScriptController::ScriptResult script_result = {
-      /* success= */ true};
-  std::move(external_script_controller_callback).Run(script_result);
-
-  // `FastCheckoutClient` state was reset after run finished.
-  EXPECT_FALSE(fast_checkout_client()->IsRunning());
-
-  histogram_tester_.ExpectUniqueSample(kUmaKeyFastCheckoutRunOutcome,
-                                       FastCheckoutRunOutcome::kSuccess, 1u);
-}
-
-TEST_F(
-    FastCheckoutClientImplTest,
-    Start_AutofillAssistantUrlSwitchSet_ScriptParametersContainDisableRpcSigning) {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(kAutofillAssistantUrl)) {
-    command_line->AppendSwitch(kAutofillAssistantUrl);
-  }
-
-  base::flat_map<std::string, std::string> script_params;
-
-  EXPECT_CALL(*external_script_controller(), StartScript(_, _, _, _, _))
-      .Times(1)
-      .WillOnce(SaveArg<0>(&script_params));
-
-  // Starting the run successfully.
-  EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl), true));
-
-  // With the corresponding command line switch set script parameters should
-  // include "DISABLE_RPC_SIGNING".
-  EXPECT_TRUE(
-      script_params.contains(autofill_assistant::public_script_parameters::
-                                 kDisableRpcSigningParameterName));
-}
-
-TEST_F(FastCheckoutClientImplTest, Start_OnboardingRejected_NotStartableAgain) {
-  // `FastCheckoutClient` is not running initially.
-  EXPECT_FALSE(fast_checkout_client()->IsRunning());
-
-  // Prepare to extract the callbacks to the external script controller.
-  base::OnceCallback<void(
-      autofill_assistant::HeadlessScriptController::ScriptResult)>
-      external_script_controller_callback;
-
-  EXPECT_CALL(*external_script_controller(),
-              StartScript(_, _, /*use_autofill_assistant_onboarding=*/
-                          true, _,
-                          /*suppress_browsing_features=*/false))
-      .Times(1)
-      .WillOnce(
-          [&](const base::flat_map<std::string, std::string>& script_parameters,
-              base::OnceCallback<void(
-                  autofill_assistant::HeadlessScriptController::ScriptResult)>
-                  script_ended_callback,
-              bool use_autofill_assistant_onboarding,
-              base::OnceCallback<void()>
-                  onboarding_successful_callback_parameter,
-              bool suppress_browsing_features) {
-            external_script_controller_callback =
-                std::move(script_ended_callback);
-          });
-
-  // Expect bottomsheet to show up.
-  EXPECT_CALL(*fast_checkout_controller(), Show(_, _)).Times(0);
-
-  // Starting the run successfully.
-  EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl), false));
-
-  // `FastCheckoutClient` is running.
-  EXPECT_TRUE(fast_checkout_client()->IsRunning());
-
-  // Cannot start another run.
-  EXPECT_FALSE(fast_checkout_client()->Start(delegate(), GURL(kUrl), false));
-
-  // Rejected onboarding.
-  autofill_assistant::HeadlessScriptController::ScriptResult script_result = {
-      /* success= */ false, /* onboarding_result= */ autofill_assistant::
-          HeadlessOnboardingResult::kRejected};
-  std::move(external_script_controller_callback).Run(script_result);
-
-  // `FastCheckoutClient` state was reset after onboarding was rejected.
-  EXPECT_FALSE(fast_checkout_client()->IsRunning());
-
-  // Not startable again.
-  EXPECT_FALSE(fast_checkout_client()->Start(delegate(), GURL(kUrl), false));
-  EXPECT_FALSE(fast_checkout_client()->IsRunning());
-
-  histogram_tester_.ExpectUniqueSample(
-      kUmaKeyFastCheckoutRunOutcome,
-      FastCheckoutRunOutcome::kOnboardingDeclined, 1u);
 }
 
 TEST_F(FastCheckoutClientImplTest, Start_FailsIfNoProfilesOnFile) {
@@ -576,11 +387,9 @@ TEST_F(FastCheckoutClientImplTest, Start_FailsIfNoProfilesOnFile) {
 
   // Remove all profiles.
   personal_data_manager()->ClearProfiles();
+  // Do not expect bottomsheet to show up.
+  EXPECT_CALL(*fast_checkout_controller(), Show).Times(0);
 
-  EXPECT_CALL(*external_script_controller(),
-              StartScript(_, _, /*use_autofill_assistant_onboarding=*/true, _,
-                          /*suppress_browsing_features=*/false))
-      .Times(0);
   EXPECT_CALL(*autofill_driver(), SetShouldSuppressKeyboard).Times(0);
 
   // Starting the run unsuccessfully.
@@ -603,10 +412,9 @@ TEST_F(FastCheckoutClientImplTest, Start_FailsIfNoCompleteProfile) {
   personal_data_manager()->AddProfile(autofill::test::GetIncompleteProfile1());
   personal_data_manager()->AddProfile(autofill::test::GetIncompleteProfile2());
 
-  EXPECT_CALL(*external_script_controller(),
-              StartScript(_, _, /*use_autofill_assistant_onboarding=*/true, _,
-                          /*suppress_browsing_features=*/false))
-      .Times(0);
+  // Do not expect bottomsheet to show up.
+  EXPECT_CALL(*fast_checkout_controller(), Show).Times(0);
+
   EXPECT_CALL(*autofill_driver(), SetShouldSuppressKeyboard).Times(0);
 
   // Starting the run unsuccessfully.
@@ -627,10 +435,9 @@ TEST_F(FastCheckoutClientImplTest, Start_FailsIfNoCreditCardsOnFile) {
   // Remove all credit cards.
   personal_data_manager()->ClearCreditCards();
 
-  EXPECT_CALL(*external_script_controller(),
-              StartScript(_, _, /*use_autofill_assistant_onboarding=*/true, _,
-                          /*suppress_browsing_features=*/false))
-      .Times(0);
+  // Do not expect bottomsheet to show up.
+  EXPECT_CALL(*fast_checkout_controller(), Show).Times(0);
+
   EXPECT_CALL(*autofill_driver(), SetShouldSuppressKeyboard).Times(0);
 
   // Starting the run unsuccessfully.
@@ -655,10 +462,9 @@ TEST_F(FastCheckoutClientImplTest, Start_FailsIfNoCompleteorValidCreditCard) {
   personal_data_manager()->AddCreditCard(
       autofill::test::GetIncompleteCreditCard());
 
-  EXPECT_CALL(*external_script_controller(),
-              StartScript(_, _, /*use_autofill_assistant_onboarding=*/true, _,
-                          /*suppress_browsing_features=*/false))
-      .Times(0);
+  // Do not expect bottomsheet to show up.
+  EXPECT_CALL(*fast_checkout_controller(), Show).Times(0);
+
   EXPECT_CALL(*autofill_driver(), SetShouldSuppressKeyboard).Times(0);
 
   // Starting the run unsuccessfully.
@@ -678,10 +484,7 @@ TEST_F(FastCheckoutClientImplTest,
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
 
   // Expect bottomsheet to show up.
-  EXPECT_CALL(*external_script_controller(),
-              StartScript(_, _, /*use_autofill_assistant_onboarding=*/true, _,
-                          /*suppress_browsing_features=*/false))
-      .Times(1);
+  EXPECT_CALL(*fast_checkout_controller(), Show).Times(1);
 
   // Starting the run successfully.
   EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl), false));
@@ -707,10 +510,7 @@ TEST_F(FastCheckoutClientImplTest,
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
 
   // Expect bottomsheet to show up.
-  EXPECT_CALL(*external_script_controller(),
-              StartScript(_, _, /*use_autofill_assistant_onboarding=*/true, _,
-                          /*suppress_browsing_features=*/false))
-      .Times(1);
+  EXPECT_CALL(*fast_checkout_controller(), Show).Times(1);
 
   // Starting the run successfully.
   EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl), false));
@@ -735,25 +535,6 @@ TEST_F(FastCheckoutClientImplTest,
   // `FastCheckoutClient` is not running initially.
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
 
-  base::OnceCallback<void()> onboarding_successful_callback;
-  // Expect bottomsheet to show up.
-  EXPECT_CALL(*external_script_controller(),
-              StartScript(_, _, /*use_autofill_assistant_onboarding=*/true, _,
-                          /*suppress_browsing_features=*/false))
-      .Times(1)
-      .WillOnce(
-          [&](const base::flat_map<std::string, std::string>& script_parameters,
-              base::OnceCallback<void(
-                  autofill_assistant::HeadlessScriptController::ScriptResult)>
-                  script_ended_callback,
-              bool use_autofill_assistant_onboarding,
-              base::OnceCallback<void()>
-                  onboarding_successful_callback_parameter,
-              bool suppress_browsing_features) {
-            onboarding_successful_callback =
-                std::move(onboarding_successful_callback_parameter);
-          });
-
   EXPECT_CALL(
       *fast_checkout_controller(),
       Show(UnorderedElementsAre(Pointee(kProfile1), Pointee(kProfile2),
@@ -762,9 +543,6 @@ TEST_F(FastCheckoutClientImplTest,
 
   // Starting the run successfully.
   EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl), false));
-
-  // User accepts the onboarding.
-  std::move(onboarding_successful_callback).Run();
 
   // `FastCheckoutClient` is running.
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
@@ -784,57 +562,6 @@ TEST_F(FastCheckoutClientImplTest,
 
   // `FastCheckoutClient` is still running.
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
-}
-
-TEST_F(FastCheckoutClientImplTest,
-       Start_OnboardingNotSuccessful_BottomsheetNotShowing) {
-  // `FastCheckoutClient` is not running initially.
-  EXPECT_FALSE(fast_checkout_client()->IsRunning());
-
-  // Prepare to extract the callbacks to the external script controller.
-  base::OnceCallback<void(
-      autofill_assistant::HeadlessScriptController::ScriptResult)>
-      external_script_controller_callback;
-  EXPECT_CALL(*external_script_controller(),
-              StartScript(_, _, /*use_autofill_assistant_onboarding=*/true, _,
-                          /*suppress_browsing_features=*/false))
-      .Times(1)
-      .WillOnce(MoveArg<1>(&external_script_controller_callback));
-
-  // Keyboard suppression is turned on and off again.
-  EXPECT_CALL(*autofill_driver(), SetShouldSuppressKeyboard(true));
-  EXPECT_CALL(*autofill_driver(), SetShouldSuppressKeyboard(false)).Times(2);
-
-  // Expect bottomsheet NOT to show up.
-  EXPECT_CALL(*fast_checkout_controller(), Show).Times(0);
-
-  // Starting the run successfully.
-  EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl), false));
-
-  // No onboarding.
-  EXPECT_CALL(
-      *runtime_manager(),
-      SetUIState(
-          autofill_assistant::UIState::kShownWithoutBrowsingFeatureSuppression))
-      .Times(0);
-  // `FastCheckoutClient` is running.
-  EXPECT_TRUE(fast_checkout_client()->IsRunning());
-
-  // Cannot start another run.
-  EXPECT_FALSE(fast_checkout_client()->Start(delegate(), GURL(kUrl), false));
-
-  // Failed run.
-  EXPECT_CALL(*runtime_manager(),
-              SetUIState(autofill_assistant::UIState::kNotShown));
-  autofill_assistant::HeadlessScriptController::ScriptResult script_result = {
-      /* success= */ false};
-  std::move(external_script_controller_callback).Run(script_result);
-
-  // `FastCheckoutClient` state was reset after run finished.
-  EXPECT_FALSE(fast_checkout_client()->IsRunning());
-
-  histogram_tester_.ExpectUniqueSample(kUmaKeyFastCheckoutRunOutcome,
-                                       FastCheckoutRunOutcome::kFail, 1u);
 }
 
 TEST_F(FastCheckoutClientImplTest, Stop_WhenIsRunning_CancelsTheRun) {
