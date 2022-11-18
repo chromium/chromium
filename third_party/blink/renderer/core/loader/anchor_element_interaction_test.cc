@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include <cstddef>
+
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -19,8 +21,15 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
-
 namespace blink {
+
+namespace {
+
+enum class PointerEventType {
+  kNone,
+  kOnPointerDown,
+  kOnPointerHover,
+};
 
 class MockAnchorElementInteractionHost
     : public mojom::blink::AnchorElementInteractionHost {
@@ -32,9 +41,17 @@ class MockAnchorElementInteractionHost
   }
 
   absl::optional<KURL> url_received_ = absl::nullopt;
+  PointerEventType event_type_{PointerEventType::kNone};
 
  private:
-  void OnPointerDown(const KURL& target) override { url_received_ = target; }
+  void OnPointerDown(const KURL& target) override {
+    url_received_ = target;
+    event_type_ = PointerEventType::kOnPointerDown;
+  }
+  void OnPointerHover(const KURL& target) override {
+    url_received_ = target;
+    event_type_ = PointerEventType::kOnPointerHover;
+  }
 
  private:
   mojo::Receiver<mojom::blink::AnchorElementInteractionHost> receiver_{this};
@@ -46,7 +63,10 @@ class AnchorElementInteractionTest : public SimTest {
   void SetUp() override {
     SimTest::SetUp();
 
-    feature_list_.InitAndEnableFeature(features::kAnchorElementInteraction);
+    feature_list_.InitWithFeatures(
+        {features::kAnchorElementInteraction,
+         features::kSpeculationRulesPointerHoverHeuristics},
+        {});
 
     MainFrame().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
         mojom::blink::AnchorElementInteractionHost::Name_,
@@ -78,8 +98,10 @@ class AnchorElementInteractionTest : public SimTest {
     GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(event);
   }
 
-  base::test::ScopedFeatureList feature_list_;
   std::vector<std::unique_ptr<MockAnchorElementInteractionHost>> hosts_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(AnchorElementInteractionTest, SingleAnchor) {
@@ -98,6 +120,7 @@ TEST_F(AnchorElementInteractionTest, SingleAnchor) {
   absl::optional<KURL> url_received = hosts_[0]->url_received_;
   EXPECT_TRUE(url_received.has_value());
   EXPECT_EQ(expected_url, url_received);
+  EXPECT_EQ(PointerEventType::kOnPointerDown, hosts_[0]->event_type_);
 }
 
 TEST_F(AnchorElementInteractionTest, InvalidHref) {
@@ -155,6 +178,7 @@ TEST_F(AnchorElementInteractionTest, NestedAnchorElementCheck) {
   absl::optional<KURL> url_received = hosts_[0]->url_received_;
   EXPECT_TRUE(url_received.has_value());
   EXPECT_EQ(expected_url, url_received);
+  EXPECT_EQ(PointerEventType::kOnPointerDown, hosts_[0]->event_type_);
 }
 
 TEST_F(AnchorElementInteractionTest, SiblingAnchorElements) {
@@ -176,6 +200,7 @@ TEST_F(AnchorElementInteractionTest, SiblingAnchorElements) {
   absl::optional<KURL> url_received = hosts_[0]->url_received_;
   EXPECT_TRUE(url_received.has_value());
   EXPECT_EQ(expected_url, url_received);
+  EXPECT_EQ(PointerEventType::kOnPointerDown, hosts_[0]->event_type_);
 }
 
 TEST_F(AnchorElementInteractionTest, NoAnchorElement) {
@@ -218,6 +243,7 @@ TEST_F(AnchorElementInteractionTest, TouchEvent) {
   absl::optional<KURL> url_received = hosts_[0]->url_received_;
   EXPECT_TRUE(url_received.has_value());
   EXPECT_EQ(expected_url, url_received);
+  EXPECT_EQ(PointerEventType::kOnPointerDown, hosts_[0]->event_type_);
 }
 
 TEST_F(AnchorElementInteractionTest, DestroyedContext) {
@@ -250,4 +276,127 @@ TEST_F(AnchorElementInteractionTest, DestroyedContext) {
   EXPECT_FALSE(url_received.has_value());
 }
 
+TEST_F(AnchorElementInteractionTest, ValidMouseHover) {
+  String source("https://example.com/p1");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(R"HTML(
+    <a href='https://anchor1.com/'>
+      <div style='padding: 0px; width: 400px; height: 400px;'></div>
+    </a>
+  )HTML");
+
+  base::SimpleTestTickClock clock;
+  GetDocument().GetAnchorElementInteractionTracker()->SetTickClockForTesting(
+      &clock);
+
+  gfx::PointF coordinates(100, 100);
+  WebMouseEvent event(WebInputEvent::Type::kMouseMove, coordinates, coordinates,
+                      WebPointerProperties::Button::kNoButton, 0,
+                      WebInputEvent::kNoModifiers,
+                      WebInputEvent::GetStaticTimeStampForTests());
+  GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
+      event, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+
+  // Wait for hover logic to process the event
+  clock.Advance(AnchorElementInteractionTracker::GetHoverDwellTime());
+  GetDocument()
+      .GetAnchorElementInteractionTracker()
+      ->FireHoverTimerForTesting();
+  base::RunLoop().RunUntilIdle();
+
+  KURL expected_url = KURL("https://anchor1.com/");
+  EXPECT_EQ(1u, hosts_.size());
+  absl::optional<KURL> url_received = hosts_[0]->url_received_;
+  EXPECT_TRUE(url_received.has_value());
+  EXPECT_EQ(expected_url, url_received);
+  EXPECT_EQ(PointerEventType::kOnPointerHover, hosts_[0]->event_type_);
+}
+
+TEST_F(AnchorElementInteractionTest, ShortMouseHover) {
+  String source("https://example.com/p1");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(R"HTML(
+    <a href='https://anchor1.com/'>
+      <div style='padding: 0px; width: 400px; height: 400px;'></div>
+    </a>
+  )HTML");
+
+  base::SimpleTestTickClock clock;
+  GetDocument().GetAnchorElementInteractionTracker()->SetTickClockForTesting(
+      &clock);
+
+  gfx::PointF coordinates(100, 100);
+  WebMouseEvent event(WebInputEvent::Type::kMouseMove, coordinates, coordinates,
+                      WebPointerProperties::Button::kNoButton, 0,
+                      WebInputEvent::kNoModifiers,
+                      WebInputEvent::GetStaticTimeStampForTests());
+  GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
+      event, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+
+  // Wait for hover logic to process the event
+  clock.Advance(0.5 * AnchorElementInteractionTracker::GetHoverDwellTime());
+  GetDocument()
+      .GetAnchorElementInteractionTracker()
+      ->FireHoverTimerForTesting();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1u, hosts_.size());
+  absl::optional<KURL> url_received = hosts_[0]->url_received_;
+  EXPECT_FALSE(url_received.has_value());
+  EXPECT_EQ(PointerEventType::kNone, hosts_[0]->event_type_);
+}
+
+TEST_F(AnchorElementInteractionTest, MousePointerEnterAndLeave) {
+  String source("https://example.com/p1");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(R"HTML(
+    <a href='https://anchor1.com/'>
+      <div style='padding: 0px; width: 400px; height: 400px;'></div>
+    </a>
+  )HTML");
+
+  base::SimpleTestTickClock clock;
+  GetDocument().GetAnchorElementInteractionTracker()->SetTickClockForTesting(
+      &clock);
+
+  // If mouse does not hover long enough over a link, it should be ignored.
+  gfx::PointF coordinates(100, 100);
+  WebMouseEvent mouse_enter_event(
+      WebInputEvent::Type::kMouseMove, coordinates, coordinates,
+      WebPointerProperties::Button::kNoButton, 0, WebInputEvent::kNoModifiers,
+      WebInputEvent::GetStaticTimeStampForTests());
+  GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
+      mouse_enter_event, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+
+  clock.Advance(0.5 * AnchorElementInteractionTracker::GetHoverDwellTime());
+  GetDocument()
+      .GetAnchorElementInteractionTracker()
+      ->FireHoverTimerForTesting();
+  base::RunLoop().RunUntilIdle();
+
+  WebMouseEvent mouse_leave_event(
+      WebInputEvent::Type::kMouseLeave, coordinates, coordinates,
+      WebPointerProperties::Button::kNoButton, 0, WebInputEvent::kNoModifiers,
+      WebInputEvent::GetStaticTimeStampForTests());
+  GetDocument().GetFrame()->GetEventHandler().HandleMouseLeaveEvent(
+      mouse_leave_event);
+
+  // Wait for hover logic to process the event
+  clock.Advance(AnchorElementInteractionTracker::GetHoverDwellTime());
+  GetDocument()
+      .GetAnchorElementInteractionTracker()
+      ->FireHoverTimerForTesting();
+  base::RunLoop().RunUntilIdle();
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1u, hosts_.size());
+  absl::optional<KURL> url_received = hosts_[0]->url_received_;
+  EXPECT_FALSE(url_received.has_value());
+  EXPECT_EQ(PointerEventType::kNone, hosts_[0]->event_type_);
+}
+
+}  // namespace
 }  // namespace blink

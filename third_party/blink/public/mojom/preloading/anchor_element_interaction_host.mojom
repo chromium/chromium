@@ -8,9 +8,13 @@ import "url/mojom/url.mojom";
 
 // Interface for sending the URL from the renderer side to browser process.
 interface AnchorElementInteractionHost {
-    // On PointerDown events for anchor elements that are part
-    // of the HTTP family, the renderer calls OnPointerDown to pass
-    // the URL to the browser process. In the browser process, the URL gets
-    // preresolved and preconnected.
+    // On pointer down events for anchor elements that are part of the HTTP family,
+    // the renderer calls OnPointerDown to pass the URL to the browser process.
+    // In the browser process, the URL gets preloaded.
     OnPointerDown(url.mojom.Url target);
+
+    // On pointer hover events for anchor elements that are part of the HTTP family,
+    // the renderer calls OnPointerHover to pass the URL to the browser process.
+    // In the browser process, the URL gets preloaded.
+    OnPointerHover(url.mojom.Url target);
 };

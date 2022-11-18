@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_ANCHOR_ELEMENT_INTERACTION_TRACKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_ANCHOR_ELEMENT_INTERACTION_TRACKER_H_
 
+#include "base/metrics/field_trial_params.h"
 #include "third_party/blink/public/mojom/preloading/anchor_element_interaction_host.mojom-blink.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -25,16 +26,20 @@ class PointerEvent;
 // the event and will report the href value to the browser process via Mojo. The
 // browser process can use this information to preload (e.g. preconnect to the
 // origin) the URL in order to improve performance.
-class AnchorElementInteractionTracker
+class BLINK_EXPORT AnchorElementInteractionTracker
     : public GarbageCollected<AnchorElementInteractionTracker> {
  public:
   explicit AnchorElementInteractionTracker(Document& document);
+  ~AnchorElementInteractionTracker();
 
   static bool IsFeatureEnabled();
+  static base::TimeDelta GetHoverDwellTime();
 
-  void OnPointerDown(EventTarget& target, const PointerEvent& pointer_event);
-
+  void OnPointerEvent(EventTarget& target, const PointerEvent& pointer_event);
+  void HoverTimerFired(TimerBase*);
   void Trace(Visitor* visitor) const;
+  void FireHoverTimerForTesting();
+  void SetTickClockForTesting(const base::TickClock* clock);
 
  private:
   HTMLAnchorElement* FirstAnchorElementIncludingSelf(Node* node);
@@ -44,6 +49,11 @@ class AnchorElementInteractionTracker
   KURL GetHrefEligibleForPreloading(const HTMLAnchorElement& anchor);
 
   HeapMojoRemote<mojom::blink::AnchorElementInteractionHost> interaction_host_;
+  // This hash map contains anchor element's url and the timetick at which a
+  // hover event should be reported if not cancelled.
+  HashMap<KURL, base::TimeTicks> hover_events_;
+  HeapTaskRunnerTimer<AnchorElementInteractionTracker> hover_timer_;
+  const base::TickClock* clock_;
 };
 
 }  // namespace blink

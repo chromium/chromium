@@ -209,11 +209,13 @@ WebInputEventResult PointerEventManager::DispatchPointerEvent(
   if (frame_ && frame_->DomWindow())
     event_timing = EventTiming::Create(frame_->DomWindow(), *pointer_event);
 
-  if (event_type == event_type_names::kPointerdown) {
+  if (event_type == event_type_names::kPointerdown ||
+      event_type == event_type_names::kPointerover ||
+      event_type == event_type_names::kPointerout) {
     AnchorElementInteractionTracker* tracker =
         frame_->GetDocument()->GetAnchorElementInteractionTracker();
     if (tracker) {
-      tracker->OnPointerDown(*target, *pointer_event);
+      tracker->OnPointerEvent(*target, *pointer_event);
     }
   }
 

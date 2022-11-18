@@ -28,4 +28,10 @@ void AnchorElementInteractionHostImpl::OnPointerDown(const GURL& url) {
   preloading_decider->OnPointerDown(url);
 }
 
+void AnchorElementInteractionHostImpl::OnPointerHover(const GURL& url) {
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&render_frame_host());
+  preloading_decider->OnPointerHover(url);
+}
+
 }  // namespace content

@@ -40,6 +40,8 @@ class PreloadingObserverImpl : public PreloadingDeciderObserverForTesting {
       candidates_.push_back(candidate.Clone());
     }
   }
+  void OnPointerDown(const GURL& url) override {}
+  void OnPointerHover(const GURL& url) override {}
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates_;
 };
 

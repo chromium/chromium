@@ -19,7 +19,18 @@ PreloadingDecider::PreloadingDecider(content::RenderFrameHost* rfh)
 
 PreloadingDecider::~PreloadingDecider() = default;
 
+void PreloadingDecider::OnPointerHover(const GURL& url) {
+  if (observer_for_testing_) {
+    observer_for_testing_->OnPointerHover(url);
+  }
+  // TODO(isaboori) Mouse hover based link selection heuristics should be
+  // implemented here.
+}
+
 void PreloadingDecider::OnPointerDown(const GURL& url) {
+  if (observer_for_testing_) {
+    observer_for_testing_->OnPointerDown(url);
+  }
   if (preconnect_delegate_)
     preconnect_delegate_->MaybePreconnect(url);
 }

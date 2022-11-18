@@ -2544,6 +2544,10 @@
     {
       name: "SpeculationRulesFetchFromHeader"
     },
+    {
+      name: "SpeculationRulesPointerHoverHeuristics",
+      base_feature: "SpeculationRulesPointerHoverHeuristics"
+    },
     // Origin trial to enable Speculation Rules for access to the prefetch proxy.
     // https://crbug.com/1190167
     {

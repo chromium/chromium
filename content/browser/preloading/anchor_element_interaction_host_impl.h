@@ -31,6 +31,7 @@ class CONTENT_EXPORT AnchorElementInteractionHostImpl
           receiver);
   // blink::mojom::AnchorElementInteractionHost:
   void OnPointerDown(const GURL& target) override;
+  void OnPointerHover(const GURL& target) override;
 };
 
 }  // namespace content
