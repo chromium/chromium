@@ -14,6 +14,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.InsetDrawable;
@@ -119,6 +120,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private final @Px int mUnclampedInitialHeight;
     private final FullscreenManager mFullscreenManager;
     private final boolean mAlwaysShowNavbarButtons;
+    private final Rect mFullscreenRestoreRect = new Rect();
 
     private static boolean sHasLoggedImmersiveModeConfirmationSetting;
 
@@ -921,12 +923,12 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     @Override
     public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
         if (isFullscreen()) return;
-        WindowManager.LayoutParams attrs = new WindowManager.LayoutParams();
-        attrs.copyFrom(mActivity.getWindow().getAttributes());
+        WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
+        mFullscreenRestoreRect.set(attrs.x, attrs.y, attrs.width, attrs.height);
         attrs.x = 0;
         attrs.y = 0;
-        attrs.height = MATCH_PARENT;
         attrs.width = MATCH_PARENT;
+        attrs.height = MATCH_PARENT;
         mActivity.getWindow().setAttributes(attrs);
         setTopMargins(0, 0);
         maybeInvokeResizeCallback();
@@ -935,8 +937,13 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     @Override
     public void onExitFullscreen(Tab tab) {
         if (!isFullscreen()) return;
-        setTopMargins(mShadowOffset, getHandleHeight() + mShadowOffset);
-        initializeHeight();
+        WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
+        attrs.x = mFullscreenRestoreRect.left;
+        attrs.y = mFullscreenRestoreRect.top;
+        attrs.width = mFullscreenRestoreRect.right;
+        attrs.height = mFullscreenRestoreRect.bottom;
+        mActivity.getWindow().setAttributes(attrs);
+        updateShadowOffset();
         maybeInvokeResizeCallback();
     }
 
