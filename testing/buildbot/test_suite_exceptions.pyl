@@ -77,7 +77,7 @@
           'shards': 2,
           'dimension_sets': [
             {
-              'machine_type': 'e2-standard-8', # crbug/1292221
+              'cores': '8', # crbug.com/1292221
             },
           ],
         },
@@ -1373,7 +1373,8 @@
           'shards': 50,
           'dimension_sets': [
             {
-              'machine_type': 'e2-standard-8', # use 8-core to shorten runtime
+              # use 8-core to shorten runtime
+              'cores': '8',
             },
           ],
         },
@@ -1729,7 +1730,8 @@
           'shards': 30,
           'dimension_sets': [
             {
-              'machine_type': 'e2-standard-8', # use 8-core to shorten runtime
+              # use 8-core to shorten runtime
+              'cores': '8',
             },
           ],
         },
@@ -1763,7 +1765,8 @@
           'shards': 50,
           'dimension_sets': [
             {
-              'machine_type': 'e2-standard-8', # use 8-core to shorten runtime
+              # use 8-core to shorten runtime
+              'cores': '8',
             },
           ],
         },
@@ -1867,7 +1870,8 @@
           'shards': 25,
           'dimension_sets': [
             {
-              'machine_type': 'e2-standard-8', # copying android-nougat-x86-rel
+              # copying android-nougat-x86-rel
+              'cores': '8',
             },
           ],
         },
@@ -1910,7 +1914,8 @@
           'shards': 6,
           'dimension_sets': [
             {
-              'machine_type': 'e2-standard-8', # use 8-core to shorten runtime
+              # use 8-core to shorten runtime
+              'cores': '8',
             },
           ],
         },
