@@ -54149,6 +54149,19 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="2" label="Subresource"/>
 </enum>
 
+<enum name="IsolatedWebAppReadIntegrityBlockAndMetadataStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Error: Integrity Block parsing: Internal error"/>
+  <int value="2" label="Error: Integrity Block parsing: Format error"/>
+  <int value="3" label="Error: Integrity Block parsing: Version error"/>
+  <int value="4" label="Error: Integrity Block validation error"/>
+  <int value="5" label="Error: Signature verification error"/>
+  <int value="6" label="Error: Metadata parsing: Internal error"/>
+  <int value="7" label="Error: Metadata parsing: Format error"/>
+  <int value="8" label="Error: Metadata parsing: Version error"/>
+  <int value="9" label="Error: Metadata validation error"/>
+</enum>
+
 <enum name="IsolatedWebAppResponseReaderCacheState">
   <int value="0" label="Not cached"/>
   <int value="1" label="Cached and ready"/>

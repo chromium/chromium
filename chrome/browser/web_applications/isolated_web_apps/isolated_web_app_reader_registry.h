@@ -127,6 +127,31 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
                     const network::ResourceRequest& resource_request,
                     ReadResponseCallback callback);
 
+  // This enum represents every error type that can occur during integrity block
+  // and metadata parsing, before responses are read from Signed Web Bundles.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ReadIntegrityBlockAndMetadataStatus {
+    kSuccess = 0,
+    // Integrity Block-related errors
+    kIntegrityBlockParserInternalError = 1,
+    kIntegrityBlockParserFormatError = 2,
+    kIntegrityBlockParserVersionError = 3,
+    kIntegrityBlockValidationError = 4,
+
+    // Signature verification errors
+    kSignatureVerificationError = 5,
+
+    // Metadata-related errors
+    kMetadataParserInternalError = 6,
+    kMetadataParserFormatError = 7,
+    kMetadataParserVersionError = 8,
+    kMetadataValidationError = 9,
+
+    kMaxValue = kMetadataValidationError
+  };
+
  private:
   FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppReaderRegistryTest,
                            TestConcurrentRequests);
@@ -161,6 +186,9 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
       ReadResponseCallback callback,
       base::expected<web_package::mojom::BundleResponsePtr,
                      SignedWebBundleReader::ReadResponseError> response_head);
+
+  ReadIntegrityBlockAndMetadataStatus GetStatusFromError(
+      const SignedWebBundleReader::ReadIntegrityBlockAndMetadataError& error);
 
   enum class ReaderCacheState;
 

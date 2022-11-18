@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -174,29 +175,40 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead(
   DCHECK(cache_entry_it != reader_cache_.End());
   DCHECK_EQ(cache_entry_it->second.state, Cache::Entry::State::kPending);
 
-  absl::optional<ReadResponseError> error;
+  absl::optional<
+      std::pair<ReadResponseError, ReadIntegrityBlockAndMetadataStatus>>
+      error_and_status;
   if (read_integrity_block_and_metadata_error.has_value()) {
-    error =
-        ReadResponseError::ForError(*read_integrity_block_and_metadata_error);
+    error_and_status = std::make_pair(
+        ReadResponseError::ForError(*read_integrity_block_and_metadata_error),
+        GetStatusFromError(*read_integrity_block_and_metadata_error));
   }
 
   SignedWebBundleReader& reader = cache_entry_it->second.GetReader();
 
-  if (!error.has_value()) {
+  if (!error_and_status.has_value()) {
     if (auto error_message = validator_->ValidateMetadata(
             web_bundle_id, reader.GetPrimaryURL(), reader.GetEntries());
         error_message.has_value()) {
-      error = ReadResponseError::ForMetadataValidationError(*error_message);
+      error_and_status = std::make_pair(
+          ReadResponseError::ForMetadataValidationError(*error_message),
+          ReadIntegrityBlockAndMetadataStatus::kMetadataValidationError);
     }
   }
+
+  base::UmaHistogramEnumeration(
+      "WebApp.Isolated.ReadIntegrityBlockAndMetadataStatus",
+      error_and_status.has_value()
+          ? error_and_status->second
+          : ReadIntegrityBlockAndMetadataStatus::kSuccess);
 
   std::vector<std::pair<network::ResourceRequest, ReadResponseCallback>>
       pending_requests =
           std::exchange(cache_entry_it->second.pending_requests, {});
 
-  if (error.has_value()) {
+  if (error_and_status.has_value()) {
     for (auto& [resource_request, callback] : pending_requests) {
-      std::move(callback).Run(base::unexpected(*error));
+      std::move(callback).Run(base::unexpected(error_and_status->first));
     }
     reader_cache_.Erase(cache_entry_it);
     return;
@@ -258,6 +270,52 @@ void IsolatedWebAppReaderRegistry::OnResponseRead(
   // `Response` object. If `this` deletes `reader`, it makes sense that the
   // reference contained in `Response` also becomes invalid.
   std::move(callback).Run(Response(std::move(*response_head), reader));
+}
+
+IsolatedWebAppReaderRegistry::ReadIntegrityBlockAndMetadataStatus
+IsolatedWebAppReaderRegistry::GetStatusFromError(
+    const SignedWebBundleReader::ReadIntegrityBlockAndMetadataError& error) {
+  return absl::visit(
+      base::Overloaded{
+          [](const web_package::mojom::BundleIntegrityBlockParseErrorPtr&
+                 error) {
+            switch (error->type) {
+              case web_package::mojom::BundleParseErrorType::
+                  kParserInternalError:
+                return ReadIntegrityBlockAndMetadataStatus::
+                    kIntegrityBlockParserInternalError;
+              case web_package::mojom::BundleParseErrorType::kFormatError:
+                return ReadIntegrityBlockAndMetadataStatus::
+                    kIntegrityBlockParserFormatError;
+              case web_package::mojom::BundleParseErrorType::kVersionError:
+                return ReadIntegrityBlockAndMetadataStatus::
+                    kIntegrityBlockParserVersionError;
+            }
+          },
+          [](const SignedWebBundleReader::AbortedByCaller& error) {
+            return ReadIntegrityBlockAndMetadataStatus::
+                kIntegrityBlockValidationError;
+          },
+          [](const web_package::SignedWebBundleSignatureVerifier::Error&
+                 error) {
+            return ReadIntegrityBlockAndMetadataStatus::
+                kSignatureVerificationError;
+          },
+          [](const web_package::mojom::BundleMetadataParseErrorPtr& error) {
+            switch (error->type) {
+              case web_package::mojom::BundleParseErrorType::
+                  kParserInternalError:
+                return ReadIntegrityBlockAndMetadataStatus::
+                    kMetadataParserInternalError;
+              case web_package::mojom::BundleParseErrorType::kFormatError:
+                return ReadIntegrityBlockAndMetadataStatus::
+                    kMetadataParserFormatError;
+              case web_package::mojom::BundleParseErrorType::kVersionError:
+                return ReadIntegrityBlockAndMetadataStatus::
+                    kMetadataParserVersionError;
+            }
+          }},
+      error);
 }
 
 IsolatedWebAppReaderRegistry::Response::Response(
