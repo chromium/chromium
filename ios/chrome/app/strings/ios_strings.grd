@@ -1292,7 +1292,7 @@ See your search engine’s instructions for deleting your search history, if app
         Go to Tab Grid
       </message>
       <message name="IDS_IOS_KEYBOARD_HISTORY" desc="Title of the menu listing history-related keyboard shortcuts." meaning="Used as a menu title in the iPad command menu.">
-        Bookmarks
+        History
       </message>
       <message name="IDS_IOS_KEYBOARD_HISTORY_BACK" desc="Title of the keyboard shortcut to go back in the history menu." meaning="Used as a command title in the iPad command menu.">
         Back
