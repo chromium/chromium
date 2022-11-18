@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <cstdint>
-#include <cstdio>
 #include <memory>
 #include <sstream>
 #include <utility>
@@ -28,35 +27,27 @@
 #include "base/task/thread_pool.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "cc/base/switches.h"
-#include "components/viz/common/switches.h"
 #include "content/public/app/content_main.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/content_switches.h"
 #include "headless/app/headless_shell.h"
+#include "headless/app/headless_shell_command_line.h"
 #include "headless/app/headless_shell_switches.h"
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "headless/lib/headless_content_main_delegate.h"
 #include "headless/public/headless_devtools_target.h"
 #include "net/base/filename_util.h"
-#include "net/base/host_port_pair.h"
-#include "net/base/ip_address.h"
 #include "net/http/http_util.h"
-#include "net/proxy_resolution/proxy_config.h"
-#include "third_party/blink/public/common/switches.h"
-#include "ui/gfx/font_render_params.h"
-#include "ui/gfx/geometry/size.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "components/os_crypt/os_crypt_switches.h"  // nogncheck
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "components/crash/core/app/crash_switches.h"  // nogncheck
 #include "components/crash/core/app/run_as_crashpad_handler_win.h"
 #include "sandbox/win/src/sandbox_types.h"
-#endif
-
-#if BUILDFLAG(IS_MAC)
-#include "components/os_crypt/os_crypt_switches.h"  // nogncheck
 #endif
 
 #if defined(HEADLESS_USE_POLICY)
@@ -67,58 +58,10 @@ namespace headless {
 
 namespace {
 
-// By default listen to incoming DevTools connections on localhost.
-const char kUseLocalHostForDevToolsHttpServer[] = "localhost";
 // Default file name for screenshot. Can be overriden by "--screenshot" switch.
 const char kDefaultScreenshotFileName[] = "screenshot.png";
 // Default file name for pdf. Can be overriden by "--print-to-pdf" switch.
 const char kDefaultPDFFileName[] = "output.pdf";
-
-bool ParseWindowSize(const std::string& window_size,
-                     gfx::Size* parsed_window_size) {
-  int width = 0;
-  int height = 0;
-  if (sscanf(window_size.c_str(), "%d%*[x,]%d", &width, &height) >= 2 &&
-      width >= 0 && height >= 0) {
-    parsed_window_size->set_width(width);
-    parsed_window_size->set_height(height);
-    return true;
-  }
-  return false;
-}
-
-bool ParseFontRenderHinting(
-    const std::string& font_render_hinting_string,
-    gfx::FontRenderParams::Hinting* font_render_hinting) {
-  if (font_render_hinting_string == "max") {
-    *font_render_hinting = gfx::FontRenderParams::Hinting::HINTING_MAX;
-  } else if (font_render_hinting_string == "full") {
-    *font_render_hinting = gfx::FontRenderParams::Hinting::HINTING_FULL;
-  } else if (font_render_hinting_string == "medium") {
-    *font_render_hinting = gfx::FontRenderParams::Hinting::HINTING_MEDIUM;
-  } else if (font_render_hinting_string == "slight") {
-    *font_render_hinting = gfx::FontRenderParams::Hinting::HINTING_SLIGHT;
-  } else if (font_render_hinting_string == "none") {
-    *font_render_hinting = gfx::FontRenderParams::Hinting::HINTING_NONE;
-  } else {
-    return false;
-  }
-  return true;
-}
-
-base::Value::Dict GetColorDictFromHexColor(const std::string& color_hex) {
-  uint32_t color;
-  CHECK(base::HexStringToUInt(color_hex, &color))
-      << "Expected a hex value for --default-background-color=";
-
-  base::Value::Dict dict;
-  dict.Set("r", static_cast<int>((color & 0xff000000) >> 24));
-  dict.Set("g", static_cast<int>((color & 0x00ff0000) >> 16));
-  dict.Set("b", static_cast<int>((color & 0x0000ff00) >> 8));
-  dict.Set("a", static_cast<int>((color & 0x000000ff)));
-
-  return dict;
-}
 
 GURL ConvertArgumentToURL(const base::CommandLine::StringType& arg) {
 #if BUILDFLAG(IS_WIN)
@@ -133,83 +76,18 @@ GURL ConvertArgumentToURL(const base::CommandLine::StringType& arg) {
       base::MakeAbsoluteFilePath(base::FilePath(arg)));
 }
 
-std::vector<GURL> ConvertArgumentsToURLs(
-    const base::CommandLine::StringVector& args) {
-  std::vector<GURL> urls;
-  urls.reserve(args.size());
-  for (const auto& arg : base::Reversed(args))
-    urls.push_back(ConvertArgumentToURL(arg));
-  return urls;
-}
+base::Value::Dict GetColorDictFromHexColor(const std::string& color_hex) {
+  uint32_t color;
+  CHECK(base::HexStringToUInt(color_hex, &color))
+      << "Expected a hex value for --default-background-color=";
 
-int RunContentMain(
-    HeadlessBrowser::Options options,
-    base::OnceCallback<void(HeadlessBrowser*)> on_browser_start_callback) {
-  content::ContentMainParams params(nullptr);
-#if BUILDFLAG(IS_WIN)
-  // Sandbox info has to be set and initialized.
-  CHECK(options.sandbox_info);
-  params.instance = options.instance;
-  params.sandbox_info = std::move(options.sandbox_info);
-#elif !BUILDFLAG(IS_ANDROID)
-  params.argc = options.argc;
-  params.argv = options.argv;
-#endif
+  base::Value::Dict dict;
+  dict.Set("r", static_cast<int>((color & 0xff000000) >> 24));
+  dict.Set("g", static_cast<int>((color & 0x00ff0000) >> 16));
+  dict.Set("b", static_cast<int>((color & 0x0000ff00) >> 8));
+  dict.Set("a", static_cast<int>((color & 0x000000ff)));
 
-  // TODO(skyostil): Implement custom message pumps.
-  DCHECK(!options.message_pump);
-
-  auto browser = std::make_unique<HeadlessBrowserImpl>(
-      std::move(on_browser_start_callback), std::move(options));
-  HeadlessContentMainDelegate delegate(std::move(browser));
-  params.delegate = &delegate;
-  return content::ContentMain(std::move(params));
-}
-
-bool ValidateCommandLine(const base::CommandLine& command_line) {
-  if (!command_line.HasSwitch(switches::kRemoteDebuggingPort) &&
-      !command_line.HasSwitch(switches::kRemoteDebuggingPipe)) {
-    if (command_line.GetArgs().size() <= 1)
-      return true;
-    LOG(ERROR) << "Open multiple tabs is only supported when "
-               << "remote debugging is enabled.";
-    return false;
-  }
-  if (command_line.HasSwitch(switches::kDefaultBackgroundColor)) {
-    LOG(ERROR) << "Setting default background color is disabled "
-               << "when remote debugging is enabled.";
-    return false;
-  }
-  if (command_line.HasSwitch(switches::kDumpDom)) {
-    LOG(ERROR) << "Dump DOM is disabled when remote debugging is enabled.";
-    return false;
-  }
-  if (command_line.HasSwitch(switches::kPrintToPDF)) {
-    LOG(ERROR) << "Print to PDF is disabled "
-               << "when remote debugging is enabled.";
-    return false;
-  }
-  if (command_line.HasSwitch(switches::kRepl)) {
-    LOG(ERROR) << "Evaluate Javascript is disabled "
-               << "when remote debugging is enabled.";
-    return false;
-  }
-  if (command_line.HasSwitch(switches::kScreenshot)) {
-    LOG(ERROR) << "Capture screenshot is disabled "
-               << "when remote debugging is enabled.";
-    return false;
-  }
-  if (command_line.HasSwitch(switches::kTimeout)) {
-    LOG(ERROR) << "Navigation timeout is disabled "
-               << "when remote debugging is enabled.";
-    return false;
-  }
-  if (command_line.HasSwitch(switches::kVirtualTimeBudget)) {
-    LOG(ERROR) << "Virtual time budget is disabled "
-               << "when remote debugging is enabled.";
-    return false;
-  }
-  return true;
+  return dict;
 }
 
 bool DoWriteFile(const base::FilePath& file_path, std::string file_data) {
@@ -227,7 +105,6 @@ bool DoWriteFile(const base::FilePath& file_path, std::string file_data) {
 }  // namespace
 
 HeadlessShell::HeadlessShell() = default;
-
 HeadlessShell::~HeadlessShell() = default;
 
 void HeadlessShell::OnBrowserStart(HeadlessBrowser* browser) {
@@ -271,36 +148,37 @@ void HeadlessShell::OnBrowserStart(HeadlessBrowser* browser) {
 
   if (!args.empty()) {
     file_task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE, base::BindOnce(&ConvertArgumentsToURLs, args),
-        base::BindOnce(&HeadlessShell::OnGotURLs, weak_factory_.GetWeakPtr()));
+        FROM_HERE, base::BindOnce(&ConvertArgumentToURL, args.front()),
+        base::BindOnce(&HeadlessShell::OnCommandLineURL,
+                       weak_factory_.GetWeakPtr()));
   }
 }
 
-void HeadlessShell::OnGotURLs(const std::vector<GURL>& urls) {
+void HeadlessShell::OnCommandLineURL(const GURL& url) {
   HeadlessWebContents::Builder builder(
       browser_context_->CreateWebContentsBuilder());
-  for (const auto& url : urls) {
-    HeadlessWebContents* web_contents = builder.SetInitialURL(url).Build();
-    if (!web_contents) {
-      LOG(ERROR) << "Navigation to " << url << " failed";
-      browser_->Shutdown();
-      return;
-    }
-    if (!web_contents_ && !RemoteDebuggingEnabled()) {
-      // TODO(jzfeng): Support observing multiple targets.
-      url_ = url;
-      web_contents_ = web_contents;
-      web_contents_->AddObserver(this);
-    }
+  HeadlessWebContents* web_contents = builder.SetInitialURL(url).Build();
+  if (!web_contents) {
+    LOG(ERROR) << "Navigation to " << url << " failed";
+    browser_->Shutdown();
+    return;
+  }
+
+  // Unless we're in remote debugging mode, associate target and
+  // start observing it so we can run commands.
+  if (!IsRemoteDebuggingEnabled()) {
+    url_ = url;
+    web_contents_ = web_contents;
+    web_contents_->AddObserver(this);
   }
 }
 
 void HeadlessShell::Detach() {
-  if (!RemoteDebuggingEnabled())
+  if (web_contents_) {
     devtools_client_.DetachClient();
-
-  web_contents_->RemoveObserver(this);
-  web_contents_ = nullptr;
+    web_contents_->RemoveObserver(this);
+    web_contents_ = nullptr;
+  }
 }
 
 void HeadlessShell::ShutdownSoon() {
@@ -638,13 +516,6 @@ void HeadlessShell::OnWriteFileDone(bool success) {
   ShutdownSoon();
 }
 
-bool HeadlessShell::RemoteDebuggingEnabled() const {
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  return (command_line.HasSwitch(switches::kRemoteDebuggingPort) ||
-          command_line.HasSwitch(switches::kRemoteDebuggingPipe));
-}
-
 #if BUILDFLAG(IS_WIN)
 int HeadlessShellMain(HINSTANCE instance,
                       sandbox::SandboxInterfaceInfo* sandbox_info) {
@@ -669,145 +540,27 @@ int HeadlessShellMain(int argc, const char** argv) {
   RunChildProcessIfNeeded(argc, argv);
   HeadlessBrowser::Options::Builder builder(argc, argv);
 #endif  // BUILDFLAG(IS_WIN)
-  HeadlessShell shell;
-
-#if BUILDFLAG(IS_FUCHSIA)
-  // TODO(fuchsia): Remove this when GPU accelerated compositing is ready.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(::switches::kDisableGpu);
-#endif
 
   base::CommandLine& command_line(*base::CommandLine::ForCurrentProcess());
-  if (!ValidateCommandLine(command_line))
-    return EXIT_FAILURE;
 
 #if BUILDFLAG(IS_MAC)
   command_line.AppendSwitch(os_crypt::switches::kUseMockKeychain);
 #endif
 
-  if (command_line.HasSwitch(switches::kDeterministicMode)) {
-    command_line.AppendSwitch(switches::kEnableBeginFrameControl);
+#if BUILDFLAG(IS_FUCHSIA)
+  // TODO(fuchsia): Remove this when GPU accelerated compositing is ready.
+  command_line.AppendSwitch(::switches::kDisableGpu);
+#endif
 
-    // Compositor flags
-    command_line.AppendSwitch(::switches::kRunAllCompositorStagesBeforeDraw);
-    command_line.AppendSwitch(::switches::kDisableNewContentRenderingTimeout);
-    // Ensure that image animations don't resync their animation timestamps when
-    // looping back around.
-    command_line.AppendSwitch(blink::switches::kDisableImageAnimationResync);
-
-    // Renderer flags
-    command_line.AppendSwitch(cc::switches::kDisableThreadedAnimation);
-    command_line.AppendSwitch(blink::switches::kDisableThreadedScrolling);
-    command_line.AppendSwitch(cc::switches::kDisableCheckerImaging);
+  if (command_line.GetArgs().size() > 1) {
+    LOG(ERROR) << "Multiple targets are not supported.";
+    return EXIT_FAILURE;
   }
 
-  if (command_line.HasSwitch(switches::kEnableBeginFrameControl))
-    builder.SetEnableBeginFrameControl(true);
+  if (!HandleCommandLineSwitches(command_line, builder))
+    return EXIT_FAILURE;
 
-  if (command_line.HasSwitch(switches::kEnableCrashReporter))
-    builder.SetCrashReporterEnabled(true);
-  if (command_line.HasSwitch(switches::kDisableCrashReporter))
-    builder.SetCrashReporterEnabled(false);
-  if (command_line.HasSwitch(switches::kCrashDumpsDir)) {
-    builder.SetCrashDumpsDir(
-        command_line.GetSwitchValuePath(switches::kCrashDumpsDir));
-  }
-
-  // Enable devtools if requested, by specifying a port (and optional address).
-  if (command_line.HasSwitch(::switches::kRemoteDebuggingPort)) {
-    std::string address = kUseLocalHostForDevToolsHttpServer;
-    if (command_line.HasSwitch(switches::kRemoteDebuggingAddress)) {
-      address =
-          command_line.GetSwitchValueASCII(switches::kRemoteDebuggingAddress);
-      net::IPAddress parsed_address;
-      if (!parsed_address.AssignFromIPLiteral(address)) {
-        LOG(ERROR) << "Invalid devtools server address";
-        return EXIT_FAILURE;
-      }
-    }
-    int parsed_port;
-    std::string port_str =
-        command_line.GetSwitchValueASCII(::switches::kRemoteDebuggingPort);
-    if (!base::StringToInt(port_str, &parsed_port) ||
-        !base::IsValueInRangeForNumericType<uint16_t>(parsed_port)) {
-      LOG(ERROR) << "Invalid devtools server port";
-      return EXIT_FAILURE;
-    }
-    const net::HostPortPair endpoint(address,
-                                     base::checked_cast<uint16_t>(parsed_port));
-    builder.EnableDevToolsServer(endpoint);
-  }
-  if (command_line.HasSwitch(::switches::kRemoteDebuggingPipe))
-    builder.EnableDevToolsPipe();
-
-  if (command_line.HasSwitch(switches::kProxyServer)) {
-    std::string proxy_server =
-        command_line.GetSwitchValueASCII(switches::kProxyServer);
-    auto proxy_config = std::make_unique<net::ProxyConfig>();
-    proxy_config->proxy_rules().ParseFromString(proxy_server);
-    if (command_line.HasSwitch(switches::kProxyBypassList)) {
-      std::string bypass_list =
-          command_line.GetSwitchValueASCII(switches::kProxyBypassList);
-      proxy_config->proxy_rules().bypass_rules.ParseFromString(bypass_list);
-    }
-    builder.SetProxyConfig(std::move(proxy_config));
-  }
-
-  if (command_line.HasSwitch(switches::kUseGL)) {
-    builder.SetGLImplementation(
-        command_line.GetSwitchValueASCII(switches::kUseGL));
-  }
-
-  if (command_line.HasSwitch(switches::kUseANGLE)) {
-    builder.SetANGLEImplementation(
-        command_line.GetSwitchValueASCII(switches::kUseANGLE));
-  }
-
-  if (command_line.HasSwitch(switches::kUserDataDir)) {
-    builder.SetUserDataDir(
-        command_line.GetSwitchValuePath(switches::kUserDataDir));
-    if (!command_line.HasSwitch(switches::kIncognito))
-      builder.SetIncognitoMode(false);
-  }
-
-  if (command_line.HasSwitch(switches::kWindowSize)) {
-    std::string window_size =
-        command_line.GetSwitchValueASCII(switches::kWindowSize);
-    gfx::Size parsed_window_size;
-    if (!ParseWindowSize(window_size, &parsed_window_size)) {
-      LOG(ERROR) << "Malformed window size";
-      return EXIT_FAILURE;
-    }
-    builder.SetWindowSize(parsed_window_size);
-  }
-
-  if (command_line.HasSwitch(switches::kHideScrollbars)) {
-    builder.SetOverrideWebPreferencesCallback(
-        base::BindRepeating([](blink::web_pref::WebPreferences* preferences) {
-          preferences->hide_scrollbars = true;
-        }));
-  }
-
-  if (command_line.HasSwitch(switches::kUserAgent)) {
-    std::string ua = command_line.GetSwitchValueASCII(switches::kUserAgent);
-    if (net::HttpUtil::IsValidHeaderValue(ua))
-      builder.SetUserAgent(ua);
-  }
-
-  if (command_line.HasSwitch(switches::kFontRenderHinting)) {
-    std::string font_render_hinting_string =
-        command_line.GetSwitchValueASCII(switches::kFontRenderHinting);
-    gfx::FontRenderParams::Hinting font_render_hinting;
-    if (ParseFontRenderHinting(font_render_hinting_string,
-                               &font_render_hinting)) {
-      builder.SetFontRenderHinting(font_render_hinting);
-    } else {
-      LOG(ERROR) << "Unknown font-render-hinting parameter value";
-      return EXIT_FAILURE;
-    }
-  }
-
-  if (command_line.HasSwitch(switches::kBlockNewWebContents))
-    builder.SetBlockNewWebContents(true);
+  HeadlessShell shell;
 
   return HeadlessBrowserMain(
       builder.Build(),
@@ -821,6 +574,34 @@ int HeadlessShellMain(const content::ContentMainParams& params) {
   return HeadlessShellMain(params.argc, params.argv);
 #endif
 }
+
+namespace {
+
+int RunContentMain(
+    HeadlessBrowser::Options options,
+    base::OnceCallback<void(HeadlessBrowser*)> on_browser_start_callback) {
+  content::ContentMainParams params(nullptr);
+#if BUILDFLAG(IS_WIN)
+  // Sandbox info has to be set and initialized.
+  CHECK(options.sandbox_info);
+  params.instance = options.instance;
+  params.sandbox_info = std::move(options.sandbox_info);
+#elif !BUILDFLAG(IS_ANDROID)
+  params.argc = options.argc;
+  params.argv = options.argv;
+#endif
+
+  // TODO(skyostil): Implement custom message pumps.
+  DCHECK(!options.message_pump);
+
+  auto browser = std::make_unique<HeadlessBrowserImpl>(
+      std::move(on_browser_start_callback), std::move(options));
+  HeadlessContentMainDelegate delegate(std::move(browser));
+  params.delegate = &delegate;
+  return content::ContentMain(std::move(params));
+}
+
+}  // namespace
 
 #if BUILDFLAG(IS_WIN)
 void RunChildProcessIfNeeded(HINSTANCE instance,
@@ -841,9 +622,10 @@ void RunChildProcessIfNeeded(int argc, const char** argv) {
     return;
 
   if (command_line.HasSwitch(switches::kUserAgent)) {
-    std::string ua = command_line.GetSwitchValueASCII(switches::kUserAgent);
-    if (net::HttpUtil::IsValidHeaderValue(ua))
-      builder.SetUserAgent(ua);
+    std::string user_agent =
+        command_line.GetSwitchValueASCII(switches::kUserAgent);
+    if (net::HttpUtil::IsValidHeaderValue(user_agent))
+      builder.SetUserAgent(user_agent);
   }
 
   int rc = RunContentMain(builder.Build(),

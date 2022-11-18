@@ -49,7 +49,7 @@ class HeadlessShell : public HeadlessWebContents::Observer {
 
   void FetchTimeout();
 
-  void OnGotURLs(const std::vector<GURL>& urls);
+  void OnCommandLineURL(const GURL& url);
 
   void PollReadyState();
 
@@ -73,8 +73,6 @@ class HeadlessShell : public HeadlessWebContents::Observer {
                  const std::string& default_file_name,
                  std::string data);
   void OnWriteFileDone(bool success);
-
-  bool RemoteDebuggingEnabled() const;
 
   GURL url_;
   raw_ptr<HeadlessBrowser> browser_ = nullptr;  // Not owned.
