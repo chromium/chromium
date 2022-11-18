@@ -65,9 +65,6 @@ try_.builder(
     main_list_view = "try",
     os = os.WINDOWS_ANY,
     tryjob = try_.job(),
-
-    # TODO(crbug.com/1366994): remove this.
-    omit_python2 = False,
     goma_backend = None,
 )
 
@@ -97,9 +94,6 @@ try_.orchestrator_builder(
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     #use_orchestrator_pool = True,
-
-    # TODO(crbug.com/1366994): remove this.
-    omit_python2 = False,
 )
 
 try_.compilator_builder(
@@ -138,9 +132,6 @@ try_.builder(
     builderless = False,
     cores = 16,
     ssd = True,
-
-    # TODO(crbug.com/1366994): remove this.
-    omit_python2 = False,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
@@ -247,9 +238,6 @@ try_.orchestrator_builder(
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     #use_orchestrator_pool = True,
-
-    # TODO(crbug.com/1366994): remove this.
-    omit_python2 = False,
 )
 
 try_.orchestrator_builder(
@@ -274,9 +262,6 @@ try_.orchestrator_builder(
         "chromium_rts.inverted_rts_bail_early": 100,
     },
     use_orchestrator_pool = True,
-
-    # TODO(crbug.com/1366994): remove this.
-    omit_python2 = False,
 )
 
 try_.compilator_builder(
