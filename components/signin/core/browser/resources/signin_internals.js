@@ -8,7 +8,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 
 import 'chrome://resources/js/jstemplate_compiled.js';
 import './strings.m.js';
-import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
 import {$} from 'chrome://resources/js/util.js';
 
 // TODO(vishwath): This function is identical to the one in sync_internals.js
@@ -80,8 +80,8 @@ function updateCookieAccounts(cookieAccountsInfo) {
 // On load, do an initial refresh and register refreshSigninInfo to be invoked
 // whenever we get new signin information from SigninInternalsUI.
 function onLoad() {
-  addWebUIListener('signin-info-changed', refreshSigninInfo);
-  addWebUIListener('update-cookie-accounts', updateCookieAccounts);
+  addWebUiListener('signin-info-changed', refreshSigninInfo);
+  addWebUiListener('update-cookie-accounts', updateCookieAccounts);
 
   sendWithPromise('getSigninInfo').then(refreshSigninInfo);
 }

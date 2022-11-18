@@ -244,7 +244,7 @@ deps: Targets generating any files being bundled. Note that this should include
       targets generating shared resources that are expected to be bundled in
       the UI, e.g. //ui/webui/resources:preprocess.
 excludes: Paths of files that are not bundled. Often used for large mojo files
-          that would otherwise be in many bundles, and for cr.m.js which relies
+          that would otherwise be in many bundles, and for cr.js which relies
           on global variables.
 ```
 
@@ -269,7 +269,7 @@ if (optimize_webui) {
       "//ui/webui/resources:preprocess",
     ]
     excludes = [
-      "chrome://resources/js/cr.m.js",
+      "chrome://resources/js/cr.js",
       "chrome://resources/mojo/mojo/public/js/bindings.js",
     ]
   }

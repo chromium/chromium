@@ -10,7 +10,7 @@ import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_brow
 
 import {SettingsReviewNotificationPermissionsElement, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 // clang-format on
 
 suite('CrSettingsReviewNotificationPermissionsInteractiveUITest', function() {

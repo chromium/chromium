@@ -9,7 +9,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 import './strings.m.js';
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 
-import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {$} from 'chrome://resources/js/util.js';
 
@@ -550,13 +550,13 @@ function appendClearButton(elt, enabled, clearCallback) {
 }
 
 function addMessageHandlers() {
-  addWebUIListener('languageDetectionInfoAdded', onLanguageDetectionInfoAdded);
-  addWebUIListener('prefsUpdated', onPrefsUpdated);
-  addWebUIListener('supportedLanguagesUpdated', onSupportedLanguagesUpdated);
-  addWebUIListener('countryUpdated', onCountryUpdated);
-  addWebUIListener('translateErrorDetailsAdded', onTranslateErrorDetailsAdded);
-  addWebUIListener('translateEventDetailsAdded', onTranslateEventDetailsAdded);
-  addWebUIListener('translateInitDetailsAdded', onTranslateInitDetailsAdded);
+  addWebUiListener('languageDetectionInfoAdded', onLanguageDetectionInfoAdded);
+  addWebUiListener('prefsUpdated', onPrefsUpdated);
+  addWebUiListener('supportedLanguagesUpdated', onSupportedLanguagesUpdated);
+  addWebUiListener('countryUpdated', onCountryUpdated);
+  addWebUiListener('translateErrorDetailsAdded', onTranslateErrorDetailsAdded);
+  addWebUiListener('translateEventDetailsAdded', onTranslateEventDetailsAdded);
+  addWebUiListener('translateInitDetailsAdded', onTranslateInitDetailsAdded);
 }
 
 /**

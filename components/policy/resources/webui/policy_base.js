@@ -11,7 +11,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 import './status_box.js';
 import './policy_table.js';
 
-import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {$} from 'chrome://resources/js/util.js';
@@ -117,11 +117,11 @@ export class Page {
     };
 
     chrome.send('listenPoliciesUpdates');
-    addWebUIListener('status-updated', status => this.setStatus(status));
-    addWebUIListener(
+    addWebUiListener('status-updated', status => this.setStatus(status));
+    addWebUiListener(
         'policies-updated',
         (names, values) => this.onPoliciesReceived_(names, values));
-    addWebUIListener('download-json', json => this.downloadJson(json));
+    addWebUiListener('download-json', json => this.downloadJson(json));
   }
 
   /**

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {$} from 'chrome://resources/js/util.js';
 
 window.addEventListener('load', function() {
   let cookieSettingsUrl;
 
-  addWebUIListener('theme-changed', themeData => {
+  addWebUiListener('theme-changed', themeData => {
     document.documentElement.setAttribute(
         'hascustombackground', themeData.hasCustomBackground);
     $('incognitothemecss').href =
@@ -16,7 +16,7 @@ window.addEventListener('load', function() {
   });
   chrome.send('observeThemeChanges');
 
-  addWebUIListener('cookie-controls-changed', dict => {
+  addWebUiListener('cookie-controls-changed', dict => {
     $('cookie-controls-tooltip-icon').hidden = !dict.enforced;
     $('cookie-controls-tooltip-icon').iconClass = dict.icon;
     $('cookie-controls-toggle').disabled = dict.enforced;

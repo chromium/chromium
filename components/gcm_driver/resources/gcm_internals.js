@@ -7,7 +7,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 // </if>
 
 import './strings.m.js';
-import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {$} from 'chrome://resources/js/util.js';
 
 let isRecording = false;
@@ -142,7 +142,7 @@ function clearLogs() {
 }
 
 function initialize() {
-  addWebUIListener('set-gcm-internals-info', setGcmInternalsInfo);
+  addWebUiListener('set-gcm-internals-info', setGcmInternalsInfo);
   $('recording').disabled = true;
   $('refresh').onclick = refreshAll;
   $('recording').onclick = setRecording;

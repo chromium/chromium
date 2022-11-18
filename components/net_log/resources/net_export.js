@@ -7,7 +7,7 @@
 import 'chrome://resources/js/ios/web_ui.js';
 // </if>
 
-import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {$} from 'chrome://resources/js/util.js';
 
 /**

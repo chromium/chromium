@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {$} from 'chrome://resources/js/util.js';
 
 function createButton(text, onClickClosure) {
@@ -158,14 +158,14 @@ function onScriptCacheReceived(scriptsCacheInfo) {
 }
 
 document.addEventListener('DOMContentLoaded', function(event) {
-  addWebUIListener('on-flags-information-received', onFlagsInfoReceived);
-  addWebUIListener('on-prefs-information-received', onPrefsInfoReceived);
-  addWebUIListener(
+  addWebUiListener('on-flags-information-received', onFlagsInfoReceived);
+  addWebUiListener('on-prefs-information-received', onPrefsInfoReceived);
+  addWebUiListener(
       'on-script-fetching-information-received', onScriptFetchingInfoReceived);
-  addWebUIListener(
+  addWebUiListener(
       'on-autofill-assistant-information-received',
       onAutofillAssistantInfoReceived);
-  addWebUIListener('on-script-cache-received', onScriptCacheReceived);
+  addWebUiListener('on-script-cache-received', onScriptCacheReceived);
 
   hideScriptCache();
   $('script-cache-hide').onclick = hideScriptCache;

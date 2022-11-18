@@ -5,7 +5,7 @@
 import './strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {$, appendParam, getRequiredElement} from 'chrome://resources/js/util.js';
 
@@ -110,7 +110,7 @@ function onLoad() {
 
     startTime = Date.now();
 
-    addWebUIListener('theme-changed', () => {
+    addWebUiListener('theme-changed', () => {
       $('themecss').href = 'chrome://theme/css/new_tab_theme.css?' + Date.now();
     });
     chrome.send('observeThemeChanges');

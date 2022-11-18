@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/js/jstemplate_compiled.js';
-import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {$} from 'chrome://resources/js/util.js';
 import {loadTestModule} from './test_loader_util.js';
 
@@ -195,15 +195,15 @@ function updateDetailedStatus(newDetails) {
  * ready to receive real-time notifications.
  */
 function onLoadWork() {
-  addWebUIListener('handlers-updated', handlers => updateHandlers(handlers));
-  addWebUIListener(
+  addWebUiListener('handlers-updated', handlers => updateHandlers(handlers));
+  addWebUiListener(
       'state-updated',
       (state, lastChanged) => updateInvalidatorState(state, lastChanged));
-  addWebUIListener(
+  addWebUiListener(
       'ids-updated', (registrar, ids) => updateIds(registrar, ids));
-  addWebUIListener(
+  addWebUiListener(
       'log-invalidations', invalidations => logInvalidations(invalidations));
-  addWebUIListener(
+  addWebUiListener(
       'detailed-status-updated',
       networkDetails => updateDetailedStatus(networkDetails));
   $('request-detailed-status').onclick = function() {

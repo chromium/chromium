@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
 import {$} from 'chrome://resources/js/util.js';
 
 import {MAX_STATS_DATA_POINT_BUFFER_SIZE} from './data_series.js';
@@ -115,20 +115,20 @@ function initialize() {
   statsTable = new StatsTable(ssrcInfoManager);
 
   // Add listeners for all the updates that get sent from webrtc_internals.cc.
-  addWebUIListener('add-peer-connection', addPeerConnection);
-  addWebUIListener('update-peer-connection', updatePeerConnection);
-  addWebUIListener('update-all-peer-connections', updateAllPeerConnections);
-  addWebUIListener('remove-peer-connection', removePeerConnection);
-  addWebUIListener('add-standard-stats', addStandardStats);
-  addWebUIListener('add-legacy-stats', addLegacyStats);
-  addWebUIListener('add-get-user-media', addGetUserMedia);
-  addWebUIListener('update-get-user-media', updateGetUserMedia);
-  addWebUIListener(
+  addWebUiListener('add-peer-connection', addPeerConnection);
+  addWebUiListener('update-peer-connection', updatePeerConnection);
+  addWebUiListener('update-all-peer-connections', updateAllPeerConnections);
+  addWebUiListener('remove-peer-connection', removePeerConnection);
+  addWebUiListener('add-standard-stats', addStandardStats);
+  addWebUiListener('add-legacy-stats', addLegacyStats);
+  addWebUiListener('add-get-user-media', addGetUserMedia);
+  addWebUiListener('update-get-user-media', updateGetUserMedia);
+  addWebUiListener(
       'remove-get-user-media-for-renderer', removeGetUserMediaForRenderer);
-  addWebUIListener(
+  addWebUiListener(
       'event-log-recordings-file-selection-cancelled',
       eventLogRecordingsFileSelectionCancelled);
-  addWebUIListener(
+  addWebUiListener(
       'audio-debug-recordings-file-selection-cancelled',
       audioDebugRecordingsFileSelectionCancelled);
 

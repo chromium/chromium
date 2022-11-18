@@ -4,7 +4,7 @@
 
 import './strings.m.js';
 
-import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {$} from 'chrome://resources/js/util.js';
 

@@ -6,7 +6,7 @@
 import 'chrome://resources/js/ios/web_ui.js';
 // </if>
 
-import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {$} from 'chrome://resources/js/util.js';
 
 // By default this page only records metrics for a given period of time in order
@@ -260,7 +260,7 @@ function setUpPasswordManagerInternals() {
   setUpMarker();
   setUpDownload('password-manager');
   setUpStopRecording();
-  addWebUIListener(
+  addWebUiListener(
       'enable-reset-upm-eviction-button', enableResetUpmEvictionButton);
 }
 
@@ -414,13 +414,13 @@ function setUpLogDisplayConfig() {
 }
 
 document.addEventListener('DOMContentLoaded', function(event) {
-  addWebUIListener('enable-reset-cache-button', enableResetCacheButton);
-  addWebUIListener('notify-about-incognito', notifyAboutIncognito);
-  addWebUIListener('notify-about-variations', notifyAboutVariations);
-  addWebUIListener('notify-reset-done', message => showModalDialog(message));
-  addWebUIListener('add-structured-log', addStructuredLog);
-  addWebUIListener('setup-autofill-internals', setUpAutofillInternals);
-  addWebUIListener(
+  addWebUiListener('enable-reset-cache-button', enableResetCacheButton);
+  addWebUiListener('notify-about-incognito', notifyAboutIncognito);
+  addWebUiListener('notify-about-variations', notifyAboutVariations);
+  addWebUiListener('notify-reset-done', message => showModalDialog(message));
+  addWebUiListener('add-structured-log', addStructuredLog);
+  addWebUiListener('setup-autofill-internals', setUpAutofillInternals);
+  addWebUiListener(
       'setup-password-manager-internals', setUpPasswordManagerInternals);
 
   chrome.send('loaded');
