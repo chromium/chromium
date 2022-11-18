@@ -215,16 +215,14 @@ IN_PROC_BROWSER_TEST_F(WindowManagementTest, DISABLED_OnScreensChangeEvent) {
 // TODO(crbug.com/1183791): Disabled on non-ChromeOS because of races with
 // SetScreenInstance and observers not being notified.
 // TODO(crbug.com/1194700): Disabled on Mac because of GetScreenInfos staleness.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_OnCurrentScreenChangeEvent DISABLED_OnCurrentScreenChangeEvent
-#else
-#define MAYBE_OnCurrentScreenChangeEvent OnCurrentScreenChangeEvent
-#endif
+// TODO(crbug.com/1385598): Completely disabled as this test is also flaky on
+// the CrOS bot.
 // Test that the oncurrentscreenchange handler fires correctly for screen
 // changes and property updates.  It also verifies that window.screen.onchange
 // also fires in the same scenarios.  (This is not true in all cases, e.g.
 // isInternal changing, but is true for width/height tests here.)
-IN_PROC_BROWSER_TEST_F(WindowManagementTest, MAYBE_OnCurrentScreenChangeEvent) {
+IN_PROC_BROWSER_TEST_F(WindowManagementTest,
+                       DISABLED_OnCurrentScreenChangeEvent) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("100+100-801x802,901+100-802x802");
