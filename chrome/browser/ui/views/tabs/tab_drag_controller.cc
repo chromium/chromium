@@ -2605,11 +2605,17 @@ TabDragController::GetTabGroupForTargetIndex(const std::vector<int>& selected) {
   // are no feet showing.
   const int tab_left_inset = TabStyle::GetTabOverlap() / 2;
 
+  const auto tab_bounds_in_drag_context_coords = [this](int model_index) {
+    const Tab* const tab = attached_context_->GetTabAt(model_index);
+    return ToEnclosingRect(views::View::ConvertRectToTarget(
+        tab, attached_context_, gfx::RectF(tab->GetLocalBounds())));
+  };
+
   // Use the left edge for a reliable fallback, e.g. if this is the leftmost
   // tab or there is a group header to the immediate left.
   int left_edge =
       attached_model->ContainsIndex(left_tab_index)
-          ? attached_context_->GetTabAt(left_tab_index)->bounds().right() -
+          ? tab_bounds_in_drag_context_coords(left_tab_index).right() -
                 tab_left_inset
           : tab_left_inset;
 
@@ -2636,7 +2642,7 @@ TabDragController::GetTabGroupForTargetIndex(const std::vector<int>& selected) {
     // never leave it unless we add this check. See crbug.com/1134376.
     // TODO(crbug/1329344): Update this to work better with Tab Scrolling once
     // dragging near the end of the tabstrip is cleaner.
-    if (attached_context_->GetTabAt(selected.back())->bounds().right() >=
+    if (tab_bounds_in_drag_context_coords(selected.back()).right() >=
         attached_context_->TabDragAreaEndX()) {
       return absl::nullopt;
     }
