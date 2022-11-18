@@ -41,6 +41,7 @@ class GlanceablesDelegate;
 class NearbyShareController;
 class NearbyShareDelegate;
 class VideoConferenceTrayController;
+class SystemSoundsDelegate;
 
 // Delegate of the Shell.
 class ASH_EXPORT ShellDelegate {
@@ -72,6 +73,10 @@ class ASH_EXPORT ShellDelegate {
       NearbyShareController* controller) const = 0;
 
   virtual std::unique_ptr<DesksTemplatesDelegate> CreateDesksTemplatesDelegate()
+      const = 0;
+
+  // Creates and returns the delegate of the System Sounds feature.
+  virtual std::unique_ptr<SystemSoundsDelegate> CreateSystemSoundsDelegate()
       const = 0;
 
   virtual std::unique_ptr<VideoConferenceTrayController>

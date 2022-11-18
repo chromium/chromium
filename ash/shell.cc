@@ -99,6 +99,7 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/system_sounds_delegate.h"
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_controller.h"
 #include "ash/public/cpp/views_text_services_context_menu_impl.h"
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
@@ -819,6 +820,7 @@ Shell::~Shell() {
   system_notification_controller_.reset();
   // Should be destroyed after Shelf and |system_notification_controller_|.
   system_tray_model_.reset();
+  system_sounds_delegate_.reset();
 
   // MruWindowTracker must be destroyed after all windows have been deleted to
   // avoid a possible crash when Shell is destroyed from a non-normal shutdown
@@ -1409,6 +1411,15 @@ void Shell::Init(
   nearby_share_controller_ = std::make_unique<NearbyShareControllerImpl>();
   nearby_share_delegate_ = shell_delegate_->CreateNearbyShareDelegate(
       nearby_share_controller_.get());
+
+  // System sounds delegate should be initialized before
+  // `SystemNotificationController` is created, because
+  // `SystemNotificationController` ctor will creat an instance of
+  // `PowerSoundsController`, which will access and play the initialized sounds.
+  if (features::AreSystemSoundsEnabled()) {
+    system_sounds_delegate_ = shell_delegate_->CreateSystemSoundsDelegate();
+    system_sounds_delegate_->Init();
+  }
 
   system_notification_controller_ =
       std::make_unique<SystemNotificationController>();

@@ -14,6 +14,7 @@
 #include "ash/system/network/managed_sim_lock_notifier.h"
 #include "ash/system/network/wifi_toggle_notification_controller.h"
 #include "ash/system/power/power_notification_controller.h"
+#include "ash/system/power/power_sounds_controller.h"
 #include "ash/system/privacy/screen_security_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
 #include "ash/system/session/session_limit_notification_controller.h"
@@ -22,6 +23,16 @@
 #include "ui/message_center/message_center.h"
 
 namespace ash {
+
+namespace {
+
+std::unique_ptr<PowerSoundsController> MaybeCreatePowerSoundsController() {
+  return features::AreSystemSoundsEnabled()
+             ? std::make_unique<PowerSoundsController>()
+             : nullptr;
+}
+
+}  // namespace
 
 SystemNotificationController::SystemNotificationController()
     : auto_connect_(std::make_unique<AutoConnectNotifier>()),
@@ -32,6 +43,7 @@ SystemNotificationController::SystemNotificationController()
           std::make_unique<GestureEducationNotificationController>()),
       power_(std::make_unique<PowerNotificationController>(
           message_center::MessageCenter::Get())),
+      power_sounds_(MaybeCreatePowerSoundsController()),
       screen_security_(std::make_unique<ScreenSecurityController>()),
       session_limit_(std::make_unique<SessionLimitNotificationController>()),
       tracing_(std::make_unique<TracingNotificationController>()),

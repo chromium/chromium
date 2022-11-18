@@ -15,6 +15,7 @@
 #include "ash/in_session_auth/in_session_auth_dialog_controller_impl.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/public/cpp/system_sounds_delegate.h"
 #include "ash/wm/system_modal_container_event_filter_delegate.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
@@ -211,6 +212,7 @@ class StickyKeysController;
 class SystemGestureEventFilter;
 class SystemModalContainerEventFilter;
 class SystemNotificationController;
+class SystemSoundsDelegate;
 class SystemTrayModel;
 class SystemTrayNotifier;
 class ToastManagerImpl;
@@ -632,6 +634,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   SystemTrayNotifier* system_tray_notifier() {
     return system_tray_notifier_.get();
   }
+  SystemSoundsDelegate* system_sounds_delegate() {
+    return system_sounds_delegate_.get();
+  }
   TabClusterUIController* tab_cluster_ui_controller() const {
     return tab_cluster_ui_controller_.get();
   }
@@ -925,6 +930,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<SystemNotificationController> system_notification_controller_;
   std::unique_ptr<SystemTrayModel> system_tray_model_;
   std::unique_ptr<SystemTrayNotifier> system_tray_notifier_;
+  std::unique_ptr<SystemSoundsDelegate> system_sounds_delegate_;
   std::unique_ptr<ToastManagerImpl> toast_manager_;
   std::unique_ptr<ClipboardHistoryControllerImpl> clipboard_history_controller_;
   std::unique_ptr<TouchDevicesController> touch_devices_controller_;

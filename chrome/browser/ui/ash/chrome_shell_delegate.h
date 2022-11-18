@@ -35,6 +35,8 @@ class ChromeShellDelegate : public ash::ShellDelegate {
       ash::NearbyShareController* controller) const override;
   std::unique_ptr<ash::DesksTemplatesDelegate> CreateDesksTemplatesDelegate()
       const override;
+  std::unique_ptr<ash::SystemSoundsDelegate> CreateSystemSoundsDelegate()
+      const override;
   std::unique_ptr<ash::VideoConferenceTrayController>
   CreateVideoConferenceTrayController() const override;
   scoped_refptr<network::SharedURLLoaderFactory>

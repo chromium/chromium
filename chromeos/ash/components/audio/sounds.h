@@ -24,6 +24,12 @@ enum class Sound {
   kSpokenFeedbackToggleCountdownHigh,
   kSpokenFeedbackToggleCountdownLow,
   kTouchType,
+  // Sound keys for the moment when the device is plugged in a charger cable.
+  kChargeHighBattery,
+  kChargeMediumBattery,
+  kChargeLowBattery,
+  // Sound key for low battery when the device isn't charging.
+  kNoChargeLowBattery,
 };
 
 }  // namespace ash
