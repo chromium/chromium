@@ -2590,6 +2590,13 @@ const char kScrollableTabStripWithDraggingDescription[] =
     "Scrolls the tabstrip while dragging tabs towards the end of the visible "
     "view.";
 
+const char kScrollableTabStripOverflowFlagId[] = "scrollable-tabstrip-overflow";
+const char kScrollableTabStripOverflowName[] =
+    "Tab Scrolling Overflow Indicator";
+const char kScrollableTabStripOverflowDescription[] =
+    "Choices for overflow indicators shown when the tabstrip is in scrolling "
+    "mode.";
+
 const char kSplitTabStripName[] = "Split TabStrip";
 const char kSplitTabStripDescription[] =
     "Splits pinned and unpinned tabs into separate TabStrips under the hood. "

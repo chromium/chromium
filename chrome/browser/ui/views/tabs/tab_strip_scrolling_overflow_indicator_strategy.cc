@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/tab_strip_scrolling_overflow_indicator_strategy.h"
 
+#include "base/notreached.h"
 #include "cc/paint/paint_shader.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -18,7 +19,7 @@ namespace {
 
 // Must be kept the same as kTabScrollingButtonPositionVariations values
 enum OverflowFeatureFlag {
-  kNone = 0,
+  kDefault = 0,
   kDivider = 1,
   kFade = 2,
   kShadow = 3,
@@ -30,6 +31,31 @@ TabStripScrollingOverflowIndicatorStrategy::
     TabStripScrollingOverflowIndicatorStrategy(views::ScrollView* scroll_view,
                                                TabStrip* tab_strip)
     : scroll_view_(scroll_view), tab_strip_(tab_strip) {}
+
+// static
+std::unique_ptr<TabStripScrollingOverflowIndicatorStrategy>
+TabStripScrollingOverflowIndicatorStrategy::CreateFromFeatureFlag(
+    views::ScrollView* scroll_view,
+    TabStrip* tab_strip) {
+  int overview_feature_flag = base::GetFieldTrialParamByFeatureAsInt(
+      features::kScrollableTabStripOverflow,
+      features::kScrollableTabStripOverflowModeName,
+      OverflowFeatureFlag::kDefault);
+
+  switch (overview_feature_flag) {
+    case OverflowFeatureFlag::kDivider:
+    case OverflowFeatureFlag::kFade:
+      return std::make_unique<FadeOverflowIndicatorStrategy>(scroll_view,
+                                                             tab_strip);
+    case OverflowFeatureFlag::kShadow:
+    case OverflowFeatureFlag::kDefault:
+      return std::make_unique<ShadowOverflowIndicatorStrategy>(scroll_view,
+                                                               tab_strip);
+    default:
+      NOTREACHED();
+      return nullptr;
+  }
+}
 
 GradientIndicatorView::GradientIndicatorView(
     views::OverflowIndicatorAlignment side,
@@ -131,8 +157,6 @@ void GradientOverflowIndicatorStrategy::Init() {
       std::move(right_overflow_indicator),
       right_overflow_indicator_->GetTotalWidth(), false);
 }
-
-// Sometimes the views need to be redrawn to get color updates.
 
 ShadowOverflowIndicatorStrategy::ShadowOverflowIndicatorStrategy(
     views::ScrollView* scroll_view,

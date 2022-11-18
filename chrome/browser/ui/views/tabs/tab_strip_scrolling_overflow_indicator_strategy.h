@@ -25,6 +25,10 @@ class TabStripScrollingOverflowIndicatorStrategy {
       TabStrip* tab_strip);
   virtual ~TabStripScrollingOverflowIndicatorStrategy() = default;
 
+  // Function to get the Featured Overflow Indicator Strategy
+  static std::unique_ptr<TabStripScrollingOverflowIndicatorStrategy>
+  CreateFromFeatureFlag(views::ScrollView* scroll_view, TabStrip* tab_strip);
+
   // Performs the setup for the Strategy. Initialize any views for overflow to
   // the scroll view here.
   virtual void Init() = 0;

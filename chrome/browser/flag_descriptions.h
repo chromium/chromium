@@ -1456,6 +1456,10 @@ extern const char kScrollableTabStripWithDraggingFlagId[];
 extern const char kScrollableTabStripWithDraggingName[];
 extern const char kScrollableTabStripWithDraggingDescription[];
 
+extern const char kScrollableTabStripOverflowFlagId[];
+extern const char kScrollableTabStripOverflowName[];
+extern const char kScrollableTabStripOverflowDescription[];
+
 extern const char kSplitTabStripName[];
 extern const char kSplitTabStripDescription[];
 

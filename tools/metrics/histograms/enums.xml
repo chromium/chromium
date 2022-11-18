@@ -57877,6 +57877,7 @@ from previous Chrome versions.
   <int value="-2098610409" label="disable-lcd-text"/>
   <int value="-2098294029" label="PageInfoStoreInfo:enabled"/>
   <int value="-2098243118" label="OmniboxTailSuggestions:disabled"/>
+  <int value="-2098234759" label="kScrollableTabStripOverflow:disabled"/>
   <int value="-2097906903" label="ArcNearbySharing:disabled"/>
   <int value="-2097895488" label="NotificationScrollBar:enabled"/>
   <int value="-2097515669" label="disable-cast"/>
@@ -63521,6 +63522,7 @@ from previous Chrome versions.
   <int value="1220171692" label="SpeculativeLaunchServiceWorker:enabled"/>
   <int value="1220274247" label="AllowReaderForAccessibility:disabled"/>
   <int value="1220464509" label="enable-first-run-ui-transitions"/>
+  <int value="1220655015" label="kScrollableTabStripOverflow:enabled"/>
   <int value="1221394044" label="SharingUseDeviceInfo:enabled"/>
   <int value="1221559505" label="enable-spelling-feedback-field-trial"/>
   <int value="1222017136" label="WebRtcUseEchoCanceller3:disabled"/>

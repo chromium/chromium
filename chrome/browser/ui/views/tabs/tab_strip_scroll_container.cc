@@ -107,8 +107,8 @@ TabStripScrollContainer::TabStripScrollContainer(
   scroll_view->SetContents(std::move(tab_strip));
 
   overflow_indicator_strategy_ =
-      std::make_unique<ShadowOverflowIndicatorStrategy>(scroll_view_,
-                                                        tab_strip_);
+      TabStripScrollingOverflowIndicatorStrategy::CreateFromFeatureFlag(
+          scroll_view_, tab_strip_);
   overflow_indicator_strategy_->Init();
   // This base::Unretained is safe because the callback is called by the
   // layout manager, which is cleaned up before view children like
