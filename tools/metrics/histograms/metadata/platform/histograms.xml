@@ -1072,6 +1072,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Missive.ResourceExhaustedCase" units="count"
+    expires_after="2023-11-17">
+  <owner>xuhong@chromium.org</owner>
+  <owner>lbaraz@chromium.org</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Counter of each case RESOURCE_EXHAUSTED error was returned by missive
+    Storage to the caller. This is reported only when such error happens
+    (rarely), and only if the Missive daemon is running.
+  </summary>
+</histogram>
+
 <histogram name="Platform.Missive.StorageUsage" units="MiB"
     expires_after="2023-05-03">
   <owner>xuhong@chromium.org</owner>
