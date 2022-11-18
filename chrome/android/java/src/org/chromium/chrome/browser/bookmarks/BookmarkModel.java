@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.bookmarks;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -38,19 +39,25 @@ public class BookmarkModel extends BookmarkBridge {
 
     private ObserverList<BookmarkDeleteObserver> mDeleteObservers = new ObserverList<>();
 
-    public static BookmarkModel getForProfile(Profile profile) {
+    /**
+     * Provides an instance of the bookmark model for the provided profile.
+     * @param profile A profile for which the bookmark model is provided.
+     * @return An instance of the bookmark model.
+     */
+    public static final BookmarkModel getForProfile(@NonNull Profile profile) {
+        assert profile != null;
+        ThreadUtils.assertOnUiThread();
         return BookmarkBridge.getForProfile(profile);
     }
 
-    /**
-     * Initialize bookmark model for last used non-incognito profile.
-     */
-    public BookmarkModel() {
-        this(Profile.getLastUsedRegularProfile());
+    BookmarkModel(long nativeBookmarkBridge) {
+        super(nativeBookmarkBridge);
     }
 
-    public BookmarkModel(Profile profile) {
-        super(profile);
+    @Override
+    // TODO(crbug.com/1150129): Remove this method once destroy calls are removed.
+    public void destroy() {
+        super.destroy();
     }
 
     /**

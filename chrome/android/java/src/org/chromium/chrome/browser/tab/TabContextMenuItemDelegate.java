@@ -263,14 +263,14 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         if (url == null || url.isEmpty()) return;
         assert url.isValid();
 
-        BookmarkModel bookmarkModel = new BookmarkModel();
+        BookmarkModel bookmarkModel =
+                BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
         bookmarkModel.finishLoadingBookmarkModel(() -> {
             // Add to reading list.
             BookmarkUtils.addToReadingList(
                     url, title, mSnackbarManager.get(), bookmarkModel, mTab.getContext());
             TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
                     .notifyEvent(EventConstants.READ_LATER_CONTEXT_MENU_TAPPED);
-            bookmarkModel.destroy();
 
             // Add to offline pages.
             RequestCoordinatorBridge.getForProfile(Profile.getLastUsedRegularProfile())

@@ -248,7 +248,7 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
             if (sBookmarkModelForTesting != null) {
                 bookmarkModel = sBookmarkModelForTesting;
             } else {
-                bookmarkModel = new BookmarkModel(Profile.getLastUsedRegularProfile());
+                bookmarkModel = BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
             }
 
             Runnable unsubscribeRunnable = () -> {

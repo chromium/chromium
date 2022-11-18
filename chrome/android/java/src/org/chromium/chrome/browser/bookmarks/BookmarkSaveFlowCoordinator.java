@@ -66,7 +66,7 @@ public class BookmarkSaveFlowCoordinator {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mUserEducationHelper = userEducationHelper;
-        mBookmarkModel = new BookmarkModel();
+        mBookmarkModel = BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
         mDestroyChecker = new DestroyChecker();
 
         mBookmarkSaveFlowView = LayoutInflater.from(mContext).inflate(
@@ -176,9 +176,6 @@ public class BookmarkSaveFlowCoordinator {
         mMediator = null;
 
         mBookmarkSaveFlowView = null;
-
-        mBookmarkModel.destroy();
-        mBookmarkModel = null;
 
         mChangeProcessor.destroy();
     }

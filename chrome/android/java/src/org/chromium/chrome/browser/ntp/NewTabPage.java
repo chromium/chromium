@@ -498,7 +498,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mNewTabPageLayout = (NewTabPageLayout) inflater.inflate(R.layout.new_tab_page_layout, null);
 
         FeedActionDelegate actionDelegate = new FeedActionDelegateImpl(activity, snackbarManager,
-                mNewTabPageManager.getNavigationDelegate(), new BookmarkModel(profile),
+                mNewTabPageManager.getNavigationDelegate(), BookmarkModel.getForProfile(profile),
                 crowButtonDelegate) {
             @Override
             public void openHelpPage() {

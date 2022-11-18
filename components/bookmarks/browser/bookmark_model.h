@@ -21,6 +21,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "base/supports_user_data.h"
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_undo_provider.h"
@@ -73,7 +74,8 @@ struct TitledUrlMatch;
 // You should NOT directly create a BookmarkModel, instead go through the
 // BookmarkModelFactory.
 class BookmarkModel : public BookmarkUndoProvider,
-                      public KeyedService {
+                      public KeyedService,
+                      public base::SupportsUserData {
  public:
   explicit BookmarkModel(std::unique_ptr<BookmarkClient> client);
 

@@ -182,7 +182,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
             mIconGenerator = FaviconUtils.createRoundedRectangleIconGenerator(context);
 
             mRemainingTaskCount = 1;
-            mBookmarkModel = new BookmarkModel();
+            mBookmarkModel = BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
             mBookmarkModel.finishLoadingBookmarkModel(new Runnable() {
                 @Override
                 public void run() {
@@ -262,7 +262,6 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
 
         @UiThread
         private void destroy() {
-            mBookmarkModel.destroy();
             mLargeIconBridge.destroy();
         }
     }
@@ -303,7 +302,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
                 RecordUserAction.record("BookmarkNavigatorWidgetAdded");
             }
 
-            mBookmarkModel = new BookmarkModel();
+            mBookmarkModel = BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
             mBookmarkModel.addObserver(new BookmarkModelObserver() {
                 @Override
                 public void bookmarkModelLoaded() {
@@ -345,10 +344,8 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
         @BinderThread
         @Override
         public void onDestroy() {
-            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-                if (mBookmarkModel != null) mBookmarkModel.destroy();
-                SystemNightModeMonitor.getInstance().removeObserver(this);
-            });
+            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+                    () -> { SystemNightModeMonitor.getInstance().removeObserver(this); });
             deleteWidgetState(mWidgetId);
         }
 

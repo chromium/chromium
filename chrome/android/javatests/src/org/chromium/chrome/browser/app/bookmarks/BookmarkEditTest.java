@@ -76,8 +76,7 @@ public class BookmarkEditTest {
     @Before
     public void setUp() throws TimeoutException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Profile profile = Profile.getLastUsedRegularProfile();
-            mBookmarkModel = new BookmarkModel(profile);
+            mBookmarkModel = BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
             mBookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
         });
 

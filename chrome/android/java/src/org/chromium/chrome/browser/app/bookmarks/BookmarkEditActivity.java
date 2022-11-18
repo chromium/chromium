@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkTextInputLayout;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
@@ -64,7 +65,7 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mModel = new BookmarkModel();
+        mModel = BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
         mBookmarkId =
                 BookmarkId.getBookmarkIdFromString(getIntent().getStringExtra(INTENT_BOOKMARK_ID));
         mModel.addObserver(mBookmarkModelObserver);
@@ -179,8 +180,6 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
     @Override
     protected void onDestroy() {
         mModel.removeObserver(mBookmarkModelObserver);
-        mModel.destroy();
-        mModel = null;
         super.onDestroy();
     }
 

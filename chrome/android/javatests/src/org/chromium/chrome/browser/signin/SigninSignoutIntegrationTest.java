@@ -227,7 +227,7 @@ public class SigninSignoutIntegrationTest {
     private void addOneTestBookmark() {
         Assert.assertNull("This method should be called only once!", mBookmarkModel);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mBookmarkModel = new BookmarkModel(Profile.fromWebContents(
+            mBookmarkModel = BookmarkModel.getForProfile(Profile.fromWebContents(
                     mActivityTestRule.getActivity().getActivityTab().getWebContents()));
             mBookmarkModel.loadFakePartnerBookmarkShimForTesting();
         });
