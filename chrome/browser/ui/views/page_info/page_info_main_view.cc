@@ -207,9 +207,11 @@ void PageInfoMainView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
   PageInfoMainView::EnsureCookieInfo();
 
   // Update the text displaying the number of allowed cookies.
-  if (!base::FeatureList::IsEnabled(page_info::kPageInfoCookiesSubpage))
+  if (!base::FeatureList::IsEnabled(page_info::kPageInfoCookiesSubpage)) {
     cookie_button_->SetTitleText(
-        l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES), num_cookies_text);
+        l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES));
+    cookie_button_->SetSecondaryText(num_cookies_text);
+  }
 
   PreferredSizeChanged();
 }

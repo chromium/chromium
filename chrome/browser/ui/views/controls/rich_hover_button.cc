@@ -124,8 +124,11 @@ RichHoverButton::RichHoverButton(
     AddChildView(std::make_unique<views::View>());
   }
 
-  if (!title_text.empty())
-    SetTitleText(title_text, secondary_text);
+  if (!title_text.empty()) {
+    SetTitleText(title_text);
+    if (!secondary_text.empty())
+      SetSecondaryText(secondary_text);
+  }
 
   if (!subtitle_text.empty()) {
     table_layout->AddRows(1, views::TableLayout::kFixedSize);
@@ -150,19 +153,15 @@ RichHoverButton::RichHoverButton(
   Layout();
 }
 
-void RichHoverButton::SetTitleText(const std::u16string& title_text,
-                                   const std::u16string& secondary_text) {
-  DCHECK(title_);
-  title_->SetText(title_text);
-  if (!secondary_text.empty()) {
-    secondary_label_->SetText(secondary_text);
-  }
-  UpdateAccessibleName();
-}
-
 void RichHoverButton::SetTitleText(const std::u16string& title_text) {
   DCHECK(title_);
   title_->SetText(title_text);
+  UpdateAccessibleName();
+}
+
+void RichHoverButton::SetSecondaryText(const std::u16string& secondary_text) {
+  DCHECK(secondary_label_);
+  secondary_label_->SetText(secondary_text);
   UpdateAccessibleName();
 }
 

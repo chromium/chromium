@@ -55,12 +55,9 @@ class RichHoverButton : public HoverButton {
 
   ~RichHoverButton() override = default;
 
-  // Updates the title text, and applies the secondary style to the secondary
-  // text portion, if present.
-  void SetTitleText(const std::u16string& title_text,
-                    const std::u16string& secondary_text);
-
   void SetTitleText(const std::u16string& title_text);
+
+  void SetSecondaryText(const std::u16string& secondary_text);
 
   void SetSubtitleText(const std::u16string& subtitle_text);
 
