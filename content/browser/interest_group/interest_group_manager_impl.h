@@ -172,9 +172,10 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   void RecordInterestGroupWin(const blink::InterestGroupKey& group_key,
                               const std::string& ad_json);
 
-  // Reports the AD URL to the k-anonymity service. Should be called when FLEDGE
-  // selects and ad.
-  void RegisterAdAsWon(const GURL& render_url);
+  // Reports the ad to the k-anonymity service. Should be called when FLEDGE
+  // selects an ad.
+  void RegisterAdAsWon(const blink::InterestGroup& group,
+                       const blink::InterestGroup::Ad& ad);
 
   // Gets a single interest group.
   void GetInterestGroup(

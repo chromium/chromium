@@ -536,7 +536,7 @@ class InterestGroupAuction::BuyerHelper
     base::Time start_time = auction_->auction_start_time_;
 
     std::vector<std::pair<GURL, bool>> kanon_entries;
-    for (const auto& ad_kanon : storage_interest_group.ads_kanon) {
+    for (const auto& ad_kanon : storage_interest_group.bidding_ads_kanon) {
       bool is_kanon =
           ad_kanon.is_k_anonymous &&
           (ad_kanon.last_updated + kKAnonymityExpiration < start_time);

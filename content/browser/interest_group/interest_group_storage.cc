@@ -1556,24 +1556,47 @@ absl::optional<StorageInterestGroup> DoGetStoredInterestGroup(
           db_interest_group.daily_update_url_kanon)) {
     return absl::nullopt;
   }
-  if (db_interest_group.interest_group.ads) {
-    for (auto& ad : db_interest_group.interest_group.ads.value()) {
-      absl::optional<StorageInterestGroup::KAnonymityData> ad_kanon;
-      if (!DoGetURLKAnonymity(db, ad.render_url, ad_kanon)) {
-        return absl::nullopt;
+  if (db_interest_group.interest_group.bidding_url) {
+    if (db_interest_group.interest_group.ads) {
+      for (auto& ad : db_interest_group.interest_group.ads.value()) {
+        absl::optional<StorageInterestGroup::KAnonymityData> ad_kanon;
+        if (!DoGetKAnonymity(
+                db, KAnonKeyForAdBid(db_interest_group.interest_group, ad),
+                ad_kanon)) {
+          return absl::nullopt;
+        }
+        if (!ad_kanon)
+          continue;
+        db_interest_group.bidding_ads_kanon.push_back(
+            std::move(ad_kanon).value());
+
+        absl::optional<StorageInterestGroup::KAnonymityData> ad_name_kanon;
+        if (!DoGetKAnonymity(db,
+                             KAnonKeyForAdNameReporting(
+                                 db_interest_group.interest_group, ad),
+                             ad_name_kanon)) {
+          return absl::nullopt;
+        }
+        if (!ad_name_kanon)
+          continue;
+        db_interest_group.reporting_ads_kanon.push_back(
+            std::move(ad_name_kanon).value());
       }
-      DCHECK(ad_kanon);
-      db_interest_group.ads_kanon.push_back(std::move(ad_kanon).value());
     }
-  }
-  if (db_interest_group.interest_group.ad_components) {
-    for (auto& ad : db_interest_group.interest_group.ad_components.value()) {
-      absl::optional<StorageInterestGroup::KAnonymityData> ad_kanon;
-      if (!DoGetURLKAnonymity(db, ad.render_url, ad_kanon)) {
-        return absl::nullopt;
+    if (db_interest_group.interest_group.ad_components) {
+      for (auto& ad : db_interest_group.interest_group.ad_components.value()) {
+        absl::optional<StorageInterestGroup::KAnonymityData> ad_kanon;
+        if (!DoGetKAnonymity(
+                db, KAnonKeyForAdBid(db_interest_group.interest_group, ad),
+                ad_kanon)) {
+          return absl::nullopt;
+        }
+        if (!ad_kanon)
+          continue;
+        db_interest_group.bidding_ads_kanon.push_back(
+            std::move(ad_kanon).value());
+        // Component ads are not used in reporting.
       }
-      DCHECK(ad_kanon);
-      db_interest_group.ads_kanon.push_back(std::move(ad_kanon).value());
     }
   }
 

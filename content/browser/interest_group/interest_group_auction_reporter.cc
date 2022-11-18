@@ -23,12 +23,14 @@
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/interest_group_auction.h"
+#include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-shared.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
@@ -293,10 +295,39 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
           *auction_config,
           winning_bid_info_.storage_interest_group->interest_group.owner);
 
+  std::string group_name =
+      winning_bid_info_.storage_interest_group->interest_group.name;
+  // if k-anonymity enforcement is on we can only reveal the winning interest
+  // group name in reportWin if the winning ad's reporting_ads_kanon entry is
+  // k-anonymous. Otherwise we simply provide the empty string instead of the
+  // group name.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFledgeConsiderKAnonymity) &&
+      base::FeatureList::IsEnabled(blink::features::kFledgeEnforceKAnonymity)) {
+    auto chosen_ad = base::ranges::find(
+        *winning_bid_info_.storage_interest_group->interest_group.ads,
+        winning_bid_info_.render_url,
+        [](const blink::InterestGroup::Ad& ad) { return ad.render_url; });
+    CHECK(chosen_ad !=
+          winning_bid_info_.storage_interest_group->interest_group.ads->end());
+    std::string reporting_key = KAnonKeyForAdNameReporting(
+        winning_bid_info_.storage_interest_group->interest_group, *chosen_ad);
+    auto kanon = base::ranges::find(
+        winning_bid_info_.storage_interest_group->reporting_ads_kanon,
+        reporting_key, [](const StorageInterestGroup::KAnonymityData& data) {
+          return data.key;
+        });
+    if (kanon == winning_bid_info_.storage_interest_group->reporting_ads_kanon
+                     .end() ||
+        !kanon->is_k_anonymous) {
+      group_name = "";
+    }
+  }
+
   bidder_worklet_handle_->GetBidderWorklet()->ReportWin(
-      winning_bid_info_.storage_interest_group->interest_group.name,
-      auction_config->non_shared_params.auction_signals, per_buyer_signals,
-      signals_for_winner, winning_bid_info_.render_url, winning_bid_info_.bid,
+      group_name, auction_config->non_shared_params.auction_signals,
+      per_buyer_signals, signals_for_winner, winning_bid_info_.render_url,
+      winning_bid_info_.bid,
       /*browser_signal_highest_scoring_other_bid=*/
       seller_info.highest_scoring_other_bid,
       seller_info.highest_scoring_other_bid_owner.has_value() &&

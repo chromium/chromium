@@ -19,6 +19,15 @@ class InterestGroupManagerImpl;
 std::string CONTENT_EXPORT KAnonKeyFor(const url::Origin& owner,
                                        const std::string& name);
 
+// Calculates the k-anonymity key for an Ad that is used for bidding.
+std::string CONTENT_EXPORT KAnonKeyForAdBid(const blink::InterestGroup& group,
+                                            const blink::InterestGroup::Ad& ad);
+// Calculates the k-anonymity key for an Ad that is used for reporting the
+// interest group name.
+std::string CONTENT_EXPORT
+KAnonKeyForAdNameReporting(const blink::InterestGroup& group,
+                           const blink::InterestGroup::Ad& ad);
+
 // Manages k-anonymity updates. Checks last updated times in the database
 // to limit updates (joins and queries) to once per day. Called by the
 // InterestGroupManagerImpl for interest group k-anonymity updates. Calls
@@ -44,7 +53,8 @@ class InterestGroupKAnonymityManager {
 
   // Notify the k-anonymity service that this ad won an auction. Internally this
   // calls RegisterIDAsJoined().
-  void RegisterAdAsWon(const GURL& render_url);
+  void RegisterAdAsWon(const blink::InterestGroup& group,
+                       const blink::InterestGroup::Ad& ad);
 
  private:
   // Callback from k-anonymity service QuerySets(). Saves the updated results to

@@ -5,6 +5,7 @@
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 
@@ -12,6 +13,29 @@ namespace content {
 
 std::string KAnonKeyFor(const url::Origin& owner, const std::string& name) {
   return owner.GetURL().spec() + '\n' + name;
+}
+
+std::string KAnonKeyForAdBid(const blink::InterestGroup& group,
+                             const blink::InterestGroup::Ad& ad) {
+  DCHECK(group.ads);
+  DCHECK(base::Contains(*group.ads, ad) ||
+         (group.ad_components && base::Contains(*group.ad_components, ad)));
+  DCHECK(group.bidding_url);
+  return group.owner.GetURL().spec() + '\n' +
+         group.bidding_url.value_or(GURL()).spec() + '\n' +
+         group.bidding_wasm_helper_url.value_or(GURL()).spec() + '\n' +
+         ad.render_url.spec();
+}
+
+std::string KAnonKeyForAdNameReporting(const blink::InterestGroup& group,
+                                       const blink::InterestGroup::Ad& ad) {
+  DCHECK(group.ads);
+  DCHECK(base::Contains(*group.ads, ad));
+  DCHECK(group.bidding_url);
+  return group.owner.GetURL().spec() + '\n' + group.name + '\n' +
+         group.bidding_url.value_or(GURL()).spec() + '\n' +
+         group.bidding_wasm_helper_url.value_or(GURL()).spec() + '\n' +
+         ad.render_url.spec();
 }
 
 InterestGroupKAnonymityManager::InterestGroupKAnonymityManager(
@@ -47,7 +71,12 @@ void InterestGroupKAnonymityManager::QueryKAnonymityForInterestGroup(
     }
   }
 
-  for (const auto& ad : storage_group.ads_kanon) {
+  for (const auto& ad : storage_group.bidding_ads_kanon) {
+    if (ad.last_updated < check_time - min_wait) {
+      ids_to_query.push_back(ad.key);
+    }
+  }
+  for (const auto& ad : storage_group.reporting_ads_kanon) {
     if (ad.last_updated < check_time - min_wait) {
       ids_to_query.push_back(ad.key);
     }
@@ -90,8 +119,11 @@ void InterestGroupKAnonymityManager::RegisterInterestGroupAsJoined(
     RegisterIDAsJoined(group.daily_update_url->spec());
 }
 
-void InterestGroupKAnonymityManager::RegisterAdAsWon(const GURL& render_url) {
-  RegisterIDAsJoined(render_url.spec());
+void InterestGroupKAnonymityManager::RegisterAdAsWon(
+    const blink::InterestGroup& group,
+    const blink::InterestGroup::Ad& ad) {
+  RegisterIDAsJoined(KAnonKeyForAdBid(group, ad));
+  RegisterIDAsJoined(KAnonKeyForAdNameReporting(group, ad));
   // TODO(behamilton): Consider proactively starting a query here to improve the
   // speed that browsers see new ads. We will likely want to rate limit this
   // somehow though.

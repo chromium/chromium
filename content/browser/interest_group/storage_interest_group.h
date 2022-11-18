@@ -53,7 +53,12 @@ struct CONTENT_EXPORT StorageInterestGroup {
   auction_worklet::mojom::BiddingBrowserSignalsPtr bidding_browser_signals;
   absl::optional<KAnonymityData> name_kanon;
   absl::optional<KAnonymityData> daily_update_url_kanon;
-  std::vector<KAnonymityData> ads_kanon;
+
+  // Can an ad bid (when k-anonymity is enforced)?
+  std::vector<KAnonymityData> bidding_ads_kanon;
+  // Can we report the interest group name for an ad?
+  std::vector<KAnonymityData> reporting_ads_kanon;
+
   // Top level page origin from when the interest group was joined.
   url::Origin joining_origin;
   // Most recent time the interset group was joined. Stored in database as

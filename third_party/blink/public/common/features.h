@@ -404,6 +404,15 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kInterestGroupStorageMaxOpsBeforeMaintenance;
 // FLEDGE ad serving runtime flag/JS API.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledge);
+
+// Configures FLEDGE to consider k-anononymity. If both
+// kFledgeConsiderKAnonymity and kFledgeEnforceKAnonymity are on it will be
+// enforced; if only kFledgeConsiderKAnonymity is on it will be simulated.
+//
+// Turning on kFledgeEnforceKAnonymity alone does nothing.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeConsiderKAnonymity);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeEnforceKAnonymity);
+
 // Runtime flag that changes default Permissions Policy for features
 // join-ad-interest-group and run-ad-auction to a more restricted EnableForSelf.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(

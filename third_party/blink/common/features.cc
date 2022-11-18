@@ -946,6 +946,14 @@ const base::FeatureParam<int> kInterestGroupStorageMaxOpsBeforeMaintenance{
 // Enables FLEDGE implementation. See https://crbug.com/1186444.
 BASE_FEATURE(kFledge, "Fledge", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// See in the header.
+BASE_FEATURE(kFledgeConsiderKAnonymity,
+             "FledgeConsiderKAnonymity",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFledgeEnforceKAnonymity,
+             "FledgeEnforceKAnonymity",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 // Changes default Permissions Policy for features join-ad-interest-group and
 // run-ad-auction to a more restricted EnableForSelf.

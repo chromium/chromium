@@ -25,6 +25,7 @@ constexpr base::TimeDelta kJoinInterval = base::Hours(1);
 constexpr base::TimeDelta kQueryInterval = base::Hours(2);
 
 constexpr char kAdURL[] = "https://www.foo.com/ad1.html";
+constexpr char kBiddingURL[] = "https://www.example.com/bidding_logic";
 constexpr char kUpdateURL[] = "https://www.example.com/update";
 
 class TestKAnonymityServiceDelegate : public KAnonymityServiceDelegate {
@@ -65,6 +66,7 @@ blink::InterestGroup MakeInterestGroup(url::Origin owner, std::string name) {
   group.expiry = base::Time::Now() + base::Days(1);
   group.owner = owner;
   group.name = name;
+  group.bidding_url = GURL(kBiddingURL);
   group.daily_update_url = GURL(kUpdateURL);
   group.ads.emplace();
   group.ads->push_back(blink::InterestGroup::Ad(GURL(kAdURL), /*metadata=*/""));
@@ -95,7 +97,7 @@ class InterestGroupKAnonymityManagerTest : public testing::Test {
     return result;
   }
 
-  absl::optional<base::Time> getLastReported(InterestGroupManagerImpl* manager,
+  absl::optional<base::Time> GetLastReported(InterestGroupManagerImpl* manager,
                                              std::string key) {
     absl::optional<base::Time> result;
     base::RunLoop run_loop;
@@ -107,6 +109,13 @@ class InterestGroupKAnonymityManagerTest : public testing::Test {
                  }));
     run_loop.Run();
     return result;
+  }
+
+  absl::optional<base::Time> GetLastAdReported(
+      InterestGroupManagerImpl* manager,
+      const blink::InterestGroup& group,
+      const blink::InterestGroup::Ad& ad) {
+    return GetLastReported(manager, KAnonKeyForAdBid(group, ad));
   }
 
   std::unique_ptr<InterestGroupManagerImpl> CreateManager(
@@ -179,7 +188,7 @@ TEST_F(InterestGroupKAnonymityManagerTest, QueueUpdatePerformsJoinSetForGroup) {
   std::string group_update_url = kUpdateURL;
 
   auto manager = CreateManager();
-  EXPECT_EQ(base::Time::Min(), getLastReported(manager.get(), group_name_url));
+  EXPECT_EQ(base::Time::Min(), GetLastReported(manager.get(), group_name_url));
   EXPECT_FALSE(getGroup(manager.get(), owner, name));
   base::Time before_join = base::Time::Now();
 
@@ -192,12 +201,12 @@ TEST_F(InterestGroupKAnonymityManagerTest, QueueUpdatePerformsJoinSetForGroup) {
   EXPECT_TRUE(getGroup(manager.get(), owner, name));
 
   absl::optional<base::Time> group_name_reported =
-      getLastReported(manager.get(), group_name_url);
+      GetLastReported(manager.get(), group_name_url);
   ASSERT_TRUE(group_name_reported);
   EXPECT_LE(before_join, group_name_reported);
 
   absl::optional<base::Time> update_url_reported =
-      getLastReported(manager.get(), kUpdateURL);
+      GetLastReported(manager.get(), kUpdateURL);
   ASSERT_TRUE(update_url_reported);
   EXPECT_LE(before_join, update_url_reported);
 
@@ -211,27 +220,30 @@ TEST_F(InterestGroupKAnonymityManagerTest, QueueUpdatePerformsJoinSetForGroup) {
 
   // Second update shouldn't change anything.
   EXPECT_EQ(group_name_reported,
-            getLastReported(manager.get(), group_name_url));
-  EXPECT_EQ(update_url_reported, getLastReported(manager.get(), kUpdateURL));
+            GetLastReported(manager.get(), group_name_url));
+  EXPECT_EQ(update_url_reported, GetLastReported(manager.get(), kUpdateURL));
 
   task_environment().FastForwardBy(kJoinInterval);
 
   // Updated more than GetJoinInterval() ago, so update.
   manager->QueueKAnonymityUpdateForInterestGroup(*maybe_group);
   task_environment().RunUntilIdle();
-  EXPECT_LT(update_url_reported, getLastReported(manager.get(), kUpdateURL));
+  EXPECT_LT(update_url_reported, GetLastReported(manager.get(), kUpdateURL));
 }
 
 TEST_F(InterestGroupKAnonymityManagerTest, RegisterAdAsWonPerformsJoinSet) {
   const GURL top_frame = GURL("https://www.example.com/foo");
   const url::Origin owner = url::Origin::Create(top_frame);
   const std::string name = "foo";
+  blink::InterestGroup group = MakeInterestGroup(owner, "foo");
+  group.bidding_url = GURL("https://www.example.com/bidding.js");
 
   auto manager = CreateManager();
   EXPECT_FALSE(getGroup(manager.get(), owner, name));
-  EXPECT_EQ(base::Time::Min(), getLastReported(manager.get(), kAdURL));
+  EXPECT_EQ(base::Time::Min(),
+            GetLastAdReported(manager.get(), group, group.ads.value()[0]));
 
-  manager->JoinInterestGroup(MakeInterestGroup(owner, "foo"), top_frame);
+  manager->JoinInterestGroup(group, top_frame);
   // The group *must* exist when JoinInterestGroup returns.
   ASSERT_TRUE(getGroup(manager.get(), owner, name));
 
@@ -239,32 +251,35 @@ TEST_F(InterestGroupKAnonymityManagerTest, RegisterAdAsWonPerformsJoinSet) {
   task_environment().FastForwardBy(base::Minutes(1));
 
   // Ads are *not* reported as part of joining an interest group.
-  absl::optional<base::Time> reported = getLastReported(manager.get(), kAdURL);
+  absl::optional<base::Time> reported =
+      GetLastAdReported(manager.get(), group, group.ads.value()[0]);
   EXPECT_EQ(base::Time::Min(), reported);
 
   base::Time before_mark_ad = base::Time::Now();
-  manager->RegisterAdAsWon(GURL(kAdURL));
+  manager->RegisterAdAsWon(group, group.ads.value()[0]);
 
   // k-anonymity update happens here.
   task_environment().FastForwardBy(base::Minutes(1));
 
-  reported = getLastReported(manager.get(), kAdURL);
+  reported = GetLastAdReported(manager.get(), group, group.ads.value()[0]);
   EXPECT_LE(before_mark_ad, reported);
   ASSERT_TRUE(reported);
   base::Time last_reported = *reported;
 
-  manager->RegisterAdAsWon(GURL(kAdURL));
+  manager->RegisterAdAsWon(group, group.ads.value()[0]);
   task_environment().FastForwardBy(base::Minutes(1));
 
   // Second update shouldn't have changed the update time (too recent).
-  EXPECT_EQ(last_reported, getLastReported(manager.get(), kAdURL));
+  EXPECT_EQ(last_reported,
+            GetLastAdReported(manager.get(), group, group.ads.value()[0]));
 
   task_environment().FastForwardBy(kJoinInterval);
 
   // Updated more than 24 hours ago, so update.
-  manager->RegisterAdAsWon(GURL(kAdURL));
+  manager->RegisterAdAsWon(group, group.ads.value()[0]);
   task_environment().RunUntilIdle();
-  EXPECT_LT(last_reported, getLastReported(manager.get(), kAdURL));
+  EXPECT_LT(last_reported,
+            GetLastAdReported(manager.get(), group, group.ads.value()[0]));
 }
 
 TEST_F(InterestGroupKAnonymityManagerTest, HandlesServerErrors) {
@@ -290,7 +305,7 @@ TEST_F(InterestGroupKAnonymityManagerTest, HandlesServerErrors) {
   // values below.
 
   absl::optional<base::Time> group_name_reported =
-      getLastReported(manager.get(), kUpdateURL);
+      GetLastReported(manager.get(), kUpdateURL);
   ASSERT_TRUE(group_name_reported);
 
   // TODO(behamilton): Change this once we expect the server to be stable.
@@ -359,13 +374,15 @@ TEST_F(InterestGroupKAnonymityManagerTestWithMock,
   const url::Origin owner = url::Origin::Create(top_frame);
   const GURL ad1 = GURL(kAdURL);
 
+  blink::InterestGroup group1 = MakeInterestGroup(owner, "foo");
+
   // Join one group twice, and an overlapping group once.
-  manager->JoinInterestGroup(MakeInterestGroup(owner, "foo"), top_frame);
-  manager->JoinInterestGroup(MakeInterestGroup(owner, "foo"), top_frame);
+  manager->JoinInterestGroup(group1, top_frame);
+  manager->JoinInterestGroup(group1, top_frame);
   manager->JoinInterestGroup(MakeInterestGroup(owner, "bar"), top_frame);
 
-  manager->RegisterAdAsWon(ad1);
-  manager->RegisterAdAsWon(ad1);
+  manager->RegisterAdAsWon(group1, group1.ads.value()[0]);
+  manager->RegisterAdAsWon(group1, group1.ads.value()[0]);
 
   // k-anonymity update happens here.
   task_environment().FastForwardBy(base::Minutes(1));
