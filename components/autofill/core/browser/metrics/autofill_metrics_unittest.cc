@@ -469,8 +469,7 @@ TEST_F(AutofillMetricsTest, FieldFillingStats) {
   base::HistogramTester histogram_tester;
   SubmitForm(form);
 
-  const std::string histogram_prefix =
-      "Autofill.FieldFillingStats.AddressForm.";
+  const std::string histogram_prefix = "Autofill.FieldFillingStats.Address.";
 
   histogram_tester.ExpectUniqueSample(histogram_prefix + "Accepted", 2, 1);
   histogram_tester.ExpectUniqueSample(histogram_prefix + "CorrectedToSameType",
