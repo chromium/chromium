@@ -12,6 +12,10 @@ namespace message_center {
 class Notification;
 }  // namespace message_center
 
+namespace ui {
+class ImageModel;
+}  // namespace ui
+
 namespace views {
 class View;
 class Widget;
@@ -38,6 +42,11 @@ class NotificationCenterTestApi {
   // Adds a notification and returns the associated id.
   std::string AddNotification();
 
+  // Adds a notification with custom parameters and returns the associated id.
+  std::string AddCustomNotification(const std::string& title,
+                                    const std::string& message,
+                                    const ui::ImageModel& icon);
+
   // Removes the notification associated with the provided id.
   void RemoveNotification(const std::string& id);
 
@@ -51,6 +60,10 @@ class NotificationCenterTestApi {
   // Returns true if `NotificationCenterTray`` is showing in the shelf, false
   // otherwise.
   bool IsTrayShown();
+
+  // Returns the popup view associated with the provided notification id,
+  // nullptr otherwise.
+  views::View* GetPopupViewForId(const std::string& id);
 
   // Returns the `NotificationCenterTray` in the shelf.
   NotificationCenterTray* GetTray();
@@ -71,9 +84,13 @@ class NotificationCenterTestApi {
   views::View* GetClearAllButton();
 
  private:
+  std::string GenerateNotificationId();
+
   std::unique_ptr<message_center::Notification> CreateNotification(
       const std::string& id,
-      const std::string& title);
+      const std::string& title,
+      const std::string& message,
+      const ui::ImageModel& icon);
 
   int notification_id_ = 0;
   NotificationCenterTray* const notification_center_tray_;
