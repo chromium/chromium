@@ -105,6 +105,46 @@ else
 fi
 ```
 
+#### Choosing renderer to debug by URL
+
+In most cases you'll want to debug the renderer which is loading a particular
+site. If you want a script which will automatically debug the renderer which has
+visited a given target URL and continue all other renderers, you can use the
+following:
+
+```sh
+./third_party/blink/tools/debug_renderer out/Default/content_shell https://example.domain/path
+```
+
+The script also supports specifying a different URL than the navigation URL.
+This is useful when the renderer you want to debug is not the top frame but one
+of the subframes on the page. For example, you could debug a particular subframe
+on a page with:
+
+```sh
+./third_party/blink/tools/debug_renderer -d https://subframe.url/path out/Default/content_shell https://example.domain/path
+```
+
+However, if you need more fine-grained control over which renderers to debug
+you can run chrome or content_shell directly with the
+`--wait-for-debugger-on-navigation` flag which will pause each renderer at the
+point of navigation (when the URL is known).
+
+This will result in a series of lines such as the following in the output:
+```
+...:content_switches_internal.cc(119)] Renderer url="https://example.domain/path" (PID) paused waiting for debugger to attach. Send SIGUSR1 to unpause.
+```
+
+You can signal the renderers you aren't interested in to continue running with:
+```sh
+kill -s SIGUSR1 <pid>
+```
+
+And debug the renderer you are interested in debugging with:
+```sh
+gdb -p <pid>
+```
+
 #### Selective breakpoints
 
 When debugging both the browser and renderer process, you might want to have

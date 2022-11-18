@@ -3,30 +3,58 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Runs Chrome / content_shell and attaches to the first renderer process in gdb.
+# Runs Chrome / content_shell and attaches to the renderer process for the
+# target URL (or the first navigation if none is specified).
 
-RENDERER_PID_RE='Renderer \(([0-9]+)\) paused waiting for debugger'
-DEFAULT_TARGET_FLAGS=(--no-sandbox --renderer-startup-dialog)
+usage() {
+  echo "usage: $(basename $0) [-d <debug-url>] <path-to-content-shell> <url> [more-args...]"
+  exit 1
+}
+
+DEFAULT_TARGET_FLAGS=(--no-sandbox --disable-hang-monitor --wait-for-debugger-on-navigation)
+
+while getopts "h?d:" OPTION
+do
+  case $OPTION in
+    h|\?)
+      usage
+      ;;
+    d)
+      DEBUG_URL=$OPTARG
+      ;;
+  esac
+done
+
+shift $[$OPTIND-1]
+
 TARGET=$1
 shift
 
 if [ -z "$TARGET" ]; then
-  echo "usage: $(basename $0) <path-to-content-shell> [more-args...]"
-  exit 1
+  usage
 fi
 
-SAW_DISABLE_FEATURES=false
 for TARGET_FLAG in "$@"; do
-  if [[ "$TARGET_FLAG" == "--disable-features="* ]]; then
-    TARGET_FLAG="$TARGET_FLAG,SpareRendererForSitePerProcess"
-    SAW_DISABLE_FEATURES=true
+  if ! [[ "$TARGET_FLAG" == "--"* ]]; then
+    URL=$TARGET_FLAG
+    break
   fi
-  TARGET_FLAGS+=("$TARGET_FLAG")
 done
-if [ $SAW_DISABLE_FEATURES != true ]; then
-  DEFAULT_TARGET_FLAGS+=(--disable-features=SpareRendererForSitePerProcess)
+
+if [ -z "$DEBUG_URL"]; then
+  if [ -z "$URL"]; then
+    echo "Debugging first renderer"
+  else
+    echo "Debugging renderer for navigation URL: $URL"
+    DEBUG_URL=$URL
+  fi
 fi
-TARGET_FLAGS=(${DEFAULT_TARGET_FLAGS[@]} ${TARGET_FLAGS[@]})
+
+# TODO: If you pass a URL containing characters that require URL encoding,
+# the URL will be encoded by chrome and won't be equivalent to the $DEBUG_URL.
+# We should url encode DEBUG_URL so that it matches the url chrome navigates to.
+RENDERER_PID_RE='Renderer url="([^"]+)" \(([0-9]+)\) paused waiting for debugger'
+TARGET_FLAGS=(${DEFAULT_TARGET_FLAGS[@]} "$@")
 
 if [ -z "$DEBUGGER" ]; then
   if which lldb > /dev/null; then
@@ -42,28 +70,56 @@ if [ -z "$DEBUGGER" ]; then
 fi
 
 OUTPUT=$(mktemp "${TMPDIR:-/tmp}"/"$(basename $0)".XXXXX)
-trap "rm $OUTPUT" EXIT
+
+maybe_kill() {
+  [ -n "$1" ] && ps -p $1 > /dev/null && kill $1
+}
+
+cleanup() {
+  rm $OUTPUT
+  maybe_kill "$BROWSER_PID"
+  maybe_kill "$SIGNAL_PID"
+}
+
+trap cleanup EXIT
 echo "$TARGET" ${TARGET_FLAGS[@]} >&2
 "$TARGET" ${TARGET_FLAGS[@]} > >(tee $OUTPUT) 2>&1 &
 BROWSER_PID=$!
 
 wait_renderer_pid() {
-  for i in {1..100}; do
-    browser_running || return
-    RENDERER_PID=$(renderer_pid)
-    [ -n "$RENDERER_PID" ] && return
-    sleep 0.2
+  NEXT_LINE=1
+  tail +1f $OUTPUT | while read LINE; do
+    NEXT_LINE=$[$NEXT_LINE + 1]
+    if [[ "$LINE" =~ $RENDERER_PID_RE ]]; then
+      RENDERER_URL=${BASH_REMATCH[1]}
+      RENDERER_PID=${BASH_REMATCH[2]}
+      if [ -z "$DEBUG_URL" ] || [[ "$RENDERER_URL" == "$DEBUG_URL" ]]; then
+        echo "$NEXT_LINE $RENDERER_PID"
+        return
+      fi
+      # Unblock unrelated renderers.
+      kill -s SIGUSR1 "$RENDERER_PID"
+    fi
   done
 }
 
-browser_running() { ps -p $BROWSER_PID > /dev/null; }
-renderer_pid() { [[ "$(cat $OUTPUT)" =~ $RENDERER_PID_RE ]] && echo ${BASH_REMATCH[1]}; }
+signal_renderers() {
+  STARTING_OUTPUT_LINE=$1
+  tail +${STARTING_OUTPUT_LINE}f $OUTPUT | while read LINE; do
+    if [[ "$LINE" =~ $RENDERER_PID_RE ]]; then
+      kill -s SIGUSR1 ${BASH_REMATCH[2]}
+    fi
+  done
+}
 
-wait_renderer_pid
+RESULT=$(wait_renderer_pid)
+NEXT_LINE=$(echo $RESULT|cut -d' ' -f 1)
+RENDERER_PID=$(echo $RESULT|cut -d' ' -f 2)
 if [ -n "$RENDERER_PID" ]; then
+  echo "Target renderer found. Sending SIGUSR1 to unblock any subsequent renderers."
+  signal_renderers ${NEXT_LINE} &
+  SIGNAL_PID=$!
   # print yellow message
   echo -e "\n\033[1;33mDebugging renderer, use '$CONTINUE' to run.\033[0m\n"
   $DEBUGGER -p $RENDERER_PID
 fi
-
-wait
