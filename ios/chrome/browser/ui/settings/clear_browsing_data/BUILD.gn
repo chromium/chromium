@@ -56,6 +56,7 @@ source_set("clear_browsing_data") {
     "//ios/chrome/browser/ui/elements:elements_internal",
     "//ios/chrome/browser/ui/icons",
     "//ios/chrome/browser/ui/icons:symbols",
+    "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/resources:legacy_password_key",
     "//ios/chrome/browser/ui/resources:password_key",
