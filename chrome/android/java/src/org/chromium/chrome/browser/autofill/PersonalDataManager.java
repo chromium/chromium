@@ -6,6 +6,11 @@ package org.chromium.chrome.browser.autofill;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.PorterDuffColorFilter;
 import android.text.format.DateUtils;
 
 import androidx.annotation.VisibleForTesting;
@@ -1348,6 +1353,7 @@ public class PersonalDataManager {
         return UserPrefs.get(Profile.getLastUsedRegularProfile());
     }
 
+    // TODO (crbug.com/1384128): Add icon dimensions to card art URL.
     private void fetchCreditCardArtImages() {
         for (CreditCard card : getCreditCardsToSuggest(/*includeServerCards= */ true)) {
             // Fetch the image using the ImageFetcher only if it is not present in the cache.
@@ -1360,7 +1366,7 @@ public class PersonalDataManager {
     }
 
     /**
-     * Return the card art image for the given `cardArtUrl`.
+     * Return the card art image for the given `customImageUrl`.
      *
      * @param customImageUrl  URL of the image. If the image is available, it is returned, otherwise
      *         it is fetched from this URL.
@@ -1372,8 +1378,23 @@ public class PersonalDataManager {
         }
         // Schedule the fetching of image and return null so that the UI thread does not have to
         // wait and can show the default network icon.
-        fetchImage(customImageUrl,
-                bitmap -> mCreditCardArtImages.put(customImageUrl.getSpec(), bitmap));
+        fetchImage(customImageUrl, bitmap -> {
+            // Create an empty mutable bitmap and set it in a canvas.
+            Bitmap cardArtImageWithGrayOverlay = Bitmap.createBitmap(
+                    bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(cardArtImageWithGrayOverlay);
+
+            // Create a gray paint with 4% opacity.
+            Paint paint = new Paint();
+            paint.setColorFilter(new PorterDuffColorFilter(
+                    Color.argb(/* alpha= */ 10, /* red= */ 68, /* green= */ 68, /* blue= */ 68),
+                    Mode.DARKEN));
+
+            // Add the icon and the 4% gray overlay.
+            canvas.drawBitmap(
+                    /* bitmap= */ bitmap, /* left= */ 0, /* top= */ 0, /* paint= */ paint);
+            mCreditCardArtImages.put(customImageUrl.getSpec(), cardArtImageWithGrayOverlay);
+        });
         return null;
     }
 
