@@ -2425,8 +2425,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.PasswordStore.OnLoginsChanged" enum="Boolean"
     expires_after="2023-03-19">
-  <owner>fhorschig@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
+  <owner>fhorschig@chromium.org</owner>
   <summary>
     Recorded whenever PasswordStore notifies consumers about changes to logins.
     Changes can be made locally (in settings, in bubbles etc.) or remotely (via
@@ -2436,8 +2436,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.PasswordStore.OnLoginsRetained"
     enum="LoginsChangedTrigger" expires_after="2023-03-19">
-  <owner>fhorschig@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
+  <owner>fhorschig@chromium.org</owner>
   <summary>
     Android only. |OnLoginsRetained| replaces |OnLoginsChanged| and this metric
     records potential calls of |OnLoginsRetained| to measure differences in
@@ -2478,9 +2478,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PasswordManager.PasswordStore.WasEnrolledInUPMWhenBackendWasCreated"
     enum="Boolean" expires_after="2023-03-19">
-  <owner>fhorschig@chromium.org</owner>
   <owner>kazinova@google.com</owner>
   <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
   <summary>
     Recorded on Android when the password store backend is created. This happens
     on startup and once per profile. It logs whether the user is enrolled in
@@ -2510,8 +2510,8 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PasswordManager.PasswordStoreAndroidBackend.ClearAllLocalPasswords.LoginsToRemove"
     units="count" expires_after="M114">
-  <owner>fhorschig@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
+  <owner>fhorschig@chromium.org</owner>
   <summary>
     Total number of logins to be removed by ClearAllLocalPasswords.
   </summary>
@@ -2520,8 +2520,8 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PasswordManager.PasswordStoreAndroidBackend.ClearAllLocalPasswords.SuccessRate"
     units="%" expires_after="M114">
-  <owner>fhorschig@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
+  <owner>fhorschig@chromium.org</owner>
   <summary>
     Ratio between successfully removed logins and total number of logins in the
     GMS's local storage. Removal is considered successful when change list is
@@ -2617,8 +2617,10 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PasswordManager.PasswordStoreAndroidBackend{Function}.APIError"
     enum="PasswordStoreAndroidBackendAPIError" expires_after="M114">
-  <owner>fhorschig@chromium.org</owner>
+  <owner>maxan@chromium.org</owner>
+  <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
   <summary>
     The error codes returned by the GMS Core ChromeSync 1P API{Function}.
     Recorded when the asynchronous job has returned.
@@ -2660,8 +2662,10 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PasswordManager.PasswordStoreAndroidBackend{Function}.ErrorCode"
     enum="PasswordStoreAndroidBackendError" expires_after="M114">
-  <owner>fhorschig@chromium.org</owner>
+  <owner>maxan@chromium.org</owner>
+  <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
   <summary>
     This metric reports the error observed when {Function} the PasswordStore
     Android backend. Recorded when the asynchronous job has returned.
@@ -2736,8 +2740,10 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PasswordManager.PasswordStoreProxyBackend.{Function}.{Metric}.{Measurement}"
     units="count" expires_after="M114">
-  <owner>fhorschig@chromium.org</owner>
+  <owner>maxan@chromium.org</owner>
+  <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
   <summary>
     Records the number of logins {Metric}{Measurement} Recorded when the
     asynchronous job for {Function} has returned.
@@ -2773,8 +2779,10 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PasswordManager.PasswordStoreProxyBackend.{ModifyingFunction}.{Metric}.{Measurement}"
     units="count" expires_after="M114">
-  <owner>fhorschig@chromium.org</owner>
+  <owner>maxan@chromium.org</owner>
+  <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
   <summary>
     Records the number of password store changes {Metric}{Measurement} Recorded
     when the asynchronous job for {ModifyingFunction} has returned. Recorded
@@ -2812,8 +2820,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.PasswordStore{Backend}{Function}"
     enum="PasswordStoreAndroidBackendRequestStatus" expires_after="M114">
-  <owner>fhorschig@chromium.org</owner>
+  <owner>maxan@chromium.org</owner>
+  <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
   <summary>
     Records each {Function} call by the PasswordStore {Backend}. Recorded twice:
     1) when the store issues the request, and 2) as the asynchronous job has
@@ -2847,8 +2857,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.PasswordStore{Backend}{Function}.Latency"
     units="ms" expires_after="M114">
-  <owner>fhorschig@chromium.org</owner>
+  <owner>maxan@chromium.org</owner>
+  <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
   <summary>
     Real-time duration of the asynchronous call to {Function} the PasswordStore
     {Backend}. Recorded when the asynchronous job has returned.
@@ -2882,8 +2894,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.PasswordStore{Backend}{Function}.Success"
     enum="BooleanSuccess" expires_after="M114">
-  <owner>fhorschig@chromium.org</owner>
+  <owner>maxan@chromium.org</owner>
+  <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
   <summary>
     Records whether {Function} the PasswordStore {Backend}. Recorded when the
     asynchronous job has returned. False is emitted if an error occurs;
@@ -3509,9 +3523,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.UnenrolledFromUPMDueToErrors" enum="Boolean"
     expires_after="M114">
-  <owner>fhorschig@chromium.org</owner>
   <owner>kazinova@google.com</owner>
   <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
   <summary>
     Records true when a client's profile is being unenrolled from UPM. This
     happens when a password store request to GMS Core fails with an error that
@@ -3525,9 +3539,9 @@ chromium-metrics-reviews@google.com.
     Obsolete in M110 after PasswordStore is no longer created for non-regular,
     guest, system and incognito profiles.
   </obsolete>
-  <owner>fhorschig@chromium.org</owner>
   <owner>kazinova@google.com</owner>
   <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
   <summary>
     Recorded on profile open after the sync service is initialized and once per
     profile. It is recorded for clients that have UPM enabled and logs whether
@@ -3541,9 +3555,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.UnifiedPasswordManager.ActiveStatus2"
     enum="UnifiedPasswordManagerActiveStatus" expires_after="M114">
-  <owner>fhorschig@chromium.org</owner>
   <owner>kazinova@google.com</owner>
   <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
   <summary>
     Recorded on profile open after the sync service is initialized and once per
     regular profile. It is recorded for clients that have UPM enabled and logs
@@ -3557,8 +3571,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.UnifiedPasswordManager.WasMigrationDone"
     enum="BooleanSuccess" expires_after="M114">
-  <owner>fhorschig@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
+  <owner>fhorschig@chromium.org</owner>
   <summary>
     Records whether passwords were successfully migrated from built in backed to
     android backed and the current migration version stored in pref is
@@ -3569,8 +3583,8 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PasswordManager.UnifiedPasswordManager.{UPMMigrationType}.Latency"
     units="ms" expires_after="M114">
-  <owner>fhorschig@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
+  <owner>fhorschig@chromium.org</owner>
   <summary>
     Real-time duration of {UPMMigrationType}. Recorded when all operations are
     completed and migration is finished.
@@ -3581,8 +3595,8 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PasswordManager.UnifiedPasswordManager.{UPMMigrationType}.Success"
     enum="BooleanSuccess" expires_after="M114">
-  <owner>fhorschig@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
+  <owner>fhorschig@chromium.org</owner>
   <summary>
     Records success of {UPMMigrationType}. Recorded when the migration is
     finished.
