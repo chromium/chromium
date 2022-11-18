@@ -124,7 +124,10 @@ class MessageBannerCoordinator {
                 setOnTouchRunnable(null);
                 setOnTitleChanged(null);
                 mTimer.cancelTimer();
+                // Make it unable to be focused if it is not in the front.
+                mView.enableA11y(false);
             } else {
+                mView.enableA11y(true);
                 setOnTouchRunnable(mTimer::resetTimer);
                 announceForAccessibility();
                 setOnTitleChanged(() -> {

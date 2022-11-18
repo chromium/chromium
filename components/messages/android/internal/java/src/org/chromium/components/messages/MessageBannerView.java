@@ -85,6 +85,11 @@ public class MessageBannerView extends BoundedLinearLayout {
         }
     }
 
+    void enableA11y(boolean enabled) {
+        setImportantForAccessibility(enabled ? IMPORTANT_FOR_ACCESSIBILITY_AUTO
+                                             : IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+    }
+
     void setTitle(String title) {
         mTitle.setText(title);
         if (mOnTitleChanged != null) mOnTitleChanged.run();
