@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/flat_set.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -27,7 +26,7 @@ namespace {
 
 using ::attribution_reporting::mojom::TriggerRegistrationError;
 
-bool AreSourceKeysValid(const base::flat_set<std::string>& source_keys) {
+bool AreSourceKeysValid(const AggregatableTriggerData::Keys& source_keys) {
   if (source_keys.size() > kMaxAggregationKeysPerSourceOrTrigger)
     return false;
 
@@ -58,7 +57,7 @@ base::expected<absl::uint128, TriggerRegistrationError> ParseKeyPiece(
   return *key_piece;
 }
 
-base::expected<base::flat_set<std::string>, TriggerRegistrationError>
+base::expected<AggregatableTriggerData::Keys, TriggerRegistrationError>
 ParseSourceKeys(base::Value::Dict& registration) {
   base::Value* v = registration.Find("source_keys");
   if (!v) {
@@ -79,7 +78,7 @@ ParseSourceKeys(base::Value::Dict& registration) {
                                 kAggregatableTriggerDataSourceKeysTooManyKeys);
   }
 
-  base::flat_set<std::string>::container_type source_keys;
+  AggregatableTriggerData::Keys source_keys;
   source_keys.reserve(num_source_keys);
 
   for (auto& maybe_string_value : *l) {
@@ -94,7 +93,7 @@ ParseSourceKeys(base::Value::Dict& registration) {
                                   kAggregatableTriggerDataSourceKeysKeyTooLong);
     }
 
-    source_keys.emplace_back(std::move(*s));
+    source_keys.push_back(std::move(*s));
   }
 
   return source_keys;
@@ -105,7 +104,7 @@ ParseSourceKeys(base::Value::Dict& registration) {
 // static
 absl::optional<AggregatableTriggerData> AggregatableTriggerData::Create(
     absl::uint128 key_piece,
-    base::flat_set<std::string> source_keys,
+    Keys source_keys,
     Filters filters,
     Filters not_filters) {
   if (!AreSourceKeysValid(source_keys))
@@ -144,11 +143,10 @@ AggregatableTriggerData::FromJSON(base::Value& value) {
                                  std::move(*filters), std::move(*not_filters));
 }
 
-AggregatableTriggerData::AggregatableTriggerData(
-    absl::uint128 key_piece,
-    base::flat_set<std::string> source_keys,
-    Filters filters,
-    Filters not_filters)
+AggregatableTriggerData::AggregatableTriggerData(absl::uint128 key_piece,
+                                                 Keys source_keys,
+                                                 Filters filters,
+                                                 Filters not_filters)
     : key_piece_(key_piece),
       source_keys_(std::move(source_keys)),
       filters_(std::move(filters)),

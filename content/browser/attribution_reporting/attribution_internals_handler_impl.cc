@@ -508,10 +508,7 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
         absl::in_place,
         /*key_piece=*/
         HexEncodeAggregationKey(aggregatable_trigger_data.key_piece()),
-        /*source_keys=*/
-        std::vector<std::string>(
-            aggregatable_trigger_data.source_keys().begin(),
-            aggregatable_trigger_data.source_keys().end()),
+        /*source_keys=*/aggregatable_trigger_data.source_keys(),
         /*filters=*/aggregatable_trigger_data.filters().filter_values(),
         /*not_filters=*/
         aggregatable_trigger_data.not_filters().filter_values());

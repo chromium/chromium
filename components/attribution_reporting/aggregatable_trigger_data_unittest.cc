@@ -8,8 +8,8 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
-#include "base/containers/flat_set.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/values_test_util.h"
 #include "base/types/expected.h"

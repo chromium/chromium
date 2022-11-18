@@ -1451,7 +1451,7 @@ TriggerBuilder DefaultAggregatableTriggerBuilder(
     aggregatable_trigger_data.push_back(
         *attribution_reporting::AggregatableTriggerData::Create(
             absl::MakeUint128(/*high=*/i, /*low=*/0),
-            /*source_keys=*/base::flat_set<std::string>{key_id},
+            /*source_keys=*/{key_id},
             /*filters=*/attribution_reporting::Filters(),
             /*not_filters=*/attribution_reporting::Filters()));
     aggregatable_values.emplace(std::move(key_id), histogram_values[i]);
