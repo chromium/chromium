@@ -575,6 +575,23 @@ source_set("platform_base_cancellation_flag") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
+source_set("platform_base_connection_info") {
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
+  sources = [ "src/internal/platform/bluetooth_connection_info.cc" ]
+  public = [
+    "src/internal/platform/bluetooth_connection_info.h",
+    "src/internal/platform/connection_info.h",
+  ]
+  public_deps = [
+    ":platform_base",
+    "//third_party/abseil-cpp:absl",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
 
 # src/internal/platform/implementation/shared
 source_set("platform_impl_shared_file") {
@@ -745,6 +762,7 @@ source_set("presence_types") {
   public_deps = [
     ":connections_credential_proto",
     ":platform_base",
+    ":platform_base_connection_info",
     ":platform_public_logging",
     "//third_party/abseil-cpp:absl",
   ]
