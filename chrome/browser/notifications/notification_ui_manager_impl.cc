@@ -87,8 +87,10 @@ void NotificationUIManagerImpl::Add(
       std::make_unique<message_center::Notification>(
           profile_notification->notification()));
 
-  if (profile && profile->IsOffTheRecord())
+  if (profile && profile->IsOffTheRecord() &&
+      !observed_otr_profiles_.IsObservingSource(profile)) {
     observed_otr_profiles_.AddObservation(profile);
+  }
 }
 
 bool NotificationUIManagerImpl::Update(
