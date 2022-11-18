@@ -75,6 +75,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/accessibility/accessibility_paint_checks.h"
 
 namespace ash {
 
@@ -179,6 +180,12 @@ class WindowCycleListTestApi {
     return cycle_view()->mirror_container_->children();
   }
 
+  const views::View* GetTabSliderActiveButtonSelector() const {
+    if (auto* tab_slider_container = cycle_view()->tab_slider_container_)
+      return tab_slider_container->active_button_selector_;
+    return nullptr;
+  }
+
   const views::View::Views& GetTabSliderButtons() const {
     auto* tab_slider_container = cycle_view()->tab_slider_container_;
     if (!tab_slider_container) {
@@ -234,6 +241,11 @@ class WindowCycleControllerTest : public AshTestBase {
 
   const views::View::Views& GetWindowCycleTabSliderButtons() const {
     return WindowCycleListTestApi(GetCycleList()).GetTabSliderButtons();
+  }
+
+  const views::View* GetWindowCycleTabSliderActiveButtonSelector() const {
+    return WindowCycleListTestApi(GetCycleList())
+        .GetTabSliderActiveButtonSelector();
   }
 
   const views::Label* GetWindowCycleNoRecentItemsLabel() const {
@@ -3101,6 +3113,47 @@ TEST_F(ModeSelectionWindowCycleControllerTest, WindowDestruction) {
   EXPECT_TRUE(cycle_controller->IsCycling());
 }
 
+// Runs the accessibility paint checks on the active button selector.
+// There should be no DCHECK failures.
+TEST_F(ModeSelectionWindowCycleControllerTest,
+       AccessibilityPaintChecksOnActiveButtonSelector) {
+  WindowCycleController* cycle_controller =
+      Shell::Get()->window_cycle_controller();
+
+  // Create a second desk.
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+
+  // Put one window on each desk.
+  auto win0 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
+  ActivateDesk(desks_controller->desks()[1].get());
+  auto win1 = CreateAppWindow(gfx::Rect(0, 0, 300, 200));
+
+  // Start cycle. Verify the slider buttons are present.
+  cycle_controller->StartCycling();
+  auto tab_slider_buttons = GetWindowCycleTabSliderButtons();
+  EXPECT_EQ(2u, tab_slider_buttons.size());
+
+  // The active button selector claims to be focusable. This has implications
+  // for the accessibility paint checks which check that focusable views have
+  // a valid role and accessible name.
+  // TODO(sammiequon|xdai): Investigate if focus behavior always is still
+  // needed. See discussion on crrev.com/c/4020278. Note: if focus behavior is
+  // changed to `NEVER`, this expectation should be updated or removed, but the
+  // call to `RunAccessibilityPaintChecks` below left in place because it is
+  // helpful to have test coverage that the paint checks pass.
+  auto* active_button_selector = GetWindowCycleTabSliderActiveButtonSelector();
+  EXPECT_EQ(active_button_selector->GetFocusBehavior(),
+            views::View::FocusBehavior::ALWAYS);
+
+  // Run the accessibility paint checks on the active button selector.
+  // There should be no DCHECK failures.
+  RunAccessibilityPaintChecks(const_cast<views::View*>(active_button_selector));
+
+  CompleteCycling(cycle_controller);
+}
+
 namespace {
 
 constexpr char kUser1Email[] = "user1@alttab";
@@ -3233,6 +3286,11 @@ class MultiUserWindowCycleControllerTest
 
   const views::View::Views& GetWindowCycleItemViews() const {
     return WindowCycleListTestApi(GetCycleList()).GetWindowCycleItemViews();
+  }
+
+  const views::View* GetWindowCycleTabSliderActiveButtonSelector() const {
+    return WindowCycleListTestApi(GetCycleList())
+        .GetTabSliderActiveButtonSelector();
   }
 
   const views::View::Views& GetWindowCycleTabSliderButtons() const {
