@@ -8,7 +8,6 @@
 
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/values.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/status.h"
@@ -95,24 +94,29 @@ Status FrameTracker::OnConnected(DevToolsClient* client) {
 Status FrameTracker::OnEvent(DevToolsClient* client,
                              const std::string& method,
                              const base::DictionaryValue& params) {
+  return OnEvent(client, method, params.GetDict());
+}
+
+Status FrameTracker::OnEvent(DevToolsClient* client,
+                             const std::string& method,
+                             const base::Value::Dict& params) {
   if (method == "Runtime.executionContextCreated") {
-    const base::DictionaryValue* context;
-    if (!params.GetDictionary("context", &context)) {
+    const base::Value::Dict* context = params.FindDict("context");
+    if (!context) {
       return Status(kUnknownError,
                     "Runtime.executionContextCreated missing dict 'context'");
     }
 
-    std::string frame_id;
-    bool is_default = true;
-
-    const std::string* context_id = context->GetDict().FindString("uniqueId");
+    const std::string* context_id = context->FindString("uniqueId");
     if (!context_id) {
       std::string json;
       base::JSONWriter::Write(*context, &json);
       return Status(kUnknownError, method + " has invalid 'context': " + json);
     }
 
-    if (const base::Value* aux_data = context->GetDict().Find("auxData")) {
+    std::string frame_id;
+    bool is_default = true;
+    if (const base::Value* aux_data = context->Find("auxData")) {
       if (!aux_data->is_dict()) {
         return Status(kUnknownError, method + " has invalid 'auxData' value");
       }
@@ -131,7 +135,7 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
     if (is_default && !frame_id.empty())
       frame_to_context_map_[frame_id] = *context_id;
   } else if (method == "Runtime.executionContextDestroyed") {
-    const base::Value::Dict* context = params.GetDict().FindDict("context");
+    const base::Value::Dict* context = params.FindDict("context");
     // TODO(nechaev): Interpret the missing 'context' as an error
     // after https://crbug.com/chromedriver/4120 is fixed.
     if (context) {
@@ -152,14 +156,14 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
   } else if (method == "Runtime.executionContextsCleared") {
     frame_to_context_map_.clear();
   } else if (method == "Page.frameAttached") {
-    if (const std::string* frame_id = params.GetDict().FindString("frameId")) {
+    if (const std::string* frame_id = params.FindString("frameId")) {
       attached_frames_.insert(*frame_id);
     } else {
       return Status(kUnknownError,
                     "missing frameId in Page.frameAttached event");
     }
   } else if (method == "Page.frameDetached") {
-    if (const std::string* frame_id = params.GetDict().FindString("frameId")) {
+    if (const std::string* frame_id = params.FindString("frameId")) {
       attached_frames_.erase(*frame_id);
       // TODO(nechaev): Remove the following line
       // after https://crbug.com/chromedriver/4120 is fixed.
@@ -169,20 +173,20 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
                     "missing frameId in Page.frameDetached event");
     }
   } else if (method == "Page.frameNavigated") {
-    if (!params.FindPath("frame.parentId"))
+    if (!params.FindByDottedPath("frame.parentId"))
       frame_to_context_map_.clear();
   } else if (method == "Target.attachedToTarget") {
-    const std::string* type = params.FindStringPath("targetInfo.type");
+    const std::string* type = params.FindStringByDottedPath("targetInfo.type");
     if (!type)
       return Status(kUnknownError,
                     "missing target type in Target.attachedToTarget event");
     if (*type == "iframe" || *type == "page") {
       const std::string* target_id =
-          params.FindStringPath("targetInfo.targetId");
+          params.FindStringByDottedPath("targetInfo.targetId");
       if (!target_id)
         return Status(kUnknownError,
                       "missing target ID in Target.attachedToTarget event");
-      const std::string* session_id = params.GetDict().FindString("sessionId");
+      const std::string* session_id = params.FindString("sessionId");
       if (!session_id)
         return Status(kUnknownError,
                       "missing session ID in Target.attachedToTarget event");
@@ -206,7 +210,7 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
       }
     }
   } else if (method == "Target.detachedFromTarget") {
-    const std::string* target_id = params.GetDict().FindString("targetId");
+    const std::string* target_id = params.FindString("targetId");
     if (!target_id)
       // Some types of Target.detachedFromTarget events do not have targetId.
       // We are not interested in those types of targets.

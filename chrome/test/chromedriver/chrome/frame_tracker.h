@@ -10,12 +10,9 @@
 #include <unordered_set>
 
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/chrome/web_view.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 struct BrowserInfo;
 class DevToolsClient;
@@ -44,6 +41,9 @@ class FrameTracker : public DevToolsEventListener {
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
                  const base::DictionaryValue& params) override;
+  Status OnEvent(DevToolsClient* client,
+                 const std::string& method,
+                 const base::Value::Dict& params);
 
  private:
   std::map<std::string, std::string> frame_to_context_map_;
