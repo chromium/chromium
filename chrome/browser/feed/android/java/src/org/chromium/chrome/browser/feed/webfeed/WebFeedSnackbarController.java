@@ -26,6 +26,8 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -34,6 +36,8 @@ import java.util.concurrent.TimeUnit;
 public class WebFeedSnackbarController {
     /**
      * A helper interface for exposing a method to launch the feed.
+     * TODO(carlosk): replace this interface with a standard Runnable because the action executed is
+     * not always opening the Following feed.
      */
     @FunctionalInterface
     public interface FeedLauncher {
@@ -46,6 +50,7 @@ public class WebFeedSnackbarController {
     private final FeedLauncher mFeedLauncher;
     private final SnackbarManager mSnackbarManager;
     private final WebFeedDialogCoordinator mWebFeedDialogCoordinator;
+    private final List<SnackbarController> mActiveControllers = new ArrayList<>();
 
     /**
      * Constructs an instance of {@link WebFeedSnackbarController}.
@@ -134,25 +139,46 @@ public class WebFeedSnackbarController {
                         .shouldTriggerHelpUI(
                                 FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE)) {
             if (followFromFeed == StreamKind.FOLLOWING) {
+                Runnable launchSnackbar = null;
+                if (isActive) {
+                    // A snackback will be shown after the dialog is closed to offer the refresh
+                    // action.
+                    launchSnackbar = () -> {
+                        showPostSuccessfulSnackbar(title, followFromFeed);
+                    };
+                };
                 mWebFeedDialogCoordinator.initializeForInFollowingFollow(
-                        mContext, null, title, isActive);
+                        mContext, launchSnackbar, title, isActive);
             } else {
                 mWebFeedDialogCoordinator.initialize(mContext, mFeedLauncher, title, isActive);
             }
             mWebFeedDialogCoordinator.showDialog();
-        } else if (followFromFeed != StreamKind.FOLLOWING) {
-            SnackbarController snackbarController = new PinnedSnackbarController() {
-                @Override
-                public void onAction(Object actionData) {
-                    super.onAction(actionData);
-                    mFeedLauncher.openFollowingFeed();
-                }
-            };
-            showSnackbar(
-                    mContext.getString(R.string.web_feed_follow_success_snackbar_message, title),
-                    snackbarController, Snackbar.UMA_WEB_FEED_FOLLOW_SUCCESS,
-                    R.string.web_feed_follow_success_snackbar_action_go_to_following);
+        } else {
+            showPostSuccessfulSnackbar(title, followFromFeed);
         }
+    }
+
+    private void showPostSuccessfulSnackbar(String title, @StreamKind int followFromFeed) {
+        SnackbarController snackbarController = new PinnedSnackbarController() {
+            @Override
+            public void onAction(Object actionData) {
+                super.onAction(actionData);
+                @FeedUserActionType
+                int userActionType = followFromFeed == StreamKind.FOLLOWING
+                        ? FeedUserActionType.TAPPED_REFRESH_FOLLOWING_FEED_ON_SNACKBAR
+                        : FeedUserActionType.TAPPED_GO_TO_FEED_ON_SNACKBAR;
+                FeedServiceBridge.reportOtherUserAction(StreamKind.UNKNOWN, userActionType);
+                // TODO(carlosk): The openFollowingFeed call may actually also cause the refresh of
+                // the Following feed, hence the need to replace FeeLauncher with a more generic
+                // interface.
+                mFeedLauncher.openFollowingFeed();
+            }
+        };
+        int actionLabelId = followFromFeed == StreamKind.FOLLOWING
+                ? R.string.web_feed_follow_success_snackbar_action_refresh
+                : R.string.web_feed_follow_success_snackbar_action_go_to_following;
+        showSnackbar(mContext.getString(R.string.web_feed_follow_success_snackbar_message, title),
+                snackbarController, Snackbar.UMA_WEB_FEED_FOLLOW_SUCCESS, actionLabelId);
     }
 
     private void showUnfollowSuccessSnackbar(
@@ -203,6 +229,16 @@ public class WebFeedSnackbarController {
     }
 
     /**
+     * Dismisses all active snackbars created by this conotroller.
+     */
+    public void dismissSnackbars() {
+        // A copy is needed as controllers will self-remove from the list.
+        List<SnackbarController> controllersCopy = new ArrayList(mActiveControllers);
+        controllersCopy.forEach((c) -> { mSnackbarManager.dismissSnackbars(c); });
+        assert mActiveControllers.isEmpty();
+    }
+
+    /**
      * A snackbar controller which dismisses the snackbar if the feed surface is shown, and
      *  optionally, upon navigation to a different URL.
      */
@@ -214,16 +250,19 @@ public class WebFeedSnackbarController {
 
         PinnedSnackbarController() {
             FeedSurfaceTracker.getInstance().addObserver(this);
+            mActiveControllers.add(this);
         }
 
         @Override
         public void onAction(Object actionData) {
             unregisterObservers();
+            mActiveControllers.remove(this);
         }
 
         @Override
         public void onDismissNoAction(Object actionData) {
             unregisterObservers();
+            mActiveControllers.remove(this);
         }
 
         @Override

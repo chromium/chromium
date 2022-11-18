@@ -71,7 +71,8 @@ class WebFeedDialogCoordinator {
             feedLauncher.openFollowingFeed();
         };
         initializeInternal(context, positiveAction,
-                R.string.web_feed_post_follow_dialog_go_to_following, title, isActive);
+                R.string.web_feed_post_follow_dialog_go_to_following, title, isActive,
+                /*hasCloseAction=*/true);
     }
 
     /**
@@ -90,16 +91,16 @@ class WebFeedDialogCoordinator {
             if (activeAction != null) activeAction.run();
         };
         initializeInternal(context, positiveAction, R.string.web_feed_post_follow_dialog_got_it,
-                title, isActive);
+                title, isActive, /*hasCloseAction=*/false);
     }
 
     private void initializeInternal(Context context, Runnable positiveAction,
-            int positiveActionLabelId, String title, boolean isActive) {
+            int positiveActionLabelId, String title, boolean isActive, boolean hasCloseAction) {
         mContext = context;
         View webFeedDialogView =
                 LayoutInflater.from(context).inflate(R.layout.web_feed_dialog, null);
-        WebFeedDialogContents dialogContents =
-                buildDialogContents(positiveAction, positiveActionLabelId, title, isActive);
+        WebFeedDialogContents dialogContents = buildDialogContents(
+                positiveAction, positiveActionLabelId, title, isActive, hasCloseAction);
         PropertyModel model = buildModel(dialogContents);
         mMediator.initialize(webFeedDialogView, dialogContents);
         PropertyModelChangeProcessor.create(
@@ -110,8 +111,8 @@ class WebFeedDialogCoordinator {
         mMediator.showDialog();
     }
 
-    private WebFeedDialogContents buildDialogContents(
-            Runnable positiveAction, int positiveActionLabelId, String title, boolean isActive) {
+    private WebFeedDialogContents buildDialogContents(Runnable positiveAction,
+            int positiveActionLabelId, String title, boolean isActive, boolean hasCloseAction) {
         RecordHistogram.recordEnumeratedHistogram(
                 "ContentSuggestions.Feed.WebFeed.PostFollowDialog.Show",
                 isActive ? WebFeedPostFollowDialogPresentation.AVAILABLE
@@ -126,11 +127,12 @@ class WebFeedDialogCoordinator {
             description = mContext.getString(
                     R.string.web_feed_post_follow_dialog_stories_ready_description, title);
             primaryButtonText = mContext.getString(positiveActionLabelId);
-            secondaryButtonText = mContext.getString(R.string.close);
+            secondaryButtonText = hasCloseAction ? mContext.getString(R.string.close) : null;
             buttonClickCallback = dismissalCause -> {
                 if (dismissalCause.equals(DialogDismissalCause.POSITIVE_BUTTON_CLICKED)) {
                     positiveAction.run();
                 } else {
+                    assert hasCloseAction : "Secondary close action must be enabled";
                     FeedServiceBridge.reportOtherUserAction(StreamKind.UNKNOWN,
                             FeedUserActionType.TAPPED_DISMISS_POST_FOLLOW_ACTIVE_HELP);
                 }
