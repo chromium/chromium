@@ -210,7 +210,6 @@ uint32_t EnumerateHardwareEncoders(VideoCodec codec,
 
   if (!compatible_with_win7 &&
       base::win::GetVersion() < base::win::Version::WIN8) {
-    DVLOG(ERROR) << "Windows versions earlier than 8 are not supported.";
     return 0;
   }
 
@@ -220,13 +219,13 @@ uint32_t EnumerateHardwareEncoders(VideoCodec codec,
       && codec != VideoCodec::kHEVC
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
   ) {
-    DVLOG(ERROR) << "Enumerating unsupported hardware encoders.";
+    DLOG(ERROR) << "Enumerating unsupported hardware encoders.";
     return 0;
   }
 
   for (const wchar_t* mfdll : kMediaFoundationVideoEncoderDLLs) {
     if (!::GetModuleHandle(mfdll)) {
-      DVLOG(ERROR) << mfdll << " is required for encoding";
+      DLOG(ERROR) << mfdll << " is required for encoding";
       return 0;
     }
   }
@@ -245,10 +244,11 @@ uint32_t EnumerateHardwareEncoders(VideoCodec codec,
   uint32_t count = 0;
   HRESULT hr = MFTEnumEx(MFT_CATEGORY_VIDEO_ENCODER, flags, &input_info,
                          &output_info, pp_activate, &count);
-  RETURN_ON_HR_FAILURE(hr, "Couldn't enumerate hardware encoder from MFTEnumEx",
-                       0);
-  RETURN_ON_FAILURE((count > 0), "No asynchronous MFT encoder found", 0);
-  DVLOG(3) << "Hardware encoder(s) available found from MFTEnumEx: " << count;
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to enumerate hardware encoders for "
+                << GetCodecName(codec)
+                << ", hr=" << logging::SystemErrorCodeToString(hr);
+  }
 
   return count;
 }
@@ -393,7 +393,8 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfilesForCodec(
       EnumerateHardwareEncoders(codec, &pp_activate, compatible_with_win7_);
   if (!encoder_count) {
     DVLOG(1)
-        << "Hardware encode acceleration is not available on this platform.";
+        << "Hardware encode acceleration is not available on this platform for "
+        << GetCodecName(codec);
     return profiles;
   }
 
