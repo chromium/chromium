@@ -27,16 +27,16 @@ class CORE_EXPORT CSSScrollTimeline : public ScrollTimeline {
             ScrollTimeline::ReferenceType reference_type,
             absl::optional<Element*> reference_element,
             const AtomicString& name,
-            TimelineAxis);
+            TimelineAxis axis);
 
-    static ScrollTimeline::ScrollDirection ComputeScrollDirection(TimelineAxis);
+    static ScrollAxis ComputeAxis(TimelineAxis);
 
    private:
     friend class CSSScrollTimeline;
 
     ScrollTimeline::ReferenceType reference_type_;
     absl::optional<Element*> reference_element_;
-    ScrollTimeline::ScrollDirection direction_;
+    ScrollAxis axis_;
     AtomicString name_;
   };
 

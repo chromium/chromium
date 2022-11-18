@@ -8544,7 +8544,7 @@ interface ScriptProcessorNode : AudioNode
     setter onaudioprocess
 interface ScrollTimeline : AnimationTimeline
     attribute @@toStringTag
-    getter orientation
+    getter axis
     getter source
     method constructor
 interface SecurityPolicyViolationEvent : Event

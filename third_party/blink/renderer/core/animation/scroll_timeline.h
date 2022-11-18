@@ -8,6 +8,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "cc/animation/scroll_timeline.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_axis.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
@@ -40,13 +41,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
 
  public:
   using ScrollOffsets = cc::ScrollTimeline::ScrollOffsets;
-
-  enum class ScrollDirection {
-    kBlock,
-    kInline,
-    kHorizontal,
-    kVertical,
-  };
+  using ScrollAxis = V8ScrollAxis::Enum;
 
   // Indicates the relation between the reference element and source of the
   // scroll timeline.
@@ -62,7 +57,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
 
   static ScrollTimeline* Create(Document* document,
                                 Element* source,
-                                ScrollDirection orientation);
+                                ScrollAxis axis);
 
   // Construct ScrollTimeline objects through one of the Create methods, which
   // perform initial snapshots, as it can't be done during the constructor due
@@ -70,10 +65,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   ScrollTimeline(Document*,
                  ReferenceType reference_type,
                  Element* reference,
-                 ScrollDirection);
-
-  static bool StringToScrollDirection(String scroll_direction,
-                                      ScrollTimeline::ScrollDirection& result);
+                 ScrollAxis axis);
 
   bool IsScrollTimeline() const override { return true; }
   // ScrollTimeline is not active if source is null, does not currently
@@ -90,7 +82,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
 
   // IDL API implementation.
   Element* source() const;
-  String orientation();
+  const V8ScrollAxis axis() const { return V8ScrollAxis(axis_); }
 
   V8CSSNumberish* currentTime() override;
   V8CSSNumberish* duration() override;
@@ -106,7 +98,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   // timeline is inactive.
   absl::optional<ScrollOffsets> GetResolvedScrollOffsets() const;
 
-  ScrollDirection GetOrientation() const { return orientation_; }
+  ScrollAxis GetAxis() const { return axis_; }
 
   void GetCurrentAndMaxOffset(const LayoutBox*,
                               double& current_offset,
@@ -194,7 +186,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   ReferenceType reference_type_;
   Member<Element> reference_element_;
   Member<Node> resolved_source_;
-  ScrollDirection orientation_;
+  ScrollAxis axis_;
 
   // Snapshotted value produced by the last SnapshotState call.
   TimelineState timeline_state_snapshotted_;

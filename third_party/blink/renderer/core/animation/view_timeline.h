@@ -46,7 +46,7 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
 
   static ViewTimeline* Create(Document&, ViewTimelineOptions*, ExceptionState&);
 
-  ViewTimeline(Document*, Element* subject, ScrollDirection orientation, Inset);
+  ViewTimeline(Document*, Element* subject, ScrollAxis axis, Inset);
 
   bool IsViewTimeline() const override { return true; }
 
@@ -63,11 +63,10 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
   AnimationTimeline::TimeDelayPair TimelineOffsetsToTimeDelays(
       const Timing& timing) const override;
 
-  void Trace(Visitor*) const override;
-
   CSSNumericValue* startOffset() const;
-
   CSSNumericValue* endOffset() const;
+
+  void Trace(Visitor*) const override;
 
  protected:
   const Inset& GetInset() const { return inset_; }

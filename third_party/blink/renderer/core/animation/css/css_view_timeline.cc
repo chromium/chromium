@@ -13,18 +13,14 @@ CSSViewTimeline::Options::Options(Element* subject,
                                   TimelineAxis axis,
                                   TimelineInset inset)
     : subject_(subject),
-      direction_(CSSScrollTimeline::Options::ComputeScrollDirection(axis)),
+      axis_(CSSScrollTimeline::Options::ComputeAxis(axis)),
       inset_(inset.GetStart(), inset.GetEnd()) {}
 
 CSSViewTimeline::CSSViewTimeline(Document* document, Options&& options)
-    : ViewTimeline(document,
-                   options.subject_,
-                   options.direction_,
-                   options.inset_) {}
+    : ViewTimeline(document, options.subject_, options.axis_, options.inset_) {}
 
 bool CSSViewTimeline::Matches(const Options& options) const {
-  return (subject() == options.subject_) &&
-         (GetOrientation() == options.direction_) &&
+  return (subject() == options.subject_) && (GetAxis() == options.axis_) &&
          (GetInset() == options.inset_);
 }
 

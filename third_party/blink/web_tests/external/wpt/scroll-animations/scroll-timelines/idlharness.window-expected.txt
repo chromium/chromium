@@ -14,11 +14,11 @@ PASS ScrollTimeline interface: existence and properties of interface prototype o
 PASS ScrollTimeline interface: existence and properties of interface prototype object's "constructor" property
 PASS ScrollTimeline interface: existence and properties of interface prototype object's @@unscopables property
 PASS ScrollTimeline interface: attribute source
-FAIL ScrollTimeline interface: attribute axis assert_true: The prototype object must have a property "axis" expected true got false
+PASS ScrollTimeline interface: attribute axis
 PASS ScrollTimeline must be primary interface of new ScrollTimeline()
 PASS Stringification of new ScrollTimeline()
 PASS ScrollTimeline interface: new ScrollTimeline() must inherit property "source" with the proper type
-FAIL ScrollTimeline interface: new ScrollTimeline() must inherit property "axis" with the proper type assert_inherits: property "axis" not found in prototype chain
+PASS ScrollTimeline interface: new ScrollTimeline() must inherit property "axis" with the proper type
 FAIL AnimationTimeline interface: new ScrollTimeline() must inherit property "currentTime" with the proper type Right-hand side of 'instanceof' is not an object
 FAIL AnimationTimeline interface: new ScrollTimeline() must inherit property "getCurrentTime(optional CSSOMString)" with the proper type assert_inherits: property "getCurrentTime" not found in prototype chain
 FAIL AnimationTimeline interface: calling getCurrentTime(optional CSSOMString) on new ScrollTimeline() with too few arguments must throw TypeError assert_inherits: property "getCurrentTime" not found in prototype chain

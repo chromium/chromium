@@ -31,7 +31,7 @@ class CORE_EXPORT CSSViewTimeline : public ViewTimeline {
     friend class CSSViewTimeline;
 
     Element* subject_;
-    ScrollTimeline::ScrollDirection direction_;
+    ScrollAxis axis_;
     ViewTimeline::Inset inset_;
   };
 

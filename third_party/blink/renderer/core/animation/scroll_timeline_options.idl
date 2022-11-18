@@ -6,5 +6,5 @@
 
 dictionary ScrollTimelineOptions {
         Element? source;
-        ScrollDirection orientation = "block";
+        ScrollAxis axis = "block";
 };

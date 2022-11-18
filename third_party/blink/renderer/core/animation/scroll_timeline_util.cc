@@ -28,7 +28,7 @@ scoped_refptr<CompositorScrollTimeline> ToCompositorScrollTimeline(
       scroll_timeline->IsActive() ? scroll_source->GetLayoutBox() : nullptr;
 
   CompositorScrollTimeline::ScrollDirection orientation = ConvertOrientation(
-      scroll_timeline->GetOrientation(), box ? box->Style() : nullptr);
+      scroll_timeline->GetAxis(), box ? box->Style() : nullptr);
 
   return CompositorScrollTimeline::Create(
       element_id, orientation, scroll_timeline->GetResolvedScrollOffsets());
@@ -49,12 +49,12 @@ absl::optional<CompositorElementId> GetCompositorScrollElementId(
 // web concepts of 'block' and 'inline' direction into absolute vertical or
 // horizontal directions.
 CompositorScrollTimeline::ScrollDirection ConvertOrientation(
-    ScrollTimeline::ScrollDirection orientation,
+    ScrollAxis axis,
     const ComputedStyle* style) {
   // Easy cases; physical is always physical.
-  if (orientation == ScrollTimeline::ScrollDirection::kHorizontal)
+  if (axis == ScrollAxis::kHorizontal)
     return CompositorScrollTimeline::ScrollRight;
-  if (orientation == ScrollTimeline::ScrollDirection::kVertical)
+  if (axis == ScrollAxis::kVertical)
     return CompositorScrollTimeline::ScrollDown;
 
   // Harder cases; first work out which axis is which, and then for each check
@@ -69,7 +69,7 @@ CompositorScrollTimeline::ScrollDirection ConvertOrientation(
   // direction: ltr;
   bool is_ltr_direction = style ? style->IsLeftToRightDirection() : true;
 
-  if (orientation == ScrollTimeline::ScrollDirection::kBlock) {
+  if (axis == ScrollAxis::kBlock) {
     if (is_horizontal_writing_mode) {
       // For horizontal writing mode, block is vertical. The starting edge is
       // always the top.
@@ -81,7 +81,7 @@ CompositorScrollTimeline::ScrollDirection ConvertOrientation(
                                          : CompositorScrollTimeline::ScrollLeft;
   }
 
-  DCHECK_EQ(orientation, ScrollTimeline::ScrollDirection::kInline);
+  DCHECK_EQ(axis, ScrollAxis::kInline);
   if (is_horizontal_writing_mode) {
     // For horizontal writing mode, inline is horizontal. The starting edge
     // depends on the directionality.
