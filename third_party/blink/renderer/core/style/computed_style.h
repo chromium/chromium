@@ -2592,6 +2592,12 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   STACK_ALLOCATED();
 
  public:
+  friend class ColorPropertyFunctions;
+  friend class StyleAdjuster;
+  friend class StyleResolverState;
+  // Access to UserModify().
+  friend class MatchedPropertiesCache;
+
   explicit ComputedStyleBuilder(const ComputedStyle& style) {
     SetStyle(ComputedStyle::Clone(style));
   }
@@ -3087,10 +3093,6 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   }
 
  private:
-  friend class ColorPropertyFunctions;
-  friend class StyleAdjuster;
-  friend class StyleResolverState;
-
   ComputedStyleBuilder() = default;
 
   CORE_EXPORT void ClearVariableNamesCache();

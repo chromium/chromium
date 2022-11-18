@@ -269,8 +269,7 @@ static bool LayoutParentStyleForcesZIndexToCreateStackingContext(
 }
 
 void StyleAdjuster::AdjustStyleForEditing(ComputedStyleBuilder& builder) {
-  const ComputedStyle& style = *builder.InternalStyle();
-  if (style.UserModify() != EUserModify::kReadWritePlaintextOnly)
+  if (builder.UserModify() != EUserModify::kReadWritePlaintextOnly)
     return;
   // Collapsing whitespace is harmful in plain-text editing.
   if (builder.WhiteSpace() == EWhiteSpace::kNormal)
@@ -589,8 +588,8 @@ static void AdjustStyleForDisplay(ComputedStyle& style,
 }
 
 bool StyleAdjuster::IsEditableElement(Element* element,
-                                      const ComputedStyle& style) {
-  if (style.UserModify() != EUserModify::kReadOnly)
+                                      const ComputedStyleBuilder& builder) {
+  if (builder.UserModify() != EUserModify::kReadOnly)
     return true;
 
   if (!element)
@@ -685,7 +684,7 @@ void StyleAdjuster::AdjustEffectiveTouchAction(
   if (element->GetDocument().IsVerticalScrollEnforced())
     enforced_by_policy = TouchAction::kPanY;
   if (::features::IsSwipeToMoveCursorEnabled() &&
-      IsEditableElement(element, style)) {
+      IsEditableElement(element, builder)) {
     element_touch_action &= ~TouchAction::kInternalPanXScrolls;
   }
 
@@ -694,7 +693,7 @@ void StyleAdjuster::AdjustEffectiveTouchAction(
   if (base::FeatureList::IsEnabled(blink::features::kStylusWritingToInput) &&
       RuntimeEnabledFeatures::StylusHandwritingEnabled() &&
       (element_touch_action & TouchAction::kPan) == TouchAction::kPan &&
-      IsEditableElement(element, style) &&
+      IsEditableElement(element, builder) &&
       !IsPasswordFieldWithUnrevealedPassword(element)) {
     element_touch_action &= ~TouchAction::kInternalNotWritable;
   }

@@ -47,7 +47,7 @@ class StyleAdjuster {
   static void AdjustStyleForTextCombine(ComputedStyleBuilder&);
 
  private:
-  static bool IsEditableElement(Element*, const ComputedStyle&);
+  static bool IsEditableElement(Element*, const ComputedStyleBuilder&);
   static bool IsPasswordFieldWithUnrevealedPassword(Element*);
   static void AdjustEffectiveTouchAction(ComputedStyle&,
                                          ComputedStyleBuilder&,

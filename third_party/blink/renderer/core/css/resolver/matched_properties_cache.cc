@@ -245,7 +245,7 @@ bool MatchedPropertiesCache::IsCacheable(const StyleResolverState& state) {
   // style stored for a shadow root child against a non shadow root child, we
   // would end up with an incorrect match.
   if (IsAtShadowBoundary(&state.GetElement()) &&
-      state.Style()->UserModify() != parent_style.UserModify()) {
+      state.StyleBuilder().UserModify() != parent_style.UserModify()) {
     return false;
   }
 
