@@ -163,6 +163,15 @@ void SubscriberCrosapi::Launch(crosapi::mojom::LaunchParamsPtr launch_params) {
       ConvertCrosapiToLaunchParams(launch_params, profile_), base::DoNothing());
 }
 
+void SubscriberCrosapi::LaunchWithResult(
+    crosapi::mojom::LaunchParamsPtr launch_params,
+    LaunchWithResultCallback callback) {
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+  proxy->LaunchAppWithParams(
+      ConvertCrosapiToLaunchParams(launch_params, profile_),
+      MojomLaunchResultToLaunchResultCallback(std::move(callback)));
+}
+
 void SubscriberCrosapi::LoadIcon(const std::string& app_id,
                                  IconKeyPtr icon_key,
                                  IconType icon_type,

@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_service/mock_crosapi_app_service_proxy.h"
 
 #include "base/notreached.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 
 namespace apps {
 
@@ -28,6 +29,16 @@ void MockCrosapiAppServiceProxy::Launch(
   launched_apps_.push_back(std::move(launch_params));
   run_loop_->Quit();
 }
+
+void MockCrosapiAppServiceProxy::LaunchWithResult(
+    crosapi::mojom::LaunchParamsPtr launch_params,
+    LaunchWithResultCallback callback) {
+  launched_apps_.push_back(std::move(launch_params));
+  std::move(callback).Run(ConvertLaunchResultToMojomLaunchResult(
+      LaunchResult(LaunchResult::State::SUCCESS)));
+  run_loop_->Quit();
+}
+
 void MockCrosapiAppServiceProxy::LoadIcon(const std::string& app_id,
                                           IconKeyPtr icon_key,
                                           IconType icon_type,

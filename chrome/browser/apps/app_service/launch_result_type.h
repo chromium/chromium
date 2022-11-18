@@ -46,6 +46,12 @@ LaunchResult ConvertMojomLaunchResultToLaunchResult(
 
 base::OnceCallback<void(crosapi::mojom::LaunchResultPtr)>
 LaunchResultToMojomLaunchResultCallback(LaunchCallback callback);
+
+crosapi::mojom::LaunchResultPtr ConvertLaunchResultToMojomLaunchResult(
+    LaunchResult&&);
+
+LaunchCallback MojomLaunchResultToLaunchResultCallback(
+    base::OnceCallback<void(crosapi::mojom::LaunchResultPtr)> callback);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 LaunchResult ConvertBoolToLaunchResult(bool success);

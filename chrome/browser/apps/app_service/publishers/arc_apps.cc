@@ -930,13 +930,13 @@ void ArcApps::LaunchAppWithParams(AppLaunchParams&& params,
     LaunchAppWithIntent(params.app_id, event_flags, std::move(params.intent),
                         params.launch_source,
                         std::make_unique<WindowInfo>(params.display_id),
-                        base::DoNothing());
+                        std::move(callback));
   } else {
     Launch(params.app_id, event_flags, params.launch_source,
            std::make_unique<WindowInfo>(params.display_id));
+    // TODO(crbug.com/1244506): Add launch return value.
+    std::move(callback).Run(LaunchResult());
   }
-  // TODO(crbug.com/1244506): Add launch return value.
-  std::move(callback).Run(LaunchResult());
 }
 
 void ArcApps::LaunchShortcut(const std::string& app_id,

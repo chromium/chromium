@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -68,6 +69,8 @@ class SubscriberCrosapi : public KeyedService,
       mojo::PendingRemote<crosapi::mojom::AppServiceSubscriber> subscriber)
       override;
   void Launch(crosapi::mojom::LaunchParamsPtr launch_params) override;
+  void LaunchWithResult(crosapi::mojom::LaunchParamsPtr launch_params,
+                        LaunchWithResultCallback callback) override;
   void LoadIcon(const std::string& app_id,
                 IconKeyPtr icon_key,
                 IconType icon_type,

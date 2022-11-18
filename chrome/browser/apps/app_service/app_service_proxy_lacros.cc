@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
@@ -23,12 +24,16 @@
 #include "chrome/browser/apps/app_service/metrics/website_metrics_service_lacros.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/web_applications/app_service/lacros_web_apps_controller.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/services/app_service/app_service_mojom_impl.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -196,8 +201,13 @@ void AppServiceProxyLacros::LaunchAppWithIntent(
       window_info ? window_info->display_id : display::kInvalidDisplayId);
   params->intent =
       apps_util::ConvertAppServiceToCrosapiIntent(intent, profile_);
-  ProxyLaunch(std::move(params));
-  std::move(callback).Run(true);
+  ProxyLaunch(
+      std::move(params),
+      base::BindOnce(
+          [](base::OnceCallback<void(bool)> callback, LaunchResult&& result) {
+            std::move(callback).Run(ConvertLaunchResultToBool(result));
+          },
+          std::move(callback)));
 }
 
 void AppServiceProxyLacros::LaunchAppWithUrl(const std::string& app_id,
@@ -216,6 +226,7 @@ void AppServiceProxyLacros::LaunchAppWithUrl(const std::string& app_id,
 void AppServiceProxyLacros::LaunchAppWithParams(AppLaunchParams&& params,
                                                 LaunchCallback callback) {
   if (!remote_crosapi_app_service_proxy_) {
+    std::move(callback).Run(LaunchResult());
     return;
   }
 
@@ -225,13 +236,12 @@ void AppServiceProxyLacros::LaunchAppWithParams(AppLaunchParams&& params,
     LOG(WARNING) << "Ash AppServiceProxy version "
                  << crosapi_app_service_proxy_version_
                  << " does not support Launch().";
+    std::move(callback).Run(LaunchResult());
     return;
   }
 
-  ProxyLaunch(ConvertLaunchParamsToCrosapi(params, profile_));
-
-  // TODO(crbug.com/1244506): Add params on crosapi and implement this.
-  std::move(callback).Run(LaunchResult());
+  ProxyLaunch(ConvertLaunchParamsToCrosapi(params, profile_),
+              std::move(callback));
 }
 
 void AppServiceProxyLacros::SetPermission(const std::string& app_id,
@@ -606,8 +616,8 @@ void AppServiceProxyLacros::InitializePreferredApps(
   preferred_apps_list_.Init(std::move(preferred_apps));
 }
 
-void AppServiceProxyLacros::ProxyLaunch(
-    crosapi::mojom::LaunchParamsPtr params) {
+void AppServiceProxyLacros::ProxyLaunch(crosapi::mojom::LaunchParamsPtr params,
+                                        LaunchCallback callback) {
   // Extensions that run in both the OS and standalone browser are not published
   // to the app service. Thus launching must happen directly.
   if (extensions::ExtensionRunsInBothOSAndStandaloneBrowser(params->app_id) ||
@@ -615,9 +625,19 @@ void AppServiceProxyLacros::ProxyLaunch(
           params->app_id)) {
     OpenApplication(profile_,
                     ConvertCrosapiToLaunchParams(std::move(params), profile_));
+    std::move(callback).Run(ConvertBoolToLaunchResult(true));
     return;
   }
-  remote_crosapi_app_service_proxy_->Launch(std::move(params));
+  if (crosapi_app_service_proxy_version_ <
+      int{crosapi::mojom::AppServiceProxy::MethodMinVersions::
+              kLaunchWithResultMinVersion}) {
+    remote_crosapi_app_service_proxy_->Launch(std::move(params));
+    std::move(callback).Run(ConvertBoolToLaunchResult(true));
+  } else {
+    remote_crosapi_app_service_proxy_->LaunchWithResult(
+        std::move(params),
+        LaunchResultToMojomLaunchResultCallback(std::move(callback)));
+  }
 }
 
 void AppServiceProxyLacros::InitWebsiteMetrics() {

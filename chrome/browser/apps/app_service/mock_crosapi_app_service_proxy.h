@@ -33,6 +33,8 @@ class MockCrosapiAppServiceProxy : public crosapi::mojom::AppServiceProxy {
       mojo::PendingRemote<crosapi::mojom::AppServiceSubscriber> subscriber)
       override;
   void Launch(crosapi::mojom::LaunchParamsPtr launch_params) override;
+  void LaunchWithResult(crosapi::mojom::LaunchParamsPtr launch_params,
+                        LaunchWithResultCallback callback) override;
   void LoadIcon(const std::string& app_id,
                 IconKeyPtr icon_key,
                 IconType icon_type,

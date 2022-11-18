@@ -11,6 +11,32 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace apps {
+namespace {
+#if BUILDFLAG(IS_CHROMEOS)
+LaunchResult::State ConvertMojomLaunchResultStateToLaunchResultState(
+    crosapi::mojom::LaunchResultState state) {
+  switch (state) {
+    case crosapi::mojom::LaunchResultState::kFailed:
+      return LaunchResult::State::FAILED;
+    case crosapi::mojom::LaunchResultState::kFailedDirectoryNotShared:
+      return LaunchResult::State::FAILED_DIRECTORY_NOT_SHARED;
+    case crosapi::mojom::LaunchResultState::kSuccess:
+      return LaunchResult::State::SUCCESS;
+  }
+}
+crosapi::mojom::LaunchResultState
+ConvertLaunchResultStateToMojomLaunchResultState(LaunchResult::State state) {
+  switch (state) {
+    case LaunchResult::State::FAILED:
+      return crosapi::mojom::LaunchResultState::kFailed;
+    case LaunchResult::State::FAILED_DIRECTORY_NOT_SHARED:
+      return crosapi::mojom::LaunchResultState::kFailedDirectoryNotShared;
+    case LaunchResult::State::SUCCESS:
+      return crosapi::mojom::LaunchResultState::kSuccess;
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}  // namespace
 
 LaunchResult::LaunchResult() = default;
 LaunchResult::~LaunchResult() = default;
@@ -30,6 +56,8 @@ LaunchResult ConvertMojomLaunchResultToLaunchResult(
     launch_result.instance_ids.push_back(
         std::move(mojom_launch_result->instance_id));
   }
+  launch_result.state = ConvertMojomLaunchResultStateToLaunchResultState(
+      mojom_launch_result->state);
   return launch_result;
 }
 
@@ -41,6 +69,42 @@ LaunchResultToMojomLaunchResultCallback(LaunchCallback callback) {
         std::move(inner_callback)
             .Run(ConvertMojomLaunchResultToLaunchResult(
                 std::move(mojom_launch_result)));
+      },
+      std::move(callback));
+}
+
+crosapi::mojom::LaunchResultPtr ConvertLaunchResultToMojomLaunchResult(
+    LaunchResult&& launch_result) {
+  auto mojom_launch_result = crosapi::mojom::LaunchResult::New();
+  if (!launch_result.instance_ids.empty()) {
+    mojom_launch_result->instance_ids = std::vector<base::UnguessableToken>();
+    for (auto& token : launch_result.instance_ids) {
+      if (!token.is_empty()) {
+        mojom_launch_result->instance_ids->push_back(token);
+      }
+    }
+    // This is a deprecated field, but unfortunately we cannot leave it blank,
+    // because the serialization code check-fails if an base::UnguessableToken
+    // is empty. So we just set it to the first of the `instance_ids`.
+    // Code will always use the `instance_ids` field over the `instance_id`, as
+    // demonstrated above, so this is safe.
+    mojom_launch_result->instance_id =
+        mojom_launch_result->instance_ids->front();
+  }
+  mojom_launch_result->state =
+      ConvertLaunchResultStateToMojomLaunchResultState(launch_result.state);
+  return mojom_launch_result;
+}
+
+LaunchCallback MojomLaunchResultToLaunchResultCallback(
+    base::OnceCallback<void(crosapi::mojom::LaunchResultPtr)> callback) {
+  return base::BindOnce(
+      [](base::OnceCallback<void(crosapi::mojom::LaunchResultPtr)>
+             inner_callback,
+         LaunchResult&& launch_result) {
+        std::move(inner_callback)
+            .Run(ConvertLaunchResultToMojomLaunchResult(
+                std::move(launch_result)));
       },
       std::move(callback));
 }

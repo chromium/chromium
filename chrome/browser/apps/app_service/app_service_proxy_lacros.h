@@ -335,7 +335,8 @@ class AppServiceProxyLacros : public KeyedService,
   // to provide a common code path to deal with the special case of extensions
   // that are run in both ash and lacros. This is a transient state but requires
   // special handling.
-  void ProxyLaunch(crosapi::mojom::LaunchParamsPtr params);
+  void ProxyLaunch(crosapi::mojom::LaunchParamsPtr params,
+                   LaunchCallback callback = base::DoNothing());
 
   void InitWebsiteMetrics();
 

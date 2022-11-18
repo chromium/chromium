@@ -356,6 +356,13 @@ struct Intent {
   [MinVersion=14] string? data@7;
 };
 
+[Stable, Extensible]
+enum LaunchResultState {
+  [Default] kFailed,
+  kFailedDirectoryNotShared,
+  kSuccess,
+};
+
 // The result from launching an app.
 [Stable]
 struct LaunchResult {
@@ -364,6 +371,7 @@ struct LaunchResult {
   mojo_base.mojom.UnguessableToken instance_id@0;
   // The IDs that represent the instances the app is launched in.
   [MinVersion=1] array<mojo_base.mojom.UnguessableToken>? instance_ids@1;
+  [MinVersion=2] LaunchResultState state@2;
 };
 
 // Enumeration of app launch sources.

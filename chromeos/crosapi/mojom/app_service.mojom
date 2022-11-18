@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 19
+// Next MinVersion: 20
 
 module crosapi.mojom;
 
@@ -143,8 +143,16 @@ interface AppServiceProxy {
 
   // Launch the app with |params|. The params include |app_id|,
   // |launch_source|, and optional |intent| at the moment.
+  // Deprecated: use `LaunchWithResult`.
   [MinVersion=11]
   Launch@1(LaunchParams params);
+
+  // Launch the app with |params|. The params include |app_id|,
+  // |launch_source|, and optional |intent| at the moment. This method will
+  // return |launch_result| to allow us find out which instance the app is
+  // running in.
+  [MinVersion=19]
+  LaunchWithResult@7(LaunchParams params) => (LaunchResult launch_result);
 
   // Load icon for an app with |app_id| from ash-chrome.
   // |icon_key|  contains the arguments for an app icon, see

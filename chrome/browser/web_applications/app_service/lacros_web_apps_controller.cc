@@ -318,6 +318,7 @@ void LacrosWebAppsController::ReturnLaunchResults(
   auto launch_result = crosapi::mojom::LaunchResult::New();
   launch_result->instance_id = base::UnguessableToken::Create();
   launch_result->instance_ids = std::vector<base::UnguessableToken>();
+  launch_result->state = crosapi::mojom::LaunchResultState::kSuccess;
 
   // TODO(crbug.com/1144877): Replaced with DCHECK when the app instance tracker
   // flag is turned on.

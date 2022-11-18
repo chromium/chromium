@@ -4,8 +4,10 @@
 
 #include "chrome/browser/apps/app_service/app_service_proxy_lacros.h"
 
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/mock_crosapi_app_service_proxy.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -39,10 +41,18 @@ TEST(AppServiceProxyLacrosTest, Launch) {
   MockCrosapiAppServiceProxy mock_proxy;
   proxy.SetCrosapiAppServiceProxyForTesting(&mock_proxy);
 
+  base::RunLoop waiter;
+  LaunchResult result;
   proxy.LaunchAppWithUrl(
       kAppId, event_flag, GURL(kUrl), launch_source,
-      std::make_unique<WindowInfo>(display::kDefaultDisplayId));
+      std::make_unique<WindowInfo>(display::kDefaultDisplayId),
+      base::BindLambdaForTesting([&](LaunchResult&& result_arg) {
+        EXPECT_EQ(result_arg.state, LaunchResult::State::SUCCESS);
+        waiter.Quit();
+      }));
   mock_proxy.Wait();
+  waiter.Run();
+
   ASSERT_EQ(mock_proxy.launched_apps().size(), 1U);
   auto& launched_app = mock_proxy.launched_apps()[0];
   EXPECT_EQ(launched_app->app_id, kAppId);

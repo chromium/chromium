@@ -307,6 +307,7 @@ void LacrosExtensionAppsController::FinallyLaunch(
     // TODO(https://crbug.com/1225848): Store the resulting instance token,
     // which will be used to close the instance at a later point in time.
     result->instance_id = base::UnguessableToken::Create();
+    result->state = crosapi::mojom::LaunchResultState::kSuccess;
     std::move(callback).Run(std::move(result));
 
   } else if (which_type_.IsExtensions()) {
@@ -350,9 +351,11 @@ void LacrosExtensionAppsController::FinallyLaunch(
 void LacrosExtensionAppsController::OnExecuteFileBrowserHandlerComplete(
     crosapi::mojom::LaunchResultPtr result,
     LaunchCallback callback,
-    bool /*success*/) {
+    bool success) {
   // TODO(https://crbug.com/1225848): Store the resulting instance token,
   // which will be used to close the instance at a later point in time.
   result->instance_id = base::UnguessableToken::Create();
+  result->state = success ? crosapi::mojom::LaunchResultState::kSuccess
+                          : crosapi::mojom::LaunchResultState::kFailed;
   std::move(callback).Run(std::move(result));
 }
