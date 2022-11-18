@@ -351,7 +351,7 @@ void ToolbarView::Init() {
   bool show_avatar_toolbar_button = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // ChromeOS only badges Incognito and Guest icons in the browser window.
-  show_avatar_toolbar_button = browser_->profile()->IsOffTheRecord() ||
+  show_avatar_toolbar_button = browser_->profile()->IsIncognitoProfile() ||
                                browser_->profile()->IsGuestSession();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   show_avatar_toolbar_button = !profiles::IsPublicSession();
