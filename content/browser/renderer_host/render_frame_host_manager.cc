@@ -1654,25 +1654,6 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
   if (is_same_document)
     return ShouldSwapBrowsingInstance::kNo_SameDocumentNavigation;
 
-  // If new_entry already has a SiteInstance, assume it is correct.  We only
-  // need to force a swap if it is in a different BrowsingInstance.
-  if (destination_instance) {
-    // If we are doing an history navigation/reload and end up failing, it might
-    // not be suitable to host the error page in the original SiteInstance.
-    // Error pages have a Cross-Origin-Opener-Policy of 'unsafe-none' and might
-    // end up in a different BrowsingInstance.
-    if (is_failure && cross_origin_opener_policy_mismatch)
-      return ShouldSwapBrowsingInstance::kYes_ForceSwap;
-
-    bool should_swap = !destination_instance->IsRelatedSiteInstance(
-        render_frame_host_->GetSiteInstance());
-    if (should_swap) {
-      return ShouldSwapBrowsingInstance::kYes_ForceSwap;
-    } else {
-      return ShouldSwapBrowsingInstance::kNo_AlreadyHasMatchingBrowsingInstance;
-    }
-  }
-
   // Check for reasons to swap processes even if we are in a process model that
   // doesn't usually swap (e.g., process-per-tab).  Any time we return true,
   // the new URL will be rendered in a new SiteInstance AND BrowsingInstance.
@@ -1771,26 +1752,6 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
     return ShouldSwapBrowsingInstance::kYes_ForceSwap;
   }
 
-  // If this is a cross-site navigation, we may be able to force a
-  // BrowsingInstance swap to avoid unneeded process sharing. This is done for
-  // certain main frame browser-initiated navigations where we can't use
-  // |source_instance| and we don't need to preserve scripting
-  // relationship for it (for isolated error pages).
-  // See https://crbug.com/803367.
-  bool is_for_isolated_error_page =
-      is_failure && frame_tree_node_->IsErrorPageIsolationEnabled();
-
-  if (current_instance->HasSite() &&
-      !render_frame_host_->IsNavigationSameSite(destination_url_info) &&
-      !CanUseSourceSiteInstance(destination_url_info, source_instance,
-                                was_server_redirect, is_failure) &&
-      !is_for_isolated_error_page &&
-      IsBrowsingInstanceSwapAllowedForPageTransition(transition,
-                                                     destination_url) &&
-      render_frame_host_->has_committed_any_navigation()) {
-    return ShouldSwapBrowsingInstance::kYes_ForceSwap;
-  }
-
   // If the navigation should end up in a different StoragePartition, create a
   // new BrowsingInstance, as we can only have one StoragePartition per
   // BrowsingInstance.
@@ -1804,6 +1765,53 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
       !current_instance
            ->IsNavigationAllowedToStayInSameProcessDueToEffectiveURLs(
                browser_context, is_main_frame, destination_url_info.url)) {
+    return ShouldSwapBrowsingInstance::kYes_ForceSwap;
+  }
+
+  // When doing a history navigation, we cannot assume that the page will behave
+  // in the same way as it did previously. It could change headers, lead to an
+  // error page, etc. We only check the destination_instance once we're done
+  // verifying that up-to-date security reasons do not require a
+  // BrowsingInstance swap. On the other hand we should use the
+  // destination_instance if suitable instead of swapping to a new
+  // BrowsingInstance. This is why this block is after security checks, but
+  // before proactive BrowsingInstance swap.
+  if (destination_instance) {
+    // TODO(ahemery): We should not have to specify here if we are going to swap
+    // BrowsingInstance. DetermineSiteInstanceForURL will reuse the
+    // destination_instance unless it is unfit because of a security concern
+    // flagged by above blocks. This is only used by BackForwardCache metrics to
+    // know if we have swapped BrowsingInstance, and it would be more
+    // appropriate to get this information in DetermineSiteInstanceForURL.
+    bool should_swap =
+        !destination_instance->IsRelatedSiteInstance(current_instance);
+    if (should_swap) {
+      return ShouldSwapBrowsingInstance::kYes_ForceSwap;
+    } else {
+      return ShouldSwapBrowsingInstance::kNo_AlreadyHasMatchingBrowsingInstance;
+    }
+  }
+
+  // If this is a cross-site navigation, we may be able to force a
+  // BrowsingInstance swap to avoid unneeded process sharing. This is done for
+  // certain main frame browser-initiated navigations where we can't use
+  // |source_instance| and we don't need to preserve scripting
+  // relationship for it (for isolated error pages).
+  // See https://crbug.com/803367.
+  // TODO(https://crbug.com/1366827): This should probably be considered a
+  // a speculative BrowsingInstance swap. It is not required for security and
+  // needs to be treated after the history navigation block
+  bool is_for_isolated_error_page =
+      is_failure && frame_tree_node_->IsErrorPageIsolationEnabled();
+
+  if (current_instance->HasSite() &&
+      !render_frame_host_->IsNavigationSameSite(destination_url_info) &&
+      !CanUseSourceSiteInstance(destination_url_info, source_instance,
+                                was_server_redirect, is_failure) &&
+      !is_for_isolated_error_page &&
+      IsBrowsingInstanceSwapAllowedForPageTransition(transition,
+                                                     destination_url) &&
+      render_frame_host_->has_committed_any_navigation()) {
     return ShouldSwapBrowsingInstance::kYes_ForceSwap;
   }
 
@@ -2246,35 +2254,42 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   // If the entry has an instance already we should usually use it, unless it is
   // no longer suitable.
   if (dest_instance) {
-    // Note: The later call to IsSuitableForUrlInfo does not have context about
-    // error page navigations, so we cannot rely on it to return correct value
-    // when error pages are involved.
-    if (IsSiteInstanceCompatibleWithErrorIsolation(
-            dest_instance, *frame_tree_node_, is_failure)) {
-      if (IsSiteInstanceCompatibleWithWebExposedIsolation(
-              dest_instance, dest_url_info.web_exposed_isolation_info)) {
-        // TODO(nasko,creis): The check whether data: or about: URLs are allowed
-        // to commit in the current process should be in IsSuitableForUrlInfo.
-        // However, making this change has further implications and needs more
-        // investigation of what behavior changes. For now, use a conservative
-        // approach and explicitly check before calling IsSuitableForUrlInfo.
-        SiteInstanceImpl* dest_instance_impl =
-            static_cast<SiteInstanceImpl*>(dest_instance);
-        // Make sure that if the destination frame is sandboxed that we don't
-        // skip the IsSuitableForUrlInfo() check. Note that it's impossible to
-        // have a sandboxed parent but unsandboxed child.
-        bool is_data_or_about_and_not_sandboxed =
-            IsDataOrAbout(dest_url_info.url) && !dest_url_info.is_sandboxed;
-        if (is_data_or_about_and_not_sandboxed ||
-            dest_instance_impl->IsSuitableForUrlInfo(dest_url_info)) {
-          // If we are forcing a swap, this should be in a different
-          // BrowsingInstance.
-          if (force_browsing_instance_swap) {
-            CHECK(!dest_instance->IsRelatedSiteInstance(
-                render_frame_host_->GetSiteInstance()));
+    // If we've decided that the target SiteInstance cannot be in the same
+    // BrowsingInstance, and that the dest_instance is, we should not reuse it.
+    if (!force_browsing_instance_swap ||
+        !dest_instance->IsRelatedSiteInstance(current_instance)) {
+      // Note: The later call to IsSuitableForUrlInfo does not have context
+      // about error page navigations, so we cannot rely on it to return correct
+      // value when error pages are involved.
+      if (IsSiteInstanceCompatibleWithErrorIsolation(
+              dest_instance, *frame_tree_node_, is_failure)) {
+        if (IsSiteInstanceCompatibleWithWebExposedIsolation(
+                dest_instance, dest_url_info.web_exposed_isolation_info)) {
+          // TODO(nasko,creis): The check whether data: or about: URLs are
+          // allowed to commit in the current process should be in
+          // IsSuitableForUrlInfo. However, making this change has further
+          // implications and needs more investigation of what behavior changes.
+          // For now, use a conservative approach and explicitly check before
+          // calling IsSuitableForUrlInfo.
+          SiteInstanceImpl* dest_instance_impl =
+              static_cast<SiteInstanceImpl*>(dest_instance);
+          // Make sure that if the destination frame is sandboxed that we don't
+          // skip the IsSuitableForUrlInfo() check. Note that it's impossible to
+          // have a sandboxed parent but unsandboxed child.
+          bool is_data_or_about_and_not_sandboxed =
+              IsDataOrAbout(dest_url_info.url) && !dest_url_info.is_sandboxed;
+          if (is_data_or_about_and_not_sandboxed ||
+              dest_instance_impl->IsSuitableForUrlInfo(dest_url_info)) {
+            // If we are forcing a swap, this should be in a different
+            // BrowsingInstance.
+            if (force_browsing_instance_swap) {
+              CHECK(!dest_instance->IsRelatedSiteInstance(
+                  render_frame_host_->GetSiteInstance()));
+            }
+            AppendReason(reason,
+                         "DetermineSiteInstanceForURL => dest_instance");
+            return SiteInstanceDescriptor(dest_instance);
           }
-          AppendReason(reason, "DetermineSiteInstanceForURL => dest_instance");
-          return SiteInstanceDescriptor(dest_instance);
         }
       }
     }

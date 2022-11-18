@@ -120,6 +120,30 @@ CrossOriginIsolatedCrossOriginRedirectHandler(
   return http_response;
 }
 
+std::unique_ptr<net::test_server::HttpResponse>
+RedirectToTargetOnSecondNavigation(
+    unsigned int& navigation_counter,
+    const net::test_server::HttpRequest& request) {
+  ++navigation_counter;
+  if (navigation_counter == 1) {
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HttpStatusCode::HTTP_OK);
+    return http_response;
+  }
+
+  GURL request_url = request.GetURL();
+  std::string dest =
+      base::UnescapeBinaryURLComponent(request_url.query_piece());
+  net::test_server::RequestQuery query =
+      net::test_server::ParseQuery(request_url);
+
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HttpStatusCode::HTTP_FOUND);
+  http_response->AddCustomHeader("Location", dest);
+  return http_response;
+}
+
 class CrossOriginOpenerPolicyBrowserTest
     : public ContentBrowserTest,
       public ::testing::WithParamInterface<std::tuple<std::string, bool>> {
@@ -183,6 +207,13 @@ class CrossOriginOpenerPolicyBrowserTest
         &net::test_server::HandlePrefixedRequest,
         "/redirect-with-coop-coep-headers",
         base::BindRepeating(CrossOriginIsolatedCrossOriginRedirectHandler)));
+
+    unsigned int navigation_counter = 0;
+    https_server_.RegisterDefaultHandler(base::BindRepeating(
+        &net::test_server::HandlePrefixedRequest,
+        "/redirect-to-target-on-second-navigation",
+        base::BindRepeating(&RedirectToTargetOnSecondNavigation,
+                            base::OwnedRef(navigation_counter))));
 
     ASSERT_TRUE(https_server()->Start());
   }
@@ -3274,6 +3305,33 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   // origin isolation invariant.
   web_contents()->GetController().GoBack();
   EXPECT_FALSE(WaitForLoadStop(web_contents()));
+}
+
+// Regression test for https://crbug.com/1374705.
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       ReloadRedirectsToCoopPage) {
+  GURL coop_page(
+      https_server()->GetURL("a.test",
+                             "/set-header?"
+                             "Cross-Origin-Opener-Policy: same-origin"));
+  GURL redirect_page(https_server()->GetURL(
+      "a.test",
+      "/redirect-to-target-on-second-navigation?" + coop_page.spec()));
+
+  // Navigate to the redirect page. On the first navigation, this is a simple
+  // empty page with no headers.
+  EXPECT_TRUE(NavigateToURL(shell(), redirect_page));
+  scoped_refptr<SiteInstanceImpl> main_si =
+      current_frame_host()->GetSiteInstance();
+  EXPECT_EQ(current_frame_host()->GetLastCommittedURL(), redirect_page);
+
+  // Reload. This time we should be redirected to a COOP: same-origin page.
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  EXPECT_EQ(current_frame_host()->GetLastCommittedURL(), coop_page);
+
+  // We should have swapped BrowsingInstance.
+  EXPECT_FALSE(
+      main_si->IsRelatedSiteInstance(current_frame_host()->GetSiteInstance()));
 }
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
