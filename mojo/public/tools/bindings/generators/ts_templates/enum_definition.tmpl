@@ -1,0 +1,23 @@
+{%- macro enum_def(enum) -%}
+/**
+ * @const { {$: !mojo.internal.MojomType} }
+ */
+export const {{enum|type_in_js_module}}Spec = { $: mojo.internal.Enum() };
+
+/**
+ * @enum {number}
+ */
+export const {{enum|type_in_js_module}} = {
+  {# Set up the enum here, but fill out the values later. #}
+{%-   for field in enum.fields %}
+  {{field.name}}: {{field.numeric_value}},
+{%-   endfor %}
+{%-   if enum.min_value is not none %}
+  MIN_VALUE: {{enum.min_value}},
+{%-   endif %}
+{%-   if enum.max_value is not none %}
+  MAX_VALUE: {{enum.max_value}},
+{%-   endif %}
+};
+
+{%- endmacro %}

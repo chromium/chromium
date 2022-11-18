@@ -1,0 +1,54 @@
+{%  for constant in struct.constants %}
+/**
+ * @const { {{constant.kind|type_in_js_module_with_nullability}} }
+ */
+export const {{struct.name}}_{{constant.name}} =
+    {{constant|constant_value_in_js_module}};
+{%  endfor %}
+
+{%- from "lite/enum_definition_for_module.tmpl" import enum_def with context %}
+{%  for enum in struct.enums %}
+{{enum_def(enum)}}
+{%  endfor %}
+
+mojo.internal.Struct(
+    {{struct.name}}Spec.$,
+    '{{struct.name}}',
+    [
+{%- for packed_field in struct.packed.packed_fields_in_ordinal_order %}
+      mojo.internal.StructField(
+        '{{packed_field.field.name}}', {{packed_field.offset}},
+        {% if packed_field.field.kind|is_bool_kind %}{{packed_field.bit}}
+        {%- else %}0{% endif %},
+        {{packed_field.field.kind|spec_type_in_js_module}},
+        {{packed_field.field|default_value_in_js_module}},
+{%-   if packed_field.field.kind.is_nullable %}
+        true /* nullable */,
+{%-   else %}
+        false /* nullable */,
+{%-   endif %}
+        {{packed_field.field.min_version or 0}}),
+{%- endfor %}
+    ],
+    [
+{%-   for info in struct.versions -%}
+      [{{info.version}}, {{info.num_bytes}}],
+{%-   endfor -%}
+    ]);
+
+{% if generate_struct_deserializers %}
+export const {{struct.name}}_Deserialize =
+    mojo.internal.createStructDeserializer({{struct.name}}Spec.$);
+{% endif %}
+
+/**
+ * @record
+ */
+export class {{struct.name}} {
+  constructor() {
+{%- for packed_field in struct.packed.packed_fields %}
+    /** @type { {{packed_field.field.kind|field_type_in_js_module}} } */
+    this.{{packed_field.field.name}};
+{%-  endfor %}
+  }
+}
