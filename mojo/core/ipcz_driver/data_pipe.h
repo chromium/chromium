@@ -80,17 +80,20 @@ class DataPipe : public Object<DataPipe> {
 
   // Constructs a partial DataPipe endpoint of type `endpoint_type`, configured
   // according to `config`, and using `buffer` for the underlying transfer
-  // buffer.
+  // buffer. `mapping` must be a valid mapping of all the memory referenced by
+  // `buffer`.
   //
   // This DataPipe is not usable until it's given a portal via AdoptPortal().
   DataPipe(EndpointType endpoint_type,
            const Config& config,
-           scoped_refptr<SharedBuffer> buffer);
+           scoped_refptr<SharedBuffer> buffer,
+           scoped_refptr<SharedBufferMapping> mapping);
 
   static Type object_type() { return kDataPipe; }
 
   // Constructs a new pair of DataPipe endpoints, one for reading and one for
-  // writing.
+  // writing. May fail and return null if the data pipe's shared memory backing
+  // could not be allocated.
   struct Pair {
     Pair();
     Pair(const Pair&);
@@ -100,7 +103,7 @@ class DataPipe : public Object<DataPipe> {
     scoped_refptr<DataPipe> consumer;
     scoped_refptr<DataPipe> producer;
   };
-  static Pair CreatePair(const Config& config);
+  static absl::optional<Pair> CreatePair(const Config& config);
 
   bool is_producer() const { return endpoint_type_ == EndpointType::kProducer; }
   bool is_consumer() const { return endpoint_type_ == EndpointType::kConsumer; }

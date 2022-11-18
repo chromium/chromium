@@ -120,17 +120,19 @@ DataPipe::PortalWrapper::~PortalWrapper() = default;
 
 DataPipe::DataPipe(EndpointType endpoint_type,
                    const Config& config,
-                   scoped_refptr<SharedBuffer> buffer)
+                   scoped_refptr<SharedBuffer> buffer,
+                   scoped_refptr<SharedBufferMapping> mapping)
     : endpoint_type_(endpoint_type),
       element_size_(config.element_size),
       buffer_(std::move(buffer)),
-      data_(SharedBufferMapping::Create(buffer_->region())),
+      data_(std::move(mapping)),
       is_peer_closed_(config.is_peer_closed) {
   DCHECK_GT(element_size_, 0u);
   DCHECK_LE(element_size_, std::numeric_limits<uint32_t>::max());
   DCHECK_GT(config.byte_capacity, 0u);
   DCHECK_LE(config.byte_capacity, std::numeric_limits<uint32_t>::max());
   DCHECK_EQ(config.byte_capacity, buffer_->region().GetSize());
+  DCHECK_EQ(config.byte_capacity, data_.capacity());
 }
 
 DataPipe::~DataPipe() {
@@ -138,7 +140,7 @@ DataPipe::~DataPipe() {
 }
 
 // static
-DataPipe::Pair DataPipe::CreatePair(const Config& config) {
+absl::optional<DataPipe::Pair> DataPipe::CreatePair(const Config& config) {
   ScopedIpczHandle producer;
   ScopedIpczHandle consumer;
   const IpczResult result =
@@ -147,16 +149,38 @@ DataPipe::Pair DataPipe::CreatePair(const Config& config) {
                                ScopedIpczHandle::Receiver(consumer));
   DCHECK_EQ(result, IPCZ_RESULT_OK);
 
-  auto region = base::UnsafeSharedMemoryRegion::Create(config.byte_capacity);
+  base::UnsafeSharedMemoryRegion consumer_region =
+      base::UnsafeSharedMemoryRegion::Create(config.byte_capacity);
+  if (!consumer_region.IsValid()) {
+    return absl::nullopt;
+  }
+
+  base::UnsafeSharedMemoryRegion producer_region = consumer_region.Duplicate();
+  if (!producer_region.IsValid()) {
+    return absl::nullopt;
+  }
+
+  scoped_refptr<SharedBuffer> consumer_buffer =
+      SharedBuffer::MakeForRegion(std::move(consumer_region));
+  scoped_refptr<SharedBuffer> producer_buffer =
+      SharedBuffer::MakeForRegion(std::move(producer_region));
+  auto consumer_mapping =
+      SharedBufferMapping::Create(consumer_buffer->region());
+  auto producer_mapping =
+      SharedBufferMapping::Create(producer_buffer->region());
+  if (!consumer_mapping || !producer_mapping) {
+    return absl::nullopt;
+  }
+
   Pair pair;
   pair.consumer = base::MakeRefCounted<DataPipe>(
-      EndpointType::kConsumer, config,
-      SharedBuffer::MakeForRegion(region.Duplicate()));
+      EndpointType::kConsumer, config, std::move(consumer_buffer),
+      std::move(consumer_mapping));
   pair.consumer->AdoptPortal(std::move(consumer));
 
   pair.producer = base::MakeRefCounted<DataPipe>(
-      EndpointType::kProducer, config,
-      SharedBuffer::MakeForRegion(std::move(region)));
+      EndpointType::kProducer, config, std::move(producer_buffer),
+      std::move(producer_mapping));
   pair.producer->AdoptPortal(std::move(producer));
   return pair;
 }
@@ -497,12 +521,18 @@ scoped_refptr<DataPipe> DataPipe::Deserialize(
     return nullptr;
   }
 
+  scoped_refptr<SharedBufferMapping> mapping =
+      SharedBufferMapping::Create(buffer->region());
+  if (!mapping) {
+    return nullptr;
+  }
+
   auto endpoint = base::MakeRefCounted<DataPipe>(
       header.endpoint_type,
       Config{.element_size = element_size,
              .byte_capacity = buffer_size,
              .is_peer_closed = header.is_peer_closed},
-      std::move(buffer));
+      std::move(buffer), std::move(mapping));
   if (!endpoint->DeserializeRingBuffer(header.ring_buffer_state)) {
     return nullptr;
   }
