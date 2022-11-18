@@ -1,0 +1,33 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+import("//build/config/chromeos/ui_mode.gni")
+
+source_set("cpp") {
+  sources = [
+    "network_health_helper.cc",
+    "network_health_helper.h",
+  ]
+
+  deps = [
+    "//chromeos/services/network_health",
+    "//chromeos/services/network_health:in_process_instance",
+    "//chromeos/services/network_health/public/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "network_health_helper_unittest.cc" ]
+  deps = [
+    ":cpp",
+    "//base/test:test_support",
+    "//chromeos/services/network_config/public/cpp:test_support",
+    "//chromeos/services/network_health",
+    "//chromeos/services/network_health/public/mojom",
+    "//testing/gtest",
+  ]
+}

@@ -34,6 +34,9 @@ class NetworkEventsObserver
   void OnSignalStrengthChanged(const std::string& guid,
                                ::chromeos::network_health::mojom::UInt32ValuePtr
                                    signal_strength) override;
+  void OnNetworkListChanged(
+      std::vector<::chromeos::network_health::mojom::NetworkPtr> networks)
+      override;
 
   // MojoServiceEventsObserverBase:
   void SetReportingEnabled(bool is_enabled) override;

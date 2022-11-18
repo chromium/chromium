@@ -101,6 +101,9 @@ void NetworkEventsObserver::OnSignalStrengthChanged(
   }
 }
 
+void NetworkEventsObserver::OnNetworkListChanged(
+    std::vector<::chromeos::network_health::mojom::NetworkPtr> networks) {}
+
 void NetworkEventsObserver::AddObserver() {
   ash::network_health::NetworkHealthManager::GetInstance()->AddObserver(
       BindNewPipeAndPassRemote());

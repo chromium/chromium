@@ -101,13 +101,11 @@ class NetworkHealthService
   void HandleNetworkEventsForInactiveNetworks(
       network_config::mojom::NetworkStatePropertiesPtr network);
 
-  // Notifies observers of connection state changes.
   void NotifyObserversConnectionStateChanged(const std::string& guid,
                                              mojom::NetworkState state);
-
-  // Notifies observers of signal strength changes.
   void NotifyObserversSignalStrengthChanged(const std::string& guid,
                                             int signal_strength);
+  void NotifyObserversNetworkListChanged();
 
   // Checks if a connection state changed has occurred.
   bool ConnectionStateChanged(

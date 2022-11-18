@@ -93,6 +93,28 @@ mojom::NetworkPtr CreateNetwork(
   return net;
 }
 
+// Compares everything except strength properties which are observed only on
+// a per-network basis.
+bool NetworksMatch(const mojom::NetworkPtr& a, const mojom::NetworkPtr& b) {
+  return a->state == b->state && a->guid == b->guid && a->name == b->name &&
+         a->mac_address == b->mac_address &&
+         a->ipv4_address == b->ipv4_address &&
+         a->ipv6_addresses == b->ipv6_addresses &&
+         a->portal_state == b->portal_state &&
+         a->portal_probe_url == b->portal_probe_url;
+}
+
+bool NetworkListsMatch(const std::vector<mojom::NetworkPtr>& networks_a,
+                       const std::vector<mojom::NetworkPtr>& networks_b) {
+  if (networks_a.size() != networks_b.size())
+    return false;
+  for (std::size_t i = 0u; i < networks_a.size(); ++i) {
+    if (!NetworksMatch(networks_a[i], networks_b[i]))
+      return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 NetworkHealthService::NetworkHealthService() {
@@ -207,6 +229,9 @@ void NetworkHealthService::CreateNetworkHealthState() {
   if (device_properties_.empty())
     return;
 
+  std::vector<mojom::NetworkPtr> prev_networks =
+      mojo::Clone(network_health_state_.networks);
+
   network_health_state_.networks.clear();
 
   std::map<network_config::mojom::NetworkType,
@@ -248,6 +273,9 @@ void NetworkHealthService::CreateNetworkHealthState() {
   }
 
   UpdateTrackedGuids();
+
+  if (!NetworkListsMatch(prev_networks, network_health_state_.networks))
+    NotifyObserversNetworkListChanged();
 }
 
 void NetworkHealthService::RefreshNetworkHealthState() {
@@ -340,6 +368,12 @@ void NetworkHealthService::NotifyObserversSignalStrengthChanged(
   for (auto& observer : observers_) {
     observer->OnSignalStrengthChanged(guid,
                                       mojom::UInt32Value::New(signal_strength));
+  }
+}
+
+void NetworkHealthService::NotifyObserversNetworkListChanged() {
+  for (auto& observer : observers_) {
+    observer->OnNetworkListChanged(mojo::Clone(network_health_state_.networks));
   }
 }
 
