@@ -76,4 +76,7 @@ message AppDataProto {
   // Input mapping hint is on or off. This is associated with the toggle of
   // show hint overlay on the menu.
   optional bool input_mapping_hint = 3;
+  // Customized Positions for the menu entry icon. It is saved when the app
+  // is closed.
+  optional PositionProto menu_entry_position = 4;
 }

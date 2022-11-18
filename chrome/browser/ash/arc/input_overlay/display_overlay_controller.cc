@@ -13,10 +13,12 @@
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
 #include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_finish_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/educational_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_menu_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/menu_entry_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/message_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/exo/shell_surface_base.h"
@@ -193,8 +195,11 @@ void DisplayOverlayController::AddMenuEntryView(views::Widget* overlay_widget) {
       vector_icons::kVideogameAssetOutlineIcon, SK_ColorBLACK);
 
   // Create and position entry point for |InputMenuView|.
-  auto menu_entry = std::make_unique<MenuEntryView>(base::BindRepeating(
-      &DisplayOverlayController::OnMenuEntryPressed, base::Unretained(this)));
+  auto menu_entry = std::make_unique<MenuEntryView>(
+      base::BindRepeating(&DisplayOverlayController::OnMenuEntryPressed,
+                          base::Unretained(this)),
+      base::BindRepeating(&DisplayOverlayController::OnMenuEntryPositionChanged,
+                          base::Unretained(this)));
   menu_entry->SetImage(views::Button::STATE_NORMAL, game_icon);
   menu_entry->SetBackground(views::CreateRoundedRectBackground(
       kMenuEntryBgColor, kMenuEntryCornerRadius));
@@ -242,6 +247,10 @@ void DisplayOverlayController::OnMenuEntryPressed() {
       InputMenuView::BuildMenuView(this, menu_entry_, parent_view->size()));
   // Hide the menu entry when the menu is displayed.
   menu_entry_->SetVisible(false);
+}
+
+void DisplayOverlayController::OnMenuEntryPositionChanged(gfx::Point location) {
+  touch_injector_->SaveMenuEntryLocation(location);
 }
 
 void DisplayOverlayController::FocusOnMenuEntry() {
@@ -423,16 +432,26 @@ views::Widget* DisplayOverlayController::GetOverlayWidget() {
 }
 
 gfx::Point DisplayOverlayController::CalculateMenuEntryPosition() {
-  auto* overlay_widget = GetOverlayWidget();
-  if (!overlay_widget)
-    return gfx::Point();
-  auto* view = overlay_widget->GetContentsView();
-  if (!view || view->bounds().IsEmpty())
-    return gfx::Point();
+  if (touch_injector_->beta() && touch_injector_->menu_entry_location()) {
+    auto normalized_location = touch_injector_->menu_entry_location();
+    auto content_bounds = touch_injector_->content_bounds();
 
-  return gfx::Point(
-      std::max(0, view->width() - kMenuEntrySize - kMenuEntrySideMargin),
-      std::max(0, view->height() / 2 - kMenuEntrySize / 2));
+    return gfx::Point(static_cast<int>(std::round(normalized_location->x() *
+                                                  content_bounds.width())),
+                      static_cast<int>(std::round(normalized_location->y() *
+                                                  content_bounds.height())));
+  } else {
+    auto* overlay_widget = GetOverlayWidget();
+    if (!overlay_widget)
+      return gfx::Point();
+    auto* view = overlay_widget->GetContentsView();
+    if (!view || view->bounds().IsEmpty())
+      return gfx::Point();
+
+    return gfx::Point(
+        std::max(0, view->width() - kMenuEntrySize - kMenuEntrySideMargin),
+        std::max(0, view->height() / 2 - kMenuEntrySize / 2));
+  }
 }
 
 views::View* DisplayOverlayController::GetParentView() {

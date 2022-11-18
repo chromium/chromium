@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "ui/events/event_rewriter.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace aura {
 class Window;
@@ -134,6 +135,11 @@ class TouchInjector : public ui::EventRewriter {
   // Save the input menu state when the menu is closed.
   void OnInputMenuViewRemoved();
   void NotifyFirstTimeLaunch();
+  // Save the menu entry view position when it's changed.
+  void SaveMenuEntryLocation(gfx::Point menu_entry_location_point);
+  absl::optional<gfx::Vector2dF> menu_entry_location() {
+    return menu_entry_location_;
+  }
 
   // Update |content_bounds_| and touch positions for each |actions_| for
   // different reasons.
@@ -223,6 +229,11 @@ class TouchInjector : public ui::EventRewriter {
   // Load menu state from |proto|. The default state is on for the toggles.
   void LoadMenuStateFromProto(AppDataProto& proto);
 
+  // Add the menu entry view position to |proto|, if it has been customized.
+  void AddMenuEntryToProtoIfCustomized(AppDataProto& proto) const;
+  // Load menu entry position from |proto|, if it exists.
+  void LoadMenuEntryFromProto(AppDataProto& proto);
+
   // Create Action by |action_type| without any input bindings.
   std::unique_ptr<Action> CreateRawAction(ActionType action_type);
   // Remove all user-added actions from |actions| and return the deleted
@@ -304,6 +315,9 @@ class TouchInjector : public ui::EventRewriter {
   bool enable_mouse_lock_ = false;
   // TODO(cuicuiruan): This can be removed when removing the flag.
   bool beta_ = ash::features::IsArcInputOverlayBetaEnabled();
+
+  // Use default position if it is null.
+  absl::optional<gfx::Vector2dF> menu_entry_location_;
 
   base::WeakPtrFactory<TouchInjector> weak_ptr_factory_{this};
 };

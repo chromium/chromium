@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_edit_menu.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
-#include "chrome/browser/ash/arc/input_overlay/ui/menu_entry_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/message_view.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point.h"
@@ -31,6 +30,7 @@ class ArcInputOverlayManagerTest;
 class TouchInjector;
 class InputMappingView;
 class InputMenuView;
+class MenuEntryView;
 class ActionEditMenu;
 class EditFinishView;
 class MessageView;
@@ -113,6 +113,7 @@ class DisplayOverlayController : public ui::EventHandler,
   void AddMenuEntryView(views::Widget* overlay_widget);
   void RemoveMenuEntryView();
   void OnMenuEntryPressed();
+  void OnMenuEntryPositionChanged(gfx::Point location);
   void FocusOnMenuEntry();
   void ClearFocusOnMenuEntry();
   void RemoveInputMenuView();

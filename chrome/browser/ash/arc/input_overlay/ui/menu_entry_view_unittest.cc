@@ -109,6 +109,15 @@ class MenuEntryViewTest : public exo::test::ExoTestBase {
     display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
   }
 
+  void SimulateMinimizeAndRestoreApp() {
+    display_overlay_controller_.reset();
+    display_overlay_controller_ =
+        std::make_unique<DisplayOverlayController>(touch_injector_.get(),
+                                                   /*first_launch=*/false);
+    menu_entry_view_ = display_overlay_controller_->GetMenuEntryView();
+    menu_entry_view_->set_beta(true);
+  }
+
   // Kept around to determine bounds(), not owned.
   raw_ptr<MenuEntryView> menu_entry_view_;
   // Used to simulate mouse actions at a particular location, to be changed upon
@@ -127,7 +136,7 @@ class MenuEntryViewTest : public exo::test::ExoTestBase {
             [&](std::unique_ptr<AppDataProto>, const std::string&) {}));
     touch_injector_->set_beta(true);
     display_overlay_controller_ = std::make_unique<DisplayOverlayController>(
-        touch_injector_.get(), false);
+        touch_injector_.get(), /*first_launch=*/false);
     menu_entry_view_ = display_overlay_controller_->GetMenuEntryView();
     menu_entry_view_->set_beta(true);
   }
@@ -191,6 +200,29 @@ TEST_F(MenuEntryViewTest, RepositionTest) {
   // Check that resulting input menu view is not offscreen.
   input_menu_view = GetInputMenuFromDisplayController();
   EXPECT_LE(input_menu_view->y() + input_menu_view->height(), bounds.height());
+}
+
+TEST_F(MenuEntryViewTest, PersistentPositionTest) {
+  // Move menu entry to another location.
+  auto initial_pos = menu_entry_view_->bounds().CenterPoint();
+  auto move_vector = gfx::Vector2d(5, 5);
+  PressLeftMouseAtMenuEntryView();
+  MouseDragMenuEntryViewBy(move_vector);
+  ReleaseLeftMouseAtMenuEntryView();
+  // Verify that the resulting position is within expectation.
+  auto final_pos = menu_entry_view_->bounds().CenterPoint();
+  auto expected_pos = initial_pos + move_vector;
+  EXPECT_POINTF_NEAR(gfx::PointF(final_pos), gfx::PointF(expected_pos),
+                     kTolerance);
+
+  // Simulate minimizing and restoring the test application.
+  SimulateMinimizeAndRestoreApp();
+
+  // Check that the position of the menu entry view persisted from the last
+  // customization.
+  final_pos = menu_entry_view_->bounds().CenterPoint();
+  EXPECT_POINTF_NEAR(gfx::PointF(final_pos), gfx::PointF(expected_pos),
+                     kTolerance);
 }
 
 }  // namespace arc::input_overlay

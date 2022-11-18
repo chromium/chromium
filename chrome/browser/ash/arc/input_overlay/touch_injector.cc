@@ -23,6 +23,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_source.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
@@ -198,6 +199,7 @@ void TouchInjector::UnRegisterEventRewriter() {
   // Need reset pending input bind if it is unregistered in edit mode.
   for (auto& action : actions_)
     action->ResetPendingBind();
+  OnSaveProtoFile();
 }
 
 void TouchInjector::Update() {
@@ -319,6 +321,7 @@ const std::string* TouchInjector::GetPackageName() const {
 }
 
 void TouchInjector::OnProtoDataAvailable(AppDataProto& proto) {
+  LoadMenuEntryFromProto(proto);
   LoadMenuStateFromProto(proto);
   for (const ActionProto& action_proto : proto.actions()) {
     if (action_proto.id() <= kMaxDefaultActionID) {
@@ -365,6 +368,13 @@ void TouchInjector::OnInputMenuViewRemoved() {
 void TouchInjector::NotifyFirstTimeLaunch() {
   first_launch_ = true;
   show_nudge_ = true;
+}
+
+void TouchInjector::SaveMenuEntryLocation(
+    gfx::Point menu_entry_location_point) {
+  menu_entry_location_ = absl::make_optional<gfx::Vector2dF>(
+      1.0 * menu_entry_location_point.x() / content_bounds().width(),
+      1.0 * menu_entry_location_point.y() / content_bounds().height());
 }
 
 void TouchInjector::UpdateForDisplayMetricsChanged() {
@@ -755,6 +765,7 @@ std::unique_ptr<AppDataProto> TouchInjector::ConvertToProto() {
     customized_proto.reset();
   }
   AddMenuStateToProto(*app_data_proto);
+  AddMenuEntryToProtoIfCustomized(*app_data_proto);
   return app_data_proto;
 }
 
@@ -769,6 +780,16 @@ void TouchInjector::AddMenuStateToProto(AppDataProto& proto) {
   proto.set_input_mapping_hint(input_mapping_visible_);
 }
 
+void TouchInjector::AddMenuEntryToProtoIfCustomized(AppDataProto& proto) const {
+  if (!menu_entry_location_)
+    return;
+  auto menu_entry_position_proto = std::make_unique<PositionProto>();
+  menu_entry_position_proto->add_anchor_to_target(menu_entry_location_->x());
+  menu_entry_position_proto->add_anchor_to_target(menu_entry_location_->y());
+
+  proto.set_allocated_menu_entry_position(menu_entry_position_proto.release());
+}
+
 void TouchInjector::LoadMenuStateFromProto(AppDataProto& proto) {
   touch_injector_enable_ =
       proto.has_input_control() ? proto.input_control() : true;
@@ -777,6 +798,15 @@ void TouchInjector::LoadMenuStateFromProto(AppDataProto& proto) {
 
   if (display_overlay_controller_)
     display_overlay_controller_->OnApplyMenuState();
+}
+
+void TouchInjector::LoadMenuEntryFromProto(AppDataProto& proto) {
+  if (!proto.has_menu_entry_position())
+    return;
+  auto menu_entry_position = proto.menu_entry_position().anchor_to_target();
+  DCHECK_EQ(menu_entry_position.size(), 2);
+  menu_entry_location_ = absl::make_optional<gfx::Vector2dF>(
+      menu_entry_position[0], menu_entry_position[1]);
 }
 
 std::unique_ptr<Action> TouchInjector::CreateRawAction(ActionType action_type) {

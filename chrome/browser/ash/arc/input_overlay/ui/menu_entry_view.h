@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_MENU_ENTRY_VIEW_H_
 
 #include "ash/constants/ash_features.h"
+#include "base/functional/callback_forward.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/button/image_button.h"
 
@@ -14,11 +15,12 @@ namespace arc::input_overlay {
 // MenuEntryView is for GIO menu entry button.
 class MenuEntryView : public views::ImageButton {
  public:
-  explicit MenuEntryView(PressedCallback callback);
+  using OnPositionChangedCallback = base::RepeatingCallback<void(gfx::Point)>;
 
+  MenuEntryView(PressedCallback pressed_callback,
+                OnPositionChangedCallback on_position_changed_callback);
   MenuEntryView(const MenuEntryView&) = delete;
   MenuEntryView& operator=(const MenuEntryView&) = delete;
-
   ~MenuEntryView() override;
 
   // views::View:
@@ -39,11 +41,17 @@ class MenuEntryView : public views::ImageButton {
   // The position when starting to drag.
   gfx::Point start_drag_pos_;
 
+  // The position when drag is updated.
+  gfx::Point target_location_;
+
   // TODO(b/253646354): This can be removed when removing the flag.
   bool beta_ = ash::features::IsArcInputOverlayBetaEnabled();
 
   // If this view is in a dragging state.
   bool is_dragging_ = false;
+
+  // Used to save the position of the menu entry view.
+  OnPositionChangedCallback on_position_changed_callback_;
 };
 
 }  // namespace arc::input_overlay

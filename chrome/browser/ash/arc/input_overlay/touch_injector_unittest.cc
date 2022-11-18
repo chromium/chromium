@@ -287,6 +287,14 @@ class TouchInjectorTest : public views::ViewsTestBase {
     EXPECT_EQ(size_actions, injector_->actions().size());
   }
 
+  void AddMenuEntryToProtoIfCustomized(AppDataProto& temp_proto) {
+    injector_->AddMenuEntryToProtoIfCustomized(temp_proto);
+  }
+
+  void LoadMenuEntryFromProto(AppDataProto& temp_proto) {
+    injector_->LoadMenuEntryFromProto(temp_proto);
+  }
+
   int GetNextActionID() { return injector_->next_action_id_; }
 
   aura::TestScreen* test_screen() {
@@ -860,6 +868,10 @@ TEST_F(TouchInjectorTest, TestProtoConversion) {
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
   injector_->ParseActions(*json_value);
+  // Simulate a menu entry position change.
+  auto menu_entry_location_point = gfx::Point(5, 5);
+  injector_->SaveMenuEntryLocation(menu_entry_location_point);
+  auto expected_menu_entry_location = injector_->menu_entry_location();
   // Change input binding on actions[1].
   auto new_input = InputElement::CreateActionTapKeyElement(ui::DomCode::US_C);
   auto* expected_input = new_input.get();
@@ -873,6 +885,11 @@ TEST_F(TouchInjectorTest, TestProtoConversion) {
   injector_->actions()[0]->PrepareToBindPosition(std::move(new_pos));
   injector_->OnApplyPendingBinding();
   auto proto = ConvertToProto();
+  // Check that the menu entry position is serialized correctly.
+  EXPECT_TRUE(proto->has_menu_entry_position());
+  auto serialized_position = proto->menu_entry_position().anchor_to_target();
+  EXPECT_EQ(expected_menu_entry_location->x(), serialized_position[0]);
+  EXPECT_EQ(expected_menu_entry_location->y(), serialized_position[1]);
   // Check whether the actions[1] with new input binding is converted to proto
   // correctly.
   auto action_proto = proto->actions()[1];
@@ -902,6 +919,9 @@ TEST_F(TouchInjectorTest, TestProtoConversion) {
     EXPECT_EQ(*action_a->current_input(), *action_b->current_input());
     EXPECT_EQ(action_a->current_positions(), action_b->current_positions());
   }
+  auto deserialized_menu_entry_location = injector->menu_entry_location();
+  EXPECT_TRUE(deserialized_menu_entry_location);
+  EXPECT_EQ(*deserialized_menu_entry_location, *expected_menu_entry_location);
 }
 
 TEST_F(TouchInjectorTest, TestAddAction) {

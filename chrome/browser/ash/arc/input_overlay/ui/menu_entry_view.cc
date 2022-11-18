@@ -5,14 +5,18 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/menu_entry_view.h"
 
 #include "base/cxx17_backports.h"
+#include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/controls/button/image_button.h"
 
 namespace arc::input_overlay {
 
-MenuEntryView::MenuEntryView(PressedCallback callback)
-    : views::ImageButton(std::move(callback)) {}
+MenuEntryView::MenuEntryView(
+    PressedCallback pressed_callback,
+    OnPositionChangedCallback on_position_changed_callback)
+    : views::ImageButton(std::move(pressed_callback)),
+      on_position_changed_callback_(on_position_changed_callback) {}
 
 MenuEntryView::~MenuEntryView() = default;
 
@@ -72,10 +76,14 @@ void MenuEntryView::OnDragUpdate(const ui::LocatedEvent& event) {
   target_location.set_y(base::clamp(target_location.y(), /*lo=*/0,
                                     /*hi=*/parent()->height() - height()));
   SetPosition(target_location);
+  target_location_ = target_location;
 }
 
 void MenuEntryView::OnDragEnd() {
   is_dragging_ = false;
+  if (target_location_ != start_drag_pos_) {
+    on_position_changed_callback_.Run(target_location_);
+  }
 }
 
 }  // namespace arc::input_overlay
