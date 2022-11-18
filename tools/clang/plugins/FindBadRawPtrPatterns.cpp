@@ -1,9 +1,9 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 #include "FindBadRawPtrPatterns.h"
 
+#include "RawPtrHelpers.h"
 #include "Util.h"
 #include "clang/AST/AST.h"
 #include "clang/AST/ASTConsumer.h"
@@ -12,10 +12,8 @@
 #include "clang/AST/TypeLoc.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
 #include "clang/ASTMatchers/ASTMatchers.h"
-#include "clang/ASTMatchers/ASTMatchersMacros.h"
 #include "clang/Basic/SourceLocation.h"
 #include "clang/Basic/SourceManager.h"
-#include "llvm/Support/LineIterator.h"
 
 using namespace clang;
 using namespace clang::ast_matchers;
@@ -89,15 +87,64 @@ class BadCastMatcher : public MatchFinder::MatchCallback {
   unsigned error_bad_raw_ptr_cast_signature_;
 };
 
+const char kNeedRawPtrSignature[] =
+    "[chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.";
+
+class RawPtrFieldMatcher : public MatchFinder::MatchCallback {
+ public:
+  explicit RawPtrFieldMatcher(clang::CompilerInstance& compiler,
+                              const std::string& exclude_fields_file,
+                              const std::string& exclude_paths_file)
+      : compiler_(compiler),
+        fields_to_exclude_(std::make_unique<FilterFile>(exclude_fields_file,
+                                                        "exclude-fields")),
+        paths_to_exclude_(
+            std::make_unique<FilterFile>(exclude_paths_file, "exclude-paths")) {
+    error_need_raw_ptr_signature_ = compiler_.getDiagnostics().getCustomDiagID(
+        clang::DiagnosticsEngine::Error, kNeedRawPtrSignature);
+  }
+
+  void Register(MatchFinder& match_finder) {
+    auto field_decl_matcher =
+        AffectedRawPtrFieldDecl(fields_to_exclude_.get(), paths_to_exclude_.get());
+    match_finder.addMatcher(field_decl_matcher, this);
+  }
+  void run(const MatchFinder::MatchResult& result) override {
+    const clang::FieldDecl* field_decl =
+        result.Nodes.getNodeAs<clang::FieldDecl>("affectedFieldDecl");
+    assert(field_decl && "matcher should bind 'fieldDecl'");
+
+    const clang::TypeSourceInfo* type_source_info =
+        field_decl->getTypeSourceInfo();
+    assert(type_source_info && "assuming |type_source_info| is always present");
+
+    assert(type_source_info->getType()->isPointerType() &&
+           "matcher should only match pointer types");
+
+    compiler_.getDiagnostics().Report(field_decl->getEndLoc(),
+                                      error_need_raw_ptr_signature_);
+  }
+
+ private:
+  clang::CompilerInstance& compiler_;
+  unsigned error_need_raw_ptr_signature_;
+  std::unique_ptr<FilterFile> fields_to_exclude_;
+  std::unique_ptr<FilterFile> paths_to_exclude_;
+};
+
 void FindBadRawPtrPatterns(Options options,
                            clang::ASTContext& ast_context,
                            clang::CompilerInstance& compiler) {
-  if (!options.check_bad_raw_ptr_cast)
-    return;
   MatchFinder match_finder;
 
   BadCastMatcher bad_cast_matcher(compiler);
-  bad_cast_matcher.Register(match_finder);
+  if (options.check_bad_raw_ptr_cast)
+    bad_cast_matcher.Register(match_finder);
+
+  RawPtrFieldMatcher field_matcher(compiler, options.exclude_fields_file,
+                                   options.exclude_paths_file);
+  if (options.check_raw_ptr_fields)
+    field_matcher.Register(match_finder);
 
   match_finder.matchAST(ast_context);
 }

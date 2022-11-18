@@ -11,6 +11,26 @@
 
 using namespace clang;
 
+namespace {
+
+// Name of a cmdline parameter that can be used to specify a file listing fields
+// that should not be rewritten to use raw_ptr<T>.
+//
+// See also:
+// - OutputSectionHelper
+// - FilterFile
+const char kExcludeFieldsArgPrefix[] = "exclude-fields=";
+
+// Name of a cmdline parameter that can be used to specify a file listing
+// regular expressions describing paths that should be excluded from the
+// rewrite.
+//
+// See also:
+// - PathFilterFile
+const char kExcludePathsArgPrefix[] = "exclude-paths=";
+
+}  // namespace
+
 namespace chrome_checker {
 
 namespace {
@@ -41,29 +61,35 @@ std::unique_ptr<ASTConsumer> FindBadConstructsAction::CreateASTConsumer(
 
 bool FindBadConstructsAction::ParseArgs(const CompilerInstance& instance,
                                         const std::vector<std::string>& args) {
-  bool parsed = true;
-
-  for (size_t i = 0; i < args.size() && parsed; ++i) {
-    if (args[i] == "check-base-classes") {
+  for (llvm::StringRef arg : args) {
+    if (arg.startswith(kExcludeFieldsArgPrefix)) {
+      options_.exclude_fields_file =
+          arg.substr(strlen(kExcludeFieldsArgPrefix)).str();
+    } else if (arg.startswith(kExcludePathsArgPrefix)) {
+      options_.exclude_paths_file =
+          arg.substr(strlen(kExcludePathsArgPrefix)).str();
+    } else if (arg == "check-base-classes") {
       // TODO(rsleevi): Remove this once http://crbug.com/123295 is fixed.
       options_.check_base_classes = true;
-    } else if (args[i] == "check-blink-data-member-type") {
+    } else if (arg == "check-blink-data-member-type") {
       options_.check_blink_data_member_type = true;
-    } else if (args[i] == "check-ipc") {
+    } else if (arg == "check-ipc") {
       options_.check_ipc = true;
-    } else if (args[i] == "check-layout-object-methods") {
+    } else if (arg == "check-layout-object-methods") {
       options_.check_layout_object_methods = true;
-    } else if (args[i] == "raw-ref-template-as-trivial-member") {
+    } else if (arg == "raw-ref-template-as-trivial-member") {
       options_.raw_ref_template_as_trivial_member = true;
-    } else if (args[i] == "check-bad-raw-ptr-cast") {
+    } else if (arg == "check-bad-raw-ptr-cast") {
       options_.check_bad_raw_ptr_cast = true;
+    } else if (arg == "check-raw-ptr-fields") {
+      options_.check_raw_ptr_fields = true;
     } else {
-      parsed = false;
-      llvm::errs() << "Unknown clang plugin argument: " << args[i] << "\n";
+      llvm::errs() << "Unknown clang plugin argument: " << arg << "\n";
+      return false;
     }
   }
 
-  return parsed;
+  return true;
 }
 
 }  // namespace chrome_checker

@@ -1,0 +1,16 @@
+raw_ptr_fields_basic.cpp:9:14: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  SomeClass* raw_ptr_field;
+             ^
+raw_ptr_fields_basic.cpp:17:14: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  SomeClass* raw_ptr_field;
+             ^
+raw_ptr_fields_basic.cpp:28:14: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  SomeClass *raw_ptr_field2;
+             ^
+raw_ptr_fields_basic.cpp:35:6: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  T* raw_ptr_field;
+     ^
+raw_ptr_fields_basic.cpp:50:40: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  typename MaybeProvidesType<T>::Type* field;
+                                       ^
+5 errors generated.
