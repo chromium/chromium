@@ -133,10 +133,10 @@ base::Value TranslateNetworkStateToONC(const NetworkState* network);
 // dictionaries using TranslateShillServiceToONCPart. |limit| is used to limit
 // the number of results.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-base::Value TranslateNetworkListToONC(NetworkTypePattern pattern,
-                                      bool configured_only,
-                                      bool visible_only,
-                                      int limit);
+base::Value::List TranslateNetworkListToONC(NetworkTypePattern pattern,
+                                            bool configured_only,
+                                            bool visible_only,
+                                            int limit);
 
 // Returns the Shill type corresponding to ONC |type| or an empty string if
 // there is no match. Only valid for ethernet, wifi, cellular, and vpn.

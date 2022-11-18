@@ -28,8 +28,7 @@ class NetworkingPrivateDelegate : public KeyedService {
   using VoidCallback = base::OnceCallback<void()>;
   using BoolCallback = base::OnceCallback<void(bool)>;
   using StringCallback = base::OnceCallback<void(const std::string&)>;
-  using NetworkListCallback =
-      base::OnceCallback<void(std::unique_ptr<base::ListValue>)>;
+  using NetworkListCallback = base::OnceCallback<void(base::Value::List)>;
   using EnabledNetworkTypesCallback =
       base::OnceCallback<void(std::unique_ptr<base::Value>)>;
   using FailureCallback = base::OnceCallback<void(const std::string&)>;

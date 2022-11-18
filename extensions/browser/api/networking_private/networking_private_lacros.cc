@@ -150,9 +150,7 @@ ListValueSuccessOrFailureCallback ListValueAdapterCallback(
         if (result->is_error()) {
           std::move(failure).Run(result->get_error());
         } else {
-          std::move(success).Run(
-              base::ListValue::From(std::make_unique<base::Value>(
-                  std::move(result->get_success_result()))));
+          std::move(success).Run(std::move(result->get_success_result()));
         }
       },
       std::move(success), std::move(failure));

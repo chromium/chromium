@@ -251,15 +251,15 @@ base::Value TranslateNetworkStateToONC(const NetworkState* network) {
   return onc_dictionary;
 }
 
-base::Value TranslateNetworkListToONC(NetworkTypePattern pattern,
-                                      bool configured_only,
-                                      bool visible_only,
-                                      int limit) {
+base::Value::List TranslateNetworkListToONC(NetworkTypePattern pattern,
+                                            bool configured_only,
+                                            bool visible_only,
+                                            int limit) {
   NetworkStateHandler::NetworkStateList network_states;
   NetworkHandler::Get()->network_state_handler()->GetNetworkListByType(
       pattern, configured_only, visible_only, limit, &network_states);
 
-  base::Value network_properties_list(base::Value::Type::LIST);
+  base::Value::List network_properties_list;
   for (const NetworkState* state : network_states) {
     network_properties_list.Append(TranslateNetworkStateToONC(state));
   }

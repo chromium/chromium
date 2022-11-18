@@ -394,9 +394,8 @@ ExtensionFunction::ResponseAction NetworkingPrivateGetNetworksFunction::Run() {
 }
 
 void NetworkingPrivateGetNetworksFunction::Success(
-    std::unique_ptr<base::ListValue> network_list) {
-  return Respond(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(network_list))));
+    base::Value::List network_list) {
+  return Respond(OneArgument(base::Value(std::move(network_list))));
 }
 
 void NetworkingPrivateGetNetworksFunction::Failure(const std::string& error) {
@@ -442,9 +441,8 @@ NetworkingPrivateGetVisibleNetworksFunction::Run() {
 }
 
 void NetworkingPrivateGetVisibleNetworksFunction::Success(
-    std::unique_ptr<base::ListValue> network_properties_list) {
-  Respond(OneArgument(
-      base::Value::FromUniquePtrValue(std::move(network_properties_list))));
+    base::Value::List network_properties_list) {
+  Respond(OneArgument(base::Value(std::move(network_properties_list))));
 }
 
 void NetworkingPrivateGetVisibleNetworksFunction::Failure(

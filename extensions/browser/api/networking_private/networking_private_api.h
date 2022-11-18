@@ -194,7 +194,7 @@ class NetworkingPrivateGetNetworksFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void Success(std::unique_ptr<base::ListValue> network_list);
+  void Success(base::Value::List network_list);
   void Failure(const std::string& error);
 };
 
@@ -218,7 +218,7 @@ class NetworkingPrivateGetVisibleNetworksFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void Success(std::unique_ptr<base::ListValue> network_list);
+  void Success(base::Value::List network_list);
   void Failure(const std::string& error);
 };
 

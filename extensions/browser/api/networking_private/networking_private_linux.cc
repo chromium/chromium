@@ -83,12 +83,12 @@ bool GuidToSsid(const std::string& guid, std::string* ssid) {
 
 // Iterates over the map cloning the contained networks to a
 // list then returns the list.
-std::unique_ptr<base::ListValue> CopyNetworkMapToList(
+base::Value::List CopyNetworkMapToList(
     const NetworkingPrivateLinux::NetworkMap& network_map) {
-  auto network_list = std::make_unique<base::ListValue>();
+  base::Value::List network_list;
 
   for (const auto& network : network_map) {
-    network_list->Append(network.second.Clone());
+    network_list.Append(network.second.Clone());
   }
 
   return network_list;
@@ -659,33 +659,31 @@ void NetworkingPrivateLinux::OnAccessPointsFound(
     std::unique_ptr<NetworkMap> network_map,
     NetworkListCallback success_callback,
     FailureCallback failure_callback) {
-  std::unique_ptr<base::ListValue> network_list =
-      CopyNetworkMapToList(*network_map);
+  base::Value::List network_list = CopyNetworkMapToList(*network_map);
   // Give ownership to the member variable.
   network_map_.swap(network_map);
-  SendNetworkListChangedEvent(*network_list);
+  SendNetworkListChangedEvent(network_list);
   std::move(success_callback).Run(std::move(network_list));
 }
 
 void NetworkingPrivateLinux::OnAccessPointsFoundViaScan(
     std::unique_ptr<NetworkMap> network_map) {
-  std::unique_ptr<base::ListValue> network_list =
-      CopyNetworkMapToList(*network_map);
+  base::Value::List network_list = CopyNetworkMapToList(*network_map);
   // Give ownership to the member variable.
   network_map_.swap(network_map);
-  SendNetworkListChangedEvent(*network_list);
+  SendNetworkListChangedEvent(network_list);
 }
 
 void NetworkingPrivateLinux::SendNetworkListChangedEvent(
-    const base::Value& network_list) {
+    const base::Value::List& network_list) {
   GuidList guidsForEventCallback;
 
-  for (const auto& network : network_list.GetList()) {
-    const base::DictionaryValue* dict = nullptr;
-    if (network.GetAsDictionary(&dict)) {
-      if (const std::string* guid = dict->FindStringKey(kAccessPointInfoGuid)) {
-        guidsForEventCallback.push_back(*guid);
-      }
+  for (const auto& network : network_list) {
+    if (!network.is_dict())
+      continue;
+    if (const std::string* guid =
+            network.GetDict().FindString(kAccessPointInfoGuid)) {
+      guidsForEventCallback.push_back(*guid);
     }
   }
 

@@ -121,17 +121,17 @@ SplitDictionaryAdapterCallback(DictionarySuccessOrFailureCallback callback) {
 using ListValueSuccessOrFailureCallback =
     base::OnceCallback<void(mojom::ListValueSuccessOrErrorReturnPtr)>;
 
-std::pair<base::OnceCallback<void(std::unique_ptr<base::ListValue>)>,
+std::pair<base::OnceCallback<void(base::Value::List)>,
           extensions::NetworkingPrivateDelegate::FailureCallback>
 SplitListValueAdapterCallback(ListValueSuccessOrFailureCallback callback) {
   auto [success, failure] = base::SplitOnceCallback(std::move(callback));
 
   return {base::BindOnce(
               [](ListValueSuccessOrFailureCallback callback,
-                 std::unique_ptr<base::ListValue> result) {
+                 base::Value::List result) {
                 std::move(callback).Run(
                     mojom::ListValueSuccessOrErrorReturn::NewSuccessResult(
-                        std::move(*result).TakeList()));
+                        std::move(result)));
               },
               std::move(success)),
           base::BindOnce(

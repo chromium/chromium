@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread.h"
+#include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate.h"
 
@@ -186,7 +187,7 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
 
   // Helper function for OnAccessPointsFound and OnAccessPointsFoundViaScan to
   // fire the OnNetworkListChangedEvent.
-  void SendNetworkListChangedEvent(const base::Value& network_list);
+  void SendNetworkListChangedEvent(const base::Value::List& network_list);
 
   // Gets a dictionary of information about the access point.
   // Returns false if there is an error getting information about the

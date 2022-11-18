@@ -100,15 +100,13 @@ class TestNetworkingPrivateDelegate : public NetworkingPrivateDelegate {
     if (fail_) {
       std::move(failure_callback).Run(kFailure);
     } else {
-      base::Value result(base::Value::Type::LIST);
-      base::Value network(base::Value::Type::DICTIONARY);
-      network.SetStringPath(::onc::network_config::kType,
-                            ::onc::network_config::kEthernet);
-      network.SetStringPath(::onc::network_config::kGUID, kGuid);
+      base::Value::List result;
+      base::Value::Dict network;
+      network.Set(::onc::network_config::kType,
+                  ::onc::network_config::kEthernet);
+      network.Set(::onc::network_config::kGUID, kGuid);
       result.Append(std::move(network));
-      std::move(success_callback)
-          .Run(base::ListValue::From(
-              base::Value::ToUniquePtrValue(std::move(result))));
+      std::move(success_callback).Run(std::move(result));
     }
   }
 

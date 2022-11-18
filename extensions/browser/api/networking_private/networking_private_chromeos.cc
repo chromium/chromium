@@ -378,8 +378,7 @@ void NetworkingPrivateChromeOS::SetProperties(
   NET_LOG(USER) << "networkingPrivate.setProperties for: "
                 << NetworkId(network);
   GetManagedConfigurationHandler()->SetProperties(
-      network->path(), static_cast<base::DictionaryValue&>(properties),
-      std::move(success_callback),
+      network->path(), properties, std::move(success_callback),
       base::BindOnce(&NetworkHandlerFailureCallback,
                      std::move(failure_callback)));
 }
@@ -408,7 +407,7 @@ void NetworkingPrivateChromeOS::CreateNetwork(
       GetStringFromDictionary(properties, ::onc::network_config::kGUID);
   NET_LOG(USER) << "networkingPrivate.CreateNetwork. GUID=" << guid;
   GetManagedConfigurationHandler()->CreateConfiguration(
-      user_id_hash, static_cast<base::DictionaryValue&>(properties),
+      user_id_hash, properties,
       base::BindOnce(&NetworkHandlerCreateCallback,
                      std::move(success_callback)),
       base::BindOnce(&NetworkHandlerFailureCallback,
@@ -489,21 +488,17 @@ void NetworkingPrivateChromeOS::GetNetworks(
       (!visible_only && network_type == ::onc::network_type::kEthernet)
           ? NetworkTypePattern::EthernetOrEthernetEAP()
           : ash::onc::NetworkTypePatternFromOncType(network_type);
-  base::Value network_properties_list =
+  base::Value::List network_properties_list =
       ash::network_util::TranslateNetworkListToONC(pattern, configured_only,
                                                    visible_only, limit);
 
-  for (auto& value : network_properties_list.GetList()) {
-    base::DictionaryValue* network_dict = nullptr;
-    value.GetAsDictionary(&network_dict);
-    DCHECK(network_dict);
-    if (GetThirdPartyVPNDictionary(network_dict))
-      AppendThirdPartyProviderName(network_dict);
+  for (auto& value : network_properties_list) {
+    DCHECK(value.is_dict());
+    if (GetThirdPartyVPNDictionary(&value))
+      AppendThirdPartyProviderName(&value);
   }
 
-  std::move(success_callback)
-      .Run(base::ListValue::From(
-          base::Value::ToUniquePtrValue(std::move(network_properties_list))));
+  std::move(success_callback).Run(std::move(network_properties_list));
 }
 
 void NetworkingPrivateChromeOS::StartConnect(const std::string& guid,
