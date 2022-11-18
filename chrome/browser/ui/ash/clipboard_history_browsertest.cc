@@ -1014,7 +1014,8 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryReorderBrowserTest, OnCopy) {
             clipboard_data_a.sequence_number_token());
 }
 
-IN_PROC_BROWSER_TEST_P(ClipboardHistoryReorderBrowserTest, OnPaste) {
+// Disabled due to flakiness: crbug.com/1385806
+IN_PROC_BROWSER_TEST_P(ClipboardHistoryReorderBrowserTest, DISABLED_OnPaste) {
   // Confirm initial state.
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ConsecutivePastes",
