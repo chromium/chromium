@@ -16,6 +16,8 @@ import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n
 import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
+import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
 import {Route} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
@@ -29,10 +31,10 @@ const SettingsSelectToSpeakSubpageElementBase =
           DeepLinkingBehavior,
           RouteOriginBehavior,
         ],
-        WebUiListenerMixin(I18nMixin(PolymerElement))) as {
+        PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))) as {
       new (): PolymerElement & I18nMixinInterface &
-          WebUiListenerMixinInterface & DeepLinkingBehaviorInterface &
-          RouteOriginBehaviorInterface,
+          WebUiListenerMixinInterface & PrefsMixinInterface &
+          DeepLinkingBehaviorInterface & RouteOriginBehaviorInterface,
     };
 
 class SettingsSelectToSpeakSubpageElement extends
@@ -47,14 +49,20 @@ class SettingsSelectToSpeakSubpageElement extends
 
   static get properties() {
     return {
-      prefs: {
+      /**
+       * Used by DeepLinkingBehavior to focus this page's deep links.
+       */
+      supportedSettingIds: {
         type: Object,
-        notify: true,
+        value: () => new Set([
+          Setting.kSelectToSpeakWordHighlight,
+          Setting.kSelectToSpeakBackgroundShading,
+          Setting.kSelectToSpeakNavigationControls,
+        ]),
       },
     };
   }
 
-  prefs: {[key: string]: any};
   private route_: Route;
 
   constructor() {

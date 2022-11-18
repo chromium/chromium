@@ -76361,6 +76361,9 @@ Called by update_net_trust_anchors.py.-->
   <int value="1528" label="Cursor Colors: On/Off"/>
   <int value="1529" label="Fullscreen Magnifier Focus Following"/>
   <int value="1530" label="Fullscreen Magnifier Mouse Following Mode"/>
+  <int value="1531" label="Select-to-Speak: Word Highlight"/>
+  <int value="1532" label="Select-to-Speak: Background Shading"/>
+  <int value="1533" label="Select-to-Speak: Navigation Controls"/>
   <int value="1600" label="Powerwash"/>
   <int value="1700" label="Change Chrome Channel"/>
   <int value="1701" label="Copy Detailed Build Info"/>

@@ -4,47 +4,65 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('SelectToSpeakSubpageTests', function() {
+  /** @type {SettingsSelectToSpeakSubpageElement} */
   let page = null;
 
-  function initPage() {
-    page = document.createElement('settings-select-to-speak-subpage');
-    document.body.appendChild(page);
-  }
-
-  setup(function() {
+  setup(async function() {
     PolymerTest.clearBody();
-    Router.getInstance().navigateTo(routes.A11Y_SELECT_TO_SPEAK);
+
+    const prefElement = document.createElement('settings-prefs');
+    document.body.appendChild(prefElement);
+
+    await CrSettingsPrefs.initialized;
+    page = document.createElement('settings-select-to-speak-subpage');
+    page.prefs = prefElement.prefs;
+    document.body.appendChild(page);
   });
 
   teardown(function() {
-    if (page) {
-      page.remove();
-    }
-    Router.getInstance().resetRouteForTesting();
+    page.remove();
   });
 
-  test('word highlight pref and toggle synced', async function() {
-    initPage();
-
-    // Make sure word highlight toggle is off, matching default pref state.
+  test('word highlight pref and toggle synced', function() {
+    // Make sure word highlight toggle is on, matching default pref state.
     const wordHighlightToggle =
-        page.shadowRoot.querySelector('#a11ySelectToSpeakOptionsHighlight');
-    assertFalse(wordHighlightToggle.checked);
+        page.shadowRoot.querySelector('#wordHighlightToggle');
+    assertTrue(wordHighlightToggle.checked);
 
-    // Toggle word highlighting on, and verify word_highlight pref is enabled.
+    // Toggle word highlighting off, and verify word_highlight pref is enabled.
     wordHighlightToggle.click();
-    const wordHighlightPref = await new Promise(
-        resolve => chrome.settingsPrivate.getPref(
-            'settings.a11y.select_to_speak_word_highlight', pref => {
-              resolve(pref);
-            }));
-    assertTrue(wordHighlightPref.value);
+    const wordHighlightPref =
+        page.getPref('settings.a11y.select_to_speak_word_highlight');
+    assertFalse(wordHighlightPref.value);
+  });
+
+  test('background shading pref and toggle synced', function() {
+    // Make sure background shading toggle is off, matching default pref state.
+    const backgroundShadingToggle =
+        page.shadowRoot.querySelector('#backgroundShadingToggle');
+    assertFalse(backgroundShadingToggle.checked);
+
+    // Toggle background shading on, and verify pref is enabled.
+    backgroundShadingToggle.click();
+    const backgroundShadingPref =
+        page.getPref('settings.a11y.select_to_speak_background_shading');
+    assertTrue(backgroundShadingPref.value);
+  });
+
+  test('navigation controls pref and toggle synced', function() {
+    // Make sure navigation controls toggle is on, matching default pref state.
+    const navigationControlsToggle =
+        page.shadowRoot.querySelector('#navigationControlsToggle');
+    assertTrue(navigationControlsToggle.checked);
+
+    // Toggle navigation controls off, and verify pref is enabled.
+    navigationControlsToggle.click();
+    const navigationControlsPref =
+        page.getPref('settings.a11y.select_to_speak_navigation_controls');
+    assertFalse(navigationControlsPref.value);
   });
 });

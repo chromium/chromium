@@ -767,6 +767,12 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_LINK_TITLE},
       {"selectToSpeakOptionsHighlightDescription",
        IDS_SELECT_TO_SPEAK_OPTIONS_HIGHLIGHT_DESCRIPTION},
+      {"selectToSpeakOptionsBackgroundShadingDescription",
+       IDS_SELECT_TO_SPEAK_OPTIONS_BACKGROUND_SHADING_DESCRIPTION},
+      {"selectToSpeakOptionsNavigationControlsDescription",
+       IDS_SELECT_TO_SPEAK_OPTIONS_NAVIGATION_CONTROLS_DESCRIPTION},
+      {"selectToSpeakOptionsNavigationControlsSubtitle",
+       IDS_SELECT_TO_SPEAK_OPTIONS_NAVIGATION_CONTROLS_SUBTITLE},
       {"selectToSpeakOptionsHighlight", IDS_SELECT_TO_SPEAK_OPTIONS_HIGHLIGHT},
       {"selectToSpeakOptionsLabel",
        IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_OPTIONS_LABEL},
@@ -1037,6 +1043,13 @@ void AccessibilitySection::RegisterHierarchy(
           mojom::Subpage::kSelectToSpeak, mojom::SearchResultIcon::kA11y,
           mojom::SearchResultDefaultRank::kMedium,
           mojom::kSelectToSpeakSubpagePath);
+      static constexpr mojom::Setting kSelectToSpeakSettings[] = {
+          mojom::Setting::kSelectToSpeakWordHighlight,
+          mojom::Setting::kSelectToSpeakBackgroundShading,
+          mojom::Setting::kSelectToSpeakNavigationControls,
+      };
+      RegisterNestedSettingBulk(mojom::Subpage::kSelectToSpeak,
+                                kSelectToSpeakSettings, generator);
     }
     // Display and magnification page.
     generator->RegisterTopLevelSubpage(

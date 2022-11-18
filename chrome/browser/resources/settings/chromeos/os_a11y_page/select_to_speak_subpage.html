@@ -31,8 +31,24 @@ found in the LICENSE file.
 
 <h2>$i18n{selectToSpeakOptionsHighlight}</h2>
 <settings-toggle-button
-    id="a11ySelectToSpeakOptionsHighlight"
+    id="wordHighlightToggle"
     pref="{{prefs.settings.a11y.select_to_speak_word_highlight}}"
     label="$i18n{selectToSpeakOptionsHighlightDescription}"
     deep-link-focus-id$="[[Setting.kSelectToSpeakWordHighlight]]">
 </settings-toggle-button>
+
+<settings-toggle-button
+    id="backgroundShadingToggle"
+    pref="{{prefs.settings.a11y.select_to_speak_background_shading}}"
+    label="$i18n{selectToSpeakOptionsBackgroundShadingDescription}"
+    deep-link-focus-id$="[[Setting.kSelectToSpeakBackgroundShading]]">
+</settings-toggle-button>
+
+<settings-toggle-button
+    id="navigationControlsToggle"
+    pref="{{prefs.settings.a11y.select_to_speak_navigation_controls}}"
+    label="$i18n{selectToSpeakOptionsNavigationControlsDescription}"
+    sub-label="$i18n{selectToSpeakOptionsNavigationControlsSubtitle}"
+    deep-link-focus-id$="[[Setting.kSelectToSpeakNavigationControls]]">
+</settings-toggle-button>
+
