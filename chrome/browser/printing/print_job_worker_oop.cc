@@ -170,6 +170,8 @@ void PrintJobWorkerOop::OnDidRenderPrintedPage(uint32_t page_index,
                                                mojom::ResultCode result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (result != mojom::ResultCode::kSuccess) {
+    // Once an error happens during rendering, there could be multiple calls
+    // to here as the queue of sent pages all return back with error.
     PRINTER_LOG(ERROR)
         << "Error rendering printed page via service for document "
         << document_oop_->cookie() << ": " << result;
@@ -237,6 +239,17 @@ void PrintJobWorkerOop::OnDidDocumentDone(int job_id,
   FinishDocumentDone(job_id);
 
   // Also done with private document reference.
+  document_oop_ = nullptr;
+}
+
+void PrintJobWorkerOop::OnDidCancel(scoped_refptr<PrintJob> job) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DVLOG(1) << "Cancel completed for printing via service for document "
+           << document_oop_->cookie();
+
+  UnregisterServiceManagerClient();
+
+  // Done with private document reference.
   document_oop_ = nullptr;
 }
 
@@ -359,10 +372,12 @@ void PrintJobWorkerOop::SetSettings(base::Value::Dict new_settings,
 }
 
 void PrintJobWorkerOop::OnFailure() {
+  // Retain a reference to the PrintJob to ensure it doesn't get deleted before
+  // the `OnDidCancel()` callback occurs.
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PrintJobWorkerOop::UnregisterServiceManagerClient,
-                     ui_weak_factory_.GetWeakPtr()));
+      FROM_HERE, base::BindOnce(&PrintJobWorkerOop::SendCancel,
+                                ui_weak_factory_.GetWeakPtr(),
+                                base::WrapRefCounted(print_job())));
   PrintJobWorker::OnFailure();
 }
 
@@ -579,6 +594,31 @@ void PrintJobWorkerOop::SendDocumentDone() {
                            base::BindOnce(&PrintJobWorkerOop::OnDidDocumentDone,
                                           ui_weak_factory_.GetWeakPtr(),
                                           printing_context()->job_id()));
+}
+
+void PrintJobWorkerOop::SendCancel(scoped_refptr<PrintJob> job) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // If an error has occurred during rendering in middle of a multi-page job,
+  // it could be possible for the `OnDidRenderPrintedPage()` callback of latter
+  // pages to still go through error processing.  In such a case the document
+  // might already have been canceled, so we should ensure to only send a
+  // cancel request to the service if we haven't already done so.
+  if (print_cancel_requested_)
+    return;
+
+  print_cancel_requested_ = true;
+  VLOG(1) << "Sending cancel for document " << document_oop_->cookie();
+
+  PrintBackendServiceManager& service_mgr =
+      PrintBackendServiceManager::GetInstance();
+
+  // Retain a reference to the PrintJob to ensure it doesn't get deleted before
+  // the `OnDidCancel()` callback occurs.
+  service_mgr.Cancel(
+      device_name_, document_oop_->cookie(),
+      base::BindOnce(&PrintJobWorkerOop::OnDidCancel,
+                     ui_weak_factory_.GetWeakPtr(), std::move(job)));
 }
 
 }  // namespace printing

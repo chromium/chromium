@@ -203,16 +203,6 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
   // Callbacks from worker functions.
   void OnDidStartPrintingReadyDocument(DocumentHelper& document_helper,
                                        mojom::ResultCode result);
-#if BUILDFLAG(IS_WIN)
-  void OnDidRenderPrintedPage(
-      DocumentHelper& document_helper,
-      mojom::PrintBackendService::RenderPrintedPageCallback callback,
-      mojom::ResultCode result);
-#endif
-  void OnDidRenderPrintedDocument(
-      DocumentHelper& document_helper,
-      mojom::PrintBackendService::RenderPrintedDocumentCallback callback,
-      mojom::ResultCode result);
   void OnDidDocumentDone(
       DocumentHelper& document_helper,
       mojom::PrintBackendService::DocumentDoneCallback callback,

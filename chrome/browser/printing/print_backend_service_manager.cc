@@ -411,6 +411,26 @@ void PrintBackendServiceManager::DocumentDone(
                      base::Unretained(this), context));
 }
 
+void PrintBackendServiceManager::Cancel(
+    const std::string& printer_name,
+    int document_cookie,
+    mojom::PrintBackendService::CancelCallback callback) {
+  CallbackContext context;
+  auto& service = GetServiceAndCallbackContext(
+      printer_name, ClientType::kPrintDocument, context);
+
+  SaveCallback(GetRemoteSavedCancelCallbacks(context.is_sandboxed),
+               context.remote_id, context.saved_callback_id,
+               std::move(callback));
+
+  SetCrashKeys(printer_name);
+
+  LogCallToRemote("Cancel", context);
+  service->Cancel(document_cookie,
+                  base::BindOnce(&PrintBackendServiceManager::OnDidCancel,
+                                 base::Unretained(this), context));
+}
+
 bool PrintBackendServiceManager::PrinterDriverFoundToRequireElevatedPrivilege(
     const std::string& printer_name) const {
   return drivers_requiring_elevated_privilege_.contains(printer_name);
@@ -922,6 +942,7 @@ void PrintBackendServiceManager::OnRemoteDisconnected(
                     remote_id, mojom::ResultCode::kFailed);
   RunSavedCallbacks(GetRemoteSavedDocumentDoneCallbacks(sandboxed), remote_id,
                     mojom::ResultCode::kFailed);
+  RunSavedCallbacks(GetRemoteSavedCancelCallbacks(sandboxed), remote_id);
 }
 
 PrintBackendServiceManager::RemoteSavedEnumeratePrintersCallbacks&
@@ -1006,6 +1027,12 @@ PrintBackendServiceManager::GetRemoteSavedDocumentDoneCallbacks(
     bool sandboxed) {
   return sandboxed ? sandboxed_saved_document_done_callbacks_
                    : unsandboxed_saved_document_done_callbacks_;
+}
+
+PrintBackendServiceManager::RemoteSavedCancelCallbacks&
+PrintBackendServiceManager::GetRemoteSavedCancelCallbacks(bool sandboxed) {
+  return sandboxed ? sandboxed_saved_cancel_callbacks_
+                   : unsandboxed_saved_cancel_callbacks_;
 }
 
 const mojo::Remote<mojom::PrintBackendService>&
@@ -1149,6 +1176,12 @@ void PrintBackendServiceManager::OnDidDocumentDone(
   LogCallbackFromRemote("DocumentDone", context);
   ServiceCallbackDone(GetRemoteSavedDocumentDoneCallbacks(context.is_sandboxed),
                       context.remote_id, context.saved_callback_id, result);
+}
+
+void PrintBackendServiceManager::OnDidCancel(const CallbackContext& context) {
+  LogCallbackFromRemote("Cancel", context);
+  ServiceCallbackDone(GetRemoteSavedCancelCallbacks(context.is_sandboxed),
+                      context.remote_id, context.saved_callback_id);
 }
 
 template <class T>
