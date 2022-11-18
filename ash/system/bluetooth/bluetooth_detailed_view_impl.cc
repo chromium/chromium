@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/bubble/bubble_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -32,6 +33,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -42,6 +44,10 @@ namespace {
 constexpr auto kToggleRowTriViewInsets = gfx::Insets::TLBR(8, 4, 8, 4);
 constexpr auto kMainContainerMargins = gfx::Insets::TLBR(2, 0, 0, 0);
 constexpr auto kPairNewDeviceIconMargins = gfx::Insets::TLBR(0, 2, 0, 0);
+
+// TODO(b/252872600): Set left inset to 24 once HoverHighlightView and/or
+// TriView support 24 pixel insets.
+constexpr auto kSubHeaderInsets = gfx::Insets::TLBR(10, 18, 10, 24);
 
 }  // namespace
 
@@ -104,11 +110,19 @@ BluetoothDeviceListItemView* BluetoothDetailedViewImpl::AddDeviceListItem() {
       std::make_unique<BluetoothDeviceListItemView>(/*listener=*/this));
 }
 
-TriView* BluetoothDetailedViewImpl::AddDeviceListSubHeader(
+views::View* BluetoothDetailedViewImpl::AddDeviceListSubHeader(
     const gfx::VectorIcon& icon,
     int text_id) {
-  // TODO(b/252872600): Update styling to match spec.
-  return AddScrollListSubHeader(device_list_, icon, text_id);
+  auto header = std::make_unique<views::BoxLayoutView>();
+  header->SetInsideBorderInsets(kSubHeaderInsets);
+  std::unique_ptr<views::Label> label = bubble_utils::CreateLabel(
+      bubble_utils::TypographyStyle::kBody2, l10n_util::GetStringUTF16(text_id),
+      cros_tokens::kColorSecondary);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  label->SetSubpixelRenderingEnabled(false);
+  header->AddChildView(std::move(label));
+
+  return device_list_->AddChildView(std::move(header));
 }
 
 void BluetoothDetailedViewImpl::NotifyDeviceListChanged() {

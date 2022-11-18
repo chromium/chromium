@@ -4,11 +4,11 @@
 
 #include "ash/system/bluetooth/bluetooth_device_list_controller_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_view.h"
 #include "ash/system/tray/tray_popup_utils.h"
-#include "ash/system/tray/tri_view.h"
 #include "base/check.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/separator.h"
@@ -95,21 +95,24 @@ void BluetoothDeviceListControllerImpl::UpdateDeviceList(
     RemoveAndResetViewIfExists(&connected_sub_header_);
   }
 
-  // The separator between the connected and previously connected devices.
-  if (!connected.empty() && !previously_connected.empty()) {
-    if (!device_list_separator_) {
-      device_list_separator_ =
-          bluetooth_detailed_view_->device_list()->AddChildView(
-              TrayPopupUtils::CreateListSubHeaderSeparator());
-    }
-    bluetooth_detailed_view_->device_list()->ReorderChildView(
-        device_list_separator_, index);
+  // QsRevamp does not use a separator.
+  if (!features::IsQsRevampEnabled()) {
+    // The separator between the connected and previously connected devices.
+    if (!connected.empty() && !previously_connected.empty()) {
+      if (!device_list_separator_) {
+        device_list_separator_ =
+            bluetooth_detailed_view_->device_list()->AddChildView(
+                TrayPopupUtils::CreateListSubHeaderSeparator());
+      }
+      bluetooth_detailed_view_->device_list()->ReorderChildView(
+          device_list_separator_, index);
 
-    // Increment |index| since this position was taken by
-    // |device_list_separator_|.
-    index++;
-  } else {
-    RemoveAndResetViewIfExists(&device_list_separator_);
+      // Increment |index| since this position was taken by
+      // |device_list_separator_|.
+      index++;
+    } else {
+      RemoveAndResetViewIfExists(&device_list_separator_);
+    }
   }
 
   // The previously connected devices.
@@ -145,8 +148,9 @@ void BluetoothDeviceListControllerImpl::UpdateDeviceList(
   bluetooth_detailed_view_->NotifyDeviceListChanged();
 }
 
-TriView* BluetoothDeviceListControllerImpl::CreateSubHeaderIfMissingAndReorder(
-    TriView* sub_header,
+views::View*
+BluetoothDeviceListControllerImpl::CreateSubHeaderIfMissingAndReorder(
+    views::View* sub_header,
     int text_id,
     size_t index) {
   if (!sub_header) {

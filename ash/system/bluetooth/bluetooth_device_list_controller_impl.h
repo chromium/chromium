@@ -15,14 +15,13 @@
 
 namespace views {
 class Separator;
+class View;
 }  // namespace views
 
 namespace ash {
 
 class BluetoothDetailedView;
-
 class BluetoothDeviceListItemView;
-class TriView;
 
 // BluetoothDeviceListController implementation.
 class ASH_EXPORT BluetoothDeviceListControllerImpl
@@ -49,9 +48,9 @@ class ASH_EXPORT BluetoothDeviceListControllerImpl
   // |sub_header| is |nullptr|, otherwise uses the provided |sub_header|. The
   // used sub-header is then moved to index |index| within the device list and
   // returned.
-  TriView* CreateSubHeaderIfMissingAndReorder(TriView* sub_header,
-                                              int text_id,
-                                              size_t index);
+  views::View* CreateSubHeaderIfMissingAndReorder(views::View* sub_header,
+                                                  int text_id,
+                                                  size_t index);
 
   // Creates and initializes a view for each of the device properties within
   // |device_property_list| if a view does not already exist, otherwise re-using
@@ -69,9 +68,9 @@ class ASH_EXPORT BluetoothDeviceListControllerImpl
   base::flat_map<std::string, BluetoothDeviceListItemView*>
       device_id_to_view_map_;
   views::Separator* device_list_separator_ = nullptr;
-  TriView* connected_sub_header_ = nullptr;
-  TriView* no_device_connected_sub_header_ = nullptr;
-  TriView* previously_connected_sub_header_ = nullptr;
+  views::View* connected_sub_header_ = nullptr;
+  views::View* no_device_connected_sub_header_ = nullptr;
+  views::View* previously_connected_sub_header_ = nullptr;
 };
 
 }  // namespace ash

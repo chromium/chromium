@@ -40,8 +40,8 @@ class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
   views::View* GetAsView() override;
   void UpdateBluetoothEnabledState(bool enabled) override;
   BluetoothDeviceListItemView* AddDeviceListItem() override;
-  TriView* AddDeviceListSubHeader(const gfx::VectorIcon& icon,
-                                  int text_id) override;
+  views::View* AddDeviceListSubHeader(const gfx::VectorIcon& icon,
+                                      int text_id) override;
   void NotifyDeviceListChanged() override;
   views::View* device_list() override;
 

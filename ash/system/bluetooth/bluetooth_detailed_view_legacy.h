@@ -22,7 +22,6 @@ namespace ash {
 class BluetoothDeviceListItemView;
 class BluetoothDisabledDetailedView;
 class DetailedViewDelegate;
-class TriView;
 
 // The legacy BluetoothDetailedView implementation, pre-QsRevamp.
 class ASH_EXPORT BluetoothDetailedViewLegacy : public BluetoothDetailedView,
@@ -51,8 +50,8 @@ class ASH_EXPORT BluetoothDetailedViewLegacy : public BluetoothDetailedView,
   views::View* GetAsView() override;
   void UpdateBluetoothEnabledState(bool enabled) override;
   BluetoothDeviceListItemView* AddDeviceListItem() override;
-  ash::TriView* AddDeviceListSubHeader(const gfx::VectorIcon& icon,
-                                       int text_id) override;
+  views::View* AddDeviceListSubHeader(const gfx::VectorIcon& icon,
+                                      int text_id) override;
   void NotifyDeviceListChanged() override;
   views::View* device_list() override;
 

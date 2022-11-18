@@ -83,7 +83,7 @@ BluetoothDeviceListItemView* BluetoothDetailedViewLegacy::AddDeviceListItem() {
       new BluetoothDeviceListItemView(/*listener=*/this));
 }
 
-ash::TriView* BluetoothDetailedViewLegacy::AddDeviceListSubHeader(
+views::View* BluetoothDetailedViewLegacy::AddDeviceListSubHeader(
     const gfx::VectorIcon& icon,
     int text_id) {
   return AddScrollListSubHeader(scroll_content(), icon, text_id);

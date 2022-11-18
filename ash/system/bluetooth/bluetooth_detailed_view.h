@@ -19,7 +19,6 @@ namespace ash {
 
 class BluetoothDeviceListItemView;
 class DetailedViewDelegate;
-class TriView;
 
 // This class defines both the interface used to interact with the detailed
 // Bluetooth page within the quick settings, including the view responsible for
@@ -79,8 +78,8 @@ class ASH_EXPORT BluetoothDetailedView {
   // Adds a sticky sub-header to the end of the device list containing |icon|
   // and text represented by the |text_id| resource ID. The client is expected
   // to use the returned pointer for removing and rearranging the sub-header.
-  virtual ash::TriView* AddDeviceListSubHeader(const gfx::VectorIcon& icon,
-                                               int text_id) = 0;
+  virtual views::View* AddDeviceListSubHeader(const gfx::VectorIcon& icon,
+                                              int text_id) = 0;
 
   // Notifies that the device list has changed and the layout is invalid.
   virtual void NotifyDeviceListChanged() = 0;

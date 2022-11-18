@@ -30,7 +30,7 @@ BluetoothDeviceListItemView* FakeBluetoothDetailedView::AddDeviceListItem() {
       new BluetoothDeviceListItemView(/*listener=*/nullptr));
 }
 
-ash::TriView* FakeBluetoothDetailedView::AddDeviceListSubHeader(
+views::View* FakeBluetoothDetailedView::AddDeviceListSubHeader(
     const gfx::VectorIcon& /*icon*/,
     int text_id) {
   std::unique_ptr<TriView> sub_header = std::make_unique<TriView>();
