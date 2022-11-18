@@ -764,34 +764,62 @@ template <typename T>
 bool operator==(const T& a, const EvalJsResult& b) {
   return b.error.empty() && (JsLiteralHelper<T>::Convert(a) == b.value);
 }
+template <typename T>
+bool operator==(const EvalJsResult& a, const T& b) {
+  return b == a;
+}
 
 template <typename T>
 bool operator!=(const T& a, const EvalJsResult& b) {
   return b.error.empty() && (JsLiteralHelper<T>::Convert(a) != b.value);
+}
+template <typename T>
+bool operator!=(const EvalJsResult& a, const T& b) {
+  return b != a;
 }
 
 template <typename T>
 bool operator>=(const T& a, const EvalJsResult& b) {
   return b.error.empty() && (JsLiteralHelper<T>::Convert(a) >= b.value);
 }
+template <typename T>
+bool operator>=(const EvalJsResult& a, const T& b) {
+  return b < a;
+}
 
 template <typename T>
 bool operator<=(const T& a, const EvalJsResult& b) {
   return b.error.empty() && (JsLiteralHelper<T>::Convert(a) <= b.value);
+}
+template <typename T>
+bool operator<=(const EvalJsResult& a, const T& b) {
+  return b > a;
 }
 
 template <typename T>
 bool operator<(const T& a, const EvalJsResult& b) {
   return b.error.empty() && (JsLiteralHelper<T>::Convert(a) < b.value);
 }
+template <typename T>
+bool operator<(const EvalJsResult& a, const T& b) {
+  return b >= a;
+}
 
 template <typename T>
 bool operator>(const T& a, const EvalJsResult& b) {
   return b.error.empty() && (JsLiteralHelper<T>::Convert(a) > b.value);
 }
+template <typename T>
+bool operator>(const EvalJsResult& a, const T& b) {
+  return b <= a;
+}
 
 inline bool operator==(std::nullptr_t a, const EvalJsResult& b) {
   return b.error.empty() && (base::Value() == b.value);
+}
+template <typename T>
+inline bool operator==(const EvalJsResult& a, std::nullptr_t b) {
+  return nullptr == a;
 }
 
 // Provides informative failure messages when the result of EvalJs() is
