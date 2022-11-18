@@ -27,6 +27,7 @@ source_set("page_info") {
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/fancy_ui",
     "//ios/chrome/browser/ui/icons:symbols",
+    "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/page_info/requirements",
     "//ios/chrome/browser/ui/permissions",
     "//ios/chrome/browser/ui/permissions:constants",
