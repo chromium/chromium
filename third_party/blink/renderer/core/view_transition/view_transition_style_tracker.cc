@@ -770,6 +770,8 @@ PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
 }
 
 bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
+  DCHECK_GE(document_->Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
   bool needs_style_invalidation = false;
 
   // Use the document element's effective zoom, since that's what the parent

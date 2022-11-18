@@ -122,6 +122,11 @@ class CORE_EXPORT ViewTransition : public ScriptWrappable,
   EffectPaintPropertyNode* GetEffect(const LayoutObject& object) const;
 
   // Dispatched during a lifecycle update after prepaint has finished its work.
+  // This is only done if the lifecycle update was triggered outside of a main
+  // frame. For example by a script API like getComputedStyle.
+  void RunViewTransitionStepsOutsideMainFrame();
+
+  // Dispatched during a lifecycle update after prepaint has finished its work.
   // This is only done if we're in the main lifecycle update that will produce
   // painted output.
   void RunViewTransitionStepsDuringMainFrame();

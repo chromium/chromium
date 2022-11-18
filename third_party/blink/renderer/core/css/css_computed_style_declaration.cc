@@ -260,6 +260,16 @@ void CSSComputedStyleDeclaration::UpdateStyleAndLayoutTreeIfNeeded(
     }
   }
 
+  // Transition pseudo-elements require data computed in pre-paint to generate
+  // the UA stylesheet for these pseudo-elements.
+  // TODO(khushalsagar): We can probably optimize this to run only when a
+  // property set by the UA stylesheet is queried.
+  if (IsTransitionPseudoElement(styled_node->GetPseudoId())) {
+    if (auto* view = document.View())
+      view->UpdateLifecycleToPrePaintClean(DocumentUpdateReason::kJavaScript);
+    return;
+  }
+
   document.UpdateStyleAndLayoutTreeForNode(styled_node);
 }
 

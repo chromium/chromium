@@ -838,14 +838,30 @@ EffectPaintPropertyNode* ViewTransition::GetEffect(
   return style_tracker_->GetEffect(element);
 }
 
+void ViewTransition::RunViewTransitionStepsOutsideMainFrame() {
+  DCHECK(document_->Lifecycle().GetState() >=
+         DocumentLifecycle::kPrePaintClean);
+  DCHECK(!in_main_lifecycle_update_);
+
+  if (state_ == State::kAnimating && style_tracker_ &&
+      !style_tracker_->RunPostPrePaintSteps()) {
+    SkipTransitionInternal(ScriptBoundState::Response::kRejectInvalidState);
+  }
+}
+
 void ViewTransition::RunViewTransitionStepsDuringMainFrame() {
+  DCHECK_GE(document_->Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
+  DCHECK(!in_main_lifecycle_update_);
+
   base::AutoReset<bool> scope(&in_main_lifecycle_update_, true);
   if (StateRunsInViewTransitionStepsDuringMainFrame(state_))
     ProcessCurrentState();
+
   if (style_tracker_ &&
-      document_->Lifecycle().GetState() >= DocumentLifecycle::kPrePaintClean) {
-    if (!style_tracker_->RunPostPrePaintSteps())
-      SkipTransitionInternal(ScriptBoundState::Response::kRejectInvalidState);
+      document_->Lifecycle().GetState() >= DocumentLifecycle::kPrePaintClean &&
+      !style_tracker_->RunPostPrePaintSteps()) {
+    SkipTransitionInternal(ScriptBoundState::Response::kRejectInvalidState);
   }
 }
 
