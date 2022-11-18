@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/crx_file/id_util.h"
+#include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/common/content_features.h"
 #include "crypto/sha2.h"
@@ -117,7 +118,7 @@ bool IsValidWebAppUrl(const GURL& app_url) {
          app_url.SchemeIs(url::kHttpsScheme) ||
          app_url.SchemeIs("chrome-extension") ||
          (app_url.SchemeIs("chrome") &&
-          (app_url.host() == chrome::kChromeUIPasswordManagerHost));
+          (app_url.host() == password_manager::kChromeUIPasswordManagerHost));
 }
 
 absl::optional<AppId> FindInstalledAppWithUrlInScope(Profile* profile,

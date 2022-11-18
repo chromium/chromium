@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
+#include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/webapps/browser/banners/app_banner_metrics.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
@@ -263,9 +264,12 @@ bool AppBannerManager::ShouldIgnore(content::RenderFrameHost* render_frame_host,
   if (render_frame_host && !render_frame_host->IsInPrimaryMainFrame())
     return true;
 
-  // There is never a need to trigger a banner for a WebUI page.
-  if (content::HasWebUIScheme(url))
+  // There is never a need to trigger a banner for a WebUI page, except
+  // for PasswordManager WebUI.
+  if (content::HasWebUIScheme(url) &&
+      (url.host() != password_manager::kChromeUIPasswordManagerHost)) {
     return true;
+  }
 
   return false;
 }
@@ -380,6 +384,23 @@ void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
   manifest_url_ = *(data.manifest_url);
   manifest_ = data.manifest->Clone();
   manifest_id_ = blink::GetIdFromManifest(manifest());
+
+  // Skip checks for PasswordManager WebUI page.
+  if (content::HasWebUIScheme(validated_url_) &&
+      (validated_url_.host() ==
+       password_manager::kChromeUIPasswordManagerHost)) {
+    if (IsWebAppConsideredInstalled()) {
+      TrackDisplayEvent(DISPLAY_EVENT_INSTALLED_PREVIOUSLY);
+      SetInstallableWebAppCheckResult(
+          InstallableWebAppCheckResult::kNo_AlreadyInstalled);
+      Stop(ALREADY_INSTALLED);
+    } else {
+      SetInstallableWebAppCheckResult(
+          InstallableWebAppCheckResult::kYes_ByUserRequest);
+      Stop(NO_ERROR_DETECTED);
+    }
+    return;
+  }
 
   PerformInstallableChecks();
 }

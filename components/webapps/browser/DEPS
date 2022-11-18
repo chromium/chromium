@@ -3,6 +3,7 @@ include_rules = [
   "+components/content_settings",
   "+components/infobars",
   "+components/messages",
+  "+components/password_manager",
   "+components/permissions",
   "+components/prefs",
   "+components/security_state/core",

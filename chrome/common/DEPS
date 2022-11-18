@@ -36,6 +36,7 @@ include_rules = [
   "+components/ntp_tiles",
   "+components/nux",
   "+components/offline_pages/buildflags",
+  "+components/password_manager/content/common",
   "+components/password_manager/core/common",
   "+components/pdf/common",
   "+components/policy/core/common",

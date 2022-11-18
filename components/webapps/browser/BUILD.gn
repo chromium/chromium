@@ -46,6 +46,7 @@ source_set("browser") {
     "//base",
     "//components/back_forward_cache",
     "//components/content_settings/core/browser",
+    "//components/password_manager/content/common",
     "//components/permissions",
     "//components/security_state/core",
     "//components/site_engagement/content",

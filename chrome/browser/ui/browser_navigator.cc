@@ -44,6 +44,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
+#include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_url_handler.h"
 #include "content/public/browser/navigation_entry.h"
@@ -913,7 +914,7 @@ bool IsHostAllowedInIncognito(const GURL& url) {
          host != chrome::kChromeUIHistoryHost &&
          host != chrome::kChromeUIExtensionsHost &&
          host != chrome::kChromeUIBookmarksHost &&
-         host != chrome::kChromeUIPasswordManagerHost;
+         host != password_manager::kChromeUIPasswordManagerHost;
 }
 
 bool IsURLAllowedInIncognito(const GURL& url,
