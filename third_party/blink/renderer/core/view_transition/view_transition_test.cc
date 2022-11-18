@@ -366,57 +366,6 @@ TEST_P(ViewTransitionTest, PrepareSharedElementsWantToBeComposited) {
   test::RunPendingTasks();
 }
 
-TEST_P(ViewTransitionTest, UncontainedElementsAreCleared) {
-  SetHtmlInnerHTML(R"HTML(
-    <style>
-      /* TODO(crbug.com/1336462): html.css is parsed before runtime flags are enabled */
-      html { view-transition-name: root; }
-      #e1 { width: 100px; height: 100px; contain: paint }
-    </style>
-    <div id=e1 style="view-transition-name: e1"></div>
-    <div id=e2 style="view-transition-name: e2"></div>
-    <div id=e3 style="view-transition-name: e3"></div>
-  )HTML");
-
-  auto* e1 = GetDocument().getElementById("e1");
-  auto* e2 = GetDocument().getElementById("e2");
-  auto* e3 = GetDocument().getElementById("e3");
-
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  ExceptionState& exception_state = v8_scope.GetExceptionState();
-
-  MockFunctionScope funcs(script_state);
-  auto* view_transition_callback =
-      V8ViewTransitionCallback::Create(funcs.ExpectCall());
-
-  auto* transition = ViewTransitionSupplement::startViewTransition(
-      script_state, GetDocument(), view_transition_callback, exception_state);
-
-  EXPECT_EQ(GetState(transition), State::kCaptureTagDiscovery);
-  EXPECT_FALSE(ShouldCompositeForViewTransition(e1));
-  EXPECT_FALSE(ShouldCompositeForViewTransition(e2));
-  EXPECT_FALSE(ShouldCompositeForViewTransition(e3));
-
-  // Update the lifecycle while keeping the transition active.
-  UpdateAllLifecyclePhasesForTest();
-
-  EXPECT_EQ(GetState(transition), State::kCapturing);
-  EXPECT_TRUE(ShouldCompositeForViewTransition(e1));
-  EXPECT_FALSE(ShouldCompositeForViewTransition(e2));
-  EXPECT_FALSE(ShouldCompositeForViewTransition(e3));
-
-  // Update the lifecycle while keeping the transition active.
-  UpdateAllLifecyclePhasesForTest();
-
-  EXPECT_TRUE(ElementIsComposited("e1"));
-  EXPECT_FALSE(ElementIsComposited("e2"));
-  EXPECT_FALSE(ElementIsComposited("e3"));
-
-  FinishTransition();
-  test::RunPendingTasks();
-}
-
 TEST_P(ViewTransitionTest, StartSharedElementsWantToBeComposited) {
   SetHtmlInnerHTML(R"HTML(
     <style>
@@ -530,7 +479,7 @@ TEST_P(ViewTransitionTest, TransitionCleanedUpBeforePromiseResolution) {
   promise_tester.WaitUntilSettled();
   // There is no current way to successfully finish a transition from a
   // unittest. Web tests focus on successful completion tests.
-  EXPECT_TRUE(promise_tester.IsRejected());
+  EXPECT_TRUE(promise_tester.IsFulfilled());
 }
 
 TEST_P(ViewTransitionTest, RenderingPausedTest) {
@@ -569,7 +518,7 @@ TEST_P(ViewTransitionTest, RenderingPausedTest) {
 
   FinishTransition();
   finished_tester.WaitUntilSettled();
-  EXPECT_TRUE(finished_tester.IsRejected());
+  EXPECT_TRUE(finished_tester.IsFulfilled());
 }
 
 TEST_P(ViewTransitionTest, Abandon) {
@@ -590,7 +539,7 @@ TEST_P(ViewTransitionTest, Abandon) {
   test::RunPendingTasks();
 
   finished_tester.WaitUntilSettled();
-  EXPECT_TRUE(finished_tester.IsRejected());
+  EXPECT_TRUE(finished_tester.IsFulfilled());
 }
 
 // Checks that the pseudo element tree is correctly build for ::transition*

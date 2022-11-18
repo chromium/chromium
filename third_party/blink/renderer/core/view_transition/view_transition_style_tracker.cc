@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -43,11 +44,9 @@
 namespace blink {
 namespace {
 
-const char* kElementSetModificationError =
-    "The element set cannot be modified at this transition state.";
 const char* kContainmentNotSatisfied =
-    "Dropping element from transition. Shared element must contain paint or "
-    "layout";
+    "Aborting transition. Element must contain paint or layout for "
+    "view-transition-name : ";
 const char* kDuplicateTagBaseError =
     "Unexpected duplicate view-transition-name: ";
 
@@ -63,6 +62,11 @@ const String& AnimationUAStyles() {
       String, kAnimationUAStyles,
       (UncompressResourceAsASCIIString(IDR_UASTYLE_TRANSITION_ANIMATIONS_CSS)));
   return kAnimationUAStyles;
+}
+
+bool SatisfiesContainment(const LayoutObject& object) {
+  return object.ShouldApplyPaintContainment() ||
+         object.ShouldApplyLayoutContainment();
 }
 
 absl::optional<String> ComputeInsetDifference(PhysicalRect reference_rect,
@@ -259,11 +263,6 @@ void ViewTransitionStyleTracker::AddConsoleError(
 void ViewTransitionStyleTracker::AddSharedElement(Element* element,
                                                   const AtomicString& name) {
   DCHECK(element);
-  if (state_ == State::kCapturing || state_ == State::kStarted) {
-    AddConsoleError(kElementSetModificationError,
-                    {DOMNodeIds::IdForNode(element)});
-    return;
-  }
 
   // Insert an empty hash set for the element if it doesn't exist, or get it if
   // it does.
@@ -277,16 +276,6 @@ void ViewTransitionStyleTracker::AddSharedElement(Element* element,
   // to sort later.
   value.insert(std::make_pair(name, set_element_sequence_id_));
   ++set_element_sequence_id_;
-}
-
-void ViewTransitionStyleTracker::RemoveSharedElement(Element* element) {
-  if (state_ == State::kCapturing || state_ == State::kStarted) {
-    AddConsoleError(kElementSetModificationError,
-                    {DOMNodeIds::IdForNode(element)});
-    return;
-  }
-
-  pending_shared_element_names_.erase(element);
 }
 
 void ViewTransitionStyleTracker::AddSharedElementsFromCSS() {
@@ -337,6 +326,25 @@ bool ViewTransitionStyleTracker::FlattenAndVerifyElements(
     VectorOf<Element>& elements,
     VectorOf<AtomicString>& transition_names,
     absl::optional<RootData>& root_data) {
+  for (const auto& element : ViewTransitionSupplement::From(*document_)
+                                 ->ElementsWithViewTransitionName()) {
+    DCHECK(element->ComputedStyleRef().ViewTransitionName());
+
+    // Ignore elements which are not rendered.
+    if (!element->GetLayoutObject())
+      continue;
+
+    // Skip the transition if containment is not satisfied.
+    if (!element->IsDocumentElement() &&
+        !SatisfiesContainment(*element->GetLayoutObject())) {
+      StringBuilder message;
+      message.Append(kContainmentNotSatisfied);
+      message.Append(element->ComputedStyleRef().ViewTransitionName());
+      AddConsoleError(message.ReleaseString());
+      return false;
+    }
+  }
+
   // We need to flatten the data first, and sort it by ordering which reflects
   // the setElement ordering.
   struct FlatData : public GarbageCollected<FlatData> {
@@ -352,7 +360,9 @@ bool ViewTransitionStyleTracker::FlattenAndVerifyElements(
 
   // Flatten it.
   for (auto& [element, names] : pending_shared_element_names_) {
-    bool is_root = element->IsDocumentElement();
+    DCHECK(element->GetLayoutObject());
+
+    const bool is_root = element->IsDocumentElement();
     if (is_root && !root_data)
       root_data.emplace();
 
@@ -391,6 +401,7 @@ bool ViewTransitionStyleTracker::FlattenAndVerifyElements(
       AddConsoleError(message.ReleaseString());
       return false;
     }
+
     transition_names.push_back(name);
     elements.push_back(element);
   }
@@ -604,7 +615,9 @@ bool ViewTransitionStyleTracker::Start() {
   // We need to run post prepaint steps here to ensure that the style would be
   // correct if computed by either the main frame or by getComputedStyle call.
   // TODO(vmpstr): Rename to something like UpdatePseudoGeometry.
-  RunPostPrePaintSteps();
+  const bool continue_transition = RunPostPrePaintSteps();
+  DCHECK(continue_transition)
+      << "The transition should've been skipped by FlattenAndVerifyElements";
 
   // We need a style invalidation to generate new content pseudo elements for
   // new elements in the DOM.
@@ -756,7 +769,7 @@ PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
   return nullptr;
 }
 
-void ViewTransitionStyleTracker::RunPostPrePaintSteps() {
+bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
   bool needs_style_invalidation = false;
 
   // Use the document element's effective zoom, since that's what the parent
@@ -775,22 +788,14 @@ void ViewTransitionStyleTracker::RunPostPrePaintSteps() {
     if (!element_data->target_element)
       continue;
 
-    // TODO(khushalsagar) : Switch paint containment and disallow fragmentation
-    // to implicit constraints. See crbug.com/1277121.
+    DCHECK_NE(element_data->target_element, document_->documentElement());
     auto* layout_object = element_data->target_element->GetLayoutObject();
-    if (!layout_object || (!layout_object->ShouldApplyPaintContainment() &&
-                           !layout_object->ShouldApplyLayoutContainment())) {
-      element_data->target_element = nullptr;
-
-      // If we had a valid |target_element| there must be an associated snapshot
-      // ID. Remove it since there is no corresponding DOM element to produce
-      // its snapshot.
-      auto& live_snapshot_id = HasLiveNewContent()
-                                   ? element_data->new_snapshot_id
-                                   : element_data->old_snapshot_id;
-      DCHECK(live_snapshot_id.IsValid());
-      live_snapshot_id = viz::ViewTransitionElementResourceId();
-      continue;
+    if (!layout_object || !SatisfiesContainment(*layout_object)) {
+      StringBuilder message;
+      message.Append(kContainmentNotSatisfied);
+      message.Append(entry.key);
+      AddConsoleError(message.ReleaseString());
+      return false;
     }
 
     gfx::Transform snapshot_matrix = layout_object->LocalToAbsoluteTransform();
@@ -887,6 +892,8 @@ void ViewTransitionStyleTracker::RunPostPrePaintSteps() {
 
   if (needs_style_invalidation)
     InvalidateStyle();
+
+  return true;
 }
 
 bool ViewTransitionStyleTracker::HasActiveAnimations() const {
@@ -962,39 +969,6 @@ EffectPaintPropertyNode* ViewTransitionStyleTracker::GetEffect(
 EffectPaintPropertyNode* ViewTransitionStyleTracker::GetRootEffect() const {
   DCHECK(root_effect_node_);
   return root_effect_node_.get();
-}
-
-void ViewTransitionStyleTracker::VerifySharedElements() {
-  for (auto& entry : element_data_map_) {
-    auto& element_data = entry.value;
-    if (!element_data->target_element)
-      continue;
-    auto& active_element = element_data->target_element;
-
-    auto* object = active_element->GetLayoutObject();
-
-    // TODO(vmpstr): Should this work for replaced elements as well?
-    if (object) {
-      if (object->ShouldApplyPaintContainment() ||
-          object->ShouldApplyLayoutContainment()) {
-        continue;
-      }
-
-      AddConsoleError(kContainmentNotSatisfied,
-                      {DOMNodeIds::IdForNode(active_element)});
-    }
-
-    // Clear the shared element. Note that we don't remove the element from the
-    // vector, since we need to preserve the order of the elements and we
-    // support nulls as a valid active element.
-
-    // Invalidate the element since we should no longer be compositing it.
-    // TODO(vmpstr): Should we abort the transition instead?0
-    auto* box = active_element->GetLayoutBox();
-    if (box && box->HasSelfPaintingLayer())
-      box->SetNeedsPaintPropertyUpdate();
-    active_element = nullptr;
-  }
 }
 
 bool ViewTransitionStyleTracker::IsSharedElement(Element* element) const {

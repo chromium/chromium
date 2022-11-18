@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_callback.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
@@ -119,6 +120,15 @@ ViewTransition* ViewTransitionSupplement::GetActiveTransition() {
   return transition_;
 }
 
+void ViewTransitionSupplement::UpdateViewTransitionNames(
+    const Element& element,
+    const ComputedStyle* style) {
+  if (style && style->ViewTransitionName())
+    elements_with_view_transition_name_.insert(&element);
+  else
+    elements_with_view_transition_name_.erase(&element);
+}
+
 ViewTransitionSupplement::ViewTransitionSupplement(Document& document)
     : Supplement<Document>(document) {}
 
@@ -126,6 +136,7 @@ ViewTransitionSupplement::~ViewTransitionSupplement() = default;
 
 void ViewTransitionSupplement::Trace(Visitor* visitor) const {
   visitor->Trace(transition_);
+  visitor->Trace(elements_with_view_transition_name_);
 
   Supplement<Document>::Trace(visitor);
 }

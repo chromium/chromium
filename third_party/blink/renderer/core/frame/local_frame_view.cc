@@ -3129,15 +3129,6 @@ void LocalFrameView::AppendViewTransitionRequests(
   });
 }
 
-void LocalFrameView::VerifySharedElementsForViewTransition() {
-  DCHECK(frame_ && frame_->GetDocument());
-
-  if (auto* transition =
-          ViewTransitionUtils::GetActiveTransition(*frame_->GetDocument())) {
-    transition->VerifySharedElements();
-  }
-}
-
 std::unique_ptr<JSONObject> LocalFrameView::CompositedLayersAsJSON(
     LayerTreeFlags flags) {
   auto* root_frame_view = GetFrame().LocalFrameRoot().View();
@@ -3207,14 +3198,6 @@ void LocalFrameView::UpdateStyleAndLayoutIfNeededRecursive() {
 
   GetFrame().Selection().UpdateStyleAndLayoutIfNeeded();
   GetFrame().GetPage()->GetDragCaret().UpdateStyleAndLayoutIfNeeded();
-
-  // If we're running the lifecycle with intent of painting, we need to
-  // verify the view transitions, since any requests will be
-  // propagated to the compositor.
-  if (GetFrame().LocalFrameRoot().View()->target_state_ ==
-      DocumentLifecycle::kPaintClean) {
-    VerifySharedElementsForViewTransition();
-  }
 }
 
 void LocalFrameView::UpdateStyleAndLayout() {

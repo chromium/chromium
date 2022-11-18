@@ -1044,6 +1044,11 @@ void Node::SetComputedStyle(scoped_refptr<const ComputedStyle> computed_style) {
   // We don't set computed style for text nodes.
   DCHECK(IsElementNode());
 
+  if (auto* element = DynamicTo<Element>(this)) {
+    ViewTransitionSupplement::From(GetDocument())
+        ->UpdateViewTransitionNames(*element, computed_style.get());
+  }
+
   NodeRenderingData* node_layout_data =
       HasRareData() ? DataAsNodeRareData()->GetNodeRenderingData()
                     : DataAsNodeRenderingData();
