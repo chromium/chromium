@@ -59,7 +59,7 @@ SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
                        animations_enabled) {}
 
 SavedTabGroupBar::~SavedTabGroupBar() {
-  // remove all buttons from the heirarchy
+  // Remove all buttons from the hierarchy
   RemoveAllButtons();
 
   if (saved_tab_group_model_)
