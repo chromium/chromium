@@ -55,7 +55,7 @@ public class PriceTrackingNotificationBridgeUnitTest {
     private static final String ACTION_ID_0 = "visit_site";
     private static final String ACTION_ID_1 = "turn_off_alert";
     private static final String ACTION_TEXT_0 = "Visit site";
-    private static final String ACTION_TEXT_1 = "Stop tracking product";
+    private static final String ACTION_TEXT_1 = "Untrack price";
 
     private PriceTrackingNotificationBridge mPriceTrackingNotificationBridge;
 
