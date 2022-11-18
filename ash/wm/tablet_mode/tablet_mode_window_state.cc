@@ -369,12 +369,9 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
       break;
     case WM_EVENT_SNAP_PRIMARY:
     case WM_EVENT_SNAP_SECONDARY:
-      DoTabletSnap(
-          window_state, event->type(),
-          WindowSnapWMEvent::GetFloatValueForSnapRatio(
-              event->IsSnapInfoAvailable()
-                  ? static_cast<const WindowSnapWMEvent*>(event)->snap_ratio()
-                  : WindowSnapWMEvent::SnapRatio::kDefaultSnapRatio));
+      // TODO(b/259302867): Remove `window_state->snap_ratio()` since it can be
+      // gotten from `window_state`.
+      DoTabletSnap(window_state, event->type(), window_state->snap_ratio());
       return;
     case WM_EVENT_CYCLE_SNAP_PRIMARY:
       CycleTabletSnap(window_state,

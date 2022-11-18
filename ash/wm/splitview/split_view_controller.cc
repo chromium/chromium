@@ -590,6 +590,9 @@ class SplitViewController::AutoSnapController
   base::flat_set<aura::Window*> observed_windows_;
 };
 
+// Helper class that prepares windows that are changing to snapped window state.
+// This allows async window state type changes and handles calls to
+// SplitViewController when necessary.
 class SplitViewController::ToBeSnappedWindowsObserver
     : public aura::WindowObserver,
       public WindowStateObserver {
@@ -913,10 +916,15 @@ void SplitViewController::AttachSnappingWindow(aura::Window* window,
 
     auto_snap_controller_ = std::make_unique<AutoSnapController>(this);
 
-    // If there is pre-set |divider_position_|, use it. It can happen during
-    // tablet <-> clamshell transition or multi-user transition.
-    divider_position_ = (divider_position_ < 0) ? GetDefaultDividerPosition()
-                                                : divider_position_;
+    // Get the divider position given by `snap_ratio`, or if there is pre-set
+    // |divider_position_|, use it. It can happen during tablet <-> clamshell
+    // transition or multi-user transition.
+    absl::optional<float> snap_ratio = WindowState::Get(window)->snap_ratio();
+    divider_position_ =
+        (divider_position_ < 0)
+            ? GetDividerPosition(snap_position,
+                                 snap_ratio ? *snap_ratio : kDefaultSnapRatio)
+            : divider_position_;
     default_snap_position_ = snap_position;
 
     // There is no divider bar in clamshell splitview mode.

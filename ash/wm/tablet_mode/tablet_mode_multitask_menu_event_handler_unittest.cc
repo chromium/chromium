@@ -407,7 +407,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, HideMultitaskMenuInOverview) {
 }
 
 // Tests that the multitask menu gets updated after a button is pressed.
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, ButtonFunctionality) {
+TEST_F(TabletModeMultitaskMenuEventHandlerTest, HalfButtonFunctionality) {
   auto window = CreateTestWindow();
 
   ShowMultitaskMenu(*window);
@@ -446,6 +446,45 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, ButtonFunctionality) {
                 ->GetBoundsInScreen()
                 .CenterPoint()
                 .x());
+}
+
+TEST_F(TabletModeMultitaskMenuEventHandlerTest, PartialButtonFunctionality) {
+  auto window = CreateTestWindow();
+
+  // Test that primary button snaps to 0.67f screen ratio.
+  ShowMultitaskMenu(*window);
+  GetEventGenerator()->GestureTapAt(GetMultitaskMenuView(GetMultitaskMenu())
+                                        ->partial_button_for_testing()
+                                        ->GetBoundsInScreen()
+                                        .left_center());
+  ASSERT_EQ(chromeos::WindowStateType::kPrimarySnapped,
+            WindowState::Get(window.get())->GetStateType());
+  const gfx::Rect work_area_bounds_in_screen =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  auto* split_view_controller =
+      SplitViewController::Get(Shell::GetPrimaryRootWindow());
+  const gfx::Rect divider_bounds =
+      split_view_controller->split_view_divider()->GetDividerBoundsInScreen(
+          /*is_dragging*/ false);
+  ASSERT_NEAR(work_area_bounds_in_screen.width() * 0.67,
+              window->bounds().width(), divider_bounds.width());
+
+  // Test that the multitask menu has been closed.
+  ASSERT_FALSE(GetMultitaskMenu());
+
+  // Test that secondary button snaps to 0.33f screen ratio.
+  ShowMultitaskMenu(*window);
+  gfx::Rect partial_bounds(GetMultitaskMenuView(GetMultitaskMenu())
+                               ->partial_button_for_testing()
+                               ->GetBoundsInScreen());
+  gfx::Point secondary_center(
+      gfx::Point(partial_bounds.x() + partial_bounds.width() * 0.67f,
+                 partial_bounds.y() + partial_bounds.y() / 2));
+  GetEventGenerator()->GestureTapAt(secondary_center);
+  ASSERT_EQ(chromeos::WindowStateType::kSecondarySnapped,
+            WindowState::Get(window.get())->GetStateType());
+  ASSERT_NEAR(work_area_bounds_in_screen.width() * 0.33,
+              window->bounds().width(), divider_bounds.width());
 }
 
 // Tests that tap outside the menu will close the menu.

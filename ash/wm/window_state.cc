@@ -451,13 +451,19 @@ void WindowState::OnWMEvent(const WMEvent* event) {
   if (event->IsSnapEvent()) {
     // Snap events should be created as WindowSnapWMEvent.
     DCHECK(event->IsSnapInfoAvailable());
+    // Save the target snap ratio.
+    // TODO(b/259302867): Since the snap ratio is saved here, remove
+    // `new_snap_ratio` method parameter piping.
+    snap_ratio_ =
+        absl::make_optional(WindowSnapWMEvent::GetFloatValueForSnapRatio(
+            static_cast<const WindowSnapWMEvent*>(event)->snap_ratio()));
   }
 
   current_state_->OnWMEvent(this, event);
 
-  if (event->IsSnapEvent() || event->IsBoundsEvent()) {
+  // TODO(b/259585069): Move the snap ratio update to `OnWindowBoundsChanged`.
+  if (event->IsBoundsEvent())
     UpdateSnapRatio();
-  }
 
   PersistentDesksBarController* bar_controller =
       Shell::Get()->persistent_desks_bar_controller();

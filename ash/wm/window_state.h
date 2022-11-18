@@ -582,9 +582,13 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   bool allow_set_bounds_direct_ = false;
   bool is_moving_to_another_display_ = false;
 
-  // A property to save the ratio between snapped window width (or height
-  // for vertical layout) and display workarea width (or height). The ratio
-  // should be preserved when the display or workspace size changes.
+  // Contains the window's target snap ratio if it's going to be snapped by a
+  // WindowSnapWMEvent, and the updated window snap ratio if the snapped
+  // window's bounds are changed while it remains snapped. It will be used to
+  // calculate the desired snapped window bounds for a WindowSnapWMEvent, or
+  // adjust the window's bounds when display or workarea changes, or decide what
+  // the window bounds should be if restoring the window back to a snapped
+  // window state, etc.
   absl::optional<float> snap_ratio_;
 
   // A property to remember the window position which was set before the
