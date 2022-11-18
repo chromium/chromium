@@ -2254,9 +2254,15 @@ void MainThreadSchedulerImpl::OnPendingTasksChanged(bool has_tasks) {
 
 void MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected(
     bool has_tasks) {
+  // https://linear.app/replay/issue/RUN-827
+  recordreplay::Assert("MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected");
+
   if (has_tasks ==
-      main_thread_only().compositor_will_send_main_frame_not_expected.get())
+      main_thread_only().compositor_will_send_main_frame_not_expected.get()) {
+    // https://linear.app/replay/issue/RUN-827
+    recordreplay::Assert("MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected #1");
     return;
+  }
 
   TRACE_EVENT1(
       TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
@@ -2264,8 +2270,15 @@ void MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected(
       "has_tasks", has_tasks);
   bool success = false;
   for (PageSchedulerImpl* page_scheduler : main_thread_only().page_schedulers) {
+    // https://linear.app/replay/issue/RUN-827
+    recordreplay::Assert("MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected #2");
+
     success |= page_scheduler->RequestBeginMainFrameNotExpected(has_tasks);
   }
+
+  // https://linear.app/replay/issue/RUN-827
+  recordreplay::Assert("MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected #3 %d", success);
+
   main_thread_only().compositor_will_send_main_frame_not_expected =
       success && has_tasks;
 }
