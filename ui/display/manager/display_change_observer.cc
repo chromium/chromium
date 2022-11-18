@@ -257,10 +257,15 @@ void DisplayChangeObserver::UpdateInternalDisplay(
         DCHECK_EQ(Display::InternalDisplayId(), state->display_id());
       SetInternalDisplayIds({state->display_id()});
 
-      if (state->current_mode() && state->native_mode() &&
-          !display_manager_->IsDisplayIdValid(state->display_id())) {
-        // Update the internal display info if it's not already registered.
-        // It'll be treated as new display in |UpdateDisplaysWith()|.
+      if (state->native_mode() &&
+          (!display_manager_->IsDisplayIdValid(state->display_id()) ||
+           !state->current_mode())) {
+        // Register the internal display info if
+        // 1) If it's not already registered. It'll be treated as
+        // new display in |UpdateDisplaysWith()|.
+        // 2) If it's not connected, because the display info will not
+        // be updated in |UpdateDisplaysWith()|, which will skips the
+        // disconnected displays.
         ManagedDisplayInfo new_info =
             CreateManagedDisplayInfo(state, state->native_mode());
         display_manager_->UpdateInternalDisplay(new_info);
