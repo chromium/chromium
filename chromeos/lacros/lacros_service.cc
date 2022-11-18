@@ -88,6 +88,7 @@
 #include "chromeos/crosapi/mojom/timezone.mojom.h"
 #include "chromeos/crosapi/mojom/tts.mojom.h"
 #include "chromeos/crosapi/mojom/url_handler.mojom.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "chromeos/crosapi/mojom/virtual_keyboard.mojom.h"
 #include "chromeos/crosapi/mojom/volume_manager.mojom.h"
 #include "chromeos/crosapi/mojom/vpn_extension_observer.mojom.h"
@@ -478,6 +479,10 @@ LacrosService::LacrosService()
   ConstructRemote<crosapi::mojom::UrlHandler,
                   &crosapi::mojom::Crosapi::BindUrlHandler,
                   Crosapi::MethodMinVersions::kBindUrlHandlerMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::VideoConferenceManager,
+      &crosapi::mojom::Crosapi::BindVideoConferenceManager,
+      Crosapi::MethodMinVersions::kBindVideoConferenceManagerMinVersion>();
   ConstructRemote<crosapi::mojom::AppPublisher, &Crosapi::BindWebAppPublisher,
                   Crosapi::MethodMinVersions::kBindWebAppPublisherMinVersion>();
   ConstructRemote<crosapi::mojom::Wallpaper,
@@ -742,6 +747,16 @@ bool LacrosService::IsVideoCaptureDeviceFactoryAvailable() const {
   return version && version.value() >=
                         Crosapi::MethodMinVersions::
                             kBindVideoCaptureDeviceFactoryMinVersion;
+}
+
+void LacrosService::BindVideoConferenceManager(
+    mojo::PendingReceiver<crosapi::mojom::VideoConferenceManager>
+        pending_receiver) {
+  DCHECK(IsAvailable<crosapi::mojom::VideoConferenceManager>());
+  BindPendingReceiverOrRemote<
+      mojo::PendingReceiver<crosapi::mojom::VideoConferenceManager>,
+      &crosapi::mojom::Crosapi::BindVideoConferenceManager>(
+      std::move(pending_receiver));
 }
 
 void LacrosService::BindStableVideoDecoderFactory(

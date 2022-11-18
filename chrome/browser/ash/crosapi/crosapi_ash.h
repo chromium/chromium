@@ -29,6 +29,7 @@ class DigitalGoodsFactoryAsh;
 namespace ash {
 class DiagnosticsServiceAsh;
 class ProbeServiceAsh;
+class VideoConferenceManagerAsh;
 }  // namespace ash
 
 namespace crosapi {
@@ -312,6 +313,8 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindVideoCaptureDeviceFactory(
       mojo::PendingReceiver<mojom::VideoCaptureDeviceFactory> receiver)
       override;
+  void BindVideoConferenceManager(
+      mojo::PendingReceiver<mojom::VideoConferenceManager> receiver) override;
   void BindVirtualKeyboard(
       mojo::PendingReceiver<mojom::VirtualKeyboard> receiver) override;
   void BindVolumeManager(
@@ -448,6 +451,10 @@ class CrosapiAsh : public mojom::Crosapi {
     return web_page_info_factory_ash_.get();
   }
 
+  ash::VideoConferenceManagerAsh* video_conference_manager_ash() {
+    return video_conference_manager_ash_.get();
+  }
+
   VirtualKeyboardAsh* virtual_keyboard_ash() {
     return virtual_keyboard_ash_.get();
   }
@@ -537,6 +544,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<UrlHandlerAsh> url_handler_ash_;
   std::unique_ptr<VideoCaptureDeviceFactoryAsh>
       video_capture_device_factory_ash_;
+  std::unique_ptr<ash::VideoConferenceManagerAsh> video_conference_manager_ash_;
   std::unique_ptr<VirtualKeyboardAsh> virtual_keyboard_ash_;
   std::unique_ptr<VolumeManagerAsh> volume_manager_ash_;
   std::unique_ptr<VpnExtensionObserverAsh> vpn_extension_observer_ash_;

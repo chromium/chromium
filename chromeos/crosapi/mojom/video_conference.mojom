@@ -1,0 +1,114 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "url/mojom/url.mojom";
+
+// Aggregated media usage status for a client. Used by
+// VideoConferenceManagerAsh to determine UI tray triggering,
+// contents, and hiding.
+[Stable]
+struct VideoConferenceMediaUsageStatus {
+  // ID for the manager to distinguish between
+  // different clients. Used for aggregating status
+  // from multiple clients on the manager side.
+  mojo_base.mojom.UnguessableToken client_id@0;
+
+  // Client has at least one running media app that
+  // is accessing/has accessed the camera/microphone.
+  bool has_media_app@1;
+
+  // Client has at least one app that had camera
+  // permissions at the time of last capture.
+  bool has_camera_permission@2;
+
+  // Client has at least one app that had microphone
+  // permissions at the time of last capture.
+  bool has_microphone_permission@3;
+
+  // Some app on this client is capturing the camera.
+  bool is_capturing_camera@4;
+
+  // Some app on this client is capturing the microphone.
+  bool is_capturing_microphone@5;
+
+  // Some app on this client is capturing the screen.
+  bool is_capturing_screen@6;
+};
+
+
+[Stable, Extensible]
+enum VideoConferenceMediaDevice {
+  // Required for marking enums extensible but should never occur.
+  [Default] kUnusedDefault,
+  kMicrophone,
+  kCamera,
+};
+
+// Interface between the Ash system and clients (lacros, ARC++, etc.)
+// for Video Conference Manager. Implemented in Ash.
+[Stable, Uuid="7dc5b924-abb8-4c0b-b2c0-676458afde5f"]
+interface VideoConferenceManager {
+  // Notifies the manager of changes in media apps.
+  NotifyMediaUsageUpdate@0(VideoConferenceMediaUsageStatus status)
+      => (bool success);
+
+  // Registers a mojo client on the manager.
+  RegisterMojoClient@1(pending_remote<VideoConferenceManagerClient> client,
+                       mojo_base.mojom.UnguessableToken client_id)
+      => (bool success);
+
+  // Notifies the manager of an app trying to access a media device
+  // while the device is system disabled.
+  NotifyDeviceUsedWhileDisabled@2(VideoConferenceMediaDevice device,
+                                  mojo_base.mojom.String16 app_name)
+      => (bool success);
+};
+
+[Stable]
+struct VideoConferenceMediaAppInfo {
+  // The id represents a unique identifier for the app. It's
+  // used by the manager to bring the app back into focus
+  // when the user clicks on 'return to app' in the UI panel.
+  mojo_base.mojom.UnguessableToken id@0;
+
+  // Timestamp of the last activity on this app. Used by the
+  // manager to sort media apps from various clients.
+  mojo_base.mojom.Time last_activity_time@1;
+
+  // App is accessing camera.
+  bool is_capturing_camera@2;
+
+  // App is accessing microphone.
+  bool is_capturing_microphone@3;
+
+  // App is capturing screen
+  bool is_capturing_screen@4;
+
+  // The title of the media app. For web apps, this is
+  // document.title. For ARC++ apps, this is the app's name.
+  mojo_base.mojom.String16 title@5;
+
+  // Url of the app, if media app is a webapp. Used to extract
+  // domain name and other info for UI to display.
+  url.mojom.Url? url@6;
+};
+
+// Client interface implemented by browsers (ash or lacros).
+[Stable, Uuid="511e08b4-2151-4c93-b46c-ded5218304b0"]
+interface VideoConferenceManagerClient {
+  // Returns media apps running on this client.
+  GetMediaApps@0() => (array<VideoConferenceMediaAppInfo> apps);
+
+  // Opens and focuses media app corresponding to the |id|.
+  ReturnToApp@1(mojo_base.mojom.UnguessableToken id) => (bool success);
+
+  // Informs client of system device's disable status
+  SetSystemMediaDeviceStatus@2(VideoConferenceMediaDevice device,
+                               bool disabled) => (bool success);
+};

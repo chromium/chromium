@@ -251,6 +251,10 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   // true.
   bool IsVideoCaptureDeviceFactoryAvailable() const;
 
+  // Binds video conference manager to lacros-browser clients.
+  void BindVideoConferenceManager(
+      mojo::PendingReceiver<crosapi::mojom::VideoConferenceManager> receiver);
+
   // Returns SystemIdleCache, which uses IdleInfoObserver to observe idle info
   // changes and caches the results. Requires IsIdleServiceAvailable() for full
   // function, and is robust against unavailability.

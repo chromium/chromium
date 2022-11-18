@@ -92,6 +92,7 @@ mojom("mojom") {
     "tts.mojom",
     "url_handler.mojom",
     "video_capture.mojom",
+    "video_conference.mojom",
     "virtual_keyboard.mojom",
     "volume_manager.mojom",
     "vpn_extension_observer.mojom",
