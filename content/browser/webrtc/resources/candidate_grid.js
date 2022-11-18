@@ -137,9 +137,12 @@ function appendRow(peerConnectionElement, active, candidatePair, stats) {
       localRow.children[index].innerText = localCandidate[stat];
     }
   });
-  // Network type is only for the local candidate
-  // so put it into the pair row above the address.
+  // Network type is only for the local candidate so put it into the pair
+  // row above the address. Also highlight VPN adapters.
   pairRow.children[2].innerText = localCandidate.networkType;
+  if (localCandidate['vpn*'] === true) {
+    pairRow.children[2].innerText += ' (VPN)';
+  }
   // protocol must always be the same for the pair
   // so put it into the pair row above the candidate type.
   // Add tcpType for local candidates.
