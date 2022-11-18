@@ -414,20 +414,23 @@ if (use_system_harfbuzz) {
   }
 }
 
-fuzzer_test("hb_shape_fuzzer") {
-  sources = [ "fuzz/hb_shape_fuzzer.cc" ]
-  deps = [
-    "//base",
-    "//third_party:freetype_harfbuzz",
-  ]
-  seed_corpus = "fuzz/seed_corpus"
-}
+# Not all checkouts have a //base directory.
+if (build_with_chromium) {
+  fuzzer_test("hb_shape_fuzzer") {
+    sources = [ "fuzz/hb_shape_fuzzer.cc" ]
+    deps = [
+      "//base",
+      "//third_party:freetype_harfbuzz",
+    ]
+    seed_corpus = "fuzz/seed_corpus"
+  }
 
-fuzzer_test("hb_subset_fuzzer") {
-  sources = [ "fuzz/hb_subset_fuzzer.cc" ]
-  deps = [
-    "//base",
-    "//third_party:freetype_harfbuzz",
-  ]
-  seed_corpus = "fuzz/seed_corpus"
+  fuzzer_test("hb_subset_fuzzer") {
+    sources = [ "fuzz/hb_subset_fuzzer.cc" ]
+    deps = [
+      "//base",
+      "//third_party:freetype_harfbuzz",
+    ]
+    seed_corpus = "fuzz/seed_corpus"
+  }
 }
