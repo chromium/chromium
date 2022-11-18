@@ -277,7 +277,10 @@ Browser* WebAppLaunchProcess::MaybeFindBrowserForLaunch() const {
     return nullptr;
   }
 
-  for (Browser* browser : *BrowserList::GetInstance()) {
+  const BrowserList* browser_list = BrowserList::GetInstance();
+  for (auto it = browser_list->begin_browsers_ordered_by_activation();
+       it != browser_list->end_browsers_ordered_by_activation(); ++it) {
+    Browser* browser = *it;
     if (browser->profile() == &*profile_ &&
         AppBrowserController::IsForWebApp(browser, params_->app_id)) {
       return browser;

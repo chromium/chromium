@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/embedder_support/switches.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
@@ -428,6 +429,27 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, GlobalLaunchQueue) {
 
   histogram_tester.ExpectUniqueSample(kLaunchHandlerHistogram,
                                       ClientMode::kAuto, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, SelectActiveBrowser) {
+  AppId app_id =
+      InstallTestWebApp("/web_apps/basic.html", /*await_metric=*/false);
+  EXPECT_EQ(GetLaunchHandler(app_id), absl::nullopt);
+
+  Browser* browser_1 = LaunchWebAppBrowser(profile(), app_id);
+  Browser* browser_2 = LaunchWebAppBrowser(profile(), app_id);
+  EXPECT_NE(browser_1, browser_2);
+
+  {
+    ScopedRegistryUpdate update(
+        &WebAppProvider::GetForTest(profile())->sync_bridge());
+    WebApp* web_app = update->UpdateApp(app_id);
+    web_app->SetLaunchHandler(LaunchHandler{ClientMode::kFocusExisting});
+  }
+
+  Browser* browser_3 = LaunchWebAppBrowser(profile(), app_id);
+  // Select the most recently opened app window.
+  EXPECT_EQ(browser_3, browser_2);
 }
 
 class WebAppLaunchHandlerDisabledBrowserTest : public InProcessBrowserTest {
