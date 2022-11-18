@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.dom_distiller;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -28,6 +28,8 @@ public class DomDistillerTabUtils {
 
     /** Used to specify whether mobile friendly is enabled for testing purposes. */
     private static Boolean sExcludeMobileFriendlyForTesting;
+    private static MutableFlagWithSafeDefault sReaderModeCctFlag =
+            new MutableFlagWithSafeDefault(ChromeFeatureList.READER_MODE_IN_CCT, false);
 
     @DistillerHeuristicsType
     private static Integer sHeuristicsForTesting;
@@ -146,8 +148,7 @@ public class DomDistillerTabUtils {
      * @return True if it should.
      */
     public static boolean isCctMode() {
-        if (!FeatureList.isInitialized()) return false;
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.READER_MODE_IN_CCT);
+        return sReaderModeCctFlag.isEnabled();
     }
 
     /**
