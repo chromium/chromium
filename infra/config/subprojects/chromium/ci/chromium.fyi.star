@@ -559,13 +559,18 @@ ci.builder(
     ),
     builder_spec = builder_config.builder_spec(
         chromium_config = builder_config.chromium_config(
-            config = "chromium",
+            config = "android",
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
         ),
         gclient_config = builder_config.gclient_config(
             config = "chromium",
+            apply_configs = ["android"],
+        ),
+        android_config = builder_config.android_config(
+            config = "x64_builder",
         ),
     ),
     builderless = True,

@@ -12,15 +12,22 @@
             "builder_spec": {
               "builder_group": "chromium.fyi",
               "execution_mode": "COMPILE_AND_TEST",
+              "legacy_android_config": {
+                "config": "x64_builder"
+              },
               "legacy_chromium_config": {
                 "apply_configs": [
                   "mb"
                 ],
                 "build_config": "Release",
-                "config": "chromium",
-                "target_bits": 64
+                "config": "android",
+                "target_bits": 64,
+                "target_platform": "android"
               },
               "legacy_gclient_config": {
+                "apply_configs": [
+                  "android"
+                ],
                 "config": "chromium"
               }
             }
