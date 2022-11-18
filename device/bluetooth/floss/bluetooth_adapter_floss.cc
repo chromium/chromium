@@ -997,7 +997,25 @@ void BluetoothAdapterFloss::ConnectDevice(
     const absl::optional<device::BluetoothDevice::AddressType>& address_type,
     ConnectDeviceCallback callback,
     ConnectDeviceErrorCallback error_callback) {
-  NOTIMPLEMENTED();
+  // On Floss, ACL and RFCOMM connection are done with
+  // createRfcommSocketToServiceRecord(UUID). This should be called after
+  // ConnectDevice. Since all that is required on Floss for insecure connection
+  // is an address, this function currently just creates a device pointer.
+  // TODO(b/259725491): This function should actually create an ACL connection.
+  BluetoothDeviceFloss* device_ptr;
+  std::string canonical_address = device::CanonicalizeBluetoothAddress(address);
+
+  if (base::Contains(devices_, canonical_address)) {
+    device_ptr =
+        static_cast<BluetoothDeviceFloss*>(devices_[canonical_address].get());
+  } else {
+    auto device = CreateBluetoothDeviceFloss(
+        FlossDeviceId({.address = address, .name = ""}));
+    device_ptr = device.get();
+    devices_.emplace(canonical_address, std::move(device));
+  }
+
+  std::move(callback).Run(device_ptr);
 }
 
 device::BluetoothLocalGattService* BluetoothAdapterFloss::GetGattService(
