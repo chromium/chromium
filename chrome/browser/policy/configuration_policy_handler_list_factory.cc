@@ -1665,12 +1665,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
 #endif // !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  { key::kExtensionManifestV2Availability,
-    extensions::pref_names::kManifestV2Availability,
-    base::Value::Type::INTEGER },
-#endif // BUILDFLAG(ENABLE_EXTENSIONS)
-
 #if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
   { key::kChromeRootStoreEnabled,
     prefs::kChromeRootStoreEnabled,
@@ -2439,7 +2433,10 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(
       std::make_unique<extensions::ExtensionSettingsPolicyHandler>(
           chrome_schema));
-
+  handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
+      key::kExtensionManifestV2Availability,
+      extensions::pref_names::kManifestV2Availability, /*min=*/0, /*max=*/3,
+      /*clamp=*/false));
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
   handlers->AddHandler(

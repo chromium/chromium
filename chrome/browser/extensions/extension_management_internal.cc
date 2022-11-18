@@ -245,18 +245,14 @@ void IndividualSettings::Reset() {
   blocked_install_message.clear();
 }
 
-GlobalSettings::GlobalSettings() {
-  Reset();
-}
+GlobalSettings::GlobalSettings() = default;
 
-GlobalSettings::~GlobalSettings() {
-}
+GlobalSettings::~GlobalSettings() = default;
 
 void GlobalSettings::Reset() {
-  has_restricted_install_sources = false;
-  install_sources.ClearPatterns();
-  has_restricted_allowed_types = false;
-  allowed_types.clear();
+  install_sources.reset();
+  allowed_types.reset();
+  manifest_v2_setting = ManifestV2Setting::kDefault;
 }
 
 }  // namespace internal

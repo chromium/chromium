@@ -11,6 +11,7 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/api_permission_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class DictionaryValue;
@@ -151,6 +152,12 @@ struct IndividualSettings {
 
 // Global extension management settings, applicable to all extensions.
 struct GlobalSettings {
+  enum class ManifestV2Setting {
+    kDefault = 0,
+    kDisabled,
+    kEnabled,
+    kEnabledForForceInstalled,
+  };
   GlobalSettings();
 
   GlobalSettings(const GlobalSettings&) = delete;
@@ -162,13 +169,14 @@ struct GlobalSettings {
 
   // Settings specifying which URLs are allowed to install extensions, will be
   // enforced only if |has_restricted_install_sources| is set to true.
-  URLPatternSet install_sources;
-  bool has_restricted_install_sources;
+  absl::optional<URLPatternSet> install_sources;
 
   // Settings specifying all allowed app/extension types, will be enforced
   // only of |has_restricted_allowed_types| is set to true.
-  std::vector<Manifest::Type> allowed_types;
-  bool has_restricted_allowed_types;
+  absl::optional<std::vector<Manifest::Type>> allowed_types;
+
+  // An enum setting indicates if manifest v2 is allowed.
+  ManifestV2Setting manifest_v2_setting = ManifestV2Setting::kDefault;
 };
 
 }  // namespace internal

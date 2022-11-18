@@ -427,8 +427,8 @@ TEST_F(ExtensionManagementServiceTest, LegacyInstallSources) {
   allowed_sites_pref.Append("https://corp.mycompany.com/*");
   SetPref(true, pref_names::kAllowedInstallSites,
           base::Value(std::move(allowed_sites_pref)));
-  const URLPatternSet& allowed_sites = ReadGlobalSettings()->install_sources;
-  ASSERT_TRUE(ReadGlobalSettings()->has_restricted_install_sources);
+  ASSERT_TRUE(ReadGlobalSettings()->install_sources);
+  const URLPatternSet& allowed_sites = *ReadGlobalSettings()->install_sources;
   EXPECT_FALSE(allowed_sites.is_empty());
   EXPECT_TRUE(allowed_sites.MatchesURL(GURL("https://www.example.com/foo")));
   EXPECT_FALSE(allowed_sites.MatchesURL(GURL("https://www.example.com/bar")));
@@ -447,9 +447,9 @@ TEST_F(ExtensionManagementServiceTest, LegacyAllowedTypes) {
 
   SetPref(true, pref_names::kAllowedTypes,
           base::Value(std::move(allowed_types_pref)));
+  ASSERT_TRUE(ReadGlobalSettings()->allowed_types);
   const std::vector<Manifest::Type>& allowed_types =
-      ReadGlobalSettings()->allowed_types;
-  ASSERT_TRUE(ReadGlobalSettings()->has_restricted_allowed_types);
+      *ReadGlobalSettings()->allowed_types;
   EXPECT_EQ(allowed_types.size(), 2u);
   EXPECT_FALSE(base::Contains(allowed_types, Manifest::TYPE_EXTENSION));
   EXPECT_TRUE(base::Contains(allowed_types, Manifest::TYPE_THEME));
@@ -688,17 +688,17 @@ TEST_F(ExtensionManagementServiceTest, PreferenceParsing) {
             ExtensionManagement::INSTALLATION_ALLOWED);
 
   // Verifies global settings.
-  EXPECT_TRUE(ReadGlobalSettings()->has_restricted_install_sources);
-  const URLPatternSet& allowed_sites = ReadGlobalSettings()->install_sources;
+  ASSERT_TRUE(ReadGlobalSettings()->install_sources);
+  const URLPatternSet& allowed_sites = *ReadGlobalSettings()->install_sources;
   EXPECT_EQ(allowed_sites.size(), 1u);
   EXPECT_TRUE(allowed_sites.MatchesURL(GURL("http://foo.com/entry")));
   EXPECT_FALSE(allowed_sites.MatchesURL(GURL("http://bar.com/entry")));
   EXPECT_TRUE(GetPolicyBlockedHosts(kNonExistingExtension)
                   .MatchesURL(GURL("http://example.com/default")));
 
-  EXPECT_TRUE(ReadGlobalSettings()->has_restricted_allowed_types);
+  ASSERT_TRUE(ReadGlobalSettings()->allowed_types);
   const std::vector<Manifest::Type>& allowed_types =
-      ReadGlobalSettings()->allowed_types;
+      *ReadGlobalSettings()->allowed_types;
   EXPECT_EQ(allowed_types.size(), 2u);
   EXPECT_TRUE(base::Contains(allowed_types, Manifest::TYPE_THEME));
   EXPECT_TRUE(base::Contains(allowed_types, Manifest::TYPE_USER_SCRIPT));
@@ -871,8 +871,8 @@ TEST_F(ExtensionManagementServiceTest, NewInstallSources) {
   allowed_sites_pref.Append("https://www.example.com/foo");
   SetPref(true, pref_names::kAllowedInstallSites,
           base::Value(std::move(allowed_sites_pref)));
-  EXPECT_TRUE(ReadGlobalSettings()->has_restricted_install_sources);
-  EXPECT_TRUE(ReadGlobalSettings()->install_sources.MatchesURL(
+  ASSERT_TRUE(ReadGlobalSettings()->install_sources);
+  EXPECT_TRUE(ReadGlobalSettings()->install_sources->MatchesURL(
       GURL("https://www.example.com/foo")));
 
   // Set the new dictionary preference.
@@ -881,8 +881,8 @@ TEST_F(ExtensionManagementServiceTest, NewInstallSources) {
     updater.ClearInstallSources();
   }
   // Verifies that the new one overrides the legacy ones.
-  EXPECT_TRUE(ReadGlobalSettings()->has_restricted_install_sources);
-  EXPECT_FALSE(ReadGlobalSettings()->install_sources.MatchesURL(
+  ASSERT_TRUE(ReadGlobalSettings()->install_sources);
+  EXPECT_FALSE(ReadGlobalSettings()->install_sources->MatchesURL(
       GURL("https://www.example.com/foo")));
 
   // Updates the new dictionary preference.
@@ -890,8 +890,8 @@ TEST_F(ExtensionManagementServiceTest, NewInstallSources) {
     PrefUpdater updater(pref_service_.get());
     updater.AddInstallSource("https://corp.mycompany.com/*");
   }
-  EXPECT_TRUE(ReadGlobalSettings()->has_restricted_install_sources);
-  EXPECT_TRUE(ReadGlobalSettings()->install_sources.MatchesURL(
+  ASSERT_TRUE(ReadGlobalSettings()->install_sources);
+  EXPECT_TRUE(ReadGlobalSettings()->install_sources->MatchesURL(
       GURL("https://corp.mycompany.com/entry")));
 }
 
@@ -903,9 +903,10 @@ TEST_F(ExtensionManagementServiceTest, NewAllowedTypes) {
   allowed_types_pref.Append(Manifest::TYPE_USER_SCRIPT);
   SetPref(true, pref_names::kAllowedTypes,
           base::Value(allowed_types_pref.Clone()));
-  EXPECT_TRUE(ReadGlobalSettings()->has_restricted_allowed_types);
-  EXPECT_EQ(ReadGlobalSettings()->allowed_types.size(), 1u);
-  EXPECT_EQ(ReadGlobalSettings()->allowed_types[0], Manifest::TYPE_USER_SCRIPT);
+  ASSERT_TRUE(ReadGlobalSettings()->allowed_types);
+  EXPECT_EQ(ReadGlobalSettings()->allowed_types->size(), 1u);
+  EXPECT_EQ(ReadGlobalSettings()->allowed_types.value()[0],
+            Manifest::TYPE_USER_SCRIPT);
 
   // Set the new dictionary preference.
   {
@@ -913,17 +914,18 @@ TEST_F(ExtensionManagementServiceTest, NewAllowedTypes) {
     updater.ClearAllowedTypes();
   }
   // Verifies that the new one overrides the legacy ones.
-  EXPECT_TRUE(ReadGlobalSettings()->has_restricted_allowed_types);
-  EXPECT_EQ(ReadGlobalSettings()->allowed_types.size(), 0u);
+  ASSERT_TRUE(ReadGlobalSettings()->allowed_types);
+  EXPECT_EQ(ReadGlobalSettings()->allowed_types->size(), 0u);
 
   // Updates the new dictionary preference.
   {
     PrefUpdater updater(pref_service_.get());
     updater.AddAllowedType("theme");
   }
-  EXPECT_TRUE(ReadGlobalSettings()->has_restricted_allowed_types);
-  EXPECT_EQ(ReadGlobalSettings()->allowed_types.size(), 1u);
-  EXPECT_EQ(ReadGlobalSettings()->allowed_types[0], Manifest::TYPE_THEME);
+  ASSERT_TRUE(ReadGlobalSettings()->allowed_types);
+  EXPECT_EQ(ReadGlobalSettings()->allowed_types->size(), 1u);
+  EXPECT_EQ(ReadGlobalSettings()->allowed_types.value()[0],
+            Manifest::TYPE_THEME);
 }
 
 // Tests functionality of new preference as to deprecate legacy
@@ -1114,6 +1116,57 @@ TEST_F(ExtensionManagementServiceTest,
   })");
   EXPECT_EQ(ExtensionManagement::INSTALLATION_REMOVED,
             GetInstallationModeById(kTargetExtension));
+}
+
+TEST_F(ExtensionManagementServiceTest, ManifestV2Default) {
+  SetPref(true, pref_names::kManifestV2Availability,
+          base::Value(static_cast<int>(
+              internal::GlobalSettings::ManifestV2Setting::kDefault)));
+  EXPECT_TRUE(
+      extension_management_->IsAllowedManifestVersion(2, kTargetExtension));
+  EXPECT_TRUE(
+      extension_management_->IsAllowedManifestVersion(3, kTargetExtension));
+}
+
+TEST_F(ExtensionManagementServiceTest, ManifestV2Disabled) {
+  SetPref(true, pref_names::kManifestV2Availability,
+          base::Value(static_cast<int>(
+              internal::GlobalSettings::ManifestV2Setting::kDisabled)));
+  EXPECT_FALSE(
+      extension_management_->IsAllowedManifestVersion(2, kTargetExtension));
+  EXPECT_TRUE(
+      extension_management_->IsAllowedManifestVersion(3, kTargetExtension));
+}
+
+TEST_F(ExtensionManagementServiceTest, ManifestV2Enabled) {
+  SetPref(true, pref_names::kManifestV2Availability,
+          base::Value(static_cast<int>(
+              internal::GlobalSettings::ManifestV2Setting::kEnabled)));
+  EXPECT_TRUE(
+      extension_management_->IsAllowedManifestVersion(2, kTargetExtension));
+  EXPECT_TRUE(
+      extension_management_->IsAllowedManifestVersion(3, kTargetExtension));
+}
+
+TEST_F(ExtensionManagementServiceTest, ManifestV2EnabledForForceInstalled) {
+  SetPref(
+      true, pref_names::kManifestV2Availability,
+      base::Value(static_cast<int>(internal::GlobalSettings::ManifestV2Setting::
+                                       kEnabledForForceInstalled)));
+  EXPECT_FALSE(
+      extension_management_->IsAllowedManifestVersion(2, kTargetExtension));
+  EXPECT_TRUE(
+      extension_management_->IsAllowedManifestVersion(3, kTargetExtension));
+
+  base::Value::Dict forced_list_pref;
+  ExternalPolicyLoader::AddExtension(forced_list_pref, kTargetExtension,
+                                     kExampleUpdateUrl);
+  SetPref(true, pref_names::kInstallForceList, forced_list_pref.Clone());
+
+  EXPECT_TRUE(
+      extension_management_->IsAllowedManifestVersion(2, kTargetExtension));
+  EXPECT_TRUE(
+      extension_management_->IsAllowedManifestVersion(3, kTargetExtension));
 }
 
 // Tests the flag value indicating that extensions are blocklisted by default.

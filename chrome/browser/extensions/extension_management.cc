@@ -86,6 +86,8 @@ ExtensionManagement::ExtensionManagement(Profile* profile)
   pref_change_registrar_.Add(enterprise_reporting::kCloudReportingEnabled,
                              pref_change_callback);
 #endif
+  pref_change_registrar_.Add(pref_names::kManifestV2Availability,
+                             pref_change_callback);
   // Note that both |global_settings_| and |default_settings_| will be null
   // before first call to Refresh(), so in order to resolve this, Refresh() must
   // be called in the initialization of ExtensionManagement.
@@ -101,8 +103,7 @@ ExtensionManagement::ExtensionManagement(Profile* profile)
       std::make_unique<PermissionsBasedManagementPolicyProvider>(this));
 }
 
-ExtensionManagement::~ExtensionManagement() {
-}
+ExtensionManagement::~ExtensionManagement() = default;
 
 void ExtensionManagement::Shutdown() {
   pref_change_registrar_.RemoveAll();
@@ -249,10 +250,10 @@ bool ExtensionManagement::IsOffstoreInstallAllowed(
     const GURL& url,
     const GURL& referrer_url) const {
   // No allowed install sites specified, disallow by default.
-  if (!global_settings_->has_restricted_install_sources)
+  if (!global_settings_->install_sources.has_value())
     return false;
 
-  const URLPatternSet& url_patterns = global_settings_->install_sources;
+  const URLPatternSet& url_patterns = *global_settings_->install_sources;
 
   if (!url_patterns.MatchesURL(url))
     return false;
@@ -271,11 +272,36 @@ bool ExtensionManagement::IsAllowedManifestType(
       ThemeServiceFactory::GetForProfile(profile_)->UsingPolicyTheme())
     return false;
 
-  if (!global_settings_->has_restricted_allowed_types)
+  if (!global_settings_->allowed_types.has_value())
     return true;
   const std::vector<Manifest::Type>& allowed_types =
-      global_settings_->allowed_types;
+      *global_settings_->allowed_types;
   return base::Contains(allowed_types, manifest_type);
+}
+
+bool ExtensionManagement::IsAllowedManifestVersion(
+    int manifest_version,
+    const std::string& extension_id) {
+  switch (global_settings_->manifest_v2_setting) {
+    case internal::GlobalSettings::ManifestV2Setting::kDefault:
+      // TODO(crbug.com/1347794): Get actual manifest v2 feature.
+      return true;
+    case internal::GlobalSettings::ManifestV2Setting::kDisabled:
+      return manifest_version >= 3;
+    case internal::GlobalSettings::ManifestV2Setting::kEnabled:
+      return true;
+    case internal::GlobalSettings::ManifestV2Setting::kEnabledForForceInstalled:
+      auto installation_mode =
+          GetInstallationMode(extension_id, /*update_url=*/std::string());
+      return manifest_version >= 3 ||
+             installation_mode == InstallationMode::INSTALLATION_FORCED ||
+             installation_mode == INSTALLATION_RECOMMENDED;
+  }
+}
+
+bool ExtensionManagement::IsAllowedManifestVersion(const Extension* extension) {
+  return IsAllowedManifestVersion(extension->manifest_version(),
+                                  extension->id());
 }
 
 APIPermissionSet ExtensionManagement::GetBlockedAPIPermissions(
@@ -439,6 +465,10 @@ void ExtensionManagement::Refresh() {
   const base::Value* extension_request_pref = LoadPreference(
       prefs::kCloudExtensionRequestEnabled, false, base::Value::Type::BOOLEAN);
 
+  const base::Value* manifest_v2_pref =
+      LoadPreference(pref_names::kManifestV2Availability,
+                     /*force_managed=*/true, base::Value::Type::INTEGER);
+
   // Reset all settings.
   global_settings_ = std::make_unique<internal::GlobalSettings>();
   settings_by_id_.clear();
@@ -488,13 +518,13 @@ void ExtensionManagement::Refresh() {
   UpdateForcedExtensions(forced_list_pref);
 
   if (install_sources_pref) {
-    global_settings_->has_restricted_install_sources = true;
+    global_settings_->install_sources = URLPatternSet();
     for (const auto& entry : install_sources_pref->GetList()) {
       if (entry.is_string()) {
         std::string url_pattern = entry.GetString();
         URLPattern pattern(URLPattern::SCHEME_ALL);
         if (pattern.Parse(url_pattern) == URLPattern::ParseResult::kSuccess) {
-          global_settings_->install_sources.AddPattern(pattern);
+          global_settings_->install_sources->AddPattern(pattern);
         } else {
           LOG(WARNING) << "Invalid URL pattern in for preference "
                        << pref_names::kAllowedInstallSites << ": "
@@ -505,19 +535,25 @@ void ExtensionManagement::Refresh() {
   }
 
   if (allowed_types_pref) {
-    global_settings_->has_restricted_allowed_types = true;
+    global_settings_->allowed_types.emplace();
     for (const auto& entry : allowed_types_pref->GetList()) {
       if (entry.is_int() && entry.GetInt() >= 0 &&
           entry.GetInt() < Manifest::Type::NUM_LOAD_TYPES) {
-        global_settings_->allowed_types.push_back(
+        global_settings_->allowed_types->push_back(
             static_cast<Manifest::Type>(entry.GetInt()));
       } else if (entry.is_string()) {
         Manifest::Type manifest_type =
             schema_constants::GetManifestType(entry.GetString());
         if (manifest_type != Manifest::TYPE_UNKNOWN)
-          global_settings_->allowed_types.push_back(manifest_type);
+          global_settings_->allowed_types->push_back(manifest_type);
       }
     }
+  }
+
+  if (manifest_v2_pref) {
+    global_settings_->manifest_v2_setting =
+        static_cast<internal::GlobalSettings::ManifestV2Setting>(
+            manifest_v2_pref->GetInt());
   }
 
   if (dict_pref) {
