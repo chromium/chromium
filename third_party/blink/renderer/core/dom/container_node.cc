@@ -1513,6 +1513,9 @@ HTMLCollection* ContainerNode::getElementsByTagName(
     const AtomicString& qualified_name) {
   DCHECK(!qualified_name.IsNull());
 
+  // https://linear.app/replay/issue/RUN-822
+  recordreplay::Assert("ContainerNode::getElementsByTagName");
+
   if (IsA<HTMLDocument>(GetDocument())) {
     return EnsureCachedCollection<HTMLTagCollection>(kHTMLTagCollectionType,
                                                      qualified_name);
