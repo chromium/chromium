@@ -1217,7 +1217,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
       </message>
 
       <!-- Privacy Sandbox v4 - Ad Privacy Page -->
-      <message name="IDS_AD_PRIVACY_PAGE_TITLE" translateable="false" desc="Title for the Ad Privacy preferences.">
+      <message name="IDS_AD_PRIVACY_PAGE_TITLE" translateable="false" desc="Title for the Ad Privacy preferences page.">
         Donec semper
       </message>
       <message name="IDS_AD_PRIVACY_PAGE_TOPICS_LINK_ROW_LABEL" translateable="false" desc="Title for topics preference.">
@@ -1226,7 +1226,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
       <message name="IDS_AD_PRIVACY_PAGE_TOPICS_LINK_ROW_SUB_LABEL_ENABLED" translateable="false" desc="Description for topics preference when enabled.">
         Enabled Nulla eros tortor, placerat blandit dictum a, interdum id metus
       </message>
-      <message name="IDS_AD_PRIVACY_PAGE_FLEDGE_LINK_ROW_LABEL" translateable="false" desc="Title for the fledge preference when enabled.">
+      <message name="IDS_AD_PRIVACY_PAGE_FLEDGE_LINK_ROW_LABEL" translateable="false" desc="Title for the fledge preference.">
         Aenean erat leo
       </message>
       <message name="IDS_AD_PRIVACY_PAGE_FLEDGE_LINK_ROW_SUB_LABEL_ENABLED" translateable="false" desc="Description for the fledge preference when enabled.">
@@ -1237,6 +1237,19 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
       </message>
       <message name="IDS_AD_PRIVACY_PAGE_AD_MEASUREMENT_LINK_ROW_SUB_LABEL_ENABLED" translateable="false" desc="Description for the ad measurement preference when enabled.">
         Enabled Vivamus id lacus et lacus porttitor vulputate. Sed semper egestas orci vel maximus.
+      </message>
+
+      <!-- Privacy Sandbox v4 - Topics Page -->
+      <message name="IDS_SETTINGS_TOPICS_PAGE_TITLE" translateable="false" desc="Title for the Topics preferences page.">
+        Mauris interdum lectus vitae lacinia
+      </message>
+      <!-- Privacy Sandbox v4 - Fledge Page -->
+      <message name="IDS_SETTINGS_FLEDGE_PAGE_TITLE" translateable="false" desc="Title for the Fledge preferences page.">
+        Aenean erat leo
+      </message>
+      <!-- Privacy Sandbox v4 - Ad Measurement Page -->
+      <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_TITLE" translateable="false" desc="Title for the Ad Measurement preferences page.">
+        Vestibulum augue erat
       </message>
 
       <!-- Secure DNS Settings.  Used by //chrome/browser/privacy. -->
