@@ -87,7 +87,9 @@ BASE_FEATURE(kPartitionAllocLargeEmptySlotSpanRing,
 
 BASE_FEATURE(kPartitionAllocBackupRefPtr,
              "PartitionAllocBackupRefPtr",
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || \
+// TODO(keishi): Enabled on mac temporarily for debugging. Will be removed after
+// one Canary release.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     (BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) && BUILDFLAG(IS_LINUX))
              FEATURE_ENABLED_BY_DEFAULT
 #else
