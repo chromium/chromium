@@ -292,7 +292,7 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "target_cpu": "x86",
-      "use_remoteexec": true
+      "use_goma": true
     }
   },
   "win64-chrome": {
@@ -300,7 +300,7 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "target_cpu": "x64",
-      "use_remoteexec": true
+      "use_goma": true
     }
   }
 }
