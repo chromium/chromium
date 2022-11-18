@@ -156,9 +156,7 @@ IN_PROC_BROWSER_TEST_F(FileChooserImplBrowserTest,
 }
 
 // https://crbug.com/1345275
-// Disabled due to b/258505229.
-IN_PROC_BROWSER_TEST_F(FileChooserImplBrowserTest,
-                       DISABLED_UploadFolderWithSymlink) {
+IN_PROC_BROWSER_TEST_F(FileChooserImplBrowserTest, UploadFolderWithSymlink) {
   EXPECT_TRUE(NavigateToURL(
       shell(), GetTestUrl(".", "file_input_webkitdirectory.html")));
 
