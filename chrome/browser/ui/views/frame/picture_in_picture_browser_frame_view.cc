@@ -146,7 +146,7 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
   back_to_tab_button_ = controls_container_view_->AddChildView(
       std::make_unique<BackToTabButton>(base::BindRepeating(
           [](PictureInPictureBrowserFrameView* frame_view) {
-            // TODO(https://crbug.com/1346734): Focus the original tab too.
+            PictureInPictureWindowManager::GetInstance()->FocusInitiator();
             PictureInPictureWindowManager::GetInstance()
                 ->ExitPictureInPicture();
           },
@@ -639,6 +639,10 @@ gfx::ShadowValues PictureInPictureBrowserFrameView::GetShadowValues() {
   return gfx::ShadowValue::MakeMdShadowValues(elevation);
 }
 #endif
+
+views::View* PictureInPictureBrowserFrameView::GetBackToTabButtonForTesting() {
+  return back_to_tab_button_;
+}
 
 BEGIN_METADATA(PictureInPictureBrowserFrameView, BrowserNonClientFrameView)
 END_METADATA

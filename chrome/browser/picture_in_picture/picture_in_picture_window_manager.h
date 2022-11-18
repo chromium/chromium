@@ -56,6 +56,9 @@ class PictureInPictureWindowManager {
 
   void ExitPictureInPicture();
 
+  // Called to notify that the initiator web contents should be focused.
+  void FocusInitiator();
+
   // Gets the web contents in the opener browser window.
   content::WebContents* GetWebContents() const;
 

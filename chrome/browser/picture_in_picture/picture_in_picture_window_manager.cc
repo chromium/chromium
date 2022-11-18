@@ -117,6 +117,11 @@ void PictureInPictureWindowManager::ExitPictureInPicture() {
     CloseWindowInternal();
 }
 
+void PictureInPictureWindowManager::FocusInitiator() {
+  if (pip_window_controller_)
+    pip_window_controller_->FocusInitiator();
+}
+
 content::WebContents* PictureInPictureWindowManager::GetWebContents() const {
   if (!pip_window_controller_)
     return nullptr;

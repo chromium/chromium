@@ -162,6 +162,8 @@ class PictureInPictureBrowserFrameView
   static gfx::ShadowValues GetShadowValues();
 #endif
 
+  views::View* GetBackToTabButtonForTesting();
+
  private:
   // A model required to use LocationIconView.
   std::unique_ptr<LocationBarModel> location_bar_model_;

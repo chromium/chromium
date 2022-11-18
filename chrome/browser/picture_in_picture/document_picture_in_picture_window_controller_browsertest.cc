@@ -19,7 +19,10 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
@@ -337,6 +340,47 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 
   EXPECT_EQ(web_contents->GetContainerBounds(),
             window_controller()->GetWindowBounds());
+}
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
+// Document PiP is not supported in Lacros yet.
+// Back to tab button (PictureInPictureBrowserFrameView) is not available
+// in Windows yet.
+#define MAYBE_FocusInitiatorWhenBackToTab DISABLED_FocusInitiatorWhenBackToTab
+#else
+#define MAYBE_FocusInitiatorWhenBackToTab FocusInitiatorWhenBackToTab
+#endif
+IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+                       MAYBE_FocusInitiatorWhenBackToTab) {
+  LoadTabAndEnterPictureInPicture(browser());
+  auto* opener_web_contents = window_controller()->GetWebContents();
+
+  // Open a new tab.
+  GURL test_page_url = ui_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(kPictureInPictureDocumentPipPage));
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), test_page_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_NE(browser()->tab_strip_model()->GetActiveWebContents(),
+            opener_web_contents);
+
+  auto* web_contents = window_controller()->GetChildWebContents();
+  ASSERT_TRUE(web_contents);
+
+  auto* browser_view = static_cast<BrowserView*>(
+      BrowserWindow::FindBrowserWindowWithWebContents(web_contents));
+  ASSERT_TRUE(browser_view);
+
+  auto* pip_frame_view = static_cast<PictureInPictureBrowserFrameView*>(
+      browser_view->frame()->GetFrameView());
+  ASSERT_TRUE(pip_frame_view);
+
+  ClickButton(
+      views::Button::AsButton(pip_frame_view->GetBackToTabButtonForTesting()));
+  EXPECT_FALSE(window_controller()->GetChildWebContents());
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(),
+            opener_web_contents);
 }
 
 // Make sure that document PiP fails without a secure context.
