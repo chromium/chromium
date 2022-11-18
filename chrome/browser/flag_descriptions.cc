@@ -2416,6 +2416,10 @@ const char kPointerLockOptionsDescription[] =
     "to true, pointer movements wil not be affected by the underlying platform "
     "modications such as mouse accelaration.";
 
+const char kPowerBookmarksSidePanel[] = "Power bookmarks side panel";
+const char kPowerBookmarksSidePanelDescription[] =
+    "Enables the power bookmarks version of the bookmarks side panel content.";
+
 const char kBookmarksImprovedSaveFlowName[] = "Improved bookmarks save flow";
 const char kBookmarksImprovedSaveFlowDescription[] =
     "Enabled an improved save flow for bookmarks.";

@@ -1358,6 +1358,9 @@ extern const char kPermissionQuietChipDescription[];
 extern const char kPointerLockOptionsName[];
 extern const char kPointerLockOptionsDescription[];
 
+extern const char kPowerBookmarksSidePanel[];
+extern const char kPowerBookmarksSidePanelDescription[];
+
 extern const char kPrerender2Name[];
 extern const char kPrerender2Description[];
 

@@ -61880,6 +61880,7 @@ from previous Chrome versions.
   <int value="209805234" label="MessagesForAndroidAutoDarkWebContents:enabled"/>
   <int value="211313007" label="CrOSEnforceSystemAecNs:disabled"/>
   <int value="211561930" label="TouchDragAndContextMenu:disabled"/>
+  <int value="212245695" label="PowerBookmarksSidePanel:disabled"/>
   <int value="212489101" label="AutofillAssistantChromeEntry:enabled"/>
   <int value="212977039" label="MediaFoundationD3D11VideoCapture:disabled"/>
   <int value="213214333" label="UnifiedPasswordManagerReenrollment:enabled"/>
@@ -64358,6 +64359,7 @@ from previous Chrome versions.
   <int value="1699182601" label="DockedMagnifier:disabled"/>
   <int value="1699290689" label="CssSelectorFragmentAnchor:enabled"/>
   <int value="1700117535" label="MediaFeedsBackgroundFetching:disabled"/>
+  <int value="1700181145" label="PowerBookmarksSidePanel:enabled"/>
   <int value="1700394127" label="OverlayScrollbar:disabled"/>
   <int value="1701295056"
       label="AutofillEnableVirtualCardManagementInDesktopSettingsPage:enabled"/>
