@@ -55,6 +55,9 @@ void EmitNetworkDataError(DataError error);
 void EmitCrosHealthdProbeError(const base::StringPiece source_type,
                                cros_healthd::mojom::ErrorType error_type);
 
+void EmitKeyboardTesterRoutineDuration(
+    const base::TimeDelta& keyboard_tester_routine_duration);
+
 }  // namespace metrics
 }  // namespace diagnostics
 }  // namespace ash

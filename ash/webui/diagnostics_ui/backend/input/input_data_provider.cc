@@ -15,6 +15,7 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/system/diagnostics/keyboard_input_log.h"
+#include "ash/webui/diagnostics_ui/backend/common/histogram_util.h"
 #include "ash/webui/diagnostics_ui/backend/input/event_watcher_factory.h"
 #include "ash/webui/diagnostics_ui/backend/input/input_data_event_watcher.h"
 #include "ash/webui/diagnostics_ui/backend/input/input_device_information.h"
@@ -23,6 +24,7 @@
 #include "ash/wm/window_util.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
+#include "base/time/time.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/chromeos/events/event_rewriter_chromeos.h"
 #include "ui/display/screen.h"
@@ -82,6 +84,11 @@ InputDataProvider::InputDataProvider(
 }
 
 InputDataProvider::~InputDataProvider() {
+  // Cleanup all the keyboard watchers/observers.
+  for (const auto& [id, _] : keyboard_watchers_) {
+    UnforwardKeyboardInput(id);
+  }
+
   BlockShortcuts(/*should_block=*/false);
   device_manager_->RemoveObserver(this);
   widget_->RemoveObserver(this);
@@ -304,6 +311,7 @@ void InputDataProvider::ForwardKeyboardInput(uint32_t id) {
   BlockShortcuts(may_send_events_);
   keyboard_watchers_[id] = watcher_factory_->MakeKeyboardEventWatcher(
       id, weak_factory_.GetWeakPtr());
+  keyboard_tester_start_timestamp_ = base::Time::Now();
 }
 
 void InputDataProvider::UnforwardKeyboardInput(uint32_t id) {
@@ -324,6 +332,9 @@ void InputDataProvider::UnforwardKeyboardInput(uint32_t id) {
   if (keyboard_watchers_.empty()) {
     BlockShortcuts(/*should_block=*/false);
   }
+
+  metrics::EmitKeyboardTesterRoutineDuration(base::Time::Now() -
+                                             keyboard_tester_start_timestamp_);
 }
 
 const std::string InputDataProvider::GetKeyboardName(uint32_t id) {

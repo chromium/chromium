@@ -92,6 +92,13 @@ void EmitCrosHealthdProbeError(const base::StringPiece source_type,
   base::UmaHistogramEnumeration(metric_name, error_type);
 }
 
+void EmitKeyboardTesterRoutineDuration(
+    const base::TimeDelta& keyboard_tester_routine_duration) {
+  base::UmaHistogramLongTimes100(
+      "ChromeOS.DiagnosticsUi.KeyboardTesterRoutineDuration",
+      keyboard_tester_routine_duration);
+}
+
 }  // namespace metrics
 }  // namespace diagnostics
 }  // namespace ash

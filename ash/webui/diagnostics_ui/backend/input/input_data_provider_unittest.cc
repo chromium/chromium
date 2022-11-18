@@ -4,6 +4,7 @@
 
 #include "ash/webui/diagnostics_ui/backend/input/input_data_provider.h"
 
+#include <cstdint>
 #include <iostream>
 #include <map>
 #include <vector>
@@ -27,10 +28,12 @@
 #include "base/message_loop/message_pump_for_ui.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
@@ -184,6 +187,8 @@ constexpr KeyDefinition kKeyActionKeyboardVolumeDown = {KEY_VOLUMEDOWN, 0xAE,
                                                         0x0C00EA};
 constexpr KeyDefinition kKeyActionKeyboardVolumeUp = {KEY_VOLUMEUP, 0xB0,
                                                       0x0C00E9};
+
+constexpr uint32_t kKeyboardTesterMetricTimeDelay = 10u;
 #if 0
 // TODO(b/208729519): Not useful until we can test Drallion keyboards.
 // Drallion, no HID equivalent
@@ -2247,6 +2252,91 @@ TEST_F(InputDataProviderTest, KeyboardInputLog) {
   EXPECT_EQ("AT Translated Set 2 keyboard", first_line_contents[2]);
 
   EXPECT_EQ("Key code: 30, Scan code: 30", lines[1]);
+}
+
+TEST_F(InputDataProviderTest, KeyboardTesterRoutineDurationMetric) {
+  base::HistogramTester histogram_tester;
+
+  std::unique_ptr<FakeKeyboardObserver> fake_observer =
+      std::make_unique<FakeKeyboardObserver>();
+
+  // Widget must be active and visible.
+  provider_->attached_widget_->Show();
+  provider_->attached_widget_->Activate();
+
+  // Construct a keyboard.
+  const ui::DeviceEvent event0(ui::DeviceEvent::DeviceType::INPUT,
+                               ui::DeviceEvent::ActionType::ADD,
+                               base::FilePath("/dev/input/event6"));
+  provider_->OnDeviceEvent(event0);
+  base::RunLoop().RunUntilIdle();
+
+  // Attach a key observer.
+  provider_->ObserveKeyEvents(
+      /*id=*/6u, fake_observer->receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  task_environment()->FastForwardBy(
+      base::Seconds(kKeyboardTesterMetricTimeDelay));
+  ASSERT_TRUE(provider_->watchers_[6]);
+
+  // Test a key event.
+  EXPECT_KEY_EVENTS(fake_observer.get(), /*id=*/6u, {{kKeyA, -1}});
+
+  // Disconnect keyboard while it is being observed.
+  ui::DeviceEvent remove_kbd_event(ui::DeviceEvent::DeviceType::INPUT,
+                                   ui::DeviceEvent::ActionType::REMOVE,
+                                   base::FilePath("/dev/input/event6"));
+  provider_->OnDeviceEvent(remove_kbd_event);
+  base::RunLoop().RunUntilIdle();
+
+  // Watcher should have been shut down, and receiver disconnected.
+  EXPECT_FALSE(provider_->watchers_[6]);
+  task_environment()->RunUntilIdle();
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "ChromeOS.DiagnosticsUi.KeyboardTesterRoutineDuration",
+      base::Seconds(kKeyboardTesterMetricTimeDelay),
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(InputDataProviderTest,
+       KeyboardTesterRoutineDurationMetricOnDestruction) {
+  base::HistogramTester histogram_tester;
+
+  std::unique_ptr<FakeKeyboardObserver> fake_observer =
+      std::make_unique<FakeKeyboardObserver>();
+
+  // Widget must be active and visible.
+  provider_->attached_widget_->Show();
+  provider_->attached_widget_->Activate();
+
+  // Construct a keyboard.
+  const ui::DeviceEvent event0(ui::DeviceEvent::DeviceType::INPUT,
+                               ui::DeviceEvent::ActionType::ADD,
+                               base::FilePath("/dev/input/event6"));
+  provider_->OnDeviceEvent(event0);
+  base::RunLoop().RunUntilIdle();
+
+  // Attach a key observer.
+  provider_->ObserveKeyEvents(
+      /*id=*/6u, fake_observer->receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  task_environment()->FastForwardBy(
+      base::Seconds(kKeyboardTesterMetricTimeDelay));
+  ASSERT_TRUE(provider_->watchers_[6]);
+
+  // Test a key event.
+  EXPECT_KEY_EVENTS(fake_observer.get(), /*id=*/6u, {{kKeyA, -1}});
+
+  // Manually destroy the provider.
+  provider_.reset();
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "ChromeOS.DiagnosticsUi.KeyboardTesterRoutineDuration",
+      base::Seconds(kKeyboardTesterMetricTimeDelay),
+      /*expected_bucket_count=*/1);
 }
 
 // TODO(b/211780758): Test all Fx scancodes using

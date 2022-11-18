@@ -185,6 +185,10 @@ class InputDataProvider : public mojom::InputDataProvider,
   base::flat_map<int, std::unique_ptr<InputDataEventWatcher>>
       keyboard_watchers_;
 
+  // Timestamp of when keyboard tester is first opened. Undefined if the
+  // keyboard tester is not open.
+  base::Time keyboard_tester_start_timestamp_;
+
   bool logged_not_dispatching_key_events_ = false;
   views::Widget* widget_ = nullptr;
 
