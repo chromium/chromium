@@ -517,7 +517,7 @@ std::vector<XCursorLoader::Image> ParseCursorFile(
 
   auto ReadU32s = [&](void* dest, size_t len) {
     DCHECK_EQ(len % 4, 0u);
-    if (offset + len > file->size())
+    if (offset >= file->size() || offset + len > file->size())
       return false;
     const auto* src32 = reinterpret_cast<const uint32_t*>(mem + offset);
     auto* dest32 = reinterpret_cast<uint32_t*>(dest);
@@ -542,7 +542,6 @@ std::vector<XCursorLoader::Image> ParseCursorFile(
     uint32_t position;
   };
   std::vector<TableOfContentsEntry> toc;
-  toc.reserve(header.ntoc);
   for (uint32_t i = 0; i < header.ntoc; i++) {
     TableOfContentsEntry entry;
     if (!ReadU32s(&entry, sizeof(TableOfContentsEntry)))
