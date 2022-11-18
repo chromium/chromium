@@ -5369,7 +5369,7 @@ class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
       BrowserContext* browser_context,
       const GURL& url,
       bool origin_matches_flag) override {
-    return origin_matches_flag;
+    return url.host() == kAppHost;
   }
 };
 
@@ -5380,14 +5380,13 @@ class RenderFrameHostImplBrowserTestWithRestrictedApis
     RenderFrameHostImplBrowserTest::SetUpCommandLine(command_line);
 
     mock_cert_verifier_.SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kIsolatedAppOrigins,
-                                    std::string("https://") + kAppHost);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
     RenderFrameHostImplBrowserTest::SetUpInProcessBrowserTestFixture();
     mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
   }
+
   void TearDownInProcessBrowserTestFixture() override {
     RenderFrameHostImplBrowserTest::TearDownInProcessBrowserTestFixture();
     mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
@@ -5401,8 +5400,7 @@ class RenderFrameHostImplBrowserTestWithRestrictedApis
     net::test_server::RegisterDefaultHandlers(https_server());
     ASSERT_TRUE(https_server()->Start());
 
-    test_client_ = std::make_unique<IsolatedWebAppContentBrowserClient>();
-    old_client_ = SetBrowserClientForTesting(test_client_.get());
+    old_client_ = SetBrowserClientForTesting(&test_client_);
   }
 
   void TearDownOnMainThread() override {
@@ -5411,7 +5409,7 @@ class RenderFrameHostImplBrowserTestWithRestrictedApis
   }
 
  private:
-  std::unique_ptr<IsolatedWebAppContentBrowserClient> test_client_;
+  IsolatedWebAppContentBrowserClient test_client_;
   raw_ptr<ContentBrowserClient> old_client_;
   ContentMockCertVerifier mock_cert_verifier_;
 };

@@ -12,7 +12,6 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_paths.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -290,20 +289,20 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest, CSPAttributeTooLong) {
   EXPECT_FALSE(current_frame_host()->child_at(0)->csp_attribute());
 }
 
+namespace {
+const char kAppHost[] = "app.com";
+const char kNonAppHost[] = "other.com";
+}  // namespace
+
 class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
  public:
   bool ShouldUrlUseApplicationIsolationLevel(
       BrowserContext* browser_context,
       const GURL& url,
       bool origin_matches_flag) override {
-    return origin_matches_flag;
+    return url.host() == kAppHost;
   }
 };
-
-namespace {
-const char kAppHost[] = "app.com";
-const char kNonAppHost[] = "other.com";
-}  // namespace
 
 class ContentSecurityPolicyIsolatedAppBrowserTest
     : public ContentSecurityPolicyBrowserTest {
@@ -314,28 +313,31 @@ class ContentSecurityPolicyIsolatedAppBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ContentSecurityPolicyBrowserTest::SetUpCommandLine(command_line);
     mock_cert_verifier_.SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kIsolatedAppOrigins,
-                                    std::string("https://") + kAppHost);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
     ContentSecurityPolicyBrowserTest::SetUpInProcessBrowserTestFixture();
     mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
-    old_client_ = SetBrowserClientForTesting(&client_);
   }
 
   void TearDownInProcessBrowserTestFixture() override {
-    SetBrowserClientForTesting(old_client_);
     mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
     ContentSecurityPolicyBrowserTest::TearDownInProcessBrowserTestFixture();
   }
 
   void SetUpOnMainThread() override {
     ContentSecurityPolicyBrowserTest::SetUpOnMainThread();
+    old_client_ = SetBrowserClientForTesting(&client_);
+
     host_resolver()->AddRule("*", "127.0.0.1");
     mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
     https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
     ASSERT_TRUE(https_server()->Start());
+  }
+
+  void TearDownOnMainThread() override {
+    SetBrowserClientForTesting(old_client_);
+    ContentSecurityPolicyBrowserTest::TearDownOnMainThread();
   }
 
  protected:
