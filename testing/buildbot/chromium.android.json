@@ -8895,10 +8895,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -8955,10 +8955,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -9016,10 +9016,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -9075,10 +9075,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -9128,10 +9128,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -9179,10 +9179,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -9238,10 +9238,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -9297,10 +9297,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -9356,10 +9356,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -9417,10 +9417,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -9477,10 +9477,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -9536,10 +9536,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -9596,10 +9596,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -9655,10 +9655,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -9715,10 +9715,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -9774,10 +9774,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -9844,10 +9844,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -9913,10 +9913,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -9978,10 +9978,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -10038,10 +10038,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -10099,10 +10099,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -10161,10 +10161,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -10223,10 +10223,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -10283,10 +10283,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -10344,10 +10344,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -10403,10 +10403,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -10462,10 +10462,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -10521,10 +10521,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -10580,10 +10580,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -10639,10 +10639,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -10698,10 +10698,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -10757,10 +10757,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -10819,10 +10819,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -10878,10 +10878,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -10937,10 +10937,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -10996,10 +10996,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -11055,10 +11055,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -11114,10 +11114,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -11173,10 +11173,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -11232,10 +11232,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -11291,10 +11291,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -11351,10 +11351,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -11410,10 +11410,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -11469,10 +11469,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -11528,10 +11528,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -11587,10 +11587,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -11646,10 +11646,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -11706,10 +11706,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -11766,10 +11766,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -11826,10 +11826,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -11885,10 +11885,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -11944,10 +11944,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -12003,10 +12003,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -12062,10 +12062,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -12121,10 +12121,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -12180,10 +12180,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -12239,10 +12239,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -12298,10 +12298,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -12357,10 +12357,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -12417,10 +12417,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -12476,10 +12476,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -12536,10 +12536,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -12596,10 +12596,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -12655,10 +12655,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -12715,10 +12715,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -12783,10 +12783,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -12855,10 +12855,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -12915,10 +12915,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -12974,10 +12974,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -13037,10 +13037,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -13097,10 +13097,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -13158,10 +13158,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -13218,10 +13218,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -13271,10 +13271,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -13323,10 +13323,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -13382,10 +13382,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -13441,10 +13441,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -13500,10 +13500,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -13561,10 +13561,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -13621,10 +13621,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -13680,10 +13680,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -13740,10 +13740,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -13799,10 +13799,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -13859,10 +13859,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -13918,10 +13918,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -13988,10 +13988,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -14057,10 +14057,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -14123,10 +14123,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -14183,10 +14183,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -14243,10 +14243,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -14304,10 +14304,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -14365,10 +14365,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -14425,10 +14425,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -14486,10 +14486,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -14545,10 +14545,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -14605,10 +14605,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -14664,10 +14664,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -14723,10 +14723,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -14782,10 +14782,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -14841,10 +14841,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -14900,10 +14900,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -14962,10 +14962,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -15022,10 +15022,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -15081,10 +15081,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -15140,10 +15140,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -15199,10 +15199,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -15258,10 +15258,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -15317,10 +15317,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -15376,10 +15376,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -15435,10 +15435,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -15495,10 +15495,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -15554,10 +15554,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -15613,10 +15613,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -15672,10 +15672,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -15731,10 +15731,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -15790,10 +15790,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -15850,10 +15850,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -15911,10 +15911,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -15971,10 +15971,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -16031,10 +16031,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -16090,10 +16090,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -16149,10 +16149,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -16208,10 +16208,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -16267,10 +16267,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -16326,10 +16326,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -16385,10 +16385,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -16444,10 +16444,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -16503,10 +16503,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -16562,10 +16562,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -16622,10 +16622,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -16681,10 +16681,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -16741,10 +16741,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -16800,10 +16800,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -16859,10 +16859,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -16919,10 +16919,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -16978,10 +16978,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -17037,10 +17037,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -17105,10 +17105,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -17177,10 +17177,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -17237,10 +17237,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -17296,10 +17296,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -17355,10 +17355,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -17418,10 +17418,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -17477,10 +17477,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -17537,10 +17537,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -17596,10 +17596,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -17649,10 +17649,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -17699,10 +17699,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -17758,10 +17758,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -17817,10 +17817,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -17876,10 +17876,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -17936,10 +17936,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -17996,10 +17996,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -18055,10 +18055,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -18115,10 +18115,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -18174,10 +18174,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -18233,10 +18233,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -18292,10 +18292,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -18358,10 +18358,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -18426,10 +18426,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -18491,10 +18491,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -18551,10 +18551,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -18610,10 +18610,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -18670,10 +18670,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -18730,10 +18730,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -18790,10 +18790,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -18850,10 +18850,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -18909,10 +18909,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -18968,10 +18968,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -19027,10 +19027,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -19086,10 +19086,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -19145,10 +19145,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -19204,10 +19204,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -19263,10 +19263,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -19324,10 +19324,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -19383,10 +19383,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -19442,10 +19442,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -19501,10 +19501,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -19560,10 +19560,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -19619,10 +19619,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -19678,10 +19678,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -19737,10 +19737,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -19796,10 +19796,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -19855,10 +19855,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -19914,10 +19914,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -19973,10 +19973,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -20032,10 +20032,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -20091,10 +20091,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -20150,10 +20150,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -20209,10 +20209,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -20269,10 +20269,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -20328,10 +20328,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -20387,10 +20387,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -20446,10 +20446,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -20505,10 +20505,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -20564,10 +20564,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -20623,10 +20623,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -20682,10 +20682,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -20741,10 +20741,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -20800,10 +20800,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -20859,10 +20859,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -20918,10 +20918,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -20978,10 +20978,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -21037,10 +21037,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -21096,10 +21096,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -21155,10 +21155,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -21214,10 +21214,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -21273,10 +21273,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -21332,10 +21332,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -21391,10 +21391,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -21451,10 +21451,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -21510,10 +21510,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -21569,10 +21569,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -25842,10 +25842,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -25901,10 +25901,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -25960,10 +25960,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -26019,10 +26019,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -26078,10 +26078,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -26137,10 +26137,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -26197,10 +26197,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -26261,10 +26261,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -26320,10 +26320,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -26379,10 +26379,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -26438,10 +26438,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -26497,10 +26497,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -26556,10 +26556,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -26616,10 +26616,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -26680,10 +26680,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -26739,10 +26739,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -26798,10 +26798,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -26857,10 +26857,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -26916,10 +26916,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -26975,10 +26975,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -27035,10 +27035,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -27099,10 +27099,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -27158,10 +27158,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -27217,10 +27217,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -27276,10 +27276,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -27335,10 +27335,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -27394,10 +27394,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -27453,10 +27453,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -27517,10 +27517,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -27576,10 +27576,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -27635,10 +27635,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -27694,10 +27694,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -27753,10 +27753,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -27812,10 +27812,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -27872,10 +27872,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -27936,10 +27936,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -27995,10 +27995,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -28054,10 +28054,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -28113,10 +28113,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -28172,10 +28172,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -28231,10 +28231,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -28291,10 +28291,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -28415,10 +28415,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -28474,10 +28474,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -28533,10 +28533,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -28592,10 +28592,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -28651,10 +28651,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -28710,10 +28710,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -28770,10 +28770,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -28839,10 +28839,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -28899,10 +28899,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -28961,10 +28961,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -29021,10 +29021,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -29075,10 +29075,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -29126,10 +29126,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -29186,10 +29186,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -29246,10 +29246,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -29307,10 +29307,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -29368,10 +29368,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -29429,10 +29429,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -29489,10 +29489,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -29550,10 +29550,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -29610,10 +29610,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -29670,10 +29670,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -29736,10 +29736,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -29796,10 +29796,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -29864,10 +29864,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -29933,10 +29933,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -29999,10 +29999,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -30060,10 +30060,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -30121,10 +30121,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -30183,10 +30183,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -30245,10 +30245,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -30306,10 +30306,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -30367,10 +30367,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -30427,10 +30427,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -30487,10 +30487,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -30547,10 +30547,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -30607,10 +30607,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -30667,10 +30667,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -30727,10 +30727,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -30787,10 +30787,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -30850,10 +30850,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -30910,10 +30910,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -30970,10 +30970,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -31030,10 +31030,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -31090,10 +31090,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -31150,10 +31150,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -31210,10 +31210,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -31270,10 +31270,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -31330,10 +31330,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -31390,10 +31390,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -31450,10 +31450,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -31510,10 +31510,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -31570,10 +31570,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -31630,10 +31630,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -31690,10 +31690,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -31750,10 +31750,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -31812,10 +31812,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -31873,10 +31873,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -31934,10 +31934,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -31994,10 +31994,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -32054,10 +32054,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -32114,10 +32114,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -32174,10 +32174,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -32234,10 +32234,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -32294,10 +32294,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -32354,10 +32354,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -32414,10 +32414,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -32475,10 +32475,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -32535,10 +32535,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -32595,10 +32595,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -32655,10 +32655,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -32715,10 +32715,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -32775,10 +32775,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -32835,10 +32835,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -32903,10 +32903,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -32964,10 +32964,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -33025,10 +33025,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -33085,10 +33085,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -33145,10 +33145,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -33205,10 +33205,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -33249,12 +33249,12 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_os_flavor": null,
               "device_playstore_version": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -33302,10 +33302,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -33352,10 +33352,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -33399,10 +33399,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -37658,10 +37658,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -37718,10 +37718,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -37779,10 +37779,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -37838,10 +37838,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -37891,10 +37891,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -37941,10 +37941,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -38000,10 +38000,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -38059,10 +38059,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -38118,10 +38118,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -38178,10 +38178,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -38238,10 +38238,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -38297,10 +38297,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -38357,10 +38357,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -38416,10 +38416,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -38476,10 +38476,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -38535,10 +38535,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -38594,10 +38594,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -38661,10 +38661,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -38730,10 +38730,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -38795,10 +38795,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -38855,10 +38855,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -38914,10 +38914,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -38975,10 +38975,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -39036,10 +39036,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -39096,10 +39096,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -39156,10 +39156,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -39215,10 +39215,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -39274,10 +39274,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -39333,10 +39333,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -39392,10 +39392,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -39451,10 +39451,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -39510,10 +39510,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -39569,10 +39569,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -39631,10 +39631,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -39690,10 +39690,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -39749,10 +39749,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -39808,10 +39808,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -39867,10 +39867,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -39926,10 +39926,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -39985,10 +39985,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -40044,10 +40044,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -40103,10 +40103,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -40162,10 +40162,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -40221,10 +40221,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -40280,10 +40280,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -40339,10 +40339,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -40398,10 +40398,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -40457,10 +40457,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -40517,10 +40517,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -40578,10 +40578,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -40637,10 +40637,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -40696,10 +40696,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -40755,10 +40755,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -40814,10 +40814,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -40873,10 +40873,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -40932,10 +40932,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -40991,10 +40991,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -41050,10 +41050,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -41109,10 +41109,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -41168,10 +41168,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -41228,10 +41228,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -41287,10 +41287,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -41346,10 +41346,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -41405,10 +41405,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -41464,10 +41464,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -41523,10 +41523,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -41582,10 +41582,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -41648,10 +41648,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -41709,10 +41709,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -41769,10 +41769,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -41828,10 +41828,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -41887,10 +41887,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -41965,10 +41965,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -42044,10 +42044,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -42124,10 +42124,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -42204,10 +42204,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -42284,10 +42284,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -42364,10 +42364,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -42444,10 +42444,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -42524,10 +42524,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -42604,10 +42604,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -42684,10 +42684,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -42764,10 +42764,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -42848,10 +42848,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -42928,10 +42928,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -43008,10 +43008,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -43088,10 +43088,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -43168,10 +43168,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -43248,10 +43248,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -43328,10 +43328,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -43408,10 +43408,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -43488,10 +43488,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -43568,10 +43568,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -43634,10 +43634,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -43713,10 +43713,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -43793,10 +43793,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -43873,10 +43873,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -43953,10 +43953,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -44033,10 +44033,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -44113,10 +44113,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -44193,10 +44193,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -44273,10 +44273,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -44353,10 +44353,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -44433,10 +44433,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -44499,10 +44499,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -44578,10 +44578,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -44658,10 +44658,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -44738,10 +44738,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -44818,10 +44818,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -44898,10 +44898,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -44978,10 +44978,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -45058,10 +45058,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -45138,10 +45138,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -45218,10 +45218,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -45298,10 +45298,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -45371,10 +45371,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -45443,10 +45443,10 @@
           ],
           "dimension_sets": [
             {
+              "cores": "4",
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }

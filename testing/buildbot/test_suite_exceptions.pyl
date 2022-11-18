@@ -1674,7 +1674,8 @@
           'shards': 30,
           'dimension_sets': [
             {
-              'machine_type': 'e2-standard-8', # use 8-core to shorten runtime
+              # use 8-core to shorten runtime
+              'cores': '8',
             },
           ],
         },
