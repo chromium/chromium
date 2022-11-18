@@ -26,6 +26,10 @@ class CullRectUpdaterTest : public PaintControllerPaintTest {
         ->FirstFragment()
         .GetContentsCullRect();
   }
+
+  CullRect GetContentsCullRect(const PaintLayer& layer) {
+    return layer.GetLayoutObject().FirstFragment().GetContentsCullRect();
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -684,6 +688,40 @@ TEST_P(CullRectUpdaterTest, NestedOverriddenCullRectScopes) {
   }
   EXPECT_EQ(cull_rect1, GetCullRect(layer1));
   EXPECT_EQ(cull_rect2, GetCullRect(layer2));
+}
+
+TEST_P(CullRectUpdaterTest, ViewScrollNeedsCullRectUpdate) {
+  SetBodyInnerHTML("<div style='height: 5000px'>");
+
+  auto& layer = *GetLayoutView().Layer();
+  EXPECT_FALSE(layer.NeedsCullRectUpdate());
+  EXPECT_EQ(gfx::PointF(),
+            layer.GetScrollableArea()->LastCullRectUpdateScrollPosition());
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 4600), GetContentsCullRect(layer).Rect());
+
+  GetDocument().domWindow()->scrollBy(0, 300);
+  UpdateAllLifecyclePhasesExceptPaint(/*update_cull_rects*/ false);
+  EXPECT_FALSE(layer.NeedsCullRectUpdate());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(gfx::PointF(),
+            layer.GetScrollableArea()->LastCullRectUpdateScrollPosition());
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 4600), GetContentsCullRect(layer).Rect());
+
+  GetDocument().domWindow()->scrollBy(0, 300);
+  UpdateAllLifecyclePhasesExceptPaint(/*update_cull_rects*/ false);
+  EXPECT_TRUE(layer.NeedsCullRectUpdate());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(gfx::PointF(0, 600),
+            layer.GetScrollableArea()->LastCullRectUpdateScrollPosition());
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 5016), GetContentsCullRect(layer).Rect());
+
+  GetDocument().domWindow()->scrollBy(0, 300);
+  UpdateAllLifecyclePhasesExceptPaint(/*update_cull_rects*/ false);
+  EXPECT_FALSE(layer.NeedsCullRectUpdate());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(gfx::PointF(0, 600),
+            layer.GetScrollableArea()->LastCullRectUpdateScrollPosition());
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 5016), GetContentsCullRect(layer).Rect());
 }
 
 class CullRectUpdateOnPaintPropertyChangeTest : public CullRectUpdaterTest {

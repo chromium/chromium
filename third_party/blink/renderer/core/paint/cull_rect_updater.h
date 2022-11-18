@@ -33,7 +33,11 @@ class CORE_EXPORT CullRectUpdater {
  public:
   explicit CullRectUpdater(PaintLayer& starting_layer);
 
-  void Update(const CullRect& input_cull_rect = CullRect::Infinite());
+  void Update();
+
+  // For testing painting behavior with cull rect with a custom top-level cull
+  // rect.
+  void UpdateForTesting(const CullRect& input_cull_rect);
 
   static void PaintPropertiesChanged(const LayoutObject&,
                                      const PaintPropertiesChangeInfo&);

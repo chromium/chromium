@@ -4093,7 +4093,7 @@ void LocalFrameView::PaintForTest(const CullRect& cull_rect) {
   AllowThrottlingScope allow_throttling(*this);
   Lifecycle().AdvanceTo(DocumentLifecycle::kInPaint);
   if (RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled())
-    CullRectUpdater(*GetLayoutView()->Layer()).Update(cull_rect);
+    CullRectUpdater(*GetLayoutView()->Layer()).UpdateForTesting(cull_rect);
   OverriddenOldCullRectScope force_old_cull_rect(*GetLayoutView()->Layer(),
                                                  cull_rect);
   PaintController& paint_controller = EnsurePaintController();
@@ -4105,8 +4105,10 @@ void LocalFrameView::PaintForTest(const CullRect& cull_rect) {
     paint_controller.CommitNewDisplayItems();
   }
   Lifecycle().AdvanceTo(DocumentLifecycle::kPaintClean);
-  if (RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled())
-    CullRectUpdater(*GetLayoutView()->Layer()).Update();
+  if (RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled()) {
+    CullRectUpdater(*GetLayoutView()->Layer())
+        .UpdateForTesting(CullRect::Infinite());
+  }
 }
 
 sk_sp<PaintRecord> LocalFrameView::GetPaintRecord() const {

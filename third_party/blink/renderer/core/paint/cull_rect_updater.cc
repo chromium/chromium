@@ -65,6 +65,8 @@ bool SetFragmentContentsCullRect(PaintLayer& layer,
     }
   } else {
     SetLayerNeedsRepaintOnCullRectChange(layer);
+    if (auto* scrollable_area = layer.GetScrollableArea())
+      scrollable_area->DidUpdateCullRect();
   }
 
   fragment.SetContentsCullRect(contents_cull_rect);
@@ -183,12 +185,13 @@ CullRectUpdater::CullRectUpdater(PaintLayer& starting_layer)
       starting_layer.GetLayoutObject().GetDocument());
 }
 
-void CullRectUpdater::Update(const CullRect& input_cull_rect) {
+void CullRectUpdater::Update() {
+  DCHECK(starting_layer_.IsRootLayer());
   TRACE_EVENT0("blink,benchmark", "CullRectUpdate");
   SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES("Blink.CullRect.UpdateTime");
 
-  DCHECK(starting_layer_.IsRootLayer());
-  UpdateInternal(input_cull_rect);
+  UpdateInternal(CullRect::Infinite());
+
 #if DCHECK_IS_ON()
   if (VLOG_IS_ON(2)) {
     VLOG(2) << "PaintLayer tree after cull rect update:";
@@ -197,12 +200,27 @@ void CullRectUpdater::Update(const CullRect& input_cull_rect) {
 #endif
 }
 
+void CullRectUpdater::UpdateForTesting(const CullRect& input_cull_rect) {
+  DCHECK(starting_layer_.IsRootLayer());
+  UpdateInternal(input_cull_rect);
+}
+
 void CullRectUpdater::UpdateInternal(const CullRect& input_cull_rect) {
   const auto& object = starting_layer_.GetLayoutObject();
   if (object.GetFrameView()->ShouldThrottleRendering())
     return;
 
   object.GetFrameView()->PropagateCullRectNeedsUpdateForFrames();
+
+  if (!starting_layer_.NeedsCullRectUpdate() &&
+      !starting_layer_.DescendantNeedsCullRectUpdate() &&
+      // This allows proactive cull rect update for direct children that will
+      // be repainted.
+      !starting_layer_.SelfOrDescendantNeedsRepaint() &&
+      // Don't skip cull rect update with custom input_cull_rect.
+      input_cull_rect.IsInfinite()) {
+    return;
+  }
 
   root_state_ =
       object.View()->FirstFragment().LocalBorderBoxProperties().Unalias();
@@ -225,6 +243,9 @@ void CullRectUpdater::UpdateInternal(const CullRect& input_cull_rect) {
 
   context.absolute = context.fixed = context.current;
   UpdateForDescendants(context, starting_layer_);
+
+  if (!g_original_cull_rects)
+    starting_layer_.ClearNeedsCullRectUpdate();
 }
 
 // See UpdateForDescendants for how |force_update_self| is propagated.
@@ -382,9 +403,6 @@ bool CullRectUpdater::UpdateForSelf(Context& context, PaintLayer& layer) {
     force_update_children |=
         SetFragmentContentsCullRect(layer, *fragment, contents_cull_rect);
   }
-
-  if (auto* scrollable_area = layer.GetScrollableArea())
-    scrollable_area->DidUpdateCullRect();
 
   return force_update_children;
 }
