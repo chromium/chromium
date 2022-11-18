@@ -68,7 +68,8 @@ DeskModel::GetEntryByUuidResult DeskModelWrapper::GetEntryByUUID(
 void DeskModelWrapper::AddOrUpdateEntry(
     std::unique_ptr<ash::DeskTemplate> new_entry,
     DeskModel::AddOrUpdateEntryCallback callback) {
-  if (new_entry->type() == ash::DeskTemplateType::kTemplate) {
+  if (new_entry->type() == ash::DeskTemplateType::kTemplate ||
+      new_entry->type() == ash::DeskTemplateType::kFloatingWorkspace) {
     GetDeskTemplateModel()->AddOrUpdateEntry(std::move(new_entry),
                                              std::move(callback));
   } else {
@@ -159,7 +160,8 @@ ash::DeskTemplate* DeskModelWrapper::FindOtherEntryWithName(
     const std::u16string& name,
     ash::DeskTemplateType type,
     const base::GUID& uuid) const {
-  if (type == ash::DeskTemplateType::kTemplate) {
+  if (type == ash::DeskTemplateType::kTemplate ||
+      type == ash::DeskTemplateType::kFloatingWorkspace) {
     return GetDeskTemplateModel()->FindOtherEntryWithName(name, type, uuid);
   } else {
     return save_and_recall_desks_model_->FindOtherEntryWithName(name, type,

@@ -4,6 +4,7 @@
 
 #include "components/desks_storage/core/desk_sync_bridge.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -438,7 +439,9 @@ size_t DeskSyncBridge::GetEntryCount() const {
 }
 
 size_t DeskSyncBridge::GetMaxEntryCount() const {
-  return GetMaxSaveAndRecallDeskEntryCount() + GetMaxDeskTemplateEntryCount();
+  return GetMaxSaveAndRecallDeskEntryCount() +
+         GetMaxFloatingWorkspaceDeskEntryCount() +
+         GetMaxDeskTemplateEntryCount();
 }
 
 // Return 0 for now since chrome sync does not support save and recall desks.
@@ -454,6 +457,10 @@ size_t DeskSyncBridge::GetDeskTemplateEntryCount() const {
 // count.
 size_t DeskSyncBridge::GetMaxSaveAndRecallDeskEntryCount() const {
   return 0u;
+}
+
+size_t DeskSyncBridge::GetMaxFloatingWorkspaceDeskEntryCount() const {
+  return (ash::features::IsFloatingWorkspaceV2Enabled() ? 1u : 0u);
 }
 
 size_t DeskSyncBridge::GetMaxDeskTemplateEntryCount() const {

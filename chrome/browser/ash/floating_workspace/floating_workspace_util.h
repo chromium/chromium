@@ -18,7 +18,8 @@ ASH_EXPORT void RegisterProfilePrefs(PrefRegistrySimple* registry);
 // Returns true if floating workspace is enabled. Note this should
 // only be called after primary user profile is loaded and policy
 // has initialized.
-ASH_EXPORT bool IsFloatingWorkspaceEnabled();
+ASH_EXPORT bool IsFloatingWorkspaceV1Enabled();
+ASH_EXPORT bool IsFloatingWorkspaceV2Enabled();
 
 }  // namespace floating_workspace_util
 }  // namespace ash

@@ -83,8 +83,10 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
 namespace ash {
 class TestFloatingWorkSpaceService : public ash::FloatingWorkspaceService {
  public:
-  explicit TestFloatingWorkSpaceService(TestingProfile* profile)
+  explicit TestFloatingWorkSpaceService(TestingProfile* profile,
+                                        TestFloatingWorkspaceVersion version)
       : ash::FloatingWorkspaceService(profile) {
+    InitForTest(version);
     mock_open_tabs_ = std::make_unique<MockOpenTabsUIDelegate>();
   }
 
@@ -145,7 +147,8 @@ class FloatingWorkspaceServiceTest : public testing::Test {
 };
 
 TEST_F(FloatingWorkspaceServiceTest, RestoreRemoteSession) {
-  TestFloatingWorkSpaceService test_floating_workspace_service(profile());
+  TestFloatingWorkSpaceService test_floating_workspace_service(
+      profile(), TestFloatingWorkspaceVersion::kFloatingWorkspaceV1Enabled);
   std::unique_ptr<sync_sessions::SyncedSession> local_session =
       CreateNewSession(local_session_name, more_recent_time);
   std::vector<const sync_sessions::SyncedSession*> foreign_sessions;
@@ -175,7 +178,8 @@ TEST_F(FloatingWorkspaceServiceTest, RestoreRemoteSession) {
 }
 
 TEST_F(FloatingWorkspaceServiceTest, RestoreLocalSession) {
-  TestFloatingWorkSpaceService test_floating_workspace_service(profile());
+  TestFloatingWorkSpaceService test_floating_workspace_service(
+      profile(), TestFloatingWorkspaceVersion::kFloatingWorkspaceV1Enabled);
   // Local session has most recent timestamp and should be restored.
   std::unique_ptr<sync_sessions::SyncedSession> local_session =
       CreateNewSession(local_session_name, most_recent_time);
@@ -205,7 +209,8 @@ TEST_F(FloatingWorkspaceServiceTest, RestoreLocalSession) {
 }
 
 TEST_F(FloatingWorkspaceServiceTest, RestoreRemoteSessionAfterUpdated) {
-  TestFloatingWorkSpaceService test_floating_workspace_service(profile());
+  TestFloatingWorkSpaceService test_floating_workspace_service(
+      profile(), TestFloatingWorkspaceVersion::kFloatingWorkspaceV1Enabled);
   // Local session has most recent timestamp and should be restored.
   std::unique_ptr<sync_sessions::SyncedSession> local_session =
       CreateNewSession(local_session_name, most_recent_time);
@@ -248,7 +253,8 @@ TEST_F(FloatingWorkspaceServiceTest, RestoreRemoteSessionAfterUpdated) {
 }
 
 TEST_F(FloatingWorkspaceServiceTest, NoLocalSession) {
-  TestFloatingWorkSpaceService test_floating_workspace_service(profile());
+  TestFloatingWorkSpaceService test_floating_workspace_service(
+      profile(), TestFloatingWorkspaceVersion::kFloatingWorkspaceV1Enabled);
   std::vector<const sync_sessions::SyncedSession*> foreign_sessions;
   const std::unique_ptr<sync_sessions::SyncedSession>
       most_recent_remote_session =
@@ -273,7 +279,8 @@ TEST_F(FloatingWorkspaceServiceTest, NoLocalSession) {
 }
 
 TEST_F(FloatingWorkspaceServiceTest, NoRemoteSession) {
-  TestFloatingWorkSpaceService test_floating_workspace_service(profile());
+  TestFloatingWorkSpaceService test_floating_workspace_service(
+      profile(), TestFloatingWorkspaceVersion::kFloatingWorkspaceV1Enabled);
   std::unique_ptr<sync_sessions::SyncedSession> local_session =
       CreateNewSession(local_session_name, least_recent_time);
   test_floating_workspace_service.SetLocalSessionForTesting(
@@ -291,7 +298,8 @@ TEST_F(FloatingWorkspaceServiceTest, NoRemoteSession) {
 }
 
 TEST_F(FloatingWorkspaceServiceTest, NoSession) {
-  TestFloatingWorkSpaceService test_floating_workspace_service(profile());
+  TestFloatingWorkSpaceService test_floating_workspace_service(
+      profile(), TestFloatingWorkspaceVersion::kFloatingWorkspaceV1Enabled);
   test_floating_workspace_service
       .RestoreBrowserWindowsFromMostRecentlyUsedDevice();
   // Wait for 3 seconds which is kMaxTimeAvailableForRestoreAfterLogin.

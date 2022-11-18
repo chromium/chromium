@@ -109,6 +109,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
+#include "chrome/browser/sync/desk_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
@@ -2292,11 +2293,13 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
   VLOG(1) << "Launching browser...";
   TRACE_EVENT0("login", "LaunchBrowser");
   if (should_launch_browser_) {
-    if (floating_workspace_util::IsFloatingWorkspaceEnabled()) {
+    if (floating_workspace_util::IsFloatingWorkspaceV1Enabled() ||
+        floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
       // If floating workspace is enabled, it will override full restore.
       FloatingWorkspaceService* floating_workspace_service =
           ash::FloatingWorkspaceService::GetForProfile(profile);
-      if (floating_workspace_service) {
+      if (floating_workspace_util::IsFloatingWorkspaceV1Enabled() &&
+          floating_workspace_service) {
         floating_workspace_service->SubscribeToForeignSessionUpdates();
       }
     } else if (!IsFullRestoreEnabled(profile)) {

@@ -73,6 +73,7 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   size_t GetSaveAndRecallDeskEntryCount() const override;
   size_t GetDeskTemplateEntryCount() const override;
   size_t GetMaxSaveAndRecallDeskEntryCount() const override;
+  size_t GetMaxFloatingWorkspaceDeskEntryCount() const;
   size_t GetMaxDeskTemplateEntryCount() const override;
   std::vector<base::GUID> GetAllEntryUuids() const override;
   bool IsReady() const override;

@@ -31,7 +31,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kFloatingWorkspaceEnabled, false);
 }
 
-bool IsFloatingWorkspaceEnabled() {
+bool IsFloatingWorkspaceV1Enabled() {
   PrefService* pref_service = GetPrimaryUserPrefService();
   DCHECK(pref_service);
 
@@ -46,6 +46,10 @@ bool IsFloatingWorkspaceEnabled() {
   }
   // If the policy is not set, return feature flag status.
   return features::IsFloatingWorkspaceEnabled();
+}
+
+bool IsFloatingWorkspaceV2Enabled() {
+  return features::IsFloatingWorkspaceV2Enabled();
 }
 
 }  // namespace floating_workspace_util

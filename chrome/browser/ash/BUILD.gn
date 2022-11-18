@@ -3280,6 +3280,7 @@ source_set("ash") {
     "//components/autofill/core/browser",
     "//components/captive_portal/core",
     "//components/content_settings/core/browser",
+    "//components/desks_storage",
     "//components/download/content/public",
     "//components/download/public/background_service:public",
     "//components/drive",
