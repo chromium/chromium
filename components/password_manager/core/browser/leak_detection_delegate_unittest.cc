@@ -577,7 +577,6 @@ class LeakDetectionDelegateWithPasswordChangeTest
   LeakDetectionDelegateWithPasswordChangeTest()
       : LeakDetectionDelegateTest(
             {password_manager::features::kPasswordChange,
-             password_manager::features::kPasswordScriptsFetching,
              password_manager::features::kPasswordDomainCapabilitiesFetching}) {
   }
 };

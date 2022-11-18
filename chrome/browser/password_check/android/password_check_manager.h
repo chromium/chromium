@@ -194,8 +194,8 @@ class PasswordCheckManager
   // in the account if the quota limit was reached.
   bool CanUseAccountCheck() const;
 
-  // Returns true if the password scripts fetching (kPasswordScriptsFetching or
-  // kPasswordDomainCapabilitiesFetching) is enabled. To have precise metrics
+  // Returns true if the password scripts fetching (i.e.
+  // `kPasswordDomainCapabilitiesFetching`) is enabled. To have precise metrics
   // about user actions on credentials with scripts, scripts are fetched only
   // for the users who can start a script, i.e. sync users.
   bool ShouldFetchPasswordScripts() const;

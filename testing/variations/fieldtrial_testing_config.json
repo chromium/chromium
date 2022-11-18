@@ -8313,8 +8313,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "PasswordChangeInSettings",
-                        "PasswordScriptsFetching"
+                        "PasswordChangeInSettings"
                     ]
                 }
             ]

@@ -2309,10 +2309,6 @@ const char kPasswordDomainCapabilitiesFetchingName[] =
 const char kPasswordDomainCapabilitiesFetchingDescription[] =
     "Fetches credentials' password change capabilities from the server.";
 
-const char kPasswordScriptsFetchingName[] = "Fetch password scripts";
-const char kPasswordScriptsFetchingDescription[] =
-    "Fetches scripts for password change flows.";
-
 const char kPasswordChangeAccountStoreUsersName[] =
     "Password change for account store users";
 const char kPasswordChangeAccountStoreUsersDescription[] =

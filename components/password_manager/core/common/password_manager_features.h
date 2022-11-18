@@ -61,7 +61,6 @@ BASE_DECLARE_FEATURE(kPasswordImport);
 BASE_DECLARE_FEATURE(kPasswordManagerRedesign);
 #endif
 BASE_DECLARE_FEATURE(kPasswordReuseDetectionEnabled);
-BASE_DECLARE_FEATURE(kPasswordScriptsFetching);
 BASE_DECLARE_FEATURE(kPasswordsGrouping);
 BASE_DECLARE_FEATURE(kPasswordStrengthIndicator);
 BASE_DECLARE_FEATURE(kRecoverFromNeverSaveAndroid);
@@ -188,8 +187,7 @@ extern const char kPasswordChangeInSettingsWithForcedWarningForEverySite[];
 extern const char kTouchToFillPasswordSubmissionWithConservativeHeuristics[];
 #endif  // IS_ANDROID
 
-// Returns true if any of the password script fetching related flags are
-// enabled.
+// Returns true the password script fetching flag is enabled.
 bool IsPasswordScriptsFetchingEnabled();
 
 // Returns true if any of the features that unlock entry points for password

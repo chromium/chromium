@@ -204,11 +204,6 @@ BASE_FEATURE(kPasswordReuseDetectionEnabled,
              "PasswordReuseDetectionEnabled",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables password scripts fetching for the |PasswordChangeInSettings| feature.
-BASE_FEATURE(kPasswordScriptsFetching,
-             "PasswordScriptsFetching",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables requesting and saving passwords grouping information from the
 // affiliation service.
 // TODO(crbug.com/1359392): Remove once launched.
@@ -377,8 +372,7 @@ const char kTouchToFillPasswordSubmissionWithConservativeHeuristics[] =
 #endif  // IS_ANDROID
 
 bool IsPasswordScriptsFetchingEnabled() {
-  return base::FeatureList::IsEnabled(kPasswordScriptsFetching) ||
-         base::FeatureList::IsEnabled(kPasswordDomainCapabilitiesFetching);
+  return base::FeatureList::IsEnabled(kPasswordDomainCapabilitiesFetching);
 }
 
 bool IsAutomatedPasswordChangeEnabled() {

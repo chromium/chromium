@@ -237,7 +237,6 @@ base::Value::List APCInternalsHandler::GetAPCRelatedFlags() const {
   const base::Feature* const apc_features[] = {
     &password_manager::features::kPasswordChange,
     &password_manager::features::kPasswordChangeInSettings,
-    &password_manager::features::kPasswordScriptsFetching,
     &password_manager::features::kPasswordDomainCapabilitiesFetching,
     &password_manager::features::kForceEnablePasswordDomainCapabilities,
 #if !BUILDFLAG(IS_ANDROID)

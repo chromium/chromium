@@ -7586,20 +7586,12 @@ const FeatureEntry kFeatureEntries[] = {
          kPasswordChangeInSettingsFeatureVariations,
          "PasswordChangeInSettingsFeatureVariations")},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"password-scripts-fetching",
-     flag_descriptions::kPasswordScriptsFetchingName,
-     flag_descriptions::kPasswordScriptsFetchingDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(password_manager::features::kPasswordScriptsFetching)},
-#else
+#if !BUILDFLAG(IS_ANDROID)
     {"password-change-account-store-users",
      flag_descriptions::kPasswordChangeAccountStoreUsersName,
      flag_descriptions::kPasswordChangeAccountStoreUsersDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(
          password_manager::features::kPasswordChangeAccountStoreUsers)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_ANDROID)
     {"page-info-cookies-subpage",
      flag_descriptions::kPageInfoCookiesSubpageName,
      flag_descriptions::kPageInfoCookiesSubpageDescription, kOsDesktop,

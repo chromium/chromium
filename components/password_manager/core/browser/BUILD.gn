@@ -360,8 +360,6 @@ static_library("browser") {
       "http_credentials_cleaner.cc",
       "http_credentials_cleaner.h",
       "password_scripts_fetcher.h",
-      "password_scripts_fetcher_impl.cc",
-      "password_scripts_fetcher_impl.h",
     ]
     deps += [ "//components/autofill_assistant/browser/public" ]
   }
@@ -761,7 +759,6 @@ source_set("unit_tests") {
     sources += [
       "capabilities_service_impl_unittest.cc",
       "http_credentials_cleaner_unittest.cc",
-      "password_scripts_fetcher_impl_unittest.cc",
       "saved_passwords_capabilities_fetcher_unittest.cc",
     ]
   }
