@@ -280,14 +280,17 @@ void ContentSettingImageView::AnimationEnded(const gfx::Animation* animation) {
   // directly after the animation is shown.
   if (web_contents &&
       content_setting_image_model_->ShouldShowPromo(web_contents)) {
-    critical_promo_bubble_ =
-        BrowserFeaturePromoController::GetForView(this)->ShowCriticalPromo(
-            user_education::FeaturePromoSpecification::CreateForLegacyPromo(
-                /* feature =*/nullptr, ui::ElementIdentifier(),
-                IDS_NOTIFICATIONS_QUIET_PERMISSION_NEW_REQUEST_PROMO),
-            views::ElementTrackerViews::GetInstance()->GetElementForView(this,
-                                                                         true));
-    content_setting_image_model_->SetPromoWasShown(web_contents);
+    if (auto* const element =
+            views::ElementTrackerViews::GetInstance()->GetElementForView(
+                this, true)) {
+      critical_promo_bubble_ =
+          BrowserFeaturePromoController::GetForView(this)->ShowCriticalPromo(
+              user_education::FeaturePromoSpecification::CreateForLegacyPromo(
+                  /* feature =*/nullptr, ui::ElementIdentifier(),
+                  IDS_NOTIFICATIONS_QUIET_PERMISSION_NEW_REQUEST_PROMO),
+              element);
+      content_setting_image_model_->SetPromoWasShown(web_contents);
+    }
   }
 }
 
