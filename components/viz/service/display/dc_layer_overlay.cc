@@ -483,7 +483,9 @@ DCLayerOverlayProcessor::DCLayerOverlayProcessor(
     bool skip_initialization_for_testing)
     : has_overlay_support_(skip_initialization_for_testing),
       allowed_yuv_overlay_count_(allowed_yuv_overlay_count),
-      debug_settings_(debug_settings) {
+      debug_settings_(debug_settings),
+      no_undamaged_overlay_promotion_(base::FeatureList::IsEnabled(
+          features::kNoUndamagedOverlayPromotion)) {
   if (!skip_initialization_for_testing) {
     UpdateHasHwOverlaySupport();
     UpdateSystemHDRStatus();
@@ -786,14 +788,21 @@ void DCLayerOverlayProcessor::Process(
             has_overlay_support_, allowed_yuv_overlay_count_,
             processed_yuv_overlay_count_, resource_provider);
         yuv_quads_in_quad_list++;
-        if (it->shared_quad_state->overlay_damage_index.has_value() &&
-            !surface_damage_rect_list_[it->shared_quad_state
-                                           ->overlay_damage_index.value()]
-                 .IsEmpty()) {
-          damaged_yuv_quads_in_quad_list++;
+
+        if (no_undamaged_overlay_promotion_) {
+          if (it->shared_quad_state->overlay_damage_index.has_value() &&
+              !surface_damage_rect_list_[it->shared_quad_state
+                                             ->overlay_damage_index.value()]
+                   .IsEmpty()) {
+            damaged_yuv_quads_in_quad_list++;
+            if (result == DC_LAYER_SUCCESS)
+              processed_yuv_overlay_count_++;
+          }
+        } else {
           if (result == DC_LAYER_SUCCESS)
             processed_yuv_overlay_count_++;
         }
+
         break;
       case DrawQuad::Material::kTextureContent: {
         const TextureDrawQuad* tex_quad = TextureDrawQuad::MaterialCast(*it);
@@ -862,13 +871,18 @@ void DCLayerOverlayProcessor::Process(
   // overlays
   bool reject_overlays = false;
   if (yuv_quads_in_quad_list > 1 && !has_protected_video_or_texture_overlays) {
-    if (damaged_yuv_quads_in_quad_list == processed_yuv_overlay_count_) {
-      frames_since_last_qualified_multi_overlays_++;
+    if (no_undamaged_overlay_promotion_) {
+      if (damaged_yuv_quads_in_quad_list == processed_yuv_overlay_count_) {
+        frames_since_last_qualified_multi_overlays_++;
+      } else {
+        frames_since_last_qualified_multi_overlays_ = 0;
+      }
+      reject_overlays = frames_since_last_qualified_multi_overlays_ <=
+                        kDCLayerFramesDelayedBeforeOverlay;
     } else {
-      frames_since_last_qualified_multi_overlays_ = 0;
+      if (yuv_quads_in_quad_list != processed_yuv_overlay_count_)
+        reject_overlays = true;
     }
-    reject_overlays = frames_since_last_qualified_multi_overlays_ <=
-                      kDCLayerFramesDelayedBeforeOverlay;
   }
 
   // A YUV quad might be rejected later due to not allowed as an underlay.
@@ -900,8 +914,9 @@ void DCLayerOverlayProcessor::Process(
             .IsEmpty();
 
     if (yuv_quads_in_quad_list > allowed_yuv_overlay_count_ &&
-        !has_protected_video_or_texture_overlays &&
-        it->material == DrawQuad::Material::kYuvVideoContent && undamaged) {
+        !has_protected_video_or_texture_overlays && undamaged &&
+        no_undamaged_overlay_promotion_ &&
+        it->material == DrawQuad::Material::kYuvVideoContent) {
       RecordDCLayerResult(DC_LAYER_FAILED_NOT_DAMAGED, it);
       continue;
     }

@@ -179,6 +179,10 @@ BASE_FEATURE(kGpuProcessHighPriorityWin,
 BASE_FEATURE(kDisableVideoOverlayIfMoving,
              "DisableVideoOverlayIfMoving",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kNoUndamagedOverlayPromotion,
+             "NoUndamagedOverlayPromotion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_MAC)
