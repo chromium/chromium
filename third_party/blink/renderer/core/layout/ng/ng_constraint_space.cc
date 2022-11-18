@@ -44,7 +44,9 @@ NGConstraintSpace NGConstraintSpace::CreateFromLayoutObject(
   LogicalSize available_size;
   bool is_fixed_inline_size = false;
   bool is_fixed_block_size = false;
-  if (cb) {
+  if (block.IsSVGChild()) {
+    // SVG <text> and <foreignObject> should not refer to its containing block.
+  } else if (cb) {
     available_size.inline_size =
         LayoutBoxUtils::AvailableLogicalWidth(block, cb);
     available_size.block_size =

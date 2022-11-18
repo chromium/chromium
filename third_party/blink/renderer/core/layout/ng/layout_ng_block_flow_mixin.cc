@@ -276,7 +276,8 @@ void LayoutNGBlockFlowMixin<Base>::UpdateNGBlockLayout() {
   }
 
   LayoutNGMixin<Base>::UpdateInFlowBlockLayout();
-  LayoutNGMixin<Base>::UpdateMargins();
+  if (!Base::IsSVGChild())
+    LayoutNGMixin<Base>::UpdateMargins();
 }
 
 template <typename Base>
