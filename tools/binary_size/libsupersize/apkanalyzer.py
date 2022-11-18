@@ -316,7 +316,10 @@ def CreateDexSymbols(apk_analyzer_async_result, dex_total_size,
   logging.debug('Waiting for apkanalyzer to finish')
   apk_analyzer_result = apk_analyzer_async_result.get()
   logging.debug('Analyzing DEX - processing results')
-  source_map = _ParseJarInfoFile(size_info_prefix + '.jar.info')
+  if size_info_prefix:
+    source_map = _ParseJarInfoFile(size_info_prefix + '.jar.info')
+  else:
+    source_map = dict()
 
   nodes = _ParseApkAnalyzerOutput(apk_analyzer_result.stdout,
                                   apk_analyzer_result.stderr)

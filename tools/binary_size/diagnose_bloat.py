@@ -238,6 +238,8 @@ class _BuildHelper:
     self.target = args.target
     self.target_os = args.target_os
     self.use_goma = args.use_goma
+    self.apk_name_override = args.custom_apk_name
+    self.main_lib_path_override = args.custom_main_lib_path
     self._SetDefaults()
     self.is_bundle = 'minimal' in self.target
 
@@ -259,6 +261,8 @@ class _BuildHelper:
 
   @property
   def apk_name(self):
+    if self.apk_name_override:
+      return self.apk_name_override
     # my_great_apk -> MyGreat.apk
     apk_name = ''.join(s.title() for s in self.target.split('_')[:-1]) + '.apk'
     if self.is_bundle:
@@ -288,6 +292,8 @@ class _BuildHelper:
   @property
   def main_lib_path(self):
     # TODO(agrieve): Could maybe extract from .apk or GN?
+    if self.main_lib_path_override:
+      return self.main_lib_path_override
     if self.IsLinux():
       return 'chrome'
     if 'monochrome' in self.target or 'trichrome' in self.target:
@@ -401,13 +407,15 @@ class _BuildHelper:
 class _BuildArchive:
   """Class for managing a directory with build results and build metadata."""
 
-  def __init__(self, rev, base_archive_dir, build, subrepo, save_unstripped):
+  def __init__(self, rev, base_archive_dir, build, subrepo, save_unstripped,
+               supersize_archive_args):
     self.build = build
     self.dir = os.path.join(base_archive_dir, rev)
     metadata_path = os.path.join(self.dir, 'metadata.txt')
     self.rev = rev
     self.metadata = _Metadata([self], build, metadata_path, subrepo)
     self._save_unstripped = save_unstripped
+    self._supersize_archive_args = supersize_archive_args
 
   def ArchiveBuildResults(self):
     """Save build artifacts necessary for diffing."""
@@ -417,9 +425,8 @@ class _BuildArchive:
       for path in self.build.abs_apk_paths:
         self._ArchiveFile(path)
       for path in self.build.abs_mapping_paths:
-        # TrichromeLibrary has no .mapping file.
-        if 'TrichromeLibrary' not in path:
-          self._ArchiveFile(path)
+        # Some apks have no .mapping files.
+        self._ArchiveFile(path, missing_ok=True)
       self._ArchiveResourceSizes()
     self._ArchiveSizeFile()
     if self._save_unstripped:
@@ -456,21 +463,24 @@ class _BuildArchive:
       cmd += [self.build.abs_apk_paths[0]]
     _RunCmd(cmd)
 
-  def _ArchiveFile(self, filename):
+  def _ArchiveFile(self, filename, missing_ok=False):
     if not os.path.exists(filename):
+      if missing_ok:
+        return
       _Die('missing expected file: %s', filename)
     shutil.copy(filename, self.dir)
 
   def _ArchiveSizeFile(self):
     supersize_cmd = [_SUPERSIZE_PATH, 'archive', self.archived_size_path]
     if self.build.IsAndroid():
-      supersize_cmd += [
-          '-f', self.build.supersize_input, '--aux-elf-file',
-          self.build.abs_main_lib_path
-      ]
+      supersize_cmd += ['-f', self.build.supersize_input]
+      if os.path.exists(self.build.abs_main_lib_path):
+        supersize_cmd += ['--aux-elf-file', self.build.abs_main_lib_path]
     else:
       supersize_cmd += ['--elf-file', self.build.abs_main_lib_path]
     supersize_cmd += ['--output-directory', self.build.output_directory]
+    if self._supersize_archive_args:
+      supersize_cmd.extend(self._supersize_archive_args.split())
     logging.info('Creating .size file')
     _RunCmd(supersize_cmd)
 
@@ -478,12 +488,13 @@ class _BuildArchive:
 class _DiffArchiveManager:
   """Class for maintaining BuildArchives and their related diff artifacts."""
 
-  def __init__(self, revs, archive_dir, diffs, build, subrepo, save_unstripped):
+  def __init__(self, revs, archive_dir, diffs, build, subrepo, save_unstripped,
+               supersize_archive_args):
     self.archive_dir = archive_dir
     self.build = build
     self.build_archives = [
-        _BuildArchive(rev, archive_dir, build, subrepo, save_unstripped)
-        for rev in revs
+        _BuildArchive(rev, archive_dir, build, subrepo, save_unstripped,
+                      supersize_archive_args) for rev in revs
     ]
     self.diffs = diffs
     self.subrepo = subrepo
@@ -869,6 +880,9 @@ def main():
                       action='store_true',
                       help='Show commands executed, extra debugging output'
                            ', and Ninja/GN output.')
+  parser.add_argument('--supersize-archive-args',
+                      help='Args to pass through to the supersize archive '
+                      'command (e.g. --java-only, --no-output-directory, etc).')
 
   build_group = parser.add_argument_group('build arguments')
   build_group.add_argument('--no-goma',
@@ -898,6 +912,20 @@ def main():
                            'Android default: trichrome_minimal_apks or '
                            'trichrome_google_minimal_apks (depending on '
                            '--enable-chrome-android-internal).')
+  build_group.add_argument('--custom-apk-name',
+                           help='The apk name by default is derived from the '
+                           'target name, but occasionally targets set a custom '
+                           'apk name in GN. In those cases use this flag to '
+                           'specify the actual apk name (e.g. '
+                           '--custom-apk-name=ChromiumNetTestSupport.apk for '
+                           'net_test_support_apk).')
+  build_group.add_argument('--custom-main-lib-path',
+                           help='The main lib path by default is derived from '
+                           'the target name. Set this if your target has its '
+                           'own main lib path (e.g. '
+                           '--custom-main-lib-path=lib.unstripped/'
+                           'libnet_java_test_native_support.so for '
+                           'net_test_support_apk).')
   if len(sys.argv) == 1:
     parser.print_help()
     return 1
@@ -932,7 +960,8 @@ def main():
   if build.IsAndroid():
     diffs += [ResourceSizesDiff()]
   diff_mngr = _DiffArchiveManager(revs, args.archive_directory, diffs, build,
-                                  subrepo, args.unstripped)
+                                  subrepo, args.unstripped,
+                                  args.supersize_archive_args)
   consecutive_failures = 0
   i = 0
   for i, archive in enumerate(diff_mngr.build_archives):

@@ -853,7 +853,7 @@ def _CreateContainerSpecs(apk_file_manager,
       apk_spec.size_info_prefix = os.path.join(top_args.output_directory,
                                                'size-info',
                                                os.path.basename(apk_prefix))
-    apk_spec.analyze_dex = bool(analyze_dex and apk_spec.size_info_prefix)
+    apk_spec.analyze_dex = analyze_dex
     apk_spec.default_component = json_config.DefaultComponentForSplit(
         split_name)
     apk_spec.path_defaults = json_config.ApkPathDefaults()

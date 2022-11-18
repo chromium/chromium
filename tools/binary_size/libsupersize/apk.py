@@ -55,7 +55,10 @@ class _ResourcePathDeobfuscator:
 class _ResourceSourceMapper:
   def __init__(self, size_info_prefix, path_defaults):
     self._path_defaults = path_defaults or {}
-    self._res_info = self._LoadResInfo(size_info_prefix)
+    if size_info_prefix:
+      self._res_info = self._LoadResInfo(size_info_prefix)
+    else:
+      self._res_info = dict()
     self._pattern_dollar_underscore = re.compile(r'\$+(.*?)(?:__\d)+')
     self._pattern_version_suffix = re.compile(r'-v\d+/')
 
