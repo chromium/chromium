@@ -16,7 +16,7 @@ items:
   name: RenderInChromeFrame
   value: 1
 owners:
-- tommi@chromium.org
+- file://components/policy/OWNERS
 schema:
   enum:
   - 0

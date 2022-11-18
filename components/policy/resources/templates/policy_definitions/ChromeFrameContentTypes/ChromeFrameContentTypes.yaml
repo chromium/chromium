@@ -11,7 +11,7 @@ example_value:
 features:
   dynamic_refresh: false
 owners:
-- tommi@chromium.org
+- file://components/policy/OWNERS
 schema:
   items:
     type: string
