@@ -978,6 +978,12 @@ void PartialTranslateBubbleView::SwitchView(
   }
 
   SwitchTabForViewState(view_state);
+  // The initial partial translation uses "Detected Language" as the source by
+  // default, so |partial_text_label_| needs to be resized after receiving the
+  // actual source language string in the response.
+  UpdateLanguageTabNames();
+  UpdateTextForViewState(view_state);
+  partial_text_label_->SizeToFit(tab_view_top_row_->GetPreferredSize().width());
   UpdateTextForViewState(view_state);
 
   // In cases where we are switching from the waiting view, the spinner should
@@ -991,7 +997,6 @@ void PartialTranslateBubbleView::SwitchView(
   }
 
   UpdateViewState(view_state);
-  UpdateLanguageTabNames();
   if (view_state == PartialTranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE ||
       view_state == PartialTranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE)
     UpdateAdvancedView();
