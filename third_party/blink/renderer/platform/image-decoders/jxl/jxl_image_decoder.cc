@@ -158,7 +158,8 @@ void JXLImageDecoder::DecodeImpl(wtf_size_t index, bool only_size) {
     // Frame already complete
     return;
   }
-  if ((index < num_decoded_frames_) && dec_) {
+  if ((index < num_decoded_frames_) && dec_ &&
+      frame_buffer_cache_[index].GetStatus() != ImageFrame::kFramePartial) {
     // An animation frame that already has been decoded, but does not have
     // status ImageFrame::kFrameComplete, was requested.
     // This can mean two things:
