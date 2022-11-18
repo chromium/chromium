@@ -5,9 +5,9 @@
 <link rel="help" href="https://drafts.csswg.org/css-sizing-4/#last-remembered">
 <link rel="help" href="https://drafts.csswg.org/css-sizing-4/#intrinsic-size-override">
 <link rel="help" href="https://drafts.csswg.org/css-contain-2/#content-visibility">
-<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/7529">
-<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/7516">
-<meta name="assert" content="Tests that the last remembered size is tracked independently for each axis." />
+<link rel="help" href="https://drafts.csswg.org/css-contain-3/#containment-inline-size">
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/7807">
+<meta name="assert" content="Tests that the last remembered size can be updated when the element has size containment but doesn't skip its contents." />
 
 <style>
 #target {
@@ -25,6 +25,12 @@
 }
 .content-skip {
   content-visibility: hidden;
+}
+.contain-size {
+  contain: size;
+}
+.contain-inline-size {
+  contain: inline-size;
 }
 .ciw-auto-2 {
   contain-intrinsic-width: auto 2px;
@@ -61,20 +67,28 @@ function nextRendering() {
 }
 
 promise_test(async function() {
-  target.className = "content-100-50 ciw-auto-20";
+  target.className = "content-100-50";
   checkSize(100, 50, "Sizing normally");
 
   await nextRendering();
+  target.className = "content-100-50 ciw-auto-20 cih-auto-10 contain-size";
+  checkSize(20, 10, "Size containment");
+
+  await nextRendering();
   target.className = "content-skip ciw-auto-2 cih-auto-1";
-  checkSize(100, 1, "Using last remembered inline size");
-}, "Only recording last remembered inline size");
+  checkSize(20, 10, "Using last remembered size");
+}, "contain:size does not prevent recording last remembered size");
 
 promise_test(async function() {
-  target.className = "content-100-50 cih-auto-10";
+  target.className = "content-100-50";
   checkSize(100, 50, "Sizing normally");
 
   await nextRendering();
+  target.className = "content-100-50 ciw-auto-20 cih-auto-10 contain-inline-size";
+  checkSize(20, 50, "Size containment for inline axis");
+
+  await nextRendering();
   target.className = "content-skip ciw-auto-2 cih-auto-1";
-  checkSize(2, 50, "Using last remembered block size");
-}, "Only recording last remembered block size");
+  checkSize(20, 50, "Using last remembered block size");
+}, "contain:inline-size does not prevent recording last remembered inline size");
 </script>

@@ -257591,16 +257591,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "7edd9b53df87ffdd019b739766aaa57b5aaaf757",
-     []
-    ],
-    "mtime.json": [
-     "e74844ae7f9db1a221511dafb37f67e004e5fa12",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -301565,11 +301555,19 @@
        []
       ],
       "auto-009-expected.txt": [
-       "f1310970ad3a00704b1942770aca28ddf7a276df",
+       "708d9b9e16436df740ca6305e2a662b7d872b8dd",
        []
       ],
       "auto-009.html.ini": [
        "d7ffb59721239785f9670120bf2d7800db1ddbc7",
+       []
+      ],
+      "auto-011-expected.txt": [
+       "70a3aee5f1cc5fe45504a9b370d1e585e514544d",
+       []
+      ],
+      "auto-012-expected.txt": [
+       "ad41b0be1d637f7d07551421ea30a414158e81a1",
        []
       ],
       "contain-intrinsic-size-001-ref.html": [
@@ -340769,7 +340767,7 @@
        ]
       },
       "structured-cloning-error-stack-optional.sub.window-expected.txt": [
-       "989a3d4657432709309446ddd2af39dd5f5e3ab5",
+       "e4d0aa6d5bc6427faa9a3d0a74b3492f34d93b08",
        []
       ],
       "structured-cloning-error-stack-optional.sub.window.js.ini": [
@@ -361489,7 +361487,7 @@
      []
     ],
     "testharness.js": [
-     "7ac363217bdce48d173b6b07482efce6731e6494",
+     "55aaa582c53eff9674f2c2f060c5678b6f82a5a3",
      []
     ],
     "testharness.js.headers": [
@@ -361880,7 +361878,7 @@
       []
      ],
      "idlharness.window-expected.txt": [
-      "3d69232843028d94d7eaec33fe6678c82ff7fa2c",
+      "e7f55fdffaf78d35856709317a1ec3c41d9f2ea4",
       []
      ],
      "idlharness.window.js.ini": [
@@ -362154,6 +362152,10 @@
     ],
     "authentication-invalid-icon.https.html.ini": [
      "48b3321f032043418c35392bb7f2417ddc683d5b",
+     []
+    ],
+    "authentication-optout.https-expected.txt": [
+     "74a8157bf304b8a7ef0cd47b998d621cd9852938",
      []
     ],
     "authentication-rejected.https-expected.txt": [
@@ -366096,7 +366098,7 @@
       []
      ],
      "soft-navigation-helper.js": [
-      "cefe915924debbb1a5eb863852c791ca6823ee06",
+      "08e9fd4a5b5711f443660b08ea1fbe46f5058555",
       []
      ]
     },
@@ -381901,7 +381903,7 @@
     ],
     "BlobURL": {
      "cross-partition.tentative.https.html": [
-      "b6c3cae09045bb0b03c17a6e2080ed9b10fd982f",
+      "c75ce07d054eb79d048373ff003a3f385a813596",
       [
        null,
        {
@@ -432862,7 +432864,7 @@
        ]
       ],
       "auto-009.html": [
-       "ca5e4985066f6b8ef0edc45e15f71c31da1715c9",
+       "6e17f69e98b5f38c339e8ae277fffd08a1d1cf30",
        [
         null,
         {}
@@ -432870,6 +432872,20 @@
       ],
       "auto-010.html": [
        "021612a3aeb286f68ce2f3c896d620b75800f235",
+       [
+        null,
+        {}
+       ]
+      ],
+      "auto-011.html": [
+       "cb82eedf26cffa2e66df71f6379d7369af71884b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "auto-012.html": [
+       "8fd395a22494abf46007bcaabb00a1aa9d9705a4",
        [
         null,
         {}
@@ -572048,7 +572064,7 @@
       ]
      ],
      "constructor.html": [
-      "c5412566e982fdc9f448833bb4cb1bffc0f863cd",
+      "8e211efa11a6ca8eb2ff606cbff683203e608702",
       [
        null,
        {}
@@ -572062,14 +572078,14 @@
       ]
      ],
      "current-time-root-scroller.html": [
-      "b9e22d64ef64528f513f1f72741eba3809e88a3b",
+      "be1d62bec51d5a9a11bd2a382db519efca955d8e",
       [
        null,
        {}
       ]
      ],
      "current-time-writing-modes.html": [
-      "651d5fc48370f6acdf7d1fac824136d0ad7c27b9",
+      "d18abcd48f5d4088089adda7ac9709f4db32b2ab",
       [
        null,
        {}
@@ -572522,6 +572538,15 @@
     ],
     "authentication-invalid-icon.https.html": [
      "875181c3c394831ebf322a2ef5b99370fc96adc8",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "authentication-optout.https.html": [
+     "ea4d18ea1ae7e0871aba8685ce09974cf3e54cf9",
      [
       null,
       {
@@ -579459,6 +579484,15 @@
       }
      ]
     ],
+    "hash.tentative.html": [
+     "3a8419c71da75196205190aadc707394bfe6614e",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "image-lcp-followed-by-image-softnav-lcp.tentative.html": [
      "27e9bbbd13c6c9affad7bbd4b0aa3cdad2d0b3bb",
      [
@@ -579479,6 +579513,15 @@
     ],
     "navigate-child.html": [
      "63a8adb208f2a0c8cfeae4f36871578bb0bf20e4",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "navigation-api-hash.tentative.html": [
+     "a63b177a63f4974423954a720b77b3874139057d",
      [
       null,
       {
@@ -602457,7 +602500,7 @@
      ]
     ],
     "full-cycle-test.https.any.js": [
-     "943de6724f8460403cf6fd8751858c7de9574847",
+     "7428f6074807f35e75e357909131b99f062b14f0",
      [
       "webcodecs/full-cycle-test.https.any.html?av1",
       {
