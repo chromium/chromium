@@ -6925,3 +6925,8 @@ crbug.com/1385681 external/wpt/web-share/disabled-by-permissions-policy-cross-or
 crbug.com/1372166 fast/spatial-navigation/snav-div-scrollable-but-without-focusable-content.html [ Failure Pass ]
 crbug.com/1385497 http/tests/inspector-protocol/tracing/page-load-metrics.js [ Failure Pass ]
 crbug.com/1349215 external/wpt/fullscreen/api/document-fullscreen-enabled-cross-origin.sub.html [ Skip Timeout ]
+
+# To be removed after cherry picking
+crbug.com/1386017 external/wpt/performance-timeline/not-restored-reasons/performance-navigation-timing-bfcache-reasons-stay.window.html [ Failure Pass ]
+crbug.com/1386017 external/wpt/performance-timeline/not-restored-reasons/performance-navigation-timing-cross-origin-bfcache.window.html [ Failure Pass ]
+crbug.com/1386017 external/wpt/performance-timeline/not-restored-reasons/performance-navigation-timing-not-bfcached.window.html [ Failure Pass ]
