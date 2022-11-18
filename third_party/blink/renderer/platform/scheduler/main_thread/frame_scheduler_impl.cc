@@ -719,11 +719,17 @@ void FrameSchedulerImpl::OnStoppedUsingFeature(
 }
 
 void FrameSchedulerImpl::NotifyDelegateAboutFeaturesAfterCurrentTask() {
+  // https://linear.app/replay/issue/RUN-825
+  recordreplay::Assert("FrameSchedulerImpl::NotifyDelegateAboutFeaturesAfterCurrentTask");
+
   if (!delegate_)
     return;
   if (feature_report_scheduled_)
     return;
   feature_report_scheduled_ = true;
+
+  // https://linear.app/replay/issue/RUN-825
+  recordreplay::Assert("FrameSchedulerImpl::NotifyDelegateAboutFeaturesAfterCurrentTask #1");
 
   main_thread_scheduler_->ExecuteAfterCurrentTask(
       base::BindOnce(&FrameSchedulerImpl::ReportFeaturesToDelegate,
@@ -731,12 +737,19 @@ void FrameSchedulerImpl::NotifyDelegateAboutFeaturesAfterCurrentTask() {
 }
 
 void FrameSchedulerImpl::ReportFeaturesToDelegate() {
+  // https://linear.app/replay/issue/RUN-825
+  recordreplay::Assert("FrameSchedulerImpl::ReportFeaturesToDelegate");
+
   DCHECK(delegate_);
   feature_report_scheduled_ = false;
   uint64_t mask = GetActiveFeaturesTrackedForBackForwardCacheMetricsMask();
   if (mask == last_uploaded_active_features_)
     return;
   last_uploaded_active_features_ = mask;
+
+  // https://linear.app/replay/issue/RUN-825
+  recordreplay::Assert("FrameSchedulerImpl::ReportFeaturesToDelegate #1");
+
   delegate_->UpdateActiveSchedulerTrackedFeatures(mask);
 }
 
@@ -749,6 +762,9 @@ base::WeakPtr<const FrameSchedulerImpl> FrameSchedulerImpl::GetWeakPtr() const {
 }
 
 void FrameSchedulerImpl::ReportActiveSchedulerTrackedFeatures() {
+  // https://linear.app/replay/issue/RUN-825
+  recordreplay::Assert("FrameSchedulerImpl::ReportActiveSchedulerTrackedFeatures");
+
   if (delegate_)
     ReportFeaturesToDelegate();
 }
