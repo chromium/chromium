@@ -83,9 +83,7 @@ std::u16string PermissionRequest::GetDialogMessageText() const {
       break;
     case RequestType::kProtectedMediaIdentifier:
       message_id =
-          media::MediaDrmBridge::IsPerOriginProvisioningSupported()
-              ? IDS_PROTECTED_MEDIA_IDENTIFIER_PER_ORIGIN_PROVISIONING_INFOBAR_TEXT
-              : IDS_PROTECTED_MEDIA_IDENTIFIER_PER_DEVICE_PROVISIONING_INFOBAR_TEXT;
+          IDS_PROTECTED_MEDIA_IDENTIFIER_PER_ORIGIN_PROVISIONING_INFOBAR_TEXT;
       break;
     case RequestType::kStorageAccess:
       // Handled by `PermissionPromptAndroid::GetMessageText` directly.

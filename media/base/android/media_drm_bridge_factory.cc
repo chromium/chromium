@@ -63,13 +63,6 @@ void MediaDrmBridgeFactory::Create(
   // MediaDrmStorage may be lazy created in MediaDrmStorageBridge.
   storage_ = std::make_unique<MediaDrmStorageBridge>();
 
-  if (!MediaDrmBridge::IsPerOriginProvisioningSupported()) {
-    // Per-origin provisioning isn't supported, so proceed without specifying an
-    // origin ID.
-    CreateMediaDrmBridge("");
-    return;
-  }
-
   storage_->Initialize(
       create_storage_cb_,
       base::BindOnce(&MediaDrmBridgeFactory::OnStorageInitialized,

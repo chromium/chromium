@@ -72,9 +72,6 @@ void ReportStatusToUmaAndNotifyCaller(OriginIdReadyCB callback,
 
 void CreateOriginIdWithMediaDrmOriginIdManager(Profile* profile,
                                                OriginIdReadyCB callback) {
-  // Only need to origin IDs if MediaDrm supports it.
-  DCHECK(media::MediaDrmBridge::IsPerOriginProvisioningSupported());
-
   auto* origin_id_manager =
       MediaDrmOriginIdManagerFactory::GetForProfile(profile);
   if (!origin_id_manager) {
@@ -88,9 +85,6 @@ void CreateOriginIdWithMediaDrmOriginIdManager(Profile* profile,
 }
 
 void CreateOriginId(OriginIdReadyCB callback) {
-  // Only need to origin IDs if MediaDrm supports it.
-  DCHECK(media::MediaDrmBridge::IsPerOriginProvisioningSupported());
-
   auto origin_id = base::UnguessableToken::Create();
   DVLOG(2) << __func__ << ": origin_id = " << origin_id;
 
@@ -100,8 +94,6 @@ void CreateOriginId(OriginIdReadyCB callback) {
 
 void AllowEmptyOriginId(content::RenderFrameHost* render_frame_host,
                         base::OnceCallback<void(bool)> callback) {
-  DCHECK(media::MediaDrmBridge::IsPerOriginProvisioningSupported());
-
   if (media::MediaDrmBridge::IsPerApplicationProvisioningSupported()) {
     // If per-application provisioning is supported by the device, use of the
     // empty origin ID won't work so don't allow it.

@@ -179,13 +179,6 @@ TEST_F(MediaDrmBridgeTest, DISABLED_Provision_Widevine) {
     return;
   }
 
-  // Provisioning requires the use of origin isolated storage, so skip this test
-  // if it's not supported.
-  if (!MediaDrmBridge::IsPerOriginProvisioningSupported()) {
-    VLOG(0) << "Origin isolated storage not supported on device.";
-    return;
-  }
-
   // Calling Provision() later should trigger a provisioning request. As we
   // can't pass the request to a license server,
   // MockProvisionFetcher::Retrieve() simply drops the request and never

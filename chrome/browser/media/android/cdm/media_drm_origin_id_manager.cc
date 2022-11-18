@@ -182,7 +182,6 @@ class MediaDrmProvisionHelper {
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_shared_url_loader_factory) {
     DVLOG(1) << __func__;
-    DCHECK(media::MediaDrmBridge::IsPerOriginProvisioningSupported());
     DCHECK(pending_shared_url_loader_factory);
     create_fetcher_cb_ =
         base::BindRepeating(&content::CreateProvisionFetcher,

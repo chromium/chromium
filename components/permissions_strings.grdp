@@ -84,9 +84,6 @@
     <message name="IDS_PROTECTED_MEDIA_IDENTIFIER_PER_ORIGIN_PROVISIONING_INFOBAR_TEXT" desc="Text requesting permission for a site to access protected media identifier. It shows the origin of the URL.">
       <ph name="URL">$1<ex>https://www.youtube.com</ex></ph> wants to play protected content. Your device’s identity will be verified by Google.
     </message>
-    <message name="IDS_PROTECTED_MEDIA_IDENTIFIER_PER_DEVICE_PROVISIONING_INFOBAR_TEXT" desc="Text requesting permission for a site to access protected media identifier. It shows the origin of the URL.">
-      <ph name="URL">$1<ex>https://www.youtube.com</ex></ph> wants to play protected content. Your device's identity will be verified by Google and may be accessed by this site.
-    </message>
   </if>
   <message name="IDS_GEOLOCATION_INFOBAR_PERMISSION_FRAGMENT" desc="Permission fragment used in the permission bubble, after 'This site wants to:' asking for permission to access the user's physical location.">
     Know your location
