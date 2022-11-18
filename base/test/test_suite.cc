@@ -416,7 +416,7 @@ int TestSuite::Run() {
   // This must be called before Initialize() because, for example,
   // content::ContentTestSuite::Initialize() may use the cached values.
   if (client_func.empty())
-    FetchAndCacheSystemInfo();
+    CHECK(FetchAndCacheSystemInfo());
 #endif
 
   Initialize();
