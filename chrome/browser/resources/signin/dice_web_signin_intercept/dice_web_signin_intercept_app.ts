@@ -11,8 +11,9 @@ import './signin_vars.css.js';
 import './strings.m.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './dice_web_signin_intercept_app.html.js';
@@ -52,7 +53,8 @@ export class DiceWebSigninInterceptAppElement extends
       guestLink_: {
         type: String,
         value() {
-          return loadTimeData.getString('guestLink');
+          return sanitizeInnerHtml(
+              loadTimeData.getString('guestLink'), {attrs: ['is']});
         },
       },
     };
@@ -60,7 +62,7 @@ export class DiceWebSigninInterceptAppElement extends
 
   private interceptionParameters_: InterceptionParameters;
   private acceptButtonClicked_: boolean;
-  private guestLink_: string;
+  private guestLink_: TrustedHTML;
   private diceWebSigninInterceptBrowserProxy_:
       DiceWebSigninInterceptBrowserProxy =
           DiceWebSigninInterceptBrowserProxyImpl.getInstance();
@@ -114,6 +116,10 @@ export class DiceWebSigninInterceptAppElement extends
     this.style.setProperty('--header-text-color', parameters.headerTextColor);
     this.notifyPath('interceptionParameters_.interceptedAccount.isManaged');
     this.notifyPath('interceptionParameters_.primaryAccount.isManaged');
+  }
+
+  private sanitizeInnerHtml_(text: string): TrustedHTML {
+    return sanitizeInnerHtml(text);
   }
 }
 

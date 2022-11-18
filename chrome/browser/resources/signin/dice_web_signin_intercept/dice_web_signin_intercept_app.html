@@ -288,7 +288,8 @@
           <iron-icon class="icon" icon="cr:domain"></iron-icon>
         </div>
         <div id="managedDisclaimerText"
-            inner-h-t-m-l="[[interceptionParameters_.managedDisclaimerText]]">
+            inner-h-t-m-l="[[sanitizeInnerHtml_(
+                interceptionParameters_.managedDisclaimerText)]]">
         </div>
       </div>
     </template>

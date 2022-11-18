@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/webui/signin/signin_error_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/signin_resources.h"
@@ -62,7 +63,7 @@ void SigninErrorUI::Initialize(Browser* browser, bool from_profile_picker) {
 
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUISigninErrorHost);
-  source->DisableTrustedTypesCSP();
+  webui::EnableTrustedTypesCSP(source);
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();
   source->SetDefaultResource(IDR_SIGNIN_SIGNIN_ERROR_SIGNIN_ERROR_HTML);

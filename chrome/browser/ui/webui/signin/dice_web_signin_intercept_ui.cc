@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/signin/dice_web_signin_intercept_handler.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/signin_resources.h"
@@ -90,7 +91,7 @@ DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://test chrome://webui-test "
       "'self';");
-  source->DisableTrustedTypesCSP();
+  webui::EnableTrustedTypesCSP(source);
 
   if (web_ui->GetWebContents()->GetVisibleURL().query() == "debug") {
     // Not intended to be hooked to anything. The bubble will not initialize it
