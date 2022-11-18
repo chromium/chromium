@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "components/sync/base/model_type.h"
 #include "components/value_store/value_store_change.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -38,7 +39,7 @@ class SettingsSyncProcessor {
   ~SettingsSyncProcessor();
 
   // Initializes this with the initial state of sync.
-  void Init(const base::Value& initial_state);
+  void Init(const base::Value::Dict& initial_state);
 
   // Sends |changes| to sync.
   absl::optional<syncer::ModelError> SendChanges(

@@ -108,15 +108,12 @@ syncer::SyncChange CreateUpdate(
       CreateData(extension_id, key, value, type));
 }
 
-syncer::SyncChange CreateDelete(
-    const std::string& extension_id,
-    const std::string& key,
-    syncer::ModelType type) {
-  base::DictionaryValue no_value;
+syncer::SyncChange CreateDelete(const std::string& extension_id,
+                                const std::string& key,
+                                syncer::ModelType type) {
   return syncer::SyncChange(
-      FROM_HERE,
-      syncer::SyncChange::ACTION_DELETE,
-      CreateData(extension_id, key, no_value, type));
+      FROM_HERE, syncer::SyncChange::ACTION_DELETE,
+      CreateData(extension_id, key, base::Value(base::Value::Dict()), type));
 }
 
 base::OnceCallback<base::WeakPtr<syncer::SyncableService>()>

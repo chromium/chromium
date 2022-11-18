@@ -31,8 +31,8 @@ void AddAllSyncData(const std::string& extension_id,
   }
 }
 
-std::unique_ptr<base::DictionaryValue> EmptyDictionaryValue() {
-  return std::make_unique<base::DictionaryValue>();
+base::Value::Dict EmptyDict() {
+  return base::Value::Dict();
 }
 
 value_store_util::ModelType ToFactoryModelType(syncer::ModelType sync_type) {
@@ -70,12 +70,12 @@ SyncStorageBackend::~SyncStorageBackend() {}
 value_store::ValueStore* SyncStorageBackend::GetStorage(
     const std::string& extension_id) {
   DCHECK(IsOnBackendSequence());
-  return GetOrCreateStorageWithSyncData(extension_id, EmptyDictionaryValue());
+  return GetOrCreateStorageWithSyncData(extension_id, EmptyDict());
 }
 
 SyncableSettingsStorage* SyncStorageBackend::GetOrCreateStorageWithSyncData(
     const std::string& extension_id,
-    std::unique_ptr<base::DictionaryValue> sync_data) const {
+    base::Value::Dict sync_data) const {
   DCHECK(IsOnBackendSequence());
 
   auto maybe_storage = storage_objs_.find(extension_id);
@@ -138,8 +138,7 @@ syncer::SyncDataList SyncStorageBackend::GetAllSyncDataForTesting(
     std::string extension_id = storage_obj.first;
 
     value_store::ValueStore::ReadResult maybe_settings =
-        GetOrCreateStorageWithSyncData(extension_id, EmptyDictionaryValue())
-            ->Get();
+        GetOrCreateStorageWithSyncData(extension_id, EmptyDict())->Get();
     if (!maybe_settings.status().ok()) {
       LOG(WARNING) << "Failed to get settings for " << extension_id << ": "
                    << maybe_settings.status().message;
@@ -167,21 +166,15 @@ absl::optional<syncer::ModelError> SyncStorageBackend::MergeDataAndStartSyncing(
   sync_error_factory_ = std::move(sync_error_factory);
 
   // Group the initial sync data by extension id.
-  // The raw pointers are safe because ownership of each item is passed to
-  // storage->StartSyncing or GetOrCreateStorageWithSyncData.
-  std::map<std::string, base::DictionaryValue*> grouped_sync_data;
+  std::map<std::string, base::Value::Dict> grouped_sync_data;
 
   for (const syncer::SyncData& sync_data : initial_sync_data) {
     SettingSyncData data(sync_data);
-    // Yes this really is a reference to a pointer.
-    base::DictionaryValue*& settings = grouped_sync_data[data.extension_id()];
-    if (!settings)
-      settings = new base::DictionaryValue();
-    DCHECK(!settings->FindKey(data.key()))
+    base::Value::Dict& settings = grouped_sync_data[data.extension_id()];
+    DCHECK(!settings.Find(data.key()))
         << "Duplicate settings for " << data.extension_id() << "/"
         << data.key();
-    settings->SetKey(data.key(),
-                     base::Value::FromUniquePtrValue(data.PassValue()));
+    settings.Set(data.key(), data.ExtractValue());
   }
 
   // Start syncing all existing storage areas.  Any storage areas created in
@@ -193,11 +186,11 @@ absl::optional<syncer::ModelError> SyncStorageBackend::MergeDataAndStartSyncing(
     auto group = grouped_sync_data.find(extension_id);
     absl::optional<syncer::ModelError> error;
     if (group != grouped_sync_data.end()) {
-      error = storage->StartSyncing(base::WrapUnique(group->second),
+      error = storage->StartSyncing(std::move(group->second),
                                     CreateSettingsSyncProcessor(extension_id));
       grouped_sync_data.erase(group);
     } else {
-      error = storage->StartSyncing(EmptyDictionaryValue(),
+      error = storage->StartSyncing(EmptyDict(),
                                     CreateSettingsSyncProcessor(extension_id));
     }
 
@@ -208,8 +201,8 @@ absl::optional<syncer::ModelError> SyncStorageBackend::MergeDataAndStartSyncing(
   // Eagerly create and init the rest of the storage areas that have sync data.
   // Under normal circumstances (i.e. not first-time sync) this will be all of
   // them.
-  for (const auto& group : grouped_sync_data) {
-    GetOrCreateStorageWithSyncData(group.first, base::WrapUnique(group.second));
+  for (auto& group : grouped_sync_data) {
+    GetOrCreateStorageWithSyncData(group.first, std::move(group.second));
   }
 
   return absl::nullopt;
@@ -237,7 +230,7 @@ absl::optional<syncer::ModelError> SyncStorageBackend::ProcessSyncChanges(
   // Create any storage areas that don't exist yet but have sync data.
   for (const auto& group : grouped_sync_data) {
     SyncableSettingsStorage* storage =
-        GetOrCreateStorageWithSyncData(group.first, EmptyDictionaryValue());
+        GetOrCreateStorageWithSyncData(group.first, EmptyDict());
     absl::optional<syncer::ModelError> error =
         storage->ProcessSyncChanges(base::WrapUnique(group.second));
     if (error.has_value())

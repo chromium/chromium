@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/storage/settings_sync_processor.h"
 
 #include "base/logging.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/api/storage/settings_sync_util.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/sync_change_processor.h"
@@ -32,11 +33,11 @@ SettingsSyncProcessor::~SettingsSyncProcessor() {
   DCHECK(IsOnBackendSequence());
 }
 
-void SettingsSyncProcessor::Init(const base::Value& initial_state) {
+void SettingsSyncProcessor::Init(const base::Value::Dict& initial_state) {
   DCHECK(IsOnBackendSequence());
   CHECK(!initialized_) << "Init called multiple times";
 
-  for (auto iter : initial_state.DictItems()) {
+  for (auto iter : initial_state) {
     synced_keys_.insert(iter.first);
   }
 

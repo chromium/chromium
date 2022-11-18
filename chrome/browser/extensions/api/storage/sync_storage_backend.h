@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 #include "components/sync/model/syncable_service.h"
 #include "components/value_store/value_store_factory.h"
 #include "extensions/browser/api/storage/settings_observer.h"
@@ -69,7 +70,7 @@ class SyncStorageBackend : public syncer::SyncableService {
   // initializing sync with some initial data if sync enabled.
   SyncableSettingsStorage* GetOrCreateStorageWithSyncData(
       const std::string& extension_id,
-      std::unique_ptr<base::DictionaryValue> sync_data) const;
+      base::Value::Dict sync_data) const;
 
   // Creates a new SettingsSyncProcessor for an extension.
   std::unique_ptr<SettingsSyncProcessor> CreateSettingsSyncProcessor(

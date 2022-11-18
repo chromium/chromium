@@ -231,10 +231,10 @@ class ExtensionSettingsApiTest : public ExtensionApiTest {
   std::string CreateMessage(StorageAreaNamespace storage_area,
                             const std::string& action,
                             bool is_final_action) {
-    base::DictionaryValue message;
-    message.SetStringKey("namespace", StorageAreaToString(storage_area));
-    message.SetStringKey("action", action);
-    message.SetBoolKey("isFinalAction", is_final_action);
+    base::Value::Dict message;
+    message.Set("namespace", StorageAreaToString(storage_area));
+    message.Set("action", action);
+    message.Set("isFinalAction", is_final_action);
     std::string message_json;
     base::JSONWriter::Write(message, &message_json);
     return message_json;
@@ -702,7 +702,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
 // details.
 IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest, ManagedStorage) {
   // Set policies for the test extension.
-  std::unique_ptr<base::DictionaryValue> policy =
+  base::Value::Dict policy =
       extensions::DictionaryBuilder()
           .Set("string-policy", "value")
           .Set("string-enum-policy", "value-1")
@@ -715,21 +715,21 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest, ManagedStorage) {
                                   .Append("one")
                                   .Append("two")
                                   .Append("three")
-                                  .Build())
+                                  .BuildList())
           .Set("dict-policy",
                extensions::DictionaryBuilder()
                    .Set("list", extensions::ListBuilder()
                                     .Append(extensions::DictionaryBuilder()
                                                 .Set("one", 1)
                                                 .Set("two", 2)
-                                                .Build())
+                                                .BuildDict())
                                     .Append(extensions::DictionaryBuilder()
                                                 .Set("three", 3)
-                                                .Build())
-                                    .Build())
-                   .Build())
-          .Build();
-  SetPolicies(policy->GetDict());
+                                                .BuildDict())
+                                    .BuildList())
+                   .BuildDict())
+          .BuildDict();
+  SetPolicies(policy);
   // Now run the extension.
   ASSERT_TRUE(RunExtensionTest("settings/managed_storage")) << message_;
 }
@@ -743,13 +743,12 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
   message_.clear();
 
   // Set policies for the test extension.
-  std::unique_ptr<base::DictionaryValue> policy =
-      extensions::DictionaryBuilder()
-          .Set("constant-policy", "aaa")
-          .Set("changes-policy", "bbb")
-          .Set("deleted-policy", "ccc")
-          .Build();
-  SetPolicies(policy->GetDict());
+  base::Value::Dict policy = extensions::DictionaryBuilder()
+                                 .Set("constant-policy", "aaa")
+                                 .Set("changes-policy", "bbb")
+                                 .Set("deleted-policy", "ccc")
+                                 .BuildDict();
+  SetPolicies(policy);
 
   ExtensionTestMessageListener ready_listener("ready");
   // Load the extension to install the event listener and wait for the
@@ -765,11 +764,11 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
 
   // Now change the policies and wait until the extension is done.
   policy = extensions::DictionaryBuilder()
-      .Set("constant-policy", "aaa")
-      .Set("changes-policy", "ddd")
-      .Set("new-policy", "eee")
-      .Build();
-  SetPolicies(policy->GetDict());
+               .Set("constant-policy", "aaa")
+               .Set("changes-policy", "ddd")
+               .Set("new-policy", "eee")
+               .BuildDict();
+  SetPolicies(policy);
   EXPECT_TRUE(events_result_catcher_.GetNextResult())
       << events_result_catcher_.message();
 }

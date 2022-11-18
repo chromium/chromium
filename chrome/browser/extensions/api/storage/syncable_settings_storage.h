@@ -68,7 +68,7 @@ class SyncableSettingsStorage : public value_store::ValueStore {
   // |sync_processor| is used to write out any changes.
   // Returns any error when trying to sync, or absl::nullopt on success.
   absl::optional<syncer::ModelError> StartSyncing(
-      std::unique_ptr<base::DictionaryValue> sync_state,
+      base::Value::Dict sync_state,
       std::unique_ptr<SettingsSyncProcessor> sync_processor);
 
   // Stops syncing this storage area. May be called at any time (idempotent).
@@ -98,19 +98,19 @@ class SyncableSettingsStorage : public value_store::ValueStore {
   // Overwrites local state with sync state.
   // Returns any error when trying to sync, or absl::nullopt on success.
   absl::optional<syncer::ModelError> OverwriteLocalSettingsWithSync(
-      std::unique_ptr<base::DictionaryValue> sync_state,
+      base::Value::Dict sync_state,
       base::Value::Dict local_state);
 
   // Called when an Add/Update/Remove comes from sync.
   syncer::SyncError OnSyncAdd(const std::string& key,
-                              std::unique_ptr<base::Value> new_value,
+                              base::Value new_value,
                               value_store::ValueStoreChangeList* changes);
   syncer::SyncError OnSyncUpdate(const std::string& key,
-                                 std::unique_ptr<base::Value> old_value,
-                                 std::unique_ptr<base::Value> new_value,
+                                 base::Value old_value,
+                                 base::Value new_value,
                                  value_store::ValueStoreChangeList* changes);
   syncer::SyncError OnSyncDelete(const std::string& key,
-                                 std::unique_ptr<base::Value> old_value,
+                                 base::Value old_value,
                                  value_store::ValueStoreChangeList* changes);
 
   // Observer to settings changes.
