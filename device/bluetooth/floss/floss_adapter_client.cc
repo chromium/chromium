@@ -43,7 +43,7 @@ void FlossAdapterClient::SetName(ResponseCallback<Void> callback,
 void FlossAdapterClient::SetDiscoverable(ResponseCallback<Void> callback,
                                          bool discoverable) {
   CallAdapterMethod<Void>(std::move(callback), adapter::kSetDiscoverable,
-                          discoverable);
+                          discoverable, /*duration=*/0u);
 }
 
 void FlossAdapterClient::StartDiscovery(ResponseCallback<Void> callback) {
