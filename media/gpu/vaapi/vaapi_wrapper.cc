@@ -626,22 +626,33 @@ bool IsVAProfileSupported(VAProfile va_profile) {
                         &ProfileCodecMap::value_type::second);
 }
 
-bool IsBlockedDriver(VaapiWrapper::CodecMode mode, VAProfile va_profile) {
+bool IsBlockedDriver(VaapiWrapper::CodecMode mode,
+                     VAProfile va_profile,
+                     const std::string& va_vendor_string) {
   if (!IsModeEncoding(mode)) {
     return va_profile == VAProfileAV1Profile0 &&
            !base::FeatureList::IsEnabled(kChromeOSHWAV1Decoder);
   }
 
-  // TODO(posciak): Remove once VP8 encoding is to be enabled by default.
   if (va_profile == VAProfileVP8Version0_3 &&
       !base::FeatureList::IsEnabled(kVaapiVP8Encoder)) {
     return true;
   }
 
-  // TODO(crbug.com/811912): Remove once VP9 encoding is enabled by default.
   if (va_profile == VAProfileVP9Profile0 &&
       !base::FeatureList::IsEnabled(kVaapiVP9Encoder)) {
     return true;
+  }
+
+  if (mode == VaapiWrapper::CodecMode::kEncodeVariableBitrate) {
+    // The rate controller on grunt is not good enough to support VBR encoding,
+    // b/253988139.
+    const bool is_amd_stoney_ridge_driver =
+        va_vendor_string.find("STONEY") != std::string::npos;
+    if (!base::FeatureList::IsEnabled(kChromeOSHWVBREncoding) ||
+        is_amd_stoney_ridge_driver) {
+      return true;
+    }
   }
 
   return false;
@@ -665,6 +676,7 @@ class VADisplayState {
   base::Lock* va_lock() { return &va_lock_; }
   VADisplay va_display() const { return va_display_; }
   VAImplementation implementation_type() const { return implementation_type_; }
+  const std::string& vendor_string() const { return va_vendor_string_; }
 
   void SetDrmFd(base::PlatformFile fd) { drm_fd_.reset(HANDLE_EINTR(dup(fd))); }
 
@@ -698,6 +710,9 @@ class VADisplayState {
 
   // Enumerated version of vaQueryVendorString(). Valid after Initialize().
   VAImplementation implementation_type_ = VAImplementation::kInvalid;
+
+  // String representing a driver acquired by vaQueryVendorString().
+  std::string va_vendor_string_;
 };
 
 // static
@@ -842,12 +857,12 @@ bool VADisplayState::InitializeVaDriver_Locked() {
     VLOGF(1) << "vaInitialize failed: " << vaErrorStr(va_res);
     return false;
   }
-  const std::string va_vendor_string = vaQueryVendorString(va_display_);
-  DLOG_IF(WARNING, va_vendor_string.empty())
+  va_vendor_string_ = vaQueryVendorString(va_display_);
+  DLOG_IF(WARNING, va_vendor_string_.empty())
       << "Vendor string empty or error reading.";
   DVLOG(1) << "VAAPI version: " << major_version << "." << minor_version << " "
-           << va_vendor_string;
-  implementation_type_ = VendorStringToImplementationType(va_vendor_string);
+           << va_vendor_string_;
+  implementation_type_ = VendorStringToImplementationType(va_vendor_string_);
 
   va_initialized_ = true;
 
@@ -1131,7 +1146,9 @@ class VASupportedProfiles {
   ~VASupportedProfiles() = default;
 
   // Fills in |supported_profiles_|.
-  void FillSupportedProfileInfos(base::Lock* va_lock, VADisplay va_display);
+  void FillSupportedProfileInfos(base::Lock* va_lock,
+                                 VADisplay va_display,
+                                 const std::string& va_vendor_string);
 
   // Fills |profile_info| for |va_profile| and |entrypoint| with
   // |required_attribs|. If the return value is true, the operation was
@@ -1188,14 +1205,17 @@ VASupportedProfiles::VASupportedProfiles()
     va_lock = nullptr;
   }
 
-  FillSupportedProfileInfos(va_lock, va_display);
+  FillSupportedProfileInfos(va_lock, va_display,
+                            display_state->vendor_string());
 
   const VAStatus va_res = display_state->Deinitialize();
   VA_LOG_ON_ERROR(va_res, VaapiFunctions::kVATerminate);
 }
 
-void VASupportedProfiles::FillSupportedProfileInfos(base::Lock* va_lock,
-                                                    VADisplay va_display) {
+void VASupportedProfiles::FillSupportedProfileInfos(
+    base::Lock* va_lock,
+    VADisplay va_display,
+    const std::string& va_vendor_string) {
   base::AutoLockMaybe auto_lock(va_lock);
 
   const std::vector<VAProfile> va_profiles =
@@ -1217,7 +1237,7 @@ void VASupportedProfiles::FillSupportedProfileInfos(base::Lock* va_lock,
     std::vector<ProfileInfo> supported_profile_infos;
 
     for (const auto& va_profile : va_profiles) {
-      if (IsBlockedDriver(mode, va_profile))
+      if (IsBlockedDriver(mode, va_profile, va_vendor_string))
         continue;
 
       if ((mode != VaapiWrapper::kVideoProcess) &&
@@ -1582,9 +1602,6 @@ bool IsLowPowerEncSupported(VAProfile va_profile) {
 }
 
 bool IsVBREncodingSupported(VAProfile va_profile) {
-  if (!base::FeatureList::IsEnabled(kChromeOSHWVBREncoding))
-    return false;
-
   auto mode = VaapiWrapper::CodecMode::kCodecModeMax;
   switch (va_profile) {
     case VAProfileH264ConstrainedBaseline:
