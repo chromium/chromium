@@ -40,7 +40,7 @@ struct FunctionInfo {
 struct DllPatchInfo {
   size_t record_bytes;  // rounded to sizeof(size_t) bytes
   size_t offset_to_functions;
-  int num_functions;
+  size_t num_functions;
   bool unload_module;
   wchar_t dll_name[1];  // placeholder for null terminated name
   // FunctionInfo function_info[] // followed by the functions to intercept
@@ -48,7 +48,7 @@ struct DllPatchInfo {
 
 // All interceptions:
 struct SharedMemory {
-  int num_intercepted_dlls;
+  size_t num_intercepted_dlls;
   void* interceptor_base;
   DllPatchInfo dll_list[1];  // placeholder for the list of dlls
 };

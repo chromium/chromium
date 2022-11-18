@@ -210,7 +210,7 @@ bool InterceptionManager::SetupConfigBuffer(void* buffer, size_t buffer_bytes) {
 
   SharedMemory* shared_memory = reinterpret_cast<SharedMemory*>(buffer);
   DllPatchInfo* dll_info = shared_memory->dll_list;
-  int num_dlls = 0;
+  size_t num_dlls = 0;
 
   shared_memory->interceptor_base =
       names_used_ ? child_->MainModule() : nullptr;

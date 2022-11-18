@@ -50,16 +50,16 @@ void WalkBuffer(void* buffer,
   ASSERT_GT(size, sizeof(SharedMemory));
   DllPatchInfo* dll = &memory->dll_list[0];
 
-  for (int i = 0; i < memory->num_intercepted_dlls; i++) {
+  for (size_t i = 0; i < memory->num_intercepted_dlls; i++) {
     ASSERT_NE(0u, wcslen(dll->dll_name));
     ASSERT_EQ(0u, dll->record_bytes % sizeof(size_t));
     ASSERT_EQ(0u, dll->offset_to_functions % sizeof(size_t));
-    ASSERT_NE(0, dll->num_functions);
+    ASSERT_NE(0u, dll->num_functions);
 
     FunctionInfo* function = reinterpret_cast<FunctionInfo*>(
         reinterpret_cast<char*>(dll) + dll->offset_to_functions);
 
-    for (int j = 0; j < dll->num_functions; j++) {
+    for (size_t j = 0; j < dll->num_functions; j++) {
       ASSERT_EQ(0u, function->record_bytes % sizeof(size_t));
 
       char* name = function->function;
