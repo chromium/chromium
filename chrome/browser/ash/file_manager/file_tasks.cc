@@ -1224,24 +1224,33 @@ std::string ToSwaActionId(const std::string& action_id) {
 
 }  // namespace
 
-// TODO(petermarshall): We need to also set the MIME types to correctly interact
-// with the user setting the default task from Files app.
 void SetWordFileHandler(Profile* profile, const std::string& action_id) {
   TaskDescriptor task(kFileManagerSwaAppId, TaskType::TASK_TYPE_WEB_APP,
                       ToSwaActionId(action_id));
-  UpdateDefaultTask(profile, task, {".doc", ".docx"}, {});
+  UpdateDefaultTask(
+      profile, task, {".doc", ".docx"},
+      {"application/msword",
+       "application/"
+       "vnd.openxmlformats-officedocument.wordprocessingml.document"});
 }
 
 void SetExcelFileHandler(Profile* profile, const std::string& action_id) {
   TaskDescriptor task(kFileManagerSwaAppId, TaskType::TASK_TYPE_WEB_APP,
                       ToSwaActionId(action_id));
-  UpdateDefaultTask(profile, task, {".xls", ".xlsx"}, {});
+  UpdateDefaultTask(
+      profile, task, {".xls", ".xlsx"},
+      {"application/vnd.ms-excel",
+       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
 }
 
 void SetPowerPointFileHandler(Profile* profile, const std::string& action_id) {
   TaskDescriptor task(kFileManagerSwaAppId, TaskType::TASK_TYPE_WEB_APP,
                       ToSwaActionId(action_id));
-  UpdateDefaultTask(profile, task, {".ppt", ".pptx"}, {});
+  UpdateDefaultTask(
+      profile, task, {".ppt", ".pptx"},
+      {"application/vnd.ms-powerpoint",
+       "application/"
+       "vnd.openxmlformats-officedocument.presentationml.presentation"});
 }
 
 }  // namespace file_manager::file_tasks
