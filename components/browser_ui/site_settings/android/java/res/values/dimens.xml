@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <dimen name="radio_button_with_description_layout_padding_top">8dp</dimen>
+    <dimen name="radio_button_with_description_height">48dp</dimen>
+</resources>

@@ -56,6 +56,8 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.AutoDarkMetrics.AutoDarkSettingsChangeSource;
 import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference.CookieSettingsState;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
+import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsMode;
@@ -1217,7 +1219,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
      * Builds an alert dialog which can be used to change the preference value or remove
      * for the exception for the current categories ContentSettingType on a Website.
      */
-    private AlertDialog.Builder buildPreferenceDialog(Website site) {
+    private AlertDialog buildPreferenceDialog(Website site) {
         BrowserContextHandle browserContextHandle =
                 getSiteSettingsDelegate().getBrowserContextHandle();
         @ContentSettingsType
@@ -1226,43 +1228,61 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         @ContentSettingValues
         Integer value = site.getContentSetting(browserContextHandle, contentSettingsType);
 
-        CharSequence[] descriptions = new String[2];
-        descriptions[0] = getString(ContentSettingsResources.getSiteSummary(
-                ContentSettingValues.ALLOW, contentSettingsType));
-        descriptions[1] = getString(ContentSettingsResources.getSiteSummary(
-                ContentSettingValues.BLOCK, contentSettingsType));
+        AlertDialog alertDialog =
+                new AlertDialog.Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
+                        .setPositiveButton(R.string.cancel, null)
+                        .setNegativeButton(R.string.remove,
+                                (dialog, which) -> {
+                                    site.setContentSetting(browserContextHandle,
+                                            contentSettingsType, ContentSettingValues.DEFAULT);
 
-        return new AlertDialog.Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
-                .setPositiveButton(R.string.cancel, null)
-                .setNegativeButton(R.string.remove,
-                        (dialog, which) -> {
-                            site.setContentSetting(browserContextHandle, contentSettingsType,
-                                    ContentSettingValues.DEFAULT);
+                                    if (mCategory.getType()
+                                            == SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT) {
+                                        AutoDarkMetrics.recordAutoDarkSettingsChangeSource(
+                                                AutoDarkSettingsChangeSource
+                                                        .SITE_SETTINGS_EXCEPTION_LIST,
+                                                false);
+                                    }
 
-                            if (mCategory.getType()
-                                    == SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT) {
-                                AutoDarkMetrics.recordAutoDarkSettingsChangeSource(
-                                        AutoDarkSettingsChangeSource.SITE_SETTINGS_EXCEPTION_LIST,
-                                        false);
-                            }
+                                    getInfoForOrigins();
+                                    dialog.dismiss();
+                                })
+                        .create();
 
-                            getInfoForOrigins();
-                            dialog.dismiss();
-                        })
-                .setSingleChoiceItems(descriptions, value == ContentSettingValues.ALLOW ? 0 : 1,
-                        (dialog, which) -> {
-                            @ContentSettingValues
-                            int permission = which == 0 ? ContentSettingValues.ALLOW
-                                                        : ContentSettingValues.BLOCK;
+        // Set custom radio button group layout that uses RadioButtonWithDescriptionLayout.
+        var inflater =
+                (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        var radioGroup = (RadioButtonWithDescriptionLayout) inflater.inflate(
+                R.layout.edit_site_dialog_radio_group, null);
 
-                            site.setContentSetting(
-                                    browserContextHandle, contentSettingsType, permission);
+        RadioButtonWithDescription allowButton = radioGroup.findViewById(R.id.allow);
+        allowButton.setPrimaryText(getString(ContentSettingsResources.getSiteSummary(
+                ContentSettingValues.ALLOW, contentSettingsType)));
 
-                            DesktopSiteMetrics.recordDesktopSiteSettingsChanged(
-                                    mCategory.getType(), permission, site);
-                            getInfoForOrigins();
-                            dialog.dismiss();
-                        });
+        RadioButtonWithDescription blockButton = radioGroup.findViewById(R.id.block);
+        blockButton.setPrimaryText(getString(ContentSettingsResources.getSiteSummary(
+                ContentSettingValues.BLOCK, contentSettingsType)));
+
+        if (value == ContentSettingValues.ALLOW) {
+            allowButton.setChecked(true);
+        } else {
+            blockButton.setChecked(true);
+        }
+
+        radioGroup.setOnCheckedChangeListener((radioButtonGroup, i) -> {
+            @ContentSettingValues
+            int permission = allowButton.isChecked() ? ContentSettingValues.ALLOW
+                                                     : ContentSettingValues.BLOCK;
+
+            site.setContentSetting(browserContextHandle, contentSettingsType, permission);
+
+            DesktopSiteMetrics.recordDesktopSiteSettingsChanged(
+                    mCategory.getType(), permission, site);
+            getInfoForOrigins();
+            alertDialog.dismiss();
+        });
+        alertDialog.setView(radioGroup);
+        return alertDialog;
     }
 
     /**
