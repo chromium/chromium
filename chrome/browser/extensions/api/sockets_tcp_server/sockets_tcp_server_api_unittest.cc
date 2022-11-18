@@ -56,9 +56,9 @@ TEST_F(SocketsTcpServerUnitTest, Create) {
       new SocketsTcpServerCreateFunction();
 
   // Run tests
-  std::unique_ptr<base::DictionaryValue> result(RunFunctionAndReturnDictionary(
+  absl::optional<base::Value::Dict> result(RunFunctionAndReturnDictionary(
       function, "[{\"persistent\": true, \"name\": \"foo\"}]"));
-  ASSERT_TRUE(result.get());
+  ASSERT_TRUE(result);
 }
 
 }  // namespace api

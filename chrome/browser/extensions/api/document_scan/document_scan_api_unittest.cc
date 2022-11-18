@@ -129,11 +129,12 @@ TEST_F(DocumentScanScanFunctionTest, Success) {
   GetDocumentScan().SetGetScannerNamesResponse({kTestScannerName});
   const std::vector<std::string> scan_data = {"PrettyPicture"};
   GetDocumentScan().SetScanResponse(scan_data);
-  std::unique_ptr<base::DictionaryValue> result(RunFunctionAndReturnDictionary(
-      function_.get(), "[{\"mimeTypes\": [\"image/png\"]}]"));
-  ASSERT_NE(nullptr, result.get());
+  absl::optional<base::Value::Dict> result = RunFunctionAndReturnDictionary(
+      function_.get(), "[{\"mimeTypes\": [\"image/png\"]}]");
+  ASSERT_TRUE(result);
   document_scan::ScanResults scan_results;
-  EXPECT_TRUE(document_scan::ScanResults::Populate(*result, &scan_results));
+  EXPECT_TRUE(document_scan::ScanResults::Populate(
+      base::Value(std::move(*result)), &scan_results));
   // Verify the image data URL is the PNG image data URL prefix plus the base64
   // representation of "PrettyPicture".
   EXPECT_THAT(
@@ -153,11 +154,12 @@ TEST_F(DocumentScanScanFunctionTest, TestingMIMEType) {
       {kTestScannerName, kVirtualUSBPrinterName});
   const std::vector<std::string> scan_data = {"PrettyPicture"};
   GetDocumentScan().SetScanResponse(scan_data);
-  std::unique_ptr<base::DictionaryValue> result(RunFunctionAndReturnDictionary(
-      function_.get(), "[{\"mimeTypes\": [\"testing\"]}]"));
-  ASSERT_NE(nullptr, result.get());
+  absl::optional<base::Value::Dict> result = RunFunctionAndReturnDictionary(
+      function_.get(), "[{\"mimeTypes\": [\"testing\"]}]");
+  ASSERT_TRUE(result);
   document_scan::ScanResults scan_results;
-  EXPECT_TRUE(document_scan::ScanResults::Populate(*result, &scan_results));
+  EXPECT_TRUE(document_scan::ScanResults::Populate(
+      base::Value(std::move(*result)), &scan_results));
   // Verify the image data URL is the PNG image data URL prefix plus the base64
   // representation of "PrettyPicture".
   EXPECT_THAT(

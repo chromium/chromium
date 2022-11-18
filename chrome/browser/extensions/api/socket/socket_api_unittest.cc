@@ -41,9 +41,9 @@ TEST_F(SocketUnitTest, Create) {
   SocketCreateFunction* function = new SocketCreateFunction();
 
   // Run tests
-  std::unique_ptr<base::DictionaryValue> result(
-      RunFunctionAndReturnDictionary(function, "[\"tcp\"]"));
-  ASSERT_TRUE(result.get());
+  absl::optional<base::Value::Dict> result =
+      RunFunctionAndReturnDictionary(function, "[\"tcp\"]");
+  ASSERT_TRUE(result);
 }
 
 TEST_F(SocketUnitTest, InvalidPort) {
