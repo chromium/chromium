@@ -43,9 +43,7 @@ TestWaylandOSExchangeDataProvideFactory::CreateProvider() {
   return std::make_unique<WaylandExchangeDataProvider>();
 }
 
-WaylandDragDropTest::WaylandDragDropTest()
-    : WaylandTest(WaylandTest::TestServerMode::kAsync) {}
-
+WaylandDragDropTest::WaylandDragDropTest() = default;
 WaylandDragDropTest::~WaylandDragDropTest() = default;
 
 void WaylandDragDropTest::SendDndEnter(WaylandWindow* window,
@@ -214,7 +212,7 @@ void WaylandDragDropTest::SendTouchMotion(WaylandWindow* window,
 }
 
 void WaylandDragDropTest::SetUp() {
-  WaylandTest::SetUp();
+  WaylandTestSimple::SetUp();
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     wl_seat_send_capabilities(server->seat()->resource(),

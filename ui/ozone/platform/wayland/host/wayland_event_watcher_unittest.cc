@@ -38,24 +38,18 @@ std::string NumberToString(uint32_t number) {
 // the sync on the test tear down.  To ensure that the error message is caught
 // by the crash reporter, we wait until idle in the end of each test before
 // checking the crash key value.
-class WaylandEventWatcherTest : public WaylandTest {
- public:
-  WaylandEventWatcherTest() : WaylandTest(TestServerMode::kAsync) {}
-  WaylandEventWatcherTest(const WaylandEventWatcherTest&) = delete;
-  WaylandEventWatcherTest& operator=(const WaylandEventWatcherTest&) = delete;
-  ~WaylandEventWatcherTest() override = default;
-
+class WaylandEventWatcherTest : public WaylandTestSimple {
  protected:
   void TearDown() override {
     // All tests in this suite terminate the client-server connection by posting
     // various errors.  We cannot sync the connection on tear down.
     DisableSyncOnTearDown();
 
-    WaylandTest::TearDown();
+    WaylandTestSimple::TearDown();
   }
 };
 
-TEST_P(WaylandEventWatcherTest, CrashKeyResourceError) {
+TEST_F(WaylandEventWatcherTest, CrashKeyResourceError) {
   const std::string kTestErrorString = "This is a nice error.";
 
   std::string text;
@@ -88,7 +82,7 @@ TEST_P(WaylandEventWatcherTest, CrashKeyResourceError) {
   EXPECT_EQ(text, crash_reporter::GetCrashKeyValue("wayland_error"));
 }
 
-TEST_P(WaylandEventWatcherTest, CrashKeyResourceNoMemory) {
+TEST_F(WaylandEventWatcherTest, CrashKeyResourceNoMemory) {
   // Prepare the expectation error string.
   const std::string expected_error_code = base::StrCat(
       {"wl_display: error ",
@@ -111,7 +105,7 @@ TEST_P(WaylandEventWatcherTest, CrashKeyResourceNoMemory) {
             crash_reporter::GetCrashKeyValue("wayland_error"));
 }
 
-TEST_P(WaylandEventWatcherTest, CrashKeyClientNoMemoryError) {
+TEST_F(WaylandEventWatcherTest, CrashKeyClientNoMemoryError) {
   const std::string expected_error_code = base::StrCat(
       {"wl_display: error ",
        NumberToString(static_cast<uint32_t>(WL_DISPLAY_ERROR_NO_MEMORY)),
@@ -128,7 +122,7 @@ TEST_P(WaylandEventWatcherTest, CrashKeyClientNoMemoryError) {
             crash_reporter::GetCrashKeyValue("wayland_error"));
 }
 
-TEST_P(WaylandEventWatcherTest, CrashKeyClientImplementationError) {
+TEST_F(WaylandEventWatcherTest, CrashKeyClientImplementationError) {
   const std::string kError = "A nice error.";
   const std::string expected_error_code = base::StrCat(
       {"wl_display: error ",
@@ -147,7 +141,7 @@ TEST_P(WaylandEventWatcherTest, CrashKeyClientImplementationError) {
             crash_reporter::GetCrashKeyValue("wayland_error"));
 }
 
-TEST_P(WaylandEventWatcherTest, CrashKeyCompositorNameSet) {
+TEST_F(WaylandEventWatcherTest, CrashKeyCompositorNameSet) {
   const std::string kTestWaylandCompositor = "OzoneWaylandTestCompositor";
   base::Environment::Create()->SetVar(base::nix::kXdgCurrentDesktopEnvVar,
                                       kTestWaylandCompositor);
@@ -164,7 +158,7 @@ TEST_P(WaylandEventWatcherTest, CrashKeyCompositorNameSet) {
             crash_reporter::GetCrashKeyValue("wayland_compositor"));
 }
 
-TEST_P(WaylandEventWatcherTest, CrashKeyCompositorNameUnset) {
+TEST_F(WaylandEventWatcherTest, CrashKeyCompositorNameUnset) {
   base::Environment::Create()->UnSetVar(base::nix::kXdgCurrentDesktopEnvVar);
 
   server_.RunAndWait(
@@ -177,9 +171,5 @@ TEST_P(WaylandEventWatcherTest, CrashKeyCompositorNameUnset) {
 
   EXPECT_EQ("Unknown", crash_reporter::GetCrashKeyValue("wayland_compositor"));
 }
-
-INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
-                         WaylandEventWatcherTest,
-                         Values(wl::ServerConfig{}));
 
 }  // namespace ui

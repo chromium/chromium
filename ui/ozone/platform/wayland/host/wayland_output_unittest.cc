@@ -13,19 +13,11 @@ using ::testing::Values;
 
 namespace ui {
 
-// TODO(crbug.com/1365887): revert this to using WaylandOutputTest = WaylandTest
-// once the default mode becomes asynchronous.
-class WaylandOutputTest : public WaylandTest {
- public:
-  WaylandOutputTest() : WaylandTest(TestServerMode::kAsync) {}
-  WaylandOutputTest(const WaylandOutputTest&) = delete;
-  WaylandOutputTest& operator=(const WaylandOutputTest&) = delete;
-  ~WaylandOutputTest() override = default;
-};
+using WaylandOutputTest = WaylandTestSimple;
 
 // Tests that name and description fall back to ones in the WaylandOutput if
 // XDGOutput is not created.
-TEST_P(WaylandOutputTest, NameAndDescriptionFallback) {
+TEST_F(WaylandOutputTest, NameAndDescriptionFallback) {
   constexpr char kWlOutputName[] = "kWlOutputName";
   constexpr char kWlOutputDescription[] = "kWlOutputDescription";
   constexpr char kXDGOutputName[] = "kXDGOutputName";
@@ -54,9 +46,5 @@ TEST_P(WaylandOutputTest, NameAndDescriptionFallback) {
   EXPECT_EQ(wl_output->name(), kWlOutputName);
   EXPECT_EQ(wl_output->description(), kWlOutputDescription);
 }
-
-INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
-                         WaylandOutputTest,
-                         Values(wl::ServerConfig{}));
 
 }  // namespace ui

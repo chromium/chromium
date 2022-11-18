@@ -40,7 +40,7 @@ class WaylandScreen;
 
 // WaylandTest is a base class that sets up a display, window, and test server,
 // and allows easy synchronization between them.
-class WaylandTest : public ::testing::TestWithParam<wl::ServerConfig> {
+class WaylandTestBase {
  public:
   // Specifies how the server should run.
   // TODO(crbug.com/1365887): this must be removed once all tests switch to
@@ -54,15 +54,13 @@ class WaylandTest : public ::testing::TestWithParam<wl::ServerConfig> {
     kSync
   };
 
-  explicit WaylandTest(TestServerMode server_mode = TestServerMode::kSync);
+  WaylandTestBase(wl::ServerConfig config, TestServerMode server_mode);
+  WaylandTestBase(const WaylandTestBase&) = delete;
+  WaylandTestBase& operator=(const WaylandTestBase&) = delete;
+  ~WaylandTestBase();
 
-  WaylandTest(const WaylandTest&) = delete;
-  WaylandTest& operator=(const WaylandTest&) = delete;
-
-  ~WaylandTest() override;
-
-  void SetUp() override;
-  void TearDown() override;
+  void SetUp();
+  void TearDown();
 
   void Sync();
 
@@ -161,6 +159,33 @@ class WaylandTest : public ::testing::TestWithParam<wl::ServerConfig> {
 
   // The server will be set to asynchronous mode once started.
   const TestServerMode server_mode_;
+  const wl::ServerConfig config_;
+};
+
+// Version of WaylandTestBase that uses parametrised tests (TEST_P).
+class WaylandTest : public WaylandTestBase,
+                    public ::testing::TestWithParam<wl::ServerConfig> {
+ public:
+  explicit WaylandTest(TestServerMode server_mode = TestServerMode::kSync);
+  WaylandTest(const WaylandTest&) = delete;
+  WaylandTest& operator=(const WaylandTest&) = delete;
+  ~WaylandTest() override;
+
+  void SetUp() override;
+  void TearDown() override;
+};
+
+// Version of WaylandTest that uses simple test fixtures (TEST_F).
+class WaylandTestSimple : public WaylandTestBase, public ::testing::Test {
+ public:
+  explicit WaylandTestSimple(WaylandTestBase::TestServerMode server_mode =
+                                 WaylandTestBase::TestServerMode::kAsync);
+  WaylandTestSimple(const WaylandTestSimple&) = delete;
+  WaylandTestSimple& operator=(const WaylandTestSimple&) = delete;
+  ~WaylandTestSimple() override;
+
+  void SetUp() override;
+  void TearDown() override;
 };
 
 }  // namespace ui

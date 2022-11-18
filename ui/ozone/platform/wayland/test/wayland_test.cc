@@ -32,10 +32,12 @@ using ::testing::SaveArg;
 
 namespace ui {
 
-WaylandTest::WaylandTest(TestServerMode server_mode)
+WaylandTestBase::WaylandTestBase(wl::ServerConfig config,
+                                 TestServerMode server_mode)
     : task_environment_(base::test::TaskEnvironment::MainThreadType::UI,
                         base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-      server_mode_(server_mode) {
+      server_mode_(server_mode),
+      config_(config) {
 #if BUILDFLAG(USE_XKBCOMMON)
   auto keyboard_layout_engine =
       std::make_unique<XkbKeyboardLayoutEngine>(xkb_evdev_code_converter_);
@@ -50,9 +52,9 @@ WaylandTest::WaylandTest(TestServerMode server_mode)
       connection_.get(), buffer_manager_gpu_.get());
 }
 
-WaylandTest::~WaylandTest() {}
+WaylandTestBase::~WaylandTestBase() = default;
 
-void WaylandTest::SetUp() {
+void WaylandTestBase::SetUp() {
   disabled_features_.push_back(ui::kWaylandSurfaceSubmissionInPixelCoordinates);
   disabled_features_.push_back(features::kWaylandScreenCoordinatesEnabled);
 
@@ -65,7 +67,7 @@ void WaylandTest::SetUp() {
     DeviceDataManager::CreateInstance();
   }
 
-  ASSERT_TRUE(server_.Start(GetParam()));
+  ASSERT_TRUE(server_.Start(config_));
   ASSERT_TRUE(connection_->Initialize());
   screen_ = connection_->wayland_output_manager()->CreateWaylandScreen();
   connection_->wayland_output_manager()->InitWaylandScreen(screen_.get());
@@ -109,7 +111,7 @@ void WaylandTest::SetUp() {
     server_.SetServerAsync();
 }
 
-void WaylandTest::TearDown() {
+void WaylandTestBase::TearDown() {
   if (initialized_) {
     if (server_mode_ != TestServerMode::kAsync)
       Sync();
@@ -118,7 +120,7 @@ void WaylandTest::TearDown() {
   }
 }
 
-void WaylandTest::Sync() {
+void WaylandTestBase::Sync() {
   // Resume the server, flushing its pending events.
   server_.Resume();
 
@@ -130,7 +132,7 @@ void WaylandTest::Sync() {
   server_.Pause();
 }
 
-void WaylandTest::PostToServerAndWait(
+void WaylandTestBase::PostToServerAndWait(
     base::OnceCallback<void(wl::TestWaylandServerThread* server)> callback) {
   // Sync with the display to ensure client's requests are processed.
   SyncDisplay();
@@ -141,7 +143,7 @@ void WaylandTest::PostToServerAndWait(
   SyncDisplay();
 }
 
-void WaylandTest::PostToServerAndWait(base::OnceClosure closure) {
+void WaylandTestBase::PostToServerAndWait(base::OnceClosure closure) {
   // Sync with the display to ensure client's requests are processed.
   SyncDisplay();
 
@@ -151,22 +153,22 @@ void WaylandTest::PostToServerAndWait(base::OnceClosure closure) {
   SyncDisplay();
 }
 
-void WaylandTest::DisableSyncOnTearDown() {
+void WaylandTestBase::DisableSyncOnTearDown() {
   initialized_ = false;
 }
 
-void WaylandTest::SetPointerFocusedWindow(WaylandWindow* window) {
+void WaylandTestBase::SetPointerFocusedWindow(WaylandWindow* window) {
   connection_->wayland_window_manager()->SetPointerFocusedWindow(window);
 }
 
-void WaylandTest::SetKeyboardFocusedWindow(WaylandWindow* window) {
+void WaylandTestBase::SetKeyboardFocusedWindow(WaylandWindow* window) {
   connection_->wayland_window_manager()->SetKeyboardFocusedWindow(window);
 }
 
-void WaylandTest::SendConfigureEvent(wl::MockXdgSurface* xdg_surface,
-                                     const gfx::Size& size,
-                                     uint32_t serial,
-                                     struct wl_array* states) {
+void WaylandTestBase::SendConfigureEvent(wl::MockXdgSurface* xdg_surface,
+                                         const gfx::Size& size,
+                                         uint32_t serial,
+                                         struct wl_array* states) {
   const int32_t width = size.width();
   const int32_t height = size.height();
   // Please note that toplevel surfaces may not exist if the surface was created
@@ -182,10 +184,10 @@ void WaylandTest::SendConfigureEvent(wl::MockXdgSurface* xdg_surface,
   xdg_surface_send_configure(xdg_surface->resource(), serial);
 }
 
-void WaylandTest::SendConfigureEvent(uint32_t surface_id,
-                                     const gfx::Size& size,
-                                     const wl::ScopedWlArray& states,
-                                     absl::optional<uint32_t> serial) {
+void WaylandTestBase::SendConfigureEvent(uint32_t surface_id,
+                                         const gfx::Size& size,
+                                         const wl::ScopedWlArray& states,
+                                         absl::optional<uint32_t> serial) {
   ASSERT_EQ(server_mode_, TestServerMode::kAsync);
   PostToServerAndWait([size, surface_id, states,
                        serial](wl::TestWaylandServerThread* server) {
@@ -215,18 +217,18 @@ void WaylandTest::SendConfigureEvent(uint32_t surface_id,
   });
 }
 
-void WaylandTest::ActivateSurface(wl::MockXdgSurface* xdg_surface) {
+void WaylandTestBase::ActivateSurface(wl::MockXdgSurface* xdg_surface) {
   wl::ScopedWlArray state({XDG_TOPLEVEL_STATE_ACTIVATED});
   SendConfigureEvent(xdg_surface, {0, 0}, 1, state.get());
 }
 
-void WaylandTest::ActivateSurface(uint32_t surface_id) {
+void WaylandTestBase::ActivateSurface(uint32_t surface_id) {
   ASSERT_EQ(server_mode_, TestServerMode::kAsync);
   wl::ScopedWlArray state({XDG_TOPLEVEL_STATE_ACTIVATED});
   SendConfigureEvent(surface_id, {0, 0}, state);
 }
 
-void WaylandTest::InitializeSurfaceAugmenter() {
+void WaylandTestBase::InitializeSurfaceAugmenter() {
   if (server_mode_ == TestServerMode::kAsync) {
     PostToServerAndWait([](wl::TestWaylandServerThread* server) {
       server->EnsureSurfaceAugmenter();
@@ -237,7 +239,7 @@ void WaylandTest::InitializeSurfaceAugmenter() {
   }
 }
 
-void WaylandTest::SyncDisplay() {
+void WaylandTestBase::SyncDisplay() {
   ASSERT_EQ(server_mode_, TestServerMode::kAsync);
   DCHECK(initialized_);
   base::RunLoop run_loop;
@@ -252,7 +254,7 @@ void WaylandTest::SyncDisplay() {
   run_loop.Run();
 }
 
-void WaylandTest::MaybeSetUpXkb() {
+void WaylandTestBase::MaybeSetUpXkb() {
 #if BUILDFLAG(USE_XKBCOMMON)
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     // Set up XKB bits and set the keymap to the client.
@@ -290,7 +292,7 @@ void WaylandTest::MaybeSetUpXkb() {
 #endif
 }
 
-std::unique_ptr<WaylandWindow> WaylandTest::CreateWaylandWindowWithParams(
+std::unique_ptr<WaylandWindow> WaylandTestBase::CreateWaylandWindowWithParams(
     PlatformWindowType type,
     const gfx::Rect bounds,
     MockWaylandPlatformWindowDelegate* delegate,
@@ -305,6 +307,33 @@ std::unique_ptr<WaylandWindow> WaylandTest::CreateWaylandWindowWithParams(
   if (window)
     window->Show(false);
   return window;
+}
+
+WaylandTest::WaylandTest(WaylandTestBase::TestServerMode server_mode)
+    : WaylandTestBase(GetParam(), server_mode) {}
+
+WaylandTest::~WaylandTest() = default;
+
+void WaylandTest::SetUp() {
+  WaylandTestBase::SetUp();
+}
+
+void WaylandTest::TearDown() {
+  WaylandTestBase::TearDown();
+}
+
+WaylandTestSimple::WaylandTestSimple(
+    WaylandTestBase::TestServerMode server_mode)
+    : WaylandTestBase({}, server_mode) {}
+
+WaylandTestSimple::~WaylandTestSimple() = default;
+
+void WaylandTestSimple::SetUp() {
+  WaylandTestBase::SetUp();
+}
+
+void WaylandTestSimple::TearDown() {
+  WaylandTestBase::TearDown();
 }
 
 }  // namespace ui

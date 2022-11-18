@@ -37,15 +37,10 @@ using ::testing::Values;
 
 namespace ui {
 
-class WaylandPointerTest : public WaylandTest {
+class WaylandPointerTest : public WaylandTestSimple {
  public:
-  WaylandPointerTest() : WaylandTest(TestServerMode::kAsync) {}
-  WaylandPointerTest(const WaylandPointerTest&) = delete;
-  WaylandPointerTest& operator=(const WaylandPointerTest&) = delete;
-  ~WaylandPointerTest() override = default;
-
   void SetUp() override {
-    WaylandTest::SetUp();
+    WaylandTestSimple::SetUp();
 
     PostToServerAndWait([](wl::TestWaylandServerThread* server) {
       wl_seat_send_capabilities(server->seat()->resource(),
@@ -172,7 +167,7 @@ ACTION_P(CloneEvent, ptr) {
   *ptr = arg0->Clone();
 }
 
-TEST_P(WaylandPointerTest, Enter) {
+TEST_F(WaylandPointerTest, Enter) {
   std::unique_ptr<Event> event;
   EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce(CloneEvent(&event));
 
@@ -187,7 +182,7 @@ TEST_P(WaylandPointerTest, Enter) {
   EXPECT_EQ(gfx::PointF(0, 0), mouse_event->location_f());
 }
 
-TEST_P(WaylandPointerTest, Leave) {
+TEST_F(WaylandPointerTest, Leave) {
   MockPlatformWindowDelegate other_delegate;
   gfx::AcceleratedWidget other_widget = gfx::kNullAcceleratedWidget;
   EXPECT_CALL(other_delegate, OnAcceleratedWidgetAvailable(_))
@@ -233,7 +228,7 @@ ACTION_P3(CloneEventAndCheckCapture, window, result, ptr) {
   *ptr = arg0->Clone();
 }
 
-TEST_P(WaylandPointerTest, Motion) {
+TEST_F(WaylandPointerTest, Motion) {
   SendEnter();
 
   std::unique_ptr<Event> event;
@@ -257,7 +252,7 @@ TEST_P(WaylandPointerTest, Motion) {
   EXPECT_EQ(gfx::PointF(10.75, 20.375), mouse_event->root_location_f());
 }
 
-TEST_P(WaylandPointerTest, MotionDragged) {
+TEST_F(WaylandPointerTest, MotionDragged) {
   SendEnter();
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
@@ -290,7 +285,7 @@ TEST_P(WaylandPointerTest, MotionDragged) {
   EXPECT_EQ(gfx::PointF(400, 500), mouse_event->root_location_f());
 }
 
-TEST_P(WaylandPointerTest, MotionDraggedWithStylus) {
+TEST_F(WaylandPointerTest, MotionDraggedWithStylus) {
   SendEnter();
 
   std::unique_ptr<Event> event;
@@ -339,7 +334,7 @@ TEST_P(WaylandPointerTest, MotionDraggedWithStylus) {
 
 // Verifies whether the platform event source handles all types of axis sources.
 // The actual behaviour of each axis source is not tested here.
-TEST_P(WaylandPointerTest, AxisSourceTypes) {
+TEST_F(WaylandPointerTest, AxisSourceTypes) {
   SendEnter();
 
   std::unique_ptr<Event> event1, event2, event3, event4;
@@ -377,7 +372,7 @@ TEST_P(WaylandPointerTest, AxisSourceTypes) {
 // to a pointer clicking event.
 // In practice, this might happen with specific compositors, eg Exo, when a
 // device wakes up from sleeping.
-TEST_P(WaylandPointerTest, SpuriousAxisSourceAndStylusToolEvents) {
+TEST_F(WaylandPointerTest, SpuriousAxisSourceAndStylusToolEvents) {
   SendEnter();
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
@@ -409,7 +404,7 @@ TEST_P(WaylandPointerTest, SpuriousAxisSourceAndStylusToolEvents) {
   // Do not validate anything, this test only ensures that no crash occurred.
 }
 
-TEST_P(WaylandPointerTest, Axis) {
+TEST_F(WaylandPointerTest, Axis) {
   SendEnter();
 
   for (uint32_t axis :
@@ -446,7 +441,7 @@ TEST_P(WaylandPointerTest, Axis) {
   }
 }
 
-TEST_P(WaylandPointerTest, SetBitmap) {
+TEST_F(WaylandPointerTest, SetBitmap) {
   SendEnter();
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
@@ -485,7 +480,7 @@ TEST_P(WaylandPointerTest, SetBitmap) {
 
 // Tests that bitmap is set on pointer focus and the pointer surface respects
 // provided scale of the surface image.
-TEST_P(WaylandPointerTest, SetBitmapAndScaleOnPointerFocus) {
+TEST_F(WaylandPointerTest, SetBitmapAndScaleOnPointerFocus) {
   for (int32_t scale = 1; scale < 5; scale++) {
     gfx::Size size = {10 * scale, 10 * scale};
     SkBitmap dummy_cursor;
@@ -551,7 +546,7 @@ TEST_P(WaylandPointerTest, SetBitmapAndScaleOnPointerFocus) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST_P(WaylandPointerTest, FlingVertical) {
+TEST_F(WaylandPointerTest, FlingVertical) {
   SendEnter(50, 75);
 
   SendRightButtonPress();
@@ -602,7 +597,7 @@ TEST_P(WaylandPointerTest, FlingVertical) {
   EXPECT_GT(0.0f, scroll_event->y_offset_ordinal());
 }
 
-TEST_P(WaylandPointerTest, FlingHorizontal) {
+TEST_F(WaylandPointerTest, FlingHorizontal) {
   SendEnter(50, 75);
 
   SendRightButtonPress();
@@ -653,7 +648,7 @@ TEST_P(WaylandPointerTest, FlingHorizontal) {
   EXPECT_GT(0.0f, scroll_event->x_offset_ordinal());
 }
 
-TEST_P(WaylandPointerTest, FlingCancel) {
+TEST_F(WaylandPointerTest, FlingCancel) {
   SendEnter(50, 75);
 
   SendRightButtonPress();
@@ -722,7 +717,7 @@ TEST_P(WaylandPointerTest, FlingCancel) {
   EXPECT_EQ(0.0f, scroll_event->y_offset_ordinal());
 }
 
-TEST_P(WaylandPointerTest, FlingDiagonal) {
+TEST_F(WaylandPointerTest, FlingDiagonal) {
   SendEnter(50, 75);
 
   SendRightButtonPress();
@@ -776,9 +771,5 @@ TEST_P(WaylandPointerTest, FlingDiagonal) {
             std::abs(scroll_event->y_offset_ordinal()));
 }
 #endif
-
-INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
-                         WaylandPointerTest,
-                         Values(wl::ServerConfig{}));
 
 }  // namespace ui

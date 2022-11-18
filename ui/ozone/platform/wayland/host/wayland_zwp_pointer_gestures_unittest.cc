@@ -56,16 +56,10 @@ class PinchEventScaleRecorder : public PlatformEventObserver {
 
 }  // namespace
 
-class WaylandPointerGesturesTest : public WaylandTest {
+class WaylandPointerGesturesTest : public WaylandTestSimple {
  public:
-  WaylandPointerGesturesTest() : WaylandTest(TestServerMode::kAsync) {}
-  WaylandPointerGesturesTest(const WaylandPointerGesturesTest&) = delete;
-  WaylandPointerGesturesTest& operator=(const WaylandPointerGesturesTest&) =
-      delete;
-  ~WaylandPointerGesturesTest() override = default;
-
   void SetUp() override {
-    WaylandTest::SetUp();
+    WaylandTestSimple::SetUp();
 
     // Pointer capability is required for gesture objects to be initialised.
     PostToServerAndWait([](wl::TestWaylandServerThread* server) {
@@ -89,7 +83,7 @@ class WaylandPointerGesturesTest : public WaylandTest {
 // WaylandZwpPointerGestures methods.
 //
 // See https://crbug.com/1283652
-TEST_P(WaylandPointerGesturesTest, PinchZoomScale) {
+TEST_F(WaylandPointerGesturesTest, PinchZoomScale) {
   PostToServerAndWait([surface_id = window_->root_surface()->get_surface_id()](
                           wl::TestWaylandServerThread* server) {
     auto* const pointer = server->seat()->pointer()->resource();
@@ -139,9 +133,5 @@ TEST_P(WaylandPointerGesturesTest, PinchZoomScale) {
 #endif
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
-                         WaylandPointerGesturesTest,
-                         testing::Values(wl::ServerConfig{}));
 
 }  // namespace ui

@@ -92,19 +92,10 @@ class TestDisplayObserver : public display::DisplayObserver {
 
 }  // namespace
 
-class WaylandScreenTest : public WaylandTest {
+class WaylandScreenTest : public WaylandTestSimple {
  public:
-  // TODO(crbug.com/1365887): TestServerMode::kAsync must be removed once all
-  // tests switch to asynchronous mode.
-  WaylandScreenTest() : WaylandTest(WaylandTest::TestServerMode::kAsync) {}
-
-  WaylandScreenTest(const WaylandScreenTest&) = delete;
-  WaylandScreenTest& operator=(const WaylandScreenTest&) = delete;
-
-  ~WaylandScreenTest() override = default;
-
   void SetUp() override {
-    WaylandTest::SetUp();
+    WaylandTestSimple::SetUp();
 
     PostToServerAndWait([](wl::TestWaylandServerThread* server) {
       auto* output = server->output();
@@ -150,7 +141,7 @@ class WaylandScreenTest : public WaylandTest {
 
 // Tests whether a primary output has been initialized before PlatformScreen is
 // created.
-TEST_P(WaylandScreenTest, OutputBaseTest) {
+TEST_F(WaylandScreenTest, OutputBaseTest) {
   // IsPrimaryOutputReady and PlatformScreen creation is done in the
   // initialization part of the tests.
 
@@ -165,7 +156,7 @@ TEST_P(WaylandScreenTest, OutputBaseTest) {
 
 // In multi-monitor setup, the `entered_outputs_` list should be updated when
 // the display is unplugged or switched off.
-TEST_P(WaylandScreenTest, EnteredOutputListAfterDisplayRemoval) {
+TEST_F(WaylandScreenTest, EnteredOutputListAfterDisplayRemoval) {
   // These have to be stored on the client thread, but must be used only on the
   // server thread.
   wl::TestOutput* output1 = nullptr;
@@ -275,7 +266,7 @@ TEST_P(WaylandScreenTest, EnteredOutputListAfterDisplayRemoval) {
   EXPECT_EQ(2u, entered_outputs.size());
 }
 
-TEST_P(WaylandScreenTest, MultipleOutputsAddedAndRemoved) {
+TEST_F(WaylandScreenTest, MultipleOutputsAddedAndRemoved) {
   // This has to be stored on the client thread, but must be used only on the
   // server thread.
   wl::TestOutput* output2 = nullptr;
@@ -369,7 +360,7 @@ TEST_P(WaylandScreenTest, MultipleOutputsAddedAndRemoved) {
   platform_screen_->RemoveObserver(&observer);
 }
 
-TEST_P(WaylandScreenTest, OutputPropertyChangesMissingLogicalSize) {
+TEST_F(WaylandScreenTest, OutputPropertyChangesMissingLogicalSize) {
   TestDisplayObserver observer;
   platform_screen_->AddObserver(&observer);
 
@@ -404,7 +395,7 @@ TEST_P(WaylandScreenTest, OutputPropertyChangesMissingLogicalSize) {
   platform_screen_->RemoveObserver(&observer);
 }
 
-TEST_P(WaylandScreenTest, OutputPropertyChangesPrimaryDisplayChanged) {
+TEST_F(WaylandScreenTest, OutputPropertyChangesPrimaryDisplayChanged) {
   TestDisplayObserver observer;
   platform_screen_->AddObserver(&observer);
 
@@ -446,7 +437,7 @@ TEST_P(WaylandScreenTest, OutputPropertyChangesPrimaryDisplayChanged) {
   platform_screen_->RemoveObserver(&observer);
 }
 
-TEST_P(WaylandScreenTest, GetAcceleratedWidgetAtScreenPoint) {
+TEST_F(WaylandScreenTest, GetAcceleratedWidgetAtScreenPoint) {
   const uint32_t surface_id = window_->root_surface()->get_surface_id();
   PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
     // Now, send enter event for the surface, which was created before.
@@ -520,7 +511,7 @@ TEST_P(WaylandScreenTest, GetAcceleratedWidgetAtScreenPoint) {
   EXPECT_EQ(widget_at_screen_point, menu_window->GetWidget());
 }
 
-TEST_P(WaylandScreenTest, GetLocalProcessWidgetAtPoint) {
+TEST_F(WaylandScreenTest, GetLocalProcessWidgetAtPoint) {
   gfx::Point point(10, 10);
   EXPECT_EQ(platform_screen_->GetLocalProcessWidgetAtPoint(point, {}),
             gfx::kNullAcceleratedWidget);
@@ -538,7 +529,7 @@ TEST_P(WaylandScreenTest, GetLocalProcessWidgetAtPoint) {
       gfx::kNullAcceleratedWidget);
 }
 
-TEST_P(WaylandScreenTest, GetDisplayMatching) {
+TEST_F(WaylandScreenTest, GetDisplayMatching) {
   TestDisplayObserver observer;
   platform_screen_->AddObserver(&observer);
 
@@ -625,7 +616,7 @@ TEST_P(WaylandScreenTest, GetDisplayMatching) {
 }
 
 // Regression test for https://crbug.com/1362872.
-TEST_P(WaylandScreenTest, GetPrimaryDisplayAfterRemoval) {
+TEST_F(WaylandScreenTest, GetPrimaryDisplayAfterRemoval) {
   TestDisplayObserver observer;
   platform_screen_->AddObserver(&observer);
 
@@ -649,7 +640,7 @@ TEST_P(WaylandScreenTest, GetPrimaryDisplayAfterRemoval) {
   platform_screen_->RemoveObserver(&observer);
 }
 
-TEST_P(WaylandScreenTest, GetDisplayForAcceleratedWidget) {
+TEST_F(WaylandScreenTest, GetDisplayForAcceleratedWidget) {
   TestDisplayObserver observer;
   platform_screen_->AddObserver(&observer);
 
@@ -732,7 +723,7 @@ TEST_P(WaylandScreenTest, GetDisplayForAcceleratedWidget) {
   });
 }
 
-TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
+TEST_F(WaylandScreenTest, GetCursorScreenPoint) {
   MockWaylandPlatformWindowDelegate delegate;
   std::unique_ptr<WaylandWindow> second_window =
       CreateWaylandWindowWithProperties(gfx::Rect(0, 0, 1920, 1080),
@@ -928,7 +919,7 @@ TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
 
 // Checks that the surface that backs the window receives new scale of the
 // output that it is in.
-TEST_P(WaylandScreenTest, SetWindowScale) {
+TEST_F(WaylandScreenTest, SetWindowScale) {
   constexpr int32_t kTripleScale = 3;
 
   const uint32_t surface_id = window_->root_surface()->get_surface_id();
@@ -980,7 +971,7 @@ TEST_P(WaylandScreenTest, SetWindowScale) {
 // which implies in its scale being set to the primary output's scale at its
 // initialization, any primary output scale update (or other properties that
 // lead to scale change) must be propagated to the window.
-TEST_P(WaylandScreenTest, SetWindowScaleWithoutEnteredOutput) {
+TEST_F(WaylandScreenTest, SetWindowScaleWithoutEnteredOutput) {
   // Test pre-conditions: single output setup whereas |output_| is the primary
   // output managed by |output_manager_|, with initial scale == 1.
   ASSERT_EQ(1u, output_manager_->GetAllOutputs().size());
@@ -1012,7 +1003,7 @@ TEST_P(WaylandScreenTest, SetWindowScaleWithoutEnteredOutput) {
 
 // Checks that output transform is properly translated into Display orientation.
 // The first one is counter-clockwise, while the latter is clockwise.
-TEST_P(WaylandScreenTest, Transform) {
+TEST_F(WaylandScreenTest, Transform) {
   constexpr std::pair<wl_output_transform, display::Display::Rotation>
       kTestData[] = {
           {WL_OUTPUT_TRANSFORM_NORMAL, display::Display::ROTATE_0},
@@ -1041,30 +1032,21 @@ TEST_P(WaylandScreenTest, Transform) {
 namespace {
 
 class LazilyConfiguredScreenTest
-    : public WaylandTest,
+    : public WaylandTestSimple,
       public wl::TestWaylandServerThread::OutputDelegate {
  public:
-  // TODO(crbug.com/1365887): TestServerMode::kAsync must be removed once all
-  // tests switch to asynchronous mode.
-  LazilyConfiguredScreenTest()
-      : WaylandTest(WaylandTest::TestServerMode::kAsync) {}
-  LazilyConfiguredScreenTest(const LazilyConfiguredScreenTest&) = delete;
-  LazilyConfiguredScreenTest& operator=(const LazilyConfiguredScreenTest&) =
-      delete;
-  ~LazilyConfiguredScreenTest() override = default;
-
   void SetUp() override {
     // This can be set on the client thread as the server is not running yet.
     ASSERT_FALSE(server_.IsRunning());
     server_.set_output_delegate(this);
-    WaylandTest::SetUp();
+    WaylandTestSimple::SetUp();
 
     output_manager_ = connection_->wayland_output_manager();
     ASSERT_TRUE(output_manager_);
   }
 
   void TearDown() override {
-    WaylandTest::TearDown();
+    WaylandTestSimple::TearDown();
 
     PostToServerAndWait(
         [output = aux_output_](wl::TestWaylandServerThread* server) {
@@ -1105,7 +1087,7 @@ class LazilyConfiguredScreenTest
 // Ensures WaylandOutputManager and WaylandScreen properly handle scenarios
 // where multiple wl_output objects are announced but not "configured" (ie:
 // size, position, mode, etc sent to client) at bind time.
-TEST_P(LazilyConfiguredScreenTest, DualOutput) {
+TEST_F(LazilyConfiguredScreenTest, DualOutput) {
   // Ensure WaylandScreen got properly created and fed with a single display
   // object, ie: |aux_output_| at server side.
   EXPECT_TRUE(output_manager_->IsOutputReady());
@@ -1128,7 +1110,7 @@ TEST_P(LazilyConfiguredScreenTest, DualOutput) {
 
 using WaylandAuraShellScreenTest = WaylandScreenTest;
 
-TEST_P(WaylandAuraShellScreenTest, OutputPropertyChanges) {
+TEST_F(WaylandAuraShellScreenTest, OutputPropertyChanges) {
   TestDisplayObserver observer;
   platform_screen_->AddObserver(&observer);
 
@@ -1221,7 +1203,7 @@ TEST_P(WaylandAuraShellScreenTest, OutputPropertyChanges) {
 // in landscape orientation. Thus their physical bounds are in portrait
 // orientation along with an offset transform, which differs from the usual
 // landscape oriented bounds.
-TEST_P(WaylandAuraShellScreenTest,
+TEST_F(WaylandAuraShellScreenTest,
        OutputPropertyChangesWithPortraitPanelRotation) {
   TestDisplayObserver observer;
   platform_screen_->AddObserver(&observer);
@@ -1307,17 +1289,5 @@ TEST_P(WaylandAuraShellScreenTest,
 
   platform_screen_->RemoveObserver(&observer);
 }
-
-INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
-                         WaylandScreenTest,
-                         Values(wl::ServerConfig{}));
-
-INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
-                         WaylandAuraShellScreenTest,
-                         Values(wl::ServerConfig{}));
-
-INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
-                         LazilyConfiguredScreenTest,
-                         Values(wl::ServerConfig{}));
 
 }  // namespace ui

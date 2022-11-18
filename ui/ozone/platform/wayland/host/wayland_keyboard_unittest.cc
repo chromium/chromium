@@ -34,15 +34,10 @@ using ::testing::Values;
 
 namespace ui {
 
-class WaylandKeyboardTest : public WaylandTest {
+class WaylandKeyboardTest : public WaylandTestSimple {
  public:
-  WaylandKeyboardTest() : WaylandTest(TestServerMode::kAsync) {}
-  WaylandKeyboardTest(const WaylandKeyboardTest&) = delete;
-  WaylandKeyboardTest& operator=(const WaylandKeyboardTest&) = delete;
-  ~WaylandKeyboardTest() override = default;
-
   void SetUp() override {
-    WaylandTest::SetUp();
+    WaylandTestSimple::SetUp();
 
     PostToServerAndWait([](wl::TestWaylandServerThread* server) {
       wl_seat_send_capabilities(server->seat()->resource(),
@@ -96,7 +91,7 @@ ACTION_P(AppendEventAndQuitLoop, ptr, event_count, closure) {
     closure.Run();
 }
 
-TEST_P(WaylandKeyboardTest, Keypress) {
+TEST_F(WaylandKeyboardTest, Keypress) {
   SendEnter();
 
   std::unique_ptr<Event> event;
@@ -135,7 +130,7 @@ TEST_P(WaylandKeyboardTest, Keypress) {
   });
 }
 
-TEST_P(WaylandKeyboardTest, ControlShiftModifiers) {
+TEST_F(WaylandKeyboardTest, ControlShiftModifiers) {
   SendEnter();
 
   std::vector<std::unique_ptr<Event>> events;
@@ -183,7 +178,7 @@ TEST_P(WaylandKeyboardTest, ControlShiftModifiers) {
 }
 
 #if BUILDFLAG(USE_XKBCOMMON)
-TEST_P(WaylandKeyboardTest, CapsLockModifier) {
+TEST_F(WaylandKeyboardTest, CapsLockModifier) {
   SendEnter();
 
   std::vector<std::unique_ptr<Event>> events;
@@ -231,7 +226,7 @@ TEST_P(WaylandKeyboardTest, CapsLockModifier) {
 }
 #endif
 
-TEST_P(WaylandKeyboardTest, EventAutoRepeat) {
+TEST_F(WaylandKeyboardTest, EventAutoRepeat) {
   constexpr int32_t rate = 5;    // num key events per second.
   constexpr int32_t delay = 60;  // in milliseconds.
 
@@ -288,7 +283,7 @@ TEST_P(WaylandKeyboardTest, EventAutoRepeat) {
   EXPECT_EQ(second_repeat_delay.InMilliseconds(), 1000 / rate);
 }
 
-TEST_P(WaylandKeyboardTest, NoEventAutoRepeatOnLeave) {
+TEST_F(WaylandKeyboardTest, NoEventAutoRepeatOnLeave) {
   constexpr int32_t rate = 5;    // num key events per second.
   constexpr int32_t delay = 60;  // in milliseconds.
 
@@ -342,9 +337,5 @@ TEST_P(WaylandKeyboardTest, NoEventAutoRepeatOnLeave) {
                          WL_KEYBOARD_KEY_STATE_RELEASED);
   });
 }
-
-INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
-                         WaylandKeyboardTest,
-                         Values(wl::ServerConfig{}));
 
 }  // namespace ui

@@ -26,15 +26,10 @@ constexpr gfx::Rect kDefaultBounds(0, 0, 100, 100);
 
 }  // namespace
 
-class WaylandEventSourceTest : public WaylandTest {
+class WaylandEventSourceTest : public WaylandTestSimple {
  public:
-  WaylandEventSourceTest() : WaylandTest(TestServerMode::kAsync) {}
-  WaylandEventSourceTest(const WaylandEventSourceTest&) = delete;
-  WaylandEventSourceTest& operator=(const WaylandEventSourceTest&) = delete;
-  ~WaylandEventSourceTest() override = default;
-
   void SetUp() override {
-    WaylandTest::SetUp();
+    WaylandTestSimple::SetUp();
 
     pointer_delegate_ = connection_->event_source();
     ASSERT_TRUE(pointer_delegate_);
@@ -46,7 +41,7 @@ class WaylandEventSourceTest : public WaylandTest {
 
 // Verify WaylandEventSource properly manages its internal state as pointer
 // button events are sent. More specifically - pointer flags.
-TEST_P(WaylandEventSourceTest, CheckPointerButtonHandling) {
+TEST_F(WaylandEventSourceTest, CheckPointerButtonHandling) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     wl_seat_send_capabilities(server->seat()->resource(),
                               WL_SEAT_CAPABILITY_POINTER);
@@ -115,7 +110,7 @@ TEST_P(WaylandEventSourceTest, CheckPointerButtonHandling) {
 
 // Verify WaylandEventSource properly manages its internal state as pointer
 // button events are sent. More specifically - pointer flags.
-TEST_P(WaylandEventSourceTest, DeleteBeforeTouchFrame) {
+TEST_F(WaylandEventSourceTest, DeleteBeforeTouchFrame) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     wl_seat_send_capabilities(server->seat()->resource(),
                               WL_SEAT_CAPABILITY_TOUCH);
@@ -152,7 +147,7 @@ TEST_P(WaylandEventSourceTest, DeleteBeforeTouchFrame) {
 
 // Verify WaylandEventSource ignores release events for mouse buttons that
 // aren't pressed. Regression test for crbug.com/1376393.
-TEST_P(WaylandEventSourceTest, IgnoreReleaseWithoutPress) {
+TEST_F(WaylandEventSourceTest, IgnoreReleaseWithoutPress) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     wl_seat_send_capabilities(server->seat()->resource(),
                               WL_SEAT_CAPABILITY_POINTER);
@@ -177,9 +172,5 @@ TEST_P(WaylandEventSourceTest, IgnoreReleaseWithoutPress) {
     wl_pointer_send_frame(pointer);
   });
 }
-
-INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
-                         WaylandEventSourceTest,
-                         Values(wl::ServerConfig{}));
 
 }  // namespace ui

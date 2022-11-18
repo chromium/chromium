@@ -266,7 +266,7 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
   std::unique_ptr<MockDragFinishedCallback> drag_finished_callback_;
 };
 
-TEST_P(WaylandDataDragControllerTest, StartDrag) {
+TEST_F(WaylandDataDragControllerTest, StartDrag) {
   FocusAndPressLeftPointerButton(window_.get(), &delegate_);
 
   auto test = [](WaylandDataDragControllerTest* self) {
@@ -287,7 +287,7 @@ TEST_P(WaylandDataDragControllerTest, StartDrag) {
   EXPECT_FALSE(data_device()->drag_delegate_);
 }
 
-TEST_P(WaylandDataDragControllerTest, StartDragWithWrongMimeType) {
+TEST_F(WaylandDataDragControllerTest, StartDragWithWrongMimeType) {
   FocusAndPressLeftPointerButton(window_.get(), &delegate_);
 
   // The client starts dragging offering data with |kMimeTypeHTML|
@@ -307,7 +307,7 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithWrongMimeType) {
 //  - https://crbug.com/1236708
 //  - https://crbug.com/1207607
 //  - https://crbug.com/1247063
-TEST_P(WaylandDataDragControllerTest, StartDragWithCustomFormats) {
+TEST_F(WaylandDataDragControllerTest, StartDragWithCustomFormats) {
   FocusAndPressLeftPointerButton(window_.get(), &delegate_);
   OSExchangeData data(OSExchangeDataProviderFactory::CreateProvider());
   ClipboardFormatType kCustomFormats[] = {
@@ -333,7 +333,7 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithCustomFormats) {
   });
 }
 
-TEST_P(WaylandDataDragControllerTest, StartDragWithText) {
+TEST_F(WaylandDataDragControllerTest, StartDragWithText) {
   FocusAndPressLeftPointerButton(window_.get(), &delegate_);
 
   // The client starts dragging offering text mime type.
@@ -349,7 +349,7 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithText) {
   ReadAndCheckData(kMimeTypeText, kSampleTextForDragAndDrop);
 }
 
-TEST_P(WaylandDataDragControllerTest, StartDragWithFileContents) {
+TEST_F(WaylandDataDragControllerTest, StartDragWithFileContents) {
   FocusAndPressLeftPointerButton(window_.get(), &delegate_);
 
   // The client starts dragging offering text mime type.
@@ -375,7 +375,7 @@ MATCHER_P(PointFNear, n, "") {
   return arg.IsWithinDistance(n, 0.01f);
 }
 
-TEST_P(WaylandDataDragControllerTest, ReceiveDrag) {
+TEST_F(WaylandDataDragControllerTest, ReceiveDrag) {
   const uint32_t surface_id = window_->root_surface()->get_surface_id();
 
   // Consume the move event from pointer enter.
@@ -428,7 +428,7 @@ TEST_P(WaylandDataDragControllerTest, ReceiveDrag) {
   ASSERT_FALSE(data_device()->drag_delegate_);
 }
 
-TEST_P(WaylandDataDragControllerTest, ReceiveDragPixelSurface) {
+TEST_F(WaylandDataDragControllerTest, ReceiveDragPixelSurface) {
   constexpr int32_t kTripleScale = 3;
 
   // Set connection to use pixel coordinates.
@@ -495,7 +495,7 @@ TEST_P(WaylandDataDragControllerTest, ReceiveDragPixelSurface) {
   SendMotionEvent(top_left);
 }
 
-TEST_P(WaylandDataDragControllerTest, DropSeveralMimeTypes) {
+TEST_F(WaylandDataDragControllerTest, DropSeveralMimeTypes) {
   EXPECT_CALL(*drop_handler_, MockOnDragEnter()).Times(1);
   const uint32_t surface_id = window_->root_surface()->get_surface_id();
   PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
@@ -539,7 +539,7 @@ TEST_P(WaylandDataDragControllerTest, DropSeveralMimeTypes) {
 
 // Tests URI validation for text/uri-list MIME type.  Log warnings rendered in
 // the console when this test is running are the expected and valid side effect.
-TEST_P(WaylandDataDragControllerTest, ValidateDroppedUriList) {
+TEST_F(WaylandDataDragControllerTest, ValidateDroppedUriList) {
   const struct {
     std::string content;
     base::flat_set<std::string> expected_uris;
@@ -600,7 +600,7 @@ TEST_P(WaylandDataDragControllerTest, ValidateDroppedUriList) {
 
 // Tests URI validation for text/x-moz-url MIME type.  Log warnings rendered in
 // the console when this test is running are the expected and valid side effect.
-TEST_P(WaylandDataDragControllerTest, ValidateDroppedXMozUrl) {
+TEST_F(WaylandDataDragControllerTest, ValidateDroppedXMozUrl) {
   const struct {
     std::u16string content;
     std::string expected_url;
@@ -663,7 +663,7 @@ TEST_P(WaylandDataDragControllerTest, ValidateDroppedXMozUrl) {
 
 // Verifies the correct delegate functions are called when a drag session is
 // started and cancelled within the same surface.
-TEST_P(WaylandDataDragControllerTest, StartAndCancel) {
+TEST_F(WaylandDataDragControllerTest, StartAndCancel) {
   FocusAndPressLeftPointerButton(window_.get(), &delegate_);
 
   ScheduleDataDeviceAction(WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE);
@@ -674,7 +674,7 @@ TEST_P(WaylandDataDragControllerTest, StartAndCancel) {
   RunMouseDragWithSampleData(window_.get(), DragDropTypes::DRAG_COPY);
 }
 
-TEST_P(WaylandDataDragControllerTest, ForeignDragHandleAskAction) {
+TEST_F(WaylandDataDragControllerTest, ForeignDragHandleAskAction) {
   const uint32_t surface_id = window_->root_surface()->get_surface_id();
   PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
     auto* data_offer =
@@ -721,7 +721,7 @@ TEST_P(WaylandDataDragControllerTest, ForeignDragHandleAskAction) {
 
 // Verifies entered surface destruction is properly handled.
 // Regression test for https://crbug.com/1143707.
-TEST_P(WaylandDataDragControllerTest, DestroyEnteredSurface) {
+TEST_F(WaylandDataDragControllerTest, DestroyEnteredSurface) {
   auto* window_1 = window_.get();
   FocusAndPressLeftPointerButton(window_1, &delegate_);
 
@@ -758,7 +758,7 @@ TEST_P(WaylandDataDragControllerTest, DestroyEnteredSurface) {
 
 // Verifies that early origin surface destruction is properly handled.
 // Regression test for https://crbug.com/1143707.
-TEST_P(WaylandDataDragControllerTest, DestroyOriginSurface) {
+TEST_F(WaylandDataDragControllerTest, DestroyOriginSurface) {
   auto* window_1 = window_.get();
   SetPointerFocusedWindow(nullptr);
 
@@ -802,7 +802,7 @@ TEST_P(WaylandDataDragControllerTest, DestroyOriginSurface) {
 }
 
 // Ensures drag/drop events are properly propagated to non-toplevel windows.
-TEST_P(WaylandDataDragControllerTest, DragToNonToplevelWindows) {
+TEST_F(WaylandDataDragControllerTest, DragToNonToplevelWindows) {
   auto* origin_window = window_.get();
   FocusAndPressLeftPointerButton(origin_window, &delegate_);
 
@@ -860,7 +860,7 @@ TEST_P(WaylandDataDragControllerTest, DragToNonToplevelWindows) {
 
 // Ensures that requests to create a |PlatformWindowType::kPopup| during drag
 // sessions return xdg_popup-backed windows.
-TEST_P(WaylandDataDragControllerTest, PopupRequestCreatesPopupWindow) {
+TEST_F(WaylandDataDragControllerTest, PopupRequestCreatesPopupWindow) {
   auto* origin_window = window_.get();
   FocusAndPressLeftPointerButton(origin_window, &delegate_);
 
@@ -892,7 +892,7 @@ TEST_P(WaylandDataDragControllerTest, PopupRequestCreatesPopupWindow) {
 
 // Ensures that requests to create a |PlatformWindowType::kMenu| during drag
 // sessions return xdg_popup-backed windows.
-TEST_P(WaylandDataDragControllerTest, MenuRequestCreatesPopupWindow) {
+TEST_F(WaylandDataDragControllerTest, MenuRequestCreatesPopupWindow) {
   auto* origin_window = window_.get();
   FocusAndPressLeftPointerButton(origin_window, &delegate_);
 
@@ -933,7 +933,7 @@ TEST_P(WaylandDataDragControllerTest, MenuRequestCreatesPopupWindow) {
 // browser <=> renderer IPC, etc. In both cases, drag controller is expected to
 // gracefully reset state and quit drag loop as if the drag session was
 // cancelled as usual.
-TEST_P(WaylandDataDragControllerTest, AsyncNoopStartDrag) {
+TEST_F(WaylandDataDragControllerTest, AsyncNoopStartDrag) {
   OSExchangeData os_exchange_data;
   os_exchange_data.SetString(sample_text_for_dnd());
 
@@ -988,7 +988,7 @@ TEST_P(WaylandDataDragControllerTest, AsyncNoopStartDrag) {
 }
 
 // Regression test for https://crbug.com/1175083.
-TEST_P(WaylandDataDragControllerTest, StartDragWithCorrectSerial) {
+TEST_F(WaylandDataDragControllerTest, StartDragWithCorrectSerial) {
   FocusAndPressLeftPointerButton(window_.get(), &delegate_);
   absl::optional<wl::Serial> mouse_press_serial =
       connection()->serial_tracker().GetSerial(wl::SerialType::kMousePress);
@@ -1038,7 +1038,7 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithCorrectSerial) {
 
 // Check drag session is correctly started when there are both mouse button and
 // a touch point pressed.
-TEST_P(WaylandDataDragControllerTest, StartDragWithCorrectSerialForDragSource) {
+TEST_F(WaylandDataDragControllerTest, StartDragWithCorrectSerialForDragSource) {
   OSExchangeData os_exchange_data;
   os_exchange_data.SetString(sample_text_for_dnd());
 
@@ -1092,9 +1092,5 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithCorrectSerialForDragSource) {
     ASSERT_TRUE(server->data_device_manager()->data_source());
   });
 }
-
-INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
-                         WaylandDataDragControllerTest,
-                         Values(wl::ServerConfig{}));
 
 }  // namespace ui

@@ -46,15 +46,10 @@ ACTION_P(CloneEvent, ptr) {
 
 }  // namespace
 
-class WaylandTouchTest : public WaylandTest {
+class WaylandTouchTest : public WaylandTestSimple {
  public:
-  WaylandTouchTest() : WaylandTest(TestServerMode::kAsync) {}
-  WaylandTouchTest(const WaylandTouchTest&) = delete;
-  WaylandTouchTest& operator=(const WaylandTouchTest&) = delete;
-  ~WaylandTouchTest() override = default;
-
   void SetUp() override {
-    WaylandTest::SetUp();
+    WaylandTestSimple::SetUp();
 
     PostToServerAndWait([](wl::TestWaylandServerThread* server) {
       wl_seat_send_capabilities(
@@ -98,7 +93,7 @@ class WaylandTouchTest : public WaylandTest {
   }
 };
 
-TEST_P(WaylandTouchTest, TouchPressAndMotion) {
+TEST_F(WaylandTouchTest, TouchPressAndMotion) {
   std::unique_ptr<Event> event;
   EXPECT_CALL(delegate_, DispatchEvent(_)).WillRepeatedly(CloneEvent(&event));
 
@@ -138,7 +133,7 @@ TEST_P(WaylandTouchTest, TouchPressAndMotion) {
 }
 
 // Tests that touch events with stylus pen work.
-TEST_P(WaylandTouchTest, TouchPressAndMotionWithStylus) {
+TEST_F(WaylandTouchTest, TouchPressAndMotionWithStylus) {
   std::unique_ptr<Event> event;
   EXPECT_CALL(delegate_, DispatchEvent(_)).WillRepeatedly(CloneEvent(&event));
 
@@ -185,7 +180,7 @@ TEST_P(WaylandTouchTest, TouchPressAndMotionWithStylus) {
 // Tests that touch events with stylus pen work. This variant of the test sends
 // the tool information after the touch down event, and ensures that
 // wl_touch::frame event handles it correctly.
-TEST_P(WaylandTouchTest, TouchPressAndMotionWithStylus2) {
+TEST_F(WaylandTouchTest, TouchPressAndMotionWithStylus2) {
   std::unique_ptr<Event> event;
   EXPECT_CALL(delegate_, DispatchEvent(_)).WillRepeatedly(CloneEvent(&event));
 
@@ -236,7 +231,7 @@ TEST_P(WaylandTouchTest, TouchPressAndMotionWithStylus2) {
 }
 
 // Tests that touch focus is correctly set and released.
-TEST_P(WaylandTouchTest, CheckTouchFocus) {
+TEST_F(WaylandTouchTest, CheckTouchFocus) {
   constexpr uint32_t touch_id1 = 1;
   constexpr uint32_t touch_id2 = 2;
   constexpr uint32_t touch_id3 = 3;
@@ -365,7 +360,7 @@ TEST_P(WaylandTouchTest, CheckTouchFocus) {
 
 // Verifies keyboard modifier flags are set in touch events while modifier keys
 // are pressed. Regression test for https://crbug.com/1298604.
-TEST_P(WaylandTouchTest, KeyboardFlagsSet) {
+TEST_F(WaylandTouchTest, KeyboardFlagsSet) {
   std::unique_ptr<Event> event;
 
   MaybeSetUpXkb();
@@ -467,9 +462,5 @@ TEST_P(WaylandTouchTest, KeyboardFlagsSet) {
   CheckEventType(ui::ET_TOUCH_RELEASED, event.get());
   EXPECT_FALSE(event->flags() & ui::EF_CONTROL_DOWN);
 }
-
-INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
-                         WaylandTouchTest,
-                         Values(wl::ServerConfig{}));
 
 }  // namespace ui

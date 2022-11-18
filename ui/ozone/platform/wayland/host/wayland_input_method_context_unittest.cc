@@ -20,6 +20,7 @@
 #include "ui/gfx/range/range.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_input_method_context.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/mock_zcr_extended_text_input.h"
@@ -35,7 +36,6 @@ using ::testing::SaveArg;
 using ::testing::Values;
 
 namespace ui {
-namespace {
 
 // Returns the number of grapheme clusters in the text.
 absl::optional<size_t> CountGraphemeCluster(base::StringPiece16 text) {
@@ -229,19 +229,10 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
   absl::optional<gfx::Rect> virtual_keyboard_bounds_;
 };
 
-class WaylandInputMethodContextTest : public WaylandTest {
+class WaylandInputMethodContextTest : public WaylandTestSimple {
  public:
-  // TODO(crbug.com/1365887): TestServerMode::kAsync must be removed once all
-  // tests switch to asynchronous mode.
-  WaylandInputMethodContextTest()
-      : WaylandTest(WaylandTest::TestServerMode::kAsync) {}
-  ~WaylandInputMethodContextTest() override = default;
-  WaylandInputMethodContextTest(const WaylandInputMethodContextTest&) = delete;
-  WaylandInputMethodContextTest& operator=(
-      const WaylandInputMethodContextTest&) = delete;
-
   void SetUp() override {
-    WaylandTest::SetUp();
+    WaylandTestSimple::SetUp();
 
     surface_id_ = window_->root_surface()->get_surface_id();
 
@@ -251,6 +242,7 @@ class WaylandInputMethodContextTest : public WaylandTest {
       wl_seat_send_capabilities(server->seat()->resource(),
                                 WL_SEAT_CAPABILITY_KEYBOARD);
     });
+    ASSERT_TRUE(connection_->seat()->keyboard());
 
     SetUpInternal();
   }
@@ -288,7 +280,7 @@ class WaylandInputMethodContextTest : public WaylandTest {
   uint32_t surface_id_ = 0u;
 };
 
-TEST_P(WaylandInputMethodContextTest, ActivateDeactivate) {
+TEST_F(WaylandInputMethodContextTest, ActivateDeactivate) {
   // Activate is called only when both InputMethod's TextInputClient focus and
   // Wayland's keyboard focus is met.
 
@@ -403,7 +395,7 @@ TEST_P(WaylandInputMethodContextTest, ActivateDeactivate) {
   });
 }
 
-TEST_P(WaylandInputMethodContextTest, Reset) {
+TEST_F(WaylandInputMethodContextTest, Reset) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     EXPECT_CALL(*server->text_input_manager_v1()->text_input(), Reset());
   });
@@ -411,7 +403,7 @@ TEST_P(WaylandInputMethodContextTest, Reset) {
   connection_->Flush();
 }
 
-TEST_P(WaylandInputMethodContextTest, SetCursorLocation) {
+TEST_F(WaylandInputMethodContextTest, SetCursorLocation) {
   constexpr gfx::Rect cursor_location(50, 0, 1, 1);
   PostToServerAndWait([cursor_location](wl::TestWaylandServerThread* server) {
     EXPECT_CALL(
@@ -423,7 +415,7 @@ TEST_P(WaylandInputMethodContextTest, SetCursorLocation) {
   connection_->Flush();
 }
 
-TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForShortText) {
+TEST_F(WaylandInputMethodContextTest, SetSurroundingTextForShortText) {
   const std::u16string text(50, u'あ');
   constexpr gfx::Range range(20, 30);
 
@@ -458,7 +450,7 @@ TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForShortText) {
       (std::pair<size_t, size_t>(0, 0)));
 }
 
-TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForLongText) {
+TEST_F(WaylandInputMethodContextTest, SetSurroundingTextForLongText) {
   const std::u16string text(5000, u'あ');
   constexpr gfx::Range range(2800, 3200);
 
@@ -495,7 +487,7 @@ TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForLongText) {
       (std::pair<size_t, size_t>(0, 0)));
 }
 
-TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForLongTextInLeftEdge) {
+TEST_F(WaylandInputMethodContextTest, SetSurroundingTextForLongTextInLeftEdge) {
   const std::u16string text(5000, u'あ');
   constexpr gfx::Range range(0, 500);
 
@@ -532,7 +524,7 @@ TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForLongTextInLeftEdge) {
       (std::pair<size_t, size_t>(0, 0)));
 }
 
-TEST_P(WaylandInputMethodContextTest,
+TEST_F(WaylandInputMethodContextTest,
        SetSurroundingTextForLongTextInRightEdge) {
   const std::u16string text(5000, u'あ');
   constexpr gfx::Range range(4500, 5000);
@@ -570,7 +562,7 @@ TEST_P(WaylandInputMethodContextTest,
       (std::pair<size_t, size_t>(0, 0)));
 }
 
-TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForLongRange) {
+TEST_F(WaylandInputMethodContextTest, SetSurroundingTextForLongRange) {
   const std::u16string text(5000, u'あ');
   constexpr gfx::Range range(1000, 4000);
 
@@ -591,7 +583,7 @@ TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForLongRange) {
   });
 }
 
-TEST_P(WaylandInputMethodContextTest, DeleteSurroundingTextWithExtendedRange) {
+TEST_F(WaylandInputMethodContextTest, DeleteSurroundingTextWithExtendedRange) {
   const std::u16string text(50, u'あ');
   const gfx::Range range(20, 30);
 
@@ -626,7 +618,7 @@ TEST_P(WaylandInputMethodContextTest, DeleteSurroundingTextWithExtendedRange) {
       (std::pair<size_t, size_t>(1, 1)));
 }
 
-TEST_P(WaylandInputMethodContextTest, SetContentType) {
+TEST_F(WaylandInputMethodContextTest, SetContentType) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     EXPECT_CALL(
         *server->text_input_extension_v1()->extended_text_input(),
@@ -648,7 +640,7 @@ TEST_P(WaylandInputMethodContextTest, SetContentType) {
   });
 }
 
-TEST_P(WaylandInputMethodContextTest, SetContentTypeWithoutLearning) {
+TEST_F(WaylandInputMethodContextTest, SetContentTypeWithoutLearning) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     EXPECT_CALL(
         *server->text_input_extension_v1()->extended_text_input(),
@@ -670,7 +662,7 @@ TEST_P(WaylandInputMethodContextTest, SetContentTypeWithoutLearning) {
   });
 }
 
-TEST_P(WaylandInputMethodContextTest, OnPreeditChanged) {
+TEST_F(WaylandInputMethodContextTest, OnPreeditChanged) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     zwp_text_input_v1_send_preedit_string(
         server->text_input_manager_v1()->text_input()->resource(),
@@ -679,7 +671,7 @@ TEST_P(WaylandInputMethodContextTest, OnPreeditChanged) {
   EXPECT_TRUE(input_method_context_delegate_->was_on_preedit_changed_called());
 }
 
-TEST_P(WaylandInputMethodContextTest, OnCommit) {
+TEST_F(WaylandInputMethodContextTest, OnCommit) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     zwp_text_input_v1_send_commit_string(
         server->text_input_manager_v1()->text_input()->resource(),
@@ -697,7 +689,7 @@ TEST_P(WaylandInputMethodContextTest, OnCommit) {
 #define MAYBE(x) DISABLED_##x
 #endif
 
-TEST_P(WaylandInputMethodContextTest, MAYBE(OnConfirmCompositionText)) {
+TEST_F(WaylandInputMethodContextTest, MAYBE(OnConfirmCompositionText)) {
   constexpr char16_t text[] = u"ab😀cあdef";
   constexpr gfx::Range range(5, 6);  // あ is selected.
 
@@ -722,7 +714,7 @@ TEST_P(WaylandInputMethodContextTest, MAYBE(OnConfirmCompositionText)) {
       input_method_context_delegate_->was_on_confirm_composition_text_called());
 }
 
-TEST_P(WaylandInputMethodContextTest, OnSetPreeditRegion_Success) {
+TEST_F(WaylandInputMethodContextTest, OnSetPreeditRegion_Success) {
   constexpr char16_t text[] = u"abcあdef";
   const gfx::Range range(3, 4);  // あ is selected.
 
@@ -749,7 +741,7 @@ TEST_P(WaylandInputMethodContextTest, OnSetPreeditRegion_Success) {
       input_method_context_delegate_->was_on_set_preedit_region_called());
 }
 
-TEST_P(WaylandInputMethodContextTest, OnSetPreeditRegion_NoSurroundingText) {
+TEST_F(WaylandInputMethodContextTest, OnSetPreeditRegion_NoSurroundingText) {
   // If no surrounding text is set yet, set_preedit_region would fail.
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     zcr_extended_text_input_v1_send_set_preedit_region(
@@ -762,7 +754,7 @@ TEST_P(WaylandInputMethodContextTest, OnSetPreeditRegion_NoSurroundingText) {
 
 // The range is represented in UTF-16 code points, so it is independent from
 // grapheme clusters.
-TEST_P(WaylandInputMethodContextTest,
+TEST_F(WaylandInputMethodContextTest,
        OnSetPreeditRegion_GraphemeClusterIndependeceSimple) {
   // Single code point representation of é.
   constexpr char16_t u16_text[] = u"\u00E9";
@@ -797,7 +789,7 @@ TEST_P(WaylandInputMethodContextTest,
       input_method_context_delegate_->was_on_set_preedit_region_called());
 }
 
-TEST_P(WaylandInputMethodContextTest,
+TEST_F(WaylandInputMethodContextTest,
        OnSetPreeditRegion_GraphemeClusterIndependeceCombined) {
   // Decomposed code point representation of é.
   constexpr char16_t u16_text[] = u"\u0065\u0301";
@@ -832,14 +824,14 @@ TEST_P(WaylandInputMethodContextTest,
       input_method_context_delegate_->was_on_set_preedit_region_called());
 }
 
-TEST_P(WaylandInputMethodContextTest, OnClearGrammarFragments) {
+TEST_F(WaylandInputMethodContextTest, OnClearGrammarFragments) {
   input_method_context_->OnClearGrammarFragments(gfx::Range(1, 5));
   SyncDisplay();
   EXPECT_TRUE(
       input_method_context_delegate_->was_on_clear_grammar_fragments_called());
 }
 
-TEST_P(WaylandInputMethodContextTest, OnAddGrammarFragments) {
+TEST_F(WaylandInputMethodContextTest, OnAddGrammarFragments) {
   input_method_context_->OnAddGrammarFragment(
       ui::GrammarFragment(gfx::Range(1, 5), "test"));
   SyncDisplay();
@@ -847,21 +839,21 @@ TEST_P(WaylandInputMethodContextTest, OnAddGrammarFragments) {
       input_method_context_delegate_->was_on_add_grammar_fragment_called());
 }
 
-TEST_P(WaylandInputMethodContextTest, OnSetAutocorrectRange) {
+TEST_F(WaylandInputMethodContextTest, OnSetAutocorrectRange) {
   input_method_context_->OnSetAutocorrectRange(gfx::Range(1, 5));
   SyncDisplay();
   EXPECT_TRUE(
       input_method_context_delegate_->was_on_set_autocorrect_range_called());
 }
 
-TEST_P(WaylandInputMethodContextTest, OnSetVirtualKeyboardOccludedBounds) {
+TEST_F(WaylandInputMethodContextTest, OnSetVirtualKeyboardOccludedBounds) {
   constexpr gfx::Rect kBounds(10, 20, 300, 400);
   input_method_context_->OnSetVirtualKeyboardOccludedBounds(kBounds);
   SyncDisplay();
   EXPECT_EQ(input_method_context_delegate_->virtual_keyboard_bounds(), kBounds);
 }
 
-TEST_P(WaylandInputMethodContextTest,
+TEST_F(WaylandInputMethodContextTest,
        OnSetVirtualKeyboardOccludedBoundsUpdatesPastTextInputClients) {
   auto client1 = std::make_unique<MockTextInputClient>(TEXT_INPUT_TYPE_TEXT);
   auto client2 = std::make_unique<MockTextInputClient>(TEXT_INPUT_TYPE_URL);
@@ -901,7 +893,7 @@ TEST_P(WaylandInputMethodContextTest,
   Mock::VerifyAndClearExpectations(client2.get());
 }
 
-TEST_P(WaylandInputMethodContextTest,
+TEST_F(WaylandInputMethodContextTest,
        OnSetVirtualKeyboardOccludedBoundsWithDeletedPastTextInputClient) {
   auto client = std::make_unique<MockTextInputClient>(TEXT_INPUT_TYPE_TEXT);
 
@@ -920,7 +912,7 @@ TEST_P(WaylandInputMethodContextTest,
   SyncDisplay();
 }
 
-TEST_P(WaylandInputMethodContextTest, DisplayVirtualKeyboard) {
+TEST_F(WaylandInputMethodContextTest, DisplayVirtualKeyboard) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     EXPECT_CALL(*server->text_input_manager_v1()->text_input(),
                 ShowInputPanel())
@@ -931,7 +923,7 @@ TEST_P(WaylandInputMethodContextTest, DisplayVirtualKeyboard) {
   SyncDisplay();
 }
 
-TEST_P(WaylandInputMethodContextTest, DismissVirtualKeyboard) {
+TEST_F(WaylandInputMethodContextTest, DismissVirtualKeyboard) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     EXPECT_CALL(*server->text_input_manager_v1()->text_input(),
                 HideInputPanel());
@@ -941,7 +933,7 @@ TEST_P(WaylandInputMethodContextTest, DismissVirtualKeyboard) {
   SyncDisplay();
 }
 
-TEST_P(WaylandInputMethodContextTest, UpdateVirtualKeyboardState) {
+TEST_F(WaylandInputMethodContextTest, UpdateVirtualKeyboardState) {
   EXPECT_FALSE(input_method_context_->IsKeyboardVisible());
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     zwp_text_input_v1_send_input_panel_state(
@@ -961,16 +953,17 @@ TEST_P(WaylandInputMethodContextTest, UpdateVirtualKeyboardState) {
 class WaylandInputMethodContextNoKeyboardTest
     : public WaylandInputMethodContextTest {
  public:
-  WaylandInputMethodContextNoKeyboardTest() = default;
-  ~WaylandInputMethodContextNoKeyboardTest() override = default;
-
   void SetUp() override {
-    WaylandTest::SetUp();
+    // Call the skip base implementation to avoid setting up the keyboard.
+    WaylandTestSimple::SetUp();
+
+    ASSERT_FALSE(connection_->seat()->keyboard());
+
     SetUpInternal();
   }
 };
 
-TEST_P(WaylandInputMethodContextNoKeyboardTest, ActivateDeactivate) {
+TEST_F(WaylandInputMethodContextNoKeyboardTest, ActivateDeactivate) {
   const uint32_t surface_id = window_->root_surface()->get_surface_id();
 
   // Because there is no keyboard, Activate is called as soon as InputMethod's
@@ -1005,7 +998,7 @@ TEST_P(WaylandInputMethodContextNoKeyboardTest, ActivateDeactivate) {
   });
 }
 
-TEST_P(WaylandInputMethodContextNoKeyboardTest, UpdateFocusBetweenTextFields) {
+TEST_F(WaylandInputMethodContextNoKeyboardTest, UpdateFocusBetweenTextFields) {
   const uint32_t surface_id = window_->root_surface()->get_surface_id();
 
   // Because there is no keyboard, Activate is called as soon as InputMethod's
@@ -1045,13 +1038,4 @@ TEST_P(WaylandInputMethodContextNoKeyboardTest, UpdateFocusBetweenTextFields) {
   });
 }
 
-INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
-                         WaylandInputMethodContextTest,
-                         Values(wl::ServerConfig{}));
-
-INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
-                         WaylandInputMethodContextNoKeyboardTest,
-                         Values(wl::ServerConfig{}));
-
-}  // namespace
 }  // namespace ui

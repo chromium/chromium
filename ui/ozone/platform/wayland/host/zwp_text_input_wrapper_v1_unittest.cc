@@ -4,12 +4,9 @@
 
 #include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper_v1.h"
 
-#include "base/run_loop.h"
-#include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
-#include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/test/mock_zcr_extended_text_input.h"
 #include "ui/ozone/platform/wayland/test/mock_zwp_text_input.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
@@ -18,21 +15,13 @@
 
 using ::testing::InSequence;
 using ::testing::Mock;
-using ::testing::Values;
 
 namespace ui {
-namespace {
 
-class ZWPTextInputWrapperV1Test : public WaylandTest {
+class ZWPTextInputWrapperV1Test : public WaylandTestSimple {
  public:
-  ZWPTextInputWrapperV1Test() : WaylandTest(TestServerMode::kAsync) {}
-  ZWPTextInputWrapperV1Test(const ZWPTextInputWrapperV1Test&) = delete;
-  ZWPTextInputWrapperV1Test& operator=(const ZWPTextInputWrapperV1Test&) =
-      delete;
-  ~ZWPTextInputWrapperV1Test() override = default;
-
   void SetUp() override {
-    WaylandTest::SetUp();
+    WaylandTestSimple::SetUp();
 
     wrapper_ = std::make_unique<ZWPTextInputWrapperV1>(
         connection_.get(), nullptr, connection_->text_input_manager_v1(),
@@ -43,7 +32,7 @@ class ZWPTextInputWrapperV1Test : public WaylandTest {
   std::unique_ptr<ZWPTextInputWrapperV1> wrapper_;
 };
 
-TEST_P(ZWPTextInputWrapperV1Test,
+TEST_F(ZWPTextInputWrapperV1Test,
        FinalizeVirtualKeyboardChangesShowInputPanel) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     InSequence s;
@@ -62,7 +51,7 @@ TEST_P(ZWPTextInputWrapperV1Test,
   });
 }
 
-TEST_P(ZWPTextInputWrapperV1Test,
+TEST_F(ZWPTextInputWrapperV1Test,
        FinalizeVirtualKeyboardChangesHideInputPanel) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     InSequence s;
@@ -82,7 +71,7 @@ TEST_P(ZWPTextInputWrapperV1Test,
   });
 }
 
-TEST_P(ZWPTextInputWrapperV1Test,
+TEST_F(ZWPTextInputWrapperV1Test,
        FinalizeVirtualKeyboardChangesMultipleInputPanelChanges) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* const mock_text_input = server->text_input_manager_v1()->text_input();
@@ -110,9 +99,4 @@ TEST_P(ZWPTextInputWrapperV1Test,
   });
 }
 
-INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
-                         ZWPTextInputWrapperV1Test,
-                         Values(wl::ServerConfig{}));
-
-}  // namespace
 }  // namespace ui

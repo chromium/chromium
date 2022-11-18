@@ -22,15 +22,10 @@ constexpr gfx::Rect kDefaultBounds(0, 0, 100, 100);
 
 }  // namespace
 
-class WaylandWindowManagerTest : public WaylandTest {
+class WaylandWindowManagerTest : public WaylandTestSimple {
  public:
-  WaylandWindowManagerTest() : WaylandTest(TestServerMode::kAsync) {}
-  WaylandWindowManagerTest(const WaylandWindowManagerTest&) = delete;
-  WaylandWindowManagerTest& operator=(const WaylandWindowManagerTest&) = delete;
-  ~WaylandWindowManagerTest() override = default;
-
   void SetUp() override {
-    WaylandTest::SetUp();
+    WaylandTestSimple::SetUp();
 
     manager_ = connection_->wayland_window_manager();
     ASSERT_TRUE(manager_);
@@ -40,7 +35,7 @@ class WaylandWindowManagerTest : public WaylandTest {
   raw_ptr<WaylandWindowManager> manager_ = nullptr;
 };
 
-TEST_P(WaylandWindowManagerTest, GetWindow) {
+TEST_F(WaylandWindowManagerTest, GetWindow) {
   MockWaylandPlatformWindowDelegate delegate;
 
   auto window1 = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
@@ -58,7 +53,7 @@ TEST_P(WaylandWindowManagerTest, GetWindow) {
   EXPECT_FALSE(manager_->GetWindow(window1_widget));
 }
 
-TEST_P(WaylandWindowManagerTest, GetWindowWithLargestBounds) {
+TEST_F(WaylandWindowManagerTest, GetWindowWithLargestBounds) {
   MockWaylandPlatformWindowDelegate delegate;
 
   auto window1 = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
@@ -71,7 +66,7 @@ TEST_P(WaylandWindowManagerTest, GetWindowWithLargestBounds) {
   EXPECT_TRUE(window2.get() == manager_->GetWindowWithLargestBounds());
 }
 
-TEST_P(WaylandWindowManagerTest, GetCurrentFocusedWindow) {
+TEST_F(WaylandWindowManagerTest, GetCurrentFocusedWindow) {
   MockWaylandPlatformWindowDelegate delegate;
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
@@ -122,7 +117,7 @@ TEST_P(WaylandWindowManagerTest, GetCurrentFocusedWindow) {
   EXPECT_FALSE(manager_->GetCurrentPointerFocusedWindow());
 }
 
-TEST_P(WaylandWindowManagerTest, GetCurrentKeyboardFocusedWindow) {
+TEST_F(WaylandWindowManagerTest, GetCurrentKeyboardFocusedWindow) {
   MockWaylandPlatformWindowDelegate delegate;
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
@@ -167,7 +162,7 @@ TEST_P(WaylandWindowManagerTest, GetCurrentKeyboardFocusedWindow) {
   EXPECT_FALSE(manager_->GetCurrentKeyboardFocusedWindow());
 }
 
-TEST_P(WaylandWindowManagerTest, GetAllWindows) {
+TEST_F(WaylandWindowManagerTest, GetAllWindows) {
   MockWaylandPlatformWindowDelegate delegate;
 
   // There is a default window created by WaylandTest.
@@ -185,9 +180,5 @@ TEST_P(WaylandWindowManagerTest, GetAllWindows) {
   windows = manager_->GetAllWindows();
   EXPECT_EQ(2u, windows.size());
 }
-
-INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
-                         WaylandWindowManagerTest,
-                         Values(wl::ServerConfig{}));
 
 }  // namespace ui

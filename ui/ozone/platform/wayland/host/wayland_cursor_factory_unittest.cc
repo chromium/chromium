@@ -7,7 +7,6 @@
 #include <wayland-cursor.h>
 
 #include "base/containers/flat_map.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/base/cursor/platform_cursor.h"
 #include "ui/ozone/common/bitmap_cursor.h"
@@ -53,11 +52,9 @@ class DryRunningWaylandCursorFactory : public WaylandCursorFactory {
 
 }  // namespace
 
-class WaylandCursorFactoryTest : public WaylandTest,
+class WaylandCursorFactoryTest : public WaylandTestSimple,
                                  public CursorFactoryObserver {
  public:
-  WaylandCursorFactoryTest() = default;
-
   // CursorFactoryObserver:
   void OnThemeLoaded() override {
     ASSERT_TRUE(loop_quit_closure_);
@@ -87,7 +84,7 @@ class WaylandCursorFactoryTest : public WaylandTest,
 // Tests that the factory holds the cursor theme until a buffer taken from it
 // released.
 // TODO(1357512): fails on Linux (not used on LaCros).
-TEST_P(WaylandCursorFactoryTest,
+TEST_F(WaylandCursorFactoryTest,
        DISABLED_RetainOldThemeUntilNewBufferIsAttached) {
   std::unique_ptr<WaylandCursorFactory> cursor_factory =
       std::make_unique<DryRunningWaylandCursorFactory>(connection_.get());
@@ -167,7 +164,7 @@ TEST_P(WaylandCursorFactoryTest,
 // Tests that the factory keeps the caches when either cursor size or buffer
 // scale are changed, and only resets them when the theme is changed.
 // TODO(1357512): fails on Linux (not used on LaCros).
-TEST_P(WaylandCursorFactoryTest, DISABLED_CachesSizesUntilThemeNameIsChanged) {
+TEST_F(WaylandCursorFactoryTest, DISABLED_CachesSizesUntilThemeNameIsChanged) {
   std::unique_ptr<WaylandCursorFactory> cursor_factory =
       std::make_unique<DryRunningWaylandCursorFactory>(connection_.get());
   cursor_factory->AddObserver(this);
@@ -258,9 +255,5 @@ TEST_P(WaylandCursorFactoryTest, DISABLED_CachesSizesUntilThemeNameIsChanged) {
     EXPECT_EQ(cursor_factory->unloaded_theme_.get(), nullptr);
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
-                         WaylandCursorFactoryTest,
-                         Values(wl::ServerConfig{}));
 
 }  // namespace ui
