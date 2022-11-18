@@ -38,6 +38,17 @@ BLINK_COMMON_EXPORT extern const char kEnableZeroCopy[];
 BLINK_COMMON_EXPORT extern const char kEventPathPolicy[];
 BLINK_COMMON_EXPORT extern const char kEventPathPolicy_ForceDisable[];
 BLINK_COMMON_EXPORT extern const char kEventPathPolicy_ForceEnable[];
+BLINK_COMMON_EXPORT extern const char kOffsetParentNewSpecBehaviorPolicy[];
+BLINK_COMMON_EXPORT extern const char
+    kOffsetParentNewSpecBehaviorPolicy_ForceDisable[];
+BLINK_COMMON_EXPORT extern const char
+    kOffsetParentNewSpecBehaviorPolicy_ForceEnable[];
+BLINK_COMMON_EXPORT extern const char
+    kSendMouseEventsDisabledFormControlsPolicy[];
+BLINK_COMMON_EXPORT extern const char
+    kSendMouseEventsDisabledFormControlsPolicy_ForceDisable[];
+BLINK_COMMON_EXPORT extern const char
+    kSendMouseEventsDisabledFormControlsPolicy_ForceEnable[];
 BLINK_COMMON_EXPORT extern const char kGpuRasterizationMSAASampleCount[];
 BLINK_COMMON_EXPORT extern const char
     kIntensiveWakeUpThrottlingPolicy_ForceDisable[];

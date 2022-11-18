@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<div id=host style="position: absolute">
+  <template shadowroot=open>
+    <div id=shadowchild style="position: absolute">
+      <slot></slot>
+    </div>
+  </template>
+  <div id=lightchild></div>
+</div>
+
+<script>
+window.offsetParentId = lightchild.offsetParent.id;
+</script>

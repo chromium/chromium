@@ -1028,6 +1028,9 @@ policies:
   1027: LensDesktopNTPSearchEnabled
   1028: AccessControlAllowMethodsInCORSPreflightSpecConformant
   1029: AllowWebAuthnWithBrokenTlsCerts
+  1030: ''
+  1031: OffsetParentNewSpecBehaviorEnabled
+  1032: SendMouseEventsDisabledFormControlsEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

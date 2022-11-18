@@ -1578,6 +1578,11 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(
       prefs::kAccessControlAllowMethodsInCORSPreflightSpecConformant, true);
+
+  registry->RegisterBooleanPref(
+      policy::policy_prefs::kOffsetParentNewSpecBehaviorEnabled, true);
+  registry->RegisterBooleanPref(
+      policy::policy_prefs::kSendMouseEventsDisabledFormControlsEnabled, true);
 }
 
 // static
@@ -2710,6 +2715,32 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
             prefs->GetBoolean(policy::policy_prefs::kEventPathEnabled)
                 ? blink::switches::kEventPathPolicy_ForceEnable
                 : blink::switches::kEventPathPolicy_ForceDisable);
+      }
+      // Override OffsetParentNewSpecBehavior feature if its Enterprise policy
+      // is specified.
+      if (prefs->HasPrefPath(
+              policy::policy_prefs::kOffsetParentNewSpecBehaviorEnabled)) {
+        command_line->AppendSwitchASCII(
+            blink::switches::kOffsetParentNewSpecBehaviorPolicy,
+            prefs->GetBoolean(
+                policy::policy_prefs::kOffsetParentNewSpecBehaviorEnabled)
+                ? blink::switches::
+                      kOffsetParentNewSpecBehaviorPolicy_ForceEnable
+                : blink::switches::
+                      kOffsetParentNewSpecBehaviorPolicy_ForceDisable);
+      }
+      // Override SendMouseEventsDisabledFormControls feature if its Enterprise
+      // Policy is specified.
+      if (prefs->HasPrefPath(policy::policy_prefs::
+                                 kSendMouseEventsDisabledFormControlsEnabled)) {
+        command_line->AppendSwitchASCII(
+            blink::switches::kSendMouseEventsDisabledFormControlsPolicy,
+            prefs->GetBoolean(policy::policy_prefs::
+                                  kSendMouseEventsDisabledFormControlsEnabled)
+                ? blink::switches::
+                      kSendMouseEventsDisabledFormControlsPolicy_ForceEnable
+                : blink::switches::
+                      kSendMouseEventsDisabledFormControlsPolicy_ForceDisable);
       }
 
       // The IntensiveWakeUpThrottling feature is typically managed via a

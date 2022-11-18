@@ -1742,6 +1742,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kEventPathEnabled,
     policy_prefs::kEventPathEnabled,
     base::Value::Type::BOOLEAN},
+  { key::kOffsetParentNewSpecBehaviorEnabled,
+    policy_prefs::kOffsetParentNewSpecBehaviorEnabled,
+    base::Value::Type::BOOLEAN},
+  { key::kSendMouseEventsDisabledFormControlsEnabled,
+    policy_prefs::kSendMouseEventsDisabledFormControlsEnabled,
+    base::Value::Type::BOOLEAN},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   { key::kDeviceAutofillSAMLUsername,
     ash::prefs::kUrlParameterToAutofillSAMLUsername,

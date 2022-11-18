@@ -44,6 +44,7 @@ LEGACY_INVERTED_POLARITY_ALLOWLIST = [
     'DriveDisabledOverCellular',
     'ExternalStorageDisabled',
     'SavingBrowserHistoryDisabled',
+    'SendMouseEventsDisabledFormControlsEnabled',
     'SyncDisabled',
 ]
 

@@ -33420,6 +33420,8 @@ Called by update_document_policy_enum.py.-->
   <int value="1028"
       label="AccessControlAllowMethodsInCORSPreflightSpecConformant"/>
   <int value="1029" label="AllowWebAuthnWithBrokenTlsCerts"/>
+  <int value="1031" label="OffsetParentNewSpecBehaviorEnabled"/>
+  <int value="1032" label="SendMouseEventsDisabledFormControlsEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
