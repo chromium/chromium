@@ -14,6 +14,7 @@
 #include "crypto/openssl_util.h"
 #include "crypto/rsa_private_key.h"
 #include "net/cert/asn1_util.h"
+#include "net/cert/pki/certificate_policies.h"
 #include "net/cert/pki/extended_key_usage.h"
 #include "net/cert/pki/parse_certificate.h"
 #include "net/cert/pki/verify_signed_data.h"
@@ -732,6 +733,20 @@ void CertBuilder::SetPolicyConstraints(
   }
 
   SetExtension(der::Input(kPolicyConstraintsOid), FinishCBB(cbb.get()),
+               /*critical=*/true);
+}
+
+void CertBuilder::SetInhibitAnyPolicy(uint64_t skip_certs) {
+  // From RFC 5280:
+  //   id-ce-inhibitAnyPolicy OBJECT IDENTIFIER ::=  { id-ce 54 }
+  //
+  //   InhibitAnyPolicy ::= SkipCerts
+  //
+  //   SkipCerts ::= INTEGER (0..MAX)
+  bssl::ScopedCBB cbb;
+  ASSERT_TRUE(CBB_init(cbb.get(), 64));
+  ASSERT_TRUE(CBB_add_asn1_uint64(cbb.get(), skip_certs));
+  SetExtension(der::Input(kInhibitAnyPolicyOid), FinishCBB(cbb.get()),
                /*critical=*/true);
 }
 

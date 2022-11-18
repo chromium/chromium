@@ -196,6 +196,9 @@ class CertBuilder {
   void SetPolicyConstraints(absl::optional<uint64_t> require_explicit_policy,
                             absl::optional<uint64_t> inhibit_policy_mapping);
 
+  // Sets the inhibitAnyPolicy extension.
+  void SetInhibitAnyPolicy(uint64_t skip_certs);
+
   void SetValidity(base::Time not_before, base::Time not_after);
 
   // Sets the Subject Key Identifier (SKI) extension to the specified string.
