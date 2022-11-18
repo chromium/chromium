@@ -51,6 +51,7 @@ static_library("powers") {
 proto_library("proto") {
   proto_in_dir = "//"
   sources = [
+    "proto/note_specifics.proto",
     "proto/power_bookmark_meta.proto",
     "proto/power_bookmark_specifics.proto",
     "proto/shopping_specifics.proto",

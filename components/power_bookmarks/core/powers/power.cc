@@ -29,7 +29,7 @@ Power::Power(const PowerBookmarkSpecifics& specifics) {
 
 Power::~Power() = default;
 
-void Power::ToPowerBookmarkSpecifics(PowerBookmarkSpecifics* specifics) {
+void Power::ToPowerBookmarkSpecifics(PowerBookmarkSpecifics* specifics) const {
   specifics->set_guid(guid_.AsLowercaseString());
   specifics->set_url(url_.spec());
   specifics->set_power_type(power_type_);
@@ -42,6 +42,24 @@ void Power::ToPowerBookmarkSpecifics(PowerBookmarkSpecifics* specifics) {
       time_modified_.ToDeltaSinceWindowsEpoch().InMicroseconds());
 
   specifics->mutable_power_specifics()->CopyFrom(*power_specifics_.get());
+}
+
+void Power::Merge(const Power& other) {
+  // Assuming guid, url and power type are the same.
+  DCHECK(guid_ == other.guid_);
+  DCHECK(url_ == other.url_);
+  DCHECK(power_type_ == other.power_type_);
+  // Take the latest time modified.
+  if (time_modified_ < other.time_modified_)
+    time_modified_ = other.time_modified_;
+  // TODO(1382835): Powers should be able to customize the merge logic.
+  power_specifics_->CopyFrom(*other.power_specifics_);
+}
+
+std::unique_ptr<Power> Power::Clone() const {
+  PowerBookmarkSpecifics power_specifics;
+  ToPowerBookmarkSpecifics(&power_specifics);
+  return std::make_unique<Power>(power_specifics);
 }
 
 }  // namespace power_bookmarks

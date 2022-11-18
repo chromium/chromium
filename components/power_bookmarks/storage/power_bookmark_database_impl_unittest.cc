@@ -20,8 +20,21 @@
 #include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+std::unique_ptr<power_bookmarks::Power> MakePower(
+    GURL url,
+    power_bookmarks::PowerType power_type) {
+  std::unique_ptr<power_bookmarks::PowerSpecifics> power_specifics =
+      std::make_unique<power_bookmarks::PowerSpecifics>();
+  std::unique_ptr<power_bookmarks::Power> power =
+      std::make_unique<power_bookmarks::Power>(std::move(power_specifics));
+  power->set_guid(base::GUID::GenerateRandomV4());
+  power->set_url(url);
+  power->set_power_type(power_type);
+  return power;
+}
+}  // namespace
 namespace power_bookmarks {
-
 class PowerBookmarkDatabaseImplTest : public testing::Test {
  public:
   PowerBookmarkDatabaseImplTest() = default;
@@ -186,50 +199,87 @@ TEST_F(PowerBookmarkDatabaseImplTest, DatabaseHasSchemaNoMeta) {
   }
 }
 
-TEST_F(PowerBookmarkDatabaseImplTest, CreatePowerWhenUpdateCalled) {
+TEST_F(PowerBookmarkDatabaseImplTest, UpdatePowerIfExist) {
   std::unique_ptr<PowerBookmarkDatabaseImpl> pbdb =
       std::make_unique<PowerBookmarkDatabaseImpl>(db_dir());
   EXPECT_TRUE(pbdb->Init());
 
-  std::unique_ptr<PowerSpecifics> power_specifics =
-      std::make_unique<PowerSpecifics>();
-  std::unique_ptr<Power> power =
-      std::make_unique<Power>(std::move(power_specifics));
-  power->set_url(GURL("https://google.com"));
-  power->set_power_type(PowerType::POWER_TYPE_MOCK);
+  auto power =
+      MakePower(GURL("https://google.com"), PowerType::POWER_TYPE_MOCK);
+  power->set_guid(base::GUID::GenerateRandomV4());
+  auto power2 = power->Clone();
 
-  // Update called when no Power can be found will result in a create.
-  EXPECT_TRUE(pbdb->UpdatePower(std::move(power)));
-
-  std::vector<std::unique_ptr<Power>> stored_powers = pbdb->GetPowersForURL(
-      GURL("https://google.com"), PowerType::POWER_TYPE_MOCK);
-  EXPECT_EQ(1u, stored_powers.size());
-  EXPECT_EQ(GURL("https://google.com"), stored_powers[0]->url());
-  EXPECT_EQ(PowerType::POWER_TYPE_MOCK, stored_powers[0]->power_type());
-}
-
-TEST_F(PowerBookmarkDatabaseImplTest, UpdatePowerWhenCreateCalled) {
-  std::unique_ptr<PowerBookmarkDatabaseImpl> pbdb =
-      std::make_unique<PowerBookmarkDatabaseImpl>(db_dir());
-  EXPECT_TRUE(pbdb->Init());
-
-  std::unique_ptr<PowerSpecifics> power_specifics =
-      std::make_unique<PowerSpecifics>();
-  std::unique_ptr<Power> power =
-      std::make_unique<Power>(std::move(power_specifics));
-  power->set_url(GURL("https://google.com"));
-  power->set_power_type(PowerType::POWER_TYPE_MOCK);
   EXPECT_TRUE(pbdb->CreatePower(std::move(power)));
 
+  EXPECT_TRUE(pbdb->UpdatePower(std::move(power2)));
+
   std::vector<std::unique_ptr<Power>> stored_powers = pbdb->GetPowersForURL(
       GURL("https://google.com"), PowerType::POWER_TYPE_MOCK);
   EXPECT_EQ(1u, stored_powers.size());
   EXPECT_EQ(GURL("https://google.com"), stored_powers[0]->url());
   EXPECT_EQ(PowerType::POWER_TYPE_MOCK, stored_powers[0]->power_type());
 
-  // Create called when there is already a Power will perform an update.
+  // Create called when there is already a Power will fail and return false.
   stored_powers[0]->set_url(GURL("https://boogle.com"));
-  EXPECT_TRUE(pbdb->CreatePower(std::move(stored_powers[0])));
+  EXPECT_FALSE(pbdb->CreatePower(std::move(stored_powers[0])));
+}
+
+TEST_F(PowerBookmarkDatabaseImplTest, ShouldNotUpdatePowerIfNotExist) {
+  std::unique_ptr<PowerBookmarkDatabaseImpl> pbdb =
+      std::make_unique<PowerBookmarkDatabaseImpl>(db_dir());
+  EXPECT_TRUE(pbdb->Init());
+
+  // Update called when no Power can be found will fail and return false.
+  EXPECT_FALSE(pbdb->UpdatePower(
+      MakePower(GURL("https://google.com"), PowerType::POWER_TYPE_MOCK)));
+
+  std::vector<std::unique_ptr<Power>> stored_powers = pbdb->GetPowersForURL(
+      GURL("https://google.com"), PowerType::POWER_TYPE_MOCK);
+  EXPECT_EQ(0u, stored_powers.size());
+}
+
+TEST_F(PowerBookmarkDatabaseImplTest, CreatePowerIfNotExist) {
+  std::unique_ptr<PowerBookmarkDatabaseImpl> pbdb =
+      std::make_unique<PowerBookmarkDatabaseImpl>(db_dir());
+  EXPECT_TRUE(pbdb->Init());
+
+  EXPECT_TRUE(pbdb->CreatePower(
+      MakePower(GURL("https://google.com"), PowerType::POWER_TYPE_MOCK)));
+
+  std::vector<std::unique_ptr<Power>> stored_powers = pbdb->GetPowersForURL(
+      GURL("https://google.com"), PowerType::POWER_TYPE_MOCK);
+  EXPECT_EQ(1u, stored_powers.size());
+  EXPECT_EQ(GURL("https://google.com"), stored_powers[0]->url());
+  EXPECT_EQ(PowerType::POWER_TYPE_MOCK, stored_powers[0]->power_type());
+
+  // Create called when there is already a Power will fail and return false.
+  stored_powers[0]->set_url(GURL("https://boogle.com"));
+  EXPECT_FALSE(pbdb->CreatePower(std::move(stored_powers[0])));
+}
+
+TEST_F(PowerBookmarkDatabaseImplTest, ShouldNotCreatePowerIfExist) {
+  std::unique_ptr<PowerBookmarkDatabaseImpl> pbdb =
+      std::make_unique<PowerBookmarkDatabaseImpl>(db_dir());
+  EXPECT_TRUE(pbdb->Init());
+
+  auto power =
+      MakePower(GURL("https://google.com"), PowerType::POWER_TYPE_MOCK);
+  power->set_guid(base::GUID::GenerateRandomV4());
+  auto power2 = power->Clone();
+
+  EXPECT_TRUE(pbdb->CreatePower(std::move(power)));
+
+  EXPECT_FALSE(pbdb->CreatePower(std::move(power2)));
+
+  std::vector<std::unique_ptr<Power>> stored_powers = pbdb->GetPowersForURL(
+      GURL("https://google.com"), PowerType::POWER_TYPE_MOCK);
+  EXPECT_EQ(1u, stored_powers.size());
+  EXPECT_EQ(GURL("https://google.com"), stored_powers[0]->url());
+  EXPECT_EQ(PowerType::POWER_TYPE_MOCK, stored_powers[0]->power_type());
+
+  // Create called when there is already a Power will fail and return false.
+  stored_powers[0]->set_url(GURL("https://boogle.com"));
+  EXPECT_FALSE(pbdb->CreatePower(std::move(stored_powers[0])));
 }
 
 TEST_F(PowerBookmarkDatabaseImplTest, GetPowersForURL) {
@@ -237,13 +287,8 @@ TEST_F(PowerBookmarkDatabaseImplTest, GetPowersForURL) {
       std::make_unique<PowerBookmarkDatabaseImpl>(db_dir());
   EXPECT_TRUE(pbdb->Init());
 
-  std::unique_ptr<PowerSpecifics> power_specifics =
-      std::make_unique<PowerSpecifics>();
-  std::unique_ptr<Power> power =
-      std::make_unique<Power>(std::move(power_specifics));
-  power->set_url(GURL("https://google.com"));
-  power->set_power_type(PowerType::POWER_TYPE_MOCK);
-  EXPECT_TRUE(pbdb->CreatePower(std::move(power)));
+  EXPECT_TRUE(pbdb->CreatePower(
+      MakePower(GURL("https://google.com"), PowerType::POWER_TYPE_MOCK)));
 
   std::vector<std::unique_ptr<Power>> stored_powers = pbdb->GetPowersForURL(
       GURL("https://google.com"), PowerType::POWER_TYPE_MOCK);
@@ -257,13 +302,8 @@ TEST_F(PowerBookmarkDatabaseImplTest, GetPowersForURLUnspecifiedType) {
       std::make_unique<PowerBookmarkDatabaseImpl>(db_dir());
   EXPECT_TRUE(pbdb->Init());
 
-  std::unique_ptr<PowerSpecifics> power_specifics =
-      std::make_unique<PowerSpecifics>();
-  std::unique_ptr<Power> power =
-      std::make_unique<Power>(std::move(power_specifics));
-  power->set_url(GURL("https://google.com"));
-  power->set_power_type(PowerType::POWER_TYPE_MOCK);
-  EXPECT_TRUE(pbdb->CreatePower(std::move(power)));
+  EXPECT_TRUE(pbdb->CreatePower(
+      MakePower(GURL("https://google.com"), PowerType::POWER_TYPE_MOCK)));
 
   std::vector<std::unique_ptr<Power>> stored_powers = pbdb->GetPowersForURL(
       GURL("https://google.com"), PowerType::POWER_TYPE_UNSPECIFIED);
@@ -310,25 +350,14 @@ TEST_F(PowerBookmarkDatabaseImplTest, GetPowerOverviewsForType) {
       std::make_unique<PowerBookmarkDatabaseImpl>(db_dir());
   EXPECT_TRUE(pbdb->Init());
 
-  std::unique_ptr<PowerSpecifics> power_specifics =
-      std::make_unique<PowerSpecifics>();
-  std::unique_ptr<Power> power =
-      std::make_unique<Power>(std::move(power_specifics));
-  power->set_url(GURL("https://google.com"));
-  power->set_power_type(PowerType::POWER_TYPE_MOCK);
-  EXPECT_TRUE(pbdb->CreatePower(std::move(power)));
+  EXPECT_TRUE(pbdb->CreatePower(
+      MakePower(GURL("https://google.com"), PowerType::POWER_TYPE_MOCK)));
 
-  power_specifics = std::make_unique<PowerSpecifics>();
-  power = std::make_unique<Power>(std::move(power_specifics));
-  power->set_url(GURL("https://google.com"));
-  power->set_power_type(PowerType::POWER_TYPE_MOCK);
-  EXPECT_TRUE(pbdb->CreatePower(std::move(power)));
+  EXPECT_TRUE(pbdb->CreatePower(
+      MakePower(GURL("https://google.com"), PowerType::POWER_TYPE_MOCK)));
 
-  power_specifics = std::make_unique<PowerSpecifics>();
-  power = std::make_unique<Power>(std::move(power_specifics));
-  power->set_url(GURL("https://boogle.com"));
-  power->set_power_type(PowerType::POWER_TYPE_MOCK);
-  EXPECT_TRUE(pbdb->CreatePower(std::move(power)));
+  EXPECT_TRUE(pbdb->CreatePower(
+      MakePower(GURL("https://boogle.com"), PowerType::POWER_TYPE_MOCK)));
 
   std::vector<std::unique_ptr<PowerOverview>> power_overviews =
       pbdb->GetPowerOverviewsForType(PowerType::POWER_TYPE_MOCK);
@@ -376,13 +405,8 @@ TEST_F(PowerBookmarkDatabaseImplTest, DeletePower) {
       std::make_unique<PowerBookmarkDatabaseImpl>(db_dir());
   EXPECT_TRUE(pbdb->Init());
 
-  std::unique_ptr<PowerSpecifics> power_specifics =
-      std::make_unique<PowerSpecifics>();
-  std::unique_ptr<Power> power =
-      std::make_unique<Power>(std::move(power_specifics));
-  power->set_url(GURL("https://google.com"));
-  power->set_power_type(PowerType::POWER_TYPE_MOCK);
-  EXPECT_TRUE(pbdb->CreatePower(std::move(power)));
+  EXPECT_TRUE(pbdb->CreatePower(
+      MakePower(GURL("https://google.com"), PowerType::POWER_TYPE_MOCK)));
 
   std::vector<std::unique_ptr<Power>> stored_powers = pbdb->GetPowersForURL(
       GURL("https://google.com"), PowerType::POWER_TYPE_MOCK);
@@ -401,13 +425,8 @@ TEST_F(PowerBookmarkDatabaseImplTest, DeletePowersForURL) {
       std::make_unique<PowerBookmarkDatabaseImpl>(db_dir());
   EXPECT_TRUE(pbdb->Init());
 
-  std::unique_ptr<PowerSpecifics> power_specifics =
-      std::make_unique<PowerSpecifics>();
-  std::unique_ptr<Power> power =
-      std::make_unique<Power>(std::move(power_specifics));
-  power->set_url(GURL("https://google.com"));
-  power->set_power_type(PowerType::POWER_TYPE_MOCK);
-  EXPECT_TRUE(pbdb->CreatePower(std::move(power)));
+  EXPECT_TRUE(pbdb->CreatePower(
+      MakePower(GURL("https://google.com"), PowerType::POWER_TYPE_MOCK)));
 
   std::vector<std::unique_ptr<Power>> stored_powers = pbdb->GetPowersForURL(
       GURL("https://google.com"), PowerType::POWER_TYPE_MOCK);
@@ -427,13 +446,8 @@ TEST_F(PowerBookmarkDatabaseImplTest, DeletePowersForURLUnspecifiedType) {
       std::make_unique<PowerBookmarkDatabaseImpl>(db_dir());
   EXPECT_TRUE(pbdb->Init());
 
-  std::unique_ptr<PowerSpecifics> power_specifics =
-      std::make_unique<PowerSpecifics>();
-  std::unique_ptr<Power> power =
-      std::make_unique<Power>(std::move(power_specifics));
-  power->set_url(GURL("https://google.com"));
-  power->set_power_type(PowerType::POWER_TYPE_MOCK);
-  EXPECT_TRUE(pbdb->CreatePower(std::move(power)));
+  EXPECT_TRUE(pbdb->CreatePower(
+      MakePower(GURL("https://google.com"), PowerType::POWER_TYPE_MOCK)));
 
   std::vector<std::unique_ptr<Power>> stored_powers = pbdb->GetPowersForURL(
       GURL("https://google.com"), PowerType::POWER_TYPE_MOCK);

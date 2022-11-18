@@ -54,4 +54,30 @@ TEST(PowerTest, ToAndFromSpecifics) {
   EXPECT_EQ(specifics.update_time_usec(), new_specifics.update_time_usec());
 }
 
+TEST(PowerTest, ClonePower) {
+  PowerBookmarkSpecifics specifics = CreatePowerBookmarkSpecifics();
+  Power power(specifics);
+  std::unique_ptr<Power> clone = power.Clone();
+  EXPECT_EQ(power.guid(), clone->guid());
+  EXPECT_EQ(power.url(), clone->url());
+  EXPECT_EQ(power.time_added(), clone->time_added());
+  EXPECT_EQ(power.time_modified(), clone->time_modified());
+  EXPECT_EQ(power.power_specifics()->SerializeAsString(),
+            clone->power_specifics()->SerializeAsString());
+}
+
+TEST(PowerTest, MergePower) {
+  PowerBookmarkSpecifics specifics = CreatePowerBookmarkSpecifics();
+  Power power(specifics);
+  Power other(specifics);
+  base::Time now = base::Time::Now();
+  power.set_time_added(now);
+  power.set_time_modified(now);
+  other.set_time_added(now + base::Seconds(1));
+  other.set_time_modified(now + base::Seconds(1));
+  power.Merge(other);
+  EXPECT_EQ(power.time_added(), now);
+  EXPECT_EQ(power.time_modified(), other.time_modified());
+}
+
 }  // namespace power_bookmarks

@@ -31,10 +31,12 @@ std::unique_ptr<Power> CreatePowerFromSpecifics(
   switch (specifics.power_type()) {
     case PowerType::POWER_TYPE_UNSPECIFIED:
     case PowerType::POWER_TYPE_MOCK:
+    case PowerType::POWER_TYPE_NOTE:
       return std::make_unique<Power>(specifics);
     default:
       NOTREACHED();
   }
+  return nullptr;
 }
 
 bool CheckIfPowerWithIdExists(sql::Database* db, const base::GUID& guid) {
@@ -279,19 +281,15 @@ PowerBookmarkDatabaseImpl::GetPowerOverviewsForType(
 bool PowerBookmarkDatabaseImpl::CreatePower(std::unique_ptr<Power> power) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (CheckIfPowerWithIdExists(&db_, power->guid()))
-    return UpdatePower(std::move(power));
+  if (CheckIfPowerWithIdExists(&db_, power->guid())) {
+    DLOG(ERROR)
+        << "Failed to create power because the current power already exists.";
+    return false;
+  }
 
   sql::Transaction transaction(&db_);
   if (!transaction.Begin())
     return false;
-
-  // Accept existing guids if they're explicitly set.
-  if (!power->guid().is_valid())
-    power->set_guid(base::GUID::GenerateRandomV4());
-  base::Time now = base::Time::Now();
-  power->set_time_added(now);
-  power->set_time_modified(now);
 
   static constexpr char kCreatePowerSaveSql[] =
       // clang-format off
@@ -337,8 +335,11 @@ bool PowerBookmarkDatabaseImpl::CreatePower(std::unique_ptr<Power> power) {
 bool PowerBookmarkDatabaseImpl::UpdatePower(std::unique_ptr<Power> power) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!CheckIfPowerWithIdExists(&db_, power->guid()))
-    return CreatePower(std::move(power));
+  if (!CheckIfPowerWithIdExists(&db_, power->guid())) {
+    DLOG(ERROR)
+        << "Failed to update power because the current power does not exist.";
+    return false;
+  }
 
   sql::Transaction transaction(&db_);
   if (!transaction.Begin())

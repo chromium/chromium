@@ -65,6 +65,14 @@ void PowerBookmarkService::GetPowerOverviewsForType(
 
 void PowerBookmarkService::CreatePower(std::unique_ptr<Power> power,
                                        SuccessCallback callback) {
+  // Accept existing guids if they're explicitly set.
+  if (!power->guid().is_valid())
+    power->set_guid(base::GUID::GenerateRandomV4());
+  base::Time now = base::Time::Now();
+  if (power->time_added().is_null())
+    power->set_time_added(now);
+  if (power->time_modified().is_null())
+    power->set_time_modified(now);
   backend_.AsyncCall(&PowerBookmarkBackend::CreatePower)
       .WithArgs(std::move(power))
       .Then(base::BindOnce(&PowerBookmarkService::NotifyPowersChanged,
@@ -74,6 +82,7 @@ void PowerBookmarkService::CreatePower(std::unique_ptr<Power> power,
 
 void PowerBookmarkService::UpdatePower(std::unique_ptr<Power> power,
                                        SuccessCallback callback) {
+  power->set_time_modified(base::Time::Now());
   backend_.AsyncCall(&PowerBookmarkBackend::UpdatePower)
       .WithArgs(std::move(power))
       .Then(base::BindOnce(&PowerBookmarkService::NotifyPowersChanged,

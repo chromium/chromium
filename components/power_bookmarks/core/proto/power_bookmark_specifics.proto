@@ -11,6 +11,8 @@ option optimize_for = LITE_RUNTIME;
 
 package power_bookmarks;
 
+import "components/power_bookmarks/core/proto/note_specifics.proto";
+
 // PowerType is persisted to disk and therefore shouldn't be reoderered or
 // changed.
 enum PowerType {
@@ -18,10 +20,18 @@ enum PowerType {
   POWER_TYPE_UNSPECIFIED = 0;
   // Used for testing.
   POWER_TYPE_MOCK = 1;
+  // Used for notes.
+  POWER_TYPE_NOTE = 2;
 }
 
+// Data structure dedicated to each power type.
+// Should keep the field numbers of specifics in sync with the ones in PowerType
+// above.
 message PowerSpecifics {
-  optional string placeholder = 1;
+  oneof specifics {
+    // Used for notes.
+    NoteSpecifics note_specifics = 2;
+  }
 }
 
 message PowerBookmarkSpecifics {

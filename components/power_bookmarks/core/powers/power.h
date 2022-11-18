@@ -46,9 +46,23 @@ class Power {
     time_modified_ = time_modified;
   }
 
+  // Used to get fields from PowerSpecifics.
+  const PowerSpecifics* power_specifics() const {
+    return power_specifics_.get();
+  }
+
   // Write the properties held in this class to power_bookmark_specifics.proto.
   // `power_bookmark_specifics` will never be nullptr.
-  void ToPowerBookmarkSpecifics(PowerBookmarkSpecifics* save_specifics);
+  void ToPowerBookmarkSpecifics(PowerBookmarkSpecifics* save_specifics) const;
+
+  // Merge the current power with the other one.
+  // guid, url and PowerType are not allowed to be different from the other
+  // power.
+  void Merge(const Power& other);
+
+  // Clone a power. Every power should be independent to others.
+  // This should be call to duplicate a power instead of direct assign.
+  std::unique_ptr<Power> Clone() const;
 
  private:
   base::GUID guid_;
