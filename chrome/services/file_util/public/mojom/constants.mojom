@@ -8,8 +8,7 @@ module chrome.file_util.mojom;
 // The set of errors which may occur while extracting a file.
 enum ExtractionResult {
   kSuccess,
-  // These enums mirror the extensions::image_writer::error strings.
-  kUnzipGenericError,
-  kUnzipInvalidArchive,
-  kTempFileError,
+  kGenericError,
+  kInvalidSrcFile,
+  kDstFileError,
 };

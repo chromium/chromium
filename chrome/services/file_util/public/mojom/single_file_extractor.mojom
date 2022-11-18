@@ -1,0 +1,35 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chrome.mojom;
+
+import "chrome/services/file_util/public/mojom/constants.mojom";
+import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
+
+// Service that extracts a single file from `src_file`. `src_file` is a .TAR.XZ
+// or .TAR file. SingleFileExtractor interface is a common interface for
+// .TAR.XZ file extraction and .TAR file extraction. `src_file` has to contain
+// a single file. If it does multiple files, the service rejects the request
+// and chrome.file_util.mojom.ExtractionResult.kInvalidSrcFile will return via
+// `result`. This service is designed to extract large files such as OS image
+// files.
+interface SingleFileExtractor {
+  // Extracts a single file from `src_file` and writes the result to
+  // `dst_file`. Progress is regularly reported via the passed `listener`.
+  Extract(mojo_base.mojom.ReadOnlyFile src_file,
+          mojo_base.mojom.File dst_file,
+          pending_remote<SingleFileExtractorListener> listener)
+          => (chrome.file_util.mojom.ExtractionResult result);
+};
+
+// Listener of extract operation.
+interface SingleFileExtractorListener {
+  // Regularly called during the extract operation to report progress.
+  // `total_bytes` indicates the size of the destination file after extraction.
+  // `progress_bytes` indicates the bytes already written to the destination
+  // file.
+  OnProgress(uint64 total_bytes,
+             uint64 progress_bytes);
+};

@@ -22,7 +22,8 @@
 #include "chrome/services/file_util/zip_file_creator.h"
 #endif
 
-#if BUILDFLAG(ENABLE_XZ_EXTRACTOR)
+#if BUILDFLAG(ENABLE_EXTRACTORS)
+#include "chrome/services/file_util/single_file_tar_file_extractor.h"
 #include "chrome/services/file_util/single_file_tar_xz_file_extractor.h"
 #endif
 
@@ -47,10 +48,14 @@ void FileUtilService::BindSafeArchiveAnalyzer(
 }
 #endif
 
-#if BUILDFLAG(ENABLE_XZ_EXTRACTOR)
+#if BUILDFLAG(ENABLE_EXTRACTORS)
+void FileUtilService::BindSingleFileTarFileExtractor(
+    mojo::PendingReceiver<chrome::mojom::SingleFileExtractor> receiver) {
+  mojo::MakeSelfOwnedReceiver(std::make_unique<SingleFileTarFileExtractor>(),
+                              std::move(receiver));
+}
 void FileUtilService::BindSingleFileTarXzFileExtractor(
-    mojo::PendingReceiver<chrome::mojom::SingleFileTarXzFileExtractor>
-        receiver) {
+    mojo::PendingReceiver<chrome::mojom::SingleFileExtractor> receiver) {
   mojo::MakeSelfOwnedReceiver(std::make_unique<SingleFileTarXzFileExtractor>(),
                               std::move(receiver));
 }

@@ -59,8 +59,11 @@ void XzExtractor::OnProgress(uint64_t total_bytes, uint64_t progress_bytes) {
 }
 
 void XzExtractor::ExtractImpl() {
+  // TODO(b/254591810): Run on a pooled worker thread to avoid blocking
+  // operation on the main UI thread.
   base::File src_file(properties_.image_path,
                       base::File::FLAG_OPEN | base::File::FLAG_READ |
+                          // Do not allow others to write to the file.
                           base::File::FLAG_WIN_EXCLUSIVE_WRITE |
                           base::File::FLAG_WIN_SHARE_DELETE);
   if (!src_file.IsValid()) {
@@ -70,11 +73,15 @@ void XzExtractor::ExtractImpl() {
 
   base::FilePath out_image_path =
       properties_.temp_dir_path.Append(kExtractedBinFileName);
-  base::File dst_file(out_image_path, base::File::FLAG_CREATE_ALWAYS |
-                                          base::File::FLAG_WRITE |
-                                          base::File::FLAG_WIN_EXCLUSIVE_READ |
-                                          base::File::FLAG_WIN_EXCLUSIVE_WRITE |
-                                          base::File::FLAG_WIN_SHARE_DELETE);
+  // TODO(b/254591810): Run on a pooled worker thread to avoid blocking
+  // operation on the main UI thread.
+  base::File dst_file(out_image_path,
+                      base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE |
+                          // Do not allow others to read the file.
+                          base::File::FLAG_WIN_EXCLUSIVE_READ |
+                          // Do not allow others to write to the file.
+                          base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                          base::File::FLAG_WIN_SHARE_DELETE);
   if (!dst_file.IsValid()) {
     RunFailureCallbackAndDeleteThis(error::kTempFileError);
     return;
@@ -83,9 +90,9 @@ void XzExtractor::ExtractImpl() {
 
   service_.Bind(LaunchFileUtilService());
   service_->BindSingleFileTarXzFileExtractor(
-      remote_single_file_tar_xz_file_extractor_.BindNewPipeAndPassReceiver());
+      remote_single_file_extractor_.BindNewPipeAndPassReceiver());
 
-  remote_single_file_tar_xz_file_extractor_->Extract(
+  remote_single_file_extractor_->Extract(
       std::move(src_file), std::move(dst_file),
       listener_.BindNewPipeAndPassRemote(),
       base::BindOnce(&XzExtractor::OnRemoteFinished, base::Unretained(this)));
@@ -100,22 +107,22 @@ void XzExtractor::OnRemoteFinished(
       std::move(complete_callback).Run();
       return;
     }
-    case chrome::file_util::mojom::ExtractionResult::kUnzipGenericError: {
+    case chrome::file_util::mojom::ExtractionResult::kGenericError: {
       RunFailureCallbackAndDeleteThis(error::kUnzipGenericError);
       return;
     }
-    case chrome::file_util::mojom::ExtractionResult::kUnzipInvalidArchive: {
+    case chrome::file_util::mojom::ExtractionResult::kInvalidSrcFile: {
       RunFailureCallbackAndDeleteThis(error::kUnzipInvalidArchive);
       return;
     }
-    case chrome::file_util::mojom::ExtractionResult::kTempFileError: {
+    case chrome::file_util::mojom::ExtractionResult::kDstFileError: {
       RunFailureCallbackAndDeleteThis(error::kTempFileError);
       return;
     }
   }
 }
 
-void XzExtractor::RunFailureCallbackAndDeleteThis(std::string error_id) {
+void XzExtractor::RunFailureCallbackAndDeleteThis(const std::string& error_id) {
   auto failure_callback = std::move(properties_.failure_callback);
   delete this;
   std::move(failure_callback).Run(error_id);

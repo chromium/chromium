@@ -33,11 +33,10 @@ constexpr int kTarBufferSize = kDefaultBufferSize;
 // output file.
 class ExtractorInner : public SingleFileTarReader::Delegate {
  public:
-  ExtractorInner(
-      mojo::PendingRemote<chrome::mojom::SingleFileTarXzFileExtractorListener>
-          pending_listener,
-      base::File src_file,
-      base::File dst_file)
+  ExtractorInner(mojo::PendingRemote<chrome::mojom::SingleFileExtractorListener>
+                     pending_listener,
+                 base::File src_file,
+                 base::File dst_file)
       : listener_(std::move(pending_listener)),
         src_file_(std::move(src_file)),
         dst_file_(std::move(dst_file)),
@@ -53,12 +52,12 @@ class ExtractorInner : public SingleFileTarReader::Delegate {
       const int bytes_read = src_file_.ReadAtCurrentPos(
           reinterpret_cast<char*>(xz_buffer.data()), xz_buffer.size());
       if (bytes_read < 0)
-        return chrome::file_util::mojom::ExtractionResult::kUnzipGenericError;
+        return chrome::file_util::mojom::ExtractionResult::kGenericError;
       if (bytes_read == 0) {
         // After reading the last chunk of file content, it is expected that the
         // ExtractChunk() below populates `result` with kSuccess and the .tar.xz
         // file extraction ends.
-        return chrome::file_util::mojom::ExtractionResult::kUnzipGenericError;
+        return chrome::file_util::mojom::ExtractionResult::kGenericError;
       }
 
       absl::optional<chrome::file_util::mojom::ExtractionResult> result;
@@ -71,6 +70,11 @@ class ExtractorInner : public SingleFileTarReader::Delegate {
       listener_->OnProgress(tar_reader_.total_bytes().value(),
                             tar_reader_.curr_bytes());
     }
+  }
+
+  void CloseFiles() {
+    src_file_.Close();
+    dst_file_.Close();
   }
 
   ~ExtractorInner() override { XzUnpacker_Free(&state_); }
@@ -91,8 +95,7 @@ class ExtractorInner : public SingleFileTarReader::Delegate {
                                       /*srcFinished=*/xz_buffer.empty(),
                                       CODER_FINISH_ANY, &status);
       if (xz_result != SZ_OK) {
-        *result =
-            chrome::file_util::mojom::ExtractionResult::kUnzipGenericError;
+        *result = chrome::file_util::mojom::ExtractionResult::kGenericError;
         return;
       }
       xz_buffer = xz_buffer.subspan(compressed_size);
@@ -133,14 +136,13 @@ class ExtractorInner : public SingleFileTarReader::Delegate {
       chrome::file_util::mojom::ExtractionResult* error) override {
     const int bytes_written = dst_file_.WriteAtCurrentPos(data, size);
     if (bytes_written < 0 || bytes_written != size) {
-      *error = chrome::file_util::mojom::ExtractionResult::kTempFileError;
+      *error = chrome::file_util::mojom::ExtractionResult::kDstFileError;
       return false;
     }
     return true;
   }
 
-  const mojo::Remote<chrome::mojom::SingleFileTarXzFileExtractorListener>
-      listener_;
+  const mojo::Remote<chrome::mojom::SingleFileExtractorListener> listener_;
 
   CXzUnpacker state_;
   ISzAlloc alloc_;
@@ -168,18 +170,20 @@ SingleFileTarXzFileExtractor::~SingleFileTarXzFileExtractor() = default;
 void SingleFileTarXzFileExtractor::Extract(
     base::File src_file,
     base::File dst_file,
-    mojo::PendingRemote<chrome::mojom::SingleFileTarXzFileExtractorListener>
+    mojo::PendingRemote<chrome::mojom::SingleFileExtractorListener>
         pending_listener,
-    SingleFileTarXzFileExtractor::ExtractCallback callback) {
+    SingleFileExtractor::ExtractCallback callback) {
   if (!src_file.IsValid() || !dst_file.IsValid()) {
     std::move(callback).Run(
-        chrome::file_util::mojom::ExtractionResult::kUnzipGenericError);
+        chrome::file_util::mojom::ExtractionResult::kGenericError);
     return;
   }
-  ExtractorInner* extractor = new ExtractorInner(
-      std::move(pending_listener), std::move(src_file), std::move(dst_file));
-  chrome::file_util::mojom::ExtractionResult result = extractor->Extract();
-  // Destroy the File objects before calling `callback`.
-  delete extractor;
+  ExtractorInner extractor(std::move(pending_listener), std::move(src_file),
+                           std::move(dst_file));
+  chrome::file_util::mojom::ExtractionResult result = extractor.Extract();
+
+  // Explicitly close the files before calling `callback` to ensure all
+  // extracted data is flushed to the file and the file is closed.
+  extractor.CloseFiles();
   std::move(callback).Run(result);
 }

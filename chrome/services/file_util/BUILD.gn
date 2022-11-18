@@ -35,11 +35,11 @@ source_set("file_util") {
       "zip_file_creator.h",
     ]
 
-    deps += ["//components/services/filesystem/public/mojom"]
+    deps += [ "//components/services/filesystem/public/mojom" ]
   }
 
   if (is_mac) {
-    deps += ["//chrome/utility/safe_browsing/mac"]
+    deps += [ "//chrome/utility/safe_browsing/mac" ]
   }
 
   if (safe_browsing_mode == 1) {
@@ -71,8 +71,10 @@ source_set("file_util") {
     }
   }
 
-  if (enable_xz_extractor) {
+  if (enable_extractors) {
     sources += [
+      "single_file_tar_file_extractor.cc",
+      "single_file_tar_file_extractor.h",
       "single_file_tar_reader.cc",
       "single_file_tar_reader.h",
       "single_file_tar_xz_file_extractor.cc",
@@ -88,8 +90,12 @@ source_set("file_util") {
 source_set("unit_tests") {
   testonly = true
 
-  if (enable_xz_extractor) {
-    sources = [ "single_file_tar_xz_file_extractor_unittest.cc" ]
+  if (enable_extractors) {
+    sources = [
+      "single_file_tar_file_extractor_unittest.cc",
+      "single_file_tar_reader_unittest.cc",
+      "single_file_tar_xz_file_extractor_unittest.cc",
+    ]
 
     deps = [
       ":file_util",
@@ -104,7 +110,7 @@ source_set("unit_tests") {
 buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
-    "ENABLE_XZ_EXTRACTOR=$enable_xz_extractor",
+    "ENABLE_EXTRACTORS=$enable_extractors",
     "ENABLE_MALDOCA=$enable_maldoca",
   ]
 }

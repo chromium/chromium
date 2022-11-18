@@ -5,19 +5,24 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_IMAGE_WRITER_PRIVATE_TAR_EXTRACTOR_H_
 #define CHROME_BROWSER_EXTENSIONS_API_IMAGE_WRITER_PRIVATE_TAR_EXTRACTOR_H_
 
-#include "base/files/file_util.h"
+#include <string>
+
 #include "chrome/browser/extensions/api/image_writer_private/extraction_properties.h"
-#include "chrome/browser/extensions/api/image_writer_private/single_file_tar_reader.h"
+#include "chrome/services/file_util/public/mojom/constants.mojom.h"
+#include "chrome/services/file_util/public/mojom/file_util_service.mojom.h"
+#include "chrome/services/file_util/public/mojom/single_file_extractor.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace extensions {
 namespace image_writer {
 
-class TarExtractor : public SingleFileTarReader::Delegate {
+class TarExtractor : public chrome::mojom::SingleFileExtractorListener {
  public:
   static bool IsTarFile(const base::FilePath& image_path);
 
-  // Start extracting the archive at |image_path| to |temp_dir_path| in
-  // |properties|.
+  // Start extracting the archive at `image_path` to `temp_dir_path` in
+  // `properties`.
   static void Extract(ExtractionProperties properties);
 
   TarExtractor(const TarExtractor&) = delete;
@@ -28,25 +33,27 @@ class TarExtractor : public SingleFileTarReader::Delegate {
   explicit TarExtractor(ExtractionProperties properties);
   ~TarExtractor() override;
 
+  // chrome::mojom::SingleFileExtractorListener implementation.
+  void OnProgress(uint64_t total_bytes, uint64_t progress_bytes) override;
+
   void ExtractImpl();
-  void ExtractChunk();
+  void OnRemoteFinished(chrome::file_util::mojom::ExtractionResult result);
+  void RunFailureCallbackAndDeleteThis(const std::string& error_id);
 
-  // SingleFileTarReader::Delegate:
-  SingleFileTarReader::Result ReadTarFile(char* data,
-                                          uint32_t* size,
-                                          std::string* error_id) override;
-  bool WriteContents(const char* data,
-                     int size,
-                     std::string* error_id) override;
+  // `service_` is a class member so that the utility process where the actual
+  // .tar file extraction is performed is kept alive while extraction is in
+  // progress.
+  mojo::Remote<chrome::mojom::FileUtilService> service_;
 
-  SingleFileTarReader tar_reader_;
+  mojo::Remote<chrome::mojom::SingleFileExtractor>
+      remote_single_file_extractor_;
 
-  base::File infile_;
-  base::File outfile_;
+  // Listener receiver.
+  // This class listens for tar extraction progress reports from the utility
+  // process.
+  mojo::Receiver<chrome::mojom::SingleFileExtractorListener> listener_{this};
 
   ExtractionProperties properties_;
-
-  base::WeakPtrFactory<TarExtractor> weak_ptr_factory_{this};
 };
 
 }  // namespace image_writer

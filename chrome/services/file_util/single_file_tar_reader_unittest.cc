@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/image_writer_private/single_file_tar_reader.h"
+#include "chrome/services/file_util/single_file_tar_reader.h"
 
 #include <memory>
 #include <vector>
 
 #include "base/files/file_util.h"
-#include "chrome/browser/extensions/api/image_writer_private/test_utils.h"
+#include "base/path_service.h"
+#include "chrome/common/chrome_paths.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-namespace extensions {
-namespace image_writer {
 
 class SingleFileTarReaderTest : public testing::Test,
                                 public SingleFileTarReader::Delegate {
@@ -23,17 +21,26 @@ class SingleFileTarReaderTest : public testing::Test,
   SingleFileTarReaderTest& operator=(const SingleFileTarReaderTest&) = delete;
   ~SingleFileTarReaderTest() override = default;
 
+  bool GetTestDataDirectory(base::FilePath* path) {
+    bool success = base::PathService::Get(chrome::DIR_TEST_DATA, path);
+    if (!success)
+      return false;
+    *path = path->AppendASCII("image_writer_private");
+    return true;
+  }
+
   bool OpenTarFile(const base::FilePath& file_path) {
-    infile_ = std::make_unique<base::File>(
+    src_file_ = std::make_unique<base::File>(
         file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-    return infile_->IsValid();
+    return src_file_->IsValid();
   }
 
   // SingleFileTarReader::Delegate:
-  SingleFileTarReader::Result ReadTarFile(char* data,
-                                          uint32_t* size,
-                                          std::string* error_id) override {
-    int bytes_read = infile_->ReadAtCurrentPos(data, *size);
+  SingleFileTarReader::Result ReadTarFile(
+      char* data,
+      uint32_t* size,
+      chrome::file_util::mojom::ExtractionResult* error) override {
+    int bytes_read = src_file_->ReadAtCurrentPos(data, *size);
     if (bytes_read < 0) {
       return SingleFileTarReader::Result::kFailure;
     }
@@ -42,9 +49,10 @@ class SingleFileTarReaderTest : public testing::Test,
     return SingleFileTarReader::Result::kSuccess;
   }
 
-  bool WriteContents(const char* data,
-                     int size,
-                     std::string* error_id) override {
+  bool WriteContents(
+      const char* data,
+      int size,
+      chrome::file_util::mojom::ExtractionResult* error) override {
     contents_.insert(contents_.end(), data, data + size);
     return true;
   }
@@ -53,7 +61,7 @@ class SingleFileTarReaderTest : public testing::Test,
   const std::vector<char>& contents() const { return contents_; }
 
  private:
-  std::unique_ptr<base::File> infile_;
+  std::unique_ptr<base::File> src_file_;
   std::vector<char> contents_;
 
   SingleFileTarReader reader_;
@@ -92,6 +100,3 @@ TEST_F(SingleFileTarReaderTest, EmptyFile) {
   EXPECT_EQ(SingleFileTarReader::Result::kSuccess, reader().ExtractChunk());
   EXPECT_TRUE(reader().IsComplete());
 }
-
-}  // namespace image_writer
-}  // namespace extensions

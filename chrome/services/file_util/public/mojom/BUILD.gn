@@ -27,12 +27,12 @@ mojom("mojom") {
     public_deps += [ "//components/services/filesystem/public/mojom" ]
   }
 
-  if (enable_xz_extractor) {
+  if (enable_extractors) {
     sources += [
       "constants.mojom",
-      "single_file_tar_xz_file_extractor.mojom",
+      "single_file_extractor.mojom",
     ]
-    enabled_features += [ "xz_extractor" ]
+    enabled_features += [ "extractors" ]
   }
 
   if (safe_browsing_mode == 1 && enable_maldoca) {

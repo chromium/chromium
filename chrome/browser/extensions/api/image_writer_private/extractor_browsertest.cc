@@ -12,6 +12,7 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 #include "chrome/browser/extensions/api/image_writer_private/extraction_properties.h"
+#include "chrome/browser/extensions/api/image_writer_private/tar_extractor.h"
 #include "chrome/browser/extensions/api/image_writer_private/test_utils.h"
 #include "chrome/browser/extensions/api/image_writer_private/xz_extractor.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -54,6 +55,26 @@ class ExtractorBrowserTest : public InProcessBrowserTest {
   base::ScopedTempDir temp_dir_;
 };
 
+IN_PROC_BROWSER_TEST_F(ExtractorBrowserTest, ExtractTar) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  base::FilePath test_data_dir;
+  ASSERT_TRUE(GetTestDataDirectory(&test_data_dir));
+  properties_.image_path = test_data_dir.AppendASCII("test.tar");
+
+  base::FilePath out_path;
+  base::RunLoop run_loop;
+  EXPECT_CALL(open_callback_, Run(_)).WillOnce(SaveArg<0>(&out_path));
+  EXPECT_CALL(complete_callback_, Run())
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  TarExtractor::Extract(std::move(properties_));
+  run_loop.Run();
+
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(out_path, &contents));
+  EXPECT_EQ("foo\n", contents);
+}
+
 IN_PROC_BROWSER_TEST_F(ExtractorBrowserTest, ExtractTarXz) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -89,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(ExtractorBrowserTest, ExtractNonExistentTarXz) {
 }
 
 // Verify that tar.xz with a 0 byte file works.
-IN_PROC_BROWSER_TEST_F(ExtractorBrowserTest, ZeroByteFile) {
+IN_PROC_BROWSER_TEST_F(ExtractorBrowserTest, ZeroByteTarXzFile) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   base::FilePath test_data_dir;
@@ -114,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(ExtractorBrowserTest, ZeroByteFile) {
   EXPECT_TRUE(contents.empty());
 }
 
-IN_PROC_BROWSER_TEST_F(ExtractorBrowserTest, ExtractBigFile) {
+IN_PROC_BROWSER_TEST_F(ExtractorBrowserTest, ExtractBigTarXzFile) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   base::FilePath test_data_dir;

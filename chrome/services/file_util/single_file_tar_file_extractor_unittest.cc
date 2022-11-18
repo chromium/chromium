@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/services/file_util/single_file_tar_xz_file_extractor.h"
+#include "chrome/services/file_util/single_file_tar_file_extractor.h"
 
 #include <stdint.h>
 
@@ -22,20 +22,17 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-// TODO(b/254591810): Add tests for SingleFileTarXzFileExtractor::ExtractChunk
-// function.
-
 namespace chrome {
 
 using ::testing::StrictMock;
 
-class SingleFileTarXzFileExtractorTest : public testing::Test {
+class SingleFileTarFileExtractorTest : public testing::Test {
  public:
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
  protected:
-  SingleFileTarXzFileExtractorTest() = default;
-  ~SingleFileTarXzFileExtractorTest() override = default;
+  SingleFileTarFileExtractorTest() = default;
+  ~SingleFileTarFileExtractorTest() override = default;
 
   base::FilePath GetFilePath(const char* file_name) {
     base::FilePath test_data;
@@ -59,11 +56,11 @@ class MockSingleFileExtractorListener
   void OnProgress(uint64_t total_bytes, uint64_t progress_bytes) override {}
 };
 
-TEST_F(SingleFileTarXzFileExtractorTest, Extract) {
+TEST_F(SingleFileTarFileExtractorTest, Extract) {
   base::test::TestFuture<chrome::file_util::mojom::ExtractionResult> future;
 
   base::FilePath path;
-  ASSERT_NO_FATAL_FAILURE(path = GetFilePath("test.tar.xz"));
+  ASSERT_NO_FATAL_FAILURE(path = GetFilePath("test.tar"));
   base::File src_file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
 
   base::FilePath out_path = temp_dir().AppendASCII("Extract_dst_file");
@@ -74,7 +71,7 @@ TEST_F(SingleFileTarXzFileExtractorTest, Extract) {
   mojo::Receiver<chrome::mojom::SingleFileExtractorListener> listener{
       mock_listener.get()};
 
-  SingleFileTarXzFileExtractor extractor;
+  SingleFileTarFileExtractor extractor;
   extractor.Extract(std::move(src_file), std::move(dst_file),
                     listener.BindNewPipeAndPassRemote(), future.GetCallback());
 
@@ -85,15 +82,15 @@ TEST_F(SingleFileTarXzFileExtractorTest, Extract) {
   EXPECT_EQ("foo\n", contents);
 }
 
-TEST_F(SingleFileTarXzFileExtractorTest, ExtractNonExistentTarXz) {
+TEST_F(SingleFileTarFileExtractorTest, ExtractTarLargerThanChunk) {
   base::test::TestFuture<chrome::file_util::mojom::ExtractionResult> future;
 
   base::FilePath path;
-  ASSERT_NO_FATAL_FAILURE(path = GetFilePath("non_existent.tar.xz"));
+  ASSERT_NO_FATAL_FAILURE(path = GetFilePath("test_large.tar"));
   base::File src_file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
 
   base::FilePath out_path =
-      temp_dir().AppendASCII("ExtractNonExistentTarXz_dst_file");
+      temp_dir().AppendASCII("ExtractTarLargerThanChunk_dst_file");
   base::File dst_file(out_path,
                       base::File::FLAG_CREATE | base::File::FLAG_WRITE);
 
@@ -101,7 +98,34 @@ TEST_F(SingleFileTarXzFileExtractorTest, ExtractNonExistentTarXz) {
   mojo::Receiver<chrome::mojom::SingleFileExtractorListener> listener{
       mock_listener.get()};
 
-  SingleFileTarXzFileExtractor extractor;
+  SingleFileTarFileExtractor extractor;
+  extractor.Extract(std::move(src_file), std::move(dst_file),
+                    listener.BindNewPipeAndPassRemote(), future.GetCallback());
+
+  const chrome::file_util::mojom::ExtractionResult& result = future.Get();
+  EXPECT_EQ(chrome::file_util::mojom::ExtractionResult::kSuccess, result);
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(out_path, &contents));
+  EXPECT_EQ(10u * 1024u, contents.size());
+}
+
+TEST_F(SingleFileTarFileExtractorTest, ExtractNonExistentTar) {
+  base::test::TestFuture<chrome::file_util::mojom::ExtractionResult> future;
+
+  base::FilePath path;
+  ASSERT_NO_FATAL_FAILURE(path = GetFilePath("non_existent.tar"));
+  base::File src_file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+
+  base::FilePath out_path =
+      temp_dir().AppendASCII("ExtractNonExistentTar_dst_file");
+  base::File dst_file(out_path,
+                      base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+
+  auto mock_listener = std::make_unique<MockSingleFileExtractorListener>();
+  mojo::Receiver<chrome::mojom::SingleFileExtractorListener> listener{
+      mock_listener.get()};
+
+  SingleFileTarFileExtractor extractor;
   extractor.Extract(std::move(src_file), std::move(dst_file),
                     listener.BindNewPipeAndPassRemote(), future.GetCallback());
 
@@ -109,11 +133,12 @@ TEST_F(SingleFileTarXzFileExtractorTest, ExtractNonExistentTarXz) {
   EXPECT_EQ(chrome::file_util::mojom::ExtractionResult::kGenericError, result);
 }
 
-TEST_F(SingleFileTarXzFileExtractorTest, ZeroByteFile) {
+// Verify that a .tar file with a 0 byte file works.
+TEST_F(SingleFileTarFileExtractorTest, ZeroByteFile) {
   base::test::TestFuture<chrome::file_util::mojom::ExtractionResult> future;
 
   base::FilePath path;
-  ASSERT_NO_FATAL_FAILURE(path = GetFilePath("empty_file.tar.xz"));
+  ASSERT_NO_FATAL_FAILURE(path = GetFilePath("empty_file.tar"));
   base::File src_file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
 
   base::FilePath out_path = temp_dir().AppendASCII("ZeroByteFile_dst_file");
@@ -124,7 +149,7 @@ TEST_F(SingleFileTarXzFileExtractorTest, ZeroByteFile) {
   mojo::Receiver<chrome::mojom::SingleFileExtractorListener> listener{
       mock_listener.get()};
 
-  SingleFileTarXzFileExtractor extractor;
+  SingleFileTarFileExtractor extractor;
   extractor.Extract(std::move(src_file), std::move(dst_file),
                     listener.BindNewPipeAndPassRemote(), future.GetCallback());
 
@@ -133,32 +158,6 @@ TEST_F(SingleFileTarXzFileExtractorTest, ZeroByteFile) {
   std::string contents;
   ASSERT_TRUE(base::ReadFileToString(out_path, &contents));
   ASSERT_TRUE(contents.empty());
-}
-
-TEST_F(SingleFileTarXzFileExtractorTest, ExtractBigFile) {
-  base::test::TestFuture<chrome::file_util::mojom::ExtractionResult> future;
-
-  base::FilePath path;
-  ASSERT_NO_FATAL_FAILURE(path = GetFilePath("2MBzeros.tar.xz"));
-  base::File src_file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-
-  base::FilePath out_path = temp_dir().AppendASCII("ExtractBigFile_dst_file");
-  base::File dst_file(out_path,
-                      base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-
-  auto mock_listener = std::make_unique<MockSingleFileExtractorListener>();
-  mojo::Receiver<chrome::mojom::SingleFileExtractorListener> listener{
-      mock_listener.get()};
-
-  SingleFileTarXzFileExtractor extractor;
-  extractor.Extract(std::move(src_file), std::move(dst_file),
-                    listener.BindNewPipeAndPassRemote(), future.GetCallback());
-
-  const chrome::file_util::mojom::ExtractionResult& result = future.Get();
-  EXPECT_EQ(chrome::file_util::mojom::ExtractionResult::kSuccess, result);
-  std::string contents;
-  ASSERT_TRUE(base::ReadFileToString(out_path, &contents));
-  EXPECT_EQ(contents, std::string(2097152, '\0'));
 }
 
 }  // namespace chrome

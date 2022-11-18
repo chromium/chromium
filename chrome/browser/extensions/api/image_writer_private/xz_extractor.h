@@ -10,7 +10,7 @@
 #include "chrome/browser/extensions/api/image_writer_private/extraction_properties.h"
 #include "chrome/services/file_util/public/mojom/constants.mojom.h"
 #include "chrome/services/file_util/public/mojom/file_util_service.mojom.h"
-#include "chrome/services/file_util/public/mojom/single_file_tar_xz_file_extractor.mojom.h"
+#include "chrome/services/file_util/public/mojom/single_file_extractor.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -23,7 +23,7 @@ namespace image_writer {
 
 // .tar.xz archive extractor. Should be called from a SequencedTaskRunner
 // context.
-class XzExtractor : public chrome::mojom::SingleFileTarXzFileExtractorListener {
+class XzExtractor : public chrome::mojom::SingleFileExtractorListener {
  public:
   static bool IsXzFile(const base::FilePath& image_path);
 
@@ -41,23 +41,25 @@ class XzExtractor : public chrome::mojom::SingleFileTarXzFileExtractorListener {
   explicit XzExtractor(ExtractionProperties properties);
   ~XzExtractor() override;
 
-  // chrome::mojom::SingleFileTarXzFileExtractorListener implementation.
+  // chrome::mojom::SingleFileExtractorListener implementation.
   void OnProgress(uint64_t total_bytes, uint64_t progress_bytes) override;
 
   void ExtractImpl();
   void OnRemoteFinished(chrome::file_util::mojom::ExtractionResult result);
-  // |error_id| might be a member variable, so it cannot be a reference.
-  void RunFailureCallbackAndDeleteThis(std::string error_id);
+  void RunFailureCallbackAndDeleteThis(const std::string& error_id);
 
+  // `service_` is a class member so that the utility process where the actual
+  // .tar.xz file extraction is performed is kept alive while extraction is in
+  // progress.
   mojo::Remote<chrome::mojom::FileUtilService> service_;
-  mojo::Remote<chrome::mojom::SingleFileTarXzFileExtractor>
-      remote_single_file_tar_xz_file_extractor_;
+
+  mojo::Remote<chrome::mojom::SingleFileExtractor>
+      remote_single_file_extractor_;
 
   // Listener receiver.
   // This class listens for .tar.xz extraction progress reports from the utility
   // process.
-  mojo::Receiver<chrome::mojom::SingleFileTarXzFileExtractorListener> listener_{
-      this};
+  mojo::Receiver<chrome::mojom::SingleFileExtractorListener> listener_{this};
 
   ExtractionProperties properties_;
 };

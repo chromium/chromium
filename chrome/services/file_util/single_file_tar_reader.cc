@@ -52,7 +52,7 @@ SingleFileTarReader::Result SingleFileTarReader::ExtractChunk() {
   // We haven't read the header.
   if (!total_bytes_.has_value()) {
     if (bytes_read < 512) {
-      error_ = chrome::file_util::mojom::ExtractionResult::kUnzipInvalidArchive;
+      error_ = chrome::file_util::mojom::ExtractionResult::kInvalidSrcFile;
       return Result::kFailure;
     }
 
