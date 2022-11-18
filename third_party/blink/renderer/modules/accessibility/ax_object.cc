@@ -6789,7 +6789,7 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
       // ax_enum, and a ToString() in ax_enum_utils, as well as move out of
       // String IgnoredReasonName(AXIgnoredReason reason) in
       // inspector_type_builder_helper.cc.
-      if (!cached_values_only) {
+      if (!cached_values_only && !IsDetached()) {
         AXObject::IgnoredReasons reasons;
         ComputeAccessibilityIsIgnored(&reasons);
         string_builder = string_builder + GetIgnoredReasonsDebugString(reasons);
