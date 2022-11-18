@@ -18,6 +18,7 @@
 #include "components/omnibox/browser/history_match.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "omnibox_event.pb.h"
 
 class ScoredHistoryMatchTest;
 
@@ -107,6 +108,11 @@ struct ScoredHistoryMatch : public history::HistoryMatch {
   // Term matches within the page title.
   TermMatches title_matches;
 
+  // Signals used to score matches. These are propagated to the ACController
+  // via ACMatch, and used by the ML Scorer as well as logged to
+  // OmniboxEventProto in order to provide ML training data.
+  metrics::OmniboxEventProto::Suggestion::ScoringSignals scoring_signals;
+
  private:
   friend class ScoredHistoryMatchTest;
   FRIEND_TEST_ALL_PREFIXES(ScoredHistoryMatchTest, GetDocumentSpecificityScore);
@@ -125,8 +131,11 @@ struct ScoredHistoryMatch : public history::HistoryMatch {
   // the page's title and where they are (e.g., at word boundaries).  Revises
   // url_matches and title_matches in the process so they only reflect matches
   // used for scoring.  (For instance, some mid-word matches are not given
-  // credit in scoring.)  Requires that |url_matches| and |title_matches| are
-  // sorted. |adjustments| must contain any adjustments used to format |url|.
+  // credit in scoring.)  Requires that `url_matches` and `title_matches` are
+  // sorted. `adjustments` must contain any adjustments used to format `url`.
+  // Signals used for scoring that are calculated here are also populated in
+  // `scoring_signals` in order to provide training data for the ML Scoring
+  // model.
   float GetTopicalityScore(const int num_terms,
                            const GURL& url,
                            const base::OffsetAdjuster::Adjustments& adjustments,
