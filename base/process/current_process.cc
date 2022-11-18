@@ -24,11 +24,11 @@ const char* GetNameForProcessType(CurrentProcessType process_type) {
     case CurrentProcessType::PROCESS_SANDBOX_HELPER:
       return "SandboxHelper";
     case CurrentProcessType::PROCESS_GPU:
-      return "Gpu";
+      return "GPU Process";
     case CurrentProcessType::PROCESS_PPAPI_PLUGIN:
-      return "PpapiPlugin";
+      return "PPAPI Process";
     case CurrentProcessType::PROCESS_PPAPI_BROKER:
-      return "PpapiBroker";
+      return "PPAPI Broker Process";
     case CurrentProcessType::PROCESS_SERVICE_NETWORK:
       return "Service: network.mojom.NetworkService";
     case CurrentProcessType::PROCESS_SERVICE_TRACING:
