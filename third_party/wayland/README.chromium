@@ -19,6 +19,7 @@ Modifications:
 - Added "include/" include_dirs for the wayland_server target
 - Added automatic generation of protocol marshalling code.
 - Made server/client generated with wayland_protocol template.
+- Using a custom branch that includes a fix to a buffer size overflow bug.
 
 To import a new snapshot of wayland:
 - Checkout the latest release tag.
