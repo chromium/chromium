@@ -39,7 +39,6 @@ RankerManager::RankerManager(Profile* profile, SearchController* controller) {
   score_normalizer_params.max_bins = 5;
 
   // Result ranking parameters.
-  // TODO(crbug.com/1199206): These need tweaking.
   FtrlOptimizer::Params ftrl_result_params;
   ftrl_result_params.alpha = 0.1;
   ftrl_result_params.gamma = 0.1;
@@ -51,7 +50,6 @@ RankerManager::RankerManager(Profile* profile, SearchController* controller) {
   mrfu_result_params.max_items = 200u;
 
   // Category ranking parameters.
-  // TODO(crbug.com/1199206): These need tweaking.
   FtrlOptimizer::Params ftrl_category_params;
   ftrl_category_params.alpha = 0.1;
   ftrl_category_params.gamma = 0.1;

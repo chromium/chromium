@@ -2097,8 +2097,6 @@ static_library("ui") {
       "app_list/search/common/string_util.h",
       "app_list/search/common/types_util.cc",
       "app_list/search/common/types_util.h",
-      "app_list/search/common/url_icon_source.cc",
-      "app_list/search/common/url_icon_source.h",
       "app_list/search/cros_action_history/cros_action_recorder.cc",
       "app_list/search/cros_action_history/cros_action_recorder.h",
       "app_list/search/cros_action_history/cros_action_recorder_tab_tracker.cc",

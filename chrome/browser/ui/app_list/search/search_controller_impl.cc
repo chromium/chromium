@@ -316,7 +316,7 @@ void SearchControllerImpl::Publish() {
   std::vector<ChromeSearchResult*> all_results;
   for (const auto& type_results : results_) {
     for (const auto& result : type_results.second) {
-      // TODO(crbug.com/1199206): Category-based search combines apps into the
+      // TODO(crbug.com/1385194): Category-based search combines apps into the
       // results list, so redirect any kTile results to kList before updating
       // the UI. Once SearchControllerImpl is the only search controller,
       // this can be removed and all results can be created as kList.

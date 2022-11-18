@@ -220,7 +220,7 @@ class ChromeSearchResult {
   // obtained from. These can include scores from intermediate ranking steps, as
   // well as prototype scores to be inspected for experimentation.
   //
-  // TODO(crbug.com/1199206): Move this to a map<string, string> of debug info
+  // TODO(crbug.com/1292783): Move this to a map<string, string> of debug info
   // that contains more than just scores, and display the contents of
   // |scoring_| in chrome://launcher-internals
   base::flat_map<std::string, double> ranker_scores_;

@@ -22,7 +22,7 @@ std::string CategoryToString(const Category value);
 
 Category StringToCategory(const std::string& value);
 
-// TODO(crbug.com/1199206): This can be removed once LaunchData contains the
+// TODO(crbug.com/1378862): This can be removed once LaunchData contains the
 // result category.
 //
 // This is slightly inconsistent with the true result->category mapping, because
