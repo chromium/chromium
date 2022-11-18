@@ -30,16 +30,15 @@ UsbInternalsTest.prototype = {
   ],
 };
 
-TEST_F('UsbInternalsTest', 'WebUIValueRenderTest', function() {
+TEST_F('UsbInternalsTest', 'WebUIValueRenderTest', async function() {
+  const module = await import('chrome://resources/js/static_types.js');
   const script = document.createElement('script');
   script.type = 'module';
   script.onload = () => {
     // Run all registered tests.
     mocha.run();
   };
-  const staticUrlPolicy = trustedTypes.createPolicy(
-      'usb-test-static',
-      {createScriptURL: () => 'chrome://webui-test/usb_internals_test.js'});
-  script.src = staticUrlPolicy.createScriptURL('');
+  script.src =
+      module.getTrustedScriptURL`chrome://webui-test/usb_internals_test.js`;
   document.body.appendChild(script);
 });
