@@ -28,7 +28,7 @@ BASE_FEATURE(kCloudGamingDevice,
 BASE_FEATURE(kDarkLightMode, "DarkLightMode", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Demo Mode System Web App migration
-BASE_FEATURE(kDemoModeSWA, "DemoModeSWA", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDemoModeSWA, "DemoModeSWA", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Disable idle sockets closing on memory pressure for NetworkContexts that
 // belong to Profiles. It only applies to Profiles because the goal is to
