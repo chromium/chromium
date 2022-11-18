@@ -7,7 +7,8 @@
 #include <algorithm>
 #include <list>
 
-#include "components/viz/common/resources/resource_sizes.h"
+#include "components/viz/common/resources/resource_format.h"
+#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/config/gpu_preferences.h"

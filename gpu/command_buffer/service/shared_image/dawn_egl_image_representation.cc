@@ -5,7 +5,7 @@
 #include "gpu/command_buffer/service/shared_image/dawn_egl_image_representation.h"
 
 #include "build/build_config.h"
-#include "components/viz/common/resources/resource_format_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "ui/gl/gl_image.h"
 
@@ -50,7 +50,7 @@ WGPUTexture DawnEGLImageRepresentation::BeginAccess(WGPUTextureUsage usage) {
   gl_representation_->BeginAccess(ToSharedImageAccessGLMode(usage));
   WGPUTextureDescriptor texture_descriptor = {};
   texture_descriptor.nextInChain = nullptr;
-  texture_descriptor.format = viz::ToWGPUFormat(format());
+  texture_descriptor.format = ToWGPUFormat(format());
   texture_descriptor.usage = WGPUTextureUsage_CopySrc |
                              WGPUTextureUsage_CopyDst |
                              WGPUTextureUsage_RenderAttachment;

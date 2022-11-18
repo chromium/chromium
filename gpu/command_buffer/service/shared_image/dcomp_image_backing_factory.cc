@@ -6,7 +6,6 @@
 
 #include <d3d11_1.h>
 
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/dcomp_surface_image_backing.h"

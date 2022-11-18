@@ -20,6 +20,7 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/test_utils.h"
@@ -251,17 +252,17 @@ TEST_F(GLTextureImageBackingFactoryTest, TexImageTexStorageEquivalence) {
   for (int i = 0; i <= viz::RESOURCE_FORMAT_MAX; ++i) {
     auto format = viz::SharedImageFormat::SinglePlane(
         static_cast<viz::ResourceFormat>(i));
-    if (!viz::GLSupportsFormat(format) || format.IsCompressed())
+    if (!GLSupportsFormat(format) || format.IsCompressed())
       continue;
-    int storage_format = viz::TextureStorageFormat(
+    int storage_format = TextureStorageFormat(
         format, feature_info->feature_flags().angle_rgbx_internal_format);
 
-    int image_gl_format = viz::GLDataFormat(format);
+    int image_gl_format = GLDataFormat(format);
     int storage_gl_format =
         gles2::TextureManager::ExtractFormatFromStorageFormat(storage_format);
     EXPECT_EQ(image_gl_format, storage_gl_format);
 
-    int image_gl_type = viz::GLDataType(format);
+    int image_gl_type = GLDataType(format);
     int storage_gl_type =
         gles2::TextureManager::ExtractTypeFromStorageFormat(storage_format);
 
@@ -274,7 +275,7 @@ TEST_F(GLTextureImageBackingFactoryTest, TexImageTexStorageEquivalence) {
     }
 
     // confirm that we support TexStorage2D only if we support TexImage2D:
-    int image_internal_format = viz::GLInternalFormat(format);
+    int image_internal_format = GLInternalFormat(format);
     bool supports_tex_image =
         validators->texture_internal_format.IsValid(image_internal_format) &&
         validators->texture_format.IsValid(image_gl_format) &&

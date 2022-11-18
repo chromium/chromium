@@ -13,6 +13,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/config/gpu_preferences.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/progress_reporter.h"
@@ -108,9 +109,9 @@ GLTextureImageBackingFactory::CreateSharedImageForTest(
       kPremul_SkAlphaType, usage, false /* is_passthrough */);
   InitializeGLTextureParams params;
   params.target = target;
-  params.internal_format = viz::GLInternalFormat(format);
-  params.format = viz::GLDataFormat(format);
-  params.type = viz::GLDataType(format);
+  params.internal_format = GLInternalFormat(format);
+  params.format = GLDataFormat(format);
+  params.type = GLDataType(format);
   params.is_cleared = is_cleared;
   result->InitializeGLTexture(service_id, params);
   return std::move(result);

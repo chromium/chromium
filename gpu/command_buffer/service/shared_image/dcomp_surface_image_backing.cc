@@ -9,6 +9,7 @@
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "third_party/angle/include/EGL/egl.h"
 #include "third_party/angle/include/EGL/eglext.h"
 #include "third_party/angle/include/EGL/eglext_angle.h"
@@ -181,7 +182,7 @@ DCompSurfaceImageBacking::DCompSurfaceImageBacking(
           surface_origin,
           alpha_type,
           usage,
-          gfx::BufferSizeForBufferFormat(size, viz::BufferFormat(format)),
+          gfx::BufferSizeForBufferFormat(size, ToBufferFormat(format)),
           false /* is_thread_safe */),
       gl_surface_(scoped_refptr(
           new D3DTextureGLSurfaceEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(),

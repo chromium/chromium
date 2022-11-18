@@ -13,6 +13,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gl/direct_composition_support.h"
@@ -54,9 +55,8 @@ bool ClearBackBuffer(Microsoft::WRL::ComPtr<IDXGISwapChain1>& swap_chain,
 
 // Only RGBA formats supported by CreateSharedImage.
 absl::optional<DXGI_FORMAT> GetSupportedRGBAFormat(
-    viz::SharedImageFormat viz_si_format) {
-  auto viz_resource_format = viz_si_format.resource_format();
-  switch (viz_resource_format) {
+    viz::SharedImageFormat si_format) {
+  switch (si_format.resource_format()) {
     case viz::RGBA_F16:
       return DXGI_FORMAT_R16G16B16A16_FLOAT;
     case viz::BGRA_8888:
@@ -519,7 +519,7 @@ bool D3DImageBackingFactory::IsSupported(uint32_t usage,
         return false;
     }
   } else if (gmb_type == gfx::DXGI_SHARED_HANDLE) {
-    if (GetDXGIFormat(viz::BufferFormat(format)) == DXGI_FORMAT_UNKNOWN)
+    if (GetDXGIFormat(ToBufferFormat(format)) == DXGI_FORMAT_UNKNOWN)
       return false;
   } else {
     return false;

@@ -13,13 +13,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
-#include "components/viz/common/resources/resource_format.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/gl_ozone_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
@@ -134,7 +133,7 @@ std::unique_ptr<DawnImageRepresentation> OzoneImageBacking::ProduceDawn(
     WGPUBackendType backend_type) {
 #if BUILDFLAG(USE_DAWN)
   DCHECK(dawn_procs_);
-  WGPUTextureFormat webgpu_format = viz::ToWGPUFormat(format());
+  WGPUTextureFormat webgpu_format = ToWGPUFormat(format());
   if (webgpu_format == WGPUTextureFormat_Undefined) {
     return nullptr;
   }

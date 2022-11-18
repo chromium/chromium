@@ -14,6 +14,7 @@
 #include "gpu/command_buffer/service/shared_image/external_vk_image_gl_representation.h"
 #include "gpu/command_buffer/service/shared_image/external_vk_image_overlay_representation.h"
 #include "gpu/command_buffer/service/shared_image/external_vk_image_skia_representation.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "gpu/vulkan/vma_wrapper.h"
@@ -573,7 +574,7 @@ std::unique_ptr<DawnImageRepresentation> ExternalVkImageBacking::ProduceDawn(
     WGPUDevice wgpuDevice,
     WGPUBackendType backend_type) {
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && BUILDFLAG(USE_DAWN)
-  auto wgpu_format = viz::ToWGPUFormat(format());
+  auto wgpu_format = ToWGPUFormat(format());
 
   if (wgpu_format == WGPUTextureFormat_Undefined) {
     DLOG(ERROR) << "Format not supported for Dawn";
@@ -650,7 +651,7 @@ GLuint ExternalVkImageBacking::ProduceGLTextureInternal() {
                           ->feature_info()
                           ->feature_flags()
                           .angle_rgbx_internal_format;
-      GLuint internal_format = viz::TextureStorageFormat(format(), use_rgbx);
+      GLuint internal_format = TextureStorageFormat(format(), use_rgbx);
       api->glTexStorage2DEXTFn(GL_TEXTURE_2D, 1, internal_format,
                                size().width(), size().height());
     } else {
@@ -675,7 +676,7 @@ GLuint ExternalVkImageBacking::ProduceGLTextureInternal() {
                         ->feature_info()
                         ->feature_flags()
                         .angle_rgbx_internal_format;
-    GLuint internal_format = viz::TextureStorageFormat(format(), use_rgbx);
+    GLuint internal_format = TextureStorageFormat(format(), use_rgbx);
     if (UseMinimalUsageFlags(context_state())) {
       api->glTexStorageMemFlags2DANGLEFn(
           GL_TEXTURE_2D, 1, internal_format, size().width(), size().height(),
@@ -707,9 +708,9 @@ ExternalVkImageBacking::ProduceGLTexture(SharedImageManager* manager,
                         ->feature_info()
                         ->feature_flags()
                         .angle_rgbx_internal_format;
-    GLuint internal_format = viz::TextureStorageFormat(format(), use_rgbx);
-    GLenum gl_format = viz::GLDataFormat(format());
-    GLenum gl_type = viz::GLDataType(format());
+    GLuint internal_format = TextureStorageFormat(format(), use_rgbx);
+    GLenum gl_format = GLDataFormat(format());
+    GLenum gl_type = GLDataType(format());
 
     texture_ = gles2::CreateGLES2TextureWithLightRef(texture_service_id,
                                                      GL_TEXTURE_2D);
@@ -745,9 +746,9 @@ ExternalVkImageBacking::ProduceGLTexturePassthrough(
                         ->feature_info()
                         ->feature_flags()
                         .angle_rgbx_internal_format;
-    GLuint internal_format = viz::TextureStorageFormat(format(), use_rgbx);
-    GLenum gl_format = viz::GLDataFormat(format());
-    GLenum gl_type = viz::GLDataType(format());
+    GLuint internal_format = TextureStorageFormat(format(), use_rgbx);
+    GLenum gl_format = GLDataFormat(format());
+    GLenum gl_type = GLDataType(format());
 
     texture_passthrough_ = base::MakeRefCounted<gpu::gles2::TexturePassthrough>(
         texture_service_id, GL_TEXTURE_2D, internal_format, size().width(),

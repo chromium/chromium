@@ -21,6 +21,7 @@ include_rules = [
   "+gpu/command_buffer/common/skia_utils.h",
   "+gpu/command_buffer/common/sync_token.h",
   "+gpu/command_buffer/service/image_factory.h",
+  "+gpu/command_buffer/service/shared_image/shared_image_format_utils.h",
   "+gpu/config/gpu_feature_info.h",
   "+gpu/config/skia_limits.h",
   "+gpu/GLES2",

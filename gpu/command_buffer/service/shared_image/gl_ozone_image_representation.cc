@@ -7,12 +7,11 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "components/viz/common/resources/resource_format.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_image/ozone_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
@@ -111,7 +110,7 @@ GLOzoneImageRepresentationShared::GetBinding(
     return nullptr;
   }
 
-  gfx::BufferFormat buffer_format = viz::BufferFormat(backing->format());
+  gfx::BufferFormat buffer_format = ToBufferFormat(backing->format());
   target = !NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format, plane)
                ? GL_TEXTURE_2D
                : gpu::GetPlatformSpecificTextureTarget();

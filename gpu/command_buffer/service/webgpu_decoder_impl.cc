@@ -36,6 +36,7 @@
 #include "gpu/command_buffer/service/isolation_key_provider.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
@@ -574,7 +575,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
           .dimension = WGPUTextureDimension_2D,
           .size = {static_cast<uint32_t>(representation_->size().width()),
                    static_cast<uint32_t>(representation_->size().height()), 1},
-          .format = viz::ToWGPUFormat(representation_->format()),
+          .format = ToWGPUFormat(representation_->format()),
           .mipLevelCount = 1,
           .sampleCount = 1,
       };
@@ -592,7 +593,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       DCHECK(buffer_size);
 
       base::CheckedNumeric<uint32_t> checked_bytes_per_row(
-          viz::BitsPerPixel(format) / 8);
+          BitsPerPixel(format) / 8);
       checked_bytes_per_row *= size.width();
 
       uint32_t packed_bytes_per_row;

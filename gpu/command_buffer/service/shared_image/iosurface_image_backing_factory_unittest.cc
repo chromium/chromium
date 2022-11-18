@@ -13,6 +13,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/tests/texture_image_factory.h"
@@ -1029,17 +1030,17 @@ TEST_P(IOSurfaceImageBackingFactoryNewTest, TexImageTexStorageEquivalence) {
   for (int i = 0; i <= viz::RESOURCE_FORMAT_MAX; ++i) {
     auto format = viz::SharedImageFormat::SinglePlane(
         static_cast<viz::ResourceFormat>(i));
-    if (!viz::GLSupportsFormat(format) || format.IsCompressed())
+    if (!GLSupportsFormat(format) || format.IsCompressed())
       continue;
-    int storage_format = viz::TextureStorageFormat(
+    int storage_format = TextureStorageFormat(
         format, feature_info->feature_flags().angle_rgbx_internal_format);
 
-    int image_gl_format = viz::GLDataFormat(format);
+    int image_gl_format = GLDataFormat(format);
     int storage_gl_format =
         gles2::TextureManager::ExtractFormatFromStorageFormat(storage_format);
     EXPECT_EQ(image_gl_format, storage_gl_format);
 
-    int image_gl_type = viz::GLDataType(format);
+    int image_gl_type = GLDataType(format);
     int storage_gl_type =
         gles2::TextureManager::ExtractTypeFromStorageFormat(storage_format);
 
@@ -1052,7 +1053,7 @@ TEST_P(IOSurfaceImageBackingFactoryNewTest, TexImageTexStorageEquivalence) {
     }
 
     // confirm that we support TexStorage2D only if we support TexImage2D:
-    int image_internal_format = viz::GLInternalFormat(format);
+    int image_internal_format = GLInternalFormat(format);
     bool supports_tex_image =
         validators->texture_internal_format.IsValid(image_internal_format) &&
         validators->texture_format.IsValid(image_gl_format) &&
@@ -1142,7 +1143,7 @@ class IOSurfaceImageBackingFactoryWithGMBTest
 TEST_P(IOSurfaceImageBackingFactoryWithGMBTest, GpuMemoryBufferImportEmpty) {
   auto mailbox = Mailbox::GenerateForSharedImage();
   gfx::Size size(256, 256);
-  gfx::BufferFormat format = viz::BufferFormat(get_format());
+  gfx::BufferFormat format = ToBufferFormat(get_format());
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
@@ -1165,7 +1166,7 @@ TEST_P(IOSurfaceImageBackingFactoryWithGMBTest, GpuMemoryBufferImportNative) {
   }
   auto mailbox = Mailbox::GenerateForSharedImage();
   gfx::Size size(256, 256);
-  gfx::BufferFormat format = viz::BufferFormat(get_format());
+  gfx::BufferFormat format = ToBufferFormat(get_format());
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
@@ -1217,8 +1218,7 @@ const auto kSharedImageFormats = ::testing::Values(
 
 std::string TestParamToString(
     const testing::TestParamInfo<viz::SharedImageFormat>& param_info) {
-  return base::StringPrintf(
-      "%s", gfx::BufferFormatToString(viz::BufferFormat(param_info.param)));
+  return param_info.param.ToString();
 }
 
 INSTANTIATE_TEST_SUITE_P(Service,

@@ -5,8 +5,8 @@
 #include "gpu/command_buffer/service/shared_image/test_image_backing.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
@@ -120,7 +120,7 @@ class TestSkiaImageRepresentation : public SkiaImageRepresentation {
         size().width(), size().height(), GrMipMapped::kNo,
         GrGLTextureInfo{GL_TEXTURE_EXTERNAL_OES,
                         static_cast<TestImageBacking*>(backing())->service_id(),
-                        static_cast<GrGLenum>(viz::TextureStorageFormat(
+                        static_cast<GrGLenum>(TextureStorageFormat(
                             format(), /*use_angle_rgbx_format=*/false))});
   }
 };

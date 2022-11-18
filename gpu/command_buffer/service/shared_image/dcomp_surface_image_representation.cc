@@ -5,7 +5,6 @@
 #include "gpu/command_buffer/service/shared_image/dcomp_surface_image_representation.h"
 
 #include "base/win/windows_types.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/dcomp_surface_image_backing.h"

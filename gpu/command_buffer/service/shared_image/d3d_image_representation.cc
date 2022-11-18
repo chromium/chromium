@@ -4,7 +4,6 @@
 
 #include "gpu/command_buffer/service/shared_image/d3d_image_representation.h"
 
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"

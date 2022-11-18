@@ -14,7 +14,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
@@ -28,6 +27,7 @@
 #include "gpu/command_buffer/service/shared_image/gl_texture_common_representations.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -69,7 +69,7 @@ using InitializeGLTextureParams =
     GLTextureImageBackingHelper::InitializeGLTextureParams;
 
 int BytesPerPixel(viz::SharedImageFormat format) {
-  int bits = viz::BitsPerPixel(format);
+  int bits = BitsPerPixel(format);
   DCHECK_GE(bits, 8);
   return bits / 8;
 }
@@ -254,7 +254,7 @@ bool GLTextureImageBacking::UploadFromMemory(const SkPixmap& pixmap) {
   DCHECK(HasExpectedAlignment(pixmap_stride, resource_format));
 
   size_t expected_stride = gfx::RowSizeForBufferFormat(
-      size().width(), viz::BufferFormat(format()), /*plane=*/0);
+      size().width(), ToBufferFormat(format()), /*plane=*/0);
   DCHECK(HasExpectedAlignment(expected_stride, resource_format));
   DCHECK_GE(pixmap_stride, expected_stride);
 
@@ -493,7 +493,7 @@ void GLTextureImageBacking::CreateEGLImage() {
   ui::ScopedMakeCurrent smc(shared_context_state->context(),
                             shared_context_state->surface());
   auto image_np = base::MakeRefCounted<gl::GLImageNativePixmap>(
-      size(), viz::BufferFormat(format()));
+      size(), ToBufferFormat(format()));
   image_np->InitializeFromTexture(GetGLServiceId());
   image_egl_ = image_np;
   if (passthrough_texture_) {

@@ -18,6 +18,7 @@
 #include "gpu/command_buffer/service/shared_image/iosurface_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
@@ -54,7 +55,7 @@ base::scoped_nsprotocol<id<MTLTexture>> CreateMetalTexture(
   TRACE_EVENT0("gpu", "IOSurfaceImageBackingFactory::CreateMetalTexture");
   base::scoped_nsprotocol<id<MTLTexture>> mtl_texture;
   MTLPixelFormat mtl_pixel_format =
-      static_cast<MTLPixelFormat>(viz::ToMTLPixelFormat(format));
+      static_cast<MTLPixelFormat>(ToMTLPixelFormat(format));
   if (mtl_pixel_format == MTLPixelFormatInvalid)
     return mtl_texture;
 

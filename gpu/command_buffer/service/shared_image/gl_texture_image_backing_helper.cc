@@ -4,7 +4,6 @@
 
 #include "gpu/command_buffer/service/shared_image/gl_texture_image_backing_helper.h"
 
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/context_state.h"
 #include "gpu/command_buffer/service/gl_utils.h"
