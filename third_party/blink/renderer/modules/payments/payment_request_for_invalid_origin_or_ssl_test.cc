@@ -128,9 +128,10 @@ TEST_F(PaymentRequestForInvalidOriginOrSslTest,
   // The show() will be rejected before user activation is checked, so there is
   // no need to trigger user-activation here.
   ScriptPromise promise =
-      request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
-  EXPECT_EQ("NotSupportedError: mock error message",
-            GetRejectString(scope.GetScriptState(), promise));
+      request->show(scope.GetScriptState(), scope.GetExceptionState());
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(DOMExceptionCode::kNotSupportedError,
+            scope.GetExceptionState().CodeAs<DOMExceptionCode>());
 }
 
 TEST_F(PaymentRequestForInvalidOriginOrSslTest,
@@ -143,14 +144,18 @@ TEST_F(PaymentRequestForInvalidOriginOrSslTest,
   // The show()s will be rejected before user activation is checked, so there is
   // no need to trigger user-activation here.
   ScriptPromise promise1 =
-      request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
-  EXPECT_EQ("NotSupportedError: mock error message",
-            GetRejectString(scope.GetScriptState(), promise1));
+      request->show(scope.GetScriptState(), scope.GetExceptionState());
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(DOMExceptionCode::kNotSupportedError,
+            scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+
+  scope.GetExceptionState().ClearException();
 
   ScriptPromise promise2 =
       request->show(scope.GetScriptState(), scope.GetExceptionState());
-  EXPECT_EQ("NotSupportedError: mock error message",
-            GetRejectString(scope.GetScriptState(), promise2));
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(DOMExceptionCode::kNotSupportedError,
+            scope.GetExceptionState().CodeAs<DOMExceptionCode>());
 }
 
 TEST_F(PaymentRequestForInvalidOriginOrSslTest,

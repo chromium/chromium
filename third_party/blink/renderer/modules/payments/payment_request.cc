@@ -816,10 +816,10 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
   }
 
   if (!not_supported_for_invalid_origin_or_ssl_error_.empty()) {
-    return ScriptPromise::RejectWithDOMException(
-        script_state, MakeGarbageCollected<DOMException>(
-                          DOMExceptionCode::kNotSupportedError,
-                          not_supported_for_invalid_origin_or_ssl_error_));
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        not_supported_for_invalid_origin_or_ssl_error_);
+    return ScriptPromise();
   }
 
   if (!payment_provider_.is_bound() || accept_resolver_) {
