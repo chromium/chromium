@@ -123,6 +123,24 @@ CREATE VIEW cpu_power_first_sched_slice_after_powerup AS
                             -- per CPU power up.
   ORDER BY ts ASC;
 
+-- A view with counts of power-ups grouped by Linux process & thread.
+--
+-- Schema:
+--   process_name   : The Linux process that ran after a power up.
+--   thread_name    : The thread in the Linux process that powered up.
+--   powerup_count  : The counts for the (process, thread) pair.
+DROP VIEW IF EXISTS cpu_power_powerup_count_by_process_and_thread;
+CREATE VIEW cpu_power_powerup_count_by_process_and_thread AS
+  SELECT
+    process.name AS process_name,
+    thread.name AS thread_name,
+    count() AS powerup_count
+  FROM cpu_power_first_sched_slice_after_powerup
+  JOIN thread using (utid)
+  JOIN process using (upid)
+  GROUP BY process_name, thread_name
+  ORDER BY powerup_count DESC;
+
 -- A view joining thread tracks and top-level slices.
 --
 -- This view is intended to be intersected by time with the scheduler
