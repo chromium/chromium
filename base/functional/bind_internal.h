@@ -17,6 +17,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/functional/callback_internal.h"
+#include "base/functional/disallow_unretained.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_asan_bound_arg_tracker.h"
 #include "base/memory/raw_ptr_asan_service.h"
@@ -86,24 +87,6 @@ namespace internal {
 
 template <typename Functor, typename SFINAE = void>
 struct FunctorTraits;
-
-// Helpers for detecting the tag created by the `DISALLOW_UNRETAINED()` macro
-// from base/functional/disallow_unretained.h. Intentionally separate to avoid
-// including <type_traits> in a header that otherwise doesn't need it.
-template <typename T, typename SFINAE = void>
-struct TypeSupportsUnretained {
-  static constexpr inline bool kValue = true;
-};
-
-template <typename T>
-struct TypeSupportsUnretained<T,
-                              std::void_t<typename T::DisallowBaseUnretained>> {
-  static constexpr inline bool kValue = false;
-};
-
-template <typename T>
-static inline constexpr bool TypeSupportsUnretainedV =
-    TypeSupportsUnretained<T>::kValue;
 
 template <typename T, typename RawPtrType = base::RawPtrBanDanglingIfSupported>
 class UnretainedWrapper {
