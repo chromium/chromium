@@ -9,11 +9,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/common/page_type.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
@@ -45,7 +43,7 @@ class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
       BrowserContext* browser_context,
       const GURL& url,
       bool origin_matches_flag) override {
-    return origin_matches_flag;
+    return url.host() == GURL(kAppUrl).host();
   }
 
   bool HandleExternalProtocol(
@@ -92,10 +90,6 @@ class IsolatedWebAppThrottleTest : public RenderViewHostTestHarness {
     RenderViewHostTestHarness::SetUp();
 
     scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
-
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kIsolatedAppOrigins, kAppUrl);
-    content::SiteIsolationPolicy::DisableFlagCachingForTesting();
 
     old_client_ = SetBrowserClientForTesting(&test_client_);
 

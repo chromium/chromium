@@ -14,7 +14,6 @@
 #include "build/build_config.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
-#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -699,8 +698,9 @@ TEST_F(NavigationRequestTest,
 
 class ScopedIsolatedAppBrowserClient : public ContentBrowserClient {
  public:
-  ScopedIsolatedAppBrowserClient()
-      : old_client_(SetBrowserClientForTesting(this)) {}
+  explicit ScopedIsolatedAppBrowserClient(const GURL& isolated_url)
+      : isolated_host_(isolated_url.host()),
+        old_client_(SetBrowserClientForTesting(this)) {}
 
   ~ScopedIsolatedAppBrowserClient() override {
     SetBrowserClientForTesting(old_client_);
@@ -710,20 +710,17 @@ class ScopedIsolatedAppBrowserClient : public ContentBrowserClient {
       BrowserContext* browser_context,
       const GURL& url,
       bool origin_matches_flag) override {
-    return origin_matches_flag;
+    return url.host() == isolated_host_;
   }
 
  private:
+  std::string isolated_host_;
   raw_ptr<ContentBrowserClient> old_client_;
 };
 
 TEST_F(NavigationRequestTest, IsolatedAppPolicyInjection) {
   const GURL kUrl = GURL("https://chromium.org");
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kIsolatedAppOrigins, kUrl.spec());
-  // Disable flag caching so the --isolated-app-origins value takes effect.
-  SiteIsolationPolicy::DisableFlagCachingForTesting();
-  ScopedIsolatedAppBrowserClient client;
+  ScopedIsolatedAppBrowserClient client(kUrl);
 
   auto navigation =
       NavigationSimulatorImpl::CreateRendererInitiated(kUrl, main_rfh());
