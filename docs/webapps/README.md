@@ -160,7 +160,7 @@ Anything that involves talking to the operating system. Usually has to do with a
 - [/docs/webapps/manifest_representations.md][35]
 - [/docs/webapps/integration-testing-framework.md][11]
 - [/docs/webapps/os_integration.md][50]
-- TODO: manifest update
+- [/docs/webapps/manifest_update_process.md][51]
 
 ## How To Use
 
@@ -355,3 +355,4 @@ This information is used when launching a web app (to determine what profile or 
 [48]: #public-interface
 [49]: #external-dependencies
 [50]: os-integration.md
+[51]: manifest_update_process.md

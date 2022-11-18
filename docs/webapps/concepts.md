@@ -52,7 +52,7 @@ Notes:
 
 The `id` specified in the manifest represents the identity of the web app. The manifest id is processed following the algorithm described in [appmanifest specification][9] to produce the app's identity. In the web app system, the app's [identifier][10] is [hashed][11] to be stored to [WebApp->app_id()][12].
 
-If a manifest is discovered during any sort of page load, then the update process is initiated for that manifest. If it resolves to an `app_id` that is installed, then it will perform an update. See https://web.dev/manifest-updates/ for more information.
+If a manifest is discovered during any sort of page load, then the update process is initiated for that manifest. If it resolves to an `app_id` that is installed, then it will perform an update. See [documentation][20] for more information.
 
 ### Scope
 
@@ -142,3 +142,4 @@ This was done because on non-ChromeOS devices it was considered a bad user exper
 [17]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/web_applications/web_app_constants.h;l=32?q=WebAppManagement&ss=chromium%2Fchromium%2Fsrc
 [18]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/web_applications/web_app_utils.cc;l=481?q=CanUserUninstallWebApp&ss=chromium%2Fchromium%2Fsrc
 [19]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/web_applications/externally_managed_app_install_task.cc;l=215?q=OnPlaceholderUninstalled&ss=chromium%2Fchromium%2Fsrc
+[20]: manifest_update_process.md
