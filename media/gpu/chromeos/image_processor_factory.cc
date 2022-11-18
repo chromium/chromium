@@ -22,13 +22,11 @@
 #if BUILDFLAG(USE_VAAPI)
 #include "media/gpu/vaapi/vaapi_image_processor_backend.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
-#endif  // BUILDFLAG(USE_VAAPI)
-
-#if BUILDFLAG(USE_V4L2_CODEC)
+#elif BUILDFLAG(USE_V4L2_CODEC)
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/gpu/v4l2/v4l2_image_processor_backend.h"
 #include "media/gpu/v4l2/v4l2_vda_helpers.h"
-#endif  // BUILDFLAG(USE_V4L2_CODEC)
+#endif
 
 namespace media {
 
@@ -82,9 +80,9 @@ std::unique_ptr<ImageProcessor> CreateVaapiImageProcessorWithInputCandidates(
       output_config, ImageProcessor::OutputMode::IMPORT, VIDEO_ROTATION_0,
       std::move(error_cb), std::move(client_task_runner));
 }
-#endif  // BUILDFLAG(USE_VAAPI)
 
-#if BUILDFLAG(USE_V4L2_CODEC) && !BUILDFLAG(USE_VAAPI)
+#elif BUILDFLAG(USE_V4L2_CODEC)
+
 std::unique_ptr<ImageProcessor> CreateV4L2ImageProcessorWithInputCandidates(
     const std::vector<PixelLayoutCandidate>& input_candidates,
     const gfx::Rect& visible_rect,
@@ -227,7 +225,7 @@ std::unique_ptr<ImageProcessor> CreateGLImageProcessorWithInputCandidates(
       output_config, ImageProcessor::OutputMode::IMPORT, VIDEO_ROTATION_0,
       std::move(error_cb), std::move(client_task_runner));
 }
-#endif  // BUILDFLAG(USE_V4L2_CODEC) && !BUILDFLAG(USE_VAAPI)
+#endif
 
 }  // namespace
 
@@ -247,7 +245,7 @@ std::unique_ptr<ImageProcessor> ImageProcessorFactory::Create(
 #elif BUILDFLAG(USE_V4L2_CODEC)
   create_funcs.push_back(base::BindRepeating(
       &V4L2ImageProcessorBackend::Create, V4L2Device::Create(), num_buffers));
-#endif  // BUILDFLAG(USE_V4L2_CODEC)
+#endif
   create_funcs.push_back(
       base::BindRepeating(&LibYUVImageProcessorBackend::Create));
 
@@ -299,7 +297,7 @@ ImageProcessorFactory::CreateWithInputCandidates(
   if (processor)
     return processor;
 
-#endif  // BUILDFLAG(USE_V4L2_CODEC)
+#endif
 
   // TODO(crbug.com/1004727): Implement LibYUVImageProcessorBackend. When doing
   // so, we must keep in mind that it might not be desirable to fallback to

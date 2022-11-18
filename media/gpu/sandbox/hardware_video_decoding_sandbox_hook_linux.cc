@@ -72,7 +72,7 @@ bool HardwareVideoDecodingPreSandboxHook(
           BrokerFilePermission::ReadOnlyRecursive(path + "/"));
     }
   }
-#endif  // BUILDFLAG(USE_V4L2_CODEC)
+#endif
 
   // TODO(b/195769334): consider using the type of client to decide if we should
   // allow access to the render node:
@@ -125,7 +125,7 @@ bool HardwareVideoDecodingPreSandboxHook(
 #else
   dlopen("/usr/lib/libv4l2.so", RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE);
 #endif  // defined(__aarch64__)
-#endif  // BUILDFLAG(USE_VAAPI)
+#endif
 
   return true;
 }

@@ -10,8 +10,7 @@
 
 #if BUILDFLAG(USE_V4L2_CODEC)
 #include <linux/videodev2.h>
-#endif  // BUILDFLAG(USE_V4L2_CODEC)
-#if BUILDFLAG(USE_VAAPI)
+#elif BUILDFLAG(USE_VAAPI)
 #include <va/va.h>
 #endif  // BUILDFLAG(USE_VAAPI)
 
@@ -104,9 +103,9 @@ TEST(FourccTest, VideoPixelFormatToV4L2PixFmt) {
       V4L2_PIX_FMT_YUV422M,
       Fourcc::FromVideoPixelFormat(PIXEL_FORMAT_I422, false)->ToV4L2PixFmt());
 }
-#endif  // BUILDFLAG(USE_V4L2_CODEC)
 
-#if BUILDFLAG(USE_VAAPI)
+#elif BUILDFLAG(USE_VAAPI)
+
 // Checks that converting a VaFourCC to Fourcc and back to VaFourCC
 // yields the same format as the original one.
 static void CheckFromVAFourCCAndBack(uint32_t va_fourcc) {
@@ -155,7 +154,7 @@ TEST(FourccTest, VideoPixelFormatToVAFourCC) {
   EXPECT_EQ(static_cast<uint32_t>(VA_FOURCC_P010),
             *Fourcc::FromVideoPixelFormat(PIXEL_FORMAT_P016LE)->ToVAFourCC());
 }
-#endif  // BUILDFLAG(USE_VAAPI)
+#endif
 
 TEST(FourccTest, FourccToSinglePlanar) {
   EXPECT_EQ(Fourcc(Fourcc::YU12).ToSinglePlanar(), Fourcc(Fourcc::YU12));

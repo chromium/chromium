@@ -7,6 +7,9 @@ import("//media/gpu/args.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
+# V4L2 and VAAPI for video acceleration should not be enabled simultaneously.
+assert(!(use_v4l2_codec && use_vaapi))
+
 assert(use_v4l2_codec || use_vaapi)
 
 # V4L2 or Vaapi imply the OS is Linux or ChromeOS

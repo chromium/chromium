@@ -99,6 +99,9 @@ component("gpu") {
   libs = []
   ldflags = []
 
+  # V4L2 and VAAPI for video acceleration should not be enabled simultaneously.
+  assert(!(use_v4l2_codec && use_vaapi))
+
   # TODO(crbug.com/1006266): consider using |use_chromeos_video_acceleration|.
   if (use_v4l2_codec || use_vaapi) {
     public_deps += [
