@@ -50,6 +50,8 @@ namespace SetCurrentInputMethod =
 namespace SwitchToLastUsedInputMethod =
     extensions::api::input_method_private::SwitchToLastUsedInputMethod;
 namespace SetXkbLayout = extensions::api::input_method_private::SetXkbLayout;
+namespace OpenOptionsPage =
+    extensions::api::input_method_private::OpenOptionsPage;
 namespace OnChanged = extensions::api::input_method_private::OnChanged;
 namespace OnDictionaryChanged =
     extensions::api::input_method_private::OnDictionaryChanged;
@@ -267,6 +269,35 @@ InputMethodPrivateHideInputViewFunction::Run() {
   }
 
   keyboard_client->HideKeyboard(ash::HideReason::kUser);
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
+InputMethodPrivateOpenOptionsPageFunction::Run() {
+  std::unique_ptr<OpenOptionsPage::Params> params(
+      OpenOptionsPage::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params.get());
+  scoped_refptr<ash::input_method::InputMethodManager::State> ime_state =
+      ash::input_method::InputMethodManager::Get()->GetActiveIMEState();
+  const ash::input_method::InputMethodDescriptor* ime =
+      ime_state->GetInputMethodFromId(params->input_method_id);
+  if (!ime)
+    return RespondNow(Error(InformativeError(
+        base::StringPrintf("%s Input Method: %s", kErrorInvalidInputMethod,
+                           params->input_method_id.c_str()),
+        static_function_name())));
+
+  content::WebContents* web_contents = GetSenderWebContents();
+  if (web_contents) {
+    const GURL& options_page_url = ime->options_page_url();
+    if (!options_page_url.is_empty()) {
+      Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+      content::OpenURLParams url_params(options_page_url, content::Referrer(),
+                                        WindowOpenDisposition::SINGLETON_TAB,
+                                        ui::PAGE_TRANSITION_LINK, false);
+      browser->OpenURL(url_params);
+    }
+  }
   return RespondNow(NoArguments());
 }
 
@@ -559,6 +590,7 @@ InputMethodAPI::InputMethodAPI(content::BrowserContext* context)
   registry.RegisterFunction<InputMethodPrivateAddWordToDictionaryFunction>();
   registry
       .RegisterFunction<InputMethodPrivateNotifyImeMenuItemActivatedFunction>();
+  registry.RegisterFunction<InputMethodPrivateOpenOptionsPageFunction>();
 }
 
 InputMethodAPI::~InputMethodAPI() = default;
