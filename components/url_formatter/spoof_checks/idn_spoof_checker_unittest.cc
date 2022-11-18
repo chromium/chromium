@@ -15,6 +15,7 @@
 #include "components/url_formatter/spoof_checks/skeleton_generator.h"
 #include "components/url_formatter/url_formatter.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/icu/source/common/unicode/uvernum.h"
 #include "url/gurl.h"
 #include "url/url_features.h"
 
@@ -1187,24 +1188,27 @@ TEST_P(IDNSpoofCheckerTest, IDNToUnicode) {
 TEST_P(IDNSpoofCheckerTest, IDNToUnicodeDeviationCharacters) {
   // Tests for 4 Deviation characters between IDNA 2003 and IDNA 2008. When
   // entered in Unicode:
-  // - In Transitional mode, the first two are mapped to 'ss' and Greek sigma
-  //   and the latter two are mapped away. However, the punycode form should
-  //   remain in punycode.
-  // - In Non-Transitional mode, none of the characters should be mapped and
-  //   the hostnames should be considered safe.
-  const Result kExpectedSafety =
-      GetParam() == IDNAMode::kNonTransitional ? kSafe : kUnsafe;
+  // - In Transitional mode, sharp-s and final-sigma are mapped to 'ss' and
+  //   sigma and ZWJ and ZWNJ two are mapped away. However, the punycode form
+  //   should remain in punycode.
+  // - In Non-Transitional mode, sharp-s and final-sigma shouldn't be be mapped
+  //   and hostnames containing them should be considered safe. ZWJ and ZWNJ
+  //   should still be considered unsafe.
+  bool is_non_transitional_idna = GetParam() == IDNAMode::kNonTransitional;
 
   const IDNTestCase kTestCases[] = {
       // U+00DF(sharp-s)
-      {"xn--fu-hia.de", u"fu\u00df.de", kExpectedSafety},
+      {"xn--fu-hia.de", u"fu\u00df.de",
+       is_non_transitional_idna ? kSafe : kUnsafe},
       // U+03C2(final-sigma)
-      {"xn--mxac2c.gr", u"\u03b1\u03b2\u03c2.gr", kExpectedSafety},
+      {"xn--mxac2c.gr", u"\u03b1\u03b2\u03c2.gr",
+       is_non_transitional_idna ? kSafe : kUnsafe},
+
+      // Treat ZWJ and ZWNJ explicitly unsafe, even in Non-Transitional mode.
       // U+200C(ZWNJ)
-      {"xn--h2by8byc123p.in", u"\u0924\u094d\u200c\u0930\u093f.in",
-       kExpectedSafety},
+      {"xn--h2by8byc123p.in", u"\u0924\u094d\u200c\u0930\u093f.in", kUnsafe},
       // U+200C(ZWJ)
-      {"xn--11b6iy14e.in", u"\u0915\u094d\u200d.in", kExpectedSafety},
+      {"xn--11b6iy14e.in", u"\u0915\u094d\u200d.in", kUnsafe},
   };
   for (const auto& test : kTestCases) {
     RunIDNToUnicodeTest(test);
