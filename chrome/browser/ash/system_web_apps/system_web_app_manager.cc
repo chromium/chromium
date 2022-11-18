@@ -216,14 +216,8 @@ SystemWebAppManager::SystemWebAppManager(Profile* profile)
   // Always create delegates because many System Web App WebUIs are disabled
   // when the delegate is not present and we need them in tests. Tests can
   // override the list of delegates with SetSystemAppsForTesting().
-  //
-  // TODO(https://crbug.com/1353262): SWAM is not supported in Kiosk mode. Many
-  // components assume that SWAM always exists alongside WebAppProvider. We want
-  // to use WebAppProvider to install web apps in Kiosk without enabling SWAM.
-  if (!base::FeatureList::IsEnabled(::features::kKioskEnableAppService) ||
-      !profiles::IsKioskSession()) {
-    system_app_delegates_ = CreateSystemWebApps(profile_);
-  }
+  // Tests can override the list of delegates with `SetSystemAppsForTesting`.
+  system_app_delegates_ = CreateSystemWebApps(profile_);
 
 #if defined(OFFICIAL_BUILD)
   const bool is_official = true;

@@ -6,11 +6,14 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
@@ -61,6 +64,18 @@ bool SystemWebAppManagerFactory::ServiceIsCreatedWithBrowserContext() const {
 
 content::BrowserContext* SystemWebAppManagerFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
+  if (ash::ProfileHelper::IsLockScreenAppProfile(
+          Profile::FromBrowserContext(context))) {
+    return nullptr;
+  }
+
+  // SWAM is not supported in Kiosk mode. We want to use WebAppProvider to
+  // install web apps in Kiosk without enabling SWAM.
+  if (base::FeatureList::IsEnabled(features::kKioskEnableAppService) &&
+      profiles::IsKioskSession()) {
+    return nullptr;
+  }
+
   return web_app::GetBrowserContextForWebApps(context);
 }
 

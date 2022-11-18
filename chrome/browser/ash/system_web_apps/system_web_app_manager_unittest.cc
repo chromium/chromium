@@ -1486,12 +1486,9 @@ class SystemWebAppManagerInKioskTest : public ChromeRenderViewHostTestHarness {
   }
 };
 
-// Checks that SWA delegates are not created in Kiosk sessions.
-TEST_F(SystemWebAppManagerInKioskTest, ShoudNotCreateDelegate) {
-  auto* manager = SystemWebAppManager::Get(profile());
-  EXPECT_TRUE(manager);
-  EXPECT_EQ(manager->system_app_delegates().size(), 0u);
-  EXPECT_EQ(manager->GetSystemApp(SystemWebAppType::SETTINGS), nullptr);
+// Checks that SWA manager is not created in Kiosk sessions.
+TEST_F(SystemWebAppManagerInKioskTest, ShoudNotCreateManager) {
+  EXPECT_FALSE(SystemWebAppManager::Get(profile()));
 }
 
 }  // namespace ash

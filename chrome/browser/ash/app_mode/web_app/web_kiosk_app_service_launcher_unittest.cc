@@ -19,7 +19,6 @@
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
-#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
@@ -37,6 +36,7 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/login/login_state/login_state.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -91,6 +91,11 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
+
+    chromeos::LoginState::Get()->SetLoggedInState(
+        chromeos::LoginState::LOGGED_IN_ACTIVE,
+        chromeos::LoginState::LOGGED_IN_USER_KIOSK);
+
     app_service_test_.UninstallAllApps(profile());
     app_service_test_.SetUp(profile());
     app_service_ = apps::AppServiceProxyFactory::GetForProfile(profile());
@@ -239,10 +244,6 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
 
   web_app::WebAppUiManager& ui_manager() {
     return web_app_provider()->ui_manager();
-  }
-
-  SystemWebAppManager* system_web_app_manager() {
-    return SystemWebAppManager::GetForTest(profile());
   }
 
   web_app::FakeExternallyManagedAppManager& externally_managed_app_manager() {

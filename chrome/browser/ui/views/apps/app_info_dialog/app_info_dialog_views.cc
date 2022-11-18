@@ -68,9 +68,9 @@ bool CanPlatformShowAppInfoDialog() {
 
 bool CanShowAppInfoDialog(Profile* profile, const std::string& extension_id) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  bool is_system_web_app =
-      ash::SystemWebAppManager::Get(profile)->IsSystemWebApp(extension_id);
-  if (is_system_web_app) {
+  auto* system_web_app_manager = ash::SystemWebAppManager::Get(profile);
+  if (system_web_app_manager &&
+      system_web_app_manager->IsSystemWebApp(extension_id)) {
     return false;
   }
 

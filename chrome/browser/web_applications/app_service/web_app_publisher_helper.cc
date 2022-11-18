@@ -4,7 +4,9 @@
 
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 
+#include <stddef.h>
 #include <atomic>
+#include <iterator>
 #include <memory>
 #include <ostream>
 #include <set>
@@ -13,28 +15,36 @@
 #include <utility>
 
 #include "base/barrier_callback.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/checked_iterators.h"
 #include "base/containers/contains.h"
 #include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/functional/identity.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/one_shot_event.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
@@ -77,6 +87,7 @@
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/services/app_service/public/cpp/shortcut.h"
+#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/clear_site_data_utils.h"
@@ -108,11 +119,14 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"  // nogncheck
+#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "chrome/browser/apps/app_service/policy_util.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_data.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "components/app_restore/app_launch_info.h"
@@ -133,8 +147,6 @@ class BrowserContext;
 }
 
 namespace web_app {
-
-class WebAppInstallManager;
 
 namespace {
 
@@ -421,15 +433,12 @@ void WebAppPublisherHelper::BadgeManagerDelegate::OnAppBadgeUpdated(
 }
 #endif
 
-WebAppPublisherHelper::WebAppPublisherHelper(
-    Profile* profile,
-    WebAppProvider* provider,
-    ash::SystemWebAppManager* swa_manager,
-    Delegate* delegate,
-    bool observe_media_requests)
+WebAppPublisherHelper::WebAppPublisherHelper(Profile* profile,
+                                             WebAppProvider* provider,
+                                             Delegate* delegate,
+                                             bool observe_media_requests)
     : profile_(profile),
       provider_(provider),
-      swa_manager_(swa_manager),
       app_type_(GetWebAppType()),
       delegate_(delegate) {
   DCHECK(profile_);
@@ -1129,7 +1138,8 @@ void WebAppPublisherHelper::LaunchAppWithParams(
   // Save all launch information for system web apps, because the browser
   // session restore can't restore system web apps.
   int session_id = apps::GetSessionIdForRestoreFromWebContents(web_contents);
-  if (SessionID::IsValidValue(session_id)) {
+  auto* swa_manager = ash::SystemWebAppManager::Get(profile());
+  if (swa_manager && SessionID::IsValidValue(session_id)) {
     const WebApp* web_app = GetWebApp(params_for_restore.app_id);
     const bool is_system_web_app = web_app && web_app->IsSystemApp();
     if (is_system_web_app) {
@@ -1143,11 +1153,10 @@ void WebAppPublisherHelper::LaunchAppWithParams(
 
       // TODO(crbug.com/1368285): Determine whether override URL can be restored
       // for all SWAs.
-      DCHECK(swa_manager_);
       auto system_app_type =
-          swa_manager_->GetSystemAppTypeForAppId(params_for_restore.app_id);
+          swa_manager->GetSystemAppTypeForAppId(params_for_restore.app_id);
       if (system_app_type.has_value()) {
-        auto* system_app = swa_manager_->GetSystemApp(*system_app_type);
+        auto* system_app = swa_manager->GetSystemApp(*system_app_type);
         DCHECK(system_app);
         if (system_app->ShouldRestoreOverrideUrl())
           launch_info->override_url = params_for_restore.override_url;
@@ -1753,10 +1762,10 @@ std::vector<std::string> WebAppPublisherHelper::GetPolicyIds(
 
   std::vector<std::string> policy_ids;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/973324): Replace this check with
-  // if (swa_manager_ && swa_manager_->IsSystemWebApp(app_id))
-  // after crrev.com/c/3954727 lands.
-  if (const auto& swa_data = web_app.client_data().system_web_app_data) {
+  auto* swa_manager = ash::SystemWebAppManager::Get(profile());
+  if (swa_manager && swa_manager->IsSystemWebApp(app_id)) {
+    const auto& swa_data = web_app.client_data().system_web_app_data;
+    DCHECK(swa_data);
     const ash::SystemWebAppType swa_type = swa_data->system_app_type;
     const absl::optional<base::StringPiece> swa_policy_id =
         apps_util::GetPolicyIdForSystemWebAppType(swa_type);
@@ -1806,10 +1815,12 @@ void WebAppPublisherHelper::UpdateAppDisabledMode(apps::App& app) {
   app.show_in_shelf = true;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  DCHECK(swa_manager_);
-  auto system_app_type = swa_manager_->GetSystemAppTypeForAppId(app.app_id);
+  auto* swa_manager = ash::SystemWebAppManager::Get(profile());
+  if (!swa_manager)
+    return;
+  auto system_app_type = swa_manager->GetSystemAppTypeForAppId(app.app_id);
   if (system_app_type.has_value()) {
-    auto* system_app = swa_manager_->GetSystemApp(*system_app_type);
+    auto* system_app = swa_manager->GetSystemApp(*system_app_type);
     DCHECK(system_app);
     app.show_in_launcher = system_app->ShouldShowInLauncher();
     app.show_in_search = system_app->ShouldShowInSearch();
@@ -1830,10 +1841,12 @@ void WebAppPublisherHelper::UpdateAppDisabledMode(apps::mojom::AppPtr& app) {
   app->show_in_shelf = apps::mojom::OptionalBool::kTrue;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  DCHECK(swa_manager_);
-  auto system_app_type = swa_manager_->GetSystemAppTypeForAppId(app->app_id);
+  auto* swa_manager = ash::SystemWebAppManager::Get(profile());
+  if (!swa_manager)
+    return;
+  auto system_app_type = swa_manager->GetSystemAppTypeForAppId(app->app_id);
   if (system_app_type.has_value()) {
-    auto* system_app = swa_manager_->GetSystemApp(*system_app_type);
+    auto* system_app = swa_manager->GetSystemApp(*system_app_type);
     DCHECK(system_app);
     app->show_in_launcher = system_app->ShouldShowInLauncher()
                                 ? apps::mojom::OptionalBool::kTrue

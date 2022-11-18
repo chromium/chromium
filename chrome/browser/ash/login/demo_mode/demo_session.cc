@@ -653,8 +653,10 @@ void DemoSession::OnDemoAppComponentLoaded() {
     return;
   }
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  ash::SystemWebAppManager::Get(profile)->on_apps_synchronized().Post(
-      FROM_HERE, base::BindOnce(&LaunchDemoSystemWebApp));
+  if (auto* swa_manager = ash::SystemWebAppManager::Get(profile)) {
+    swa_manager->on_apps_synchronized().Post(
+        FROM_HERE, base::BindOnce(&LaunchDemoSystemWebApp));
+  }
 }
 
 base::FilePath GetSplashScreenImagePath(base::FilePath localized_image_path,

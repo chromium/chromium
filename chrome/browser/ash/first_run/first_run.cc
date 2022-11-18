@@ -82,6 +82,7 @@ class AppLauncher : public ProfileObserver,
   // App launcher owns itself and will be deleted when the app is launched or
   // the profile is destroyed.
   static void LaunchHelpAfterSWALoad(Profile* profile) {
+    DCHECK(ShouldLaunchHelpApp(profile));
     new AppLauncher(profile);
   }
   // ProfileObserver:
@@ -132,6 +133,9 @@ bool ShouldLaunchHelpApp(Profile* profile) {
 
   if (WizardController::default_controller())
     WizardController::default_controller()->PrepareFirstRunPrefs();
+
+  if (!SystemWebAppManager::Get(profile))
+    return false;
 
   if (!IsRegularUserOrSupervisedChild(user_manager))
     return false;

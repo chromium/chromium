@@ -76,7 +76,7 @@ class SystemWebAppManager : public KeyedService,
   // lock-screen, system profile).
   static SystemWebAppManager* Get(Profile* profile);
   // Gets the associated WebAppProvider for system web apps. `WebAppProvider` is
-  // always presented in the `profile` if the `Get` above returns non-nullptr.
+  // always present in the `profile` if the `Get` above returns non-nullptr.
   static web_app::WebAppProvider* GetWebAppProvider(Profile* profile);
 
   // Returns the SystemWebAppManager for tests. Blocks if the web app registry

@@ -6,29 +6,16 @@
 
 #include <utility>
 
-#include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/feature_list.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/intent_util.h"
-#include "chrome/browser/apps/app_service/launch_utils.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "components/content_settings/core/common/content_settings.h"
-#include "components/content_settings/core/common/content_settings_pattern.h"
-#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/services/app_service/public/cpp/features.h"
-#include "components/webapps/browser/installable/installable_metrics.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/app_menu_constants.h"
@@ -65,19 +52,11 @@ WebApps::WebApps(apps::AppServiceProxy* proxy)
       provider_(WebAppProvider::GetForLocalAppsUnchecked(profile_)),
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       instance_registry_(&proxy->InstanceRegistry()),
-      publisher_helper_(profile_,
-                        provider_,
-                        ash::SystemWebAppManager::Get(profile_),
-                        this,
-                        ShouldObserveMediaRequests())
-#else
-      publisher_helper_(profile_,
-                        provider_,
-                        /*swa_manager=*/nullptr,
-                        this,
-                        ShouldObserveMediaRequests())
 #endif
-{
+      publisher_helper_(profile_,
+                        provider_,
+                        this,
+                        ShouldObserveMediaRequests()) {
   Initialize(proxy->AppService());
 }
 
@@ -200,13 +179,13 @@ void WebApps::GetMenuModel(const std::string& app_id,
   }
 
   apps::MenuItems menu_items;
-  if (web_app->IsSystemApp()) {
+  auto* swa_manager = ash::SystemWebAppManager::Get(profile());
+  if (swa_manager && swa_manager->IsSystemWebApp(web_app->app_id())) {
     DCHECK(web_app->client_data().system_web_app_data.has_value());
     ash::SystemWebAppType swa_type =
         web_app->client_data().system_web_app_data->system_app_type;
 
-    auto* system_app =
-        ash::SystemWebAppManager::Get(profile())->GetSystemApp(swa_type);
+    auto* system_app = swa_manager->GetSystemApp(swa_type);
     if (system_app && system_app->ShouldShowNewWindowMenuOption()) {
       apps::AddCommandItem(ash::LAUNCH_NEW,
                            IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW, menu_items);

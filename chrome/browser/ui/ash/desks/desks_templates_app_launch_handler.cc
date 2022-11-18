@@ -120,8 +120,9 @@ bool DesksTemplatesAppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
     absl::optional<ash::SystemWebAppType> swa_type =
         ash::GetSystemWebAppTypeForAppId(profile(), app_id);
     if (swa_type.has_value()) {
-      auto* system_app =
-          ash::SystemWebAppManager::Get(profile())->GetSystemApp(*swa_type);
+      auto* swa_manager = ash::SystemWebAppManager::Get(profile());
+      DCHECK(swa_manager);
+      auto* system_app = swa_manager->GetSystemApp(*swa_type);
       DCHECK(system_app);
       is_multi_instance_window = system_app->ShouldShowNewWindowMenuOption();
     }

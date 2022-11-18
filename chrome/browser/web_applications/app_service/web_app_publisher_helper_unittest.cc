@@ -9,14 +9,15 @@
 #include <sstream>
 #include <utility>
 
+#include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/traits_bag.h"
+#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -33,14 +34,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
-#endif
-
-namespace ash {
-class SystemWebAppManager;
-}
 
 namespace web_app {
 
@@ -91,15 +84,8 @@ class WebAppPublisherHelperTest : public testing::Test {
 
     provider_ = WebAppProvider::GetForWebApps(profile());
 
-    ash::SystemWebAppManager* swa_manager_ptr = nullptr;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    swa_manager_ = std::make_unique<ash::TestSystemWebAppManager>(profile());
-    swa_manager_ptr = swa_manager_.get();
-#endif
-
     publisher_ = std::make_unique<WebAppPublisherHelper>(
-        profile(), provider_,
-        /*swa_manager=*/swa_manager_ptr, &no_op_delegate_,
+        profile(), provider_, &no_op_delegate_,
         /*observe_media_requests=*/false);
 
     test::AwaitStartWebAppProviderAndSubsystems(profile());
@@ -112,9 +98,6 @@ class WebAppPublisherHelperTest : public testing::Test {
   NoOpWebAppPublisherDelegate no_op_delegate_;
   WebAppProvider* provider_;
   std::unique_ptr<WebAppPublisherHelper> publisher_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<ash::TestSystemWebAppManager> swa_manager_;
-#endif
 };
 
 TEST_F(WebAppPublisherHelperTest, CreateWebApp_Minimal) {
