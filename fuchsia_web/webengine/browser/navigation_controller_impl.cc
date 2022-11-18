@@ -194,7 +194,7 @@ fuchsia::web::NavigationState
 NavigationControllerImpl::GetVisibleNavigationState() const {
   content::NavigationEntry* const entry =
       web_contents_->GetController().GetVisibleEntry();
-  if (!entry || entry->IsInitialEntry())
+  if (entry->IsInitialEntry())
     return fuchsia::web::NavigationState();
 
   fuchsia::web::NavigationState state;

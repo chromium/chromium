@@ -30,14 +30,13 @@ using bookmarks::BookmarkNode;
 namespace {
 
 bool IsNTP(content::WebContents* web_contents) {
-  // Use the committed entry so the bookmarks bar disappears at the same time
-  // the page does.
+  // Use the committed entry (or the visible entry, if the committed entry is
+  // the initial NavigationEntry) so the bookmarks bar disappears at the same
+  // time the page does.
   content::NavigationEntry* entry =
       web_contents->GetController().GetLastCommittedEntry();
-  if (!entry || entry->IsInitialEntry())
+  if (entry->IsInitialEntry())
     entry = web_contents->GetController().GetVisibleEntry();
-  if (!entry)
-    return false;
   const GURL& url = entry->GetURL();
   return NewTabUI::IsNewTab(url) || NewTabPageUI::IsNewTabPageOrigin(url) ||
          NewTabPageThirdPartyUI::IsNewTabPageOrigin(url) ||

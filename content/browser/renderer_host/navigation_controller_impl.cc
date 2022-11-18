@@ -184,7 +184,7 @@ bool ShouldTreatNavigationAsReload(FrameTreeNode* node,
   if (should_replace_current_entry)
     return false;
   // Only convert to reload if at least one navigation committed.
-  if (!last_committed_entry || last_committed_entry->IsInitialEntry())
+  if (last_committed_entry->IsInitialEntry())
     return false;
 
   // Skip navigations initiated by external applications.
@@ -1012,13 +1012,13 @@ bool NavigationControllerImpl::CanViewSource() {
 
 int NavigationControllerImpl::GetLastCommittedEntryIndex() {
   // The last committed entry index must always be less than the number of
-  // entries.  If there are no entries, it must be -1.
+  // entries.
   DCHECK_LT(last_committed_entry_index_, GetEntryCount());
-  DCHECK(GetEntryCount() || last_committed_entry_index_ == -1);
   return last_committed_entry_index_;
 }
 
 int NavigationControllerImpl::GetEntryCount() {
+  DCHECK_GE(entries_.size(), 1u);
   DCHECK_LE(entries_.size(), max_entry_count());
   return static_cast<int>(entries_.size());
 }
@@ -1317,69 +1317,42 @@ bool NavigationControllerImpl::RendererDidNavigate(
 
   // Save the previous state before we clobber it.
   bool overriding_user_agent_changed = false;
-  if (GetLastCommittedEntry()) {
-    if (entry_replaced_by_post_commit_error_) {
-      // Same document navigation events with a post-commit error should already
-      // be blocked by RenderFrameHostImpl::ValidateDidCommitParams() before
-      // reaching here.
-      CHECK(!is_same_document_navigation);
+  if (entry_replaced_by_post_commit_error_) {
+    // Same document navigation events with a post-commit error should already
+    // be blocked by RenderFrameHostImpl::ValidateDidCommitParams() before
+    // reaching here.
+    CHECK(!is_same_document_navigation);
 
-      // Any commit while a post-commit error page is showing should put the
-      // original entry back, replacing the error page's entry.  This includes
-      // reloads, where the original entry was used as the pending entry and
-      // should now be at the correct index at commit time.
-      entries_[last_committed_entry_index_] =
-          std::move(entry_replaced_by_post_commit_error_);
-    }
-    details->previous_main_frame_url = GetLastCommittedEntry()->GetURL();
-    details->previous_entry_index = GetLastCommittedEntryIndex();
-    if (PendingEntryMatchesRequest(navigation_request) &&
-        pending_entry_->GetIsOverridingUserAgent() !=
-            GetLastCommittedEntry()->GetIsOverridingUserAgent()) {
-      overriding_user_agent_changed = true;
-    }
-#if BUILDFLAG(IS_ANDROID)
-    // TODO(crbug.com/1266277): Clean up the logic of setting
-    // |overriding_user_agent_changed| post-launch.
-    if (base::FeatureList::IsEnabled(features::kRequestDesktopSiteExceptions) ||
-        base::FeatureList::IsEnabled(features::kRequestDesktopSiteAdditions)) {
-      // Must honor user agent overrides in the |navigation_request|, such as
-      // from things like RequestDesktopSiteWebContentsObserverAndroid. As a
-      // result, besides comparing |pending_entry_|'s user agent against
-      // LastCommittedEntry's, also need to compare |navigation_request|'s user
-      // agent against LastCommittedEntry's.
-      if (navigation_request->is_overriding_user_agent() !=
-          GetLastCommittedEntry()->GetIsOverridingUserAgent()) {
-        overriding_user_agent_changed = true;
-      }
-    }
-#endif  // BUILDFLAG(IS_ANDROID)
-  } else {
-    // GetLastCommittedEntry() is null, so this is the first entry.
-    details->previous_main_frame_url = GURL();
-    details->previous_entry_index = -1;
-    if (PendingEntryMatchesRequest(navigation_request) &&
-        pending_entry_->GetIsOverridingUserAgent()) {
-      // Default setting is NOT override the user agent, so overriding the user
-      // agent in first entry should be considered as user agent changed as
-      // well.
-      overriding_user_agent_changed = true;
-    }
-#if BUILDFLAG(IS_ANDROID)
-    // TODO(crbug.com/1266277): Clean up the logic of setting
-    // |overriding_user_agent_changed| post-launch.
-    if (base::FeatureList::IsEnabled(features::kRequestDesktopSiteExceptions) ||
-        base::FeatureList::IsEnabled(features::kRequestDesktopSiteAdditions)) {
-      // Must honor user agent overrides in the |navigation_request|, such as
-      // from things like RequestDesktopSiteWebContentsObserverAndroid. As a
-      // result, besides checking |pending_entry_|'s user agent, also need to
-      // check |navigation_request|'s.
-      if (navigation_request->is_overriding_user_agent()) {
-        overriding_user_agent_changed = true;
-      }
-    }
-#endif  // BUILDFLAG(IS_ANDROID)
+    // Any commit while a post-commit error page is showing should put the
+    // original entry back, replacing the error page's entry.  This includes
+    // reloads, where the original entry was used as the pending entry and
+    // should now be at the correct index at commit time.
+    entries_[last_committed_entry_index_] =
+        std::move(entry_replaced_by_post_commit_error_);
   }
+  details->previous_main_frame_url = GetLastCommittedEntry()->GetURL();
+  details->previous_entry_index = GetLastCommittedEntryIndex();
+  if (PendingEntryMatchesRequest(navigation_request) &&
+      pending_entry_->GetIsOverridingUserAgent() !=
+          GetLastCommittedEntry()->GetIsOverridingUserAgent()) {
+    overriding_user_agent_changed = true;
+  }
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/1266277): Clean up the logic of setting
+  // |overriding_user_agent_changed| post-launch.
+  if (base::FeatureList::IsEnabled(features::kRequestDesktopSiteExceptions) ||
+      base::FeatureList::IsEnabled(features::kRequestDesktopSiteAdditions)) {
+    // Must honor user agent overrides in the |navigation_request|, such as
+    // from things like RequestDesktopSiteWebContentsObserverAndroid. As a
+    // result, besides comparing |pending_entry_|'s user agent against
+    // LastCommittedEntry's, also need to compare |navigation_request|'s user
+    // agent against LastCommittedEntry's.
+    if (navigation_request->is_overriding_user_agent() !=
+        GetLastCommittedEntry()->GetIsOverridingUserAgent()) {
+      overriding_user_agent_changed = true;
+    }
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 
   bool is_main_frame_navigation = !rfh->GetParent();
 
@@ -1399,10 +1372,8 @@ bool NavigationControllerImpl::RendererDidNavigate(
   }
   // Notify the last active entry that we have navigated away.
   if (is_main_frame_navigation && !is_same_document_navigation) {
-    if (NavigationEntryImpl* navigation_entry = GetLastCommittedEntry()) {
-      if (auto* metrics = navigation_entry->back_forward_cache_metrics()) {
-        metrics->MainFrameDidNavigateAwayFromDocument();
-      }
+    if (auto* metrics = GetLastCommittedEntry()->back_forward_cache_metrics()) {
+      metrics->MainFrameDidNavigateAwayFromDocument();
     }
   }
 
@@ -1447,8 +1418,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
   // Do navigation-type specific actions. These will make and commit an entry.
   details->type = ClassifyNavigation(rfh, params, navigation_request);
 
-  if (ShouldMaintainTrivialSessionHistory(rfh->frame_tree_node()) &&
-      GetLastCommittedEntry()) {
+  if (ShouldMaintainTrivialSessionHistory(rfh->frame_tree_node())) {
     // Ensure that this navigation does not add a navigation entry, since
     // ShouldMaintainTrivialSessionHistory() means we should not add an entry
     // beyond the last committed one. Therefore, `should_replace_current_entry`
@@ -1464,7 +1434,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
            details->type == NAVIGATION_TYPE_AUTO_SUBFRAME);
   }
 
-  if (GetLastCommittedEntry() && GetLastCommittedEntry()->IsInitialEntry()) {
+  if (GetLastCommittedEntry()->IsInitialEntry()) {
     if (rfh->GetParent()) {
       // This is a subframe navigation on the initial empty document, which used
       // to not have a NavigationEntry to attach to. Now it can attach to the
@@ -1731,8 +1701,7 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
       // inert, and thus set params.did_create_new_entry to false. In that case,
       // we must treat it as NEW rather than the converted reload case below,
       // since the new SiteInstance doesn't match the last committed entry.
-      if (!GetLastCommittedEntry() ||
-          GetLastCommittedEntry()->site_instance() != rfh->GetSiteInstance()) {
+      if (GetLastCommittedEntry()->site_instance() != rfh->GetSiteInstance()) {
         trace_return.set_return_reason("new pending, new entry");
         return NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY;
       }
@@ -1746,13 +1715,6 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
       trace_return.set_return_reason("new pending, existing (same) entry");
       return NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY;
     }
-  }
-
-  // Everything below here is assumed to be an existing entry, but if there is
-  // no last committed entry, we must consider it a new navigation instead.
-  if (!GetLastCommittedEntry()) {
-    trace_return.set_return_reason("no last committed, new entry");
-    return NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY;
   }
 
   if (navigation_request->commit_params().intended_as_new_entry) {
@@ -1933,7 +1895,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
   // First check if this is an in-page navigation.  If so, clone the current
   // entry instead of looking at the pending entry, because the pending entry
   // does not have any subframe history items.
-  if (is_same_document && GetLastCommittedEntry()) {
+  if (is_same_document) {
     FrameNavigationEntry* previous_frame_entry =
         GetLastCommittedEntry()->GetFrameEntry(rfh->frame_tree_node());
     auto frame_entry = base::MakeRefCounted<FrameNavigationEntry>(
@@ -2041,7 +2003,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
     // history.pushState() is classified as a navigation to a new page, but sets
     // is_same_document to true. In this case, we already have the title and
     // favicon available, so set them immediately.
-    if (is_same_document && GetLastCommittedEntry()) {
+    if (is_same_document) {
       new_entry->SetTitle(GetLastCommittedEntry()->GetTitle());
       new_entry->GetFavicon() = GetLastCommittedEntry()->GetFavicon();
     }
@@ -2094,7 +2056,6 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
     // We're guaranteed to have a last committed entry if intended_as_new_entry
     // is true.
     entry = GetLastCommittedEntry();
-    DCHECK(entry);
 
     // If the NavigationRequest matches a new pending entry and is classified as
     // EXISTING_ENTRY, then it is a navigation to the same URL that was
@@ -2343,8 +2304,6 @@ bool NavigationControllerImpl::RendererDidNavigateAutoSubframe(
 
   // This may be a "new auto" case where we add a new FrameNavigationEntry, or
   // it may be a "history auto" case where we update an existing one.
-  NavigationEntryImpl* last_committed = GetLastCommittedEntry();
-
   // We may want to update |last_committed|'s FrameNavigationEntry (if one
   // exists), or we may want to clobber it and create a new one. We update in
   // cases where the corresponding FrameNavigationEntry is conceptually similar
@@ -2368,6 +2327,7 @@ bool NavigationControllerImpl::RendererDidNavigateAutoSubframe(
   // to a navigation in another frame), we want to make sure we overwrite the
   // initial empty document state everywhere this FrameNavigationEntry is used,
   // which is accompished by updating the existing FrameNavigationEntry.
+  NavigationEntryImpl* last_committed = GetLastCommittedEntry();
   FrameNavigationEntry* last_committed_frame_entry =
       last_committed->GetFrameEntry(rfh->frame_tree_node());
   NavigationEntryImpl::UpdatePolicy update_policy =
@@ -2405,10 +2365,6 @@ void NavigationControllerImpl::CopyStateFrom(NavigationController* temp,
   DCHECK(GetLastCommittedEntry()->IsInitialEntry());
   DCHECK(!GetPendingEntry());
   entries_.clear();
-
-  if (source->GetEntryCount() == 0) {
-    return;
-  }
 
   needs_reload_ = needs_reload;
   needs_reload_type_ = NeedsReloadType::kCopyStateFrom;
@@ -2595,10 +2551,6 @@ void NavigationControllerImpl::NotifyUserActivation() {
   // When a user activation occurs, ensure that all adjacent entries for the
   // same document clear their skippable bit, so that the history manipulation
   // intervention does not apply to them.
-  auto* last_committed_entry = GetLastCommittedEntry();
-  if (!last_committed_entry)
-    return;
-
   if (base::FeatureList::IsEnabled(
           features::kDebugHistoryInterventionNoUserActivation)) {
     return;
@@ -2713,24 +2665,9 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
   std::unique_ptr<NavigationEntryImpl> entry;
   if (!render_frame_host->is_main_frame()) {
     // Subframe case: create FrameNavigationEntry.
-    if (GetLastCommittedEntry()) {
-      entry = GetLastCommittedEntry()->Clone();
-      entry->set_extra_headers(extra_headers);
-      // TODO(arthursonzogni): What about |is_renderer_initiated|?
-      // Renderer-initiated navigation that target a remote frame are currently
-      // classified as browser-initiated when this one has already navigated.
-      // See https://crbug.com/722251.
-    } else {
-      // If there's no last committed entry, create an entry for about:blank
-      // with a subframe entry for our destination.
-      // TODO(creis): Ensure this case can't exist in https://crbug.com/524208.
-      entry = NavigationEntryImpl::FromNavigationEntry(CreateNavigationEntry(
-          GURL(url::kAboutBlankURL), referrer, initiator_origin,
-          source_site_instance, page_transition, is_renderer_initiated,
-          extra_headers, browser_context_,
-          nullptr /* blob_url_loader_factory */,
-          false /* rewrite_virtual_urls */));
-    }
+    DCHECK(GetLastCommittedEntry());
+    entry = GetLastCommittedEntry()->Clone();
+    entry->set_extra_headers(extra_headers);
     // TODO(arthursonzogni): What about |is_renderer_initiated|?
     // Renderer-initiated navigation that target a remote frame are currently
     // classified as browser-initiated when this one has already navigated.
@@ -2766,8 +2703,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
   }
 
   bool override_user_agent = false;
-  if (GetLastCommittedEntry() &&
-      GetLastCommittedEntry()->GetIsOverridingUserAgent()) {
+  if (GetLastCommittedEntry()->GetIsOverridingUserAgent()) {
     entry->SetIsOverridingUserAgent(true);
     override_user_agent = true;
   }
@@ -2868,9 +2804,7 @@ void NavigationControllerImpl::SetSessionStorageNamespace(
 }
 
 bool NavigationControllerImpl::IsUnmodifiedBlankTab() {
-  return IsInitialNavigation() &&
-         (!GetLastCommittedEntry() ||
-          GetLastCommittedEntry()->IsInitialEntry()) &&
+  return IsInitialNavigation() && GetLastCommittedEntry()->IsInitialEntry() &&
          !frame_tree_->has_accessed_initial_main_document();
 }
 
@@ -2959,9 +2893,7 @@ NavigationEntryImpl* NavigationControllerImpl::GetPendingEntry() {
 
 int NavigationControllerImpl::GetPendingEntryIndex() {
   // The pending entry index must always be less than the number of entries.
-  // If there are no entries, it must be exactly -1.
   DCHECK_LT(pending_entry_index_, GetEntryCount());
-  DCHECK(GetEntryCount() != 0 || pending_entry_index_ == -1);
   return pending_entry_index_;
 }
 
@@ -2996,7 +2928,7 @@ void NavigationControllerImpl::InsertOrReplaceEntry(
   DiscardNonCommittedEntriesWithCommitDetails(commit_details);
 
   // When replacing, don't prune the forward history.
-  if ((replace || was_post_commit_error) && entries_.size() > 0) {
+  if (replace || was_post_commit_error) {
     CopyReplacedNavigationEntryDataIfPreviouslyEmpty(
         entries_[last_committed_entry_index_].get(), entry.get());
     // If the new entry is a post-commit error page, we store the current last
@@ -3289,15 +3221,6 @@ NavigationControllerImpl::DetermineActionForHistoryNavigation(
     }
   }
 
-  // If there's no last committed entry, there is no previous history entry to
-  // compare against, so fall back to a different-document load.  Note that we
-  // should only reach this case for the root frame and not descend further
-  // into subframes.
-  if (!GetLastCommittedEntry()) {
-    DCHECK(frame->IsMainFrame());
-    return HistoryNavigationAction::kDifferentDocument;
-  }
-
   // Reloads should result in a different-document load.  Note that reloads may
   // also happen via the |needs_reload_| mechanism where the reload_type is
   // NONE, so detect this by comparing whether we're going to the same
@@ -3473,15 +3396,11 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
   bool override_user_agent = ShouldOverrideUserAgent(params.override_user_agent,
                                                      GetLastCommittedEntry());
 
-  // Don't allow an entry replacement if there is no entry to replace.
-  // http://crbug.com/457149
-  //
-  // If there is an entry, an entry replacement must happen if the current
-  // browsing context should maintain a trivial session history.
+  // An entry replacement must happen if the current browsing context should
+  // maintain a trivial session history.
   bool should_replace_current_entry =
       (params.should_replace_current_entry ||
-       ShouldMaintainTrivialSessionHistory(node)) &&
-      entries_.size();
+       ShouldMaintainTrivialSessionHistory(node));
 
   // Javascript URLs should not create NavigationEntries. All other navigations
   // do, including navigations to chrome renderer debug URLs.
@@ -3538,14 +3457,12 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
     // policy container for it, then we should copy it into the pending entry,
     // so that it is copied to the navigation request in
     // CreateNavigationRequestFromLoadParams later.
-    if (GetLastCommittedEntry()) {
-      FrameNavigationEntry* previous_frame_entry =
-          GetLastCommittedEntry()->GetFrameEntry(node);
-      if (previous_frame_entry &&
-          previous_frame_entry->policy_container_policies()) {
-        pending_entry_->GetFrameEntry(node)->set_policy_container_policies(
-            previous_frame_entry->policy_container_policies()->ClonePtr());
-      }
+    FrameNavigationEntry* previous_frame_entry =
+        GetLastCommittedEntry()->GetFrameEntry(node);
+    if (previous_frame_entry &&
+        previous_frame_entry->policy_container_policies()) {
+      pending_entry_->GetFrameEntry(node)->set_policy_container_policies(
+          previous_frame_entry->policy_container_policies()->ClonePtr());
     }
   }
 
@@ -3556,8 +3473,7 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
   // and that PolicyContainerHost will be put in the final RenderFrameHost for
   // the navigation. This way, we ensure that we keep enforcing the right
   // policies on the initial empty document after the reload.
-  if ((!GetLastCommittedEntry() || GetLastCommittedEntry()->IsInitialEntry()) &&
-      params.url.IsAboutBlank()) {
+  if (GetLastCommittedEntry()->IsInitialEntry() && params.url.IsAboutBlank()) {
     if (node->current_frame_host() &&
         node->current_frame_host()->policy_container_host()) {
       pending_entry_->GetFrameEntry(node)->set_policy_container_policies(
@@ -3674,18 +3590,7 @@ NavigationControllerImpl::CreateNavigationEntryFromLoadParams(
 
   // For subframes, create a pending entry with a corresponding frame entry.
   if (!node->IsMainFrame()) {
-    if (GetLastCommittedEntry()) {
-      entry = GetLastCommittedEntry()->Clone();
-    } else {
-      // If there's no last committed entry, create an entry for about:blank
-      // with a subframe entry for our destination.
-      // TODO(creis): Ensure this case can't exist in https://crbug.com/524208.
-      entry = NavigationEntryImpl::FromNavigationEntry(CreateNavigationEntry(
-          GURL(url::kAboutBlankURL), params.referrer, params.initiator_origin,
-          params.source_site_instance.get(), params.transition_type,
-          params.is_renderer_initiated, extra_headers_crlf, browser_context_,
-          blob_url_loader_factory, false /* rewrite_virtual_urls */));
-    }
+    entry = GetLastCommittedEntry()->Clone();
     entry->AddOrUpdateFrameEntry(
         node, NavigationEntryImpl::UpdatePolicy::kReplace, -1, -1, "", nullptr,
         static_cast<SiteInstanceImpl*>(params.source_site_instance.get()),
@@ -4109,8 +4014,7 @@ void NavigationControllerImpl::LoadIfNecessary() {
         /*initiator_rfh=*/nullptr,
         /*soft_navigation_heuristics_task_id=*/absl::nullopt,
         /*navigation_api_key=*/nullptr);
-  } else if (last_committed_entry_index_ != -1 &&
-             !GetLastCommittedEntry()
+  } else if (!GetLastCommittedEntry()
                   ->IsInitialEntryNotForSynchronousAboutBlank()) {
     pending_entry_ = entries_[last_committed_entry_index_].get();
     pending_entry_index_ = last_committed_entry_index_;
@@ -4258,6 +4162,7 @@ void NavigationControllerImpl::InsertEntriesFrom(
     entries_.insert(entries_.begin() + i,
                     source->entries_[i]->CloneWithoutSharing(context.get()));
   }
+  DCHECK_GE(entries_.size(), 1u);
   DCHECK(pending_entry_index_ == -1 ||
          pending_entry_ == GetEntryAtIndex(pending_entry_index_));
 }
@@ -4362,11 +4267,7 @@ NavigationControllerImpl::ComputePolicyContainerPoliciesForFrameEntry(
     bool is_same_document,
     const GURL& url) {
   if (is_same_document) {
-    // TODO(https://crbug.com/524208): Remove this nullptr check when we can
-    // ensure we always have a FrameNavigationEntry here.
-    if (!GetLastCommittedEntry())
-      return nullptr;
-
+    DCHECK(GetLastCommittedEntry());
     FrameNavigationEntry* previous_frame_entry =
         GetLastCommittedEntry()->GetFrameEntry(rfh->frame_tree_node());
 
@@ -4475,7 +4376,7 @@ NavigationControllerImpl::PopulateSingleNavigationApiHistoryEntryVector(
     int64_t pending_item_sequence_number,
     int64_t pending_document_sequence_number) {
   std::vector<blink::mojom::NavigationApiHistoryEntryPtr> entries;
-  if (GetLastCommittedEntry() && GetLastCommittedEntry()->IsInitialEntry()) {
+  if (GetLastCommittedEntry()->IsInitialEntry()) {
     // Don't process the initial entry.
     DCHECK_EQ(GetEntryCount(), 1);
     return entries;

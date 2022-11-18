@@ -236,8 +236,7 @@ TabLoadTracker::LoadingState TabLoadTracker::DetermineLoadingState(
     // prerendering, when an already rendered WebContents is swapped in at the
     // moment of a navigation.
     content::NavigationController& controller = web_contents->GetController();
-    if (controller.GetLastCommittedEntry() &&
-        !controller.GetLastCommittedEntry()->IsInitialEntry() &&
+    if (!controller.GetLastCommittedEntry()->IsInitialEntry() &&
         !controller.IsInitialNavigation() && !controller.NeedsReload()) {
       loading_state = LOADED;
     }

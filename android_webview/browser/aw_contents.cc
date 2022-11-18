@@ -838,12 +838,9 @@ void AwContents::OnReceivedIcon(const GURL& icon_url, const SkBitmap& bitmap) {
 
   content::NavigationEntry* entry =
       web_contents_->GetController().GetLastCommittedEntry();
-
-  if (entry) {
-    entry->GetFavicon().valid = true;
-    entry->GetFavicon().url = icon_url;
-    entry->GetFavicon().image = gfx::Image::CreateFrom1xBitmap(bitmap);
-  }
+  entry->GetFavicon().valid = true;
+  entry->GetFavicon().url = icon_url;
+  entry->GetFavicon().image = gfx::Image::CreateFrom1xBitmap(bitmap);
 
   ScopedJavaLocalRef<jobject> java_bitmap =
       gfx::ConvertToJavaBitmap(bitmap, gfx::OomBehavior::kReturnNullOnOom);
@@ -897,7 +894,7 @@ base::android::ScopedJavaLocalRef<jbyteArray> AwContents::GetCertificate(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   content::NavigationEntry* entry =
       web_contents_->GetController().GetLastCommittedEntry();
-  if (!entry || entry->IsInitialEntry() || !entry->GetSSL().certificate) {
+  if (entry->IsInitialEntry() || !entry->GetSSL().certificate) {
     return ScopedJavaLocalRef<jbyteArray>();
   }
 
@@ -1030,8 +1027,7 @@ base::android::ScopedJavaLocalRef<jbyteArray> AwContents::GetOpaqueState(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Required optimization in WebViewClassic to not save any state if
   // there has been no navigations.
-  if (!web_contents_->GetController().GetLastCommittedEntry() ||
-      web_contents_->GetController()
+  if (web_contents_->GetController()
           .GetLastCommittedEntry()
           ->IsInitialEntry()) {
     return ScopedJavaLocalRef<jbyteArray>();

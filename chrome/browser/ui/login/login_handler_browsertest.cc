@@ -1979,8 +1979,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, PromptWithOnlyInitialEntry) {
   content::WebContents* opened_contents =
       browser()->tab_strip_model()->GetWebContentsAt(1);
   NavigationController* opened_controller = &opened_contents->GetController();
-  ASSERT_TRUE(!opened_controller->GetVisibleEntry() ||
-              opened_controller->GetVisibleEntry()->IsInitialEntry());
+  ASSERT_TRUE(opened_controller->GetVisibleEntry()->IsInitialEntry());
   LoginPromptBrowserTestObserver observer;
   observer.Register(content::Source<NavigationController>(opened_controller));
   WindowedAuthNeededObserver auth_needed_waiter(opened_controller);

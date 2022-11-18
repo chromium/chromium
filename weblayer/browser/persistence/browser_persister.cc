@@ -299,12 +299,10 @@ void BrowserPersister::BuildCommandsForTab(TabImpl* tab, int index_in_browser) {
   // Ensure that we don't try to persist initial NavigationEntry, as it is
   // not actually associated with any navigation and will just result in
   // about:blank on session restore.
-  bool is_on_initial_entry =
-      (tab->web_contents()->GetController().GetLastCommittedEntry() &&
-       tab->web_contents()
-           ->GetController()
-           .GetLastCommittedEntry()
-           ->IsInitialEntry());
+  bool is_on_initial_entry = (tab->web_contents()
+                                  ->GetController()
+                                  .GetLastCommittedEntry()
+                                  ->IsInitialEntry());
   const int current_index =
       is_on_initial_entry ? -1 : controller.GetCurrentEntryIndex();
   const int min_index =

@@ -426,10 +426,10 @@ void ExtensionActionRunner::RunPendingScriptsForExtension(
 
   content::NavigationEntry* visible_entry =
       web_contents()->GetController().GetVisibleEntry();
-  // Refuse to run if there's no visible entry that is not the initial
-  // NavigationEntry, because we have no way of determining if it's the proper
-  // page. This should rarely, if ever, happen.
-  if (!visible_entry || visible_entry->IsInitialEntry())
+  // Refuse to run if the visible entry is the initial NavigationEntry, because
+  // we have no way of determining if it's the proper page. This should rarely,
+  // if ever, happen.
+  if (visible_entry->IsInitialEntry())
     return;
 
   // We add this to the list of permitted extensions and erase pending entries

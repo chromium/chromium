@@ -363,7 +363,7 @@ void CustomTabBarView::UpdateContents() {
 
   content::NavigationEntry* entry = contents->GetController().GetVisibleEntry();
   std::u16string title, location;
-  if (entry && !entry->IsInitialEntry()) {
+  if (!entry->IsInitialEntry()) {
     title = Browser::FormatTitleForDisplay(entry->GetTitleForDisplay());
     if (ShouldDisplayUrl(contents)) {
       location = web_app::AppBrowserController::FormatUrlOrigin(

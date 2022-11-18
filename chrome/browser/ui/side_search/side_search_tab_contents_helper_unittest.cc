@@ -118,8 +118,7 @@ class SideSearchTabContentsHelperTest : public ::testing::Test {
 TEST_F(SideSearchTabContentsHelperTest, LastSearchURLUpdatesCorrectly) {
   // When a tab is first opened there should be no last encountered search URL.
   EXPECT_FALSE(helper()->last_search_url().has_value());
-  EXPECT_TRUE(!GetLastCommittedSideContentsEntry() ||
-              GetLastCommittedSideContentsEntry()->IsInitialEntry());
+  EXPECT_TRUE(GetLastCommittedSideContentsEntry()->IsInitialEntry());
 
   // Navigating to a matching search URL should update the `last_search_url`.
   LoadURL(kSearchMatchUrl1);

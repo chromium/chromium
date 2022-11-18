@@ -362,9 +362,10 @@ void NavigationControllerImpl::Stop() {
 }
 
 int NavigationControllerImpl::GetNavigationListSize() {
-  content::NavigationEntry* current_entry =
-      web_contents()->GetController().GetLastCommittedEntry();
-  if (current_entry && current_entry->IsInitialEntry()) {
+  if (web_contents()
+          ->GetController()
+          .GetLastCommittedEntry()
+          ->IsInitialEntry()) {
     // If we're currently on the initial NavigationEntry, no navigation has
     // committed, so the initial NavigationEntry should not be part of the
     // "Navigation List", and we should return 0 as the navigation list size.
@@ -377,9 +378,10 @@ int NavigationControllerImpl::GetNavigationListSize() {
 }
 
 int NavigationControllerImpl::GetNavigationListCurrentIndex() {
-  content::NavigationEntry* current_entry =
-      web_contents()->GetController().GetLastCommittedEntry();
-  if (current_entry && current_entry->IsInitialEntry()) {
+  if (web_contents()
+          ->GetController()
+          .GetLastCommittedEntry()
+          ->IsInitialEntry()) {
     // If we're currently on the initial NavigationEntry, no navigation has
     // committed, so the initial NavigationEntry should not be part of the
     // "Navigation List", and we should return -1 as the current index. This

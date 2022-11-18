@@ -1421,7 +1421,7 @@ bool LocationBarView::ShowPageInfoDialog() {
     return false;
 
   content::NavigationEntry* entry = contents->GetController().GetVisibleEntry();
-  if (!entry || entry->IsInitialEntry())
+  if (entry->IsInitialEntry())
     return false;
 
   DCHECK(GetWidget());

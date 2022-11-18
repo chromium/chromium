@@ -847,10 +847,9 @@ DevToolsWindow::MaybeCreateNavigationThrottle(
     content::NavigationHandle* handle) {
   WebContents* web_contents = handle->GetWebContents();
   if (!web_contents || !web_contents->HasLiveOriginalOpenerChain() ||
-      (web_contents->GetController().GetLastCommittedEntry() &&
-       !web_contents->GetController()
-            .GetLastCommittedEntry()
-            ->IsInitialEntry())) {
+      !web_contents->GetController()
+           .GetLastCommittedEntry()
+           ->IsInitialEntry()) {
     return nullptr;
   }
 

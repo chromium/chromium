@@ -149,7 +149,7 @@ bool TabContentsSyncedTabDelegate::ShouldSync(
   // associated with any navigation.
   content::NavigationEntry* last_committed_entry =
       web_contents_->GetController().GetLastCommittedEntry();
-  if (last_committed_entry && last_committed_entry->IsInitialEntry()) {
+  if (last_committed_entry->IsInitialEntry()) {
     return false;
   }
 

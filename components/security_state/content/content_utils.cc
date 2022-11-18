@@ -21,7 +21,7 @@ std::unique_ptr<security_state::VisibleSecurityState> GetVisibleSecurityState(
 
   content::NavigationEntry* entry =
       web_contents->GetController().GetVisibleEntry();
-  if (!entry || entry->IsInitialEntry())
+  if (entry->IsInitialEntry())
     return state;
   // Set fields that are not dependent on the connection info.
   state->is_error_page = entry->GetPageType() == content::PAGE_TYPE_ERROR;

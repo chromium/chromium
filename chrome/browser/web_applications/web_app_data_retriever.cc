@@ -50,7 +50,7 @@ void WebAppDataRetriever::GetWebAppInstallInfo(
 
   content::NavigationEntry* entry =
       web_contents->GetController().GetLastCommittedEntry();
-  if (!entry || entry->IsInitialEntry()) {
+  if (entry->IsInitialEntry()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&WebAppDataRetriever::CallCallbackOnError,
                                   weak_ptr_factory_.GetWeakPtr()));
@@ -175,7 +175,7 @@ void WebAppDataRetriever::OnGetWebPageMetadata(
   content::NavigationEntry* entry =
       contents->GetController().GetLastCommittedEntry();
 
-  if (entry && !entry->IsInitialEntry()) {
+  if (!entry->IsInitialEntry()) {
     if (entry->GetUniqueID() == last_committed_nav_entry_unique_id) {
       info = std::make_unique<WebAppInstallInfo>(*web_page_metadata);
       if (info->start_url.is_empty())

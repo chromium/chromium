@@ -2430,11 +2430,11 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, FrameTreeTest) {
                           ->GetIsolationContext(),
                       isolated_origin, MakeOACIsolationState(false))
                   .requires_origin_keyed_process());
-  // Verify that the tab2 child frame is on the initial NavigationEntry (or
-  // has no NavigationEntry if InitialNavigationEntry is disabled).
-  NavigationEntry* current_entry =
-      tab2_shell->web_contents()->GetController().GetLastCommittedEntry();
-  EXPECT_TRUE(!current_entry || current_entry->IsInitialEntry());
+  // Verify that the tab2 child frame is on the initial NavigationEntry.
+  EXPECT_TRUE(tab2_shell->web_contents()
+                  ->GetController()
+                  .GetLastCommittedEntry()
+                  ->IsInitialEntry());
 
   // Now, create a second frame in tab2 and navigate it to
   // `isolated_origin_url`. Even though isolation is requested, it should not

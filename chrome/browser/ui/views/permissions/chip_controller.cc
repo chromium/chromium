@@ -315,7 +315,7 @@ void ChipController::ShowPageInfoDialog() {
     return;
 
   content::NavigationEntry* entry = contents->GetController().GetVisibleEntry();
-  if (!entry || entry->IsInitialEntry())
+  if (entry->IsInitialEntry())
     return;
 
   // prevent chip from collapsing while prompt bubble is open

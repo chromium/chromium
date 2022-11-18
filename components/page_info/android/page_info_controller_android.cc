@@ -42,7 +42,7 @@ static jlong JNI_PageInfoController_Init(
   // Important to use GetVisibleEntry to match what's showing in the omnibox.
   content::NavigationEntry* nav_entry =
       web_contents->GetController().GetVisibleEntry();
-  if (!nav_entry || nav_entry->IsInitialEntry())
+  if (nav_entry->IsInitialEntry())
     return 0;
 
   return reinterpret_cast<intptr_t>(

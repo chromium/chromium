@@ -442,8 +442,7 @@ int GetContentRestrictions(const Browser* browser) {
     content_restrictions = core_tab_helper->content_restrictions();
     NavigationEntry* last_committed_entry =
         current_tab->GetController().GetLastCommittedEntry();
-    if (!content::IsSavableURL(
-            last_committed_entry ? last_committed_entry->GetURL() : GURL()))
+    if (!content::IsSavableURL(last_committed_entry->GetURL()))
       content_restrictions |= CONTENT_RESTRICTION_SAVE;
   }
   return content_restrictions;
@@ -965,7 +964,7 @@ WebContents* DuplicateTabAt(Browser* browser, int index) {
 
 bool CanDuplicateTabAt(const Browser* browser, int index) {
   WebContents* contents = browser->tab_strip_model()->GetWebContentsAt(index);
-  return contents && contents->GetController().GetLastCommittedEntry();
+  return contents;
 }
 
 void MoveTabsToExistingWindow(Browser* source,

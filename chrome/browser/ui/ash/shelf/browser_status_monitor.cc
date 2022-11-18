@@ -396,12 +396,10 @@ void BrowserStatusMonitor::OnTabInserted(TabStripModel* tab_strip_model,
                                          content::WebContents* contents) {
   if (!web_app::IsWebAppsCrosapiEnabled()) {
     UpdateAppItemState(contents, false /*remove*/);
-    // If the contents does not have a visible navigation entry that is not the
-    // initial entry, wait until a navigation status changes before setting the
-    // browser window Shelf ID (done by the web contents observer added by
-    // AddWebContentsObserver()).
+    // If the visible navigation entry is the initial entry, wait until a
+    // navigation status changes before setting the browser window Shelf ID
+    // (done by the web contents observer added by AddWebContentsObserver()).
     if (tab_strip_model->GetActiveWebContents() == contents &&
-        contents->GetController().GetVisibleEntry() &&
         !contents->GetController().GetVisibleEntry()->IsInitialEntry()) {
       Browser* browser = chrome::FindBrowserWithWebContents(contents);
       SetShelfIDForBrowserWindowContents(browser, contents);

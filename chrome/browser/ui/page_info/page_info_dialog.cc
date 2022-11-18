@@ -23,7 +23,7 @@ bool ShowPageInfoDialog(content::WebContents* web_contents,
 
   content::NavigationEntry* entry =
       web_contents->GetController().GetVisibleEntry();
-  if (!entry || entry->IsInitialEntry())
+  if (entry->IsInitialEntry())
     return false;
 
   auto initialized_callback =
