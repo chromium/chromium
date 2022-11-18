@@ -2770,9 +2770,6 @@ void RenderFrameImpl::CommitNavigationWithParams(
     // Save the Back/Forward Cache NotRestoredReasons struct to WebLocalFrame to
     // report for PerformanceNavigationTiming API.
     frame_->SetNotRestoredReasons(std::move(not_restored_reasons));
-    // For cross-document main frame history navigations, |not_restored_reasons|
-    // should be populated and has blocking reasons.
-    DCHECK(frame_->HasBlockingReasons());
   }
 
   // Note: this intentionally does not call |Detach()| before |reset()|. If

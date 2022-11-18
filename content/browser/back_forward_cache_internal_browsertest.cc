@@ -4177,12 +4177,10 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFencedFrames,
   blink::mojom::BackForwardCacheNotRestoredReasonsPtr web_reasons =
       can_store_result.tree_reasons->GetWebExposedNotRestoredReasons();
   EXPECT_TRUE(web_reasons->same_origin_details);
-  EXPECT_FALSE(web_reasons->blocked);
+  EXPECT_EQ(web_reasons->blocked, blink::mojom::BFCacheBlocked::kNo);
   EXPECT_EQ(2u, web_reasons->same_origin_details->children.size());
-  EXPECT_FALSE(web_reasons->same_origin_details->children.at(0)->blocked);
   EXPECT_FALSE(
       web_reasons->same_origin_details->children.at(0)->same_origin_details);
-  EXPECT_TRUE(web_reasons->same_origin_details->children.at(1)->blocked);
   EXPECT_FALSE(
       web_reasons->same_origin_details->children.at(1)->same_origin_details);
 }

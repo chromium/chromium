@@ -221,8 +221,6 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   // Sets BackForwardCache NotRestoredReasons for the current frame.
   virtual void SetNotRestoredReasons(
       const mojom::BackForwardCacheNotRestoredReasonsPtr&) = 0;
-  // Returns if the current frame's NotRestoredReasons has any blocking reasons.
-  virtual bool HasBlockingReasons() = 0;
 
   // Hierarchy ----------------------------------------------------------
 
