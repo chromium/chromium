@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <style>
+    .old {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 50vw;
+      height: 100vh;
+      background: lightblue;
+    }
+
+    .new {
+      position: fixed;
+      top: 0;
+      left: 50vw;
+      width: 50vw;
+      height: 100vh;
+      background: lightgreen;
+    }
+
+    .frame {
+      width: 50px;
+      height: 100px;
+    }
+
+    .frame_hidden {
+      width: 5px;
+      height: 10px;
+      background: blue;
+    }
+  </style>
+</head>
+<body>
+  <div class="old">
+    <div class="frame" style="background: white;">
+      <div class="frame_hidden"></div>
+    </div>
+  </div>
+  <div class="new">
+    <div class="frame" style="background: grey;">
+      <div class="frame_hidden"></div>
+    </div>
+  </div>
+</body>
+</html>

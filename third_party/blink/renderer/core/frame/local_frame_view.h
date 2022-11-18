@@ -772,6 +772,8 @@ class CORE_EXPORT LocalFrameView final
   bool RemovePendingOpacityUpdate(const LayoutObject& object);
   bool UpdateAllPendingOpacityUpdates();
 
+  void ForAllChildLocalFrameViews(base::FunctionRef<void(LocalFrameView&)>);
+
  protected:
   void FrameRectsChanged(const gfx::Rect&) override;
   void SelfVisibleChanged() override;
@@ -946,7 +948,6 @@ class CORE_EXPORT LocalFrameView final
 
   void ForAllChildViewsAndPlugins(
       base::FunctionRef<void(EmbeddedContentView&)>);
-  void ForAllChildLocalFrameViews(base::FunctionRef<void(LocalFrameView&)>);
 
   enum TraversalOrder { kPreOrder, kPostOrder };
   void ForAllNonThrottledLocalFrameViews(

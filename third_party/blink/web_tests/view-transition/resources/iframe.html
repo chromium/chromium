@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <style>
+    body {
+      background: white;
+    }
+
+    .hidden {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 10px;
+      height: 10px;
+      background: blue;
+
+      view-transition-name: hidden;
+      contain: layout;
+    }
+
+    ::view-transition-group(*) {
+      animation-duration: 300s;
+      visibility: hidden;
+    }
+
+    ::view-transition {
+      background: blue;
+    }
+  </style>
+</head>
+<body>
+  <div class="hidden"></div>
+</body>
+</html>

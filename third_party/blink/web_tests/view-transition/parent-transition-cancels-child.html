@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <style>
+    iframe {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100px;
+      height: 100px;
+      border: unset;
+    }
+
+    .hidden {
+      width: 10px;
+      height: 10px;
+      background: red;
+      view-transition-name: hidden;
+      contain: layout;
+    }
+
+    ::view-transition-group(hidden) {
+      animation-duration: 300s;
+      visibility: hidden;
+    }
+
+    ::view-transition-old(root) {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 50vw;
+      height: 100vh;
+      animation: unset;
+      opacity: 1;
+    }
+    ::view-transition-new(root) {
+      position: fixed;
+      top: 0;
+      left: 50vw;
+      width: 50vw;
+      height: 100vh;
+      animation: unset;
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <iframe id="frame" src="./resources/iframe.html"></iframe>
+  <div class="hidden"></div>
+  <script>
+    async function startTransitionInIframe() {
+      let nestedDocument = frame.contentWindow.document;
+      await nestedDocument.startViewTransition(() => {
+        nestedDocument.body.style.background = "grey"}).finished;
+    }
+
+    async function runTest() {
+      document.body.style.background = "lightblue";
+      await document.startViewTransition(() => {
+        document.body.style.background = "lightgreen";
+      }).ready;
+
+      await startTransitionInIframe();
+
+      if (window.testRunner)
+        window.testRunner.notifyDone();
+    }
+
+    window.onload = function() {
+      if (window.testRunner)
+        window.testRunner.waitUntilDone();
+      requestAnimationFrame(runTest);
+    }
+  </script>
+</body>
+</html>

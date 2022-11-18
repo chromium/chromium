@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <style>
+    iframe {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100px;
+      height: 100px;
+      border: unset;
+    }
+  </style>
+</head>
+<body>
+  <iframe id="cancelled" src="./resources/iframe.html"></iframe>
+  <iframe id="active" src="./resources/iframe.html"></iframe>
+  <script>
+    async function startTransitionInIframe(frame) {
+      let nestedDocument = frame.contentWindow.document;
+      await nestedDocument.startViewTransition(() => {
+        nestedDocument.body.style.background = "grey"}).ready;
+    }
+
+    async function runTest() {
+      await startTransitionInIframe(cancelled);
+      await startTransitionInIframe(active);
+
+      if (window.testRunner)
+        window.testRunner.notifyDone();
+    }
+
+    window.onload = function() {
+      if (window.testRunner)
+        window.testRunner.waitUntilDone();
+      requestAnimationFrame(runTest);
+    }
+  </script>
+</body>
+</html>
