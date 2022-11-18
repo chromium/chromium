@@ -34,6 +34,10 @@ PrefService* TestSigninClient::GetPrefs() {
   return pref_service_;
 }
 
+bool TestSigninClient::IsClearPrimaryAccountAllowed() const {
+  return is_clear_primary_account_allowed_ == SignoutDecision::ALLOW;
+}
+
 void TestSigninClient::PreSignOut(
     base::OnceCallback<void(SignoutDecision)> on_signout_decision_reached,
     signin_metrics::ProfileSignout signout_source_metric) {

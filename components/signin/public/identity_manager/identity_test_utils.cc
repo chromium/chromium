@@ -197,9 +197,9 @@ void SetRefreshTokenForPrimaryAccount(IdentityManager* identity_manager,
 
 void SetInvalidRefreshTokenForPrimaryAccount(
     IdentityManager* identity_manager) {
-  DCHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
+  DCHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
   CoreAccountId account_id =
-      identity_manager->GetPrimaryAccountId(ConsentLevel::kSync);
+      identity_manager->GetPrimaryAccountId(ConsentLevel::kSignin);
 
   SetInvalidRefreshTokenForAccount(identity_manager, account_id);
 }

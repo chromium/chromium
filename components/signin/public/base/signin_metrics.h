@@ -77,6 +77,10 @@ enum ProfileSignout : int {
   ACCOUNT_EMAIL_UPDATED = 20,
   // User clicked on sign-out from the clear browsing data page.
   USER_CLICKED_SIGNOUT_FROM_CLEAR_BROWSING_DATA_PAGE = 21,
+  // Profile Signout during reconciliation triggered by a Gaia cookie update.
+  GAIA_COOKIE_UPDATED = 22,
+  // Profile Signout during reconciliation.
+  ACCOUNT_RECONCILOR_RECONCILE = 23,
   // Keep this as the last enum.
   NUM_PROFILE_SIGNOUT_METRICS,
 };

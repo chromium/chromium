@@ -51,6 +51,10 @@ class TestSigninClient : public SigninClient {
   // once there is a unit test that requires it.
   PrefService* GetPrefs() override;
 
+  // Returns true if clear primary account is allowed regardless of the consent
+  // level.
+  bool IsClearPrimaryAccountAllowed() const override;
+
   // Allow or disallow continuation of sign-out depending on value of
   // |is_clear_primary_account_allowed_|;
   void PreSignOut(

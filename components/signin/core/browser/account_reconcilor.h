@@ -214,6 +214,8 @@ class AccountReconcilor
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorMiceTest,
                            AccountReconcilorStateScheduled);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTest,
+                           ClearPrimaryAccountNotAllowed);
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTest,
                            DiceTokenServiceRegistration);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTest,
                            DiceReconcileWithoutSignin);

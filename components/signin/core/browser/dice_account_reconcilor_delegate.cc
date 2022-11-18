@@ -11,22 +11,46 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_client.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
 
 namespace signin {
 
 // Revokes tokens for all accounts in chrome_accounts but the primary account.
 void RevokeAllSecondaryTokens(
     IdentityManager* identity_manager,
+    ConsentLevel consent_level,
     signin_metrics::SourceForRefreshTokenOperation source,
+    signin_metrics::ProfileSignout maybe_signout_source,
     bool revoke_only_if_in_error) {
+  // If |consent_level| is sync but there is only a primary account with Signin
+  // consent, it must be revoked.
+  bool should_revoke_primary_account =
+      consent_level == ConsentLevel::kSync &&
+      !identity_manager->HasPrimaryAccount(ConsentLevel::kSync) &&
+      identity_manager->HasPrimaryAccount(ConsentLevel::kSignin) &&
+      (!revoke_only_if_in_error ||
+       identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+           identity_manager->GetPrimaryAccountId(ConsentLevel::kSignin)));
+
+  if (should_revoke_primary_account) {
+    // The primary account should be revoked by calling |ClearPrimaryAccount|.
+    identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
+        maybe_signout_source, signin_metrics::SignoutDelete::kIgnoreMetric);
+    DCHECK(identity_manager->GetAccountsWithRefreshTokens().empty());
+    return;
+  }
   // The sync account should not be removed but put in a paused state, therefore
-  // this function excludes only the primary account with sync consent.
+  // this function excludes the primary account with sync consent. In some
+  // cases, removing the primary account regardless of the consent level is not
+  // allowed (e.g. cloud-managed enterprise profiles).
   CoreAccountId primary_account =
-      identity_manager->GetPrimaryAccountId(ConsentLevel::kSync);
+      identity_manager->GetPrimaryAccountId(consent_level);
 
   auto* accounts_mutator = identity_manager->GetAccountsMutator();
   for (const CoreAccountInfo& account_info :
@@ -50,8 +74,9 @@ void RevokeAllSecondaryTokens(
 }
 
 DiceAccountReconcilorDelegate::DiceAccountReconcilorDelegate(
-    IdentityManager* identity_manager)
-    : identity_manager_(identity_manager) {}
+    IdentityManager* identity_manager,
+    SigninClient* signin_client)
+    : identity_manager_(identity_manager), signin_client_(signin_client) {}
 DiceAccountReconcilorDelegate::~DiceAccountReconcilorDelegate() = default;
 
 bool DiceAccountReconcilorDelegate::IsReconcileEnabled() const {
@@ -155,19 +180,31 @@ bool DiceAccountReconcilorDelegate::
     return false;
   }
 
-  RevokeAllSecondaryTokens(identity_manager_,
-                           signin_metrics::SourceForRefreshTokenOperation::
-                               kAccountReconcilor_Reconcile,
-                           /*revoke_only_if_in_error=*/false);
+  RevokeAllSecondaryTokens(
+      identity_manager_, GetConsentLevelForPrimaryAccount(),
+      signin_metrics::SourceForRefreshTokenOperation::
+          kAccountReconcilor_Reconcile,
+      signin_metrics::ProfileSignout::ACCOUNT_RECONCILOR_RECONCILE,
+      /*revoke_only_if_in_error=*/false);
   return true;
+}
+
+ConsentLevel DiceAccountReconcilorDelegate::GetConsentLevelForPrimaryAccount()
+    const {
+  // In some cases, clearing the primary account is not allowed regardless of
+  // the consent level (e.g. cloud-managed profiles). In these cases, the dice
+  // account reconcilor delegate should never remove the primary account
+  // regardless of the consent.
+  return signin_client_->IsClearPrimaryAccountAllowed() ? ConsentLevel::kSync
+                                                        : ConsentLevel::kSignin;
 }
 
 bool DiceAccountReconcilorDelegate::ShouldRevokeTokensBeforeMultilogin(
     const std::vector<CoreAccountId>& chrome_accounts,
     const std::vector<gaia::ListedAccount>& gaia_accounts,
     bool first_execution) const {
-  CoreAccountId primary_account =
-      identity_manager_->GetPrimaryAccountId(ConsentLevel::kSync);
+  CoreAccountId primary_account = identity_manager_->GetPrimaryAccountId(
+      GetConsentLevelForPrimaryAccount());
 
   bool primary_has_error =
       identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
@@ -179,8 +216,8 @@ bool DiceAccountReconcilorDelegate::ShouldRevokeTokensBeforeMultilogin(
     return false;
 
   // On first execution, it's generally OK to reorder accounts. Only logout if
-  // the Sync account needs to be removed from the first position in cookies (it
-  // would be unacceptable to swap another account there).
+  // the primary account needs to be removed from the first position in cookies
+  // (it would be unacceptable to swap another account there).
   if (first_execution) {
     return !primary_account.empty() && primary_has_error &&
            gaia_accounts[0].id == primary_account && gaia_accounts[0].valid;
@@ -265,39 +302,46 @@ gaia::MultiloginMode DiceAccountReconcilorDelegate::CalculateModeForReconcile(
 void DiceAccountReconcilorDelegate::
     RevokeSecondaryTokensBeforeReconcileIfNeeded() {
   RevokeAllSecondaryTokens(identity_manager_,
+                           GetConsentLevelForPrimaryAccount(),
                            signin_metrics::SourceForRefreshTokenOperation::
                                kAccountReconcilor_GaiaCookiesUpdated,
+                           signin_metrics::ProfileSignout::GAIA_COOKIE_UPDATED,
                            /*revoke_only_if_in_error=*/true);
 }
 
 void DiceAccountReconcilorDelegate::OnAccountsCookieDeletedByUserAction(
     bool synced_data_deletion_in_progress) {
+  ConsentLevel consent_level = GetConsentLevelForPrimaryAccount();
   // Revoke secondary tokens to avoid reconcilor rebuilding cookies.
-  RevokeAllSecondaryTokens(identity_manager_,
-                           signin_metrics::SourceForRefreshTokenOperation::
-                               kAccountReconcilor_GaiaCookiesDeletedByUser,
-                           /*revoke_only_if_in_error=*/false);
+  RevokeAllSecondaryTokens(
+      identity_manager_, consent_level,
+      signin_metrics::SourceForRefreshTokenOperation::
+          kAccountReconcilor_GaiaCookiesDeletedByUser,
+      signin_metrics::ProfileSignout::USER_DELETED_ACCOUNT_COOKIES,
+      /*revoke_only_if_in_error=*/false);
 
-  if (!identity_manager_->HasPrimaryAccount(ConsentLevel::kSync))
+  if (!identity_manager_->HasPrimaryAccount(consent_level))
     return;
 
-  DCHECK_EQ(GetConsentLevelForPrimaryAccount(), ConsentLevel::kSync);
-  CoreAccountId primary_sync_account =
-      identity_manager_->GetPrimaryAccountId(ConsentLevel::kSync);
-
-  // Sync account should be paused if the account cookie is deleted by user
-  // action. If sync data deletion in progress, avoid invalidating the sync
-  // account unless it is already in a persistent error state. This is needed to
-  // ensure the data gets deleted from the google account.
-  if (!synced_data_deletion_in_progress ||
-      identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
-          primary_sync_account)) {
-    // Invalidate the primary token, but do not revoke it.
-    auto* accounts_mutator = identity_manager_->GetAccountsMutator();
-    accounts_mutator->InvalidateRefreshTokenForPrimaryAccount(
-        signin_metrics::SourceForRefreshTokenOperation::
-            kAccountReconcilor_GaiaCookiesDeletedByUser);
+  if (synced_data_deletion_in_progress &&
+      identity_manager_->HasPrimaryAccount(ConsentLevel::kSync)) {
+    // If sync data deletion in progress, avoid invalidating the sync
+    // account unless it is already in a persistent error state. This is needed
+    // to ensure the data gets deleted from the google account.
+    CoreAccountId primary_sync_account =
+        identity_manager_->GetPrimaryAccountId(ConsentLevel::kSync);
+    if (!identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
+            primary_sync_account)) {
+      return;
+    }
   }
+
+  // The primary account should be paused if the account cookie is deleted by
+  // user action.
+  auto* accounts_mutator = identity_manager_->GetAccountsMutator();
+  accounts_mutator->InvalidateRefreshTokenForPrimaryAccount(
+      signin_metrics::SourceForRefreshTokenOperation::
+          kAccountReconcilor_GaiaCookiesDeletedByUser);
 }
 
 void DiceAccountReconcilorDelegate::OnReconcileFinished(

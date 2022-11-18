@@ -38,6 +38,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/cookie_settings_util.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -197,6 +198,11 @@ void ChromeSigninClient::RemoveContentSettingsObserver(
     content_settings::Observer* observer) {
   HostContentSettingsMapFactory::GetForProfile(profile_)
       ->RemoveObserver(observer);
+}
+
+bool ChromeSigninClient::IsClearPrimaryAccountAllowed() const {
+  return UserSignoutSettingToSignoutDecision(profile_) ==
+         SigninClient::SignoutDecision::ALLOW;
 }
 
 void ChromeSigninClient::PreSignOut(

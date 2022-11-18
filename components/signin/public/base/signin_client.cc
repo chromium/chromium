@@ -10,3 +10,7 @@ void SigninClient::PreSignOut(
   // Allow sign out to continue.
   std::move(on_signout_decision_reached).Run(SignoutDecision::ALLOW);
 }
+
+bool SigninClient::IsClearPrimaryAccountAllowed() const {
+  return true;
+}

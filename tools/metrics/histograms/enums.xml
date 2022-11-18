@@ -93864,6 +93864,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="21" label="User clicked signout from clear browsing data page">
     User clicked sign-out in the clear browsing data page.
   </int>
+  <int value="22" label="AccountReconcilor GaiaCookiesUpdated">
+    The reconcilor cleared the signin primary account on a Gaia cookie update.
+  </int>
+  <int value="23" label="AccountReconcilor Reconcile">
+    The reconcilor cleared the signin primary account during reconcilation.
+  </int>
 </enum>
 
 <enum name="SigninSource">

@@ -177,7 +177,7 @@ class DummyAccountReconcilorWithDelegate : public AccountReconcilor {
       case signin::AccountConsistencyMethod::kDice:
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
         return std::make_unique<signin::DiceAccountReconcilorDelegate>(
-            identity_manager);
+            identity_manager, client);
 #else
         NOTREACHED();
         return nullptr;
@@ -1083,6 +1083,32 @@ class AccountReconcilorDiceTest : public AccountReconcilorTest {
   AccountReconcilorDiceTest& operator=(const AccountReconcilorDiceTest&) =
       delete;
 };
+
+TEST_F(AccountReconcilorDiceTest, ClearPrimaryAccountNotAllowed) {
+  EXPECT_CALL(*GetMockReconcilor(), PerformLogoutAllAccountsAction()).Times(1);
+  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(testing::_))
+      .Times(0);
+
+  test_signin_client()->set_is_clear_primary_account_allowed(
+      SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
+  signin::SetListAccountsResponseOneAccount(kFakeEmail, kFakeGaiaId,
+                                            &test_url_loader_factory_);
+  identity_test_env()->MakePrimaryAccountAvailable(
+      kFakeEmail, signin::ConsentLevel::kSignin);
+  identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
+  EXPECT_TRUE(identity_test_env()->identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+
+  AccountReconcilor* reconcilor = GetMockReconcilor();
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
+  ASSERT_TRUE(reconcilor->is_reconcile_started_);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(reconcilor->is_reconcile_started_);
+  testing::Mock::VerifyAndClearExpectations(GetMockReconcilor());
+
+  EXPECT_TRUE(identity_test_env()->identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+}
 
 // Tests that the AccountReconcilor is always registered.
 TEST_F(AccountReconcilorDiceTest, DiceTokenServiceRegistration) {

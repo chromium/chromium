@@ -265,6 +265,8 @@ bool IsAlwaysAllowedSignoutSources(
     case signin_metrics::ProfileSignout::
         IOS_ACCOUNT_REMOVED_FROM_DEVICE_AFTER_RESTORE:
     case signin_metrics::ProfileSignout::USER_DELETED_ACCOUNT_COOKIES:
+    case signin_metrics::ProfileSignout::GAIA_COOKIE_UPDATED:
+    case signin_metrics::ProfileSignout::ACCOUNT_RECONCILOR_RECONCILE:
     // There's no special-casing for these in ChromeSigninClient, as they only
     // happen when there's no sync account and policies aren't enforced.
     // PrimaryAccountManager won't actually invoke PreSignOut in this case,
@@ -429,6 +431,8 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
     signin_metrics::ProfileSignout::ACCOUNT_EMAIL_UPDATED,
     signin_metrics::ProfileSignout::
         USER_CLICKED_SIGNOUT_FROM_CLEAR_BROWSING_DATA_PAGE,
+    signin_metrics::ProfileSignout::GAIA_COOKIE_UPDATED,
+    signin_metrics::ProfileSignout::ACCOUNT_RECONCILOR_RECONCILE,
 };
 // kNumberOfObsoleteSignoutSources should be updated when a ProfileSignout
 // value is deprecated.
