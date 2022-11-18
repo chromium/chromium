@@ -5174,6 +5174,7 @@
         },
         'args': [
           '--test-launcher-print-test-stdio=always',
+          '--combine-ash-logs-on-bots',
         ],
       },
       'linux-ubsan-vptr': {

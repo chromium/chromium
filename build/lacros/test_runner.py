@@ -504,8 +504,10 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
     log = None
     if args.ash_logging_path:
       log = open(args.ash_logging_path, 'a')
-    # Ash logs can be useful. Enable ash log by default on bots.
-    elif _IsRunningOnBots(forward_args):
+    # Put ash logs in a separate file on bots.
+    # For asan builds, the ash log is not symbolized. In order to
+    # read the stack strace, we don't redirect logs to another file.
+    elif _IsRunningOnBots(forward_args) and not args.combine_ash_logs_on_bots:
       summary_file = _ParseSummaryOutput(forward_args)
       if summary_file:
         ash_log_path = os.path.join(os.path.dirname(summary_file),
@@ -678,6 +680,9 @@ def Main():
       type=str,
       help='File & path to ash-chrome logging output while running Lacros '
       'browser tests. If not provided, no output will be generated.')
+  test_parser.add_argument('--combine-ash-logs-on-bots',
+                           action='store_true',
+                           help='Whether to combine ash logs on bots.')
 
   args = arg_parser.parse_known_args()
   return args[0].func(args[0], args[1])
