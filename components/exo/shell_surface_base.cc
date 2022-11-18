@@ -401,7 +401,7 @@ void ShellSurfaceBase::SetTitle(const std::u16string& title) {
 
 void ShellSurfaceBase::SetIcon(const gfx::ImageSkia& icon) {
   TRACE_EVENT0("exo", "ShellSurfaceBase::SetIcon");
-  WidgetDelegate::SetIcon(icon);
+  WidgetDelegate::SetIcon(ui::ImageModel::FromImageSkia(icon));
 }
 
 void ShellSurfaceBase::SetSystemModal(bool system_modal) {

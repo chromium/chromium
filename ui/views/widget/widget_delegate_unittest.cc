@@ -90,9 +90,9 @@ TEST_F(WidgetDelegateTest, AppIconCanDifferFromWindowIcon) {
   auto delegate = std::make_unique<WidgetDelegate>();
 
   gfx::ImageSkia window_icon = gfx::test::CreateImageSkia(16, 16);
-  delegate->SetIcon(window_icon);
+  delegate->SetIcon(ui::ImageModel::FromImageSkia(window_icon));
   gfx::ImageSkia app_icon = gfx::test::CreateImageSkia(48, 48);
-  delegate->SetAppIcon(app_icon);
+  delegate->SetAppIcon(ui::ImageModel::FromImageSkia(app_icon));
   EXPECT_TRUE(delegate->GetWindowIcon().Rasterize(nullptr).BackedBySameObjectAs(
       window_icon));
   EXPECT_TRUE(
@@ -104,7 +104,7 @@ TEST_F(WidgetDelegateTest, AppIconFallsBackToWindowIcon) {
   auto delegate = std::make_unique<WidgetDelegate>();
 
   gfx::ImageSkia window_icon = gfx::test::CreateImageSkia(16, 16);
-  delegate->SetIcon(window_icon);
+  delegate->SetIcon(ui::ImageModel::FromImageSkia(window_icon));
   // Don't set an independent app icon.
   EXPECT_TRUE(
       delegate->GetWindowAppIcon().Rasterize(nullptr).BackedBySameObjectAs(

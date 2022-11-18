@@ -24,9 +24,6 @@ class AppDialogView : public views::BubbleDialogDelegateView {
   explicit AppDialogView(const ui::ImageModel& image);
   ~AppDialogView() override;
 
-  // views::BubbleDialogDelegateView:
-  void OnThemeChanged() override;
-
  protected:
   void InitializeView(const std::u16string& heading_text);
 
@@ -34,7 +31,6 @@ class AppDialogView : public views::BubbleDialogDelegateView {
   void SetLabelText(const std::u16string& text);
 
  private:
-  ui::ImageModel image_;
   raw_ptr<views::Label> label_ = nullptr;
 };
 

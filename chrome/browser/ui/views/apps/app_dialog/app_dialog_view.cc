@@ -8,14 +8,14 @@
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/gfx/image/image_skia.h"
+#include "ui/base/models/image_model.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 
 AppDialogView::AppDialogView(const ui::ImageModel& image)
-    : BubbleDialogDelegateView(nullptr, views::BubbleBorder::NONE),
-      image_(image) {
+    : BubbleDialogDelegateView(nullptr, views::BubbleBorder::NONE) {
+  SetIcon(image);
   SetShowIcon(true);
   SetShowCloseButton(false);
   SetModalType(ui::MODAL_TYPE_SYSTEM);
@@ -24,11 +24,6 @@ AppDialogView::AppDialogView(const ui::ImageModel& image)
 }
 
 AppDialogView::~AppDialogView() = default;
-
-void AppDialogView::OnThemeChanged() {
-  views::BubbleDialogDelegateView::OnThemeChanged();
-  SetIcon(image_.Rasterize(GetColorProvider()));
-}
 
 void AppDialogView::InitializeView(const std::u16string& heading_text) {
   SetButtons(ui::DIALOG_BUTTON_OK);

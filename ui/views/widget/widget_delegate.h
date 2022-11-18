@@ -21,7 +21,6 @@
 #include "ui/views/widget/widget.h"
 
 namespace gfx {
-class ImageSkia;
 class Rect;
 }  // namespace gfx
 
@@ -333,11 +332,7 @@ class VIEWS_EXPORT WidgetDelegate
   void SetCanResize(bool can_resize);
   void SetFocusTraversesOut(bool focus_traverses_out);
   void SetEnableArrowKeyTraversal(bool enable_arrow_key_traversal);
-  // TODO(crbug.com/1385470): Remove ImageSkia version of SetIcon().
-  void SetIcon(const gfx::ImageSkia& icon);
   void SetIcon(ui::ImageModel icon);
-  // TODO(crbug.com/1385470): Remove ImageSkia version of SetAppIcon().
-  void SetAppIcon(const gfx::ImageSkia& icon);
   void SetAppIcon(ui::ImageModel icon);
   void SetInitiallyFocusedView(View* initially_focused_view);
   void SetModalType(ui::ModalType modal_type);

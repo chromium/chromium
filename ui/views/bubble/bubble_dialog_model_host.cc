@@ -432,8 +432,7 @@ BubbleDialogModelHost::BubbleDialogModelHost(
   }
 
   if (!model_->icon(GetPassKey()).IsEmpty()) {
-    // TODO(pbos): Consider adding ImageModel support to SetIcon().
-    SetIcon(model_->icon(GetPassKey()).GetImage().AsImageSkia());
+    SetIcon(model_->icon(GetPassKey()));
     SetShowIcon(true);
   }
 

@@ -359,18 +359,10 @@ void WidgetDelegate::SetEnableArrowKeyTraversal(
   params_.enable_arrow_key_traversal = enable_arrow_key_traversal;
 }
 
-void WidgetDelegate::SetIcon(const gfx::ImageSkia& icon) {
-  SetIcon(ui::ImageModel::FromImageSkia(icon));
-}
-
 void WidgetDelegate::SetIcon(ui::ImageModel icon) {
   params_.icon = std::move(icon);
   if (GetWidget())
     GetWidget()->UpdateWindowIcon();
-}
-
-void WidgetDelegate::SetAppIcon(const gfx::ImageSkia& icon) {
-  SetAppIcon(ui::ImageModel::FromImageSkia(icon));
 }
 
 void WidgetDelegate::SetAppIcon(ui::ImageModel icon) {

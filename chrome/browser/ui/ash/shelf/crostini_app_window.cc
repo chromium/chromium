@@ -43,9 +43,10 @@ class CrostiniAppWindow::IconLoader : public AppServiceAppIconLoader,
       return;
 
     if (mode_ == Mode::kWindowIcon) {
-      widget_->widget_delegate()->SetIcon(image);
+      widget_->widget_delegate()->SetIcon(ui::ImageModel::FromImageSkia(image));
     } else {
-      widget_->widget_delegate()->SetAppIcon(image);
+      widget_->widget_delegate()->SetAppIcon(
+          ui::ImageModel::FromImageSkia(image));
     }
   }
 

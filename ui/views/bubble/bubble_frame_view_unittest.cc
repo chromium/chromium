@@ -1239,7 +1239,8 @@ TEST_F(BubbleFrameViewTest, LayoutWithIcon) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(20, 80);
   bitmap.eraseColor(SK_ColorYELLOW);
-  delegate->SetIcon(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
+  delegate->SetIcon(ui::ImageModel::FromImageSkia(
+      gfx::ImageSkia::CreateFrom1xBitmap(bitmap)));
   delegate->SetShowIcon(true);
 
   Widget* widget =

@@ -499,10 +499,8 @@ VIEW_BUILDER_VIEW_TYPE_PROPERTY(views::View, ExtraView)
 VIEW_BUILDER_VIEW_TYPE_PROPERTY(views::View, FootnoteView)
 VIEW_BUILDER_PROPERTY(bool, FocusTraversesOut)
 VIEW_BUILDER_PROPERTY(bool, EnableArrowKeyTraversal)
-// TODO(crbug.com/1385470): Add back these versions once ImageSkia versions of
-// these are removed and uncommenting these can compile.
-// VIEW_BUILDER_PROPERTY(ui::ImageModel, Icon)
-// VIEW_BUILDER_PROPERTY(ui::ImageModel, AppIcon)
+VIEW_BUILDER_PROPERTY(ui::ImageModel, Icon)
+VIEW_BUILDER_PROPERTY(ui::ImageModel, AppIcon)
 VIEW_BUILDER_PROPERTY(ui::ImageModel, MainImage)
 VIEW_BUILDER_PROPERTY(ui::ModalType, ModalType)
 VIEW_BUILDER_PROPERTY(bool, OwnedByWidget)
