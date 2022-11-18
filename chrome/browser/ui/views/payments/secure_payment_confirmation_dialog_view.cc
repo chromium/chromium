@@ -151,7 +151,7 @@ void SecurePaymentConfirmationDialogView::OnDialogClosed() {
   // WebAuthn dialog after clicking 'Verify', or when the user chooses to
   // opt-out. We should only run the cancellation callback in the former case;
   // in the latter the opt-out callback will trigger from OnOptOutClicked.
-  if (!opt_out_clicked_) {
+  if (!model_->opt_out_clicked()) {
     std::move(cancel_callback_).Run();
     RecordAuthenticationDialogResult(
         SecurePaymentConfirmationAuthenticationDialogResult::kClosed);
@@ -163,8 +163,6 @@ void SecurePaymentConfirmationDialogView::OnDialogClosed() {
 }
 
 void SecurePaymentConfirmationDialogView::OnOptOutClicked() {
-  opt_out_clicked_ = true;
-
   if (observer_for_test_) {
     observer_for_test_->OnOptOutClicked();
   }

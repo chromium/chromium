@@ -37,6 +37,7 @@ enum class SPCTransactionMode {
   NONE,
   AUTOACCEPT,
   AUTOREJECT,
+  AUTOOPTOUT,
 };
 
 // This class manages the interaction between the renderer (through the

@@ -145,6 +145,10 @@ class SecurePaymentConfirmationModel {
   void set_opt_out_link_label(const std::u16string& opt_out_link_label) {
     opt_out_link_label_ = opt_out_link_label;
   }
+  bool opt_out_clicked() const { return opt_out_clicked_; }
+  void set_opt_out_clicked(const bool opt_out_clicked) {
+    opt_out_clicked_ = opt_out_clicked;
+  }
 
   // Relying Party id (origin); used in the opt out dialog.
   const std::u16string& relying_party_id() const { return relying_party_id_; }
@@ -182,6 +186,7 @@ class SecurePaymentConfirmationModel {
   bool opt_out_visible_ = false;
   std::u16string opt_out_label_;
   std::u16string opt_out_link_label_;
+  bool opt_out_clicked_ = false;
 
   std::u16string relying_party_id_;
 

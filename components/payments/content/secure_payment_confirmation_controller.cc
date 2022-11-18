@@ -174,6 +174,9 @@ void SecurePaymentConfirmationController::
   if (request_->spc_transaction_mode() != SPCTransactionMode::NONE) {
     if (request_->spc_transaction_mode() == SPCTransactionMode::AUTOACCEPT) {
       OnConfirm();
+    } else if (request_->spc_transaction_mode() ==
+               SPCTransactionMode::AUTOOPTOUT) {
+      OnOptOut();
     } else {
       OnCancel();
     }
@@ -243,6 +246,9 @@ void SecurePaymentConfirmationController::OnCancel() {
 }
 
 void SecurePaymentConfirmationController::OnOptOut() {
+  // Set the opt out clicked state on the model so that the view knows not to
+  // call back to OnCancel when the dialog is closed.
+  model_.set_opt_out_clicked(true);
   CloseDialog();
 
   if (!request_)

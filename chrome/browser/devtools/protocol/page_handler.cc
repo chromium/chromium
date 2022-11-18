@@ -94,6 +94,9 @@ protocol::Response PageHandler::SetSPCTransactionMode(
   } else if (mode ==
              protocol::Page::SetSPCTransactionMode::ModeEnum::Autoreject) {
     spc_mode = payments::SPCTransactionMode::AUTOREJECT;
+  } else if (mode ==
+             protocol::Page::SetSPCTransactionMode::ModeEnum::Autooptout) {
+    spc_mode = payments::SPCTransactionMode::AUTOOPTOUT;
   } else if (mode != protocol::Page::SetSPCTransactionMode::ModeEnum::None) {
     return protocol::Response::ServerError("Unrecognized mode value");
   }

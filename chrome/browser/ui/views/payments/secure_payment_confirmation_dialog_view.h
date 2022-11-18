@@ -116,11 +116,6 @@ class SecurePaymentConfirmationDialogView
   // InitChildViews, but is only marked visible if opt-out was requested.
   raw_ptr<views::StyledLabel> opt_out_view_ = nullptr;
 
-  // Tracks whether or not the user clicked the 'Opt Out' button to close the
-  // transaction dialog. Necessary to distinguish between a cancellation and
-  // opt-out in OnDialogClosed.
-  bool opt_out_clicked_ = false;
-
   base::WeakPtrFactory<SecurePaymentConfirmationDialogView> weak_ptr_factory_{
       this};
 };

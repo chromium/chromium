@@ -8123,6 +8123,7 @@ domain Page
         none
         autoaccept
         autoreject
+        autooptout
 
   # Generates a report for testing.
   experimental command generateTestReport
