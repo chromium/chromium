@@ -536,40 +536,6 @@ class PolicyTemplateChecker(object):
       return None
     return value
 
-  def _AddPolicyID(self, id, policy_ids, policy, deleted_policy_ids):
-    '''
-    Adds |id| to |policy_ids|. Generates an error message if the
-    |id| exists already; |policy| is needed for this message.
-    '''
-    if id in policy_ids:
-      self._PolicyError('Duplicate id', policy, 'id')
-    elif id in deleted_policy_ids:
-      self._PolicyError('Deleted id', policy, 'id')
-    elif isinstance(id, int):
-      policy_ids.add(id)
-
-  def _CheckPolicyIDs(self, policy_ids, deleted_policy_ids):
-    '''
-    Checks a set of policy_ids to make sure it contains a continuous range
-    of entries (i.e. no holes).
-    Holes would not be a technical problem, but we want to ensure that nobody
-    accidentally omits IDs.
-    '''
-    policy_count = len(policy_ids) + len(deleted_policy_ids)
-    for i in range(policy_count):
-      if (i + 1) not in policy_ids and (i + 1) not in deleted_policy_ids:
-        self._Error('No policy with id: %s' % (i + 1))
-
-  def _CheckHighestId(self, policy_ids, highest_id):
-    '''
-    Checks that the 'highest_id_currently_used' value is actually set to the
-    highest id in use by any policy.
-    '''
-    highest_id_in_policies = max(policy_ids)
-    if highest_id != highest_id_in_policies:
-      self._Error(("'highest_id_currently_used' must be set to the highest"
-                   "policy id in use, which is currently %s (vs %s).") %
-                  (highest_id_in_policies, highest_id))
 
   def _ValidateSchema(self, schema, schema_name, policy):
     ''' Helper fuction to call `schema_validator.ValidateSchema`. Appends error
@@ -949,8 +915,7 @@ class PolicyTemplateChecker(object):
 
     return False
 
-  def _CheckPolicy(self, policy, is_in_group, policy_ids, deleted_policy_ids,
-                   current_version):
+  def _CheckPolicyDefinition(self, policy, current_version, is_in_group=False):
     if not isinstance(policy, dict):
       self._Error('Each policy must be a dictionary.', 'policy', None, policy)
       return
@@ -1041,11 +1006,8 @@ class PolicyTemplateChecker(object):
       # Statistics.
       self.num_groups += 1
 
-    else:  # policy_type != group
-      # Each policy must have a protobuf ID.
-      id = self._CheckContains(policy, 'id', int)
-      self._AddPolicyID(id, policy_ids, policy, deleted_policy_ids)
-
+    # policy_type != group
+    else:
       # Each policy must have an owner.
       self._CheckOwners(policy)
 
@@ -1368,6 +1330,9 @@ class PolicyTemplateChecker(object):
       elif 'max_size' in policy:
         self._PolicyError('"max_size" is used for non external policies.',
                           policy, 'max_size')
+
+  def _CheckPolicy(self, policy, current_version):
+    self._CheckPolicyDefinition(policy, current_version)
 
   def _CheckPlatform(self, platforms, field_name, policy):
     ''' Verifies the |platforms| list. Records any error with |field_name| and
@@ -1942,12 +1907,6 @@ class PolicyTemplateChecker(object):
         parent_element=None,
         container_name='The root element',
         offending=None)
-    highest_id = self._CheckContains(legacy_policy_template,
-                                     'highest_id_currently_used',
-                                     int,
-                                     parent_element=None,
-                                     container_name='The root element',
-                                     offending=None)
     highest_atomic_group_id = self._CheckContains(
         legacy_policy_template,
         'highest_atomic_group_id_currently_used',
@@ -1986,15 +1945,9 @@ class PolicyTemplateChecker(object):
         device_policy_proto_map, options.device_policy_proto_path)
 
     if policy_definitions is not None:
-      policy_ids = set()
       for policy in policy_definitions:
-        self._CheckPolicy(policy, False, policy_ids, deleted_policy_ids,
-                          current_version)
         self._CheckDevicePolicyProtoMappingDeviceOnly(
             policy, device_policy_proto_map, legacy_device_policy_proto_map)
-      self._CheckPolicyIDs(policy_ids, deleted_policy_ids)
-      if highest_id is not None:
-        self._CheckHighestId(policy_ids, highest_id)
       self._CheckTotalDevicePolicyExternalDataMaxSize(policy_definitions)
 
     # Made it as a dict (policy_name -> True) to reuse _CheckContains.
@@ -2036,10 +1989,33 @@ class PolicyTemplateChecker(object):
     # Second part: check formatting.
     # TODO(crbug/1375858): Check valid yaml formatting
 
-    # Third part: if the original file contents are available, try to check
-    # if the new policy definitions are compatible with the original policy
-    # definitions (if the original file contents have not raised any syntax
-    # errors).
+    # Third part: summary and exit.
+    if self.options.stats:
+      if self.num_groups > 0:
+        print('%d policies, %d of those in %d groups (containing on '
+              'average %.1f policies).' %
+              (self.num_policies, self.num_policies_in_groups, self.num_groups,
+               (1.0 * self.num_policies_in_groups / self.num_groups)))
+      else:
+        print(self.num_policies, 'policies, 0 policy groups.')
+    return
+
+  def CheckModifiedPolicies(self, policy_change_list, current_version,
+                            skip_compability_check, known_features):
+    '''
+      Checks that changes made to policies `policy_change_list` are compatible
+      with the `current_version` and previous versions of the policy.
+      This also check that the policy definition schema matches the expected
+      schema for a policy. `skip_compability_check` is used to skip the schema
+      and version compatibility checks and must be used with care.
+      'known_features' is a list of faetures that we can find in the feature
+      list for policies.
+      Returns warnings and errors found in the policies.
+    '''
+    self.features = known_features
+    modified_policies = [pc['new_policy'] for pc in policy_change_list]
+    for policy in modified_policies:
+      self._CheckPolicyDefinition(policy, current_version)
     self.non_compatibility_error_count = 0
     if (not self.errors and not skip_compability_check):
       self._CheckPolicyDefinitionsChangeCompatibility(policy_change_list,
@@ -2055,19 +2031,7 @@ class PolicyTemplateChecker(object):
           'justification. Otherwise, please provide an explanation for the '
           'change. For more information please refer to: '
           'https://bit.ly/33qr3ZV.')
-
-    # Fourth part: summary and exit.
-    print('Finished checking policies. %d errors, %d warnings.' %
-          (len(self.errors), len(self.warnings)))
-    if self.options.stats:
-      if self.num_groups > 0:
-        print('%d policies, %d of those in %d groups (containing on '
-              'average %.1f policies).' %
-              (self.num_policies, self.num_policies_in_groups, self.num_groups,
-               (1.0 * self.num_policies_in_groups / self.num_groups)))
-      else:
-        print(self.num_policies, 'policies, 0 policy groups.')
-    return
+    return self.errors, self.warnings
 
   def Run(self,
           argv,
