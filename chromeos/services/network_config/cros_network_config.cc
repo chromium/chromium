@@ -3615,9 +3615,17 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
   DCHECK(network_metadata_store);
 
   base::Value::List new_apns;
-  if (const base::Value::List* old_apns =
+  if (const base::Value::List* old_custom_apns =
           network_metadata_store->GetCustomApnList(network_guid)) {
-    new_apns = old_apns->Clone();
+    if (old_custom_apns->size() >= mojom::kMaxNumCustomApns) {
+      NET_LOG(ERROR)
+          << "CreateCustomApn: Cannot create new custom APN for network: "
+          << network_guid << ". Network already has the max amount allowed: "
+          << mojom::kMaxNumCustomApns;
+      return;
+    }
+
+    new_apns = old_custom_apns->Clone();
   }
 
   // Set unique Id for custom APNs

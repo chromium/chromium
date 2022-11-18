@@ -1941,6 +1941,45 @@ TEST_F(CrosNetworkConfigTest, RemoveCustomApn) {
   }
 }
 
+TEST_F(CrosNetworkConfigTest, CreateCustomApn_MaxAmountAllowed) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
+
+  // Register an observer to capture values sent to Shill
+  TestNetworkConfigurationObserver network_config_observer(
+      network_configuration_handler());
+
+  const base::Value::List* custom_apns =
+      network_metadata_store()->GetCustomApnList(kCellularGuid);
+  ASSERT_FALSE(custom_apns);
+
+  TestApnData test_apn1;
+  test_apn1.access_point_name = kCellularTestApn1;
+  test_apn1.name = kCellularTestApnName1;
+  test_apn1.username = kCellularTestApnUsername1;
+  test_apn1.password = kCellularTestApnPassword1;
+  test_apn1.attach = kCellularTestApnAttach1;
+  test_apn1.mojo_apn_types = {mojom::ApnType::kDefault,
+                              mojom::ApnType::kAttach};
+  test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault,
+                             ::onc::cellular_apn::kApnTypeAttach};
+
+  // Verify that the API creates as many APNs as allowed
+  for (size_t i = 0; i < mojom::kMaxNumCustomApns; ++i) {
+    CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn());
+    EXPECT_EQ(i + 1,
+              network_config_observer.GetOnConfigurationModifiedCallCount());
+  }
+  // Verify that the next call does nothing
+  CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn());
+  EXPECT_EQ(mojom::kMaxNumCustomApns,
+            network_config_observer.GetOnConfigurationModifiedCallCount());
+
+  custom_apns = network_metadata_store()->GetCustomApnList(kCellularGuid);
+  ASSERT_TRUE(custom_apns);
+  EXPECT_EQ(mojom::kMaxNumCustomApns, custom_apns->size());
+}
+
 TEST_F(CrosNetworkConfigTest, ConnectedAPN_ApnRevampEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
