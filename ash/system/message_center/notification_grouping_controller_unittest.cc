@@ -480,4 +480,35 @@ TEST_F(NotificationGroupingControllerTest, ChildNotificationUpdate) {
   EXPECT_TRUE(message_center->FindNotificationById(id0)->group_child());
 }
 
+// When the last child of the group notification is removed, its parent
+// notification should be removed as well. We are testing in the case where
+// there is no popup or notification center is not showing.
+TEST_F(NotificationGroupingControllerTest, ChildNotificationRemove) {
+  auto* message_center = MessageCenter::Get();
+  std::string id0, id1;
+  const GURL url(u"http://test-url.com/");
+  id0 = AddNotificationWithOriginUrl(url);
+  id1 = AddNotificationWithOriginUrl(url);
+  std::string id_parent = id0 + kIdSuffixForGroupContainerNotification;
+
+  // Toggle the system tray to dismiss all popups.
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  GetPrimaryUnifiedSystemTray()->CloseBubble();
+
+  EXPECT_EQ(3u, message_center->GetVisibleNotifications().size());
+
+  // Remove one child. Parent notification is still retained.
+  message_center->RemoveNotification(id1, /*by_user=*/false);
+  EXPECT_EQ(2u, message_center->GetVisibleNotifications().size());
+  EXPECT_TRUE(message_center->FindNotificationById(id_parent));
+  EXPECT_FALSE(message_center->FindNotificationById(id1));
+  EXPECT_TRUE(message_center->FindNotificationById(id0));
+
+  // Remove the last child notification. Parent notification should be removed.
+  message_center->RemoveNotification(id0, /*by_user=*/false);
+  EXPECT_EQ(0u, message_center->GetVisibleNotifications().size());
+  EXPECT_FALSE(message_center->FindNotificationById(id_parent));
+  EXPECT_FALSE(message_center->FindNotificationById(id0));
+}
+
 }  // namespace ash

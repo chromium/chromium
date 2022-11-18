@@ -329,10 +329,7 @@ void NotificationGroupingController::RemoveGroupedChild(
   // in a grouped notification.
   auto grouped_notifications =
       grouped_notification_list_->GetGroupedNotificationsForParent(parent_id);
-  if (GetActiveNotificationViewController() &&
-      GetActiveNotificationViewController()->GetMessageViewForNotificationId(
-          parent_id) &&
-      grouped_notifications.size() == 1) {
+  if (grouped_notifications.size() == 1) {
     MessageCenter::Get()->RemoveNotification(parent_id, true);
     return;
   }
