@@ -15,7 +15,7 @@ const int32 kFailedToStartId = 0;
 
 // Enumeration of each of the diagnostics routines the platform may support.
 //
-// NextMinVersion: 3, NextIndex: 34
+// NextMinVersion: 4, NextIndex: 35
 [Stable, Extensible]
 enum DiagnosticRoutineEnum {
   [Default] kUnknown = 30,
@@ -52,6 +52,7 @@ enum DiagnosticRoutineEnum {
   [MinVersion=1] kSensitiveSensor = 31,
   [MinVersion=2] kFingerprint = 32,
   [MinVersion=2] kFingerprintAlive = 33,
+  [MinVersion=3] kPrivacyScreen = 34
 };
 
 // Enumeration of the possible DiskRead routine's command type

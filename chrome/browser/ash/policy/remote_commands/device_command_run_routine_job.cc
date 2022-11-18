@@ -505,6 +505,14 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
           std::move(response_callback));
       break;
     }
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kPrivacyScreen: {
+      constexpr char kPrivacyScreenTargetState[] = "targetState";
+      absl::optional<bool> target_state =
+          params_dict_.GetDict().FindBool(kPrivacyScreenTargetState);
+      diagnostics_service->RunPrivacyScreenRoutine(
+          target_state.value_or(true), std::move(response_callback));
+      break;
+    }
   }
 }
 

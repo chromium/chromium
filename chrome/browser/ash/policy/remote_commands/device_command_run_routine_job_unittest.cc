@@ -65,6 +65,10 @@ constexpr char kMaximumDischargePercentAllowedFieldName[] =
 constexpr char kMinimumChargePercentRequiredFieldName[] =
     "minimumChargePercentRequired";
 
+// String constants identifying the parameter field for the privacy screen
+// routine.
+constexpr char kPrivacyScreenTargetStateFieldName[] = "targetState";
+
 constexpr uint32_t kId = 11;
 constexpr auto kStatus =
     ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kRunning;
@@ -1461,6 +1465,45 @@ TEST_F(DeviceCommandRunRoutineJobTest, RunSensitiveSensorRoutineSuccess) {
         EXPECT_TRUE(payload);
         EXPECT_EQ(CreateSuccessPayload(kId, kStatus), *payload);
       })));
+}
+
+// Test that privacy screen routine succeeds with all parameters specified.
+TEST_F(DeviceCommandRunRoutineJobTest, RunPrivacyScreenRoutineSuccess) {
+  auto run_routine_response =
+      ash::cros_healthd::mojom::RunRoutineResponse::New(kId, kStatus);
+  ash::cros_healthd::FakeCrosHealthd::Get()->SetRunRoutineResponseForTesting(
+      run_routine_response);
+  base::Value params_dict(base::Value::Type::DICTIONARY);
+  params_dict.SetBoolKey(kPrivacyScreenTargetStateFieldName, true);
+  EXPECT_TRUE(
+      RunJob(ash::cros_healthd::mojom::DiagnosticRoutineEnum::kPrivacyScreen,
+             std::move(params_dict),
+             base::BindLambdaForTesting([](RemoteCommandJob* job) {
+               EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
+               std::unique_ptr<std::string> payload = job->GetResultPayload();
+               EXPECT_TRUE(payload);
+               EXPECT_EQ(CreateSuccessPayload(kId, kStatus), *payload);
+             })));
+}
+
+// Test that privacy screen routine succeeds without the optional parameter
+// |targetState| specified.
+TEST_F(DeviceCommandRunRoutineJobTest,
+       RunPrivacyScreenRoutineSuccessNoOptionalTargetState) {
+  auto run_routine_response =
+      ash::cros_healthd::mojom::RunRoutineResponse::New(kId, kStatus);
+  ash::cros_healthd::FakeCrosHealthd::Get()->SetRunRoutineResponseForTesting(
+      run_routine_response);
+  base::Value params_dict(base::Value::Type::DICTIONARY);
+  EXPECT_TRUE(
+      RunJob(ash::cros_healthd::mojom::DiagnosticRoutineEnum::kPrivacyScreen,
+             std::move(params_dict),
+             base::BindLambdaForTesting([](RemoteCommandJob* job) {
+               EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
+               std::unique_ptr<std::string> payload = job->GetResultPayload();
+               EXPECT_TRUE(payload);
+               EXPECT_EQ(CreateSuccessPayload(kId, kStatus), *payload);
+             })));
 }
 
 }  // namespace policy

@@ -54,7 +54,7 @@ interface CrosHealthdServiceFactory {
 
 // Diagnostics interface exposed by the cros_healthd daemon.
 //
-// NextMinVersion: 4, NextIndex: 36
+// NextMinVersion: 5, NextIndex: 37
 [Stable]
 interface CrosHealthdDiagnosticsService {
   // Returns an array of all diagnostic routines that the platform supports.
@@ -550,6 +550,16 @@ interface CrosHealthdDiagnosticsService {
   // * |response| - contains a unique identifier and status for the created
   //                routine.
   [MinVersion=3] RunFingerprintAliveRoutine@35()
+    => (RunRoutineResponse response);
+
+  // Requests that the PrivacyScreen routine is created and started on the
+  // platform. This routine checks whether the privacy screen is working as
+  // expected. This routine is only available if GetAvailableRoutines returned
+  // kPrivacyScreen.
+  //
+  // The request:
+  // * |target_state| - privacy screen target state.
+  [MinVersion=4] RunPrivacyScreenRoutine@36(bool target_state)
       => (RunRoutineResponse response);
 };
 

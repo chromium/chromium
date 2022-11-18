@@ -775,6 +775,16 @@ void FakeCrosHealthd::RunFingerprintAliveRoutine(
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
+void FakeCrosHealthd::RunPrivacyScreenRoutine(
+    bool target_state,
+    RunPrivacyScreenRoutineCallback callback) {
+  last_run_routine_ = mojom::DiagnosticRoutineEnum::kPrivacyScreen;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), run_routine_response_.Clone()),
+      callback_delay_);
+}
+
 void FakeCrosHealthd::AddBluetoothObserver(
     mojo::PendingRemote<mojom::CrosHealthdBluetoothObserver> observer) {
   bluetooth_observers_.Add(std::move(observer));
