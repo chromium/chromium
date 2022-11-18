@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATION_LISTENER;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BOTTOM_OFFSET_PX;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISABLE_ANIMATIONS_FOR_TESTING;
@@ -73,6 +74,7 @@ class KeyboardAccessoryMediator
         mModel.set(OBFUSCATED_CHILD_AT_CALLBACK, this::onSuggestionObfuscatedAt);
         mModel.set(SHOW_KEYBOARD_CALLBACK, this::closeSheet);
         mModel.set(SHEET_OPENER_ITEM, new SheetOpenerBarItem(sheetOpenerCallbacks));
+        mModel.set(ANIMATION_LISTENER, mVisibilityDelegate::onBarFadeInAnimationEnd);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
             mModel.get(BAR_ITEMS).add(mModel.get(SHEET_OPENER_ITEM));
         }
@@ -275,7 +277,7 @@ class KeyboardAccessoryMediator
                 || propertyKey == SKIP_CLOSING_ANIMATION
                 || propertyKey == DISABLE_ANIMATIONS_FOR_TESTING
                 || propertyKey == OBFUSCATED_CHILD_AT_CALLBACK || propertyKey == SHOW_SWIPING_IPH
-                || propertyKey == HAS_SUGGESTIONS) {
+                || propertyKey == HAS_SUGGESTIONS || propertyKey == ANIMATION_LISTENER) {
             return;
         }
         assert false : "Every property update needs to be handled explicitly!";

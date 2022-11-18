@@ -56,12 +56,15 @@ class KeyboardAccessoryProperties {
     static final WritableBooleanPropertyKey HAS_SUGGESTIONS =
             new WritableBooleanPropertyKey("has_suggestions");
 
+    static final WritableObjectPropertyKey<KeyboardAccessoryView.AnimationListener>
+            ANIMATION_LISTENER = new WritableObjectPropertyKey<>("animation_listener");
+
     static PropertyModel.Builder defaultModelBuilder() {
         return new PropertyModel
                 .Builder(DISABLE_ANIMATIONS_FOR_TESTING, BAR_ITEMS, VISIBLE, SKIP_CLOSING_ANIMATION,
                         BOTTOM_OFFSET_PX, SHEET_OPENER_ITEM, KEYBOARD_TOGGLE_VISIBLE, SHEET_TITLE,
                         SHOW_KEYBOARD_CALLBACK, OBFUSCATED_CHILD_AT_CALLBACK, SHOW_SWIPING_IPH,
-                        HAS_SUGGESTIONS)
+                        HAS_SUGGESTIONS, ANIMATION_LISTENER)
                 .with(BAR_ITEMS, new ListModel<>())
                 .with(VISIBLE, false)
                 .with(SKIP_CLOSING_ANIMATION, false)

@@ -1116,6 +1116,12 @@ public class ManualFillingControllerTest {
     }
 
     @Test
+    public void testScrollsPageUpAfterBarIsFullyShown() {
+        mMediator.onBarFadeInAnimationEnd();
+        verify(mLastMockWebContents).scrollFocusedEditableNodeIntoView();
+    }
+
+    @Test
     public void testShowAccessorySheetTab() {
         // Prepare a tab and register a new tab, so there is a reason to display the bar.
         addBrowserTab(mMediator, 1111, null);
