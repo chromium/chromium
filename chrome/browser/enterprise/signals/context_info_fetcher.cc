@@ -16,6 +16,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/signals/signals_utils.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/component_updater/pref_names.h"
+#include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/policy/content/policy_blocklist_service.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -52,6 +54,14 @@
 namespace enterprise_signals {
 
 namespace {
+
+absl::optional<std::string> GetEnterpriseProfileId(Profile* profile) {
+  auto* profile_id_service =
+      enterprise::ProfileIdServiceFactory::GetForProfile(profile);
+  if (profile_id_service)
+    return profile_id_service->GetProfileId();
+  return absl::nullopt;
+}
 
 #if BUILDFLAG(IS_LINUX)
 const char** GetUfwConfigPath() {
@@ -226,6 +236,7 @@ void ContextInfoFetcher::Fetch(ContextInfoCallback callback) {
       utils::GetSafeBrowsingProtectionLevel(profile->GetPrefs());
   info.password_protection_warning_trigger =
       utils::GetPasswordProtectionWarningTrigger(profile->GetPrefs());
+  info.enterprise_profile_id = GetEnterpriseProfileId(profile);
 
 #if BUILDFLAG(IS_WIN)
   base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})
