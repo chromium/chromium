@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 
 import androidx.test.filters.SmallTest;
 
@@ -56,10 +57,9 @@ public class TabSelectionEditorSelectionActionUnitTest {
         MockitoAnnotations.initMocks(this);
         mContext = Robolectric.buildActivity(Activity.class).get();
         mContext.setTheme(org.chromium.chrome.tab_ui.R.style.Theme_BrowserUI_DayNight);
-        boolean isIncognito = false;
-        mAction = TabSelectionEditorSelectionAction.createAction(mContext, ShowMode.IF_ROOM,
-                ButtonType.ICON_AND_TEXT, IconPosition.END, isIncognito);
-        mTabModel = spy(new MockTabModel(isIncognito, null));
+        mAction = TabSelectionEditorSelectionAction.createAction(
+                mContext, ShowMode.IF_ROOM, ButtonType.ICON_AND_TEXT, IconPosition.END);
+        mTabModel = spy(new MockTabModel(false, null));
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         // TODO(ckitagawa): Add tests for when this is true.
         mAction.configure(mTabModelSelector, mSelectionDelegate, mDelegate, false);
@@ -80,10 +80,8 @@ public class TabSelectionEditorSelectionActionUnitTest {
                         TabSelectionEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID));
         Assert.assertNotNull(
                 mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ICON));
-        Assert.assertNull(
+        Assert.assertNotNull(
                 mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ICON_TINT));
-        Assert.assertTrue(
-                mAction.getPropertyModel().get(TabSelectionEditorActionProperties.SKIP_ICON_TINT));
     }
 
     @Test
@@ -102,6 +100,10 @@ public class TabSelectionEditorSelectionActionUnitTest {
                 true, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ENABLED));
         Assert.assertEquals(
                 0, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ITEM_COUNT));
+        Assert.assertNotNull(
+                mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ICON));
+        Drawable selectAllIcon =
+                mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ICON);
 
         // 1 tab of 2 selected.
         selectedTabIds.add(0);
@@ -113,6 +115,8 @@ public class TabSelectionEditorSelectionActionUnitTest {
                 true, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ENABLED));
         Assert.assertEquals(
                 1, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ITEM_COUNT));
+        Assert.assertEquals(selectAllIcon,
+                mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ICON));
 
         // 2 tabs of 2 selected.
         selectedTabIds.add(1);
@@ -125,6 +129,8 @@ public class TabSelectionEditorSelectionActionUnitTest {
                 true, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ENABLED));
         Assert.assertEquals(
                 2, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ITEM_COUNT));
+        Assert.assertNotEquals(selectAllIcon,
+                mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ICON));
     }
 
     @Test

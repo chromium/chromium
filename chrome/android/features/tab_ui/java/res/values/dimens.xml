@@ -81,6 +81,5 @@ found in the LICENSE file.
 
     <!-- Dimens for TabSelectionEditorV2 -->
     <dimen name="tab_selection_editor_action_view_padding">14dp</dimen>
-    <dimen name="tab_selection_editor_selection_action_inset">2dp</dimen>
     <dimen name="tab_selection_editor_share_sheet_preview_thumbnail_padding">10dp</dimen>
 </resources>

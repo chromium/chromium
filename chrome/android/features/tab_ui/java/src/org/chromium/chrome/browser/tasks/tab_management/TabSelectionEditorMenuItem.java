@@ -154,15 +154,6 @@ public class TabSelectionEditorMenuItem {
     }
 
     public void setIconTint(@Nullable ColorStateList colorStateList) {
-        // A null colorStateList is used with TabSelectionEditorActionProperties.SKIP_ICON_TINT
-        // = true to signal that a custom tint is used. Ignore null so that this custom tint is
-        // not overridden.
-        if (colorStateList == null) {
-            mIconTint = null;
-            mListItem.model.set(TabSelectionEditorActionProperties.ICON_TINT, null);
-            return;
-        }
-
         // mListItem uses the default icon tint whenever shown. Cache the tint to restore it when
         // the action view shown state is toggled.
         mListItem.model.set(TabSelectionEditorActionProperties.ICON_TINT,
@@ -199,10 +190,6 @@ public class TabSelectionEditorMenuItem {
 
     public void setOnSelectionStateChange(Callback<List<Integer>> callback) {
         mOnSelectionStateChange = callback;
-    }
-
-    public void setOnShownInMenu(Runnable runnable) {
-        mListItem.model.set(TabSelectionEditorActionProperties.ON_SHOWN_IN_MENU, runnable);
     }
 
     /**
