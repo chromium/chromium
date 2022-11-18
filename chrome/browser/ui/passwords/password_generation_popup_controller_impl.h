@@ -126,6 +126,10 @@ class PasswordGenerationPopupControllerImpl
       const zoom::ZoomController::ZoomChangedEventData& data) override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if defined(UNIT_TEST)
+  PasswordGenerationPopupView* view() const { return view_; }
+#endif
+
  protected:
   PasswordGenerationPopupControllerImpl(
       const gfx::RectF& bounds,
@@ -134,9 +138,6 @@ class PasswordGenerationPopupControllerImpl
       PasswordGenerationPopupObserver* observer,
       content::WebContents* web_contents,
       content::RenderFrameHost* frame);
-
-  // Handle to the popup. May be NULL if popup isn't showing.
-  raw_ptr<PasswordGenerationPopupView> view_;
 
  private:
   class KeyPressRegistrator;
@@ -170,6 +171,9 @@ class PasswordGenerationPopupControllerImpl
 
   // Accept password if it's selected.
   bool PossiblyAcceptPassword();
+
+  // Handle to the popup. May be NULL if popup isn't showing.
+  raw_ptr<PasswordGenerationPopupView> view_;
 
   const autofill::FormData form_data_;
 
