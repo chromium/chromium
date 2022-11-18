@@ -4079,6 +4079,9 @@ TEST_P(UnretainedDanglingRawPtrTest, UnretainedDanglingPtrShouldReport) {
 
 #if !defined(PA_HAS_64_BITS_POINTERS)
 TEST_P(PartitionAllocTest, BackupRefPtrGuardRegion) {
+  if (!UseBRPPool())
+    return;
+
   size_t alignment = internal::PageAllocationGranularity();
 
   uintptr_t requested_address;
@@ -4105,6 +4108,9 @@ TEST_P(PartitionAllocTest, BackupRefPtrGuardRegion) {
 // Allocate memory, and reference it from 3 raw_ptr. Among them 2 will be
 // dangling.
 TEST_P(PartitionAllocTest, DanglingPtr) {
+  if (!UseBRPPool())
+    return;
+
   CountDanglingRawPtr dangling_checks;
 
   // Allocate memory, and reference it from 3 raw_ptr.
@@ -4161,6 +4167,9 @@ TEST_P(PartitionAllocTest, DanglingPtr) {
 // raw_ptr<T, DisableDanglingPtrDetection>. Among them 2 will be dangling. This
 // doesn't trigger any dangling raw_ptr checks.
 TEST_P(PartitionAllocTest, DanglingDanglingPtr) {
+  if (!UseBRPPool())
+    return;
+
   CountDanglingRawPtr dangling_checks;
 
   // Allocate memory, and reference it from 3 raw_ptr.
@@ -4200,6 +4209,9 @@ TEST_P(PartitionAllocTest, DanglingDanglingPtr) {
 // When 'free' is called, it remain one raw_ptr<> and one
 // raw_ptr<T, DisableDanglingPtrDetection>. The raw_ptr<> is released first.
 TEST_P(PartitionAllocTest, DanglingMixedReleaseRawPtrFirst) {
+  if (!UseBRPPool())
+    return;
+
   CountDanglingRawPtr dangling_checks;
 
   uint64_t* ptr = static_cast<uint64_t*>(
@@ -4250,6 +4262,9 @@ TEST_P(PartitionAllocTest, DanglingMixedReleaseRawPtrFirst) {
 // The raw_ptr<T, DisableDanglingPtrDetection> is released first. This
 // triggers the dangling raw_ptr<> checks.
 TEST_P(PartitionAllocTest, DanglingMixedReleaseDanglingPtrFirst) {
+  if (!UseBRPPool())
+    return;
+
   CountDanglingRawPtr dangling_checks;
 
   void* ptr =
@@ -4299,6 +4314,9 @@ TEST_P(PartitionAllocTest, DanglingMixedReleaseDanglingPtrFirst) {
 // raw_ptr<T, DisableDanglingPtrDetection>, then it is used to acquire one
 // dangling raw_ptr<>. Release the raw_ptr<> first.
 TEST_P(PartitionAllocTest, DanglingPtrUsedToAcquireNewRawPtr) {
+  if (!UseBRPPool())
+    return;
+
   CountDanglingRawPtr dangling_checks;
 
   void* ptr =
@@ -4334,6 +4352,9 @@ TEST_P(PartitionAllocTest, DanglingPtrUsedToAcquireNewRawPtr) {
 // Same as 'DanglingPtrUsedToAcquireNewRawPtr', but release the
 // raw_ptr<T, DisableDanglingPtrDetection> before the raw_ptr<>.
 TEST_P(PartitionAllocTest, DanglingPtrUsedToAcquireNewRawPtrVariant) {
+  if (!UseBRPPool())
+    return;
+
   CountDanglingRawPtr dangling_checks;
 
   void* ptr =
@@ -4370,6 +4391,9 @@ TEST_P(PartitionAllocTest, DanglingPtrUsedToAcquireNewRawPtrVariant) {
 // background, there is one raw_ptr<T, DisableDanglingPtrDetection>. This
 // doesn't trigger any dangling raw_ptr<T> checks.
 TEST_P(PartitionAllocTest, RawPtrReleasedBeforeFree) {
+  if (!UseBRPPool())
+    return;
+
   CountDanglingRawPtr dangling_checks;
 
   void* ptr =
@@ -4405,6 +4429,9 @@ TEST_P(PartitionAllocTest, RawPtrReleasedBeforeFree) {
 
 // Acquire() once, Release() twice => CRASH
 TEST_P(PartitionAllocDeathTest, ReleaseUnderflowRawPtr) {
+  if (!UseBRPPool())
+    return;
+
   void* ptr =
       allocator.root()->Alloc(64 - ExtraAllocSize(allocator), type_name);
   auto* ref_count =
@@ -4417,6 +4444,9 @@ TEST_P(PartitionAllocDeathTest, ReleaseUnderflowRawPtr) {
 
 // AcquireFromUnprotectedPtr() once, ReleaseFromUnprotectedPtr() twice => CRASH
 TEST_P(PartitionAllocDeathTest, ReleaseUnderflowDanglingPtr) {
+  if (!UseBRPPool())
+    return;
+
   void* ptr =
       allocator.root()->Alloc(64 - ExtraAllocSize(allocator), type_name);
   auto* ref_count =
