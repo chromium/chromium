@@ -23,5 +23,9 @@ cargo_crate("lib") {
   cargo_pkg_name = "supports-hyperlinks"
   cargo_pkg_description =
       "Detects whether a terminal supports rendering hyperlinks."
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [ "//third_party/rust/atty/v0_2:lib" ]
 }

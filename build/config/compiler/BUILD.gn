@@ -1796,37 +1796,9 @@ config("no_chromium_code") {
     }
   }
 
-  # Rust warnings to ignore in third party dependencies. This list is
-  # built from those warnings which are currently in our various Rust
-  # third party dependencies, but aren't serious (they're largely
-  # stylistic).
-  # An alternative policy would be to suppress all warnings in third
-  # party Rust code using "--cap-lints allow". This is what cargo does
-  # for code outside your own crate, so is worth considering if it
-  # turns out that maintaining this list is onerous.
-  # (https://doc.rust-lang.org/rustc/lints/levels.html#capping-lints)
-  rustflags = [
-    "-A",
-    "unused_parens",
-    "-A",
-    "bare_trait_objects",
-    "-A",
-    "non_fmt_panics",
-    "-A",
-    "redundant_semicolons",
-    "-A",
-    "unused_parens",
-    "-A",
-    "anonymous_parameters",
-    "-A",
-    "bare_trait_objects",
-    "-A",
-    "deprecated",
-    "-A",
-    "non_camel_case_types",
-    "-A",
-    "unused_imports",
-  ]
+  # Suppress all warnings in third party, as Cargo does:
+  # https://doc.rust-lang.org/rustc/lints/levels.html#capping-lints
+  rustflags = [ "--cap-lints=allow" ]
 
   configs = [ ":default_warnings" ]
 }

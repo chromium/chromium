@@ -22,6 +22,10 @@ cargo_crate("lib") {
   cargo_pkg_authors = "Without Boats <saoirse@without.boats>, Ashley Williams <ashley666ashley@gmail.com>, Steve Klabnik <steve@steveklabnik.com>, Rain <rain@sunshowers.io>"
   cargo_pkg_name = "camino"
   cargo_pkg_description = "UTF-8 paths"
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [ "//third_party/rust/serde/v1:lib" ]
   features = [
     "serde",

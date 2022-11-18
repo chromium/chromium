@@ -19,4 +19,8 @@ cargo_crate("lib") {
   cargo_pkg_name = "static_assertions"
   cargo_pkg_description =
       "Compile-time assertions to ensure that invariants are met."
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
 }

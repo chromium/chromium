@@ -21,5 +21,9 @@ cargo_crate("lib") {
   cargo_pkg_version = "0.1.1"
   cargo_pkg_name = "clap_lex"
   cargo_pkg_description = "Minimal, flexible command line parser"
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [ "//third_party/rust/os_str_bytes/v6:lib" ]
 }

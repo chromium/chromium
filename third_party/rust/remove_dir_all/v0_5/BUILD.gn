@@ -23,6 +23,10 @@ cargo_crate("lib") {
   cargo_pkg_name = "remove_dir_all"
   cargo_pkg_description =
       "A safe, reliable implementation of remove_dir_all for Windows"
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = []
   if (is_win) {
     deps += [ "//third_party/rust/winapi/v0_3:lib" ]

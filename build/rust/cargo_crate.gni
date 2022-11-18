@@ -328,9 +328,5 @@ template("cargo_crate") {
 
 set_defaults("cargo_crate") {
   library_configs = default_compiler_configs
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
-  library_configs += [ "//build/config/compiler:no_chromium_code" ]
   executable_configs = default_executable_configs
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
-  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
 }

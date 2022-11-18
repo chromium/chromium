@@ -22,6 +22,10 @@ cargo_crate("lib") {
   cargo_pkg_authors = "Aleksey Kladov <aleksey.kladov@gmail.com>"
   cargo_pkg_name = "once_cell"
   cargo_pkg_description = "Single assignment cells and lazy values."
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   features = [
     "alloc",
     "race",

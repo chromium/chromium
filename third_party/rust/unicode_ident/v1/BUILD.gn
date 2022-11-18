@@ -22,4 +22,8 @@ cargo_crate("lib") {
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "unicode-ident"
   cargo_pkg_description = "Determine whether characters have the XID_Start or XID_Continue properties according to Unicode Standard Annex #31"
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
 }

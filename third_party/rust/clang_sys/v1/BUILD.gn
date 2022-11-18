@@ -22,6 +22,10 @@ cargo_crate("lib") {
   cargo_pkg_authors = "Kyle Mayes <kyle@mayeses.com>"
   cargo_pkg_name = "clang-sys"
   cargo_pkg_description = "Rust bindings for libclang."
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     "//third_party/rust/glob/v0_3:lib",
     "//third_party/rust/libc/v0_2:lib",

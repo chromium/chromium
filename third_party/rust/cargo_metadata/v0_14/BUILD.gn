@@ -23,6 +23,10 @@ cargo_crate("lib") {
       "Oliver Schneider <git-spam-no-reply9815368754983@oli-obk.de>"
   cargo_pkg_name = "cargo_metadata"
   cargo_pkg_description = "structured access to the output of `cargo metadata`"
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     "//third_party/rust/camino/v1:lib",
     "//third_party/rust/cargo_platform/v0_1:lib",

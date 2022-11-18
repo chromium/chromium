@@ -23,6 +23,10 @@ cargo_crate("lib") {
   cargo_pkg_name = "nom"
   cargo_pkg_description =
       "A byte-oriented, zero-copy, parser combinators library"
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     "//third_party/rust/memchr/v2:lib",
     "//third_party/rust/minimal_lexical/v0_2:lib",

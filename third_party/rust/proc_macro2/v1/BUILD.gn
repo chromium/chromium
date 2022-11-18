@@ -19,6 +19,10 @@ cargo_crate("lib") {
       "David Tolnay <dtolnay@gmail.com>, Alex Crichton <alex@alexcrichton.com>"
   cargo_pkg_name = "proc-macro2"
   cargo_pkg_description = "A substitute implementation of the compiler's `proc_macro` API to decouple token-based libraries from the procedural macro use case."
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [ "//third_party/rust/unicode_ident/v1:lib" ]
   features = [
     "proc-macro",

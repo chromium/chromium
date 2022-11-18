@@ -22,4 +22,8 @@ cargo_crate("buildrs_support") {
   cargo_pkg_authors = "Josh Stone <cuviper@gmail.com>"
   cargo_pkg_name = "autocfg"
   cargo_pkg_description = "Automatic cfg for Rust compiler features"
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
 }

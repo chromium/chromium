@@ -361,6 +361,10 @@ fn write_concrete<W: fmt::Write>(
         write_str_escaped(&mut writer, description)?;
         writeln!(writer, "\"")?;
     }
+    writeln!(writer, "library_configs -= [ \"//build/config/compiler:chromium_code\" ]")?;
+    writeln!(writer, "library_configs += [ \"//build/config/compiler:no_chromium_code\" ]")?;
+    writeln!(writer, "executable_configs -= [ \"//build/config/compiler:chromium_code\" ]")?;
+    writeln!(writer, "executable_configs += [ \"//build/config/compiler:no_chromium_code\" ]")?;
 
     if !details.deps.is_empty() {
         write_deps(&mut writer, "deps", details.deps.clone())?;

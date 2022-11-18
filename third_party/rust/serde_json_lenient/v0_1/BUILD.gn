@@ -18,6 +18,10 @@ cargo_crate("lib") {
   cargo_pkg_authors = "Adrian Taylor <adetaylor@chromium.org>, Michael Bolin <bolinfest@gmail.com>, Erick Tryzelaar <erick.tryzelaar@gmail.com>, David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "serde_json_lenient"
   cargo_pkg_description = "A lenient JSON serialization file format"
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     "//third_party/rust/itoa/v0_4:lib",
     "//third_party/rust/ryu/v1:lib",

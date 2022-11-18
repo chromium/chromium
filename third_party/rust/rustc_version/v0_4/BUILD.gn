@@ -23,5 +23,9 @@ cargo_crate("buildrs_support") {
   cargo_pkg_name = "rustc_version"
   cargo_pkg_description =
       "A library for querying the version of a installed rustc compiler"
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [ "//third_party/rust/semver/v1:lib" ]
 }

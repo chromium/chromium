@@ -22,5 +22,9 @@ cargo_crate("lib") {
   cargo_pkg_authors = "dylni"
   cargo_pkg_name = "os_str_bytes"
   cargo_pkg_description = "Utilities for converting between byte sequences and platform-native strings"
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   features = [ "raw_os_str" ]
 }

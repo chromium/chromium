@@ -23,6 +23,10 @@ cargo_crate("lib") {
   cargo_pkg_name = "glob"
   cargo_pkg_description =
       "Support for matching file paths against Unix shell style patterns."
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
 }
 cargo_crate("buildrs_support") {
   crate_name = "glob"
@@ -43,4 +47,8 @@ cargo_crate("buildrs_support") {
   cargo_pkg_name = "glob"
   cargo_pkg_description =
       "Support for matching file paths against Unix shell style patterns."
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
 }

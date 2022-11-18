@@ -22,5 +22,9 @@ cargo_crate("lib") {
   cargo_pkg_authors = "bluss"
   cargo_pkg_name = "either"
   cargo_pkg_description = "The enum `Either` with variants `Left` and `Right` is a general purpose sum type with two cases."
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   features = [ "use_std" ]
 }

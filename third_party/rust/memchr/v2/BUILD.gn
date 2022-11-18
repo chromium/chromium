@@ -22,6 +22,10 @@ cargo_crate("lib") {
   cargo_pkg_authors = "Andrew Gallant <jamslam@gmail.com>, bluss"
   cargo_pkg_name = "memchr"
   cargo_pkg_description = "Safe interface to memchr."
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   features = [ "std" ]
   build_root = "crate/build.rs"
   build_sources = [ "crate/build.rs" ]
