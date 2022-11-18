@@ -954,7 +954,7 @@ std::string BrowserAccessibility::SubtreeToStringHelper(size_t level) {
   return result;
 }
 
-void BrowserAccessibility::EnableGlobalAccessibilityModeOnApiUsage() const {
+void BrowserAccessibility::NotifyAccessibilityApiUsage() const {
   content::BrowserAccessibilityStateImpl::GetInstance()
       ->OnAccessibilityApiUsage();
 }

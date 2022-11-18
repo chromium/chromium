@@ -48,7 +48,7 @@ const AXTreeData& AXPlatformNodeDelegate::GetTreeData() const {
 ax::mojom::Role AXPlatformNodeDelegate::GetRole() const {
   // Getting the role is generally the result of an accessibility API call, so
   // we should reset the auto-disable accessibility code.
-  EnableGlobalAccessibilityModeOnApiUsage();
+  NotifyAccessibilityApiUsage();
   if (node_)
     return node_->GetRole();
   return GetData().role;

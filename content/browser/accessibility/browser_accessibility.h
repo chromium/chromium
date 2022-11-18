@@ -515,7 +515,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
 
   std::string SubtreeToStringHelper(size_t level) override;
 
-  void EnableGlobalAccessibilityModeOnApiUsage() const override;
+  void NotifyAccessibilityApiUsage() const override;
 
   // The UIA tree formatter needs access to GetUniqueId() to identify the
   // starting point for tree dumps.

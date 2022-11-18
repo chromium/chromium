@@ -636,7 +636,7 @@ class AX_EXPORT AXPlatformNodeDelegate {
 
   virtual std::string SubtreeToStringHelper(size_t level) = 0;
 
-  virtual void EnableGlobalAccessibilityModeOnApiUsage() const {}
+  virtual void NotifyAccessibilityApiUsage() const {}
 
  private:
   // The underlying node. This could change during the lifetime of this object
