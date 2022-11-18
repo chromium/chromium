@@ -89,13 +89,13 @@ protocol::Response PageHandler::SetSPCTransactionMode(
     return protocol::Response::ServerError("No web contents to host a dialog.");
 
   payments::SPCTransactionMode spc_mode = payments::SPCTransactionMode::NONE;
-  if (mode == protocol::Page::SetSPCTransactionMode::ModeEnum::Autoaccept) {
+  if (mode == protocol::Page::SetSPCTransactionMode::ModeEnum::AutoAccept) {
     spc_mode = payments::SPCTransactionMode::AUTOACCEPT;
   } else if (mode ==
-             protocol::Page::SetSPCTransactionMode::ModeEnum::Autoreject) {
+             protocol::Page::SetSPCTransactionMode::ModeEnum::AutoReject) {
     spc_mode = payments::SPCTransactionMode::AUTOREJECT;
   } else if (mode ==
-             protocol::Page::SetSPCTransactionMode::ModeEnum::Autooptout) {
+             protocol::Page::SetSPCTransactionMode::ModeEnum::AutoOptOut) {
     spc_mode = payments::SPCTransactionMode::AUTOOPTOUT;
   } else if (mode != protocol::Page::SetSPCTransactionMode::ModeEnum::None) {
     return protocol::Response::ServerError("Unrecognized mode value");
