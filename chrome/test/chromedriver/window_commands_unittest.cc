@@ -366,6 +366,133 @@ TEST(WindowCommandsTest, ExecuteAddCookie_SameSiteNotSet) {
 
 namespace {
 
+class GetCookiesWebView : public StubWebView {
+ public:
+  explicit GetCookiesWebView(std::string document_url)
+      : StubWebView("1"), document_url_(document_url) {}
+  ~GetCookiesWebView() override = default;
+
+  Status CallFunction(const std::string& frame,
+                      const std::string& function,
+                      const base::Value::List& args,
+                      std::unique_ptr<base::Value>* result) override {
+    if (function.find("document.URL") != std::string::npos) {
+      *result = std::make_unique<base::Value>(document_url_);
+    }
+    return Status(kOk);
+  }
+
+  Status GetCookies(base::Value* cookies,
+                    const std::string& current_page_url) override {
+    base::Value::List new_cookies;
+    base::Value::Dict cookie_0;
+    cookie_0.Set("name", "a");
+    cookie_0.Set("value", "0");
+    cookie_0.Set("domain", "example.com");
+    cookie_0.Set("path", "/");
+    cookie_0.Set("session", true);
+    new_cookies.Append(cookie_0.Clone());
+    base::Value::Dict cookie_1;
+    cookie_1.Set("name", "b");
+    cookie_1.Set("value", "1");
+    cookie_1.Set("domain", "example.org");
+    cookie_1.Set("path", "/test");
+    cookie_1.Set("sameSite", "None");
+    cookie_1.Set("expires", 10);
+    cookie_1.Set("httpOnly", true);
+    cookie_1.Set("session", false);
+    cookie_1.Set("secure", true);
+    new_cookies.Append(cookie_1.Clone());
+    *cookies = base::Value(new_cookies.Clone());
+    return Status(kOk);
+  }
+
+ private:
+  std::string document_url_;
+};
+
+}  // namespace
+
+TEST(WindowCommandsTest, ExecuteGetCookies) {
+  GetCookiesWebView webview = GetCookiesWebView("https://chromium.org");
+  base::Value::Dict params;
+  std::unique_ptr<base::Value> result_value;
+  Status status =
+      CallWindowCommand(ExecuteGetCookies, &webview, params, &result_value);
+  ASSERT_EQ(kOk, status.code()) << status.message();
+  base::Value::List expected_cookies;
+  base::Value::Dict cookie_0;
+  cookie_0.Set("name", "a");
+  cookie_0.Set("value", "0");
+  cookie_0.Set("domain", "example.com");
+  cookie_0.Set("path", "/");
+  cookie_0.Set("sameSite", "Lax");
+  cookie_0.Set("httpOnly", false);
+  cookie_0.Set("secure", false);
+  expected_cookies.Append(cookie_0.Clone());
+  base::Value::Dict cookie_1;
+  cookie_1.Set("name", "b");
+  cookie_1.Set("value", "1");
+  cookie_1.Set("domain", "example.org");
+  cookie_1.Set("path", "/test");
+  cookie_1.Set("sameSite", "None");
+  cookie_1.Set("expiry", 10);
+  cookie_1.Set("httpOnly", true);
+  cookie_1.Set("secure", true);
+  expected_cookies.Append(cookie_1.Clone());
+  EXPECT_EQ(result_value->GetList(), expected_cookies);
+}
+
+TEST(WindowCommandsTest, ExecuteGetNamedCookie) {
+  GetCookiesWebView webview = GetCookiesWebView("https://chromium.org");
+  base::Value::Dict params;
+  std::unique_ptr<base::Value> result_value;
+
+  // Get without cookie name.
+  Status status =
+      CallWindowCommand(ExecuteGetNamedCookie, &webview, params, &result_value);
+  ASSERT_EQ(kInvalidArgument, status.code()) << status.message();
+
+  // Get with undefined cookie.
+  params.Set("name", "missing");
+  status =
+      CallWindowCommand(ExecuteGetNamedCookie, &webview, params, &result_value);
+  ASSERT_EQ(kNoSuchCookie, status.code()) << status.message();
+
+  // Get cookie a.
+  params.Set("name", "a");
+  status =
+      CallWindowCommand(ExecuteGetNamedCookie, &webview, params, &result_value);
+  ASSERT_EQ(kOk, status.code()) << status.message();
+  base::Value::Dict expected_cookie_0;
+  expected_cookie_0.Set("name", "a");
+  expected_cookie_0.Set("value", "0");
+  expected_cookie_0.Set("domain", "example.com");
+  expected_cookie_0.Set("path", "/");
+  expected_cookie_0.Set("sameSite", "Lax");
+  expected_cookie_0.Set("httpOnly", false);
+  expected_cookie_0.Set("secure", false);
+  EXPECT_EQ(result_value->GetDict(), expected_cookie_0);
+
+  // Get cookie b.
+  params.Set("name", "b");
+  status =
+      CallWindowCommand(ExecuteGetNamedCookie, &webview, params, &result_value);
+  ASSERT_EQ(kOk, status.code()) << status.message();
+  base::Value::Dict expected_cookie_1;
+  expected_cookie_1.Set("name", "b");
+  expected_cookie_1.Set("value", "1");
+  expected_cookie_1.Set("domain", "example.org");
+  expected_cookie_1.Set("path", "/test");
+  expected_cookie_1.Set("sameSite", "None");
+  expected_cookie_1.Set("expiry", 10);
+  expected_cookie_1.Set("httpOnly", true);
+  expected_cookie_1.Set("secure", true);
+  EXPECT_EQ(result_value->GetDict(), expected_cookie_1);
+}
+
+namespace {
+
 class StorePrintParamsWebView : public StubWebView {
  public:
   StorePrintParamsWebView() : StubWebView("1") {}

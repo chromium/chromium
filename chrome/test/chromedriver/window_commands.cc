@@ -248,8 +248,15 @@ base::Value::Dict CreateDictionaryFrom(const Cookie& cookie) {
     SetSafeInt(dict, "expiry", cookie.expiry);
   dict.Set("httpOnly", cookie.http_only);
   dict.Set("secure", cookie.secure);
-  if (!cookie.samesite.empty())
+  if (!cookie.samesite.empty()) {
     dict.Set("sameSite", cookie.samesite);
+  } else {
+    // The default in the standard is Lax:
+    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite
+    // Chrome (mostly) treats default cookies as Lax so this seems correct:
+    // https://chromestatus.com/feature/5088147346030592
+    dict.Set("sameSite", "Lax");
+  }
   return dict;
 }
 
