@@ -179,7 +179,7 @@ group("gn_all") {
 
   if (!is_ios) {
     deps += [
-      ":chromedriver",
+      ":chromedriver_group",
       "//cc:cc_unittests",
       "//components:components_browsertests",
       "//components/policy:policy_templates",
@@ -1068,7 +1068,7 @@ group("gn_visibility") {
 }
 
 if (!is_ios) {
-  group("chromedriver") {
+  group("chromedriver_group") {
     testonly = true
 
     if (is_fuchsia || is_android) {
@@ -1089,6 +1089,12 @@ if (!is_ios) {
         "//chrome/test/chromedriver:generate_chromedriver_license",
       ]
     }
+  }
+
+  # TODO(chromium:1382224): Remove this target as soon as all the builders have switched to :chromedriver_group
+  group("chromedriver") {
+    testonly = true
+    deps = [ ":chromedriver_group" ]
   }
 
   # This group includes all of the targets needed to build and test Blink,
