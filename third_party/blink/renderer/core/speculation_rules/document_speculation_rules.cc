@@ -9,6 +9,7 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_including_tree_order_traversal.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -153,6 +154,8 @@ void DocumentSpeculationRules::AddRuleSet(SpeculationRuleSet* rule_set) {
   DCHECK(!base::Contains(rule_sets_, rule_set));
   rule_sets_.push_back(rule_set);
   if (rule_set->has_document_rule()) {
+    UseCounter::Count(GetSupplementable(),
+                      WebFeature::kSpeculationRulesDocumentRules);
     InitializeIfNecessary();
     InvalidateAllLinks();
   }

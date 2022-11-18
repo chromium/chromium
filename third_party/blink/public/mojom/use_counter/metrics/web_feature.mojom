@@ -3730,6 +3730,10 @@ enum WebFeature {
   kCSSValueAppearanceMediaSliderThumbRendered = 4389,
   kCSSValueAppearanceMediaVolumeSliderRendered = 4390,
   kCSSValueAppearanceMediaVolumeSliderThumbRendered = 4391,
+  kV8PerformanceResourceTiming_DeliveryType_AttributeGetter = 4392,
+  kDocumentLoaderDeliveryTypeNavigationalPrefetch = 4393,
+  kSpeculationRulesHeader = 4394,
+  kSpeculationRulesDocumentRules = 4395,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

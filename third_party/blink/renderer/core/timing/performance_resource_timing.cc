@@ -202,7 +202,6 @@ AtomicString PerformanceResourceTiming::initiatorType() const {
   return initiator_type_;
 }
 
-// TODO(crbug/1358591): Support "navigational-prefetch".
 AtomicString PerformanceResourceTiming::deliveryType() const {
   DCHECK(RuntimeEnabledFeatures::DeliveryTypeEnabled());
   if (!AllowTimingDetails())

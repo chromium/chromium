@@ -46,6 +46,7 @@
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
+#include "services/network/public/mojom/url_response_head.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
@@ -85,6 +86,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_object_element.h"
@@ -2675,10 +2677,16 @@ void DocumentLoader::CommitNavigation() {
 
 void DocumentLoader::CreateParserPostCommit() {
   if (RuntimeEnabledFeatures::SpeculationRulesFetchFromHeaderEnabled()) {
+    CountUse(WebFeature::kSpeculationRulesHeader);
     auto& speculation_rules_header =
         response_.HttpHeaderField(http_names::kSpeculationRules);
     PreloadHelper::LoadSpeculationRuleLinkFromHeader(
         speculation_rules_header, GetFrame()->GetDocument(), *GetFrame());
+  }
+
+  if (navigation_delivery_type_ ==
+      network::mojom::NavigationDeliveryType::kNavigationalPrefetch) {
+    CountUse(WebFeature::kDocumentLoaderDeliveryTypeNavigationalPrefetch);
   }
 
   // DidObserveLoadingBehavior() must be called after DispatchDidCommitLoad() is

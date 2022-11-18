@@ -42613,6 +42613,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4389" label="CSSValueAppearanceMediaSliderThumbRendered"/>
   <int value="4390" label="CSSValueAppearanceMediaVolumeSliderRendered"/>
   <int value="4391" label="CSSValueAppearanceMediaVolumeSliderThumbRendered"/>
+  <int value="4392"
+      label="V8PerformanceResourceTiming_DeliveryType_AttributeGetter"/>
+  <int value="4393" label="DocumentLoaderDeliveryTypeNavigationalPrefetch"/>
+  <int value="4394" label="SpeculationRulesHeader"/>
+  <int value="4395" label="SpeculationRulesDocumentRules"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
