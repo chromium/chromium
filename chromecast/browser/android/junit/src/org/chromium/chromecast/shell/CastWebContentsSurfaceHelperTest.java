@@ -27,13 +27,14 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chromecast.base.Consumer;
 import org.chromium.chromecast.base.Observer;
 import org.chromium.chromecast.base.Scope;
 import org.chromium.chromecast.shell.CastWebContentsSurfaceHelper.MediaSessionGetter;
 import org.chromium.chromecast.shell.CastWebContentsSurfaceHelper.StartParams;
 import org.chromium.content.browser.MediaSessionImpl;
 import org.chromium.content_public.browser.WebContents;
+
+import java.util.function.Consumer;
 
 /**
  * Tests for CastWebContentsSurfaceHelper.

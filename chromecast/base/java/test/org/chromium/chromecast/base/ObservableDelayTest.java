@@ -10,6 +10,7 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.BiFunction;
 
 /**
  * Tests for Observable#delay().

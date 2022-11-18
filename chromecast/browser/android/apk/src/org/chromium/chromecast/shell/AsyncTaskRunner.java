@@ -6,10 +6,10 @@ package org.chromium.chromecast.shell;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.chromecast.base.Consumer;
 import org.chromium.chromecast.base.Scope;
 
 import java.util.concurrent.Executor;
+import java.util.function.Consumer;
 
 /**
  * Runs a task on a worker thread, then run the callback with the result on the UI thread.

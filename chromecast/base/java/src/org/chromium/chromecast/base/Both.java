@@ -5,7 +5,12 @@
 package org.chromium.chromecast.base;
 
 import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Represents a structure containing an instance of both A and B.

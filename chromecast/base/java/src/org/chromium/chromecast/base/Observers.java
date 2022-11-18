@@ -4,6 +4,9 @@
 
 package org.chromium.chromecast.base;
 
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+
 /**
  * Helper functions for creating Observers, used by Observable.subscribe() to handle state changes.
  */

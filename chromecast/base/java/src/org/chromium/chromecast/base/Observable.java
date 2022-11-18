@@ -4,7 +4,10 @@
 
 package org.chromium.chromecast.base;
 
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Interface for Observable state.

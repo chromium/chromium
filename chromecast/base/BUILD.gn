@@ -313,20 +313,15 @@ if (is_android) {
   android_library("base_java") {
     java_src_dir = "//chromecast/base/java/src"
     sources = [
-      "$java_src_dir/org/chromium/chromecast/base/BiConsumer.java",
-      "$java_src_dir/org/chromium/chromecast/base/BiFunction.java",
-      "$java_src_dir/org/chromium/chromecast/base/BiPredicate.java",
       "$java_src_dir/org/chromium/chromecast/base/Both.java",
       "$java_src_dir/org/chromium/chromecast/base/Box.java",
       "$java_src_dir/org/chromium/chromecast/base/Cell.java",
-      "$java_src_dir/org/chromium/chromecast/base/Consumer.java",
       "$java_src_dir/org/chromium/chromecast/base/Controller.java",
       "$java_src_dir/org/chromium/chromecast/base/Itertools.java",
       "$java_src_dir/org/chromium/chromecast/base/Observable.java",
       "$java_src_dir/org/chromium/chromecast/base/Observer.java",
       "$java_src_dir/org/chromium/chromecast/base/Observers.java",
       "$java_src_dir/org/chromium/chromecast/base/OwnedScope.java",
-      "$java_src_dir/org/chromium/chromecast/base/Predicate.java",
       "$java_src_dir/org/chromium/chromecast/base/Scope.java",
       "$java_src_dir/org/chromium/chromecast/base/Scopes.java",
       "$java_src_dir/org/chromium/chromecast/base/Sequencer.java",

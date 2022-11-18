@@ -17,6 +17,8 @@ import org.chromium.chromecast.base.Inheritance.Derived;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 /**
  * Tests for Observers, a utility class to construct readable objects that can be passed to
