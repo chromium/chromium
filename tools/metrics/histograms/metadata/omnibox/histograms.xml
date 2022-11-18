@@ -378,6 +378,14 @@ chromium-metrics-reviews@google.com.
     it is expected to be more accurate: the baseline CharTypedToRepaintLatency
     uses now() from when the subsequent has-processed notification arrives back
     on the UI thread, which may overestimate user-visible latency.
+
+    Note: Compositor-provided timestamps are taken using presentation time
+    callbacks. Before M110 the callbacks used for this histogram might be called
+    even if the next submitted frame fails to present which means that the
+    character is not really rendered on-screen yet. From M110 onward, this is
+    fixed by using callbacks that are only called after the first following
+    successful presentation, so a slight change might be noticed in the
+    histogram values.
   </summary>
 </histogram>
 
@@ -390,6 +398,14 @@ chromium-metrics-reviews@google.com.
     Records the time between when OnPaint() is called to the time the compositor
     reports pixels were successfully drawn to the screen. This a subset of the
     time reported in Omnibox.CharTypedToRepaintLatency.InsertToPresent.
+
+    Note: Compositor-provided timestamps are taken using presentation time
+    callbacks. Before M110 the callbacks used for this histogram might be called
+    even if the next submitted frame fails to present which means that the
+    character is not really rendered on-screen yet. From M110 onward, this is
+    fixed by using callbacks that are only called after the first following
+    successful presentation, so a slight change might be noticed in the
+    histogram values.
   </summary>
 </histogram>
 
