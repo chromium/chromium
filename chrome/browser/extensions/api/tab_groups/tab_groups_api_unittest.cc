@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_constants.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_event_router.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_event_router_factory.h"
@@ -48,28 +49,26 @@ namespace extensions {
 
 namespace {
 
-std::unique_ptr<base::ListValue> RunTabGroupsQueryFunction(
-    Browser* browser,
-    const Extension* extension,
-    const std::string& query_info) {
+base::Value::List RunTabGroupsQueryFunction(Browser* browser,
+                                            const Extension* extension,
+                                            const std::string& query_info) {
   auto function = base::MakeRefCounted<TabGroupsQueryFunction>();
   function->set_extension(extension);
   std::unique_ptr<base::Value> value(
       extension_function_test_utils::RunFunctionAndReturnSingleResult(
           function.get(), query_info, browser, api_test_utils::NONE));
-  return base::ListValue::From(std::move(value));
+  return std::move(*value).TakeList();
 }
 
-std::unique_ptr<base::DictionaryValue> RunTabGroupsGetFunction(
-    Browser* browser,
-    const Extension* extension,
-    const std::string& args) {
+base::Value::Dict RunTabGroupsGetFunction(Browser* browser,
+                                          const Extension* extension,
+                                          const std::string& args) {
   auto function = base::MakeRefCounted<TabGroupsGetFunction>();
   function->set_extension(extension);
   std::unique_ptr<base::Value> value(
       extension_function_test_utils::RunFunctionAndReturnSingleResult(
           function.get(), args, browser, api_test_utils::NONE));
-  return base::DictionaryValue::From(std::move(value));
+  return std::move(*value).TakeDict();
 }
 
 // Creates an extension with "tabGroups" permission.
@@ -232,13 +231,12 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsQueryTitle) {
 
   // Query by title and verify results.
   const char* kTitleQueryInfo = R"([{"title": "Sample title"}])";
-  std::unique_ptr<base::ListValue> groups_list(
-      RunTabGroupsQueryFunction(browser(), extension.get(), kTitleQueryInfo));
-  ASSERT_TRUE(groups_list);
-  ASSERT_EQ(1u, groups_list->GetList().size());
+  base::Value::List groups_list =
+      RunTabGroupsQueryFunction(browser(), extension.get(), kTitleQueryInfo);
+  ASSERT_EQ(1u, groups_list.size());
 
-  const base::Value& group_info = groups_list->GetList()[0];
-  ASSERT_EQ(base::Value::Type::DICTIONARY, group_info.type());
+  const base::Value& group_info = groups_list[0];
+  ASSERT_TRUE(group_info.is_dict());
   EXPECT_EQ(
       tab_groups_util::GetGroupId(group1),
       group_info.FindKeyOfType("id", base::Value::Type::INTEGER)->GetInt());
@@ -271,12 +269,11 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsQueryColor) {
 
   // Query by color and verify results.
   const char* kColorQueryInfo = R"([{"color": "blue"}])";
-  std::unique_ptr<base::ListValue> groups_list(
-      RunTabGroupsQueryFunction(browser(), extension.get(), kColorQueryInfo));
-  ASSERT_TRUE(groups_list);
-  ASSERT_EQ(1u, groups_list->GetList().size());
+  base::Value::List groups_list =
+      RunTabGroupsQueryFunction(browser(), extension.get(), kColorQueryInfo);
+  ASSERT_EQ(1u, groups_list.size());
 
-  const base::Value& group_info = groups_list->GetList()[0];
+  const base::Value& group_info = groups_list[0];
   ASSERT_EQ(base::Value::Type::DICTIONARY, group_info.type());
   EXPECT_EQ(
       tab_groups_util::GetGroupId(group3),
@@ -302,16 +299,11 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsGetSuccess) {
   // Use the TabGroupsGetFunction to get the group object.
   constexpr char kFormatArgs[] = R"([%d])";
   const std::string args = base::StringPrintf(kFormatArgs, group_id);
-  std::unique_ptr<base::DictionaryValue> group_info(
-      RunTabGroupsGetFunction(browser(), extension.get(), args));
+  base::Value::Dict group_info =
+      RunTabGroupsGetFunction(browser(), extension.get(), args);
 
-  EXPECT_EQ(
-      group_id,
-      group_info->FindKeyOfType("id", base::Value::Type::INTEGER)->GetInt());
-
-  EXPECT_EQ("Title",
-            group_info->FindKeyOfType("title", base::Value::Type::STRING)
-                ->GetString());
+  EXPECT_EQ(group_id, *group_info.FindInt("id"));
+  EXPECT_EQ("Title", *group_info.FindString("title"));
 }
 
 // Test that tabGroups.get() fails on a nonexistent group.
