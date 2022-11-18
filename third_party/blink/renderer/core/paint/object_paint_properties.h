@@ -145,7 +145,7 @@ class CORE_EXPORT ObjectPaintProperties {
   //         The space created by overflow clip. The translation equals the
   //         offset between the scrolling contents and the scrollable area of
   //         the container, both originated from the top-left corner, so it is
-  //         the sum of scroll position (instead of scroll offset) of the
+  //         the scroll position (instead of scroll offset) of the
   //         ScrollableArea.
   //
   // ... +-[ TransformIsolationNode ]

@@ -167,8 +167,11 @@ class PLATFORM_EXPORT CompositingReason {
     kRequiresCullRectExpansion =
         kDirectReasonsForTransformProperty | kDirectReasonsForScaleProperty |
         kDirectReasonsForRotateProperty | kDirectReasonsForTranslateProperty |
-        kDirectReasonsForScrollTranslationProperty,
-
+        kDirectReasonsForScrollTranslationProperty |
+        // Normally a sticky element inherits the expanded contents cull rect of
+        // the scroll container, but it needs expansion by itself if there is
+        // additional clip between the sticky element and its scroll container.
+        kStickyPosition,
   };
 };
 

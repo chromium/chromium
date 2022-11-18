@@ -514,8 +514,8 @@ TEST_F(PaintPropertyNodeTest, StickyTranslationChange) {
   ExpectUnchangedState();
   TransformPaintPropertyNode::State state;
   state.direct_compositing_reasons = CompositingReason::kStickyPosition;
-  // Change compositing reasons only.
-  EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyNonRerasterValues,
+  // The change affects RequiresCullRectExpansion().
+  EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyValues,
             transform.child1->Update(*transform.ancestor, std::move(state)));
 
   // Change sticky translation.
