@@ -60,7 +60,7 @@ void MockMediaStreamVideoSource::RequestRefreshFrame() {
         media::VideoFrame::CreateColorFrame(format_.frame_size, 0, 0, 0,
                                             base::TimeDelta());
     PostCrossThreadTask(
-        *io_task_runner(), FROM_HERE,
+        *video_task_runner(), FROM_HERE,
         CrossThreadBindOnce(frame_callback_, frame,
                             std::vector<scoped_refptr<media::VideoFrame>>(),
                             base::TimeTicks()));
@@ -107,7 +107,7 @@ void MockMediaStreamVideoSource::DeliverVideoFrame(
   DCHECK(!is_stopped_for_restart_);
   DCHECK(!frame_callback_.is_null());
   PostCrossThreadTask(
-      *io_task_runner(), FROM_HERE,
+      *video_task_runner(), FROM_HERE,
       CrossThreadBindOnce(frame_callback_, std::move(frame),
                           std::vector<scoped_refptr<media::VideoFrame>>(),
                           base::TimeTicks()));
@@ -117,7 +117,7 @@ void MockMediaStreamVideoSource::DeliverEncodedVideoFrame(
     scoped_refptr<EncodedVideoFrame> frame) {
   DCHECK(!is_stopped_for_restart_);
   DCHECK(!encoded_frame_callback_.is_null());
-  PostCrossThreadTask(*io_task_runner(), FROM_HERE,
+  PostCrossThreadTask(*video_task_runner(), FROM_HERE,
                       CrossThreadBindOnce(encoded_frame_callback_,
                                           std::move(frame), base::TimeTicks()));
 }
@@ -125,7 +125,7 @@ void MockMediaStreamVideoSource::DeliverEncodedVideoFrame(
 void MockMediaStreamVideoSource::DeliverNewCropVersion(uint32_t crop_version) {
   DCHECK(!crop_version_callback_.is_null());
   PostCrossThreadTask(
-      *io_task_runner(), FROM_HERE,
+      *video_task_runner(), FROM_HERE,
       CrossThreadBindOnce(crop_version_callback_, crop_version));
 }
 

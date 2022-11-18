@@ -228,7 +228,7 @@ void MediaStreamVideoSource::StopForRestart(RestartCallback callback,
             source_size.has_value() ? *source_size
                                     : gfx::Size(kDefaultWidth, kDefaultHeight));
     PostCrossThreadTask(
-        *io_task_runner(), FROM_HERE,
+        *video_task_runner(), FROM_HERE,
         CrossThreadBindOnce(&VideoTrackAdapter::DeliverFrameOnIO,
                             GetTrackAdapter(), black_frame,
                             std::vector<scoped_refptr<media::VideoFrame>>(),
@@ -356,7 +356,7 @@ void MediaStreamVideoSource::SetDeviceRotationDetection(bool enabled) {
   enable_device_rotation_detection_ = enabled;
 }
 
-base::SequencedTaskRunner* MediaStreamVideoSource::io_task_runner() const {
+base::SequencedTaskRunner* MediaStreamVideoSource::video_task_runner() const {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   return Platform::Current()->GetIOTaskRunner().get();
 }
@@ -551,8 +551,8 @@ VideoCaptureFeedbackCB MediaStreamVideoSource::GetFeedbackCallback() const {
 scoped_refptr<VideoTrackAdapter> MediaStreamVideoSource::GetTrackAdapter() {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   if (!track_adapter_) {
-    track_adapter_ =
-        base::MakeRefCounted<VideoTrackAdapter>(io_task_runner(), GetWeakPtr());
+    track_adapter_ = base::MakeRefCounted<VideoTrackAdapter>(
+        video_task_runner(), GetWeakPtr());
   }
   return track_adapter_;
 }

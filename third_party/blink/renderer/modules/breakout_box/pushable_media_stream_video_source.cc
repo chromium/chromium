@@ -18,9 +18,9 @@ PushableMediaStreamVideoSource::Broker::Broker(
     PushableMediaStreamVideoSource* source)
     : source_(source),
       main_task_runner_(source->GetTaskRunner()),
-      io_task_runner_(source->io_task_runner()) {
+      video_task_runner_(source->video_task_runner()) {
   DCHECK(main_task_runner_);
-  DCHECK(io_task_runner_);
+  DCHECK(video_task_runner_);
 }
 
 void PushableMediaStreamVideoSource::Broker::OnClientStarted() {
@@ -77,7 +77,7 @@ void PushableMediaStreamVideoSource::Broker::PushFrame(
   // CanvasCaptureHandler::SendFrame,
   // and HtmlVideoElementCapturerSource::sendNewFrame.
   PostCrossThreadTask(
-      *io_task_runner_, FROM_HERE,
+      *video_task_runner_, FROM_HERE,
       CrossThreadBindOnce(frame_callback_, std::move(video_frame),
                           std::vector<scoped_refptr<media::VideoFrame>>(),
                           estimated_capture_time));

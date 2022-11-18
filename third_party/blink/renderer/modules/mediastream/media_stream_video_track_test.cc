@@ -155,7 +155,7 @@ class MediaStreamVideoTrackTest
   void DepleteIOCallbacks() {
     base::RunLoop run_loop;
     base::RepeatingClosure quit_closure = run_loop.QuitClosure();
-    mock_source()->io_task_runner()->PostTask(
+    mock_source()->video_task_runner()->PostTask(
         FROM_HERE,
         base::BindLambdaForTesting([&] { std::move(quit_closure).Run(); }));
     run_loop.Run();

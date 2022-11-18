@@ -142,11 +142,11 @@ class MediaStreamVideoRendererSink::FrameDeliverer {
 MediaStreamVideoRendererSink::MediaStreamVideoRendererSink(
     MediaStreamComponent* video_component,
     const RepaintCB& repaint_cb,
-    scoped_refptr<base::SequencedTaskRunner> io_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> video_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> main_render_task_runner)
     : repaint_cb_(repaint_cb),
       video_component_(video_component),
-      io_task_runner_(std::move(io_task_runner)),
+      video_task_runner_(std::move(video_task_runner)),
       main_render_task_runner_(std::move(main_render_task_runner)) {}
 
 MediaStreamVideoRendererSink::~MediaStreamVideoRendererSink() {
@@ -160,7 +160,7 @@ void MediaStreamVideoRendererSink::Start() {
       std::make_unique<MediaStreamVideoRendererSink::FrameDeliverer>(
           repaint_cb_, weak_factory_.GetWeakPtr(), main_render_task_runner_);
   PostCrossThreadTask(
-      *io_task_runner_, FROM_HERE,
+      *video_task_runner_, FROM_HERE,
       CrossThreadBindOnce(&FrameDeliverer::Start,
                           WTF::CrossThreadUnretained(frame_deliverer_.get())));
 
@@ -184,7 +184,7 @@ void MediaStreamVideoRendererSink::Start() {
           MediaStreamSource::kReadyStateEnded ||
       !video_component_->Enabled()) {
     PostCrossThreadTask(
-        *io_task_runner_, FROM_HERE,
+        *video_task_runner_, FROM_HERE,
         CrossThreadBindOnce(&FrameDeliverer::RenderEndOfStream,
                             CrossThreadUnretained(frame_deliverer_.get())));
   }
@@ -195,7 +195,7 @@ void MediaStreamVideoRendererSink::Stop() {
 
   MediaStreamVideoSink::DisconnectFromTrack();
   if (frame_deliverer_)
-    io_task_runner_->DeleteSoon(FROM_HERE, frame_deliverer_.release());
+    video_task_runner_->DeleteSoon(FROM_HERE, frame_deliverer_.release());
 }
 
 void MediaStreamVideoRendererSink::Resume() {
@@ -203,7 +203,7 @@ void MediaStreamVideoRendererSink::Resume() {
   if (!frame_deliverer_)
     return;
 
-  PostCrossThreadTask(*io_task_runner_, FROM_HERE,
+  PostCrossThreadTask(*video_task_runner_, FROM_HERE,
                       WTF::CrossThreadBindOnce(
                           &FrameDeliverer::Resume,
                           WTF::CrossThreadUnretained(frame_deliverer_.get())));
@@ -214,7 +214,7 @@ void MediaStreamVideoRendererSink::Pause() {
   if (!frame_deliverer_)
     return;
 
-  PostCrossThreadTask(*io_task_runner_, FROM_HERE,
+  PostCrossThreadTask(*video_task_runner_, FROM_HERE,
                       WTF::CrossThreadBindOnce(
                           &FrameDeliverer::Pause,
                           WTF::CrossThreadUnretained(frame_deliverer_.get())));
@@ -225,7 +225,7 @@ void MediaStreamVideoRendererSink::OnReadyStateChanged(
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   if (state == WebMediaStreamSource::kReadyStateEnded && frame_deliverer_) {
     PostCrossThreadTask(
-        *io_task_runner_, FROM_HERE,
+        *video_task_runner_, FROM_HERE,
         WTF::CrossThreadBindOnce(
             &FrameDeliverer::RenderEndOfStream,
             WTF::CrossThreadUnretained(frame_deliverer_.get())));

@@ -76,7 +76,7 @@ class MODULES_EXPORT PushableMediaStreamVideoSource
     media::VideoCaptureFeedback feedback_ GUARDED_BY(lock_);
 
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-    scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
+    scoped_refptr<base::SequencedTaskRunner> video_task_runner_;
   };
 
   explicit PushableMediaStreamVideoSource(

@@ -44,7 +44,7 @@ class MODULES_EXPORT VideoTrackAdapter
   using OnMutedCallback = base::RepeatingCallback<void(bool mute_state)>;
 
   VideoTrackAdapter(
-      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> video_task_runner,
       base::WeakPtr<MediaStreamVideoSource> media_stream_video_source);
 
   VideoTrackAdapter(const VideoTrackAdapter&) = delete;
@@ -85,9 +85,9 @@ class MODULES_EXPORT VideoTrackAdapter
   // equal-to-or-greater-than the given crop version.
   void NewCropVersionOnIO(uint32_t crop_version);
 
-  base::SequencedTaskRunner* io_task_runner() const {
+  base::SequencedTaskRunner* video_task_runner() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return io_task_runner_.get();
+    return video_task_runner_.get();
   }
 
   // Start monitor that frames are delivered to this object. I.E, that
@@ -166,7 +166,7 @@ class MODULES_EXPORT VideoTrackAdapter
   // |thread_checker_| is bound to the main render thread.
   SEQUENCE_CHECKER(sequence_checker_);
 
-  const scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> video_task_runner_;
 
   base::WeakPtr<MediaStreamVideoSource> media_stream_video_source_;
 
