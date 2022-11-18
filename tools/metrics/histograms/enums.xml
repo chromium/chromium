@@ -2447,6 +2447,8 @@ Unknown properties are collapsed to zero. -->
   <int value="23"
       label="Invisible renderer in foreground app with not perceptible
              binding oom"/>
+  <int value="24"
+      label="Invisible renderer in foreground app with waived binding oom"/>
 </enum>
 
 <enum name="AndroidProcessedMinidumps">

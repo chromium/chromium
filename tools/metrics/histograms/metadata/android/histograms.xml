@@ -824,6 +824,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.BindingManger.ConnectionsDroppedDueToMaxSize"
+    units="connections" expires_after="2023-04-16">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Records the total number of BindingManager bindings to
+    ChildProcessConnections that were dropped due to the BindingManager reaching
+    the connection limit. This value accumulates while the app is running and is
+    emitted upong the app being backgrounded at which time the counter is reset.
+  </summary>
+</histogram>
+
 <histogram name="Android.BiometricAuth.AuthRequester"
     enum="BiometricAuthRequester" expires_after="M112">
   <owner>ioanap@chromium.org</owner>
