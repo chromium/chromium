@@ -44,6 +44,24 @@ static void RecordReplayAssert(const char* aFormat, ...) {
   }
 }
 
+static void* gRecordReplayAreEventsDisallowedFn;
+
+static bool RecordReplayAreEventsDisallowed() {
+  if (!gRecordReplayAreEventsDisallowedFn) {
+    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayAreEventsDisallowed");
+    if (!fnptr) {
+      gRecordReplayAreEventsDisallowedFn = reinterpret_cast<void*>(1);
+      return false;
+    }
+    gRecordReplayAreEventsDisallowedFn = fnptr;
+  }
+
+  if (gRecordReplayAreEventsDisallowedFn != reinterpret_cast<void*>(1)) {
+    return reinterpret_cast<bool(*)()>(gRecordReplayAreEventsDisallowedFn)();
+  }
+  return false;
+}
+
 namespace base {
 namespace internal {
 
@@ -304,7 +322,8 @@ UncheckedScopedBlockingCall::UncheckedScopedBlockingCall(
         blocking_call_type == BlockingCallType::kRegular && !is_will_block_;
     if (is_monitored_type && !previous_scoped_blocking_call_) {
       // https://linear.app/replay/issue/RUN-756
-      RecordReplayAssert("UncheckedScopedBlockingCall #1");
+      if (!RecordReplayAreEventsDisallowed())
+        RecordReplayAssert("UncheckedScopedBlockingCall #1");
       monitored_call_.emplace();
     } else if (!is_monitored_type && previous_scoped_blocking_call_ &&
                previous_scoped_blocking_call_->monitored_call_) {
