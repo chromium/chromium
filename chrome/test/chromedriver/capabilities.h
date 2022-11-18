@@ -168,7 +168,7 @@ struct Capabilities {
   // Time to wait for extension background page to appear. If 0, no waiting.
   base::TimeDelta extension_load_timeout;
 
-  std::unique_ptr<base::DictionaryValue> local_state;
+  std::unique_ptr<base::Value::Dict> local_state;
 
   std::string log_path;
 
@@ -183,7 +183,7 @@ struct Capabilities {
 
   base::Value devtools_events_logging_prefs;
 
-  std::unique_ptr<base::DictionaryValue> prefs;
+  std::unique_ptr<base::Value::Dict> prefs;
 
   Switches switches;
 

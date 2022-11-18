@@ -156,103 +156,105 @@ namespace {
 // Creates a JSON object (represented by base::DictionaryValue) that contains
 // the capabilities, for returning to the client app as the result of New
 // Session command.
-std::unique_ptr<base::DictionaryValue> CreateCapabilities(
+std::unique_ptr<base::Value::Dict> CreateCapabilities(
     Session* session,
     const Capabilities& capabilities,
     const base::DictionaryValue& desired_caps) {
-  std::unique_ptr<base::DictionaryValue> caps(new base::DictionaryValue());
+  auto caps = std::make_unique<base::Value::Dict>();
 
   // Capabilities defined by W3C. Some of these capabilities have different
   // names in legacy mode.
-  caps->SetStringKey("browserName", base::ToLowerASCII(kBrowserShortName));
-  caps->SetStringKey(session->w3c_compliant ? "browserVersion" : "version",
-                     session->chrome->GetBrowserInfo()->browser_version);
+  caps->Set("browserName", base::ToLowerASCII(kBrowserShortName));
+  caps->Set(session->w3c_compliant ? "browserVersion" : "version",
+            session->chrome->GetBrowserInfo()->browser_version);
   std::string os_name = session->chrome->GetOperatingSystemName();
   if (os_name.find("Windows") != std::string::npos)
     os_name = "Windows";
   if (session->w3c_compliant) {
-    caps->SetStringKey("platformName", base::ToLowerASCII(os_name));
+    caps->Set("platformName", base::ToLowerASCII(os_name));
   } else {
-    caps->SetStringKey("platform", os_name);
+    caps->Set("platform", os_name);
   }
-  caps->SetStringKey("pageLoadStrategy", session->chrome->page_load_strategy());
-  caps->SetBoolKey("acceptInsecureCerts", capabilities.accept_insecure_certs);
+  caps->Set("pageLoadStrategy", session->chrome->page_load_strategy());
+  caps->Set("acceptInsecureCerts", capabilities.accept_insecure_certs);
+
   const base::Value* proxy = desired_caps.FindKey("proxy");
   if (proxy == nullptr || proxy->is_none())
-    caps->SetKey("proxy", base::Value(base::Value::Type::DICTIONARY));
+    caps->Set("proxy", base::Value(base::Value::Type::DICTIONARY));
   else
-    caps->SetKey("proxy", proxy->Clone());
+    caps->Set("proxy", proxy->Clone());
+
   // add setWindowRect based on whether we are desktop/android/remote
   if (capabilities.IsAndroid() || capabilities.IsRemoteBrowser()) {
-    caps->SetBoolKey("setWindowRect", false);
+    caps->Set("setWindowRect", false);
   } else {
-    caps->SetBoolKey("setWindowRect", true);
+    caps->Set("setWindowRect", true);
   }
-  if (session->script_timeout == base::TimeDelta::Max())
-    caps->SetPath({"timeouts", "script"}, base::Value());
-  else
-    SetSafeInt(caps->GetDict(), "timeouts.script",
+  if (session->script_timeout == base::TimeDelta::Max()) {
+    caps->SetByDottedPath("timeouts.script", base::Value());
+  } else {
+    SetSafeInt(*caps, "timeouts.script",
                session->script_timeout.InMilliseconds());
-  SetSafeInt(caps->GetDict(), "timeouts.pageLoad",
+  }
+  SetSafeInt(*caps, "timeouts.pageLoad",
              session->page_load_timeout.InMilliseconds());
-  SetSafeInt(caps->GetDict(), "timeouts.implicit",
+  SetSafeInt(*caps, "timeouts.implicit",
              session->implicit_wait.InMilliseconds());
-  caps->SetBoolKey("strictFileInteractability",
-                   session->strict_file_interactability);
-  caps->SetStringKey(session->w3c_compliant ? "unhandledPromptBehavior"
-                                            : "unexpectedAlertBehaviour",
-                     session->unhandled_prompt_behavior);
+  caps->Set("strictFileInteractability", session->strict_file_interactability);
+  caps->Set(session->w3c_compliant ? "unhandledPromptBehavior"
+                                   : "unexpectedAlertBehaviour",
+            session->unhandled_prompt_behavior);
 
   // Extensions defined by the W3C.
   // See https://w3c.github.io/webauthn/#sctn-automation-webdriver-capability
-  caps->SetBoolKey("webauthn:virtualAuthenticators", !capabilities.IsAndroid());
-  caps->SetBoolKey("webauthn:extension:largeBlob", !capabilities.IsAndroid());
-  caps->SetBoolKey("webauthn:extension:credBlob", !capabilities.IsAndroid());
+  caps->Set("webauthn:virtualAuthenticators", !capabilities.IsAndroid());
+  caps->Set("webauthn:extension:largeBlob", !capabilities.IsAndroid());
+  caps->Set("webauthn:extension:credBlob", !capabilities.IsAndroid());
 
   // Chrome-specific extensions.
   const std::string chrome_driver_version_key = base::StringPrintf(
       "%s.%sVersion", base::ToLowerASCII(kBrowserShortName).c_str(),
       base::ToLowerASCII(kChromeDriverProductShortName).c_str());
-  caps->SetStringPath(chrome_driver_version_key, kChromeDriverVersion);
+  caps->SetByDottedPath(chrome_driver_version_key, kChromeDriverVersion);
   const std::string debugger_address_key =
       base::StringPrintf("%s.debuggerAddress", kChromeDriverOptionsKeyPrefixed);
-  caps->SetStringPath(debugger_address_key, session->chrome->GetBrowserInfo()
-                                                ->debugger_endpoint.Address()
-                                                .ToString());
+  caps->SetByDottedPath(debugger_address_key, session->chrome->GetBrowserInfo()
+                                                  ->debugger_endpoint.Address()
+                                                  .ToString());
   ChromeDesktopImpl* desktop = nullptr;
   Status status = session->chrome->GetAsDesktop(&desktop);
   if (status.IsOk()) {
     const std::string user_data_key = base::StringPrintf(
         "%s.userDataDir", base::ToLowerASCII(kBrowserShortName).c_str());
-    caps->SetStringPath(
+    caps->SetByDottedPath(
         user_data_key,
         desktop->command().GetSwitchValuePath("user-data-dir").AsUTF8Unsafe());
-    caps->SetBoolKey("networkConnectionEnabled",
-                     desktop->IsNetworkConnectionEnabled());
+    caps->Set("networkConnectionEnabled",
+              desktop->IsNetworkConnectionEnabled());
   }
 
   // Legacy capabilities.
   if (!session->w3c_compliant) {
-    caps->SetBoolKey("javascriptEnabled", true);
-    caps->SetBoolKey("takesScreenshot", true);
-    caps->SetBoolKey("takesHeapSnapshot", true);
-    caps->SetBoolKey("handlesAlerts", true);
-    caps->SetBoolKey("databaseEnabled", false);
-    caps->SetBoolKey("locationContextEnabled", true);
-    caps->SetBoolKey("mobileEmulationEnabled",
-                     session->chrome->IsMobileEmulationEnabled());
-    caps->SetBoolKey("browserConnectionEnabled", false);
-    caps->SetBoolKey("cssSelectorsEnabled", true);
-    caps->SetBoolKey("webStorageEnabled", true);
-    caps->SetBoolKey("rotatable", false);
-    caps->SetBoolKey("acceptSslCerts", capabilities.accept_insecure_certs);
-    caps->SetBoolKey("nativeEvents", true);
-    caps->SetBoolKey("hasTouchScreen", session->chrome->HasTouchScreen());
+    caps->Set("javascriptEnabled", true);
+    caps->Set("takesScreenshot", true);
+    caps->Set("takesHeapSnapshot", true);
+    caps->Set("handlesAlerts", true);
+    caps->Set("databaseEnabled", false);
+    caps->Set("locationContextEnabled", true);
+    caps->Set("mobileEmulationEnabled",
+              session->chrome->IsMobileEmulationEnabled());
+    caps->Set("browserConnectionEnabled", false);
+    caps->Set("cssSelectorsEnabled", true);
+    caps->Set("webStorageEnabled", true);
+    caps->Set("rotatable", false);
+    caps->Set("acceptSslCerts", capabilities.accept_insecure_certs);
+    caps->Set("nativeEvents", true);
+    caps->Set("hasTouchScreen", session->chrome->HasTouchScreen());
   }
 
   if (session->webSocketUrl) {
-    caps->SetStringKey("webSocketUrl",
-                       "ws://" + session->host + "/session/" + session->id);
+    caps->Set("webSocketUrl",
+              "ws://" + session->host + "/session/" + session->id);
   }
 
   return caps;
@@ -354,12 +356,12 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
     return status;
 
   if (session->w3c_compliant) {
-    base::Value body(base::Value::Type::DICTIONARY);
-    body.SetKey("capabilities", session->capabilities->Clone());
-    body.SetStringKey("sessionId", session->id);
-    *value = base::Value::ToUniquePtrValue(body.Clone());
+    base::Value::Dict body;
+    body.Set("capabilities", session->capabilities->Clone());
+    body.Set("sessionId", session->id);
+    *value = std::make_unique<base::Value>(body.Clone());
   } else {
-    *value = base::Value::ToUniquePtrValue(session->capabilities->Clone());
+    *value = std::make_unique<base::Value>(session->capabilities->Clone());
   }
 
   status = CheckSessionCreated(session);
@@ -463,11 +465,11 @@ Status ConfigureHeadlessSession(Session* session,
 
   const std::string* download_directory = nullptr;
   if (capabilities.prefs) {
-    download_directory =
-        capabilities.prefs->FindStringPath("download.default_directory");
+    download_directory = capabilities.prefs->FindStringByDottedPath(
+        "download.default_directory");
     if (!download_directory) {
-      download_directory =
-          capabilities.prefs->FindStringKey("download.default_directory");
+      download_directory = capabilities.prefs->FindStringByDottedPath(
+          "download.default_directory");
     }
   }
   session->headless_download_directory = std::make_unique<std::string>(
@@ -705,7 +707,7 @@ Status ExecuteQuit(bool allow_detach,
 Status ExecuteGetSessionCapabilities(Session* session,
                                      const base::Value::Dict& params,
                                      std::unique_ptr<base::Value>* value) {
-  *value = base::Value::ToUniquePtrValue(session->capabilities->Clone());
+  *value = std::make_unique<base::Value>(session->capabilities->Clone());
   return Status(kOk);
 }
 
@@ -1214,11 +1216,11 @@ Status ExecuteSetWindowPosition(Session* session,
   if (!maybe_x.has_value() || !maybe_y.has_value())
     return Status(kInvalidArgument, "missing or invalid 'x' or 'y'");
 
-  base::Value rect_params(base::Value::Type::DICTIONARY);
-  rect_params.SetIntKey("x", static_cast<int>(maybe_x.value()));
-  rect_params.SetIntKey("y", static_cast<int>(maybe_y.value()));
-  return session->chrome->SetWindowRect(
-      session->window, base::Value::AsDictionaryValue(rect_params));
+  base::Value::Dict rect_params;
+  rect_params.Set("x", static_cast<int>(maybe_x.value()));
+  rect_params.Set("y", static_cast<int>(maybe_y.value()));
+  return session->chrome->SetWindowRect(session->window,
+                                        std::move(rect_params));
 }
 
 Status ExecuteGetWindowSize(Session* session,
@@ -1246,11 +1248,11 @@ Status ExecuteSetWindowSize(Session* session,
   if (!maybe_width.has_value() || !maybe_height.has_value())
     return Status(kInvalidArgument, "missing or invalid 'width' or 'height'");
 
-  base::Value rect_params(base::Value::Type::DICTIONARY);
-  rect_params.SetIntKey("width", static_cast<int>(maybe_width.value()));
-  rect_params.SetIntKey("height", static_cast<int>(maybe_height.value()));
-  return session->chrome->SetWindowRect(
-      session->window, base::Value::AsDictionaryValue(rect_params));
+  base::Value::Dict rect_params;
+  rect_params.Set("width", static_cast<int>(maybe_width.value()));
+  rect_params.Set("height", static_cast<int>(maybe_height.value()));
+  return session->chrome->SetWindowRect(session->window,
+                                        std::move(rect_params));
 }
 
 Status ExecuteGetAvailableLogTypes(Session* session,

@@ -11,16 +11,16 @@
 
 #include "base/files/file_path.h"
 #include "base/process/kill.h"
+#include "base/values.h"
 #include "chrome/test/chromedriver/capabilities.h"
 #include "chrome/test/chromedriver/net/sync_websocket_factory.h"
 
 class DevToolsEventListener;
 
 namespace base {
-class DictionaryValue;
 class FilePath;
 enum TerminationStatus;
-}
+}  // namespace base
 
 namespace network {
 namespace mojom {
@@ -46,10 +46,9 @@ Status ProcessExtensions(const std::vector<std::string>& extensions,
                          const base::FilePath& temp_dir,
                          Switches* switches,
                          std::vector<std::string>* bg_pages);
-Status PrepareUserDataDir(
-    const base::FilePath& user_data_dir,
-    const base::DictionaryValue* custom_prefs,
-    const base::DictionaryValue* custom_local_state);
+Status PrepareUserDataDir(const base::FilePath& user_data_dir,
+                          const base::Value::Dict* custom_prefs,
+                          const base::Value::Dict* custom_local_state);
 Status ParseDevToolsActivePortFile(const base::FilePath& user_data_dir,
                                    int* port);
 Status RemoveOldDevToolsActivePortFile(const base::FilePath& user_data_dir);

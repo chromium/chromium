@@ -87,14 +87,13 @@ Status ParseFilePath(base::FilePath* to_set,
   return Status(kOk);
 }
 
-Status ParseDict(std::unique_ptr<base::DictionaryValue>* to_set,
+Status ParseDict(std::unique_ptr<base::Value::Dict>* to_set,
                  const base::Value& option,
                  Capabilities* capabilities) {
-  const base::DictionaryValue* dict = nullptr;
-  if (!option.GetAsDictionary(&dict))
+  const base::Value::Dict* dict = option.GetIfDict();
+  if (!dict)
     return Status(kInvalidArgument, "must be a dictionary");
-  *to_set =
-      base::DictionaryValue::From(base::Value::ToUniquePtrValue(dict->Clone()));
+  *to_set = std::make_unique<base::Value::Dict>(dict->Clone());
   return Status(kOk);
 }
 

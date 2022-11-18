@@ -33,10 +33,6 @@ static const char kIgnore[] = "ignore";
 // or legacy mode (when false).
 static const bool kW3CDefault = true;
 
-namespace base {
-class DictionaryValue;
-}
-
 class Chrome;
 class Status;
 class WebDriverLog;
@@ -150,7 +146,7 @@ struct Session {
   std::vector<std::unique_ptr<WebDriverLog>> devtools_logs;
   std::unique_ptr<WebDriverLog> driver_log;
   ScopedTempDirWithRetry temp_dir;
-  std::unique_ptr<base::DictionaryValue> capabilities;
+  std::unique_ptr<base::Value::Dict> capabilities;
   // |command_listeners| should be declared after |chrome|. When the |Session|
   // is destroyed, |command_listeners| should be freed first, since some
   // |CommandListener|s might be |CommandListenerProxy|s that forward to

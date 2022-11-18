@@ -853,10 +853,11 @@ Status ExecuteNewWindow(Session* session,
   if (status.IsError())
     return status;
 
-  auto results = std::make_unique<base::DictionaryValue>();
-  results->GetDict().Set("handle", WebViewIdToWindowHandle(handle));
-  results->GetDict().Set(
-      "type", (window_type == Chrome::WindowType::kWindow) ? "window" : "tab");
+  base::Value::Dict dict;
+  dict.Set("handle", WebViewIdToWindowHandle(handle));
+  dict.Set("type",
+           (window_type == Chrome::WindowType::kWindow) ? "window" : "tab");
+  auto results = std::make_unique<base::Value>(std::move(dict));
   *value = std::move(results);
   return Status(kOk);
 }
@@ -2693,15 +2694,15 @@ Status ExecuteSetWindowRect(Session* session,
   }
 
   // to pass to the set window rect command
-  base::DictionaryValue rect_params;
+  base::Value::Dict rect_params;
   // only set position if both x and y are given
   if (has_x && has_y) {
-    rect_params.GetDict().Set("x", static_cast<int>(x));
-    rect_params.GetDict().Set("y", static_cast<int>(y));
+    rect_params.Set("x", static_cast<int>(x));
+    rect_params.Set("y", static_cast<int>(y));
   }  // only set size if both height and width are given
   if (has_width && has_height) {
-    rect_params.GetDict().Set("width", static_cast<int>(width));
-    rect_params.GetDict().Set("height", static_cast<int>(height));
+    rect_params.Set("width", static_cast<int>(width));
+    rect_params.Set("height", static_cast<int>(height));
   }
   Status status = session->chrome->SetWindowRect(session->window, rect_params);
   if (status.IsError())
@@ -2828,9 +2829,7 @@ Status ExecuteSetPermission(Session* session,
   else
     return Status(kInvalidArgument, "unrecognized permission state");
 
-  auto val = base::Value::ToUniquePtrValue(base::Value(descriptor->Clone()));
-  auto dict = base::DictionaryValue::From(std::move(val));
-
+  auto dict = std::make_unique<base::Value::Dict>(descriptor->Clone());
   return session->chrome->SetPermission(std::move(dict), valid_state, one_realm,
                                         web_view);
 }

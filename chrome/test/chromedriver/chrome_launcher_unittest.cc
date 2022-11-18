@@ -198,12 +198,12 @@ TEST(PrepareUserDataDir, CustomPrefs) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
-  base::DictionaryValue prefs;
-  prefs.SetString("myPrefsKey", "ok");
-  prefs.SetKey("pref.sub", base::Value("1"));
-  base::DictionaryValue local_state;
-  local_state.SetString("myLocalKey", "ok");
-  local_state.SetKey("local.state.sub", base::Value("2"));
+  base::Value::Dict prefs;
+  prefs.Set("myPrefsKey", "ok");
+  prefs.Set("pref.sub", base::Value("1"));
+  base::Value::Dict local_state;
+  local_state.Set("myLocalKey", "ok");
+  local_state.Set("local.state.sub", base::Value("2"));
   Status status =
       internal::PrepareUserDataDir(temp_dir.GetPath(), &prefs, &local_state);
   ASSERT_EQ(kOk, status.code());

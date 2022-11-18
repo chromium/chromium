@@ -33,7 +33,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_result_codes.h"
@@ -907,15 +906,16 @@ std::string GenerateExtensionId(const std::string& input) {
   return output;
 }
 
-Status GetExtensionBackgroundPage(const base::DictionaryValue* manifest,
+Status GetExtensionBackgroundPage(const base::Value::Dict* manifest,
                                   const std::string& id,
                                   std::string* bg_page) {
   std::string bg_page_name;
   bool persistent =
-      manifest->FindBoolPath("background.persistent").value_or(true);
-  if (manifest->FindPath("background.scripts"))
+      manifest->FindBoolByDottedPath("background.persistent").value_or(true);
+  if (manifest->FindByDottedPath("background.scripts"))
     bg_page_name = "_generated_background_page.html";
-  manifest->GetString("background.page", &bg_page_name);
+  if (const std::string* name_str = manifest->FindString("background.page"))
+    bg_page_name = *name_str;
   if (bg_page_name.empty() || !persistent)
     return Status(kOk);
   GURL base_url("chrome-extension://" + id + "/");
@@ -998,33 +998,34 @@ Status ProcessExtension(const std::string& extension,
     return Status(kUnknownError, "cannot read manifest");
   std::unique_ptr<base::Value> manifest_value =
       base::JSONReader::ReadDeprecated(manifest_data);
-  base::DictionaryValue* manifest;
-  if (!manifest_value || !manifest_value->GetAsDictionary(&manifest))
+  base::Value::Dict* manifest =
+      manifest_value ? manifest_value->GetIfDict() : nullptr;
+  if (!manifest)
     return Status(kUnknownError, "invalid manifest");
 
-  std::string manifest_key_base64;
-  if (manifest->GetString("key", &manifest_key_base64)) {
+  const std::string* manifest_key_base64 = manifest->FindString("key");
+  if (manifest_key_base64) {
     // If there is a key in both the header and the manifest, use the key in the
     // manifest. This allows chromedriver users users who generate dummy crxs
     // to set the manifest key and have a consistent ID.
     std::string manifest_key;
-    if (!base::Base64Decode(manifest_key_base64, &manifest_key))
+    if (!base::Base64Decode(*manifest_key_base64, &manifest_key))
       return Status(kUnknownError, "'key' in manifest is not base64 encoded");
     std::string manifest_id = GenerateExtensionId(manifest_key);
     if (id != manifest_id) {
       if (is_crx_file) {
         LOG(WARNING)
             << "Public key in crx header is different from key in manifest"
-            << std::endl << "key from header:   " << public_key_base64
-            << std::endl << "key from manifest: " << manifest_key_base64
-            << std::endl << "generated extension id from header key:   " << id
-            << std::endl << "generated extension id from manifest key: "
-            << manifest_id;
+            << std::endl
+            << "key from header:   " << public_key_base64 << std::endl
+            << "key from manifest: " << *manifest_key_base64 << std::endl
+            << "generated extension id from header key:   " << id << std::endl
+            << "generated extension id from manifest key: " << manifest_id;
       }
       id = manifest_id;
     }
   } else {
-    manifest->SetString("key", public_key_base64);
+    manifest->Set("key", public_key_base64);
     base::JSONWriter::Write(*manifest, &manifest_data);
     if (base::WriteFile(
             manifest_path, manifest_data.c_str(), manifest_data.size()) !=
@@ -1084,30 +1085,30 @@ Status ProcessExtensions(const std::vector<std::string>& extensions,
   return Status(kOk);
 }
 
-Status WritePrefsFile(
-    const std::string& template_string,
-    const base::DictionaryValue* custom_prefs,
-    const base::FilePath& path) {
+Status WritePrefsFile(const std::string& template_string,
+                      const base::Value::Dict* custom_prefs,
+                      const base::FilePath& path) {
   auto parsed_json =
       base::JSONReader::ReadAndReturnValueWithError(template_string);
-  if (!parsed_json.has_value())
+  if (!parsed_json.has_value()) {
     return Status(kUnknownError, "cannot parse internal JSON template: " +
                                      parsed_json.error().message);
+  }
 
-  base::DictionaryValue* prefs;
-  if (!parsed_json->GetAsDictionary(&prefs))
+  base::Value::Dict* prefs = parsed_json->GetIfDict();
+  if (!prefs)
     return Status(kUnknownError, "malformed prefs dictionary");
 
   if (custom_prefs) {
-    for (const auto item : custom_prefs->GetDict()) {
-      prefs->GetDict().SetByDottedPath(item.first, item.second.Clone());
+    for (const auto item : *custom_prefs) {
+      prefs->SetByDottedPath(item.first, item.second.Clone());
     }
   }
 
   std::string prefs_str;
   base::JSONWriter::Write(*prefs, &prefs_str);
   VLOG(0) << "Populating " << path.BaseName().value()
-          << " file: " << PrettyPrintValue(*prefs);
+          << " file: " << PrettyPrintValue(base::Value(prefs->Clone()));
   if (static_cast<int>(prefs_str.length()) != base::WriteFile(
           path, prefs_str.c_str(), prefs_str.length())) {
     return Status(kUnknownError, "failed to write prefs file");
@@ -1115,10 +1116,9 @@ Status WritePrefsFile(
   return Status(kOk);
 }
 
-Status PrepareUserDataDir(
-    const base::FilePath& user_data_dir,
-    const base::DictionaryValue* custom_prefs,
-    const base::DictionaryValue* custom_local_state) {
+Status PrepareUserDataDir(const base::FilePath& user_data_dir,
+                          const base::Value::Dict* custom_prefs,
+                          const base::Value::Dict* custom_local_state) {
   base::FilePath default_dir =
       user_data_dir.AppendASCII(chrome::kInitialProfile);
   if (!base::CreateDirectory(default_dir))

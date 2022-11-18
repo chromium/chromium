@@ -65,7 +65,7 @@ class Chrome {
 
   // Sets the rect of the specified WebView
   virtual Status SetWindowRect(const std::string& target_id,
-                               const base::DictionaryValue& params) = 0;
+                               const base::Value::Dict& params) = 0;
 
   // Maximizes specified WebView.
   virtual Status MaximizeWindow(const std::string& target_id) = 0;
@@ -87,7 +87,7 @@ class Chrome {
 
   // Requests altering permission setting for given permission.
   virtual Status SetPermission(
-      std::unique_ptr<base::DictionaryValue> permission_descriptor,
+      std::unique_ptr<base::Value::Dict> permission_descriptor,
       PermissionState desired_state,
       bool one_realm,
       WebView* current_view) = 0;
