@@ -157,7 +157,6 @@ crbug.com/923134 [ android ] ContextLost_WebGL2Blocked [ Skip ]
 # Failing on android N5
 
 # Flaking on Linux FYI Release
-crbug.com/1340081 [ linux release amd-0x7340 ] ContextLost_WorkerWebGLRAFAfterGPUCrash [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
