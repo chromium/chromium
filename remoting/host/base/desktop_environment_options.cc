@@ -120,7 +120,7 @@ void DesktopEnvironmentOptions::ApplySessionOptions(
   // This field is for test purpose. Usually it should not be set to false.
   absl::optional<bool> detect_updated_region =
       options.GetBool("Detect-Updated-Region");
-  if (detect_updated_region) {
+  if (detect_updated_region.has_value()) {
     desktop_capture_options_.set_detect_updated_region(*detect_updated_region);
   }
 #if defined(WEBRTC_USE_PIPEWIRE)

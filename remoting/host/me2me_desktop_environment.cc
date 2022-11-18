@@ -160,6 +160,15 @@ Me2MeDesktopEnvironment::Me2MeDesktopEnvironment(
   // see http://crbug.com/73423. It's safe to enable it here because it works
   // properly under Xvfb.
   mutable_desktop_capture_options()->set_use_update_notifications(true);
+
+#if BUILDFLAG(IS_LINUX)
+  // Setting this option to false means that the capture differ wrapper will not
+  // be used when the X11 capturer is selected. This reduces the X11 capture
+  // time by a few milliseconds per frame and is safe because we can rely on
+  // XDAMAGE to identify the changed regions rather than checking each pixel
+  // ourselves.
+  mutable_desktop_capture_options()->set_detect_updated_region(false);
+#endif
 }
 
 bool Me2MeDesktopEnvironment::InitializeSecurity(
