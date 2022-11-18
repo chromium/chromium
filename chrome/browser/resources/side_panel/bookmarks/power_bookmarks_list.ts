@@ -116,7 +116,8 @@ export class PowerBookmarksListElement extends PolymerElement {
   private compact_: boolean;
   private activeFolderPath_: chrome.bookmarks.BookmarkTreeNode[];
   private labels_: Label[];
-  private descriptions_ = new Map<string, string>();
+  private compactDescriptions_ = new Map<string, string>();
+  private expandedDescriptions_ = new Map<string, string>();
   private showPriceTracking_: boolean;
   private activeSortIndex_: number;
   private sortTypes_: string[];
@@ -161,42 +162,49 @@ export class PowerBookmarksListElement extends PolymerElement {
    */
   private findBookmarkDescriptions_(bookmark:
                                         chrome.bookmarks.BookmarkTreeNode) {
-    if (bookmark.children && this.compact_) {
+    if (bookmark.children) {
       PluralStringProxyImpl.getInstance()
           .getPluralString('bookmarkFolderChildCount', bookmark.children.length)
           .then(pluralString => {
-            this.set(`descriptions_.${bookmark.id}`, pluralString);
+            this.set(`compactDescriptions_.${bookmark.id}`, pluralString);
           });
-    } else if (bookmark.url && !this.compact_) {
+    }
+    if (bookmark.url) {
       const url = new URL(bookmark.url);
       // Show chrome:// if it's a chrome internal url
       if (url.protocol === 'chrome:') {
-        this.set(`descriptions_.${bookmark.id}`, 'chrome://' + url.hostname);
+        this.set(
+            `expandedDescriptions_.${bookmark.id}`, 'chrome://' + url.hostname);
+      } else {
+        this.set(`expandedDescriptions_.${bookmark.id}`, url.hostname);
       }
-      this.set(`descriptions_.${bookmark.id}`, url.hostname);
-    } else {
-      this.set(`descriptions_.${bookmark.id}`, '');
     }
     if (bookmark.children) {
       bookmark.children.forEach(child => this.findBookmarkDescriptions_(child));
     }
   }
 
-  private getBookmarkDescription_(bookmark: chrome.bookmarks.BookmarkTreeNode) {
-    return this.get(`descriptions_.${bookmark.id}`);
+  private getBookmarkDescription_(bookmark: chrome.bookmarks.BookmarkTreeNode):
+      string|undefined {
+    if (this.compact_) {
+      return this.get(`compactDescriptions_.${bookmark.id}`);
+    } else {
+      return this.get(`expandedDescriptions_.${bookmark.id}`);
+    }
   }
 
-  private getFolderSortLabel_(): string {
-    let folderName;
+  private getFolderLabel_(): string {
     if (this.activeFolderPath_.length) {
       const activeFolder =
           this.activeFolderPath_[this.activeFolderPath_.length - 1];
-      folderName = activeFolder!.title;
+      return activeFolder!.title;
     } else {
-      folderName = loadTimeData.getString('allBookmarks');
+      return loadTimeData.getString('allBookmarks');
     }
-    return loadTimeData.getStringF(
-        'folderSort', folderName, this.sortTypes_[this.activeSortIndex_]!);
+  }
+
+  private getSortLabel_(): string {
+    return this.sortTypes_[this.activeSortIndex_]!;
   }
 
   private getProductInfos_(): BookmarkProductInfo[] {
@@ -342,11 +350,37 @@ export class PowerBookmarksListElement extends PolymerElement {
     this.$.sortMenu.showAt(event.target as HTMLElement);
   }
 
+  private onAddNewFolderClicked_(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    // TODO: Implement add new folder functionality
+  }
+
+  private onBulkEditClicked_(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    // TODO: Implement edit state
+  }
+
   private onSortTypeClicked_(event: DomRepeatEvent<string>) {
     event.preventDefault();
     event.stopPropagation();
     this.$.sortMenu.close();
     this.activeSortIndex_ = event.model.index;
+  }
+
+  private onVisualViewClicked_(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.$.sortMenu.close();
+    this.compact_ = false;
+  }
+
+  private onCompactViewClicked_(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.$.sortMenu.close();
+    this.compact_ = true;
   }
 
   private onAddTabClicked_() {

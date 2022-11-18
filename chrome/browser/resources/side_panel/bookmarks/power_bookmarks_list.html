@@ -20,8 +20,9 @@
   }
 
   cr-icon-button {
+    --cr-icon-button-icon-size: 16px;
     --cr-icon-button-size: 20px;
-    margin-inline-start: 0;
+    margin: 0;
   }
 
   iron-icon {
@@ -91,14 +92,6 @@
     font-size: 15px;
   }
 
-  .folder-sort-row {
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-    gap: 4px;
-    margin: 14px;
-  }
-
   .footer-or-empty-state {
     border-top: 1px solid var(--border-color);
   }
@@ -117,6 +110,13 @@
     padding: 6px;
   }
 
+  .heading-row {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    margin: 14px;
+  }
+
   .icon-arrow-back {
     -webkit-mask-image: var(--cr-icon-image);
     -webkit-mask-position: center;
@@ -125,6 +125,14 @@
     background-color: var(--cr-primary-text-color);
     height: var(--back-button-size);
     width: var(--back-button-size);
+  }
+
+  .icon-button-row {
+    align-items: center;
+    color: var(--cr-secondary-text-color);
+    display: flex;
+    font-size: var(--mwb-secondary-text-font-size);
+    gap: 8px;
   }
 
   .icon-discounted {
@@ -173,6 +181,21 @@
     color: var(--price-tracking-original-color);
     text-decoration: line-through;
   }
+
+  .sort-menu-button {
+    --hover-bg-color: var(--cr-hover-background-color);
+    --ripple-opacity: 0;
+    border: none;
+    color: var(--cr-secondary-text-color);
+    gap: 4px;
+    height: fit-content;
+    padding: 0;
+  }
+
+  .sort-menu-button:active {
+    background-color: var(--cr-active-background-color);
+    box-shadow: none;
+  }
 </style>
 
 <div class="column" id="powerBookmarksContainer">
@@ -186,21 +209,32 @@
       </button>
     </template>
   </div>
-  <div class="folder-sort-row">
+  <div class="heading-row">
     <button class="back-button" on-click="onBackClicked_"
         disabled="[[!activeFolderPath_.length]]">
       <div class="icon-arrow-back" hidden="[[!activeFolderPath_.length]]">
       </div>
-      [[getFolderSortLabel_(activeFolderPath_.*, activeSortIndex_)]]
+      [[getFolderLabel_(activeFolderPath_.*)]]
     </button>
-    <cr-icon-button iron-icon="cr:expand-more"
-        aria-label="$i18n{sortMenuA11yLabel}"
-        on-click="onShowSortMenuClicked_"></cr-icon-button>
+    <div class="icon-button-row">
+      <cr-button class="sort-menu-button" aria-label="$i18n{sortMenuA11yLabel}"
+          on-click="onShowSortMenuClicked_">
+        [[getSortLabel_(activeSortIndex_)]]
+        <iron-icon icon="bookmarks:filter-list"></iron-icon>
+      </cr-button>
+      <cr-icon-button iron-icon="bookmarks:create-new-folder"
+          aria-label="$i18n{createNewFolderA11yLabel}"
+          on-click="onAddNewFolderClicked_"></cr-icon-button>
+      <cr-icon-button class="icon-edit"
+          aria-label="$i18n{editBookmarkListA11yLabel}"
+          on-click="onBulkEditClicked_"></cr-icon-button>
+    </div>
   </div>
   <div class="bookmarks" hidden="[[!shownBookmarks_.length]]">
     <template is="dom-repeat" items="[[shownBookmarks_]]">
       <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]"
-          description="[[getBookmarkDescription_(item, descriptions_.*)]]"
+          description=
+              "[[getBookmarkDescription_(item, descriptions_.*, compact_)]]"
           compact="[[compact_]]"
           on-row-clicked="onRowClicked_">
         <div slot="extra-content-container">
@@ -247,4 +281,13 @@
       [[getSortMenuItemLabel_(item)]]
     </button>
   </template>
+  <hr>
+  <button class="dropdown-item" on-click="onVisualViewClicked_">
+    <iron-icon icon="cr:check" invisible$="[[compact_]]"></iron-icon>
+    $i18n{visualView}
+  </button>
+  <button class="dropdown-item" on-click="onCompactViewClicked_">
+    <iron-icon icon="cr:check" invisible$="[[!compact_]]"></iron-icon>
+    $i18n{compactView}
+  </button>
 </cr-action-menu>
