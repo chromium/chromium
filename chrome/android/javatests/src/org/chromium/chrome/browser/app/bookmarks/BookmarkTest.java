@@ -271,7 +271,6 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/1385530")
     public void testAddBookmark() throws Exception {
         mActivityTestRule.loadUrl(mTestPage);
         // Check partner bookmarks are lazily loaded.
@@ -1161,7 +1160,6 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1385530")
     public void testMoveButtonsGoneForPartnerBookmarks() throws Exception {
         loadFakePartnerBookmarkShimForTesting();
         BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
