@@ -38,14 +38,11 @@ ci/WebKit Linux ASAN
 ci/WebKit Linux Leak
 ci/WebKit Linux MSAN
 ci/WebKit Win10
-ci/Win 7 Tests x64 (1)
 ci/Win Builder
 ci/Win Builder (dbg)
 ci/Win x64 Builder
 ci/Win x64 Builder (dbg)
 ci/Win10 Tests x64
-ci/Win7 (32) Tests
-ci/Win7 Tests (1)
 ci/Windows deterministic
 ci/android-archive-dbg
 ci/android-archive-rel

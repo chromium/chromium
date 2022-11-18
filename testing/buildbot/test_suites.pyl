@@ -5220,26 +5220,6 @@
       },
     },
 
-    'win7_32_bit_gtests': {
-      'base_unittests': {},
-      'browser_tests': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
-      'sbox_integration_tests': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'integrity': 'high',
-            }
-          ],
-        },
-      },
-      'sbox_unittests': {},
-      'sbox_validation_tests': {},
-    },
-
     'win_specific_chromium_gtests': {
       'chrome_cleaner_unittests': {},
       'chrome_elf_unittests': {},

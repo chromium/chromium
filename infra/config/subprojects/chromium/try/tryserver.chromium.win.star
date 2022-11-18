@@ -159,7 +159,6 @@ try_.builder(
     name = "win_chromium_x64_rel_ng",
     mirrors = [
         "ci/Win x64 Builder",
-        "ci/Win 7 Tests x64 (1)",
     ],
 )
 
@@ -287,20 +286,6 @@ try_.compilator_builder(
     main_list_view = "try",
     # TODO (crbug.com/1245171): Revert when root issue is fixed
     grace_period = 4 * time.minute,
-)
-
-try_.builder(
-    name = "win7-rel",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
-    mirrors = [
-        "ci/Win Builder",
-        "ci/Win7 Tests (1)",
-    ],
-    cores = 16,
-    execution_timeout = 4 * time.hour + 30 * time.minute,
-    goma_jobs = goma.jobs.J300,
-    main_list_view = "try",
-    ssd = True,
 )
 
 try_.builder(

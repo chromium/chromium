@@ -230,8 +230,6 @@
   },
   'blink_web_tests': {
     'remove_from': [
-      'Win 7 Tests x64 (1)',  # 64-bit win is unsupported by the layout tests.
-      'Win7 Tests (1)',
       'Win10 Tests x64 (dbg)',
       'mac-osxbeta-rel',
     ],
@@ -553,8 +551,6 @@
   },
   'blink_wpt_tests': {
     'remove_from': [
-      'Win 7 Tests x64 (1)',  # 64-bit win is unsupported by the layout tests.
-      'Win7 Tests (1)',
       'Win10 Tests x64 (dbg)',
       'devtools_frontend_linux_blink_light_rel',
       'devtools_frontend_linux_blink_light_rel_fastbuild',
@@ -1051,13 +1047,6 @@
           'shards': 15,
           'quickrun_shards': 30,
         }
-      },
-      'Win7 Tests (1)': {
-        # This is for slow test execution that often becomes a critical path of
-        # swarming jobs. crbug.com/868114
-        'swarming': {
-          'shards': 15,
-        },
       },
       'linux-chromeos-chrome': {
         # TODO(https://crbug.com/932269): Promote out of experiment when the
@@ -2354,10 +2343,6 @@
   },
   'grit_python_unittests': {
     'remove_from': [
-      # These tests require node, which is not supported in Win7.
-      # (https://crbug.com/1218989)
-      'Win 7 Tests x64 (1)',
-      'Win7 Tests (1)',
       # TODO(https://crbug.com/1267125): Re-enable.
       'mac11-arm64-rel-tests',
       # TODO(https://crbug.com/1267125): Re-enable.
@@ -2954,10 +2939,6 @@
   },
   'notification_helper_unittests': {
     'remove_from': [
-      # The test uses WinRT, which only exists in Windows 8 or above.
-      # (https://crbug.com/813553)
-      'Win 7 Tests x64 (1)',
-      'Win7 Tests (1)',
       # all these bots run Windows 7.
       'ToTWin',
       'ToTWin(dbg)',
@@ -3996,11 +3977,6 @@
     },
   },
   'webkit_unit_tests': {
-    'remove_from': [
-      # Flakily fails on Win7. https://crbug.com/943372.
-      'Win7 Tests (1)',
-      'Win 7 Tests x64 (1)',
-    ],
     'modifications': {
       'Linux ASan LSan Tests (1)': {
         # These are very slow on the ASAN trybot for some reason.

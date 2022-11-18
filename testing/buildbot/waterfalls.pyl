@@ -6066,15 +6066,6 @@
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
         },
       },
-      'Win 7 Tests x64 (1)': {
-        'mixins': [
-          'win7',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_win_gtests',
-          'isolated_scripts': 'chromium_win_rel_isolated_scripts',
-        },
-      },
       # 'Win Builder' and 'Win x64 Builder' should have the same set of
       # additional_compile_targets and test_suites.
       'Win Builder': {
@@ -6098,9 +6089,6 @@
           'scripts': 'chromium_win_scripts',
         },
       },
-      # 'Win10 Tests x64' and 'Win7 Tests (1)' should have the same set of
-      # additional_compile_targets and test_suites.
-      # Added pixel tests on Win 10 only.
       'Win10 Tests x64': {
         'mixins': [
           'x86-64',
@@ -6130,21 +6118,6 @@
         ],
         'test_suites': {
           'gtest_tests': 'chromium_win10_gtests',
-          'isolated_scripts': 'chromium_win_rel_isolated_scripts',
-        },
-      },
-      'Win7 (32) Tests': {
-        'mixins': [
-          'x86-32',
-          'win7',
-        ],
-        'test_suites': {
-          'gtest_tests': 'win7_32_bit_gtests',
-        }
-      },
-      'Win7 Tests (1)': {
-        'test_suites': {
-          'gtest_tests': 'chromium_win_gtests',
           'isolated_scripts': 'chromium_win_rel_isolated_scripts',
         },
       },
