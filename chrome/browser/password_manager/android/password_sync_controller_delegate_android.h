@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/types/strong_alias.h"
@@ -31,7 +32,8 @@ class PasswordSyncControllerDelegateAndroid
       public PasswordSyncControllerDelegateBridge::Consumer {
  public:
   explicit PasswordSyncControllerDelegateAndroid(
-      std::unique_ptr<PasswordSyncControllerDelegateBridge> bridge);
+      std::unique_ptr<PasswordSyncControllerDelegateBridge> bridge,
+      base::OnceClosure on_sync_shutdown);
   PasswordSyncControllerDelegateAndroid(
       const PasswordSyncControllerDelegateAndroid&) = delete;
   PasswordSyncControllerDelegateAndroid(
@@ -54,6 +56,7 @@ class PasswordSyncControllerDelegateAndroid
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   // PasswordStoreAndroidBackendBridge::Consumer implementation.
   void OnCredentialManagerNotified() override;
@@ -82,6 +85,8 @@ class PasswordSyncControllerDelegateAndroid
 
   // Last sync status set in CredentialManager.
   absl::optional<IsSyncEnabled> credential_manager_sync_setting_;
+
+  base::OnceClosure on_sync_shutdown_;
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_observation_{this};

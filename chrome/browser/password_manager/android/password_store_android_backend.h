@@ -319,6 +319,10 @@ class PasswordStoreAndroidBackend
   // each task cleared this way that it could have failed.
   void ClearZombieTasks();
 
+  // Clears |sync_service_| when syncer::SyncServiceObserver::OnSyncShutdown is
+  // called.
+  void SyncShutdown();
+
   // Observer to propagate potential password changes to.
   RemoteChangesReceived stored_passwords_changed_;
 

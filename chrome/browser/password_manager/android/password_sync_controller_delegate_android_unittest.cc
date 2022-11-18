@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/password_manager/android/mock_password_sync_controller_delegate_bridge.h"
 #include "components/password_manager/core/browser/android_backend_error.h"
@@ -32,7 +34,8 @@ class PasswordSyncControllerDelegateAndroidTest : public testing::Test {
  protected:
   PasswordSyncControllerDelegateAndroidTest() {
     sync_controller_delegate_ =
-        std::make_unique<PasswordSyncControllerDelegateAndroid>(CreateBridge());
+        std::make_unique<PasswordSyncControllerDelegateAndroid>(
+            CreateBridge(), base::DoNothing());
   }
 
   ~PasswordSyncControllerDelegateAndroidTest() override {
@@ -50,7 +53,6 @@ class PasswordSyncControllerDelegateAndroidTest : public testing::Test {
     return *sync_controller_delegate_;
   }
 
- private:
   std::unique_ptr<PasswordSyncControllerDelegateBridge> CreateBridge() {
     auto unique_delegate_bridge = std::make_unique<
         StrictMock<MockPasswordSyncControllerDelegateBridge>>();
@@ -59,6 +61,7 @@ class PasswordSyncControllerDelegateAndroidTest : public testing::Test {
     return unique_delegate_bridge;
   }
 
+ private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   syncer::TestSyncService sync_service_;
   std::unique_ptr<PasswordSyncControllerDelegateAndroid>
@@ -203,6 +206,17 @@ TEST_F(PasswordSyncControllerDelegateAndroidTest,
        AttachesObserverOnSyncServiceInitialized) {
   sync_controller_delegate()->OnSyncServiceInitialized(sync_service());
   EXPECT_TRUE(sync_service()->HasObserver(sync_controller_delegate()));
+}
+
+TEST_F(PasswordSyncControllerDelegateAndroidTest, OnSyncShutdown) {
+  base::MockCallback<base::OnceClosure> mock_callback;
+  auto sync_controller =
+      std::make_unique<PasswordSyncControllerDelegateAndroid>(
+          CreateBridge(), mock_callback.Get());
+  syncer::TestSyncService sync_service;
+
+  EXPECT_CALL(mock_callback, Run);
+  sync_controller->OnSyncShutdown(&sync_service);
 }
 
 }  // namespace password_manager

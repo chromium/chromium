@@ -31,8 +31,10 @@ std::string BuildCredentialManagerNotificationMetricName(
 }  // namespace
 
 PasswordSyncControllerDelegateAndroid::PasswordSyncControllerDelegateAndroid(
-    std::unique_ptr<PasswordSyncControllerDelegateBridge> bridge)
-    : bridge_(std::move(bridge)) {
+    std::unique_ptr<PasswordSyncControllerDelegateBridge> bridge,
+    base::OnceClosure on_sync_shutdown)
+    : bridge_(std::move(bridge)),
+      on_sync_shutdown_(std::move(on_sync_shutdown)) {
   DCHECK(bridge_);
   bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
 }
@@ -142,6 +144,14 @@ void PasswordSyncControllerDelegateAndroid::OnStateChanged(
     bridge_->NotifyCredentialManagerWhenNotSyncing();
     credential_manager_sync_setting_ = IsSyncEnabled(false);
   }
+}
+
+void PasswordSyncControllerDelegateAndroid::OnSyncShutdown(
+    syncer::SyncService* sync) {
+  sync_service_ = nullptr;
+  if (!on_sync_shutdown_)
+    return;
+  std::move(on_sync_shutdown_).Run();
 }
 
 void PasswordSyncControllerDelegateAndroid::OnCredentialManagerNotified() {

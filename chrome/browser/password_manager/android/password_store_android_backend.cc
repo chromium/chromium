@@ -676,7 +676,9 @@ PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(PrefService* prefs)
   bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
   sync_controller_delegate_ =
       std::make_unique<PasswordSyncControllerDelegateAndroid>(
-          std::make_unique<PasswordSyncControllerDelegateBridgeImpl>());
+          std::make_unique<PasswordSyncControllerDelegateBridgeImpl>(),
+          base::BindOnce(&PasswordStoreAndroidBackend::SyncShutdown,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
@@ -712,6 +714,7 @@ void PasswordStoreAndroidBackend::InitBackend(
 
 void PasswordStoreAndroidBackend::Shutdown(
     base::OnceClosure shutdown_completed) {
+  sync_service_ = nullptr;
   lifecycle_helper_->UnregisterObserver();
   // TODO(https://crbug.com/1229654): Implement (e.g. unsubscribe from GMS).
   std::move(shutdown_completed).Run();
@@ -1391,6 +1394,10 @@ void PasswordStoreAndroidBackend::ClearZombieTasks() {
     GetAndEraseJob(job_id)->RecordMetrics(AndroidBackendError(
         AndroidBackendErrorType::kCleanedUpWithoutResponse));
   });
+}
+
+void PasswordStoreAndroidBackend::SyncShutdown() {
+  sync_service_ = nullptr;
 }
 
 }  // namespace password_manager
