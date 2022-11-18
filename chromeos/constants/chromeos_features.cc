@@ -56,6 +56,11 @@ BASE_FEATURE(kQuickAnswersV2SettingsSubToggle,
              "QuickAnswersV2SettingsSubToggle",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether to enable Quick Answers Rich card.
+BASE_FEATURE(kQuickAnswersRichCard,
+             "QuickAnswersRichCard",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsCloudGamingDeviceEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->IsCloudGamingDevice();
@@ -74,6 +79,10 @@ bool IsDemoModeSWAEnabled() {
 
 bool IsQuickAnswersV2TranslationDisabled() {
   return base::FeatureList::IsEnabled(kDisableQuickAnswersV2Translation);
+}
+
+bool IsQuickAnswersRichCardEnabled() {
+  return base::FeatureList::IsEnabled(kQuickAnswersRichCard);
 }
 
 bool IsQuickAnswersV2SettingsSubToggleEnabled() {
