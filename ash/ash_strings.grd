@@ -2559,7 +2559,7 @@ Connect your device to power.
       </message>
 
       <message name="IDS_ASH_STATUS_TRAY_AUDIO_HEADPHONE" desc="label used for audio headphone device">
-        Headphone
+        Headphones
       </message>
 
       <message name="IDS_ASH_STATUS_TRAY_AUDIO_INTERNAL_SPEAKER" desc="label used for internal audio speaker">
