@@ -68,10 +68,9 @@ class VIEWS_EXPORT ElementTrackerViews {
   // a Widget may not have associated elements, and that the returned object
   // may be transient.
   //
-  // If `assign_temporary_id` is set and `view` does not have an identifier,
-  // ui::ElementTracker::kTemporaryIdentifier will be assigned. This does not
-  // guarantee that the method will return non-null, as the View may still not
-  // be visible to the user.
+  // For the non-const version, if `assign_temporary_id` is set and `view` does
+  // not have an identifier, ui::ElementTracker::kTemporaryIdentifier will be
+  // assigned.
   TrackedElementViews* GetElementForView(View* view,
                                          bool assign_temporary_id = false);
   const TrackedElementViews* GetElementForView(const View* view) const;
