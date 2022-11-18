@@ -15,6 +15,9 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Router} from '../../router.js';
+import {routes} from '../os_route.js';
+
 /**
  * @constructor
  * @extends {PolymerElement}
@@ -34,13 +37,8 @@ class HotspotSummaryItemElement extends HotspotSummaryItemElementBase {
   }
 
   /** @private */
-  onSubpageArrowClick_() {
-    // TODO: implementation
-  }
-
-  /** @private */
-  onWrapperClick_() {
-    // TODO: implementation
+  navigateToDetailPage_() {
+    Router.getInstance().navigateTo(routes.HOTSPOT_DETAIL);
   }
 }
 

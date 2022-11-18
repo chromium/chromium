@@ -280,6 +280,46 @@ TEST_F('OSSettingsInternetPageV3Test', 'AllJsTests', () => {
   mocha.run();
 });
 
+// TODO(b/239477916) Move this test back into the list of tests below once
+// hotspot is launched.
+var OSSettingsHotspotSubpageV3Test = class extends OSSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/hotspot_subpage_tests.js&host=test';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: super.featureList.enabled.concat(['ash::features::kHotspot'])
+    };
+  }
+};
+
+TEST_F('OSSettingsHotspotSubpageV3Test', 'AllJsTests', () => {
+  mocha.run();
+});
+
+// TODO(b/239477916) Move this test back into the list of tests below once
+// hotspot is launched.
+var OSSettingsHotspotSummaryItemV3Test = class extends OSSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/hotspot_summary_item_tests.js&host=test';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: super.featureList.enabled.concat(['ash::features::kHotspot'])
+    };
+  }
+};
+
+TEST_F('OSSettingsHotspotSummaryItemV3Test', 'AllJsTests', () => {
+  mocha.run();
+});
+
 function crostiniTestGenPreamble() {
   GEN('crostini::FakeCrostiniFeatures fake_crostini_features;');
   GEN('fake_crostini_features.SetAll(true);');
@@ -443,11 +483,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['NearbyShareReceiveDialog', 'nearby_share_receive_dialog_tests.js'],
  ['NetworkAlwaysOnVpn', 'network_always_on_vpn_test.js'],
  ['NetworkProxySection', 'network_proxy_section_test.js'],
- [
-   'NetworkSummary',
-   'network_summary_test.js',
-   {enabled: ['ash::features::kHotspot']},
- ],
+ ['NetworkSummary', 'network_summary_test.js'],
  ['NetworkSummaryItem', 'network_summary_item_test.js'],
  ['OncMojoTest', 'onc_mojo_test.js'],
  ['OsBluetoothPage', 'os_bluetooth_page_tests.js'],

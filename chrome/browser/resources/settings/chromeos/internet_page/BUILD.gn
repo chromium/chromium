@@ -19,6 +19,7 @@ js_type_check("closure_compile_module") {
     ":esim_install_error_dialog",
     ":esim_remove_profile_dialog",
     ":esim_rename_dialog",
+    ":hotspot_subpage",
     ":hotspot_summary_item",
     ":internet_config",
     ":internet_detail_menu",
@@ -60,6 +61,7 @@ js_library("cellular_setup_dialog") {
 js_library("hotspot_summary_item") {
   deps = [
     "//ash/webui/common/resources:i18n_behavior",
+    "//chrome/browser/resources/settings:router",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -245,6 +247,13 @@ js_library("internet_subpage") {
   ]
 }
 
+js_library("hotspot_subpage") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list = []
+}
+
 js_library("network_always_on_vpn") {
   deps = [
     ":internet_shared_css",
@@ -427,6 +436,7 @@ html_to_js("web_components") {
     "esim_install_error_dialog.js",
     "esim_remove_profile_dialog.js",
     "esim_rename_dialog.js",
+    "hotspot_subpage.js",
     "hotspot_summary_item.js",
     "internet_config.js",
     "internet_detail_menu.js",

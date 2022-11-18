@@ -297,6 +297,18 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
         type: String,
         value: '',
       },
+
+      /**
+       * Return true if hotspot feature flag is enabled.
+       * @private
+       */
+      isHotspotFeatureEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('isHotspotEnabled') &&
+              loadTimeData.getBoolean('isHotspotEnabled');
+        },
+      },
     };
   }
 

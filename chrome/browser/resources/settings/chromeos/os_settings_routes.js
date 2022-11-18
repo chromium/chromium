@@ -57,6 +57,7 @@ import {Route} from '../router.js';
  *   FINGERPRINT: !Route,
  *   FILES: !Route,
  *   GOOGLE_ASSISTANT: !Route,
+ *   HOTSPOT_DETAIL: !Route,
  *   INTERNET: !Route,
  *   INTERNET_NETWORKS: !Route,
  *   KERBEROS: !Route,

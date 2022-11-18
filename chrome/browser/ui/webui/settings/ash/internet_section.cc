@@ -44,6 +44,7 @@ using ::chromeos::settings::mojom::kApnSubpagePath;
 using ::chromeos::settings::mojom::kCellularDetailsSubpagePath;
 using ::chromeos::settings::mojom::kCellularNetworksSubpagePath;
 using ::chromeos::settings::mojom::kEthernetDetailsSubpagePath;
+using ::chromeos::settings::mojom::kHotspotSubpagePath;
 using ::chromeos::settings::mojom::kKnownNetworksSubpagePath;
 using ::chromeos::settings::mojom::kMobileDataNetworksSubpagePath;
 using ::chromeos::settings::mojom::kNetworkSectionPath;
@@ -915,6 +916,13 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_INTERNET_TETHER_NOT_SETUP_WITH_LEARN_MORE_LINK,
           GetHelpUrlWithBoard(chrome::kInstantTetheringLearnMoreURL)));
+  // TODO(b/259623645): Replace learn more link with hotspot url once it is
+  // ready.
+  html_source->AddString(
+      "hotspotSubpageSubtitle",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_INTERNET_HOTSPOT_SUBTITLE_WITH_LEARN_MORE_LINK,
+          GetHelpUrlWithBoard(chrome::kInstantTetheringLearnMoreURL)));
 }
 
 void InternetSection::AddHandlers(content::WebUI* web_ui) {
@@ -1022,6 +1030,12 @@ void InternetSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::kCellularDetailsSubpagePath);
   RegisterNestedSettingBulk(mojom::Subpage::kCellularDetails,
                             GetCellularDetailsSettings(), generator);
+
+  // Hotspot details.
+  generator->RegisterTopLevelSubpage(
+      IDS_SETTINGS_INTERNET_HOTSPOT_DETAILS, mojom::Subpage::kHotspotDetails,
+      mojom::SearchResultIcon::kCellular,
+      mojom::SearchResultDefaultRank::kMedium, mojom::kHotspotSubpagePath);
 
   // APN.
   generator->RegisterNestedSubpage(

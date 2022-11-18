@@ -44,6 +44,7 @@ enum Subpage {
   kTetherDetails = 6,
   kVpnDetails = 7,
   kApn = 8,
+  kHotspotDetails = 9,
 
   // Bluetooth section.
   kBluetoothDevices = 100,
@@ -177,6 +178,7 @@ const string kCellularDetailsSubpagePath = "networkDetail";
 const string kTetherDetailsSubpagePath = "networkDetail";
 const string kVpnDetailsSubpagePath = "networkDetail";
 const string kApnSubpagePath = "apn";
+const string kHotspotSubpagePath = "hotspotDetail";
 
 // Bluetooth section.
 const string kBluetoothSectionPath = "bluetooth";
