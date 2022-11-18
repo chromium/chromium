@@ -56,6 +56,7 @@
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "ash/system/unified/feature_pods_container_view.h"
+#include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/quick_settings_view.h"
 #include "ash/system/unified/quiet_mode_feature_pod_controller.h"
@@ -190,7 +191,7 @@ UnifiedSystemTrayController::CreateQuickSettingsView() {
   auto qs_view = std::make_unique<QuickSettingsView>(this);
   quick_settings_view_ = qs_view.get();
 
-  InitFeaturePods();
+  InitFeatureTiles();
 
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsForChromeOS) &&
       !Shell::Get()->session_controller()->IsScreenLocked() &&
@@ -609,10 +610,6 @@ void UnifiedSystemTrayController::LoadIsExpandedPref() {
 }
 
 void UnifiedSystemTrayController::InitFeaturePods() {
-  // TODO(crbug/1368717): use FeatureTiles.
-  if (ash::features::IsQsRevampEnabled())
-    return;
-
   if (ash::features::IsQuickSettingsNetworkRevampEnabled()) {
     AddFeaturePodItem(std::make_unique<NetworkFeaturePodController>(this));
   } else {
@@ -645,9 +642,35 @@ void UnifiedSystemTrayController::InitFeaturePods() {
       Shell::Get()->tablet_mode_controller()->InTabletMode());
 }
 
+void UnifiedSystemTrayController::InitFeatureTiles() {
+  // TODO(b/252871301): Create each feature's tile.
+  // For prototyping, adding a primary and a compact feature tile, followed by a
+  // single compact placeholder tile and six primary placeholder tiles.
+  auto accessibility_controller =
+      std::make_unique<AccessibilityFeaturePodController>(this);
+  auto screen_capture_controller =
+      std::make_unique<CaptureModeFeaturePodController>(this);
+
+  std::vector<std::unique_ptr<FeatureTile>> tiles;
+  tiles.push_back(accessibility_controller->CreateTile());
+  tiles.push_back(screen_capture_controller->CreateTile());
+
+  // Adding placeholder tiles.
+  tiles.push_back(
+      std::make_unique<FeatureTile>(FeatureTile::TileType::kCompact));
+  while (tiles.size() < 9)
+    tiles.push_back(std::make_unique<FeatureTile>());
+
+  quick_settings_view_->AddTiles(std::move(tiles));
+
+  // Transfer ownership of controllers to this.
+  feature_pod_controllers_.push_back(std::move(accessibility_controller));
+  feature_pod_controllers_.push_back(std::move(screen_capture_controller));
+}
+
 void UnifiedSystemTrayController::AddFeaturePodItem(
     std::unique_ptr<FeaturePodControllerBase> controller) {
-  DCHECK(unified_view_ || quick_settings_view_);
+  DCHECK(unified_view_);
   FeaturePodButton* button = controller->CreateButton();
   button->SetExpandedAmount(IsExpanded() ? 1.0 : 0.0,
                             false /* fade_icon_button */);

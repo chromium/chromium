@@ -5,14 +5,17 @@
 #ifndef ASH_CAPTURE_MODE_CAPTURE_MODE_FEATURE_POD_CONTROLLER_H_
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_FEATURE_POD_CONTROLLER_H_
 
+#include <memory>
+
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 
 namespace ash {
 
+class FeatureTile;
 class UnifiedSystemTrayController;
 
-// Controller of a feature pod button that toggles night light mode.
+// Controller of a feature pod button that launches screen capture.
 class CaptureModeFeaturePodController : public FeaturePodControllerBase {
  public:
   explicit CaptureModeFeaturePodController(
@@ -25,6 +28,7 @@ class CaptureModeFeaturePodController : public FeaturePodControllerBase {
 
   // FeaturePodControllerBase:
   FeaturePodButton* CreateButton() override;
+  std::unique_ptr<FeatureTile> CreateTile() override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
 

@@ -4,9 +4,17 @@
 
 #include "ash/system/unified/feature_pod_controller_base.h"
 
+#include "ash/system/unified/feature_pod_button.h"
+#include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 
 namespace ash {
+
+// TODO(b/252871301): Remove after implementing every FeatureTile and making
+// this function pure virtual.
+std::unique_ptr<FeatureTile> FeaturePodControllerBase::CreateTile() {
+  return std::make_unique<FeatureTile>();
+}
 
 void FeaturePodControllerBase::OnLabelPressed() {
   return OnIconPressed();

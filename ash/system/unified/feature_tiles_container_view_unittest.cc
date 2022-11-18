@@ -4,35 +4,78 @@
 
 #include "ash/system/unified/feature_tiles_container_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
+#include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/views/test/views_test_utils.h"
 
 namespace ash {
 
-// TODO(crbug/1368717): use FeatureTile.
-class FeatureTilesContainerViewTest : public NoSessionAshTestBase,
+namespace {
+
+class MockFeaturePodController : public FeaturePodControllerBase {
+ public:
+  explicit MockFeaturePodController(FeatureTile::TileType type) : type_(type) {}
+
+  MockFeaturePodController(const MockFeaturePodController&) = delete;
+  MockFeaturePodController& operator=(const MockFeaturePodController&) = delete;
+
+  ~MockFeaturePodController() override = default;
+
+  FeaturePodButton* CreateButton() override {
+    return new FeaturePodButton(/*controller=*/this);
+  }
+
+  std::unique_ptr<FeatureTile> CreateTile() override {
+    auto tile = std::make_unique<FeatureTile>(/*controller=*/this,
+                                              /*togglable=*/true, type_);
+    tile->SetVectorIcon(vector_icons::kDogfoodIcon);
+    return tile;
+  }
+
+  QsFeatureCatalogName GetCatalogName() override {
+    return QsFeatureCatalogName::kUnknown;
+  }
+
+  void OnIconPressed() override {}
+  void OnLabelPressed() override {}
+
+ private:
+  FeatureTile::TileType type_;
+};
+
+}  // namespace
+
+class FeatureTilesContainerViewTest : public AshTestBase,
                                       public views::ViewObserver {
  public:
-  FeatureTilesContainerViewTest() = default;
+  FeatureTilesContainerViewTest() {
+    feature_list_.InitWithFeatures(
+        {features::kQsRevamp, features::kQsRevampWip}, {});
+  }
 
   FeatureTilesContainerViewTest(const FeatureTilesContainerViewTest&) = delete;
   FeatureTilesContainerViewTest& operator=(
       const FeatureTilesContainerViewTest&) = delete;
-
   ~FeatureTilesContainerViewTest() override = default;
 
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
     GetPrimaryUnifiedSystemTray()->ShowBubble();
-    container_ = std::make_unique<FeatureTilesContainerView>(controller());
+    container_ = std::make_unique<FeatureTilesContainerView>(
+        GetPrimaryUnifiedSystemTray()
+            ->bubble()
+            ->unified_system_tray_controller());
     container_->AddObserver(this);
   }
 
@@ -40,39 +83,25 @@ class FeatureTilesContainerViewTest : public NoSessionAshTestBase,
     container_->RemoveObserver(this);
     container_.reset();
     GetPrimaryUnifiedSystemTray()->CloseBubble();
-    NoSessionAshTestBase::TearDown();
-  }
-
-  // views::ViewObserver:
-  void OnViewPreferredSizeChanged(views::View* observed_view) override {
-    ++preferred_size_changed_count_;
+    AshTestBase::TearDown();
   }
 
   FeatureTilesContainerView* container() { return container_.get(); }
-
-  UnifiedSystemTrayController* controller() {
-    return GetPrimaryUnifiedSystemTray()
-        ->bubble()
-        ->unified_system_tray_controller();
-  }
-
-  int preferred_size_changed_count() const {
-    return preferred_size_changed_count_;
-  }
 
   int CalculateRowsFromHeight(int height) {
     return container()->CalculateRowsFromHeight(height);
   }
 
-  // TODO(crbug/1368717): use FeatureTile.
-  std::vector<FeaturePodButton*> buttons_;
+  int FeatureTileRowCount() { return container()->FeatureTileRowCount(); }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<FeatureTilesContainerView> container_;
-  int preferred_size_changed_count_ = 0;
 };
 
-TEST_F(FeatureTilesContainerViewTest, CalculateRowsFromHeight) {
+// Tests `CalculateRowsFromHeight` which returns the number of max displayable
+// feature tile rows given the available height.
+TEST_F(FeatureTilesContainerViewTest, DisplayableRows) {
   int row_height = kFeatureTileHeight;
 
   // Expect max number of rows even if available height could fit another row.
@@ -84,6 +113,41 @@ TEST_F(FeatureTilesContainerViewTest, CalculateRowsFromHeight) {
 
   // Expect min number of rows even with zero height.
   EXPECT_EQ(kFeatureTileMinRows, CalculateRowsFromHeight(0));
+}
+
+// Tests that rows are dynamically added by adding FeatureTile elements to the
+// container.
+TEST_F(FeatureTilesContainerViewTest, FeatureTileRows) {
+  std::unique_ptr<MockFeaturePodController> primary_tile_controller =
+      std::make_unique<MockFeaturePodController>(
+          FeatureTile::TileType::kPrimary);
+  std::unique_ptr<MockFeaturePodController> compact_tile_controller =
+      std::make_unique<MockFeaturePodController>(
+          FeatureTile::TileType::kCompact);
+
+  // Expect one row by adding two primary tiles.
+  std::vector<std::unique_ptr<FeatureTile>> two_primary_tiles;
+  two_primary_tiles.push_back(primary_tile_controller->CreateTile());
+  two_primary_tiles.push_back(primary_tile_controller->CreateTile());
+  container()->AddTiles(std::move(two_primary_tiles));
+  EXPECT_EQ(FeatureTileRowCount(), 1);
+
+  // Expect one other row by adding a primary and two compact tiles.
+  std::vector<std::unique_ptr<FeatureTile>> one_primary_two_compact_tiles;
+  one_primary_two_compact_tiles.push_back(
+      primary_tile_controller->CreateTile());
+  one_primary_two_compact_tiles.push_back(
+      compact_tile_controller->CreateTile());
+  one_primary_two_compact_tiles.push_back(
+      compact_tile_controller->CreateTile());
+  container()->AddTiles(std::move(one_primary_two_compact_tiles));
+  EXPECT_EQ(FeatureTileRowCount(), 2);
+
+  // Expect one other row by adding a single primary tile.
+  std::vector<std::unique_ptr<FeatureTile>> one_primary_tile;
+  one_primary_tile.push_back(primary_tile_controller->CreateTile());
+  container()->AddTiles(std::move(one_primary_tile));
+  EXPECT_EQ(FeatureTileRowCount(), 3);
 }
 
 }  // namespace ash

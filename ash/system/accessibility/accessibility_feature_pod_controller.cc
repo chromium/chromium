@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/unified/feature_pod_button.h"
+#include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -46,6 +47,21 @@ FeaturePodButton* AccessibilityFeaturePodController::CreateButton() {
     TrackVisibilityUMA();
 
   return button;
+}
+
+std::unique_ptr<FeatureTile> AccessibilityFeaturePodController::CreateTile() {
+  DCHECK(features::IsQsRevampEnabled());
+  auto feature_tile = std::make_unique<FeatureTile>(/*controller=*/this,
+                                                    /*is_togglable=*/false);
+  feature_tile->SetVectorIcon(kUnifiedMenuAccessibilityIcon);
+  feature_tile->SetLabel(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY));
+  feature_tile->SetSubLabelVisibility(false);
+  const std::u16string tooltip_text =
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_TOOLTIP);
+  feature_tile->SetTooltipText(tooltip_text);
+  feature_tile->SetDrillInButtonTooltipText(tooltip_text);
+  return feature_tile;
 }
 
 QsFeatureCatalogName AccessibilityFeaturePodController::GetCatalogName() {

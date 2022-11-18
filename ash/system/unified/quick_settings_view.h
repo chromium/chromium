@@ -17,6 +17,7 @@ class FlexLayoutView;
 
 namespace ash {
 
+class FeatureTile;
 class FeatureTilesContainerView;
 class PageIndicatorView;
 class QuickSettingsFooter;
@@ -40,6 +41,9 @@ class ASH_EXPORT QuickSettingsView : public views::View {
 
   // Sets the maximum height that the view can take.
   void SetMaxHeight(int max_height);
+
+  // Adds tiles to the FeatureTile container view.
+  void AddTiles(std::vector<std::unique_ptr<FeatureTile>> tiles);
 
   // Adds slider view.
   void AddSliderView(views::View* slider_view);

@@ -13,6 +13,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
+#include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -43,6 +44,19 @@ FeaturePodButton* CaptureModeFeaturePodController::CreateButton() {
 
   button_->DisableLabelButtonFocus();
   return button_;
+}
+
+std::unique_ptr<FeatureTile> CaptureModeFeaturePodController::CreateTile() {
+  DCHECK(features::IsQsRevampEnabled());
+  auto feature_tile = std::make_unique<FeatureTile>(
+      /*controller=*/this, /*is_togglable=*/false,
+      FeatureTile::TileType::kCompact);
+  feature_tile->SetVectorIcon(kCaptureModeIcon);
+  const auto label_text =
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAPTURE_MODE_BUTTON_LABEL);
+  feature_tile->SetLabel(label_text);
+  feature_tile->SetTooltipText(label_text);
+  return feature_tile;
 }
 
 QsFeatureCatalogName CaptureModeFeaturePodController::GetCatalogName() {

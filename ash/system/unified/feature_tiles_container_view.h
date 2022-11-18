@@ -15,6 +15,8 @@ namespace ash {
 
 // TODO(crbug/1368717): use FeatureTile.
 class FeaturePodButton;
+class FeatureTile;
+class FeatureTileRow;
 class PaginationModel;
 class UnifiedSystemTrayController;
 
@@ -34,9 +36,11 @@ class ASH_EXPORT FeatureTilesContainerView : public views::View,
 
   ~FeatureTilesContainerView() override;
 
-  // Adds FeatureTileRow elements with FeatureTile placeholders.
-  // This function is only used for prototyping.
-  void AddPlaceholderFeatureTiles();
+  // Adds feature tiles to display in the tiles container.
+  // This function temporarily adds a primary and a compact tile along with
+  // other empty FeatureTile placeholders.
+  // TODO(b/252871301): Apply each feature tile.
+  void AddTiles(std::vector<std::unique_ptr<FeatureTile>> tiles);
 
   // Sets the number of rows of feature tiles based on the max height the
   // container can have.
@@ -54,7 +58,9 @@ class ASH_EXPORT FeatureTilesContainerView : public views::View,
   void OnScrollEvent(ui::ScrollEvent* event) override;
   bool OnMouseWheel(const ui::MouseWheelEvent& event) override;
 
-  int row_count() const { return feature_tile_rows_; }
+  int displayable_rows() const { return displayable_rows_; }
+
+  int FeatureTileRowCount() { return feature_tile_rows_.size(); }
 
  private:
   friend class FeatureTilesContainerViewTest;
@@ -74,9 +80,12 @@ class ASH_EXPORT FeatureTilesContainerView : public views::View,
   // Owned by UnifiedSystemTrayModel.
   PaginationModel* const pagination_model_;
 
-  // Number of rows of feature tiles to display. Updated based on the available
+  // Number of rows that can be displayed based on the available
   // max height for FeatureTilesContainer.
-  int feature_tile_rows_ = 0;
+  int displayable_rows_ = 0;
+
+  // List of rows that contain feature tiles.
+  std::vector<FeatureTileRow*> feature_tile_rows_;
 
   // Used for preventing reentrancy issue in ChildVisibilityChanged. Should be
   // always false if FeatureTilesContainerView is not in the call stack.

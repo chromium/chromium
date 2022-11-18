@@ -13,6 +13,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/detailed_view_controller.h"
 #include "ash/system/unified/feature_pod_button.h"
+#include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/feature_tiles_container_view.h"
 #include "ash/system/unified/page_indicator_view.h"
 #include "ash/system/unified/quick_settings_footer.h"
@@ -161,6 +162,11 @@ void QuickSettingsView::SetMaxHeight(int max_height) {
   max_height_ = max_height;
   feature_tiles_container_->SetRowsFromHeight(
       CalculateHeightForFeatureTilesContainer());
+}
+
+void QuickSettingsView::AddTiles(
+    std::vector<std::unique_ptr<FeatureTile>> tiles) {
+  feature_tiles_container_->AddTiles(std::move(tiles));
 }
 
 void QuickSettingsView::AddSliderView(views::View* slider_view) {

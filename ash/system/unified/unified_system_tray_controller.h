@@ -220,6 +220,11 @@ class ASH_EXPORT UnifiedSystemTrayController
   // If you want to add a new feature pod item, you have to add here.
   void InitFeaturePods();
 
+  // Initialize feature pod controllers and their tile views.
+  // Temporarily only adds two feature tiles and other placeholder tiles.
+  // TODO(b/252871301): Create each feature's tile.
+  void InitFeatureTiles();
+
   // Add the feature pod controller and its view.
   void AddFeaturePodItem(std::unique_ptr<FeaturePodControllerBase> controller);
 

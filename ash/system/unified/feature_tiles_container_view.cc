@@ -7,28 +7,40 @@
 #include "ash/public/cpp/pagination/pagination_controller.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/system/tray/tray_constants.h"
-#include "ash/system/unified/feature_pod_button.h"
+#include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/views/background.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
-
-using views::FlexLayout;
-using views::FlexLayoutView;
 
 namespace ash {
 
 namespace {
 
 constexpr gfx::Size kFeatureTileRowSize(440, kFeatureTileHeight);
-constexpr gfx::Size kFeatureTileDefaultSize(200, kFeatureTileHeight);
-constexpr gfx::Size kFeatureTileCompactSize(96, kFeatureTileHeight);
+constexpr gfx::Insets kFeatureTileContainerInteriorMargin =
+    gfx::Insets::VH(16, 0);
+constexpr gfx::Insets kFeatureTileRowInteriorMargin = gfx::Insets::VH(0, 16);
 constexpr gfx::Insets kFeatureTileRowMargins = gfx::Insets::VH(4, 0);
 constexpr gfx::Insets kFeatureTileMargins = gfx::Insets::VH(0, 4);
-constexpr gfx::Insets kFeatureTileRowPadding = gfx::Insets::VH(0, 16);
-constexpr gfx::Insets kFeatureTileContainerPadding = gfx::Insets::VH(16, 0);
+
+// FeatureTileRow weight constants
+constexpr int kCompactTileWeight = 1;
+constexpr int kPrimaryTileWeight = 2;
+constexpr int kMaxRowWeight = 4;
+
+int GetTileWeight(FeatureTile::TileType type) {
+  switch (type) {
+    case FeatureTile::TileType::kPrimary:
+      return kPrimaryTileWeight;
+    case FeatureTile::TileType::kCompact:
+      return kCompactTileWeight;
+    default:
+      NOTREACHED();
+  }
+}
+
+}  // namespace
 
 class FeatureTileRow : public views::FlexLayoutView {
  public:
@@ -36,9 +48,9 @@ class FeatureTileRow : public views::FlexLayoutView {
 
   FeatureTileRow() {
     SetPreferredSize(kFeatureTileRowSize);
+    SetInteriorMargin(kFeatureTileRowInteriorMargin);
     SetDefault(views::kMarginsKey, kFeatureTileMargins);
     SetIgnoreDefaultMainAxisMargins(true);
-    SetInteriorMargin(kFeatureTileRowPadding);
   }
 
   FeatureTileRow(const FeatureTileRow&) = delete;
@@ -49,77 +61,53 @@ class FeatureTileRow : public views::FlexLayoutView {
 BEGIN_METADATA(FeatureTileRow, views::FlexLayoutView)
 END_METADATA
 
-// Temp class for prototyping.
-class FeatureTile : public views::Label {
- public:
-  METADATA_HEADER(FeatureTile);
-
-  explicit FeatureTile(bool compact = false) {
-    SetPreferredSize(compact ? kFeatureTileCompactSize
-                             : kFeatureTileDefaultSize);
-    SetBackground(views::CreateSolidBackground(SK_ColorGRAY));
-  }
-
-  FeatureTile(const FeatureTile&) = delete;
-  FeatureTile& operator=(const FeatureTile&) = delete;
-  ~FeatureTile() override = default;
-};
-
-BEGIN_METADATA(FeatureTile, views::Label)
-END_METADATA
-
-}  // namespace
-
 FeatureTilesContainerView::FeatureTilesContainerView(
     UnifiedSystemTrayController* controller)
     : controller_(controller),
       pagination_model_(controller->model()->pagination_model()),
-      feature_tile_rows_(kFeatureTileMaxRows) {
+      displayable_rows_(kFeatureTileMaxRows) {
   DCHECK(pagination_model_);
   DCHECK(controller_);
   pagination_model_->AddObserver(this);
 
-  SetLayoutManager(std::make_unique<FlexLayout>())
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetInteriorMargin(kFeatureTileContainerInteriorMargin)
       .SetDefault(views::kMarginsKey, kFeatureTileRowMargins)
-      .SetIgnoreDefaultMainAxisMargins(true)
-      .SetInteriorMargin(kFeatureTileContainerPadding)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-
-  // Adds four rows with placeholder FeatureTile elements.
-  AddPlaceholderFeatureTiles();
+      .SetIgnoreDefaultMainAxisMargins(true);
 }
 
 FeatureTilesContainerView::~FeatureTilesContainerView() {
   pagination_model_->RemoveObserver(this);
 }
 
-void FeatureTilesContainerView::AddPlaceholderFeatureTiles() {
-  // TODO: add child rows based on `feature_tile_rows`.
-  FeatureTileRow* row1 = AddChildView(std::make_unique<FeatureTileRow>());
-  FeatureTileRow* row2 = AddChildView(std::make_unique<FeatureTileRow>());
-  FeatureTileRow* row3 = AddChildView(std::make_unique<FeatureTileRow>());
-  FeatureTileRow* row4 = AddChildView(std::make_unique<FeatureTileRow>());
+void FeatureTilesContainerView::AddTiles(
+    std::vector<std::unique_ptr<FeatureTile>> tiles) {
+  // A FeatureTileRow can hold a combination of primary and compact tiles
+  // depending on the added tile weights.
+  int row_weight = 0;
+  for (auto& tile : tiles) {
+    if (row_weight == 0) {
+      // TODO(crbug/1371668): Create new page container if number of rows
+      // surpasses `displayable_rows_`.
+      feature_tile_rows_.push_back(
+          AddChildView(std::make_unique<FeatureTileRow>()));
+    }
+    row_weight += GetTileWeight(tile->tile_type());
+    DCHECK_LE(row_weight, kMaxRowWeight);
+    feature_tile_rows_.back()->AddChildView(std::move(tile));
 
-  row1->AddChildView(std::make_unique<FeatureTile>());
-  row1->AddChildView(std::make_unique<FeatureTile>(/*compact=*/true));
-  row1->AddChildView(std::make_unique<FeatureTile>(/*compact=*/true));
-
-  row2->AddChildView(std::make_unique<FeatureTile>());
-  row2->AddChildView(std::make_unique<FeatureTile>());
-
-  row3->AddChildView(std::make_unique<FeatureTile>());
-  row3->AddChildView(std::make_unique<FeatureTile>());
-
-  row4->AddChildView(std::make_unique<FeatureTile>());
-  row4->AddChildView(std::make_unique<FeatureTile>());
+    if (row_weight == kMaxRowWeight)
+      row_weight = 0;
+  }
 }
 
 void FeatureTilesContainerView::SetRowsFromHeight(int max_height) {
-  int feature_tile_rows = CalculateRowsFromHeight(max_height);
+  int displayable_rows = CalculateRowsFromHeight(max_height);
 
-  if (feature_tile_rows_ != feature_tile_rows) {
-    feature_tile_rows_ = feature_tile_rows;
+  if (displayable_rows_ != displayable_rows) {
+    displayable_rows_ = displayable_rows;
     UpdateTotalPages();
   }
 }
@@ -173,7 +161,7 @@ int FeatureTilesContainerView::CalculateRowsFromHeight(int height) {
 
 // TODO(crbug/1371668): Update pagination.
 int FeatureTilesContainerView::GetTilesPerPage() const {
-  return kFeatureTileItemsInRow * feature_tile_rows_;
+  return kFeatureTileItemsInRow * displayable_rows_;
 }
 
 // TODO(crbug/1371668): Update pagination.
