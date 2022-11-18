@@ -98,7 +98,6 @@ void DistantSession::InitWithSyncedSession(
   tag = synced_session->session_tag;
   name = synced_session->session_name;
   modified_time = synced_session->modified_time;
-  device_type = synced_session->device_type;
 
   std::vector<const sessions::SessionTab*> open_tabs;
   open_tabs_delegate->GetForeignSessionTabs(tag, &open_tabs);

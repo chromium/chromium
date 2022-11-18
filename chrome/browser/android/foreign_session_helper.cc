@@ -234,7 +234,7 @@ jboolean ForeignSessionHelper::GetForeignSessions(
 
     last_pushed_session.Reset(Java_ForeignSessionHelper_pushSession(
         env, result, ConvertUTF8ToJavaString(env, session.session_tag),
-        ConvertUTF8ToJavaString(env, session.session_name), session.device_type,
+        ConvertUTF8ToJavaString(env, session.session_name),
         session.modified_time.ToJavaTime()));
 
     // Push the full session, with tabs ordered by visual position.

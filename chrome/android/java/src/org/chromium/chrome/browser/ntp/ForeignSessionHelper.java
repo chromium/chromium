@@ -39,26 +39,14 @@ public class ForeignSessionHelper {
      * Represents synced foreign session.
      */
     static class ForeignSession {
-        // Please keep in sync with components/sync/protocol/sync_enums.proto.
-        static final int DEVICE_TYPE_UNSET = 0;
-        static final int DEVICE_TYPE_WIN = 1;
-        static final int DEVICE_TYPE_MACOSX = 2;
-        static final int DEVICE_TYPE_LINUX = 3;
-        static final int DEVICE_TYPE_CHROMEOS = 4;
-        static final int DEVICE_TYPE_OTHER = 5;
-        static final int DEVICE_TYPE_PHONE = 6;
-        static final int DEVICE_TYPE_TABLET = 7;
-
         public final String tag;
         public final String name;
-        public final int deviceType;
         public final long modifiedTime;
         public final List<ForeignSessionWindow> windows = new ArrayList<ForeignSessionWindow>();
 
-        private ForeignSession(String tag, String name, int deviceType, long modifiedTime) {
+        private ForeignSession(String tag, String name, long modifiedTime) {
             this.tag = tag;
             this.name = name;
-            this.deviceType = deviceType;
             this.modifiedTime = modifiedTime;
         }
     }
@@ -97,9 +85,8 @@ public class ForeignSessionHelper {
 
     @CalledByNative
     private static ForeignSession pushSession(
-            List<ForeignSession> sessions, String tag, String name, int deviceType,
-            long modifiedTime) {
-        ForeignSession session = new ForeignSession(tag, name, deviceType, modifiedTime);
+            List<ForeignSession> sessions, String tag, String name, long modifiedTime) {
+        ForeignSession session = new ForeignSession(tag, name, modifiedTime);
         sessions.add(session);
         return session;
     }
