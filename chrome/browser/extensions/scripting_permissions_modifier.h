@@ -74,9 +74,6 @@ class ScriptingPermissionsModifier {
   std::unique_ptr<const PermissionSet> WithholdPermissionsIfNecessary(
       const PermissionSet& permissions);
 
-  // Returns the subset of active permissions which can be withheld.
-  std::unique_ptr<const PermissionSet> GetRevokablePermissions() const;
-
  private:
   // Grants any withheld host permissions.
   void GrantWithheldHostPermissions();

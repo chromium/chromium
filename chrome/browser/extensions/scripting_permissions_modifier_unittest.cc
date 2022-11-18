@@ -807,6 +807,7 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
 
   // At installation, all permissions granted.
   ScriptingPermissionsModifier modifier(profile(), extension);
+  PermissionsManager* manager = PermissionsManager::Get(profile());
   EXPECT_THAT(GetEffectivePatternsAsStrings(*extension),
               testing::UnorderedElementsAre("https://google.com/maps"));
 
@@ -822,23 +823,25 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
   modifier.GrantHostPermission(GURL("https://google.com/maps"));
   EXPECT_THAT(GetEffectivePatternsAsStrings(*extension),
               testing::UnorderedElementsAre("https://google.com/maps"));
-  EXPECT_THAT(GetPatternsAsStrings(
-                  modifier.GetRevokablePermissions()->effective_hosts()),
-              // Subtle: revokable permissions include permissions either in
-              // the runtime granted permissions preference or active on the
-              // extension object. In this case, that includes both google.com/*
-              // and google.com/maps.
-              testing::UnorderedElementsAre("https://google.com/maps",
-                                            "https://google.com/*"));
+  EXPECT_THAT(
+      GetPatternsAsStrings(
+          manager->GetRevokablePermissions(*extension)->effective_hosts()),
+      // Subtle: revokable permissions include permissions either in
+      // the runtime granted permissions preference or active on the
+      // extension object. In this case, that includes both google.com/*
+      // and google.com/maps.
+      testing::UnorderedElementsAre("https://google.com/maps",
+                                    "https://google.com/*"));
 
   // Remove the granted permission. This should remove the permission from both
   // the active permissions on the extension object and the entry in the
   // preferences.
   modifier.RemoveAllGrantedHostPermissions();
   EXPECT_THAT(GetEffectivePatternsAsStrings(*extension), testing::IsEmpty());
-  EXPECT_THAT(GetPatternsAsStrings(
-                  modifier.GetRevokablePermissions()->effective_hosts()),
-              testing::IsEmpty());
+  EXPECT_THAT(
+      GetPatternsAsStrings(
+          manager->GetRevokablePermissions(*extension)->effective_hosts()),
+      testing::IsEmpty());
 }
 
 // TODO(crbug.com/1289441): Move test to PermissionsManager once permissions can

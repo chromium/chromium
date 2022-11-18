@@ -2241,13 +2241,12 @@ DeveloperPrivateRemoveHostPermissionFunction::Run() {
     return RespondNow(Error(kCannotChangeHostPermissions));
 
   URLPatternSet host_permissions_to_remove({*pattern});
-  ScriptingPermissionsModifier scripting_modifier(browser_context(), extension);
   std::unique_ptr<const PermissionSet> permissions_to_remove =
       PermissionSet::CreateIntersection(
           PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
                         host_permissions_to_remove.Clone(),
                         host_permissions_to_remove.Clone()),
-          *scripting_modifier.GetRevokablePermissions(),
+          *manager->GetRevokablePermissions(*extension),
           URLPatternSet::IntersectionBehavior::kDetailed);
   if (permissions_to_remove->IsEmpty())
     return RespondNow(Error("Cannot remove a host that hasn't been granted."));

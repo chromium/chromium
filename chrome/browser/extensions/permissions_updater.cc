@@ -517,9 +517,8 @@ PermissionsUpdater::GetRevokablePermissions(const Extension* extension) const {
   // Additionally, some required permissions may be revokable if they can be
   // withheld by the ScriptingPermissionsModifier.
   std::unique_ptr<const PermissionSet> revokable_scripting_permissions =
-      ScriptingPermissionsModifier(browser_context_,
-                                   base::WrapRefCounted(extension))
-          .GetRevokablePermissions();
+      PermissionsManager::Get(browser_context_)
+          ->GetRevokablePermissions(*extension);
 
   if (revokable_scripting_permissions) {
     revokable_permissions = PermissionSet::CreateUnion(

@@ -129,57 +129,6 @@ void ScriptingPermissionsModifier::RemoveAllGrantedHostPermissions() {
   WithholdHostPermissions();
 }
 
-std::unique_ptr<const PermissionSet>
-ScriptingPermissionsModifier::GetRevokablePermissions() const {
-  // No extra revokable permissions if the extension couldn't ever be affected.
-  if (!util::CanWithholdPermissionsFromExtension(*extension_))
-    return nullptr;
-
-  // If we aren't withholding host permissions, then there may be some
-  // permissions active on the extension that should be revokable. Otherwise,
-  // all granted permissions should be stored in the preferences (and these
-  // can be a superset of permissions on the extension, as in the case of e.g.
-  // granting origins when only a subset is requested by the extension).
-  // TODO(devlin): This is confusing and subtle. We should instead perhaps just
-  // add all requested hosts as runtime-granted hosts if we aren't withholding
-  // host permissions.
-  const PermissionSet* current_granted_permissions = nullptr;
-  std::unique_ptr<const PermissionSet> runtime_granted_permissions =
-      permissions_manager_->GetRuntimePermissionsFromPrefs(*extension_);
-  std::unique_ptr<const PermissionSet> union_set;
-  if (runtime_granted_permissions) {
-    union_set = PermissionSet::CreateUnion(
-        *runtime_granted_permissions,
-        extension_->permissions_data()->active_permissions());
-    current_granted_permissions = union_set.get();
-  } else {
-    current_granted_permissions =
-        &extension_->permissions_data()->active_permissions();
-  }
-
-  // Unrevokable permissions include granted API permissions, manifest
-  // permissions, and host permissions that are always allowed.
-  PermissionSet unrevokable_permissions(
-      current_granted_permissions->apis().Clone(),
-      current_granted_permissions->manifest_permissions().Clone(),
-      URLPatternSet(), URLPatternSet());
-  {
-    // TODO(devlin): We do this pattern of "required + optional" enough. Make it
-    // a part of PermissionsParser and stop duplicating the set each time.
-    std::unique_ptr<PermissionSet> requested_permissions =
-        PermissionSet::CreateUnion(
-            PermissionsParser::GetRequiredPermissions(extension_.get()),
-            PermissionsParser::GetOptionalPermissions(extension_.get()));
-    ExtensionsBrowserClient::Get()->AddAdditionalAllowedHosts(
-        *requested_permissions, &unrevokable_permissions);
-  }
-
-  // Revokable permissions are, predictably, any in the current set that aren't
-  // considered unrevokable.
-  return PermissionSet::CreateDifference(*current_granted_permissions,
-                                         unrevokable_permissions);
-}
-
 void ScriptingPermissionsModifier::GrantWithheldHostPermissions() {
   const PermissionSet& withheld =
       extension_->permissions_data()->withheld_permissions();
@@ -193,7 +142,7 @@ void ScriptingPermissionsModifier::GrantWithheldHostPermissions() {
 
 void ScriptingPermissionsModifier::WithholdHostPermissions() {
   std::unique_ptr<const PermissionSet> revokable_permissions =
-      GetRevokablePermissions();
+      permissions_manager_->GetRevokablePermissions(*extension_);
   DCHECK(revokable_permissions);
   PermissionsUpdater(browser_context_)
       .RevokeRuntimePermissions(*extension_, *revokable_permissions,
