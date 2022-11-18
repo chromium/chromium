@@ -134,8 +134,14 @@ void DisplayItemRasterInvalidator::AddRasterInvalidation(
     const DisplayItemClient& client,
     const IntRect& rect,
     PaintInvalidationReason reason,
-    RasterInvalidator::ClientIsOldOrNew old_or_new) {
+    RasterInvalidator::ClientIsOldOrNew old_or_new,
+    const char* why) {
   IntRect r = invalidator_.ClipByLayerBounds(mapper_.MapVisualRect(rect));
+
+  // https://linear.app/replay/issue/RUN-657
+  recordreplay::Assert("DisplayItemRasterInvalidator::AddRasterInvalidation %s %d %d %d %d %d",
+                       why, r.X(), r.Y(), r.Width(), r.Height(), r.IsEmpty());
+
   if (r.IsEmpty())
     return;
 
@@ -152,14 +158,16 @@ void DisplayItemRasterInvalidator::GenerateRasterInvalidation(
     if (!old_visual_rect.IsEmpty()) {
       AddRasterInvalidation(client, old_visual_rect,
                             PaintInvalidationReason::kDisappeared,
-                            kClientIsOld);
+                            kClientIsOld,
+                            "GenerateRasterInvalidation #1");
     }
     return;
   }
 
   if (old_visual_rect.IsEmpty()) {
     AddRasterInvalidation(client, new_visual_rect,
-                          PaintInvalidationReason::kAppeared, kClientIsNew);
+                          PaintInvalidationReason::kAppeared, kClientIsNew,
+                          "GenerateRasterInvalidation #2");
     return;
   }
 
@@ -167,9 +175,11 @@ void DisplayItemRasterInvalidator::GenerateRasterInvalidation(
     // The old client has been deleted and the new client happens to be at the
     // same address. They have no relationship.
     AddRasterInvalidation(client, old_visual_rect,
-                          PaintInvalidationReason::kDisappeared, kClientIsOld);
+                          PaintInvalidationReason::kDisappeared, kClientIsOld,
+                          "GenerateRasterInvalidation #3");
     AddRasterInvalidation(client, new_visual_rect,
-                          PaintInvalidationReason::kAppeared, kClientIsNew);
+                          PaintInvalidationReason::kAppeared, kClientIsNew,
+                          "GenerateRasterInvalidation #4");
     return;
   }
 
@@ -189,7 +199,8 @@ void DisplayItemRasterInvalidator::GenerateRasterInvalidation(
 
   IntRect partial_rect = client.PartialInvalidationVisualRect();
   if (!partial_rect.IsEmpty())
-    AddRasterInvalidation(client, partial_rect, reason, kClientIsNew);
+    AddRasterInvalidation(client, partial_rect, reason, kClientIsNew,
+                          "GenerateRasterInvalidation #5");
 }
 
 static IntRect ComputeRightDelta(const IntPoint& location,
@@ -233,7 +244,8 @@ void DisplayItemRasterInvalidator::GenerateIncrementalRasterInvalidation(
                         new_visual_rect.Size());
   if (!right_delta.IsEmpty()) {
     AddRasterInvalidation(client, right_delta,
-                          PaintInvalidationReason::kIncremental, kClientIsNew);
+                          PaintInvalidationReason::kIncremental, kClientIsNew,
+                          "GenerateIncrementalRasterInvalidation #1");
   }
 
   IntRect bottom_delta =
@@ -241,7 +253,8 @@ void DisplayItemRasterInvalidator::GenerateIncrementalRasterInvalidation(
                          new_visual_rect.Size());
   if (!bottom_delta.IsEmpty()) {
     AddRasterInvalidation(client, bottom_delta,
-                          PaintInvalidationReason::kIncremental, kClientIsNew);
+                          PaintInvalidationReason::kIncremental, kClientIsNew,
+                          "GenerateIncrementalRasterInvalidation #2");
   }
 }
 
@@ -251,12 +264,14 @@ void DisplayItemRasterInvalidator::GenerateFullRasterInvalidation(
     const IntRect& new_visual_rect,
     PaintInvalidationReason reason) {
   if (!new_visual_rect.Contains(old_visual_rect)) {
-    AddRasterInvalidation(client, old_visual_rect, reason, kClientIsNew);
+    AddRasterInvalidation(client, old_visual_rect, reason, kClientIsNew,
+                          "GenerateFullRasterInvalidation #1");
     if (old_visual_rect.Contains(new_visual_rect))
       return;
   }
 
-  AddRasterInvalidation(client, new_visual_rect, reason, kClientIsNew);
+  AddRasterInvalidation(client, new_visual_rect, reason, kClientIsNew,
+                        "GenerateFullRasterInvalidation #2");
 }
 
 }  // namespace blink

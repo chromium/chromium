@@ -37,7 +37,8 @@ class DisplayItemRasterInvalidator {
   ALWAYS_INLINE void AddRasterInvalidation(const DisplayItemClient&,
                                            const IntRect&,
                                            PaintInvalidationReason,
-                                           RasterInvalidator::ClientIsOldOrNew);
+                                           RasterInvalidator::ClientIsOldOrNew,
+                                           const char* why);
   ALWAYS_INLINE DisplayItemIterator
   MatchNewDisplayItemInOldChunk(const DisplayItem& new_item,
                                 DisplayItemIterator& next_old_item_to_match);
