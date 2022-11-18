@@ -188,6 +188,7 @@
 
 #if BUILDFLAG(IS_FUCHSIA)
 #include "base/fuchsia/system_info.h"
+#include "content/public/common/result_codes.h"
 #endif
 
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
@@ -846,7 +847,9 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
   // Making the blocking call now also avoids the potential for blocking later
   // in when it might be user-visible.
   if (!base::FetchAndCacheSystemInfo()) {
-    return TerminateForFatalInitializationError();
+    // Returning `RESULT_CODE_KILLED` instead of
+    // TerminateForFatalInitializationError() to avoid CHECK.
+    return ResultCode::RESULT_CODE_KILLED;
   }
 #endif
 
