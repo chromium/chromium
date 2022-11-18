@@ -5,7 +5,6 @@
 use test_rlib_crate::say_hello_from_crate;
 
 fn main() {
-    assert_eq!(test_mixed_static_library::add_two_ints_via_rust_then_cpp(12, 13), 25);
     assert_eq!(test_proc_macro_crate::calculate_using_proc_macro!(), 30);
     assert_eq!(test_rust_static_library::add_two_ints_via_rust(3, 4), 7);
     assert_eq!(test_rust_static_library_non_standard_arrangement::do_subtract(4, 3), 1);
@@ -24,11 +23,6 @@ mod tests {
     #[test]
     fn test_call_to_rust_non_standard_arrangement() {
         assert_eq!(test_rust_static_library_non_standard_arrangement::do_subtract(8, 4), 4);
-    }
-
-    #[test]
-    fn test_call_to_rust_then_cpp() {
-        assert_eq!(test_mixed_static_library::add_two_ints_via_rust_then_cpp(12, 13), 25)
     }
 
     #[test]

@@ -7,5 +7,5 @@ import("//build/rust/rust_unit_test.gni")
 rust_unit_test("test_rust_unittests") {
   sources = [ "main.rs" ]
   crate_root = "main.rs"
-  deps = [ "//build/rust/tests/test_mixed_static_library" ]
+  deps = [ "//build/rust/tests/test_rust_static_library" ]
 }

@@ -13,7 +13,6 @@
 #include "build/buildflag.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#include "build/rust/tests/test_mixed_static_library/test_mixed_static_library.h"
 #include "build/rust/tests/test_rust_static_library/src/lib.rs.h"
 
 TEST(RustTest, CppCallingIntoRust_BasicFFI) {
@@ -29,8 +28,4 @@ TEST(RustTest, RustComponentUsesPartitionAlloc) {
             partition_alloc::IsManagedByPartitionAlloc(
                 reinterpret_cast<uintptr_t>(cpp_allocated_int.get())));
   rust::Box<SomeStruct>::from_raw(rust_allocated_ptr);
-}
-
-TEST(RustTest, CppCallingIntoRustAndBack_BasicFFI) {
-  EXPECT_EQ(10u, add_two_ints_via_rust_then_cpp(6, 4));
 }

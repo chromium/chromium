@@ -8,7 +8,6 @@ rust_executable("test_rust_exe") {
   crate_root = "main.rs"
   sources = [ "main.rs" ]
   deps = [
-    "//build/rust/tests/test_mixed_static_library",
     "//build/rust/tests/test_proc_macro_crate",
     "//build/rust/tests/test_rlib_crate:target1",
     "//build/rust/tests/test_rust_static_library",
