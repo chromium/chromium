@@ -13,6 +13,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import './components/buttons/oobe_text_button.js';
 import './components/oobe_icons.m.js';
 
 import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
@@ -68,6 +69,14 @@ Polymer({
      * Whether user is authenticating on SAML page.
      */
     isSamlPage_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
+     * Whether default SAML IdP is shown.
+     */
+    isDefaultSsoProvider: {
       type: Boolean,
       value: false,
     },
@@ -191,6 +200,7 @@ Polymer({
 
     this.authenticatorParams_ = params;
     this.email_ = data.email;
+    this.isDefaultSsoProvider = data.doSamlRedirect;
     if (!data['doSamlRedirect']) {
       this.doGaiaRedirect_();
     }
@@ -379,6 +389,17 @@ Polymer({
     return this.i18n(
         isManualInput_ ? 'manualPasswordMismatch' :
                          'passwordChangedIncorrectOldPassword');
+  },
+
+  /**
+   * Invoked when "Enter Google Account info" button is pressed on SAML screen.
+   * @private
+   */
+  onChangeSigninProviderClicked_() {
+    this.authenticatorParams_.doSamlRedirect = false;
+    this.authenticatorParams_.enableGaiaActionButtons = true;
+    this.isDefaultSsoProvider = false;
+    this.authenticator_.load(AuthMode.DEFAULT, this.authenticatorParams_);
   },
 
 });

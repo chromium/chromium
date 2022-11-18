@@ -72,6 +72,9 @@ class LockScreenReauthDialogTestHelper {
   // Clicks the 'Cancel' button on the 'Saml Account' screen.
   void ClickCancelButtonOnSamlScreen();
 
+  // Clicks the 'Enter Google Account Info' button on the SAML screen.
+  void ClickChangeIdPButtonOnSamlScreen();
+
   // Waits for a screen with the `saml-container` element to be shown.
   void WaitForSamlScreen();
 
@@ -82,6 +85,8 @@ class LockScreenReauthDialogTestHelper {
   void ExpectErrorScreenVisible();
   void ExpectSamlScreenVisible();
   void ExpectSamlScreenHidden();
+
+  void ExpectGaiaScreenVisible();
 
   // Next members allow to check visibility of some elements on 'confirm
   // password screen' and also help to fill forms. Precondition: 'confirm

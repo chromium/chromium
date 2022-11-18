@@ -35,6 +35,7 @@ const test::UIPath kMainCancelButton = {"main-element",
 const test::UIPath kErrorCancelButton = {"main-element",
                                          "cancelButtonErrorScreen"};
 const test::UIPath kSamlCancelButton = {"main-element", "saml-close-button"};
+const test::UIPath kChangeIdPButton = {"main-element", "change-account"};
 const test::UIPath kMainScreen = {"main-element", "verifyAccountScreen"};
 const test::UIPath kErrorScreen = {"main-element", "errorScreen"};
 const test::UIPath kSamlConfirmPasswordScreen = {"main-element",
@@ -167,6 +168,11 @@ void LockScreenReauthDialogTestHelper::ClickCancelButtonOnSamlScreen() {
   DialogJS().TapOnPath(kSamlCancelButton);
 }
 
+void LockScreenReauthDialogTestHelper::ClickChangeIdPButtonOnSamlScreen() {
+  ExpectSamlScreenVisible();
+  DialogJS().TapOnPath(kChangeIdPButton);
+}
+
 void LockScreenReauthDialogTestHelper::WaitForSamlScreen() {
   WaitForAuthenticatorToLoad();
   DialogJS().CreateVisibilityWaiter(true, kSamlContainer)->Wait();
@@ -192,6 +198,10 @@ void LockScreenReauthDialogTestHelper::ExpectSamlScreenVisible() {
 
 void LockScreenReauthDialogTestHelper::ExpectSamlScreenHidden() {
   DialogJS().ExpectHiddenPath(kSamlContainer);
+}
+
+void LockScreenReauthDialogTestHelper::ExpectGaiaScreenVisible() {
+  DialogJS().ExpectAttributeEQ("isDefaultSsoProvider", {"main-element"}, false);
 }
 
 void LockScreenReauthDialogTestHelper::ExpectSamlConfirmPasswordVisible() {

@@ -206,6 +206,23 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, Login) {
   UnlockWithSAML();
 }
 
+// Tests that we can switch from SAML page to GAIA page on the lock screen.
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, SamlSwitchToGaia) {
+  fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
+
+  Login();
+
+  // Lock the screen and trigger the lock screen SAML reauth dialog.
+  ScreenLockerTester().Lock();
+
+  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+      LockScreenReauthDialogTestHelper::StartSamlAndWaitForIdpPageLoad();
+
+  reauth_dialog_helper->ClickChangeIdPButtonOnSamlScreen();
+
+  reauth_dialog_helper->ExpectGaiaScreenVisible();
+}
+
 // Tests the cancel button in Verify Screen.
 IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, VerifyScreenCancel) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");

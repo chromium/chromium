@@ -1,3 +1,4 @@
+<!-- TODO(b/259386106): reduce duplication with login screen code -->
 <style>
   :host {
     --lock-screen-reauth-dialog-buttons-horizontal-padding: 40px;
@@ -93,8 +94,8 @@
   }
 
   #samlContainer[saml-notice-message] {
-    /* #F1F3F4 */
-    background: rgb(241, 243, 244);
+    /* #FFFFFF */
+    background: white;
   }
 
   #samlNoticeMessage {
@@ -103,6 +104,18 @@
     flex: 1;
     font-size: 13px;
     padding-top: 15px;
+  }
+
+  #saml-footer-container {
+    align-items: center;
+    background: white;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.17);
+     /* #6a6a6a */
+    color: rgb(106, 106, 106);
+    display: flex;
+    height: 58px;
+    justify-content: flex-end;
+    min-height: 0;
   }
 
   #saml-close-button {
@@ -114,6 +127,12 @@
     flex: 1;
     height: 100%;
     width: 100%;
+  }
+
+  #change-account {
+    margin: 0 4px;
+    padding-inline-end: 8px;
+    padding-inline-start: 8px;
   }
 
   .title-icon {
@@ -292,6 +311,14 @@
   </div>
   <webview id="signin-frame" name="signin-frame" class="flex">
   </webview>
+  <div id="saml-footer-container" hidden="[[!isDefaultSsoProvider]]"
+     class="layout horizontal">
+    <div>[[i18nDynamic(locale, 'samlChangeProviderMessage')]]</div>
+    <oobe-text-button id="change-account"
+        text-key="samlChangeProviderButton"
+        on-click="onChangeSigninProviderClicked_">
+    </oobe-text-button>
+  </div>
 </div>
 
 <div id="samlConfirmPasswordScreen" class="content-wrapper"

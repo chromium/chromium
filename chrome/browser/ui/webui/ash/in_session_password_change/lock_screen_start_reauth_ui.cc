@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_reauth_handler.h"
+#include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -110,17 +111,19 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
       "passwordChangedOldPasswordHint",
       l10n_util::GetStringUTF16(IDS_LOCK_PASSWORD_CHANGED_OLD_PASSWORD_HINT));
 
+  source->AddString(
+      "samlChangeProviderMessage",
+      l10n_util::GetStringUTF16(IDS_LOGIN_SAML_CHANGE_PROVIDER_MESSAGE));
+  source->AddString(
+      "samlChangeProviderButton",
+      l10n_util::GetStringUTF16(IDS_LOGIN_SAML_CHANGE_PROVIDER_BUTTON));
+
   source->AddResourcePaths(
       base::make_span(kPasswordChangeResources, kPasswordChangeResourcesSize));
   source->SetDefaultResource(IDR_PASSWORD_CHANGE_LOCK_SCREEN_REAUTH_APP_HTML);
 
-  // Add Gaia Authenticator resources
-  source->AddResourcePaths(
-      base::make_span(kGaiaAuthHostResources, kGaiaAuthHostResourcesSize));
-
-  // Add OOBE resources
-  source->AddResourcePaths(base::make_span(kOobeUnconditionalResources,
-                                           kOobeUnconditionalResourcesSize));
+  // Add OOBE and Gaia Authenticator resources
+  OobeUI::AddOobeComponents(source);
 
   content::WebUIDataSource::Add(profile, source);
 }
