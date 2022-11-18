@@ -283,9 +283,16 @@ message UMAOutput {
   optional uint64 duration = 2;
 }
 
+// Specified by client in the metadata on how to interpret the model results.
+message OutputLabel {
+  // The label to which this output is associated with. Each OutputLabel
+  // corresponds to one output.
+  optional string output_label = 1;
+}
+
 // Metadata about a segmentation model for a given segment. Contains information
 // on how to use the model such as collecting signals, interpreting results etc.
-// Next tag: 14
+// Next tag: 16
 message SegmentationModelMetadata {
   // The version information needed to validate segmentation models.
   optional VersionInfo version_info = 9;
@@ -368,5 +375,10 @@ message SegmentationModelMetadata {
     // Model returns any integer value.
     RETURN_TYPE_INTEGER = 4;
   }
+  // TODO(ritikagup@): Move the field inside OutputLabel.
   optional OutputDescription return_type = 14;
+
+  // List of output labels, each label is attached to one of the output result
+  // of the model, describing what that output signify.
+  repeated OutputLabel output_labels = 15;
 }
