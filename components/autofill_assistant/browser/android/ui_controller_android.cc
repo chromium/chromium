@@ -507,19 +507,6 @@ void UiControllerAndroid::SetupForState() {
       ResetGenericUiControllers();
       return;
 
-    case AutofillAssistantState::TRACKING:
-      SetOverlayState(OverlayState::HIDDEN);
-      SetSpinPoodle(false);
-
-      if (!execution_delegate_->NeedsUI()) {
-        Java_AssistantModel_setVisible(AttachCurrentThread(), GetModel(),
-                                       false);
-        DestroySelf();
-      } else if (execution_delegate_->IsTabSelected()) {
-        ShowContentAndExpandBottomSheet();
-      }
-      return;
-
     case AutofillAssistantState::INACTIVE:
       // Wait for the state to change.
       return;
@@ -895,8 +882,7 @@ void UiControllerAndroid::UpdateActions(
   // Special case: don't create a default cancel chip during shutdown.
   if (!has_close_or_cancel && !ui_delegate_->IsUiShuttingDown()) {
     base::android::ScopedJavaLocalRef<jobject> jcancel_chip;
-    if (execution_delegate_->GetState() == AutofillAssistantState::STOPPED ||
-        execution_delegate_->GetState() == AutofillAssistantState::TRACKING) {
+    if (execution_delegate_->GetState() == AutofillAssistantState::STOPPED) {
       jcancel_chip = Java_AutofillAssistantUiController_createCloseButton(
           env, java_object_, static_cast<int>(CLOSE_ACTION), ICON_CLEAR,
           ConvertUTF8ToJavaString(env, ""),

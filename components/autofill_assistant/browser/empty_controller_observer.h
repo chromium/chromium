@@ -34,7 +34,6 @@ class EmptyControllerObserver : public ControllerObserver {
   void OnExecuteScript(const std::string& start_message) override {}
   void OnStart(const TriggerContext& trigger_context) override {}
   void OnStop() override {}
-  void OnResetState() override {}
   void OnUiShownChanged(bool shown) override {}
 };
 }  // namespace autofill_assistant

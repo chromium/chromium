@@ -4,12 +4,6 @@
 
 package org.chromium.components.autofill_assistant;
 
-import android.content.Context;
-import android.view.View;
-
-import org.chromium.base.supplier.Supplier;
-import org.chromium.components.autofill_assistant.onboarding.OnboardingCoordinatorFactory;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -21,19 +15,5 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
     public AssistantOnboardingHelper createOnboardingHelper(
             WebContents webContents, AssistantDependencies dependencies) {
         return new AssistantOnboardingHelperImpl(webContents, dependencies);
-    }
-
-    @Override
-    public AutofillAssistantActionHandler createActionHandler(Context context,
-            BottomSheetController bottomSheetController,
-            AssistantBrowserControlsFactory browserControlsFactory, View rootView,
-            Supplier<WebContents> webContentsSupplier,
-            AssistantStaticDependencies staticDependencies) {
-        return new AutofillAssistantActionHandlerImpl(
-                new OnboardingCoordinatorFactory(context, bottomSheetController,
-                        staticDependencies.getBrowserContext(), browserControlsFactory, rootView,
-                        staticDependencies.getAccessibilityUtil(),
-                        staticDependencies.createInfoPageUtil()),
-                webContentsSupplier, staticDependencies);
     }
 }

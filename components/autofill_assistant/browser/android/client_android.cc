@@ -20,7 +20,6 @@
 #include "base/time/default_tick_clock.h"
 #include "components/autofill_assistant/android/jni_headers/AssistantParseSingleTagXmlUtilWrapper_jni.h"
 #include "components/autofill_assistant/android/jni_headers/AutofillAssistantClient_jni.h"
-#include "components/autofill_assistant/android/jni_headers/AutofillAssistantDirectActionImpl_jni.h"
 #include "components/autofill_assistant/browser/android/ui_controller_android_utils.h"
 #include "components/autofill_assistant/browser/autofill_assistant_tts_controller.h"
 #include "components/autofill_assistant/browser/controller.h"
@@ -222,158 +221,6 @@ void ClientAndroid::OnAccessToken(JNIEnv* env,
   }
 }
 
-void ClientAndroid::FetchWebsiteActions(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    const base::android::JavaParamRef<jstring>& jexperiment_ids,
-    const base::android::JavaParamRef<jobjectArray>& jparameter_names,
-    const base::android::JavaParamRef<jobjectArray>& jparameter_values,
-    const base::android::JavaParamRef<jobject>& jcallback) {
-  if (!controller_) {
-    CreateController(ui_controller_android_utils::GetServiceToInject(env, this),
-                     /* trigger_script= */ absl::nullopt);
-  }
-
-  base::android::ScopedJavaGlobalRef<jobject> scoped_jcallback(env, jcallback);
-  controller_->Track(
-      ui_controller_android_utils::CreateTriggerContext(
-          env, GetWebContents(), jexperiment_ids, jparameter_names,
-          jparameter_values, /* jdevice_only_parameter_names= */
-          base::android::JavaParamRef<jobjectArray>(nullptr),
-          /* jdevice_only_parameter_values= */
-          base::android::JavaParamRef<jobjectArray>(nullptr),
-          /* onboarding_shown = */ false,
-          /* is_direct_action = */ true,
-          /* jinitial_url = */ nullptr,
-          /* is_custom_tab = */
-          dependencies_->GetPlatformDependencies()->IsCustomTab(
-              *GetWebContents())),
-      base::BindOnce(&ClientAndroid::OnFetchWebsiteActions,
-                     weak_ptr_factory_.GetWeakPtr(), scoped_jcallback));
-}
-
-bool ClientAndroid::HasRunFirstCheck(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) const {
-  return controller_ != nullptr && controller_->HasRunFirstCheck();
-}
-
-base::android::ScopedJavaLocalRef<jobjectArray>
-ClientAndroid::GetDirectActionsAsJavaArrayOfStrings(JNIEnv* env) const {
-  // Using a set here helps remove duplicates.
-  std::set<std::string> names;
-
-  if (!controller_) {
-    return base::android::ToJavaArrayOfStrings(
-        env, std::vector<std::string>(names.begin(), names.end()));
-  }
-
-  for (const ScriptHandle& script : controller_->GetDirectActionScripts()) {
-    for (const std::string& name : script.direct_action.names) {
-      names.insert(name);
-    }
-  }
-
-  return base::android::ToJavaArrayOfStrings(
-      env, std::vector<std::string>(names.begin(), names.end()));
-}
-
-base::android::ScopedJavaLocalRef<jobject>
-ClientAndroid::ToJavaAutofillAssistantDirectAction(
-    JNIEnv* env,
-    const DirectAction& direct_action) const {
-  std::set<std::string> names;
-  for (const std::string& name : direct_action.names)
-    names.insert(name);
-  auto jnames = base::android::ToJavaArrayOfStrings(
-      env, std::vector<std::string>(names.begin(), names.end()));
-
-  std::vector<std::string> required_arguments;
-  for (const std::string& arg : direct_action.required_arguments)
-    required_arguments.emplace_back(arg);
-  auto jrequired_arguments =
-      base::android::ToJavaArrayOfStrings(env, required_arguments);
-
-  std::vector<std::string> optional_arguments;
-  for (const std::string& arg : direct_action.optional_arguments)
-    optional_arguments.emplace_back(arg);
-  auto joptional_arguments =
-      base::android::ToJavaArrayOfStrings(env, std::move(optional_arguments));
-
-  return Java_AutofillAssistantDirectActionImpl_Constructor(
-      env, jnames, jrequired_arguments, joptional_arguments);
-}
-
-base::android::ScopedJavaLocalRef<jobjectArray> ClientAndroid::GetDirectActions(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
-  DCHECK(controller_ != nullptr);
-  // Prepare the java array to hold the direct actions.
-  base::android::ScopedJavaLocalRef<jclass> directaction_array_class =
-      base::android::GetClass(env,
-                              "org/chromium/components/autofill_assistant/"
-                              "AutofillAssistantDirectActionImpl",
-                              "autofill_assistant");
-
-  const std::vector<ScriptHandle>& direct_action_scripts =
-      controller_->GetDirectActionScripts();
-
-  jobjectArray joa = env->NewObjectArray(
-      direct_action_scripts.size(), directaction_array_class.obj(), nullptr);
-  jni_generator::CheckException(env);
-
-  for (size_t i = 0; i < direct_action_scripts.size(); i++) {
-    auto jdirect_action = ToJavaAutofillAssistantDirectAction(
-        env, direct_action_scripts.at(i).direct_action);
-    env->SetObjectArrayElement(joa, i, jdirect_action.obj());
-  }
-  return base::android::ScopedJavaLocalRef<jobjectArray>(env, joa);
-}
-
-void ClientAndroid::OnFetchWebsiteActions(
-    const base::android::JavaRef<jobject>& jcallback) {
-  JNIEnv* env = AttachCurrentThread();
-  Java_AutofillAssistantClient_onFetchWebsiteActions(
-      env, java_object_, jcallback, controller_ != nullptr);
-}
-
-bool ClientAndroid::PerformDirectAction(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    const base::android::JavaParamRef<jstring>& jaction_name,
-    const base::android::JavaParamRef<jstring>& jexperiment_ids,
-    const base::android::JavaParamRef<jobjectArray>& jparameter_names,
-    const base::android::JavaParamRef<jobjectArray>& jparameter_values,
-    const base::android::JavaParamRef<jobject>& joverlay_coordinator) {
-  std::string action_name =
-      base::android::ConvertJavaStringToUTF8(env, jaction_name);
-
-  auto trigger_context = ui_controller_android_utils::CreateTriggerContext(
-      env, GetWebContents(), jexperiment_ids, jparameter_names,
-      jparameter_values, /* jdevice_only_parameter_names= */
-      base::android::JavaParamRef<jobjectArray>(nullptr),
-      /* jdevice_only_parameter_values= */
-      base::android::JavaParamRef<jobjectArray>(nullptr),
-      /* onboarding_shown = */ false,
-      /* is_direct_action = */ true,
-      /* jinitial_url = */
-      nullptr,
-      /* is_custom_tab = */
-      dependencies_->GetPlatformDependencies()->IsCustomTab(*GetWebContents()));
-
-  int action_index = FindDirectAction(action_name);
-  if (action_index == -1)
-    return false;
-
-  // If an overlay is already shown, then show the rest of the UI immediately.
-  if (joverlay_coordinator) {
-    AttachUI(joverlay_coordinator);
-  }
-
-  return controller_->PerformDirectAction(action_index,
-                                          std::move(trigger_context));
-}
-
 void ClientAndroid::ShowFatalError(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
@@ -421,24 +268,6 @@ base::android::ScopedJavaGlobalRef<jobject> ClientAndroid::GetDependencies(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
   return jdependencies_;
-}
-
-int ClientAndroid::FindDirectAction(const std::string& action_name) {
-  // It's too late to create a controller. This should have been done in
-  // FetchWebsiteActions.
-  if (!controller_)
-    return -1;
-
-  const std::vector<ScriptHandle>& direct_action_scripts =
-      controller_->GetDirectActionScripts();
-  for (size_t i = 0; i < direct_action_scripts.size(); i++) {
-    const base::flat_set<std::string>& action_names =
-        direct_action_scripts.at(i).direct_action.names;
-    if (action_names.count(action_name) != 0)
-      return i;
-  }
-
-  return -1;
 }
 
 void ClientAndroid::AttachUI() {
@@ -775,10 +604,6 @@ void ClientAndroid::DestroyController() {
   ui_controller_.reset();
   controller_.reset();
   started_ = false;
-}
-
-bool ClientAndroid::NeedsUI() {
-  return !ui_controller_android_ && controller_ && controller_->NeedsUI();
 }
 
 bool ClientAndroid::GetMakeSearchesAndBrowsingBetterEnabled() const {

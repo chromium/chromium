@@ -92,9 +92,6 @@ class ControllerObserver : public base::CheckedObserver {
   // Called when the flow is stopped.
   virtual void OnStop() = 0;
 
-  // Called when the state needs to be reset.
-  virtual void OnResetState() = 0;
-
   // Called whenever the UI is shown or hidden.
   virtual void OnUiShownChanged(bool shown) = 0;
 };

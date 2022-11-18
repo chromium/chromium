@@ -1228,23 +1228,6 @@ void UiController::OnStop() {
   SetForm(nullptr, base::DoNothing(), base::DoNothing());
 }
 
-void UiController::OnResetState() {
-  // TODO(b/204963552): this list is incomplete. It would be much better if,
-  // instead of selectively clearing fields, we'd solve this in a more holistic
-  // way.
-  bubble_message_.clear();
-  tts_message_.clear();
-  status_message_.clear();
-  details_.clear();
-  info_box_.reset();
-  progress_visible_ = true;
-  progress_bar_error_state_ = false;
-  progress_active_step_ = 0;
-  step_progress_bar_configuration_ =
-      ShowProgressBarProto::StepProgressBarConfiguration();
-  peek_mode_ = ConfigureBottomSheetProto::HANDLE;
-}
-
 void UiController::OnUiShownChanged(bool shown) {
   // Stop any ongoing TTS if UI is hidden.
   if (!shown && tts_button_state_ == TtsButtonState::PLAYING) {

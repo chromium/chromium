@@ -115,9 +115,6 @@ class ExecutionDelegate {
   // Remove a previously registered observer.
   virtual void RemoveObserver(const ControllerObserver* observer) = 0;
 
-  // Returns true if the controller is in a state where UI is necessary.
-  virtual bool NeedsUI() const = 0;
-
  protected:
   ExecutionDelegate() = default;
 };

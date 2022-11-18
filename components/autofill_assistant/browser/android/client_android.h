@@ -79,31 +79,6 @@ class ClientAndroid : public Client,
       const base::android::JavaParamRef<jobject>& jcaller,
       const base::android::JavaParamRef<jbyteArray>& jclient_token);
 
-  void FetchWebsiteActions(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller,
-      const base::android::JavaParamRef<jstring>& jexperiment_ids,
-      const base::android::JavaParamRef<jobjectArray>& jargument_names,
-      const base::android::JavaParamRef<jobjectArray>& jargument_values,
-      const base::android::JavaParamRef<jobject>& jcallback);
-
-  bool HasRunFirstCheck(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller) const;
-
-  base::android::ScopedJavaLocalRef<jobjectArray> GetDirectActions(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller);
-
-  bool PerformDirectAction(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller,
-      const base::android::JavaParamRef<jstring>& jaction_id,
-      const base::android::JavaParamRef<jstring>& jexperiment_ids,
-      const base::android::JavaParamRef<jobjectArray>& jargument_names,
-      const base::android::JavaParamRef<jobjectArray>& jargument_values,
-      const base::android::JavaParamRef<jobject>& joverlay_coordinator);
-
   void ShowFatalError(JNIEnv* env,
                       const base::android::JavaParamRef<jobject>& jcaller);
 
@@ -176,20 +151,7 @@ class ClientAndroid : public Client,
       const absl::optional<TriggerScriptProto>& trigger_script);
   void DestroyController();
   void AttachUI(const base::android::JavaRef<jobject>& joverlay_coordinator);
-  bool NeedsUI();
-  void OnFetchWebsiteActions(const base::android::JavaRef<jobject>& jcallback);
   void SafeDestroyControllerAndUI(Metrics::DropOutReason reason);
-
-  base::android::ScopedJavaLocalRef<jobjectArray>
-  GetDirectActionsAsJavaArrayOfStrings(JNIEnv* env) const;
-
-  base::android::ScopedJavaLocalRef<jobject>
-  ToJavaAutofillAssistantDirectAction(JNIEnv* env,
-                                      const DirectAction& direct_action) const;
-
-  // Returns the index of a direct action with that name, to pass to
-  // UiDelegate::PerformUserAction() or -1 if not found.
-  int FindDirectAction(const std::string& action_name);
 
   void OnAnnotateDomModelFileAvailable(
       base::OnceCallback<void(absl::optional<int64_t>)> callback,

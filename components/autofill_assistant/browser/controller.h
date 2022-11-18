@@ -79,23 +79,6 @@ class Controller : public ScriptExecutorDelegate,
 
   ~Controller() override;
 
-  // Let the controller know it should keep tracking script availability for the
-  // current domain, to be ready to report any scripts as action.
-  //
-  // Activates the controller, if needed and runs it in the background, without
-  // showing any UI until a script is started or Start() is called.
-  //
-  // Only the context of the first call to Track() is taken into account.
-  //
-  // If non-null |on_first_check_done| is called once the result of the first
-  // check of script availability are in - whether they're positive or negative.
-  void Track(std::unique_ptr<TriggerContext> trigger_context,
-             base::OnceCallback<void()> on_first_check_done);
-
-  // Returns true if we are in tracking mode and the first round of script
-  // checks has been completed.
-  bool HasRunFirstCheck() const;
-
   // Called when autofill assistant should start.
   //
   // This shows a UI, containing a progress bar, and executes the first
@@ -103,13 +86,9 @@ class Controller : public ScriptExecutorDelegate,
   //
   // Start() does nothing if called more than once or if a script is already
   // running.
-  //
-  // Start() will overwrite any context previously set by Track().
   bool Start(const GURL& deeplink_url,
              std::unique_ptr<TriggerContext> trigger_context);
 
-  const std::vector<ScriptHandle>& GetDirectActionScripts() const;
-  bool PerformDirectAction(int index, std::unique_ptr<TriggerContext> context);
   base::Value GetDebugContext();
 
   // Overrides ScriptExecutorDelegate:
@@ -176,7 +155,6 @@ class Controller : public ScriptExecutorDelegate,
                                    Metrics::DropOutReason reason);
 
   // Overrides ExecutionDelegate:
-  bool NeedsUI() const override;
   void GetVisualViewport(RectF* visual_viewport) const override;
   ViewportMode GetViewportMode() override;
   bool IsTabSelected() override;
@@ -241,8 +219,6 @@ class Controller : public ScriptExecutorDelegate,
   void StopPeriodicScriptChecks();
   void OnPeriodicScriptCheck();
 
-  void MaybeReportFirstCheckDone();
-
   // Runs autostart scripts from |runnable_scripts|, if the conditions are
   // right. Nothing happens if an empty vector is passed.
   // If none of the scripts is autostartable or too many are, it stops the
@@ -302,14 +278,11 @@ class Controller : public ScriptExecutorDelegate,
   bool allow_autostart() { return state_ == AutofillAssistantState::STARTING; }
 
   void RecordDropOutOrShutdown(Metrics::DropOutReason reason);
-  void PerformDelayedShutdownIfNecessary();
 
   bool StateNeedsUI(AutofillAssistantState state);
 
   // Resets the controller to the initial state.
   void ResetState();
-  void SetDirectActionScripts(
-      const std::vector<ScriptHandle>& direct_action_scripts);
 
   // Records flow metrics. This may be invoked multiple times per flow, but will
   // only record the first impression for each flow.
@@ -323,6 +296,8 @@ class Controller : public ScriptExecutorDelegate,
       const GURL& url,
       absl::optional<int64_t> model_version);
   void GetScriptsForUrl(const GURL& url);
+
+  bool NeedsUI() const;
 
   ClientSettings settings_;
   const raw_ptr<Client> client_;
@@ -373,9 +348,6 @@ class Controller : public ScriptExecutorDelegate,
   // Lazily instantiate in touchable_element_area().
   std::unique_ptr<ElementArea> touchable_element_area_;
 
-  // Current set of direct actions.
-  std::vector<ScriptHandle> direct_action_scripts_;
-
   // Current viewport mode.
   ViewportMode viewport_mode_ = ViewportMode::NO_RESIZE;
 
@@ -411,40 +383,15 @@ class Controller : public ScriptExecutorDelegate,
 
   base::ObserverList<ControllerObserver> observers_;
 
-  // If true, the controller is supposed to stay up and running in the
-  // background even without UI, keeping track of scripts.
-  //
-  // This has two main effects:
-  // - the controllers stays alive even after a fatal error, just so it can
-  // immediately report that no actions are available on that website.
-  // - scripts error are not considered fatal errors. The controller reverts
-  // to TRACKING mode.
-  //
-  // This is set by Track().
-  bool tracking_ = false;
-
   // Whether the controller is in a state in which a UI should be shown.
   bool needs_ui_ = false;
 
   // Whether UI is shown.
   bool ui_shown_ = false;
 
-  // True once the controller has run the first set of scripts and have either
-  // declared it invalid - and entered stopped state - or have processed its
-  // result - and updated the state and set of available actions.
-  bool has_run_first_check_ = false;
-
   // Whether the overlay should be set according to state or always hidden.
   ConfigureUiStateProto::OverlayBehavior overlay_behavior_ =
       ConfigureUiStateProto::DEFAULT;
-
-  // Callbacks to call when |has_run_first_check_| becomes true.
-  std::vector<base::OnceCallback<void()>> on_has_run_first_check_;
-
-  // If set, the controller entered the STOPPED state but shutdown was delayed
-  // until the browser has left the |script_url_.host()| for which the decision
-  // was taken.
-  absl::optional<Metrics::DropOutReason> delayed_shutdown_reason_;
 
   UserModel user_model_;
 

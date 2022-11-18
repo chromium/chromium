@@ -89,6 +89,8 @@ void ScriptTracker::CheckScripts() {
   GURL url = delegate_->GetCurrentURL();
   batch_element_checker_ = std::make_unique<BatchElementChecker>();
   for (const std::unique_ptr<Script>& script : available_scripts_) {
+    // Direct actions are not supported anymore, but might still be served by
+    // the server.
     if (script->handle.direct_action.empty() && !script->handle.autostart)
       continue;
 
@@ -166,24 +168,6 @@ base::Value ScriptTracker::GetDebugContext() const {
   for (const std::unique_ptr<Script>& script : available_scripts_)
     available_scripts_js.Append(script->handle.path);
   dict.Set("available-scripts", std::move(available_scripts_js));
-
-  base::Value::List runnable_scripts_js;
-  for (const auto& entry : runnable_scripts_) {
-    base::Value::Dict script_js;
-    script_js.Set("path", entry.path);
-    script_js.Set("autostart", entry.autostart);
-
-    base::Value::Dict direct_action_js;
-    direct_action_js.Set("names", ToValueList(entry.direct_action.names));
-    direct_action_js.Set("required_arguments",
-                         ToValueList(entry.direct_action.required_arguments));
-    direct_action_js.Set("optional_arguments",
-                         ToValueList(entry.direct_action.optional_arguments));
-    script_js.Set("direct_action", std::move(direct_action_js));
-
-    runnable_scripts_js.Append(std::move(script_js));
-  }
-  dict.Set("runnable-scripts", std::move(runnable_scripts_js));
 
   return base::Value(std::move(dict));
 }

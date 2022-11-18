@@ -11,11 +11,9 @@ import android.os.Build;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.components.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.components.autofill_assistant.user_data.GmsIntegrator;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -23,10 +21,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.content.browser.accessibility.BrowserAccessibilityState;
 import org.chromium.content_public.browser.WebContents;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * An Autofill Assistant client, associated with a specific WebContents.
@@ -111,69 +106,6 @@ public class AutofillAssistantClient {
 
         AutofillAssistantClientJni.get().onJavaDestroyUI(
                 mNativeClientAndroid, AutofillAssistantClient.this);
-    }
-
-    /** Starts the controller and fetching scripts for websites. */
-    public void fetchWebsiteActions(String userName, String experimentIds,
-            Map<String, String> arguments, Callback<Boolean> callback) {
-        if (mNativeClientAndroid == 0) {
-            callback.onResult(false);
-            return;
-        }
-
-        chooseAccountAsyncIfNecessary(userName.isEmpty() ? null : userName);
-
-        // The native side calls sendDirectActionList() on the callback once the controller has
-        // results.
-        AutofillAssistantClientJni.get().fetchWebsiteActions(mNativeClientAndroid,
-                AutofillAssistantClient.this, experimentIds,
-                arguments.keySet().toArray(new String[arguments.size()]),
-                arguments.values().toArray(new String[arguments.size()]), callback);
-    }
-
-    /** Return true if the controller exists and is in tracking mode. */
-    public boolean hasRunFirstCheck() {
-        if (mNativeClientAndroid == 0) {
-            return false;
-        }
-
-        ThreadUtils.assertOnUiThread();
-        return AutofillAssistantClientJni.get().hasRunFirstCheck(
-                mNativeClientAndroid, AutofillAssistantClient.this);
-    }
-
-    /** Lists available direct actions. */
-    public List<AutofillAssistantDirectAction> getDirectActions() {
-        if (mNativeClientAndroid == 0) {
-            return Collections.emptyList();
-        }
-        AutofillAssistantDirectAction[] actions = AutofillAssistantClientJni.get().getDirectActions(
-                mNativeClientAndroid, AutofillAssistantClient.this);
-        return Arrays.asList(actions);
-    }
-
-    /**
-     * Performs a direct action.
-     *
-     * @param actionId id of the action
-     * @param experimentIds comma-separated set of experiments to use while running the flow
-     * @param arguments report these as script parameters while performing this specific action
-     * @param overlayCoordinator if non-null, reuse existing UI elements, usually created to show
-     *         onboarding.
-     * @return true if the action was found started, false otherwise. The action can still fail
-     * after this method returns true; the failure will be displayed on the UI.
-     */
-    public boolean performDirectAction(String actionId, String experimentIds,
-            Map<String, String> arguments,
-            @Nullable AssistantOverlayCoordinator overlayCoordinator) {
-        if (mNativeClientAndroid == 0) return false;
-
-        // Note that only fetchWebsiteActions can start AA, so only it needs
-        // chooseAccountAsyncIfNecessary.
-        return AutofillAssistantClientJni.get().performDirectAction(mNativeClientAndroid,
-                AutofillAssistantClient.this, actionId, experimentIds,
-                arguments.keySet().toArray(new String[arguments.size()]),
-                arguments.values().toArray(new String[arguments.size()]), overlayCoordinator);
     }
 
     /**
@@ -358,12 +290,6 @@ public class AutofillAssistantClient {
         return Build.MODEL;
     }
 
-    /** Adds a dynamic action to the given reporter. */
-    @CalledByNative
-    private void onFetchWebsiteActions(Callback<Boolean> callback, boolean success) {
-        callback.onResult(success);
-    }
-
     @CalledByNative
     private void clearNativePtr() {
         mNativeClientAndroid = 0;
@@ -380,15 +306,6 @@ public class AutofillAssistantClient {
                 long nativeClientAndroid, AutofillAssistantClient caller, byte[] clientToken);
         String getPrimaryAccountName(long nativeClientAndroid, AutofillAssistantClient caller);
         void onJavaDestroyUI(long nativeClientAndroid, AutofillAssistantClient caller);
-        void fetchWebsiteActions(long nativeClientAndroid, AutofillAssistantClient caller,
-                String experimentIds, String[] argumentNames, String[] argumentValues,
-                Object callback);
-        boolean hasRunFirstCheck(long nativeClientAndroid, AutofillAssistantClient caller);
-        AutofillAssistantDirectAction[] getDirectActions(
-                long nativeClientAndroid, AutofillAssistantClient caller);
-        boolean performDirectAction(long nativeClientAndroid, AutofillAssistantClient caller,
-                String actionId, String experimentId, String[] argumentNames,
-                String[] argumentValues, @Nullable AssistantOverlayCoordinator overlayCoordinator);
         void showFatalError(long nativeClientAndroid, AutofillAssistantClient caller);
         boolean isSupervisedUser(long nativeClientAndroid, AutofillAssistantClient caller);
         void onSpokenFeedbackAccessibilityServiceChanged(

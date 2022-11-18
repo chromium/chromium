@@ -17,31 +17,13 @@ namespace autofill_assistant {
 //
 // INACTIVE -> STARTING -> RUNNING -> PROMPT -> RUNNING -> .. -> STOPPED
 //
-// A typical run, when started from a direct action, goes into tracking mode,
-// execute a script, the goes back to tracking mode:
-//
-// INACTIVE -> TRACKING -> RUNNING -> TRACKING -> ... -> STOPPED
-//
 // See the individual state for possible state transitions.
 enum class AutofillAssistantState {
   // Autofill assistant is not doing or showing anything.
   //
   // Initial state.
-  // Next states: STARTING, TRACKING, STOPPED
+  // Next states: STARTING, STOPPED
   INACTIVE = 0,
-
-  // Autofill assistant is keeping track of script availability.
-  //
-  // UI will only be shown if the previous state was RUNNING and if the script
-  // finished with tell + stop.
-  //
-  // In this mode, scripts are not autostarted. User actions might be available.
-  //
-  // Note that it is possible to go from TRACKING to STARTING to trigger
-  // whatever autostartable scripts is defined for a page.
-  //
-  // Next states: STARTING, RUNNING, STOPPED
-  TRACKING,
 
   // Autofill assistant is waiting for an autostart script.
   //
@@ -55,7 +37,7 @@ enum class AutofillAssistantState {
   // Status message, progress and details kept up-to-date by the running
   // script.
   //
-  // Next states: PROMPT, MODAL_DIALOG, TRACKING, STARTING, STOPPED
+  // Next states: PROMPT, MODAL_DIALOG, STARTING, STOPPED
   RUNNING,
 
   // Autofill assistant is waiting for the user to make a choice.
@@ -64,7 +46,7 @@ enum class AutofillAssistantState {
   // empty. A touchable area must be configured. The user might be filling in
   // the data for a payment request.
   //
-  // Next states: RUNNING, TRACKING, STOPPED
+  // Next states: RUNNING, STOPPED
   PROMPT,
 
   // Autofill assistant is expecting a modal dialog, such as the one asking for
@@ -81,7 +63,7 @@ enum class AutofillAssistantState {
   // In that scenario, the status message at the time of transition to STOPPED
   // is supposed to contain the final message.
   //
-  // Next states: TRACKING
+  // Next states: none.
   STOPPED,
 
   // Autofill assistant is waiting for the user to browse the website until one
@@ -96,7 +78,7 @@ enum class AutofillAssistantState {
   // are not a reason to shutdown autofill assistant. Navigating away from the
   // original domain will however shut down autofill assistant.
   //
-  // Next states: RUNNING, TRACKING, STOPPED
+  // Next states: RUNNING, STOPPED
   BROWSE,
 };
 
@@ -111,9 +93,6 @@ inline std::ostream& operator<<(std::ostream& out,
   switch (state) {
     case AutofillAssistantState::INACTIVE:
       out << "INACTIVE";
-      break;
-    case AutofillAssistantState::TRACKING:
-      out << "TRACKING";
       break;
     case AutofillAssistantState::STARTING:
       out << "STARTING";

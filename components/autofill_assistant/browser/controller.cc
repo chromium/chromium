@@ -170,10 +170,6 @@ void Controller::SetTouchableElementArea(const ElementAreaProto& area) {
   touchable_element_area()->SetFromProto(area);
 }
 
-const std::vector<ScriptHandle>& Controller::GetDirectActionScripts() const {
-  return direct_action_scripts_;
-}
-
 bool Controller::IsNavigatingToNewDocument() {
   return navigating_to_new_document_;
 }
@@ -260,24 +256,6 @@ void Controller::SetBrowseDomainsAllowlist(std::vector<std::string> domains) {
   browse_domains_allowlist_ = std::move(domains);
 }
 
-bool Controller::PerformDirectAction(int index,
-                                     std::unique_ptr<TriggerContext> context) {
-  if (index < 0 ||
-      static_cast<size_t>(index) >= direct_action_scripts_.size()) {
-    NOTREACHED() << "Invalid direct action index: " << index;
-    return false;
-  }
-
-  ScriptHandle handle = direct_action_scripts_.at(index);
-  direct_action_scripts_.clear();
-  ExecuteScript(handle.path, handle.start_message, handle.needs_ui,
-                std::move(context),
-                state_ == AutofillAssistantState::TRACKING
-                    ? AutofillAssistantState::TRACKING
-                    : AutofillAssistantState::PROMPT);
-  return true;
-}
-
 void Controller::SetViewportMode(ViewportMode mode) {
   if (mode == viewport_mode_)
     return;
@@ -360,15 +338,10 @@ const ClientSettings& Controller::GetClientSettings() const {
 }
 
 void Controller::ShutdownIfNecessary() {
-  if (!tracking_) {
-    // We expect the DropOutReason to be already reported when we reach this
-    // point and therefore the reason we pass here in the argument should be
-    // ignored.
-    Shutdown(Metrics::DropOutReason::UI_CLOSED_UNEXPECTEDLY);
-  } else if (NeedsUI()) {
-    needs_ui_ = false;
-    client_->DestroyUISoon();
-  }
+  // We expect the DropOutReason to be already reported when we reach this
+  // point and therefore the reason we pass here in the argument should be
+  // ignored.
+  Shutdown(Metrics::DropOutReason::UI_CLOSED_UNEXPECTEDLY);
 }
 
 void Controller::EnterBrowseModeForShutdown() {
@@ -404,10 +377,8 @@ bool Controller::EnterState(AutofillAssistantState state) {
 
   VLOG(2) << __func__ << ": " << state_ << " -> " << state;
 
-  // The only valid way of leaving the STOPPED state is to go back to tracking
-  // mode.
-  DCHECK(state_ != AutofillAssistantState::STOPPED ||
-         (state == AutofillAssistantState::TRACKING && tracking_));
+  // Leaving the STOPPED state is not allowed.
+  DCHECK(state_ != AutofillAssistantState::STOPPED);
   state_ = state;
 
   bool should_suppress_keyboard = ShouldSuppressKeyboard();
@@ -439,17 +410,12 @@ void Controller::SetWebControllerForTest(
 }
 
 void Controller::OnUrlChange() {
-  if (state_ == AutofillAssistantState::STOPPED) {
-    PerformDelayedShutdownIfNecessary();
-    return;
-  }
   user_model_.SetCurrentURL(GetCurrentURL());
   GetOrCheckScripts();
 }
 
 bool Controller::ShouldCheckScripts() {
-  return state_ == AutofillAssistantState::TRACKING ||
-         state_ == AutofillAssistantState::STARTING ||
+  return state_ == AutofillAssistantState::STARTING ||
          ((state_ == AutofillAssistantState::PROMPT ||
            state_ == AutofillAssistantState::BROWSE) &&
           (!script_tracker_ || !script_tracker_->running()));
@@ -646,13 +612,6 @@ void Controller::OnGetScripts(
 
   if (scripts.empty()) {
     script_tracker()->SetScripts({});
-
-    if (state_ == AutofillAssistantState::TRACKING) {
-      OnFatalError(GetDisplayStringUTF8(ClientSettingsProto::DEFAULT_ERROR,
-                                        GetSettings()),
-                   Metrics::DropOutReason::NO_SCRIPTS);
-      return;
-    }
     OnNoRunnableScriptsForPage();
   }
 
@@ -667,19 +626,8 @@ void Controller::ExecuteScript(const std::string& script_path,
                                AutofillAssistantState end_state) {
   DCHECK(!script_tracker()->running());
 
-  // To prevent state from persisting across direct actions, we need to
-  // explicitly clear it each time before we run a script (b/195417453). Note
-  // that for cases where a JITT script transitions into a regular script,
-  // preserving state is important, so we can't clear this indiscriminately.
-  if (context->GetDirectAction()) {
-    ResetState();
-  }
-
   if (needs_ui) {
     RequireUI();
-  } else if (needs_ui_ && state_ == AutofillAssistantState::TRACKING) {
-    needs_ui_ = false;
-    client_->DestroyUI();
   }
   EnterState(AutofillAssistantState::RUNNING);
 
@@ -691,7 +639,6 @@ void Controller::ExecuteScript(const std::string& script_path,
   // Runnable scripts will be checked and reported if necessary after executing
   // the script.
   script_tracker_->ClearRunnableScripts();
-  direct_action_scripts_.clear();
 
   script_tracker()->ExecuteScript(
       script_path, &user_data_, std::move(context),
@@ -722,57 +669,26 @@ void Controller::OnScriptExecuted(const std::string& script_path,
 
   switch (result.at_end) {
     case ScriptExecutor::SHUTDOWN:
-      if (!tracking_) {
-        Shutdown(Metrics::DropOutReason::SCRIPT_SHUTDOWN);
-        return;
-      }
-      needs_ui_ = false;
-      end_state = AutofillAssistantState::TRACKING;
-      break;
-
+      Shutdown(Metrics::DropOutReason::SCRIPT_SHUTDOWN);
+      return;
     case ScriptExecutor::SHUTDOWN_GRACEFULLY:
-      if (!tracking_) {
-        EnterStoppedState();
-        RecordDropOutOrShutdown(Metrics::DropOutReason::SCRIPT_SHUTDOWN);
-        return;
-      }
-      needs_ui_ = true;
-      SetStoppedUI();
-      end_state = AutofillAssistantState::TRACKING;
-      break;
-
+      EnterStoppedState();
+      RecordDropOutOrShutdown(Metrics::DropOutReason::SCRIPT_SHUTDOWN);
+      return;
     case ScriptExecutor::CLOSE_CUSTOM_TAB:
       for (ControllerObserver& observer : observers_) {
         observer.CloseCustomTab();
       }
-      if (!tracking_) {
-        Shutdown(Metrics::DropOutReason::CUSTOM_TAB_CLOSED);
-        return;
-      }
-      needs_ui_ = false;
-      end_state = AutofillAssistantState::TRACKING;
+      Shutdown(Metrics::DropOutReason::CUSTOM_TAB_CLOSED);
       return;
-
     case ScriptExecutor::CONTINUE:
-      if (end_state == AutofillAssistantState::TRACKING) {
-        needs_ui_ = false;
-      }
+      // Do nothing.
       break;
-
     default:
       VLOG(1) << "Unexpected value for at_end: " << result.at_end;
       break;
   }
   EnterState(end_state);
-}
-
-void Controller::ResetState() {
-  viewport_mode_ = ViewportMode::NO_RESIZE;
-  overlay_behavior_ = ConfigureUiStateProto::DEFAULT;
-  touchable_element_area()->Clear();
-  for (ControllerObserver& observer : observers_) {
-    observer.OnResetState();
-  }
 }
 
 void Controller::MaybeAutostartScript(
@@ -795,7 +711,6 @@ void Controller::MaybeAutostartScript(
   }
 
   if (autostart_index == -1) {
-    SetDirectActionScripts(runnable_scripts);
     return;
   }
 
@@ -862,36 +777,9 @@ void Controller::InitFromParameters() {
       trigger_context_->GetScriptParameters().GetDisableRpcSigning());
 }
 
-void Controller::Track(std::unique_ptr<TriggerContext> trigger_context,
-                       base::OnceCallback<void()> on_first_check_done) {
-  tracking_ = true;
-
-  if (state_ == AutofillAssistantState::INACTIVE) {
-    trigger_context_ = std::move(trigger_context);
-    InitFromParameters();
-    for (ControllerObserver& observer : observers_) {
-      observer.OnStart(*GetTriggerContext());
-    }
-    EnterState(AutofillAssistantState::TRACKING);
-  }
-
-  if (on_first_check_done) {
-    if (has_run_first_check_) {
-      std::move(on_first_check_done).Run();
-    } else {
-      on_has_run_first_check_.emplace_back(std::move(on_first_check_done));
-    }
-  }
-}
-
-bool Controller::HasRunFirstCheck() const {
-  return tracking_ && has_run_first_check_;
-}
-
 bool Controller::Start(const GURL& deeplink_url,
                        std::unique_ptr<TriggerContext> trigger_context) {
-  if (state_ != AutofillAssistantState::INACTIVE &&
-      state_ != AutofillAssistantState::TRACKING) {
+  if (state_ != AutofillAssistantState::INACTIVE) {
     return false;
   }
 
@@ -903,10 +791,6 @@ bool Controller::Start(const GURL& deeplink_url,
   if (ShutdownIfCertificateInsecure()) {
     return false;
   }
-
-  // Force a re-evaluation of the script, to get a chance to autostart.
-  if (state_ == AutofillAssistantState::TRACKING)
-    script_tracker_->ClearRunnableScripts();
 
   if (IsNavigatingToNewDocument()) {
     start_after_navigation_ = base::BindOnce(
@@ -950,7 +834,6 @@ bool Controller::ShouldSuppressKeyboard() const {
     case AutofillAssistantState::BROWSE:
     case AutofillAssistantState::MODAL_DIALOG:
     case AutofillAssistantState::STOPPED:
-    case AutofillAssistantState::TRACKING:
     case AutofillAssistantState::INACTIVE:
       return false;
   }
@@ -1000,11 +883,6 @@ void Controller::OnScriptError(const std::string& error_message,
   }
   EnterStoppedState();
 
-  if (tracking_) {
-    EnterState(AutofillAssistantState::TRACKING);
-    return;
-  }
-
   RecordDropOutOrShutdown(reason);
 }
 
@@ -1021,18 +899,6 @@ void Controller::OnFatalError(const std::string& error_message,
   }
   EnterStoppedState();
 
-  // If we haven't managed to check the set of scripts yet at this point, we
-  // never will.
-  MaybeReportFirstCheckDone();
-
-  if (tracking_ && script_url_.host() == GetCurrentURL().host()) {
-    // When tracking the controller should stays until the browser has navigated
-    // away from the last domain that was checked to be able to tell callers
-    // that the set of user actions is empty.
-    delayed_shutdown_reason_ = reason;
-    return;
-  }
-
   RecordDropOutOrShutdown(reason);
 }
 
@@ -1046,28 +912,6 @@ void Controller::RecordDropOutOrShutdown(Metrics::DropOutReason reason) {
     client_->RecordDropOut(reason);
   } else {
     Shutdown(reason);
-  }
-}
-
-void Controller::PerformDelayedShutdownIfNecessary() {
-  if (delayed_shutdown_reason_ &&
-      script_url_.host() != GetCurrentURL().host()) {
-    Metrics::DropOutReason reason = delayed_shutdown_reason_.value();
-    delayed_shutdown_reason_ = absl::nullopt;
-    tracking_ = false;
-    Shutdown(reason);
-  }
-}
-
-void Controller::MaybeReportFirstCheckDone() {
-  if (has_run_first_check_)
-    return;
-
-  has_run_first_check_ = true;
-
-  while (!on_has_run_first_check_.empty()) {
-    std::move(on_has_run_first_check_.back()).Run();
-    on_has_run_first_check_.pop_back();
   }
 }
 
@@ -1101,17 +945,6 @@ void Controller::OnNoRunnableScriptsForPage() {
   }
 }
 
-void Controller::SetDirectActionScripts(
-    const std::vector<ScriptHandle>& runnable_scripts) {
-  direct_action_scripts_.clear();
-  for (const auto& script : runnable_scripts) {
-    if (script.direct_action.empty())
-      continue;
-
-    direct_action_scripts_.push_back(script);
-  }
-}
-
 void Controller::SetSemanticSelectorPolicy(SemanticSelectorPolicy policy) {
   DCHECK(annotate_dom_model_service_);
   if (!annotate_dom_model_service_->SetOverridesPolicy(std::move(policy))) {
@@ -1121,32 +954,15 @@ void Controller::SetSemanticSelectorPolicy(SemanticSelectorPolicy policy) {
 
 void Controller::OnRunnableScriptsChanged(
     const std::vector<ScriptHandle>& runnable_scripts) {
-  base::ScopedClosureRunner report_first_check;
-  if (!has_run_first_check_) {
-    // Only report first check done once we're done processing the given set of
-    // scripts - whatever the outcome - so callers can see that outcome in the
-    // state of the controller.
-    report_first_check.ReplaceClosure(
-        base::BindOnce(&Controller::MaybeReportFirstCheckDone,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
   // Script selection is disabled when a script is already running. We will
   // check again and maybe update when the current script has finished.
   if (script_tracker()->running())
     return;
 
-  switch (state_) {
-    case AutofillAssistantState::STARTING:
-      MaybeAutostartScript(runnable_scripts);
-      return;
-    case AutofillAssistantState::TRACKING:
-      SetDirectActionScripts(runnable_scripts);
-      return;
-    default:
-      // In other states we ignore the script update.
-      break;
+  if (state_ == AutofillAssistantState::STARTING) {
+    MaybeAutostartScript(runnable_scripts);
   }
+  // In other states we ignore the script update.
 }
 
 void Controller::DidFinishLoad(content::RenderFrameHost* render_frame_host,
@@ -1239,15 +1055,6 @@ void Controller::DidStartNavigation(
     return;
   }
 
-  // When in TRACKING state all navigation is allowed, but user-initiated
-  // navigation will close the UI if any.
-  if (state_ == AutofillAssistantState::TRACKING &&
-      is_user_initiated_or_back_forward &&
-      !navigation_handle->WasServerRedirect()) {
-    ShutdownIfNecessary();
-    return;
-  }
-
   // Note that BROWSE state end conditions are in DidFinishNavigation, in order
   // to be able to properly evaluate the committed url.
 }
@@ -1270,7 +1077,6 @@ void Controller::DidFinishNavigation(
         return;
       }
       break;
-    case AutofillAssistantState::TRACKING:
     case AutofillAssistantState::STOPPED:
     case AutofillAssistantState::INACTIVE:
       break;
@@ -1407,7 +1213,6 @@ bool Controller::StateNeedsUI(AutofillAssistantState state) {
       return true;
 
     case AutofillAssistantState::INACTIVE:
-    case AutofillAssistantState::TRACKING:
     case AutofillAssistantState::STOPPED:
     case AutofillAssistantState::RUNNING:
       return false;
