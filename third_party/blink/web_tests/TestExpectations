@@ -316,7 +316,6 @@ crbug.com/1259367 [ Mac ] printing/offscreencanvas-webgl-printing.html [ Failure
 external/wpt/editing/run/inserttext.html?2001-last [ Failure ]
 external/wpt/editing/run/forecolor.html?1-1000 [ Failure ]
 external/wpt/editing/run/forecolor.html?2001-last [ Failure ]
-external/wpt/editing/run/insertlinebreak.html [ Failure ]
 
 # WPT editing test failures
 crbug.com/1168974 external/wpt/editing/run/forwarddelete.html?6001-last [ Failure ]
@@ -1968,7 +1967,6 @@ crbug.com/686118 http/tests/security/setDomainRelaxationForbiddenForURLScheme.ht
 
 # Flaky tests on Mac after enabling scroll animations in web_tests
 crbug.com/944583 [ Mac ] fast/events/platform-wheelevent-paging-xy-in-scrolling-div.html [ Failure Pass ]
-crbug.com/944583 [ Mac ] fast/events/platform-wheelevent-paging-xy-in-scrolling-page.html [ Failure Pass ]
 crbug.com/944583 [ Mac ] fast/events/space-scroll-textinput-canceled.html [ Failure Pass ]
 crbug.com/944583 [ Mac ] fast/scrolling/percentage-mousewheel-scroll-on-iframe.html [ Failure Pass ]
 crbug.com/944583 [ Mac ] fast/scrolling/percentage-mousewheel-scroll.html [ Failure Pass ]
@@ -3003,7 +3001,6 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-01
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-016.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-020.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-179.xht [ Failure ]
-crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-189.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-192.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-193.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-194.xht [ Failure ]
@@ -3224,7 +3221,6 @@ crbug.com/626703 [ Win ] external/wpt/websockets/Create-blocked-port.any.worker.
 crbug.com/626703 [ Mac10.14 ] external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html?pen [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html?pen [ Timeout ]
 crbug.com/626703 [ Win ] external/wpt/websockets/stream/tentative/constructor.any.serviceworker.html?wss [ Failure Timeout ]
-crbug.com/626703 [ Win ] external/wpt/websockets/constructor/010.html?wss [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/websockets/opening-handshake/005.html [ Failure Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/RTCPeerConnection-ondatachannel.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/webrtc/RTCPeerConnection-ondatachannel.html [ Skip Timeout ]
@@ -4442,8 +4438,6 @@ crbug.com/1048149 external/wpt/html/browsers/the-window-object/open-close/open-f
 crbug.com/1048149 external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-screeny.html [ Crash Timeout ]
 crbug.com/1048149 external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-width.html [ Crash Timeout ]
 crbug.com/1048149 [ Mac ] fast/forms/calendar-picker/month-picker-appearance.html [ Crash Pass ]
-crbug.com/1048149 [ Mac ] fast/forms/calendar-picker/month-picker-appearance-step.html [ Crash Pass ]
-crbug.com/1048149 crbug.com/1050121 [ Mac ] fast/forms/month/month-picker-appearance-zoom150.html [ Crash Failure Pass ]
 
 # SwANGLE issues
 crbug.com/1204234 css3/blending/background-blend-mode-single-accelerated-element.html [ Failure ]
@@ -5162,7 +5156,6 @@ crbug.com/1048761 [ Mac11 ] external/wpt/websockets/Send-0byte-data.any.html?wpt
 crbug.com/1048761 [ Mac12 ] external/wpt/websockets/Send-0byte-data.any.html?wpt_flags=h2 [ Failure ]
 crbug.com/1048761 [ Mac12-arm64 ] external/wpt/websockets/Send-0byte-data.any.html?wpt_flags=h2 [ Failure ]
 crbug.com/1048761 [ Win ] external/wpt/websockets/Send-0byte-data.any.html?wpt_flags=h2 [ Failure ]
-crbug.com/1048761 [ Win ] external/wpt/websockets/Send-0byte-data.any.worker.html?wpt_flags=h2 [ Failure ]
 crbug.com/1048761 [ Linux ] external/wpt/websockets/Send-65K-data.any.html?wpt_flags=h2 [ Failure ]
 crbug.com/1048761 [ Mac10.15 ] external/wpt/websockets/Send-65K-data.any.html?wpt_flags=h2 [ Failure ]
 crbug.com/1048761 [ Mac11 ] external/wpt/websockets/Send-65K-data.any.html?wpt_flags=h2 [ Failure ]
