@@ -164,6 +164,7 @@ class CreditCardCVCAuthenticatorTest : public testing::Test {
 };
 
 TEST_F(CreditCardCVCAuthenticatorTest, AuthenticateServerCardSuccess) {
+  base::HistogramTester histogram_tester;
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
   cvc_authenticator_->Authenticate(&card, requester_->GetWeakPtr(),
@@ -172,9 +173,13 @@ TEST_F(CreditCardCVCAuthenticatorTest, AuthenticateServerCardSuccess) {
   OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber);
   EXPECT_TRUE((*requester_->did_succeed()));
   EXPECT_EQ(kTestNumber16, requester_->number());
+  histogram_tester.ExpectUniqueSample("Autofill.CvcAuth.ServerCard.Attempt",
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
 }
 
 TEST_F(CreditCardCVCAuthenticatorTest, AuthenticateVirtualCardSuccess) {
+  base::HistogramTester histogram_tester;
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
   card.set_record_type(CreditCard::RecordType::VIRTUAL_CARD);
   autofill_client_.set_last_committed_primary_main_frame_url(
@@ -202,9 +207,13 @@ TEST_F(CreditCardCVCAuthenticatorTest, AuthenticateVirtualCardSuccess) {
   OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber);
   EXPECT_TRUE((*requester_->did_succeed()));
   EXPECT_EQ(kTestNumber16, requester_->number());
+  histogram_tester.ExpectUniqueSample("Autofill.CvcAuth.VirtualCard.Attempt",
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
 }
 
 TEST_F(CreditCardCVCAuthenticatorTest, AuthenticateVirtualCard_InvalidURL) {
+  base::HistogramTester histogram_tester;
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
   card.set_record_type(CreditCard::RecordType::VIRTUAL_CARD);
   autofill_client_.set_last_committed_primary_main_frame_url(GURL());
@@ -219,9 +228,13 @@ TEST_F(CreditCardCVCAuthenticatorTest, AuthenticateVirtualCard_InvalidURL) {
 
   ASSERT_FALSE(GetFullCardRequest()->GetShouldUnmaskCardForTesting());
   EXPECT_FALSE(*requester_->did_succeed());
+  histogram_tester.ExpectUniqueSample("Autofill.CvcAuth.VirtualCard.Attempt",
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
 }
 
 TEST_F(CreditCardCVCAuthenticatorTest, AuthenticateNetworkError) {
+  base::HistogramTester histogram_tester;
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
   cvc_authenticator_->Authenticate(&card, requester_->GetWeakPtr(),
@@ -230,9 +243,13 @@ TEST_F(CreditCardCVCAuthenticatorTest, AuthenticateNetworkError) {
   OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kNetworkError,
                   std::string());
   EXPECT_FALSE((*requester_->did_succeed()));
+  histogram_tester.ExpectUniqueSample("Autofill.CvcAuth.ServerCard.Attempt",
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
 }
 
 TEST_F(CreditCardCVCAuthenticatorTest, AuthenticatePermanentFailure) {
+  base::HistogramTester histogram_tester;
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
   cvc_authenticator_->Authenticate(&card, requester_->GetWeakPtr(),
@@ -241,9 +258,13 @@ TEST_F(CreditCardCVCAuthenticatorTest, AuthenticatePermanentFailure) {
   OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kPermanentFailure,
                   std::string());
   EXPECT_FALSE((*requester_->did_succeed()));
+  histogram_tester.ExpectUniqueSample("Autofill.CvcAuth.ServerCard.Attempt",
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
 }
 
 TEST_F(CreditCardCVCAuthenticatorTest, AuthenticateTryAgainFailure) {
+  base::HistogramTester histogram_tester;
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
   cvc_authenticator_->Authenticate(&card, requester_->GetWeakPtr(),
@@ -256,6 +277,9 @@ TEST_F(CreditCardCVCAuthenticatorTest, AuthenticateTryAgainFailure) {
   OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber);
   EXPECT_TRUE((*requester_->did_succeed()));
   EXPECT_EQ(kTestNumber16, requester_->number());
+  histogram_tester.ExpectUniqueSample("Autofill.CvcAuth.ServerCard.Attempt",
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
 }
 
 }  // namespace autofill
