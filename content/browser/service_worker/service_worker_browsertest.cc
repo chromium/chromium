@@ -4239,20 +4239,20 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSpeculativeStartupBrowserTest,
       static_cast<int>(blink::ServiceWorkerStatusCode::kOk), 1);
 }
 
-enum class ServiceWorkerBypassFetchHandlerAllowedOriginType {
-  kAllowed,
-  kNotAllowed
+enum class ServiceWorkerBypassFetchHandlerBypassedOriginType {
+  kBypassed,
+  kNotBypassed
 };
 
 class ServiceWorkerBypassFetchHandlerTest
     : public ServiceWorkerBrowserTest,
       public testing::WithParamInterface<
-          ServiceWorkerBypassFetchHandlerAllowedOriginType> {
+          ServiceWorkerBypassFetchHandlerBypassedOriginType> {
  public:
   ServiceWorkerBypassFetchHandlerTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kServiceWorkerBypassFetchHandler,
-          {{"allowed_origins", "https://a.test"}}}},
+          {{"origins_to_bypass", "https://a.test"}}}},
         {});
   }
   ~ServiceWorkerBypassFetchHandlerTest() override = default;
@@ -4283,16 +4283,16 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ServiceWorkerBypassFetchHandlerTest,
     testing::Values(
-        ServiceWorkerBypassFetchHandlerAllowedOriginType::kAllowed,
-        ServiceWorkerBypassFetchHandlerAllowedOriginType::kNotAllowed));
+        ServiceWorkerBypassFetchHandlerBypassedOriginType::kBypassed,
+        ServiceWorkerBypassFetchHandlerBypassedOriginType::kNotBypassed));
 
 IN_PROC_BROWSER_TEST_P(ServiceWorkerBypassFetchHandlerTest, UrlInAllowList) {
   std::string origin;
   switch (GetParam()) {
-    case ServiceWorkerBypassFetchHandlerAllowedOriginType::kAllowed:
+    case ServiceWorkerBypassFetchHandlerBypassedOriginType::kBypassed:
       origin = "a.test";
       break;
-    case ServiceWorkerBypassFetchHandlerAllowedOriginType::kNotAllowed:
+    case ServiceWorkerBypassFetchHandlerBypassedOriginType::kNotBypassed:
       origin = "b.test";
       break;
   }
@@ -4341,12 +4341,12 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerBypassFetchHandlerTest, UrlInAllowList) {
   EXPECT_TRUE(NavigateToURL(shell(), in_scope_url));
 
   switch (GetParam()) {
-    case ServiceWorkerBypassFetchHandlerAllowedOriginType::kAllowed:
+    case ServiceWorkerBypassFetchHandlerBypassedOriginType::kBypassed:
       // If bypassing is allowed, the service worker was bypassed and the
       // navigation request shouldn't be handled by the fetch handler.
       EXPECT_EQ(0, EvalJs(GetPrimaryMainFrame(), script));
       break;
-    case ServiceWorkerBypassFetchHandlerAllowedOriginType::kNotAllowed:
+    case ServiceWorkerBypassFetchHandlerBypassedOriginType::kNotBypassed:
       // If bypassing is not allowed, the navigation request should be handled
       // by the fetch handler.
       EXPECT_EQ(1, EvalJs(GetPrimaryMainFrame(), script));
