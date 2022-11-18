@@ -22,6 +22,20 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="GpuPeakMemoryUsage">
+  <variant name="ChangeTab2"
+      summary="Changing tabs. Note that this histogram uses presentation
+               callbacks to determine the end of the tab change (which is
+               when the tab change is presented on the screen). However,
+               before M110 it was possible that the callback was called even
+               if the next submitted frame failed to present successfully.
+               Since M110, the histogram switched to using presentation
+               callbacks that are only called when the first following frame
+               is successfully presented on the screen (hence version 2)"/>
+  <variant name="PageLoad" summary="Page load"/>
+  <variant name="Scroll" summary="Scroll"/>
+</variants>
+
 <variants name="ProfiledProcess">
   <variant name="" summary="all process types, aggregated"/>
   <variant name=".Browser" summary="the Browser process"/>
@@ -1259,33 +1273,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Memory.GPU.PeakMemoryAllocationSource2" units="MB"
-    expires_after="2023-04-30">
-<!-- Name completed by a combination of the following two histogram_suffixes: -->
-
-<!-- histogram_suffixes name="GPU.PeakMemoryAllocationSourceBase" -->
-
-<!-- and histogram_suffixes name="GPU.PeakMemoryAllocationSource" -->
-
+<histogram name="Memory.GPU.PeakMemoryAllocationSource2.{Usage}.{Source}"
+    units="MB" expires_after="2023-04-30">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
-    The maximum amount of memory of the GPU process allocated by a particular
-    source during a user interaction (e.g. tab-switch, page-load, scroll etc.).
+    The maximum amount of memory of the GPU process allocated by {Source} during
+    the following user interaction: {Usage}.
+
     See Memory.GPU.PeakMemoryUsage2.
   </summary>
+  <token key="Usage" variants="GpuPeakMemoryUsage"/>
+  <token key="Source">
+    <variant name="CommandBuffer" summary="GPU command buffer"/>
+    <variant name="SharedContextState" summary="Shared Context State"/>
+    <variant name="SharedImageStub" summary="Shared Image Stub"/>
+    <variant name="Skia" summary="Skia"/>
+    <variant name="Unknown" summary="an unknown source"/>
+  </token>
 </histogram>
 
-<histogram base="true" name="Memory.GPU.PeakMemoryUsage2" units="MB"
+<histogram name="Memory.GPU.PeakMemoryUsage2.{Usage}" units="MB"
     expires_after="2023-04-30">
-<!-- Name completed by histogram_suffixes name="GPU_PeakMemoryUsage" -->
-
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
-    The maximum amount of memory of the GPU process during a particular
-    interaction (e.g. tab-switch, page-load, scroll etc.).
+    The maximum amount of memory of the GPU process during the following user
+    interaction: {Usage}.
   </summary>
+  <token key="Usage" variants="GpuPeakMemoryUsage"/>
 </histogram>
 
 <histogram name="Memory.Gpu.PrivateMemoryFootprint" units="MB"

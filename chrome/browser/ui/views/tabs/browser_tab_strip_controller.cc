@@ -287,10 +287,11 @@ void BrowserTabStripController::SelectTab(int model_index,
   gesture_detail.type = type;
   model_->ActivateTabAt(model_index, gesture_detail);
 
-  tabstrip_->GetWidget()->GetCompositor()->RequestPresentationTimeForNextFrame(
-      base::BindOnce(
+  tabstrip_->GetWidget()
+      ->GetCompositor()
+      ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
           [](std::unique_ptr<content::PeakGpuMemoryTracker> tracker,
-             const gfx::PresentationFeedback& feedback) {
+             base::TimeTicks presentation_timestamp) {
             // This callback will be ran once the ui::Compositor presents the
             // next frame for the |tabstrip_|. The destruction of |tracker| will
             // get the peak GPU memory and record a histogram.

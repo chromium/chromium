@@ -41,7 +41,7 @@ constexpr int kMemoryHistogramBucketCount = 100;
 constexpr const char* GetUsageName(PeakGpuMemoryTracker::Usage usage) {
   switch (usage) {
     case PeakGpuMemoryTracker::Usage::CHANGE_TAB:
-      return "ChangeTab";
+      return "ChangeTab2";
     case PeakGpuMemoryTracker::Usage::PAGE_LOAD:
       return "PageLoad";
     case PeakGpuMemoryTracker::Usage::SCROLL:

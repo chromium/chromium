@@ -2173,31 +2173,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="GPU.DirectComposition.SwapChainCreationResult2"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="GPU_PeakMemoryAllocationSources" separator=".">
-  <suffix name="CommandBuffer" label="GPU Command Buffer."/>
-  <suffix name="SharedContextState" label="Shared Context State."/>
-  <suffix name="SharedImageStub" label="Shared Image Stub."/>
-  <suffix name="Skia" label="Skia."/>
-  <suffix name="Unknown" label="No source specified."/>
-  <affected-histogram name="Memory.GPU.PeakMemoryAllocationSource2.ChangeTab"/>
-  <affected-histogram name="Memory.GPU.PeakMemoryAllocationSource2.PageLoad"/>
-  <affected-histogram name="Memory.GPU.PeakMemoryAllocationSource2.Scroll"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="GPU_PeakMemoryAllocationSourcesBase" separator=".">
-  <suffix base="true" name="ChangeTab" label="Changing Tabs."/>
-  <suffix base="true" name="PageLoad" label="Page Load."/>
-  <suffix base="true" name="Scroll" label="Scroll."/>
-  <affected-histogram name="Memory.GPU.PeakMemoryAllocationSource2"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="GPU_PeakMemoryUsage" separator=".">
-  <suffix name="ChangeTab" label="Changing Tabs."/>
-  <suffix name="PageLoad" label="Page Load."/>
-  <suffix name="Scroll" label="Scroll."/>
-  <affected-histogram name="Memory.GPU.PeakMemoryUsage2"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="GPU_ProtectedVideoType" separator=".">
   <suffix name="Clear" label="Clear"/>
   <suffix name="HardwareProtected" label="HardwareProtected"/>
