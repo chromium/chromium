@@ -2473,6 +2473,28 @@ Unknown properties are collapsed to zero. -->
   <int value="13" label="User stopped"/>
 </enum>
 
+<enum name="AndroidRealTimeIsInAllowlistResult">
+  <int value="0" label="NO"/>
+  <int value="1" label="YES"/>
+  <int value="2" label="ALLOWLIST_UNAVAILABLE"/>
+</enum>
+
+<enum name="AndroidRealTimePopulateAllowlistResult">
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="FAILED_EMPTY"/>
+  <int value="2" label="FAILED_PROTO_PARSE"/>
+  <int value="3" label="FAILED_MISSING_URL_HASHES"/>
+  <int value="4" label="FAILED_MISSING_VERSION_ID"/>
+  <int value="5" label="FAILED_MISSING_SCHEME_ID"/>
+  <int value="6" label="FAILED_EMPTY_URL_HASHES"/>
+  <int value="7" label="FAILED_DANGLING_HASH"/>
+  <int value="8" label="SKIPPED_OLD_VERSION_ID"/>
+  <int value="9" label="SKIPPED_EQUAL_VERSION_ID"/>
+  <int value="10" label="SKIPPED_INVALID_SCHEME_ID"/>
+  <int value="11" label="FAILED_HASH_LENGTH_EXCEEDS_MAX"/>
+  <int value="12" label="FAILED_TOO_FEW_ALLOWLIST_ENTRIES"/>
+</enum>
+
 <enum name="AndroidResourceBundleLocaleFailures">
   <int value="0" label="Locale Pak file was not found"/>
   <int value="1" label="LoadDataPackFromLocalePak() primary call failed"/>

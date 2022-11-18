@@ -80,6 +80,13 @@ chromium-metrics-reviews@google.com.
   <variant name="StandardProtection" summary="standard protection"/>
 </variants>
 
+<variants name="RealTimeUrlAllowlistSource">
+  <variant name="DynamicUpdate"
+      summary="allowlist is generated through the component updater"/>
+  <variant name="ResourceBundle"
+      summary="allowlist is generated through the local resource file"/>
+</variants>
+
 <variants name="RealTimeUrlCheckUserCategory">
   <variant name="" summary="consumer or enterprise"/>
   <variant name=".Consumer" summary="consumer"/>
@@ -124,6 +131,85 @@ chromium-metrics-reviews@google.com.
     Records the service error of refreshing OAuth2 access token during fetching
     the user's advanced protection status. Logged at startup for all users, once
     a day for AP users, and will retry on transient failures.
+  </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.Android.RealTimeAllowlist.InstallerLoadFromDiskPbFileEmpty"
+    units="bool" expires_after="2023-10-26">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether LoadFromDisk is attempting to read an empty pb file path.
+    Logged whenever a component update or initial component load occurs for the
+    RealTimeUrlChecksAllowlist component.
+  </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.Android.RealTimeAllowlist.IsInAllowlist.{AllowlistSource}Result"
+    enum="AndroidRealTimeIsInAllowlistResult" expires_after="2023-10-26">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Measures the result from performing an allowlist check when the
+    {AllowlistSource}.
+  </summary>
+  <token key="AllowlistSource" variants="RealTimeUrlAllowlistSource"/>
+</histogram>
+
+<histogram name="SafeBrowsing.Android.RealTimeAllowlist.IsInAllowlistElapsed"
+    units="ms" expires_after="2023-10-26">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Measures the time it takes to perform a real time url allowlist check.
+  </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.Android.RealTimeAllowlist.Populate.{AllowlistSource}Result"
+    enum="AndroidRealTimePopulateAllowlistResult" expires_after="2023-10-26">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Measures the outcome of populating the allowlist, when the
+    {AllowlistSource}.
+  </summary>
+  <token key="AllowlistSource" variants="RealTimeUrlAllowlistSource"/>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.Android.RealTimeAllowlist.Populate.{AllowlistSource}Size"
+    units="entries" expires_after="2023-10-26">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Measures the number of entries in the allowlist when the {AllowlistSource}.
+    This metric is only recorded when populating the allowlist is successful.
+  </summary>
+  <token key="AllowlistSource" variants="RealTimeUrlAllowlistSource"/>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.Android.RealTimeAllowlist.Populate.{AllowlistSource}Version"
+    units="versioncode" expires_after="2023-10-26">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the version of the allowlist when the {AllowlistSource}. This metric
+    is only recorded when populating the allowlist is successful.
+  </summary>
+  <token key="AllowlistSource" variants="RealTimeUrlAllowlistSource"/>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.Android.RealTimeAllowlist.PopulateResourceFileElapsed"
+    units="ms" expires_after="2023-10-26">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Measures the time it takes to initialize a real time url allowlist.
   </summary>
 </histogram>
 

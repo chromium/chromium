@@ -1,0 +1,23 @@
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package safe_browsing;
+
+/// This is the high-confidence allowlist used for real-time URL checks. It is
+/// used only on Android.
+message HighConfidenceAllowlist {
+  // The allowlist version. This is used to ensure that component updates result
+  // in loading the latest allowlist version.
+  optional int32 version_id = 1;
+
+  // Id that increments when there are breaking changes to the proto file
+  // format. The major purpose of this is to avoid concerns with backwards
+  // compatibility.
+  optional int32 scheme_id = 2;
+
+  // A list of hashes generated from truncating a SHA-256 hash to the first 16
+  // bytes. These are concatenated together into one field instead of having a
+  // repeated field to save space.
+  optional bytes url_hashes = 3;
+}

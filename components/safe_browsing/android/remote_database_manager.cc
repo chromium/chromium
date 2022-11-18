@@ -14,9 +14,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/safe_browsing/android/real_time_url_checks_allowlist.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
 #include "components/safe_browsing/core/browser/db/v4_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -247,6 +249,16 @@ RemoteSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
   if (!enabled_ || !CanCheckUrl(url))
     return AsyncMatch::NO_MATCH;
 
+  if (base::FeatureList::IsEnabled(kComponentUpdaterAndroidProtegoAllowlist)) {
+    // SafeBrowsingComponentUpdaterAndroidProtegoAllowlist is enabled.
+    RealTimeUrlChecksAllowlist::IsInAllowlistResult is_match =
+        RealTimeUrlChecksAllowlist::GetInstance()->IsInAllowlist(url);
+    // Note that if the allowlist is unavailable, we return MATCH
+    return is_match == RealTimeUrlChecksAllowlist::IsInAllowlistResult::
+                           kNotInAllowlist
+               ? AsyncMatch::NO_MATCH
+               : AsyncMatch::MATCH;
+  }
   // TODO(crbug.com/1014202): Make this call async.
   bool is_match = SafeBrowsingApiHandlerBridge::GetInstance()
                       .StartHighConfidenceAllowlistCheck(url);

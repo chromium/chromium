@@ -4,6 +4,7 @@
 
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 
 android_library("safe_browsing_java") {
   deps = [
@@ -19,6 +20,11 @@ android_library("safe_browsing_java") {
   ]
 }
 
+fuzzable_proto_library("realtimeallowlist_proto") {
+  proto_in_dir = "//"
+  sources = [ "proto/realtimeallowlist.proto" ]
+}
+
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/components/safe_browsing/SafeBrowsingApiBridge.java",
@@ -28,10 +34,27 @@ generate_jni("jni_headers") {
 # This target is for the mobile version.
 group("safe_browsing_mobile") {
   deps = [
+    ":real_time_url_checks_allowlist",
     ":remote_database_manager",
     ":safe_browsing_api_handler",
     ":safe_browsing_api_handler_util",
     "//components/safe_browsing/core/browser/db:safe_browsing_db_shared",
+  ]
+}
+
+static_library("real_time_url_checks_allowlist") {
+  sources = [
+    "real_time_url_checks_allowlist.cc",
+    "real_time_url_checks_allowlist.h",
+  ]
+  deps = [
+    "//base",
+    "//components/resources:components_resources",
+    "//components/safe_browsing/android:realtimeallowlist_proto",
+    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/common",
+    "//ui/base:base",
+    "//url",
   ]
 }
 
@@ -41,11 +64,13 @@ static_library("remote_database_manager") {
     "remote_database_manager.h",
   ]
   deps = [
+    ":real_time_url_checks_allowlist",
     ":safe_browsing_api_handler",
     "//base:base",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/db:v4_get_hash_protocol_manager",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/common",
     "//components/variations",
     "//content/public/browser",
     "//net",
@@ -86,20 +111,26 @@ source_set("safe_browsing_api_handler") {
 source_set("unit_tests_mobile") {
   testonly = true
   sources = [
+    "real_time_url_checks_allowlist_resource_file_unittest.cc",
+    "real_time_url_checks_allowlist_unittest.cc",
     "remote_database_manager_unittest.cc",
     "safe_browsing_api_handler_unittest.cc",
   ]
   deps = [
+    ":real_time_url_checks_allowlist",
     ":remote_database_manager",
     ":safe_browsing_api_handler",
     ":safe_browsing_api_handler_util",
     "//base",
+    "//components/resources:components_resources_grit",
+    "//components/safe_browsing/android:realtimeallowlist_proto",
     "//components/safe_browsing/core/browser/db:metadata_proto",
     "//components/safe_browsing/core/browser/db:unit_tests_shared",
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/browser/db:v4_test_util",
     "//components/variations",
     "//content/test:test_support",
+    "//services/network:test_support",
     "//services/network/public/mojom",
     "//testing/gtest",
     "//url",

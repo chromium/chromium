@@ -62,6 +62,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/component_updater/crow_domain_list_component_installer.h"
 #include "chrome/browser/component_updater/desktop_sharing_hub_component_remover.h"
+#include "chrome/browser/component_updater/real_time_url_checks_allowlist_component_installer.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -213,6 +214,7 @@ void RegisterComponentsForUpdate() {
 
 #if BUILDFLAG(IS_ANDROID)
   RegisterCrowDomainListComponent(cus);
+  RegisterRealTimeUrlChecksAllowlistComponent(cus);
 #endif  // BUIDLFLAG(IS_ANDROID)
 
   RegisterAutofillStatesComponent(cus, g_browser_process->local_state());

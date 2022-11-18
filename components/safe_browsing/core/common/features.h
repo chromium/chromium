@@ -42,6 +42,9 @@ const char kClientSideDetectionTagParamName[] = "reporter_omaha_tag";
 // Enables client side detection referrer chain.
 BASE_DECLARE_FEATURE(kClientSideDetectionReferrerChain);
 
+// Enables serving the Android Protego allowlist through the component updater.
+BASE_DECLARE_FEATURE(kComponentUpdaterAndroidProtegoAllowlist);
+
 // Controls whether an access token is attached to scanning requests triggered
 // by enterprise Connectors.
 BASE_DECLARE_FEATURE(kConnectorsScanningAccessToken);
