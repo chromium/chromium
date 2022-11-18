@@ -77,8 +77,7 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   bool CheckExtensionIDs(const std::set<FullHash>& extension_ids,
                          Client* client) override;
   bool CheckResourceUrl(const GURL& url, Client* client) override;
-  AsyncMatch CheckUrlForHighConfidenceAllowlist(const GURL& url,
-                                                Client* client) override;
+  bool CheckUrlForHighConfidenceAllowlist(const GURL& url) override;
   bool CheckUrlForAccuracyTips(const GURL& url, Client* client) override;
   bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override;
   bool MatchDownloadAllowlistUrl(const GURL& url) override;
@@ -139,9 +138,6 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
     // This respresents the case when we're trying to determine if a URL is
     // part of the CSD allowlist.
     CHECK_CSD_ALLOWLIST,
-
-    // TODO(vakh): Explain this.
-    CHECK_HIGH_CONFIDENCE_ALLOWLIST,
 
     // Checks whether the URL should shown an accuracy tip.
     CHECK_ACCURACY_TIPS,
@@ -281,8 +277,12 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   bool HandleCheck(std::unique_ptr<PendingCheck> check);
 
   // Like HandleCheck, but for allowlists that have both full-hashes and
-  // partial hashes in the DB. Returns MATCH, NO_MATCH, or ASYNC.
-  AsyncMatch HandleAllowlistCheck(std::unique_ptr<PendingCheck> check);
+  // partial hashes in the DB. If |allow_async_check| is false, it will only
+  // return either MATCH or NO_MATCH. If |allow_async_check| is true, it returns
+  // MATCH, NO_MATCH, or ASYNC. In the ASYNC case, it will schedule performing
+  // the full hash check.
+  AsyncMatch HandleAllowlistCheck(std::unique_ptr<PendingCheck> check,
+                                  bool allow_async_check);
 
   // Computes the hashes of URLs that have artificially been marked as unsafe
   // using any of the following command line flags: "mark_as_phishing",

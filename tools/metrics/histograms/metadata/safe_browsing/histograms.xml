@@ -1349,7 +1349,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SafeBrowsing.RT.LocalMatch.Result"
     enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2023-05-14">
-  <owner>vakh@chromium.org</owner>
+  <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs the result of checking the URL against the local Safe Browsing high

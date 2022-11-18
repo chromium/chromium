@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
@@ -504,9 +505,8 @@ bool V4LocalDatabaseManager::CheckResourceUrl(const GURL& url, Client* client) {
   return HandleCheck(std::move(check));
 }
 
-AsyncMatch V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
-    const GURL& url,
-    Client* client) {
+bool V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
+    const GURL& url) {
   DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
 
   StoresToCheck stores_to_check({GetUrlHighConfidenceAllowlistId()});
@@ -525,17 +525,20 @@ AsyncMatch V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
       (!all_stores_available && is_artificial_prefix_empty)) {
     // NOTE(vakh): If Safe Browsing isn't enabled yet, or if the URL isn't a
     // navigation URL, or if the allowlist isn't ready yet, or if the allowlist
-    // is too small, return MATCH. The full URL check won't be performed, but
-    // hash-based check will still be done. If any artificial matches are
-    // present, consider the allowlist as ready.
-    return AsyncMatch::MATCH;
+    // is too small, return that there is a match. The full URL check won't be
+    // performed, but hash-based check will still be done. If any artificial
+    // matches are present, consider the allowlist as ready.
+    return true;
   }
 
   std::unique_ptr<PendingCheck> check = std::make_unique<PendingCheck>(
-      client, ClientCallbackType::CHECK_HIGH_CONFIDENCE_ALLOWLIST,
-      stores_to_check, std::vector<GURL>(1, url));
+      nullptr, ClientCallbackType::CHECK_OTHER, stores_to_check,
+      std::vector<GURL>(1, url));
 
-  return HandleAllowlistCheck(std::move(check));
+  AsyncMatch result =
+      HandleAllowlistCheck(std::move(check), /*allow_async_check=*/false);
+  DCHECK_NE(AsyncMatch::ASYNC, result);
+  return result == AsyncMatch::MATCH;
 }
 
 bool V4LocalDatabaseManager::CheckUrlForAccuracyTips(const GURL& url,
@@ -595,7 +598,7 @@ AsyncMatch V4LocalDatabaseManager::CheckCsdAllowlistUrl(const GURL& url,
       client, ClientCallbackType::CHECK_CSD_ALLOWLIST, stores_to_check,
       std::vector<GURL>(1, url));
 
-  return HandleAllowlistCheck(std::move(check));
+  return HandleAllowlistCheck(std::move(check), /*allow_async_check=*/true);
 }
 
 bool V4LocalDatabaseManager::MatchDownloadAllowlistUrl(const GURL& url) {
@@ -828,7 +831,8 @@ SBThreatType V4LocalDatabaseManager::GetSBThreatTypeForList(
 }
 
 AsyncMatch V4LocalDatabaseManager::HandleAllowlistCheck(
-    std::unique_ptr<PendingCheck> check) {
+    std::unique_ptr<PendingCheck> check,
+    bool allow_async_check) {
   // We don't bother queuing allowlist checks since the DB will
   // normally be available already -- allowlists are used after page load,
   // and navigations are blocked until the DB is ready and dequeues checks.
@@ -854,6 +858,9 @@ AsyncMatch V4LocalDatabaseManager::HandleAllowlistCheck(
     }
   }
 
+  if (!allow_async_check) {
+    return AsyncMatch::NO_MATCH;
+  }
   ScheduleFullHashCheck(std::move(check));
   return AsyncMatch::ASYNC;
 }
@@ -1052,16 +1059,6 @@ void V4LocalDatabaseManager::RespondToClientWithoutPendingCheckCleanup(
       check->client->OnCheckDownloadUrlResult(check->urls,
                                               check->most_severe_threat_type);
       break;
-
-    case ClientCallbackType::CHECK_HIGH_CONFIDENCE_ALLOWLIST: {
-      DCHECK_EQ(1u, check->urls.size());
-      bool did_match_allowlist = check->most_severe_threat_type ==
-                                 SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST;
-      DCHECK(did_match_allowlist ||
-             check->most_severe_threat_type == SB_THREAT_TYPE_SAFE);
-      check->client->OnCheckUrlForHighConfidenceAllowlist(did_match_allowlist);
-      break;
-    }
 
     case ClientCallbackType::CHECK_RESOURCE_URL:
       DCHECK_EQ(1u, check->urls.size());

@@ -268,13 +268,6 @@ class TestAllowlistClient : public SafeBrowsingDatabaseManager::Client {
     callback_called_ = true;
   }
 
-  void OnCheckUrlForHighConfidenceAllowlist(bool is_allowlisted) override {
-    EXPECT_EQ(match_expected_, is_allowlisted);
-    EXPECT_EQ(SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST,
-              expected_sb_threat_type_);
-    callback_called_ = true;
-  }
-
   bool callback_called() { return callback_called_; }
 
  private:
@@ -673,179 +666,97 @@ TEST_F(V4LocalDatabaseManagerTest,
       GURL("http://example.com/a/"), usual_threat_types_, nullptr));
 }
 
-// Hash prefix matches on the high confidence allowlist, but full hash match
-// fails.
+// Hash prefix matches on the high confidence allowlist, but not a full hash
+// match, so it says there is no match and does not perform a full hash check.
+// This can only happen with an invalid db setup.
 TEST_F(V4LocalDatabaseManagerTest,
-       TestCheckUrlForHCAllowlistWithPrefixMatchButNoFullHashMatch) {
+       TestCheckUrlForHCAllowlistWithPrefixMatchButNoLocalFullHashMatch) {
+  SetupFakeManager();
   std::string url_safe_no_scheme("example.com/safe/");
   FullHash safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
-
-  // Setup to receive full-hash misses. We won't make URL requests.
-  ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
-  ResetLocalDatabaseManager();
-  WaitForTasksOnTaskRunner();
 
   // Setup to match hash prefix in the local database.
   const HashPrefix safe_hash_prefix(safe_full_hash.substr(0, 5));
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlHighConfidenceAllowlistId(),
                                        safe_hash_prefix);
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true,
-                    /* store_file_size= */ 10000);
+  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
 
-  // Setup the allowlist client to verify the callback.
-  TestAllowlistClient client(
-      /* match_expected= */ false,
-      /* expected_sb_threat_type= */ SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST);
-
-  // Lookup the high confidence allowlist.
+  // Confirm there is no match and the full hash check is not performed.
   const GURL url_check("https://" + url_safe_no_scheme);
-  EXPECT_EQ(AsyncMatch::ASYNC,
-            v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
-                url_check, &client));
-
-  EXPECT_FALSE(client.callback_called());
-
-  // Wait for PerformFullHashCheck to complete.
+  EXPECT_FALSE(v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
+      url_check));
   WaitForTasksOnTaskRunner();
-  EXPECT_TRUE(client.callback_called());
+  EXPECT_FALSE(FakeV4LocalDatabaseManager::PerformFullHashCheckCalled(
+      v4_local_database_manager_));
 }
 
-// Hash prefix matches on the high confidence allowlist, and subsequently the
-// full hash also matches.
-TEST_F(V4LocalDatabaseManagerTest,
-       TestCheckUrlForHCAllowlistWithPrefixMatchAndFullHashMatch) {
-  std::string url_safe_no_scheme("example.com/safe/");
-  FullHash safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
-
-  // Setup to receive full-hash hit. We won't make URL requests.
-  FullHashInfos infos(
-      {{safe_full_hash, GetUrlHighConfidenceAllowlistId(), base::Time::Now()}});
-  ScopedFakeGetHashProtocolManagerFactory pin(infos);
-  ResetLocalDatabaseManager();
-  WaitForTasksOnTaskRunner();
-
-  // Setup to match hash prefix in the local database.
-  const HashPrefix safe_hash_prefix(safe_full_hash.substr(0, 5));
-  StoreAndHashPrefixes store_and_hash_prefixes;
-  store_and_hash_prefixes.emplace_back(GetUrlHighConfidenceAllowlistId(),
-                                       safe_hash_prefix);
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true,
-                    /* store_file_size= */ 100000);
-
-  // Setup the allowlist client to verify the callback.
-  TestAllowlistClient client(
-      /* match_expected= */ true,
-      /* expected_sb_threat_type= */ SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST);
-
-  // Lookup the high confidence allowlist.
-  const GURL url_check("https://" + url_safe_no_scheme);
-  EXPECT_EQ(AsyncMatch::ASYNC,
-            v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
-                url_check, &client));
-
-  EXPECT_FALSE(client.callback_called());
-
-  // Wait for PerformFullHashCheck to complete.
-  WaitForTasksOnTaskRunner();
-  EXPECT_TRUE(client.callback_called());
-}
-
-// Full hash match on the high confidence allowlist. Returns |MATCH|
-// synchronously and callback isn't called.
+// Full hash match on the high confidence allowlist. Returns true
+// synchronously and the full hash check is not performed.
 TEST_F(V4LocalDatabaseManagerTest,
        TestCheckUrlForHCAllowlistWithLocalFullHashMatch) {
+  SetupFakeManager();
   std::string url_safe_no_scheme("example.com/safe/");
   FullHash safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
-
-  // Setup to receive full-hash misses. We won't make URL requests.
-  ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
-  ResetLocalDatabaseManager();
-  WaitForTasksOnTaskRunner();
 
   // Setup to match full hash in the local database.
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlHighConfidenceAllowlistId(),
                                        safe_full_hash);
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true,
-                    /* store_file_size= */ 100000);
+  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
 
-  // Setup the allowlist client to verify the callback isn't called.
-  TestAllowlistClient client(
-      /* match_expected= */ false,
-      /* expected_sb_threat_type= */ SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST);
+  // Confirm there is a match and the full hash check is not performed.
   const GURL url_check("https://" + url_safe_no_scheme);
-  EXPECT_EQ(AsyncMatch::MATCH,
-            v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
-                url_check, &client));
-
+  EXPECT_TRUE(v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
+      url_check));
   WaitForTasksOnTaskRunner();
-  EXPECT_FALSE(client.callback_called());
+  EXPECT_FALSE(FakeV4LocalDatabaseManager::PerformFullHashCheckCalled(
+      v4_local_database_manager_));
 }
 
-// Hash prefix has no match on the high confidence allowlist. Returns |NO_MATCH|
-// synchronously and callback isn't called.
+// Hash prefix has no match on the high confidence allowlist. Returns false
+// synchronously and the full hash check is not performed.
 TEST_F(V4LocalDatabaseManagerTest, TestCheckUrlForHCAllowlistWithNoMatch) {
+  SetupFakeManager();
   std::string url_safe_no_scheme("example.com/safe/");
   FullHash safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
 
-  // Setup to receive full-hash misses. We won't make URL requests.
-  ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
-  ResetLocalDatabaseManager();
-  WaitForTasksOnTaskRunner();
-
   // Add a full hash that won't match the URL we check.
   StoreAndHashPrefixes store_and_hash_prefixes;
-  store_and_hash_prefixes.emplace_back(GetUrlMalwareId(), safe_full_hash);
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true,
-                    /* store_file_size= */ 100000);
+  store_and_hash_prefixes.emplace_back(GetUrlHighConfidenceAllowlistId(),
+                                       safe_full_hash);
+  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
 
-  // Setup the allowlist client to verify the callback isn't called.
-  TestAllowlistClient client(
-      /* match_expected= */ false,
-      /* expected_sb_threat_type= */ SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST);
+  // Confirm there is no match and the full hash check is not performed.
   const GURL url_check("https://example.com/other/");
-  EXPECT_EQ(AsyncMatch::NO_MATCH,
-            v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
-                url_check, &client));
-
+  EXPECT_FALSE(v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
+      url_check));
   WaitForTasksOnTaskRunner();
-  EXPECT_FALSE(client.callback_called());
+  EXPECT_FALSE(FakeV4LocalDatabaseManager::PerformFullHashCheckCalled(
+      v4_local_database_manager_));
 }
 
-// When allowlist is unavailable, all URLS should be considered MATCH.
+// When allowlist is unavailable, all URLs should be considered as matches.
 TEST_F(V4LocalDatabaseManagerTest, TestCheckUrlForHCAllowlistUnavailable) {
-  // Setup to receive full-hash misses. We won't make URL requests.
-  ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
-  ResetLocalDatabaseManager();
-  WaitForTasksOnTaskRunner();
+  SetupFakeManager();
 
   // Setup local database as unavailable.
   StoreAndHashPrefixes store_and_hash_prefixes;
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ false,
-                    /* store_file_size= */ 100000);
+  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ false);
 
-  // Setup the allowlist client to verify the callback isn't called.
-  TestAllowlistClient client(
-      /* match_expected= */ false,
-      /* expected_sb_threat_type= */ SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST);
-
+  // Confirm there is a match and the full hash check is not performed.
   const GURL url_check("https://example.com/safe");
-  EXPECT_EQ(AsyncMatch::MATCH,
-            v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
-                url_check, &client));
-
+  EXPECT_TRUE(v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
+      url_check));
   WaitForTasksOnTaskRunner();
-  EXPECT_FALSE(client.callback_called());
+  EXPECT_FALSE(FakeV4LocalDatabaseManager::PerformFullHashCheckCalled(
+      v4_local_database_manager_));
 }
 
-// When allowlist is available but the size is too small, all URLS should be
-// considered MATCH.
+// When allowlist is available but the size is too small, all URLs should be
+// considered as matches.
 TEST_F(V4LocalDatabaseManagerTest, TestCheckUrlForHCAllowlistSmallSize) {
-  // Setup to receive full-hash misses. We won't make URL requests.
-  ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
-  ResetLocalDatabaseManager();
-  WaitForTasksOnTaskRunner();
+  SetupFakeManager();
 
   // Setup the size of the allowlist to be smaller than the threshold. (10
   // entries)
@@ -853,18 +764,13 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckUrlForHCAllowlistSmallSize) {
   ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true,
                     /* store_file_size= */ 32 * 10);
 
-  // Setup the allowlist client to verify the callback isn't called.
-  TestAllowlistClient client(
-      /* match_expected= */ false,
-      /* expected_sb_threat_type= */ SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST);
-
+  // Confirm there is a match and the full hash check is not performed.
   const GURL url_check("https://example.com/safe");
-  EXPECT_EQ(AsyncMatch::MATCH,
-            v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
-                url_check, &client));
-
+  EXPECT_TRUE(v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
+      url_check));
   WaitForTasksOnTaskRunner();
-  EXPECT_FALSE(client.callback_called());
+  EXPECT_FALSE(FakeV4LocalDatabaseManager::PerformFullHashCheckCalled(
+      v4_local_database_manager_));
 }
 
 TEST_F(V4LocalDatabaseManagerTest, TestGetSeverestThreatTypeAndMetadata) {

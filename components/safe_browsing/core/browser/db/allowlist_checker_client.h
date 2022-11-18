@@ -42,7 +42,6 @@ class AllowlistCheckerClient : public SafeBrowsingDatabaseManager::Client {
 
   // SafeBrowsingDatabaseMananger::Client impl
   void OnCheckAllowlistUrlResult(bool is_allowlisted) override;
-  void OnCheckUrlForHighConfidenceAllowlist(bool did_match_allowlist) override;
 
  private:
   // Helper method to instantiate a AllowlistCheckerClient object.

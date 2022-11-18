@@ -44,9 +44,6 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   MOCK_METHOD2(CheckCsdAllowlistUrl,
                AsyncMatch(const GURL&, SafeBrowsingDatabaseManager::Client*));
 
-  MOCK_METHOD2(CheckUrlForHighConfidenceAllowlist,
-               AsyncMatch(const GURL&, SafeBrowsingDatabaseManager::Client*));
-
  protected:
   ~MockSafeBrowsingDatabaseManager() override {}
 };

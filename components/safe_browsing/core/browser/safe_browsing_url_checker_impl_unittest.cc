@@ -83,8 +83,7 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   // Returns the allowlist match result previously set by
   // |SetAllowlistResultForUrl|. It crashes if the allowlist match result for
   // the |gurl| is not set in advance.
-  AsyncMatch CheckUrlForHighConfidenceAllowlist(const GURL& gurl,
-                                                Client* client) override {
+  bool CheckUrlForHighConfidenceAllowlist(const GURL& gurl) override {
     std::string url = gurl.spec();
     DCHECK(base::Contains(urls_allowlist_match_, url));
     return urls_allowlist_match_[url];
@@ -112,7 +111,7 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
     urls_delayed_callback_[url] = delayed_callback;
   }
 
-  void SetAllowlistResultForUrl(const GURL& gurl, AsyncMatch match) {
+  void SetAllowlistResultForUrl(const GURL& gurl, bool match) {
     std::string url = gurl.spec();
     urls_allowlist_match_[url] = match;
   }
@@ -138,7 +137,7 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   base::flat_map<std::string, SBThreatType> urls_threat_type_;
   base::flat_map<std::string, bool> urls_delayed_callback_;
   base::flat_map<std::string, Client*> urls_client_;
-  base::flat_map<std::string, AsyncMatch> urls_allowlist_match_;
+  base::flat_map<std::string, bool> urls_allowlist_match_;
 
   bool called_cancel_check_ = false;
 };
@@ -446,7 +445,7 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_RealTimeEnabledAllowlistMatch) {
       /*real_time_lookup_enabled=*/true, /*can_check_safe_browsing_db=*/true);
 
   GURL url("https://example.test/");
-  database_manager_->SetAllowlistResultForUrl(url, AsyncMatch::MATCH);
+  database_manager_->SetAllowlistResultForUrl(url, true);
   // To make sure hash based check is not skipped when the URL is in the
   // allowlist, set threat type to phishing for hash based check.
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
@@ -472,7 +471,7 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_RealTimeEnabledSafeUrl) {
       /*real_time_lookup_enabled=*/true, /*can_check_safe_browsing_db=*/true);
 
   GURL url("https://example.test/");
-  database_manager_->SetAllowlistResultForUrl(url, AsyncMatch::NO_MATCH);
+  database_manager_->SetAllowlistResultForUrl(url, false);
   url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE);
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
@@ -499,7 +498,7 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_RealTimeEnabledSafeUrlFromCache) {
       /*real_time_lookup_enabled=*/true, /*can_check_safe_browsing_db=*/true);
 
   GURL url("https://example.test/");
-  database_manager_->SetAllowlistResultForUrl(url, AsyncMatch::NO_MATCH);
+  database_manager_->SetAllowlistResultForUrl(url, false);
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
                                          /*delayed_callback=*/false);
   url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE);
@@ -529,7 +528,7 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       /*real_time_lookup_enabled=*/true, /*can_check_safe_browsing_db=*/true);
 
   GURL url("https://example.test/");
-  database_manager_->SetAllowlistResultForUrl(url, AsyncMatch::NO_MATCH);
+  database_manager_->SetAllowlistResultForUrl(url, false);
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                          /*delayed_callback=*/false);
   url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE);
@@ -578,7 +577,7 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnDestruct) {
         /*real_time_lookup_enabled=*/true, /*can_check_safe_browsing_db=*/true);
 
     GURL url("https://example.test/");
-    database_manager_->SetAllowlistResultForUrl(url, AsyncMatch::NO_MATCH);
+    database_manager_->SetAllowlistResultForUrl(url, false);
     url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING);
 
     base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback> cb;

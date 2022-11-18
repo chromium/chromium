@@ -183,7 +183,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   void OnCheckBrowseUrlResult(const GURL& url,
                               SBThreatType threat_type,
                               const ThreatMetadata& metadata) override;
-  void OnCheckUrlForHighConfidenceAllowlist(bool did_match_allowlist) override;
+
+  void OnCheckUrlForHighConfidenceAllowlist(bool did_match_allowlist);
 
   void OnTimeout();
 
@@ -265,9 +266,6 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   // Calls |CheckBrowseUrl| on the database manager and sets
   // is_async_database_manager_check_in_progress_ if the check is asynchronous.
   bool CallCheckBrowseUrl(const GURL& url);
-  // Calls |CheckUrlForHighConfidenceAllowlist| on the database manager and sets
-  // is_async_database_manager_check_in_progress_ if the check is asynchronous.
-  AsyncMatch CallCheckUrlForHighConfidenceAllowlist(const GURL& url);
   // Cancels the ongoing database manager check if there is one.
   void CancelCheckIfRelevant();
 

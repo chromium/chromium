@@ -106,11 +106,6 @@ void AllowlistCheckerClient::OnCheckAllowlistUrlResult(
   OnCheckUrlResult(did_match_allowlist);
 }
 
-void AllowlistCheckerClient::OnCheckUrlForHighConfidenceAllowlist(
-    bool did_match_allowlist) {
-  OnCheckUrlResult(did_match_allowlist);
-}
-
 void AllowlistCheckerClient::OnCheckUrlResult(bool did_match_allowlist) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   timer_.Stop();

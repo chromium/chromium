@@ -25,9 +25,9 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 using content::BrowserThread;
-
 namespace safe_browsing {
 
+using IsInAllowlistResult = RealTimeUrlChecksAllowlist::IsInAllowlistResult;
 namespace {
 
 // Android field trial for controlling types_to_check.
@@ -240,29 +240,24 @@ bool RemoteSafeBrowsingDatabaseManager::CheckResourceUrl(const GURL& url,
   return true;
 }
 
-AsyncMatch
-RemoteSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
-    const GURL& url,
-    Client* client) {
+bool RemoteSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
+    const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   if (!enabled_ || !CanCheckUrl(url))
-    return AsyncMatch::NO_MATCH;
+    return false;
 
   if (base::FeatureList::IsEnabled(kComponentUpdaterAndroidProtegoAllowlist)) {
     // SafeBrowsingComponentUpdaterAndroidProtegoAllowlist is enabled.
-    RealTimeUrlChecksAllowlist::IsInAllowlistResult is_match =
+    IsInAllowlistResult match_result =
         RealTimeUrlChecksAllowlist::GetInstance()->IsInAllowlist(url);
-    // Note that if the allowlist is unavailable, we return MATCH
-    return is_match == RealTimeUrlChecksAllowlist::IsInAllowlistResult::
-                           kNotInAllowlist
-               ? AsyncMatch::NO_MATCH
-               : AsyncMatch::MATCH;
+    // Note that if the allowlist is unavailable, we say that is a match.
+    return match_result == IsInAllowlistResult::kInAllowlist ||
+           match_result == IsInAllowlistResult::kAllowlistUnavailable;
   }
-  // TODO(crbug.com/1014202): Make this call async.
-  bool is_match = SafeBrowsingApiHandlerBridge::GetInstance()
-                      .StartHighConfidenceAllowlistCheck(url);
-  return is_match ? AsyncMatch::MATCH : AsyncMatch::NO_MATCH;
+
+  return SafeBrowsingApiHandlerBridge::GetInstance()
+      .StartHighConfidenceAllowlistCheck(url);
 }
 
 bool RemoteSafeBrowsingDatabaseManager::CheckUrlForAccuracyTips(

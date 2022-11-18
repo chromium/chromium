@@ -92,11 +92,6 @@ class SafeBrowsingDatabaseManager
     // Currently only used for CSD allowlist.
     virtual void OnCheckAllowlistUrlResult(bool did_match_allowlist) {}
 
-    // Called when the result of checking the high-confidence allowlist is
-    // known.
-    virtual void OnCheckUrlForHighConfidenceAllowlist(
-        bool did_match_allowlist) {}
-
     // Called when the result of checking for accuracy tips is known.
     virtual void OnCheckUrlForAccuracyTip(bool should_show_accuracy_tip) {}
   };
@@ -187,13 +182,12 @@ class SafeBrowsingDatabaseManager
                                             Client* client) = 0;
 
   // Called on the IO thread to check whether |url| is safe by checking if it
-  // appears on a high-confidence allowlist. The 3-state return value indicates
-  // the result or that |client| will get a callback later with the result.
-  // The high confidence allowlist is a list of partial or full hashes of URLs
-  // that are expected to be safe so in the case of a match on this list, the
-  // realtime full URL Safe Browsing lookup isn't performed.
-  virtual AsyncMatch CheckUrlForHighConfidenceAllowlist(const GURL& url,
-                                                        Client* client) = 0;
+  // appears on a high-confidence allowlist. The return value is true if it
+  // matches the allowlist, and is false if it does not. The high confidence
+  // allowlist is a list of full hashes of URLs that are expected to be safe so
+  // in the case of a match on this list, the realtime full URL Safe Browsing
+  // lookup isn't performed.
+  virtual bool CheckUrlForHighConfidenceAllowlist(const GURL& url) = 0;
 
   // Called on the IO thread to check whether |url| should show an accuracy tip.
   // If we can synchronously determine that the url shouldn't trigger an
