@@ -5,7 +5,6 @@
 #include "net/cert/pki/crl.h"
 
 #include "base/stl_util.h"
-#include "base/types/optional_util.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/revocation_util.h"
 #include "net/cert/pki/signature_algorithm.h"
@@ -421,7 +420,9 @@ CRLRevocationStatus CheckCRL(std::string_view raw_crl,
   // Check CRL dates. Roughly corresponds to 6.3.3 (a) (1) but does not attempt
   // to update the CRL if it is out of date.
   if (!CheckRevocationDateValid(tbs_cert_list.this_update,
-                                base::OptionalToPtr(tbs_cert_list.next_update),
+                                tbs_cert_list.next_update.has_value()
+                                    ? &tbs_cert_list.next_update.value()
+                                    : nullptr,
                                 verify_time, max_age)) {
     return CRLRevocationStatus::UNKNOWN;
   }
