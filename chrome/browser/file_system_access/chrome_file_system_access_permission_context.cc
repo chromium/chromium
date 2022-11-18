@@ -251,13 +251,19 @@ const struct {
     // Allow access to iCloud files.
     {base::DIR_HOME, FILE_PATH_LITERAL("Library/Mobile Documents"),
      kDontBlockChildren},
+    // Allow access to other cloud files, such as Google Drive.
+    {base::DIR_HOME, FILE_PATH_LITERAL("Library/CloudStorage"),
+     kDontBlockChildren},
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-    // On Linux also block access to devices via /dev, as well as security
-    // sensitive data in /sys and /proc.
+    // On Linux also block access to devices via /dev.
     {kNoBasePathKey, FILE_PATH_LITERAL("/dev"), kBlockAllChildren},
-    {kNoBasePathKey, FILE_PATH_LITERAL("/sys"), kBlockAllChildren},
+    // And security sensitive data in /proc and /sys.
     {kNoBasePathKey, FILE_PATH_LITERAL("/proc"), kBlockAllChildren},
+    {kNoBasePathKey, FILE_PATH_LITERAL("/sys"), kBlockAllChildren},
+    // And system files in /boot and /etc.
+    {kNoBasePathKey, FILE_PATH_LITERAL("/boot"), kBlockAllChildren},
+    {kNoBasePathKey, FILE_PATH_LITERAL("/etc"), kBlockAllChildren},
     // And block all of ~/.config, matching the similar restrictions on mac
     // and windows.
     {base::DIR_HOME, FILE_PATH_LITERAL(".config"), kBlockAllChildren},
