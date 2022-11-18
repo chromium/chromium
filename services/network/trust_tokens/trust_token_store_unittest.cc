@@ -315,13 +315,18 @@ TEST(TrustTokenStore, PrunesDataAssociatedWithRemovedKeyCommitments) {
       std::make_unique<InMemoryTrustTokenPersister>());
   SuitableTrustTokenOrigin issuer =
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com"));
+  base::test::TaskEnvironment env(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
+  auto some_arbitrary_time = base::Seconds(42);
+  env.AdvanceClock(some_arbitrary_time);
   my_store->AddTokens(issuer, std::vector<std::string>{"some token body"},
                       "quite a secure key, this");
 
   auto another_commitment = mojom::TrustTokenVerificationKey::New();
   another_commitment->body = "distinct from the first key";
 
+  env.AdvanceClock(some_arbitrary_time);
   my_store->AddTokens(issuer, std::vector<std::string>{"some other token body"},
                       another_commitment->body);
 
@@ -334,6 +339,8 @@ TEST(TrustTokenStore, PrunesDataAssociatedWithRemovedKeyCommitments) {
   TrustToken expected_token;
   expected_token.set_body("some other token body");
   expected_token.set_signing_key(another_commitment->body);
+  expected_token.set_creation_time_windows_epoch_micros(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 
   // Removing |my_commitment| should have
   // - led to the removal of the token associated with the removed key and
@@ -352,6 +359,11 @@ TEST(TrustTokenStore, AddsTrustTokens) {
       std::make_unique<InMemoryTrustTokenPersister>());
   SuitableTrustTokenOrigin issuer =
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com"));
+  base::test::TaskEnvironment env(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+
+  auto some_arbitrary_time = base::Seconds(42);
+  env.AdvanceClock(some_arbitrary_time);
 
   auto match_all_keys =
       base::BindRepeating([](const std::string& t) { return true; });
@@ -369,6 +381,8 @@ TEST(TrustTokenStore, AddsTrustTokens) {
   TrustToken expected_token;
   expected_token.set_body("some token");
   expected_token.set_signing_key(kMyKey);
+  expected_token.set_creation_time_windows_epoch_micros(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
   my_store->AddTokens(issuer, std::vector<std::string>{expected_token.body()},
                       kMyKey);
 
@@ -384,6 +398,11 @@ TEST(TrustTokenStore, RetrievesTrustTokensRespectingNontrivialPredicate) {
       std::make_unique<InMemoryTrustTokenPersister>());
   SuitableTrustTokenOrigin issuer =
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com"));
+  base::test::TaskEnvironment env(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+
+  auto some_arbitrary_time = base::Seconds(42);
+  env.AdvanceClock(some_arbitrary_time);
 
   const std::string kMatchingKey = "bbbbbb";
   const std::string kNonmatchingKey = "aaaaaa";
@@ -396,6 +415,8 @@ TEST(TrustTokenStore, RetrievesTrustTokensRespectingNontrivialPredicate) {
   TrustToken expected_token;
   expected_token.set_body("this one should get returned");
   expected_token.set_signing_key(kMatchingKey);
+  expected_token.set_creation_time_windows_epoch_micros(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 
   my_store->AddTokens(issuer, std::vector<std::string>{expected_token.body()},
                       kMatchingKey);
@@ -421,6 +442,11 @@ TEST(TrustTokenStore, DeletesSingleToken) {
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com"));
   auto match_all_keys =
       base::BindRepeating([](const std::string& t) { return true; });
+  base::test::TaskEnvironment env(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+
+  auto some_arbitrary_time = base::Seconds(42);
+  env.AdvanceClock(some_arbitrary_time);
 
   // Deleting a single token should result in that token
   // not being returned by subsequent RetrieveMatchingTokens calls.
@@ -433,10 +459,14 @@ TEST(TrustTokenStore, DeletesSingleToken) {
   TrustToken first_token;
   first_token.set_body("delete me!");
   first_token.set_signing_key(my_commitment->body);
+  first_token.set_creation_time_windows_epoch_micros(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 
   TrustToken second_token;
   second_token.set_body("don't delete me!");
   second_token.set_signing_key(my_commitment->body);
+  second_token.set_creation_time_windows_epoch_micros(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 
   my_store->AddTokens(
       issuer, std::vector<std::string>{first_token.body(), second_token.body()},

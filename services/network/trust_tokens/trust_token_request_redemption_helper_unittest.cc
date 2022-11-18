@@ -985,6 +985,9 @@ TEST_F(TrustTokenRequestRedemptionHelperTest,
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")));
   EXPECT_TRUE(maybe_record);
   EXPECT_FALSE(maybe_record->has_lifetime());
+  EXPECT_TRUE(maybe_record->has_creation_time_windows_epoch_micros());
+  EXPECT_EQ(maybe_record->creation_time_windows_epoch_micros(),
+            base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 }
 
 TEST_F(TrustTokenRequestRedemptionHelperTest, RejectsUnsuitableInsecureIssuer) {

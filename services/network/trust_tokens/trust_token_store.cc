@@ -221,6 +221,9 @@ void TrustTokenStore::AddTokens(const SuitableTrustTokenOrigin& issuer,
     TrustToken* entry = config->add_tokens();
     entry->set_body(*it);
     entry->set_signing_key(std::string(issuing_key));
+    int64_t since_epoch =
+        base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
+    entry->set_creation_time_windows_epoch_micros(since_epoch);
   }
 
   persister_->SetIssuerConfig(issuer, std::move(config));

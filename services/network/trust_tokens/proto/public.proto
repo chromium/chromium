@@ -20,6 +20,10 @@ message TrustToken {
   // are only provided to servers while their commitment keys
   // remain active.
   optional bytes signing_key = 2;  // required
+
+  // Time delta in microseconds between creation of the token and the windows
+  // epoch.
+  optional int64 creation_time_windows_epoch_micros = 3;
 }
 
 // A TrustTokenRedemptionRecord message stores state associated with a single
@@ -37,4 +41,8 @@ message TrustTokenRedemptionRecord {
   // lifetime many seconds after redemption. When omitted, a record is expired
   // when the relevant key is expired.
   optional uint64 lifetime = 5;
+
+  // Time delta in microseconds between creation of the redemption record and
+  // the windows epoch.
+  optional int64 creation_time_windows_epoch_micros = 6;
 }
