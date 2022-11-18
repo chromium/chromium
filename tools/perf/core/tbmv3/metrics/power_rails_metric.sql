@@ -16,13 +16,21 @@ USING SPAN_JOIN(run_story_event, drain_in_watts);
 
 -- Compute cumulative power drain over the duration of the run_story event.
 CREATE VIEW story_drain AS
-SELECT
-    subsystem,
-    sum(dur * drain_w / 1e9) as drain_j,
-    sum(dur / 1e6) as dur_ms
-FROM run_story_span_join_drain
-JOIN power_counters USING (name)
+WITH
+  drain_per_rail AS (
+    SELECT
+      name,
+      sum(dur * drain_w / 1e9) AS drain_j,
+      sum(dur / 1e6) AS dur_ms
+    FROM run_story_span_join_drain
+    GROUP BY name
+  )
+SELECT subsystem, sum(drain_j) AS drain_j, max(dur_ms) AS dur_ms
+FROM drain_per_rail
+JOIN power_counters
+  USING (name)
 GROUP BY subsystem;
+
 
 CREATE VIEW interaction_events AS
 SELECT ts, dur
@@ -34,12 +42,19 @@ USING SPAN_JOIN(interaction_events, drain_in_watts);
 
 -- Compute cumulative power drain over the total duration of interaction events.
 CREATE VIEW interaction_drain AS
-SELECT
-    subsystem,
-    sum(dur * drain_w / 1e9) as drain_j,
-    sum(dur / 1e6) as dur_ms
-FROM interactions_span_join_drain
-JOIN power_counters USING (name)
+WITH
+  drain_per_rail AS (
+    SELECT
+      name,
+      sum(dur * drain_w / 1e9) AS drain_j,
+      sum(dur / 1e6) AS dur_ms
+    FROM interactions_span_join_drain
+    GROUP BY name
+  )
+SELECT subsystem, sum(drain_j) AS drain_j, max(dur_ms) AS dur_ms
+FROM drain_per_rail
+JOIN power_counters
+  USING (name)
 GROUP BY subsystem;
 
 -- Output power consumption as measured by several ODPMs, over the following
