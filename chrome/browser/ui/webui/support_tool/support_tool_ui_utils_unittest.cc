@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/support_tool/support_tool_ui_utils.h"
 
+#include <memory>
 #include <set>
 #include <string>
 
@@ -14,11 +15,16 @@
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/browser/support_tool/data_collector.h"
 #include "components/feedback/pii_types.h"
+#include "content/public/test/browser_task_environment.h"
 #include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/fake_browser_manager.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using ::testing::ContainerEq;
 using ::testing::IsEmpty;
@@ -56,9 +62,14 @@ const auto kPIIStringsWithDefinition = base::MakeFixedFlatMap<
 
 class SupportToolUiUtilsTest : public ::testing::Test {
  public:
-  SupportToolUiUtilsTest() = default;
+  SupportToolUiUtilsTest()
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      : browser_manager_(std::make_unique<crosapi::FakeBrowserManager>()){}
+#else
+      = default;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  SupportToolUiUtilsTest(const SupportToolUiUtilsTest&) = delete;
+        SupportToolUiUtilsTest(const SupportToolUiUtilsTest&) = delete;
   SupportToolUiUtilsTest& operator=(const SupportToolUiUtilsTest&) = delete;
 
   // Change included field of `included_data_collectors` in `data_collectors` as
@@ -78,6 +89,12 @@ class SupportToolUiUtilsTest : public ::testing::Test {
         data_collector_item.Set(support_tool_ui::kDataCollectorIncluded, true);
     }
   }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 TEST_F(SupportToolUiUtilsTest, PiiItems) {
@@ -120,7 +137,8 @@ TEST_F(SupportToolUiUtilsTest, PiiItems) {
 TEST_F(SupportToolUiUtilsTest, CustomizedUrl) {
   const std::string test_case_id = "test_case_id_0";
   // Get list of all data collectors.
-  base::Value::List expected_data_collectors = GetAllDataCollectorsForDevice();
+  base::Value::List expected_data_collectors =
+      GetAllDataCollectorItemsForDeviceForTesting();
   std::set<support_tool::DataCollectorType> included_data_collectors = {
       support_tool::DataCollectorType::CHROME_INTERNAL,
       support_tool::DataCollectorType::CRASH_IDS};

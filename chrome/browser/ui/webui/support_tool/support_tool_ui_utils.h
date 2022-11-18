@@ -85,6 +85,7 @@ std::string GetSupportCaseIDFromURL(const GURL& url);
 //  protoEnum: number,
 // }
 // Returns only the data collectors that are available for user's device.
+// Sets `isIncluded` as false for all items if `module_query` is empty.
 base::Value::List GetDataCollectorItemsInQuery(std::string module_query);
 
 // Creates base::Value::List according to the format Support Tool UI
@@ -96,13 +97,13 @@ base::Value::List GetDataCollectorItemsInQuery(std::string module_query);
 //  isIncluded: boolean,
 //  protoEnum: number,
 // }
-base::Value::List GetAllDataCollectors();
+base::Value::List GetAllDataCollectorItems();
 
 // Creates base::Value::List according to the format Support Tool UI
 // accepts and fills the contents with all data collectors with isIncluded:
 // false as a default choice. Only return data collectors available for caller's
 // platform.
-base::Value::List GetAllDataCollectorsForDevice();
+base::Value::List GetAllDataCollectorItemsForDeviceForTesting();
 
 std::set<support_tool::DataCollectorType> GetIncludedDataCollectorTypes(
     const base::Value::List* data_collector_items);

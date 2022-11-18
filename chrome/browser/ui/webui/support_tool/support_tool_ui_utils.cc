@@ -303,51 +303,25 @@ base::Value::List GetDataCollectorItemsInQuery(std::string module_query) {
   base::Value::List data_collector_list;
   support_tool::DataCollectionModule module;
   InitDataCollectionModuleFromURLQuery(&module, module_query);
-  for (const auto& type : kDataCollectors) {
+  for (const auto& type : GetAllAvailableDataCollectorsOnDevice()) {
     data_collector_list.Append(GetDataCollectorItemForType(module, type));
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  for (const auto& type : kDataCollectorsChromeosAsh) {
-    data_collector_list.Append(GetDataCollectorItemForType(module, type));
-  }
-#if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
-  for (const auto& type : kDataCollectorsChromeosHwDetails) {
-    data_collector_list.Append(GetDataCollectorItemForType(module, type));
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return data_collector_list;
 }
 
-base::Value::List GetAllDataCollectors() {
+base::Value::List GetAllDataCollectorItems() {
   base::Value::List data_collector_list;
-  for (const auto& type : kDataCollectors) {
-    data_collector_list.Append(GetDataCollectorItemForType(type));
-  }
-  for (const auto& type : kDataCollectorsChromeosAsh) {
-    data_collector_list.Append(GetDataCollectorItemForType(type));
-  }
-  for (const auto& type : kDataCollectorsChromeosHwDetails) {
+  for (const auto& type : GetAllDataCollectors()) {
     data_collector_list.Append(GetDataCollectorItemForType(type));
   }
   return data_collector_list;
 }
 
-base::Value::List GetAllDataCollectorsForDevice() {
+base::Value::List GetAllDataCollectorItemsForDeviceForTesting() {
   base::Value::List data_collector_list;
-  for (const auto& type : kDataCollectors) {
+  for (const auto& type : GetAllAvailableDataCollectorsOnDevice()) {
     data_collector_list.Append(GetDataCollectorItemForType(type));
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  for (const auto& type : kDataCollectorsChromeosAsh) {
-    data_collector_list.Append(GetDataCollectorItemForType(type));
-  }
-#if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
-  for (const auto& type : kDataCollectorsChromeosHwDetails) {
-    data_collector_list.Append(GetDataCollectorItemForType(type));
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return data_collector_list;
 }
 

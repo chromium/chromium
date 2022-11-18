@@ -212,7 +212,7 @@ void SupportToolMessageHandler::HandleGetAllDataCollectors(
   AllowJavascript();
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
-  ResolveJavascriptCallback(callback_id, GetAllDataCollectors());
+  ResolveJavascriptCallback(callback_id, GetAllDataCollectorItems());
 }
 
 // Starts data collection with the issue details and selected set of data
