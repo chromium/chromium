@@ -157,7 +157,8 @@ class WebRtcInternalsTest : public testing::Test {
     EXPECT_EQ(expected, *actual);
   }
 
-  void VerifyGetUserMediaData(base::Value* actual_data,
+  void VerifyGetUserMediaData(const std::string& request_type,
+                              base::Value* actual_data,
                               GlobalRenderFrameHostId frame_id,
                               int pid,
                               int request_id,
@@ -171,6 +172,7 @@ class WebRtcInternalsTest : public testing::Test {
     // origin is the empty string in tests.
     VerifyString(dict, "origin", "");
     VerifyInt(dict, "request_id", request_id);
+    VerifyString(dict, "request_type", request_type);
     VerifyString(dict, "audio", audio);
     VerifyString(dict, "video", video);
   }
@@ -392,15 +394,15 @@ TEST_F(WebRtcInternalsTest, AddGetUserMedia) {
   // Add one observer before "getUserMedia".
   webrtc_internals.AddObserver(&observer);
 
-  webrtc_internals.OnGetUserMedia(kFrameId, kPid, kRequestId, true, true,
-                                  kAudioConstraint, kVideoConstraint);
+  webrtc_internals.OnGetUserMedia(kFrameId, kPid, kRequestId, /*audio=*/true,
+                                  /*video=*/true, kAudioConstraint,
+                                  kVideoConstraint);
 
   loop.Run();
 
   ASSERT_EQ("add-get-user-media", observer.event_name());
-  VerifyGetUserMediaData(observer.event_data(), kFrameId, kPid, kRequestId,
-                         kAudioConstraint, kVideoConstraint);
-
+  VerifyGetUserMediaData("getUserMedia", observer.event_data(), kFrameId, kPid,
+                         kRequestId, kAudioConstraint, kVideoConstraint);
   webrtc_internals.RemoveObserver(&observer);
 
   base::RunLoop().RunUntilIdle();
@@ -453,10 +455,80 @@ TEST_F(WebRtcInternalsTest, UpdateGetUserMediaError) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(WebRtcInternalsTest, AddGetDisplayMedia) {
+  base::RunLoop loop;
+  MockWebRtcInternalsProxy observer(&loop);
+  WebRTCInternalsForTest webrtc_internals;
+
+  // Add one observer before "getDisplayMedia".
+  webrtc_internals.AddObserver(&observer);
+
+  webrtc_internals.OnGetDisplayMedia(kFrameId, kPid, kRequestId, /*audio=*/true,
+                                     /*video=*/true, kAudioConstraint,
+                                     kVideoConstraint);
+
+  loop.Run();
+
+  ASSERT_EQ("add-get-user-media", observer.event_name());
+  VerifyGetUserMediaData("getDisplayMedia", observer.event_data(), kFrameId,
+                         kPid, kRequestId, kAudioConstraint, kVideoConstraint);
+  webrtc_internals.RemoveObserver(&observer);
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(WebRtcInternalsTest, UpdateGetDisplayMediaSuccess) {
+  base::RunLoop loop;
+  MockWebRtcInternalsProxy observer(&loop);
+  WebRTCInternalsForTest webrtc_internals;
+
+  // Add one observer before "getDisplayMediaSuccess".
+  webrtc_internals.AddObserver(&observer);
+
+  webrtc_internals.OnGetDisplayMediaSuccess(
+      kFrameId, kPid, kRequestId, kStreamId, kAudioTrackInfo, kVideoTrackInfo);
+
+  loop.Run();
+
+  ASSERT_EQ("update-get-user-media", observer.event_name());
+  VerifyGetUserMediaSuccessData(observer.event_data(), kFrameId, kPid,
+                                kRequestId, kStreamId, kAudioTrackInfo,
+                                kVideoTrackInfo);
+
+  webrtc_internals.RemoveObserver(&observer);
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(WebRtcInternalsTest, UpdateGetDisplayMediaError) {
+  base::RunLoop loop;
+  MockWebRtcInternalsProxy observer(&loop);
+  WebRTCInternalsForTest webrtc_internals;
+
+  // Add one observer before "getDisplayMediaFailure".
+  webrtc_internals.AddObserver(&observer);
+
+  webrtc_internals.OnGetDisplayMediaFailure(kFrameId, kPid, kRequestId,
+                                            kGetUserMediaError,
+                                            kGetUserMediaErrorMessage);
+
+  loop.Run();
+
+  ASSERT_EQ("update-get-user-media", observer.event_name());
+  VerifyGetUserMediaFailureData(observer.event_data(), kFrameId, kPid,
+                                kRequestId, kGetUserMediaError,
+                                kGetUserMediaErrorMessage);
+
+  webrtc_internals.RemoveObserver(&observer);
+
+  base::RunLoop().RunUntilIdle();
+}
+
 TEST_F(WebRtcInternalsTest, SendAllUpdateWithGetUserMedia) {
   WebRTCInternalsForTest webrtc_internals;
-  webrtc_internals.OnGetUserMedia(kFrameId, kPid, kRequestId, true, true,
-                                  kAudioConstraint, kVideoConstraint);
+  webrtc_internals.OnGetUserMedia(kFrameId, kPid, kRequestId, /*audio=*/true,
+                                  /*video=*/true, kAudioConstraint,
+                                  kVideoConstraint);
 
   MockWebRtcInternalsProxy observer;
   // Add one observer after "getUserMedia".
@@ -464,8 +536,28 @@ TEST_F(WebRtcInternalsTest, SendAllUpdateWithGetUserMedia) {
   webrtc_internals.UpdateObserver(&observer);
 
   EXPECT_EQ("add-get-user-media", observer.event_name());
-  VerifyGetUserMediaData(observer.event_data(), kFrameId, kPid, kRequestId,
-                         kAudioConstraint, kVideoConstraint);
+  VerifyGetUserMediaData("getUserMedia", observer.event_data(), kFrameId, kPid,
+                         kRequestId, kAudioConstraint, kVideoConstraint);
+
+  webrtc_internals.RemoveObserver(&observer);
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(WebRtcInternalsTest, SendAllUpdateWithGetDisplayMedia) {
+  WebRTCInternalsForTest webrtc_internals;
+  webrtc_internals.OnGetDisplayMedia(kFrameId, kPid, kRequestId, /*audio=*/true,
+                                     /*video=*/true, kAudioConstraint,
+                                     kVideoConstraint);
+
+  MockWebRtcInternalsProxy observer;
+  // Add one observer after "getDisplayMedia".
+  webrtc_internals.AddObserver(&observer);
+  webrtc_internals.UpdateObserver(&observer);
+
+  EXPECT_EQ("add-get-user-media", observer.event_name());
+  VerifyGetUserMediaData("getDisplayMedia", observer.event_data(), kFrameId,
+                         kPid, kRequestId, kAudioConstraint, kVideoConstraint);
 
   webrtc_internals.RemoveObserver(&observer);
 

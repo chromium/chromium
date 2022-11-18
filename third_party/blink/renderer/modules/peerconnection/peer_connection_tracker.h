@@ -222,6 +222,15 @@ class MODULES_EXPORT PeerConnectionTracker
                                         const String& error,
                                         const String& error_message);
 
+  // Sends an update when getDisplayMedia is called.
+  virtual void TrackGetDisplayMedia(UserMediaRequest* user_media_request);
+  // Sends an update when getDisplayMedia resolveѕ with a stream.
+  virtual void TrackGetDisplayMediaSuccess(UserMediaRequest* user_media_request,
+                                           MediaStream* stream);
+  // Sends an update when getDisplayMedia fails with an error.
+  virtual void TrackGetDisplayMediaFailure(UserMediaRequest* user_media_request,
+                                           const String& error,
+                                           const String& error_message);
   // Sends a new fragment on an RtcEventLog.
   virtual void TrackRtcEventLogWrite(RTCPeerConnectionHandler* pc_handler,
                                      const WTF::Vector<uint8_t>& output);

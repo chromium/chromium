@@ -139,6 +139,51 @@ class CONTENT_EXPORT PeerConnectionTrackerHostObserver
       const std::string& error,
       const std::string& error_message) {}
 
+  // This method is called when getDisplayMedia is called.
+  // - |render_frame_host_id| identifies the RenderFrameHost.
+  // - |pid| is the OS process ID.
+  // - |request_id| is an id assigned to the getDisplayMedia call and its
+  //     callback/error
+  // - |audio| is true if the audio stream is requested.
+  // - |video| is true if the video stream is requested.
+  // - |audio_constraints| is the constraints for the audio.
+  // - |video_constraints| is the constraints for the video.
+  virtual void OnGetDisplayMedia(GlobalRenderFrameHostId render_frame_host_id,
+                                 base::ProcessId pid,
+                                 int request_id,
+                                 bool audio,
+                                 bool video,
+                                 const std::string& audio_constraints,
+                                 const std::string& video_constraints) {}
+
+  // This method is called when getDisplayMedia resolves with a stream.
+  // - |render_frame_host_id| identifies the RenderFrameHost.
+  // - |pid| is the OS process ID.
+  // - |request_id| is the internal getDisplayMedia request id.
+  // - |stream_id| is the id of the stream containing the tracks.
+  // - |audio_track_info| describes the streams audio track (if any).
+  // - |video_track_info| describes the streams video track (if any).
+  virtual void OnGetDisplayMediaSuccess(
+      GlobalRenderFrameHostId render_frame_host_id,
+      base::ProcessId pid,
+      int request_id,
+      const std::string& stream_id,
+      const std::string& audio_track_info,
+      const std::string& video_track_info) {}
+
+  // This method is called when getDisplayMedia rejects with an error.
+  // - |render_frame_host_id| identifies the RenderFrameHost.
+  // - |pid| is the OS process ID.
+  // - |request_id| is the internal getDisplayMedia request id.
+  // - |error| is the (DOM) error.
+  // - |error_message| is the error message.
+  virtual void OnGetDisplayMediaFailure(
+      GlobalRenderFrameHostId render_frame_host_id,
+      base::ProcessId pid,
+      int request_id,
+      const std::string& error,
+      const std::string& error_message) {}
+
  protected:
   PeerConnectionTrackerHostObserver();
 };

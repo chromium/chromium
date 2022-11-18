@@ -193,6 +193,46 @@ void PeerConnectionTrackerHost::GetUserMediaFailure(
   }
 }
 
+void PeerConnectionTrackerHost::GetDisplayMedia(
+    int request_id,
+    bool audio,
+    bool video,
+    const std::string& audio_constraints,
+    const std::string& video_constraints) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  for (auto& observer : GetObserverList()) {
+    observer.OnGetDisplayMedia(frame_id_, peer_pid_, request_id, audio, video,
+                               audio_constraints, video_constraints);
+  }
+}
+
+void PeerConnectionTrackerHost::GetDisplayMediaSuccess(
+    int request_id,
+    const std::string& stream_id,
+    const std::string& audio_track_info,
+    const std::string& video_track_info) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  for (auto& observer : GetObserverList()) {
+    observer.OnGetDisplayMediaSuccess(frame_id_, peer_pid_, request_id,
+                                      stream_id, audio_track_info,
+                                      video_track_info);
+  }
+}
+
+void PeerConnectionTrackerHost::GetDisplayMediaFailure(
+    int request_id,
+    const std::string& error,
+    const std::string& error_message) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  for (auto& observer : GetObserverList()) {
+    observer.OnGetDisplayMediaFailure(frame_id_, peer_pid_, request_id, error,
+                                      error_message);
+  }
+}
+
 void PeerConnectionTrackerHost::WebRtcEventLogWrite(
     int lid,
     const std::vector<uint8_t>& output) {

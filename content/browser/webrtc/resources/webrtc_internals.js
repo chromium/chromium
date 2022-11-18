@@ -554,16 +554,17 @@ function addLegacyStats(data) {
 }
 
 /**
- * Adds a getUserMedia request.
+ * Adds a getUserMedia/getDisplayMedia request.
  *
  * @param {!Object} data The object containing rid {number}, pid {number},
- *     origin {string}, request_id {number}, audio {string}, video {string}.
+ *     origin {string}, request_id {number}, request_type {string},
+ *     audio {string}, video {string}.
  */
 function addGetUserMedia(data) {
   userMediaRequests.push(data);
 
   if (!$(USER_MEDIA_TAB_ID)) {
-    tabView.addTab(USER_MEDIA_TAB_ID, 'GetUserMedia Requests');
+    tabView.addTab(USER_MEDIA_TAB_ID, 'GetUserMedia/GetDisplayMedia Requests');
   }
 
   const requestDiv = document.createElement('div');
@@ -574,7 +575,9 @@ function addGetUserMedia(data) {
 
   appendChildWithText(requestDiv, 'div', 'Caller origin: ' + data.origin);
   appendChildWithText(requestDiv, 'div', 'Caller process id: ' + data.pid);
-  const el = appendChildWithText(requestDiv, 'span', 'getUserMedia call');
+
+  const el = appendChildWithText(requestDiv, 'span',
+    data.request_type + ' call');
   el.style.fontWeight = 'bold';
   appendChildWithText(el, 'div', 'Time: ' +
     (new Date(data.timestamp).toTimeString()))
@@ -592,25 +595,27 @@ function addGetUserMedia(data) {
 }
 
 /**
- * Update a getUserMedia request with a result or error.
+ * Update a getUserMedia/getDisplayMedia request with a result or error.
  *
  * @param {!Object} data The object containing rid {number}, pid {number},
- *     request_id {number}. For getUserMedia results there is also the
+ *     request_id {number}, request_type {string}.
+ *     For results there is also the
  *     stream_id {string}, audio_track_info {string} and
- *     video_track_info {string}. For errors the error {string} and
+ *     video_track_info {string}.
+ *     For errors the error {string} and
  *     error_message {string} fields are set.
  */
 function updateGetUserMedia(data) {
   userMediaRequests.push(data);
 
   if (!$(USER_MEDIA_TAB_ID)) {
-    tabView.addTab(USER_MEDIA_TAB_ID, 'GetUserMedia Requests');
+    tabView.addTab(USER_MEDIA_TAB_ID, 'GetUserMedia/GetDisplayMedia Requests');
   }
 
   const requestDiv = document.getElementById(
     ['gum', data.rid, data.pid, data.request_id].join('-'));
   if (!requestDiv) {
-    console.error('Could not update getUserMedia request', data);
+    console.error('Could not update ' + data.request_type + ' request', data);
     return;
   }
 
@@ -627,7 +632,8 @@ function updateGetUserMedia(data) {
     return;
   }
 
-  const el = appendChildWithText(requestDiv, 'span', 'getUserMedia result');
+  const el = appendChildWithText(requestDiv, 'span',
+      data.request_type + ' result');
   el.style.fontWeight = 'bold';
   appendChildWithText(el, 'div', 'Time: ' +
     (new Date(data.timestamp).toTimeString()))

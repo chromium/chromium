@@ -1195,6 +1195,52 @@ void PeerConnectionTracker::TrackGetUserMediaFailure(
       user_media_request->request_id(), error, error_message);
 }
 
+void PeerConnectionTracker::TrackGetDisplayMedia(
+    UserMediaRequest* user_media_request) {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
+
+  peer_connection_tracker_host_->GetDisplayMedia(
+      user_media_request->request_id(), user_media_request->Audio(),
+      user_media_request->Video(),
+      SerializeGetUserMediaMediaConstraints(
+          user_media_request->AudioConstraints()),
+      SerializeGetUserMediaMediaConstraints(
+          user_media_request->VideoConstraints()));
+}
+
+void PeerConnectionTracker::TrackGetDisplayMediaSuccess(
+    UserMediaRequest* user_media_request,
+    MediaStream* stream) {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
+
+  // Serialize audio and video track information (id and label) or an
+  // empty string when there is no such track.
+  String audio_track_info =
+      stream->getAudioTracks().empty()
+          ? String("")
+          : String("id:") + stream->getAudioTracks()[0]->id() +
+                String(" label:") + stream->getAudioTracks()[0]->label();
+  String video_track_info =
+      stream->getVideoTracks().empty()
+          ? String("")
+          : String("id:") + stream->getVideoTracks()[0]->id() +
+                String(" label:") + stream->getVideoTracks()[0]->label();
+
+  peer_connection_tracker_host_->GetDisplayMediaSuccess(
+      user_media_request->request_id(), stream->id(), audio_track_info,
+      video_track_info);
+}
+
+void PeerConnectionTracker::TrackGetDisplayMediaFailure(
+    UserMediaRequest* user_media_request,
+    const String& error,
+    const String& error_message) {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
+
+  peer_connection_tracker_host_->GetDisplayMediaFailure(
+      user_media_request->request_id(), error, error_message);
+}
+
 void PeerConnectionTracker::TrackRtcEventLogWrite(
     RTCPeerConnectionHandler* pc_handler,
     const WTF::Vector<uint8_t>& output) {
