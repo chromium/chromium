@@ -479,9 +479,12 @@ export class CameraManager implements EventListener {
 
   async startCapture(): Promise<[Promise<void>]> {
     this.setCameraAvailable(false);
-    const captureDone = await this.scheduler.startCapture();
-    this.setCameraAvailable(true);
-    return assertExists(captureDone);
+    try {
+      const captureDone = await this.scheduler.startCapture();
+      return assertExists(captureDone);
+    } finally {
+      this.setCameraAvailable(true);
+    }
   }
 
   stopCapture(): void {
