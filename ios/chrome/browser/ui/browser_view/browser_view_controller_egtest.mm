@@ -206,6 +206,13 @@
   [ChromeEarlGrey waitForMainTabCount:1];
 }
 
+// Tests that the Search Widget URL loads the NTP with the Omnibox focused.
+- (void)testOpenSearchWidget {
+  [ChromeEarlGrey sceneOpenURL:GURL("chromewidgetkit://search-widget/search")];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
+}
+
 #pragma mark - Multiwindow
 
 // TODO(crbug.com/1369222): Re-enable this test.

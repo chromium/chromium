@@ -63,6 +63,18 @@ source_set("url_loading_params_header") {
   ]
 }
 
+source_set("new_tab_animation_tab_helper") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "new_tab_animation_tab_helper.h",
+    "new_tab_animation_tab_helper.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/web/public",
+  ]
+}
+
 source_set("test_support") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true

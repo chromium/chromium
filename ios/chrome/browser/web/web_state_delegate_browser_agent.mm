@@ -192,7 +192,8 @@ web::WebState* WebStateDelegateBrowserAgent::OpenURLFromWebState(
       return tab_insertion_agent_->InsertWebState(
           load_params, source, false, TabInsertion::kPositionAutomatically,
           (params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB),
-          /*inherit_opener=*/false, /*should_show_start_surface=*/false);
+          /*inherit_opener=*/false, /*should_show_start_surface=*/false,
+          /*should_skip_new_tab_animation=*/false);
     }
     case WindowOpenDisposition::CURRENT_TAB: {
       source->GetNavigationManager()->LoadURLWithParams(load_params);
@@ -202,7 +203,8 @@ web::WebState* WebStateDelegateBrowserAgent::OpenURLFromWebState(
       return tab_insertion_agent_->InsertWebState(
           load_params, source, true, TabInsertion::kPositionAutomatically,
           /*in_background=*/false, /*inherit_opener=*/false,
-          /*should_show_start_surface=*/false);
+          /*should_show_start_surface=*/false,
+          /*should_skip_new_tab_animation=*/false);
     }
     default:
       NOTIMPLEMENTED();

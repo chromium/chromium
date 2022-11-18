@@ -548,6 +548,8 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
     params.web_params.url = result;
   }
 
+  params.from_external = true;
+
   if ([[connectionInformation startupParameters] applicationMode] !=
           ApplicationModeForTabOpening::INCOGNITO &&
       [tabOpener URLIsOpenedInRegularMode:params.web_params.url]) {

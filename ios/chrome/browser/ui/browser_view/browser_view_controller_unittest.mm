@@ -48,10 +48,12 @@
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_coordinator.h"
+#import "ios/chrome/browser/ui/tabs/foreground_tab_animation_view.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_adaptor.h"
+#import "ios/chrome/browser/url_loading/new_tab_animation_tab_helper.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
@@ -67,6 +69,7 @@
 #import "testing/gtest_mac.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -286,6 +289,35 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     return browser_->GetWebStateList()->GetActiveWebState();
   }
 
+  void InsertWebState(std::unique_ptr<web::WebState> web_state) {
+    WebStateList* web_state_list = browser_->GetWebStateList();
+    web_state_list->InsertWebState(0, std::move(web_state),
+                                   WebStateList::INSERT_ACTIVATE,
+                                   WebStateOpener());
+  }
+
+  std::unique_ptr<web::WebState> CreateWebState() {
+    web::WebState::CreateParams params(chrome_browser_state_.get());
+    auto web_state = web::WebState::Create(params);
+    AttachTabHelpers(web_state.get(), NO);
+    return web_state;
+  }
+
+  void ExpectNewTabInsertionAnimation(bool animated, ProceduralBlock block) {
+    id mock_animation_view_class =
+        OCMClassMock([ForegroundTabAnimationView class]);
+
+    if (animated) {
+      OCMExpect([mock_animation_view_class alloc]);
+    } else {
+      [[mock_animation_view_class reject] alloc];
+    }
+
+    block();
+
+    [mock_animation_view_class verify];
+  }
+
   MOCK_METHOD0(OnCompletionCalled, void());
 
   web::WebTaskEnvironment task_environment_;
@@ -348,6 +380,26 @@ TEST_F(BrowserViewControllerTest, UpdateWebStateVisibility) {
   EXPECT_EQ(web_state_list->GetWebStateAt(0)->IsVisible(), false);
   EXPECT_EQ(web_state_list->GetWebStateAt(1)->IsVisible(), false);
   EXPECT_EQ(web_state_list->GetWebStateAt(2)->IsVisible(), true);
+}
+
+TEST_F(BrowserViewControllerTest, didInsertWebStateWithAnimation) {
+  // Animation is only expected on iPhone, not iPad.
+  bool animation_expected =
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
+  ExpectNewTabInsertionAnimation(animation_expected, ^{
+    auto web_state = CreateWebState();
+    InsertWebState(std::move(web_state));
+  });
+}
+
+TEST_F(BrowserViewControllerTest, didInsertWebStateWithoutAnimation) {
+  ExpectNewTabInsertionAnimation(false, ^{
+    auto web_state = CreateWebState();
+    NewTabAnimationTabHelper::CreateForWebState(web_state.get());
+    NewTabAnimationTabHelper::FromWebState(web_state.get())
+        ->DisableNewTabAnimation();
+    InsertWebState(std::move(web_state));
+  });
 }
 
 }  // namespace

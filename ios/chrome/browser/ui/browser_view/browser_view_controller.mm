@@ -113,6 +113,7 @@
 #import "ios/chrome/browser/ui/util/url_with_title.h"
 #import "ios/chrome/browser/upgrade/upgrade_center.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/browser/url_loading/new_tab_animation_tab_helper.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_observer_bridge.h"
@@ -3264,9 +3265,18 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     return;
   }
 
+  auto* animationTabHelper = NewTabAnimationTabHelper::FromWebState(webState);
+  BOOL animated =
+      !animationTabHelper || animationTabHelper->ShouldAnimateNewTab();
+  if (animationTabHelper) {
+    // Remove the helper because it isn't needed anymore.
+    NewTabAnimationTabHelper::RemoveFromWebState(webState);
+  }
+
   BOOL inBackground =
       !activating ||
-      NewTabPageTabHelper::FromWebState(webState)->ShouldShowStartSurface();
+      NewTabPageTabHelper::FromWebState(webState)->ShouldShowStartSurface() ||
+      !animated;
   [self initiateNewTabAnimationForWebState:webState
                       willOpenInBackground:inBackground];
 }
@@ -3280,14 +3290,16 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // The rest of this function initiates the new tab animation, which is
   // phone-specific.  Call the foreground tab added completion block; for
   // iPhones, this will get executed after the animation has finished.
-  if ([self canShowTabStrip]) {
+  if ([self canShowTabStrip] || background) {
     if (self.foregroundTabWasAddedCompletionBlock) {
       // This callback is called before webState is activated. Dispatch the
       // callback asynchronously to be sure the activation is complete.
       __weak BrowserViewController* weakSelf = self;
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(^{
-            [weakSelf executeAndClearForegroundTabWasAddedCompletionBlock];
+            [weakSelf
+                executeAndClearForegroundTabWasAddedCompletionBlock:!
+                                                                    background];
           }));
     }
     return;
@@ -3312,7 +3324,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 // Helper which execute and then clears `foregroundTabWasAddedCompletionBlock`
 // if it is still set, or does nothing.
-- (void)executeAndClearForegroundTabWasAddedCompletionBlock {
+- (void)executeAndClearForegroundTabWasAddedCompletionBlock:(BOOL)animated {
   // Test existence again as the block may have been deleted.
   ProceduralBlock completion = self.foregroundTabWasAddedCompletionBlock;
   if (!completion)
@@ -3325,7 +3337,13 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // getting run. An example where this would happen is when opening
   // multiple tabs via the "Open URLs in Chrome" Siri Shortcut.
   self.foregroundTabWasAddedCompletionBlock = nil;
-  completion();
+  if (animated) {
+    completion();
+  } else {
+    [UIView performWithoutAnimation:^{
+      completion();
+    }];
+  }
 }
 
 // Helper which starts voice search at the end of new Tab animation if

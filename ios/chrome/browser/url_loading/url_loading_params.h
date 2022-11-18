@@ -72,6 +72,10 @@ struct UrlLoadParams {
   // settings), as opposed to a web page context. Defaults to `false`.
   bool from_chrome;
 
+  // Whether or not this URL command comes from an external source (e.g. a
+  // widget).
+  bool from_external;
+
   // Whether the new tab command was initiated by the user (e.g. by tapping the
   // new tab button in the tools menu) or not (e.g. opening a new tab via a
   // Javascript action). Defaults to `true`. Only used when the `web_params.url`

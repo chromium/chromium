@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/url_loading/new_tab_animation_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/referrer.h"
@@ -60,7 +61,8 @@ TEST_F(TabInsertionBrowserAgentTest, InsertUrlSingle) {
                              /*index=*/0,
                              /*in_background=*/false,
                              /*inherit_opener=*/false,
-                             /*should_show_start_surface=*/false);
+                             /*should_show_start_surface=*/false,
+                             /*should_skip_new_tab_animation=*/false);
   ASSERT_EQ(1, browser_->GetWebStateList()->count());
   EXPECT_EQ(web_state, browser_->GetWebStateList()->GetWebStateAt(0));
 }
@@ -73,7 +75,8 @@ TEST_F(TabInsertionBrowserAgentTest, InsertUrlMultiple) {
                              /*index=*/0,
                              /*in_background=*/false,
                              /*inherit_opener=*/false,
-                             /*should_show_start_surface=*/false);
+                             /*should_show_start_surface=*/false,
+                             /*should_skip_new_tab_animation=*/false);
   web::WebState* web_state1 =
       agent_->InsertWebState(Params(GURL(kURL1)),
                              /*parent=*/nil,
@@ -81,7 +84,8 @@ TEST_F(TabInsertionBrowserAgentTest, InsertUrlMultiple) {
                              /*index=*/0,
                              /*in_background=*/false,
                              /*inherit_opener=*/false,
-                             /*should_show_start_surface=*/false);
+                             /*should_show_start_surface=*/false,
+                             /*should_skip_new_tab_animation=*/false);
   web::WebState* web_state2 =
       agent_->InsertWebState(Params(GURL(kURL1)),
                              /*parent=*/nil,
@@ -89,7 +93,8 @@ TEST_F(TabInsertionBrowserAgentTest, InsertUrlMultiple) {
                              /*index=*/1,
                              /*in_background=*/false,
                              /*inherit_opener=*/false,
-                             /*should_show_start_surface=*/false);
+                             /*should_show_start_surface=*/false,
+                             /*should_skip_new_tab_animation=*/false);
 
   ASSERT_EQ(3, browser_->GetWebStateList()->count());
   EXPECT_EQ(web_state1, browser_->GetWebStateList()->GetWebStateAt(0));
@@ -105,7 +110,8 @@ TEST_F(TabInsertionBrowserAgentTest, AppendUrlSingle) {
                              /*index=*/browser_->GetWebStateList()->count(),
                              /*in_background=*/false,
                              /*inherit_opener=*/false,
-                             /*should_show_start_surface=*/false);
+                             /*should_show_start_surface=*/false,
+                             /*should_skip_new_tab_animation=*/false);
 
   ASSERT_EQ(1, browser_->GetWebStateList()->count());
   EXPECT_EQ(web_state, browser_->GetWebStateList()->GetWebStateAt(0));
@@ -119,7 +125,8 @@ TEST_F(TabInsertionBrowserAgentTest, AppendUrlMultiple) {
                              /*index=*/browser_->GetWebStateList()->count(),
                              /*in_background=*/false,
                              /*inherit_opener=*/false,
-                             /*should_show_start_surface=*/false);
+                             /*should_show_start_surface=*/false,
+                             /*should_skip_new_tab_animation=*/false);
   web::WebState* web_state1 =
       agent_->InsertWebState(Params(GURL(kURL1)),
                              /*parent=*/nil,
@@ -127,7 +134,8 @@ TEST_F(TabInsertionBrowserAgentTest, AppendUrlMultiple) {
                              /*index=*/browser_->GetWebStateList()->count(),
                              /*in_background=*/false,
                              /*inherit_opener=*/false,
-                             /*should_show_start_surface=*/false);
+                             /*should_show_start_surface=*/false,
+                             /*should_skip_new_tab_animation=*/false);
   web::WebState* web_state2 =
       agent_->InsertWebState(Params(GURL(kURL1)),
                              /*parent=*/nil,
@@ -135,7 +143,8 @@ TEST_F(TabInsertionBrowserAgentTest, AppendUrlMultiple) {
                              /*index=*/browser_->GetWebStateList()->count(),
                              /*in_background=*/false,
                              /*inherit_opener=*/false,
-                             /*should_show_start_surface=*/false);
+                             /*should_show_start_surface=*/false,
+                             /*should_skip_new_tab_animation=*/false);
 
   ASSERT_EQ(3, browser_->GetWebStateList()->count());
   EXPECT_EQ(web_state0, browser_->GetWebStateList()->GetWebStateAt(0));
@@ -152,21 +161,24 @@ TEST_F(TabInsertionBrowserAgentTest, AddWithOrderController) {
                              /*index=*/browser_->GetWebStateList()->count(),
                              /*in_background=*/false,
                              /*inherit_opener=*/false,
-                             /*should_show_start_surface=*/false);
+                             /*should_show_start_surface=*/false,
+                             /*should_skip_new_tab_animation=*/false);
   agent_->InsertWebState(Params(GURL(kURL1)),
                          /*parent=*/nil,
                          /*opened_by_dom=*/false,
                          /*index=*/browser_->GetWebStateList()->count(),
                          /*in_background=*/false,
                          /*inherit_opener=*/false,
-                         /*should_show_start_surface=*/false);
+                         /*should_show_start_surface=*/false,
+                         /*should_skip_new_tab_animation=*/false);
   agent_->InsertWebState(Params(GURL(kURL1)),
                          /*parent=*/nil,
                          /*opened_by_dom=*/false,
                          /*index=*/browser_->GetWebStateList()->count(),
                          /*in_background=*/false,
                          /*inherit_opener=*/false,
-                         /*should_show_start_surface=*/false);
+                         /*should_show_start_surface=*/false,
+                         /*should_skip_new_tab_animation=*/false);
 
   // Add a new tab, it should be added behind the parent.
   web::WebState* child =
@@ -176,7 +188,8 @@ TEST_F(TabInsertionBrowserAgentTest, AddWithOrderController) {
                              /*index=*/TabInsertion::kPositionAutomatically,
                              /*in_background=*/false,
                              /*inherit_opener=*/false,
-                             /*should_show_start_surface=*/false);
+                             /*should_show_start_surface=*/false,
+                             /*should_skip_new_tab_animation=*/false);
   EXPECT_EQ(browser_->GetWebStateList()->GetIndexOfWebState(parent), 0);
   EXPECT_EQ(browser_->GetWebStateList()->GetIndexOfWebState(child), 1);
 
@@ -188,7 +201,8 @@ TEST_F(TabInsertionBrowserAgentTest, AddWithOrderController) {
                              /*index=*/TabInsertion::kPositionAutomatically,
                              /*in_background=*/false,
                              /*inherit_opener=*/false,
-                             /*should_show_start_surface=*/false);
+                             /*should_show_start_surface=*/false,
+                             /*should_skip_new_tab_animation=*/false);
   EXPECT_EQ(browser_->GetWebStateList()->GetIndexOfWebState(web_state),
             browser_->GetWebStateList()->count() - 1);
 
@@ -200,7 +214,8 @@ TEST_F(TabInsertionBrowserAgentTest, AddWithOrderController) {
                              /*index=*/browser_->GetWebStateList()->count(),
                              /*in_background=*/false,
                              /*inherit_opener=*/false,
-                             /*should_show_start_surface=*/false);
+                             /*should_show_start_surface=*/false,
+                             /*should_skip_new_tab_animation=*/false);
   EXPECT_EQ(browser_->GetWebStateList()->GetIndexOfWebState(web_state2),
             browser_->GetWebStateList()->count() - 1);
 
@@ -212,7 +227,8 @@ TEST_F(TabInsertionBrowserAgentTest, AddWithOrderController) {
                              /*index=*/TabInsertion::kPositionAutomatically,
                              /*in_background=*/false,
                              /*inherit_opener=*/false,
-                             /*should_show_start_surface=*/false);
+                             /*should_show_start_surface=*/false,
+                             /*should_skip_new_tab_animation=*/false);
   EXPECT_EQ(browser_->GetWebStateList()->GetIndexOfWebState(web_state3),
             browser_->GetWebStateList()->GetIndexOfWebState(web_state) + 1);
 
@@ -224,7 +240,41 @@ TEST_F(TabInsertionBrowserAgentTest, AddWithOrderController) {
                              /*index=*/TabInsertion::kPositionAutomatically,
                              /*in_background=*/false,
                              /*inherit_opener=*/false,
-                             /*should_show_start_surface=*/false);
+                             /*should_show_start_surface=*/false,
+                             /*should_skip_new_tab_animation=*/false);
   EXPECT_EQ(browser_->GetWebStateList()->GetIndexOfWebState(web_state4),
             browser_->GetWebStateList()->GetIndexOfWebState(web_state3) + 1);
+}
+
+// Tests that when params.from_external is true, a NewTabAnimationTabHelper is
+// created with a boolean set to disable animation.
+TEST_F(TabInsertionBrowserAgentTest, ShouldSkipNewTabAnimationTrue) {
+  web::WebState* web_state =
+      agent_->InsertWebState(Params(GURL(kURL1)),
+                             /*parent=*/nil,
+                             /*opened_by_dom=*/false,
+                             /*index=*/0,
+                             /*in_background=*/false,
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false,
+                             /*should_skip_new_tab_animation=*/true);
+  const auto* helper = NewTabAnimationTabHelper::FromWebState(web_state);
+  ASSERT_NE(helper, nullptr);
+  EXPECT_FALSE(helper->ShouldAnimateNewTab());
+}
+
+// Tests that when params.from_external is false, a NewTabAnimationTabHelper is
+// not created.
+TEST_F(TabInsertionBrowserAgentTest, ShouldSkipNewTabAnimationFalse) {
+  web::WebState* web_state =
+      agent_->InsertWebState(Params(GURL(kURL1)),
+                             /*parent=*/nil,
+                             /*opened_by_dom=*/false,
+                             /*index=*/0,
+                             /*in_background=*/false,
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false,
+                             /*should_skip_new_tab_animation=*/false);
+  const auto* helper = NewTabAnimationTabHelper::FromWebState(web_state);
+  EXPECT_EQ(helper, nullptr);
 }

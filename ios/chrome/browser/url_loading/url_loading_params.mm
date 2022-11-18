@@ -76,6 +76,7 @@ UrlLoadParams::UrlLoadParams()
       append_to(kLastTab),
       origin_point(CGPointZero),
       from_chrome(false),
+      from_external(false),
       user_initiated(true),
       should_focus_omnibox(false),
       inherit_opener(false),
@@ -88,6 +89,7 @@ UrlLoadParams::UrlLoadParams(const UrlLoadParams& other)
       append_to(other.append_to),
       origin_point(other.origin_point),
       from_chrome(other.from_chrome),
+      from_external(other.from_external),
       user_initiated(other.user_initiated),
       should_focus_omnibox(other.should_focus_omnibox),
       inherit_opener(other.inherit_opener),
@@ -100,6 +102,7 @@ UrlLoadParams& UrlLoadParams::operator=(const UrlLoadParams& other) {
   append_to = other.append_to;
   origin_point = other.origin_point;
   from_chrome = other.from_chrome;
+  from_external = other.from_external;
   user_initiated = other.user_initiated;
   should_focus_omnibox = other.should_focus_omnibox;
   inherit_opener = other.inherit_opener;
