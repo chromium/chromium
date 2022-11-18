@@ -22,18 +22,6 @@
 
 namespace {
 
-// Get a machine flag from |statistics_provider|, returning the given
-// |default_value| if not present.
-bool GetMachineFlag(chromeos::system::StatisticsProvider* statistics_provider,
-                    const std::string& key,
-                    bool default_value) {
-  bool value = default_value;
-  if (!statistics_provider->GetMachineFlag(key, &value))
-    return default_value;
-
-  return value;
-}
-
 std::string GetString(const base::Value::Dict& dict, base::StringPiece key) {
   const std::string* value = dict.FindString(key);
   return value ? *value : std::string();
@@ -111,7 +99,8 @@ EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
     // registration gets lost.
     if (local_state.GetBoolean(prefs::kEnrollmentRecoveryRequired)) {
       LOG(WARNING) << "Enrollment recovery required according to pref.";
-      if (statistics_provider->GetEnterpriseMachineID().empty())
+      const auto serial_number = statistics_provider->GetMachineID();
+      if (!serial_number || serial_number->empty())
         LOG(WARNING) << "Postponing recovery because machine id is missing.";
       else
         config.mode = EnrollmentConfig::MODE_RECOVERY;
@@ -159,11 +148,16 @@ EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
   const bool pref_enrollment_can_exit =
       local_state.GetBoolean(prefs::kDeviceEnrollmentCanExit);
 
-  const bool oem_is_managed = GetMachineFlag(
-      statistics_provider, chromeos::system::kOemIsEnterpriseManagedKey, false);
-  const bool oem_can_exit_enrollment = GetMachineFlag(
-      statistics_provider, chromeos::system::kOemCanExitEnterpriseEnrollmentKey,
-      true);
+  const bool oem_is_managed =
+      chromeos::system::StatisticsProvider::FlagValueToBool(
+          statistics_provider->GetMachineFlag(
+              chromeos::system::kOemIsEnterpriseManagedKey),
+          /*default_value=*/false);
+  const bool oem_can_exit_enrollment =
+      chromeos::system::StatisticsProvider::FlagValueToBool(
+          statistics_provider->GetMachineFlag(
+              chromeos::system::kOemCanExitEnterpriseEnrollmentKey),
+          /*default_value=*/true);
 
   // Decide enrollment mode. Give precedence to forced variants.
   if (IsEnrollingAfterRollback()) {
