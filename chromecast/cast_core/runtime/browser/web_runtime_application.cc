@@ -7,6 +7,7 @@
 #include "base/task/bind_post_task.h"
 #include "chromecast/browser/cast_web_service.h"
 #include "chromecast/common/feature_constants.h"
+#include "components/cast_receiver/browser/public/embedder_application.h"
 #include "components/cast_receiver/browser/public/message_port_service.h"
 #include "components/url_rewrite/browser/url_request_rewrite_rules_manager.h"
 #include "content/public/browser/navigation_entry.h"
@@ -30,7 +31,7 @@ WebRuntimeApplication::WebRuntimeApplication(
 WebRuntimeApplication::~WebRuntimeApplication() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   StopApplication(
-      RuntimeApplicationBase::Delegate::ApplicationStopReason::kUserRequest,
+      cast_receiver::EmbedderApplication::ApplicationStopReason::kUserRequest,
       net::OK);
 }
 
@@ -39,15 +40,17 @@ void WebRuntimeApplication::Launch(StatusCallback callback) {
 
   LOG(INFO) << "Launching application: " << *this;
 
-  SetContentPermissions(*delegate().GetWebContents());
+  SetContentPermissions(*embedder_application().GetWebContents());
 
   // Register GrpcWebUI for handling Cast apps with URLs in the form
   // chrome*://* that use WebUIs.
   const std::vector<std::string> hosts = {"home", "error", "cast_resources"};
   content::WebUIControllerFactory::RegisterFactory(
-      delegate().CreateWebUIControllerFactory(std::move(hosts)).release());
+      embedder_application()
+          .CreateWebUIControllerFactory(std::move(hosts))
+          .release());
 
-  delegate().GetAllBindings(base::BindPostTask(
+  embedder_application().GetAllBindings(base::BindPostTask(
       task_runner(),
       base::BindOnce(&WebRuntimeApplication::OnAllBindingsReceived,
                      weak_factory_.GetWeakPtr())));
@@ -69,7 +72,7 @@ void WebRuntimeApplication::InnerWebContentsCreated(
   DLOG(INFO) << "Inner web contents created";
 
   CastWebContents* outer_cast_contents =
-      CastWebContents::FromWebContents(delegate().GetWebContents());
+      CastWebContents::FromWebContents(embedder_application().GetWebContents());
   DCHECK(outer_cast_contents);
 
   SetContentPermissions(*inner_web_contents);
@@ -83,7 +86,7 @@ void WebRuntimeApplication::MediaStartedPlaying(
     const MediaPlayerInfo& video_type,
     const content::MediaPlayerId& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  delegate().NotifyMediaPlaybackChanged(true);
+  embedder_application().NotifyMediaPlaybackChanged(true);
 }
 
 void WebRuntimeApplication::MediaStoppedPlaying(
@@ -91,7 +94,7 @@ void WebRuntimeApplication::MediaStoppedPlaying(
     const content::MediaPlayerId& id,
     content::WebContentsObserver::MediaStoppedReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  delegate().NotifyMediaPlaybackChanged(false);
+  embedder_application().NotifyMediaPlaybackChanged(false);
 }
 
 void WebRuntimeApplication::OnAllBindingsReceived(
@@ -100,22 +103,25 @@ void WebRuntimeApplication::OnAllBindingsReceived(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!status.ok()) {
     LOG(ERROR) << "Failed to get all bindings: " << status;
-    StopApplication(
-        RuntimeApplicationBase::Delegate::ApplicationStopReason::kRuntimeError,
-        net::ERR_FAILED);
+    StopApplication(cast_receiver::EmbedderApplication::ApplicationStopReason::
+                        kRuntimeError,
+                    net::ERR_FAILED);
     return;
   }
 
-  content::WebContentsObserver::Observe(delegate().GetWebContents());
-  cast_receiver::PageStateObserver::Observe(delegate().GetWebContents());
-  auto* message_port_sevice = delegate().GetMessagePortService();
+  content::WebContentsObserver::Observe(
+      embedder_application().GetWebContents());
+  cast_receiver::PageStateObserver::Observe(
+      embedder_application().GetWebContents());
+  auto* message_port_sevice = embedder_application().GetMessagePortService();
   DCHECK(message_port_sevice);
   bindings_manager_ = std::make_unique<cast_receiver::BindingsManager>(
       *this, *message_port_sevice);
   for (auto& binding : bindings) {
     bindings_manager_->AddBinding(std::move(binding));
   }
-  bindings_manager_->ConfigureWebContents(delegate().GetWebContents());
+  bindings_manager_->ConfigureWebContents(
+      embedder_application().GetWebContents());
 
   // Application is initialized now - we can load the URL.
   LoadPage(app_url());
@@ -129,7 +135,7 @@ void WebRuntimeApplication::OnPageLoadComplete() {
 void WebRuntimeApplication::OnError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   StopApplication(
-      RuntimeApplicationBase::Delegate::ApplicationStopReason::kRuntimeError,
+      cast_receiver::EmbedderApplication::ApplicationStopReason::kRuntimeError,
       0);
 }
 
@@ -138,18 +144,18 @@ void WebRuntimeApplication::OnPageStopped(StopReason reason,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (reason) {
     case cast_receiver::PageStateObserver::StopReason::kUnknown:
-      StopApplication(RuntimeApplicationBase::Delegate::ApplicationStopReason::
-                          kRuntimeError,
+      StopApplication(cast_receiver::EmbedderApplication::
+                          ApplicationStopReason::kRuntimeError,
                       error_code);
       break;
     case cast_receiver::PageStateObserver::StopReason::kApplicationRequest:
-      StopApplication(RuntimeApplicationBase::Delegate::ApplicationStopReason::
-                          kApplicationRequest,
+      StopApplication(cast_receiver::EmbedderApplication::
+                          ApplicationStopReason::kApplicationRequest,
                       error_code);
       break;
     case cast_receiver::PageStateObserver::StopReason::kHttpError:
       StopApplication(
-          RuntimeApplicationBase::Delegate::ApplicationStopReason::kHttpError,
+          cast_receiver::EmbedderApplication::ApplicationStopReason::kHttpError,
           error_code);
       break;
   }

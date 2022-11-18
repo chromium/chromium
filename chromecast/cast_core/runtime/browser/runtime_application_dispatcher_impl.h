@@ -13,18 +13,18 @@
 #include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_base.h"
-#include "chromecast/cast_core/runtime/browser/runtime_application_dispatcher.h"
 #include "chromecast/cast_core/runtime/browser/streaming_runtime_application.h"
 #include "chromecast/cast_core/runtime/browser/web_runtime_application.h"
 #include "components/cast_receiver/browser/public/application_client.h"
 #include "components/cast_receiver/browser/public/application_config.h"
+#include "components/cast_receiver/browser/public/runtime_application_dispatcher.h"
 #include "third_party/openscreen/src/cast/common/public/cast_streaming_app_ids.h"
 
 namespace chromecast {
 
-template <typename TRuntimeApplicationPlatform>
+template <typename TEmbedderApplication>
 class RuntimeApplicationDispatcherImpl
-    : public RuntimeApplicationDispatcher<TRuntimeApplicationPlatform> {
+    : public cast_receiver::RuntimeApplicationDispatcher<TEmbedderApplication> {
  public:
   // |application_client| is expected to persist for the lifetime of this
   // instance.
@@ -33,38 +33,38 @@ class RuntimeApplicationDispatcherImpl
   ~RuntimeApplicationDispatcherImpl() override = default;
 
  private:
-  using RuntimeApplicationPlatformFactory = RuntimeApplicationDispatcher<
-      TRuntimeApplicationPlatform>::RuntimeApplicationPlatformFactory;
+  using EmbedderApplicationFactory =
+      cast_receiver::RuntimeApplicationDispatcher<
+          TEmbedderApplication>::EmbedderApplicationFactory;
 
   // RuntimeApplicationDispatcher implementation.
-  TRuntimeApplicationPlatform* CreateApplication(
+  TEmbedderApplication* CreateApplication(
       std::string session_id,
       cast_receiver::ApplicationConfig app_config,
-      RuntimeApplicationPlatformFactory factory) override;
-  TRuntimeApplicationPlatform* GetApplication(
-      const std::string& session_id) override;
-  std::unique_ptr<TRuntimeApplicationPlatform> DestroyApplication(
+      EmbedderApplicationFactory factory) override;
+  TEmbedderApplication* GetApplication(const std::string& session_id) override;
+  std::unique_ptr<TEmbedderApplication> DestroyApplication(
       const std::string& session_id) override;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::raw_ref<cast_receiver::ApplicationClient> const application_client_;
 
-  base::flat_map<std::string, std::unique_ptr<TRuntimeApplicationPlatform>>
+  base::flat_map<std::string, std::unique_ptr<TEmbedderApplication>>
       loaded_apps_;
 };
 
-template <typename TRuntimeApplicationPlatform>
-RuntimeApplicationDispatcherImpl<TRuntimeApplicationPlatform>::
+template <typename TEmbedderApplication>
+RuntimeApplicationDispatcherImpl<TEmbedderApplication>::
     RuntimeApplicationDispatcherImpl(
         cast_receiver::ApplicationClient& application_client)
     : application_client_(application_client) {}
 
-template <typename TRuntimeApplicationPlatform>
-TRuntimeApplicationPlatform*
-RuntimeApplicationDispatcherImpl<TRuntimeApplicationPlatform>::
-    CreateApplication(std::string session_id,
-                      cast_receiver::ApplicationConfig app_config,
-                      RuntimeApplicationPlatformFactory factory) {
+template <typename TEmbedderApplication>
+TEmbedderApplication*
+RuntimeApplicationDispatcherImpl<TEmbedderApplication>::CreateApplication(
+    std::string session_id,
+    cast_receiver::ApplicationConfig app_config,
+    EmbedderApplicationFactory factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::unique_ptr<RuntimeApplicationBase> app;
@@ -79,17 +79,20 @@ RuntimeApplicationDispatcherImpl<TRuntimeApplicationPlatform>::
   // TODO(b/232140331): Call this only when foreground app changes.
   application_client_->OnForegroundApplicationChanged(app.get());
 
-  std::unique_ptr<TRuntimeApplicationPlatform> platform_app =
+  auto* app_ptr = app.get();
+  std::unique_ptr<TEmbedderApplication> embedder_app =
       std::move(factory).Run(std::move(app));
+  app_ptr->SetEmbedderApplication(*embedder_app);
+
   auto [iter, success] =
-      loaded_apps_.emplace(std::move(session_id), std::move(platform_app));
+      loaded_apps_.emplace(std::move(session_id), std::move(embedder_app));
   DCHECK(success);
   return iter->second.get();
 }
 
-template <typename TRuntimeApplicationPlatform>
-TRuntimeApplicationPlatform*
-RuntimeApplicationDispatcherImpl<TRuntimeApplicationPlatform>::GetApplication(
+template <typename TEmbedderApplication>
+TEmbedderApplication*
+RuntimeApplicationDispatcherImpl<TEmbedderApplication>::GetApplication(
     const std::string& session_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -97,10 +100,10 @@ RuntimeApplicationDispatcherImpl<TRuntimeApplicationPlatform>::GetApplication(
   return iter == loaded_apps_.end() ? nullptr : iter->second.get();
 }
 
-template <typename TRuntimeApplicationPlatform>
-std::unique_ptr<TRuntimeApplicationPlatform> RuntimeApplicationDispatcherImpl<
-    TRuntimeApplicationPlatform>::DestroyApplication(const std::string&
-                                                         session_id) {
+template <typename TEmbedderApplication>
+std::unique_ptr<TEmbedderApplication>
+RuntimeApplicationDispatcherImpl<TEmbedderApplication>::DestroyApplication(
+    const std::string& session_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto iter = loaded_apps_.find(session_id);

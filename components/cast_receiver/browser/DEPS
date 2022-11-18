@@ -2,6 +2,7 @@ include_rules = [
   "+components/cast_streaming/browser/public",
   "+components/media_control/browser",
   "+components/on_load_script_injector/browser",
+  "+components/url_rewrite/mojom",
   "+content/public/browser",
   "+media",
   "+net/base",

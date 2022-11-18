@@ -16,8 +16,6 @@
 
 namespace chromecast {
 
-RuntimeApplicationBase::Delegate::~Delegate() = default;
-
 RuntimeApplicationBase::RuntimeApplicationBase(
     std::string cast_session_id,
     cast_receiver::ApplicationConfig app_config,
@@ -34,9 +32,10 @@ RuntimeApplicationBase::~RuntimeApplicationBase() {
   CHECK(!is_application_running_);
 }
 
-void RuntimeApplicationBase::SetDelegate(Delegate& delegate) {
-  DCHECK(!delegate_);
-  delegate_ = &delegate;
+void RuntimeApplicationBase::SetEmbedderApplication(
+    cast_receiver::EmbedderApplication& embedder_application) {
+  DCHECK(!embedder_application_);
+  embedder_application_ = &embedder_application;
 }
 
 const std::string& RuntimeApplicationBase::GetDisplayName() const {
@@ -53,13 +52,13 @@ const std::string& RuntimeApplicationBase::GetCastSessionId() const {
 
 void RuntimeApplicationBase::Load(StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(delegate_->GetWebContents());
+  DCHECK(embedder_application().GetWebContents());
 
   is_application_running_ = true;
   if (cached_mojom_rules_) {
     // Apply cached URL rewrite rules before anything is done with the page.
-    auto* cast_web_contents =
-        CastWebContents::FromWebContents(delegate_->GetWebContents());
+    auto* cast_web_contents = CastWebContents::FromWebContents(
+        embedder_application().GetWebContents());
     DCHECK(cast_web_contents);
     cast_web_contents->SetUrlRewriteRules(std::move(cached_mojom_rules_));
   }
@@ -70,25 +69,26 @@ void RuntimeApplicationBase::Load(StatusCallback callback) {
 
 void RuntimeApplicationBase::Stop(StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  StopApplication(Delegate::ApplicationStopReason::kUserRequest,
-                  /*net_error_code=*/0);
+  StopApplication(
+      cast_receiver::EmbedderApplication::ApplicationStopReason::kUserRequest,
+      /*net_error_code=*/0);
   std::move(callback).Run(cast_receiver::OkStatus());
 }
 
 cast_receiver::ApplicationClient::ApplicationControls*
 RuntimeApplicationBase::GetApplicationControls() {
-  if (!delegate().GetWebContents()) {
+  if (!embedder_application().GetWebContents()) {
     return nullptr;
   }
 
   return &application_client_->GetApplicationControls(
-      *delegate().GetWebContents());
+      *embedder_application().GetWebContents());
 }
 
 void RuntimeApplicationBase::LoadPage(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  delegate().LoadPage(url);
+  embedder_application().LoadPage(url);
 
   SetWebVisibilityAndPaint(false);
 }
@@ -117,7 +117,7 @@ void RuntimeApplicationBase::OnPageLoaded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DLOG(INFO) << "Page loaded: " << *this;
 
-  auto* window_controls = delegate_->GetContentWindowControls();
+  auto* window_controls = embedder_application().GetContentWindowControls();
   DCHECK(window_controls);
   window_controls->AddVisibilityChangeObserver(*this);
   if (is_touch_input_enabled_) {
@@ -135,18 +135,18 @@ void RuntimeApplicationBase::OnPageLoaded() {
     window_controls->HideWindow();
   }
 
-  delegate().NotifyApplicationStarted();
+  embedder_application().NotifyApplicationStarted();
 }
 
 void RuntimeApplicationBase::SetUrlRewriteRules(
     url_rewrite::mojom::UrlRequestRewriteRulesPtr mojom_rules) {
-  if (!delegate_->GetWebContents()) {
+  if (!embedder_application().GetWebContents()) {
     cached_mojom_rules_ = std::move(mojom_rules);
     return;
   }
 
   auto* cast_web_contents =
-      CastWebContents::FromWebContents(delegate_->GetWebContents());
+      CastWebContents::FromWebContents(embedder_application().GetWebContents());
   DCHECK(cast_web_contents);
   cast_web_contents->SetUrlRewriteRules(std::move(mojom_rules));
 }
@@ -160,7 +160,7 @@ void RuntimeApplicationBase::SetMediaBlocking(bool load_blocked,
   LOG(INFO) << "Media state updated: is_load_blocked=" << load_blocked
             << ", is_start_blocked=" << start_blocked << ", " << *this;
 
-  if (!delegate_->GetWebContents()) {
+  if (!embedder_application().GetWebContents()) {
     return;
   }
 
@@ -181,7 +181,7 @@ void RuntimeApplicationBase::SetVisibility(bool is_visible) {
   LOG(INFO) << "Visibility updated: is_visible_=" << is_visible_ << ", "
             << *this;
 
-  auto* window_controls = delegate_->GetContentWindowControls();
+  auto* window_controls = embedder_application().GetContentWindowControls();
   if (!window_controls) {
     return;
   }
@@ -200,7 +200,7 @@ void RuntimeApplicationBase::SetTouchInputEnabled(bool enabled) {
   LOG(INFO) << "Touch input updated: is_touch_input_enabled_= "
             << is_touch_input_enabled_ << ", " << *this;
 
-  auto* window_controls = delegate_->GetContentWindowControls();
+  auto* window_controls = embedder_application().GetContentWindowControls();
   if (!window_controls) {
     return;
   }
@@ -217,7 +217,7 @@ bool RuntimeApplicationBase::IsApplicationRunning() const {
 }
 
 void RuntimeApplicationBase::StopApplication(
-    Delegate::ApplicationStopReason stop_reason,
+    cast_receiver::EmbedderApplication::ApplicationStopReason stop_reason,
     int32_t net_error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -226,26 +226,26 @@ void RuntimeApplicationBase::StopApplication(
   }
   is_application_running_ = false;
 
-  auto* web_contents = delegate_->GetWebContents();
+  auto* web_contents = embedder_application().GetWebContents();
   if (web_contents) {
     web_contents->DispatchBeforeUnload(false /* auto_cancel */);
     web_contents->ClosePage();
 
     // Check if window is still available as page might have been closed before.
-    auto* window_controls = delegate_->GetContentWindowControls();
+    auto* window_controls = embedder_application().GetContentWindowControls();
     if (window_controls) {
       window_controls->RemoveVisibilityChangeObserver(*this);
     }
   }
 
-  delegate().NotifyApplicationStopped(stop_reason, net_error_code);
+  embedder_application().NotifyApplicationStopped(stop_reason, net_error_code);
 
   LOG(INFO) << "Application is stopped: stop_reason=" << stop_reason << ", "
             << *this;
 }
 
 void RuntimeApplicationBase::SetWebVisibilityAndPaint(bool is_visible) {
-  auto* web_contents = delegate_->GetWebContents();
+  auto* web_contents = embedder_application().GetWebContents();
   if (!web_contents) {
     return;
   }
@@ -269,26 +269,6 @@ void RuntimeApplicationBase::OnWindowShown() {
 
 void RuntimeApplicationBase::OnWindowHidden() {
   SetWebVisibilityAndPaint(false);
-}
-
-std::ostream& operator<<(
-    std::ostream& os,
-    RuntimeApplicationBase::Delegate::ApplicationStopReason reason) {
-  switch (reason) {
-    case RuntimeApplicationBase::Delegate::ApplicationStopReason::kUndefined:
-      return os << "Undefined";
-    case RuntimeApplicationBase::Delegate::ApplicationStopReason::
-        kApplicationRequest:
-      return os << "Application Request";
-    case RuntimeApplicationBase::Delegate::ApplicationStopReason::kIdleTimeout:
-      return os << "Idle Timeout";
-    case RuntimeApplicationBase::Delegate::ApplicationStopReason::kUserRequest:
-      return os << "Use Request";
-    case RuntimeApplicationBase::Delegate::ApplicationStopReason::kHttpError:
-      return os << "HTTP Error";
-    case RuntimeApplicationBase::Delegate::ApplicationStopReason::kRuntimeError:
-      return os << "Runtime Error";
-  }
 }
 
 }  // namespace chromecast

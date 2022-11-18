@@ -16,17 +16,12 @@
 #include "components/cast_receiver/browser/public/application_client.h"
 #include "components/cast_receiver/browser/public/application_config.h"
 #include "components/cast_receiver/browser/public/content_window_controls.h"
+#include "components/cast_receiver/browser/public/embedder_application.h"
 #include "components/cast_receiver/browser/public/runtime_application.h"
 #include "components/url_rewrite/mojom/url_request_rewrite.mojom.h"
 
-namespace cast_receiver {
-class MessagePortService;
-class StreamingConfigManager;
-}  // namespace cast_receiver
-
 namespace content {
 class WebContents;
-class WebUIControllerFactory;
 }  // namespace content
 
 namespace chromecast {
@@ -39,99 +34,25 @@ class RuntimeApplicationBase
     : public cast_receiver::RuntimeApplication,
       public cast_receiver::ContentWindowControls::VisibilityChangeObserver {
  public:
-  // This class defines a wrapper around any platform-specific communication
-  // details required for functionality of a RuntimeApplicationBase instance.
-  class Delegate {
-   public:
-    enum class ApplicationStopReason {
-      kUndefined = 0,
-      kApplicationRequest,
-      kIdleTimeout,
-      kUserRequest,
-      kHttpError,
-      kRuntimeError
-    };
-
-    virtual ~Delegate();
-
-    // Notifies the Cast agent that application has started.
-    virtual void NotifyApplicationStarted() = 0;
-
-    // Notifies the Cast agent that application has stopped.
-    virtual void NotifyApplicationStopped(ApplicationStopReason stop_reason,
-                                          int32_t net_error_code) = 0;
-
-    // Notifies the Cast agent about media playback state changed.
-    virtual void NotifyMediaPlaybackChanged(bool playing) = 0;
-
-    // Fetches all bindings asynchronously, calling |callback| with the results
-    // of this call once it returns.
-    using GetAllBindingsCallback =
-        base::OnceCallback<void(cast_receiver::Status,
-                                std::vector<std::string>)>;
-    virtual void GetAllBindings(GetAllBindingsCallback callback) = 0;
-
-    // Gets the platform-specific MessagePortService instance for this
-    // application, if such an instance exists.
-    virtual cast_receiver::MessagePortService* GetMessagePortService() = 0;
-
-    // Creates a new platform-specific WebUIControllerFactory.
-    virtual std::unique_ptr<content::WebUIControllerFactory>
-    CreateWebUIControllerFactory(std::vector<std::string> hosts) = 0;
-
-    // Returns the WebContents this application should use.
-    //
-    // TODO(crbug.com/1382907): Change to a callback-based API.
-    virtual content::WebContents* GetWebContents() = 0;
-
-    // Returns the window controls for this instance.
-    //
-    // TODO(crbug.com/1382907): Change to a callback-based API.
-    virtual cast_receiver::ContentWindowControls*
-    GetContentWindowControls() = 0;
-
-    virtual cast_receiver::StreamingConfigManager*
-    GetStreamingConfigManager() = 0;
-
-    // Loads |url| in the associated WebContents.
-    //
-    // TODO(crbug.com/1383332): Remove this function.
-    virtual void LoadPage(const GURL& url) = 0;
-  };
-
   ~RuntimeApplicationBase() override;
 
-  void SetDelegate(Delegate& delegate);
+  // Sets the |embedder_application| to be used for making calls to platform-
+  // specific implementations of cast_receiver interfaces.
+  void SetEmbedderApplication(
+      cast_receiver::EmbedderApplication& embedder_application);
 
-  // Called before Launch() to perform any pre-launch loading that is
-  // necessary. The |callback| will be called indicating if the operation
-  // succeeded or not. If Load fails, |this| should be destroyed since it's not
-  // necessarily valid to retry Load with a new request.
-  void Load(StatusCallback callback);
-
-  // Called to stop the application. The |callback| will be called indicating
-  // if the operation succeeded or not.
-  void Stop(StatusCallback callback);
-
-  // Sets URL rewrite rules.
+  // RuntimeApplication implementation.
+  //
+  // To be implemented by descendants of this class:
+  // - Launch(StatusCallback callback)
+  // - IsStreamingApplication()
+  void Load(StatusCallback callback) override;
+  void Stop(StatusCallback callback) override;
   void SetUrlRewriteRules(
-      url_rewrite::mojom::UrlRequestRewriteRulesPtr mojom_rules);
-
-  // Sets media playback state.
-  void SetMediaBlocking(bool load_blocked, bool start_blocked);
-
-  // Sets visibility state.
-  void SetVisibility(bool is_visible);
-
-  // Sets touch input.
-  void SetTouchInputEnabled(bool enabled);
-
-  // Called to launch the application. The |callback| will be called indicating
-  // if the operation succeeded or not.
-  virtual void Launch(StatusCallback callback) = 0;
-
-  // Partial RuntimeApplication implementation:
-  // IsStreamingApplication must be implemented in inherited classes.
+      url_rewrite::mojom::UrlRequestRewriteRulesPtr mojom_rules) override;
+  void SetMediaBlocking(bool load_blocked, bool start_blocked) override;
+  void SetVisibility(bool is_visible) override;
+  void SetTouchInputEnabled(bool enabled) override;
   const std::string& GetDisplayName() const override;
   const std::string& GetAppId() const override;
   const std::string& GetCastSessionId() const override;
@@ -146,14 +67,18 @@ class RuntimeApplicationBase
 
   // Stops the running application. Must be called before destruction of any
   // instance of the implementing object.
-  virtual void StopApplication(Delegate::ApplicationStopReason stop_reason,
-                               int32_t net_error_code);
+  virtual void StopApplication(
+      cast_receiver::EmbedderApplication::ApplicationStopReason stop_reason,
+      int32_t net_error_code);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner() {
     return task_runner_;
   }
 
-  Delegate& delegate() { return *delegate_; }
+  cast_receiver::EmbedderApplication& embedder_application() {
+    DCHECK(embedder_application_);
+    return *embedder_application_;
+  }
 
   // NOTE: This field is empty until after Load() is called.
   const cast_receiver::ApplicationConfig& config() const { return app_config_; }
@@ -188,7 +113,8 @@ class RuntimeApplicationBase
 
   base::raw_ref<cast_receiver::ApplicationClient> application_client_;
 
-  base::raw_ptr<Delegate> delegate_{nullptr};
+  base::raw_ptr<cast_receiver::EmbedderApplication> embedder_application_{
+      nullptr};
 
   // Cached mojom rules that are set iff |cast_web_view_| is not created before
   // SetUrlRewriteRules is called.
@@ -206,10 +132,6 @@ class RuntimeApplicationBase
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<RuntimeApplicationBase> weak_factory_{this};
 };
-
-std::ostream& operator<<(
-    std::ostream& os,
-    RuntimeApplicationBase::Delegate::ApplicationStopReason reason);
 
 }  // namespace chromecast
 

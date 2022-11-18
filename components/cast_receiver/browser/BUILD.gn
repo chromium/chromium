@@ -10,6 +10,7 @@ source_set("browser") {
     "//components/cast_receiver/common",
     "//components/cast_streaming/browser",
     "//components/media_control/browser",
+    "//components/url_rewrite/mojom",
     "//content/public/browser",
   ]
   public = [
@@ -47,6 +48,7 @@ if (enable_cast_receiver || is_fuchsia) {
       "//components/cast_receiver/common",
       "//components/media_control/browser",
       "//components/on_load_script_injector/browser",
+      "//components/url_rewrite/browser",
       "//content",
       "//ui/base",
     ]
@@ -55,7 +57,10 @@ if (enable_cast_receiver || is_fuchsia) {
       "bindings_manager.h",
       "bindings_message_port_connector.cc",
       "bindings_message_port_connector.h",
+      "embedder_application.cc",
+      "public/embedder_application.h",
       "public/message_port_service.h",
+      "public/runtime_application_dispatcher.h",
     ]
   }
 }

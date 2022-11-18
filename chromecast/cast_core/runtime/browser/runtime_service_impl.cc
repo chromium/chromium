@@ -18,6 +18,7 @@
 #include "chromecast/cast_core/runtime/browser/runtime_application_service_impl.h"
 #include "chromecast/metrics/cast_event_builder_simple.h"
 #include "components/cast_receiver/browser/public/application_client.h"
+#include "components/cast_receiver/browser/public/embedder_application.h"
 #include "third_party/cast_core/public/src/proto/common/application_config.pb.h"
 
 namespace chromecast {
@@ -166,7 +167,8 @@ void RuntimeServiceImpl::HandleLoadApplication(
               [](scoped_refptr<base::SequencedTaskRunner> task_runner,
                  cast::common::ApplicationConfig config,
                  CastWebService& web_service,
-                 std::unique_ptr<RuntimeApplicationBase> runtime_application) {
+                 std::unique_ptr<cast_receiver::RuntimeApplication>
+                     runtime_application) {
                 return std::make_unique<RuntimeApplicationServiceImpl>(
                     std::move(runtime_application), std::move(config),
                     std::move(task_runner), web_service);

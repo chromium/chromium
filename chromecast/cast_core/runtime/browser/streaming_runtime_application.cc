@@ -6,6 +6,7 @@
 
 #include "components/cast/message_port/platform_message_port.h"
 #include "components/cast_receiver/browser/public/application_client.h"
+#include "components/cast_receiver/browser/public/embedder_application.h"
 #include "components/cast_receiver/browser/public/message_port_service.h"
 #include "components/cast_streaming/public/cast_streaming_url.h"
 #include "content/public/browser/navigation_handle.h"
@@ -39,7 +40,7 @@ StreamingRuntimeApplication::StreamingRuntimeApplication(
 StreamingRuntimeApplication::~StreamingRuntimeApplication() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   StopApplication(
-      RuntimeApplicationBase::Delegate::ApplicationStopReason::kUserRequest,
+      cast_receiver::EmbedderApplication::ApplicationStopReason::kUserRequest,
       net::OK);
 }
 
@@ -52,7 +53,7 @@ void StreamingRuntimeApplication::OnError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOG(WARNING) << "Streaming session for " << *this << " has hit an error!";
   StopApplication(
-      RuntimeApplicationBase::Delegate::ApplicationStopReason::kRuntimeError,
+      cast_receiver::EmbedderApplication::ApplicationStopReason::kRuntimeError,
       net::ERR_FAILED);
 }
 
@@ -66,10 +67,11 @@ void StreamingRuntimeApplication::OnResolutionChanged(
 void StreamingRuntimeApplication::Launch(StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  SetContentPermissions(*delegate().GetWebContents());
+  DCHECK(embedder_application().GetWebContents());
+  SetContentPermissions(*embedder_application().GetWebContents());
 
   // Bind Cast Transport.
-  auto* message_port_service = delegate().GetMessagePortService();
+  auto* message_port_service = embedder_application().GetMessagePortService();
   DCHECK(message_port_service);
   std::unique_ptr<cast_api_bindings::MessagePort> server_port;
   std::unique_ptr<cast_api_bindings::MessagePort> client_port;
@@ -80,8 +82,8 @@ void StreamingRuntimeApplication::Launch(StatusCallback callback) {
   // Initialize the streaming receiver.
   receiver_session_client_ = std::make_unique<StreamingReceiverSessionClient>(
       task_runner(), application_client_->GetNetworkContextGetter(),
-      std::move(server_port), delegate().GetWebContents(), this,
-      delegate().GetStreamingConfigManager(),
+      std::move(server_port), embedder_application().GetWebContents(), this,
+      embedder_application().GetStreamingConfigManager(),
       /* supports_audio= */ GetAppId() !=
           openscreen::cast::GetIosAppStreamingAudioVideoAppId(),
       /* supports_video= */ true);
@@ -97,7 +99,7 @@ void StreamingRuntimeApplication::Launch(StatusCallback callback) {
 }
 
 void StreamingRuntimeApplication::StopApplication(
-    RuntimeApplicationBase::Delegate::ApplicationStopReason stop_reason,
+    cast_receiver::EmbedderApplication::ApplicationStopReason stop_reason,
     int32_t net_error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!receiver_session_client_) {

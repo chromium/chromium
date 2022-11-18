@@ -13,9 +13,9 @@
 #include "chromecast/cast_core/runtime/browser/core_streaming_config_manager.h"
 #include "chromecast/cast_core/runtime/browser/grpc_webui_controller_factory.h"
 #include "chromecast/cast_core/runtime/browser/message_port_service_grpc.h"
-#include "chromecast/cast_core/runtime/browser/runtime_application_base.h"
 #include "chromecast/cast_core/runtime/browser/url_rewrite/url_request_rewrite_type_converters.h"
 #include "chromecast/common/feature_constants.h"
+#include "components/cast_receiver/browser/public/content_window_controls.h"
 
 namespace chromecast {
 namespace {
@@ -85,20 +85,23 @@ class CastContentWindowControls : public cast_receiver::ContentWindowControls,
 };
 
 cast::common::StopReason::Type ToProtoType(
-    RuntimeApplicationBase::Delegate::ApplicationStopReason reason) {
+    cast_receiver::EmbedderApplication::ApplicationStopReason reason) {
   switch (reason) {
-    case RuntimeApplicationBase::Delegate::ApplicationStopReason::kUndefined:
+    case cast_receiver::EmbedderApplication::ApplicationStopReason::kUndefined:
       return cast::common::StopReason::UNDEFINED;
-    case RuntimeApplicationBase::Delegate::ApplicationStopReason::
+    case cast_receiver::EmbedderApplication::ApplicationStopReason::
         kApplicationRequest:
       return cast::common::StopReason::APPLICATION_REQUEST;
-    case RuntimeApplicationBase::Delegate::ApplicationStopReason::kIdleTimeout:
+    case cast_receiver::EmbedderApplication::ApplicationStopReason::
+        kIdleTimeout:
       return cast::common::StopReason::IDLE_TIMEOUT;
-    case RuntimeApplicationBase::Delegate::ApplicationStopReason::kUserRequest:
+    case cast_receiver::EmbedderApplication::ApplicationStopReason::
+        kUserRequest:
       return cast::common::StopReason::USER_REQUEST;
-    case RuntimeApplicationBase::Delegate::ApplicationStopReason::kHttpError:
+    case cast_receiver::EmbedderApplication::ApplicationStopReason::kHttpError:
       return cast::common::StopReason::HTTP_ERROR;
-    case RuntimeApplicationBase::Delegate::ApplicationStopReason::kRuntimeError:
+    case cast_receiver::EmbedderApplication::ApplicationStopReason::
+        kRuntimeError:
       return cast::common::StopReason::RUNTIME_ERROR;
   }
 }
@@ -118,7 +121,7 @@ const cast::common::Dictionary::Entry* FindEntry(
 }  // namespace
 
 RuntimeApplicationServiceImpl::RuntimeApplicationServiceImpl(
-    std::unique_ptr<RuntimeApplicationBase> runtime_application,
+    std::unique_ptr<cast_receiver::RuntimeApplication> runtime_application,
     cast::common::ApplicationConfig config,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     CastWebService& web_service)
@@ -128,8 +131,6 @@ RuntimeApplicationServiceImpl::RuntimeApplicationServiceImpl(
       web_service_(web_service) {
   DCHECK(runtime_application_);
   DCHECK(task_runner_);
-
-  runtime_application_->SetDelegate(*this);
 }
 
 RuntimeApplicationServiceImpl::~RuntimeApplicationServiceImpl() = default;
@@ -465,7 +466,7 @@ void RuntimeApplicationServiceImpl::NotifyMediaPlaybackChanged(bool playing) {
   DCHECK(core_app_stub_);
 
   DLOG(INFO) << "Media playback changed: playing=" << playing << ", "
-            << *runtime_application_;
+             << *runtime_application_;
 
   auto call = core_app_stub_->CreateCall<
       cast::v2::CoreApplicationServiceStub::MediaPlaybackChanged>();

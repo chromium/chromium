@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "components/cast_receiver/common/public/status.h"
+#include "components/url_rewrite/mojom/url_request_rewrite.mojom.h"
 
 namespace cast_receiver {
 
@@ -35,6 +36,33 @@ class RuntimeApplication {
 
   // Returns whether this application is currently running.
   virtual bool IsApplicationRunning() const = 0;
+
+  // Called before Launch() to perform any pre-launch loading that is
+  // necessary. The |callback| will be called indicating if the operation
+  // succeeded or not. If Load fails, |this| should be destroyed since it's
+  // not necessarily valid to retry Load with a new request.
+  virtual void Load(StatusCallback callback) = 0;
+
+  // Called to launch the application. The |callback| will be called
+  // indicating if the operation succeeded or not.
+  virtual void Launch(StatusCallback callback) = 0;
+
+  // Called to stop the application. The |callback| will be called indicating
+  // if the operation succeeded or not.
+  virtual void Stop(StatusCallback callback) = 0;
+
+  // Sets URL rewrite rules.
+  virtual void SetUrlRewriteRules(
+      url_rewrite::mojom::UrlRequestRewriteRulesPtr mojom_rules) = 0;
+
+  // Sets media playback state.
+  virtual void SetMediaBlocking(bool load_blocked, bool start_blocked) = 0;
+
+  // Sets visibility state.
+  virtual void SetVisibility(bool is_visible) = 0;
+
+  // Sets touch input.
+  virtual void SetTouchInputEnabled(bool enabled) = 0;
 };
 
 std::ostream& operator<<(std::ostream& os, const RuntimeApplication& app);

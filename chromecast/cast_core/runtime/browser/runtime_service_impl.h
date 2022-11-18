@@ -14,9 +14,9 @@
 #include "chromecast/cast_core/runtime/browser/cast_runtime_action_recorder.h"
 #include "chromecast/cast_core/runtime/browser/cast_runtime_metrics_recorder.h"
 #include "chromecast/cast_core/runtime/browser/cast_runtime_metrics_recorder_service.h"
-#include "chromecast/cast_core/runtime/browser/runtime_application_dispatcher.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_service_impl.h"
 #include "components/cast_receiver/browser/public/application_client.h"
+#include "components/cast_receiver/browser/public/runtime_application_dispatcher.h"
 #include "components/cast_receiver/common/public/status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cast_core/public/src/proto/metrics/metrics_recorder.castcore.pb.h"
@@ -103,7 +103,8 @@ class RuntimeServiceImpl final
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  std::unique_ptr<RuntimeApplicationDispatcher<RuntimeApplicationServiceImpl>>
+  std::unique_ptr<cast_receiver::RuntimeApplicationDispatcher<
+      RuntimeApplicationServiceImpl>>
       application_dispatcher_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

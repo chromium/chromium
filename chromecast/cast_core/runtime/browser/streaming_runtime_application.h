@@ -33,7 +33,7 @@ class StreamingRuntimeApplication final
   // RuntimeApplicationBase implementation:
   void Launch(StatusCallback callback) override;
   void StopApplication(
-      RuntimeApplicationBase::Delegate::ApplicationStopReason stop_reason,
+      cast_receiver::EmbedderApplication::ApplicationStopReason stop_reason,
       int32_t net_error_code) override;
   bool IsStreamingApplication() const override;
 

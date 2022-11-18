@@ -113,7 +113,6 @@ cast_source_set("runtime_application_dispatcher") {
   sources = [
     "runtime_application_base.cc",
     "runtime_application_base.h",
-    "runtime_application_dispatcher.h",
     "runtime_application_dispatcher_impl.h",
     "streaming_runtime_application.cc",
     "streaming_runtime_application.h",
