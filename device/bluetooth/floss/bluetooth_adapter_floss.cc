@@ -461,6 +461,12 @@ void BluetoothAdapterFloss::OnGetConnectionState(const FlossDeviceId& device_id,
     return;
   }
 
+  if (!ret.has_value()) {
+    LOG(WARNING) << "GetConnectionState returned error: " << ret.error()
+                 << " on device: " << device_id;
+    return;
+  }
+
   // Connected if connection state >= 1:
   // https://android.googlesource.com/platform/packages/modules/Bluetooth/+/84eff3217e552cbb3399e6deecdfce6748ae34ef/system/btif/src/btif_dm.cc#693
   device->SetConnectionState(*ret);
@@ -481,6 +487,12 @@ void BluetoothAdapterFloss::OnGetBondState(const FlossDeviceId& device_id,
   if (!device) {
     LOG(WARNING) << "GetBondState returned for a non-existing device "
                  << device_id;
+    return;
+  }
+
+  if (!ret.has_value()) {
+    LOG(WARNING) << "GetBondState returned error: " << ret.error()
+                 << " on device: " << device_id;
     return;
   }
 
