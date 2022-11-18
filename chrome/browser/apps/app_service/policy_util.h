@@ -20,9 +20,14 @@
 #include <string>
 #include <vector>
 
-#include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "base/containers/flat_map.h"
 #include "base/strings/string_piece_forward.h"
+#include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/webui/system_apps/public/system_web_app_type.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class Profile;
 
@@ -34,14 +39,18 @@ bool IsSupportedAppTypePolicyId(base::StringPiece policy_id);
 // Checks whether |policy_id| specifies a Chrome App.
 bool IsChromeAppPolicyId(base::StringPiece policy_id);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Checks whether |policy_id| specifies an Arc App.
 bool IsArcAppPolicyId(base::StringPiece policy_id);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Checks whether |policy_id| specifies a Web App.
 bool IsWebAppPolicyId(base::StringPiece policy_id);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Checks whether |policy_id| specifies a System Web App.
 bool IsSystemWebAppPolicyId(base::StringPiece policy_id);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Checks whether |policy_id| specifies a Preinstalled Web App.
 bool IsPreinstalledWebAppPolicyId(base::StringPiece policy_id);
@@ -82,10 +91,22 @@ absl::optional<std::vector<std::string>> GetPolicyIdsFromAppId(
     Profile*,
     const std::string& app_id);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Maps SystemWebAppType to a policy id.
 // Returns absl::nullopt for apps not included in official builds.
 absl::optional<base::StringPiece> GetPolicyIdForSystemWebAppType(
     ash::SystemWebAppType);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Returns the policy ID for a given preinstalled web app ID. Note that not all
+// preinstalled web apps are supposed to have a policy ID (currently we only
+// support EDU apps) - in all other cases this will return absl::nullopt.
+absl::optional<base::StringPiece> GetPolicyIdForPreinstalledWebApp(
+    base::StringPiece preinstalled_web_app_id);
+
+void SetPreinstalledWebAppsMappingForTesting(
+    absl::optional<base::flat_map<base::StringPiece, base::StringPiece>>
+        preinstalled_web_apps_mapping_for_testing);
 
 }  // namespace apps_util
 

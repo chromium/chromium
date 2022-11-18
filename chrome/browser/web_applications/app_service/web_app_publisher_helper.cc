@@ -49,6 +49,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/apps/app_service/policy_util.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -120,7 +121,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"  // nogncheck
 #include "ash/webui/system_apps/public/system_web_app_type.h"
-#include "chrome/browser/apps/app_service/policy_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
@@ -1761,6 +1761,12 @@ std::vector<std::string> WebAppPublisherHelper::GetPolicyIds(
   const auto& app_id = web_app.app_id();
 
   std::vector<std::string> policy_ids;
+
+  if (absl::optional<base::StringPiece> preinstalled_web_app_policy_id =
+          apps_util::GetPolicyIdForPreinstalledWebApp(app_id)) {
+    policy_ids.emplace_back(*preinstalled_web_app_policy_id);
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* swa_manager = ash::SystemWebAppManager::Get(profile());
   if (swa_manager && swa_manager->IsSystemWebApp(app_id)) {
@@ -1777,14 +1783,12 @@ std::vector<std::string> WebAppPublisherHelper::GetPolicyIds(
     if (swa_type == ash::SystemWebAppType::FILE_MANAGER) {
       policy_ids.push_back(file_manager::kFileManagerAppId);
     }
-
-    return policy_ids;
   }
-#endif
+#endif  // BUIDLFLAG(IS_CHROMEOS_ASH)
 
   if (!registrar().HasExternalAppWithInstallSource(
           app_id, ExternalInstallSource::kExternalPolicy)) {
-    return {};
+    return policy_ids;
   }
 
   base::flat_map<AppId, base::flat_set<GURL>> installed_apps =
@@ -1796,10 +1800,9 @@ std::vector<std::string> WebAppPublisherHelper::GetPolicyIds(
 
     base::ranges::transform(install_urls, std::back_inserter(policy_ids),
                             &GURL::spec);
-    return policy_ids;
   }
 
-  return {};
+  return policy_ids;
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

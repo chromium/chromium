@@ -40,11 +40,10 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/json/json_string_value_serializer.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram.h"
@@ -725,11 +724,19 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
         base::WrapUnique<ShelfControllerHelper>(helper));
   }
 
-  void AppendPrefValue(base::Value::List& pref_value,
-                       const std::string& extension_id) {
+  void AppendPrefValue(base::Value::List& pref_values,
+                       const std::string& policy_id) {
     base::Value::Dict entry;
-    entry.Set(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, extension_id);
-    pref_value.Append(std::move(entry));
+    entry.Set(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, policy_id);
+    pref_values.Append(std::move(entry));
+  }
+
+  void RemovePrefValue(base::Value::List& pref_values,
+                       const std::string& policy_id) {
+    pref_values.EraseIf([&policy_id](const auto& entry) {
+      return *entry.GetDict().FindString(
+                 ChromeShelfPrefs::kPinnedAppsPrefAppIDKey) == policy_id;
+    });
   }
 
   void InsertRemoveAllPinsChange(syncer::SyncChangeList* list) {
@@ -957,6 +964,11 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
       }
     }
     return result;
+  }
+
+  bool IsAppPolicyPinned(const std::string& app_id) {
+    return GetPinnableForAppID(app_id, profile()) ==
+           AppListControllerDelegate::PIN_FIXED;
   }
 
   // Returns the list containing app IDs of items shown in shelf. The order of
@@ -3430,7 +3442,26 @@ TEST_F(ChromeShelfControllerTest, Policy) {
   InstallSystemWebApp(std::make_unique<CameraSystemAppDelegate>(profile()));
 
   extension_service_->AddExtension(extension2_.get());
-  AddWebApp(web_app::kGmailAppId);
+
+  AddWebApp(web_app::kYoutubeAppId);
+
+  // Here and below we pretend that Gmail is both a preinstalled and a
+  // force-installed app and instruct that "gmail" policy_id has to be treated
+  // accordingly. This means that both "gmail" and
+  // "https://mail.google.com/mail/?usp=installed_webapp" are valid policy_ids
+  // for web_app::kGmailAppId.
+  constexpr base::StringPiece kGmailPolicyId = "gmail";
+
+  base::flat_map<base::StringPiece, base::StringPiece>
+      preinstalled_web_apps_mapping;
+  preinstalled_web_apps_mapping.emplace(kGmailPolicyId, web_app::kGmailAppId);
+  apps_util::SetPreinstalledWebAppsMappingForTesting(
+      preinstalled_web_apps_mapping);
+
+  // Force-install Gmail.
+  auto gmail_start_url = GetWebAppUrl(web_app::kGmailAppId);
+  auto gmail_install_url = gmail_start_url;
+  InstallExternalWebApp(gmail_start_url, gmail_install_url);
 
   // Pin policy should be initilized before controller start.
   base::Value::List policy_value;
@@ -3439,27 +3470,50 @@ TEST_F(ChromeShelfControllerTest, Policy) {
   AppendPrefValue(policy_value,
                   std::string{*apps_util::GetPolicyIdForSystemWebAppType(
                       ash::SystemWebAppType::CAMERA)});
+  // Pin Gmail by its install_url (see above).
+  AppendPrefValue(policy_value, gmail_install_url.spec());
+
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
 
   InitShelfController();
 
-  // Only |extension2_| should get pinned. |extension1_| is specified but not
-  // installed, and Gmail is part of the default set, but that
-  // shouldn't take effect when the policy override is in place.
-  EXPECT_EQ("Chrome, App2, Camera", GetPinnedAppStatus());
+  // |extension2_|, Camera and Gmail should get pinned. |extension1_| is
+  // specified but not installed, and Youtube is part of the default set, but
+  // that shouldn't take effect when the policy override is in place.
+  EXPECT_EQ("Chrome, App2, Camera, Gmail", GetPinnedAppStatus());
+  EXPECT_TRUE(IsAppPolicyPinned(extension2_->id()));
+  EXPECT_TRUE(IsAppPolicyPinned(web_app::kCameraAppId));
+  EXPECT_TRUE(IsAppPolicyPinned(web_app::kGmailAppId));
 
   // Installing |extension1_| should add it to the shelf. Note, App1 goes
   // before App2 that is aligned with the pin order in policy.
   AddExtension(extension1_.get());
-  EXPECT_EQ("Chrome, App1, App2, Camera", GetPinnedAppStatus());
+  EXPECT_EQ("Chrome, App1, App2, Camera, Gmail", GetPinnedAppStatus());
+  EXPECT_TRUE(IsAppPolicyPinned(extension1_->id()));
 
   // Removing |extension1_| from the policy should not be reflected in the
   // shelf and pin will exist.
-  policy_value.erase(policy_value.begin());
+  RemovePrefValue(policy_value, extension1_->id());
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
-  EXPECT_EQ("Chrome, App1, App2, Camera", GetPinnedAppStatus());
+  EXPECT_EQ("Chrome, App1, App2, Camera, Gmail", GetPinnedAppStatus());
+  EXPECT_FALSE(IsAppPolicyPinned(extension1_->id()));
+
+  // Remove Gmail from the policy. It should stay pinned, but is no longer
+  // fixed.
+  RemovePrefValue(policy_value, gmail_install_url.spec());
+  profile()->GetTestingPrefService()->SetManagedPref(
+      prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
+  EXPECT_EQ("Chrome, App1, App2, Camera, Gmail", GetPinnedAppStatus());
+  EXPECT_FALSE(IsAppPolicyPinned(web_app::kGmailAppId));
+
+  // Check that Gmail can also be pinned by direct mapping.
+  AppendPrefValue(policy_value, std::string(kGmailPolicyId));
+  profile()->GetTestingPrefService()->SetManagedPref(
+      prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
+  EXPECT_EQ("Chrome, App1, App2, Camera, Gmail", GetPinnedAppStatus());
+  EXPECT_TRUE(IsAppPolicyPinned(web_app::kGmailAppId));
 }
 
 TEST_F(ChromeShelfControllerTest, UnpinWithUninstall) {
