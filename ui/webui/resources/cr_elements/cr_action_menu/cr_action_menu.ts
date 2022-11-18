@@ -11,7 +11,7 @@ import {FocusOutlineManager} from '../../js/focus_outline_manager.js';
 import {FocusRow} from '../../js/focus_row.js';
 import {focusWithoutInk} from '../../js/focus_without_ink.js';
 import {isMac, isWindows} from '../../js/platform.js';
-import {getDeepActiveElement} from '../../js/util.js';
+import {getDeepActiveElement} from '../../js/util_ts.js';
 
 import {getTemplate} from './cr_action_menu.html.js';
 

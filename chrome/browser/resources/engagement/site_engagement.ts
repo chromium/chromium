@@ -4,7 +4,6 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {createElementWithClassName} from 'chrome://resources/js/util.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {SiteEngagementDetails, SiteEngagementDetailsProvider} from './site_engagement_details.mojom-webui.js';
@@ -55,30 +54,34 @@ function initialize() {
    * @param info The info to create the row from.
    */
   function createRow(info: SiteEngagementDetails): HTMLElement {
-    const originCell = createElementWithClassName('td', 'origin-cell');
+    const originCell = document.createElement('td');
+    originCell.classList.add('origin-cell');
     originCell.textContent = info.origin.url;
 
-    const baseScoreInput = createElementWithClassName(
-                               'input', 'base-score-input') as HTMLInputElement;
+    const baseScoreInput = document.createElement('input');
+    baseScoreInput.classList.add('base-score-input');
     baseScoreInput.addEventListener('focus', disableAutoupdate);
     baseScoreInput.addEventListener('blur', enableAutoupdate);
     baseScoreInput.value = String(info.baseScore);
 
-    const baseScoreCell = createElementWithClassName('td', 'base-score-cell');
+    const baseScoreCell = document.createElement('td');
+    baseScoreCell.classList.add('base-score-cell');
     baseScoreCell.appendChild(baseScoreInput);
 
-    const bonusScoreCell = createElementWithClassName('td', 'bonus-score-cell');
+    const bonusScoreCell = document.createElement('td');
+    bonusScoreCell.classList.add('bonus-score-cell');
     bonusScoreCell.textContent = String(info.installedBonus);
 
-    const totalScoreCell = createElementWithClassName('td', 'total-score-cell');
+    const totalScoreCell = document.createElement('td');
+    totalScoreCell.classList.add('total-score-cell');
     totalScoreCell.textContent = String(info.totalScore);
 
-    const engagementBar =
-        createElementWithClassName('div', 'engagement-bar') as HTMLElement;
+    const engagementBar = document.createElement('div');
+    engagementBar.classList.add('engagement-bar');
     engagementBar.style.width = (info.totalScore * 4) + 'px';
 
-    const engagementBarCell =
-        createElementWithClassName('td', 'engagement-bar-cell') as HTMLElement;
+    const engagementBarCell = document.createElement('td');
+    engagementBarCell.classList.add('engagement-bar-cell');
     engagementBarCell.appendChild(engagementBar);
 
     const row = document.createElement('tr');

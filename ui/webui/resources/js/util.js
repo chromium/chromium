@@ -53,25 +53,6 @@ export function announceAccessibleMessage(msg) {
 // </if>
 
 /**
- * Return the first ancestor for which the {@code predicate} returns true.
- * @param {Node} node The node to check.
- * @param {function(Node):boolean} predicate The function that tests the
- *     nodes.
- * @param {boolean=} includeShadowHosts
- * @return {Node} The found ancestor or null if not found.
- */
-export function findAncestor(node, predicate, includeShadowHosts) {
-  while (node !== null) {
-    if (predicate(node)) {
-      break;
-    }
-    node = includeShadowHosts && node instanceof ShadowRoot ? node.host :
-                                                              node.parentNode;
-  }
-  return node;
-}
-
-/**
  * Check the directionality of the page.
  * @return {boolean} True if Chrome is running an RTL UI.
  */

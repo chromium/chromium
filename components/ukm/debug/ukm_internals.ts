@@ -9,7 +9,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
-import {$, createElementWithClassName} from 'chrome://resources/js/util.js';
+import {$} from 'chrome://resources/js/util.js';
 
 interface Metric {
   name: string;
@@ -110,15 +110,16 @@ function removeChildren(parent: Element) {
 function createUrlCard(
     sourcesForUrl: UkmDataSource[], sourcesDiv: Element,
     displayState: Map<string, string>) {
-  const sourceDiv = createElementWithClassName('div', 'url_card');
+  const sourceDiv = document.createElement('div');
+  sourceDiv.classList.add('url_card');
   sourcesDiv.appendChild(sourceDiv);
   if (!sourcesForUrl || sourcesForUrl.length === 0) {
     return;
   }
   for (const source of sourcesForUrl) {
     // This div allows hiding of the metrics per URL.
-    const sourceContainer = /** @type {!Element} */ (
-        createElementWithClassName('div', 'source_container'));
+    const sourceContainer = document.createElement('div');
+    sourceContainer.classList.add('source_container');
     sourceDiv.appendChild(sourceContainer);
     createUrlHeader(source.url, source.id, sourceContainer);
     createSourceCard(
@@ -133,13 +134,15 @@ function createUrlCard(
  */
 function createUrlHeader(
     url: string|undefined, id: [number, number], sourceDiv: Element) {
-  const headerElement = createElementWithClassName('div', 'collapsible_header');
+  const headerElement = document.createElement('div');
+  headerElement.classList.add('collapsible_header');
   sourceDiv.appendChild(headerElement);
-  const urlElement = createElementWithClassName('span', 'url') as HTMLElement;
+  const urlElement = document.createElement('span');
+  urlElement.classList.add('url');
   urlElement.innerText = url ? url : URL_EMPTY;
   headerElement.appendChild(urlElement);
-  const idElement =
-      createElementWithClassName('span', 'sourceid') as HTMLElement;
+  const idElement = document.createElement('span');
+  idElement.classList.add('sourceid');
   idElement.innerText = as64Bit(id);
   headerElement.appendChild(idElement);
   // Make the click on header toggle entries div.
@@ -162,8 +165,8 @@ function createUrlHeader(
  */
 function createSourceCard(
     source: UkmDataSource, sourceDiv: Element, displayState: string|undefined) {
-  const metricElement =
-      createElementWithClassName('div', 'entries') as HTMLElement;
+  const metricElement = document.createElement('div');
+  metricElement.classList.add('entries');
   sourceDiv.appendChild(metricElement);
   const sortedEntry =
       source.entries.sort((x, y) => x.name.localeCompare(y.name));
@@ -189,12 +192,14 @@ function createSourceCard(
  */
 function createEntryTable(entry: UkmEntry, sourceDiv: Element) {
   // Add first column to the table.
-  const entryTable = createElementWithClassName('table', 'entry_table');
+  const entryTable = document.createElement('table');
+  entryTable.classList.add('entry_table');
   entryTable.setAttribute('value', entry.name);
   sourceDiv.appendChild(entryTable);
   const firstRow = document.createElement('tr');
   entryTable.appendChild(firstRow);
-  const entryName = createElementWithClassName('td', 'entry_name');
+  const entryName = document.createElement('td');
+  entryName.classList.add('entry_name');
   entryName.setAttribute('rowspan', '0');
   entryName.textContent = entry.name;
   firstRow.appendChild(entryName);
@@ -206,10 +211,12 @@ function createEntryTable(entry: UkmEntry, sourceDiv: Element) {
   // Add metrics columns.
   for (const metric of sortedMetrics) {
     const nextRow = document.createElement('tr');
-    const metricName = createElementWithClassName('td', 'metric_name');
+    const metricName = document.createElement('td');
+    metricName.classList.add('metric_name');
     metricName.textContent = metric.name;
     nextRow.appendChild(metricName);
-    const metricValue = createElementWithClassName('td', 'metric_value');
+    const metricValue = document.createElement('td');
+    metricValue.classList.add('metric_value');
     metricValue.textContent = as64Bit(metric.value);
     nextRow.appendChild(metricValue);
     entryTable.appendChild(nextRow);
@@ -372,9 +379,11 @@ function updateUkmData() {
     removeChildren(sourcesDiv);
 
     // Setup a title for the sources div.
-    const urlTitleElement = createElementWithClassName('span', 'url');
+    const urlTitleElement = document.createElement('span');
+    urlTitleElement.classList.add('url');
     urlTitleElement.textContent = 'URL';
-    const sourceIdTitleElement = createElementWithClassName('span', 'sourceid');
+    const sourceIdTitleElement = document.createElement('span');
+    sourceIdTitleElement.classList.add('sourceid');
     sourceIdTitleElement.textContent = 'Source ID';
     sourcesDiv.appendChild(urlTitleElement);
     sourcesDiv.appendChild(sourceIdTitleElement);

@@ -60,6 +60,7 @@ preprocess_if_expr("preprocess_src_ts") {
     "store_ts.ts",
     "test_loader.ts",
     "test_loader_util.ts",
+    "util_ts.ts",
   ]
 
   if (is_chromeos) {

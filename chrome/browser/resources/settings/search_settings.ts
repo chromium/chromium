@@ -7,7 +7,6 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {createEmptySearchBubble, findAndRemoveHighlights, highlight, removeHighlights, stripDiacritics} from 'chrome://resources/js/search_highlight_utils.js';
-import {findAncestor} from 'chrome://resources/js/util.js';
 import {DomIf, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsSectionElement} from './settings_page/settings_section.js';
@@ -73,6 +72,17 @@ import {SettingsSubpageElement} from './settings_page/settings_subpage.js';
     let foundMatches = false;
     const highlights: HTMLElement[] = [];
 
+    // Returns true if the node or any of its ancestors are a settings-subpage.
+    function isInSubpage(node: (Node|null)): boolean {
+      while (node !== null) {
+        if (node.nodeName === 'SETTINGS-SUBPAGE') {
+          return true;
+        }
+        node = node instanceof ShadowRoot ? node.host : node.parentNode;
+      }
+      return false;
+    }
+
     function doSearch(node: Node) {
       // NOTE: For subpage wrappers <template route-path="..."> when |no-search|
       // participates in a data binding:
@@ -128,8 +138,7 @@ import {SettingsSubpageElement} from './settings_page/settings_subpage.js';
             // Currently, they're incorrectly positioned and there's no great
             // signal at which to know when to reposition them (because every
             // page asynchronously loads/renders things differently).
-            const isSubpage = (n: Node) => n.nodeName === 'SETTINGS-SUBPAGE';
-            if (findAncestor(select, isSubpage, true)) {
+            if (isInSubpage(select)) {
               return;
             }
 

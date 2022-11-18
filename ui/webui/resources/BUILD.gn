@@ -190,6 +190,7 @@ ts_library("library") {
                "js/store_ts.ts",
                "js/test_loader.ts",
                "js/test_loader_util.ts",
+               "js/util_ts.ts",
              ]
 
   if (include_polymer) {

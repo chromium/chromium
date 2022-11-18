@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$} from 'chrome://resources/js/util.js';
+import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
-$('os-link-href').onclick = crosUrlAboutRedirect;
+getRequiredElement('os-link-href').onclick = crosUrlAboutRedirect;
 
 function crosUrlAboutRedirect() {
   chrome.send('crosUrlAboutRedirect');

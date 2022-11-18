@@ -7,7 +7,6 @@ import './item.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
-import {isTextInputElement} from 'chrome://resources/js/util.js';
 
 import {changeFolderOpen, deselectItems, selectItem} from './actions.js';
 import {highlightUpdatedItems, trackUpdatedItems} from './api_listener.js';
@@ -68,6 +67,10 @@ function getDragElement(path: EventTarget[]): BookmarkElement|null {
 
 function getBookmarkNode(bookmarkElement: BookmarkElement): BookmarkNode {
   return Store.getInstance().data.nodes[bookmarkElement.itemId]!;
+}
+
+function isTextInputElement(element: HTMLElement): boolean {
+  return element.tagName === 'INPUT' || element.tagName === 'TEXTAREA';
 }
 
 /**
@@ -358,7 +361,7 @@ export class DndManager {
 
   private onDrop_(e: Event) {
     // Allow normal DND on text inputs.
-    if (isTextInputElement((e.composedPath()[0] as HTMLElement))) {
+    if (isTextInputElement(e.composedPath()[0] as HTMLElement)) {
       return;
     }
 
