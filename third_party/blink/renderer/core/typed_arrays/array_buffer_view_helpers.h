@@ -8,6 +8,7 @@
 #include <type_traits>
 
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
@@ -128,5 +129,17 @@ class MaybeShared {
 };
 
 }  // namespace blink
+
+namespace WTF {
+
+// NotShared<T> is essentially Member<T> from the perspective of HeapVector.
+template <typename T>
+struct VectorTraits<blink::NotShared<T>> : VectorTraits<blink::Member<T>> {};
+
+// MaybeShared<T> is essentially Member<T> from the perspective of HeapVector.
+template <typename T>
+struct VectorTraits<blink::MaybeShared<T>> : VectorTraits<blink::Member<T>> {};
+
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_ARRAY_BUFFER_VIEW_HELPERS_H_
