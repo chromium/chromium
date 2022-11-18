@@ -68,4 +68,12 @@
       ],
     },
   ],
+  facets: {
+      "fuchsia.test": {
+          "deprecated-allowed-packages": [
+             "build-info-service",
+             "intl_property_manager",
+          ],
+      },
+  },
 }

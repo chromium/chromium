@@ -2,17 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 {
-  use: [
-    {
-      protocol: "fuchsia.sys.Environment",
-    },
-  ],
   facets: {
       "fuchsia.test": {
           "deprecated-allowed-packages": [
+             "archivist-for-embedding",
              "cursor",
-             "web_engine",
-             "web_runner",
+             "web_engine"
           ],
       },
   },

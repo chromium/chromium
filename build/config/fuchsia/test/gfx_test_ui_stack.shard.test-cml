@@ -38,4 +38,9 @@
       from: "#test_ui_stack",
     },
   ],
+  facets: {
+    "fuchsia.test": {
+        "deprecated-allowed-packages": [ "gfx-scene-manager-test-ui-stack" ],
+    },
+  },
 }

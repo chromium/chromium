@@ -29,4 +29,9 @@
       from: "#test_fonts",
     },
   ],
+  facets: {
+    "fuchsia.test": {
+        "deprecated-allowed-packages": [ "fonts" ],
+    },
+  },
 }

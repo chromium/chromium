@@ -812,6 +812,7 @@ test("web_engine_integration_tests_cfv1") {
     "//build/config/fuchsia/test/cfv1_launcher.shard.test-cml",
     "//build/config/fuchsia/test/web_instance.shard.test-cml",
     "//build/config/fuchsia/test/web_instance_host.shard.test-cml",
+    "//fuchsia_web/webengine/web_engine_integration_tests_cfv1.shard.test-cml",
   ]
 }
 

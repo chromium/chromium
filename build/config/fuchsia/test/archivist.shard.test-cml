@@ -20,4 +20,9 @@
       from: "#isolated_archivist",
     },
   ],
+  facets: {
+    "fuchsia.test": {
+        "deprecated-allowed-packages": [ "archivist-without-attribution" ],
+    },
+  },
 }

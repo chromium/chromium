@@ -39,4 +39,9 @@
       from: "#isolated_codec_factory",
     },
   ],
+  facets: {
+    "fuchsia.test": {
+        "deprecated-allowed-packages": [ "codec_factory" ],
+    },
+  },
 }

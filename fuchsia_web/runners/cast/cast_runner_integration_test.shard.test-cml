@@ -45,11 +45,8 @@
   facets: {
     "fuchsia.test": {
       "deprecated-allowed-packages": [
-          "build-info-service",
           "cast_runner",
           "flatland-scene-manager-test-ui-stack",
-          "fonts",
-          "intl_property_manager",
           "test_manager",
           "web_engine",
       ],

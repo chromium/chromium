@@ -34,4 +34,9 @@
       from: "#test_ui_stack",
     },
   ],
+  facets: {
+    "fuchsia.test": {
+        "deprecated-allowed-packages": [ "flatland-scene-manager-test-ui-stack" ],
+    },
+  },
 }
