@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/callback_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
@@ -42,8 +41,7 @@ class RefCountedClosureList
   SEQUENCE_CHECKER(sequence_checker_);
 
   // List of all completion closures (protected by |sequenced_task_runner_|).
-  base::OnceClosureList callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
-  std::vector<base::CallbackListSubscription> callback_subscriptions_
+  std::vector<base::OnceClosure> callbacks_
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 

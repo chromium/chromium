@@ -17,7 +17,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_list.h"
 #include "base/containers/adapters.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file.h"
@@ -210,8 +209,9 @@ StorageQueue::StorageQueue(
 StorageQueue::~StorageQueue() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
 
-  // Stop upload timer.
+  // Stop timers.
   upload_timer_.AbandonAndStop();
+  check_back_timer_.AbandonAndStop();
   // Make sure no pending writes is present.
   DCHECK(write_contexts_queue_.empty());
 
@@ -294,8 +294,9 @@ Status StorageQueue::Init() {
   //
   if (!options_.upload_period().is_zero() &&
       !options_.upload_period().is_max()) {
-    upload_timer_.Start(FROM_HERE, options_.upload_period(), this,
-                        &StorageQueue::PeriodicUpload);
+    upload_timer_.Start(FROM_HERE, options_.upload_period(),
+                        base::BindRepeating(&StorageQueue::PeriodicUpload,
+                                            weakptr_factory_.GetWeakPtr()));
   }
   // In case some events are found in the queue, initiate an upload.
   // This is especially imporant for non-periodic queues, but won't harm
@@ -1072,10 +1073,14 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
     // retry the upload.
     if (storage_queue_ &&
         !storage_queue_->options_.upload_retry_delay().is_zero()) {
-      ScheduleAfter(storage_queue_->options_.upload_retry_delay(),
-                    base::BindOnce(
-                        &StorageQueue::CheckBackUpload, storage_queue_, status,
-                        /*next_sequencing_id=*/sequence_info_.sequencing_id()));
+      storage_queue_->check_back_timer_.Start(
+          FROM_HERE, storage_queue_->options_.upload_retry_delay(),
+          base::BindPostTask(
+              storage_queue_->sequenced_task_runner_,
+              base::BindRepeating(
+                  &StorageQueue::CheckBackUpload,
+                  storage_queue_->weakptr_factory_.GetWeakPtr(), status,
+                  /*next_sequencing_id=*/sequence_info_.sequencing_id())));
     }
   }
 

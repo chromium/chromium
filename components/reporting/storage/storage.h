@@ -133,7 +133,7 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
   const scoped_refptr<EncryptionModuleInterface> encryption_module_;
 
   // Internal module for initiail key delivery from server.
-  const std::unique_ptr<KeyDelivery> key_delivery_;
+  const std::unique_ptr<KeyDelivery, base::OnTaskRunnerDeleter> key_delivery_;
 
   // Compression module.
   const scoped_refptr<CompressionModule> compression_module_;

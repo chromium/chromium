@@ -54,18 +54,23 @@ TEST_F(RefCountedClosureListTest, BasicUsageTest) {
     std::atomic<size_t> count{num_tasks};
     {
       test::TestCallbackAutoWaiter waiter;
-      const auto closure_list = base::MakeRefCounted<RefCountedClosureList>(
-          base::SequencedTaskRunner::GetCurrentDefault());
-      closure_list->RegisterCompletionCallback(base::BindOnce(
-          &test::TestCallbackAutoWaiter::Signal, base::Unretained(&waiter)));
-      for (size_t t = 0; t < num_tasks; ++t) {
-        auto worker = std::make_unique<Worker>(&count, closure_list);
-        base::ThreadPool::PostDelayedTask(
-            FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-            base::BindOnce(&Worker::Run, std::move(worker)),
-            base::Seconds(1.0 + base::RandDouble()));
+
+      {
+        const auto closure_list = base::MakeRefCounted<RefCountedClosureList>(
+            base::SequencedTaskRunnerHandle::Get());
+        closure_list->RegisterCompletionCallback(base::BindOnce(
+            &test::TestCallbackAutoWaiter::Signal, base::Unretained(&waiter)));
+        for (size_t t = 0; t < num_tasks; ++t) {
+          auto worker = std::make_unique<Worker>(&count, closure_list);
+          base::ThreadPool::PostDelayedTask(
+              FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+              base::BindOnce(&Worker::Run, std::move(worker)),
+              base::Seconds(1.0 + base::RandDouble()));
+        }
+        ASSERT_THAT(count.load(), Eq(num_tasks));
+        // Drop the original reference to `closure_list`.
+        // After that only Workers will hold it.
       }
-      ASSERT_THAT(count.load(), Eq(num_tasks));
 
       // Forward time to trigger workers to run.
       task_environment_.FastForwardBy(base::Seconds(2));

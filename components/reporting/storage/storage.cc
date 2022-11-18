@@ -11,7 +11,6 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_list.h"
 #include "base/containers/adapters.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file.h"
@@ -121,19 +120,26 @@ class Storage::QueueUploaderInterface : public UploaderInterface {
 class Storage::KeyDelivery {
  public:
   using RequestCallback = base::OnceCallback<void(Status)>;
-  explicit KeyDelivery(
-      UploaderInterface::AsyncStartUploaderCb async_start_upload_cb)
-      : async_start_upload_cb_(async_start_upload_cb),
-        sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-            {base::TaskPriority::BEST_EFFORT, base::MayBlock()})) {
-    DETACH_FROM_SEQUENCE(sequence_checker_);
+
+  // Factory method, returns smart pointer with deletion on sequence.
+  static std::unique_ptr<KeyDelivery, base::OnTaskRunnerDeleter> Create(
+      UploaderInterface::AsyncStartUploaderCb async_start_upload_cb) {
+    auto sequence_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::TaskPriority::BEST_EFFORT, base::MayBlock()});
+    return std::unique_ptr<KeyDelivery, base::OnTaskRunnerDeleter>(
+        new KeyDelivery(async_start_upload_cb, sequence_task_runner),
+        base::OnTaskRunnerDeleter(sequence_task_runner));
   }
 
-  ~KeyDelivery() = default;
+  ~KeyDelivery() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    PostResponses(
+        Status(error::UNAVAILABLE, "Key not delivered - Storage shuts down"));
+  }
 
   void Request(RequestCallback callback) {
     sequenced_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&KeyDelivery::EuqueueRequestAndStart,
+        FROM_HERE, base::BindOnce(&KeyDelivery::EuqueueRequestAndPossiblyStart,
                                   base::Unretained(this), std::move(callback)));
   }
 
@@ -144,11 +150,20 @@ class Storage::KeyDelivery {
   }
 
  private:
-  void EuqueueRequestAndStart(RequestCallback callback) {
+  // Constructor called by factory only.
+  explicit KeyDelivery(
+      UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
+      scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
+      : sequenced_task_runner_(sequenced_task_runner),
+        async_start_upload_cb_(async_start_upload_cb) {
+    DETACH_FROM_SEQUENCE(sequence_checker_);
+  }
+
+  void EuqueueRequestAndPossiblyStart(RequestCallback callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(callback);
     const bool first_call = callbacks_.empty();
-    callback_subscriptions_.emplace_back(callbacks_.Add(std::move(callback)));
-    DCHECK(callback_subscriptions_.back());
+    callbacks_.push_back(std::move(callback));
     if (!first_call) {
       // Already started.
       return;
@@ -167,9 +182,10 @@ class Storage::KeyDelivery {
 
   void PostResponses(Status status) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    callbacks_.Notify(status);
-    DCHECK(callbacks_.empty());
-    callback_subscriptions_.clear();
+    for (auto& callback : callbacks_) {
+      std::move(callback).Run(status);
+    }
+    callbacks_.clear();
   }
 
   static void WrapInstantiatedKeyUploader(
@@ -194,18 +210,14 @@ class Storage::KeyDelivery {
     uploader_result.ValueOrDie()->Completed(Status::StatusOK());
   }
 
+  const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+  SEQUENCE_CHECKER(sequence_checker_);
+
   // Upload provider callback.
   const UploaderInterface::AsyncStartUploaderCb async_start_upload_cb_;
 
-  // List of all request callbacks (protected by |sequenced_task_runner_|).
-  base::OnceCallbackList<void(Status)> callbacks_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-  std::vector<base::CallbackListSubscription> callback_subscriptions_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
+  // List of all request callbacks.
+  std::vector<RequestCallback> callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 class Storage::KeyInStorage {
@@ -348,7 +360,6 @@ class Storage::KeyInStorage {
                       static_cast<int64_t>(
                           new_file_index)) {  // Lower index file, will remove
                                               // it.
-
                 return true;
               }
               return false;
@@ -628,7 +639,7 @@ Storage::Storage(const StorageOptions& options,
                  UploaderInterface::AsyncStartUploaderCb async_start_upload_cb)
     : options_(options),
       encryption_module_(encryption_module),
-      key_delivery_(std::make_unique<KeyDelivery>(async_start_upload_cb)),
+      key_delivery_(KeyDelivery::Create(async_start_upload_cb)),
       compression_module_(compression_module),
       key_in_storage_(std::make_unique<KeyInStorage>(
           options.signature_verification_public_key(),

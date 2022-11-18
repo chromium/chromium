@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/callback_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
@@ -28,16 +27,17 @@ RefCountedClosureList::~RefCountedClosureList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Send notification to all registered closures.
-  callbacks_.Notify();
-  DCHECK(callbacks_.empty());
-  callback_subscriptions_.clear();
+  for (auto& callback : callbacks_) {
+    std::move(callback).Run();
+  }
+  callbacks_.clear();
 }
 
 void RefCountedClosureList::RegisterCompletionCallback(
     base::OnceClosure callback) {
   DCHECK(callback);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  callback_subscriptions_.emplace_back(callbacks_.Add(std::move(callback)));
+  callbacks_.push_back(std::move(callback));
 }
 
 }  // namespace reporting
