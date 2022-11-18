@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
+#include "third_party/blink/renderer/core/inspector/console_message_storage.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_rule_predicate.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
@@ -1334,11 +1335,25 @@ auto HasURLs(Matchers&&... urls) {
       ::testing::UnorderedElementsAre(urls...));
 }
 
+// Matches a SpeculationCandidatePtr with a KURL.
+auto HasURL(::testing::Matcher<KURL> matcher) {
+  return ::testing::Pointee(::testing::Field(
+      "url", &mojom::blink::SpeculationCandidate::url, matcher));
+}
+
 // Matches a SpeculationCandidatePtr with a SpeculationAction.
 auto HasAction(::testing::Matcher<mojom::blink::SpeculationAction> matcher) {
-  return ::testing::Pointee(
-      ::testing::Field("action", &mojom::blink::SpeculationCandidate::action,
-                       std::forward<decltype(matcher)>(matcher)));
+  return ::testing::Pointee(::testing::Field(
+      "action", &mojom::blink::SpeculationCandidate::action, matcher));
+}
+
+// Matches a SpeculationCandidatePtr with a ReferrerPolicy.
+auto HasReferrerPolicy(
+    ::testing::Matcher<network::mojom::ReferrerPolicy> matcher) {
+  return ::testing::Pointee(::testing::Field(
+      "referrer", &mojom::blink::SpeculationCandidate::referrer,
+      ::testing::Pointee(::testing::Field(
+          "policy", &mojom::blink::Referrer::policy, matcher))));
 }
 
 HTMLAnchorElement* AddAnchor(ContainerNode& parent, const String& href) {
@@ -1729,6 +1744,156 @@ TEST_F(DocumentRulesTest, DisconnectedLinkInShadowTree) {
         link->remove();
       });
   EXPECT_TRUE(candidates.empty());
+}
+
+// Tests that a document rule's specified referrer policy is used.
+TEST_F(DocumentRulesTest, ReferrerPolicy) {
+  ScopedSpeculationRulesReferrerPolicyKeyForTest enable_referrer_policy_key{
+      true};
+
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  auto* link_with_referrer = AddAnchor(*document.body(), "https://foo.com/abc");
+  link_with_referrer->setAttribute(html_names::kReferrerpolicyAttr,
+                                   "same-origin");
+  auto* link_with_rel_no_referrer =
+      AddAnchor(*document.body(), "https://foo.com/def");
+  link_with_rel_no_referrer->setAttribute(html_names::kRelAttr, "noreferrer");
+
+  String speculation_script = R"(
+    {"prefetch": [{
+      "source": "document",
+      "where": {"href_matches": "https://foo.com/*"},
+      "referrer_policy": "strict-origin"
+    }]}
+  )";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_THAT(candidates, ::testing::Each(HasReferrerPolicy(
+                              network::mojom::ReferrerPolicy::kStrictOrigin)));
+}
+
+// Tests that a link's referrer-policy value is used if one is not specified
+// in the document rule.
+TEST_F(DocumentRulesTest, LinkReferrerPolicy) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+  page_holder.GetFrame().DomWindow()->SetReferrerPolicy(
+      network::mojom::ReferrerPolicy::kStrictOrigin);
+
+  auto* link_with_referrer = AddAnchor(*document.body(), "https://foo.com/abc");
+  link_with_referrer->setAttribute(html_names::kReferrerpolicyAttr,
+                                   "same-origin");
+  auto* link_with_no_referrer =
+      AddAnchor(*document.body(), "https://foo.com/xyz");
+  auto* link_with_rel_noreferrer =
+      AddAnchor(*document.body(), "https://foo.com/mno");
+  link_with_rel_noreferrer->setAttribute(html_names::kRelAttr, "noreferrer");
+  auto* link_with_invalid_referrer =
+      AddAnchor(*document.body(), "https://foo.com/pqr");
+  link_with_invalid_referrer->setAttribute(html_names::kReferrerpolicyAttr,
+                                           "invalid");
+  auto* link_with_disallowed_referrer =
+      AddAnchor(*document.body(), "https://foo.com/aaa");
+  link_with_disallowed_referrer->setAttribute(html_names::kReferrerpolicyAttr,
+                                              "unsafe-url");
+
+  String speculation_script = R"(
+    {"prefetch": [
+      {"source": "document", "where": {"href_matches": "https://foo.com/*"}}
+    ]}
+  )";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_THAT(
+      candidates,
+      ::testing::UnorderedElementsAre(
+          ::testing::AllOf(
+              HasURL(link_with_referrer->HrefURL()),
+              HasReferrerPolicy(network::mojom::ReferrerPolicy::kSameOrigin)),
+          ::testing::AllOf(
+              HasURL(link_with_rel_noreferrer->HrefURL()),
+              HasReferrerPolicy(network::mojom::ReferrerPolicy::kNever)),
+          ::testing::AllOf(
+              HasURL(link_with_no_referrer->HrefURL()),
+              HasReferrerPolicy(network::mojom::ReferrerPolicy::kStrictOrigin)),
+          ::testing::AllOf(
+              HasURL(link_with_invalid_referrer->HrefURL()),
+              HasReferrerPolicy(
+                  network::mojom::ReferrerPolicy::kStrictOrigin))));
+
+  // Console message should have been logged for
+  // |link_with_disallowed_referrer|.
+  const auto& console_message_storage =
+      page_holder.GetPage().GetConsoleMessageStorage();
+  EXPECT_EQ(console_message_storage.size(), 1u);
+  EXPECT_EQ(console_message_storage.at(0)->Nodes()[0],
+            DOMNodeIds::IdForNode(link_with_disallowed_referrer));
+}
+
+// Tests that changing the "referrerpolicy" attribute results in the
+// corresponding speculation candidate updating.
+TEST_F(DocumentRulesTest, ReferrerPolicyAttributeChangeCausesLinkInvalidation) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  auto* link_with_referrer = AddAnchor(*document.body(), "https://foo.com/abc");
+  link_with_referrer->setAttribute(html_names::kReferrerpolicyAttr,
+                                   "same-origin");
+  String speculation_script = R"(
+    {"prefetch": [
+      {"source": "document", "where": {"href_matches": "https://foo.com/*"}}
+    ]}
+  )";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_THAT(candidates, ElementsAre(HasReferrerPolicy(
+                              network::mojom::ReferrerPolicy::kSameOrigin)));
+
+  PropagateRulesToStubSpeculationHostWithMicrotasksScope(
+      page_holder, speculation_host, [&]() {
+        link_with_referrer->setAttribute(html_names::kReferrerpolicyAttr,
+                                         "strict-origin");
+      });
+  EXPECT_THAT(candidates, ElementsAre(HasReferrerPolicy(
+                              network::mojom::ReferrerPolicy::kStrictOrigin)));
+}
+
+// Tests that changing the "rel" attribute results in the corresponding
+// speculation candidate updating. Also tests that "rel=noreferrer" overrides
+// the referrerpolicy attribute.
+TEST_F(DocumentRulesTest, RelAttributeChangeCausesLinkInvalidation) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  auto* link = AddAnchor(*document.body(), "https://foo.com/abc");
+  link->setAttribute(html_names::kReferrerpolicyAttr, "same-origin");
+
+  String speculation_script = R"(
+    {"prefetch": [
+      {"source": "document", "where": {"href_matches": "https://foo.com/*"}}
+    ]}
+  )";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_THAT(candidates, ElementsAre(HasReferrerPolicy(
+                              network::mojom::ReferrerPolicy::kSameOrigin)));
+
+  PropagateRulesToStubSpeculationHostWithMicrotasksScope(
+      page_holder, speculation_host,
+      [&]() { link->setAttribute(html_names::kRelAttr, "noreferrer"); });
+  EXPECT_THAT(
+      candidates,
+      ElementsAre(HasReferrerPolicy(network::mojom::ReferrerPolicy::kNever)));
 }
 
 }  // namespace

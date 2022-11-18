@@ -51,6 +51,8 @@ class CORE_EXPORT DocumentSpeculationRules
   void HrefAttributeChanged(HTMLAnchorElement* link,
                             const AtomicString& old_value,
                             const AtomicString& new_value);
+  void ReferrerPolicyAttributeChanged(HTMLAnchorElement* link);
+  void RelAttributeChanged(HTMLAnchorElement* link);
 
   void Trace(Visitor*) const override;
 

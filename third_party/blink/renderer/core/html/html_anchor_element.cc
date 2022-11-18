@@ -278,6 +278,19 @@ void HTMLAnchorElement::ParseAttribute(
   } else if (params.name == html_names::kRelAttr) {
     SetRel(params.new_value);
     rel_list_->DidUpdateAttributeValue(params.old_value, params.new_value);
+    if (isConnected() && IsLink()) {
+      if (auto* document_rules =
+              DocumentSpeculationRules::FromIfExists(GetDocument())) {
+        document_rules->RelAttributeChanged(this);
+      }
+    }
+  } else if (params.name == html_names::kReferrerpolicyAttr) {
+    if (isConnected() && IsLink()) {
+      if (auto* document_rules =
+              DocumentSpeculationRules::FromIfExists(GetDocument())) {
+        document_rules->ReferrerPolicyAttributeChanged(this);
+      }
+    }
   } else {
     HTMLElement::ParseAttribute(params);
   }

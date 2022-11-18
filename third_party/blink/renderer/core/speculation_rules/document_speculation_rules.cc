@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/speculation_rule_loader.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_rule_predicate.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
@@ -72,6 +73,55 @@ String MakeReferrerWarning(mojom::blink::SpeculationAction action,
          url.ElidedString() + " due to unacceptable referrer policy (" +
          SecurityPolicy::ReferrerPolicyAsString(referrer.referrer_policy) +
          ").";
+}
+
+// Computes a referrer based on a Speculation Rule, and its URL or the link it
+// is matched against. Return absl::nullopt if the computed referrer policy is
+// not acceptable (see AcceptableReferrerPolicy above).
+absl::optional<Referrer> GetReferrer(SpeculationRule* rule,
+                                     ExecutionContext* execution_context,
+                                     mojom::blink::SpeculationAction action,
+                                     HTMLAnchorElement* link,
+                                     absl::optional<KURL> opt_url) {
+  DCHECK(link || opt_url);
+  bool using_link_referrer_policy = false;
+  network::mojom::ReferrerPolicy referrer_policy;
+  if (rule->referrer_policy()) {
+    referrer_policy = rule->referrer_policy().value();
+  } else {
+    referrer_policy = execution_context->GetReferrerPolicy();
+    if (link && link->HasRel(kRelationNoReferrer)) {
+      using_link_referrer_policy = true;
+      referrer_policy = network::mojom::ReferrerPolicy::kNever;
+    } else if (link &&
+               link->FastHasAttribute(html_names::kReferrerpolicyAttr)) {
+      // Override |referrer_policy| with value derived from link's
+      // referrerpolicy attribute (if valid).
+      using_link_referrer_policy = SecurityPolicy::ReferrerPolicyFromString(
+          link->FastGetAttribute(html_names::kReferrerpolicyAttr),
+          kSupportReferrerPolicyLegacyKeywords, &referrer_policy);
+    }
+  }
+
+  String outgoing_referrer = execution_context->OutgoingReferrer();
+  KURL url = link ? link->HrefURL() : opt_url.value();
+  Referrer referrer =
+      SecurityPolicy::GenerateReferrer(referrer_policy, url, outgoing_referrer);
+
+  if (!AcceptableReferrerPolicy(action, referrer)) {
+    auto* console_message = MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kOther,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        MakeReferrerWarning(action, url, referrer));
+    if (using_link_referrer_policy) {
+      console_message->SetNodes(link->GetDocument().GetFrame(),
+                                {DOMNodeIds::IdForNode(link)});
+    }
+    execution_context->AddConsoleMessage(console_message);
+    return absl::nullopt;
+  }
+
+  return referrer;
 }
 
 }  // namespace
@@ -167,6 +217,27 @@ void DocumentSpeculationRules::HrefAttributeChanged(
   QueueUpdateSpeculationCandidates();
 }
 
+void DocumentSpeculationRules::ReferrerPolicyAttributeChanged(
+    HTMLAnchorElement* link) {
+  if (!initialized_)
+    return;
+
+  DCHECK(link->isConnected());
+  InvalidateLink(link);
+
+  QueueUpdateSpeculationCandidates();
+}
+
+void DocumentSpeculationRules::RelAttributeChanged(HTMLAnchorElement* link) {
+  if (!initialized_)
+    return;
+
+  DCHECK(link->isConnected());
+  InvalidateLink(link);
+
+  QueueUpdateSpeculationCandidates();
+}
+
 void DocumentSpeculationRules::Trace(Visitor* visitor) const {
   Supplement::Trace(visitor);
   visitor->Trace(rule_sets_);
@@ -210,32 +281,19 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
   if (!host || !execution_context)
     return;
 
-  network::mojom::ReferrerPolicy document_referrer_policy =
-      execution_context->GetReferrerPolicy();
-  String outgoing_referrer = execution_context->OutgoingReferrer();
-
   Vector<mojom::blink::SpeculationCandidatePtr> candidates;
-  auto push_candidates = [&candidates, &document_referrer_policy,
-                          &outgoing_referrer, &execution_context](
+  auto push_candidates = [&candidates, &execution_context](
                              mojom::blink::SpeculationAction action,
                              const HeapVector<Member<SpeculationRule>>& rules) {
     for (SpeculationRule* rule : rules) {
-      network::mojom::ReferrerPolicy referrer_policy =
-          rule->referrer_policy().value_or(document_referrer_policy);
       for (const KURL& url : rule->urls()) {
-        Referrer referrer = SecurityPolicy::GenerateReferrer(
-            referrer_policy, url, outgoing_referrer);
-
-        if (!AcceptableReferrerPolicy(action, referrer)) {
-          execution_context->AddConsoleMessage(
-              mojom::blink::ConsoleMessageSource::kOther,
-              mojom::blink::ConsoleMessageLevel::kWarning,
-              MakeReferrerWarning(action, url, referrer));
+        absl::optional<Referrer> referrer =
+            GetReferrer(rule, execution_context, action, /*link=*/nullptr, url);
+        if (!referrer)
           continue;
-        }
 
         auto referrer_ptr = mojom::blink::Referrer::New(
-            KURL(referrer.referrer), referrer.referrer_policy);
+            KURL(referrer->referrer), referrer->referrer_policy);
         candidates.push_back(mojom::blink::SpeculationCandidate::New(
             url, action, std::move(referrer_ptr),
             rule->requires_anonymous_client_ip_when_cross_origin(),
@@ -296,7 +354,7 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
     DCHECK(execution_context);
 
     const auto push_link_candidates =
-        [&link, &link_candidates](
+        [&link, &link_candidates, &execution_context](
             mojom::blink::SpeculationAction action,
             const HeapVector<Member<SpeculationRule>>& speculation_rules) {
           for (SpeculationRule* rule : speculation_rules) {
@@ -305,17 +363,20 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
             if (!rule->predicate()->Matches(*link))
               continue;
 
-            // TODO(crbug.com/1371522): This should be computed based on the
-            // speculation rule's referrer policy or the link's referrer
-            // policy, and the execution context's referrer url.
-            mojom::blink::ReferrerPtr referrer = mojom::blink::Referrer::New(
-                KURL(), network::mojom::ReferrerPolicy::kNever);
+            absl::optional<Referrer> referrer =
+                GetReferrer(rule, execution_context, action, link,
+                            /*opt_url=*/absl::nullopt);
+            if (!referrer)
+              continue;
+            mojom::blink::ReferrerPtr referrer_ptr =
+                mojom::blink::Referrer::New(KURL(referrer->referrer),
+                                            referrer->referrer_policy);
 
             // TODO(crbug.com/1371522): We should be generating a target hint
             // based on the link's target.
             mojom::blink::SpeculationCandidatePtr candidate =
                 mojom::blink::SpeculationCandidate::New(
-                    link->HrefURL(), action, std::move(referrer),
+                    link->HrefURL(), action, std::move(referrer_ptr),
                     rule->requires_anonymous_client_ip_when_cross_origin(),
                     rule->target_browsing_context_name_hint().value_or(
                         mojom::blink::SpeculationTargetHint::kNoHint));
