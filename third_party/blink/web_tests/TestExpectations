@@ -6015,6 +6015,7 @@ crbug.com/1296449 [ Linux Release ] external/wpt/workers/SharedWorker-MessageEve
 
 # Sheriff 2022-04-20
 crbug.com/1253971 [ Mac ] external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-parts-structure.tentative.html [ Timeout ]
+crbug.com/1385472 [ Win ] external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-parts-structure.tentative.html [ Timeout ]
 
 # Sheriff 2022-04-21
 crbug.com/1318318 external/wpt/fetch/private-network-access/service-worker-background-fetch.https.window.html [ Failure Pass Timeout ]
@@ -6422,6 +6423,8 @@ crbug.com/1376986 [ Mac11 ] virtual/compute-pressure/external/wpt/compute-pressu
 crbug.com/1378078 [ Debug Linux ] media/controls/slow-doubletap.html [ Failure ]
 crbug.com/1384671 [ Win ] virtual/prerender/external/wpt/speculation-rules/prerender/opt-out.html [ Failure Timeout ]
 crbug.com/1384671 [ Linux ] external/wpt/speculation-rules/prerender/opt-out.html [ Failure Timeout ]
+crbug.com/1385491 [ Win ] external/wpt/selection/user-select-on-input-and-contenteditable.html [ Crash Failure Pass Timeout ]
+crbug.com/1385538 [ Win ] http/tests/serviceworker/postmessage-cross-process.html [ Failure ]
 
 # Sheriff 2022-10-07
 crbug.com/1372556 [ Linux ] external/wpt/css/css-text/text-transform/text-transform-capitalize-* [ Failure Pass ]
@@ -6899,6 +6902,7 @@ crbug.com/1301942 external/wpt/priority-hints/service-worker-fetch-request-prior
 
 # Sheriff 2022-11-31
 crbug.com/1383527 [ Mac ] http/tests/devtools/indexeddb/resources-panel.js [ Failure ]
+crbug.com/1385483 [ Linux ] http/tests/devtools/indexeddb/resources-panel.js [ Failure ]
 
 # Sheriff 2022-11-15
 crbug.com/1383990 [ Mac ] external/wpt/html/dom/idlharness.worker.html [ Failure Skip ]
