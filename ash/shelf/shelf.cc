@@ -408,8 +408,6 @@ void Shelf::CreateHotseatWidget(aura::Window* container) {
   hotseat_transition_metrics_reporter_ =
       std::make_unique<HotseatWidgetAnimationMetricsReporter>(
           HotseatWidgetAnimationMetricsReporter::HotseatElementType::kWidget);
-  Shell::Get()->login_unlock_throughput_recorder()->SetShelfViewIfNotSet(
-      hotseat_widget_->scrollable_shelf_view()->shelf_view());
 }
 
 void Shelf::CreateStatusAreaWidget(aura::Window* shelf_container) {

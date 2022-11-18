@@ -26,7 +26,6 @@ class Compositor;
 namespace ash {
 
 class ShelfModel;
-class ShelfView;
 
 class ASH_EXPORT LoginUnlockThroughputRecorder
     : public SessionObserver,
@@ -72,9 +71,6 @@ class ASH_EXPORT LoginUnlockThroughputRecorder
   // This is called when the list of shelf icons is updated.
   void UpdateShelfIconList(const ShelfModel* model);
 
-  // Remembers ShelfView pointer to watch for shelf animation finish.
-  void SetShelfViewIfNotSet(ShelfView* shelf_view);
-
   void ResetScopedThroughputReporterBlockerForTesting();
 
   const ui::TotalAnimationThroughputReporter*
@@ -110,8 +106,6 @@ class ASH_EXPORT LoginUnlockThroughputRecorder
   base::flat_set<int> restore_windows_presented_;
 
   base::TimeTicks primary_user_logged_in_;
-
-  base::raw_ptr<ShelfView> shelf_view_ = nullptr;
 
   bool shelf_initialized_ = false;
 

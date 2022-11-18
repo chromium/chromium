@@ -6,7 +6,10 @@
 
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/shelf/hotseat_widget.h"
+#include "ash/shelf/scrollable_shelf_view.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -24,7 +27,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/total_animation_throughput_reporter.h"
 #include "ui/views/animation/bounds_animator.h"
-#include "ui/views/animation/bounds_animator_observer.h"
 
 namespace ash {
 namespace {
@@ -317,17 +319,14 @@ void LoginUnlockThroughputRecorder::OnLoginAnimationFinish(
   ReportLogin(start, data);
 }
 
-void LoginUnlockThroughputRecorder::SetShelfViewIfNotSet(
-    ShelfView* shelf_view) {
-  if (!shelf_view_)
-    shelf_view_ = shelf_view;
-}
-
 void LoginUnlockThroughputRecorder::ScheduleWaitForShelfAnimationEnd() {
-  DCHECK(shelf_view_);
-  if (!shelf_view_)
-    return;
-
+  ShelfView* shelf_view =
+      RootWindowController::ForWindow(
+          Shell::Get()->window_tree_host_manager()->GetPrimaryRootWindow())
+          ->shelf()
+          ->hotseat_widget()
+          ->scrollable_shelf_view()
+          ->shelf_view();
   base::OnceCallback on_animation_end = base::BindOnce(
       [](base::TimeTicks primary_user_logged_in) {
         const base::TimeDelta duration_ms =
@@ -338,7 +337,7 @@ void LoginUnlockThroughputRecorder::ScheduleWaitForShelfAnimationEnd() {
       },
       primary_user_logged_in_);
 
-  (new AnimationObserver(shelf_view_, on_animation_end))->StartObserving();
+  (new AnimationObserver(shelf_view, on_animation_end))->StartObserving();
 }
 
 void LoginUnlockThroughputRecorder::OnAllExpectedShelfIconsLoaded() {
