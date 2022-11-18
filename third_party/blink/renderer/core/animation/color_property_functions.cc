@@ -14,9 +14,10 @@ OptionalStyleColor ColorPropertyFunctions::GetInitialColor(
   return GetUnvisitedColor(property, initial_style);
 }
 
+template <typename ComputedStyleOrBuilder>
 OptionalStyleColor ColorPropertyFunctions::GetUnvisitedColor(
     const CSSProperty& property,
-    const ComputedStyle& style) {
+    const ComputedStyleOrBuilder& style) {
   switch (property.PropertyID()) {
     case CSSPropertyID::kAccentColor:
       if (style.AccentColor().IsAutoColor())
@@ -64,9 +65,16 @@ OptionalStyleColor ColorPropertyFunctions::GetUnvisitedColor(
   }
 }
 
+template OptionalStyleColor
+ColorPropertyFunctions::GetUnvisitedColor<ComputedStyle>(const CSSProperty&,
+                                                         const ComputedStyle&);
+template OptionalStyleColor ColorPropertyFunctions::GetUnvisitedColor<
+    ComputedStyleBuilder>(const CSSProperty&, const ComputedStyleBuilder&);
+
+template <typename ComputedStyleOrBuilder>
 OptionalStyleColor ColorPropertyFunctions::GetVisitedColor(
     const CSSProperty& property,
-    const ComputedStyle& style) {
+    const ComputedStyleOrBuilder& style) {
   switch (property.PropertyID()) {
     case CSSPropertyID::kAccentColor:
       return style.AccentColor();
@@ -113,6 +121,12 @@ OptionalStyleColor ColorPropertyFunctions::GetVisitedColor(
       return nullptr;
   }
 }
+
+template OptionalStyleColor
+ColorPropertyFunctions::GetVisitedColor<ComputedStyle>(const CSSProperty&,
+                                                       const ComputedStyle&);
+template OptionalStyleColor ColorPropertyFunctions::GetVisitedColor<
+    ComputedStyleBuilder>(const CSSProperty&, const ComputedStyleBuilder&);
 
 void ColorPropertyFunctions::SetUnvisitedColor(const CSSProperty& property,
                                                ComputedStyleBuilder& builder,

@@ -172,21 +172,22 @@ Color CSSColorInterpolationType::ResolveInterpolableColor(
 
   if (double currentcolor_fraction =
           To<InterpolableNumber>(list.Get(kCurrentcolor))->Value()) {
-    auto current_color_getter = is_visited
-                                    ? ColorPropertyFunctions::GetVisitedColor
-                                    : ColorPropertyFunctions::GetUnvisitedColor;
+    auto current_color_getter =
+        is_visited
+            ? ColorPropertyFunctions::GetVisitedColor<ComputedStyleBuilder>
+            : ColorPropertyFunctions::GetUnvisitedColor<ComputedStyleBuilder>;
     StyleColor current_style_color = StyleColor::CurrentColor();
     if (is_text_decoration) {
       current_style_color =
           current_color_getter(
               CSSProperty::Get(CSSPropertyID::kWebkitTextFillColor),
-              *state.Style())
+              state.StyleBuilder())
               .Access();
     }
     if (current_style_color.IsCurrentColor()) {
       current_style_color =
           current_color_getter(CSSProperty::Get(CSSPropertyID::kColor),
-                               *state.Style())
+                               state.StyleBuilder())
               .Access();
     }
     AddPremultipliedColor(red, green, blue, alpha, currentcolor_fraction,

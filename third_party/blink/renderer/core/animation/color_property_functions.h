@@ -40,10 +40,12 @@ class ColorPropertyFunctions {
  public:
   static OptionalStyleColor GetInitialColor(const CSSProperty&,
                                             const ComputedStyle& initial_style);
+  template <typename ComputedStyleOrBuilder>
   static OptionalStyleColor GetUnvisitedColor(const CSSProperty&,
-                                              const ComputedStyle&);
+                                              const ComputedStyleOrBuilder&);
+  template <typename ComputedStyleOrBuilder>
   static OptionalStyleColor GetVisitedColor(const CSSProperty&,
-                                            const ComputedStyle&);
+                                            const ComputedStyleOrBuilder&);
   static void SetUnvisitedColor(const CSSProperty&,
                                 ComputedStyleBuilder&,
                                 const Color&);
