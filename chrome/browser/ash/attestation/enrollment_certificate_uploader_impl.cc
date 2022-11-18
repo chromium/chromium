@@ -105,7 +105,7 @@ void EnrollmentCertificateUploaderImpl::GetCertificate(bool force_new_key) {
       /*account_id=*/EmptyAccountId(),   // Not used.
       /*request_origin=*/std::string(),  // Not used.
       /*force_new_key=*/force_new_key,
-      /*key_crypto_type=*/::attestation::KEY_TYPE_ECC,
+      /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
       /*key_name=*/std::string(),  // Leave key name empty to generate a default
                                    // name.
       /*profile_specific_data=*/absl::nullopt,
