@@ -13,31 +13,29 @@ package omnibox;
 // Entity Suggest rendering data.
 message EntityInfo {
   // The entity id.
-  optional string mid = 1;
-
-  // The query to submit when clicking the suggestion.
-  optional string query_to_submit = 2;
-
-  // Will replace the original suggestion as the text on the suggestion's 1st
-  // line (title).
-  optional string first_line = 3;
+  optional string entity_id = 1;
 
   // The suggestion second line (subtitle).
   // For some clients (e.g. desktop) this is used as the part which is to the
   // right of the emdash.
-  optional string second_line = 4;
+  optional string annotation = 2;
 
-  // Encoding of how search behavior should be modified when clicking the entity
-  // suggestion (gs_ssp).
-  // Controls for example - force triggering of KP@1 and twiddling the search
-  // results to boost results for the entity.
-  optional string search_parameters = 5;
+  // The query to submit when clicking the suggestion.
+  optional string query_to_submit = 3;
 
   // Image Url.
   // Will replace the suggestion icon
   optional string image_url = 6;
 
+  // Will replace the original suggestion as the text on the suggestion's 1st
+  // line (title).
+  optional string name = 7;
+
   // Dominant color.
   // Affects how image is rendered.
-  optional string dominant_color = 7;
+  optional string dominant_color = 9;
+
+  // Encoding of how search behavior should be modified when clicking the entity
+  // suggestion (gs_ssp).
+  optional string suggest_search_parameters = 10;
 }
