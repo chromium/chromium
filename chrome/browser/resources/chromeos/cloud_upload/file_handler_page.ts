@@ -38,8 +38,16 @@ export class FileHandlerPageElement extends HTMLElement {
   // Sets the dynamic content of the page like the file name.
   async initDynamicContent() {
     try {
-      const dialogArgs = await this.proxy.handler.getDialogArgs();
+      const [dialogArgs, {installed: isOfficePwaInstalled}] =
+          await Promise.all([
+            this.proxy.handler.getDialogArgs(),
+            this.proxy.handler.isOfficePWAInstalled(),
+          ]);
       assert(dialogArgs.args);
+
+      if (isOfficePwaInstalled) {
+        this.shadowRoot!.querySelector('#available-to-install')!.remove();
+      }
 
       const fileNameElement =
           this.shadowRoot!.querySelector<HTMLSpanElement>('#file-name');
