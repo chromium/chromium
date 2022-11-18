@@ -624,11 +624,8 @@ class RenderWidgetHostTest : public testing::Test {
     site_instance_group_.reset();
     process_.reset();
     browser_context_.reset();
-
-#if defined(USE_AURA)
-    ImageTransportFactory::Terminate();
-#endif
 #if defined(USE_AURA) || BUILDFLAG(IS_MAC)
+    ImageTransportFactory::Terminate();
     display::Screen::SetScreenInstance(nullptr);
     screen_.reset();
 #endif
@@ -640,8 +637,7 @@ class RenderWidgetHostTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  virtual void ConfigureView(TestView* view) {
-  }
+  virtual void ConfigureView(TestView* view) {}
 
   void ReinitalizeHost() {
     host_->BindWidgetInterfaces(
