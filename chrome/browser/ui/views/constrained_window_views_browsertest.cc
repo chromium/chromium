@@ -145,7 +145,8 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, TabCloseTest) {
 // Tests that the tab-modal window is hidden when an other tab is selected and
 // shown when its tab is selected again.
 // Flaky on ASAN builds (https://crbug.com/997634)
-#if defined(ADDRESS_SANITIZER)
+// Flaky on Mac (https://crbug.com/1385896)
+#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_MAC)
 #define MAYBE_TabSwitchTest DISABLED_TabSwitchTest
 #else
 #define MAYBE_TabSwitchTest TabSwitchTest
