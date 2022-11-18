@@ -1306,6 +1306,7 @@ void MaybeAddThrottle(
     throttles->push_back(std::move(maybe_throttle));
 }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 void MaybeAddCondition(
     std::unique_ptr<content::CommitDeferringCondition> maybe_condition,
     std::vector<std::unique_ptr<content::CommitDeferringCondition>>*
@@ -1313,6 +1314,7 @@ void MaybeAddCondition(
   if (maybe_condition)
     conditions->push_back(std::move(maybe_condition));
 }
+#endif
 
 void MaybeAddThrottles(
     std::vector<std::unique_ptr<content::NavigationThrottle>> additional,

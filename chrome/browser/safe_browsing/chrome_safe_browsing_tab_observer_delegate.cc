@@ -46,7 +46,11 @@ bool ChromeSafeBrowsingTabObserverDelegate::DoesSafeBrowsingServiceExist() {
 std::unique_ptr<ClientSideDetectionHost>
 ChromeSafeBrowsingTabObserverDelegate::CreateClientSideDetectionHost(
     content::WebContents* web_contents) {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   return ChromeClientSideDetectionHostDelegate::CreateHost(web_contents);
+#else
+  return nullptr;
+#endif
 }
 
 }  // namespace safe_browsing

@@ -36,7 +36,6 @@ namespace {
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 // The maximum time to wait for DOM features to be collected, in milliseconds.
 const int kDomFeatureTimeoutMs = 3000;
-#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 void ExtractVisualFeaturesAndReplyOnUIThread(
     const SkBitmap& bitmap,
@@ -48,6 +47,7 @@ void ExtractVisualFeaturesAndReplyOnUIThread(
       FROM_HERE, base::BindOnce(std::move(ui_thread_callback),
                                 std::move(visual_features)));
 }
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 }  // namespace
 
@@ -256,7 +256,6 @@ void PasswordProtectionRequestContent::MaybeCollectVisualFeatures() {
     SendRequest();
   }
 }
-#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 void PasswordProtectionRequestContent::CollectVisualFeatures() {
   content::RenderWidgetHostView* view =
@@ -300,6 +299,7 @@ void PasswordProtectionRequestContent::OnVisualFeatureCollectionDone(
 
   SendRequest();
 }
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 #if BUILDFLAG(IS_ANDROID)
 void PasswordProtectionRequestContent::SetReferringAppInfo() {

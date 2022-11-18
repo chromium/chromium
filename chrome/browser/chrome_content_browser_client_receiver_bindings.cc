@@ -131,6 +131,7 @@
 
 namespace {
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 // Helper method for ExposeInterfacesToRenderer() that checks the latest
 // SafeBrowsing pref value on the UI thread before hopping over to the IO
 // thread.
@@ -172,6 +173,7 @@ void MaybeCreateSafeBrowsingForRenderer(
                               allowlist_domains),
           std::move(receiver)));
 }
+#endif
 
 // BadgeManager is not used for Android.
 #if !BUILDFLAG(IS_ANDROID)
