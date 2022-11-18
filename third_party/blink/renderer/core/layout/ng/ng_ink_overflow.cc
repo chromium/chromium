@@ -304,6 +304,9 @@ NGInkOverflow::Type NGInkOverflow::SetTextInkOverflow(
     const ComputedStyle& style,
     const PhysicalSize& size,
     PhysicalRect* ink_overflow_out) {
+  // https://linear.app/replay/issue/RUN-826
+  recordreplay::Assert("NGInkOverflow::SetTextInkOverflow");
+
   CheckType(type);
   DCHECK_EQ(type, kNotSet);
   base::Optional<PhysicalRect> ink_overflow =
