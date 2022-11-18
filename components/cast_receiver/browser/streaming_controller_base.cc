@@ -2,16 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/cast_core/runtime/browser/streaming_controller_base.h"
+#include "components/cast_receiver/browser/streaming_controller_base.h"
 
 #include "base/bind.h"
+#include "components/cast/message_port/message_port.h"
 #include "components/cast/message_port/platform_message_port.h"
+#include "components/cast_receiver/browser/streaming_controller_mirroring.h"
+#include "components/cast_receiver/browser/streaming_controller_remoting.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
+#include "components/cast_streaming/public/features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
-namespace chromecast {
+namespace cast_receiver {
+
+// static
+std::unique_ptr<StreamingController> StreamingControllerBase::Create(
+    std::unique_ptr<cast_api_bindings::MessagePort> message_port,
+    content::WebContents* web_contents) {
+  if (cast_streaming::IsCastRemotingEnabled()) {
+    return std::make_unique<StreamingControllerRemoting>(
+        std::move(message_port), web_contents);
+  }
+
+  return std::make_unique<StreamingControllerMirroring>(std::move(message_port),
+                                                        web_contents);
+}
 
 StreamingControllerBase::StreamingControllerBase(
     std::unique_ptr<cast_api_bindings::MessagePort> message_port,
@@ -85,4 +102,4 @@ void StreamingControllerBase::TryStartPlayback() {
   }
 }
 
-}  // namespace chromecast
+}  // namespace cast_receiver

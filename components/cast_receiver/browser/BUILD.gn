@@ -33,7 +33,7 @@ source_set("browser") {
 }
 
 # TODO(crbug.com/1359579): Limit visibility to just this component.
-if (enable_cast_receiver || is_fuchsia) {
+if (enable_cast_receiver) {
   source_set("runtime") {
     public_deps = [ "//third_party/blink/public/common" ]
     deps = [
@@ -61,6 +61,42 @@ if (enable_cast_receiver || is_fuchsia) {
       "public/embedder_application.h",
       "public/message_port_service.h",
       "public/runtime_application_dispatcher.h",
+    ]
+  }
+
+  source_set("streaming_receiver_session_client") {
+    sources = [
+      "streaming_controller.h",
+      "streaming_controller_base.cc",
+      "streaming_controller_base.h",
+      "streaming_controller_mirroring.cc",
+      "streaming_controller_mirroring.h",
+      "streaming_controller_remoting.cc",
+      "streaming_controller_remoting.h",
+      "streaming_receiver_session_client.cc",
+      "streaming_receiver_session_client.h",
+    ]
+
+    public_deps = [
+      "//base",
+      "//components/cast_streaming/browser",
+    ]
+
+    deps = [
+      "//base",
+      "//components/cast/message_port",
+      "//components/cast/message_port:message_port_core",
+      "//components/cast_receiver/browser",
+      "//components/cast_receiver/common",
+      "//components/cast_streaming/public",
+      "//components/cast_streaming/public/mojom",
+      "//components/url_rewrite/common",
+      "//content/public/browser",
+      "//media/mojo/mojom",
+      "//mojo/public/cpp/bindings",
+      "//third_party/abseil-cpp:absl",
+      "//third_party/blink/public/common:headers",
+      "//third_party/openscreen/src/cast/streaming:receiver",
     ]
   }
 }
@@ -103,6 +139,7 @@ source_set("unit_tests") {
     ":browser",
     ":page_state_observer",
     ":permissions_manager",
+    "//base/test:test_support",
     "//media",
     "//testing/gmock",
     "//testing/gtest",
@@ -113,7 +150,11 @@ source_set("unit_tests") {
     "permissions_manager_impl_unittest.cc",
   ]
 
-  if (enable_cast_receiver || is_fuchsia) {
-    deps += [ ":runtime" ]
+  if (enable_cast_receiver) {
+    deps += [
+      ":runtime",
+      ":streaming_receiver_session_client",
+    ]
+    sources += [ "streaming_receiver_session_client_unittest.cc" ]
   }
 }

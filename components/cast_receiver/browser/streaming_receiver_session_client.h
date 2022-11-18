@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_STREAMING_RECEIVER_SESSION_CLIENT_H_
-#define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_STREAMING_RECEIVER_SESSION_CLIENT_H_
+#ifndef COMPONENTS_CAST_RECEIVER_BROWSER_STREAMING_RECEIVER_SESSION_CLIENT_H_
+#define COMPONENTS_CAST_RECEIVER_BROWSER_STREAMING_RECEIVER_SESSION_CLIENT_H_
 
 #include <memory>
 
@@ -33,7 +33,7 @@ class VideoDecoderConfig;
 struct VideoTransformation;
 }  // namespace media
 
-namespace chromecast {
+namespace cast_receiver {
 
 class StreamingController;
 
@@ -206,6 +206,6 @@ class StreamingReceiverSessionClient
   base::WeakPtrFactory<StreamingReceiverSessionClient> weak_factory_;
 };
 
-}  // namespace chromecast
+}  // namespace cast_receiver
 
-#endif  // CHROMECAST_CAST_CORE_RUNTIME_BROWSER_STREAMING_RECEIVER_SESSION_CLIENT_H_
+#endif  // COMPONENTS_CAST_RECEIVER_BROWSER_STREAMING_RECEIVER_SESSION_CLIENT_H_

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/cast_core/runtime/browser/streaming_controller_mirroring.h"
+#include "components/cast_receiver/browser/streaming_controller_mirroring.h"
 
 #include "components/cast/message_port/message_port.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
 
-namespace chromecast {
+namespace cast_receiver {
 
 // Callback used for RendererController::SetPlaybackController() mojo call.
 void OnCastStreamingRendererAcquired() {
@@ -40,9 +40,9 @@ void StreamingControllerMirroring::StartPlayback(
 void StreamingControllerMirroring::ProcessConfig(
     cast_streaming::ReceiverConfig& config) {
   // Ensure remoting is disabled for this streaming session.
-  DLOG_IF(INFO, config.remoting)
-      << "Remoting configuration removed from received AVConstraints";
+  DLOG_IF(WARNING, config.remoting)
+      << "Remoting configuration removed from received ReceiverConfig";
   config.remoting = absl::nullopt;
 }
 
-}  // namespace chromecast
+}  // namespace cast_receiver

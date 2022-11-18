@@ -59,56 +59,6 @@ cast_source_set("grpc_webui") {
   ]
 }
 
-cast_source_set("streaming_receiver_session_client") {
-  sources = [
-    "streaming_controller.h",
-    "streaming_controller_base.cc",
-    "streaming_controller_base.h",
-    "streaming_controller_mirroring.cc",
-    "streaming_controller_mirroring.h",
-    "streaming_receiver_session_client.cc",
-    "streaming_receiver_session_client.h",
-  ]
-
-  if (!enable_remoting_for_cwr) {
-    sources += [ "streaming_controller_factory_mirroring.cc" ]
-  }
-
-  public_deps = [
-    "//base",
-    "//chromecast/browser:public",
-    "//components/cast/message_port",
-    "//components/cast_streaming/browser",
-    "//media/mojo/mojom",
-    "//third_party/abseil-cpp:absl",
-  ]
-
-  deps = [
-    "//base",
-    "//chromecast/shared:platform_info_serializer",
-    "//components/cast/message_port:message_port_core",
-    "//components/cast_receiver/browser",
-    "//components/cast_receiver/common",
-    "//components/cast_streaming/public",
-    "//components/cast_streaming/public/mojom",
-    "//components/url_rewrite/common",
-    "//content/public/browser",
-    "//mojo/public/cpp/bindings",
-    "//third_party/blink/public/common:headers",
-    "//third_party/openscreen/src/cast/streaming:receiver",
-  ]
-
-  # TODO: Move this block up once the parent CL merges in. Without keeping it
-  # separate, rebasing wouldn't work
-  sources += [
-    "streaming_controller_remoting.cc",
-    "streaming_controller_remoting.h",
-  ]
-  if (enable_remoting_for_cwr) {
-    sources += [ "streaming_controller_factory_mirroring.cc" ]
-  }
-}
-
 cast_source_set("runtime_application_dispatcher") {
   sources = [
     "runtime_application_base.cc",
@@ -121,11 +71,11 @@ cast_source_set("runtime_application_dispatcher") {
   ]
 
   public_deps = [
-    ":streaming_receiver_session_client",
     "//base",
     "//chromecast/browser",
     "//chromecast/common:feature_constants",
     "//components/cast_receiver/browser",
+    "//components/cast_receiver/browser:streaming_receiver_session_client",
     "//components/cast_receiver/common",
     "//components/cast_streaming/public/mojom",
     "//components/url_rewrite/browser",
@@ -173,7 +123,6 @@ cast_source_set("runtime_service_impl") {
     ":grpc_webui",
     ":metrics_recorder",
     ":runtime_application_dispatcher",
-    ":streaming_receiver_session_client",
     "//base",
     "//chromecast/browser",
     "//chromecast/cast_core:cast_core_switches",
@@ -184,6 +133,7 @@ cast_source_set("runtime_service_impl") {
     "//components/cast/message_port",
     "//components/cast_receiver/browser",
     "//components/cast_receiver/browser:page_state_observer",
+    "//components/cast_receiver/browser:streaming_receiver_session_client",
     "//components/cast_receiver/common",
     "//components/cast_streaming/browser",
     "//components/cast_streaming/public",
@@ -254,19 +204,18 @@ cast_source_set("unit_tests") {
     "cast_runtime_metrics_test_helpers.h",
     "core_streaming_config_manager_unittest.cc",
     "grpc_resource_data_source_unittest.cc",
-    "streaming_receiver_session_client_unittest.cc",
   ]
 
   deps = [
     ":grpc_webui",
     ":metrics_recorder",
     ":runtime_service_impl",
-    ":streaming_receiver_session_client",
     "//base",
     "//base/test:test_support",
     "//chromecast/browser:test_support",
     "//chromecast/shared:platform_info_serializer",
     "//components/cast_receiver/browser",
+    "//components/cast_receiver/browser:streaming_receiver_session_client",
     "//components/cast_receiver/common",
     "//components/cast_streaming/browser",
     "//components/cast_streaming/public",

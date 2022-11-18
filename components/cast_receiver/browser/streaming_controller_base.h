@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_STREAMING_CONTROLLER_BASE_H_
-#define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_STREAMING_CONTROLLER_BASE_H_
+#ifndef COMPONENTS_CAST_RECEIVER_BROWSER_STREAMING_CONTROLLER_BASE_H_
+#define COMPONENTS_CAST_RECEIVER_BROWSER_STREAMING_CONTROLLER_BASE_H_
 
-#include "chromecast/cast_core/runtime/browser/streaming_controller.h"
+#include "components/cast_receiver/browser/streaming_controller.h"
 
 #include <memory>
 
@@ -25,7 +25,7 @@ namespace content {
 class NavigationHandle;
 }  // namespace content
 
-namespace chromecast {
+namespace cast_receiver {
 
 // This class provides an implementation of StreamingController using the types
 // provided in the cast_streaming component.
@@ -98,6 +98,6 @@ class StreamingControllerBase : public StreamingController,
   std::unique_ptr<cast_streaming::ReceiverSession> receiver_session_;
 };
 
-}  // namespace chromecast
+}  // namespace cast_receiver
 
-#endif  // CHROMECAST_CAST_CORE_RUNTIME_BROWSER_STREAMING_CONTROLLER_BASE_H_
+#endif  // COMPONENTS_CAST_RECEIVER_BROWSER_STREAMING_CONTROLLER_BASE_H_

@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/cast_core/runtime/browser/streaming_receiver_session_client.h"
+#include "components/cast_receiver/browser/streaming_receiver_session_client.h"
 
 #include "base/containers/contains.h"
 #include "base/test/task_environment.h"
-#include "chromecast/browser/test/mock_cast_web_view.h"
-#include "chromecast/cast_core/runtime/browser/streaming_controller.h"
-#include "chromecast/shared/platform_info_serializer.h"
+#include "components/cast_receiver/browser/streaming_controller.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
 #include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -23,7 +21,7 @@ class NetworkContext;
 }  // namespace mojom
 }  // namespace network
 
-namespace chromecast {
+namespace cast_receiver {
 namespace {
 
 class MockStreamingController : public StreamingController {
@@ -111,4 +109,4 @@ TEST_F(StreamingReceiverSessionClientTest, FailureWhenNoConfigAfterLaunch) {
       StreamingReceiverSessionClient::kMaxAVSettingsWaitTime);
 }
 
-}  // namespace chromecast
+}  // namespace cast_receiver

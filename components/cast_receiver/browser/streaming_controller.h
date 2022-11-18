@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_STREAMING_CONTROLLER_H_
-#define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_STREAMING_CONTROLLER_H_
+#ifndef COMPONENTS_CAST_RECEIVER_BROWSER_STREAMING_CONTROLLER_H_
+#define COMPONENTS_CAST_RECEIVER_BROWSER_STREAMING_CONTROLLER_H_
 
 #include "base/callback.h"
 #include "components/cast_streaming/browser/public/receiver_config.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
 
-namespace chromecast {
+namespace cast_receiver {
 
 // This class is responsible for configuring a Cast Streaming session and
 // beginning its playback.
@@ -30,6 +30,6 @@ class StreamingController {
   virtual void StartPlaybackAsync(PlaybackStartedCB cb) = 0;
 };
 
-}  // namespace chromecast
+}  // namespace cast_receiver
 
-#endif  // CHROMECAST_CAST_CORE_RUNTIME_BROWSER_STREAMING_CONTROLLER_H_
+#endif  // COMPONENTS_CAST_RECEIVER_BROWSER_STREAMING_CONTROLLER_H_

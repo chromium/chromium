@@ -80,13 +80,14 @@ void StreamingRuntimeApplication::Launch(StatusCallback callback) {
                                            std::move(client_port));
 
   // Initialize the streaming receiver.
-  receiver_session_client_ = std::make_unique<StreamingReceiverSessionClient>(
-      task_runner(), application_client_->GetNetworkContextGetter(),
-      std::move(server_port), embedder_application().GetWebContents(), this,
-      embedder_application().GetStreamingConfigManager(),
-      /* supports_audio= */ GetAppId() !=
-          cast_streaming::GetIosAppStreamingAudioVideoAppId(),
-      /* supports_video= */ true);
+  receiver_session_client_ =
+      std::make_unique<cast_receiver::StreamingReceiverSessionClient>(
+          task_runner(), application_client_->GetNetworkContextGetter(),
+          std::move(server_port), embedder_application().GetWebContents(), this,
+          embedder_application().GetStreamingConfigManager(),
+          /* supports_audio= */ GetAppId() !=
+              cast_streaming::GetIosAppStreamingAudioVideoAppId(),
+          /* supports_video= */ true);
   receiver_session_client_->LaunchStreamingReceiverAsync();
 
   // Application is initialized now - we can load the URL.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/cast_core/runtime/browser/streaming_receiver_session_client.h"
+#include "components/cast_receiver/browser/streaming_receiver_session_client.h"
 
 #include <utility>
 
@@ -11,13 +11,12 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chromecast/cast_core/runtime/browser/streaming_controller_base.h"
-#include "chromecast/shared/platform_info_serializer.h"
 #include "components/cast/message_port/platform_message_port.h"
+#include "components/cast_receiver/browser/streaming_controller_base.h"
 #include "components/cast_streaming/public/cast_streaming_url.h"
 #include "media/base/video_decoder_config.h"
 
-namespace chromecast {
+namespace cast_receiver {
 
 constexpr base::TimeDelta
     StreamingReceiverSessionClient::kMaxAVSettingsWaitTime;
@@ -62,7 +61,7 @@ StreamingReceiverSessionClient::StreamingReceiverSessionClient(
 
   cast_streaming::SetNetworkContextGetter(std::move(network_context_getter));
 
-  DLOG(INFO) << "Streaming Receiver Session start pending...";
+  DVLOG(1) << "Streaming Receiver Session start pending...";
   config_manager->AddConfigObserver(*this);
   if (config_manager->has_config()) {
     // TODO(crbug.com/1359568): This may not behave correctly if the config is
@@ -82,10 +81,10 @@ StreamingReceiverSessionClient::StreamingReceiverSessionClient(
 }
 
 StreamingReceiverSessionClient::~StreamingReceiverSessionClient() {
-  DLOG(INFO) << "StreamingReceiverSessionClient state when destroyed"
-             << "\n\tIs Healthy: " << is_healthy()
-             << "\n\tLaunch called: " << is_streaming_launch_pending()
-             << "\n\tAV Settings Received: " << has_received_av_settings();
+  DVLOG(1) << "StreamingReceiverSessionClient state when destroyed"
+           << "\n\tIs Healthy: " << is_healthy()
+           << "\n\tLaunch called: " << is_streaming_launch_pending()
+           << "\n\tAV Settings Received: " << has_received_av_settings();
 
   cast_streaming::SetNetworkContextGetter({});
 }
@@ -141,7 +140,7 @@ void StreamingReceiverSessionClient::OnStreamingConfigSet(
     constraints.video_limits.clear();
   }
   if (supports_audio_ && supports_video_) {
-    DLOG(INFO) << "Allowing both audio and video for this streaming session!";
+    DVLOG(1) << "Allowing both audio and video for this streaming session!";
   }
 
   streaming_state_ |= LaunchState::kAVSettingsReceived;
@@ -174,4 +173,4 @@ void StreamingReceiverSessionClient::TriggerError() {
   handler_->OnError();
 }
 
-}  // namespace chromecast
+}  // namespace cast_receiver

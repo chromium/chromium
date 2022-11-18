@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/cast_core/runtime/browser/streaming_controller_remoting.h"
+#include "components/cast_receiver/browser/streaming_controller_remoting.h"
 
 #include "components/cast/message_port/message_port.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
-#include "third_party/openscreen/src/cast/streaming/receiver_session.h"
 
-namespace chromecast {
+namespace cast_receiver {
 
 StreamingControllerRemoting::StreamingControllerRemoting(
     std::unique_ptr<cast_api_bindings::MessagePort> message_port,
@@ -37,9 +36,9 @@ void StreamingControllerRemoting::ProcessConfig(
     cast_streaming::ReceiverConfig& config) {
   // Ensure remoting is enabled for this streaming session.
   if (!config.remoting) {
-    DLOG(INFO) << "Remoting configuration added to received AVConstraints";
+    DLOG(WARNING) << "Remoting configuration added to received ReceiverConfig";
     config.remoting.emplace();
   }
 }
 
-}  // namespace chromecast
+}  // namespace cast_receiver
