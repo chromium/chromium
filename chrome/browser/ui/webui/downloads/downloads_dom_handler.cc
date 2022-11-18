@@ -26,6 +26,7 @@
 #include "chrome/browser/download/download_danger_prompt.h"
 #include "chrome/browser/download/download_history.h"
 #include "chrome/browser/download/download_item_model.h"
+#include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_query.h"
 #include "chrome/browser/download/drag_download_item.h"
@@ -176,14 +177,23 @@ void DownloadsDOMHandler::SaveDangerousRequiringGesture(const std::string& id) {
 
   CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_SAVE_DANGEROUS);
   download::DownloadItem* file = GetDownloadByStringId(id);
-  if (file)
+  if (file) {
+    DownloadItemWarningData::AddWarningActionEvent(
+        file, DownloadItemWarningData::DOWNLOADS_PAGE,
+        DownloadItemWarningData::KEEP);
     ShowDangerPrompt(file);
+  }
 }
 
 void DownloadsDOMHandler::DiscardDangerous(const std::string& id) {
   CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_DISCARD_DANGEROUS);
   download::DownloadItem* download = GetDownloadByStringId(id);
   if (download) {
+    // The warning action event needs to be added before Safe Browsing report is
+    // sent, because this event should be included in the report.
+    DownloadItemWarningData::AddWarningActionEvent(
+        download, DownloadItemWarningData::DOWNLOADS_PAGE,
+        DownloadItemWarningData::DISCARD);
     // If this download is no longer dangerous, is already canceled or
     // completed, don't send any report.
     // Only sends dangerous download discard report if :

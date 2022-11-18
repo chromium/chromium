@@ -70,6 +70,9 @@ class DownloadDangerPrompt {
       bool did_proceed,
       const download::DownloadItem& download);
 
+  // Records warning action event consumed by Safe Browsing reports.
+  static void RecordDownloadWarningEvent(Action action,
+                                         download::DownloadItem* download);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_DANGER_PROMPT_H_

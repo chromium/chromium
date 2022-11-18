@@ -270,6 +270,7 @@ void DownloadDangerPromptViews::RunDone(Action action) {
     if (download_->IsDangerous() && !download_->IsDone()) {
       const bool accept = action == DownloadDangerPrompt::ACCEPT;
       RecordDownloadDangerPrompt(accept, *download_);
+      RecordDownloadWarningEvent(action, download_);
       if (!download_->GetURL().is_empty() &&
           !content::DownloadItemUtils::GetBrowserContext(download_)
                ->IsOffTheRecord()) {

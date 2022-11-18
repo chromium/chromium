@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -60,4 +61,23 @@ void DownloadDangerPrompt::RecordDownloadDangerPrompt(
                            download::GetDownloadDangerTypeString(danger_type)),
         file_type_uma_value);
   }
+}
+
+void DownloadDangerPrompt::RecordDownloadWarningEvent(
+    Action action,
+    download::DownloadItem* download) {
+  DownloadItemWarningData::WarningAction warning_action;
+  switch (action) {
+    case Action::ACCEPT:
+      warning_action = DownloadItemWarningData::PROCEED;
+      break;
+    case Action::CANCEL:
+      warning_action = DownloadItemWarningData::CANCEL;
+      break;
+    case Action::DISMISS:
+      warning_action = DownloadItemWarningData::CLOSE;
+      break;
+  }
+  DownloadItemWarningData::AddWarningActionEvent(
+      download, DownloadItemWarningData::DOWNLOAD_PROMPT, warning_action);
 }
