@@ -129,10 +129,6 @@
           "group": "tryserver.chromium.win"
         },
         {
-          "builder": "win10_chromium_x64_rel_ng",
-          "group": "tryserver.chromium.win"
-        },
-        {
           "builder": "win11-x64-fyi-rel",
           "group": "tryserver.chromium.win"
         },

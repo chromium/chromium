@@ -211,35 +211,6 @@ try_.builder(
     os = os.WINDOWS_10,
 )
 
-# TODO(crbug.com/1381274): Remove this after it's been replaced with win-rel.
-try_.orchestrator_builder(
-    name = "win10_chromium_x64_rel_ng",
-    check_for_flakiness = True,
-    compilator = "win10_chromium_x64_rel_ng-compilator",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
-    mirrors = [
-        "ci/Win x64 Builder",
-        "ci/Win10 Tests x64",
-        "ci/GPU Win x64 Builder",
-        "ci/Win10 x64 Release (NVIDIA)",
-    ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
-    use_clang_coverage = True,
-    coverage_test_types = ["unit", "overall"],
-    main_list_view = "try",
-    experiments = {
-        "chromium_rts.inverted_rts": 100,
-    },
-    description_html = "<h1>NOTE: This bot is now deprecated. Please use 'win-rel' instead.</h1>",
-    # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
-    # are addressed
-    #use_orchestrator_pool = True,
-)
-
 try_.orchestrator_builder(
     name = "win-rel-inverse-fyi",
     check_for_flakiness = True,
@@ -262,15 +233,6 @@ try_.orchestrator_builder(
         "chromium_rts.inverted_rts_bail_early": 100,
     },
     use_orchestrator_pool = True,
-)
-
-try_.compilator_builder(
-    name = "win10_chromium_x64_rel_ng-compilator",
-    check_for_flakiness = True,
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
-    main_list_view = "try",
-    # TODO (crbug.com/1245171): Revert when root issue is fixed
-    grace_period = 4 * time.minute,
 )
 
 try_.builder(
