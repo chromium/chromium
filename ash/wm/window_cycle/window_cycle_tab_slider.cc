@@ -106,29 +106,6 @@ WindowCycleTabSlider::WindowCycleTabSlider()
       Shell::Get()->window_cycle_controller()->IsAltTabPerActiveDesk();
   all_desks_tab_slider_button_->SetToggled(!per_desk);
   current_desk_tab_slider_button_->SetToggled(per_desk);
-
-  // TODO(sammiequon|xdai): Investigate if this focus behavior always and the
-  // following overrides are necessary. See discussion on crrev.com/c/4020278.
-  active_button_selector_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
-
-  // Because`active_button_selector_` claims to be focusable, the accessibility
-  // paint checker will flag it due to lack of a valid role. Give it a role
-  // appropriate for a generic container. Note: if focus behavior is `NEVER`,
-  // this view likely will no longer need a valid role in order to pass the
-  // paint checks or to enhance the end user experience for ChromeVox users.
-  active_button_selector_->GetViewAccessibility().OverrideRole(
-      ax::mojom::Role::kPane);
-
-  // In addition, because `active_button_selector_` claims to be focusable, the
-  // accessibility paint checker will also flag it due to lack of an accessible
-  // name. Items which are end-user focusable need to have an accessible name so
-  // that users know its purpose is when they navigate to it. Because this view
-  // will never be reached via navigation, set its name to explicitly empty.
-  // Note: if focus behavior is `NEVER`, this view likely will no longer need a
-  // valid name in order to pass the paint checks or to enhance the end user
-  // experience for ChromeVox users.
-  active_button_selector_->GetViewAccessibility().OverrideName(
-      u"", ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
 }
 
 void WindowCycleTabSlider::SetFocus(bool focus) {

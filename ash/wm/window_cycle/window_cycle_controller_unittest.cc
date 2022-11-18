@@ -3135,20 +3135,15 @@ TEST_F(ModeSelectionWindowCycleControllerTest,
   auto tab_slider_buttons = GetWindowCycleTabSliderButtons();
   EXPECT_EQ(2u, tab_slider_buttons.size());
 
-  // The active button selector claims to be focusable. This has implications
-  // for the accessibility paint checks which check that focusable views have
-  // a valid role and accessible name.
-  // TODO(sammiequon|xdai): Investigate if focus behavior always is still
-  // needed. See discussion on crrev.com/c/4020278. Note: if focus behavior is
-  // changed to `NEVER`, this expectation should be updated or removed, but the
-  // call to `RunAccessibilityPaintChecks` below left in place because it is
-  // helpful to have test coverage that the paint checks pass.
+  // Run the accessibility paint checks on the active button selector.
+  // There should be no DCHECK failures. Failures in the past occurred due to
+  // the active button selector having `FocusBehavior::ALWAYS`. That change,
+  // done to improve ChromeVox's presentation, appears to no longer be needed.
+  // Therefore the default focus behavior (`FocusBehavior::NEVER`) is once again
+  // in place.
   auto* active_button_selector = GetWindowCycleTabSliderActiveButtonSelector();
   EXPECT_EQ(active_button_selector->GetFocusBehavior(),
-            views::View::FocusBehavior::ALWAYS);
-
-  // Run the accessibility paint checks on the active button selector.
-  // There should be no DCHECK failures.
+            views::View::FocusBehavior::NEVER);
   RunAccessibilityPaintChecks(const_cast<views::View*>(active_button_selector));
 
   CompleteCycling(cycle_controller);
