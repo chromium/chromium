@@ -126,8 +126,9 @@ var TreeParserUtil = (function() {
     // cross_site_iframe_factory.html as leaf node locations. Colon is for port
     // numbers, which may also be specified. Semicolon and equals are for cookie
     // strings, which may sometimes be provided in URL query strings such as for
-    // the EmbeddedTestServer default handler /set-cookie.
-    const re = new RegExp('^[a-zA-Z0-9\\/_?&;:.=-]+$');
+    // the EmbeddedTestServer default handler /set-cookie. Percent is for
+    // allowing escaped squences in the URL, like %2F.
+    const re = new RegExp('^[a-zA-Z0-9\\/%_?&;:.=-]+$');
     if (!token.match(re))
       throw new Error('Expected an identifier, but found "' + token + '".');
     return token;
