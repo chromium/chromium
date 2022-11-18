@@ -1,0 +1,92 @@
+<style>
+  :host {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    padding: 32px;
+    width: 512px;
+  }
+
+  .title {
+    color: var(--cros-text-color-primary);
+    font: var(--cros-display-7-font);
+    margin-block-end: 6px;
+  }
+
+  .normal-text {
+    color: var(--cros-text-color-primary);
+    font: var(--cros-body-1-font);
+    margin-block-end: 12px;
+    margin-block-start: 16px;
+  }
+
+  #button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+
+  input[type='radio'] {
+    opacity: 0;
+    position: absolute;
+  }
+
+  .radio-label {
+    align-items: center;
+    background-color: var(--cros-ripple-color);
+    border-radius: 12px;
+    box-sizing: border-box;
+    color: var(--cros-text-color-primary);
+    cursor: pointer;
+    display: flex;
+    font: var(--cros-body-1-font);
+    height: 54px;
+  }
+
+  .radio-label:has(> input[type='radio']) {
+    border: 2px solid transparent;
+  }
+
+  .radio-label:has(> input[type='radio']:checked) {
+    border: 2px solid var(--cros-color-prominent);
+  }
+
+  .icon-placeholder {
+    background-color: white;
+    border-radius: 50%;
+    height: 22px;
+    margin-inline-end: 12px;
+    margin-inline-start: 20px;
+    width: 22px;
+  }
+</style>
+
+<!-- TODO(b:251046594): Use localized strings -->
+<div class="title">
+  Choose an application to open <span id="file-name"></span>.
+</div>
+<form>
+  <div class="normal-text">
+    Apps installed on this device
+  </div>
+
+  <label class="radio-label">
+    <input type="radio" name="app-choice" id="drive" value="drive" checked
+        autofocus>
+    <div class="icon-placeholder"></div>
+    <span id="drive-app-name"></span>
+  </label>
+  <div class="normal-text">
+    Apps available to install
+  </div>
+
+  <label class="radio-label">
+    <input type="radio" name="app-choice" id="onedrive" value="onedrive">
+    <div class="icon-placeholder"></div>
+    Microsoft Office
+  </label>
+</form>
+<div id="button-container">
+  <cr-button class="cancel-button">Cancel</cr-button>
+  <cr-button class="action-button">Open</cr-button>
+</div>

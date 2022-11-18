@@ -478,8 +478,7 @@ bool ExecuteWebDriveOfficeTask(Profile* profile,
       // TODO(b/247038054) Add user preference to decide whether or not the
       // dialog should be shown.
       return ash::cloud_upload::UploadAndOpen(
-          profile, file_urls,
-          ash::cloud_upload::mojom::CloudProvider::kGoogleDrive,
+          profile, file_urls, ash::cloud_upload::CloudProvider::kGoogleDrive,
           /*show_dialog=*/false);
     }
   } else {
@@ -576,8 +575,7 @@ bool ExecuteOpenInOfficeTask(Profile* profile,
       // dialog should be shown.
       LOG(ERROR) << "File can be moved to ODFS";
       return ash::cloud_upload::UploadAndOpen(
-          profile, file_urls,
-          ash::cloud_upload::mojom::CloudProvider::kOneDrive,
+          profile, file_urls, ash::cloud_upload::CloudProvider::kOneDrive,
           /*show_dialog=*/false);
     }
   } else {
@@ -1215,6 +1213,35 @@ bool IsOfficeFile(const base::FilePath& path) {
       return true;
   }
   return false;
+}
+
+namespace {
+
+std::string ToSwaActionId(const std::string& action_id) {
+  return std::string(ash::file_manager::kChromeUIFileManagerURL) + "?" +
+         action_id;
+}
+
+}  // namespace
+
+// TODO(petermarshall): We need to also set the MIME types to correctly interact
+// with the user setting the default task from Files app.
+void SetWordFileHandler(Profile* profile, const std::string& action_id) {
+  TaskDescriptor task(kFileManagerSwaAppId, TaskType::TASK_TYPE_WEB_APP,
+                      ToSwaActionId(action_id));
+  UpdateDefaultTask(profile, task, {".doc", ".docx"}, {});
+}
+
+void SetExcelFileHandler(Profile* profile, const std::string& action_id) {
+  TaskDescriptor task(kFileManagerSwaAppId, TaskType::TASK_TYPE_WEB_APP,
+                      ToSwaActionId(action_id));
+  UpdateDefaultTask(profile, task, {".xls", ".xlsx"}, {});
+}
+
+void SetPowerPointFileHandler(Profile* profile, const std::string& action_id) {
+  TaskDescriptor task(kFileManagerSwaAppId, TaskType::TASK_TYPE_WEB_APP,
+                      ToSwaActionId(action_id));
+  UpdateDefaultTask(profile, task, {".ppt", ".pptx"}, {});
 }
 
 }  // namespace file_manager::file_tasks

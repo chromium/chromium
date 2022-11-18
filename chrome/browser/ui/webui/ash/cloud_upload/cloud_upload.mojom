@@ -4,16 +4,13 @@
 
 module ash.cloud_upload.mojom;
 
-// Possible cloud providers to open Office files with.
-enum CloudProvider {
-  kGoogleDrive,
-  kOneDrive,
-};
-
 // The selected action when the user closes the dialog.
 enum UserAction {
   kCancel,
-  kUpload,
+  kSetUpGoogleDrive,
+  kSetUpOneDrive,
+  kUploadToGoogleDrive,
+  kUploadToOneDrive,
 };
 
 // Options for which sub-page/flow we want to show.
@@ -28,9 +25,6 @@ enum DialogPage {
 
 // Contains the arguments used to set up the dialog.
 struct DialogArgs {
-  // The selected cloud provider to transfer Office files to.
-  CloudProvider cloud_provider;
-
   // List of files that will be uploaded on dialog close if the user completes
   // the setup. May be empty if the dialog wasn't initiated from a file handler.
   array<string> file_names;

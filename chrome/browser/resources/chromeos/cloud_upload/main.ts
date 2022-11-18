@@ -4,6 +4,7 @@
 
 import './cloud_upload_dialog.js';
 import './drive_upload_page.js';
+import './file_handler_page.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
@@ -16,7 +17,7 @@ assert(dialogArgs.args);
 
 switch (dialogArgs.args.dialogPage) {
   case DialogPage.kFileHandlerDialog: {
-    // Do nothing for now.
+    document.body.append(document.createElement('file-handler-page'));
     break;
   }
   case DialogPage.kOneDriveSetup: {

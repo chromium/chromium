@@ -62,23 +62,49 @@ void OpenODFSUrl(const storage::FileSystemURL& uploaded_file_url) {
       }));
 }
 
-void OnCloudSetupComplete(Profile* profile,
-                          const std::vector<storage::FileSystemURL>& file_urls,
-                          const mojom::CloudProvider cloud_provider,
-                          const std::string& action) {
-  if (action == kUserActionUpload) {
+void StartUpload(Profile* profile,
+                 const std::vector<storage::FileSystemURL>& file_urls,
+                 const CloudProvider cloud_provider) {
+  if (cloud_provider == CloudProvider::kGoogleDrive) {
     for (const auto& file_url : file_urls) {
-      switch (cloud_provider) {
-        case mojom::CloudProvider::kOneDrive:
-          OneDriveUploadHandler::Upload(profile, file_url,
-                                        base::BindOnce(&OpenODFSUrl));
-          break;
-        case mojom::CloudProvider::kGoogleDrive:
-          DriveUploadHandler::Upload(profile, file_url,
-                                     base::BindOnce(&OpenDriveUrl));
-          break;
-      }
+      DriveUploadHandler::Upload(profile, file_url,
+                                 base::BindOnce(&OpenDriveUrl));
     }
+  } else if (cloud_provider == CloudProvider::kOneDrive) {
+    for (const auto& file_url : file_urls) {
+      OneDriveUploadHandler::Upload(profile, file_url,
+                                    base::BindOnce(&OpenODFSUrl));
+    }
+  }
+}
+
+void OnDialogComplete(Profile* profile,
+                      const std::vector<storage::FileSystemURL>& file_urls,
+                      const std::string& action) {
+  using file_manager::file_tasks::kActionIdOpenInOffice;
+  using file_manager::file_tasks::SetExcelFileHandler;
+  using file_manager::file_tasks::SetPowerPointFileHandler;
+  using file_manager::file_tasks::SetWordFileHandler;
+
+  if (action == kUserActionUploadToGoogleDrive) {
+    SetWordFileHandler(profile,
+                       file_manager::file_tasks::kActionIdWebDriveOfficeWord);
+    SetExcelFileHandler(profile,
+                        file_manager::file_tasks::kActionIdWebDriveOfficeExcel);
+    SetPowerPointFileHandler(
+        profile, file_manager::file_tasks::kActionIdWebDriveOfficePowerPoint);
+    StartUpload(profile, file_urls, CloudProvider::kGoogleDrive);
+  } else if (action == kUserActionUploadToOneDrive) {
+    SetWordFileHandler(profile, kActionIdOpenInOffice);
+    SetExcelFileHandler(profile, kActionIdOpenInOffice);
+    SetPowerPointFileHandler(profile, kActionIdOpenInOffice);
+    StartUpload(profile, file_urls, CloudProvider::kOneDrive);
+  } else if (action == kUserActionSetUpGoogleDrive) {
+    CloudUploadDialog::Show(profile, file_urls,
+                            mojom::DialogPage::kGoogleDriveSetup);
+  } else if (action == kUserActionSetUpOneDrive) {
+    CloudUploadDialog::Show(profile, file_urls,
+                            mojom::DialogPage::kOneDriveSetup);
   } else if (action == kUserActionCancel) {
     UMA_HISTOGRAM_ENUMERATION(kDriveTaskResultMetricName,
                               OfficeTaskResult::CANCELLED);
@@ -89,15 +115,11 @@ void OnCloudSetupComplete(Profile* profile,
 
 bool UploadAndOpen(Profile* profile,
                    const std::vector<storage::FileSystemURL>& file_urls,
-                   const mojom::CloudProvider cloud_provider,
+                   const CloudProvider cloud_provider,
                    bool show_dialog) {
   if (show_dialog) {
-    mojom::DialogPage dialog_page =
-        cloud_provider == mojom::CloudProvider::kGoogleDrive
-            ? mojom::DialogPage::kGoogleDriveSetup
-            : mojom::DialogPage::kOneDriveSetup;
-    return CloudUploadDialog::Show(profile, file_urls, cloud_provider,
-                                   dialog_page);
+    return CloudUploadDialog::Show(profile, file_urls,
+                                   mojom::DialogPage::kFileHandlerDialog);
   }
 
   bool empty_selection = file_urls.empty();
@@ -105,7 +127,7 @@ bool UploadAndOpen(Profile* profile,
   if (empty_selection) {
     return false;
   }
-  OnCloudSetupComplete(profile, file_urls, cloud_provider, kUserActionUpload);
+  StartUpload(profile, file_urls, cloud_provider);
   return true;
 }
 
@@ -113,7 +135,6 @@ bool UploadAndOpen(Profile* profile,
 bool CloudUploadDialog::Show(
     Profile* profile,
     const std::vector<storage::FileSystemURL>& file_urls,
-    const mojom::CloudProvider cloud_provider,
     const mojom::DialogPage dialog_page) {
   // Allow no more than one upload dialog at a time. In the case of multiple
   // upload requests, they should either be handled simultaneously or queued.
@@ -123,7 +144,6 @@ bool CloudUploadDialog::Show(
   }
 
   mojom::DialogArgsPtr args = mojom::DialogArgs::New();
-  args->cloud_provider = cloud_provider;
   for (const auto& file_url : file_urls) {
     args->file_names.push_back(file_url.path().BaseName().value());
   }
@@ -132,7 +152,7 @@ bool CloudUploadDialog::Show(
   // The pointer is managed by an instance of `views::WebDialogView` and removed
   // in `SystemWebDialogDelegate::OnDialogClosed`.
   UploadRequestCallback uploadCallback =
-      base::BindOnce(&OnCloudSetupComplete, profile, file_urls, cloud_provider);
+      base::BindOnce(&OnDialogComplete, profile, file_urls);
   CloudUploadDialog* dialog = new CloudUploadDialog(
       std::move(args), std::move(uploadCallback), dialog_page);
 
@@ -147,10 +167,14 @@ void CloudUploadDialog::OnDialogShown(content::WebUI* webui) {
 }
 
 void CloudUploadDialog::OnDialogClosed(const std::string& json_retval) {
-  if (callback_) {
-    std::move(callback_).Run(json_retval);
-  }
+  UploadRequestCallback callback = std::move(callback_);
+  // Deletes this, so we store the callback first.
   SystemWebDialogDelegate::OnDialogClosed(json_retval);
+  // The callback can create a new dialog. It must be called last because we can
+  // only have one of these dialogs at a time.
+  if (callback) {
+    std::move(callback).Run(json_retval);
+  }
 }
 
 CloudUploadDialog::CloudUploadDialog(mojom::DialogArgsPtr args,

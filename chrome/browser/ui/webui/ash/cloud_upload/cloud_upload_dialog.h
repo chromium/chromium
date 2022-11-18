@@ -16,20 +16,23 @@ class Profile;
 
 namespace ash::cloud_upload {
 
-// Either OneDrive for the Office PWA or Drive for Web Drive editing.
-enum class UploadType {
-  kOneDrive,
-  kDrive,
-};
-
 // The string conversions of ash::cloud_upload::mojom::UserAction.
 const char kUserActionCancel[] = "cancel";
-const char kUserActionUpload[] = "upload";
+const char kUserActionSetUpGoogleDrive[] = "setup-drive";
+const char kUserActionSetUpOneDrive[] = "setup-onedrive";
+const char kUserActionUploadToGoogleDrive[] = "upload-drive";
+const char kUserActionUploadToOneDrive[] = "upload-onedrive";
+
+// Either OneDrive for the Office PWA or Drive for Drive Web editing.
+enum class CloudProvider {
+  kGoogleDrive,
+  kOneDrive,
+};
 
 // Initiates the upload workflow.
 bool UploadAndOpen(Profile* profile,
                    const std::vector<storage::FileSystemURL>& file_urls,
-                   const mojom::CloudProvider cloud_provider,
+                   const CloudProvider cloud_provider,
                    bool show_dialog);
 
 // Defines the web dialog used to help users upload Office files to the cloud.
@@ -45,7 +48,6 @@ class CloudUploadDialog : public SystemWebDialogDelegate {
   // if a new dialog has been effectively created.
   static bool Show(Profile* profile,
                    const std::vector<storage::FileSystemURL>& file_urls,
-                   const mojom::CloudProvider cloud_provider,
                    const mojom::DialogPage dialog_page);
 
   void OnDialogShown(content::WebUI* webui) override;

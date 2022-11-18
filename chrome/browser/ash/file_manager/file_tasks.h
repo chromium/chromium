@@ -373,6 +373,13 @@ bool IsHtmlFile(const base::FilePath& path);
 // Returns whether |path| is a MS Office file according to its extension.
 bool IsOfficeFile(const base::FilePath& path);
 
+// TODO(petermarshall): Move these to a new file office_file_tasks.cc/h
+// Updates the default task for each of the office file types. |action_id| must
+// be a valid action registered with the Files app SWA.
+void SetWordFileHandler(Profile* profile, const std::string& action_id);
+void SetExcelFileHandler(Profile* profile, const std::string& action_id);
+void SetPowerPointFileHandler(Profile* profile, const std::string& action_id);
+
 }  // namespace file_manager::file_tasks
 
 #endif  // CHROME_BROWSER_ASH_FILE_MANAGER_FILE_TASKS_H_

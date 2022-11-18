@@ -4,14 +4,13 @@
 
 import 'chrome://cloud-upload/cloud_upload_dialog.js';
 
-import {CloudProvider, DialogArgs, DialogPage, PageHandlerRemote, UserAction} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
+import {DialogArgs, DialogPage, PageHandlerRemote, UserAction} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browser_proxy.js';
 import {CloudUploadElement} from 'chrome://cloud-upload/cloud_upload_dialog.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 interface ProxyOptions {
-  uploadType: CloudProvider;
   fileName?: string|null;
   officePWAInstalled: boolean;
 }
@@ -26,7 +25,6 @@ class CloudUploadTestBrowserProxy implements CloudUploadBrowserProxy {
   constructor(options: ProxyOptions) {
     this.handler = TestBrowserProxy.fromClass(PageHandlerRemote);
     const args: DialogArgs = {
-      cloudProvider: options.uploadType,
       fileNames: [],
       dialogPage: DialogPage.kOneDriveSetup,
     };
@@ -52,7 +50,7 @@ suite('<cloud-upload>', () => {
      called. */
   let testProxy: CloudUploadTestBrowserProxy;
 
-  const setupForUploadType = async (options: ProxyOptions) => {
+  const setUp = async (options: ProxyOptions) => {
     testProxy = new CloudUploadTestBrowserProxy(options);
     CloudUploadBrowserProxy.setInstance(testProxy);
 
@@ -104,8 +102,7 @@ suite('<cloud-upload>', () => {
    * file.
    */
   test('Set up OneDrive with file', async () => {
-    await setupForUploadType({
-      uploadType: CloudProvider.kOneDrive,
+    await setUp({
       fileName: 'file.docx',
       officePWAInstalled: false,
     });
@@ -124,8 +121,7 @@ suite('<cloud-upload>', () => {
    * file.
    */
   test('Set up OneDrive without file', async () => {
-    await setupForUploadType({
-      uploadType: CloudProvider.kOneDrive,
+    await setUp({
       officePWAInstalled: false,
     });
 
@@ -139,8 +135,7 @@ suite('<cloud-upload>', () => {
   });
 
   test('Set up OneDrive with Office PWA already installed', async () => {
-    await setupForUploadType({
-      uploadType: CloudProvider.kOneDrive,
+    await setUp({
       officePWAInstalled: true,
     });
 
@@ -159,8 +154,7 @@ suite('<cloud-upload>', () => {
    * `respondAndClose` mojo request.
    */
   test('Open file button', async () => {
-    await setupForUploadType({
-      uploadType: CloudProvider.kGoogleDrive,
+    await setUp({
       fileName: 'file.docx',
       officePWAInstalled: false,
     });
@@ -174,7 +168,8 @@ suite('<cloud-upload>', () => {
     await testProxy.handler.whenCalled('respondAndClose');
     assertEquals(1, testProxy.handler.getCallCount('respondAndClose'));
     assertDeepEquals(
-        [UserAction.kUpload], testProxy.handler.getArgs('respondAndClose'));
+        [UserAction.kUploadToOneDrive],
+        testProxy.handler.getArgs('respondAndClose'));
   });
 
   /**
@@ -182,8 +177,7 @@ suite('<cloud-upload>', () => {
    * mojo request.
    */
   test('Close button', async () => {
-    await setupForUploadType({
-      uploadType: CloudProvider.kGoogleDrive,
+    await setUp({
       fileName: 'file.docx',
       officePWAInstalled: false,
     });
