@@ -49,9 +49,6 @@ crbug.com/933880 http/tests/inspector-protocol/network/security-info-on-response
 crbug.com/933880 http/tests/inspector-protocol/network/xhr-interception-auth-fail.js [ Failure ]
 crbug.com/933880 http/tests/misc/redirect-to-about-blank.html [ Timeout ]
 
-# JS Self-Profiling currently requires site isolation.
-crbug.com/956688 wpt_internal/js-self-profiling/* [ Skip ]
-
 crbug.com/1106413 external/wpt/webmessaging/multi-globals/broadcastchannel-current.sub.html [ Failure ]
 crbug.com/1106413 external/wpt/webmessaging/multi-globals/broadcastchannel-incumbent.sub.html [ Failure ]
 

@@ -801,9 +801,6 @@ crbug.com/1267498 [ Fuchsia ] transforms/transformed-caret.html [ Failure ]
 
 crbug.com/829028 [ Mac ] compositing/gestures/gesture-tapHighlight-lines-and-float-in-multicol.html [ Failure ]
 
-# Requires support of the image-resolution CSS property
-crbug.com/1086473 external/wpt/css/css-images/image-resolution/* [ Failure Skip ]
-
 # Fail due to lack of fuzzy matching on Linux, Win and Mac platforms for WPT. The pixels in the pre-rotated reference
 # images do not exactly match the exif rotated images, probably due to jpeg decoding/encoding issues. Maybe
 # adjusting the image size to a multiple of 8 would fix this (so all jpeg blocks are solid color).
@@ -2156,9 +2153,6 @@ crbug.com/1218716 external/wpt/permissions-policy/experimental-features/trust-to
 
 # Sheriff 2020-02-06
 
-# These are added to W3CImportExpectations as Skip, remove when next import is done.
-crbug.com/666657 external/wpt/css/css-text/hanging-punctuation/* [ Failure Skip ]
-
 crbug.com/909597 external/wpt/css/css-ui/text-overflow-ruby.html [ Failure ]
 
 crbug.com/1005518 external/wpt/css/css-writing-modes/direction-upright-001.html [ Failure ]
@@ -3116,41 +3110,11 @@ crbug.com/626703 [ Mac10.15 ] external/wpt/pointerevents/pointerevent_pointercap
 crbug.com/626703 [ Win11 ] external/wpt/mediacapture-streams/MediaDevices-enumerateDevices-per-origin-ids.sub.https.html [ Failure Timeout ]
 crbug.com/626703 [ Win11 ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaDevices-enumerateDevices-per-origin-ids.sub.https.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/webrtc/RTCPeerConnection-videoDetectorTest.html [ Failure Timeout ]
-crbug.com/626703 [ Linux ] external/wpt/fetch/metadata/generated/css-images.https.sub.tentative.html [ Skip Timeout ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/fetch/metadata/generated/css-images.https.sub.tentative.html [ Skip Timeout ]
-crbug.com/626703 [ Mac11 ] external/wpt/fetch/metadata/generated/css-images.https.sub.tentative.html [ Skip Timeout ]
-crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/metadata/generated/css-images.https.sub.tentative.html [ Skip Timeout ]
-crbug.com/626703 [ Mac12 ] external/wpt/fetch/metadata/generated/css-images.https.sub.tentative.html [ Skip Timeout ]
-crbug.com/626703 [ Mac12-arm64 ] external/wpt/fetch/metadata/generated/css-images.https.sub.tentative.html [ Skip Timeout ]
-crbug.com/626703 [ Win ] external/wpt/fetch/metadata/generated/css-images.https.sub.tentative.html [ Skip Timeout ]
-crbug.com/626703 [ Linux ] external/wpt/fetch/metadata/generated/css-images.sub.tentative.html [ Skip Timeout ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/fetch/metadata/generated/css-images.sub.tentative.html [ Skip Timeout ]
-crbug.com/626703 [ Mac11 ] external/wpt/fetch/metadata/generated/css-images.sub.tentative.html [ Skip Timeout ]
-crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/metadata/generated/css-images.sub.tentative.html [ Skip Timeout ]
-crbug.com/626703 [ Mac12 ] external/wpt/fetch/metadata/generated/css-images.sub.tentative.html [ Skip Timeout ]
-crbug.com/626703 [ Mac12-arm64 ] external/wpt/fetch/metadata/generated/css-images.sub.tentative.html [ Skip Timeout ]
-crbug.com/626703 [ Win ] external/wpt/fetch/metadata/generated/css-images.sub.tentative.html [ Skip Timeout ]
-crbug.com/626703 [ Linux ] external/wpt/fetch/metadata/generated/element-link-icon.https.sub.html [ Skip Timeout ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/fetch/metadata/generated/element-link-icon.https.sub.html [ Skip Timeout ]
-crbug.com/626703 [ Mac11 ] external/wpt/fetch/metadata/generated/element-link-icon.https.sub.html [ Skip Timeout ]
-crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/metadata/generated/element-link-icon.https.sub.html [ Skip Timeout ]
-crbug.com/626703 [ Mac12 ] external/wpt/fetch/metadata/generated/element-link-icon.https.sub.html [ Skip Timeout ]
-crbug.com/626703 [ Mac12-arm64 ] external/wpt/fetch/metadata/generated/element-link-icon.https.sub.html [ Skip Timeout ]
-crbug.com/626703 [ Win ] external/wpt/fetch/metadata/generated/element-link-icon.https.sub.html [ Skip Timeout ]
-crbug.com/626703 [ Linux ] external/wpt/fetch/metadata/generated/element-link-icon.sub.html [ Skip Timeout ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/fetch/metadata/generated/element-link-icon.sub.html [ Skip Timeout ]
-crbug.com/626703 [ Mac11 ] external/wpt/fetch/metadata/generated/element-link-icon.sub.html [ Skip Timeout ]
-crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/metadata/generated/element-link-icon.sub.html [ Skip Timeout ]
-crbug.com/626703 [ Mac12 ] external/wpt/fetch/metadata/generated/element-link-icon.sub.html [ Skip Timeout ]
-crbug.com/626703 [ Mac12-arm64 ] external/wpt/fetch/metadata/generated/element-link-icon.sub.html [ Skip Timeout ]
-crbug.com/626703 [ Win ] external/wpt/fetch/metadata/generated/element-link-icon.sub.html [ Skip Timeout ]
-crbug.com/626703 [ Linux ] external/wpt/fetch/metadata/generated/element-video-poster.https.sub.html [ Timeout ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/fetch/metadata/generated/element-video-poster.https.sub.html [ Timeout ]
-crbug.com/626703 [ Mac11 ] external/wpt/fetch/metadata/generated/element-video-poster.https.sub.html [ Timeout ]
-crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/metadata/generated/element-video-poster.https.sub.html [ Timeout ]
-crbug.com/626703 [ Mac12 ] external/wpt/fetch/metadata/generated/element-video-poster.https.sub.html [ Timeout ]
-crbug.com/626703 [ Mac12-arm64 ] external/wpt/fetch/metadata/generated/element-video-poster.https.sub.html [ Timeout ]
-crbug.com/626703 [ Win ] external/wpt/fetch/metadata/generated/element-video-poster.https.sub.html [ Timeout ]
+crbug.com/626703 external/wpt/fetch/metadata/generated/css-images.https.sub.tentative.html [ Skip Timeout ]
+crbug.com/626703 external/wpt/fetch/metadata/generated/css-images.sub.tentative.html [ Skip Timeout ]
+crbug.com/626703 external/wpt/fetch/metadata/generated/element-link-icon.https.sub.html [ Skip Timeout ]
+crbug.com/626703 external/wpt/fetch/metadata/generated/element-link-icon.sub.html [ Skip Timeout ]
+crbug.com/626703 external/wpt/fetch/metadata/generated/element-video-poster.https.sub.html [ Skip Timeout ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/css-images.https.sub.tentative.html [ Skip Timeout ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/css-images.sub.tentative.html [ Skip Timeout ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/element-link-icon.https.sub.html [ Skip Timeout ]
