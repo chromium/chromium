@@ -1444,6 +1444,16 @@ export class FileManager extends EventTarget {
       }
     }
 
+    // If the resolved directory to be changed is blocked by DLP, we should
+    // fallback to the default display root.
+    if (nextCurrentDirEntry && util.isDlpEnabled()) {
+      const volumeInfo = this.volumeManager_.getVolumeInfo(nextCurrentDirEntry);
+      if (volumeInfo && this.volumeManager_.isDisabled(volumeInfo.volumeType)) {
+        console.warn('Target directory is DLP blocked, redirecting to MyFiles');
+        nextCurrentDirEntry = null;
+      }
+    }
+
     // If the directory to be changed to is still not resolved, then fallback to
     // the default display root.
     if (!nextCurrentDirEntry) {

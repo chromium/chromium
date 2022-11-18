@@ -1277,10 +1277,12 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DLP, /* dlp.js */
     DlpFilesAppBrowserTest,
-    ::testing::Values(TestCase("transferShowDlpToast").EnableDlp(),
-                      TestCase("dlpShowManagedIcon").EnableDlp(),
-                      TestCase("dlpContextMenuRestrictionDetails").EnableDlp(),
-                      TestCase("saveAsDlpRestrictedDirectory").EnableDlp()));
+    ::testing::Values(
+        TestCase("transferShowDlpToast").EnableDlp(),
+        TestCase("dlpShowManagedIcon").EnableDlp(),
+        TestCase("dlpContextMenuRestrictionDetails").EnableDlp(),
+        TestCase("saveAsDlpRestrictedDirectory").EnableDlp(),
+        TestCase("saveAsDlpRestrictedRedirectsToMyFiles").EnableDlp()));
 
 #define FILE_TRANSFER_TEST_CASE(name) \
   TestCase(name).EnableFileTransferConnector()
