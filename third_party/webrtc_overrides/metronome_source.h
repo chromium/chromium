@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -17,6 +18,7 @@
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/delayed_task_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -41,15 +43,20 @@ namespace blink {
 // for testing.
 class RTC_EXPORT MetronomeSource final {
  public:
-  // The tick phase.
-  static base::TimeTicks Phase();
-  // The tick frequency.
-  static base::TimeDelta Tick();
-  // The next metronome tick that is at or after |time|.
-  static base::TimeTicks TimeSnappedToNextTick(base::TimeTicks time);
+  // Class abstracting requesting a callback on the next tick.
+  class TickProvider {
+   public:
+    virtual ~TickProvider() = default;
 
-  explicit MetronomeSource(
-      const scoped_refptr<base::SequencedTaskRunner>& metronome_task_runner);
+    // Requests a callback on the next tick. The callback must be run on the
+    // same sequence that called this method.
+    virtual void RequestCallOnNextTick(base::OnceClosure callback) = 0;
+
+    // Estimate the current tick period.
+    virtual base::TimeDelta TickPeriod() = 0;
+  };
+
+  explicit MetronomeSource(std::unique_ptr<TickProvider> tick_provider);
   ~MetronomeSource();
 
   MetronomeSource(const MetronomeSource&) = delete;
@@ -71,9 +78,13 @@ class RTC_EXPORT MetronomeSource final {
   // Reschedules an invocation of OnMetronomeTick.
   void Reschedule();
 
-  const scoped_refptr<base::SequencedTaskRunner> metronome_task_runner_;
+  // Returns the tick provider's tick period.
+  base::TimeDelta TickPeriod();
+
   SEQUENCE_CHECKER(metronome_sequence_checker_);
   std::vector<absl::AnyInvocable<void() &&>> callbacks_
+      GUARDED_BY_CONTEXT(metronome_sequence_checker_);
+  std::unique_ptr<TickProvider> tick_provider_
       GUARDED_BY_CONTEXT(metronome_sequence_checker_);
   base::WeakPtrFactory<MetronomeSource> weak_factory_{this};
 };

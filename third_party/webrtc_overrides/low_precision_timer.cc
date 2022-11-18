@@ -5,7 +5,9 @@
 #include "third_party/webrtc_overrides/low_precision_timer.h"
 
 #include "base/check.h"
+#include "base/task/sequenced_task_runner.h"
 #include "third_party/webrtc_overrides/task_queue_factory.h"
+#include "third_party/webrtc_overrides/timer_based_tick_provider.h"
 
 namespace blink {
 
@@ -28,8 +30,8 @@ void LowPrecisionTimer::SchedulableCallback::Schedule(
       << "The callback has already been scheduled.";
   scheduled_time_ = scheduled_time;
   // Snap target time to metronome tick!
-  base::TimeTicks target_time =
-      MetronomeSource::TimeSnappedToNextTick(scheduled_time_);
+  base::TimeTicks target_time = TimerBasedTickProvider::TimeSnappedToNextTick(
+      scheduled_time_, TimerBasedTickProvider::kDefaultPeriod);
   task_runner_->PostDelayedTaskAt(
       base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
       base::BindOnce(&LowPrecisionTimer::SchedulableCallback::MaybeRun, this),

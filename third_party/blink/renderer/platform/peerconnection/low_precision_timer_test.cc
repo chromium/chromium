@@ -9,10 +9,15 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/webrtc_overrides/metronome_source.h"
+#include "third_party/webrtc_overrides/timer_based_tick_provider.h"
 
 namespace blink {
 
 namespace {
+
+base::TimeDelta TickPeriod() {
+  return TimerBasedTickProvider::kDefaultPeriod;
+}
 
 class LowPrecisionTimerTest : public ::testing::Test {
  public:
@@ -23,7 +28,9 @@ class LowPrecisionTimerTest : public ::testing::Test {
     // Ensure mock time is aligned with metronome tick.
     base::TimeTicks now = base::TimeTicks::Now();
     task_environment_.FastForwardBy(
-        MetronomeSource::TimeSnappedToNextTick(now) - now);
+        TimerBasedTickProvider::TimeSnappedToNextTick(
+            now, TimerBasedTickProvider::kDefaultPeriod) -
+        now);
   }
 
  protected:
@@ -135,19 +142,18 @@ TEST_F(LowPrecisionTimerTest, StartOneShot) {
                                               base::Unretained(&listener)));
 
   // Schedule to fire on the first tick.
-  timer.StartOneShot(MetronomeSource::Tick());
-  task_environment_.FastForwardBy(MetronomeSource::Tick());
+  timer.StartOneShot(TickPeriod());
+  task_environment_.FastForwardBy(TickPeriod());
   EXPECT_EQ(listener.callback_count(), 1u);
 
   // The task does not repeat automatically.
-  task_environment_.FastForwardBy(MetronomeSource::Tick());
+  task_environment_.FastForwardBy(TickPeriod());
   EXPECT_EQ(listener.callback_count(), 1u);
 
   // Schedule to fire a millisecond before the next tick. Advancing to that
   // time does not result in a callback.
-  timer.StartOneShot(MetronomeSource::Tick() - base::Milliseconds(1));
-  task_environment_.FastForwardBy(MetronomeSource::Tick() -
-                                  base::Milliseconds(1));
+  timer.StartOneShot(TickPeriod() - base::Milliseconds(1));
+  task_environment_.FastForwardBy(TickPeriod() - base::Milliseconds(1));
   EXPECT_EQ(listener.callback_count(), 1u);
   // But it fires on the next tick.
   task_environment_.FastForwardBy(base::Milliseconds(1));
@@ -155,17 +161,17 @@ TEST_F(LowPrecisionTimerTest, StartOneShot) {
 
   // Fire a little after the next tick. Two ticks has to pass before anything
   // happens.
-  timer.StartOneShot(MetronomeSource::Tick() + base::Milliseconds(1));
-  task_environment_.FastForwardBy(MetronomeSource::Tick());
+  timer.StartOneShot(TickPeriod() + base::Milliseconds(1));
+  task_environment_.FastForwardBy(TickPeriod());
   EXPECT_EQ(listener.callback_count(), 2u);
-  task_environment_.FastForwardBy(MetronomeSource::Tick());
+  task_environment_.FastForwardBy(TickPeriod());
   EXPECT_EQ(listener.callback_count(), 3u);
 
   // Schedule to fire but shutdown the timer before it has time to fire.
-  timer.StartOneShot(MetronomeSource::Tick());
+  timer.StartOneShot(TickPeriod());
   timer.Shutdown();
 
-  task_environment_.FastForwardBy(MetronomeSource::Tick());
+  task_environment_.FastForwardBy(TickPeriod());
   EXPECT_EQ(listener.callback_count(), 3u);
 }
 
@@ -176,7 +182,7 @@ TEST_F(LowPrecisionTimerTest, RecursiveStartOneShot) {
   // A full tick is needed before the callback fires.
   task_environment_.FastForwardBy(delay);
   EXPECT_EQ(recursive_shotter.callback_count(), 0u);
-  task_environment_.FastForwardBy(MetronomeSource::Tick() - delay);
+  task_environment_.FastForwardBy(TickPeriod() - delay);
   EXPECT_EQ(recursive_shotter.callback_count(), 1u);
 
   // The same is true the second time it fires. This is not a high precision
@@ -185,11 +191,11 @@ TEST_F(LowPrecisionTimerTest, RecursiveStartOneShot) {
   // higher precision.
   task_environment_.FastForwardBy(delay);
   EXPECT_EQ(recursive_shotter.callback_count(), 1u);
-  task_environment_.FastForwardBy(MetronomeSource::Tick() - delay);
+  task_environment_.FastForwardBy(TickPeriod() - delay);
   EXPECT_EQ(recursive_shotter.callback_count(), 2u);
 
   // It is not repeated a third time.
-  task_environment_.FastForwardBy(MetronomeSource::Tick());
+  task_environment_.FastForwardBy(TickPeriod());
   EXPECT_EQ(recursive_shotter.callback_count(), 2u);
 }
 
@@ -200,9 +206,8 @@ TEST_F(LowPrecisionTimerTest, MoveToNewTaskRunner) {
                                               base::Unretained(&listener)));
 
   // Schedule on the next tick, and advance time close to that.
-  timer.StartOneShot(MetronomeSource::Tick());
-  task_environment_.FastForwardBy(MetronomeSource::Tick() -
-                                  base::Milliseconds(3));
+  timer.StartOneShot(TickPeriod());
+  task_environment_.FastForwardBy(TickPeriod() - base::Milliseconds(3));
   EXPECT_EQ(listener.callback_count(), 0u);
 
   // Move to a new task runner. The CallbackListener will EXPECT_TRUE that the
@@ -229,17 +234,16 @@ TEST_F(LowPrecisionTimerTest, StartRepeating) {
   task_environment_.FastForwardBy(base::Milliseconds(10));
   EXPECT_EQ(listener.callback_count(), 0u);
   // But it does repeat on every tick.
-  task_environment_.FastForwardBy(MetronomeSource::Tick() -
-                                  base::Milliseconds(10));
+  task_environment_.FastForwardBy(TickPeriod() - base::Milliseconds(10));
   EXPECT_EQ(listener.callback_count(), 1u);
-  task_environment_.FastForwardBy(MetronomeSource::Tick());
+  task_environment_.FastForwardBy(TickPeriod());
   EXPECT_EQ(listener.callback_count(), 2u);
-  task_environment_.FastForwardBy(MetronomeSource::Tick());
+  task_environment_.FastForwardBy(TickPeriod());
   EXPECT_EQ(listener.callback_count(), 3u);
   timer.Shutdown();
 
   // The timer stops on shutdown.
-  task_environment_.FastForwardBy(MetronomeSource::Tick());
+  task_environment_.FastForwardBy(TickPeriod());
   EXPECT_EQ(listener.callback_count(), 3u);
 }
 
@@ -250,25 +254,25 @@ TEST_F(LowPrecisionTimerTest, StopRepeatingTimer) {
                                               base::Unretained(&listener)));
 
   // Repeat every tick.
-  timer.StartRepeating(MetronomeSource::Tick());
-  task_environment_.FastForwardBy(MetronomeSource::Tick());
+  timer.StartRepeating(TickPeriod());
+  task_environment_.FastForwardBy(TickPeriod());
   EXPECT_EQ(listener.callback_count(), 1u);
-  task_environment_.FastForwardBy(MetronomeSource::Tick());
+  task_environment_.FastForwardBy(TickPeriod());
   EXPECT_EQ(listener.callback_count(), 2u);
 
   // Stop the timer and ensure it stops repeating.
   timer.Stop();
-  task_environment_.FastForwardBy(MetronomeSource::Tick());
+  task_environment_.FastForwardBy(TickPeriod());
   EXPECT_EQ(listener.callback_count(), 2u);
 
   // The timer is reusable - can start and stop again.
-  timer.StartRepeating(MetronomeSource::Tick());
-  task_environment_.FastForwardBy(MetronomeSource::Tick());
+  timer.StartRepeating(TickPeriod());
+  task_environment_.FastForwardBy(TickPeriod());
   EXPECT_EQ(listener.callback_count(), 3u);
-  task_environment_.FastForwardBy(MetronomeSource::Tick());
+  task_environment_.FastForwardBy(TickPeriod());
   EXPECT_EQ(listener.callback_count(), 4u);
   timer.Stop();
-  task_environment_.FastForwardBy(MetronomeSource::Tick());
+  task_environment_.FastForwardBy(TickPeriod());
   EXPECT_EQ(listener.callback_count(), 4u);
 
   // Cleanup.
@@ -278,12 +282,12 @@ TEST_F(LowPrecisionTimerTest, StopRepeatingTimer) {
 // Ensures stopping inside the timer callback does not deadlock.
 TEST_F(LowPrecisionTimerTest, StopTimerFromInsideCallback) {
   // Stops its own timer from inside the callback after a tick.
-  RecursiveStopper recursive_stopper(MetronomeSource::Tick());
-  task_environment_.FastForwardBy(MetronomeSource::Tick());
+  RecursiveStopper recursive_stopper(TickPeriod());
+  task_environment_.FastForwardBy(TickPeriod());
   EXPECT_EQ(recursive_stopper.callback_count(), 1u);
 
   // Ensure we are stopped, the callback count does not increase.
-  task_environment_.FastForwardBy(MetronomeSource::Tick());
+  task_environment_.FastForwardBy(TickPeriod());
   EXPECT_EQ(recursive_stopper.callback_count(), 1u);
 }
 
@@ -324,18 +328,18 @@ TEST_F(LowPrecisionTimerTest, IsActive) {
 
   // StartOneShot() makes the timer temporarily active.
   EXPECT_FALSE(is_active_checker.timer().IsActive());
-  is_active_checker.timer().StartOneShot(MetronomeSource::Tick());
+  is_active_checker.timer().StartOneShot(TickPeriod());
   EXPECT_TRUE(is_active_checker.timer().IsActive());
-  task_environment_.FastForwardBy(MetronomeSource::Tick());
+  task_environment_.FastForwardBy(TickPeriod());
   EXPECT_FALSE(is_active_checker.timer().IsActive());
   // The timer is said to be inactive inside the one-shot callback.
   EXPECT_FALSE(is_active_checker.was_active_in_last_callback());
 
   // StartRepeating() makes the timer active until stopped.
   EXPECT_FALSE(is_active_checker.timer().IsActive());
-  is_active_checker.timer().StartRepeating(MetronomeSource::Tick());
+  is_active_checker.timer().StartRepeating(TickPeriod());
   EXPECT_TRUE(is_active_checker.timer().IsActive());
-  task_environment_.FastForwardBy(MetronomeSource::Tick());
+  task_environment_.FastForwardBy(TickPeriod());
   EXPECT_TRUE(is_active_checker.timer().IsActive());
   // The timer is said to be active inside the repeating callback.
   EXPECT_TRUE(is_active_checker.was_active_in_last_callback());

@@ -16,14 +16,13 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
 #include "third_party/webrtc/api/metronome/metronome.h"
+#include "third_party/webrtc_overrides/timer_based_tick_provider.h"
 
 namespace blink {
-
-constexpr base::TimeDelta kMetronomeTick = base::Hertz(64);
-
 class WebRtcMetronomeAdapter : public webrtc::Metronome {
  public:
   explicit WebRtcMetronomeAdapter(base::WeakPtr<MetronomeSource> source)
@@ -31,7 +30,10 @@ class WebRtcMetronomeAdapter : public webrtc::Metronome {
 
   // webrtc::Metronome implementation.
   webrtc::TimeDelta TickPeriod() const override {
-    return webrtc::TimeDelta::Micros(MetronomeSource::Tick().InMicroseconds());
+    const base::TimeDelta period = source_
+                                       ? source_->TickPeriod()
+                                       : TimerBasedTickProvider::kDefaultPeriod;
+    return webrtc::TimeDelta::Micros(period.InMicroseconds());
   }
 
   void RequestCallOnNextTick(absl::AnyInvocable<void() &&> callback) override {
@@ -43,25 +45,8 @@ class WebRtcMetronomeAdapter : public webrtc::Metronome {
   const base::WeakPtr<MetronomeSource> source_;
 };
 
-// static
-base::TimeTicks MetronomeSource::Phase() {
-  return base::TimeTicks();
-}
-
-// static
-base::TimeDelta MetronomeSource::Tick() {
-  return kMetronomeTick;
-}
-
-// static
-base::TimeTicks MetronomeSource::TimeSnappedToNextTick(base::TimeTicks time) {
-  return time.SnappedToNextTick(MetronomeSource::Phase(),
-                                MetronomeSource::Tick());
-}
-
-MetronomeSource::MetronomeSource(
-    const scoped_refptr<base::SequencedTaskRunner>& metronome_task_runner)
-    : metronome_task_runner_(metronome_task_runner) {
+MetronomeSource::MetronomeSource(std::unique_ptr<TickProvider> tick_provider)
+    : tick_provider_(std::move(tick_provider)) {
   DETACH_FROM_SEQUENCE(metronome_sequence_checker_);
 }
 
@@ -91,12 +76,14 @@ void MetronomeSource::OnMetronomeTick() {
 }
 
 void MetronomeSource::Reschedule() {
-  metronome_task_runner_->PostDelayedTaskAt(
-      base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
-      base::BindOnce(&MetronomeSource::OnMetronomeTick,
-                     weak_factory_.GetWeakPtr()),
-      TimeSnappedToNextTick(base::TimeTicks::Now()),
-      base::subtle::DelayPolicy::kPrecise);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(metronome_sequence_checker_);
+  tick_provider_->RequestCallOnNextTick(base::BindOnce(
+      &MetronomeSource::OnMetronomeTick, weak_factory_.GetWeakPtr()));
+}
+
+base::TimeDelta MetronomeSource::TickPeriod() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(metronome_sequence_checker_);
+  return tick_provider_->TickPeriod();
 }
 
 std::unique_ptr<webrtc::Metronome> MetronomeSource::CreateWebRtcMetronome() {

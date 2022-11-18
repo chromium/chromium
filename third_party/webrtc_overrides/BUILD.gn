@@ -208,6 +208,8 @@ source_set("task_queue_factory") {
     # third_party/blink/renderer/platform/peerconnection/metronome_source_test.cc
     "metronome_source.cc",
     "metronome_source.h",
+    "timer_based_tick_provider.cc",
+    "timer_based_tick_provider.h",
 
     # Tested in
     # third_party/blink/renderer/platform/peerconnection/task_queue_factory_test.cc

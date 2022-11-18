@@ -17,8 +17,8 @@
 
 namespace blink {
 class LowPrecisionTimer;
-class MetronomeSource;
 class TimerBase;
+class TimerBasedTickProvider;
 class WebRtcTaskQueue;
 }
 namespace webrtc {
@@ -55,8 +55,8 @@ class PostDelayedTaskPassKey {
   friend class base::DeadlineTimer;
   friend class base::MetronomeTimer;
   friend class blink::LowPrecisionTimer;
-  friend class blink::MetronomeSource;
   friend class blink::TimerBase;
+  friend class blink::TimerBasedTickProvider;
   friend class blink::WebRtcTaskQueue;
   friend class PostDelayedTaskPassKeyForTesting;
   friend class webrtc::ThreadWrapper;

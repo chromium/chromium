@@ -16,6 +16,7 @@
 #include "third_party/webrtc/api/task_queue/task_queue_test.h"
 #include "third_party/webrtc_overrides/metronome_source.h"
 #include "third_party/webrtc_overrides/test/metronome_like_task_queue_test.h"
+#include "third_party/webrtc_overrides/timer_based_tick_provider.h"
 
 namespace blink {
 
@@ -59,10 +60,12 @@ class TaskQueueProvider : public MetronomeLikeTaskQueueProvider {
 
   base::TimeDelta DeltaToNextTick() const override {
     base::TimeTicks now = base::TimeTicks::Now();
-    return MetronomeSource::TimeSnappedToNextTick(now) - now;
+    return TimerBasedTickProvider::TimeSnappedToNextTick(
+               now, TimerBasedTickProvider::kDefaultPeriod) -
+           now;
   }
   base::TimeDelta MetronomeTick() const override {
-    return MetronomeSource::Tick();
+    return TimerBasedTickProvider::kDefaultPeriod;
   }
   webrtc::TaskQueueBase* TaskQueue() const override {
     return task_queue_.get();

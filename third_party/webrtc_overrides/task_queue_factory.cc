@@ -22,6 +22,7 @@
 #include "third_party/webrtc/api/units/time_delta.h"
 #include "third_party/webrtc_overrides/coalesced_tasks.h"
 #include "third_party/webrtc_overrides/metronome_source.h"
+#include "third_party/webrtc_overrides/timer_based_tick_provider.h"
 
 namespace blink {
 
@@ -144,7 +145,8 @@ void WebRtcTaskQueue::PostDelayedTask(absl::AnyInvocable<void() &&> task,
   base::TimeTicks target_time =
       base::TimeTicks::Now() + base::Microseconds(delay.us());
   base::TimeTicks snapped_target_time =
-      MetronomeSource::TimeSnappedToNextTick(target_time);
+      TimerBasedTickProvider::TimeSnappedToNextTick(
+          target_time, TimerBasedTickProvider::kDefaultPeriod);
   // The posted task might outlive |this|, but access to |this| is guarded by
   // the ref-counted |is_active_| flag.
   if (coalesced_tasks_.QueueDelayedTask(target_time, std::move(task),

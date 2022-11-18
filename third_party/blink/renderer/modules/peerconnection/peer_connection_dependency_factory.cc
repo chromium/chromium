@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/webrtc/thread_wrapper.h"
@@ -74,6 +75,7 @@
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 #include "third_party/webrtc/rtc_base/ssl_adapter.h"
 #include "third_party/webrtc_overrides/task_queue_factory.h"
+#include "third_party/webrtc_overrides/timer_based_tick_provider.h"
 
 namespace WTF {
 template <>
@@ -190,7 +192,8 @@ class PeerConnectionStaticDeps {
     webrtc::ThreadWrapper::current()->set_send_allowed(true);
     if (!metronome_source_) {
       metronome_source_ = std::make_unique<MetronomeSource>(
-          chrome_worker_thread_.task_runner());
+          std::make_unique<TimerBasedTickProvider>(
+              TimerBasedTickProvider::kDefaultPeriod));
     }
   }
 

@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_local.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -23,6 +24,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/rtc_base/physical_socket_server.h"
 #include "third_party/webrtc_overrides/metronome_source.h"
+#include "third_party/webrtc_overrides/timer_based_tick_provider.h"
 
 namespace webrtc {
 namespace {
@@ -237,7 +239,8 @@ void ThreadWrapper::PostDelayedTask(absl::AnyInvocable<void() &&> task,
       base::TimeTicks::Now() + base::Microseconds(delay.us());
   // Coalesce low precision tasks onto the metronome.
   base::TimeTicks snapped_target_time =
-      blink::MetronomeSource::TimeSnappedToNextTick(target_time);
+      blink::TimerBasedTickProvider::TimeSnappedToNextTick(
+          target_time, blink::TimerBasedTickProvider::kDefaultPeriod);
   if (coalesced_tasks_.QueueDelayedTask(target_time, std::move(task),
                                         snapped_target_time)) {
     task_runner_->PostDelayedTaskAt(
