@@ -197,8 +197,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void OnGetReportsToSendFromWebUI(base::OnceClosure done,
                                    std::vector<AttributionReport> reports);
 
-  void SendReports(bool log_metrics,
-                   base::RepeatingClosure done,
+  void SendReports(base::RepeatingClosure web_ui_callback,
                    std::vector<AttributionReport> reports);
   void PrepareToSendReport(AttributionReport report,
                            bool is_debug_report,

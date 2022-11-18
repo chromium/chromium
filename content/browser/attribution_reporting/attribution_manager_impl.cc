@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/overloaded.h"
@@ -752,6 +753,7 @@ void AttributionManagerImpl::GetPendingReportsForInternalUse(
 void AttributionManagerImpl::SendReportsForWebUI(
     const std::vector<AttributionReport::Id>& ids,
     base::OnceClosure done) {
+  DCHECK(done);
   attribution_storage_.AsyncCall(&AttributionStorage::GetReports)
       .WithArgs(ids)
       .Then(base::BindOnce(&AttributionManagerImpl::OnGetReportsToSendFromWebUI,
@@ -800,30 +802,33 @@ void AttributionManagerImpl::GetReportsToSend() {
                     AttributionReport::Type::kAggregatableAttribution})
       .Then(base::BindOnce(&AttributionManagerImpl::SendReports,
                            weak_factory_.GetWeakPtr(),
-                           /*log_metrics=*/true, base::DoNothing()));
+                           /*web_ui_callback=*/base::NullCallback()));
 }
 
 void AttributionManagerImpl::OnGetReportsToSendFromWebUI(
     base::OnceClosure done,
     std::vector<AttributionReport> reports) {
+  DCHECK(done);
+
   if (reports.empty()) {
     std::move(done).Run();
     return;
   }
 
-  base::Time now = base::Time::Now();
+  // Give all reports the same report time for consistency in the internals UI.
+  const base::Time now = base::Time::Now();
   for (AttributionReport& report : reports) {
     report.set_report_time(now);
   }
 
   auto barrier = base::BarrierClosure(reports.size(), std::move(done));
-  SendReports(
-      /*log_metrics=*/false, std::move(barrier), std::move(reports));
+  SendReports(std::move(barrier), std::move(reports));
 }
 
+// If `web_ui_callback` is null, assumes that `reports` are being sent at their
+// intended time, and logs metrics for them. Otherwise, does not log metrics.
 void AttributionManagerImpl::SendReports(
-    bool log_metrics,
-    base::RepeatingClosure done,
+    base::RepeatingClosure web_ui_callback,
     std::vector<AttributionReport> reports) {
   const base::Time now = base::Time::Now();
   for (AttributionReport& report : reports) {
@@ -831,7 +836,9 @@ void AttributionManagerImpl::SendReports(
 
     bool inserted = reports_being_sent_.emplace(report.ReportId()).second;
     if (!inserted) {
-      done.Run();
+      if (web_ui_callback)
+        web_ui_callback.Run();
+
       continue;
     }
 
@@ -840,17 +847,18 @@ void AttributionManagerImpl::SendReports(
       // need to make sure we forward that the report was "sent" to ensure it is
       // deleted from storage, etc. This simulates sending the report through a
       // null channel.
-      OnReportSent(done, std::move(report),
+      OnReportSent(web_ui_callback, std::move(report),
                    SendResult(SendResult::Status::kDropped));
       continue;
     }
 
-    if (log_metrics)
+    if (!web_ui_callback)
       LogMetricsOnReportSend(report, now);
 
-    PrepareToSendReport(std::move(report), /*is_debug_report=*/false,
-                        base::BindOnce(&AttributionManagerImpl::OnReportSent,
-                                       weak_factory_.GetWeakPtr(), done));
+    PrepareToSendReport(
+        std::move(report), /*is_debug_report=*/false,
+        base::BindOnce(&AttributionManagerImpl::OnReportSent,
+                       weak_factory_.GetWeakPtr(), web_ui_callback));
   }
 }
 
@@ -894,7 +902,8 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
       [](base::OnceClosure done, base::WeakPtr<AttributionManagerImpl> manager,
          AttributionReport::Id report_id,
          absl::optional<base::Time> new_report_time, bool success) {
-        std::move(done).Run();
+        if (done)
+          std::move(done).Run();
 
         if (manager && success) {
           manager->MarkReportCompleted(report_id);
