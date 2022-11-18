@@ -4584,6 +4584,48 @@ TEST_P(CertVerifyProcConstraintsTest, InhibitAnyPolicy1Intermediate) {
   EXPECT_THAT(Verify(), IsOk());
 }
 
+TEST_P(CertVerifyProcConstraintsTest, PoliciesRoot) {
+  static const char kPolicy1[] = "1.2.3.4";
+  static const char kPolicy2[] = "1.2.3.5";
+
+  for (bool root_has_matching_policy : {false, true}) {
+    SCOPED_TRACE(root_has_matching_policy);
+
+    if (root_has_matching_policy) {
+      // This chain should be valid whether or not policies from the root are
+      // processed.
+      chain_[3]->SetCertificatePolicies({kPolicy1});
+    } else {
+      // If the policies from the root are processed, this chain will not be
+      // valid for any policy.
+      chain_[3]->SetCertificatePolicies({kPolicy2});
+    }
+
+    // Policy constraints are specified on an intermediate so that an explicit
+    // policy will be required regardless if root constraints are applied.
+    chain_[2]->SetPolicyConstraints(
+        /*require_explicit_policy=*/0,
+        /*inhibit_policy_mapping=*/absl::nullopt);
+
+    chain_[2]->SetCertificatePolicies({kPolicy1});
+    chain_[1]->SetCertificatePolicies({kPolicy1});
+    chain_[0]->SetCertificatePolicies({kPolicy1});
+
+    if (root_has_matching_policy) {
+      EXPECT_THAT(Verify(), IsOk());
+    } else {
+      if (VerifyProcTypeIsBuiltin() ||
+          verify_proc_type() == CERT_VERIFY_PROC_MAC ||
+          verify_proc_type() == CERT_VERIFY_PROC_IOS ||
+          verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
+        EXPECT_THAT(Verify(), IsOk());
+      } else {
+        EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
+      }
+    }
+  }
+}
+
 TEST_P(CertVerifyProcConstraintsTest, KeyUsageNoCertSignRoot) {
   chain_[3]->SetKeyUsages({KEY_USAGE_BIT_CRL_SIGN});
 
