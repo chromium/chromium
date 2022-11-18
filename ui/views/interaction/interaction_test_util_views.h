@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_INTERACTION_INTERACTION_TEST_UTIL_VIEWS_H_
 #define UI_VIEWS_INTERACTION_INTERACTION_TEST_UTIL_VIEWS_H_
 
+#include <string>
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_test_util.h"
 
@@ -39,6 +40,10 @@ class InteractionTestUtilSimulatorViews
   bool SelectDropdownItem(ui::TrackedElement* dropdown,
                           size_t index,
                           InputType input_type) override;
+  bool EnterText(ui::TrackedElement* element,
+                 const std::u16string& text,
+                 TextEntryMode mode) override;
+  bool Confirm(ui::TrackedElement* element) override;
 
   // Convenience method for tests that need to simulate a button press and have
   // direct access to the button.

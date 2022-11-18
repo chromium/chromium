@@ -11,11 +11,14 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/events/event.h"
+#include "ui/events/types/event_type.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
@@ -107,6 +110,22 @@ class InteractionTestUtilSimulatorBrowser
                                                                     input_type);
     CHECK_EQ(static_cast<int>(index), tab_strip->GetActiveIndex());
     return true;
+  }
+
+  bool Confirm(ui::TrackedElement* element) override {
+    // This handler *explicitly* only handles OmniboxView; it will reject any
+    // other element or View type.
+    if (!element->IsA<views::TrackedElementViews>())
+      return false;
+    auto* const view = element->AsA<views::TrackedElementViews>()->view();
+    if (auto* const omnibox = views::AsViewClass<OmniboxViewViews>(view)) {
+      ui::KeyEvent press(ui::ET_KEY_PRESSED, ui::VKEY_RETURN, ui::EF_NONE);
+      omnibox->OnKeyEvent(&press);
+      ui::KeyEvent release(ui::ET_KEY_RELEASED, ui::VKEY_RETURN, ui::EF_NONE);
+      omnibox->OnKeyEvent(&release);
+      return true;
+    }
+    return false;
   }
 };
 

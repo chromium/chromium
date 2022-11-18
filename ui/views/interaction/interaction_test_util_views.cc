@@ -4,6 +4,7 @@
 
 #include "ui/views/interaction/interaction_test_util_views.h"
 
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -17,6 +18,7 @@
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/base/ime/text_input_client.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/events/base_event_utils.h"
@@ -24,6 +26,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/gesture_event_details.h"
 #include "ui/events/types/event_type.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
@@ -39,6 +42,7 @@
 #include "ui/views/view_tracker.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace views::test {
 
@@ -215,18 +219,22 @@ void SendTapGesture(T* target, const gfx::Point& point) {
   target->OnGestureEvent(&release_event);
 }
 
-// Sends a key press to the specified `target`.
-void SendKeyPress(View* view, ui::KeyboardCode code) {
+// Sends a key press to the specified `target`. Returns true if the view is
+// still valid after processing the keypress.
+bool SendKeyPress(View* view, ui::KeyboardCode code, int flags = ui::EF_NONE) {
   ViewTracker tracker(view);
-  view->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, code, ui::EF_NONE,
-                                  ui::EventTimeForNow()));
+  view->OnKeyPressed(
+      ui::KeyEvent(ui::ET_KEY_PRESSED, code, flags, ui::EventTimeForNow()));
 
   // Verify that the button is not destroyed after the key-down before trying
   // to send the key-up.
-  if (tracker.view()) {
-    tracker.view()->OnKeyReleased(ui::KeyEvent(
-        ui::ET_KEY_RELEASED, code, ui::EF_NONE, ui::EventTimeForNow()));
-  }
+  if (!tracker.view())
+    return false;
+
+  tracker.view()->OnKeyReleased(
+      ui::KeyEvent(ui::ET_KEY_RELEASED, code, flags, ui::EventTimeForNow()));
+
+  return tracker.view();
 }
 
 }  // namespace
@@ -425,6 +433,85 @@ bool InteractionTestUtilSimulatorViews::SelectDropdownItem(
   selector.SelectItem();
   return selector.success();
 #endif
+}
+
+bool InteractionTestUtilSimulatorViews::EnterText(ui::TrackedElement* element,
+                                                  const std::u16string& text,
+                                                  TextEntryMode mode) {
+  if (!element->IsA<TrackedElementViews>())
+    return false;
+  auto* const view = element->AsA<TrackedElementViews>()->view();
+
+  // Currently, Textfields (and derived types like Textareas) are supported, as
+  // well as EditableCombobox.
+  Textfield* textfield = AsViewClass<Textfield>(view);
+  if (!textfield && IsViewClass<EditableCombobox>(view))
+    textfield = AsViewClass<EditableCombobox>(view)->textfield_;
+
+  if (textfield) {
+    if (textfield->GetReadOnly()) {
+      LOG(ERROR) << "Cannot set text on read-only textfield.";
+      return false;
+    }
+
+    // Textfield does not expose all of the power of RenderText so some care has
+    // to be taken in positioning the input caret using the methods available to
+    // this class.
+    switch (mode) {
+      case TextEntryMode::kAppend: {
+        // Determine the start and end of the selectable range, and position the
+        // caret immediately after the end of the range. This approach does not
+        // make any assumptions about the indexing mode of the text,
+        // multi-codepoint characters, etc.
+        textfield->SelectAll(false);
+        auto range = textfield->GetSelectedRange();
+        range.set_start(range.end());
+        textfield->SetSelectedRange(range);
+        break;
+      }
+      case TextEntryMode::kInsertOrReplace:
+        // No action needed; keep selection and cursor as they are.
+        break;
+      case TextEntryMode::kReplaceAll:
+        textfield->SelectAll(false);
+        break;
+    }
+
+    // This is an IME method that is the closest thing to inserting text from
+    // the user rather than setting it programmatically.
+    textfield->InsertText(
+        text,
+        ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+    return true;
+  }
+
+  return false;
+}
+
+bool InteractionTestUtilSimulatorViews::Confirm(ui::TrackedElement* element) {
+  if (!element->IsA<TrackedElementViews>())
+    return false;
+  auto* const view = element->AsA<TrackedElementViews>()->view();
+
+  // Currently, only dialogs can be confirmed. Fetch the delegate and call
+  // Accept().
+  DialogDelegate* delegate = nullptr;
+  if (auto* const dialog = AsViewClass<DialogDelegateView>(view)) {
+    delegate = dialog->AsDialogDelegate();
+  } else if (auto* const bubble = AsViewClass<BubbleDialogDelegateView>(view)) {
+    delegate = bubble->AsDialogDelegate();
+  }
+
+  if (!delegate)
+    return false;
+
+  if (!delegate->GetOkButton()) {
+    LOG(ERROR) << "Confirm(): cannot confirm dialog that has no OK button.";
+    return false;
+  }
+
+  delegate->AcceptDialog();
+  return true;
 }
 
 void InteractionTestUtilSimulatorViews::DoDefaultAction(View* view,

@@ -5,6 +5,7 @@
 #include "ui/base/interaction/interactive_test.h"
 
 #include <memory>
+#include <string>
 
 #include "base/auto_reset.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -92,6 +93,32 @@ InteractionSequence::StepBuilder InteractiveTestApi::SelectDropdownItem(
         test->test_util().SelectDropdownItem(el, item, input_type);
       },
       item, input_type, base::Unretained(this)));
+  return builder;
+}
+
+InteractionSequence::StepBuilder InteractiveTestApi::EnterText(
+    ElementSpecifier element,
+    std::u16string text,
+    TextEntryMode mode) {
+  StepBuilder builder;
+  internal::SpecifyElement(builder, element);
+  builder.SetStartCallback(base::BindOnce(
+      [](std::u16string text, TextEntryMode mode, InteractiveTestApi* test,
+         InteractionSequence*, TrackedElement* el) {
+        test->test_util().EnterText(el, std::move(text), mode);
+      },
+      std::move(text), mode, base::Unretained(this)));
+  return builder;
+}
+
+InteractionSequence::StepBuilder InteractiveTestApi::Confirm(
+    ElementSpecifier element) {
+  StepBuilder builder;
+  internal::SpecifyElement(builder, element);
+  builder.SetStartCallback(
+      base::BindOnce([](InteractiveTestApi* test, InteractionSequence*,
+                        TrackedElement* el) { test->test_util().Confirm(el); },
+                     base::Unretained(this)));
   return builder;
 }
 

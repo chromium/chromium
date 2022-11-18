@@ -18,6 +18,7 @@
 #include "ui/views/interaction/element_tracker_views.h"
 
 namespace {
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
 constexpr char kDocumentWithTitle1URL[] = "/title1.html";
 }
 
@@ -60,8 +61,6 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest, CompareScreenshot_View) {
 
 IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest,
                        CompareScreenshot_WebPage) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
-
   // Set the browser view to a consistent size.
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser());
@@ -74,6 +73,15 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest,
                   // This adds a callback that calls
                   // InteractionTestUtilBrowser::CompareScreenshot().
                   Screenshot(kWebContentsElementId, std::string(), "3924454"));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest, ConfirmOmnibox) {
+  InstrumentTab(browser(), kWebContentsElementId);
+  constexpr char16_t kNewUrl[] = u"chrome://version";
+
+  RunTestSequence(
+      EnterText(kOmniboxElementId, kNewUrl), Confirm(kOmniboxElementId),
+      WaitForWebContentsNavigation(kWebContentsElementId, GURL(kNewUrl)));
 }
 
 class InteractionTestUtilBrowserSelectTabTest

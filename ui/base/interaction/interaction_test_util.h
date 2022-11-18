@@ -6,6 +6,7 @@
 #define UI_BASE_INTERACTION_INTERACTION_TEST_UTIL_H_
 
 #include <memory>
+#include <vector>
 
 #include "ui/base/interaction/element_tracker.h"
 
@@ -20,10 +21,10 @@ namespace ui::test {
 // class MyTest {
 //   void SetUp() override {
 //     test_util_.AddSimulator(
-//         std::make_unique<InteractionTestUtilSimuatorViews>());
+//         std::make_unique<InteractionTestUtilSimulatorViews>());
 // #if BUILDFLAG(IS_MAC)
 //     test_util_.AddSimulator(
-//         std::make_unique<InteractionTestUtilSimuatorMac>());
+//         std::make_unique<InteractionTestUtilSimulatorMac>());
 // #endif
 //     ...
 //   }
@@ -61,6 +62,17 @@ class InteractionTestUtil {
     kTouch
   };
 
+  // How should text be sent to a text input?
+  enum class TextEntryMode {
+    // Replaces all of the existing text with the new text.
+    kReplaceAll,
+    // Inserts the new text at the current cursor position, replacing any
+    // existing selection.
+    kInsertOrReplace,
+    // Appends the new text to the end of the existing text.
+    kAppend
+  };
+
   // Provides framework-agnostic ways to send common input to the UI, such as
   // clicking buttons, typing text, etc.
   //
@@ -74,6 +86,7 @@ class InteractionTestUtil {
     void operator=(const Simulator&) = delete;
 
     using InputType = InteractionTestUtil::InputType;
+    using TextEntryMode = InteractionTestUtil::TextEntryMode;
 
     // Tries to press `element` as if it is a button. Returns false if `element`
     // is an unsupported type or if `input_type` is not supported.
@@ -103,6 +116,14 @@ class InteractionTestUtil {
     [[nodiscard]] virtual bool SelectDropdownItem(TrackedElement* dropdown,
                                                   size_t index,
                                                   InputType input_type);
+
+    // Sets or modifies the text of a text box, editable combobox, etc.
+    [[nodiscard]] virtual bool EnterText(TrackedElement* element,
+                                         const std::u16string& text,
+                                         TextEntryMode mode);
+
+    // Sends a "confirm" input to `element`, e.g. a RETURN keypress.
+    [[nodiscard]] virtual bool Confirm(TrackedElement* element);
   };
 
   InteractionTestUtil();
@@ -155,6 +176,16 @@ class InteractionTestUtil {
   // Prefer PressButton() for buttons and SelectMenuItem() for menu items.
   void DoDefaultAction(TrackedElement* element,
                        InputType input_type = InputType::kDontCare);
+
+  // Sets or modifies the text of a text box, editable combobox, etc. `text` is
+  // the text to enter, and `mode` specifies how it should be entered. Default
+  // is replace existing text.
+  void EnterText(TrackedElement* element,
+                 std::u16string text,
+                 TextEntryMode mode = TextEntryMode::kReplaceAll);
+
+  // Sends a "confirm" input to `element`, e.g. a RETURN keypress.
+  void Confirm(TrackedElement* element);
 
  private:
   // The list of known simulators.

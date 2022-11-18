@@ -105,12 +105,15 @@ Verbs fall into a number of different categories:
   when the step is triggered, the test fails. There is also a version that looks
   for a DOM element in an
   [instrumented WebContents](#webcontents-instrumentation) [Browser].
-- **Action** verbs simulate input to specific UI elements. You may specify the
-  type of input you want to simulate (keyboard, mouse, etc.) but you don't have
-  to. Examples:
+- **Action** verbs simulate input to specific UI elements. You can often specify
+  the type of input you want to simulate (keyboard, mouse, etc.) but you don't
+  have to. Examples:
     - `PressButton()`
     - `SelectMenuItem()`
     - `SelectTab()`
+    - `SelectDropdownItem()`
+    - `EnterText()`
+    - `Confirm()`
     - `DoDefaultAction()`
     - `NavigateWebContents()` [Browser]
 - **Mouse** verbs simulate mouse input to the entire application, and are

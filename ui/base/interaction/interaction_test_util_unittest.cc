@@ -4,8 +4,11 @@
 
 #include "ui/base/interaction/interaction_test_util.h"
 
+#include <string>
+
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ime/text_input_mode.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
 
@@ -35,6 +38,11 @@ class MockInteractionSimulator : public InteractionTestUtil::Simulator {
                bool(TrackedElement* dropdown,
                     size_t index,
                     InputType input_type));
+  MOCK_METHOD3(EnterText,
+               bool(TrackedElement* element,
+                    const std::u16string& text,
+                    TextEntryMode mode));
+  MOCK_METHOD1(Confirm, bool(TrackedElement* element));
 };
 
 }  // namespace
@@ -93,6 +101,35 @@ TEST(InteractionTestUtilTest, SelectDropdownItem) {
                                  InteractionTestUtil::InputType::kDontCare))
       .WillOnce(testing::Return(true));
   util.SelectDropdownItem(&element, 1U);
+}
+
+TEST(InteractionTestUtilTest, EnterText) {
+  constexpr char16_t kText[] = u"Some text.";
+  TestElement element(kTestElementIdentifier, kTestElementContext);
+  InteractionTestUtil util;
+  auto* const mock = util.AddSimulator(
+      std::make_unique<testing::StrictMock<MockInteractionSimulator>>());
+
+  EXPECT_CALL(*mock, EnterText(&element, std::u16string(kText),
+                               InteractionTestUtil::TextEntryMode::kAppend))
+      .WillOnce(testing::Return(true));
+  util.EnterText(&element, kText, InteractionTestUtil::TextEntryMode::kAppend);
+
+  EXPECT_CALL(*mock, EnterText(&element, std::u16string(kText),
+                               InteractionTestUtil::TextEntryMode::kReplaceAll))
+      .WillOnce(testing::Return(true));
+  util.EnterText(&element, kText,
+                 InteractionTestUtil::TextEntryMode::kReplaceAll);
+}
+
+TEST(InteractionTestUtilTest, Confirm) {
+  TestElement element(kTestElementIdentifier, kTestElementContext);
+  InteractionTestUtil util;
+  auto* const mock = util.AddSimulator(
+      std::make_unique<testing::StrictMock<MockInteractionSimulator>>());
+
+  EXPECT_CALL(*mock, Confirm(&element)).WillOnce(testing::Return(true));
+  util.Confirm(&element);
 }
 
 }  // namespace ui::test

@@ -25,7 +25,9 @@ enum class ActionType {
   kSelectMenuItem,
   kDoDefaultAction,
   kSelectTab,
-  kSelectDropdownItem
+  kSelectDropdownItem,
+  kEnterText,
+  kConfirm
 };
 
 using ActionRecord = std::tuple<ActionType,
@@ -74,6 +76,18 @@ class TestSimulator : public InteractionTestUtil::Simulator {
                           size_t item,
                           InputType input_type) override {
     DoAction(ActionType::kSelectDropdownItem, collection, input_type);
+    return true;
+  }
+
+  bool EnterText(TrackedElement* element,
+                 const std::u16string& text,
+                 TextEntryMode mode) override {
+    DoAction(ActionType::kEnterText, element, InputType::kKeyboard);
+    return true;
+  }
+
+  bool Confirm(TrackedElement* element) override {
+    DoAction(ActionType::kConfirm, element, InputType::kDontCare);
     return true;
   }
 
@@ -143,7 +157,9 @@ TEST_F(InteractiveTestTest, InteractionVerbs) {
       SelectMenuItem(kTestId2, InputType::kKeyboard),
       DoDefaultAction(kTestId3, InputType::kMouse),
       SelectTab(kTestId4, 3U, InputType::kTouch),
-      SelectDropdownItem(kTestId1, 2U, InputType::kDontCare));
+      SelectDropdownItem(kTestId1, 2U, InputType::kDontCare),
+      EnterText(kTestId2, u"The quick brown fox.", TextEntryMode::kAppend),
+      Confirm(kTestId3));
 
   EXPECT_THAT(simulator()->records(),
               testing::ElementsAre(
@@ -156,7 +172,11 @@ TEST_F(InteractiveTestTest, InteractionVerbs) {
                   ActionRecord{ActionType::kSelectTab, kTestId4, kTestContext1,
                                InputType::kTouch},
                   ActionRecord{ActionType::kSelectDropdownItem, kTestId1,
-                               kTestContext1, InputType::kDontCare}));
+                               kTestContext1, InputType::kDontCare},
+                  ActionRecord{ActionType::kEnterText, kTestId2, kTestContext1,
+                               InputType::kKeyboard},
+                  ActionRecord{ActionType::kConfirm, kTestId3, kTestContext1,
+                               InputType::kDontCare}));
 }
 
 TEST_F(InteractiveTestTest, InteractionVerbsInAnyContext) {
@@ -173,7 +193,9 @@ TEST_F(InteractiveTestTest, InteractionVerbsInAnyContext) {
       InAnyContext(SelectMenuItem(kTestId2, InputType::kKeyboard)),
       InAnyContext(DoDefaultAction(kTestId3, InputType::kMouse)),
       InAnyContext(SelectTab(kTestId4, 3U, InputType::kTouch)),
-      InAnyContext(SelectDropdownItem(kTestId1, 2U, InputType::kDontCare)));
+      InAnyContext(SelectDropdownItem(kTestId1, 2U, InputType::kDontCare)),
+      InAnyContext(EnterText(kTestId2, u"The quick brown fox.")),
+      InAnyContext(Confirm(kTestId3)));
 
   EXPECT_THAT(simulator()->records(),
               testing::ElementsAre(
@@ -186,7 +208,11 @@ TEST_F(InteractiveTestTest, InteractionVerbsInAnyContext) {
                   ActionRecord{ActionType::kSelectTab, kTestId4, kTestContext1,
                                InputType::kTouch},
                   ActionRecord{ActionType::kSelectDropdownItem, kTestId1,
-                               kTestContext1, InputType::kDontCare}));
+                               kTestContext1, InputType::kDontCare},
+                  ActionRecord{ActionType::kEnterText, kTestId2, kTestContext1,
+                               InputType::kKeyboard},
+                  ActionRecord{ActionType::kConfirm, kTestId3, kTestContext1,
+                               InputType::kDontCare}));
 }
 
 TEST_F(InteractiveTestTest, Do) {

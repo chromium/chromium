@@ -50,6 +50,7 @@ class InteractiveTestApi {
   using InputType = InteractionTestUtil::InputType;
   using MultiStep = internal::InteractiveTestPrivate::MultiStep;
   using StepBuilder = InteractionSequence::StepBuilder;
+  using TextEntryMode = InteractionTestUtil::TextEntryMode;
 
   // Construct a MultiStep from one or more StepBuilders and/or MultiSteps.
   template <typename... Args>
@@ -96,6 +97,11 @@ class InteractiveTestApi {
       ElementSpecifier collection,
       size_t item,
       InputType input_type = InputType::kDontCare);
+  [[nodiscard]] StepBuilder EnterText(
+      ElementSpecifier element,
+      std::u16string text,
+      TextEntryMode mode = TextEntryMode::kReplaceAll);
+  [[nodiscard]] StepBuilder Confirm(ElementSpecifier element);
 
   // Specifies a test action that is not tied to any one UI element.
   // Returns true on success, false on failure (which will fail the test).
