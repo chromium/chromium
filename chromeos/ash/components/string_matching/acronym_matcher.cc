@@ -47,6 +47,7 @@ AcronymMatcher::AcronymMatcher(const TokenizedString& query,
   for (auto token : text.tokens()) {
     text_acronym_.push_back(token[0]);
   }
+  text_mapping_ = text.mappings();
 }
 AcronymMatcher::~AcronymMatcher() = default;
 
@@ -60,6 +61,13 @@ double AcronymMatcher::CalculateRelevance() {
   if (found_index == 0) {
     relevance += kIsPrefixCharScore - kIsFrontOfTokenCharScore;
   }
+
+  // update the |hits_| if there is a match.
+  for (size_t i = 0; i < query_.size(); i++) {
+    size_t start_pos = text_mapping_[i].start();
+    hits_.emplace_back(start_pos, start_pos + 1);
+  }
+
   return relevance;
 }
 

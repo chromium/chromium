@@ -6,7 +6,9 @@
 #define CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_ACRONYM_MATCHER_H_
 
 #include <string>
+
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
+#include "ui/gfx/range/range.h"
 
 namespace ash::string_matching {
 
@@ -28,6 +30,8 @@ constexpr double kNoMatchScore = 0.0;
 // and "abdc" are not.
 class AcronymMatcher {
  public:
+  typedef std::vector<gfx::Range> Hits;
+
   AcronymMatcher(const TokenizedString& query, const TokenizedString& text);
   ~AcronymMatcher();
 
@@ -38,9 +42,21 @@ class AcronymMatcher {
   // and returns true. Otherwise, returns false to indicate no match.
   double CalculateRelevance();
 
+  // Return the hits match of the AcronymMatcher. E.g.,
+  // For query: "coc" and text: "Crash Of Crowns".
+  // The hit would be {{0,1}, {6,7}, {9,10}} as the query is matched at position
+  // 0, 6 and 9, i.e., "[C]rash [O]f [C]rowns".
+  //
+  // N.B. This function is not expected to be called before the function
+  // `CalculateRelevance()`.
+  const Hits& hits() const { return hits_; }
+
  private:
   std::u16string query_;
   std::u16string text_acronym_;
+  Hits text_mapping_;
+
+  Hits hits_;
 };
 
 }  // namespace ash::string_matching
