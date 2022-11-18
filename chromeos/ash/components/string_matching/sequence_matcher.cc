@@ -17,6 +17,9 @@ namespace {
 using Match = SequenceMatcher::Match;
 using Matches = std::vector<Match>;
 
+// The maximum recognized text size if text-length agnosticism is applied.
+constexpr int kTextAgnosticismSize = 9;
+
 bool CompareMatches(const Match& m1, const Match& m2) {
   return m1.pos_first_string < m2.pos_first_string;
 }
@@ -220,7 +223,7 @@ int SequenceMatcher::EditDistance() {
   return edit_distance_;
 }
 
-double SequenceMatcher::Ratio() {
+double SequenceMatcher::Ratio(bool use_text_length_agnosticism) {
   if (use_edit_distance_) {
     if (edit_distance_ratio_ < 0) {
       const int edit_distance = EditDistance();
@@ -234,7 +237,22 @@ double SequenceMatcher::Ratio() {
   // Uses block matching to calculate ratio.
   if (block_matching_ratio_ < 0) {
     int sum_match = 0;
-    const int sum_length = first_string_.size() + second_string_.size();
+    const int query_size = first_string_.size();
+    const int text_size = second_string_.size();
+
+    int sum_length = query_size;
+    // Text-length agnosticism is applied for long texts if
+    // `use_text_length_agnosticism` is true, but we still keep it not shorter
+    // than the query length. Text length agnosticism is ignored if we have a
+    // longer query than the text.
+    if (use_text_length_agnosticism && query_size < text_size) {
+      int max_recognized_text_length =
+          std::max(kTextAgnosticismSize, query_size);
+      sum_length += std::min(text_size, max_recognized_text_length);
+    } else {
+      sum_length += text_size;
+    }
+
     DCHECK_NE(sum_length, 0);
     const int num_blocks = GetMatchingBlocks().size();
     for (const auto& match : GetMatchingBlocks()) {

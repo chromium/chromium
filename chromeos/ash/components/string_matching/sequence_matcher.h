@@ -15,6 +15,7 @@ namespace {
 
 constexpr double kNumMatchingBlocksPenalty = 0.1;
 constexpr bool kUseEditDistance = false;
+constexpr bool kUseTextLengthAgnosticism = false;
 
 }  // namespace
 
@@ -45,7 +46,7 @@ class SequenceMatcher {
   // blocks. For the same number of matching characters, we prefer fewer
   // matching blocks. Value equal to 0 means no penalty. Values greater than 0
   // means heavier penalty will be applied to larger number of blocks. This is
-  // only appled if `use_edit_distance` is false.
+  // only applied if `use_edit_distance` is false.
   SequenceMatcher(
       const std::u16string& first_string,
       const std::u16string& second_string,
@@ -58,7 +59,18 @@ class SequenceMatcher {
   ~SequenceMatcher();
 
   // Calculates similarity ratio of `first_string_` and `second_string_`.
-  double Ratio();
+  //
+  // In the actual string matching in launcher searches, we will input with the
+  // query as `first_string_` and the text as `second_string_`. As the query is
+  // likely to be shorter than the text in most cases, we would like to
+  // ignore/lower the influence of the amounts of any remaining unmatched
+  // portions of the `second_string_` onto the ratio (i.e., "text-length
+  // agnosticism").
+  //
+  // Thus, We will trim the text length if it is too long and
+  // `use_text_length_agnosticism` is true, and it only works for the block
+  // matching algorithm.
+  double Ratio(bool use_text_length_agnosticism = kUseTextLengthAgnosticism);
   // Calculates the Damerau–Levenshtein restricted edit distance between
   // `first_string_` and `second_string_`. Also known as the "optimal string
   // alignment distance".

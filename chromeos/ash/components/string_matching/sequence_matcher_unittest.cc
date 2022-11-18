@@ -143,6 +143,25 @@ TEST_F(SequenceMatcherTest, TestSequenceMatcherRatioWithPenalty) {
       0.0, 0.001);
 }
 
+TEST_F(SequenceMatcherTest, TestSequenceMatcherRatioWithTextLengthAgnosticism) {
+  // Two matching blocks, total matching blocks length is 4.
+  EXPECT_NEAR(
+      SequenceMatcher(u"word", u"hello world", 0.0, kDefaultUseEditDistance)
+          .Ratio(/*use_text_length_agnosticism=*/true),
+      0.615, 0.001);
+
+  // One matching block, length is 4.
+  EXPECT_NEAR(
+      SequenceMatcher(u"worl", u"hello world", 0.0, kDefaultUseEditDistance)
+          .Ratio(/*use_text_length_agnosticism=*/true),
+      0.615, 0.001);
+
+  // No matching block at all.
+  EXPECT_NEAR(
+      SequenceMatcher(u"abcd", u"xyz", 0.0, kDefaultUseEditDistance).Ratio(),
+      0.0, 0.001);
+}
+
 TEST_F(SequenceMatcherTest, TestEditDistanceRatio) {
   ASSERT_EQ(SequenceMatcher(u"abcd", u"adbc", 0.0, true).Ratio(), 0.5);
   EXPECT_NEAR(SequenceMatcher(u"white cats", u"cats white", 0.0, true).Ratio(),

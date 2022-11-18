@@ -262,7 +262,7 @@ TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkCompleteNonMatchMultiToken) {
 TEST_F(FuzzyTokenizedStringMatchTest,
        BenchmarkVariedLengthUnmatchedTextSingleToken) {
   std::u16string full_text = u"abcdefghijklmnop";
-  const size_t shortest_text_length = 6;
+  const size_t shortest_text_length = 9;
   const size_t longest_text_length = full_text.size();
 
   std::vector<std::u16string> queries = {u"abc", u"bcd", u"cde", u"def"};
@@ -272,13 +272,15 @@ TEST_F(FuzzyTokenizedStringMatchTest,
     // text, the relevance score should not be influenced by the
     // amounts of any remaining unmatched portions of text ("text-length
     // agnosticism").
+    std::vector<double> scores;
     for (size_t i = shortest_text_length; i < longest_text_length; ++i) {
       std::u16string text = full_text.substr(0, i);
       const double relevance = CalculateRelevance(query, text);
+      scores.push_back(relevance);
       VLOG(1) << FormatRelevanceResult(query, text, relevance,
                                        /*query_first*/ true);
     }
-    // TODO(crbug.com/1336160): Enforce/check text-length agnosticism.
+    ExpectAllNearlyEqual(scores);
   }
 }
 
@@ -300,12 +302,14 @@ TEST_F(FuzzyTokenizedStringMatchTest,
     // text, the relevance score should not be influenced by the
     // amounts of any remaining unmatched portions of text ("text-length
     // agnosticism").
+    std::vector<double> scores;
     for (const auto& text : texts) {
       const double relevance = CalculateRelevance(query, text);
       VLOG(1) << FormatRelevanceResult(query, text, relevance,
                                        /*query_first*/ true);
+      scores.push_back(relevance);
     }
-    // TODO(crbug.com/1336160): Enforce/check text-length agnosticism.
+    ExpectAllNearlyEqual(scores);
   }
 }
 
@@ -421,11 +425,6 @@ TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkTokensPresentInTextButNotQuery) {
     scores_query_two_tokens.push_back(relevance);
   }
   ExpectAllNearlyEqual(scores_query_two_tokens, /*abs_error*/ 0.1);
-
-  // TODO(crbug.com/1336160): Support text-length agnosticism, whereby
-  // non-matched text tokens have no (or less of) an adverse effect on scoring.
-  // Maybe add some score comparisons between `scores_query_single_token` and
-  // `scores_query_two_tokens`.
 
   // TODO(crbug.com/1336160): [Later] Consider a score boost for when a matched
   // token is the first token of both text and query.
@@ -1162,16 +1161,19 @@ TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkKeyboardShortcutsDesk) {
   }
 }
 
-// TODO(crbug.com/1327090): Reduce/remove penalties for unmatched text.
 TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkKeyboardShortcutsEmojiPicker) {
   std::u16string text = u"Open Emoji picker";
   std::vector<std::u16string> queries = {u"emoj", u"emoji", u"emoji ",
                                          u"emoji p", u"emoji pi"};
+  std::vector<double> scores;
   for (const auto& query : queries) {
     const double relevance = CalculateRelevance(query, text);
     VLOG(1) << FormatRelevanceResult(query, text, relevance,
                                      /*query_first*/ false);
+    scores.push_back(relevance);
   }
+  ExpectMostlyIncreasing(scores, /*epsilon=*/0.001);
+  ExpectAllNearlyEqualTo(scores, 0.9, /*abs_error=*/0.1);
 }
 
 TEST_F(FuzzyTokenizedStringMatchTest,
@@ -1189,17 +1191,19 @@ TEST_F(FuzzyTokenizedStringMatchTest,
   ExpectAllNearlyEqual(scores);
 }
 
-// TODO(crbug.com/1336160): Introduce some kind of agnosticism to text length.
 TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkSettingsPreferences) {
   std::u16string query = u"preferences";
   std::vector<std::u16string> texts = {
       u"Android preferences", u"Caption preferences", u"System preferences",
       u"External storage preferences"};
+  std::vector<double> scores;
   for (const auto& text : texts) {
     const double relevance = CalculateRelevance(query, text);
+    scores.push_back(relevance);
     VLOG(1) << FormatRelevanceResult(query, text, relevance,
                                      /*query_first*/ true);
   }
+  ExpectAllNearlyEqual(scores);
 }
 
 /**********************************************************************
@@ -1325,7 +1329,7 @@ TEST_F(FuzzyTokenizedStringMatchTest, WeightedRatio) {
         u"this sentence is much much much much much longer "
         u"than the text before");
     EXPECT_NEAR(
-        match.WeightedRatio(TokenizedString(query), TokenizedString(text)), 0.5,
+        match.WeightedRatio(TokenizedString(query), TokenizedString(text)), 0.6,
         0.1);
   }
 }
@@ -1460,7 +1464,7 @@ TEST_F(FuzzyTokenizedStringMatchTest, ParamThresholdTest) {
     std::u16string text(u"ClashOfTitan");
     EXPECT_LT(
         match.Relevance(TokenizedString(query), TokenizedString(text), true),
-        0.75);
+        0.77);
   }
 }
 
