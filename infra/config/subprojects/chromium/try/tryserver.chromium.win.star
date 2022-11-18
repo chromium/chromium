@@ -66,6 +66,7 @@ try_.builder(
     os = os.WINDOWS_ANY,
     tryjob = try_.job(),
     goma_backend = None,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
 try_.orchestrator_builder(

@@ -83,13 +83,13 @@
   },
   "$build/goma": {
     "enable_ats": true,
-    "jobs": 150,
+    "jobs": 300,
     "rpc_extra_params": "?prod",
     "server_host": "goma.chromium.org"
   },
   "$build/reclient": {
     "instance": "rbe-chromium-untrusted",
-    "jobs": 150,
+    "jobs": 300,
     "metrics_project": "chromium-reclient-metrics"
   },
   "$recipe_engine/resultdb/test_presentation": {
