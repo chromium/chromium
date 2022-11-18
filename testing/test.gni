@@ -696,13 +696,12 @@ template("test") {
     force_xctest = enable_run_ios_unittests_with_xctest ||
                    (defined(invoker.is_xctest) && invoker.is_xctest)
 
-    if (force_xctest) {
-      ios_test_target_type = "ios_xctest_test"
-    } else {
-      ios_test_target_type = "ios_app_bundle"
-    }
-
-    target(ios_test_target_type, _test_target) {
+    mixed_test(_test_target) {
+      if (force_xctest) {
+        target_type = "ios_xctest_test"
+      } else {
+        target_type = "ios_app_bundle"
+      }
       testonly = true
 
       if (force_xctest && build_with_chromium) {
