@@ -126,7 +126,8 @@ void AutofillPopupViewAndroid::OnSuggestionsChanged() {
         suggestion.frontend_id == POPUP_ITEM_ID_MIXED_FORM_MESSAGE;
 
     Java_AutofillPopupBridge_addToAutofillSuggestionArray(
-        env, data_array, i, base::android::ConvertUTF16ToJavaString(env, label),
+        env, java_object_, data_array, i,
+        base::android::ConvertUTF16ToJavaString(env, label),
         base::android::ConvertUTF16ToJavaString(env, secondary_label),
         base::android::ConvertUTF16ToJavaString(env, sublabel),
         base::android::ConvertUTF16ToJavaString(env, secondary_sublabel),

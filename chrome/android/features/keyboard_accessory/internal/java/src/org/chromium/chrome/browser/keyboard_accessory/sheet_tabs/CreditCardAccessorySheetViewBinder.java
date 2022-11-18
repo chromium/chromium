@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
+
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.View;
@@ -12,6 +14,7 @@ import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -78,13 +81,18 @@ class CreditCardAccessorySheetViewBinder {
             // the event that the bitmap is not present in the PersonalDataManager, fall back to the
             // icon corresponding to the `mOrigin`.
             Bitmap iconBitmap = null;
+            Resources res = view.getContext().getResources();
             if (info.getIconUrl() != null && info.getIconUrl().isValid()) {
                 iconBitmap =
-                        PersonalDataManager.getInstance()
-                                .getCustomImageForAutofillSuggestionIfAvailable(info.getIconUrl());
+                        PersonalDataManager.getInstance().getCustomImageForAutofillSuggestionIfAvailable(
+                                AutofillUiUtils.getCCIconURLWithParams(info.getIconUrl(),
+                                        res.getDimensionPixelSize(
+                                                R.dimen.keyboard_accessory_bar_item_cc_icon_width),
+                                        res.getDimensionPixelSize(
+                                                R.dimen.keyboard_accessory_suggestion_icon_size)));
             }
             if (iconBitmap != null) {
-                view.setIcon(new BitmapDrawable(view.getContext().getResources(), iconBitmap));
+                view.setIcon(new BitmapDrawable(res, iconBitmap));
             } else {
                 view.setIcon(AppCompatResources.getDrawable(
                         view.getContext(), getDrawableForOrigin(info.getOrigin())));

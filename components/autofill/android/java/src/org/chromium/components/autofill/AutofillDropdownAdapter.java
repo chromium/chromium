@@ -291,6 +291,10 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
         }
         // If a customIcon is provided we prefer to use it over the iconId of the item.
         if (item.getCustomIcon() != null) {
+            // TODO(crbug.com/1381189): We need to scale the bitmap because we show custom icons to
+            // highlight certain credit card features (like virtual cards), which are available in a
+            // fixed size. In future, if we show only the card art for all cards, there is no need
+            // to scale the bitmap as we can directly fetch the icon in the required size.
             // Scale the bitmap to match the dimensions of the default resources used for other
             // items.
             Bitmap scaledBitmap = Bitmap.createScaledBitmap(item.getCustomIcon(),

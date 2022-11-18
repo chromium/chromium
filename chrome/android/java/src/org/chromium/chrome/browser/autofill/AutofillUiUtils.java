@@ -28,6 +28,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.TextViewCompat;
@@ -40,6 +41,7 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -433,5 +435,30 @@ public class AutofillUiUtils {
                 new SpanApplier.SpanInfo("<link1>", "</link1>",
                         new NoUnderlineClickableSpan(
                                 context, view -> onClickCallback.onResult(url))));
+    }
+
+    /**
+     * Adds dimension params to card art URL for credit cards.
+     * @param customIconURL A FIFE URL to fetch the card art icon.
+     * @param width in pixels.
+     * @param height in pixels.
+     * @return {@link GURL} formatted with the icon dimensions to fetch the card art icon.
+     */
+    public static GURL getCCIconURLWithParams(GURL customIconURL, @Px int width, @Px int height) {
+        // TODO(crbug.com/1313616): There is only one gstatic card art image we are using currently.
+        // Remove this logic and append FIFE URL suffix by default when the static image is
+        // deprecated.
+        // Check if the image is gstatic stored in Static Content Service. If not append the
+        // dimension params to the FIFE URL.
+        if (customIconURL.getSpec().equals(
+                    "https://www.gstatic.com/autofill/virtualcard/icon/capitalone.png")) {
+            return customIconURL;
+        }
+        // Params can be added to a FIFE URL by appending them at the end like URL[=params]. "w"
+        // option is used to set the width in pixels, "h" is used to set the height in pixels,
+        // and "n" represents center cropping the image.
+        StringBuilder url = new StringBuilder(customIconURL.getSpec());
+        url.append("=w").append(width).append("-h").append(height).append("-n");
+        return new GURL(url.toString());
     }
 }

@@ -196,11 +196,10 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
      *         it'd be preferred over the iconId.
      */
     @CalledByNative
-    private static void addToAutofillSuggestionArray(AutofillSuggestion[] array, int index,
-            String label, String secondaryLabel, String sublabel, String secondarySublabel,
-            String itemTag, int iconId, boolean isIconAtStart, int suggestionId,
-            boolean isDeletable, boolean isLabelMultiline, boolean isLabelBold,
-            GURL customIconUrl) {
+    private void addToAutofillSuggestionArray(AutofillSuggestion[] array, int index, String label,
+            String secondaryLabel, String sublabel, String secondarySublabel, String itemTag,
+            int iconId, boolean isIconAtStart, int suggestionId, boolean isDeletable,
+            boolean isLabelMultiline, boolean isLabelBold, GURL customIconUrl) {
         int drawableId = iconId == 0 ? DropdownItem.NO_ICON : iconId;
         AutofillSuggestion.Builder builder = new AutofillSuggestion.Builder()
                                                      .setLabel(label)
@@ -214,10 +213,15 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
                                                      .setIsDeletable(isDeletable)
                                                      .setIsMultiLineLabel(isLabelMultiline)
                                                      .setIsBoldLabel(isLabelBold);
-        if (customIconUrl != null) {
+        if (customIconUrl != null && customIconUrl.isValid()) {
             builder.setCustomIcon(
                     PersonalDataManager.getInstance()
-                            .getCustomImageForAutofillSuggestionIfAvailable(customIconUrl));
+                            .getCustomImageForAutofillSuggestionIfAvailable(
+                                    AutofillUiUtils.getCCIconURLWithParams(customIconUrl,
+                                            mContext.getResources().getDimensionPixelSize(
+                                                    R.dimen.autofill_dropdown_icon_width),
+                                            mContext.getResources().getDimensionPixelSize(
+                                                    R.dimen.autofill_dropdown_icon_height))));
         }
         array[index] = builder.build();
     }

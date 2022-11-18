@@ -229,6 +229,31 @@ public class PersonalDataManagerTest {
     @Test
     @SmallTest
     @Feature({"Autofill"})
+    public void testCreditCardArtURLIsFormattedWithImageSpecs() throws TimeoutException {
+        GURL virtualCardIconURL =
+                new GURL("https://www.gstatic.com/autofill/virtualcard/icon/capitalone.png");
+        GURL cardArtURL = new GURL("http://google.com/test");
+        int widthPixels = 32;
+        int heightPixels = 20;
+
+        // For virtual card icon, the URL should not be updated. For card art icon, the URL should
+        // be updated as `cardArtURL=w{width}-h{height}-n`.
+        assertThat(AutofillUiUtils.getCCIconURLWithParams(
+                           virtualCardIconURL, widthPixels, heightPixels))
+                .isEqualTo(virtualCardIconURL);
+        assertThat(AutofillUiUtils.getCCIconURLWithParams(cardArtURL, widthPixels, heightPixels))
+                .isEqualTo(new GURL(new StringBuilder(cardArtURL.getSpec())
+                                            .append("=w")
+                                            .append(widthPixels)
+                                            .append("-h")
+                                            .append(heightPixels)
+                                            .append("-n")
+                                            .toString()));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Autofill"})
     public void testAddAndDeleteCreditCard() throws TimeoutException {
         CreditCard card = createLocalCreditCard("Visa", "1234123412341234", "5", "2020");
         card.setOrigin("Chrome settings");
