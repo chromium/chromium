@@ -1,7 +1,0 @@
-{
-  "SRCDIR": "../..",
-
-  "headless/headless_browsertest_resources.grd": {
-    "includes": [31000],
-  }
-}
