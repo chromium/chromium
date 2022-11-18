@@ -410,6 +410,7 @@ public abstract class SyncConsentFragmentBase
         mSyncConsentView.getHistoryRow().setOnClickListener(this::recordClickAndResetListener);
 
         mSyncConsentView.getRefuseButton().setOnClickListener(this::onRefuseButtonClicked);
+        mSyncConsentView.getRefuseButton().setVisibility(View.GONE);
         mSyncConsentView.getAcceptButton().setOnClickListener(this::onAcceptButtonClicked);
         mSyncConsentView.getAcceptButton().setVisibility(View.GONE);
         mSyncConsentView.getMoreButton().setVisibility(View.VISIBLE);
@@ -658,6 +659,7 @@ public abstract class SyncConsentFragmentBase
 
     private void showAcceptButton() {
         if (mSyncConsentView != null) {
+            mSyncConsentView.getRefuseButton().setVisibility(View.VISIBLE);
             mSyncConsentView.getAcceptButton().setVisibility(View.VISIBLE);
             mSyncConsentView.getMoreButton().setVisibility(View.GONE);
             mSyncConsentView.getScrollView().setScrolledToBottomObserver(null);

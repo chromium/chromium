@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ui.signin;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -28,7 +27,6 @@ class SyncConsentView extends LinearLayout {
     private Button mRefuseButton;
     private Button mMoreButton;
     private ButtonCompat mAcceptButton;
-    private View mAcceptButtonEndPadding;
     private TextView mDetailsDescription;
 
     public SyncConsentView(Context context, @Nullable AttributeSet attrs) {
@@ -49,7 +47,6 @@ class SyncConsentView extends LinearLayout {
         mRefuseButton = findViewById(R.id.negative_button);
         mMoreButton = findViewById(R.id.more_button);
         mAcceptButton = findViewById(R.id.positive_button);
-        mAcceptButtonEndPadding = findViewById(R.id.positive_button_end_padding);
         mDetailsDescription = findViewById(R.id.sync_consent_details_description);
     }
 
