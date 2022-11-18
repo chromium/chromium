@@ -5,6 +5,7 @@
 module media.mojom;
 
 import "media/mojo/mojom/media_types.mojom";
+import "media/mojo/mojom/video_decoder.mojom";
 
 // Mojo struct for
 // `fidl::InterfaceRequest<fuchsia::media::drm::ContentDecryptionModule>`.
@@ -39,6 +40,16 @@ interface FuchsiaMediaResourceProvider {
 
   // Create connection to fuchsia::media::StreamProcessor for the specified
   // `codec`.
+  // TODO(crbug.com/1198266): Move this to the new FuchsiaMediaCodecProvider.
   CreateVideoDecoder(VideoCodec codec, VideoDecoderSecureMemoryMode secure_mode,
                      StreamProcessorRequest stream_processor_request);
+};
+
+// Interface implemented in the browser process and bound once per set of
+// GpuVideoAcceleratorFactories in the renderer to get hardware codec resources.
+interface FuchsiaMediaCodecProvider {
+  // Returns video decoder configs that are supported by the driver-based local
+  // codec factory.
+  GetSupportedVideoDecoderConfigs() =>
+     (array<SupportedVideoDecoderConfig> supported_configs);
 };

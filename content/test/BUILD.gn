@@ -749,6 +749,10 @@ static_library("test_support") {
       "sandbox_status_service.h",
     ]
   }
+
+  if (is_fuchsia) {
+    public_deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec" ]
+  }
 }
 
 # Fuchsia performance tests on smart displays use web_engine and a browser
@@ -2575,6 +2579,7 @@ test("content_unittests") {
     sources += [
       "../browser/accessibility/browser_accessibility_fuchsia_unittest.cc",
       "../browser/accessibility/browser_accessibility_manager_fuchsia_unittest.cc",
+      "../browser/renderer_host/media/fuchsia_media_codec_provider_impl_unittest.cc",
     ]
 
     # TODO(https://crbug.com/1185811): Investigate removing the requirement for
@@ -2585,6 +2590,7 @@ test("content_unittests") {
       "//build/config/fuchsia/test/fonts.shard.test-cml",
       "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
       "//build/config/fuchsia/test/network.shard.test-cml",
+      "//build/config/fuchsia/test/platform_video_codecs.shard.test-cml",
       "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
     ]
   }

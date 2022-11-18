@@ -88,6 +88,10 @@
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_FUCHSIA)
+#include "media/fuchsia_media_codec_provider_impl.h"
+#endif
+
 namespace base {
 class CommandLine;
 class PersistentMemoryAllocator;
@@ -833,6 +837,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void BindPluginRegistry(
       mojo::PendingReceiver<blink::mojom::PluginRegistry> receiver);
 #endif
+#if BUILDFLAG(IS_FUCHSIA)
+  void BindMediaCodecProvider(
+      mojo::PendingReceiver<media::mojom::FuchsiaMediaCodecProvider> receiver);
+#endif
 
   // blink::mojom::DomStorageProvider:
   void BindDomStorage(
@@ -1152,6 +1160,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
   mojo::Remote<media::stable::mojom::StableVideoDecoderFactory>
       stable_video_decoder_factory_remote_;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_FUCHSIA)
+  std::unique_ptr<FuchsiaMediaCodecProviderImpl> media_codec_provider_;
+#endif
 
   // The memory allocator, if any, in which the renderer will write its metrics.
   std::unique_ptr<base::PersistentMemoryAllocator> metrics_allocator_;

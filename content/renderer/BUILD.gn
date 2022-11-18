@@ -341,6 +341,7 @@ target(link_target_type, "renderer") {
 
   if (is_fuchsia) {
     sources += [ "renderer_main_platform_delegate_fuchsia.cc" ]
+    public_deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec" ]
 
     deps += [
       "//media/fuchsia/cdm/client",
