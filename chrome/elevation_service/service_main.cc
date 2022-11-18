@@ -237,11 +237,13 @@ HRESULT ServiceMain::Run() {
 // static
 HRESULT ServiceMain::InitializeComSecurity() {
   CDacl dacl;
-  constexpr BYTE com_rights_execute_local =
+  constexpr auto com_rights_execute_local =
       COM_RIGHTS_EXECUTE | COM_RIGHTS_EXECUTE_LOCAL;
-  dacl.AddAllowedAce(Sids::System(), com_rights_execute_local);
-  dacl.AddAllowedAce(Sids::Admins(), com_rights_execute_local);
-  dacl.AddAllowedAce(Sids::Interactive(), com_rights_execute_local);
+  if (!dacl.AddAllowedAce(Sids::System(), com_rights_execute_local) ||
+      !dacl.AddAllowedAce(Sids::Admins(), com_rights_execute_local) ||
+      !dacl.AddAllowedAce(Sids::Interactive(), com_rights_execute_local)) {
+    return E_ACCESSDENIED;
+  }
 
   CSecurityDesc sd;
   sd.SetDacl(dacl);
@@ -249,10 +251,30 @@ HRESULT ServiceMain::InitializeComSecurity() {
   sd.SetOwner(Sids::Admins());
   sd.SetGroup(Sids::Admins());
 
+  // These are the flags being set:
+  // EOAC_DYNAMIC_CLOAKING: DCOM uses the thread token (if present) when
+  //   determining the client's identity. Useful when impersonating another
+  //   user.
+  // EOAC_SECURE_REFS: Authenticates distributed reference count calls to
+  //   prevent malicious users from releasing objects that are still being used.
+  // EOAC_DISABLE_AAA: Causes any activation where a server process would be
+  //   launched under the caller's identity (activate-as-activator) to fail with
+  //   E_ACCESSDENIED.
+  // EOAC_NO_CUSTOM_MARSHAL: reduces the chances of executing arbitrary DLLs
+  //   because it allows the marshaling of only CLSIDs that are implemented in
+  //   Ole32.dll, ComAdmin.dll, ComSvcs.dll, or Es.dll, or that implement the
+  //   CATID_MARSHALER category ID.
+  // RPC_C_AUTHN_LEVEL_PKT_PRIVACY: prevents replay attacks, verifies that none
+  //   of the data transferred between the client and server has been modified,
+  //   ensures that the data transferred can only be seen unencrypted by the
+  //   client and the server.
   return ::CoInitializeSecurity(
       const_cast<SECURITY_DESCRIPTOR*>(sd.GetPSECURITY_DESCRIPTOR()), -1,
       nullptr, nullptr, RPC_C_AUTHN_LEVEL_PKT_PRIVACY, RPC_C_IMP_LEVEL_IDENTIFY,
-      nullptr, EOAC_DYNAMIC_CLOAKING | EOAC_NO_CUSTOM_MARSHAL, nullptr);
+      nullptr,
+      EOAC_DYNAMIC_CLOAKING | EOAC_DISABLE_AAA | EOAC_SECURE_REFS |
+          EOAC_NO_CUSTOM_MARSHAL,
+      nullptr);
 }
 
 void ServiceMain::WaitForExitSignal() {
