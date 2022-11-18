@@ -173,8 +173,9 @@ struct FrameSenderConfig {
   RtpPayloadType rtp_payload_type = RtpPayloadType::UNKNOWN;
 
   // If true, use an external HW encoder rather than the built-in
-  // software-based one.
-  bool use_external_encoder = false;
+  // software-based one. Note that this may be the ExternalVideoEncoder or
+  // the H264VideoToolboxEncoder as appropriate.
+  bool use_hardware_encoder = false;
 
   // RTP timebase: The number of RTP units advanced per one second.  For audio,
   // this is the sampling rate.  For video, by convention, this is 90 kHz.

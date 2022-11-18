@@ -133,6 +133,8 @@ source_set("encoding") {
   sources = [
     "encoding/audio_encoder.cc",
     "encoding/audio_encoder.h",
+    "encoding/encoding_support.cc",
+    "encoding/encoding_support.h",
     "encoding/external_video_encoder.cc",
     "encoding/external_video_encoder.h",
     "encoding/fake_software_video_encoder.cc",
@@ -341,6 +343,7 @@ test("cast_unittests") {
     "common/expanded_value_base_unittest.cc",
     "common/openscreen_conversion_helpers_unittest.cc",
     "encoding/audio_encoder_unittest.cc",
+    "encoding/encoding_support_unittest.cc",
     "encoding/external_video_encoder_unittest.cc",
     "encoding/video_encoder_unittest.cc",
     "encoding/vpx_quantizer_parser_unittest.cc",

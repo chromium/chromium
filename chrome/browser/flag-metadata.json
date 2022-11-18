@@ -821,6 +821,16 @@
     "expiry_milestone": 110
   },
   {
+    "name": "cast-streaming-hardware-h264",
+    "owners": [ "jophba", "openscreen-eng" ],
+    "expiry_milestone": 121
+  },
+  {
+    "name": "cast-streaming-hardware-vp8",
+    "owners": [ "jophba", "openscreen-eng" ],
+    "expiry_milestone": 121
+  },
+  {
     "name": "cct-brand-transparency",
     "owners": [ "wenyufu" ],
     "expiry_milestone": 110
@@ -3748,11 +3758,6 @@
     "name": "force-control-face-ae",
     "owners": [ "chromeos-camera-eng@google.com" ],
     "expiry_milestone": 110
-  },
-  {
-    "name": "force-enable-cast-remoting-query",
-    "owners": [ "rwkeane@google.com", "openscreen-eng@google.com" ],
-    "expiry_milestone": 115
   },
   {
     "name": "force-enable-fast-checkout-capabilities",

@@ -4639,6 +4639,20 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kPreinstalledWebAppDuplicationFixer)},
 
+    {"cast-streaming-hardware-h264",
+     flag_descriptions::kCastStreamingHardwareH264Name,
+     flag_descriptions::kCastStreamingHardwareH264Description, kOsDesktop,
+     ENABLE_DISABLE_VALUE_TYPE(
+         switches::kCastStreamingForceEnableHardwareH264,
+         switches::kCastStreamingForceDisableHardwareH264)},
+
+    {"cast-streaming-hardware-vp8",
+     flag_descriptions::kCastStreamingHardwareVp8Name,
+     flag_descriptions::kCastStreamingHardwareVp8Description, kOsDesktop,
+     ENABLE_DISABLE_VALUE_TYPE(
+         switches::kCastStreamingForceEnableHardwareVp8,
+         switches::kCastStreamingForceDisableHardwareVp8)},
+
     {"enable-openscreen-cast-streaming-session",
      flag_descriptions::kOpenscreenCastStreamingSessionName,
      flag_descriptions::kOpenscreenCastStreamingSessionDescription, kOsDesktop,
@@ -4646,11 +4660,11 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"enable-cast-streaming-av1", flag_descriptions::kCastStreamingAv1Name,
      flag_descriptions::kCastStreamingAv1Description, kOsDesktop,
-     FEATURE_VALUE_TYPE(mirroring::features::kCastStreamingAv1)},
+     FEATURE_VALUE_TYPE(media::kCastStreamingAv1)},
 
     {"enable-cast-streaming-vp9", flag_descriptions::kCastStreamingVp9Name,
      flag_descriptions::kCastStreamingVp9Description, kOsDesktop,
-     FEATURE_VALUE_TYPE(mirroring::features::kCastStreamingVp9)},
+     FEATURE_VALUE_TYPE(media::kCastStreamingVp9)},
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 

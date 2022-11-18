@@ -637,7 +637,7 @@ TEST_F(OpenscreenSessionHostTest, CanRequestRefresh) {
 }
 
 TEST_F(OpenscreenSessionHostTest, Vp9CodecEnabledInOffer) {
-  base::test::ScopedFeatureList feature_list(features::kCastStreamingVp9);
+  base::test::ScopedFeatureList feature_list(media::kCastStreamingVp9);
   CreateSession(SessionType::VIDEO_ONLY);
 
   const openscreen::cast::Offer& offer =
@@ -654,7 +654,7 @@ TEST_F(OpenscreenSessionHostTest, Vp9CodecEnabledInOffer) {
 TEST_F(OpenscreenSessionHostTest, Av1CodecEnabledInOffer) {
 // Cast streaming of AV1 is desktop only.
 #if !BUILDFLAG(IS_ANDROID)
-  base::test::ScopedFeatureList feature_list(features::kCastStreamingAv1);
+  base::test::ScopedFeatureList feature_list(media::kCastStreamingAv1);
   CreateSession(SessionType::VIDEO_ONLY);
 
   const openscreen::cast::Offer& offer =
@@ -699,7 +699,7 @@ TEST_F(OpenscreenSessionHostTest, ShouldEnableHardwareVp8EncodingIfSupported) {
                           [](const media::cast::FrameSenderConfig& config) {
                             return config.codec ==
                                        media::cast::Codec::CODEC_VIDEO_VP8 &&
-                                   config.use_external_encoder;
+                                   config.use_hardware_encoder;
                           }));
 #endif
 }
@@ -734,7 +734,7 @@ TEST_F(OpenscreenSessionHostTest, ShouldEnableHardwareH264EncodingIfSupported) {
                           [](const media::cast::FrameSenderConfig& config) {
                             return config.codec ==
                                        media::cast::Codec::CODEC_VIDEO_H264 &&
-                                   config.use_external_encoder;
+                                   config.use_hardware_encoder;
                           }));
 #endif
 }

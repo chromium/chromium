@@ -108,7 +108,7 @@ void CastSenderImpl::InitializeAudio(
     const FrameSenderConfig& audio_config,
     StatusChangeOnceCallback status_change_cb) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
-  CHECK(audio_config.use_external_encoder ||
+  CHECK(audio_config.use_hardware_encoder ||
         cast_environment_->HasAudioThread());
 
   VLOG(1) << "CastSenderImpl@" << this << "::InitializeAudio()";

@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
@@ -38,6 +39,7 @@
 #include "content/public/browser/video_capture_device_launcher.h"
 #include "content/public/browser/web_contents.h"
 #include "media/audio/audio_device_description.h"
+#include "media/base/media_switches.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "media/mojo/mojom/audio_input_stream.mojom.h"
 #include "media/mojo/mojom/audio_processing.mojom.h"
@@ -63,6 +65,13 @@ using media::mojom::AudioInputStreamObserver;
 
 // Default resolution constraint.
 constexpr gfx::Size kMaxResolution(1920, 1080);
+
+// Command line arguments that should be passed to the mirroring service.
+static const char* kPassthroughSwitches[]{
+    switches::kCastStreamingForceEnableHardwareH264,
+    switches::kCastStreamingForceDisableHardwareH264,
+    switches::kCastStreamingForceEnableHardwareVp8,
+    switches::kCastStreamingForceDisableHardwareVp8};
 
 void CreateVideoCaptureHostOnIO(
     const std::string& device_id,
@@ -192,12 +201,25 @@ void CastMirroringServiceHost::Start(
     return;
   }
 
+  // Although the base::Features get propagated to the mirroring service, the
+  // command line flags do not.
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  std::vector<std::string> extra_switches;
+
+  for (const char* passthrough_switch : kPassthroughSwitches) {
+    if (command_line.HasSwitch(passthrough_switch)) {
+      extra_switches.emplace_back(passthrough_switch);
+    }
+  }
+
   // Launch and connect to the Mirroring Service. The process will run until
   // |mirroring_service_| is reset.
   content::ServiceProcessHost::Launch(
       mirroring_service_.BindNewPipeAndPassReceiver(),
       content::ServiceProcessHost::Options()
           .WithDisplayName("Mirroring Service")
+          .WithExtraCommandLineSwitches(extra_switches)
           .Pass());
   mojo::PendingRemote<mojom::ResourceProvider> provider;
   resource_provider_receiver_.Bind(provider.InitWithNewPipeAndPassReceiver());

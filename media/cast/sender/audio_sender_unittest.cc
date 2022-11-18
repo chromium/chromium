@@ -101,7 +101,7 @@ class AudioSenderTest : public ::testing::Test {
     cast_environment_ = new CastEnvironment(&testing_clock_, task_runner_,
                                             task_runner_, task_runner_);
     audio_config_.codec = CODEC_AUDIO_OPUS;
-    audio_config_.use_external_encoder = false;
+    audio_config_.use_hardware_encoder = false;
     audio_config_.rtp_timebase = kDefaultAudioSamplingRate;
     audio_config_.channels = 2;
     audio_config_.max_bitrate = kDefaultAudioEncoderBitrate;

@@ -1518,16 +1518,32 @@ const char kOpenscreenCastStreamingSessionDescription[] =
     "be used for negotiating and executing mirroring and remoting sessions.";
 
 const char kCastStreamingAv1Name[] =
-    "Enable AV1 codec video encoding in Cast mirroring sessions";
+    "Enable AV1 video encoding for Cast Streaming";
 const char kCastStreamingAv1Description[] =
-    "Enables the inclusion of AV1 codec video encoding in Cast mirroring "
-    "session negotiations.";
+    "Offers the AV1 video codec when negotiating Cast Streaming, and uses AV1 "
+    "if selected for the session.";
+
+const char kCastStreamingHardwareH264Name[] =
+    "Toggle hardware accelerated H.264 video encoding for Cast Streaming";
+const char kCastStreamingHardwareH264Description[] =
+    "The default is to allow hardware H.264 encoding when recommended for the "
+    "platform. If enabled, hardware H.264 encoding will always be allowed when "
+    "supported by the platform. If disabled, hardware H.264 encoding will "
+    "never be used.";
+
+const char kCastStreamingHardwareVp8Name[] =
+    "Toggle hardware accelerated VP8 video encoding for Cast Streaming";
+const char kCastStreamingHardwareVp8Description[] =
+    "The default is to allow hardware VP8 encoding when recommended for the "
+    "platform. If enabled, hardware VP8 encoding will always be allowed when "
+    "supported by the platform (regardless of recommendation). If disabled, "
+    "hardware VP8 encoding will never be used.";
 
 const char kCastStreamingVp9Name[] =
-    "Enable VP9 codec video encoding in Cast mirroring sessions";
+    "Enable VP9 video encoding for Cast Streaming";
 const char kCastStreamingVp9Description[] =
-    "Enables the inclusion of VP9 codec video encoding in Cast mirroring "
-    "session negotiations.";
+    "Offers the VP9 video codec when negotiating Cast Streaming, and uses VP9 "
+    "if selected for the session.";
 
 const char kGpuRasterizationName[] = "GPU rasterization";
 const char kGpuRasterizationDescription[] = "Use GPU to rasterize web content.";

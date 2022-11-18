@@ -264,6 +264,16 @@ const char kHardwareVideoDecodeFrameRate[] = "hardware-video-decode-framerate";
 // Out-of-Process video decoding.
 const char kMaxChromeOSDecoderThreads[] = "max-chromeos-decoder-threads";
 #endif
+
+const char kCastStreamingForceDisableHardwareH264[] =
+    "cast-streaming-force-disable-hardware-h264";
+const char kCastStreamingForceDisableHardwareVp8[] =
+    "cast-streaming-force-disable-hardware-vp8";
+const char kCastStreamingForceEnableHardwareH264[] =
+    "cast-streaming-force-enable-hardware-h264";
+const char kCastStreamingForceEnableHardwareVp8[] =
+    "cast-streaming-force-enable-hardware-vp8";
+
 }  // namespace switches
 
 namespace media {
@@ -1210,6 +1220,24 @@ BASE_FEATURE(kUseFakeDeviceForMediaStream,
 // estimations.
 BASE_FEATURE(kBresenhamCadence,
              "BresenhamCadence",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether mirroring negotiations will include the AV1 codec for video
+// encoding.
+//
+// NOTE: currently only software AV1 encoding is supported.
+// TODO(https://crbug.com/1383333): hardware AV1 encoding should be added.
+BASE_FEATURE(kCastStreamingAv1,
+             "CastStreamingAv1",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether mirroring negotiations will include the VP9 codec for video
+// encoding.
+//
+// NOTE: currently only software VP9 encoding is supported.
+// TODO(https://crbug.com/1311770): hardware VP9 encoding should be added.
+BASE_FEATURE(kCastStreamingVp9,
+             "CastStreamingVp9",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_FUCHSIA)

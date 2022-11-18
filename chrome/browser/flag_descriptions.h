@@ -855,6 +855,12 @@ extern const char kOpenscreenCastStreamingSessionDescription[];
 extern const char kCastStreamingAv1Name[];
 extern const char kCastStreamingAv1Description[];
 
+extern const char kCastStreamingHardwareH264Name[];
+extern const char kCastStreamingHardwareH264Description[];
+
+extern const char kCastStreamingHardwareVp8Name[];
+extern const char kCastStreamingHardwareVp8Description[];
+
 extern const char kCastStreamingVp9Name[];
 extern const char kCastStreamingVp9Description[];
 

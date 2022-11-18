@@ -58640,6 +58640,7 @@ from previous Chrome versions.
   <int value="-1656179450" label="EnableOmniboxRichEntities:enabled"/>
   <int value="-1655535052" label="enable-pointer-events"/>
   <int value="-1655281250" label="DefaultCalculatorWebApp:enabled"/>
+  <int value="-1654476091" label="cast-streaming-force-enable-hardware-vp8"/>
   <int value="-1654344175" label="disable-extension-info-dialog"/>
   <int value="-1653991213" label="CrossOriginIsolated:disabled"/>
   <int value="-1653838003" label="PauseBackgroundTabs:enabled"/>
@@ -60807,6 +60808,7 @@ from previous Chrome versions.
   <int value="-406475702"
       label="webview-disable-apps-package-names-allowlist-component"/>
   <int value="-405380243" label="enable-encryption-migration"/>
+  <int value="-405321262" label="cast-streaming-force-disable-hardware-vp8"/>
   <int value="-404496301" label="DownloadRange:disabled"/>
   <int value="-403701720" label="DirectActions:enabled"/>
   <int value="-403649153" label="WebViewBrotliSupport:disabled"/>
@@ -61601,6 +61603,7 @@ from previous Chrome versions.
   <int value="61205887" label="enable-text-input-focus-manager"/>
   <int value="61466986" label="AsyncDns:disabled"/>
   <int value="63187126" label="DownloadsAutoResumptionNative:enabled"/>
+  <int value="63693157" label="cast-streaming-force-disable-hardware-h264"/>
   <int value="64016368" label="SafeBrowsingSeparateNetworkContexts:enabled"/>
   <int value="64942701" label="OfflinePagesSvelteConcurrentLoading:disabled"/>
   <int value="65245449" label="FilesBannerFramework:enabled"/>
@@ -62259,6 +62262,7 @@ from previous Chrome versions.
   <int value="461523297"
       label="UsernameFirstFlowFallbackCrowdsourcing:enabled"/>
   <int value="461641589" label="WebAppWindowControlsOverlay:disabled"/>
+  <int value="462453078" label="cast-streaming-force-enable-hardware-h264"/>
   <int value="463582989" label="CompositorThreadedScrollbarScrolling:disabled"/>
   <int value="464226051" label="CrOSComponent:enabled"/>
   <int value="464773709" label="OmniboxExperimentalSuggestScoring:enabled"/>

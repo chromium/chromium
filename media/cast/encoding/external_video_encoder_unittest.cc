@@ -8,12 +8,7 @@
 
 #include "build/build_config.h"
 #include "media/base/video_frame.h"
-#include "media/base/video_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "base/cpu.h"  // nogncheck
-#endif
 
 namespace media::cast {
 
@@ -30,17 +25,6 @@ scoped_refptr<VideoFrame> CreateFrame(const uint8_t* y_plane_data,
   }
   return result;
 }
-
-static const std::vector<media::VideoEncodeAccelerator::SupportedProfile>
-    kValidVeaProfiles{
-        VideoEncodeAccelerator::SupportedProfile(media::VP8PROFILE_MIN,
-                                                 gfx::Size(1920, 1080)),
-        VideoEncodeAccelerator::SupportedProfile(media::H264PROFILE_MIN,
-                                                 gfx::Size(1920, 1080)),
-    };
-
-constexpr std::array<const char*, 3> kFirstPartyModelNames{
-    {"Chromecast", "Eureka Dongle", "Chromecast Ultra"}};
 
 }  // namespace
 
@@ -88,70 +72,6 @@ TEST(QuantizerEstimatorTest, EstimatesForTrivialFrames) {
     const scoped_refptr<VideoFrame> random_frame =
         CreateFrame(random_frame_data.get(), frame_size);
     EXPECT_LE(50.0, qe.EstimateForDeltaFrame(*random_frame));
-  }
-}
-
-// The decoder on Vizio TVs doesn't play well with Chrome OS hardware encoders.
-// See https://crbug.com/1238774 for more context.
-TEST(ExternalVideoEncoderTest,
-     DoesntRecommendExternalVp8EncoderForVizioOnChromeOS) {
-  constexpr std::array<const char*, 10> kVizioTvModelNames{
-      {"e43u-d2", "e60-e3", "OLED55-H1", "M50-D1", "E65-F1", "E50-F2", "M55-D0",
-       "Vizio P-Series Quantum 4K", "M55-E0", "V435-H1"}};
-
-  for (const char* model_name : kVizioTvModelNames) {
-    constexpr bool should_recommend =
-#if BUILDFLAG(IS_CHROMEOS)
-        false;
-#else
-        true;
-#endif
-    EXPECT_EQ(should_recommend,
-              ExternalVideoEncoder::IsRecommended(
-                  CODEC_VIDEO_VP8, std::string(model_name), kValidVeaProfiles))
-        << model_name;
-  }
-}
-
-TEST(ExternalVideoEncoderTest, RecommendsExternalVp8EncoderForChromecast) {
-#if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_FALSE(ExternalVideoEncoder::IsRecommended(
-      CODEC_VIDEO_VP8, "Eureka Dongle", kValidVeaProfiles));
-  EXPECT_FALSE(ExternalVideoEncoder::IsRecommended(
-      CODEC_VIDEO_VP8, "Chromecast", kValidVeaProfiles));
-  EXPECT_FALSE(ExternalVideoEncoder::IsRecommended(
-      CODEC_VIDEO_VP8, "Chromecast Ultra", kValidVeaProfiles));
-  EXPECT_FALSE(ExternalVideoEncoder::IsRecommended(
-      CODEC_VIDEO_VP8, "Google Home", kValidVeaProfiles));
-#else
-  for (const char* model_name : kFirstPartyModelNames) {
-    EXPECT_TRUE(ExternalVideoEncoder::IsRecommended(
-        CODEC_VIDEO_VP8, std::string(model_name), kValidVeaProfiles));
-  }
-#endif
-}
-
-TEST(ExternalVideoEncoderTest, RecommendsH264HardwareEncoderProperly) {
-  for (const char* model_name : kFirstPartyModelNames) {
-// On ChromeOS only, disable hardware encoder on AMD chipsets due to
-// failure on Chromecast chipsets to decode.
-#if BUILDFLAG(IS_CHROMEOS)
-    if (base::CPU().vendor_name() == "AuthenticAMD") {
-      EXPECT_FALSE(ExternalVideoEncoder::IsRecommended(
-          CODEC_VIDEO_H264, std::string(model_name), kValidVeaProfiles));
-      break;
-    }
-#endif
-
-    constexpr bool should_recommend =
-#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN)
-        true;
-#else
-        false;
-#endif
-    EXPECT_EQ(should_recommend, ExternalVideoEncoder::IsRecommended(
-                                    CODEC_VIDEO_H264, std::string(model_name),
-                                    kValidVeaProfiles));
   }
 }
 

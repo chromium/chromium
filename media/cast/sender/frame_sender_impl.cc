@@ -86,7 +86,7 @@ FrameSenderImpl::FrameSenderImpl(
       is_audio_(config.rtp_payload_type <= RtpPayloadType::AUDIO_LAST),
       // We only use the adaptive control for software video encoding.
       congestion_control_(
-          (!config.use_external_encoder && !is_audio_)
+          (!config.use_hardware_encoder && !is_audio_)
               ? NewAdaptiveCongestionControl(cast_environment->Clock(),
                                              config.max_bitrate,
                                              config.min_bitrate,

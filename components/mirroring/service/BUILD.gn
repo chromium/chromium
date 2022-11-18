@@ -76,7 +76,6 @@ component("mirroring_service") {
     "//services/network/public/mojom",
     "//services/viz/public/cpp/gpu",
     "//third_party/jsoncpp",  # Required by Open Screen API.
-    "//third_party/libaom:libaom_buildflags",
     "//third_party/openscreen/src/cast/streaming:common",
     "//third_party/openscreen/src/cast/streaming:sender",
     "//ui/base",

@@ -46,7 +46,7 @@ FrameSenderConfig GetDefaultAudioSenderConfig() {
   config.sender_ssrc = recv_config.sender_ssrc;
   config.receiver_ssrc = recv_config.receiver_ssrc;
   config.rtp_payload_type = recv_config.rtp_payload_type;
-  config.use_external_encoder = false;
+  config.use_hardware_encoder = false;
   config.rtp_timebase = recv_config.rtp_timebase;
   config.channels = recv_config.channels;
   config.max_bitrate = config.min_bitrate = config.start_bitrate =
@@ -62,7 +62,7 @@ FrameSenderConfig GetDefaultVideoSenderConfig() {
   config.sender_ssrc = recv_config.sender_ssrc;
   config.receiver_ssrc = recv_config.receiver_ssrc;
   config.rtp_payload_type = recv_config.rtp_payload_type;
-  config.use_external_encoder = false;
+  config.use_hardware_encoder = false;
   config.rtp_timebase = recv_config.rtp_timebase;
   config.max_bitrate = kDefaultMaxVideoBitrate;
   config.min_bitrate = kDefaultMinVideoBitrate;

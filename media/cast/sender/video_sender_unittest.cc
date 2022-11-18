@@ -193,7 +193,7 @@ class VideoSenderTest : public ::testing::Test {
   // |expect_init_success| is true if initialization is expected to succeed.
   void InitEncoder(bool external, bool expect_init_success) {
     FrameSenderConfig video_config = GetDefaultVideoSenderConfig();
-    video_config.use_external_encoder = external;
+    video_config.use_hardware_encoder = external;
 
     ASSERT_EQ(operational_status_, STATUS_UNINITIALIZED);
 

@@ -42,7 +42,7 @@
 #include "media/base/audio_capturer_source.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
-#include "media/cast/encoding/external_video_encoder.h"
+#include "media/cast/encoding/encoding_support.h"
 #include "media/cast/sender/audio_sender.h"
 #include "media/cast/sender/video_sender.h"
 #include "media/gpu/gpu_video_accelerator_util.h"
@@ -490,7 +490,7 @@ void OpenscreenSessionHost::OnNegotiated(
            ? base::NumberToString(static_cast<int>(video_config->codec)).c_str()
            : "none"),
       (video_config
-           ? (video_config->use_external_encoder ? "hardware" : "software")
+           ? (video_config->use_hardware_encoder ? "hardware" : "software")
            : "n/a")));
 }
 
@@ -915,43 +915,41 @@ void OpenscreenSessionHost::NegotiateMirroring() {
 
   if (session_params_.type != SessionType::AUDIO_ONLY) {
     // First, check if hardware VP8 and H264 are available.
-    const bool hardware_vp8_recommended =
-        media::cast::ExternalVideoEncoder::IsRecommended(
-            Codec::CODEC_VIDEO_VP8, session_params_.receiver_model_name,
-            supported_profiles_);
+    const bool should_offer_hardware_vp8 =
+        media::cast::encoding_support::IsHardwareEnabled(Codec::CODEC_VIDEO_VP8,
+                                                         supported_profiles_);
 
-    if (hardware_vp8_recommended) {
+    if (should_offer_hardware_vp8) {
       FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
           RtpPayloadType::VIDEO_VP8, Codec::CODEC_VIDEO_VP8);
       UpdateConfigUsingSessionParameters(session_params_, config);
-      config.use_external_encoder = true;
+      config.use_hardware_encoder = true;
       last_offered_video_configs_.push_back(config);
       video_configs.push_back(ToOpenscreenVideoConfig(config));
     }
 
-    if (media::cast::ExternalVideoEncoder::IsRecommended(
-            Codec::CODEC_VIDEO_H264, session_params_.receiver_model_name,
-            supported_profiles_)) {
+    if (media::cast::encoding_support::IsHardwareEnabled(
+            Codec::CODEC_VIDEO_H264, supported_profiles_)) {
       FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
           RtpPayloadType::VIDEO_H264, Codec::CODEC_VIDEO_H264);
       UpdateConfigUsingSessionParameters(session_params_, config);
-      config.use_external_encoder = true;
+      config.use_hardware_encoder = true;
       last_offered_video_configs_.push_back(config);
       video_configs.push_back(ToOpenscreenVideoConfig(config));
     }
 
     // Then add software AV1 and VP9 if enabled.
-    // TODO(https://crbug.com/1311770): hardware VP9 encoding should be added.
-    if (mirroring::features::IsCastStreamingAV1Enabled()) {
+    if (media::cast::encoding_support::IsSoftwareEnabled(
+            Codec::CODEC_VIDEO_AV1)) {
       FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
           RtpPayloadType::VIDEO_AV1, Codec::CODEC_VIDEO_AV1);
       UpdateConfigUsingSessionParameters(session_params_, config);
-      config.use_external_encoder = false;
       last_offered_video_configs_.push_back(config);
       video_configs.push_back(ToOpenscreenVideoConfig(config));
     }
 
-    if (base::FeatureList::IsEnabled(features::kCastStreamingVp9)) {
+    if (media::cast::encoding_support::IsSoftwareEnabled(
+            Codec::CODEC_VIDEO_VP9)) {
       FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
           RtpPayloadType::VIDEO_VP9, Codec::CODEC_VIDEO_VP9);
       UpdateConfigUsingSessionParameters(session_params_, config);
@@ -959,7 +957,10 @@ void OpenscreenSessionHost::NegotiateMirroring() {
       video_configs.push_back(ToOpenscreenVideoConfig(config));
     }
 
-    if (!hardware_vp8_recommended) {
+    // Finally, offer software VP8 if hardware VP8 was not offered.
+    if (!should_offer_hardware_vp8 &&
+        media::cast::encoding_support::IsSoftwareEnabled(
+            Codec::CODEC_VIDEO_VP8)) {
       FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
           RtpPayloadType::VIDEO_VP8, Codec::CODEC_VIDEO_VP8);
       UpdateConfigUsingSessionParameters(session_params_, config);

@@ -112,6 +112,32 @@ MEDIA_EXPORT extern const char kHardwareVideoDecodeFrameRate[];
 MEDIA_EXPORT extern const char kMaxChromeOSDecoderThreads[];
 #endif
 
+// NOTE: callers should always use the free functions in
+// /media/cast/encoding/encoding_support.h instead of accessing these features
+// directly.
+//
+// If enabled, completely disables use of H264 hardware encoding for Cast
+// Streaming sessions. Takes precedence over
+// kCastStreamingForceEnableHardwareH264.
+MEDIA_EXPORT extern const char kCastStreamingForceDisableHardwareH264[];
+
+// If enabled, completely disables use of VP8 hardware encoding for Cast
+// Streaming sessions. Takes precedence over
+// kCastStreamingForceEnableHardwareVp8.
+MEDIA_EXPORT extern const char kCastStreamingForceDisableHardwareVp8[];
+
+// If enabled, allows use of H264 hardware encoding for Cast Streaming sessions,
+// even on platforms where it is disabled due to performance and reliability
+// issues. kCastStreamingForceDisableHardwareH264 must be disabled for this flag
+// to take effect.
+MEDIA_EXPORT extern const char kCastStreamingForceEnableHardwareH264[];
+
+// If enabled, allows use of VP8 hardware encoding for Cast Streaming sessions,
+// even on platforms where it is disabled due to performance and reliability
+// issues. kCastStreamingForceDisableHardwareVp8 must be disabled for this flag
+// to take effect.
+MEDIA_EXPORT extern const char kCastStreamingForceEnableHardwareVp8[];
+
 }  // namespace switches
 
 namespace media {
@@ -124,6 +150,13 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kAudioFocusLossSuspendMediaSession);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAutoplayIgnoreWebAudio);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAutoplayDisableSettings);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kBresenhamCadence);
+
+// NOTE: callers should always use the free functions in
+// /media/cast/encoding/encoding_support.h instead of accessing these features
+// directly.
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kCastStreamingAv1);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kCastStreamingVp9);
+
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kCdmHostVerification);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kCdmProcessSiteIsolation);
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)

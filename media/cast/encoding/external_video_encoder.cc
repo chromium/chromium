@@ -10,11 +10,6 @@
 #include <sstream>
 #include <utility>
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "base/cpu.h"                     // nogncheck
-#include "base/no_destructor.h"           // nogncheck
-#endif
-
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -69,52 +64,6 @@ constexpr int kBacklogRedlineThreshold = 4;
 // The number of histogram buckets for quantization estimation. These
 // histograms must encompass the range [-255, 255] (inclusive).
 constexpr int kQuantizationHistogramSize = 511;
-
-// Scan profiles for hardware VP8 encoder support.
-bool IsHardwareVP8EncodingSupported(
-    base::StringPiece receiver_model_name,
-    const std::vector<media::VideoEncodeAccelerator::SupportedProfile>&
-        profiles) {
-// The hardware encoder on ChromeOS has major issues when connecting to a
-// variety of first and third party devices. See https://crbug.com/1382591.
-#if !BUILDFLAG(IS_CHROMEOS)
-  for (const auto& vea_profile : profiles) {
-    if (vea_profile.profile >= media::VP8PROFILE_MIN &&
-        vea_profile.profile <= media::VP8PROFILE_MAX) {
-      return true;
-    }
-  }
-#endif
-
-  return false;
-}  // namespace
-
-// Scan profiles for hardware H.264 encoder support.
-bool IsHardwareH264EncodingSupported(
-    const std::vector<media::VideoEncodeAccelerator::SupportedProfile>&
-        profiles) {
-// TODO(b/169533953): Look into chromecast fails to decode bitstreams produced
-// by the AMD HW encoder.
-#if BUILDFLAG(IS_CHROMEOS)
-  static const base::NoDestructor<base::CPU> cpuid;
-  static const bool is_amd = cpuid->vendor_name() == "AuthenticAMD";
-  if (is_amd)
-    return false;
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-// TODO(crbug.com/1015482): Look into why H.264 hardware encoder on MacOS is
-// broken.
-// TODO(crbug.com/1015482): Look into HW encoder initialization issues on Win.
-#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN)
-  for (const auto& vea_profile : profiles) {
-    if (vea_profile.profile >= media::H264PROFILE_MIN &&
-        vea_profile.profile <= media::H264PROFILE_MAX) {
-      return true;
-    }
-  }
-#endif  // !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN)
-  return false;
-}
 
 }  // namespace
 
@@ -673,31 +622,6 @@ class ExternalVideoEncoder::VEAClientImpl final
   // reset to false after the allocated buffer is received.
   bool allocate_input_buffer_in_progress_;
 };
-
-// static
-bool ExternalVideoEncoder::IsSupported(const FrameSenderConfig& video_config) {
-  if (video_config.codec != CODEC_VIDEO_VP8 &&
-      video_config.codec != CODEC_VIDEO_H264)
-    return false;
-
-  // We assume that the system provides a hardware encoder at this point.
-  return video_config.use_external_encoder;
-}
-
-// static
-bool ExternalVideoEncoder::IsRecommended(
-    Codec codec,
-    base::StringPiece receiver_model_name,
-    const std::vector<media::VideoEncodeAccelerator::SupportedProfile>&
-        profiles) {
-  if (codec == CODEC_VIDEO_VP8)
-    return IsHardwareVP8EncodingSupported(receiver_model_name, profiles);
-
-  if (codec == CODEC_VIDEO_H264)
-    return IsHardwareH264EncodingSupported(profiles);
-
-  return false;
-}
 
 ExternalVideoEncoder::ExternalVideoEncoder(
     const scoped_refptr<CastEnvironment>& cast_environment,

@@ -30,7 +30,7 @@ const int kQp = 20;
 FrameSenderConfig GetVideoConfigForTest() {
   FrameSenderConfig config = GetDefaultVideoSenderConfig();
   config.codec = CODEC_VIDEO_VP8;
-  config.use_external_encoder = false;
+  config.use_hardware_encoder = false;
   config.max_frame_rate = kFrameRate;
   config.video_codec_params.min_qp = kQp;
   config.video_codec_params.max_qp = kQp;

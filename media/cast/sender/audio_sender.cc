@@ -54,7 +54,7 @@ AudioSender::AudioSender(scoped_refptr<CastEnvironment> cast_environment,
     : cast_environment_(cast_environment),
       rtp_timebase_(audio_config.rtp_timebase),
       frame_sender_(std::move(sender)) {
-  if (!audio_config.use_external_encoder) {
+  if (!audio_config.use_hardware_encoder) {
     audio_encoder_ = std::make_unique<AudioEncoder>(
         std::move(cast_environment), audio_config.channels, rtp_timebase_,
         audio_config.max_bitrate, audio_config.codec,

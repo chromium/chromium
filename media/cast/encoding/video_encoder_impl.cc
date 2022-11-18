@@ -53,15 +53,6 @@ void EncodeVideoFrameOnEncoderThread(
 }
 }  // namespace
 
-// static
-bool VideoEncoderImpl::IsSupported(const FrameSenderConfig& video_config) {
-  return video_config.codec == CODEC_VIDEO_VP8 ||
-         video_config.codec == CODEC_VIDEO_VP9 ||
-         video_config.codec == CODEC_VIDEO_AV1 ||
-         (video_config.enable_fake_codec_for_tests &&
-          video_config.codec == CODEC_VIDEO_FAKE);
-}
-
 VideoEncoderImpl::VideoEncoderImpl(
     scoped_refptr<CastEnvironment> cast_environment,
     const FrameSenderConfig& video_config,

@@ -39,7 +39,7 @@
 #include "media/audio/audio_input_device.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/base/bind_to_current_loop.h"
-#include "media/cast/encoding/external_video_encoder.h"
+#include "media/cast/encoding/encoding_support.h"
 #include "media/cast/net/cast_transport.h"
 #include "media/cast/sender/audio_sender.h"
 #include "media/cast/sender/video_sender.h"
@@ -845,26 +845,25 @@ void Session::CreateAndSendOffer() {
     const int32_t video_ssrc = base::RandInt(kVideoSsrcMin, kVideoSsrcMax);
     if (state_ == MIRRORING) {
       // First, check if hardware VP8 and H264 are available.
-      const bool hardware_vp8_recommended =
-          media::cast::ExternalVideoEncoder::IsRecommended(
-              Codec::CODEC_VIDEO_VP8, session_params_.receiver_model_name,
-              supported_profiles_);
+      const bool should_offer_hardware_vp8 =
+          media::cast::encoding_support::IsHardwareEnabled(
+              Codec::CODEC_VIDEO_VP8, supported_profiles_);
 
-      if (hardware_vp8_recommended) {
+      if (should_offer_hardware_vp8) {
         FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
             RtpPayloadType::VIDEO_VP8, Codec::CODEC_VIDEO_VP8);
-        config.use_external_encoder = true;
+        config.use_hardware_encoder = true;
         AddSenderConfig(video_ssrc, config, aes_key, aes_iv, session_params_,
                         &video_configs);
         AddStreamObject(stream_index++, "VP8", video_configs.back(),
                         mirror_settings_, stream_list);
       }
-      if (media::cast::ExternalVideoEncoder::IsRecommended(
-              Codec::CODEC_VIDEO_H264, session_params_.receiver_model_name,
-              supported_profiles_)) {
+
+      if (media::cast::encoding_support::IsHardwareEnabled(
+              Codec::CODEC_VIDEO_H264, supported_profiles_)) {
         FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
             RtpPayloadType::VIDEO_H264, Codec::CODEC_VIDEO_H264);
-        config.use_external_encoder = true;
+        config.use_hardware_encoder = true;
         AddSenderConfig(video_ssrc, config, aes_key, aes_iv, session_params_,
                         &video_configs);
         AddStreamObject(stream_index++, "H264", video_configs.back(),
@@ -872,8 +871,8 @@ void Session::CreateAndSendOffer() {
       }
 
       // Then add software AV1 and VP9 if enabled.
-      // TODO(https://crbug.com/1311770): hardware VP9 encoding should be added.
-      if (mirroring::features::IsCastStreamingAV1Enabled()) {
+      if (media::cast::encoding_support::IsSoftwareEnabled(
+              Codec::CODEC_VIDEO_AV1)) {
         FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
             RtpPayloadType::VIDEO_AV1, Codec::CODEC_VIDEO_AV1);
         AddSenderConfig(video_ssrc, config, aes_key, aes_iv, session_params_,
@@ -881,7 +880,9 @@ void Session::CreateAndSendOffer() {
         AddStreamObject(stream_index++, "AV1", video_configs.back(),
                         mirror_settings_, stream_list);
       }
-      if (base::FeatureList::IsEnabled(features::kCastStreamingVp9)) {
+
+      if (media::cast::encoding_support::IsSoftwareEnabled(
+              Codec::CODEC_VIDEO_VP9)) {
         FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
             RtpPayloadType::VIDEO_VP9, Codec::CODEC_VIDEO_VP9);
         AddSenderConfig(video_ssrc, config, aes_key, aes_iv, session_params_,
@@ -891,7 +892,9 @@ void Session::CreateAndSendOffer() {
       }
 
       // Finally, offer software VP8 if hardware VP8 was not offered.
-      if (!hardware_vp8_recommended) {
+      if (!should_offer_hardware_vp8 &&
+          media::cast::encoding_support::IsSoftwareEnabled(
+              Codec::CODEC_VIDEO_VP8)) {
         FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
             RtpPayloadType::VIDEO_VP8, Codec::CODEC_VIDEO_VP8);
         AddSenderConfig(video_ssrc, config, aes_key, aes_iv, session_params_,
