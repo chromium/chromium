@@ -140,7 +140,7 @@ class PolicyRule {
   // string: is the desired matching pattern.
   // match_opts: if the pattern matching is case sensitive or not.
   bool AddStringMatch(RuleType rule_type,
-                      int16_t parameter,
+                      uint8_t parameter,
                       const wchar_t* string,
                       StringMatchOptions match_opts);
 
@@ -150,7 +150,7 @@ class PolicyRule {
   // number: the value to compare the input to.
   // comparison_op: the comparison kind (equal, logical and, etc).
   bool AddNumberMatch(RuleType rule_type,
-                      int16_t parameter,
+                      uint8_t parameter,
                       uint32_t number,
                       RuleOp comparison_op);
 
@@ -168,7 +168,7 @@ class PolicyRule {
   // in AddStringMatch.
   bool GenStringOpcode(RuleType rule_type,
                        StringMatchOptions match_opts,
-                       uint16_t parameter,
+                       uint8_t parameter,
                        int state,
                        bool last_call,
                        int* skip_count,

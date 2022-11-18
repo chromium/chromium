@@ -73,8 +73,8 @@ enum EvalResult {
   TERMINATE_PROCESS,   // Destroy target process. Do IPC as well.
 };
 
-// The following are the implemented opcodes.
-enum OpcodeID {
+// The following are the implemented opcodes. uint16_t purely to pack nicely.
+enum OpcodeID : uint16_t {
   OP_ALWAYS_FALSE,        // Evaluates to false (EVAL_FALSE).
   OP_ALWAYS_TRUE,         // Evaluates to true (EVAL_TRUE).
   OP_NUMBER_MATCH,        // Match a 32-bit integer as n == a.
@@ -195,7 +195,7 @@ class PolicyOpcode {
   void SetOptions(uint32_t options) { options_ = options; }
 
   // Returns the parameter of the function the opcode concerns.
-  uint16_t GetParameter() const { return parameter_; }
+  uint8_t GetParameter() const { return parameter_; }
 
  private:
   static const size_t kArgumentCount = 4;  // The number of supported argument.
@@ -213,7 +213,10 @@ class PolicyOpcode {
   EvalResult EvaluateHelper(const ParameterSet* parameters,
                             MatchContext* match);
   OpcodeID opcode_id_;
-  int16_t parameter_;
+  // Used a boolean field but provided as a uint8_t to maintain packing.
+  uint8_t has_param_;
+  // Not used if has_param_ is false.
+  uint8_t parameter_;
   uint32_t options_;
   OpcodeArgument arguments_[PolicyOpcode::kArgumentCount];
 };
@@ -301,7 +304,7 @@ class OpcodeFactory {
   // selected_param: index of the input argument. It must be a uint32_t or the
   // evaluation result will generate a EVAL_ERROR.
   // match: the number to compare against the selected_param.
-  PolicyOpcode* MakeOpNumberMatch(int16_t selected_param,
+  PolicyOpcode* MakeOpNumberMatch(uint8_t selected_param,
                                   uint32_t match,
                                   uint32_t options);
 
@@ -309,7 +312,7 @@ class OpcodeFactory {
   // selected_param: index of the input argument. It must be an void* or the
   // evaluation result will generate a EVAL_ERROR.
   // match: the pointer numeric value to compare against selected_param.
-  PolicyOpcode* MakeOpVoidPtrMatch(int16_t selected_param,
+  PolicyOpcode* MakeOpVoidPtrMatch(uint8_t selected_param,
                                    const void* match,
                                    uint32_t options);
 
@@ -317,7 +320,7 @@ class OpcodeFactory {
   // selected_param: index of the input argument. It must be a uint32_t or the
   // evaluation result will generate a EVAL_ERROR.
   // lower_bound, upper_bound: the range to compare against selected_param.
-  PolicyOpcode* MakeOpNumberMatchRange(int16_t selected_param,
+  PolicyOpcode* MakeOpNumberMatchRange(uint8_t selected_param,
                                        uint32_t lower_bound,
                                        uint32_t upper_bound,
                                        uint32_t options);
@@ -335,7 +338,7 @@ class OpcodeFactory {
   // current implementation.
   // match_opts: Indicates additional matching flags. Currently CaseInsensitive
   // is supported.
-  PolicyOpcode* MakeOpWStringMatch(int16_t selected_param,
+  PolicyOpcode* MakeOpWStringMatch(uint8_t selected_param,
                                    const wchar_t* match_str,
                                    int start_position,
                                    StringMatchOptions match_opts,
@@ -345,17 +348,17 @@ class OpcodeFactory {
   // selected_param: index of the input argument. It must be uint32_t or the
   // evaluation result will generate a EVAL_ERROR.
   // match: the value to bitwise AND against selected_param.
-  PolicyOpcode* MakeOpNumberAndMatch(int16_t selected_param,
+  PolicyOpcode* MakeOpNumberAndMatch(uint8_t selected_param,
                                      uint32_t match,
                                      uint32_t options);
 
  private:
   // Constructs the common part of every opcode. selected_param is the index
-  // of the input param to use when evaluating the opcode. Pass -1 in
-  // selected_param to indicate that no input parameter is required.
+  // of the input param to use when evaluating the opcode.
+  PolicyOpcode* MakeBase(OpcodeID opcode_id, uint32_t options);
   PolicyOpcode* MakeBase(OpcodeID opcode_id,
                          uint32_t options,
-                         int16_t selected_param);
+                         uint8_t selected_param);
 
   // Allocates (and copies) a string (of size length) inside the buffer and
   // returns the displacement with respect to start.
