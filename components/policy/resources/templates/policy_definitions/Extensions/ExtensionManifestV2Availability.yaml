@@ -1,9 +1,9 @@
 owners:
 - zmin@chromium.org
 - file://components/policy/OWNERS
-caption: Control manifest v2 extension availability
+caption: Control Manifest v2 extension availability
 desc: |-
-  Control if manifest v2 extensions can be used by browser.
+  Control if Manifest v2 extensions can be used by browser.
 
   Manifest v2 extensions support will be deprecated and all extensions need
   to be migrated to v3 in the future. More information and timeline of the
