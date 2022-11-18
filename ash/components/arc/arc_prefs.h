@@ -29,6 +29,7 @@ ARC_EXPORT extern const char kArcInitialSettingsPending[];
 ARC_EXPORT extern const char kArcLocationServiceEnabled[];
 ARC_EXPORT extern const char kArcManagementTransition[];
 ARC_EXPORT extern const char kArcPackages[];
+ARC_EXPORT extern const char kArcPackagesIsUpToDate[];
 ARC_EXPORT extern const char kArcPaiStarted[];
 ARC_EXPORT extern const char kArcPolicyComplianceReported[];
 ARC_EXPORT extern const char kArcProvisioningInitiatedFromOobe[];

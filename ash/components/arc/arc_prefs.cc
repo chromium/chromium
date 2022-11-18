@@ -72,6 +72,8 @@ const char kArcTermsShownInOobe[] = "arc.terms.shown_in_oobe";
 const char kArcLocationServiceEnabled[] = "arc.location_service.enabled";
 // A preference to keep list of Android packages and their infomation.
 const char kArcPackages[] = "arc.packages";
+// A preference that indicates that arc.packages is up to date.
+const char kArcPackagesIsUpToDate[] = "arc.packages_is_up_to_date";
 // A preference that indicates that Play Auto Install flow was already started.
 const char kArcPaiStarted[] = "arc.pai.started";
 // A preference that indicates that provisioning was initiated from OOBE. This

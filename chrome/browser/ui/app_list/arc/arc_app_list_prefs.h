@@ -642,6 +642,9 @@ class ArcAppListPrefs : public KeyedService,
   // Records UMA metrics on app counts on ARC start.
   void RecordAppIdsUma();
 
+  // Updates kArcPackagesIsUpToDate pref.
+  void UpdateArcPackagesIsUpToDatePref();
+
   Profile* const profile_;
 
   // Owned by the BrowserContext.
@@ -689,6 +692,8 @@ class ArcAppListPrefs : public KeyedService,
   base::OneShotTimer detect_default_app_availability_timeout_;
   // Set of currently installing apps_.
   std::unordered_set<std::string> apps_installations_;
+  // Set of package names which are installed but not yet added to the prefs.
+  std::unordered_set<std::string> packages_to_be_added_;
   // To execute file operations in sequence.
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
 

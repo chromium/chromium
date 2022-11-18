@@ -7,11 +7,13 @@
 #include <utility>
 
 #include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/adb_sideloading_availability_delegate.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
+#include "components/prefs/pref_service.h"
 
 namespace arc {
 
@@ -41,6 +43,12 @@ void ArcActivationNecessityChecker::Check(CheckCallback callback) {
   // Always activate ARC for unmanaged users who will get some applications
   // installed by Play Auto Install (PAI).
   if (!policy_util::IsAccountManaged(profile_)) {
+    std::move(callback).Run(true);
+    return;
+  }
+
+  // Activate ARC if the package list held by ArcAppListPrefs is not up to date.
+  if (!profile_->GetPrefs()->GetBoolean(arc::prefs::kArcPackagesIsUpToDate)) {
     std::move(callback).Run(true);
     return;
   }

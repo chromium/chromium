@@ -71,6 +71,7 @@ class ArcActivationNecessityCheckerTest : public testing::Test {
     profile_ = profile_builder.Build();
     profile_->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
     profile_->GetPrefs()->SetBoolean(prefs::kArcEnabled, true);
+    profile_->GetPrefs()->SetBoolean(prefs::kArcPackagesIsUpToDate, true);
 
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
         profile_->GetProfileUserName(), "1234567890"));
@@ -146,6 +147,14 @@ TEST_F(ArcActivationNecessityCheckerTest, UnmanagedUser) {
 
 TEST_F(ArcActivationNecessityCheckerTest, AdbSideloadingIsAvailable) {
   adb_sideloading_availability_delegate_.set_result(true);
+  base::test::TestFuture<bool> future;
+  checker_->Check(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+}
+
+TEST_F(ArcActivationNecessityCheckerTest, PacakgeListIsNotUpToDate) {
+  profile_->GetPrefs()->SetBoolean(prefs::kArcPackagesIsUpToDate, false);
+
   base::test::TestFuture<bool> future;
   checker_->Check(future.GetCallback());
   EXPECT_TRUE(future.Get());

@@ -473,6 +473,7 @@ TEST_F(ArcSessionManagerTest, SignedInWorkflowWithArcOnDemand) {
   PrefService* const prefs = profile()->GetPrefs();
   prefs->SetBoolean(prefs::kArcTermsAccepted, true);
   prefs->SetBoolean(prefs::kArcSignedIn, true);
+  prefs->SetBoolean(prefs::kArcPackagesIsUpToDate, true);
 
   arc_session_manager()->SetProfile(profile());
   arc_session_manager()->Initialize();

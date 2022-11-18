@@ -391,6 +391,7 @@ void ArcAppListPrefs::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(arc::prefs::kArcApps);
   registry->RegisterDictionaryPref(arc::prefs::kArcPackages);
+  registry->RegisterBooleanPref(arc::prefs::kArcPackagesIsUpToDate, false);
   registry->RegisterIntegerPref(arc::prefs::kArcFrameworkVersion,
                                 -1 /* default_value */);
   registry->RegisterDictionaryPref(
@@ -1385,6 +1386,7 @@ void ArcAppListPrefs::OnConnectionClosed() {
   VLOG(1) << "App instance connection is closed.";
   DisableAllApps();
   installing_packages_count_ = 0;
+  packages_to_be_added_.clear();
   apps_installations_.clear();
   CancelDefaultAppLoadingTimeout();
   ClearIconRequestRecord();
@@ -2159,6 +2161,10 @@ void ArcAppListPrefs::OnPackageAdded(
   DCHECK(IsArcAndroidEnabledForProfile(profile_));
 
   AddOrUpdatePackagePrefs(*package_info);
+
+  packages_to_be_added_.erase(package_info->package_name);
+  UpdateArcPackagesIsUpToDatePref();
+
   for (auto& observer : observer_list_)
     observer.OnPackageInstalled(*package_info);
 }
@@ -2194,6 +2200,8 @@ void ArcAppListPrefs::OnPackageListRefreshed(
         observer.OnPackageRemoved(package_name, false);
     }
   }
+
+  UpdateArcPackagesIsUpToDatePref();
 
   package_list_initial_refreshed_ = true;
   for (auto& observer : observer_list_)
@@ -2281,6 +2289,7 @@ void ArcAppListPrefs::OnInstallationStarted(
     const absl::optional<std::string>& package_name) {
   ++installing_packages_count_;
   CancelDefaultAppLoadingTimeout();
+  UpdateArcPackagesIsUpToDatePref();
 
   if (!package_name.has_value())
     return;
@@ -2313,6 +2322,8 @@ void ArcAppListPrefs::OnInstallationFinished(
         reason = InstallationCounterReasonEnum::POLICY;
       }
       UMA_HISTOGRAM_ENUMERATION("Arc.AppInstalledReason", reason);
+
+      packages_to_be_added_.insert(result->package_name);
     }
   }
 
@@ -2322,6 +2333,7 @@ void ArcAppListPrefs::OnInstallationFinished(
   }
   --installing_packages_count_;
   MaybeSetDefaultAppLoadingTimeout();
+  UpdateArcPackagesIsUpToDatePref();
 }
 
 void ArcAppListPrefs::NotifyAppStatesChanged(const std::string& app_id) {
@@ -2335,6 +2347,14 @@ void ArcAppListPrefs::NotifyAppStatesChanged(const std::string& app_id) {
 void ArcAppListPrefs::AppInfo::SetIgnoreCompareInstallTimeForTesting(
     bool ignore) {
   ignore_compare_app_info_install_time = ignore;
+}
+
+void ArcAppListPrefs::UpdateArcPackagesIsUpToDatePref() {
+  // Set kArcPackagesIsUpToDate to true if there is no active install and all
+  // installed packages are added to the prefs.
+  prefs_->SetBoolean(
+      arc::prefs::kArcPackagesIsUpToDate,
+      installing_packages_count_ == 0 && packages_to_be_added_.empty());
 }
 
 ArcAppListPrefs::AppInfo::AppInfo(
