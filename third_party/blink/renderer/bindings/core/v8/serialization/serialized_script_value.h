@@ -353,8 +353,14 @@ class CORE_EXPORT SerializedScriptValue
   static DataBufferPtr AllocateBuffer(size_t);
 
   void SetData(DataBufferPtr data, size_t size) {
-    // https://linear.app/replay/issue/RUN-490
-    recordreplay::Assert("SerializedScriptValue::SetData %zu", size);
+    // Tolerate different serialized value lengths when replaying, as a workaround
+    // to improve robustness and allow the replay to continue.
+    size_t recorded_size = recordreplay::RecordReplayValue("SerializedScriptValue::SetData", size);
+    if (recorded_size != size) {
+      data_buffer_ = AllocateBuffer(recorded_size);
+      memset(data_buffer_.get(), 0, recorded_size);
+      return;
+    }
 
     data_buffer_ = std::move(data);
     data_buffer_size_ = size;
