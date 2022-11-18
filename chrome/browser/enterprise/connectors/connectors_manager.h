@@ -121,7 +121,6 @@ class ConnectorsManager {
   void StartObservingPrefs(PrefService* pref_service);
   void StartObservingPref(AnalysisConnector connector);
   void StartObservingPref(ReportingConnector connector);
-  void StartObservingPref(FileSystemConnector connector);
 
   // Validates which settings should be applied to an analysis connector event
   // against connector policies. Cache the policy value the first time this is

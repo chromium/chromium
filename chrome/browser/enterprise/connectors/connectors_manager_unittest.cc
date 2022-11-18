@@ -44,10 +44,6 @@ constexpr AnalysisConnector kAllAnalysisConnectors[] = {
 constexpr ReportingConnector kAllReportingConnectors[] = {
     ReportingConnector::SECURITY_EVENT};
 
-constexpr FileSystemConnector kAllFileSystemConnectors[] = {
-    FileSystemConnector::SEND_DOWNLOAD_TO_CLOUD,
-};
-
 constexpr char kEmptySettingsPref[] = "[]";
 
 constexpr char kNormalCloudAnalysisSettingsPref[] = R"([
@@ -88,29 +84,6 @@ constexpr char kNormalReportingSettingsPref[] = R"([
   {
     "service_provider": "google"
   }
-])";
-
-constexpr char kNormalSendDownloadToCloudPolicy[] = R"([
-  {
-    "service_provider": "box",
-    "enterprise_id": "1234567890",
-    "enable": [
-      {
-        "url_list": ["*"],
-        "mime_types": ["text/plain", "image/png", "application/zip"],
-      },
-    ],
-    "disable": [
-      {
-        "url_list": ["no.text.com", "no.text.no.image.com"],
-        "mime_types": ["text/plain"],
-      },
-      {
-        "url_list": ["no.image.com", "no.text.no.image.com"],
-        "mime_types": ["image/png"],
-      },
-    ],
-  },
 ])";
 
 constexpr char kDlpAndMalwareUrl[] = "https://foo.com";
@@ -155,13 +128,6 @@ class ConnectorsManagerTest : public testing::Test {
     // configurable this will change.
     ASSERT_EQ(GURL("https://chromereporting-pa.googleapis.com/v1/events"),
               settings.reporting_url);
-  }
-
-  void ValidateSettings(const FileSystemSettings& settings) {
-    // Mime types are the only setting affect by the policy, the rest are
-    // just copied from the service provider comfig.  So only need to validate
-    // this in tests.
-    ASSERT_EQ(settings.mime_types, expected_mime_types_);
   }
 
   class ScopedConnectorPref {
@@ -905,55 +871,5 @@ TEST_P(ConnectorsManagerReportingTest, DynamicPolicies) {
 INSTANTIATE_TEST_SUITE_P(ConnectorsManagerReportingTest,
                          ConnectorsManagerReportingTest,
                          testing::ValuesIn(kAllReportingConnectors));
-
-class ConnectorsManagerFileSystemTest
-    : public ConnectorsManagerTest,
-      public testing::WithParamInterface<FileSystemConnector> {
- public:
-  ConnectorsManagerFileSystemTest() {
-    scoped_feature_list_.InitWithFeatures({kEnterpriseConnectorsEnabled}, {});
-  }
-
-  FileSystemConnector connector() const { return GetParam(); }
-
-  const char* pref() const { return ConnectorPref(connector()); }
-};
-
-TEST_P(ConnectorsManagerFileSystemTest, DynamicPolicies) {
-  ConnectorsManager manager(std::make_unique<BrowserCrashEventRouter>(profile_),
-                            ExtensionInstallEventRouter(profile_),
-                            pref_service(), GetServiceProviderConfig());
-  // The cache is initially empty.
-  ASSERT_TRUE(manager.GetFileSystemConnectorsSettingsForTesting().empty());
-
-  // Once the pref is updated, the settings should be cached, and reporting
-  // settings can be obtained.
-  {
-    ScopedConnectorPref scoped_pref(pref_service(), pref(),
-                                    kNormalSendDownloadToCloudPolicy);
-
-    const auto& cached_settings =
-        manager.GetFileSystemConnectorsSettingsForTesting();
-    ASSERT_FALSE(cached_settings.empty());
-    ASSERT_EQ(1u, cached_settings.count(connector()));
-    ASSERT_EQ(1u, cached_settings.at(connector()).size());
-
-    expected_mime_types_ = {"text/plain", "image/png", "application/zip"};
-
-    auto settings = cached_settings.at(connector())
-                        .at(0)
-                        .GetSettings(GURL("https://any.com"));
-    ASSERT_TRUE(settings.has_value());
-
-    ValidateSettings(settings.value());
-  }
-
-  // The cache should be empty again after the pref is reset.
-  ASSERT_TRUE(manager.GetAnalysisConnectorsSettingsForTesting().empty());
-}
-
-INSTANTIATE_TEST_SUITE_P(ConnectorsManagerFileSystemTest,
-                         ConnectorsManagerFileSystemTest,
-                         testing::ValuesIn(kAllFileSystemConnectors));
 
 }  // namespace enterprise_connectors

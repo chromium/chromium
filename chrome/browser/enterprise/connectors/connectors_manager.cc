@@ -348,7 +348,6 @@ void ConnectorsManager::StartObservingPrefs(PrefService* pref_service) {
   StartObservingPref(AnalysisConnector::FILE_TRANSFER);
 #endif
   StartObservingPref(ReportingConnector::SECURITY_EVENT);
-  StartObservingPref(FileSystemConnector::SEND_DOWNLOAD_TO_CLOUD);
 }
 
 void ConnectorsManager::StartObservingPref(AnalysisConnector connector) {
@@ -369,17 +368,6 @@ void ConnectorsManager::StartObservingPref(ReportingConnector connector) {
     pref_change_registrar_.Add(
         pref,
         base::BindRepeating(&ConnectorsManager::CacheReportingConnectorPolicy,
-                            base::Unretained(this), connector));
-  }
-}
-
-void ConnectorsManager::StartObservingPref(FileSystemConnector connector) {
-  const char* pref = ConnectorPref(connector);
-  DCHECK(pref);
-  if (!pref_change_registrar_.IsObserved(pref)) {
-    pref_change_registrar_.Add(
-        pref,
-        base::BindRepeating(&ConnectorsManager::CacheFileSystemConnectorPolicy,
                             base::Unretained(this), connector));
   }
 }
