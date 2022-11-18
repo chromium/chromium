@@ -12,7 +12,6 @@
 #include "base/win/registry.h"
 #include "base/win/startup_information.h"
 #include "base/win/win_util.h"
-#include "base/win/windows_version.h"
 #include "sandbox/win/tests/common/controller.h"
 #include "sandbox/win/tests/integration_tests/hooking_dll.h"
 #include "sandbox/win/tests/integration_tests/hooking_win_proc.h"

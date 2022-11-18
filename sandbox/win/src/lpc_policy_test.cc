@@ -11,7 +11,6 @@
 #include <windows.h>
 #include <winioctl.h>
 
-#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "sandbox/win/src/heap_helper.h"
 #include "sandbox/win/src/sandbox.h"
@@ -26,12 +25,11 @@ namespace sandbox {
 namespace {
 
 bool CsrssDisconnectSupported() {
-  // This functionality has not been verified on versions before Win10.
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return false;
-
-  // Does not work on 32-bit on x64 (ie Wow64).
-  return (!base::win::OSInfo::GetInstance()->IsWowX86OnAMD64());
+#if defined(_WIN64) && !defined(ADDRESS_SANITIZER)
+  return true;
+#else
+  return false;
+#endif  // defined(_WIN64) && !defined(ADDRESS_SANITIZER)
 }
 
 }  // namespace
@@ -216,11 +214,10 @@ TEST(LpcPolicyTest, TestCanFindCsrPortHeap) {
 #endif
 
 TEST(LpcPolicyTest, MAYBE_TestHeapFlags) {
-  if (!CsrssDisconnectSupported()) {
-    // This functionality has not been verified on versions before Win10.
+  if (!CsrssDisconnectSupported())
     return;
-  }
-  // Windows does not support callers supplying arbritary flag values. So we
+
+  // Windows does not support callers supplying arbitrary flag values. So we
   // write some non-trivial value to reduce the chance we match this in random
   // data.
   DWORD flags = 0x41007;

@@ -8,7 +8,6 @@
 
 #include "base/process/process_info.h"
 #include "base/win/access_token.h"
-#include "base/win/windows_version.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "sandbox/win/src/sandbox_policy.h"

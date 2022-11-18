@@ -9,7 +9,6 @@
 #include <stddef.h>
 #include <utility>
 
-#include "base/win/windows_version.h"
 #include "sandbox/win/src/restricted_token.h"
 
 namespace sandbox {

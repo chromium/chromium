@@ -68,8 +68,6 @@ void StartupInformationHelper::AddInheritedHandle(HANDLE handle) {
 
 void StartupInformationHelper::SetAppContainer(
     scoped_refptr<AppContainer> container) {
-  // Only supported for Windows 8+.
-  DCHECK(base::win::GetVersion() >= base::win::Version::WIN8);
   // LowPrivilegeAppContainer only supported for Windows 10+
   DCHECK(!container->GetEnableLowPrivilegeAppContainer() ||
          base::win::GetVersion() >= base::win::Version::WIN10_RS1);

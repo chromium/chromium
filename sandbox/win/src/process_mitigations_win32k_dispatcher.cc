@@ -10,7 +10,6 @@
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/unguessable_token.h"
-#include "base/win/windows_version.h"
 #include "sandbox/win/src/interception.h"
 #include "sandbox/win/src/interceptors.h"
 #include "sandbox/win/src/ipc_tags.h"

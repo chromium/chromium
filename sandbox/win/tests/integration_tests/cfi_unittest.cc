@@ -9,7 +9,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
-#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -77,12 +76,6 @@ TEST(CFGSupportTests, LongJmp) {
 // Make sure Microsoft binaries compiled with CFG cannot call indirect pointers
 // not listed in the loader config for this test binary.
 TEST(CFGSupportTests, MsIndirectFailure) {
-  // CFG is only supported on >= Win8.1 Update 3.
-  // Not checking for update, since test infra is updated and it would add
-  // a lot of complexity.
-  if (base::win::GetVersion() < base::win::Version::WIN8_1)
-    return;
-
   base::FilePath exe_path;
   ASSERT_TRUE(base::PathService::Get(base::FILE_EXE, &exe_path));
 

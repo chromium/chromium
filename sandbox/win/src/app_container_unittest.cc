@@ -17,7 +17,6 @@
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/win/sid.h"
-#include "base/win/windows_version.h"
 #include "sandbox/features.h"
 #include "sandbox/win/src/app_container_base.h"
 #include "sandbox/win/src/security_capabilities.h"

@@ -4,6 +4,10 @@
 
 #include "sandbox/features.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
 namespace sandbox::features {
 #if BUILDFLAG(IS_WIN)
 bool IsAppContainerSandboxSupported() {

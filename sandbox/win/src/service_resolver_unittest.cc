@@ -153,18 +153,10 @@ std::unique_ptr<ResolverThunkTest> GetTestResolver(bool relaxed) {
   return std::make_unique<WinXpResolverTest>(relaxed);
 #else
   base::win::OSInfo* os_info = base::win::OSInfo::GetInstance();
-  if (os_info->IsWowX86OnAMD64()) {
-    if (os_info->version() >= base::win::Version::WIN10)
-      return std::make_unique<Wow64W10ResolverTest>(relaxed);
-    if (os_info->version() >= base::win::Version::WIN8)
-      return std::make_unique<Wow64W8ResolverTest>(relaxed);
-    return std::make_unique<Wow64ResolverTest>(relaxed);
-  }
+  if (os_info->IsWowX86OnAMD64())
+    return std::make_unique<Wow64W10ResolverTest>(relaxed);
 
-  if (os_info->version() >= base::win::Version::WIN8)
-    return std::make_unique<Win8ResolverTest>(relaxed);
-
-  return std::make_unique<WinXpResolverTest>(relaxed);
+  return std::make_unique<Win8ResolverTest>(relaxed);
 #endif
 }
 

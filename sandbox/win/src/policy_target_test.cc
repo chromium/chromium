@@ -8,7 +8,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/win/scoped_process_information.h"
-#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "sandbox/win/src/broker_services.h"
 #include "sandbox/win/src/sandbox.h"

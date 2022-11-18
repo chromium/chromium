@@ -13,7 +13,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
 #include "sandbox/policy/win/sandbox_test_utils.h"
 #include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/app_container_base.h"
@@ -42,7 +41,6 @@ class SandboxFeatureTest
   virtual MitigationFlags GetExpectedMitigationFlags();
   virtual MitigationFlags GetExpectedDelayedMitigationFlags();
 
-  // App Containers are only available in Windows 8 and up
   virtual AppContainerType GetExpectedAppContainerType();
   virtual std::vector<base::win::Sid> GetExpectedCapabilities();
 

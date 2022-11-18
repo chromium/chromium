@@ -10,7 +10,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/command_line.h"
-#include "base/win/windows_version.h"
 #endif
 
 namespace sandbox {

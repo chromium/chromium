@@ -10,7 +10,6 @@
 
 #include "base/notreached.h"
 #include "base/win/scoped_handle.h"
-#include "base/win/windows_version.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/policy_engine_opcodes.h"
 #include "sandbox/win/src/policy_params.h"

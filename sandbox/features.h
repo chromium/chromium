@@ -7,10 +7,6 @@
 
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
-
 namespace sandbox::features {
 #if BUILDFLAG(IS_WIN)
 // Returns whether the App Container Sandbox is supported by the current

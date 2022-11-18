@@ -192,18 +192,14 @@ ResultCode ConfigBase::AddRuleInternal(SubSystem subsystem,
       break;
     }
     case SubSystem::kWin32kLockdown: {
-      // Win32k intercept rules only supported on Windows 8 and above. This must
-      // match the version checks in process_mitigations.cc for consistency.
-      if (base::win::GetVersion() >= base::win::Version::WIN8) {
-        DCHECK_EQ(MITIGATION_WIN32K_DISABLE,
-                  mitigations_ & MITIGATION_WIN32K_DISABLE)
-            << "Enable MITIGATION_WIN32K_DISABLE before adding win32k policy "
-               "rules.";
-        if (!ProcessMitigationsWin32KLockdownPolicy::GenerateRules(
-                pattern, semantics, policy_maker_.get())) {
-          NOTREACHED();
-          return SBOX_ERROR_BAD_PARAMS;
-        }
+      DCHECK_EQ(MITIGATION_WIN32K_DISABLE,
+                mitigations_ & MITIGATION_WIN32K_DISABLE)
+          << "Enable MITIGATION_WIN32K_DISABLE before adding win32k policy "
+             "rules.";
+      if (!ProcessMitigationsWin32KLockdownPolicy::GenerateRules(
+              pattern, semantics, policy_maker_.get())) {
+        NOTREACHED();
+        return SBOX_ERROR_BAD_PARAMS;
       }
       break;
     }
@@ -399,12 +395,11 @@ ResultCode ConfigBase::SetDisconnectCsrss() {
 // CreateThread EAT patch used when this is enabled.
 // See https://crbug.com/783296#c27.
 #if defined(_WIN64) && !defined(ADDRESS_SANITIZER)
-  if (base::win::GetVersion() >= base::win::Version::WIN10) {
-    is_csrss_connected_ = false;
-    return AddKernelObjectToClose(L"ALPC Port", nullptr);
-  }
-#endif  // !defined(_WIN64)
+  is_csrss_connected_ = false;
+  return AddKernelObjectToClose(L"ALPC Port", nullptr);
+#else
   return SBOX_ALL_OK;
+#endif  // !defined(_WIN64) || defined(ADDRESS_SANITIZER)
 }
 
 void ConfigBase::SetDesktop(Desktop desktop) {

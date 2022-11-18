@@ -12,7 +12,6 @@
 #include "base/win/atl.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/sid.h"
-#include "base/win/windows_version.h"
 #include "sandbox/win/src/acl.h"
 #include "sandbox/win/src/security_capabilities.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -579,8 +578,6 @@ TEST(RestrictedTokenTest, LockdownDefaultDaclNoLogonSid) {
 }
 
 TEST(RestrictedTokenTest, LowBoxToken) {
-  if (base::win::GetVersion() < base::win::Version::WIN8)
-    return;
   base::win::ScopedHandle token;
 
   auto package_sid = base::win::Sid::FromSddlString(L"S-1-15-2-1-2-3-4-5-6-7");

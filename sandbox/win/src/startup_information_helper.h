@@ -11,7 +11,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/win/startup_information.h"
-#include "base/win/windows_version.h"
 #include "sandbox/win/src/app_container_base.h"
 #include "sandbox/win/src/process_mitigations.h"
 #include "sandbox/win/src/security_capabilities.h"

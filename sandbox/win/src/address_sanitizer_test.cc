@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/win/scoped_handle.h"
-#include "base/win/windows_version.h"
 #include "sandbox/win/tests/common/controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

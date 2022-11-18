@@ -9,7 +9,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
-#include "base/win/windows_version.h"
 
 namespace sandbox {
 namespace {
@@ -98,10 +97,6 @@ bool HeapFlags(HANDLE handle, DWORD* flags) {
 }
 
 HANDLE FindCsrPortHeap() {
-  if (base::win::GetVersion() < base::win::Version::WIN10) {
-    // This functionality has not been verified on versions before Win10.
-    return nullptr;
-  }
   DWORD number_of_heaps = ::GetProcessHeaps(0, nullptr);
   std::unique_ptr<HANDLE[]> all_heaps(new HANDLE[number_of_heaps]);
   if (::GetProcessHeaps(number_of_heaps, all_heaps.get()) != number_of_heaps)

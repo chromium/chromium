@@ -7,7 +7,6 @@
 #include <windows.h>
 
 #include "base/strings/utf_string_conversions.h"
-#include "base/win/windows_version.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/process_mitigations_win32k_policy.h"
 #include "sandbox/win/tests/common/controller.h"

@@ -9,7 +9,6 @@
 #include <winioctl.h>
 
 #include "base/win/scoped_handle.h"
-#include "base/win/windows_version.h"
 #include "sandbox/win/src/filesystem_policy.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/sandbox.h"
@@ -715,11 +714,6 @@ TEST(FilePolicyTest, CheckMissingNTPrefixEscape) {
 }
 
 TEST(FilePolicyTest, TestCopyFile) {
-  // Check if the test is running Win8 or newer since
-  // MITIGATION_STRICT_HANDLE_CHECKS is not supported on older systems.
-  if (base::win::GetVersion() < base::win::Version::WIN8)
-    return;
-
   TestRunner runner;
   runner.SetTimeout(2000);
 

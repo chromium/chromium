@@ -46,9 +46,7 @@ MitigationFlags SandboxFeatureTest::GetExpectedMitigationFlags() {
       ::sandbox::MITIGATION_KTM_COMPONENT;
 
 #if !defined(NACL_WIN64)
-  // Win32k mitigation is only set on the operating systems it's available on
-  if (base::win::GetVersion() >= base::win::Version::WIN8)
-    flags = flags | ::sandbox::MITIGATION_WIN32K_DISABLE;
+  flags = flags | ::sandbox::MITIGATION_WIN32K_DISABLE;
 #endif
 
   return flags;
