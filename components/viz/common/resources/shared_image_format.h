@@ -94,12 +94,20 @@ class SharedImageFormat {
   }
   bool is_multi_plane() const { return plane_type_ == PlaneType::kMultiPlane; }
 
+  // Stub function that always returns false for preferring external sampler.
+  // TODO(hitawala): Check if external sampler support is needed for clients and
+  // if needed return accordingly.
+  bool PrefersExternalSampler() const { return false; }
+
   // Returns whether the resource format can be used as a software bitmap for
   // export to the display compositor.
   bool IsBitmapFormatSupported() const;
 
   // Return the number of planes associated with the format.
   int NumberOfPlanes() const;
+
+  // Returns true is `plane_index` is valid.
+  bool IsValidPlaneIndex(int plane_index) const;
 
   std::string ToString() const;
 

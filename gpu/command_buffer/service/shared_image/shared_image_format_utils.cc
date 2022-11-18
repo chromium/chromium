@@ -4,6 +4,11 @@
 
 #include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+
+#include "base/check.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_format_utils.h"
@@ -21,21 +26,135 @@ gfx::BufferFormat ToBufferFormat(viz::SharedImageFormat format) {
 }
 
 bool GLSupportsFormat(viz::SharedImageFormat format) {
-  return viz::GLSupportsFormat(format.resource_format());
+  if (format.is_single_plane())
+    return viz::GLSupportsFormat(format.resource_format());
+  // No support for multiplanar formats.
+  return false;
 }
-unsigned int GLDataType(viz::SharedImageFormat format) {
-  return viz::GLDataType(format.resource_format());
+GLFormat ToGLFormatExternalSampler(viz::SharedImageFormat format) {
+  DCHECK(format.is_multi_plane());
+  DCHECK(format.PrefersExternalSampler());
+  const GLenum ext_format = format.HasAlpha() ? GL_RGBA : GL_RGB;
+  GLFormat gl_format;
+  gl_format.data_type = GL_NONE;
+  gl_format.data_format = ext_format;
+  gl_format.image_internal_format = ext_format;
+  gl_format.storage_internal_format = ext_format;
+  gl_format.target = GL_TEXTURE_EXTERNAL_OES;
+  return gl_format;
 }
-unsigned int GLDataFormat(viz::SharedImageFormat format) {
-  return viz::GLDataFormat(format.resource_format());
+GLFormat ToGLFormat(viz::SharedImageFormat format,
+                    int plane_index,
+                    bool use_angle_rgbx_format) {
+  GLFormat gl_format;
+  gl_format.data_type = GLDataType(format);
+  gl_format.data_format = GLDataFormat(format, plane_index);
+  gl_format.image_internal_format = GLInternalFormat(format, plane_index);
+  gl_format.storage_internal_format =
+      TextureStorageFormat(format, use_angle_rgbx_format, plane_index);
+  gl_format.target = GL_TEXTURE_2D;
+  return gl_format;
 }
-unsigned int GLInternalFormat(viz::SharedImageFormat format) {
-  return viz::GLInternalFormat(format.resource_format());
+GLenum GLDataType(viz::SharedImageFormat format) {
+  if (format.is_single_plane())
+    return viz::GLDataType(format.resource_format());
+  switch (format.channel_format()) {
+    case viz::SharedImageFormat::ChannelFormat::k8:
+      return GL_UNSIGNED_BYTE;
+    case viz::SharedImageFormat::ChannelFormat::k10:
+      return GL_UNSIGNED_SHORT;
+    case viz::SharedImageFormat::ChannelFormat::k16:
+      return GL_UNSIGNED_SHORT;
+    case viz::SharedImageFormat::ChannelFormat::k16F:
+      return GL_HALF_FLOAT_OES;
+  }
 }
-unsigned int TextureStorageFormat(viz::SharedImageFormat format,
-                                  bool use_angle_rgbx_format) {
-  return viz::TextureStorageFormat(format.resource_format(),
-                                   use_angle_rgbx_format);
+GLenum GLDataFormat(viz::SharedImageFormat format, int plane_index) {
+  DCHECK(format.IsValidPlaneIndex(plane_index));
+  if (format.is_single_plane())
+    return viz::GLDataFormat(format.resource_format());
+  // For multiplanar formats without external sampler, GL formats are per plane.
+  // For single channel planes Y, U, V, A return GL_RED_EXT.
+  // For 2 channel plane UV return GL_RG_EXT.
+  switch (format.plane_config()) {
+    case viz::SharedImageFormat::PlaneConfig::kY_V_U:
+      return GL_RED_EXT;
+    case viz::SharedImageFormat::PlaneConfig::kY_UV:
+      return plane_index == 1 ? GL_RG_EXT : GL_RED_EXT;
+    case viz::SharedImageFormat::PlaneConfig::kY_UV_A:
+      return plane_index == 1 ? GL_RG_EXT : GL_RED_EXT;
+  }
+}
+GLenum GLInternalFormat(viz::SharedImageFormat format, int plane_index) {
+  DCHECK(format.IsValidPlaneIndex(plane_index));
+  if (format.is_single_plane())
+    return viz::GLInternalFormat(format.resource_format());
+  // For multiplanar formats without external sampler, GL formats are per plane.
+  // For single channel 8-bit planes Y, U, V, A return GL_RED_EXT.
+  // For single channel 10-bit planes Y return GL_R16_EXT.
+  // For 2 channel plane 8-bit UV return GL_RG_EXT.
+  // For 2 channel plane 16-bit UV return GL_RG16_EXT.
+  // TODO(hitawala): Add support for YVU/YUVA for 16 bit channels.
+  switch (format.channel_format()) {
+    case viz::SharedImageFormat::ChannelFormat::k8:
+      switch (format.plane_config()) {
+        case viz::SharedImageFormat::PlaneConfig::kY_V_U:
+          return GL_RED_EXT;
+        case viz::SharedImageFormat::PlaneConfig::kY_UV:
+          return plane_index == 1 ? GL_RG_EXT : GL_RED_EXT;
+        case viz::SharedImageFormat::PlaneConfig::kY_UV_A:
+          return plane_index == 1 ? GL_RG_EXT : GL_RED_EXT;
+      }
+    case viz::SharedImageFormat::ChannelFormat::k10:
+      DCHECK(format.plane_config() ==
+             viz::SharedImageFormat::PlaneConfig::kY_UV);
+      return plane_index == 1 ? GL_RG16_EXT : GL_R16_EXT;
+    case viz::SharedImageFormat::ChannelFormat::k16:
+      DCHECK(format.plane_config() ==
+             viz::SharedImageFormat::PlaneConfig::kY_UV);
+      return plane_index == 1 ? GL_RG16_EXT : GL_R16_EXT;
+    case viz::SharedImageFormat::ChannelFormat::k16F:
+      DCHECK(format.plane_config() ==
+             viz::SharedImageFormat::PlaneConfig::kY_UV);
+      return plane_index == 1 ? GL_RG16F_EXT : GL_R16F_EXT;
+  }
+}
+GLenum TextureStorageFormat(viz::SharedImageFormat format,
+                            bool use_angle_rgbx_format,
+                            int plane_index) {
+  DCHECK(format.IsValidPlaneIndex(plane_index));
+  if (format.is_single_plane())
+    return viz::TextureStorageFormat(format.resource_format(),
+                                     use_angle_rgbx_format);
+  // For multiplanar formats without external sampler, GL formats are per plane.
+  // For single channel 8-bit planes Y, U, V, A return GL_R8_EXT.
+  // For single channel 10-bit planes Y return GL_R16_EXT.
+  // For 2 channel plane 8-bit UV return GL_RG8_EXT.
+  // For 2 channel plane 16-bit UV return GL_RG16_EXT.
+  // TODO(hitawala): Add support for YVU/YUVA for 16 bit channels.
+  switch (format.channel_format()) {
+    case viz::SharedImageFormat::ChannelFormat::k8:
+      switch (format.plane_config()) {
+        case viz::SharedImageFormat::PlaneConfig::kY_V_U:
+          return GL_R8_EXT;
+        case viz::SharedImageFormat::PlaneConfig::kY_UV:
+          return plane_index == 1 ? GL_RG8_EXT : GL_R8_EXT;
+        case viz::SharedImageFormat::PlaneConfig::kY_UV_A:
+          return plane_index == 1 ? GL_RG8_EXT : GL_R8_EXT;
+      }
+    case viz::SharedImageFormat::ChannelFormat::k10:
+      DCHECK(format.plane_config() ==
+             viz::SharedImageFormat::PlaneConfig::kY_UV);
+      return plane_index == 1 ? GL_RG16_EXT : GL_R16_EXT;
+    case viz::SharedImageFormat::ChannelFormat::k16:
+      DCHECK(format.plane_config() ==
+             viz::SharedImageFormat::PlaneConfig::kY_UV);
+      return plane_index == 1 ? GL_RG16_EXT : GL_R16_EXT;
+    case viz::SharedImageFormat::ChannelFormat::k16F:
+      DCHECK(format.plane_config() ==
+             viz::SharedImageFormat::PlaneConfig::kY_UV);
+      return plane_index == 1 ? GL_RG16F_EXT : GL_R16F_EXT;
+  }
 }
 
 #if BUILDFLAG(ENABLE_VULKAN)

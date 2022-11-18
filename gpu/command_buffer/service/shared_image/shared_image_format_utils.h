@@ -7,6 +7,7 @@
 
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/common/gl2_types.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/vulkan/buildflags.h"
 #include "third_party/dawn/include/dawn/webgpu.h"
@@ -18,6 +19,16 @@
 #endif
 
 namespace gpu {
+
+// GLFormat is a struct containing the GL data type, data format, internal
+// format used by the image, internal format used for storage and GL target.
+struct GLFormat {
+  GLenum data_type = 0;
+  GLenum data_format = 0;
+  GLenum image_internal_format = 0;
+  GLenum storage_internal_format = 0;
+  GLenum target = 0;
+};
 
 // A set of utility functions to get the equivalent GPU API (GL, Vulkan, Dawn,
 // Metal) type/format information for a given SharedImageFormat. These functions
@@ -36,17 +47,26 @@ GPU_GLES2_EXPORT gfx::BufferFormat ToBufferFormat(
 // SharedImageFormat.
 // Returns true if given `format` is supported by GL.
 GPU_GLES2_EXPORT bool GLSupportsFormat(viz::SharedImageFormat format);
+// Return the GLFormat when using external sampler for a given `format`.
+GPU_GLES2_EXPORT GLFormat
+ToGLFormatExternalSampler(viz::SharedImageFormat format);
+// Return the GLFormat for a given `format`.
+GPU_GLES2_EXPORT GLFormat ToGLFormat(viz::SharedImageFormat format,
+                                     int plane_index,
+                                     bool use_angle_rgbx_format);
 // Returns GL data type for given `format`.
-GPU_GLES2_EXPORT unsigned int GLDataType(viz::SharedImageFormat format);
+GPU_GLES2_EXPORT GLenum GLDataType(viz::SharedImageFormat format);
 // Returns GL data format for given `format`.
-GPU_GLES2_EXPORT unsigned int GLDataFormat(viz::SharedImageFormat format);
+GPU_GLES2_EXPORT GLenum GLDataFormat(viz::SharedImageFormat format,
+                                     int plane_index = 0);
 // Returns the GL format used internally for matching with the texture format
 // for a given `format`.
-GPU_GLES2_EXPORT unsigned int GLInternalFormat(viz::SharedImageFormat format);
+GPU_GLES2_EXPORT GLenum GLInternalFormat(viz::SharedImageFormat format,
+                                         int plane_index = 0);
 // Returns texture storage format for given `format`.
-GPU_GLES2_EXPORT unsigned int TextureStorageFormat(
-    viz::SharedImageFormat format,
-    bool use_angle_rgbx_format);
+GPU_GLES2_EXPORT GLenum TextureStorageFormat(viz::SharedImageFormat format,
+                                             bool use_angle_rgbx_format,
+                                             int plane_index = 0);
 
 // Following functions return the appropriate Vulkan format for a
 // SharedImageFormat.

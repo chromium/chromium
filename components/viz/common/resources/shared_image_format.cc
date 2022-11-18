@@ -118,6 +118,10 @@ int SharedImageFormat::NumberOfPlanes() const {
   return 0;
 }
 
+bool SharedImageFormat::IsValidPlaneIndex(int plane_index) const {
+  return plane_index >= 0 && plane_index < NumberOfPlanes();
+}
+
 std::string SharedImageFormat::ToString() const {
   switch (plane_type_) {
     case PlaneType::kUnknown:
