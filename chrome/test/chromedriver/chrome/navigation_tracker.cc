@@ -7,7 +7,6 @@
 #include <unordered_map>
 
 #include "base/strings/string_util.h"
-#include "base/values.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/javascript_dialog_manager.h"
@@ -230,6 +229,12 @@ Status NavigationTracker::OnConnected(DevToolsClient* client) {
 Status NavigationTracker::OnEvent(DevToolsClient* client,
                                   const std::string& method,
                                   const base::DictionaryValue& params) {
+  return OnEvent(client, method, params.GetDict());
+}
+
+Status NavigationTracker::OnEvent(DevToolsClient* client,
+                                  const std::string& method,
+                                  const base::Value::Dict& params) {
   if (client->IsMainPage() &&
       (method == "Page.loadEventFired" ||
        (is_eager_ && method == "Page.domContentEventFired"))) {
@@ -237,37 +242,104 @@ Status NavigationTracker::OnEvent(DevToolsClient* client,
     return UpdateCurrentLoadingState();
   }
   if (method == "Page.frameAttached") {
-    std::string frame_id;
-    if (!params.GetString("frameId", &frame_id))
+    const std::string* frame_id = params.FindString("frameId");
+    if (!frame_id)
       return Status(kUnknownError, "missing or invalid 'frameId'");
-    frame_to_state_map_[frame_id] = kUnknown;
+    frame_to_state_map_[*frame_id] = kUnknown;
   } else if (method == "Page.frameDetached") {
-    std::string frame_id;
-    if (!params.GetString("frameId", &frame_id))
+    const std::string* frame_id = params.FindString("frameId");
+    if (!frame_id)
       return Status(kUnknownError, "missing or invalid 'frameId'");
 
-    frame_to_state_map_.erase(frame_id);
-    if (frame_id == current_frame_id_)
+    frame_to_state_map_.erase(*frame_id);
+    if (*frame_id == current_frame_id_)
       SetCurrentFrameInvalid();
   } else if (method == "Page.frameStartedLoading") {
     // If frame that started loading is the current frame
     // set loading_state_ to loading. If it is another subframe
     // the loading state should not change
-    std::string frame_id;
-    if (!params.GetString("frameId", &frame_id))
+    const std::string* frame_id = params.FindString("frameId");
+    if (!frame_id)
       return Status(kUnknownError, "missing or invalid 'frameId'");
-    frame_to_state_map_[frame_id] = kLoading;
+    frame_to_state_map_[*frame_id] = kLoading;
   } else if (method == "Page.frameStoppedLoading") {
     // Sometimes Page.frameStoppedLoading fires without
     // an associated Page.loadEventFired. If this happens
     // for the current frame, assume loading has finished.
-    std::string frame_id;
-    if (!params.GetString("frameId", &frame_id))
+    const std::string* frame_id = params.FindString("frameId");
+    if (!frame_id)
       return Status(kUnknownError, "missing or invalid 'frameId'");
-    frame_to_state_map_[frame_id] = kNotLoading;
+    frame_to_state_map_[*frame_id] = kNotLoading;
   } else if (method == "Inspector.targetCrashed") {
     ClearFrameStates();
     InitCurrentFrame(kNotLoading);
+  }
+  return Status(kOk);
+}
+
+Status NavigationTracker::OnCommandSuccess(DevToolsClient* client,
+                                           const std::string& method,
+                                           const base::Value::Dict* result,
+                                           const Timeout& command_timeout) {
+  // Check if Page.navigate has any error from top frame
+  if (method == "Page.navigate" && result) {
+    const std::string* error_text = result->FindString("errorText");
+    if (error_text && IsNetworkError(*error_text))
+      return Status(kUnknownError, *error_text);
+  }
+
+  // Check for start of navigation. In some case response to navigate is delayed
+  // until after the command has already timed out, in which case it has already
+  // been cancelled or will be cancelled soon, and should be ignored.
+  if (HasCurrentFrame() &&
+      (method == "Page.navigate" || method == "Page.navigateToHistoryEntry") &&
+      GetLoadingState() != kLoading && !command_timeout.IsExpired()) {
+    // At this point the browser has initiated the navigation, but besides that,
+    // it is unknown what will happen.
+    //
+    // There are a few cases (perhaps more):
+    // 1 The RenderFrameHost has already queued FrameMsg_Navigate and loading
+    //   will start shortly.
+    // 2 The RenderFrameHost has already queued FrameMsg_Navigate and loading
+    //   will never start because it is just an in-page fragment navigation.
+    // 3 The RenderFrameHost is suspended and hasn't queued FrameMsg_Navigate
+    //   yet. This happens for cross-site navigations. The RenderFrameHost
+    //   will not queue FrameMsg_Navigate until it is ready to unload the
+    //   previous page (after running unload handlers and such).
+    // TODO(nasko): Revisit case 3, since now unload handlers are run in the
+    // background. http://crbug.com/323528.
+    //
+    // To determine whether a load is expected, do a round trip to the
+    // renderer to ask what the URL is.
+    // If case #1, by the time the command returns, the frame started to load
+    // event will also have been received, since the DevTools command will
+    // be queued behind FrameMsg_Navigate.
+    // If case #2, by the time the command returns, the navigation will
+    // have already happened, although no frame start/stop events will have
+    // been received.
+    // If case #3, the URL will be blank if the navigation hasn't been started
+    // yet. In that case, expect a load to happen in the future.
+    *loading_state_ = kUnknown;
+    base::Value::Dict params;
+    params.Set("expression", "document.URL");
+    base::Value result_dict;
+    Status status(kOk);
+    for (int attempt = 0; attempt < 3; attempt++) {
+      status = client_->SendCommandAndGetResultWithTimeout(
+          "Runtime.evaluate", params, &command_timeout, &result_dict);
+      if (status.code() != kUnknownError ||
+          status.message().find(kTargetClosedMessage) == std::string::npos) {
+        break;
+      }
+    }
+
+    if (status.IsError())
+      return MakeNavigationCheckFailedStatus(status);
+    std::string* url = result_dict.FindStringPath("result.value");
+    if (!url)
+      return MakeNavigationCheckFailedStatus(status);
+    if (GetLoadingState() == kUnknown && url->empty())
+      *loading_state_ = kLoading;
   }
   return Status(kOk);
 }
@@ -338,66 +410,7 @@ Status NavigationTracker::OnCommandSuccess(DevToolsClient* client,
                                            const std::string& method,
                                            const base::DictionaryValue* result,
                                            const Timeout& command_timeout) {
-  // Check if Page.navigate has any error from top frame
-  std::string error_text;
-  if (method == "Page.navigate" && result &&
-      result->GetString("errorText", &error_text) &&
-      IsNetworkError(error_text)) {
-    return Status(kUnknownError, error_text);
-  }
-
-  // Check for start of navigation. In some case response to navigate is delayed
-  // until after the command has already timed out, in which case it has already
-  // been cancelled or will be cancelled soon, and should be ignored.
-  if (HasCurrentFrame() &&
-      (method == "Page.navigate" || method == "Page.navigateToHistoryEntry") &&
-      GetLoadingState() != kLoading && !command_timeout.IsExpired()) {
-    // At this point the browser has initiated the navigation, but besides that,
-    // it is unknown what will happen.
-    //
-    // There are a few cases (perhaps more):
-    // 1 The RenderFrameHost has already queued FrameMsg_Navigate and loading
-    //   will start shortly.
-    // 2 The RenderFrameHost has already queued FrameMsg_Navigate and loading
-    //   will never start because it is just an in-page fragment navigation.
-    // 3 The RenderFrameHost is suspended and hasn't queued FrameMsg_Navigate
-    //   yet. This happens for cross-site navigations. The RenderFrameHost
-    //   will not queue FrameMsg_Navigate until it is ready to unload the
-    //   previous page (after running unload handlers and such).
-    // TODO(nasko): Revisit case 3, since now unload handlers are run in the
-    // background. http://crbug.com/323528.
-    //
-    // To determine whether a load is expected, do a round trip to the
-    // renderer to ask what the URL is.
-    // If case #1, by the time the command returns, the frame started to load
-    // event will also have been received, since the DevTools command will
-    // be queued behind FrameMsg_Navigate.
-    // If case #2, by the time the command returns, the navigation will
-    // have already happened, although no frame start/stop events will have
-    // been received.
-    // If case #3, the URL will be blank if the navigation hasn't been started
-    // yet. In that case, expect a load to happen in the future.
-    *loading_state_ = kUnknown;
-    base::Value::Dict params;
-    params.Set("expression", "document.URL");
-    base::Value result_dict;
-    Status status(kOk);
-    for (int attempt = 0; attempt < 3; attempt++) {
-      status = client_->SendCommandAndGetResultWithTimeout(
-          "Runtime.evaluate", params, &command_timeout, &result_dict);
-      if (status.code() != kUnknownError ||
-          status.message().find(kTargetClosedMessage) == std::string::npos) {
-        break;
-      }
-    }
-
-    if (status.IsError())
-      return MakeNavigationCheckFailedStatus(status);
-    std::string* url = result_dict.FindStringPath("result.value");
-    if (!url)
-      return MakeNavigationCheckFailedStatus(status);
-    if (GetLoadingState() == kUnknown && url->empty())
-      *loading_state_ = kLoading;
-  }
-  return Status(kOk);
+  const base::Value::Dict* dict = result->GetIfDict();
+  DCHECK(dict);
+  return OnCommandSuccess(client, method, dict, command_timeout);
 }
