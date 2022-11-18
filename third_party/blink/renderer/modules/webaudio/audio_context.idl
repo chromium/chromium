@@ -58,5 +58,5 @@ enum AudioContextLatencyCategory {
 
     [RuntimeEnabled=AudioContextSetSinkId, MeasureAs=AudioContextSinkId, SecureContext] readonly attribute (DOMString or AudioSinkInfo) sinkId;
     [RuntimeEnabled=AudioContextSetSinkId, MeasureAs=AudioContextSetSinkId, RaisesException, CallWith=ScriptState, SecureContext] Promise<void> setSinkId((DOMString or AudioSinkOptions) sinkId);
-    [RuntimeEnabled=AudioContextSetSinkId] attribute EventHandler onsinkchange;
+    [RuntimeEnabled=AudioContextSetSinkId, SecureContext] attribute EventHandler onsinkchange;
 };

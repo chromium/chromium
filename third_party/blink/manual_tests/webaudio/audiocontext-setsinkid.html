@@ -88,6 +88,10 @@
       };
 
       const audioContext = new AudioContext();
+      const osc = new OscillatorNode(audioContext);
+      const amp = new GainNode(audioContext, {gain: 0.25});
+      osc.connect(amp).connect(audioContext.destination);
+      osc.start();
 
       if (typeof audioContext.setSinkId !== 'function' ||
           typeof audioContext.sinkId != 'string') {
@@ -116,6 +120,7 @@
               `<option value="silent">none (silent output)</option>`;
           appView.dropdown.innerHTML = deviceListString;
           appView.changeButton.addEventListener('click', (event) => {
+            audioContext.resume();
             onDeviceChange(event, audioContext, appView);
           });
           appView.dropdown.disabled = false;
