@@ -56,7 +56,9 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
     DISMISS = 6,
     // The user has clicked the back button on the bubble subpage to go back
     // to the bubble main page.
-    BACK = 7
+    BACK = 7,
+    // The user has opened the subpage from the main page.
+    OPEN_SUBPAGE = 8
   };
 
   struct WarningActionEvent {

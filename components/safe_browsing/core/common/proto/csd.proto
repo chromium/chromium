@@ -1652,7 +1652,7 @@ message ClientSafeBrowsingReportRequest {
     // go/chrome-download-warning-surfaces for details.
     enum Surface {
       SURFACE_UNSPECIFIED = 0;
-      // Applicable actions: DISCARD
+      // Applicable actions: DISCARD, OPEN_SUBPAGE
       BUBBLE_MAINPAGE = 1;
       // Applicable actions: PROCEED, DISCARD, DISMISS, CLOSE, BACK
       BUBBLE_SUBPAGE = 2;
@@ -1683,6 +1683,8 @@ message ClientSafeBrowsingReportRequest {
       // The user has clicked the back button on the bubble subpage to go back
       // to the bubble main page.
       BACK = 7;
+      // The user has opened the subpage from the main page.
+      OPEN_SUBPAGE = 8;
     }
     optional Action action = 2;
 

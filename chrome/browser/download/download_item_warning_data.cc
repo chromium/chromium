@@ -118,6 +118,10 @@ DownloadItemWarningData::ConstructCsbrrDownloadWarningAction(
       action.set_action(
           ClientSafeBrowsingReportRequest::DownloadWarningAction::BACK);
       break;
+    case DownloadItemWarningData::OPEN_SUBPAGE:
+      action.set_action(
+          ClientSafeBrowsingReportRequest::DownloadWarningAction::OPEN_SUBPAGE);
+      break;
     case DownloadItemWarningData::SHOWN:
       NOTREACHED();
       break;

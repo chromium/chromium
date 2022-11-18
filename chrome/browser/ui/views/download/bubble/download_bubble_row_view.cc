@@ -557,6 +557,9 @@ void DownloadBubbleRowView::Layout() {
 
 void DownloadBubbleRowView::OnMainButtonPressed() {
   if (ui_info_.has_subpage) {
+    DownloadItemWarningData::AddWarningActionEvent(
+        model_->GetDownloadItem(), DownloadItemWarningData::BUBBLE_MAINPAGE,
+        DownloadItemWarningData::OPEN_SUBPAGE);
     navigation_handler_->OpenSecurityDialog(this);
   } else {
     RecordDownloadOpenButtonPressed(model_->IsDone());
