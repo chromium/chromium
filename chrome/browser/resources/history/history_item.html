@@ -177,6 +177,14 @@
         align-items: center;
         display: flex;
       }
+
+      /* Visually hide the label but still allow the screen reader to
+        pick it up. */
+      cr-checkbox::part(label-container) {
+        clip: rect(0,0,0,0);
+        display: block;
+        position: fixed;
+      }
     </style>
 
     <div id="main-container">
