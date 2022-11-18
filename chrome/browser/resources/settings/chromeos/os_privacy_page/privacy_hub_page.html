@@ -1,5 +1,5 @@
 <style include="settings-shared">
-    iron-list > :not(:last-of-type) {
+    .list-item:not(:last-of-type) {
       border-bottom: var(--cr-separator-line);
     }
 </style>
@@ -24,13 +24,11 @@
     </template>
 
     <template is="dom-if" if="[[!isCameraListEmpty_]]" restamp>
-      <iron-list id="cameraList" items="[[camerasConnected_]]">
-        <template>
-          <div class="list-item">
-            [[item]]
-          </div>
-        </template>
-      </iron-list>
+      <template id="cameraList" is="dom-repeat" items="[[camerasConnected_]]">
+        <div class="list-item">
+          [[item]]
+        </div>
+      </template>
     </template>
   </div>
 </div>
@@ -55,13 +53,11 @@
     </template>
 
     <template is="dom-if" if="[[!isMicListEmpty_]]" restamp>
-      <iron-list id="micList" items="[[microphonesConnected_]]">
-        <template>
-          <div class="list-item">
-            [[item]]
-          </div>
-        </template>
-      </iron-list>
+      <template id="micList" is="dom-repeat" items="[[microphonesConnected_]]">
+        <div class="list-item">
+          [[item]]
+        </div>
+      </template>
     </template>
   </div>
 </div>
