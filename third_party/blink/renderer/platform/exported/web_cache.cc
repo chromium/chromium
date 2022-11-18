@@ -44,12 +44,18 @@ static void ToResourceTypeStat(const MemoryCache::TypeStatistic& from,
 }
 
 void WebCache::SetCapacity(size_t capacity) {
+  // https://linear.app/replay/issue/RUN-821
+  recordreplay::Assert("WebCache::SetCapacity %zu", capacity);
+
   MemoryCache* cache = GetMemoryCache();
   if (cache)
     cache->SetCapacity(static_cast<unsigned>(capacity));
 }
 
 void WebCache::Clear() {
+  // https://linear.app/replay/issue/RUN-821
+  recordreplay::Assert("WebCache::Clear");
+
   MemoryCache* cache = GetMemoryCache();
   if (cache)
     cache->EvictResources();
