@@ -56,6 +56,8 @@ void EventRewriterControllerImpl::Initialize(
       Shell::Get()->privacy_screen_controller()->IsSupported()) {
     privacy_screen_supported = true;
   }
+
+  event_rewriter_chromeos_delegate_ = event_rewriter_delegate;
   std::unique_ptr<ui::EventRewriterChromeOS> event_rewriter_chromeos =
       std::make_unique<ui::EventRewriterChromeOS>(
           event_rewriter_delegate, Shell::Get()->sticky_keys_controller(),

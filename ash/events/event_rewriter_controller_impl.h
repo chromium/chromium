@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "ui/aura/env_observer.h"
+#include "ui/chromeos/events/event_rewriter_chromeos.h"
 
 namespace ui {
 class EventRewriter;
@@ -53,6 +54,10 @@ class ASH_EXPORT EventRewriterControllerImpl : public EventRewriterController,
   // mapping in EventRewriterChromeOS.
   void SetAltDownRemappingEnabled(bool enabled);
 
+  ui::EventRewriterChromeOS::Delegate* event_rewriter_chromeos_delegate() {
+    return event_rewriter_chromeos_delegate_;
+  }
+
  private:
   // The |EventRewriter|s managed by this controller.
   std::vector<std::unique_ptr<ui::EventRewriter>> rewriters_;
@@ -61,6 +66,8 @@ class ASH_EXPORT EventRewriterControllerImpl : public EventRewriterController,
   AccessibilityEventRewriter* accessibility_event_rewriter_ = nullptr;
   KeyboardDrivenEventRewriter* keyboard_driven_event_rewriter_ = nullptr;
   ui::EventRewriterChromeOS* event_rewriter_chromeos_ = nullptr;
+  ui::EventRewriterChromeOS::Delegate* event_rewriter_chromeos_delegate_ =
+      nullptr;
 };
 
 }  // namespace ash

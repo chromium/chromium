@@ -530,18 +530,56 @@ class FakeInputDeviceInfoHelper : public InputDeviceInfoHelper {
   }
 };
 
+// Test implementation of ui::EventRewriterChromeOS::Delegate used to check that
+// modifier key rewrites are suppressed appropriately in InputDataProvider.
+class TestEventRewriterChromeOSDelegate
+    : public ui::EventRewriterChromeOS::Delegate {
+ public:
+  // ui::EventRewriterChromeOS::Delegate:
+  bool RewriteModifierKeys() override {
+    return suppress_modifier_key_rewrites_;
+  }
+  void SuppressModifierKeyRewrites(bool should_supress) override {
+    suppress_modifier_key_rewrites_ = should_supress;
+  }
+
+  // Not used, only to satisfy interface.
+  bool GetKeyboardRemappedPrefValue(const std::string& pref_name,
+                                    int* result) const override {
+    return false;
+  }
+  bool TopRowKeysAreFunctionKeys() const override { return false; }
+  bool IsExtensionCommandRegistered(ui::KeyboardCode key_code,
+                                    int flags) const override {
+    return false;
+  }
+  bool IsSearchKeyAcceleratorReserved() const override { return false; }
+  bool NotifyDeprecatedRightClickRewrite() override { return false; }
+  bool NotifyDeprecatedSixPackKeyRewrite(ui::KeyboardCode key_code) override {
+    return false;
+  }
+
+ protected:
+  bool suppress_modifier_key_rewrites_ = false;
+};
+
 // Our modifications to InputDataProvider that carries around its own
 // widget (representing the window that needs to be visible for key events
 // to be observed), the needed factories for our fake utilities, and a
 // reference to the current event watchers.
 class TestInputDataProvider : public InputDataProvider {
  public:
-  TestInputDataProvider(views::Widget* widget, watchers_t& watchers)
+  TestInputDataProvider(
+      views::Widget* widget,
+      watchers_t& watchers,
+      ui::EventRewriterChromeOS::Delegate* event_rewriter_delegate)
       : InputDataProvider(
             widget->GetNativeWindow(),
             std::make_unique<FakeDeviceManager>(),
             std::make_unique<FakeInputDataEventWatcherFactory>(watchers),
-            /*keyboard_input_log_ptr=*/nullptr),
+            /*keyboard_input_log_ptr=*/nullptr,
+            Shell::Get()->accelerator_controller(),
+            event_rewriter_delegate),
         attached_widget_(widget),
         watchers_(watchers) {
     info_helper_ = base::SequenceBound<FakeInputDeviceInfoHelper>(
@@ -555,10 +593,10 @@ class TestInputDataProvider : public InputDataProvider {
   // be destroyed early. (See next item.)
   views::Widget* attached_widget_;
   // Keep a list of watchers for each evdev in the provider. This is a
-  // reference to an instance outside of this class, as the lifetime of the list
-  // needs to exceed the destruction of this test class, and can only be cleaned
-  // up once all watchers have been destroyed by the base InputDataProvider,
-  // which occurs after our destruction.
+  // reference to an instance outside of this class, as the lifetime of the
+  // list needs to exceed the destruction of this test class, and can only be
+  // cleaned up once all watchers have been destroyed by the base
+  // InputDataProvider, which occurs after our destruction.
   watchers_t& watchers_;
 };
 
@@ -580,9 +618,12 @@ class InputDataProviderTest : public AshTestBase {
     AshTestSuite::LoadTestResources();
     AshTestBase::SetUp();
 
+    event_rewriter_delegate_ =
+        std::make_unique<TestEventRewriterChromeOSDelegate>();
+
     // Note: some init for creating widgets is performed in base SetUp
-    // instead of the constructor, so our init must also be delayed until SetUp,
-    // so we can safely invoke CreateTestWidget().
+    // instead of the constructor, so our init must also be delayed until
+    // SetUp, so we can safely invoke CreateTestWidget().
 
     statistics_provider_.SetMachineStatistic(
         chromeos::system::kKeyboardMechanicalLayoutKey, "ANSI");
@@ -591,8 +632,8 @@ class InputDataProviderTest : public AshTestBase {
 
     fake_udev_ = std::make_unique<testing::FakeUdevLoader>();
     widget_ = CreateTestWidget();
-    provider_ =
-        std::make_unique<TestInputDataProvider>(widget_.get(), watchers_);
+    provider_ = std::make_unique<TestInputDataProvider>(
+        widget_.get(), watchers_, event_rewriter_delegate_.get());
 
     // Apply these early, in SetUp; delaying until
     // FakeInputDeviceInfoHelper::GetDeviceInfo() is not appropriate, as
@@ -627,6 +668,10 @@ class InputDataProviderTest : public AshTestBase {
                launcher_accelerator);
   }
 
+  bool ModifierRewritesAreSuppressed() {
+    return !event_rewriter_delegate_->RewriteModifierKeys();
+  }
+
  protected:
   struct ExpectedKeyEvent {
     KeyDefinition key;
@@ -653,13 +698,14 @@ class InputDataProviderTest : public AshTestBase {
 
     i = 0;
     for (auto* iter = list.begin(); iter != list.end(); iter++, i++) {
-      EXPECT_EQ(*fake_observer->events_[i].second,
-                mojom::KeyEvent(/*id=*/id, /*type=*/iter->down
-                                               ? mojom::KeyEventType::kPress
-                                               : mojom::KeyEventType::kRelease,
-                                /*key_code=*/iter->key.key_code,
-                                /*scan_code=*/iter->key.at_scan_code,
-                                /*top_row_position=*/iter->position))
+      EXPECT_EQ(
+          *fake_observer->events_[i].second,
+          mojom::KeyEvent(/*id=*/id,
+                          /*type=*/iter->down ? mojom::KeyEventType::kPress
+                                              : mojom::KeyEventType::kRelease,
+                          /*key_code=*/iter->key.key_code,
+                          /*scan_code=*/iter->key.at_scan_code,
+                          /*top_row_position=*/iter->position))
           << " which is EXPECT_KEY_EVENTS item #" << i;
     }
   }
@@ -702,6 +748,7 @@ class InputDataProviderTest : public AshTestBase {
   // All evdev watchers in use by provider_.
   watchers_t watchers_;
   std::unique_ptr<TestInputDataProvider> provider_;
+  std::unique_ptr<TestEventRewriterChromeOSDelegate> event_rewriter_delegate_;
 
  private:
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
@@ -1654,6 +1701,7 @@ TEST_F(InputDataProviderTest, ShortcutBlockingObeysFocus) {
   provider_->OnDeviceEvent(event0);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(OpenAndCloseLauncher());
+  EXPECT_TRUE(ModifierRewritesAreSuppressed());
 
   // If widget is in focus, ObserveKeyEvents should block shortcuts, however
   // since the widget is not in focus, it does not block
@@ -1661,6 +1709,7 @@ TEST_F(InputDataProviderTest, ShortcutBlockingObeysFocus) {
       kDeviceId, fake_observer->receiver.BindNewPipeAndPassRemote());
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(OpenAndCloseLauncher());
+  EXPECT_TRUE(ModifierRewritesAreSuppressed());
 }
 
 TEST_F(InputDataProviderTest, ShortcutBlockingObeysFocusSwitching) {
@@ -1678,20 +1727,24 @@ TEST_F(InputDataProviderTest, ShortcutBlockingObeysFocusSwitching) {
   provider_->OnDeviceEvent(event0);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(OpenAndCloseLauncher());
+  EXPECT_TRUE(ModifierRewritesAreSuppressed());
 
   // If widget is in focus, ObserveKeyEvents should block shortcuts
   provider_->ObserveKeyEvents(
       kDeviceId, fake_observer->receiver.BindNewPipeAndPassRemote());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(OpenAndCloseLauncher());
+  EXPECT_FALSE(ModifierRewritesAreSuppressed());
 
   // Hide widget and check that we can use shortcuts
   provider_->attached_widget_->Hide();
   EXPECT_TRUE(OpenAndCloseLauncher());
+  EXPECT_TRUE(ModifierRewritesAreSuppressed());
 
   // Show widget and check that shortcuts are blocked
   provider_->attached_widget_->Show();
   EXPECT_FALSE(OpenAndCloseLauncher());
+  EXPECT_FALSE(ModifierRewritesAreSuppressed());
 }
 
 TEST_F(InputDataProviderTest, ShortcutBlockingObeysLastObserverDisconnect) {
@@ -1713,28 +1766,33 @@ TEST_F(InputDataProviderTest, ShortcutBlockingObeysLastObserverDisconnect) {
   provider_->OnDeviceEvent(event0);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(OpenAndCloseLauncher());
+  EXPECT_TRUE(ModifierRewritesAreSuppressed());
 
   // If widget is in focus, ObserveKeyEvents should block shortcuts
   provider_->ObserveKeyEvents(
       kDeviceId, fake_observer1->receiver.BindNewPipeAndPassRemote());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(OpenAndCloseLauncher());
+  EXPECT_FALSE(ModifierRewritesAreSuppressed());
 
   // When second observer is added, shortcuts should still be blocked
   provider_->ObserveKeyEvents(
       kDeviceId, fake_observer2->receiver.BindNewPipeAndPassRemote());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(OpenAndCloseLauncher());
+  EXPECT_FALSE(ModifierRewritesAreSuppressed());
 
   // When first observer is destroyed, shortcuts should still be blocked
   fake_observer1.reset();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(OpenAndCloseLauncher());
+  EXPECT_FALSE(ModifierRewritesAreSuppressed());
 
   // After second observer is destroyed, shortcuts should be unblocked
   fake_observer2.reset();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(OpenAndCloseLauncher());
+  EXPECT_TRUE(ModifierRewritesAreSuppressed());
 }
 
 // Test overlapping lifetimes of separate observers of one device.
@@ -1807,7 +1865,8 @@ TEST_F(InputDataProviderTest, KeyObservationMultipleProviders) {
 
   std::unique_ptr<TestInputDataProvider> provider2_ =
       std::make_unique<TestInputDataProvider>(provider2_widget.get(),
-                                              provider2_watchers);
+                                              provider2_watchers,
+                                              event_rewriter_delegate_.get());
   auto& provider1_ = provider_;
 
   std::unique_ptr<FakeKeyboardObserver> fake_observer1 =
@@ -2193,8 +2252,8 @@ TEST_F(InputDataProviderTest, KeyboardInputLog) {
 // TODO(b/211780758): Test all Fx scancodes using
 // ui/events/keycodes/dom/dom_code_data.inc as source of truth.
 
-// Test the behavior when the tablet mode status has changed. The tablet mode is
-// initialized as "not-in-tablet-mode".
+// Test the behavior when the tablet mode status has changed. The tablet mode
+// is initialized as "not-in-tablet-mode".
 TEST_F(InputDataProviderTest, TabletModeObservation) {
   FakeTabletModeObserver fake_observer;
   base::test::TestFuture<bool> future;
@@ -2219,8 +2278,8 @@ TEST_F(InputDataProviderTest, TabletModeObservation) {
   EXPECT_EQ(2u, fake_observer.num_tablet_mode_change_calls());
 }
 
-// Test the behavior when the tablet mode status has changed. The tablet mode is
-// initialized as "in-tablet-mode".
+// Test the behavior when the tablet mode status has changed. The tablet mode
+// is initialized as "in-tablet-mode".
 TEST_F(InputDataProviderTest, TabletModeObservationInitAsTabletMode) {
   FakeTabletModeObserver fake_observer;
   base::test::TestFuture<bool> future;
@@ -2345,8 +2404,8 @@ TEST_F(InputDataProviderTest, MoveAppToTestingScreen) {
   aura::Window* window = widget_->GetNativeWindow();
   ASSERT_EQ(primary_display_id, screen->GetDisplayNearestWindow(window).id());
 
-  // Call MoveAppToTestingScreen function with the touchscreen evdev id 2, which
-  // maps to the secondary display.
+  // Call MoveAppToTestingScreen function with the touchscreen evdev id 2,
+  // which maps to the secondary display.
   provider_->MoveAppToTestingScreen(/*evdev_id=*/2);
 
   // Confirm the app has been moved to the secondary display.
@@ -2405,14 +2464,15 @@ TEST_F(InputDataProviderTest, MoveAppBackToPreviousScreen) {
   aura::Window* window = widget_->GetNativeWindow();
   ASSERT_EQ(primary_display_id, screen->GetDisplayNearestWindow(window).id());
 
-  // Call MoveAppToTestingScreen function with the touchscreen evdev id 2, which
-  // maps to the secondary display.
+  // Call MoveAppToTestingScreen function with the touchscreen evdev id 2,
+  // which maps to the secondary display.
   provider_->MoveAppToTestingScreen(/*evdev_id=*/2);
 
   // Confirm the app has been moved to the secondary display.
   ASSERT_EQ(secondary_display_id, screen->GetDisplayNearestWindow(window).id());
 
-  // Call MoveAppBackToPreviousScreen to move the app back to original display.
+  // Call MoveAppBackToPreviousScreen to move the app back to original
+  // display.
   provider_->MoveAppBackToPreviousScreen();
 
   // Confirm the app has been moved back to the original display.

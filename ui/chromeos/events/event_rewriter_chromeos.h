@@ -108,8 +108,13 @@ class EventRewriterChromeOS : public EventRewriter {
 
     // Returns true only if the the key event was rewritten to ALTGR. For most
     // cases, it is expected that this function returns false as most key events
-    // do not involve ALTGR.
+    // do not involve ALTGR. Returns false if SuppressModifierKeyRewrites was
+    // called to suppress modifier rewrites.
     virtual bool RewriteModifierKeys() = 0;
+
+    // Suppresses all modifier key rewrites and makes |RewriteModifierKeys|
+    // always return false if |should_supress| is true.
+    virtual void SuppressModifierKeyRewrites(bool should_supress) = 0;
 
     // Returns true if get keyboard remapped preference value successfully and
     // the value will be stored in |value|.

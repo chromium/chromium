@@ -4211,6 +4211,7 @@ class DesksAcceleratorsTest : public DesksTest,
 
   // ui::EventRewriterChromeOS::Delegate:
   bool RewriteModifierKeys() override { return true; }
+  void SuppressModifierKeyRewrites(bool should_supress) override {}
   bool GetKeyboardRemappedPrefValue(const std::string& pref_name,
                                     int* result) const override {
     return false;

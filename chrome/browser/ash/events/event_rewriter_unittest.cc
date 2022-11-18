@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_overlay.h"
 #include "ash/constants/ash_features.h"
@@ -499,6 +500,34 @@ TEST_F(EventRewriterTest, TestRewriteCommandToControl) {
        {ui::VKEY_LWIN, ui::DomCode::META_RIGHT,
         ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::DomKey::META}},
   });
+}
+
+TEST_F(EventRewriterTest, ModifiersNotRemappedWhenSuppressed) {
+  // Remap Control -> Alt.
+  Preferences::RegisterProfilePrefs(prefs()->registry());
+  IntegerPrefMember control;
+  InitModifierKeyPref(&control, ::prefs::kLanguageRemapControlKeyTo,
+                      ui::chromeos::ModifierKey::kAltKey);
+
+  delegate_->SuppressModifierKeyRewrites(false);
+
+  // Pressing Control + B should now be remapped to Alt + B.
+  CheckKeyTestCase(rewriter(),
+                   {ui::ET_KEY_PRESSED,
+                    {ui::VKEY_B, ui::DomCode::US_B, ui::EF_CONTROL_DOWN,
+                     ui::DomKey::Constant<'b'>::Character},
+                    {ui::VKEY_B, ui::DomCode::US_B, ui::EF_ALT_DOWN,
+                     ui::DomKey::Constant<'b'>::Character}});
+
+  delegate_->SuppressModifierKeyRewrites(true);
+
+  // Pressing Control + B should no longer be remapped.
+  CheckKeyTestCase(rewriter(),
+                   {ui::ET_KEY_PRESSED,
+                    {ui::VKEY_B, ui::DomCode::US_B, ui::EF_CONTROL_DOWN,
+                     ui::DomKey::Constant<'b'>::Character},
+                    {ui::VKEY_B, ui::DomCode::US_B, ui::EF_CONTROL_DOWN,
+                     ui::DomKey::Constant<'b'>::Character}});
 }
 
 TEST_F(EventRewriterTest, TestRewriteExternalMetaKey) {
@@ -4816,6 +4845,7 @@ class ExtensionRewriterInputTest : public EventRewriterAshTest,
   bool NotifyDeprecatedSixPackKeyRewrite(ui::KeyboardCode key_code) override {
     return false;
   }
+  void SuppressModifierKeyRewrites(bool should_suppress) override {}
 
   std::map<std::string, int> modifier_remapping_;
   base::flat_set<ui::Accelerator> registered_extension_shortcuts_;

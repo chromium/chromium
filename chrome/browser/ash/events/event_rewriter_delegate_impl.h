@@ -41,6 +41,7 @@ class EventRewriterDelegateImpl : public ui::EventRewriterChromeOS::Delegate {
   bool IsSearchKeyAcceleratorReserved() const override;
   bool NotifyDeprecatedRightClickRewrite() override;
   bool NotifyDeprecatedSixPackKeyRewrite(ui::KeyboardCode key_code) override;
+  void SuppressModifierKeyRewrites(bool should_suppress) override;
 
  private:
   const PrefService* GetPrefService() const;
@@ -51,6 +52,9 @@ class EventRewriterDelegateImpl : public ui::EventRewriterChromeOS::Delegate {
 
   // Handles showing notifications when deprecated event rewrites occur.
   std::unique_ptr<DeprecationNotificationController> deprecation_controller_;
+
+  // Tracks whether modifier rewrites should be suppressed or not.
+  bool suppress_modifier_key_rewrites_ = false;
 };
 
 }  // namespace ash

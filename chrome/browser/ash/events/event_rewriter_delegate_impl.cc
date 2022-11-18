@@ -46,7 +46,7 @@ bool EventRewriterDelegateImpl::RewriteModifierKeys() {
   if (user_manager::UserManager::Get()->IsLoggedInAsGuest() &&
       LoginDisplayHost::default_host())
     return false;
-  return true;
+  return !suppress_modifier_key_rewrites_;
 }
 
 bool EventRewriterDelegateImpl::GetKeyboardRemappedPrefValue(
@@ -130,4 +130,8 @@ const PrefService* EventRewriterDelegateImpl::GetPrefService() const {
   return profile ? profile->GetPrefs() : nullptr;
 }
 
+void EventRewriterDelegateImpl::SuppressModifierKeyRewrites(
+    bool should_suppress) {
+  suppress_modifier_key_rewrites_ = should_suppress;
+}
 }  // namespace ash

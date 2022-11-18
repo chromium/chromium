@@ -172,6 +172,7 @@ class ChromeVoxAccessibilityEventRewriterTest
  private:
   // ui::EventRewriterChromeOS::Delegate:
   bool RewriteModifierKeys() override { return true; }
+  void SuppressModifierKeyRewrites(bool should_suppress) override {}
 
   bool GetKeyboardRemappedPrefValue(const std::string& pref_name,
                                     int* value) const override {
@@ -563,6 +564,7 @@ class SwitchAccessAccessibilityEventRewriterTest
  private:
   // ui::EventRewriterChromeOS::Delegate:
   bool RewriteModifierKeys() override { return true; }
+  void SuppressModifierKeyRewrites(bool should_suppress) override {}
 
   bool GetKeyboardRemappedPrefValue(const std::string& pref_name,
                                     int* value) const override {
