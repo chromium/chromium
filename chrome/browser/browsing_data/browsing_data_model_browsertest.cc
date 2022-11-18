@@ -143,7 +143,7 @@ class BrowsingDataModelTrustTokenBrowserTest
         network::features::kTrustTokenOperationsRequiringOriginTrial;
     feature_list_.InitWithFeaturesAndParameters(
         // Enabled Features:
-        {{network::features::kTrustTokens,
+        {{network::features::kPrivateStateTokens,
           {{field_trial_param.name,
             field_trial_param.GetName(
                 network::features::TrustTokenOriginTrialSpec::

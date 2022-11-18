@@ -83,7 +83,7 @@ KAnonymityTrustTokenGetter::~KAnonymityTrustTokenGetter() = default;
 
 void KAnonymityTrustTokenGetter::TryGetTrustTokenAndKey(
     TryGetTrustTokenAndKeyCallback callback) {
-  if (!base::FeatureList::IsEnabled(network::features::kTrustTokens) ||
+  if (!base::FeatureList::IsEnabled(network::features::kPrivateStateTokens) ||
       !identity_manager_ ||
       !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     std::move(callback).Run(absl::nullopt);

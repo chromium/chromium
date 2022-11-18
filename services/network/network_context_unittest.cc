@@ -7050,7 +7050,7 @@ TEST_F(NetworkContextSplitCacheTest, AutomaticallyAssignIsolationInfo) {
 
 TEST_F(NetworkContextTest, EnableTrustTokens) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kTrustTokens);
+  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
@@ -7070,7 +7070,7 @@ TEST_F(NetworkContextTest, EnableTrustTokens) {
 
 TEST_F(NetworkContextTestWithMockTime, EnableTrustTokensWithStoreOnDisk) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kTrustTokens);
+  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
 
   base::ScopedTempDir dir;
   ASSERT_TRUE(dir.CreateUniqueTempDir());
@@ -7136,7 +7136,7 @@ TEST_F(NetworkContextTestWithMockTime, EnableTrustTokensWithStoreOnDisk) {
 
 TEST_F(NetworkContextTest, DisableTrustTokens) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kTrustTokens);
+  scoped_feature_list.InitAndDisableFeature(features::kPrivateStateTokens);
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
@@ -7169,7 +7169,7 @@ class NetworkContextExpectBadMessageTest : public NetworkContextTest {
 TEST_F(NetworkContextExpectBadMessageTest,
        FailsTrustTokenBearingRequestWhenTrustTokensIsDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kTrustTokens);
+  scoped_feature_list.InitAndDisableFeature(features::kPrivateStateTokens);
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
@@ -7194,7 +7194,7 @@ TEST_F(NetworkContextExpectBadMessageTest,
 TEST_F(NetworkContextExpectBadMessageTest,
        FailsTrustTokenRedemptionWhenForbidden) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kTrustTokens);
+  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
@@ -7224,7 +7224,7 @@ TEST_F(NetworkContextExpectBadMessageTest,
 TEST_F(NetworkContextExpectBadMessageTest,
        FailsTrustTokenSigningWhenForbidden) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kTrustTokens);
+  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
@@ -7254,7 +7254,7 @@ TEST_F(NetworkContextExpectBadMessageTest,
 TEST_F(NetworkContextTest,
        AttemptsTrustTokenBearingRequestWhenTrustTokensIsEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kTrustTokens);
+  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
@@ -7280,7 +7280,7 @@ TEST_F(NetworkContextTest,
 TEST_F(NetworkContextTest,
        RejectsTrustTokenBearingRequestWhenThirdPartyCookiesAreDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kTrustTokens);
+  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
@@ -7309,7 +7309,7 @@ TEST_F(NetworkContextTest,
 
 TEST_F(NetworkContextTest, NoAvailableTrustTokensWhenTrustTokensAreDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kTrustTokens);
+  scoped_feature_list.InitAndDisableFeature(features::kPrivateStateTokens);
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
@@ -7332,7 +7332,7 @@ TEST_F(NetworkContextTest, NoAvailableTrustTokensWhenTrustTokensAreDisabled) {
 
 TEST_F(NetworkContextTest, GetStoredTrustTokens) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kTrustTokens);
+  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
@@ -7380,7 +7380,7 @@ TEST_F(NetworkContextTest, GetStoredTrustTokens) {
 
 TEST_F(NetworkContextTest, GetStoredTrustTokensReentrant) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kTrustTokens);
+  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
@@ -7425,7 +7425,7 @@ TEST_F(NetworkContextTest, GetStoredTrustTokensReentrant) {
 TEST_F(NetworkContextTest,
        DeleteStoredTrustTokensReportsErrorWhenFeatureIsDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kTrustTokens);
+  scoped_feature_list.InitAndDisableFeature(features::kPrivateStateTokens);
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
@@ -7450,7 +7450,7 @@ TEST_F(NetworkContextTest,
 TEST_F(NetworkContextTest,
        DeleteStoredTrustTokensReportsErrorWithInvalidOrigin) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kTrustTokens);
+  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
@@ -7474,7 +7474,7 @@ TEST_F(NetworkContextTest,
 
 TEST_F(NetworkContextTest, DeleteStoredTrustTokens) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kTrustTokens);
+  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
@@ -7529,7 +7529,7 @@ TEST_F(NetworkContextTest, DeleteStoredTrustTokens) {
 
 TEST_F(NetworkContextTest, DeleteStoredTrustTokensReentrant) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kTrustTokens);
+  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());

@@ -28,7 +28,7 @@ namespace content {
 class TrustTokenUseCountersBrowsertest : public InProcessBrowserTest {
  public:
   TrustTokenUseCountersBrowsertest() {
-    features_.InitAndEnableFeature(network::features::kTrustTokens);
+    features_.InitAndEnableFeature(network::features::kPrivateStateTokens);
   }
 
   void SetUpOnMainThread() override {

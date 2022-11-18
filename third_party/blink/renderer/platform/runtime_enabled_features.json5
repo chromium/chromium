@@ -2204,6 +2204,22 @@
       base_feature: "PrivateNetworkAccessPermissionPrompt",
     },
     {
+      name: "PrivateStateTokens",
+      origin_trial_feature_name: "TrustTokens",
+      origin_trial_allows_third_party: true,
+      public: true,
+      // status: "test",
+    },
+    {
+      // Always allow trust token issuance (so long as the base::Feature
+      // is enabled). Used for testing; circumvents a runtime check that,
+      // if this RuntimeEnabledFeature is not present, guarantees the origin
+      // trial is enabled.
+      name: "PrivateStateTokensAlwaysAllowIssuance",
+      public: true,
+      status: "test",
+    },
+    {
       name: "PushMessaging",
       public: true,
       status: "stable",
@@ -2763,22 +2779,6 @@
     {
       name: "TrustedTypesUseCodeLike",
       status: "experimental",
-    },
-    {
-      name: "TrustTokens",
-      origin_trial_feature_name: "TrustTokens",
-      origin_trial_allows_third_party: true,
-      public: true,
-      status: "test",
-    },
-    {
-      // Always allow trust token issuance (so long as the base::Feature
-      // is enabled). Used for testing; circumvents a runtime check that,
-      // if this RuntimeEnabledFeature is not present, guarantees the origin
-      // trial is enabled.
-      name: "TrustTokensAlwaysAllowIssuance",
-      public: true,
-      status: "test",
     },
     {
       name: "UnclosedFormControlIsInvalid",

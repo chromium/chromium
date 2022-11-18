@@ -5620,7 +5620,11 @@
     "expiry_milestone": 113
   },
   {
-    "name": "productivity-launcher",
+    "name": "private-state-tokens",
+    "owners": [ "svaldez", "aykutb@google.com" ],
+    "expiry_milestone": 105
+  },
+  {    "name": "productivity-launcher",
     "owners": [ "cros-system-ui-eng@google.com" ],
     "expiry_milestone": 106
   },
@@ -6630,11 +6634,6 @@
     "name": "trim-on-memory-pressure",
     "owners": [ "bgeffon" ],
     "expiry_milestone": 90
-  },
-  {
-    "name": "trust-tokens",
-    "owners": [ "svaldez", "aykutb@google.com" ],
-    "expiry_milestone": 105
   },
   {
     "name": "trusted-web-activity-notification-permission-delegation",

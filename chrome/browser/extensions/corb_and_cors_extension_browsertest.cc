@@ -1280,7 +1280,8 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 class TrustTokenExtensionBrowserTest : public CorbAndCorsExtensionBrowserTest {
  public:
   TrustTokenExtensionBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(network::features::kTrustTokens);
+    scoped_feature_list_.InitAndEnableFeature(
+        network::features::kPrivateStateTokens);
   }
 
  protected:

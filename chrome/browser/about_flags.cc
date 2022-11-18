@@ -7669,9 +7669,9 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kColorProviderRedirectionForThemeProvider)},
 
-    {"trust-tokens", flag_descriptions::kTrustTokensName,
-     flag_descriptions::kTrustTokensDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(network::features::kTrustTokens,
+    {"private-state-tokens", flag_descriptions::kPrivateStateTokensName,
+     flag_descriptions::kPrivateStateTokensDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(network::features::kPrivateStateTokens,
                                     kPlatformProvidedTrustTokensVariations,
                                     "TrustTokenOriginTrial")},
 

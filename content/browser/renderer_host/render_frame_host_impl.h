@@ -1952,7 +1952,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // have scheme HTTP or HTTPS. (See network::SuitableTrustTokenOrigin's class
   // comment for the rationale.)
   //
-  // 2. Trust Tokens must be enabled (network::features::kTrustTokens).
+  // 2. Private State Tokens must be enabled
+  // (network::features::kPrivateStateTokens).
   //
   // 3. This frame's origin must be potentially trustworthy.
   void BindTrustTokenQueryAnswerer(

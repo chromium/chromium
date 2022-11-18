@@ -536,8 +536,8 @@ HTMLIFrameElement::ConstructTrustTokenParams() const {
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kError,
-        "Trust Tokens issuance is disabled except in "
-        "contexts with the TrustTokens Origin Trial enabled."));
+        "Private State Tokens issuance is disabled except in "
+        "contexts with the PrivateStateTokens Origin Trial enabled."));
     return nullptr;
   }
 

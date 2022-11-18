@@ -497,7 +497,7 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
     return base::FeatureList::IsEnabled(features::kInterestGroupStorage);
 
   if (trial_name == "TrustTokens")
-    return base::FeatureList::IsEnabled(network::features::kTrustTokens);
+    return base::FeatureList::IsEnabled(network::features::kPrivateStateTokens);
 
   if (trial_name == "SpeculationRulesPrefetch") {
     return base::FeatureList::IsEnabled(

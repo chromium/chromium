@@ -11,8 +11,8 @@ namespace blink {
 
 bool IsTrustTokenIssuanceAvailableInExecutionContext(
     const ExecutionContext& context) {
-  return context.FeatureEnabled(OriginTrialFeature::kTrustTokens) ||
-         RuntimeEnabledFeatures::TrustTokensAlwaysAllowIssuanceEnabled();
+  return context.FeatureEnabled(OriginTrialFeature::kPrivateStateTokens) ||
+         RuntimeEnabledFeatures::PrivateStateTokensAlwaysAllowIssuanceEnabled();
 }
 
 }  // namespace blink

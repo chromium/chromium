@@ -1698,8 +1698,8 @@ extern const char kTranslateIntentDescription[];
 extern const char kTreatInsecureOriginAsSecureName[];
 extern const char kTreatInsecureOriginAsSecureDescription[];
 
-extern const char kTrustTokensName[];
-extern const char kTrustTokensDescription[];
+extern const char kPrivateStateTokensName[];
+extern const char kPrivateStateTokensDescription[];
 
 extern const char kTurnOffStreamingMediaCachingOnBatteryName[];
 extern const char kTurnOffStreamingMediaCachingOnBatteryDescription[];

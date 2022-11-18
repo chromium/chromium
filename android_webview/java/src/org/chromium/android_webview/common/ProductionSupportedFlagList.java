@@ -188,8 +188,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE,
                     "When enabled, merchant bound virtual cards will be offered in the keyboard "
                             + "accessory."),
-            Flag.baseFeature(
-                    NetworkServiceFeatures.TRUST_TOKENS, "Enables the prototype Trust Tokens API."),
+            Flag.baseFeature(NetworkServiceFeatures.PRIVATE_STATE_TOKENS,
+                    "Enables the prototype Private State Tokens API."),
             Flag.commandLine(AwSwitches.WEBVIEW_DISABLE_PACKAGE_ALLOWLIST_THROTTLING,
                     "Disables throttling querying apps package names allowlist components in"
                             + "WebView clients."),

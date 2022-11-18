@@ -300,7 +300,7 @@ namespace {
 class WithTrustTokensEnabled {
  public:
   WithTrustTokensEnabled() {
-    feature_list_.InitAndEnableFeature(network::features::kTrustTokens);
+    feature_list_.InitAndEnableFeature(network::features::kPrivateStateTokens);
   }
 
  private:

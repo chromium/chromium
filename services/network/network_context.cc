@@ -2403,7 +2403,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     builder.SetCookieStore(std::move(cookie_store));
   }
 
-  if (base::FeatureList::IsEnabled(features::kTrustTokens)) {
+  if (base::FeatureList::IsEnabled(features::kPrivateStateTokens)) {
     trust_token_store_ = std::make_unique<PendingTrustTokenStore>();
 
     base::FilePath trust_token_path;

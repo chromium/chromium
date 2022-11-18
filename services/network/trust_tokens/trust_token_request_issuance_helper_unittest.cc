@@ -1117,7 +1117,7 @@ class TrustTokenRequestIssuanceHelperTestWithPlatformIssuance
         "Need to update this initialization logic if the type of the param "
         "changes.");
     features_.InitAndEnableFeatureWithParameters(
-        features::kTrustTokens,
+        features::kPrivateStateTokens,
         {{features::kPlatformProvidedTrustTokenIssuance.name, "true"}});
   }
 

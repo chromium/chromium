@@ -43,7 +43,7 @@ class TrustTokenParametersBrowsertest
     auto& field_trial_param =
         network::features::kTrustTokenOperationsRequiringOriginTrial;
     features_.InitAndEnableFeatureWithParameters(
-        network::features::kTrustTokens,
+        network::features::kPrivateStateTokens,
         {{field_trial_param.name,
           field_trial_param.GetName(
               network::features::TrustTokenOriginTrialSpec::
@@ -171,7 +171,7 @@ IN_PROC_BROWSER_TEST_P(TrustTokenParametersBrowsertest,
 class TrustTokenPermissionsPolicyBrowsertest : public ContentBrowserTest {
  public:
   TrustTokenPermissionsPolicyBrowsertest() {
-    features_.InitAndEnableFeature(network::features::kTrustTokens);
+    features_.InitAndEnableFeature(network::features::kPrivateStateTokens);
   }
 
   void SetUpOnMainThread() override {

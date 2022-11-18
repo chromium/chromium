@@ -112,7 +112,7 @@ class DevToolsTrustTokenBrowsertestWithPlatformIssuance
         "Need to update this initialization logic if the type of the param "
         "changes.");
     features_.InitAndEnableFeatureWithParameters(
-        network::features::kTrustTokens,
+        network::features::kPrivateStateTokens,
         {{network::features::kPlatformProvidedTrustTokenIssuance.name,
           "true"}});
   }

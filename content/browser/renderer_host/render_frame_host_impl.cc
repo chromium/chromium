@@ -10585,12 +10585,12 @@ void RenderFrameHostImpl::BindTrustTokenQueryAnswerer(
     return;
   }
 
-  // This is enforced in benign renderers by the RuntimeEnabled=TrustTokens IDL
-  // attribute (the base::Feature's value is tied to the
-  // RuntimeEnabledFeature's).
-  if (!base::FeatureList::IsEnabled(network::features::kTrustTokens)) {
+  // This is enforced in benign renderers by the
+  // RuntimeEnabled=PrivateStateTokens IDL attribute (the base::Feature's value
+  // is tied to the RuntimeEnabledFeature's).
+  if (!base::FeatureList::IsEnabled(network::features::kPrivateStateTokens)) {
     mojo::ReportBadMessage(
-        "Attempted to get a TrustTokenQueryAnswerer with Trust Tokens "
+        "Attempted to get a TrustTokenQueryAnswerer with Private State Tokens "
         "disabled.");
     return;
   }

@@ -22,7 +22,7 @@ namespace android_webview {
 // Tokens is enabled.
 void LoadTrustTokenKeyCommitmentsComponent(
     ComponentLoaderPolicyVector& policies) {
-  if (!base::FeatureList::IsEnabled(network::features::kTrustTokens))
+  if (!base::FeatureList::IsEnabled(network::features::kPrivateStateTokens))
     return;
 
   DVLOG(1)

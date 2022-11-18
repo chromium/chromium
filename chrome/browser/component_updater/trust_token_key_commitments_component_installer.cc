@@ -22,7 +22,7 @@ namespace component_updater {
 
 void RegisterTrustTokenKeyCommitmentsComponentIfTrustTokensEnabled(
     ComponentUpdateService* cus) {
-  if (!base::FeatureList::IsEnabled(network::features::kTrustTokens))
+  if (!base::FeatureList::IsEnabled(network::features::kPrivateStateTokens))
     return;
 
   VLOG(1) << "Registering Trust Token Key Commitments component.";

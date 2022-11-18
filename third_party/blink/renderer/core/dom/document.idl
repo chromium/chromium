@@ -199,10 +199,10 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     [MeasureAs=PrefixedPageVisibility, ImplementedAs=hidden] readonly attribute boolean webkitHidden;
 
     // Trust Token API (https://github.com/wicg/trust-token-api)
-    [CallWith=ScriptState, Measure, RaisesException, NewObject, SecureContext, RuntimeEnabled=TrustTokens] Promise<boolean> hasTrustToken(USVString issuer);
+    [CallWith=ScriptState, Measure, RaisesException, NewObject, SecureContext, RuntimeEnabled=PrivateStateTokens] Promise<boolean> hasTrustToken(USVString issuer);
 
     // Trust Token API (https://github.com/wicg/trust-token-api)
-    [CallWith=ScriptState, Measure, RaisesException, NewObject, SecureContext, RuntimeEnabled=TrustTokens] Promise<boolean> hasRedemptionRecord(USVString issuer);
+    [CallWith=ScriptState, Measure, RaisesException, NewObject, SecureContext, RuntimeEnabled=PrivateStateTokens] Promise<boolean> hasRedemptionRecord(USVString issuer);
 
     // Confirmation of Action API
     // https://github.com/WICG/aom/blob/gh-pages/notification-api.md

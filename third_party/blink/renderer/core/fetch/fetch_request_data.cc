@@ -194,7 +194,7 @@ FetchRequestData* FetchRequestData::Create(
   if (fetch_api_request->trust_token_params) {
     if (script_state) {
       // script state might be null for some tests
-      DCHECK(RuntimeEnabledFeatures::TrustTokensEnabled(
+      DCHECK(RuntimeEnabledFeatures::PrivateStateTokensEnabled(
           ExecutionContext::From(script_state)));
     }
     absl::optional<network::mojom::blink::TrustTokenParams> trust_token_params =

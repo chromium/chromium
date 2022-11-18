@@ -40,7 +40,7 @@ class KAnonymityServiceClientTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(network::features::kTrustTokens);
+    feature_list_.InitAndEnableFeature(network::features::kPrivateStateTokens);
     TestingProfile::Builder builder;
     builder.SetSharedURLLoaderFactory(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -442,7 +442,7 @@ class KAnonymityServiceClientJoinQueryTest
  protected:
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
-        {{network::features::kTrustTokens, {}},
+        {{network::features::kPrivateStateTokens, {}},
          {features::kKAnonymityService,
           {
               {"KAnonymityServiceJoinRelayServer", kJoinRelayURL},

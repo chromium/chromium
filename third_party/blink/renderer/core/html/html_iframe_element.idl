@@ -54,7 +54,7 @@
     [RuntimeEnabled=LazyFrameLoading, CEReactions, Reflect, ReflectOnly=("lazy", "eager", "auto"), ReflectMissing="auto", ReflectInvalid="auto"] attribute DOMString loading;
 
     // Trust Tokens request parameters (https://github.com/wicg/trust-token-api)
-    [RuntimeEnabled=TrustTokens, SecureContext, Reflect, MeasureAs=TrustTokenIframe] attribute DOMString trustToken;
+    [RuntimeEnabled=PrivateStateTokens, SecureContext, Reflect, MeasureAs=TrustTokenIframe] attribute DOMString trustToken;
 
     // Anonymous iframes
     // https://github.com/camillelamy/explainers/blob/master/anonymous_iframes.md

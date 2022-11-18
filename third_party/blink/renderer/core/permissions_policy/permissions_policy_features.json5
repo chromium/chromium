@@ -376,7 +376,7 @@
     {
       name: "TrustTokenRedemption",
       permissions_policy_name: "trust-token-redemption",
-      depends_on: ["TrustTokens"],
+      depends_on: ["PrivateStateTokens"],
     },
     {
       name: "Usb",

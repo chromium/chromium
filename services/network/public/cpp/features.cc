@@ -142,10 +142,12 @@ BASE_FEATURE(kOpaqueResponseBlockingV02,
              "OpaqueResponseBlockingV02",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables preprocessing requests with the Trust Tokens API Fetch flags set,
-// and handling their responses, according to the protocol.
+// Enables preprocessing requests with the Private State Tokens API Fetch flags
+// set, and handling their responses, according to the protocol.
 // (See https://github.com/WICG/trust-token-api.)
-BASE_FEATURE(kTrustTokens, "TrustTokens", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrivateStateTokens,
+             "TrustTokens",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Determines which Trust Tokens operations require the TrustTokens origin trial
 // active in order to be used. This is runtime-configurable so that the Trust
@@ -173,7 +175,7 @@ const base::FeatureParam<TrustTokenOriginTrialSpec>::Option
          "only-issuance-requires-origin-trial"}};
 const base::FeatureParam<TrustTokenOriginTrialSpec>
     kTrustTokenOperationsRequiringOriginTrial{
-        &kTrustTokens, "TrustTokenOperationsRequiringOriginTrial",
+        &kPrivateStateTokens, "TrustTokenOperationsRequiringOriginTrial",
         TrustTokenOriginTrialSpec::kOriginTrialNotRequired,
         &kTrustTokenOriginTrialParamOptions};
 
@@ -184,7 +186,7 @@ const base::FeatureParam<TrustTokenOriginTrialSpec>
 // WARNING: If you rename this param, you must update the corresponding flag
 // entry in about_flags.cc.
 const base::FeatureParam<bool> kPlatformProvidedTrustTokenIssuance{
-    &kTrustTokens, "PlatformProvidedTrustTokenIssuance", false};
+    &kPrivateStateTokens, "PlatformProvidedTrustTokenIssuance", false};
 
 BASE_FEATURE(kWebSocketReassembleShortMessages,
              "WebSocketReassembleShortMessages",

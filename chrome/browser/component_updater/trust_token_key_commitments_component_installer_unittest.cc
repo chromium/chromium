@@ -28,7 +28,7 @@ class TrustTokenKeyCommitmentsComponentInstallerTest : public ::testing::Test {
 
 TEST_F(TrustTokenKeyCommitmentsComponentInstallerTest, FeatureDisabled) {
   base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndDisableFeature(network::features::kTrustTokens);
+  scoped_list.InitAndDisableFeature(network::features::kPrivateStateTokens);
   auto service =
       std::make_unique<component_updater::MockComponentUpdateService>();
   EXPECT_CALL(*service, RegisterComponent(_)).Times(0);

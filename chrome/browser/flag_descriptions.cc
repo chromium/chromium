@@ -2989,9 +2989,9 @@ const char kTreatInsecureOriginAsSecureDescription[] =
     "specified e.g. \"http://example.com\". For the definition of secure "
     "contexts, see https://w3c.github.io/webappsec-secure-contexts/";
 
-const char kTrustTokensName[] = "Enable Trust Tokens";
-const char kTrustTokensDescription[] =
-    "Enables the prototype Trust Token API "
+const char kPrivateStateTokensName[] = "Enable Private State Tokens";
+const char kPrivateStateTokensDescription[] =
+    "Enables the prototype Private State Token API "
     "(https://github.com/wicg/trust-token-api).";
 
 const char kTurnOffStreamingMediaCachingOnBatteryName[] =
