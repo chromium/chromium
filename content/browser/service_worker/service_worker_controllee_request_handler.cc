@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/trace_event/trace_event.h"
 #include "components/offline_pages/buildflags/buildflags.h"
@@ -110,11 +111,9 @@ bool ShouldBypassFetchHandlerForMainResource(const GURL& stripped_url) {
           features::ServiceWorkerBypassFetchHandlerTarget::kMainResource) {
     // When the url is in the allowlist, fetch handlers for the main resource
     // are bypassed.
-    // TODO(crbug.com/1371756) Consider using `static`. Since having `static`
-    // led some test failures, we tentatively removed it.
-    const std::vector<url::Origin> allowed_origins(
+    const static base::NoDestructor<std::vector<url::Origin>> allowed_origins(
         BypassingFetchHandlerAllowedOrigins());
-    for (const auto& it : allowed_origins) {
+    for (const auto& it : *allowed_origins) {
       // Skip comparing port numbers because some tests run the mock HTTP server
       // with a random port number.
       if (it.scheme() == stripped_url.scheme() &&
