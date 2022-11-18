@@ -1,4 +1,4 @@
 monorail: {
-  component: "UI>Browser>WebAppInstalls"
+  component: "Blink>Screen>MultiScreen"
 }
 team_email: "pwa-dev@chromium.org"
