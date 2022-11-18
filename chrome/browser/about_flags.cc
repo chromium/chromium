@@ -216,6 +216,7 @@
 #include "ui/gl/gl_switches.h"
 #include "ui/native_theme/native_theme_features.h"
 #include "ui/ui_features.h"
+#include "url/url_features.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/allocator/buildflags.h"
@@ -9151,6 +9152,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"omit-cors-client-cert", flag_descriptions::kOmitCorsClientCertName,
      flag_descriptions::kOmitCorsClientCertDescription, kOsAll,
      FEATURE_VALUE_TYPE(network::features::kOmitCorsClientCert)},
+
+    {"use-idna2008-non-transitional",
+     flag_descriptions::kUseIDNA2008NonTransitionalName,
+     flag_descriptions::kUseIDNA2008NonTransitionalDescription, kOsAll,
+     FEATURE_VALUE_TYPE(url::kUseIDNA2008NonTransitional)},
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"link-capturing-infobar", flag_descriptions::kLinkCapturingInfoBarName,

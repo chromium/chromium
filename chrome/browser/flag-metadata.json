@@ -6755,6 +6755,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "use-idna2008-non-transitional",
+    "owners": ["meacer", "trusty-transport@chromium.org"],
+    "expiry_milestone": 112
+  },
+  {
     "name": "use-lens-to-search-for-image",
     "owners": [ "bernsteine", "hujasonx" ],
     "expiry_milestone": 100
