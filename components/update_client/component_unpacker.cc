@@ -25,6 +25,19 @@
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
 #include "components/update_client/utils.h"
+#include "third_party/zlib/google/compression_utils.h"
+
+namespace {
+
+const base::FilePath::CharType kMetadataFolder[] =
+    FILE_PATH_LITERAL("_metadata");
+
+base::FilePath GetVerifiedContentsPath(const base::FilePath& extension_path) {
+  return extension_path.Append(kMetadataFolder)
+      .Append(FILE_PATH_LITERAL("verified_contents.json"));
+}
+
+}  // namespace
 
 namespace update_client {
 
@@ -65,7 +78,7 @@ bool ComponentUnpacker::Verify() {
     required_keys.push_back(pk_hash_);
   const crx_file::VerifierResult result = crx_file::Verify(
       path_, crx_format_, required_keys, std::vector<uint8_t>(), &public_key_,
-      nullptr, /*compressed_verified_contents=*/nullptr);
+      nullptr, &compressed_verified_contents_);
   if (result != crx_file::VerifierResult::OK_FULL &&
       result != crx_file::VerifierResult::OK_DELTA) {
     error_ = UnpackerError::kInvalidFile;
@@ -101,6 +114,52 @@ void ComponentUnpacker::EndUnzipping(bool result) {
     return;
   }
   VLOG(1) << "Unpacked successfully";
+  base::FilePath verified_contents_path =
+      GetVerifiedContentsPath(is_delta_ ? unpack_diff_path_ : unpack_path_);
+  // If the verified contents are already present in the _metadata folder, we
+  // can ignore the verified contents in the header.
+  if (compressed_verified_contents_.empty() ||
+      base::PathExists(verified_contents_path)) {
+    BeginPatching();
+    return;
+  }
+
+  UncompressVerifiedContents();
+}
+
+void ComponentUnpacker::UncompressVerifiedContents() {
+  std::string verified_contents;
+  if (!compression::GzipUncompress(compressed_verified_contents_,
+                                   &verified_contents)) {
+    LOG(ERROR) << "Decompressing verified contents from header failed";
+    BeginPatching();
+    return;
+  }
+
+  StoreVerifiedContentsInExtensionDir(verified_contents);
+}
+
+void ComponentUnpacker::StoreVerifiedContentsInExtensionDir(
+    const std::string& verified_contents) {
+  base::FilePath extension_dir = is_delta_ ? unpack_diff_path_ : unpack_path_;
+  base::FilePath metadata_path = extension_dir.Append(kMetadataFolder);
+  if (!base::CreateDirectory(metadata_path)) {
+    LOG(ERROR) << "Could not create metadata directory " << metadata_path;
+    BeginPatching();
+    return;
+  }
+
+  base::FilePath verified_contents_path =
+      GetVerifiedContentsPath(extension_dir);
+
+  // Cannot write the verified contents file.
+  if (!base::WriteFile(verified_contents_path, verified_contents)) {
+    LOG(ERROR) << "Could not write verified contents into file "
+               << verified_contents_path;
+    BeginPatching();
+    return;
+  }
+
   BeginPatching();
 }
 

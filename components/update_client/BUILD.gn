@@ -170,6 +170,7 @@ static_library("update_client") {
     "//components/version_info:version_info",
     "//courgette:courgette_lib",
     "//crypto",
+    "//third_party/zlib/google:compression_utils",
     "//url",
   ]
 
@@ -237,6 +238,7 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/update_client/binary_input.bin",
     "//components/test/data/update_client/binary_output.bin",
     "//components/test/data/update_client/empty_file",
+    "//components/test/data/update_client/gndmhdcefbhlchkhipcnnbkcmicncehk_22_314.crx3",
     "//components/test/data/update_client/ihfokbkgjpifnbbojhneepfflplebdkc_1.crx",
     "//components/test/data/update_client/ihfokbkgjpifnbbojhneepfflplebdkc_1to2.crx",
     "//components/test/data/update_client/ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff",
