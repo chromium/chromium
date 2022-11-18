@@ -78,7 +78,7 @@ class UnitTestResultProcessor(results_module.ResultProcessor):
 
 
 class UnitTestTagUtils(tag_utils.BaseTagUtils):
-  def RemoveMostIgnoredTags(self, tags: Iterable[str]) -> ct.TagTupleType:
+  def RemoveIgnoredTags(self, tags: Iterable[str]) -> ct.TagTupleType:
     tags = list(set(tags) - set(['win-laptop']))
     tags.sort()
     return tuple(tags)

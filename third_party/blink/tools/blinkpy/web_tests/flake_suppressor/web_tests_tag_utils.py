@@ -12,11 +12,7 @@ WEB_TESTS_TAGS_TO_IGNORE = set(['trusty', 'x86_64', 'x86', 'arm', 'arm64'])
 
 
 class WebTestsTagUtils(tag_utils.BaseTagUtils):
-    def RemoveMostIgnoredTags(self, tags: Iterable[str]) -> ct.TagTupleType:
+    def RemoveIgnoredTags(self, tags: Iterable[str]) -> ct.TagTupleType:
         tags = list(set(tags) - WEB_TESTS_TAGS_TO_IGNORE)
         tags.sort()
-        return tuple(tags)
-
-    def RemoveTemporarilyKeptIgnoredTags(self, tags: Iterable[str]
-                                         ) -> ct.TagTupleType:
         return tuple(tags)

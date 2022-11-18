@@ -1116,7 +1116,7 @@
       },
       {
         "args": [
-          "webgl_conformance",
+          "webgl2_conformance",
           "--show-stdout",
           "--browser=cros-chrome",
           "--passthrough",
@@ -1172,7 +1172,7 @@
       },
       {
         "args": [
-          "webgl_conformance",
+          "webgl1_conformance",
           "--show-stdout",
           "--browser=cros-chrome",
           "--passthrough",
@@ -1227,7 +1227,7 @@
       },
       {
         "args": [
-          "webgl_conformance",
+          "webgl1_conformance",
           "--show-stdout",
           "--browser=cros-chrome",
           "--passthrough",

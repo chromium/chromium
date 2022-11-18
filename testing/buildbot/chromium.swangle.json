@@ -5,7 +5,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "webgl_conformance",
+          "webgl1_conformance",
           "--show-stdout",
           "--browser=release",
           "--passthrough",
@@ -816,7 +816,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "webgl_conformance",
+          "webgl1_conformance",
           "--show-stdout",
           "--browser=release",
           "--passthrough",
@@ -858,7 +858,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "webgl_conformance",
+          "webgl1_conformance",
           "--show-stdout",
           "--browser=release",
           "--passthrough",

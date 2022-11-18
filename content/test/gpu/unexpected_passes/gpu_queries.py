@@ -146,7 +146,6 @@ WHERE
   (
     "Failure" IN UNNEST(typ_expectations)
     OR "RetryOnFailure" IN UNNEST(typ_expectations))
-  {suite_filter_clause}
 """
 
 ALL_BUILDERS_FROM_TABLE_SUBQUERY = """\
@@ -187,36 +186,11 @@ class GpuBigQueryQuerier(queries_module.BigQueryQuerier):
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
 
-    self._check_webgl_version = None
-    self._webgl_version_tag = None
-    # WebGL 1 and 2 tests are technically the same suite, but have different
-    # expectation files. This leads to us getting both WebGL 1 and 2 results
-    # when we only have expectations for one of them, which causes all the
-    # results from the other to be reported as not having a matching
-    # expectation.
-    # TODO(crbug.com/1140283): Remove this once WebGL expectations are merged
-    # and there's no need to differentiate them.
-    # pylint: disable=access-member-before-definition
-    if 'webgl_conformance' in self._suite:
-      webgl_version = self._suite[-1]
-      self._suite = 'webgl_conformance'
-      self._webgl_version_tag = 'webgl-version-%s' % webgl_version
-      self._check_webgl_version =\
-          lambda tags: self._webgl_version_tag in tags
-    else:
-      self._check_webgl_version = lambda tags: True
-    # pylint: enable=access-member-before-definition
-
     # Most test names are |suite|_integration_test, but there are several that
     # are not reported that way in typ, and by extension ResultDB, so adjust
     # that here.
     self._suite = TELEMETRY_SUITE_TO_RDB_SUITE_EXCEPTION_MAP.get(
         self._suite, self._suite + '_integration_test')
-
-  def _ShouldSkipOverResult(self, result: queries_module.QueryResult) -> bool:
-    # Skip over the result if the WebGL version does not match the one we're
-    # looking for.
-    return not self._check_webgl_version(result['typ_tags'])
 
   def _GetQueryGeneratorForBuilder(
       self, builder: data_types.BuilderEntry
@@ -229,11 +203,9 @@ class GpuBigQueryQuerier(queries_module.BigQueryQuerier):
           test_id,
           r"gpu_tests\\.%s\\.")""" % self._suite)
 
-    query = TEST_FILTER_QUERY_TEMPLATE.format(
-        builder_project=builder.project,
-        builder_type=builder.builder_type,
-        suite=self._suite,
-        suite_filter_clause=self._GetSuiteFilterClause())
+    query = TEST_FILTER_QUERY_TEMPLATE.format(builder_project=builder.project,
+                                              builder_type=builder.builder_type,
+                                              suite=self._suite)
     query_results = self._RunBigQueryCommandsForJsonOutput(
         query, {'': {
             'builder_name': builder.name
@@ -255,21 +227,6 @@ class GpuBigQueryQuerier(queries_module.BigQueryQuerier):
     # Only one expectation file is ever used for the GPU tests, so just use
     # whichever one we've read in.
     return None
-
-  def _GetSuiteFilterClause(self) -> str:
-    """Returns a SQL clause to only include relevant suites.
-
-    Meant for cases where suites are differentiated by typ tag rather than
-    reported suite name, e.g. WebGL 1 vs. 2 conformance.
-
-    Returns:
-      A string containing a valid SQL clause. Will be an empty string if no
-      filtering is possible/necessary.
-    """
-    if not self._webgl_version_tag:
-      return ''
-
-    return 'AND "%s" IN UNNEST(typ_tags)' % self._webgl_version_tag
 
   def _StripPrefixFromTestId(self, test_id: str) -> str:
     # GPU test IDs provided by ResultDB are the test name as known by the test

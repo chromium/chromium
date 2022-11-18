@@ -4129,7 +4129,7 @@
       },
       {
         "args": [
-          "webgl_conformance",
+          "webgl1_conformance",
           "--show-stdout",
           "--browser=fuchsia-chrome",
           "--passthrough",
@@ -4142,7 +4142,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webgl_conformance_tests",
+        "name": "webgl1_conformance_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -4451,7 +4451,7 @@
       },
       {
         "args": [
-          "webgl_conformance",
+          "webgl1_conformance",
           "--show-stdout",
           "--browser=fuchsia-chrome",
           "--passthrough",
@@ -4465,7 +4465,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webgl_conformance_tests",
+        "name": "webgl1_conformance_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true

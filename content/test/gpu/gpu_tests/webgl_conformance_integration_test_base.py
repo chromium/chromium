@@ -1,13 +1,13 @@
 # Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+"""Base class for WebGL conformance tests."""
 
 import logging
 import os
 import re
 import sys
 from typing import Any, List, Optional, Set, Tuple
-import unittest
 
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
@@ -63,6 +63,7 @@ extension_harness_additional_script = r"""
   window.onload = function() { window._loaded = true; }
 """
 
+
 # cmp no longer exists in Python 3
 def cmp(a: Any, b: Any) -> int:
   return int(a > b) - int(a < b)
@@ -84,7 +85,8 @@ class WebGLTestArgs():
     self.extension_list = extension_list
 
 
-class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
+class WebGLConformanceIntegrationTestBase(
+    gpu_integration_test.GpuIntegrationTest):
 
   _webgl_version = None
   is_asan = False
@@ -94,10 +96,6 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   _command_decoder = ''
   _verified_flags = False
   _original_environ = None
-
-  @classmethod
-  def Name(cls) -> str:
-    return 'webgl_conformance'
 
   def _SuiteSupportsParallelTests(self) -> bool:
     return True
@@ -119,11 +117,10 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   @classmethod
   def AddCommandlineArgs(cls, parser: ct.CmdArgParser) -> None:
-    super(WebGLConformanceIntegrationTest, cls).AddCommandlineArgs(parser)
-    parser.add_option(
-        '--webgl-conformance-version',
-        help='Version of the WebGL conformance tests to run.',
-        default='1.0.4')
+    super().AddCommandlineArgs(parser)
+    parser.add_option('--webgl-conformance-version',
+                      help='Version of the WebGL conformance tests to run.',
+                      default='1.0.4')
     parser.add_option(
         '--webgl2-only',
         help='Whether we include webgl 1 tests if version is 2.0.0 or above.',
@@ -146,6 +143,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                                  options.webgl_conformance_version,
                                  (options.webgl2_only == 'true'), None)
     cls._SetClassVariablesFromOptions(options)
+    assert cls._webgl_version is not None
     for test_path in test_paths:
       test_path_with_args = test_path
       if cls._webgl_version > 1:
@@ -179,76 +177,11 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   @classmethod
   def _GetExtensionList(cls) -> List[str]:
-    if cls._webgl_version == 1:
-      return [
-          'ANGLE_instanced_arrays',
-          'EXT_blend_minmax',
-          'EXT_color_buffer_half_float',
-          'EXT_disjoint_timer_query',
-          'EXT_float_blend',
-          'EXT_frag_depth',
-          'EXT_shader_texture_lod',
-          'EXT_sRGB',
-          'EXT_texture_compression_bptc',
-          'EXT_texture_compression_rgtc',
-          'EXT_texture_filter_anisotropic',
-          'KHR_parallel_shader_compile',
-          'OES_element_index_uint',
-          'OES_fbo_render_mipmap',
-          'OES_standard_derivatives',
-          'OES_texture_float',
-          'OES_texture_float_linear',
-          'OES_texture_half_float',
-          'OES_texture_half_float_linear',
-          'OES_vertex_array_object',
-          'WEBGL_color_buffer_float',
-          'WEBGL_compressed_texture_astc',
-          'WEBGL_compressed_texture_etc',
-          'WEBGL_compressed_texture_etc1',
-          'WEBGL_compressed_texture_pvrtc',
-          'WEBGL_compressed_texture_s3tc',
-          'WEBGL_compressed_texture_s3tc_srgb',
-          'WEBGL_debug_renderer_info',
-          'WEBGL_debug_shaders',
-          'WEBGL_depth_texture',
-          'WEBGL_draw_buffers',
-          'WEBGL_lose_context',
-          'WEBGL_multi_draw',
-          'WEBGL_video_texture',
-          'WEBGL_webcodecs_video_frame',
-      ]
-    return [
-        'EXT_color_buffer_float',
-        'EXT_color_buffer_half_float',
-        'EXT_disjoint_timer_query_webgl2',
-        'EXT_float_blend',
-        'EXT_texture_compression_bptc',
-        'EXT_texture_compression_rgtc',
-        'EXT_texture_filter_anisotropic',
-        'EXT_texture_norm16',
-        'KHR_parallel_shader_compile',
-        'OES_draw_buffers_indexed',
-        'OES_texture_float_linear',
-        'OVR_multiview2',
-        'WEBGL_compressed_texture_astc',
-        'WEBGL_compressed_texture_etc',
-        'WEBGL_compressed_texture_etc1',
-        'WEBGL_compressed_texture_pvrtc',
-        'WEBGL_compressed_texture_s3tc',
-        'WEBGL_compressed_texture_s3tc_srgb',
-        'WEBGL_debug_renderer_info',
-        'WEBGL_debug_shaders',
-        'WEBGL_draw_instanced_base_vertex_base_instance',
-        'WEBGL_lose_context',
-        'WEBGL_multi_draw',
-        'WEBGL_multi_draw_instanced_base_vertex_base_instance',
-        'WEBGL_video_texture',
-        'WEBGL_webcodecs_video_frame',
-    ]
+    raise NotImplementedError()
 
   @classmethod
   def _ModifyBrowserEnvironment(cls) -> None:
-    super(WebGLConformanceIntegrationTest, cls)._ModifyBrowserEnvironment()
+    super()._ModifyBrowserEnvironment()
     if (sys.platform == 'darwin'
         and cls.GetOriginalFinderOptions().enable_metal_debug_layers):
       if cls._original_environ is None:
@@ -262,7 +195,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def _RestoreBrowserEnvironment(cls) -> None:
     if cls._original_environ is not None:
       os.environ = cls._original_environ.copy()
-    super(WebGLConformanceIntegrationTest, cls)._RestoreBrowserEnvironment()
+    super()._RestoreBrowserEnvironment()
 
   def _ShouldForceRetryOnFailureFirstTest(self) -> bool:
     # Force RetryOnFailure of the first test on a shard on ChromeOS VMs.
@@ -397,8 +330,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
     See the parent class' method documentation for additional information.
     """
-    default_args = super(WebGLConformanceIntegrationTest,
-                         cls).GenerateBrowserArgs(additional_args)
+    default_args = super().GenerateBrowserArgs(additional_args)
 
     # --test-type=gpu is used only to suppress the "Google API Keys are missing"
     # infobar, which causes flakiness in tests.
@@ -455,7 +387,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   @classmethod
   def SetUpProcess(cls) -> None:
-    super(WebGLConformanceIntegrationTest, cls).SetUpProcess()
+    super().SetUpProcess()
     cls.CustomizeBrowserArgs([])
     cls.StartBrowser()
     # By setting multiple server directories, the root of the server
@@ -552,7 +484,8 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   @classmethod
   def GetPlatformTags(cls, browser: ct.Browser) -> List[str]:
-    tags = super(WebGLConformanceIntegrationTest, cls).GetPlatformTags(browser)
+    assert cls._webgl_version is not None
+    tags = super().GetPlatformTags(browser)
     tags.append('webgl-version-%d' % cls._webgl_version)
 
     system_info = browser.GetSystemInfo()
@@ -592,16 +525,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   @classmethod
   def ExpectationsFiles(cls) -> List[str]:
-    assert cls._webgl_version == 1 or cls._webgl_version == 2
-    if cls._webgl_version == 1:
-      file_name = 'webgl_conformance_expectations.txt'
-    else:
-      file_name = 'webgl2_conformance_expectations.txt'
-    return [
-        os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), 'test_expectations',
-            file_name)
-    ]
+    raise NotImplementedError()
 
 
 def _GetGPUInfoErrorString(gpu_info: telemetry_gpu_info.GPUInfo) -> str:
@@ -616,9 +540,3 @@ def _GetGPUInfoErrorString(gpu_info: telemetry_gpu_info.GPUInfo) -> str:
 
 def _GetExtensionHarnessScript() -> str:
   return conformance_harness_script + extension_harness_additional_script
-
-
-def load_tests(loader: unittest.TestLoader, tests: Any,
-               pattern: Any) -> unittest.TestSuite:
-  del loader, tests, pattern  # Unused.
-  return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])

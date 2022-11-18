@@ -49,13 +49,7 @@ from unexpected_passes_common import result_output
 
 SUITE_TO_EXPECTATIONS_MAP = {
     'power': 'power_measurement',
-    'webgl_conformance1': 'webgl_conformance',
-    'webgl_conformance2': 'webgl2_conformance',
-}
-
-SUITE_TO_TELEMETRY_SUITE_MAP = {
-    'webgl_conformance1': 'webgl_conformance',
-    'webgl_conformance2': 'webgl_conformance',
+    'webgl1_conformance': 'webgl_conformance',
 }
 
 
@@ -83,8 +77,8 @@ def ParseArgs():
       '--suite',
       required=True,
       # Could probably autogenerate this list using the same
-      # method as Telemetry's run_browser_tests.py once there is no need to
-      # distinguish WebGL 1 from WebGL 2.
+      # method as Telemetry's run_browser_tests.py now that WebGL 1 and 2 are
+      # properly split.
       choices=[
           'context_lost',
           'hardware_accelerated_feature',
@@ -97,8 +91,8 @@ def ParseArgs():
           'screenshot_sync',
           'trace_test',
           'webcodecs',
-          'webgl_conformance1',
-          'webgl_conformance2',
+          'webgl1_conformance',
+          'webgl2_conformance',
       ],
       help='The test suite being checked.')
 
@@ -122,9 +116,8 @@ def ParseArgs():
 def main():
   args = ParseArgs()
 
-  builders_instance = gpu_builders.GpuBuilders(
-      SUITE_TO_TELEMETRY_SUITE_MAP.get(args.suite, args.suite),
-      args.include_internal_builders)
+  builders_instance = gpu_builders.GpuBuilders(args.suite,
+                                               args.include_internal_builders)
   builders.RegisterInstance(builders_instance)
   expectations_instance = gpu_expectations.GpuExpectations()
 

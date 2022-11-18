@@ -8,23 +8,11 @@ import unittest
 from blinkpy.web_tests.flake_suppressor import web_tests_tag_utils as tag_utils
 
 
-class RemoveMostIgnoredTagsUnittest(unittest.TestCase):
+class RemoveIgnoredTagsUnittest(unittest.TestCase):
     def testBasic(self) -> None:
         tags = ['win', 'x86', 'release']
-        filtered_tags = tag_utils.WebTestsTagUtils().RemoveMostIgnoredTags(
-            tags)
+        filtered_tags = tag_utils.WebTestsTagUtils().RemoveIgnoredTags(tags)
         self.assertEqual(filtered_tags, ('release', 'win'))
-
-
-class RemoveTemporarilyKeptIgnoredTagsUnittest(unittest.TestCase):
-    def testBasic(self) -> None:
-        tags = ['win', 'x86_64', 'mac11']
-        # RemoveTemporarilyKeptIgnoredTags is always called after
-        # RemoveMostIgnoredTags. For web tests RemoveTemporarilyKeptIgnoredTags
-        # returns input tag set.
-        filtered_tags = (tag_utils.WebTestsTagUtils().
-                         RemoveTemporarilyKeptIgnoredTags(tags))
-        self.assertEqual(filtered_tags, ('win', 'x86_64', 'mac11'))
 
 
 if __name__ == '__main__':

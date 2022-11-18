@@ -294,10 +294,6 @@ class ExpectationProcessor():
     """
     expectation_file = self.GetExpectationFileForSuite(suite, typ_tags)
     if not include_all_tags:
-      # Remove temporarily un-ignored tags, namely webgl-version-x tags, since
-      # those were necessary to find the correct file. However, we do not want
-      # to actually include them in the file since they are unused/ignored.
-      typ_tags = tag_utils.TagUtils.RemoveTemporarilyKeptIgnoredTags(typ_tags)
       typ_tags = self.FilterToMostSpecificTypTags(typ_tags, expectation_file)
     bug = '%s ' % bug if bug else bug
 

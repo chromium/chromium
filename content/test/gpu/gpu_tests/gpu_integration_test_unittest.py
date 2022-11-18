@@ -23,7 +23,8 @@ from gpu_tests import common_typing as ct
 from gpu_tests import context_lost_integration_test
 from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
-from gpu_tests import webgl_conformance_integration_test as webgl_cit
+from gpu_tests import webgl1_conformance_integration_test as webgl1_cit
+from gpu_tests import webgl2_conformance_integration_test as webgl2_cit
 
 import gpu_path_util
 
@@ -246,7 +247,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
                                                                      ) -> None:
     args = gpu_helper.GetMockArgs(webgl_version='1.0.0')
     tag_set = self._TestTagGenerationForMockPlatform(
-        webgl_cit.WebGLConformanceIntegrationTest, args, is_asan=True)
+        webgl1_cit.WebGL1ConformanceIntegrationTest, args, is_asan=True)
     self.assertTrue(set(['asan', 'webgl-version-1']).issubset(tag_set))
     self.assertFalse(set(['no-asan', 'webgl-version-2']) & tag_set)
 
@@ -254,17 +255,19 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
       self) -> None:
     args = gpu_helper.GetMockArgs(webgl_version='2.0.0')
     tag_set = self._TestTagGenerationForMockPlatform(
-        webgl_cit.WebGLConformanceIntegrationTest, args)
+        webgl2_cit.WebGL2ConformanceIntegrationTest, args)
     self.assertTrue(set(['no-asan', 'webgl-version-2']).issubset(tag_set))
     self.assertFalse(set(['asan', 'webgl-version-1']) & tag_set)
 
   def testWebGlConformanceTimeoutNoAsan(self) -> None:
-    instance = webgl_cit.WebGLConformanceIntegrationTest('_RunConformanceTest')
+    instance = webgl1_cit.WebGL1ConformanceIntegrationTest(
+        '_RunConformanceTest')
     instance.is_asan = False
     self.assertEqual(instance._GetTestTimeout(), 300)
 
   def testWebGlConformanceTimeoutAsan(self) -> None:
-    instance = webgl_cit.WebGLConformanceIntegrationTest('_RunConformanceTest')
+    instance = webgl1_cit.WebGL1ConformanceIntegrationTest(
+        '_RunConformanceTest')
     instance.is_asan = True
     self.assertEqual(instance._GetTestTimeout(), 600)
 

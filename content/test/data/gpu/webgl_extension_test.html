@@ -47,7 +47,7 @@
         if (missing_list.length == 0) {
           webglTestHarness.reportResults(name, true, "All " + context_type + " extensions are being tested.");
         } else {
-          var error_string = "The following " + context_type + " extensions are not being tested and should be added to GetExtensionList() in content/test/gpu/gpu_tests/webgl_conformance_integration_test.py:";
+          var error_string = "The following " + context_type + " extensions are not being tested and should be added to GetExtensionList() in content/test/gpu/gpu_tests/webgl1_conformance_integration_test.py or webgl2_conformance_integration_test.py:";
           for (var i in missing_list) {
             error_string += "\n\t" + missing_list[i];
           }

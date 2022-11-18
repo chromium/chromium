@@ -182,7 +182,7 @@ class BigQueryQuerier():
     json_results = self._GetJsonResultsFromBigQuery(query)
 
     for r in json_results:
-      typ_tags = tuple(tag_utils.TagUtils.RemoveMostIgnoredTags(r['typ_tags']))
+      typ_tags = tuple(tag_utils.TagUtils.RemoveIgnoredTags(r['typ_tags']))
       test_name = r['test_name']
       _, test_name = self._result_processor.GetTestSuiteAndNameFromResultDbName(
           test_name)

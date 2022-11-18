@@ -8,22 +8,11 @@ import unittest
 from flake_suppressor import gpu_tag_utils as tag_utils
 
 
-class RemoveMostIgnoredTagsUnittest(unittest.TestCase):
+class RemoveIgnoredTagsUnittest(unittest.TestCase):
   def testBasic(self) -> None:
     tags = ['win', 'win-laptop', 'webgl-version-1']
-    filtered_tags = tag_utils.GpuTagUtils().RemoveMostIgnoredTags(tags)
-    self.assertEqual(filtered_tags, ('webgl-version-1', 'win'))
-
-
-class RemoveTemporarilyKeptIgnoredTagsUnittest(unittest.TestCase):
-  def testBasic(self) -> None:
-    # win-laptop shouldn't technically be here since it would have been removed
-    # by RemoveMostIgnoredTags(), but since this is *only* supposed to remove
-    # temporarily kept ignored tags, include it to test that.
-    tags = ['win', 'win-laptop', 'webgl-version-1', 'amd']
-    filtered_tags = tag_utils.GpuTagUtils().RemoveTemporarilyKeptIgnoredTags(
-        tags)
-    self.assertEqual(filtered_tags, ('amd', 'win', 'win-laptop'))
+    filtered_tags = tag_utils.GpuTagUtils().RemoveIgnoredTags(tags)
+    self.assertEqual(filtered_tags, ('win', ))
 
 
 if __name__ == '__main__':
