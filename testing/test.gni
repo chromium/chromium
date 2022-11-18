@@ -89,7 +89,8 @@ template("mixed_test") {
     _gtest_is_in_deps = false
     if (defined(invoker.deps) && invoker.deps != []) {
       foreach(dep, invoker.deps) {
-        if (dep == "//testing/gtest") {
+        if (get_label_info(dep, "label_no_toolchain") ==
+            "//testing/gtest:gtest") {
           _gtest_is_in_deps = true
         }
       }
