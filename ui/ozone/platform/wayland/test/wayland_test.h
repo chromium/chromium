@@ -125,6 +125,13 @@ class WaylandTest : public ::testing::TestWithParam<wl::ServerConfig> {
   // Does nothing if XkbCommon is not used.
   void MaybeSetUpXkb();
 
+  // Creates a Wayland window with the specified delegate, type, and bounds.
+  std::unique_ptr<WaylandWindow> CreateWaylandWindowWithParams(
+      PlatformWindowType type,
+      const gfx::Rect bounds,
+      MockWaylandPlatformWindowDelegate* delegate,
+      gfx::AcceleratedWidget parent_widget = gfx::kNullAcceleratedWidget);
+
   base::test::TaskEnvironment task_environment_;
 
   wl::TestWaylandServerThread server_;

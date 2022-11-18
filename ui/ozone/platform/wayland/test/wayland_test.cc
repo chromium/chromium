@@ -290,4 +290,21 @@ void WaylandTest::MaybeSetUpXkb() {
 #endif
 }
 
+std::unique_ptr<WaylandWindow> WaylandTest::CreateWaylandWindowWithParams(
+    PlatformWindowType type,
+    const gfx::Rect bounds,
+    MockWaylandPlatformWindowDelegate* delegate,
+    gfx::AcceleratedWidget parent_widget) {
+  PlatformWindowInitProperties properties;
+  properties.bounds = bounds;
+  properties.type = type;
+  properties.parent_widget = parent_widget;
+
+  auto window = delegate->CreateWaylandWindow(
+      connection_.get(), std::move(properties), true, true);
+  if (window)
+    window->Show(false);
+  return window;
+}
+
 }  // namespace ui

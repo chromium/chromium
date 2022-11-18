@@ -37,25 +37,11 @@ class WaylandWindowManagerTest : public WaylandTest {
   }
 
  protected:
-  std::unique_ptr<WaylandWindow> CreateWaylandWindowWithParams(
-      PlatformWindowType type,
-      const gfx::Rect bounds,
-      MockPlatformWindowDelegate* delegate) {
-    PlatformWindowInitProperties properties;
-    properties.bounds = bounds;
-    properties.type = type;
-    auto window = WaylandWindow::Create(delegate, connection_.get(),
-                                        std::move(properties));
-    if (window)
-      window->Show(false);
-    return window;
-  }
-
   raw_ptr<WaylandWindowManager> manager_ = nullptr;
 };
 
 TEST_P(WaylandWindowManagerTest, GetWindow) {
-  MockPlatformWindowDelegate delegate;
+  MockWaylandPlatformWindowDelegate delegate;
 
   auto window1 = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
                                                kDefaultBounds, &delegate);
@@ -73,7 +59,7 @@ TEST_P(WaylandWindowManagerTest, GetWindow) {
 }
 
 TEST_P(WaylandWindowManagerTest, GetWindowWithLargestBounds) {
-  MockPlatformWindowDelegate delegate;
+  MockWaylandPlatformWindowDelegate delegate;
 
   auto window1 = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
                                                kDefaultBounds, &delegate);
@@ -86,7 +72,7 @@ TEST_P(WaylandWindowManagerTest, GetWindowWithLargestBounds) {
 }
 
 TEST_P(WaylandWindowManagerTest, GetCurrentFocusedWindow) {
-  MockPlatformWindowDelegate delegate;
+  MockWaylandPlatformWindowDelegate delegate;
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     wl_seat_send_capabilities(server->seat()->resource(),
@@ -137,7 +123,7 @@ TEST_P(WaylandWindowManagerTest, GetCurrentFocusedWindow) {
 }
 
 TEST_P(WaylandWindowManagerTest, GetCurrentKeyboardFocusedWindow) {
-  MockPlatformWindowDelegate delegate;
+  MockWaylandPlatformWindowDelegate delegate;
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     wl_seat_send_capabilities(server->seat()->resource(),
@@ -182,7 +168,7 @@ TEST_P(WaylandWindowManagerTest, GetCurrentKeyboardFocusedWindow) {
 }
 
 TEST_P(WaylandWindowManagerTest, GetAllWindows) {
-  MockPlatformWindowDelegate delegate;
+  MockWaylandPlatformWindowDelegate delegate;
 
   // There is a default window created by WaylandTest.
   auto windows = manager_->GetAllWindows();
