@@ -938,43 +938,43 @@
       </message>
 
       <!-- Page Zoom -->
-      <message name="IDS_PAGE_ZOOM_TITLE" desc="Title of the preference that allows the user to update the accessibility page zoom feature that applies to the web contents." translateable="false">
+      <message name="IDS_PAGE_ZOOM_TITLE" desc="Title of the preference that allows the user to update the accessibility page zoom feature that applies to the web contents.">
         Zoom
       </message>
-      <message name="IDS_PAGE_ZOOM_LABEL" desc="Accessibility label for control to allow user to change page zoom" translateable="false">
+      <message name="IDS_PAGE_ZOOM_LABEL" desc="Accessibility label for control to allow user to change page zoom">
         Page zoom
       </message>
-      <message name="IDS_PAGE_ZOOM_LEVEL_LABEL" desc="Accessibility label for indicator of current page zoom level set by the user" translateable="false">
+      <message name="IDS_PAGE_ZOOM_LEVEL_LABEL" desc="Accessibility label for indicator of current page zoom level set by the user">
         Current zoom is <ph name="ZOOM_LEVEL">%1$d<ex>100</ex></ph> %%
       </message>
-      <message name="IDS_PAGE_ZOOM_SUMMARY" desc="Summary of the preference that allows the user to update the accessibility page zoom feature that applies to the web contents." translateable="false">
+      <message name="IDS_PAGE_ZOOM_SUMMARY" desc="Summary of the preference that allows the user to update the accessibility page zoom feature that applies to the web contents.">
         Make the default text and images on sites smaller or larger
       </message>
-      <message name="IDS_PAGE_ZOOM_DECREASE_ZOOM_BUTTON_TEXT" desc="Accessibility label for button to allow user to decrease page zoom" translateable="false">
+      <message name="IDS_PAGE_ZOOM_DECREASE_ZOOM_BUTTON_TEXT" desc="Accessibility label for button to allow user to decrease page zoom">
         Decrease zoom
       </message>
-      <message name="IDS_PAGE_ZOOM_INCREASE_ZOOM_BUTTON_TEXT" desc="Accessibility label for button to allow user to increase page zoom" translateable="false">
+      <message name="IDS_PAGE_ZOOM_INCREASE_ZOOM_BUTTON_TEXT" desc="Accessibility label for button to allow user to increase page zoom">
         Increase zoom
       </message>
-      <message name="IDS_PAGE_ZOOM_LEVEL" desc="Text description of the current page zoom level set by the user" translateable="false">
+      <message name="IDS_PAGE_ZOOM_LEVEL" desc="Text description of the current page zoom level set by the user">
         <ph name="ZOOM_LEVEL">%1$d<ex>100</ex></ph> %%
       </message>
-      <message name="IDS_PAGE_ZOOM_ALWAYS_SHOW_PREFERENCE_TITLE" desc="Title of the preference that allows the user to always show the menu item for zoom" translateable="false">
+      <message name="IDS_PAGE_ZOOM_ALWAYS_SHOW_PREFERENCE_TITLE" desc="Title of the preference that allows the user to always show the menu item for zoom">
         Show zoom
       </message>
-      <message name="IDS_PAGE_ZOOM_ALWAYS_SHOW_PREFERENCE_SUMMARY" desc="Summary of the preference that allows the user to always show the menu item for zoom." translateable="false">
+      <message name="IDS_PAGE_ZOOM_ALWAYS_SHOW_PREFERENCE_SUMMARY" desc="Summary of the preference that allows the user to always show the menu item for zoom.">
         Zoom in or out on a page from the main menu
       </message>
-      <message name="IDS_PAGE_ZOOM_PREVIEW_TITLE" desc="Label of the section of sample text shown to the user to preview zoom level." translateable="false">
+      <message name="IDS_PAGE_ZOOM_PREVIEW_TITLE" desc="Label of the section of sample text shown to the user to preview zoom level.">
         Preview
       </message>
-      <message name="IDS_PAGE_ZOOM_PREVIEW_TEXT_TITLE" desc="Sample text displayed to user in settings to see/test a desired zoom level." translateable="false">
+      <message name="IDS_PAGE_ZOOM_PREVIEW_TEXT_TITLE" desc="Sample text displayed to user in settings to see/test a desired zoom level.">
         The Wonderful Wizard of Oz
       </message>
-      <message name="IDS_PAGE_ZOOM_PREVIEW_TEXT_SUMMARY" desc="Sample text displayed to user in settings to see/test a desired zoom level." translateable="false">
+      <message name="IDS_PAGE_ZOOM_PREVIEW_TEXT_SUMMARY" desc="Sample text displayed to user in settings to see/test a desired zoom level.">
         Chapter 11: The Wonderful Emerald City of Oz
       </message>
-      <message name="IDS_PAGE_ZOOM_PREVIEW_TEXT_ITEM" desc="Sample text displayed to user in settings to see/test a desired zoom level." translateable="false">
+      <message name="IDS_PAGE_ZOOM_PREVIEW_TEXT_ITEM" desc="Sample text displayed to user in settings to see/test a desired zoom level.">
         Even with eyes protected by the green spectacles Dorothy and her friends were at first dazzled by the
       </message>
 
