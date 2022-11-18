@@ -13,6 +13,7 @@
 #include "ash/public/cpp/test/test_desks_templates_delegate.h"
 #include "ash/public/cpp/test/test_nearby_share_delegate.h"
 #include "ash/system/geolocation/test_geolocation_url_loader_factory.h"
+#include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/wm/gestures/back_gesture/test_back_gesture_contextual_nudge_delegate.h"
 #include "url/gurl.h"
 
@@ -56,6 +57,11 @@ TestShellDelegate::CreateNearbyShareDelegate(
 std::unique_ptr<DesksTemplatesDelegate>
 TestShellDelegate::CreateDesksTemplatesDelegate() const {
   return std::make_unique<TestDesksTemplatesDelegate>();
+}
+
+std::unique_ptr<ash::VideoConferenceTrayController>
+TestShellDelegate::CreateVideoConferenceTrayController() const {
+  return std::make_unique<FakeVideoConferenceTrayController>();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

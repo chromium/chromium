@@ -47,6 +47,8 @@ class TestShellDelegate : public ShellDelegate {
       NearbyShareController* controller) const override;
   std::unique_ptr<DesksTemplatesDelegate> CreateDesksTemplatesDelegate()
       const override;
+  std::unique_ptr<ash::VideoConferenceTrayController>
+  CreateVideoConferenceTrayController() const override;
   scoped_refptr<network::SharedURLLoaderFactory>
   GetGeolocationUrlLoaderFactory() const override;
   bool CanGoBack(gfx::NativeWindow window) const override;

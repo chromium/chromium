@@ -5,6 +5,9 @@
 #ifndef ASH_SYSTEM_VIDEO_CONFERENCE_VIDEO_CONFERENCE_TRAY_CONTROLLER_H_
 #define ASH_SYSTEM_VIDEO_CONFERENCE_VIDEO_CONFERENCE_TRAY_CONTROLLER_H_
 
+#include "ash/ash_export.h"
+#include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
+
 namespace ash {
 
 // Controller that will act as a "bridge" between VC apps management and the VC
@@ -12,7 +15,8 @@ namespace ash {
 // destructed immediately after the UI, so any code that keeps a reference to
 // it must be prepared to accommodate this specific lifetime in order to prevent
 // any use-after-free bugs.
-class VideoConferenceTrayController {
+class ASH_EXPORT VideoConferenceTrayController
+    : public media::CameraPrivacySwitchObserver {
  public:
   VideoConferenceTrayController();
 
@@ -20,7 +24,14 @@ class VideoConferenceTrayController {
   VideoConferenceTrayController& operator=(
       const VideoConferenceTrayController&) = delete;
 
-  ~VideoConferenceTrayController();
+  ~VideoConferenceTrayController() override;
+
+  // Set the state for camera software mute. Virtual for testing/mocking.
+  virtual void SetCameraSoftwareMuted(bool mute_camera);
+
+  // media::CameraPrivacySwitchObserver:
+  void OnCameraSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState state) override;
 };
 
 }  // namespace ash

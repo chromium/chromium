@@ -9,7 +9,12 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_background_view.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+
+namespace ui {
+class Event;
+}  // namespace ui
 
 namespace views {
 class ImageView;
@@ -47,12 +52,19 @@ class ASH_EXPORT VideoConferenceTray : public TrayBackgroundView {
   void OnThemeChanged() override;
   void UpdateAfterLoginStatusChange() override;
 
+  IconButton* camera_icon() { return camera_icon_; }
+
  private:
   friend class VideoConferenceTrayTest;
 
   // Updates the orientation of the expand indicator, based on shelf alignment
   // and whether the bubble is opened.
   void UpdateExpandIndicator();
+
+  // Callback functions for the icons when being clicked.
+  void OnCameraButtonClicked(const ui::Event& event);
+  void OnAudioButtonClicked(const ui::Event& event);
+  void OnScreenShareButtonClicked(const ui::Event& event);
 
   // Owned by the views hierarchy.
   IconButton* audio_icon_ = nullptr;
@@ -62,6 +74,8 @@ class ASH_EXPORT VideoConferenceTray : public TrayBackgroundView {
 
   // The bubble that appears after clicking the tray button.
   std::unique_ptr<TrayBubbleWrapper> bubble_;
+
+  base::WeakPtrFactory<VideoConferenceTray> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

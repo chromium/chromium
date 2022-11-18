@@ -7,11 +7,15 @@
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/icon_button.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test_shell_delegate.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -39,7 +43,7 @@ class VideoConferenceTrayTest : public AshTestBase {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kVcControlsUi);
 
-    AshTestBase::SetUp();
+    AshTestBase::SetUp(std::make_unique<TestShellDelegate>());
   }
 
   VideoConferenceTray* video_conference_tray() {
@@ -49,6 +53,11 @@ class VideoConferenceTrayTest : public AshTestBase {
 
   views::ImageView* expand_indicator() {
     return video_conference_tray()->expand_indicator_;
+  }
+
+  FakeVideoConferenceTrayController* controller() {
+    return static_cast<FakeVideoConferenceTrayController*>(
+        Shell::Get()->video_conference_tray_controller());
   }
 
  private:
@@ -132,6 +141,21 @@ TEST_F(VideoConferenceTrayTest, ExpandIndicator) {
       BitmapsAreEqual(gfx::ImageSkiaOperations::CreateRotatedImage(
                           expected_image, SkBitmapOperations::ROTATION_90_CW),
                       expand_indicator()->GetImage()));
+}
+
+TEST_F(VideoConferenceTrayTest, ToggleCameraButton) {
+  auto* camera_icon = video_conference_tray()->camera_icon();
+  EXPECT_FALSE(camera_icon->toggled());
+
+  // Click the button should mute the camera.
+  LeftClickOn(camera_icon);
+  EXPECT_TRUE(controller()->camera_soft_muted());
+  EXPECT_TRUE(camera_icon->toggled());
+
+  // Toggle again, should be unmuted.
+  LeftClickOn(camera_icon);
+  EXPECT_FALSE(controller()->camera_soft_muted());
+  EXPECT_FALSE(camera_icon->toggled());
 }
 
 }  // namespace ash

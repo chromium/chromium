@@ -1430,7 +1430,7 @@ void Shell::Init(
   // themselves exist.
   if (features::IsVcControlsUiEnabled()) {
     video_conference_tray_controller_ =
-        std::make_unique<VideoConferenceTrayController>();
+        shell_delegate_->CreateVideoConferenceTrayController();
   }
 
   window_tree_host_manager_->InitHosts();

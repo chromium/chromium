@@ -40,6 +40,7 @@ class GlanceablesController;
 class GlanceablesDelegate;
 class NearbyShareController;
 class NearbyShareDelegate;
+class VideoConferenceTrayController;
 
 // Delegate of the Shell.
 class ASH_EXPORT ShellDelegate {
@@ -72,6 +73,9 @@ class ASH_EXPORT ShellDelegate {
 
   virtual std::unique_ptr<DesksTemplatesDelegate> CreateDesksTemplatesDelegate()
       const = 0;
+
+  virtual std::unique_ptr<VideoConferenceTrayController>
+  CreateVideoConferenceTrayController() const = 0;
 
   // Returns the geolocation loader factory used to initialize geolocation
   // provider.
