@@ -128,6 +128,10 @@ reviewer.
   <summary>
     Interactions between sync and the cookies clear on exit setting. Only
     recorded when the user has cookies clear on exit enabled.
+
+    Recorded on all profiles, including for profiles such as guest profiles that
+    do not allow modification of this setting. (This value logged on those cases
+    is the default value for the setting.)
   </summary>
 </histogram>
 
@@ -248,13 +252,31 @@ reviewer.
 
 <histogram name="Privacy.DoNotTrackSetting" enum="BooleanEnabled"
     expires_after="never">
+  <obsolete>
+    Logged on profile open, including for profiles such as guest profiles that
+    do not allow modification of this setting. (This value logged on those cases
+    is the default value for the setting.) Replaced in M-110 with the histogram
+    Privacy.DoNotTrackSetting2, which is similar but only emitted on regular
+    profiles.
+  </obsolete>
 <!-- expires-never: tracked as an important privacy metric. -->
 
   <owner>mkwst@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <summary>
-    Whether the Do Not Track setting is enabled. Recorded at the Profile
-    startup.
+    Whether the Do Not Track setting is enabled. Recorded at the profile open.
+  </summary>
+</histogram>
+
+<histogram name="Privacy.DoNotTrackSetting2" enum="BooleanEnabled"
+    expires_after="never">
+<!-- expires-never: tracked as an important privacy metric. -->
+
+  <owner>mkwst@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <summary>
+    Whether the Do Not Track setting is enabled. Recorded at the profile open,
+    only for regular profiles (not Incognito, Guest, etc.).
   </summary>
 </histogram>
 

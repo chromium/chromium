@@ -365,7 +365,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
   #if BUILDFLAG(IS_CHROMEOS) && defined(USE_CUPS)
     "PrintingMetricsService",
   #endif // BUILDFLAG(IS_CHROMEOS) && defined(USE_CUPS)
-    "PrivacyMetricsService",
     "PrivacySandboxService",
     "PrivacySandboxSettings",
     "ProcessManager",
@@ -659,7 +658,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
   #if BUILDFLAG(IS_CHROMEOS) && defined(USE_CUPS)
     "PrintingMetricsService",
   #endif // BUILDFLAG(IS_CHROMEOS) && defined(USE_CUPS)
-    "PrivacyMetricsService",
     "PrivacySandboxService",
     "PrivacySandboxSettings",
     "ProcessManager",

@@ -24,10 +24,27 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.AdvancedSpellcheck.OnStartup" enum="BooleanEnabled"
     expires_after="2023-05-07">
+  <obsolete>
+    Logged on profile open, including for profiles such as guest profiles that
+    do not allow modification of this setting. (This value logged on those cases
+    is the default value for the setting.) Replaced in M-110 with the histogram
+    Settings.AdvancedSpellcheck.OnStartup2, which is similar but only emitted on
+    regular profiles.
+  </obsolete>
   <owner>harrisonsean@chromium.org</owner>
   <owner>chrome-friendly-settings@google.com</owner>
   <summary>
-    The state of the advanced spellcheck setting, recorded on profile startup.
+    The state of the advanced spellcheck setting, recorded on profile open.
+  </summary>
+</histogram>
+
+<histogram name="Settings.AdvancedSpellcheck.OnStartup2" enum="BooleanEnabled"
+    expires_after="2023-03-05">
+  <owner>harrisonsean@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <summary>
+    The state of the advanced spellcheck setting, recorded on profile open for
+    regular profiles (not Incognito, Guest, etc.).
   </summary>
 </histogram>
 
@@ -43,10 +60,27 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.AutocompleteSearches.OnStartup" enum="BooleanEnabled"
     expires_after="2023-04-16">
+  <obsolete>
+    Logged on profile open, including for profiles such as guest profiles that
+    do not allow modification of this setting. (This value logged on those cases
+    is the default value for the setting.) Replaced in M-110 with the histogram
+    Settings.AutocompleteSearches.OnStartup2, which is similar but only emitted
+    on regular profiles.
+  </obsolete>
   <owner>harrisonsean@chromium.org</owner>
   <owner>chrome-friendly-settings@google.com</owner>
   <summary>
-    The state of the autocomplete searches setting, recorded on profile startup.
+    The state of the autocomplete searches setting, recorded on profile open.
+  </summary>
+</histogram>
+
+<histogram name="Settings.AutocompleteSearches.OnStartup2"
+    enum="BooleanEnabled" expires_after="2023-04-16">
+  <owner>harrisonsean@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <summary>
+    The state of the autocomplete searches setting, recorded on profile open,
+    only for regular profiles (not Incognito, Guest, etc.).
   </summary>
 </histogram>
 
@@ -195,11 +229,29 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.PreloadStatus.OnStartup" enum="BooleanEnabled"
     expires_after="2023-04-30">
+  <obsolete>
+    Logged on profile open, including for profiles such as guest profiles that
+    do not allow modification of this setting. (This value logged on those cases
+    is the default value for the setting.) Replaced in M-110 with the histogram
+    Settings.PreloadStatus.OnStartup2, which is similar but only emitted on
+    regular profiles.
+  </obsolete>
   <owner>harrisonsean@chromium.org</owner>
   <owner>chrome-friendly-settings@google.com</owner>
   <summary>
-    The status of the preload setting, recorded on profile startup. Not recorded
+    The status of the preload setting, recorded on profile open. Not recorded
     for iOS where the setting does not exist.
+  </summary>
+</histogram>
+
+<histogram name="Settings.PreloadStatus.OnStartup2" enum="BooleanEnabled"
+    expires_after="2023-04-30">
+  <owner>harrisonsean@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <summary>
+    The status of the preload setting, recorded on regular profile open (not
+    Incognito, Guest, etc.). Not recorded for iOS where the setting does not
+    exist.
   </summary>
 </histogram>
 
