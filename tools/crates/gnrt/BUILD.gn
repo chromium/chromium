@@ -44,7 +44,7 @@ rust_static_library("gnrt_lib") {
 }
 
 test("gnrt_unittests") {
-  rs_sources = [
+  sources = [
     "crates_unittest.rs",
     "deps_unittest.rs",
     "gn_unittest.rs",
@@ -52,8 +52,10 @@ test("gnrt_unittests") {
     "platforms_unittest.rs",
   ]
 
-  rs_deps = [
+  deps = [
     ":gnrt_lib",
+    "//base/test:run_all_unittests",
+    "//testing/gtest",
     "//third_party/rust/cargo_metadata/v0_14:test_support",
 
     # TODO(crbug.com/1338658): Depend on test_support target once issue is
@@ -66,11 +68,6 @@ test("gnrt_unittests") {
     "//third_party/rust/serde_json/v1:lib",
     "//third_party/rust/tempfile/v3:lib",
     "//third_party/rust/toml/v0_5:test_support",
-  ]
-
-  deps = [
-    "//base/test:run_all_unittests",
-    "//testing/gtest",
   ]
 }
 

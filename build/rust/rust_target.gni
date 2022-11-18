@@ -276,6 +276,9 @@ template("rust_target") {
       } else {
         # Mixed targets (which define the below) always enable use from C++.
         assert(!defined(_mutually_dependent_target))
+
+        # Rust libraries can be depended on by and linked in with C++.
+        deps = [ "//build/rust/std" ]
       }
     }
 

@@ -11,8 +11,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/devtools.gni")
 import("//build/config/gclient_args.gni")
 import("//build/config/rts.gni")
-import("//build/rust/mixed_executable.gni")
-import("//build/rust/mixed_shared_library.gni")
+import("//build/rust/rust_static_library.gni")
 import("//build_overrides/build.gni")
 
 declare_args() {
@@ -59,42 +58,75 @@ if (is_android) {
   import("//build/util/generate_wrapper.gni")
 }
 
+# This template generates the test target (of type `target_type`) but also
+# generates a rust library that includes all .rs files found in sources and
+# depends on that from the test target.
 template("mixed_test") {
   assert(defined(invoker.target_type) && invoker.target_type != "")
-  target("mixed_${invoker.target_type}", target_name) {
-    forward_variables_from(invoker,
-                           "*",
-                           TESTONLY_AND_VISIBILITY + [ "target_type" ])
-    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-    if (!defined(rs_configs)) {
-      rs_configs = []
-    }
-    rs_configs += [ "//build/rust:test" ]
 
-    # The crate_root is generated and should not be specified.
-    assert(!defined(rs_crate_root))
-    rs_generate_crate_root = true
+  _rs_vars = [
+    "sources",  # We split this list into two.
+    "crate_name",  # Android test template overrides the crate name.
+  ]
 
-    # We could automatically add `rs_deps += [ "//testing/rust_gtest_interop" ]`
+  if (defined(invoker.sources)) {
+    _rs_sources = filter_include(invoker.sources, [ "*.rs" ])
+    _cc_sources = filter_exclude(invoker.sources, [ "*.rs" ])
+  } else {
+    _rs_sources = []
+    _cc_sources = []
+  }
+
+  if (_rs_sources != []) {
+    _rust_target_name = "${target_name}_rust_objects"
+
+    # We could automatically add `deps += [ "//testing/rust_gtest_interop" ]`
     # if `rs_sources` is non-empty. But we don't automatically provide
     # //testing/gtest either so it would be asymmetric and could break in that
-    # case. So, we act instead as if //testing/rust_gtest_interop is part of the
-    # //testing/gtest dependency. If you add one, and have `rs_sources` listed,
-    # you get both.
+    # case. So, we act instead as if //testing/rust_gtest_interop is part of
+    # the //testing/gtest dependency. If you add one, and have `rs_sources`
+    # listed, you get both.
     _gtest_is_in_deps = false
-    if (defined(rs_sources) && rs_sources != [] && defined(deps) &&
-        deps != []) {
-      foreach(dep, deps) {
+    if (defined(invoker.deps) && invoker.deps != []) {
+      foreach(dep, invoker.deps) {
         if (dep == "//testing/gtest") {
           _gtest_is_in_deps = true
         }
       }
     }
-    if (_gtest_is_in_deps) {
-      if (!defined(rs_deps)) {
-        rs_deps = []
+
+    # TODO(danakj): This could be a rust_source_set perhaps, the point being
+    # that we need to link in all the .o object files inside the library,
+    # instead of dropping unreachable ones during linking (which would drop the
+    # tests). Alternatively we could use a special name suffix or other similar
+    # trick perhaps to ensure that all object files are linked in here.
+    rust_static_library(_rust_target_name) {
+      forward_variables_from(invoker,
+                             TESTONLY_AND_VISIBILITY + [
+                                   "crate_name",
+                                   "deps",
+                                   "public_deps",
+                                 ])
+      configs += [ "//build/rust:test" ]
+      generate_crate_root = true
+      sources = _rs_sources
+      if (_gtest_is_in_deps) {
+        deps += [ "//testing/rust_gtest_interop" ]
       }
-      rs_deps += [ "//testing/rust_gtest_interop" ]
+    }
+  } else {
+    not_needed(invoker, _rs_vars)
+  }
+
+  target(invoker.target_type, target_name) {
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY + _rs_vars)
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    sources = _cc_sources
+    if (!defined(deps)) {
+      deps = []
+    }
+    if (_rs_sources != []) {
+      deps += [ ":${_rust_target_name}" ]
     }
   }
 }
@@ -103,8 +135,7 @@ template("mixed_test") {
 # set.
 # Variable:
 #   use_xvfb: (optional) whether to run the executable under Xvfb.
-#   use_raw_android_executable: Use mixed_executable() rather than
-#      android_apk().
+#   use_raw_android_executable: Use executable() rather than android_apk().
 #   use_native_activity: Test implements ANativeActivity_onCreate().
 #   test_runner_shard: (Fuchsia, optional): for CFv2 tests, use the given test
 #      runner shard rather than the default shard for the ELF runner when
@@ -322,10 +353,6 @@ template("test") {
           configs -= [ "//build/config:compress_debug_sections" ]
         }
 
-        # Use a crate name that avoids creating a warning due to double
-        # underscore (ie. `__`).
-        rs_crate_name = _library_crate_name
-
         forward_variables_from(
             invoker,
             "*",
@@ -334,6 +361,10 @@ template("test") {
                   "deps",
                 ] + _apk_specific_vars + _wrapper_script_vars +
                 TESTONLY_AND_VISIBILITY)
+
+        # Use a crate name that avoids creating a warning due to double
+        # underscore (ie. `__`).
+        crate_name = _library_crate_name
 
         # Native targets do not need to depend on java targets. Filter them out
         # so that the shared library can be built without needing to wait for

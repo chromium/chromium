@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 use rust_gtest_interop::prelude::*;
-use std::pin::Pin;
 
 #[gtest(Test, InTopModule)]
 fn test() {
