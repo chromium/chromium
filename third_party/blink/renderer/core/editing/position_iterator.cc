@@ -338,11 +338,6 @@ void PositionIteratorAlgorithm<Strategy>::Decrement() {
 }
 
 template <typename Strategy>
-bool PositionIteratorAlgorithm<Strategy>::IsBeforeNode(const Node& node) const {
-  return anchor_node_ == &node && !offset_in_anchor_;
-}
-
-template <typename Strategy>
 bool PositionIteratorAlgorithm<Strategy>::AtStart() const {
   DCHECK(IsValid());
   if (!anchor_node_)
@@ -371,8 +366,10 @@ bool PositionIteratorAlgorithm<Strategy>::AtStartOfNode() const {
   DCHECK(IsValid());
   if (!anchor_node_)
     return true;
-  if (!node_after_position_in_anchor_)
-    return !Strategy::HasChildren(*anchor_node_) && !offset_in_anchor_;
+  if (!node_after_position_in_anchor_) {
+    return !ShouldTraverseChildren<Strategy>(*anchor_node_) &&
+           !offset_in_anchor_;
+  }
   return !Strategy::PreviousSibling(*node_after_position_in_anchor_);
 }
 

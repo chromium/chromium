@@ -1039,8 +1039,7 @@ TEST_F(VisibleUnitsTest, SnapForwardWithTableAndImages) {
   EXPECT_EQ(Position(table, 0),
             MostForwardCaretPosition(Position::FirstPositionInNode(table)));
   EXPECT_EQ(Position(table, 0), MostForwardCaretPosition(Position(table, 0)));
-  // The result should be `Position(table, 1)`.
-  EXPECT_EQ(Position(table, 0), MostForwardCaretPosition(Position(table, 1)));
+  EXPECT_EQ(Position(table, 1), MostForwardCaretPosition(Position(table, 1)));
   EXPECT_EQ(Position::BeforeNode(img1),
             MostForwardCaretPosition(Position::BeforeNode(tbody)));
   EXPECT_EQ(Position::BeforeNode(img1),
@@ -1055,8 +1054,7 @@ TEST_F(VisibleUnitsTest, SnapForwardWithTableAndImages) {
             MostForwardCaretPosition(Position::LastPositionInNode(tbody)));
   EXPECT_EQ(Position::LastPositionInNode(tbody),
             MostForwardCaretPosition(Position::AfterNode(tbody)));
-  // The result should be `Position(table, 2)`.
-  EXPECT_EQ(Position(table, 0), MostForwardCaretPosition(Position(table, 2)));
+  EXPECT_EQ(Position(table, 2), MostForwardCaretPosition(Position(table, 2)));
   EXPECT_EQ(Position::LastPositionInNode(table),
             MostForwardCaretPosition(Position(table, 3)));
   EXPECT_EQ(Position::LastPositionInNode(table),

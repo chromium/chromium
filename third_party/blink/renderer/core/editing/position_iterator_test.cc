@@ -71,7 +71,7 @@ class PositionIteratorTest : public EditingTestBase {
       os << "@" << it.OffsetInTextNode();
     } else if (EditingIgnoresContent(*it.GetNode()) ||
                IsUserSelectContain(*it.GetNode())) {
-      os << "@" << (it.IsBeforeNode(*it.GetNode()) ? "0" : "1");
+      os << "@" << (it.AtStartOfNode() ? "0" : "1");
     }
     os << " " << position1;
     if (position1 != position2)
@@ -130,7 +130,7 @@ TEST_F(PositionIteratorTest, decrementWithInputElement) {
       ElementsAre(
           "---E BODY BODY@afterChildren",
           "---E INPUT id=\"target\"@1 INPUT id=\"target\"@afterAnchor",
-          "---E INPUT id=\"target\"@0 INPUT id=\"target\"@beforeAnchor INPUT "
+          "-S-E INPUT id=\"target\"@0 INPUT id=\"target\"@beforeAnchor INPUT "
           "id=\"target\"@afterAnchor",
           "---- BODY BODY@offsetInAnchor[1]",
           "---E #text \"123\"@3 #text \"123\"@offsetInAnchor[3]",
@@ -152,7 +152,7 @@ TEST_F(PositionIteratorTest, decrementWithSelectElement) {
       ElementsAre(
           "---E BODY BODY@afterChildren",
           "---E SELECT id=\"target\"@1 SELECT id=\"target\"@afterAnchor",
-          "---E SELECT id=\"target\"@0 SELECT id=\"target\"@beforeAnchor "
+          "-S-E SELECT id=\"target\"@0 SELECT id=\"target\"@beforeAnchor "
           "SELECT id=\"target\"@afterAnchor",
           "---- BODY BODY@offsetInAnchor[1]",
           "---E #text \"123\"@3 #text \"123\"@offsetInAnchor[3]",
@@ -169,7 +169,7 @@ TEST_F(PositionIteratorTest, decrementWithSelectElement) {
       ElementsAre(
           "---E BODY BODY@afterChildren",
           "---E SELECT id=\"target\"@1 SELECT id=\"target\"@afterAnchor",
-          "---E SELECT id=\"target\"@0 SELECT id=\"target\"@beforeAnchor "
+          "-S-E SELECT id=\"target\"@0 SELECT id=\"target\"@beforeAnchor "
           "SELECT id=\"target\"@afterAnchor",
           "---- BODY BODY@offsetInAnchor[1]",
           "---E #text \"123\"@3 #text \"123\"@offsetInAnchor[3]",
@@ -191,7 +191,7 @@ TEST_F(PositionIteratorTest, decrementWithTextAreaElement) {
       ElementsAre(
           "---E BODY BODY@afterChildren",
           "---E TEXTAREA id=\"target\"@1 TEXTAREA id=\"target\"@afterAnchor",
-          "---E TEXTAREA id=\"target\"@0 TEXTAREA id=\"target\"@beforeAnchor "
+          "-S-E TEXTAREA id=\"target\"@0 TEXTAREA id=\"target\"@beforeAnchor "
           "TEXTAREA id=\"target\"@afterAnchor",
           "---- BODY BODY@offsetInAnchor[1]",
           "---E #text \"123\"@3 #text \"123\"@offsetInAnchor[3]",
@@ -208,7 +208,7 @@ TEST_F(PositionIteratorTest, decrementWithTextAreaElement) {
       ElementsAre(
           "---E BODY BODY@afterChildren",
           "---E TEXTAREA id=\"target\"@1 TEXTAREA id=\"target\"@afterAnchor",
-          "---E TEXTAREA id=\"target\"@0 TEXTAREA id=\"target\"@beforeAnchor "
+          "-S-E TEXTAREA id=\"target\"@0 TEXTAREA id=\"target\"@beforeAnchor "
           "TEXTAREA id=\"target\"@afterAnchor",
           "---- BODY BODY@offsetInAnchor[1]",
           "---E #text \"123\"@3 #text \"123\"@offsetInAnchor[3]",
@@ -241,7 +241,7 @@ TEST_F(PositionIteratorTest, incrementWithInputElement) {
   EXPECT_THAT(
       ScanForwardInFlatTree(selection_text),
       ElementsAre("-S-- BODY BODY@offsetInAnchor[0]",
-                  "---E INPUT id=\"target\"@0 INPUT id=\"target\"@beforeAnchor "
+                  "-S-E INPUT id=\"target\"@0 INPUT id=\"target\"@beforeAnchor "
                   "INPUT id=\"target\"@afterAnchor",
                   "---E INPUT id=\"target\"@1 INPUT id=\"target\"@afterAnchor",
                   "---- BODY BODY@offsetInAnchor[1]",
@@ -261,7 +261,7 @@ TEST_F(PositionIteratorTest, incrementWithSelectElement) {
       ScanForward(selection_text),
       ElementsAre(
           "-S-- BODY BODY@offsetInAnchor[0]",
-          "---E SELECT id=\"target\"@0 SELECT id=\"target\"@beforeAnchor "
+          "-S-E SELECT id=\"target\"@0 SELECT id=\"target\"@beforeAnchor "
           "SELECT id=\"target\"@afterAnchor",
           "---E SELECT id=\"target\"@1 SELECT id=\"target\"@afterAnchor",
           "---- BODY BODY@offsetInAnchor[1]",
@@ -275,7 +275,7 @@ TEST_F(PositionIteratorTest, incrementWithSelectElement) {
       ScanForwardInFlatTree(selection_text),
       ElementsAre(
           "-S-- BODY BODY@offsetInAnchor[0]",
-          "---E SELECT id=\"target\"@0 SELECT id=\"target\"@beforeAnchor "
+          "-S-E SELECT id=\"target\"@0 SELECT id=\"target\"@beforeAnchor "
           "SELECT id=\"target\"@afterAnchor",
           "---E SELECT id=\"target\"@1 SELECT id=\"target\"@afterAnchor",
           "---- BODY BODY@offsetInAnchor[1]",
@@ -294,7 +294,7 @@ TEST_F(PositionIteratorTest, incrementWithTextAreaElement) {
       ScanForward(selection_text),
       ElementsAre(
           "-S-- BODY BODY@offsetInAnchor[0]",
-          "---E TEXTAREA id=\"target\"@0 TEXTAREA id=\"target\"@beforeAnchor "
+          "-S-E TEXTAREA id=\"target\"@0 TEXTAREA id=\"target\"@beforeAnchor "
           "TEXTAREA id=\"target\"@afterAnchor",
           "---E TEXTAREA id=\"target\"@1 TEXTAREA id=\"target\"@afterAnchor",
           "---- BODY BODY@offsetInAnchor[1]",
@@ -308,7 +308,7 @@ TEST_F(PositionIteratorTest, incrementWithTextAreaElement) {
       ScanForwardInFlatTree(selection_text),
       ElementsAre(
           "-S-- BODY BODY@offsetInAnchor[0]",
-          "---E TEXTAREA id=\"target\"@0 TEXTAREA id=\"target\"@beforeAnchor "
+          "-S-E TEXTAREA id=\"target\"@0 TEXTAREA id=\"target\"@beforeAnchor "
           "TEXTAREA id=\"target\"@afterAnchor",
           "---E TEXTAREA id=\"target\"@1 TEXTAREA id=\"target\"@afterAnchor",
           "---- BODY BODY@offsetInAnchor[1]",

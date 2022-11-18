@@ -62,9 +62,6 @@ class PositionIteratorAlgorithm {
 
   Node* GetNode() const { return anchor_node_; }
 
-  // Returns true if current position is before `node`.
-  bool IsBeforeNode(const Node& node) const;
-
   int OffsetInTextNode() const {
     DCHECK(anchor_node_->IsTextNode());
     return offset_in_anchor_;

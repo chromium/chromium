@@ -201,7 +201,7 @@ TEST_F(ReplaceSelectionCommandTest, TableAndImages) {
 
   // Should not crash
   EXPECT_TRUE(command.Apply());
-  EXPECT_EQ("<table> <tbody><img><img>|</tbody><br> </table>",
+  EXPECT_EQ("<table> <tbody><img><img>|</tbody> </table>",
             GetSelectionTextFromBody());
 }
 

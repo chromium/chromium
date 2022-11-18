@@ -943,7 +943,7 @@ PositionTemplate<Strategy> MostForwardCaretPosition(
     // ignored.
     if (EditingIgnoresContent(*current_node) ||
         IsDisplayInsideTable(current_node)) {
-      if (current_pos.IsBeforeNode(*current_node))
+      if (current_pos.AtStartOfNode())
         return PositionTemplate<Strategy>::EditingPositionOf(current_node, 0);
       continue;
     }
