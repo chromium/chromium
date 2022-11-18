@@ -130,6 +130,6 @@
   You can use a natural, human-like voice when your device is online. Text will be sent to Google for processing. You can turn this off any time in Settings.
 </message>
 <message desc="Label for the control in the Select-to-speak options dialog where the user can toggle automatic voice switching." name="IDS_SELECT_TO_SPEAK_OPTIONS_VOICE_SWITCHING_DESCRIPTION">
-  Automatically switch voice based on language
+  Automatically change language to match selected content
 </message>
 </grit-part>
