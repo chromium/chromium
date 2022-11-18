@@ -53,13 +53,14 @@ class AccountChecker : public signin::IdentityManager::Observer {
   // Handle the responses for fetching users' web and app activity consent
   // status.
   void HandleFetchWaaResponse(
-      PrefService* pref_service,
       // Passing the endpoint_fetcher ensures the endpoint_fetcher's
       // lifetime extends to the callback and is not destroyed
       // prematurely (which would result in cancellation of the request).
       // TODO(crbug.com/1362026): Avoid passing this fetcher.
       std::unique_ptr<EndpointFetcher> endpoint_fetcher,
       std::unique_ptr<EndpointResponse> responses);
+
+  void OnFetchWaaJsonParsed(data_decoder::DataDecoder::ValueOrError result);
 
   // Send users' pref to server on whether to receive price tracking emails.
   void SendPriceEmailPref();
