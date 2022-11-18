@@ -139,6 +139,7 @@ class PictureInPictureMediaPlayerReceiver : public media::mojom::MediaPlayer {
   void SetPowerExperimentState(bool enabled) override {}
   void SetAudioSinkId(const std::string& sink_id) override {}
   void SuspendForFrameClosed() override {}
+  void RequestMediaRemoting() override {}
 
  private:
   mojo::AssociatedReceiver<media::mojom::MediaPlayer> receiver_{this};

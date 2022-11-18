@@ -1286,6 +1286,12 @@ void MediaSessionImpl::SetMute(bool mute) {
       normal_players_.begin()->first.player_id, mute);
 }
 
+void MediaSessionImpl::RequestMediaRemoting() {
+  DCHECK_EQ(normal_players_.size(), 1u);
+  normal_players_.begin()->first.observer->OnRequestMediaRemoting(
+      normal_players_.begin()->first.player_id);
+}
+
 void MediaSessionImpl::GetMediaImageBitmap(
     const media_session::MediaImage& image,
     int minimum_size_px,

@@ -166,11 +166,11 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) TestMediaController
   void HangUp() override {}
   void Raise() override {}
   void SetMute(bool mute) override {}
+  void RequestMediaRemoting() override;
 
   int toggle_suspend_resume_count() const {
     return toggle_suspend_resume_count_;
   }
-
   int suspend_count() const { return suspend_count_; }
   int resume_count() const { return resume_count_; }
   int stop_count() const { return stop_count_; }
@@ -180,12 +180,18 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) TestMediaController
   int seek_backward_count() const { return seek_backward_count_; }
   int seek_forward_count() const { return seek_forward_count_; }
   int seek_to_count() const { return seek_to_count_; }
+  int request_media_remoting_count() const {
+    return request_media_remoting_count_;
+  }
 
   absl::optional<base::TimeDelta> seek_to_time() { return seek_to_time_; }
 
   void SimulateMediaSessionInfoChanged(mojom::MediaSessionInfoPtr session_info);
   void SimulateMediaSessionActionsChanged(
       const std::vector<mojom::MediaSessionAction>& actions);
+  void SimulateMediaSessionChanged(base::UnguessableToken token);
+  void SimulateMediaSessionMetadataChanged(
+      const media_session::MediaMetadata& meta_data);
   void Flush();
 
  private:
@@ -199,6 +205,7 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) TestMediaController
   int seek_backward_count_ = 0;
   int seek_forward_count_ = 0;
   int seek_to_count_ = 0;
+  int request_media_remoting_count_ = 0;
 
   absl::optional<base::TimeDelta> seek_to_time_;
 

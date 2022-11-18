@@ -75,7 +75,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationItem {
 
   // Called by MediaNotificationService when a Remote Playback session is
   // started.
-  virtual void RequestMediaRemoting() = 0;
+  virtual bool RequestMediaRemoting() = 0;
 
   // Returns the type of source.
   virtual media_message_center::SourceType SourceType() = 0;

@@ -174,8 +174,10 @@ class WebMediaPlayer {
   virtual void OnTimeUpdate() {}
 
   virtual void RequestRemotePlaybackDisabled(bool disabled) {}
+  virtual void RequestMediaRemoting() {}
   virtual void FlingingStarted() {}
   virtual void FlingingStopped() {}
+
   virtual void SetPreload(Preload) {}
   virtual WebTimeRanges Buffered() const = 0;
   virtual WebTimeRanges Seekable() const = 0;
@@ -193,9 +195,6 @@ class WebMediaPlayer {
   // True if the loaded media has a playable video/audio track.
   virtual bool HasVideo() const = 0;
   virtual bool HasAudio() const = 0;
-
-  // True if the media is being played on a remote device.
-  virtual bool IsRemote() const { return false; }
 
   // Dimension of the video.
   virtual gfx::Size NaturalSize() const = 0;

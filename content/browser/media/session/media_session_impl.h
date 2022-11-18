@@ -289,6 +289,10 @@ class MediaSessionImpl : public MediaSession,
   // Mute or unmute the media player.
   void SetMute(bool mute) override;
 
+  // Request the media player to start Media Remoting once there are available
+  // sinks.
+  void RequestMediaRemoting() override;
+
   // PresentationObserver:
   void OnPresentationsChanged(bool has_presentation) override;
 

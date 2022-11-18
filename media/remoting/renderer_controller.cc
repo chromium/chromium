@@ -218,6 +218,10 @@ void RendererController::OnRemotePlaybackDisabled(bool disabled) {
   UpdateAndMaybeSwitch(ENABLED_BY_PAGE, DISABLED_BY_PAGE);
 }
 
+void RendererController::OnMediaRemotingRequested() {
+  is_media_remoting_requested_ = true;
+}
+
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING_RPC)
 openscreen::WeakPtr<openscreen::cast::RpcMessenger>
 RendererController::GetRpcMessenger() {

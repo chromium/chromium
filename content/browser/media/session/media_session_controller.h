@@ -65,6 +65,7 @@ class CONTENT_EXPORT MediaSessionController
   void OnSetAudioSinkId(int player_id,
                         const std::string& raw_device_id) override;
   void OnSetMute(int player_id, bool mute) override;
+  void OnRequestMediaRemoting(int player_id) override;
   RenderFrameHost* render_frame_host() const override;
   absl::optional<media_session::MediaPosition> GetPosition(
       int player_id) const override;

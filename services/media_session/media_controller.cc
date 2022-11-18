@@ -340,6 +340,13 @@ void MediaController::SetMute(bool mute) {
     session_->ipc()->SetMute(mute);
 }
 
+void MediaController::RequestMediaRemoting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (session_)
+    session_->ipc()->RequestMediaRemoting();
+}
+
 void MediaController::SetMediaSession(AudioFocusRequest* session) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

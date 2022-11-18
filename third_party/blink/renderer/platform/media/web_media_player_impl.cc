@@ -2707,6 +2707,12 @@ void WebMediaPlayerImpl::RequestRemotePlaybackDisabled(bool disabled) {
   }
 }
 
+void WebMediaPlayerImpl::RequestMediaRemoting() {
+  if (observer_) {
+    observer_->OnMediaRemotingRequested();
+  }
+}
+
 #if BUILDFLAG(IS_ANDROID)
 void WebMediaPlayerImpl::FlingingStarted() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());

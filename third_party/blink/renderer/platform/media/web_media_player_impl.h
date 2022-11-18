@@ -263,7 +263,9 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void OnFrameHidden() override;
   void OnFrameShown() override;
   void OnIdleTimeout() override;
+
   void RequestRemotePlaybackDisabled(bool disabled) override;
+  void RequestMediaRemoting() override;
 
 #if BUILDFLAG(IS_ANDROID)
   // TODO(https://crbug.com/839651): Rename Flinging[Started/Stopped] to

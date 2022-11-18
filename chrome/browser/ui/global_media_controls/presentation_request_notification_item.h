@@ -97,7 +97,7 @@ class PresentationRequestNotificationItem final
   media_message_center::SourceType SourceType() override;
   void SetVolume(float volume) override {}
   void SetMute(bool mute) override {}
-  void RequestMediaRemoting() override {}
+  bool RequestMediaRemoting() override;
 
   void UpdateViewWithMetadata();
   void UpdateViewWithImages();

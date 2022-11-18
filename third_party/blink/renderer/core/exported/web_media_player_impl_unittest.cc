@@ -132,6 +132,7 @@ class MockMediaObserver : public media::MediaObserver,
   MOCK_METHOD1(OnBecameDominantVisibleContent, void(bool));
   MOCK_METHOD1(OnMetadataChanged, void(const media::PipelineMetadata&));
   MOCK_METHOD1(OnRemotePlaybackDisabled, void(bool));
+  MOCK_METHOD0(OnMediaRemotingRequested, void());
   MOCK_METHOD0(OnHlsManifestDetected, void());
   MOCK_METHOD0(OnPlaying, void());
   MOCK_METHOD0(OnPaused, void());

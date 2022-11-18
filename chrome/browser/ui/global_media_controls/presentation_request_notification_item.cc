@@ -172,6 +172,10 @@ PresentationRequestNotificationItem::SourceType() {
   return media_message_center::SourceType::kPresentationRequest;
 }
 
+bool PresentationRequestNotificationItem::RequestMediaRemoting() {
+  return false;
+}
+
 void PresentationRequestNotificationItem::UpdateViewWithMetadata() {
   if (!view_)
     return;

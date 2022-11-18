@@ -600,6 +600,7 @@ class CORE_EXPORT HTMLMediaElement
   void SetPowerExperimentState(bool enabled) override;
   void SetAudioSinkId(const String&) override;
   void SuspendForFrameClosed() override;
+  void RequestMediaRemoting() override {}
 
   void LoadTimerFired(TimerBase*);
   void ProgressEventTimerFired();

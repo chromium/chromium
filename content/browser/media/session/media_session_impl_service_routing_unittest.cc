@@ -65,6 +65,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   MOCK_METHOD2(OnSetAudioSinkId,
                void(int player_id, const std::string& raw_device_id));
   MOCK_METHOD2(OnSetMute, void(int player_id, bool mute));
+  MOCK_METHOD(void, OnRequestMediaRemoting, (int player_id), (override));
 
   absl::optional<media_session::MediaPosition> GetPosition(
       int player_id) const override {

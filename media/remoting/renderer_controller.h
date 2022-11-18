@@ -63,6 +63,7 @@ class RendererController final : public mojom::RemotingSource,
   void OnBecameDominantVisibleContent(bool is_dominant) override;
   void OnMetadataChanged(const PipelineMetadata& metadata) override;
   void OnRemotePlaybackDisabled(bool disabled) override;
+  void OnMediaRemotingRequested() override;
   void OnPlaying() override;
   void OnPaused() override;
   void OnFrozen() override;
@@ -234,6 +235,7 @@ class RendererController final : public mojom::RemotingSource,
   GURL url_after_redirects_;
 
   bool is_hls_ = false;
+  bool is_media_remoting_requested_ = false;
 
   // Records session events of interest.
   SessionMetricsRecorder metrics_recorder_;

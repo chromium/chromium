@@ -67,6 +67,7 @@ class MockMediaSession : public MediaSession {
   MOCK_METHOD(void, HangUp, (), (override));
   MOCK_METHOD(void, Raise, (), (override));
   MOCK_METHOD(void, SetMute, (bool mute), (override));
+  MOCK_METHOD(void, RequestMediaRemoting, (), (override));
 };
 
 }  // namespace content

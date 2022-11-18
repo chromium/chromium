@@ -59,6 +59,9 @@ class MediaSessionPlayerObserver {
   // The given |player_id| has been requested to mute or unmute.
   virtual void OnSetMute(int player_id, bool mute) = 0;
 
+  // The given |player_id| has been requested to start Media Remoting.
+  virtual void OnRequestMediaRemoting(int player_id) = 0;
+
   // Returns the position for |player_id|.
   virtual absl::optional<media_session::MediaPosition> GetPosition(
       int player_id) const = 0;

@@ -211,12 +211,15 @@ void CastMediaNotificationItem::Dismiss() {
   is_active_ = false;
 }
 
+void CastMediaNotificationItem::SetVolume(float volume) {
+  session_controller_->SetVolume(volume);
+}
 void CastMediaNotificationItem::SetMute(bool mute) {
   session_controller_->SetMute(mute);
 }
 
-void CastMediaNotificationItem::SetVolume(float volume) {
-  session_controller_->SetVolume(volume);
+bool CastMediaNotificationItem::RequestMediaRemoting() {
+  return false;
 }
 
 media_message_center::SourceType CastMediaNotificationItem::SourceType() {

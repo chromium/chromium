@@ -54,6 +54,10 @@ interface MediaPlayer {
 
   // Suspends the media player when the host frame is closed.
   SuspendForFrameClosed();
+
+  // Request the media player to start Media Remoting when there are available
+  // sinks.
+  RequestMediaRemoting();
 };
 
 // Implemented by the MediaWebContentsObserver. The remote lives in the renderer

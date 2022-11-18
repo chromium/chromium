@@ -424,4 +424,13 @@ TEST_F(MediaSessionNotificationItemTest,
   testing::Mock::VerifyAndClearExpectations(&view());
 }
 
+TEST_F(MediaSessionNotificationItemTest, RequestMediaRemoting) {
+  EXPECT_EQ(0, controller().request_media_remoting_count());
+
+  item().RequestMediaRemoting();
+  item().FlushForTesting();
+
+  EXPECT_EQ(1, controller().request_media_remoting_count());
+}
+
 }  // namespace global_media_controls

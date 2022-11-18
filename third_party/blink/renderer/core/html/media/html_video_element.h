@@ -199,6 +199,7 @@ class CORE_EXPORT HTMLVideoElement final
   // interface, fully implemented in the parent class HTMLMediaElement.
   void RequestEnterPictureInPicture() final;
   void RequestExitPictureInPicture() final;
+  void RequestMediaRemoting() final;
 
   void DidMoveToNewDocument(Document& old_document) override;
 

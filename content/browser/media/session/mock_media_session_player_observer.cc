@@ -103,6 +103,11 @@ void MockMediaSessionPlayerObserver::OnSetMute(int player_id, bool mute) {
   EXPECT_GT(players_.size(), static_cast<size_t>(player_id));
 }
 
+void MockMediaSessionPlayerObserver::OnRequestMediaRemoting(int player_id) {
+  EXPECT_GE(player_id, 0);
+  EXPECT_GT(players_.size(), static_cast<size_t>(player_id));
+}
+
 absl::optional<media_session::MediaPosition>
 MockMediaSessionPlayerObserver::GetPosition(int player_id) const {
   EXPECT_GE(player_id, 0);

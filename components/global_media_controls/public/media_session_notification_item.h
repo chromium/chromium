@@ -101,7 +101,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
   media_message_center::SourceType SourceType() override;
   void SetVolume(float volume) override {}
   void SetMute(bool mute) override;
-  void RequestMediaRemoting() override;
+  bool RequestMediaRemoting() override;
 
   // Stops the media session.
   void Stop();

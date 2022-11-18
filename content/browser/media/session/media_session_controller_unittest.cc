@@ -156,6 +156,8 @@ class TestMediaPlayer : public media::mojom::MediaPlayer {
 
   void SuspendForFrameClosed() override {}
 
+  void RequestMediaRemoting() override {}
+
   // Getters used from MediaSessionControllerTest.
   bool received_play() const { return received_play_; }
 

@@ -211,9 +211,11 @@ void MediaSessionNotificationItem::SetMute(bool mute) {
     media_controller_remote_->SetMute(mute);
 }
 
-void MediaSessionNotificationItem::RequestMediaRemoting() {
-  // TODO(muyaoxu@google.com): Implement this method to send commands to
-  // `media_controller_remote_`.
+bool MediaSessionNotificationItem::RequestMediaRemoting() {
+  if (!media_controller_remote_.is_bound())
+    return false;
+  media_controller_remote_->RequestMediaRemoting();
+  return true;
 }
 
 void MediaSessionNotificationItem::SetController(

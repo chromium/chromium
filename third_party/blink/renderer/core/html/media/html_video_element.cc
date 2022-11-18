@@ -380,6 +380,10 @@ void HTMLVideoElement::RequestExitPictureInPicture() {
       .ExitPictureInPicture(this, nullptr);
 }
 
+void HTMLVideoElement::RequestMediaRemoting() {
+  GetWebMediaPlayer()->RequestMediaRemoting();
+}
+
 void HTMLVideoElement::PaintCurrentFrame(cc::PaintCanvas* canvas,
                                          const gfx::Rect& dest_rect,
                                          const cc::PaintFlags* flags) const {

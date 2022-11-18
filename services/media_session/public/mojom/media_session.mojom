@@ -9,7 +9,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
-// Next MinVersion: 16
+// Next MinVersion: 17
 
 [Stable, Extensible]
 enum MediaPlaybackState {
@@ -248,7 +248,7 @@ interface MediaSessionObserver {
 
 // A MediaSession manages the media session and audio focus for a given
 // WebContents or ARC app.
-// Next Method ID: 23
+// Next Method ID: 24
 [Stable]
 interface MediaSession {
   [Stable, Extensible]
@@ -351,4 +351,7 @@ interface MediaSession {
 
   // Mute or unmute the media player.
   [MinVersion=13] SetMute@22(bool mute);
+
+  // Request Media Remoting once there are available sinks.
+  [MinVersion=16] RequestMediaRemoting@23();
 };
