@@ -26,4 +26,8 @@ BASE_FEATURE(kUnifiedAppServiceIconLoading,
              "UnifiedAppServiceIconLoading",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAppServiceStorage,
+             "AppServiceStorage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace apps
