@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedInputMethods) {
   // should be "xkb:fr::fra", enabling "xkb:us::eng" should not be possible,
   // enabling "xkb:de::ger" should be possible.
   EXPECT_EQ(2U, ime_state->GetAllowedInputMethodIds().size());
-  EXPECT_EQ(2U, ime_state->GetEnabledInputMethods()->size());
+  EXPECT_EQ(2U, ime_state->GetEnabledInputMethods().size());
   EXPECT_EQ(input_methods[1], ime_state->GetCurrentInputMethod().id());
   EXPECT_FALSE(ime_state->EnableInputMethod(input_methods[0]));
   EXPECT_TRUE(ime_state->EnableInputMethod(input_methods[2]));

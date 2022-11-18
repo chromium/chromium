@@ -418,8 +418,7 @@ TEST_F(InputMethodManagerImplTest, TestObserver) {
   EXPECT_EQ(0, observer.input_method_extension_added_count_);
   EXPECT_EQ(0, observer.input_method_extension_removed_count_);
   manager_->GetActiveIMEState()->EnableLoginLayouts("en-US", keyboard_layouts);
-  EXPECT_EQ(8U,
-            manager_->GetActiveIMEState()->GetEnabledInputMethods()->size());
+  EXPECT_EQ(8U, manager_->GetActiveIMEState()->GetEnabledInputMethods().size());
   EXPECT_EQ(1, observer.input_method_changed_count_);
   // Menu change is triggered only if current input method was actually changed.
   EXPECT_EQ(0, observer.input_method_menu_item_changed_count_);
@@ -562,17 +561,16 @@ TEST_F(InputMethodManagerImplTest, TestEnabledInputMethods) {
   manager_->GetActiveIMEState()->EnableLoginLayouts(
       "ja", keyboard_layouts);  // Japanese
   EXPECT_EQ(2U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
-  std::unique_ptr<InputMethodDescriptors> methods(
-      manager_->GetActiveIMEState()->GetEnabledInputMethods());
-  ASSERT_TRUE(methods.get());
-  EXPECT_EQ(2U, methods->size());
+  InputMethodDescriptors methods =
+      manager_->GetActiveIMEState()->GetEnabledInputMethods();
+  EXPECT_EQ(2U, methods.size());
   const InputMethodDescriptor* id_to_find =
       manager_->GetInputMethodUtil()->GetInputMethodDescriptorFromId(
           ImeIdFromEngineId("xkb:us::eng"));
-  EXPECT_TRUE(id_to_find && Contain(*methods.get(), *id_to_find));
+  EXPECT_TRUE(id_to_find && Contain(methods, *id_to_find));
   id_to_find = manager_->GetInputMethodUtil()->GetInputMethodDescriptorFromId(
       ImeIdFromEngineId("xkb:jp::jpn"));
-  EXPECT_TRUE(id_to_find && Contain(*methods.get(), *id_to_find));
+  EXPECT_TRUE(id_to_find && Contain(methods, *id_to_find));
 }
 
 TEST_F(InputMethodManagerImplTest, TestEnableTwoLayouts) {
@@ -931,18 +929,18 @@ TEST_F(InputMethodManagerImplTest,
   active_state->EnableInputMethod(ImeIdFromEngineId("xkb:de::ger"));
 
   base::i18n::SetICUDefaultLocale("en-US");
-  std::unique_ptr<InputMethodDescriptors> result =
+  InputMethodDescriptors result =
       active_state->GetEnabledInputMethodsSortedByLocalizedDisplayNames();
-  ASSERT_FALSE(result->empty());
+  ASSERT_FALSE(result.empty());
 
   InputMethodUtil* util = manager_->GetInputMethodUtil();
   UErrorCode error_code = U_ZERO_ERROR;
   std::unique_ptr<icu::Collator> collator(
       icu::Collator::createInstance(error_code));
 
-  for (size_t i = 1; i < result->size(); ++i) {
-    std::string prev_name = util->GetLocalizedDisplayName(result->at(i - 1));
-    std::string name = util->GetLocalizedDisplayName(result->at(i));
+  for (size_t i = 1; i < result.size(); ++i) {
+    std::string prev_name = util->GetLocalizedDisplayName(result.at(i - 1));
+    std::string name = util->GetLocalizedDisplayName(result.at(i));
     ASSERT_EQ(UCOL_LESS, base::i18n::CompareString16WithCollator(
                              *collator, base::UTF8ToUTF16(prev_name),
                              base::UTF8ToUTF16(name)));
@@ -958,69 +956,60 @@ TEST_F(InputMethodManagerImplTest, TestNextInputMethod) {
   // For http://crbug.com/19655#c11 - (1)
   manager_->GetActiveIMEState()->EnableLoginLayouts("en-US", keyboard_layouts);
   EXPECT_EQ(8U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
-  std::unique_ptr<InputMethodDescriptors> sorted_enabled_input_methods =
+  InputMethodDescriptors sorted_enabled_input_methods =
       manager_->GetActiveIMEState()
           ->GetEnabledInputMethodsSortedByLocalizedDisplayNames();
   InputMethodDescriptor current_input_method =
       manager_->GetActiveIMEState()->GetCurrentInputMethod();
-  EXPECT_EQ(sorted_enabled_input_methods->at(0).id(),
-            current_input_method.id());
+  EXPECT_EQ(sorted_enabled_input_methods.at(0).id(), current_input_method.id());
   EXPECT_EQ(current_input_method.keyboard_layout(), keyboard_->last_layout_);
 
   manager_->GetActiveIMEState()->SwitchToNextInputMethod();
   EXPECT_TRUE(observer.last_show_message_);
   current_input_method = manager_->GetActiveIMEState()->GetCurrentInputMethod();
-  EXPECT_EQ(sorted_enabled_input_methods->at(1).id(),
-            current_input_method.id());
+  EXPECT_EQ(sorted_enabled_input_methods.at(1).id(), current_input_method.id());
   EXPECT_EQ(current_input_method.keyboard_layout(), keyboard_->last_layout_);
 
   manager_->GetActiveIMEState()->SwitchToNextInputMethod();
   EXPECT_TRUE(observer.last_show_message_);
   current_input_method = manager_->GetActiveIMEState()->GetCurrentInputMethod();
-  EXPECT_EQ(sorted_enabled_input_methods->at(2).id(),
-            current_input_method.id());
+  EXPECT_EQ(sorted_enabled_input_methods.at(2).id(), current_input_method.id());
   EXPECT_EQ(current_input_method.keyboard_layout(), keyboard_->last_layout_);
 
   manager_->GetActiveIMEState()->SwitchToNextInputMethod();
   EXPECT_TRUE(observer.last_show_message_);
   current_input_method = manager_->GetActiveIMEState()->GetCurrentInputMethod();
-  EXPECT_EQ(sorted_enabled_input_methods->at(3).id(),
-            current_input_method.id());
+  EXPECT_EQ(sorted_enabled_input_methods.at(3).id(), current_input_method.id());
   EXPECT_EQ(current_input_method.keyboard_layout(), keyboard_->last_layout_);
 
   manager_->GetActiveIMEState()->SwitchToNextInputMethod();
   EXPECT_TRUE(observer.last_show_message_);
   current_input_method = manager_->GetActiveIMEState()->GetCurrentInputMethod();
-  EXPECT_EQ(sorted_enabled_input_methods->at(4).id(),
-            current_input_method.id());
+  EXPECT_EQ(sorted_enabled_input_methods.at(4).id(), current_input_method.id());
   EXPECT_EQ(current_input_method.keyboard_layout(), keyboard_->last_layout_);
 
   manager_->GetActiveIMEState()->SwitchToNextInputMethod();
   EXPECT_TRUE(observer.last_show_message_);
   current_input_method = manager_->GetActiveIMEState()->GetCurrentInputMethod();
-  EXPECT_EQ(sorted_enabled_input_methods->at(5).id(),
-            current_input_method.id());
+  EXPECT_EQ(sorted_enabled_input_methods.at(5).id(), current_input_method.id());
   EXPECT_EQ(current_input_method.keyboard_layout(), keyboard_->last_layout_);
 
   manager_->GetActiveIMEState()->SwitchToNextInputMethod();
   EXPECT_TRUE(observer.last_show_message_);
   current_input_method = manager_->GetActiveIMEState()->GetCurrentInputMethod();
-  EXPECT_EQ(sorted_enabled_input_methods->at(6).id(),
-            current_input_method.id());
+  EXPECT_EQ(sorted_enabled_input_methods.at(6).id(), current_input_method.id());
   EXPECT_EQ(current_input_method.keyboard_layout(), keyboard_->last_layout_);
 
   manager_->GetActiveIMEState()->SwitchToNextInputMethod();
   EXPECT_TRUE(observer.last_show_message_);
   current_input_method = manager_->GetActiveIMEState()->GetCurrentInputMethod();
-  EXPECT_EQ(sorted_enabled_input_methods->at(7).id(),
-            current_input_method.id());
+  EXPECT_EQ(sorted_enabled_input_methods.at(7).id(), current_input_method.id());
   EXPECT_EQ(current_input_method.keyboard_layout(), keyboard_->last_layout_);
 
   manager_->GetActiveIMEState()->SwitchToNextInputMethod();
   EXPECT_TRUE(observer.last_show_message_);
   current_input_method = manager_->GetActiveIMEState()->GetCurrentInputMethod();
-  EXPECT_EQ(sorted_enabled_input_methods->at(0).id(),
-            current_input_method.id());
+  EXPECT_EQ(sorted_enabled_input_methods.at(0).id(), current_input_method.id());
   EXPECT_EQ(current_input_method.keyboard_layout(), keyboard_->last_layout_);
 
   manager_->RemoveObserver(&observer);
@@ -1150,11 +1139,11 @@ TEST_F(InputMethodManagerImplTest, TestAddRemoveExtensionInputMethods) {
   EXPECT_EQ(2U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
 
   {
-    std::unique_ptr<InputMethodDescriptors> methods(
+    InputMethodDescriptors methods(
         manager_->GetActiveIMEState()->GetEnabledInputMethods());
-    ASSERT_EQ(2U, methods->size());
+    ASSERT_EQ(2U, methods.size());
     // Ext IMEs should be at the end of the list.
-    EXPECT_EQ(ext1_id, methods->at(1).id());
+    EXPECT_EQ(ext1_id, methods.at(1).id());
   }
 
   const std::string ext2_id =
@@ -1176,12 +1165,12 @@ TEST_F(InputMethodManagerImplTest, TestAddRemoveExtensionInputMethods) {
   manager_->GetActiveIMEState()->SetEnabledExtensionImes(&extension_ime_ids);
   EXPECT_EQ(3U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
   {
-    std::unique_ptr<InputMethodDescriptors> methods(
+    InputMethodDescriptors methods(
         manager_->GetActiveIMEState()->GetEnabledInputMethods());
-    ASSERT_EQ(3U, methods->size());
+    ASSERT_EQ(3U, methods.size());
     // Ext IMEs should be at the end of the list.
-    EXPECT_EQ(ext1_id, methods->at(1).id());
-    EXPECT_EQ(ext2_id, methods->at(2).id());
+    EXPECT_EQ(ext1_id, methods.at(1).id());
+    EXPECT_EQ(ext2_id, methods.at(2).id());
   }
 
   // Remove them.
@@ -1259,11 +1248,11 @@ TEST_F(InputMethodManagerImplTest, TestAddExtensionInputThenLockScreen) {
   EXPECT_EQ("us(dvorak)", keyboard_->last_layout_);
   {
     // This is for crosbug.com/27052.
-    std::unique_ptr<InputMethodDescriptors> methods(
+    InputMethodDescriptors methods(
         manager_->GetActiveIMEState()->GetEnabledInputMethods());
-    ASSERT_EQ(2U, methods->size());
+    ASSERT_EQ(2U, methods.size());
     // Ext. IMEs should be at the end of the list.
-    EXPECT_EQ(ext_id, methods->at(1).id());
+    EXPECT_EQ(ext_id, methods.at(1).id());
   }
   manager_->RemoveObserver(&observer);
 }
@@ -1683,10 +1672,10 @@ TEST_F(InputMethodManagerImplTest, TestAddRemoveArcInputMethods) {
   manager_->GetActiveIMEState()->SetEnabledExtensionImes(&extension_ime_ids);
   EXPECT_EQ(2u, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
   {
-    std::unique_ptr<InputMethodDescriptors> methods =
+    InputMethodDescriptors methods =
         manager_->GetActiveIMEState()->GetEnabledInputMethods();
-    EXPECT_EQ(2u, methods->size());
-    EXPECT_EQ(ime_id, methods->at(1).id());
+    EXPECT_EQ(2u, methods.size());
+    EXPECT_EQ(ime_id, methods.at(1).id());
   }
 
   // Change to it.

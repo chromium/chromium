@@ -166,11 +166,11 @@ InputMethodPrivateGetInputMethodsFunction::Run() {
   ash::input_method::InputMethodUtil* util = manager->GetInputMethodUtil();
   scoped_refptr<ash::input_method::InputMethodManager::State> ime_state =
       manager->GetActiveIMEState();
-  std::unique_ptr<ash::input_method::InputMethodDescriptors> input_methods =
+  ash::input_method::InputMethodDescriptors input_methods =
       ime_state->GetEnabledInputMethodsSortedByLocalizedDisplayNames();
-  for (size_t i = 0; i < input_methods->size(); ++i) {
+  for (size_t i = 0; i < input_methods.size(); ++i) {
     const ash::input_method::InputMethodDescriptor& input_method =
-        (*input_methods)[i];
+        input_methods[i];
     base::Value::Dict val;
     val.Set("id", input_method.id());
     val.Set("name", util->GetInputMethodLongName(input_method));

@@ -28,10 +28,9 @@ class MockInputMethodManagerImpl : public MockInputMethodManager {
 
     // MockInputMethodManager::State:
     scoped_refptr<InputMethodManager::State> Clone() const override;
-    std::unique_ptr<InputMethodDescriptors>
-    GetEnabledInputMethodsSortedByLocalizedDisplayNames() const override;
-    std::unique_ptr<InputMethodDescriptors> GetEnabledInputMethods()
+    InputMethodDescriptors GetEnabledInputMethodsSortedByLocalizedDisplayNames()
         const override;
+    InputMethodDescriptors GetEnabledInputMethods() const override;
     const InputMethodDescriptor* GetInputMethodFromId(
         const std::string& input_method_id) const override;
     InputMethodDescriptor GetCurrentInputMethod() const override;

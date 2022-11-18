@@ -174,37 +174,36 @@ InputMethodManagerImpl::StateImpl::Clone() const {
   return scoped_refptr<InputMethodManager::State>(new_state.get());
 }
 
-std::unique_ptr<InputMethodDescriptors>
+InputMethodDescriptors
 InputMethodManagerImpl::StateImpl::GetEnabledInputMethods() const {
-  std::unique_ptr<InputMethodDescriptors> result(new InputMethodDescriptors);
+  InputMethodDescriptors result;
   // Build the enabled input method descriptors from the enabled input
   // methods cache |enabled_input_method_ids_|.
   for (const auto& input_method_id : enabled_input_method_ids_) {
     const InputMethodDescriptor* descriptor =
         manager_->util_.GetInputMethodDescriptorFromId(input_method_id);
     if (descriptor) {
-      result->push_back(*descriptor);
+      result.push_back(*descriptor);
     } else {
       const auto ix = available_input_methods_.find(input_method_id);
       if (ix != available_input_methods_.end())
-        result->push_back(ix->second);
+        result.push_back(ix->second);
       else
         DVLOG(1) << "Descriptor is not found for: " << input_method_id;
     }
   }
-  if (result->empty()) {
+  if (result.empty()) {
     // Initially |enabled_input_method_ids_| is empty. browser_tests might take
     // this path.
-    result->push_back(
-        InputMethodUtil::GetFallbackInputMethodDescriptor());
+    result.push_back(InputMethodUtil::GetFallbackInputMethodDescriptor());
   }
 
   return result;
 }
 
-std::unique_ptr<InputMethodDescriptors> InputMethodManagerImpl::StateImpl::
+InputMethodDescriptors InputMethodManagerImpl::StateImpl::
     GetEnabledInputMethodsSortedByLocalizedDisplayNames() const {
-  std::unique_ptr<InputMethodDescriptors> result = GetEnabledInputMethods();
+  InputMethodDescriptors result = GetEnabledInputMethods();
 
   UErrorCode error_code = U_ZERO_ERROR;
   std::unique_ptr<icu::Collator> collator(
@@ -213,7 +212,7 @@ std::unique_ptr<InputMethodDescriptors> InputMethodManagerImpl::StateImpl::
   const InputMethodUtil& util = manager_->util_;
 
   std::sort(
-      result->begin(), result->end(),
+      result.begin(), result.end(),
       [&collator, &util](const InputMethodDescriptor& a,
                          const InputMethodDescriptor& b) {
         std::u16string a16 = base::UTF8ToUTF16(util.GetLocalizedDisplayName(a));
@@ -760,17 +759,17 @@ void InputMethodManagerImpl::StateImpl::SwitchToNextInputMethod() {
   }
 
   const std::string& current_input_method_id = current_input_method_.id();
-  std::unique_ptr<InputMethodDescriptors> sorted_enabled_input_methods =
+  InputMethodDescriptors sorted_enabled_input_methods =
       GetEnabledInputMethodsSortedByLocalizedDisplayNames();
 
   auto iter =
-      base::ranges::find(*sorted_enabled_input_methods, current_input_method_id,
+      base::ranges::find(sorted_enabled_input_methods, current_input_method_id,
                          &InputMethodDescriptor::id);
 
-  if (iter != sorted_enabled_input_methods->end())
+  if (iter != sorted_enabled_input_methods.end())
     ++iter;
-  if (iter == sorted_enabled_input_methods->end())
-    iter = sorted_enabled_input_methods->begin();
+  if (iter == sorted_enabled_input_methods.end())
+    iter = sorted_enabled_input_methods.begin();
 
   ChangeInputMethod(iter->id(), true);
 }
@@ -879,10 +878,9 @@ InputMethodManagerImpl::StateImpl::LookupInputMethod(
 
   // Sanity check
   if (!InputMethodIsEnabled(input_method_id)) {
-    std::unique_ptr<InputMethodDescriptors> input_methods(
-        GetEnabledInputMethods());
-    DCHECK(!input_methods->empty());
-    input_method_id_to_switch = input_methods->at(0).id();
+    InputMethodDescriptors input_methods(GetEnabledInputMethods());
+    DCHECK(!input_methods.empty());
+    input_method_id_to_switch = input_methods.at(0).id();
     if (!input_method_id.empty()) {
       DVLOG(1) << "Can't change the current input method to " << input_method_id
                << " since the engine is not enabled. "

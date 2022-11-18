@@ -48,14 +48,14 @@ void MockInputMethodManager::State::DisableNonLockScreenLayouts() {}
 void MockInputMethodManager::State::GetInputMethodExtensions(
     InputMethodDescriptors* result) {}
 
-std::unique_ptr<InputMethodDescriptors> MockInputMethodManager::State::
+InputMethodDescriptors MockInputMethodManager::State::
     GetEnabledInputMethodsSortedByLocalizedDisplayNames() const {
-  return nullptr;
+  return {};
 }
 
-std::unique_ptr<InputMethodDescriptors>
-MockInputMethodManager::State::GetEnabledInputMethods() const {
-  return nullptr;
+InputMethodDescriptors MockInputMethodManager::State::GetEnabledInputMethods()
+    const {
+  return {};
 }
 
 const std::vector<std::string>&

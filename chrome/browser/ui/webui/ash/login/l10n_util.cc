@@ -504,7 +504,7 @@ base::Value::List GetAndActivateLoginKeyboardLayouts(
   input_method_manager->GetActiveIMEState()->EnableLoginLayouts(
       locale, hardware_login_input_methods);
 
-  std::unique_ptr<input_method::InputMethodDescriptors> input_methods(
+  input_method::InputMethodDescriptors input_methods(
       input_method_manager->GetActiveIMEState()->GetEnabledInputMethods());
   std::set<std::string> input_methods_added;
 
@@ -521,9 +521,9 @@ base::Value::List GetAndActivateLoginKeyboardLayouts(
   }
 
   bool optgroup_added = false;
-  for (size_t i = 0; i < input_methods->size(); ++i) {
+  for (size_t i = 0; i < input_methods.size(); ++i) {
     // Makes sure the id is in legacy xkb id format.
-    const std::string& ime_id = (*input_methods)[i].id();
+    const std::string& ime_id = input_methods[i].id();
     if (!InsertString(ime_id, &input_methods_added))
       continue;
     if (!optgroup_added) {
@@ -531,7 +531,7 @@ base::Value::List GetAndActivateLoginKeyboardLayouts(
       AddOptgroupOtherLayouts(input_methods_list);
     }
     input_methods_list.Append(
-        CreateInputMethodsEntry((*input_methods)[i], selected, util));
+        CreateInputMethodsEntry(input_methods[i], selected, util));
   }
 
   // "xkb:us::eng" should always be in the list of available layouts.

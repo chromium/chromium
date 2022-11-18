@@ -182,14 +182,13 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
     // methods, sorted in ascending order of their localized full display names,
     // according to the lexicographical order defined by the current system
     // locale (aka. display language).
-    virtual std::unique_ptr<InputMethodDescriptors>
+    virtual InputMethodDescriptors
     GetEnabledInputMethodsSortedByLocalizedDisplayNames() const = 0;
 
     // Returns enabled input methods, including extension input methods.
     // Although presented as a list, the result is NOT sorted in any specific
     // order; the ordering is arbitrary and undefined.
-    virtual std::unique_ptr<InputMethodDescriptors> GetEnabledInputMethods()
-        const = 0;
+    virtual InputMethodDescriptors GetEnabledInputMethods() const = 0;
 
     // Returns IDs of enabled input methods, including extension input methods.
     // Although presented as a list, the result is NOT sorted in any specific

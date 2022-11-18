@@ -279,9 +279,9 @@ void SetSelectToSpeakEnabledPref(bool enabled) {
 
 bool IsBrailleImeEnabled() {
   InputMethodManager* imm = InputMethodManager::Get();
-  std::unique_ptr<InputMethodDescriptors> descriptors =
+  InputMethodDescriptors descriptors =
       imm->GetActiveIMEState()->GetEnabledInputMethods();
-  for (const auto& descriptor : *descriptors) {
+  for (const auto& descriptor : descriptors) {
     if (descriptor.id() == extension_ime_util::kBrailleImeEngineId)
       return true;
   }

@@ -46,10 +46,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockInputMethodManager
         const std::vector<std::string>& initial_layouts) override;
     void DisableNonLockScreenLayouts() override;
     void GetInputMethodExtensions(InputMethodDescriptors* result) override;
-    std::unique_ptr<InputMethodDescriptors>
-    GetEnabledInputMethodsSortedByLocalizedDisplayNames() const override;
-    std::unique_ptr<InputMethodDescriptors> GetEnabledInputMethods()
+    InputMethodDescriptors GetEnabledInputMethodsSortedByLocalizedDisplayNames()
         const override;
+    InputMethodDescriptors GetEnabledInputMethods() const override;
     const std::vector<std::string>& GetEnabledInputMethodIds() const override;
     const InputMethodDescriptor* GetInputMethodFromId(
         const std::string& input_method_id) const override;
