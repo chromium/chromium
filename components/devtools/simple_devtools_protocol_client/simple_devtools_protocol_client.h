@@ -13,7 +13,6 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "content/public/browser/devtools_agent_host.h"
 
@@ -32,8 +31,6 @@ class SimpleDevToolsProtocolClient : public content::DevToolsAgentHostClient {
   explicit SimpleDevToolsProtocolClient(const std::string& session_id);
 
   ~SimpleDevToolsProtocolClient() override;
-
-  void InitBrowserMainThread();
 
   void AttachClient(scoped_refptr<content::DevToolsAgentHost> agent_host);
   void DetachClient();
@@ -66,7 +63,7 @@ class SimpleDevToolsProtocolClient : public content::DevToolsAgentHostClient {
                                base::span<const uint8_t> json_message) override;
   void AgentHostClosed(content::DevToolsAgentHost* agent_host) override;
 
-  void DispatchProtocolMessage(base::Value::Dict message);
+  void DispatchProtocolMessageTask(base::Value::Dict message);
 
   void SendProtocolMessage(base::Value::Dict message);
 
@@ -74,7 +71,6 @@ class SimpleDevToolsProtocolClient : public content::DevToolsAgentHostClient {
                        const EventCallback& event_callback);
 
   const std::string session_id_;
-  scoped_refptr<base::SequencedTaskRunner> browser_main_thread_;
   base::raw_ptr<SimpleDevToolsProtocolClient> parent_client_ = nullptr;
   base::flat_map<std::string, SimpleDevToolsProtocolClient*> sessions_;
 

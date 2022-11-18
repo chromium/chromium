@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -86,6 +87,11 @@ class SimpleDevToolsProtocolClientTest : public SimpleDevToolsProtocolClient,
   SimpleDevToolsProtocolClientTest() {
     AttachClient(new MockDevToolsAgentHost);
   }
+
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 class SimpleDevToolsProtocolClientSendCommandTest
@@ -99,6 +105,7 @@ class SimpleDevToolsProtocolClientSendCommandTest
                 base::BindOnce(&SimpleDevToolsProtocolClientSendCommandTest::
                                    OnSendCommand1Response,
                                base::Unretained(this)));
+    RunUntilIdle();
   }
 
   void OnSendCommand1Response(base::Value::Dict params) {
@@ -108,6 +115,7 @@ class SimpleDevToolsProtocolClientSendCommandTest
                 base::BindOnce(&SimpleDevToolsProtocolClientSendCommandTest::
                                    OnSendCommand2Response,
                                base::Unretained(this)));
+    RunUntilIdle();
   }
 
   void OnSendCommand2Response(base::Value::Dict params) {
@@ -120,6 +128,7 @@ class SimpleDevToolsProtocolClientSendCommandTest
                       self->OnSendCommand3Response(std::move(params));
                     },
                     base::Unretained(this)));
+    RunUntilIdle();
   }
 
   void OnSendCommand3Response(base::Value::Dict params) {
@@ -147,6 +156,7 @@ class SimpleDevToolsProtocolClientEventHandlerTest
     base::JSONWriter::Write(base::Value(std::move(params)), &json);
     DispatchProtocolMessage(agent_host_.get(),
                             base::as_bytes(base::make_span(json)));
+    RunUntilIdle();
   }
 };
 
