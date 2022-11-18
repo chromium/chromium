@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
 
+#include <algorithm>
 #include <cmath>
 #include <memory>
 
@@ -106,7 +107,10 @@ BaseRenderingContext2D::BaseRenderingContext2D(
   state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>());
 }
 
-BaseRenderingContext2D::~BaseRenderingContext2D() = default;
+BaseRenderingContext2D::~BaseRenderingContext2D() {
+  UMA_HISTOGRAM_CUSTOM_COUNTS("Blink.Canvas.MaximumStateStackDepth",
+                              max_state_stack_depth_, 1, 33, 32);
+}
 
 void BaseRenderingContext2D::save() {
   if (isContextLost())
@@ -127,6 +131,8 @@ void BaseRenderingContext2D::save() {
   state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>(
       GetState(), CanvasRenderingContext2DState::kDontCopyClipList,
       CanvasRenderingContext2DState::SaveType::kSaveRestore));
+  max_state_stack_depth_ =
+      std::max(state_stack_.size(), max_state_stack_depth_);
 
   if (canvas)
     canvas->save();
@@ -181,6 +187,8 @@ void BaseRenderingContext2D::beginLayer() {
   state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>(
       GetState(), CanvasRenderingContext2DState::kDontCopyClipList,
       CanvasRenderingContext2DState::SaveType::kBeginEndLayer));
+  max_state_stack_depth_ =
+      std::max(state_stack_.size(), max_state_stack_depth_);
   layer_count_++;
 
   if (globalAlpha() != 1 &&
@@ -202,6 +210,8 @@ void BaseRenderingContext2D::beginLayer() {
     state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>(
         GetState(), CanvasRenderingContext2DState::kDontCopyClipList,
         CanvasRenderingContext2DState::SaveType::kInternalLayer));
+    max_state_stack_depth_ =
+        std::max(state_stack_.size(), max_state_stack_depth_);
 
     cc::PaintFlags extra_flags;
     GetState().FillStyle()->ApplyToFlags(extra_flags);

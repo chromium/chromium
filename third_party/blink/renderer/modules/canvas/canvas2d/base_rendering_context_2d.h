@@ -447,6 +447,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
                      BaseRenderingContext2D::OverdrawOp overdraw_op);
 
   HeapVector<Member<CanvasRenderingContext2DState>> state_stack_;
+  unsigned max_state_stack_depth_ = 1;
   // Counts how many states have been pushed with BeginLayer.
   int layer_count_ = 0;
   AntiAliasingMode clip_antialiasing_;
