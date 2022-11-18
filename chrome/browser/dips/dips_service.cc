@@ -6,12 +6,14 @@
 
 #include <set>
 
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -52,9 +54,16 @@ DIPSService::DIPSService(content::BrowserContext* context)
           Profile::FromBrowserContext(context))),
       repeating_timer_(CreateTimer(Profile::FromBrowserContext(context))),
       storage_(base::SequenceBound<DIPSStorage>(CreateTaskRunner())) {
-  // TODO(crbug.com/1342228): Persist DB to disk for non-OTR profiles.
-  storage_.AsyncCall(&DIPSStorage::Init).WithArgs(absl::nullopt);
-  // TODO(rtarpine): Prevent use of the DB until prepopulation starts.
+  absl::optional<base::FilePath> path;
+
+  if (base::FeatureList::IsEnabled(dips::kFeature) &&
+      dips::kPersistedDatabaseEnabled.Get() &&
+      !browser_context_->IsOffTheRecord()) {
+    path = browser_context_->GetPath().Append(kDIPSFilename);
+  }
+
+  storage_.AsyncCall(&DIPSStorage::Init).WithArgs(path);
+  // TODO: Prevent use of the DB until prepopulation starts.
   InitializeStorageWithEngagedSites();
   repeating_timer_->Start();
 }
