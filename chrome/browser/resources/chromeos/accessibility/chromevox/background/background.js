@@ -7,9 +7,9 @@ import {AutomationUtil} from '../../common/automation_util.js';
 import {constants} from '../../common/constants.js';
 import {CursorRange} from '../../common/cursors/range.js';
 import {InstanceChecker} from '../../common/instance_checker.js';
+import {AbstractEarcons} from '../common/abstract_earcons.js';
 import {NavBraille} from '../common/braille/nav_braille.js';
 import {CompositeTts} from '../common/composite_tts.js';
-import {EarconInterface} from '../common/earcon_interface.js';
 import {ExtensionBridge} from '../common/extension_bridge.js';
 import {LocaleOutputHelper} from '../common/locale_output_helper.js';
 import {Msgs} from '../common/msgs.js';
@@ -64,7 +64,7 @@ export class Background extends ChromeVoxState {
     /** @private {CursorRange} */
     this.currentRange_ = null;
 
-    /** @private {!EarconInterface} */
+    /** @private {!AbstractEarcons} */
     this.earcons_ = new Earcons();
 
     /** @private {boolean} */
