@@ -4,7 +4,6 @@
 
 #include "chrome/test/chromedriver/chrome/network_conditions_override_manager.h"
 
-#include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/network_conditions.h"
 #include "chrome/test/chromedriver/chrome/status.h"
@@ -34,8 +33,15 @@ Status NetworkConditionsOverrideManager::OnEvent(
     DevToolsClient* client,
     const std::string& method,
     const base::DictionaryValue& params) {
+  return OnEvent(client, method, params.GetDict());
+}
+
+Status NetworkConditionsOverrideManager::OnEvent(
+    DevToolsClient* client,
+    const std::string& method,
+    const base::Value::Dict& params) {
   if (method == "Page.frameNavigated") {
-    if (!params.FindPath("frame.parentId"))
+    if (!params.FindByDottedPath("frame.parentId"))
       return ApplyOverrideIfNeeded();
   }
   return Status(kOk);

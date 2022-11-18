@@ -5,7 +5,6 @@
 #include "chrome/test/chromedriver/devtools_events_logger.h"
 
 #include "base/json/json_writer.h"
-#include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/devtools_client_impl.h"
 
@@ -23,11 +22,17 @@ Status DevToolsEventsLogger::OnConnected(DevToolsClient* client) {
 Status DevToolsEventsLogger::OnEvent(DevToolsClient* client,
                                      const std::string& method,
                                      const base::DictionaryValue& params) {
+  return OnEvent(client, method, params.GetDict());
+}
+
+Status DevToolsEventsLogger::OnEvent(DevToolsClient* client,
+                                     const std::string& method,
+                                     const base::Value::Dict& params) {
   auto it = events_.find(method);
   if (it != events_.end()) {
-    base::DictionaryValue log_message_dict;
-    log_message_dict.SetString("method", method);
-    log_message_dict.SetKey("params", params.Clone());
+    base::Value::Dict log_message_dict;
+    log_message_dict.Set("method", method);
+    log_message_dict.Set("params", params.Clone());
     std::string log_message_json;
     base::JSONWriter::Write(log_message_dict, &log_message_json);
 
