@@ -283,6 +283,9 @@
   <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_CVC_AND_EXPIRATION_V2" desc="Error message that encourages the user to try to re-enter their credit card CVC or update the expiration dates after a previous failed attempt, according to August 2019 UI guidelines.">
     Check your CVC and try again or update the expiration date
   </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_SECURITY_CODE" desc="Text providing context to the user during virtual card security code authentication when they have entered an incorrect security code, such as CVC. It lets the user know that they need to look at the security code on their card again to make sure the one they entered into the form is correct, and that they need to try again.">
+    Check the code on the <ph name="SIDE_OF_CARD">$1<ex>back of your card</ex></ph> and try again
+  </message>
   <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_PERMANENT" desc="Error message to show when a credit card cannot be verified and the user isn't allowed to retry.">
     This card can't be verified right now
   </message>

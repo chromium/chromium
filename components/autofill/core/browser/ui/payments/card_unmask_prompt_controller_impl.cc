@@ -26,6 +26,24 @@
 
 namespace autofill {
 
+namespace {
+
+std::u16string GetSideOfCardTranslationString(CvcPosition cvc_position) {
+  switch (cvc_position) {
+    case CvcPosition::kFrontOfCard:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_UNMASK_PROMPT_SECURITY_CODE_POSITION_FRONT_OF_CARD);
+    case CvcPosition::kBackOfCard:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_UNMASK_PROMPT_SECURITY_CODE_POSITION_BACK_OF_CARD);
+    default:
+      NOTREACHED();
+      return u"";
+  }
+}
+
+}  // namespace
+
 CardUnmaskPromptControllerImpl::CardUnmaskPromptControllerImpl(
     PrefService* pref_service)
     : pref_service_(pref_service) {}
@@ -69,8 +87,15 @@ void CardUnmaskPromptControllerImpl::OnVerificationResult(
       break;
 
     case AutofillClient::PaymentsRpcResult::kTryAgainFailure: {
-      error_message = l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_CVC);
+      if (IsVirtualCard()) {
+        error_message = l10n_util::GetStringFUTF16(
+            IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_SECURITY_CODE,
+            GetSideOfCardTranslationString(
+                card_unmask_challenge_option_->cvc_position));
+      } else {
+        error_message = l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_CVC);
+      }
       break;
     }
 
@@ -219,24 +244,12 @@ std::u16string CardUnmaskPromptControllerImpl::GetInstructionsMessage() const {
   if (IsChallengeOptionPresent()) {
     DCHECK_EQ(card_unmask_challenge_option_->type,
               CardUnmaskChallengeOptionType::kCvc);
-    std::u16string side_of_card;
-    switch (card_unmask_challenge_option_->cvc_position) {
-      case CvcPosition::kFrontOfCard:
-        side_of_card = l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_CARD_UNMASK_PROMPT_SECURITY_CODE_POSITION_FRONT_OF_CARD);
-        break;
-      case CvcPosition::kBackOfCard:
-        side_of_card = l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_CARD_UNMASK_PROMPT_SECURITY_CODE_POSITION_BACK_OF_CARD);
-        break;
-      default:
-        NOTREACHED();
-    }
     return l10n_util::GetStringFUTF16(
         IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_VIRTUAL_CARD,
         base::NumberToString16(
             card_unmask_challenge_option_->challenge_input_length),
-        side_of_card);
+        GetSideOfCardTranslationString(
+            card_unmask_challenge_option_->cvc_position));
   }
   return l10n_util::GetStringUTF16(
       card_.record_type() == CreditCard::LOCAL_CARD
