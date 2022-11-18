@@ -2056,8 +2056,6 @@ suite('NewTabPageRealboxTest', () => {
   test(
       'match icons are updated when entity images become available',
       async () => {
-        const imageData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC=';
-
         realbox.$.input.value = 'hello';
         realbox.$.input.dispatchEvent(new InputEvent('input'));
 
@@ -2122,28 +2120,13 @@ suite('NewTabPageRealboxTest', () => {
             containerEl, 'background-color', 'rgba(117, 117, 117, 0.25)');
         assertIconMaskImageUrl(realbox.$.icon, 'search.svg');  // Default icon.
 
-        // URL of the loaded image must match image URL of the match.
-        testProxy.callbackRouterRemote.autocompleteMatchImageAvailable(
-            1, {url: 'http://example.com/'}, imageData);
-        await testProxy.callbackRouterRemote.$.flushForTesting();
-        assertStyle(
-            containerEl, 'background-color', 'rgba(117, 117, 117, 0.25)');
-        assertIconMaskImageUrl(realbox.$.icon, 'search.svg');  // Default icon.
-
-        // Index of the loaded image must match index of the match.
-        testProxy.callbackRouterRemote.autocompleteMatchImageAvailable(
-            0, {url: 'https://gstatic.com/'}, imageData);
-        await testProxy.callbackRouterRemote.$.flushForTesting();
-        assertStyle(
-            containerEl, 'background-color', 'rgba(117, 117, 117, 0.25)');
-        assertIconMaskImageUrl(realbox.$.icon, 'search.svg');  // Default icon.
-
-        // Once the image successfully loads it replaces the match icon.
-        testProxy.callbackRouterRemote.autocompleteMatchImageAvailable(
-            1, {url: 'https://gstatic.com/'}, imageData);
-        await testProxy.callbackRouterRemote.$.flushForTesting();
         assertEquals(
-            matchEls[1]!.$.icon.$.image.getAttribute('src'), imageData);
+            matchEls[1]!.$.icon.$.image.getAttribute('src'),
+            `chrome://image?${matches[1]!.imageUrl}`);
+
+        // Mock image finishing loading, which should remove the temporary
+        // background color.
+        matchEls[1]!.$.icon.$.image.dispatchEvent(new Event('load'));
         assertStyle(containerEl, 'background-color', 'rgba(0, 0, 0, 0)');
         // Realbox icon is not updated as the input does not feature images.
         assertIconMaskImageUrl(realbox.$.icon, 'search.svg');  // Default icon.

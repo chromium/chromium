@@ -150,10 +150,6 @@ class RealboxSearchBrowserTestPage : public realbox::mojom::Page {
   // realbox::mojom::Page
   void AutocompleteResultChanged(
       realbox::mojom::AutocompleteResultPtr result) override {}
-  void AutocompleteMatchImageAvailable(uint32_t match_index,
-                                       const GURL& url,
-                                       const std::string& data_url) override {}
-
   mojo::PendingRemote<realbox::mojom::Page> GetRemotePage() {
     return receiver_.BindNewPipeAndPassRemote();
   }

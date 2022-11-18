@@ -10,10 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service.h"
 #include "chrome/browser/ui/webui/realbox/realbox.mojom.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
-#include "components/omnibox/browser/favicon_cache.h"
 #include "components/omnibox/browser/omnibox.mojom-shared.h"
 #include "components/url_formatter/spoof_checks/idna_metrics.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -93,10 +91,6 @@ class RealboxHandler : public realbox::mojom::PageHandler,
   void OnResultChanged(AutocompleteController* controller,
                        bool default_match_changed) override;
 
-  void OnRealboxBitmapFetched(int match_index,
-                              const GURL& image_url,
-                              const SkBitmap& bitmap);
-
   // OpenURL function used as a callback for execution of actions.
   void OpenURL(const GURL& destination_url,
                TemplateURLRef::PostContent* post_content,
@@ -114,9 +108,6 @@ class RealboxHandler : public realbox::mojom::PageHandler,
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<AutocompleteController> autocomplete_controller_;
-  raw_ptr<BitmapFetcherService> bitmap_fetcher_service_;
-  std::vector<BitmapFetcherService::RequestId> bitmap_request_ids_;
-  FaviconCache favicon_cache_;
   base::TimeTicks time_user_first_modified_realbox_;
 
   mojo::Remote<realbox::mojom::Page> page_;

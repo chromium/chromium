@@ -41,10 +41,6 @@ struct AutocompleteMatch {
   array<ACMatchClassification> contents_class;
   mojo_base.mojom.String16 description;
   array<ACMatchClassification> description_class;
-  // if a favicon is available for |destination_url| it is fetched in C++ and
-  // the resulting data URL is sent to JS via AutocompleteMatchImageAvailable
-  // along with the |destination_url| and the match index which are used to
-  // identify the appropriate match.
   url.mojom.Url destination_url;
   mojo_base.mojom.String16 inline_autocompletion;
   mojo_base.mojom.String16 fill_into_edit;
@@ -55,10 +51,8 @@ struct AutocompleteMatch {
   // are valid for entity suggestions only. Entity suggestions have a |type| of
   // 'search-suggest-entity'.
   string image_dominant_color;
-  // The image url for entity suggestions. |image_url| is an external url and
-  // therefore is fetched in C++ and the resulting data URL is sent to JS via
-  // AutocompleteMatchImageAvailable along with the |image_url| and the match
-  // index which are used to identify the appropriate match.
+  // The image url for entity suggestions. |image_url| is an external url or
+  // a data URI.
   string image_url;
   // Used to determine if the match has an image, calculator answer or
   // suggestion answer.
@@ -147,10 +141,4 @@ interface PageHandler {
 interface Page {
   // Updates the NTP realbox with the autocomplete results.
   AutocompleteResultChanged(AutocompleteResult result);
-  // Updates the NTP realbox popup with the image or favicon data URL for the
-  // given |match_index| and |url| where |url| is an AutocompleteMatch image_url
-  // or destination_url for an entity or a navigation suggestion respectively.
-  AutocompleteMatchImageAvailable(uint32 match_index,
-                                  url.mojom.Url url,
-                                  string data_url);
 };

@@ -18,10 +18,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
-#include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/favicon/favicon_service_factory.h"
-#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
@@ -507,22 +504,9 @@ RealboxHandler::RealboxHandler(
     content::WebContents* web_contents)
     : profile_(profile),
       web_contents_(web_contents),
-      bitmap_fetcher_service_(
-          BitmapFetcherServiceFactory::GetForBrowserContext(profile)),
-      favicon_cache_(FaviconServiceFactory::GetForProfile(
-                         profile,
-                         ServiceAccessType::EXPLICIT_ACCESS),
-                     HistoryServiceFactory::GetForProfile(
-                         profile,
-                         ServiceAccessType::EXPLICIT_ACCESS)),
       page_handler_(this, std::move(pending_page_handler)) {}
 
-RealboxHandler::~RealboxHandler() {
-  // Clear pending bitmap requests.
-  for (auto bitmap_request_id : bitmap_request_ids_) {
-    bitmap_fetcher_service_->CancelRequest(bitmap_request_id);
-  }
-}
+RealboxHandler::~RealboxHandler() = default;
 
 void RealboxHandler::SetPage(
     mojo::PendingRemote<realbox::mojom::Page> pending_page) {
@@ -822,34 +806,4 @@ void RealboxHandler::OnResultChanged(AutocompleteController* controller,
           web_contents_, autocomplete_controller_->result());
     }
   }
-
-  // Clear pending bitmap requests before requesting new ones.
-  for (auto bitmap_request_id : bitmap_request_ids_) {
-    bitmap_fetcher_service_->CancelRequest(bitmap_request_id);
-  }
-  bitmap_request_ids_.clear();
-
-  int match_index = -1;
-  for (const auto& match : autocomplete_controller_->result()) {
-    match_index++;
-
-    // Request bitmaps for matche images.
-    if (!match.ImageUrl().is_empty()) {
-      bitmap_request_ids_.push_back(bitmap_fetcher_service_->RequestImage(
-          match.ImageUrl(),
-          base::BindOnce(&RealboxHandler::OnRealboxBitmapFetched,
-                         weak_ptr_factory_.GetWeakPtr(), match_index,
-                         match.ImageUrl())));
-    }
-  }
-}
-
-void RealboxHandler::OnRealboxBitmapFetched(int match_index,
-                                            const GURL& image_url,
-                                            const SkBitmap& bitmap) {
-  auto data = gfx::Image::CreateFrom1xBitmap(bitmap).As1xPNGBytes();
-  std::string data_url =
-      webui::GetPngDataUrl(data->front_as<unsigned char>(), data->size());
-
-  page_->AutocompleteMatchImageAvailable(match_index, image_url, data_url);
 }

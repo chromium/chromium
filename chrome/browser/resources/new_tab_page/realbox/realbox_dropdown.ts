@@ -8,12 +8,11 @@ import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface} from '../realbox.mojom-webui.js';
+import {AutocompleteMatch, AutocompleteResult, PageHandlerInterface} from '../realbox.mojom-webui.js';
 import {decodeString16} from '../utils.js';
 
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
@@ -92,27 +91,11 @@ export class RealboxDropdownElement extends PolymerElement {
   private hiddenGroupIds_: number[];
   private selectableMatchElements_: Element[];
 
-  private callbackRouter_: PageCallbackRouter;
   private pageHandler_: PageHandlerInterface;
-  private autocompleteMatchImageAvailableListenerId_: number|null = null;
 
   constructor() {
     super();
-    this.callbackRouter_ = RealboxBrowserProxy.getInstance().callbackRouter;
     this.pageHandler_ = RealboxBrowserProxy.getInstance().handler;
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-    this.autocompleteMatchImageAvailableListenerId_ =
-        this.callbackRouter_.autocompleteMatchImageAvailable.addListener(
-            this.onAutocompleteMatchImageAvailable_.bind(this));
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.callbackRouter_.removeListener(
-        this.autocompleteMatchImageAvailableListenerId_!);
   }
 
   //============================================================================
@@ -170,29 +153,6 @@ export class RealboxDropdownElement extends PolymerElement {
   //============================================================================
   // Callbacks
   //============================================================================
-
-  /**
-   * @param matchIndex match index
-   * @param url match imageUrl
-   * @param dataUrl match image or favicon content in in base64 encoded Data URL
-   *     format.
-   */
-  private onAutocompleteMatchImageAvailable_(
-      matchIndex: number, url: Url, dataUrl: string) {
-    if (!this.result || !this.result.matches) {
-      return;
-    }
-
-    const match = this.result.matches[matchIndex];
-    if (!match) {
-      return;
-    }
-
-    // Set image content of the match, if applicable.
-    if (match.imageUrl === url.url) {
-      this.set(`result.matches.${matchIndex}.imageDataUrl`, dataUrl);
-    }
-  }
 
   private onResultRepaint_() {
     this.dispatchEvent(new CustomEvent('result-repaint', {

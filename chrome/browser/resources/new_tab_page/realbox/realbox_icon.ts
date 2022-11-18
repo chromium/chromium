@@ -12,9 +12,6 @@ import {getTemplate} from './realbox_icon.html.js';
 const DOCUMENT_MATCH_TYPE: string = 'document';
 const HISTORY_CLUSTER_MATCH_TYPE: string = 'history-cluster';
 
-export type AutocompleteMatchWithImageData =
-    AutocompleteMatch&{imageDataUrl?: string};
-
 export interface RealboxIconElement {
   $: {
     container: HTMLElement,
@@ -99,7 +96,17 @@ export class RealboxIconElement extends PolymerElement {
 
       imageSrc_: {
         type: String,
-        computed: `computeImageSrc_(match.imageDataUrl, match)`,
+        computed: `computeImageSrc_(match.imageUrl, match)`,
+        observer: 'onImageSrcChanged_',
+      },
+
+      /**
+       * Flag indicating whether or not an image is loading. This is used to
+       * show a placeholder color while the image is loading.
+       */
+      imageLoading_: {
+        type: Boolean,
+        value: false,
       },
     };
   }
@@ -112,6 +119,7 @@ export class RealboxIconElement extends PolymerElement {
   match: AutocompleteMatch;
   private iconStyle_: string;
   private imageSrc_: string;
+  private imageLoading_: boolean;
 
   //============================================================================
   // Helpers
@@ -164,29 +172,35 @@ export class RealboxIconElement extends PolymerElement {
   }
 
   private computeImageSrc_(): string {
-    if (!this.match) {
+    if (!this.match || !this.match.imageUrl) {
       return '';
     }
 
-    if ((this.match as AutocompleteMatchWithImageData).imageDataUrl) {
-      return (this.match as AutocompleteMatchWithImageData).imageDataUrl!;
-    } else if (
-        this.match.imageUrl && this.match.imageUrl.startsWith('data:image/')) {
-      // zero-prefix matches come with the image content in |match.imageUrl|.
+    if (this.match.imageUrl.startsWith('data:image/')) {
+      // Zero-prefix matches come with the image content in |match.imageUrl|.
       return this.match.imageUrl;
-    } else {
-      return '';
     }
+
+    return `chrome://image?${this.match.imageUrl}`;
   }
 
-  private containerBgColor_(imageSrc: string, imageDominantColor: string):
+  private containerBgColor_(imageDominantColor: string, imageLoading: boolean):
       string {
     // If the match has an image dominant color, show that color in place of the
     // image until it loads. This helps the image appear to load more smoothly.
-    return (!imageSrc && imageDominantColor) ?
+    return (imageLoading && imageDominantColor) ?
         // .25 opacity matching c/b/u/views/omnibox/omnibox_match_cell_view.cc.
         `${imageDominantColor}40` :
-        '';
+        'transparent';
+  }
+
+  private onImageSrcChanged_() {
+    // If imageSrc_ changes to a new truthy value, a new image is being loaded.
+    this.imageLoading_ = !!this.imageSrc_;
+  }
+
+  private onImageLoad_() {
+    this.imageLoading_ = false;
   }
 }
 
