@@ -46,6 +46,11 @@ content::WebUIDataSource* CreateProjectorAnnotatorHTMLSource() {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc, csp);
 
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types polymer-html-literal "
+      "polymer-template-event-attribute-policy;");
+
   return source;
 }
 
