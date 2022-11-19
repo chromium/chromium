@@ -564,7 +564,8 @@
           "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
-          "--ui-test-action-timeout=40000"
+          "--ui-test-action-timeout=40000",
+          "--exclude-paths-from-win-defender"
         ],
         "merge": {
           "args": [],
@@ -620,7 +621,8 @@
           "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
-          "--ui-test-action-timeout=40000"
+          "--ui-test-action-timeout=40000",
+          "--exclude-paths-from-win-defender"
         ],
         "merge": {
           "args": [],
@@ -734,7 +736,8 @@
           "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
-          "--ui-test-action-timeout=40000"
+          "--ui-test-action-timeout=40000",
+          "--exclude-paths-from-win-defender"
         ],
         "merge": {
           "args": [],
@@ -848,7 +851,8 @@
           "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
-          "--ui-test-action-timeout=40000"
+          "--ui-test-action-timeout=40000",
+          "--exclude-paths-from-win-defender"
         ],
         "merge": {
           "args": [],
@@ -903,7 +907,8 @@
           "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
-          "--ui-test-action-timeout=40000"
+          "--ui-test-action-timeout=40000",
+          "--exclude-paths-from-win-defender"
         ],
         "merge": {
           "args": [],
@@ -957,7 +962,8 @@
           "--gtest_shuffle",
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
-          "--ui-test-action-timeout=40000"
+          "--ui-test-action-timeout=40000",
+          "--exclude-paths-from-win-defender"
         ],
         "merge": {
           "args": [],
