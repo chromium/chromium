@@ -167,18 +167,33 @@ std::string AXTreeFormatterWin::EvaluateScript(
     const AXTreeSelector& selector,
     const ui::AXInspectScenario& scenario) const {
   Microsoft::WRL::ComPtr<IAccessible> root = FindAccessibleRoot(selector);
-  if (!root) {
+  return EvaluateScript(root, scenario.script_instructions, 0 /* start_index */,
+                        scenario.script_instructions.size());
+}
+
+std::string AXTreeFormatterWin::EvaluateScript(
+    AXPlatformNodeDelegate* root,
+    const std::vector<AXScriptInstruction>& instructions,
+    size_t start_index,
+    size_t end_index) const {
+  DCHECK(root);
+  return EvaluateScript(root->GetNativeViewAccessible(), instructions,
+                        start_index, end_index);
+}
+
+std::string AXTreeFormatterWin::EvaluateScript(
+    Microsoft::WRL::ComPtr<IAccessible> root,
+    const std::vector<AXScriptInstruction>& instructions,
+    size_t start_index,
+    size_t end_index) const {
+  if (!root)
     return "error no accessibility tree found";
-  };
-  const std::vector<ui::AXScriptInstruction>& instructions =
-      scenario.script_instructions;
-  size_t end_index = instructions.size();
 
   base::Value scripts(base::Value::Type::LIST);
   ui::AXTreeIndexerWin indexer(root);
   std::map<std::string, ui::Target> storage;
   ui::AXCallStatementInvokerWin invoker(&indexer, &storage);
-  for (size_t index = 0; index < end_index; index++) {
+  for (size_t index = start_index; index < end_index; index++) {
     if (instructions[index].IsComment()) {
       scripts.Append(instructions[index].AsComment());
       continue;

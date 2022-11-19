@@ -35,6 +35,12 @@ constexpr const char kMacParameterizedAttributes[]{
 
 #endif
 
+#if BUILDFLAG(IS_WIN)
+
+constexpr const char kIAccessible[]{"win/ia2/iaccessible"};
+
+#endif
+
 // See content/test/data/accessibility/readme.md for an overview.
 //
 // This test loads an HTML file, invokes a script, and then
@@ -531,6 +537,19 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXStringForRange) {
   RunTypedTest<kMacParameterizedAttributes>("ax-string-for-range.html");
+}
+
+#endif
+
+#if BUILDFLAG(IS_WIN)
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DumpAccessibilityScriptTest,
+                         ::testing::Values(ui::AXApiType::kWinIA2),
+                         TestPassToString());
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, IAccessibleRole) {
+  RunTypedTest<kIAccessible>(L"iaccessible-role.html");
 }
 
 #endif
