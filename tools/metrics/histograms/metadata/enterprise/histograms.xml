@@ -1511,17 +1511,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Enterprise.EncryptedReportingPipelineEnqueue"
-    enum="EnterpriseCloudReportingStatusCode" expires_after="2023-11-17">
-  <owner>lbaraz@chromium.org</owner>
-  <owner>xuhong@chromium.org</owner>
-  <owner>src/components/reporting/OWNERS</owner>
-  <summary>
-    Recorded when ReportQueue::Enqueue is called. It indicates whether the event
-    has been enqueued successfully or returned an error Status.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.EnrolledDevicePolicyPresent" enum="Boolean"
     expires_after="2023-04-01">
   <owner>igorcov@chromium.org</owner>
