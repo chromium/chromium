@@ -73,6 +73,8 @@ const AcceleratorData kDebugAcceleratorData[] = {
     {true, ui::VKEY_T, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
      DEBUG_TOGGLE_TOUCH_SCREEN},
     {true, ui::VKEY_T, kDebugModifier, DEBUG_TOGGLE_TABLET_MODE},
+    {true, ui::VKEY_A, kDebugModifier,
+     DEBUG_TOGGLE_VIDEO_CONFERENCE_CAMERA_TRAY_ICON},
     {true, ui::VKEY_B, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
      DEBUG_TOGGLE_WALLPAPER_MODE},
     {true, ui::VKEY_L, kDebugModifier, DEBUG_PRINT_LAYER_HIERARCHY},

@@ -702,6 +702,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case DEBUG_TUCK_FLOATED_WINDOW_LEFT:
     case DEBUG_TUCK_FLOATED_WINDOW_RIGHT:
       return debug::CanTuckFloatedWindow();
+    case DEBUG_TOGGLE_VIDEO_CONFERENCE_CAMERA_TRAY_ICON:
+      return true;
 
     // The following are always enabled.
     case BRIGHTNESS_DOWN:
@@ -859,6 +861,7 @@ void AcceleratorControllerImpl::PerformAction(
     case DEBUG_TOGGLE_DARK_MODE:
     case DEBUG_TOGGLE_DYNAMIC_COLOR:
     case DEBUG_TOGGLE_GLANCEABLES:
+    case DEBUG_TOGGLE_VIDEO_CONFERENCE_CAMERA_TRAY_ICON:
     case DEBUG_SYSTEM_UI_STYLE_VIEWER:
       debug::PerformDebugActionIfEnabled(action);
       break;

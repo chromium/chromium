@@ -192,6 +192,10 @@ void HandleToggleTabletMode() {
   controller->SetEnabledForDev(!controller->InTabletMode());
 }
 
+void HandleToggleVideoConferenceCameraTrayIcon() {
+  // TODO(b/259733853): Add call to toggle visibility for the icon itself.
+}
+
 void HandleTriggerCrash() {
   LOG(FATAL) << "Intentional crash via debug accelerator.";
 }
@@ -313,6 +317,9 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
     case DEBUG_TUCK_FLOATED_WINDOW_LEFT:
     case DEBUG_TUCK_FLOATED_WINDOW_RIGHT:
       HandleTuckFloatedWindow(action);
+      break;
+    case DEBUG_TOGGLE_VIDEO_CONFERENCE_CAMERA_TRAY_ICON:
+      HandleToggleVideoConferenceCameraTrayIcon();
       break;
     default:
       break;

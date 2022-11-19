@@ -3448,6 +3448,9 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_ACTION_DEBUG_TOGGLE_TABLET_MODE" translateable="false" desc="Label for accelerator action - Turn Tablet mode on or off.">
         Turn tablet mode on or off
       </message>
+      <message name="IDS_ASH_ACCELERATOR_ACTION_DEBUG_TOGGLE_VIDEO_CONFERENCE_CAMERA_TRAY_ICON" translateable="false" desc="Label for accelerator action - Turn video conference camera tray icon on or off.">
+        Turn video conference camera tray icon on or off
+      </message>
       <message name="IDS_ASH_ACCELERATOR_ACTION_DEBUG_TOGGLE_WALLPAPER_MODE" translateable="false" desc="Label for accelerator action - Turn wallpapaer mode on or off.">
         Turn wallpapaer mode on or off
       </message>
