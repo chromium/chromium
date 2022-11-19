@@ -4385,6 +4385,22 @@ if (is_android) {
     sources = [ "android/javatests/src/org/chromium/base/library_loader/EarlyNativeTest.java" ]
   }
 
+  android_library("base_java_url_utils_for_test") {
+    testonly = true
+    sources = [
+      "test/android/javatests/src/org/chromium/base/test/util/UrlUtils.java",
+    ]
+
+    deps = [
+      ":base_java",
+      "//base:jni_java",
+      "//build/android:build_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/junit:junit",
+    ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  }
+
   android_library("base_java_test_support") {
     testonly = true
 
@@ -4392,6 +4408,8 @@ if (is_android) {
       ":base_java",
       "//base:jni_java",
       "//build/android:build_java",
+      "//third_party/accessibility_test_framework:accessibility_test_framework_java",
+      "//third_party/android_deps:espresso_java",
       "//third_party/android_sdk:android_test_base_java",
       "//third_party/android_sdk:android_test_mock_java",
       "//third_party/android_support_test_runner:runner_java",
@@ -4401,6 +4419,8 @@ if (is_android) {
       "//third_party/hamcrest:hamcrest_java",
       "//third_party/junit",
     ]
+
+    public_deps = [ ":base_java_url_utils_for_test" ]
 
     sources = [
       "test/android/javatests/src/org/chromium/base/FakeTimeTestRule.java",
@@ -4482,7 +4502,6 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/util/TestFileUtil.java",
       "test/android/javatests/src/org/chromium/base/test/util/TimeoutScale.java",
       "test/android/javatests/src/org/chromium/base/test/util/TimeoutTimer.java",
-      "test/android/javatests/src/org/chromium/base/test/util/UrlUtils.java",
       "test/android/javatests/src/org/chromium/base/test/util/UserActionTester.java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

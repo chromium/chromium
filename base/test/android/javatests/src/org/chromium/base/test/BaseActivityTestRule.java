@@ -4,6 +4,11 @@
 
 package org.chromium.base.test;
 
+import static com.google.android.apps.common.testing.accessibility.framework.AccessibilityCheckResultUtils.matchesCheckNames;
+
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.is;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.support.test.runner.lifecycle.Stage;
@@ -11,6 +16,12 @@ import android.text.TextUtils;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
+import androidx.test.espresso.contrib.AccessibilityChecks;
+
+import com.google.android.apps.common.testing.accessibility.framework.ClickableSpanViewCheck;
+import com.google.android.apps.common.testing.accessibility.framework.DuplicateClickableBoundsViewCheck;
+import com.google.android.apps.common.testing.accessibility.framework.EditableContentDescViewCheck;
+import com.google.android.apps.common.testing.accessibility.framework.TouchTargetSizeViewCheck;
 
 import org.junit.Assert;
 import org.junit.rules.TestRule;
@@ -39,6 +50,38 @@ public class BaseActivityTestRule<T extends Activity> implements TestRule {
      */
     public BaseActivityTestRule(Class<T> activityClass) {
         mActivityClass = activityClass;
+
+        // Enable accessibility checks, but suppress checks that fit into the following:
+        //
+        //   TouchTargetSize checks - Many views in Chrome give false positives for the minimum
+        //                            target size of 48dp. 100s of tests fail, leave disabled
+        //                            until a complete audit can be done.
+        //
+        //   ClickableSpan checks - Chrome uses ClickableSpan's throughout for in-line links,
+        //                          but a URLSpan is considered more accessible, except in the
+        //                          case of relative links. Disable until after an audit.
+        //
+        //   EditableContentDesc checks - Editable TextViews (EditText's) should not have a
+        //                                content description and instead have a hint or label.
+        //                                Various Autofill tests fail because of this, leave
+        //                                disabled until after an audit.
+        //
+        //   DuplicateClickableBounds checks - Some containers are marked clickable when they do not
+        //                                     process click events. Two views with the same bounds
+        //                                     should not both be clickable. Some examples in:
+        //                                     PageInfoRowView, AutofillAssistant and TabModal.
+        //
+        // TODO(AccessibilityChecks): Complete above audits and ideally suppress no checks.
+        try {
+            AccessibilityChecks.enable().setSuppressingResultMatcher(anyOf(
+                    matchesCheckNames(is(TouchTargetSizeViewCheck.class.getSimpleName())),
+                    matchesCheckNames(is(ClickableSpanViewCheck.class.getSimpleName())),
+                    matchesCheckNames(is(EditableContentDescViewCheck.class.getSimpleName())),
+                    matchesCheckNames(
+                            is(DuplicateClickableBoundsViewCheck.class.getSimpleName()))));
+        } catch (IllegalStateException e) {
+            // Suppress IllegalStateException for AccessibilityChecks already enabled.
+        }
     }
 
     @Override

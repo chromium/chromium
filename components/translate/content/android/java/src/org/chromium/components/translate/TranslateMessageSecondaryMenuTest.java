@@ -306,6 +306,9 @@ public final class TranslateMessageSecondaryMenuTest {
                 messageProperties.get(MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID));
         listMenuButton.setDelegate(
                 messageProperties.get(MessageBannerProperties.SECONDARY_MENU_BUTTON_DELEGATE));
+        // For a view created in a test, we can make the view not important for accessibility
+        // to prevent failures from AccessibilityChecks. Do not do this for views outside tests.
+        listMenuButton.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
 
         sContentView.addView(listMenuButton);
 

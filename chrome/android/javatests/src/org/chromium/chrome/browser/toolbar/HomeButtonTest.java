@@ -75,6 +75,9 @@ public class HomeButtonTest extends BlankUiTestActivityTestCase {
 
             mIdHomeButton = View.generateViewId();
             mHomeButton = new HomeButton(getActivity(), null);
+            // For a view created in a test, we can make the view not important for accessibility
+            // to prevent failures from AccessibilityChecks. Do not do this for views outside tests.
+            mHomeButton.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
             ObservableSupplierImpl<Boolean> homepagePolicySupplier = new ObservableSupplierImpl<>();
             homepagePolicySupplier.set(false);
             mHomeButton.init(new ObservableSupplierImpl<Boolean>(),

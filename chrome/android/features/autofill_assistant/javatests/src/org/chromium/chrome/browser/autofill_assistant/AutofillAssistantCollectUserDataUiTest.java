@@ -1064,12 +1064,14 @@ public class AutofillAssistantCollectUserDataUiTest {
                 new AutofillAssistantCollectUserDataTestHelper.MockDelegate();
 
         String acceptTermsText = "I accept";
+        String denyTermsText = "I deny";
 
         // Display terms as 2 radio buttons "I accept" vs "I don't".
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             model.set(AssistantCollectUserDataModel.DELEGATE, delegate);
             model.set(AssistantCollectUserDataModel.ACCEPT_TERMS_AND_CONDITIONS_TEXT,
                     acceptTermsText);
+            model.set(AssistantCollectUserDataModel.TERMS_REQUIRE_REVIEW_TEXT, denyTermsText);
             model.set(AssistantCollectUserDataModel.SHOW_TERMS_AS_CHECKBOX, false);
             model.set(AssistantCollectUserDataModel.VISIBLE, true);
         });
