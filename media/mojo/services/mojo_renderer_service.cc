@@ -160,6 +160,7 @@ void MojoRendererService::SetCdm(
 void MojoRendererService::OnError(PipelineStatus error) {
   DVLOG(1) << __func__ << "(" << error << ")";
   state_ = STATE_ERROR;
+  CancelPeriodicMediaTimeUpdates();
   client_->OnError(std::move(error));
 }
 
