@@ -7,8 +7,9 @@
  * different output engines.
  */
 import {AbstractEarcons} from '../common/abstract_earcons.js';
-import {BrailleInterface} from '../common/braille/braille_interface.js';
 import {TtsInterface} from '../common/tts_interface.js';
+
+import {BrailleInterface} from './braille/braille_interface.js';
 
 export const ChromeVox = {
   /** @type {BrailleInterface} */

@@ -4,13 +4,11 @@
 
 /**
  * @fileoverview Defines a Braille interface.
- *
  * All Braille engines in ChromeVox conform to this interface.
- *
  */
 
-import {BrailleDisplayState} from './braille_key_types.js';
-import {NavBraille} from './nav_braille.js';
+import {BrailleDisplayState} from '../../common/braille/braille_key_types.js';
+import {NavBraille} from '../../common/braille/nav_braille.js';
 
 /** @interface */
 export class BrailleInterface {
