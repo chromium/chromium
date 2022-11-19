@@ -5,6 +5,7 @@
 #ifndef UI_WM_PUBLIC_ACTIVATION_CHANGE_OBSERVER_H_
 #define UI_WM_PUBLIC_ACTIVATION_CHANGE_OBSERVER_H_
 
+#include "base/observer_list_types.h"
 #include "ui/wm/public/wm_public_export.h"
 
 namespace aura {
@@ -13,7 +14,7 @@ class Window;
 
 namespace wm {
 
-class WM_PUBLIC_EXPORT ActivationChangeObserver {
+class WM_PUBLIC_EXPORT ActivationChangeObserver : public base::CheckedObserver {
  public:
   // The reason or cause of a window activation change.
   enum class ActivationReason {
@@ -50,7 +51,7 @@ class WM_PUBLIC_EXPORT ActivationChangeObserver {
   virtual void OnAttemptToReactivateWindow(aura::Window* request_active,
                                            aura::Window* actual_active) {}
 
-  virtual ~ActivationChangeObserver() {}
+  ~ActivationChangeObserver() override;
 };
 
 // Gets/Sets the ActivationChangeObserver for a specific window. This observer
