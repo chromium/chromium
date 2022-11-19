@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// <if expr="chromeos_ash">
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
+// </if>
 
 import {Channel} from './channel.js';
 import {PostMessageChannel} from './post_message_channel.js';

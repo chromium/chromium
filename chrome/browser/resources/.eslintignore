@@ -1,0 +1,2 @@
+# Ignore because eslint doesn't understand // <if expr>
+gaia_auth_host/authenticator.js

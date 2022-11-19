@@ -1770,11 +1770,11 @@ if (enable_js_type_check) {
         "ui/file_manager:closure_compile",
       ]
     }
+    if (is_chromeos || is_android) {
+      data_deps += [ "chrome/browser/resources:closure_compile" ]
+    }
     if (!is_castos) {
-      data_deps += [
-        "chrome/browser/resources:closure_compile",
-        "chrome/test:closure_compile",
-      ]
+      data_deps += [ "chrome/test:closure_compile" ]
     }
   }
 }

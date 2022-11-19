@@ -44,9 +44,12 @@ generate_grd("build_injected_grdp") {
   deps = [ ":build_injected_scripts" ]
 }
 
-# Preprocess existing files.
+# Preprocess existing files. Must preprocess directly to target_gen_dir to
+# accommodate Closure Compiler, as a large number of external targets expect to
+# import these files from relative paths.
+preprocess_folder = target_gen_dir
 preprocess_if_expr("preprocess_src") {
-  out_folder = "$target_gen_dir/gaia_auth_host_preprocessed"
+  out_folder = preprocess_folder
   out_manifest = "$target_gen_dir/$manifest_existing_files"
   in_files = [
     "authenticator.js",
@@ -54,7 +57,9 @@ preprocess_if_expr("preprocess_src") {
     "okta_detect_success_injected.js",
     "password_change_authenticator.js",
     "post_message_channel.js",
+    "scroll_helper_injected.js",
     "saml_handler.js",
+    "saml_injected.js",
     "saml_password_attributes.js",
     "saml_timestamps.js",
     "saml_username_autofill.js",
@@ -78,108 +83,127 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-js_type_check("closure_compile") {
-  closure_flags =
-      default_closure_args + [
-        "js_module_root=" +
-            rebase_path("//chrome/browser/resources/gaia_auth_host/",
-                        root_build_dir),
-        "js_module_root=./gen/chrome/browser/resources/gaia_auth_host/",
-      ]
-  deps = [
-    ":authenticator",
-    ":channel",
-    ":password_change_authenticator",
-    ":post_message_channel",
-    ":saml_handler",
-    ":saml_password_attributes",
-    ":saml_timestamps",
-    ":saml_username_autofill",
-    ":scroll_helper_injected",
-    ":webview_event_manager",
-  ]
-}
+# Limit closure targets to ChromeOS, since closure is deprecated on Desktop.
+if (is_chromeos_ash) {
+  js_type_check("closure_compile") {
+    deps = [
+      ":authenticator",
+      ":channel",
+      ":password_change_authenticator",
+      ":post_message_channel",
+      ":saml_handler",
+      ":saml_password_attributes",
+      ":saml_timestamps",
+      ":saml_username_autofill",
+      ":scroll_helper_injected",
+      ":webview_event_manager",
+    ]
+  }
 
-js_library("channel") {
-}
+  js_library("channel") {
+    sources = [ "$preprocess_folder/channel.js" ]
+    extra_deps = [ ":preprocess_src" ]
+  }
 
-js_library("webview_event_manager") {
-}
+  js_library("webview_event_manager") {
+    sources = [ "$preprocess_folder/webview_event_manager.js" ]
+    extra_deps = [ ":preprocess_src" ]
+  }
 
-js_library("post_message_channel") {
-  deps = [ ":channel" ]
-}
+  js_library("post_message_channel") {
+    sources = [ "$preprocess_folder/post_message_channel.js" ]
+    deps = [ ":channel" ]
+    extra_deps = [ ":preprocess_src" ]
+  }
 
-js_library("saml_password_attributes") {
-  deps = [ ":saml_timestamps" ]
-}
+  js_library("saml_password_attributes") {
+    sources = [ "$preprocess_folder/saml_password_attributes.js" ]
+    deps = [ ":saml_timestamps" ]
+    extra_deps = [ ":preprocess_src" ]
+  }
 
-js_library("saml_timestamps") {
-}
+  js_library("saml_timestamps") {
+    sources = [ "$preprocess_folder/saml_timestamps.js" ]
+    extra_deps = [ ":preprocess_src" ]
+  }
 
-js_library("scroll_helper_injected") {
-}
+  js_library("scroll_helper_injected") {
+    sources = [ "$preprocess_folder/scroll_helper_injected.js" ]
+    extra_deps = [ ":preprocess_src" ]
+  }
 
-js_library("saml_username_autofill") {
-  deps = [ "//ui/webui/resources/js:util" ]
-}
+  js_library("saml_username_autofill") {
+    sources = [ "$preprocess_folder/scroll_helper_injected.js" ]
+    deps = [ "//ui/webui/resources/js:util" ]
+    extra_deps = [ ":preprocess_src" ]
+  }
 
-js_library("saml_handler") {
-  deps = [
-    ":channel",
-    ":post_message_channel",
-    ":saml_password_attributes",
-    ":saml_username_autofill",
-    ":webview_event_manager",
-    "//ui/webui/resources/js/cr:event_target",
-  ]
-}
+  js_library("saml_handler") {
+    sources = [ "$preprocess_folder/saml_handler.js" ]
+    deps = [
+      ":channel",
+      ":post_message_channel",
+      ":saml_password_attributes",
+      ":saml_username_autofill",
+      ":webview_event_manager",
+      "//ui/webui/resources/js/cr:event_target",
+    ]
+    extra_deps = [ ":preprocess_src" ]
+  }
 
-js_library("saml_injected") {
-  deps = [
-    ":channel",
-    ":post_message_channel",
-    ":scroll_helper_injected",
-  ]
-}
+  js_library("saml_injected") {
+    sources = [ "$preprocess_folder/saml_injected.js" ]
+    deps = [
+      ":channel",
+      ":post_message_channel",
+      ":scroll_helper_injected",
+    ]
+    extra_deps = [ ":preprocess_src" ]
+  }
 
-js_library("authenticator") {
-  deps = [
-    ":saml_handler",
-    ":saml_password_attributes",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:util",
-    "//ui/webui/resources/js/cr:event_target",
-  ]
-  externs_list = [
-    "$externs_path/chrome_extensions.js",
-    "$externs_path/chrome_send.js",
-    "$externs_path/webview_tag.js",
-  ]
-}
+  js_library("authenticator") {
+    sources = [ "$preprocess_folder/authenticator.js" ]
+    deps = [
+      ":saml_handler",
+      ":saml_password_attributes",
+      "//ui/webui/resources/js:assert",
+      "//ui/webui/resources/js:cr.m",
+      "//ui/webui/resources/js:util",
+      "//ui/webui/resources/js/cr:event_target",
+    ]
+    externs_list = [
+      "$externs_path/chrome_extensions.js",
+      "$externs_path/chrome_send.js",
+      "$externs_path/webview_tag.js",
+    ]
+    extra_deps = [ ":preprocess_src" ]
+  }
 
-js_library("password_change_authenticator") {
-  deps = [
-    ":saml_handler",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:util",
-    "//ui/webui/resources/js/cr:event_target",
-  ]
-  externs_list = [
-    "$externs_path/chrome_extensions.js",
-    "$externs_path/webview_tag.js",
-  ]
+  js_library("password_change_authenticator") {
+    sources = [ "$preprocess_folder/password_change_authenticator.js" ]
+    deps = [
+      ":saml_handler",
+      "//ui/webui/resources/js:assert",
+      "//ui/webui/resources/js:util",
+      "//ui/webui/resources/js/cr:event_target",
+    ]
+    externs_list = [
+      "$externs_path/chrome_extensions.js",
+      "$externs_path/webview_tag.js",
+    ]
+    extra_deps = [ ":preprocess_src" ]
+  }
 }
 
 stage_folder = "$target_gen_dir/stage"
 
 copy("saml_injected_copy") {
+  deps = [ ":preprocess_src" ]
   sources = [
-    "channel.js",
-    "post_message_channel.js",
-    "saml_injected.js",
-    "scroll_helper_injected.js",
+    "$preprocess_folder/channel.js",
+    "$preprocess_folder/post_message_channel.js",
+    "$preprocess_folder/saml_injected.js",
+    "$preprocess_folder/scroll_helper_injected.js",
   ]
   outputs = [ stage_folder + "/{{source_file_part}}" ]
 }

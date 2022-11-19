@@ -128,12 +128,10 @@ group("resources") {
 if (enable_js_type_check) {
   group("closure_compile") {
     deps = []
-    if (is_linux || is_chromeos || is_win || is_mac) {
-      deps += [ "gaia_auth_host:closure_compile" ]
-    }
     if (is_chromeos_ash) {
       deps += [
         "chromeos:closure_compile",
+        "gaia_auth_host:closure_compile",
         "nearby_internals:closure_compile",
         "nearby_share:closure_compile",
         "nearby_share/shared:closure_compile_module",

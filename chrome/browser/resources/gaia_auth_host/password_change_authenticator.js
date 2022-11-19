@@ -7,7 +7,9 @@
  */
 
 import {assert} from 'chrome://resources/js/assert.js';
+// <if expr="chromeos_ash">
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
+// </if>
 import {$, appendParam} from 'chrome://resources/js/util.js';
 
 import {SamlHandler} from './saml_handler.js';
