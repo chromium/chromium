@@ -206,6 +206,13 @@ class DCLayerTree {
   };
 
  private:
+  // Given pending overlays, builds or updates visual tree.
+  // Returns true if commit succeeded.
+  bool BuildVisualTreeHelper(
+      const std::vector<std::unique_ptr<ui::DCRendererLayerParams>>& overlays,
+      // True if the caller determined that rebuilding the tree is required.
+      bool needs_rebuild_visual_tree);
+
   // This will add an ink visual to the visual tree to enable delegated ink
   // trails. This will initially always be called directly before an OS
   // delegated ink API is used. After that, it can also be added anytime the
