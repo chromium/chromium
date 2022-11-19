@@ -217,19 +217,41 @@ void FastPairGattServiceClientImpl::NotifyWriteAccountKeyError(
   std::move(write_account_key_callback_).Run(error);
 }
 
-void FastPairGattServiceClientImpl::GattDiscoveryCompleteForService(
+void FastPairGattServiceClientImpl::GattServicesDiscovered(
     device::BluetoothAdapter* adapter,
-    device::BluetoothRemoteGattService* service) {
+    device::BluetoothDevice* device) {
+  // The Bluetooth adapter |this| observes notifies its observers to call this
+  // function for all devices known to the adapter once all GATT services of
+  // each device are ready. One FastPairGattServiceClientImpl is created per
+  // device handshake, so each is associated with a device. Before considering
+  // |device|'s discovered services, this client must ensure that it is the same
+  // as the associated device.
+  if (device_address_ != device->GetAddress())
+    return;
+
   gatt_service_discovery_timer_.Stop();
 
-  // Verify that the discovered service and device are the ones we care about.
-  if (service->GetUUID() == kFastPairBluetoothUuid &&
-      service->GetDevice()->GetAddress() == device_address_) {
-    QP_LOG(INFO) << __func__
-                 << ": Completed discovery for Fast Pair GATT service";
-    gatt_service_ = service;
-    FindGattCharacteristicsAndStartNotifySessions();
+  gatt_service_ = device->GetGattService(kFastPairBluetoothUuid.value());
+  if (!gatt_service_) {
+    QP_LOG(WARNING) << __func__
+                    << ": Fast Pair GATT service expected but unavailable; "
+                    << "GATT connection will be abandoned.";
+
+    // TODO(b/257099968): Emit a metric "expected GATT service *not* found".
+
+    // Since the Fast Pair GATT service is not found, this connection
+    // is fatal; |this| will be destroyed.
+    // The FastPairHandshake that owns |this| and the FastPairPairer that owns
+    // the FastPairHandshake will be notified of the failed connection.
+    NotifyInitializedError(PairFailure::kGattServiceDiscovery);
+    return;
   }
+
+  // TODO(b/257099968): Emit a metric "expected GATT service found".
+
+  QP_LOG(INFO) << __func__
+               << ": Completed discovery for Fast Pair GATT service";
+  FindGattCharacteristicsAndStartNotifySessions();
 }
 
 std::vector<device::BluetoothRemoteGattCharacteristic*>
