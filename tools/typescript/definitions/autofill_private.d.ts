@@ -92,25 +92,20 @@ declare global {
       }
 
       export function saveAddress(address: AddressEntry): void;
-      export function getCountryList(
-          callback: (entries: CountryEntry[]) => void): void;
+      export function getCountryList(): Promise<CountryEntry[]>;
       export function getAddressComponents(
-          countryCode: string,
-          callback: (components: AddressComponents) => void): void;
-      export function getAddressList(
-          callback: (entries: AddressEntry[]) => void): void;
+          countryCode: string): Promise<AddressComponents>;
+      export function getAddressList(): Promise<AddressEntry[]>;
       export function saveCreditCard(card: CreditCardEntry): void;
       export function removeEntry(guid: string): void;
       export function validatePhoneNumbers(
-          params: ValidatePhoneParams,
-          callback: (numbers: string[]) => void): void;
-      export function getCreditCardList(
-          callback: (entries: CreditCardEntry[]) => void): void;
+          params: ValidatePhoneParams): Promise<string[]>;
+      export function getCreditCardList(): Promise<CreditCardEntry[]>;
       export function maskCreditCard(guid: string): void;
       export function migrateCreditCards(): void;
       export function logServerCardLinkClicked(): void;
       export function setCreditCardFIDOAuthEnabledState(enabled: boolean): void;
-      export function getUpiIdList(callback: (items: string[]) => void): void;
+      export function getUpiIdList(): Promise<string[]>;
       export function addVirtualCard(cardId: string): void;
       export function removeVirtualCard(cardId: string): void;
 

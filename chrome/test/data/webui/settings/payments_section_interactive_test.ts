@@ -9,6 +9,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {CrInputElement, PaymentsManagerImpl, SettingsCreditCardEditDialogElement, SettingsPaymentsSectionElement} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, whenAttributeIs} from 'chrome://webui-test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {createCreditCardEntry, TestPaymentsManager} from './passwords_and_autofill_fake_data.js';
 // clang-format on
@@ -30,9 +31,9 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
   /**
    * Creates the payments section for the given credit card list.
    */
-  function createPaymentsSection(
+  async function createPaymentsSection(
       creditCards: chrome.autofillPrivate.CreditCardEntry[]):
-      SettingsPaymentsSectionElement {
+      Promise<SettingsPaymentsSectionElement> {
     // Override the PaymentsManagerImpl for testing.
     const paymentsManager = new TestPaymentsManager();
     paymentsManager.data.creditCards = creditCards;
@@ -40,7 +41,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
 
     const section = document.createElement('settings-payments-section');
     document.body.appendChild(section);
-    flush();
+    await flushTasks();
     return section;
   }
 
@@ -48,8 +49,9 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
    * Creates the Add Credit Card dialog. Simulate clicking "Add" button in
    * payments section.
    */
-  function createAddCreditCardDialog(): SettingsCreditCardEditDialogElement {
-    const section = createPaymentsSection(/*creditCards=*/[]);
+  async function createAddCreditCardDialog():
+      Promise<SettingsCreditCardEditDialogElement> {
+    const section = await createPaymentsSection(/*creditCards=*/[]);
     // Simulate clicking "Add" button in payments section.
     assertFalse(!!section.shadowRoot!.querySelector(
         'settings-credit-card-edit-dialog'));
@@ -66,10 +68,10 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
    * clicking three-dots menu button then clicking editing button of the first
    * card in the card list.
    */
-  function createEditCreditCardDialog(
+  async function createEditCreditCardDialog(
       creditCards: chrome.autofillPrivate.CreditCardEntry[]):
-      SettingsCreditCardEditDialogElement {
-    const section = createPaymentsSection(creditCards);
+      Promise<SettingsCreditCardEditDialogElement> {
+    const section = await createPaymentsSection(creditCards);
     // Simulate clicking three-dots menu button for the first card in the list.
     const rowShadowRoot =
         section.$.paymentsList.shadowRoot!
@@ -103,7 +105,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
   }
 
   test('add card dialog', async function() {
-    const creditCardDialog = createAddCreditCardDialog();
+    const creditCardDialog = await createAddCreditCardDialog();
 
     // Wait for the dialog to open.
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
@@ -128,7 +130,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
   });
 
   test('save new card', async function() {
-    const creditCardDialog = createAddCreditCardDialog();
+    const creditCardDialog = await createAddCreditCardDialog();
 
     // Wait for the dialog to open.
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
@@ -177,7 +179,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
   });
 
   test('trim credit card when save', async function() {
-    const creditCardDialog = createAddCreditCardDialog();
+    const creditCardDialog = await createAddCreditCardDialog();
 
     // Wait for the dialog to open.
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
@@ -232,7 +234,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     // Set the expiration year to next year to avoid expired card.
     creditCard.expirationYear = nextYear();
     creditCard.cardNumber = '4444333322221111';
-    const creditCardDialog = createEditCreditCardDialog([creditCard]);
+    const creditCardDialog = await createEditCreditCardDialog([creditCard]);
 
     // Wait for the dialog to open.
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
@@ -286,7 +288,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
   });
 
   test('show error message when input nickname is invalid', async function() {
-    const creditCardDialog = createAddCreditCardDialog();
+    const creditCardDialog = await createAddCreditCardDialog();
 
     // Wait for the dialog to open.
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
@@ -346,7 +348,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     creditCard.expirationYear = nextYear();
     creditCard.cardNumber = '4444333322221111';
     // Edit dialog for an existing card with no nickname.
-    const creditCardDialog = createEditCreditCardDialog([creditCard]);
+    const creditCardDialog = await createEditCreditCardDialog([creditCard]);
 
     // Wait for the dialog to open.
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
@@ -369,7 +371,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
   });
 
   test('only show nickname character count when focused', async function() {
-    const creditCardDialog = createAddCreditCardDialog();
+    const creditCardDialog = await createAddCreditCardDialog();
 
     // Wait for the dialog to open.
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
@@ -415,7 +417,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     // Set the expiration year to the previous year to simulate expired card.
     creditCard.expirationYear = lastYear();
     // Edit dialog for an existing card with no nickname.
-    const creditCardDialog = createEditCreditCardDialog([creditCard]);
+    const creditCardDialog = await createEditCreditCardDialog([creditCard]);
 
     // Wait for the dialog to open.
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');

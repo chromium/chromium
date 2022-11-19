@@ -209,8 +209,8 @@ export class SettingsPaymentsSectionElement extends
     this.setPersonalDataListener_ = setPersonalDataListener;
 
     // Request initial data.
-    this.paymentsManager_.getCreditCardList(setCreditCardsListener);
-    this.paymentsManager_.getUpiIdList(setUpiIdsListener);
+    this.paymentsManager_.getCreditCardList().then(setCreditCardsListener);
+    this.paymentsManager_.getUpiIdList().then(setUpiIdsListener);
 
     // Listen for changes.
     this.paymentsManager_.setPersonalDataManagerListener(

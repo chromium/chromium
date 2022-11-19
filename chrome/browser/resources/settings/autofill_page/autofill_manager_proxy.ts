@@ -24,8 +24,7 @@ export interface AutofillManagerProxy {
   /**
    * Request the list of addresses.
    */
-  getAddressList(
-      callback: (entries: chrome.autofillPrivate.AddressEntry[]) => void): void;
+  getAddressList(): Promise<chrome.autofillPrivate.AddressEntry[]>;
 
   /**
    * Saves the given address.
@@ -48,9 +47,8 @@ export class AutofillManagerImpl implements AutofillManagerProxy {
     chrome.autofillPrivate.onPersonalDataChanged.removeListener(listener);
   }
 
-  getAddressList(
-      callback: (entries: chrome.autofillPrivate.AddressEntry[]) => void) {
-    chrome.autofillPrivate.getAddressList(callback);
+  getAddressList() {
+    return chrome.autofillPrivate.getAddressList();
   }
 
   saveAddress(address: chrome.autofillPrivate.AddressEntry) {

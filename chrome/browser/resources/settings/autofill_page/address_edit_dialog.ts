@@ -382,17 +382,11 @@ export interface CountryDetailManager {
  */
 export class CountryDetailManagerImpl implements CountryDetailManager {
   getCountryList() {
-    return new Promise<chrome.autofillPrivate.CountryEntry[]>(function(
-        callback) {
-      chrome.autofillPrivate.getCountryList(callback);
-    });
+    return chrome.autofillPrivate.getCountryList();
   }
 
   getAddressFormat(countryCode: string) {
-    return new Promise<chrome.autofillPrivate.AddressComponents>(function(
-        callback) {
-      chrome.autofillPrivate.getAddressComponents(countryCode, callback);
-    });
+    return chrome.autofillPrivate.getAddressComponents(countryCode);
   }
 
   static getInstance(): CountryDetailManager {

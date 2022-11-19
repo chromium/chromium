@@ -22,9 +22,7 @@ export interface PaymentsManagerProxy {
   /**
    * Request the list of credit cards.
    */
-  getCreditCardList(
-      callback: (entries: chrome.autofillPrivate.CreditCardEntry[]) => void):
-      void;
+  getCreditCardList(): Promise<chrome.autofillPrivate.CreditCardEntry[]>;
 
   /** @param guid The GUID of the credit card to remove. */
   removeCreditCard(guid: string): void;
@@ -57,7 +55,7 @@ export interface PaymentsManagerProxy {
   /**
    * Requests the list of UPI IDs from personal data.
    */
-  getUpiIdList(callback: (entries: string[]) => void): void;
+  getUpiIdList(): Promise<string[]>;
 
   /**
    * Enrolls the card into virtual cards.
@@ -87,9 +85,8 @@ export class PaymentsManagerImpl implements PaymentsManagerProxy {
     chrome.autofillPrivate.onPersonalDataChanged.removeListener(listener);
   }
 
-  getCreditCardList(
-      callback: (entries: chrome.autofillPrivate.CreditCardEntry[]) => void) {
-    chrome.autofillPrivate.getCreditCardList(callback);
+  getCreditCardList() {
+    return chrome.autofillPrivate.getCreditCardList();
   }
 
   removeCreditCard(guid: string) {
@@ -116,8 +113,8 @@ export class PaymentsManagerImpl implements PaymentsManagerProxy {
     chrome.autofillPrivate.setCreditCardFIDOAuthEnabledState(enabled);
   }
 
-  getUpiIdList(callback: (entries: string[]) => void) {
-    chrome.autofillPrivate.getUpiIdList(callback);
+  getUpiIdList() {
+    return chrome.autofillPrivate.getUpiIdList();
   }
 
   addVirtualCard(cardId: string) {

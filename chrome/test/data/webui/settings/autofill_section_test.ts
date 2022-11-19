@@ -10,6 +10,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {AutofillManagerImpl, CountryDetailManager, CountryDetailManagerImpl, CrInputElement, SettingsAddressEditDialogElement, SettingsAddressRemoveConfirmationDialogElement, SettingsAutofillSectionElement, SettingsTextareaElement} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, whenAttributeIs} from 'chrome://webui-test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {AutofillManagerExpectations, createAddressEntry, createEmptyAddressEntry, TestAutofillManager} from './passwords_and_autofill_fake_data.js';
 // clang-format on
@@ -30,10 +31,7 @@ class CountryDetailManagerTestImpl implements CountryDetailManager {
   }
 
   getAddressFormat(countryCode: string) {
-    return new Promise<chrome.autofillPrivate.AddressComponents>(function(
-        resolve) {
-      chrome.autofillPrivate.getAddressComponents(countryCode, resolve);
-    });
+    return chrome.autofillPrivate.getAddressComponents(countryCode);
   }
 }
 
@@ -52,9 +50,9 @@ function expectEvent(
 /**
  * Creates the autofill section for the given list.
  */
-function createAutofillSection(
+async function createAutofillSection(
     addresses: chrome.autofillPrivate.AddressEntry[],
-    prefValues: any): SettingsAutofillSectionElement {
+    prefValues: any): Promise<SettingsAutofillSectionElement> {
   // Override the AutofillManagerImpl for testing.
   const autofillManager = new TestAutofillManager();
   autofillManager.data.addresses = addresses;
@@ -63,7 +61,7 @@ function createAutofillSection(
   const section = document.createElement('settings-autofill-section');
   section.prefs = {autofill: prefValues};
   document.body.appendChild(section);
-  flush();
+  await flushTasks();
 
   return section;
 }
@@ -88,8 +86,8 @@ function createAddressDialog(address: chrome.autofillPrivate.AddressEntry):
  * Creates the remove address dialog. Simulate clicking "Remove" button in
  * autofill section.
  */
-function createRemoveAddressDialog(autofillManager: TestAutofillManager):
-    SettingsAddressRemoveConfirmationDialogElement {
+async function createRemoveAddressDialog(autofillManager: TestAutofillManager):
+    Promise<SettingsAddressRemoveConfirmationDialogElement> {
   const address = createAddressEntry();
 
   // Override the AutofillManagerImpl for testing.
@@ -99,7 +97,7 @@ function createRemoveAddressDialog(autofillManager: TestAutofillManager):
   document.body.innerHTML = window.trustedTypes!.emptyHTML;
   const section = document.createElement('settings-autofill-section');
   document.body.appendChild(section);
-  flush();
+  await flushTasks();
 
   const addressList = section.$.addressList;
   const row = addressList.children[0];
@@ -146,8 +144,9 @@ suite('AutofillSectionAddressTests', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
-  test('verifyNoAddresses', function() {
-    const section = createAutofillSection([], {profile_enabled: {value: true}});
+  test('verifyNoAddresses', async function() {
+    const section =
+        await createAutofillSection([], {profile_enabled: {value: true}});
 
     const addressList = section.$.addressList;
     assertTrue(!!addressList);
@@ -159,7 +158,7 @@ suite('AutofillSectionAddressTests', function() {
     assertFalse(section.$.autofillProfileToggle.disabled);
   });
 
-  test('verifyAddressCount', function() {
+  test('verifyAddressCount', async function() {
     const addresses = [
       createAddressEntry(),
       createAddressEntry(),
@@ -168,8 +167,8 @@ suite('AutofillSectionAddressTests', function() {
       createAddressEntry(),
     ];
 
-    const section =
-        createAutofillSection(addresses, {profile_enabled: {value: true}});
+    const section = await createAutofillSection(
+        addresses, {profile_enabled: {value: true}});
 
     const addressList = section.$.addressList;
     assertTrue(!!addressList);
@@ -181,17 +180,17 @@ suite('AutofillSectionAddressTests', function() {
     assertFalse(section.$.addAddress.disabled);
   });
 
-  test('verifyAddressDisabled', function() {
+  test('verifyAddressDisabled', async function() {
     const section =
-        createAutofillSection([], {profile_enabled: {value: false}});
+        await createAutofillSection([], {profile_enabled: {value: false}});
 
     assertFalse(section.$.autofillProfileToggle.disabled);
     assertTrue(section.$.addAddress.hidden);
   });
 
-  test('verifyAddressFields', function() {
+  test('verifyAddressFields', async function() {
     const address = createAddressEntry();
-    const section = createAutofillSection([address], {});
+    const section = await createAutofillSection([address], {});
     const addressList = section.$.addressList;
     const row = addressList.children[0];
     assertTrue(!!row);
@@ -210,9 +209,9 @@ suite('AutofillSectionAddressTests', function() {
     assertEquals(addressSummary, actualSummary);
   });
 
-  test('verifyAddressRowButtonTriggersDropdown', function() {
+  test('verifyAddressRowButtonTriggersDropdown', async function() {
     const address = createAddressEntry();
-    const section = createAutofillSection([address], {});
+    const section = await createAutofillSection([address], {});
     const addressList = section.$.addressList;
     const row = addressList.children[0];
     assertTrue(!!row);
@@ -258,7 +257,8 @@ suite('AutofillSectionAddressTests', function() {
 
   test('verifyRemoveAddressDialogConfirmed', async function() {
     const autofillManager = new TestAutofillManager();
-    const removeAddressDialog = createRemoveAddressDialog(autofillManager);
+    const removeAddressDialog =
+        await createRemoveAddressDialog(autofillManager);
 
     // Wait for the dialog to open.
     await whenAttributeIs(removeAddressDialog.$.dialog, 'open', '');
@@ -278,7 +278,8 @@ suite('AutofillSectionAddressTests', function() {
 
   test('verifyRemoveAddressDialogCanceled', async function() {
     const autofillManager = new TestAutofillManager();
-    const removeAddressDialog = createRemoveAddressDialog(autofillManager);
+    const removeAddressDialog =
+        await createRemoveAddressDialog(autofillManager);
 
     // Wait for the dialog to open.
     await whenAttributeIs(removeAddressDialog.$.dialog, 'open', '');

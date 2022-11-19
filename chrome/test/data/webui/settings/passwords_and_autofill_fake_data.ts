@@ -413,10 +413,9 @@ export class TestAutofillManager implements AutofillManagerProxy {
     this.actual_.listeningAddresses--;
   }
 
-  getAddressList(
-      callback: (entries: chrome.autofillPrivate.AddressEntry[]) => void) {
+  getAddressList() {
     this.actual_.requestedAddresses++;
-    callback(this.data.addresses);
+    return Promise.resolve(this.data.addresses);
   }
 
   saveAddress(_address: chrome.autofillPrivate.AddressEntry) {}
@@ -485,15 +484,14 @@ export class TestPaymentsManager implements PaymentsManagerProxy {
     this.actual_.listeningCreditCards--;
   }
 
-  getCreditCardList(
-      callback: (entries: chrome.autofillPrivate.CreditCardEntry[]) => void) {
+  getCreditCardList() {
     this.actual_.requestedCreditCards++;
-    callback(this.data.creditCards);
+    return Promise.resolve(this.data.creditCards);
   }
 
-  getUpiIdList(callback: (entries: string[]) => void) {
+  getUpiIdList() {
     this.actual_.requestedUpiIds++;
-    callback(this.data.upiIds);
+    return Promise.resolve(this.data.upiIds);
   }
 
   clearCachedCreditCard(_guid: string) {

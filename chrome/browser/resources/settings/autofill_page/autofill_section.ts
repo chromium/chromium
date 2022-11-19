@@ -120,7 +120,7 @@ export class SettingsAutofillSectionElement extends
     this.setPersonalDataListener_ = setPersonalDataListener;
 
     // Request initial data.
-    this.autofillManager_.getAddressList(setAddressesListener);
+    this.autofillManager_.getAddressList().then(setAddressesListener);
 
     // Listen for changes.
     this.autofillManager_.setPersonalDataManagerListener(
