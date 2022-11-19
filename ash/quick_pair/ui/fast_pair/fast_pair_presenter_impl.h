@@ -107,7 +107,7 @@ class FastPairPresenterImpl : public FastPairPresenter {
   void OnDiscoveryClicked(DiscoveryCallback action_callback);
   void OnDiscoveryDismissed(scoped_refptr<Device> device,
                             DiscoveryCallback callback,
-                            bool user_dismissed);
+                            FastPairNotificationDismissReason dismiss_reason);
   void OnDiscoveryLearnMoreClicked(DiscoveryCallback action_callback);
   bool WasDiscoveryNotificationAlreadyShownForDevice(const Device& device);
   void AddDeviceToDiscoveryNotificationAlreadyShownMap(
@@ -115,13 +115,15 @@ class FastPairPresenterImpl : public FastPairPresenter {
   void AllowNotificationForRecentlyLostDevice(scoped_refptr<Device> device);
 
   void OnNavigateToSettings(PairingFailedCallback callback);
-  void OnPairingFailedDismissed(PairingFailedCallback callback,
-                                bool user_dismissed);
+  void OnPairingFailedDismissed(
+      PairingFailedCallback callback,
+      FastPairNotificationDismissReason dismiss_reason);
 
   void OnAssociateAccountActionClicked(AssociateAccountCallback callback);
   void OnAssociateAccountLearnMoreClicked(AssociateAccountCallback callback);
-  void OnAssociateAccountDismissed(AssociateAccountCallback callback,
-                                   bool user_dismissed);
+  void OnAssociateAccountDismissed(
+      AssociateAccountCallback callback,
+      FastPairNotificationDismissReason dismiss_reason);
 
   void OnDiscoveryMetadataRetrieved(scoped_refptr<Device> device,
                                     DiscoveryCallback callback,

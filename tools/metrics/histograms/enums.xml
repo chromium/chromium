@@ -37660,6 +37660,7 @@ Called by update_extension_permission.py.-->
   <int value="12" label="Discovery UI: Connect Button Pressed"/>
   <int value="13" label="Discovery UI Dismissed By User"/>
   <int value="14" label="Discovery UI: Learn More Pressed"/>
+  <int value="15" label="Discovery UI Dismissed By Timeout"/>
   <int value="121" label="Pairing Failed"/>
   <int value="122" label="Pairing Succeeded"/>
   <int value="141"
@@ -37668,6 +37669,8 @@ Called by update_extension_permission.py.-->
       label="Discovery UI: Dismissed By User After Learn More Pressed"/>
   <int value="143"
       label="Discovery UI: Dismissed By OS After Learn More Pressed"/>
+  <int value="144"
+      label="Discovery UI: Dismissed By Timeout After Learn More Pressed"/>
   <int value="1211" label="Pairing Failed: Error UI Dismissed By OS"/>
   <int value="1212" label="Pairing Failed: Error UI Settings Button Pressed"/>
   <int value="1213" label="Pairing Failed: Error UI Dismissed By User"/>
@@ -37745,12 +37748,15 @@ Called by update_extension_permission.py.-->
   <int value="12" label="Associate Account Dismissed By OS"/>
   <int value="13" label="Associate Account: Learn More Button Pressed"/>
   <int value="14" label="Associate Account: Save Button Pressed"/>
+  <int value="15" label="Associate Account Dismissed By Timeout"/>
   <int value="131"
       label="Associate Account: Save Button Pressed After Learn More Pressed"/>
   <int value="132"
       label="Associate Account Dismissed By User After Learn More Pressed"/>
   <int value="133"
       label="Associate Account Dismissed By OS After Learn More Pressed"/>
+  <int value="134"
+      label="Associate Account Dismissed By Timeout After Learn More Pressed"/>
 </enum>
 
 <enum name="FastPairSavedDevicesUiEvent">

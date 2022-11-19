@@ -282,23 +282,35 @@ void FastPairPresenterImpl::OnDiscoveryClicked(DiscoveryCallback callback) {
   callback.Run(DiscoveryAction::kPairToDevice);
 }
 
-void FastPairPresenterImpl::OnDiscoveryDismissed(scoped_refptr<Device> device,
-                                                 DiscoveryCallback callback,
-                                                 bool user_dismissed) {
+void FastPairPresenterImpl::OnDiscoveryDismissed(
+    scoped_refptr<Device> device,
+    DiscoveryCallback callback,
+    FastPairNotificationDismissReason dismiss_reason) {
   // If the discovery notification was not dismissed by user, we remove the
   // device from the map in order to allow the notification to show again. We
   // check |WasDiscoveryNotificationAlreadyShownForDevice| to make sure it is
   // the same protocol, address, and metadata in the map before removing to
   // prevent edge cases (for example, a device changes protocol but uses the
   // same address).
-  if (!user_dismissed &&
+  if (dismiss_reason != FastPairNotificationDismissReason::kDismissedByUser &&
       WasDiscoveryNotificationAlreadyShownForDevice(*device)) {
     address_to_devices_with_discovery_notification_already_shown_map_.erase(
         device->ble_address);
   }
 
-  callback.Run(user_dismissed ? DiscoveryAction::kDismissedByUser
-                              : DiscoveryAction::kDismissed);
+  switch (dismiss_reason) {
+    case FastPairNotificationDismissReason::kDismissedByUser:
+      callback.Run(DiscoveryAction::kDismissedByUser);
+      break;
+    case FastPairNotificationDismissReason::kDismissedByOs:
+      callback.Run(DiscoveryAction::kDismissedByOs);
+      break;
+    case FastPairNotificationDismissReason::kDismissedByTimeout:
+      callback.Run(DiscoveryAction::kDismissedByTimeout);
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 void FastPairPresenterImpl::StartDeviceLostTimer(scoped_refptr<Device> device) {
@@ -416,9 +428,22 @@ void FastPairPresenterImpl::OnNavigateToSettings(
 
 void FastPairPresenterImpl::OnPairingFailedDismissed(
     PairingFailedCallback callback,
-    bool user_dismissed) {
-  callback.Run(user_dismissed ? PairingFailedAction::kDismissedByUser
-                              : PairingFailedAction::kDismissed);
+    FastPairNotificationDismissReason dismiss_reason) {
+  switch (dismiss_reason) {
+    case FastPairNotificationDismissReason::kDismissedByUser:
+      callback.Run(PairingFailedAction::kDismissedByUser);
+      break;
+    case FastPairNotificationDismissReason::kDismissedByOs:
+      callback.Run(PairingFailedAction::kDismissed);
+      break;
+    case FastPairNotificationDismissReason::kDismissedByTimeout:
+      // Fast Pair Error Notifications do not have a timeout, so this is never
+      // expected to be hit.
+      NOTREACHED();
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 void FastPairPresenterImpl::ShowAssociateAccount(
@@ -493,9 +518,20 @@ void FastPairPresenterImpl::OnAssociateAccountLearnMoreClicked(
 
 void FastPairPresenterImpl::OnAssociateAccountDismissed(
     AssociateAccountCallback callback,
-    bool user_dismissed) {
-  callback.Run(user_dismissed ? AssociateAccountAction::kDismissedByUser
-                              : AssociateAccountAction::kDismissed);
+    FastPairNotificationDismissReason dismiss_reason) {
+  switch (dismiss_reason) {
+    case FastPairNotificationDismissReason::kDismissedByUser:
+      callback.Run(AssociateAccountAction::kDismissedByUser);
+      break;
+    case FastPairNotificationDismissReason::kDismissedByOs:
+      callback.Run(AssociateAccountAction::kDismissedByOs);
+      break;
+    case FastPairNotificationDismissReason::kDismissedByTimeout:
+      callback.Run(AssociateAccountAction::kDismissedByTimeout);
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 void FastPairPresenterImpl::ShowCompanionApp(scoped_refptr<Device> device,

@@ -15,14 +15,17 @@ std::ostream& operator<<(std::ostream& stream, DiscoveryAction action) {
     case DiscoveryAction::kDismissedByUser:
       stream << "[Dismissed by user]";
       break;
-    case DiscoveryAction::kDismissed:
-      stream << "[Dismissed]";
+    case DiscoveryAction::kDismissedByOs:
+      stream << "[Dismissed by OS]";
       break;
     case DiscoveryAction::kLearnMore:
       stream << "[Learn more]";
       break;
     case DiscoveryAction::kAlreadyDisplayed:
-      stream << "[[Already displayed notification for device]]";
+      stream << "[Already displayed notification for device]";
+      break;
+    case DiscoveryAction::kDismissedByTimeout:
+      stream << "[Dismissed by timeout]";
       break;
   }
 
@@ -40,8 +43,11 @@ std::ostream& operator<<(std::ostream& stream, AssociateAccountAction action) {
     case AssociateAccountAction::kDismissedByUser:
       stream << "[Dismissed by user]";
       break;
-    case AssociateAccountAction::kDismissed:
-      stream << "[Dismissed]";
+    case AssociateAccountAction::kDismissedByOs:
+      stream << "[Dismissed by OS]";
+      break;
+    case AssociateAccountAction::kDismissedByTimeout:
+      stream << "[Dismissed by timeout]";
       break;
   }
 

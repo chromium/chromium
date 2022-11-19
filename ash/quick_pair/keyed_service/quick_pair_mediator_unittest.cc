@@ -220,7 +220,8 @@ TEST_F(MediatorTest, DoesNotInvokeShowPairing_DismissedByUser) {
 TEST_F(MediatorTest, DoesNotInvokeShowPairing_Dismissed) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairing).Times(0);
-  mock_ui_broker_->NotifyDiscoveryAction(device_, DiscoveryAction::kDismissed);
+  mock_ui_broker_->NotifyDiscoveryAction(device_,
+                                         DiscoveryAction::kDismissedByOs);
 }
 
 TEST_F(MediatorTest, DoesNotInvokeShowPairing_LearnMore) {
@@ -534,7 +535,7 @@ TEST_F(MediatorTest, AssociateAccountKeyAction_Dismissed) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_pairer_broker_, PairDevice).Times(0);
   mock_ui_broker_->NotifyAssociateAccountAction(
-      device_, AssociateAccountAction::kDismissed);
+      device_, AssociateAccountAction::kDismissedByUser);
 }
 
 TEST_F(MediatorTest, CompanionAppAction_DownloadApp) {

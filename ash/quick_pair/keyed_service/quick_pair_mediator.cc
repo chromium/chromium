@@ -276,10 +276,11 @@ void Mediator::OnDiscoveryAction(scoped_refptr<Device> device,
 
       pairer_broker_->PairDevice(device);
     } break;
-    case DiscoveryAction::kDismissedByUser:
-    case DiscoveryAction::kDismissed:
-    case DiscoveryAction::kLearnMore:
     case DiscoveryAction::kAlreadyDisplayed:
+    case DiscoveryAction::kDismissedByOs:
+    case DiscoveryAction::kDismissedByTimeout:
+    case DiscoveryAction::kDismissedByUser:
+    case DiscoveryAction::kLearnMore:
       break;
   }
 }
@@ -304,10 +305,10 @@ void Mediator::OnAssociateAccountAction(scoped_refptr<Device> device,
       ui_broker_->RemoveNotifications(
           /*clear_already_shown_discovery_notification_cache=*/false);
       break;
-    case AssociateAccountAction::kLearnMore:
-      break;
+    case AssociateAccountAction::kDismissedByOs:
+    case AssociateAccountAction::kDismissedByTimeout:
     case AssociateAccountAction::kDismissedByUser:
-    case AssociateAccountAction::kDismissed:
+    case AssociateAccountAction::kLearnMore:
       break;
   }
 }

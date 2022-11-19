@@ -17,6 +17,14 @@ class MessageCenter;
 namespace ash {
 namespace quick_pair {
 
+class NotificationDelegate;
+
+enum class FastPairNotificationDismissReason {
+  kDismissedByUser,
+  kDismissedByOs,
+  kDismissedByTimeout,
+};
+
 // This controller creates and manages a message_center::Notification for each
 // FastPair corresponding notification event.
 class FastPairNotificationController {
@@ -30,53 +38,59 @@ class FastPairNotificationController {
       const FastPairNotificationController&) = delete;
 
   // Creates and displays corresponding system notification.
-  void ShowErrorNotification(const std::u16string& device_name,
-                             gfx::Image device_image,
-                             base::RepeatingClosure launch_bluetooth_pairing,
-                             base::OnceCallback<void(bool)> on_close);
+  void ShowErrorNotification(
+      const std::u16string& device_name,
+      gfx::Image device_image,
+      base::RepeatingClosure launch_bluetooth_pairing,
+      base::OnceCallback<void(FastPairNotificationDismissReason)> on_close);
   void ShowUserDiscoveryNotification(
       const std::u16string& device_name,
       const std::u16string& email_address,
       gfx::Image device_image,
       base::RepeatingClosure on_connect_clicked,
       base::RepeatingClosure on_learn_more_clicked,
-      base::OnceCallback<void(bool)> on_close);
+      base::OnceCallback<void(FastPairNotificationDismissReason)> on_close);
   void ShowGuestDiscoveryNotification(
       const std::u16string& device_name,
       gfx::Image device_image,
       base::RepeatingClosure on_connect_clicked,
       base::RepeatingClosure on_learn_more_clicked,
-      base::OnceCallback<void(bool)> on_close);
+      base::OnceCallback<void(FastPairNotificationDismissReason)> on_close);
   void ShowSubsequentDiscoveryNotification(
       const std::u16string& device_name,
       const std::u16string& email_address,
       gfx::Image device_image,
       base::RepeatingClosure on_connect_clicked,
       base::RepeatingClosure on_learn_more_clicked,
-      base::OnceCallback<void(bool)> on_close);
+      base::OnceCallback<void(FastPairNotificationDismissReason)> on_close);
   void ShowApplicationAvailableNotification(
       const std::u16string& device_name,
       gfx::Image device_image,
       base::RepeatingClosure download_app_callback,
-      base::OnceCallback<void(bool)> on_close);
+      base::OnceCallback<void(FastPairNotificationDismissReason)> on_close);
   void ShowApplicationInstalledNotification(
       const std::u16string& device_name,
       gfx::Image device_image,
       const std::u16string& app_name,
       base::RepeatingClosure launch_app_callback,
-      base::OnceCallback<void(bool)> on_close);
-  void ShowPairingNotification(const std::u16string& device_name,
-                               gfx::Image device_image,
-                               base::OnceCallback<void(bool)> on_close);
-  void ShowAssociateAccount(const std::u16string& device_name,
-                            const std::u16string& email_address,
-                            gfx::Image device_image,
-                            base::RepeatingClosure on_save_clicked,
-                            base::RepeatingClosure on_learn_more_clicked,
-                            base::OnceCallback<void(bool)> on_close);
+      base::OnceCallback<void(FastPairNotificationDismissReason)> on_close);
+  void ShowPairingNotification(
+      const std::u16string& device_name,
+      gfx::Image device_image,
+      base::OnceCallback<void(FastPairNotificationDismissReason)> on_close);
+  void ShowAssociateAccount(
+      const std::u16string& device_name,
+      const std::u16string& email_address,
+      gfx::Image device_image,
+      base::RepeatingClosure on_save_clicked,
+      base::RepeatingClosure on_learn_more_clicked,
+      base::OnceCallback<void(FastPairNotificationDismissReason)> on_close);
   void RemoveNotifications();
 
  private:
+  void RemoveNotificationsByTimeout(
+      scoped_refptr<NotificationDelegate> notification_delegate);
+
   // This timer is used for Discovery and Associate Account notifications to
   // remove them from the Message Center if the user does not elect to begin
   // pairing/saving to their account.

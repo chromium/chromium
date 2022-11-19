@@ -29,11 +29,13 @@ enum COMPONENT_EXPORT(QUICK_PAIR_COMMON) FastPairEngagementFlowEvent {
   kDiscoveryUiConnectPressed = 12,
   kDiscoveryUiDismissedByUser = 13,
   kDiscoveryUiLearnMorePressed = 14,
+  kDiscoveryUiDismissedByTimeout = 15,
   kPairingFailed = 121,
   kPairingSucceeded = 122,
   kDiscoveryUiConnectPressedAfterLearnMorePressed = 141,
   kDiscoveryUiDismissedByUserAfterLearnMorePressed = 142,
   kDiscoveryUiDismissedAfterLearnMorePressed = 143,
+  kDiscoveryUiDismissedByTimeoutAfterLearnMorePressed = 144,
   kErrorUiDismissed = 1211,
   kErrorUiSettingsPressed = 1212,
   kErrorUiDismissedByUser = 1213,
@@ -52,9 +54,11 @@ enum COMPONENT_EXPORT(QUICK_PAIR_COMMON)
       kAssociateAccountUiDismissed = 12,
       kAssociateAccountLearnMorePressed = 13,
       kAssociateAccountSavePressed = 14,
+      kAssociateAccountUiDismissedByTimeout = 15,
       kAssociateAccountSavePressedAfterLearnMorePressed = 131,
       kAssociateAccountDismissedByUserAfterLearnMorePressed = 132,
       kAssociateAccountDismissedAfterLearnMorePressed = 133,
+      kAssociateAccountDismissedByTimeoutAfterLearnMorePressed = 134,
     };
 
 // These values are persisted to logs. Entries should not be renumbered and

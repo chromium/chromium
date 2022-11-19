@@ -146,7 +146,7 @@ void QuickPairMetricsLogger::OnDiscoveryAction(scoped_refptr<Device> device,
       AttemptRecordingFastPairEngagementFlow(
           *device, FastPairEngagementFlowEvent::kDiscoveryUiDismissedByUser);
       break;
-    case DiscoveryAction::kDismissed:
+    case DiscoveryAction::kDismissedByOs:
       if (base::Contains(discovery_learn_more_devices_, device)) {
         AttemptRecordingFastPairEngagementFlow(
             *device, FastPairEngagementFlowEvent::
@@ -157,6 +157,18 @@ void QuickPairMetricsLogger::OnDiscoveryAction(scoped_refptr<Device> device,
 
       AttemptRecordingFastPairEngagementFlow(
           *device, FastPairEngagementFlowEvent::kDiscoveryUiDismissed);
+      break;
+    case DiscoveryAction::kDismissedByTimeout:
+      if (base::Contains(discovery_learn_more_devices_, device)) {
+        AttemptRecordingFastPairEngagementFlow(
+            *device, FastPairEngagementFlowEvent::
+                         kDiscoveryUiDismissedByTimeoutAfterLearnMorePressed);
+        discovery_learn_more_devices_.erase(device);
+        break;
+      }
+
+      AttemptRecordingFastPairEngagementFlow(
+          *device, FastPairEngagementFlowEvent::kDiscoveryUiDismissedByTimeout);
       break;
     case DiscoveryAction::kAlreadyDisplayed:
       break;
@@ -274,7 +286,21 @@ void QuickPairMetricsLogger::OnAssociateAccountAction(
           *device, FastPairRetroactiveEngagementFlowEvent::
                        kAssociateAccountUiDismissedByUser);
       break;
-    case AssociateAccountAction::kDismissed:
+    case AssociateAccountAction::kDismissedByTimeout:
+      if (base::Contains(associate_account_learn_more_devices_, device)) {
+        AttemptRecordingFastPairRetroactiveEngagementFlow(
+            *device,
+            FastPairRetroactiveEngagementFlowEvent::
+                kAssociateAccountDismissedByTimeoutAfterLearnMorePressed);
+        associate_account_learn_more_devices_.erase(device);
+        break;
+      }
+
+      AttemptRecordingFastPairRetroactiveEngagementFlow(
+          *device, FastPairRetroactiveEngagementFlowEvent::
+                       kAssociateAccountUiDismissedByTimeout);
+      break;
+    case AssociateAccountAction::kDismissedByOs:
       if (base::Contains(associate_account_learn_more_devices_, device)) {
         AttemptRecordingFastPairRetroactiveEngagementFlow(
             *device, FastPairRetroactiveEngagementFlowEvent::
