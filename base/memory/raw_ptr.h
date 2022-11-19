@@ -567,7 +567,7 @@ struct BackupRefPtrImpl {
     // important for integrity of the BRP algorithm. Without these, an attacker
     // could make the pointer point to another allocation, and cause its
     // ref-count to go to 0 upon this pointer's destruction, even though there
-    // may be another pointer still pointint to it, thus making it lose the BRP
+    // may be another pointer still pointing to it, thus making it lose the BRP
     // protection prematurely.
     uintptr_t address = partition_alloc::UntagPtr(wrapped_ptr);
     // TODO(bartekn): Consider adding support for non-BRP pools too (without
