@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/free_deleter.h"
+#include "base/win/nt_status.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/policy_engine_opcodes.h"
@@ -118,7 +119,7 @@ NTSTATUS ProcessPolicy::OpenProcessTokenExAction(const ClientInfo& client_info,
   return status;
 }
 
-DWORD ProcessPolicy::CreateThreadAction(
+NTSTATUS ProcessPolicy::CreateThreadAction(
     const ClientInfo& client_info,
     const SIZE_T stack_size,
     const LPTHREAD_START_ROUTINE start_address,
@@ -131,7 +132,7 @@ DWORD ProcessPolicy::CreateThreadAction(
       ::CreateRemoteThread(client_info.process, nullptr, stack_size,
                            start_address, parameter, creation_flags, thread_id);
   if (!local_handle) {
-    return ::GetLastError();
+    return base::win::GetLastNtStatus();
   }
   if (!::DuplicateHandle(::GetCurrentProcess(), local_handle,
                          client_info.process, handle, 0, false,

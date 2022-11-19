@@ -155,7 +155,10 @@ static_library("sandbox") {
   configs +=
       [ "//build/config/sanitizers:default_sanitizer_flags_but_coverage" ]
 
-  configs += [ "//build/config:precompiled_headers" ]
+  configs += [
+    "//build/config:precompiled_headers",
+    "//build/config/compiler:prevent_unsafe_narrowing",
+  ]
 
   public_deps = [
     ":common",

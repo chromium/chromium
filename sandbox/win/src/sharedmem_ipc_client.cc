@@ -28,7 +28,7 @@ DWORD SignalObjectAndWaitWrapper(HANDLE object_to_signal,
       millis == INFINITE ? nullptr : &timeout);
   if (!NT_SUCCESS(status))
     return WAIT_FAILED;
-  return status;
+  return static_cast<DWORD>(status);
 }
 
 DWORD WaitForSingleObjectWrapper(HANDLE handle, DWORD millis) {
@@ -38,7 +38,7 @@ DWORD WaitForSingleObjectWrapper(HANDLE handle, DWORD millis) {
       handle, FALSE, millis == INFINITE ? nullptr : &timeout);
   if (!NT_SUCCESS(status))
     return WAIT_FAILED;
-  return status;
+  return static_cast<DWORD>(status);
 }
 
 }  // namespace
@@ -172,7 +172,8 @@ size_t SharedMemIPCClient::LockFreeChannel(bool* severe_failure) {
 // Find out which channel we are from the pointer returned by GetBuffer.
 size_t SharedMemIPCClient::ChannelIndexFromBuffer(const void* buffer) {
   ptrdiff_t d = reinterpret_cast<const char*>(buffer) - first_base_;
-  size_t num = d / kIPCChannelSize;
+  DCHECK_GE(d, 0);
+  size_t num = static_cast<size_t>(d) / kIPCChannelSize;
   DCHECK_LT(num, control_->channels_count);
   return (num);
 }

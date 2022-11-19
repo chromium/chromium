@@ -80,8 +80,8 @@ void StartupInformationHelper::AddJobToAssociate(HANDLE job_handle) {
   job_handle_list_.push_back(job_handle);
 }
 
-int StartupInformationHelper::CountAttributes() {
-  int attribute_count = 0;
+DWORD StartupInformationHelper::CountAttributes() {
+  DWORD attribute_count = 0;
   if (mitigations_[0] || mitigations_[1])
     ++attribute_count;
 

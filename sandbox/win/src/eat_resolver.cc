@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/win/pe_image.h"
+#include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/sandbox_nt_util.h"
 
 namespace sandbox {
@@ -26,7 +27,7 @@ NTSTATUS EatResolverThunk::Setup(const void* target_module,
     return ret;
 
   if (!eat_entry_)
-    return STATUS_INVALID_PARAMETER;
+    return NTSTATUS_INVALID_PARAMETER;
 
 #if defined(_WIN64)
   // We have two thunks, in order: the return path and the forward path.
@@ -61,7 +62,7 @@ NTSTATUS EatResolverThunk::ResolveTarget(const void* module,
                                          void** address) {
   DCHECK_NT(address);
   if (!module)
-    return STATUS_INVALID_PARAMETER;
+    return NTSTATUS_INVALID_PARAMETER;
 
   base::win::PEImage pe(module);
   if (!pe.VerifyMagic())

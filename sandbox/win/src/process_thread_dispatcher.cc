@@ -130,7 +130,7 @@ bool ThreadProcessDispatcher::CreateThread(IPCInfo* ipc,
   }
 
   HANDLE handle;
-  DWORD ret = ProcessPolicy::CreateThreadAction(
+  NTSTATUS ret = ProcessPolicy::CreateThreadAction(
       *ipc->client_info, stack_size, start_address, parameter, creation_flags,
       nullptr, &handle);
 
