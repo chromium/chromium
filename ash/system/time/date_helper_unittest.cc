@@ -44,13 +44,13 @@ TEST_F(DateHelperUnittest, GetWeekTitle) {
   SetDefaultLocale("zh-CN");
   std::vector<std::u16string> week_titles =
       DateHelper::GetInstance()->week_titles();
-  EXPECT_EQ(u"日", week_titles[0]);  // Sunday
-  EXPECT_EQ(u"一", week_titles[1]);  // Monday
-  EXPECT_EQ(u"二", week_titles[2]);  // Tuesday
-  EXPECT_EQ(u"三", week_titles[3]);  // Wednesday
-  EXPECT_EQ(u"四", week_titles[4]);  // Thursday
-  EXPECT_EQ(u"五", week_titles[5]);  // Friday
-  EXPECT_EQ(u"六", week_titles[6]);  // Saturday
+  EXPECT_EQ(u"一", week_titles[0]);  // Monday
+  EXPECT_EQ(u"二", week_titles[1]);  // Tuesday
+  EXPECT_EQ(u"三", week_titles[2]);  // Wednesday
+  EXPECT_EQ(u"四", week_titles[3]);  // Thursday
+  EXPECT_EQ(u"五", week_titles[4]);  // Friday
+  EXPECT_EQ(u"六", week_titles[5]);  // Saturday
+  EXPECT_EQ(u"日", week_titles[6]);  // Sunday
 
   SetDefaultLocale("ar");
   week_titles = DateHelper::GetInstance()->week_titles();
@@ -103,10 +103,12 @@ TEST_F(DateHelperUnittest, GetFormattedInterval) {
   ASSERT_TRUE(base::Time::FromString("22 Nov 2021 22:30 GMT", &date3));
 
   SetDefaultLocale("en_US");
-  EXPECT_EQ(u"10:00 – 11:45 AM", Format12HrClockInterval(date1, date2));
-  EXPECT_EQ(u"10:00 AM – 10:30 PM", Format12HrClockInterval(date1, date3));
-  EXPECT_EQ(u"10:00 – 11:45", Format24HrClockInterval(date1, date2));
-  EXPECT_EQ(u"10:00 – 22:30", Format24HrClockInterval(date1, date3));
+  EXPECT_EQ(u"10:00\u2009–\u200911:45\u202fAM",
+            Format12HrClockInterval(date1, date2));
+  EXPECT_EQ(u"10:00\u202fAM\u2009–\u200910:30\u202fPM",
+            Format12HrClockInterval(date1, date3));
+  EXPECT_EQ(u"10:00\u2009–\u200911:45", Format24HrClockInterval(date1, date2));
+  EXPECT_EQ(u"10:00\u2009–\u200922:30", Format24HrClockInterval(date1, date3));
 
   SetDefaultLocale("zh_Hant");
   EXPECT_EQ(u"上午10:00至11:45", Format12HrClockInterval(date1, date2));

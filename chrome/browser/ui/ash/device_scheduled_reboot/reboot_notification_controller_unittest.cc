@@ -139,9 +139,9 @@ TEST_F(RebootNotificationControllerTest, UserSessionShowsNotification) {
   notification_controller_.MaybeShowPendingRebootNotification(
       reboot_time, base::NullCallback());
   EXPECT_NE(absl::nullopt, GetPendingRebootNotification());
-  EXPECT_EQ(
-      GetPendingRebootNotification()->message(),
-      u"Your administrator will restart your device at 3:20 PM on Feb 2, 2022");
+  EXPECT_EQ(GetPendingRebootNotification()->message(),
+            u"Your administrator will restart your device at 3:20\u202fPM on "
+            u"Feb 2, 2022");
 
   // Show post reboot notification.
   notification_controller_.MaybeShowPostRebootNotification();
@@ -170,18 +170,19 @@ TEST_F(RebootNotificationControllerTest, UserSessionNotificationChanged) {
   notification_controller_.MaybeShowPendingRebootNotification(
       reboot_time1, base::NullCallback());
   EXPECT_NE(absl::nullopt, GetPendingRebootNotification());
-  EXPECT_EQ(
-      GetPendingRebootNotification()->message(),
-      u"Your administrator will restart your device at 3:20 PM on Feb 2, 2022");
+  EXPECT_EQ(GetPendingRebootNotification()->message(),
+            u"Your administrator will restart your device at 3:20\u202fPM on "
+            u"Feb 2, 2022");
   EXPECT_EQ(GetTransientNotificationCount(), 1);
 
   // Change reboot time. Close old notification and show new one.
   notification_controller_.MaybeShowPendingRebootNotification(
       reboot_time2, base::NullCallback());
   EXPECT_NE(absl::nullopt, GetPendingRebootNotification());
-  EXPECT_EQ(GetPendingRebootNotification()->message(),
-            u"Your administrator will restart your device at 11:15 AM on May "
-            u"15, 2023");
+  EXPECT_EQ(
+      GetPendingRebootNotification()->message(),
+      u"Your administrator will restart your device at 11:15\u202fAM on May "
+      u"15, 2023");
   EXPECT_EQ(GetTransientNotificationCount(), 1);
 }
 
@@ -204,9 +205,9 @@ TEST_F(RebootNotificationControllerTest, ManagedGuestSessionShowsNotification) {
   notification_controller_.MaybeShowPendingRebootNotification(
       reboot_time, base::NullCallback());
   EXPECT_NE(absl::nullopt, GetPendingRebootNotification());
-  EXPECT_EQ(
-      GetPendingRebootNotification()->message(),
-      u"Your administrator will restart your device at 3:20 PM on Feb 2, 2022");
+  EXPECT_EQ(GetPendingRebootNotification()->message(),
+            u"Your administrator will restart your device at 3:20\u202fPM on "
+            u"Feb 2, 2022");
 
   // Show post reboot notification.
   notification_controller_.MaybeShowPostRebootNotification();

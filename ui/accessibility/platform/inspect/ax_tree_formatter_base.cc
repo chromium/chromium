@@ -120,6 +120,9 @@ void AXTreeFormatterBase::RecursiveFormatTree(const base::Value::Dict& dict,
   // Replace literal newlines with "<newline>"
   base::ReplaceChars(line, "\n", "<newline>", &line);
 
+  // Replace U+202f to ASCII SPACE
+  base::ReplaceFirstSubstringAfterOffset(&line, 0, "\u202f", " ");
+
   *contents += line + "\n";
 
   // TODO(accessibility): This can be removed once the UIA tree formatter

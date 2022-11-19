@@ -98,7 +98,9 @@ function getMaxDate() {
  * @return {Date} The converted time.
  */
 function getDateInTimezone(timezoneId) {
-  return new Date(new Date().toLocaleString('en-US', {timeZone: timezoneId}));
+  return new Date(new Date()
+                      .toLocaleString('en-US', {timeZone: timezoneId})
+                      .replace('\u202f', ' '));
 }
 
 /**

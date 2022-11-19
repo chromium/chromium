@@ -109,9 +109,9 @@ TEST_F(CalendarUtilsUnitTest, DateFormatterClockTimes) {
   ASSERT_TRUE(base::Time::FromString("1 Aug 2021 00:00 GMT", &midnight));
 
   // Return time in twelve hour clock format. (no '0' padding)
-  EXPECT_EQ(u"9:05 AM", calendar_utils::GetTwelveHourClockTime(am_time));
-  EXPECT_EQ(u"11:30 PM", calendar_utils::GetTwelveHourClockTime(pm_time));
-  EXPECT_EQ(u"12:00 AM", calendar_utils::GetTwelveHourClockTime(midnight));
+  EXPECT_EQ(u"9:05\u202fAM", calendar_utils::GetTwelveHourClockTime(am_time));
+  EXPECT_EQ(u"11:30\u202fPM", calendar_utils::GetTwelveHourClockTime(pm_time));
+  EXPECT_EQ(u"12:00\u202fAM", calendar_utils::GetTwelveHourClockTime(midnight));
 
   // Return time in twenty four hour clock format. (has '0' padding)
   EXPECT_EQ(u"09:05", calendar_utils::GetTwentyFourHourClockTime(am_time));
@@ -225,18 +225,18 @@ TEST_F(CalendarUtilsUnitTest, IntervalFormatter) {
 
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
 
-  EXPECT_EQ(u"10:00 – 11:30 AM",
+  EXPECT_EQ(u"10:00\u2009–\u200911:30\u202fAM",
             calendar_utils::FormatTwelveHourClockTimeInterval(date1, date2));
 
-  EXPECT_EQ(u"10:00 AM – 3:49 PM",
+  EXPECT_EQ(u"10:00\u202fAM\u2009–\u20093:49\u202fPM",
             calendar_utils::FormatTwelveHourClockTimeInterval(date1, date3));
 
   EXPECT_EQ(
-      u"10:00 – 11:30",
+      u"10:00\u2009–\u200911:30",
       calendar_utils::FormatTwentyFourHourClockTimeInterval(date1, date2));
 
   EXPECT_EQ(
-      u"10:00 – 15:49",
+      u"10:00\u2009–\u200915:49",
       calendar_utils::FormatTwentyFourHourClockTimeInterval(date1, date3));
 }
 

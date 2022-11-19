@@ -142,13 +142,19 @@ TEST_F(LocaleICUTest, monthFormat) {
 
 TEST_F(LocaleICUTest, localizedDateFormatText) {
   // Note: EXPECT_EQ(String, String) doesn't print result as string.
-  EXPECT_EQ("h:mm:ss a", LocalizedDateFormatText("en_US"));
+  EXPECT_EQ(
+      "h:mm:ss\xE2\x80\xAF"
+      "a",
+      LocalizedDateFormatText("en_US").Utf8());
   EXPECT_EQ("HH:mm:ss", LocalizedDateFormatText("fr"));
   EXPECT_EQ("H:mm:ss", LocalizedDateFormatText("ja"));
 }
 
 TEST_F(LocaleICUTest, localizedShortDateFormatText) {
-  EXPECT_EQ("h:mm a", LocalizedShortDateFormatText("en_US"));
+  EXPECT_EQ(
+      "h:mm\xE2\x80\xAF"
+      "a",
+      LocalizedShortDateFormatText("en_US").Utf8());
   EXPECT_EQ("HH:mm", LocalizedShortDateFormatText("fr"));
   EXPECT_EQ("H:mm", LocalizedShortDateFormatText("ja"));
 }

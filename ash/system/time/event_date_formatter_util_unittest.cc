@@ -63,8 +63,8 @@ TEST_F(EventDateFormatterUtilTest,
       event_date_formatter_util::GetStartAndEndTimeAccessibleNames(start_time,
                                                                    end_time);
 
-  EXPECT_EQ(actual_start, u"3:30 PM");
-  EXPECT_EQ(actual_end, u"4:30 PM");
+  EXPECT_EQ(actual_start, u"3:30\u202fPM");
+  EXPECT_EQ(actual_end, u"4:30\u202fPM");
 }
 
 TEST_F(EventDateFormatterUtilTest, GetFormattedInterval_12HourClock) {
@@ -81,7 +81,7 @@ TEST_F(EventDateFormatterUtilTest, GetFormattedInterval_12HourClock) {
       event_date_formatter_util::GetFormattedInterval(start_time, end_time);
 
   // \x2013 is unicode for dash i.e. '-'
-  EXPECT_EQ(actual, u"3:30 \x2013 4:30 PM");
+  EXPECT_EQ(actual, u"3:30\u2009\x2013\u20094:30\u202fPM");
 }
 
 TEST_F(EventDateFormatterUtilTest, GetFormattedInterval_24HourClock) {
@@ -98,7 +98,7 @@ TEST_F(EventDateFormatterUtilTest, GetFormattedInterval_24HourClock) {
       event_date_formatter_util::GetFormattedInterval(start_time, end_time);
 
   // \x2013 is unicode for dash i.e. '-'
-  EXPECT_EQ(actual, u"15:30 \x2013 16:30");
+  EXPECT_EQ(actual, u"15:30\u2009\x2013\u200916:30");
 }
 
 class EventDateFormatterAllDayEventTest
@@ -171,28 +171,28 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(
         MultiDayEventTestParams{
             "22 Nov 2021 09:00 GMT", "24 Nov 2021 09:00 GMT",
-            "22 Nov 2021 00:00 UTC", u"Starts at 10:00 AM (Day 1/3)"},
+            "22 Nov 2021 00:00 UTC", u"Starts at 10:00\u202fAM (Day 1/3)"},
         MultiDayEventTestParams{
             "22 Nov 2021 09:00 GMT", "24 Nov 2021 09:00 GMT",
-            "23 Nov 2021 00:00 UTC", u"Starts at 10:00 AM (Day 2/3)"},
+            "23 Nov 2021 00:00 UTC", u"Starts at 10:00\u202fAM (Day 2/3)"},
         MultiDayEventTestParams{
             "22 Nov 2021 09:00 GMT", "24 Nov 2021 09:00 GMT",
-            "24 Nov 2021 00:00 UTC", u"Ends at 10:00 AM (Day 3/3)"},
+            "24 Nov 2021 00:00 UTC", u"Ends at 10:00\u202fAM (Day 3/3)"},
         // Test edge case where a multi-day event falls into a single day in the
         // right timezone.
         MultiDayEventTestParams{
             "22 Nov 2021 23:00 GMT", "23 Nov 2021 23:00 GMT",
-            "23 Nov 2021 00:00 UTC", u"Starts at 12:00 AM (Day 1/1)"},
+            "23 Nov 2021 00:00 UTC", u"Starts at 12:00\u202fAM (Day 1/1)"},
         // Test where a 2 hour event spans multiple days depending on timezone,
         // day 1.
         MultiDayEventTestParams{
             "22 Nov 2021 22:00 GMT", "23 Nov 2021 00:00 GMT",
-            "22 Nov 2021 00:00 UTC", u"Starts at 11:00 PM (Day 1/2)"},
+            "22 Nov 2021 00:00 UTC", u"Starts at 11:00\u202fPM (Day 1/2)"},
         // Test where a 2 hour event spans multiple days depending on timezone,
         // day 2.
         MultiDayEventTestParams{
             "22 Nov 2021 22:00 GMT", "23 Nov 2021 00:00 GMT",
-            "23 Nov 2021 00:00 UTC", u"Ends at 1:00 AM (Day 2/2)"}));
+            "23 Nov 2021 00:00 UTC", u"Ends at 1:00\u202fAM (Day 2/2)"}));
 
 TEST_P(EventDateFormatterMultiDayEventTest, GetMultiDayText_MultiDayEvent) {
   const char* start_time_string = GetStartTimeString();

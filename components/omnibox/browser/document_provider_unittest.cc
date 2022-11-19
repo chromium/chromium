@@ -770,7 +770,7 @@ TEST_F(DocumentProviderTest, GenerateLastModifiedString) {
   // ISO8601 UTC timestamp strings since the service returns them in practice.
   EXPECT_EQ(DocumentProvider::GenerateLastModifiedString(
                 base::TimeToISO8601(modified_today), local_now),
-            u"2:18 AM");
+            u"2:18\u202FAM");
   EXPECT_EQ(DocumentProvider::GenerateLastModifiedString(
                 base::TimeToISO8601(modified_this_year), local_now),
             u"Aug 19");

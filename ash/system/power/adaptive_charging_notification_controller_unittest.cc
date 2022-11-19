@@ -122,7 +122,8 @@ TEST_F(AdaptiveChargingNotificationControllerTest, HaveTimeInNotification) {
 
   // Current local time is 12:42 pm, so 5 hours after should be 5:30pm (rounding
   // from 5:42pm).
-  EXPECT_NE(notification->message().find(u"5:30 pm"), std::u16string::npos);
+  EXPECT_NE(notification->message().find(u"5:30\u202fpm"),
+            std::u16string::npos);
 }
 
 TEST_F(AdaptiveChargingNotificationControllerTest, TimeRoundingUpTest) {
@@ -152,7 +153,8 @@ TEST_F(AdaptiveChargingNotificationControllerTest, TimeRoundingUpTest) {
 
   // Current local time is 12:45 pm, so 5 hours after should be 6:00pm (rounding
   // from 5:45pm).
-  EXPECT_NE(notification->message().find(u"6:00 pm"), std::u16string::npos);
+  EXPECT_NE(notification->message().find(u"6:00\u202fpm"),
+            std::u16string::npos);
 }
 
 TEST_F(AdaptiveChargingNotificationControllerTest,

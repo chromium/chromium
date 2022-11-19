@@ -38,7 +38,7 @@ function assert_input_value_with_limits(initial, step, min, max, keySequence, ex
 
   assert_equals(input.value, expected);
   if (expectedDisplayValue)
-    assert_equals(getUserAgentShadowTextContent(input), expectedDisplayValue);
+    assert_equals(getUserAgentShadowTextContent(input).replace('\u202f', ' '), expectedDisplayValue);
 }
 
 function assert_input_value_with_limits_after_up(initial, step, min, max, expected, expectedDisplayValue) {

@@ -9,10 +9,10 @@ PASS input.value = ""; getUserAgentShadowTextContent(input) is emptyText
 
 Initial text: --:--:45 --
 Empty value should not clear read-only fields.
-PASS input.value = ""; getUserAgentShadowTextContent(input) is "--:--:45 --"
+FAIL input.value = ""; getUserAgentShadowTextContent(input) should be --:--:45 --. Was --:--:45 --.
 Empty value should clear only editable fields.
-PASS eventSender.keyDown("ArrowUp"); getUserAgentShadowTextContent(input) is "01:--:45 --"
-PASS input.value = ""; getUserAgentShadowTextContent(input) is "--:--:45 --"
+FAIL eventSender.keyDown("ArrowUp"); getUserAgentShadowTextContent(input) should be 01:--:45 --. Was 01:--:45 --.
+FAIL input.value = ""; getUserAgentShadowTextContent(input) should be --:--:45 --. Was --:--:45 --.
 PASS successfullyParsed is true
 
 TEST COMPLETE

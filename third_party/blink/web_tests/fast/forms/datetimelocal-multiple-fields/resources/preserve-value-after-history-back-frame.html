@@ -59,7 +59,7 @@ window.onload = function() { setTimeout(function() {
                 {
                     'description' : 'Went back to a page. Checking a form control which had a partial value',
                     'actual' : fieldsText(testInput2),
-                    'expected' : insertCommaIfNecessary('01/dd/1999 --:00 --', testInput1)
+                    'expected' : insertCommaIfNecessary('01/dd/1999 --:00\u202f--', testInput1)
                 });
             forward('forwardTo2');
             break;
@@ -97,7 +97,7 @@ window.onload = function() { setTimeout(function() {
                 {
                     'description' : 'Went forward to a page. Checking a form control which had a partial value',
                     'actual' : fieldsText(testInput2),
-                    'expected' : insertCommaIfNecessary('mm/31/yyyy 12:-- PM', testInput1)
+                    'expected' : insertCommaIfNecessary('mm/31/yyyy 12:--\u202fPM', testInput1)
                 });
             back('backTo1Second');
             break;

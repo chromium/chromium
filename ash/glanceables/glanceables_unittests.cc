@@ -346,7 +346,7 @@ TEST_F(GlanceablesTest, UpNextEventItemViewRendersCorrectlyIn12HrClockFormat) {
   GlanceablesUpNextEventItemView view(CreateTestEvent());
 
   EXPECT_EQ(view.event_title_label_for_test()->GetText(), u"Test event 123");
-  EXPECT_EQ(view.event_time_label_for_test()->GetText(), u"6:00 PM");
+  EXPECT_EQ(view.event_time_label_for_test()->GetText(), u"6:00\u202fPM");
 }
 
 TEST_F(GlanceablesTest, UpNextEventItemViewRendersCorrectlyIn24HrClockFormat) {

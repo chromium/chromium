@@ -50,7 +50,7 @@ window.onload = function() { setTimeout(function() {
                 {
                     'description' : 'Went back to a page. Checking a form control which had a partial value',
                     'actual' : fieldsText(testInput2),
-                    'expected' : '01:--:-- AM'
+                    'expected' : '01:--:--\u202fAM'
                 });
             forward('forwardTo2');
             break;
@@ -81,7 +81,7 @@ window.onload = function() { setTimeout(function() {
                 {
                     'description' : 'Went forward to a page. Checking a form control which had a partial value',
                     'actual' : fieldsText(testInput2),
-                    'expected' : '--:59:-- --'
+                    'expected' : '--:59:--\u202f--'
                 });
             back('backTo1Second');
             break;

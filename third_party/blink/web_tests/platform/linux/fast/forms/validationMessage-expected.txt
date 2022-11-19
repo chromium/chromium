@@ -36,14 +36,14 @@ input rangeOverflow and rangeUnderflow: Value must be 1.
 input rangeOverflow and rangeUnderflow: Value must be 1.
 input rangeOverflow and rangeUnderflow: Value must be 01/02/2000.
 input rangeOverflow and rangeUnderflow: Value must be 01/02/2000.
-input rangeOverflow and rangeUnderflow: Value must be 01/02/2000, 12:00 AM.
-input rangeOverflow and rangeUnderflow: Value must be 01/02/2000, 12:00 AM.
+input rangeOverflow and rangeUnderflow: Value must be 01/02/2000, 12:00 AM.
+input rangeOverflow and rangeUnderflow: Value must be 01/02/2000, 12:00 AM.
 input rangeOverflow and rangeUnderflow: Value must be January 2000.
 input rangeOverflow and rangeUnderflow: Value must be January 2000.
 input rangeOverflow and rangeUnderflow: Value must be Week 01, 2000.
 input rangeOverflow and rangeUnderflow: Value must be Week 01, 2000.
-input rangeOverflow and rangeUnderflow: Value must be 7:00 AM.
-input rangeOverflow and rangeUnderflow: Value must be 7:00 AM.
+input rangeOverflow and rangeUnderflow: Value must be 7:00 AM.
+input rangeOverflow and rangeUnderflow: Value must be 7:00 AM.
 tooLong:
 input tooLong: Please shorten this text to 3 characters or less (you are currently using 5 characters).
 input tooLong: Please shorten this text to 2 characters or less (you are currently using 3 characters).

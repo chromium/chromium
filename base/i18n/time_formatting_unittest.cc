@@ -76,7 +76,7 @@ TEST(TimeFormattingTest, TimeFormatTimeOfDayDefault12h) {
   Time time;
   EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &time));
   std::u16string clock24h(u"15:42");
-  std::u16string clock12h_pm(u"3:42 PM");
+  std::u16string clock12h_pm(u"3:42\u202fPM");
   std::u16string clock12h(u"3:42");
   std::u16string clock24h_millis(u"15:42:07.000");
 
@@ -114,7 +114,7 @@ TEST(TimeFormattingTest, TimeFormatTimeOfDayDefault24h) {
   Time time;
   EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &time));
   std::u16string clock24h(u"15:42");
-  std::u16string clock12h_pm(u"3:42 pm");
+  std::u16string clock12h_pm(u"3:42\u202fpm");
   std::u16string clock12h(u"3:42");
   std::u16string clock24h_millis(u"15:42:07.000");
 
@@ -179,7 +179,7 @@ TEST(TimeFormattingTest, TimeFormatTimeOfDayDE) {
   Time time;
   EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &time));
   std::u16string clock24h(u"15:42");
-  std::u16string clock12h_pm(u"3:42 PM");
+  std::u16string clock12h_pm(u"3:42\u202fPM");
   std::u16string clock12h(u"3:42");
 
   // The default is 24h clock.
@@ -244,13 +244,13 @@ TEST(TimeFormattingTest, TimeFormatDateUS) {
   EXPECT_EQ(u"Apr 30, 2011", TimeFormatShortDate(time));
   EXPECT_EQ(u"4/30/11", TimeFormatShortDateNumeric(time));
 
-  EXPECT_EQ(u"4/30/11, 3:42:07 PM", TimeFormatShortDateAndTime(time));
-  EXPECT_EQ(u"4/30/11, 3:42:07 PM " + GetShortTimeZone(time),
+  EXPECT_EQ(u"4/30/11, 3:42:07\u202fPM", TimeFormatShortDateAndTime(time));
+  EXPECT_EQ(u"4/30/11, 3:42:07\u202fPM " + GetShortTimeZone(time),
             TimeFormatShortDateAndTimeWithTimeZone(time));
 
   EXPECT_EQ(u"April 2011", TimeFormatMonthAndYear(time));
 
-  EXPECT_EQ(u"Saturday, April 30, 2011 at 3:42:07 PM",
+  EXPECT_EQ(u"Saturday, April 30, 2011 at 3:42:07\u202fPM",
             TimeFormatFriendlyDateAndTime(time));
 
   EXPECT_EQ(u"Saturday, April 30, 2011", TimeFormatFriendlyDate(time));
@@ -286,7 +286,7 @@ TEST(TimeFormattingTest, TimeFormatWithPattern) {
 
   i18n::SetICUDefaultLocale("en_US");
   EXPECT_EQ(u"Apr 30, 2011", TimeFormatWithPattern(time, "yMMMd"));
-  EXPECT_EQ(u"April 30 at 3:42:07 PM",
+  EXPECT_EQ(u"April 30 at 3:42:07\u202fPM",
             TimeFormatWithPattern(time, "MMMMdjmmss"));
 
   i18n::SetICUDefaultLocale("en_GB");
@@ -405,7 +405,7 @@ TEST(TimeFormattingTest, TimeIntervalFormat) {
   EXPECT_TRUE(Time::FromUTCExploded(kTestIntervalEndTimeExploded, &end_time));
 
   EXPECT_EQ(
-      u"Saturday, April 30 – Saturday, May 28",
+      u"Saturday, April 30\u2009–\u2009Saturday, May 28",
       DateIntervalFormat(begin_time, end_time, DATE_FORMAT_MONTH_WEEKDAY_DAY));
 
   const Time::Exploded kTestIntervalBeginTimeExploded = {
@@ -415,12 +415,12 @@ TEST(TimeFormattingTest, TimeIntervalFormat) {
   EXPECT_TRUE(
       Time::FromUTCExploded(kTestIntervalBeginTimeExploded, &begin_time));
   EXPECT_EQ(
-      u"Monday, May 16 – Saturday, May 28",
+      u"Monday, May 16\u2009–\u2009Saturday, May 28",
       DateIntervalFormat(begin_time, end_time, DATE_FORMAT_MONTH_WEEKDAY_DAY));
 
   i18n::SetICUDefaultLocale("en_GB");
   EXPECT_EQ(
-      u"Monday 16 May – Saturday 28 May",
+      u"Monday 16\u2009–\u2009Saturday 28 May",
       DateIntervalFormat(begin_time, end_time, DATE_FORMAT_MONTH_WEEKDAY_DAY));
 
   i18n::SetICUDefaultLocale("ja");

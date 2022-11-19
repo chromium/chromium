@@ -96,7 +96,7 @@ TEST_F(TimeUtilsTimezoneFunctionsTest, ToLocalizedStringDaylightSavings) {
   base::i18n::SetICUDefaultLocale("en_US");
   icu::TimeZone::adoptDefault(
       icu::TimeZone::createTimeZone("America/Los_Angeles"));
-  EXPECT_EQ(u"Friday 8:50 AM",
+  EXPECT_EQ(u"Friday 8:50\u202fAM",
             WeeklyTimeToLocalizedString(test_weekly_time, &test_clock_));
 
   base::i18n::SetICUDefaultLocale("de_DE");
@@ -121,7 +121,7 @@ TEST_F(TimeUtilsTimezoneFunctionsTest, ToLocalizedStringNoDaylightSavings) {
   base::i18n::SetICUDefaultLocale("en_US");
   icu::TimeZone::adoptDefault(
       icu::TimeZone::createTimeZone("America/Los_Angeles"));
-  EXPECT_EQ(u"Friday 7:50 AM",
+  EXPECT_EQ(u"Friday 7:50\u202fAM",
             WeeklyTimeToLocalizedString(test_weekly_time, &test_clock_));
 }
 

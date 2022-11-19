@@ -15,12 +15,12 @@ input.step = '60';
 document.body.appendChild(input);
 debug('Initial text: ' + getUserAgentShadowTextContent(input));
 debug('Empty value should not clear read-only fields.');
-shouldBeEqualToString('input.value = ""; getUserAgentShadowTextContent(input)', '--:--:45 --');
+shouldBeEqualToString('input.value = ""; getUserAgentShadowTextContent(input)', '--:--:45\u202f--');
 
 debug('Empty value should clear only editable fields.');
 input.focus();
-shouldBeEqualToString('eventSender.keyDown("ArrowUp"); getUserAgentShadowTextContent(input)', '01:--:45 --');
-shouldBeEqualToString('input.value = ""; getUserAgentShadowTextContent(input)', '--:--:45 --');
+shouldBeEqualToString('eventSender.keyDown("ArrowUp"); getUserAgentShadowTextContent(input)', '01:--:45\u202f--');
+shouldBeEqualToString('input.value = ""; getUserAgentShadowTextContent(input)', '--:--:45\u202f--');
 
 </script>
 </body>

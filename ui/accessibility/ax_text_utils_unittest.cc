@@ -286,7 +286,7 @@ TEST(AXTextUtils, GetWordStartOffsetsMalformedInputTest) {
   const std::u16string text =
       u"..we *## should parse $#@$ through bad ,,  input";
   EXPECT_THAT(GetWordStartOffsets(text),
-              testing::ElementsAre(2, 9, 16, 27, 35, 43));
+              testing::ElementsAre(2, 9, 16, 24, 27, 35, 43));
 }
 
 TEST(AXTextUtils, GetSentenceStartOffsetsBasicTest) {

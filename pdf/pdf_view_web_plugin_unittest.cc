@@ -1785,8 +1785,12 @@ class PdfViewWebPluginWithDocInfoTest : public PdfViewWebPluginTest {
     metadata.Set("keywords", "Keywords");
     metadata.Set("creator", "Creator");
     metadata.Set("producer", "Producer");
-    metadata.Set("creationDate", "5/4/21, 4:12:13 AM");
-    metadata.Set("modDate", "6/4/21, 8:16:17 AM");
+    metadata.Set("creationDate",
+                 "5/4/21, 4:12:13\xE2\x80\xAF"
+                 "AM");
+    metadata.Set("modDate",
+                 "6/4/21, 8:16:17\xE2\x80\xAF"
+                 "AM");
     metadata.Set("pageSize", "13.89 × 16.67 in (portrait)");
     metadata.Set("canSerializeDocument", true);
 

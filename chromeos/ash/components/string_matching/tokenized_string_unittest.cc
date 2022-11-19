@@ -95,7 +95,7 @@ TEST(TokenizedStringTest, Basic) {
     EXPECT_EQ(u"faxing{0,6} signing{9,16}", GetContent(token_words));
   }
   {
-    std::u16string text(u"!@#$%^&*()<<<**>>>");
+    std::u16string text(u"!#$%^&*()<<<**>>>");
     TokenizedString tokens(text);
     EXPECT_EQ(u"", GetContent(tokens));
     TokenizedString token_words(text, TokenizedString::Mode::kWords);

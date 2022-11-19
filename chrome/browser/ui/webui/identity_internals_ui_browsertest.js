@@ -48,7 +48,7 @@ BaseIdentityInternalsWebUITest.prototype = {
     // Full-date format has 'at' between date and time in en-US, but
     // ECMAScript's Date.parse cannot grok it.
     return Date.parse(tokenEntry.shadowRoot.querySelector('.expiration-time')
-        .innerText.replace(' at ', ' '));
+        .innerText.replace(' at ', ' ').replace('\u202f', ' '));
   },
 
   /**
@@ -186,7 +186,7 @@ TEST_F('IdentityInternalsSingleTokenWebUITest', 'verifyGetters', function() {
   assertEquals(this.getExpirationTime(tokenListEntries[0]),
       Date.parse(
           tokenListEntries[0].shadowRoot.querySelector('.expiration-time')
-          .innerText.replace(' at ', ' ')));
+          .innerText.replace(' at ', ' ').replace('\u202f', ' ')));
   const scopes =
       tokenListEntries[0].shadowRoot.querySelector('.scope-list')
           .innerHTML.split('<br>');

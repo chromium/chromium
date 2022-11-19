@@ -3438,9 +3438,12 @@ TEST_F(SavedDeskTest, TimeStrFormat) {
   };
   // The expected time string for each template.
   const std::vector<std::u16string> expected_timestr = {
-      u"Jan 1, 2022, 10:30 AM",
-      u"Today 10:30 AM",
-      u"Yesterday 10:30 AM",
+      u"Jan 1, 2022, 10:30\u202f"
+      "AM",
+      u"Today 10:30\u202f"
+      "AM",
+      u"Yesterday 10:30\u202f"
+      "AM",
   };
   std::vector<base::Time> time = {
       time_long_ago,

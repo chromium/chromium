@@ -274,7 +274,7 @@ TEST_F(DetailsTest, GetDescriptionLine1) {
                    25, 15, 16, 0);
   EXPECT_TRUE(Details::UpdateFromProto(proto_date, &details));
   EXPECT_THAT(details.descriptionLine1(),
-              Eq("3:16 PM \xE2\x80\xA2 Wed, Sep 25"));
+              Eq("3:16\xE2\x80\xAFPM \xE2\x80\xA2 Wed, Sep 25"));
 
   base::i18n::SetICUDefaultLocale("de_DE");
   ShowDetailsProto proto_date_de;
@@ -282,7 +282,7 @@ TEST_F(DetailsTest, GetDescriptionLine1) {
                    25, 15, 16, 0);
   EXPECT_TRUE(Details::UpdateFromProto(proto_date, &details));
   EXPECT_THAT(details.descriptionLine1(),
-              Eq("3:16 PM \xE2\x80\xA2 Mi., 25. Sept."));
+              Eq("3:16\xE2\x80\xAFPM \xE2\x80\xA2 Mi., 25. Sept."));
 
   ShowDetailsProto proto_empty;
   proto_empty.mutable_details()->set_title("title");

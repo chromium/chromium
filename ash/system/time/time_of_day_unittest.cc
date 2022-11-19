@@ -35,17 +35,26 @@ TEST(TimeOfDayTest, TestSeveralOffsets) {
 
   // 6:32 PM ==> 18:32.
   TimeOfDay time1(18 * 60 + 32);
-  EXPECT_EQ("6:32 PM", time1.ToString());
+  EXPECT_EQ("6:32\xE2\x80\xAFPM", time1.ToString());
 
   // 9:59 AM.
   TimeOfDay time2(9 * 60 + 59);
-  EXPECT_EQ("9:59 AM", time2.ToString());
+  EXPECT_EQ(
+      "9:59\xE2\x80\xAF"
+      "AM",
+      time2.ToString());
 
   // Border times: 00:00 and 24:00.
   TimeOfDay time3(0);
   TimeOfDay time4(24 * 60);
-  EXPECT_EQ("12:00 AM", time3.ToString());
-  EXPECT_EQ("12:00 AM", time4.ToString());
+  EXPECT_EQ(
+      "12:00\xE2\x80\xAF"
+      "AM",
+      time3.ToString());
+  EXPECT_EQ(
+      "12:00\xE2\x80\xAF"
+      "AM",
+      time4.ToString());
 }
 
 TEST(TimeOfDayTest, TestFromTime) {

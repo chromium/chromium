@@ -112,12 +112,13 @@ TEST_F(
   const views::Label* summary_label = GetSummaryLabel();
   const views::Label* time_label = GetTimeLabel();
   EXPECT_EQ(u"summary_0", summary_label->GetText());
-  EXPECT_EQ(u"9:00 \x2013 10:00 AM", time_label->GetText());
-  EXPECT_EQ(u"summary_0, 9:00 \x2013 10:00 AM",
+  EXPECT_EQ(u"9:00\u2009\x2013\u200910:00\u202fAM", time_label->GetText());
+  EXPECT_EQ(u"summary_0, 9:00\u2009\x2013\u200910:00\u202fAM",
             summary_label->GetTooltipText());
-  EXPECT_EQ(u"summary_0, 9:00 \x2013 10:00 AM", time_label->GetTooltipText());
+  EXPECT_EQ(u"summary_0, 9:00\u2009\x2013\u200910:00\u202fAM",
+            time_label->GetTooltipText());
   EXPECT_EQ(
-      u"9:00 AM to\n        10:00 AM,\n        GMT+02:00,\n        "
+      u"9:00\u202fAM to\n        10:00\u202fAM,\n        GMT+02:00,\n        "
       u"summary_0. Select for more details in Google Calendar.",
       event_list_item_view()->GetAccessibleName());
 }

@@ -2159,9 +2159,9 @@ TEST_F(LockContentsViewUnitTest, ShowReasonOnAuthDisabled) {
                        base::Hours(1), true /*disable_lock_screen_media*/));
   EXPECT_FALSE(password_view->GetVisible());
   EXPECT_FALSE(pin_view->GetVisible());
-  EXPECT_EQ(
-      l10n_util::GetStringFUTF16(IDS_ASH_LOGIN_COME_BACK_MESSAGE, u"8:00 AM"),
-      auth_test_api.GetDisabledAuthMessageContent());
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_LOGIN_COME_BACK_MESSAGE,
+                                       u"8:00\u202fAM"),
+            auth_test_api.GetDisabledAuthMessageContent());
   // Setting auth disabled due to time usage limit.
   DataDispatcher()->DisableAuthForUser(
       kFirstUserAccountId,
