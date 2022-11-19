@@ -94,7 +94,7 @@ import './os_settings_page/os_settings_page.js';
 import './os_settings_page/settings_idle_load.js';
 import './os_settings_menu/os_settings_menu.js';
 import './os_settings_ui/os_settings_ui.js';
-import './os_settings_icons_css.js';
+import './os_settings_icons.css.js';
 import './os_settings_search_box/os_search_result_row.js';
 import './os_settings_search_box/os_settings_search_box.js';
 import './os_toolbar/os_toolbar.js';

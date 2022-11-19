@@ -7,7 +7,6 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/css_to_wrapper.gni")
-import("//tools/polymer/html_to_js.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -291,14 +290,8 @@ generate_grd("build_grd") {
   }
 }
 
-html_to_js("web_components") {
-  js_files = [ "os_settings_icons_css.js" ]
-}
-
 group("generate_web_components") {
   public_deps = [
-    ":web_components",
-
     # Sub-folder targets
     "internet_page:web_components",
     "multidevice_page:web_components",
@@ -344,7 +337,6 @@ js_type_check("closure_compile_local_module") {
     ":os_page_visibility",
     ":os_route",
     ":os_settings",
-    ":os_settings_icons_css",
     ":os_settings_routes",
     ":pref_to_setting_metric_converter",
     ":prefs_behavior",
@@ -413,9 +405,6 @@ js_library("os_route") {
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-}
-
-js_library("os_settings_icons_css") {
 }
 
 js_library("os_settings_routes") {

@@ -8,24 +8,24 @@
  */
 
 import 'chrome://resources/ash/common/cellular_setup/cellular_eid_dialog.js';
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import '../os_settings_icons_css.js';
+import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
+import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '../os_settings_icons.css.js';
 import './esim_install_error_dialog.js';
-import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
 import {CellularSetupPageName} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
 import {ESimManagerListenerBehavior, ESimManagerListenerBehaviorInterface} from 'chrome://resources/ash/common/cellular_setup/esim_manager_listener_behavior.js';
 import {getEuicc, getPendingESimProfiles} from 'chrome://resources/ash/common/cellular_setup/esim_manager_utils.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {getSimSlotCount} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkList} from 'chrome://resources/ash/common/network/network_list_types.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {ESimProfileProperties, ESimProfileRemote, EuiccRemote, ProfileInstallResult, ProfileState} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
