@@ -1005,7 +1005,7 @@
       'android-x64-cast': 'android_cast_debug_static_bot_compile_only',
       'android_archive_rel_ng': 'android_release_trybot',
       'android_arm64_dbg_recipe': 'android_debug_trybot_compile_only_arm64_fastbuild_reclient',
-      'android_blink_rel': 'android_release_trybot_reclient',
+      'android_blink_rel': 'android_release_trybot_x64_reclient',
       'android_compile_dbg': 'android_debug_trybot_compile_only_reclient',
       'android_compile_x64_dbg': 'android_debug_trybot_compile_only_x64_reclient',
       'android_compile_x86_dbg': 'android_debug_trybot_compile_only_x86_reclient',
@@ -1704,6 +1704,10 @@
       'android', 'release_trybot_reclient', 'strip_debug_info', 'x64',
       'android_fastbuild', 'webview_trichrome',
       'no_secondary_abi', 'webview_shell',
+    ],
+
+    'android_release_trybot_x64_reclient': [
+      'android', 'release_trybot_reclient', 'strip_debug_info', 'x64',
     ],
 
     'android_release_trybot_x86_fastbuild_webview_google_invert_fieldtrials': [

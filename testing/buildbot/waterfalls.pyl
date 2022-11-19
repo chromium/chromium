@@ -6615,8 +6615,10 @@
     'machines': {
       'android_blink_rel': {
         'mixins': [
-          'marshmallow',
-          'bullhead',
+          '12-x64-emulator',
+          'emulator-8-cores',
+          'linux-bionic',
+          'x86-64',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_android_webkit_gtests',
