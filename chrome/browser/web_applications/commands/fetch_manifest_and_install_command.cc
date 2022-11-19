@@ -153,10 +153,10 @@ FetchManifestAndInstallCommand::~FetchManifestAndInstallCommand() = default;
 LockDescription& FetchManifestAndInstallCommand::lock_description() const {
   DCHECK(noop_lock_description_ || app_lock_description_);
 
-  if (noop_lock_description_)
-    return *noop_lock_description_;
+  if (app_lock_description_)
+    return *app_lock_description_;
 
-  return *app_lock_description_;
+  return *noop_lock_description_;
 }
 
 void FetchManifestAndInstallCommand::StartWithLock(
@@ -295,7 +295,7 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
 
   app_lock_description_ =
       command_manager()->lock_manager().UpgradeAndAcquireLock(
-          std::move(noop_lock_description_), std::move(noop_lock_), {app_id_},
+          std::move(noop_lock_), {app_id_},
           base::BindOnce(&FetchManifestAndInstallCommand::
                              CheckForPlayStoreIntentOrGetIcons,
                          weak_ptr_factory_.GetWeakPtr(), std::move(icon_urls),

@@ -10,10 +10,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-
-namespace content {
-struct PartitionedLockHolder;
-}
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 
 namespace web_app {
 
@@ -48,27 +45,31 @@ class LockDescription {
   // exclusive lock on the shared web contents.
   bool IncludesSharedWebContents() const;
 
-  bool HasLockBeenRequested() const { return !!holder_.get(); }
-
  protected:
   explicit LockDescription(base::flat_set<AppId> app_ids, Type type);
 
  private:
-  friend class WebAppLockManager;
-
   enum class LockLevel {
     kStatic = 0,
     kApp = 1,
     kMaxValue = kApp,
   };
 
-  // TODO(https://crbug.com/1375870): move to be held by lock after all commands
-  // are migrated to hold a lock.
-  std::unique_ptr<content::PartitionedLockHolder> holder_;
   const base::flat_set<AppId> app_ids_{};
   const Type type_;
 
   base::WeakPtrFactory<LockDescription> weak_factory_{this};
+};
+
+class Lock {
+ public:
+  explicit Lock(std::unique_ptr<content::PartitionedLockHolder> holder);
+
+  ~Lock();
+
+ private:
+  friend class WebAppLockManager;
+  std::unique_ptr<content::PartitionedLockHolder> holder_;
 };
 
 }  // namespace web_app

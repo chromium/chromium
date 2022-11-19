@@ -12,8 +12,15 @@ SharedWebContentsLockDescription::SharedWebContentsLockDescription()
     : LockDescription({}, LockDescription::Type::kBackgroundWebContents) {}
 SharedWebContentsLockDescription::~SharedWebContentsLockDescription() = default;
 
-SharedWebContentsLock::SharedWebContentsLock(
+WithSharedWebContentsResources::WithSharedWebContentsResources(
     content::WebContents& shared_web_contents)
     : shared_web_contents_(shared_web_contents) {}
+WithSharedWebContentsResources::~WithSharedWebContentsResources() = default;
+
+SharedWebContentsLock::SharedWebContentsLock(
+    std::unique_ptr<content::PartitionedLockHolder> holder,
+    content::WebContents& shared_web_contents)
+    : Lock(std::move(holder)),
+      WithSharedWebContentsResources(shared_web_contents) {}
 SharedWebContentsLock::~SharedWebContentsLock() = default;
 }  // namespace web_app

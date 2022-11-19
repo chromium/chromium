@@ -12,6 +12,7 @@
 
 namespace content {
 class WebContents;
+struct PartitionedLockHolder;
 }  // namespace content
 
 namespace web_app {
@@ -41,20 +42,23 @@ class SharedWebContentsWithAppLockDescription : public LockDescription {
   ~SharedWebContentsWithAppLockDescription();
 };
 
-class SharedWebContentsWithAppLock : public SharedWebContentsLock,
-                                     public AppLock {
+class SharedWebContentsWithAppLock : public Lock,
+                                     public WithSharedWebContentsResources,
+                                     public WithAppResources {
  public:
   using LockDescription = SharedWebContentsWithAppLockDescription;
 
-  SharedWebContentsWithAppLock(content::WebContents& shared_web_contents,
-                               WebAppRegistrar& registrar,
-                               WebAppSyncBridge& sync_bridge,
-                               WebAppInstallFinalizer& install_finalizer,
-                               OsIntegrationManager& os_integration_manager,
-                               WebAppInstallManager& install_manager,
-                               WebAppIconManager& icon_manager,
-                               WebAppTranslationManager& translation_manager,
-                               WebAppUiManager& ui_manager);
+  SharedWebContentsWithAppLock(
+      std::unique_ptr<content::PartitionedLockHolder> holder,
+      content::WebContents& shared_web_contents,
+      WebAppRegistrar& registrar,
+      WebAppSyncBridge& sync_bridge,
+      WebAppInstallFinalizer& install_finalizer,
+      OsIntegrationManager& os_integration_manager,
+      WebAppInstallManager& install_manager,
+      WebAppIconManager& icon_manager,
+      WebAppTranslationManager& translation_manager,
+      WebAppUiManager& ui_manager);
   ~SharedWebContentsWithAppLock();
 };
 

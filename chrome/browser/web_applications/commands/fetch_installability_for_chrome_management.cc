@@ -48,9 +48,9 @@ FetchInstallabilityForChromeManagement::
 LockDescription& FetchInstallabilityForChromeManagement::lock_description()
     const {
   DCHECK(noop_lock_description_ || app_lock_description_);
-  if (noop_lock_description_)
-    return *noop_lock_description_;
-  return *app_lock_description_;
+  if (app_lock_description_)
+    return *app_lock_description_;
+  return *noop_lock_description_;
 }
 
 void FetchInstallabilityForChromeManagement::StartWithLock(
@@ -148,7 +148,7 @@ void FetchInstallabilityForChromeManagement::OnWebAppInstallabilityChecked(
 
   app_lock_description_ =
       command_manager()->lock_manager().UpgradeAndAcquireLock(
-          std::move(noop_lock_description_), std::move(noop_lock_), {app_id_},
+          std::move(noop_lock_), {app_id_},
           base::BindOnce(
               &FetchInstallabilityForChromeManagement::OnAppLockGranted,
               weak_factory_.GetWeakPtr()));

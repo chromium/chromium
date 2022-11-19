@@ -20,8 +20,8 @@ class AppLock;
 class AppLockDescription;
 class LockDescription;
 class NoopLock;
-class NoopLockDescription;
-class SharedWebContentsLockDescription;
+class SharedWebContentsLock;
+class SharedWebContentsWithAppLock;
 class SharedWebContentsWithAppLockDescription;
 class WebAppProvider;
 
@@ -40,12 +40,12 @@ class WebAppLockManager {
 
   // Acquires the lock for the given `lock`, calling `on_lock_acquired` when
   // complete. This call will CHECK-fail if the lock has already been used in an
-  // `AcquireLock` call. The lock is considered released when the `lock` is
+  // `older` call. The lock is considered released when the `lock` is
   // destroyed.
-  void AcquireLock(LockDescription& lock, base::OnceClosure on_lock_acquired);
+  void AcquireLock(base::WeakPtr<content::PartitionedLockHolder> holder,
+                   LockDescription& lock,
+                   base::OnceClosure on_lock_acquired);
 
-  // (https://crbug.com/1375870): Consider passing lock_holder's weak ptr as a
-  // parameter explicitly same as `PartitionedLockManager`.
   template <class LockType>
   void AcquireLock(
       LockDescription& lock_description,
@@ -55,12 +55,13 @@ class WebAppLockManager {
   // when the new lock has been acquired. This call will CHECK-fail if `lock`
   // was not already used in a call to `AcquireLock`.
   std::unique_ptr<SharedWebContentsWithAppLockDescription>
-  UpgradeAndAcquireLock(std::unique_ptr<SharedWebContentsLockDescription> lock,
-                        const base::flat_set<AppId>& app_ids,
-                        base::OnceClosure on_lock_acquired);
+  UpgradeAndAcquireLock(
+      std::unique_ptr<SharedWebContentsLock> lock,
+      const base::flat_set<AppId>& app_ids,
+      base::OnceCallback<void(std::unique_ptr<SharedWebContentsWithAppLock>)>
+          on_lock_acquired);
 
   std::unique_ptr<AppLockDescription> UpgradeAndAcquireLock(
-      std::unique_ptr<NoopLockDescription> lock_description,
       std::unique_ptr<NoopLock> lock,
       const base::flat_set<AppId>& app_ids,
       base::OnceCallback<void(std::unique_ptr<AppLock>)> on_lock_acquired);

@@ -18,6 +18,7 @@ SharedWebContentsWithAppLockDescription::
     ~SharedWebContentsWithAppLockDescription() = default;
 
 SharedWebContentsWithAppLock::SharedWebContentsWithAppLock(
+    std::unique_ptr<content::PartitionedLockHolder> holder,
     content::WebContents& shared_web_contents,
     WebAppRegistrar& registrar,
     WebAppSyncBridge& sync_bridge,
@@ -27,15 +28,16 @@ SharedWebContentsWithAppLock::SharedWebContentsWithAppLock(
     WebAppIconManager& icon_manager,
     WebAppTranslationManager& translation_manager,
     WebAppUiManager& ui_manager)
-    : SharedWebContentsLock(shared_web_contents),
-      AppLock(registrar,
-              sync_bridge,
-              install_finalizer,
-              os_integration_manager,
-              install_manager,
-              icon_manager,
-              translation_manager,
-              ui_manager) {}
+    : Lock(std::move(holder)),
+      WithSharedWebContentsResources(shared_web_contents),
+      WithAppResources(registrar,
+                       sync_bridge,
+                       install_finalizer,
+                       os_integration_manager,
+                       install_manager,
+                       icon_manager,
+                       translation_manager,
+                       ui_manager) {}
 
 SharedWebContentsWithAppLock::~SharedWebContentsWithAppLock() = default;
 

@@ -7,6 +7,10 @@
 
 #include "chrome/browser/web_applications/locks/lock.h"
 
+namespace content {
+struct PartitionedLockHolder;
+}
+
 namespace web_app {
 
 // This lock essentially doesn't lock anything in the system. However, if a
@@ -22,11 +26,12 @@ class NoopLockDescription : public LockDescription {
   ~NoopLockDescription();
 };
 
-class NoopLock {
+class NoopLock : public Lock {
  public:
   using LockDescription = NoopLockDescription;
 
-  NoopLock() = default;
+  explicit NoopLock(std::unique_ptr<content::PartitionedLockHolder> holder)
+      : Lock(std::move(holder)) {}
   ~NoopLock() = default;
 };
 

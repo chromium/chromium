@@ -10,6 +10,7 @@
 
 namespace content {
 class WebContents;
+struct PartitionedLockHolder;
 }  // namespace content
 
 namespace web_app {
@@ -28,12 +29,14 @@ class SharedWebContentsLockDescription : public LockDescription {
   ~SharedWebContentsLockDescription();
 };
 
-class SharedWebContentsLock {
+// This gives access to a `content::WebContents` instance that's managed by
+// `WebAppCommandManager`. A lock class that needs access to
+// `content::WebContents` can inherit from this class.
+class WithSharedWebContentsResources {
  public:
-  using LockDescription = SharedWebContentsLockDescription;
-
-  explicit SharedWebContentsLock(content::WebContents& shared_web_contents);
-  ~SharedWebContentsLock();
+  explicit WithSharedWebContentsResources(
+      content::WebContents& shared_web_contents);
+  ~WithSharedWebContentsResources();
 
   content::WebContents& shared_web_contents() const {
     return *shared_web_contents_;
@@ -41,6 +44,17 @@ class SharedWebContentsLock {
 
  private:
   raw_ref<content::WebContents> shared_web_contents_;
+};
+
+class SharedWebContentsLock : public Lock,
+                              public WithSharedWebContentsResources {
+ public:
+  using LockDescription = SharedWebContentsLockDescription;
+
+  explicit SharedWebContentsLock(
+      std::unique_ptr<content::PartitionedLockHolder> holder,
+      content::WebContents& shared_web_contents);
+  ~SharedWebContentsLock();
 };
 
 }  // namespace web_app

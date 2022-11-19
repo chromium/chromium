@@ -25,4 +25,9 @@ bool LockDescription::IncludesSharedWebContents() const {
   }
 }
 
+Lock::Lock(std::unique_ptr<content::PartitionedLockHolder> holder)
+    : holder_(std::move(holder)) {}
+
+Lock::~Lock() = default;
+
 }  // namespace web_app

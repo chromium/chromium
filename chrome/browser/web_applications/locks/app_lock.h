@@ -10,6 +10,10 @@
 #include "chrome/browser/web_applications/locks/lock.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 
+namespace content {
+struct PartitionedLockHolder;
+}
+
 namespace web_app {
 
 class OsIntegrationManager;
@@ -33,19 +37,22 @@ class AppLockDescription : public LockDescription {
   ~AppLockDescription();
 };
 
-class AppLock {
+// This gives access to web app components that allow read/write access to web
+// apps. A lock class that needs read/read access to web apps can inherit from
+// this class.
+// Note: a future improvement could be to only give read/write access to a list
+// of specific web apps.
+class WithAppResources {
  public:
-  using LockDescription = AppLockDescription;
-
-  AppLock(WebAppRegistrar& registrar,
-          WebAppSyncBridge& sync_bridge,
-          WebAppInstallFinalizer& install_finalizer,
-          OsIntegrationManager& os_integration_manager,
-          WebAppInstallManager& install_manager,
-          WebAppIconManager& icon_manager,
-          WebAppTranslationManager& translation_manager,
-          WebAppUiManager& ui_manager);
-  ~AppLock();
+  WithAppResources(WebAppRegistrar& registrar,
+                   WebAppSyncBridge& sync_bridge,
+                   WebAppInstallFinalizer& install_finalizer,
+                   OsIntegrationManager& os_integration_manager,
+                   WebAppInstallManager& install_manager,
+                   WebAppIconManager& icon_manager,
+                   WebAppTranslationManager& translation_manager,
+                   WebAppUiManager& ui_manager);
+  ~WithAppResources();
 
   WebAppRegistrar& registrar() { return *registrar_; }
   WebAppSyncBridge& sync_bridge() { return *sync_bridge_; }
@@ -69,6 +76,22 @@ class AppLock {
   raw_ref<WebAppIconManager> icon_manager_;
   raw_ref<WebAppTranslationManager> translation_manager_;
   raw_ref<WebAppUiManager> ui_manager_;
+};
+
+class AppLock : public Lock, public WithAppResources {
+ public:
+  using LockDescription = AppLockDescription;
+
+  AppLock(std::unique_ptr<content::PartitionedLockHolder> holder,
+          WebAppRegistrar& registrar,
+          WebAppSyncBridge& sync_bridge,
+          WebAppInstallFinalizer& install_finalizer,
+          OsIntegrationManager& os_integration_manager,
+          WebAppInstallManager& install_manager,
+          WebAppIconManager& icon_manager,
+          WebAppTranslationManager& translation_manager,
+          WebAppUiManager& ui_manager);
+  ~AppLock();
 };
 
 }  // namespace web_app
