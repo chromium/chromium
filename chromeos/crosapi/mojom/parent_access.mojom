@@ -44,9 +44,9 @@ struct ParentAccessErrorResult {
   Type type@0;
 };
 
-// Struct used to indicate that the parent cancelled the request.
-[Stable]
-struct ParentAccessCancelledResult {};
+// Struct used to indicate that the parent canceled the request.
+[Stable, RenamedFrom="crosapi.mojom.ParentAccessCancelledResult"]
+struct ParentAccessCanceledResult {};
 
 // Struct used to indicate that the parent declined the request.
 [Stable]
@@ -59,8 +59,8 @@ union ParentAccessResult {
   ParentAccessApprovedResult approved;
   // If present, an unexpected error occurred during the request.
   ParentAccessErrorResult error;
-  // If present, the parent cancelled the request
-  ParentAccessCancelledResult cancelled;
+  // If present, the parent canceled the request
+  ParentAccessCanceledResult canceled;
   // If present, the parent declined the request
   ParentAccessDeclinedResult declined;
 };

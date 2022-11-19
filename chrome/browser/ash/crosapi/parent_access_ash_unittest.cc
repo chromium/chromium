@@ -140,7 +140,7 @@ TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_Approved) {
   run_loop.Run();
 }
 
-/// Makes sure the correct result is returned by the crosapi when the request
+// Makes sure the correct result is returned by the crosapi when the request
 // is declined.
 TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_Declined) {
   base::RunLoop run_loop;
@@ -161,8 +161,29 @@ TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_Declined) {
   run_loop.Run();
 }
 
+// Makes sure an cancel result is returned by the crosapi when the request
+// is canceled.
+TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_Canceled) {
+  base::RunLoop run_loop;
+  parent_access_ash_->GetWebsiteParentApproval(
+      GURL(test_url), test_child_display_name, test_favicon,
+      base::BindOnce(
+          [](base::OnceClosure quit_closure,
+             crosapi::mojom::ParentAccessResultPtr result) {
+            // The request had an was canceled.
+            EXPECT_TRUE(result->is_canceled());
+            std::move(quit_closure).Run();
+          },
+          run_loop.QuitClosure()));
+
+  auto dialog_result = std::make_unique<ash::ParentAccessDialog::Result>();
+  dialog_result->status = ash::ParentAccessDialog::Result::Status::kCanceled;
+  dialog_provider_->TriggerCallbackWithResult(std::move(dialog_result));
+  run_loop.Run();
+}
+
 // Makes sure an error result is returned by the crosapi when the request
-//  had an error.
+// had an error.
 TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_Error) {
   base::RunLoop run_loop;
   parent_access_ash_->GetWebsiteParentApproval(
