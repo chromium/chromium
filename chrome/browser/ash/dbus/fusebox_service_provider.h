@@ -38,12 +38,18 @@ class FuseBoxServiceProvider : public CrosDBusService::ServiceProviderInterface,
   // corresponds to the standard stat function described by "man 2 stat".
   void Close(dbus::MethodCall* method_call,
              dbus::ExportedObject::ResponseSender sender);
+  void Close2(dbus::MethodCall* method_call,
+              dbus::ExportedObject::ResponseSender sender);
   void MkDir(dbus::MethodCall* method_call,
              dbus::ExportedObject::ResponseSender sender);
   void Open(dbus::MethodCall* method_call,
             dbus::ExportedObject::ResponseSender sender);
+  void Open2(dbus::MethodCall* method_call,
+             dbus::ExportedObject::ResponseSender sender);
   void Read(dbus::MethodCall* method_call,
             dbus::ExportedObject::ResponseSender sender);
+  void Read2(dbus::MethodCall* method_call,
+             dbus::ExportedObject::ResponseSender sender);
   void ReadDir2(dbus::MethodCall* method_call,
                 dbus::ExportedObject::ResponseSender sender);
   void RmDir(dbus::MethodCall* method_call,

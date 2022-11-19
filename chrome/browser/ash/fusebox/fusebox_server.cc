@@ -250,6 +250,31 @@ void RunReadCallbackTypical(
   task_runner->ReleaseSoon(FROM_HERE, std::move(buffer));
 }
 
+void RunRead2CallbackFailure(Server::Read2Callback callback,
+                             base::File::Error error_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  fusebox_staging::Read2ResponseProto response_proto;
+  response_proto.set_posix_error_code(FileErrorToErrno(error_code));
+  std::move(callback).Run(response_proto);
+}
+
+void RunRead2CallbackTypical(Server::Read2Callback callback,
+                             scoped_refptr<net::IOBuffer> buffer,
+                             int length) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  fusebox_staging::Read2ResponseProto response_proto;
+  if (length < 0) {
+    response_proto.set_posix_error_code(NetErrorToErrno(length));
+  } else {
+    *response_proto.mutable_data() = std::string(buffer->data(), length);
+  }
+  std::move(callback).Run(response_proto);
+
+  content::GetIOThreadTaskRunner({})->ReleaseSoon(FROM_HERE, std::move(buffer));
+}
+
 void RunRmDirCallback(
     Server::RmDirCallback callback,
     scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
@@ -325,6 +350,106 @@ std::string SubdirForTempDir(base::ScopedTempDir& scoped_temp_dir) {
 }
 
 }  // namespace
+
+Server::ReadWriter::ReadWriter(const storage::FileSystemURL& fs_url)
+    : fs_url_(fs_url) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+}
+
+Server::ReadWriter::~ReadWriter() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+}
+
+void Server::ReadWriter::Read(
+    scoped_refptr<storage::FileSystemContext> fs_context,
+    int64_t offset,
+    int64_t length,
+    Server::Read2Callback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  // See if we can re-use the previous storage::FileStreamReader.
+  std::unique_ptr<storage::FileStreamReader> fs_reader;
+  if (fs_reader_ && (read_offset_ == offset)) {
+    fs_reader = std::move(fs_reader_);
+    read_offset_ = -1;
+  } else {
+    fs_reader = fs_context->CreateFileStreamReader(fs_url_, offset, INT64_MAX,
+                                                   base::Time());
+    if (!fs_reader) {
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&RunRead2CallbackFailure, std::move(callback),
+                         base::File::Error::FILE_ERROR_INVALID_URL));
+      return;
+    }
+  }
+
+  constexpr int64_t min_length = 256;
+  constexpr int64_t max_length = 262144;  // 256 KiB.
+  scoped_refptr<net::IOBuffer> buffer = base::MakeRefCounted<net::IOBuffer>(
+      std::max(min_length, std::min(max_length, length)));
+
+  // Save the pointer before we std::move fs_reader into a base::OnceCallback.
+  // The std::move keeps the underlying storage::FileStreamReader alive while
+  // any network I/O is pending. Without the std::move, the underlying
+  // storage::FileStreamReader would get destroyed at the end of this function.
+  auto* saved_fs_reader = fs_reader.get();
+
+  auto pair = base::SplitOnceCallback(base::BindOnce(
+      &Server::ReadWriter::OnRead, weak_ptr_factory_.GetWeakPtr(),
+      std::move(callback), fs_context, std::move(fs_reader), buffer, offset));
+
+  int result =
+      saved_fs_reader->Read(buffer.get(), length, std::move(pair.first));
+  if (result != net::ERR_IO_PENDING) {  // The read was synchronous.
+    std::move(pair.second).Run(result);
+  }
+}
+
+void Server::ReadWriter::OnRead(
+    Server::Read2Callback callback,
+    scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
+    std::unique_ptr<storage::FileStreamReader> fs_reader,
+    scoped_refptr<net::IOBuffer> buffer,
+    int64_t offset,
+    int length) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  if (length >= 0) {
+    fs_reader_ = std::move(fs_reader);
+    read_offset_ = offset + length;
+  } else {
+    fs_reader_.reset();
+    read_offset_ = -1;
+  }
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&RunRead2CallbackTypical, std::move(callback),
+                                std::move(buffer), length));
+}
+
+Server::FuseFileMapEntry::FuseFileMapEntry(
+    scoped_refptr<storage::FileSystemContext> fs_context_arg,
+    storage::FileSystemURL fs_url_arg,
+    bool readable_arg,
+    bool writable_arg)
+    : fs_context_(fs_context_arg),
+      readable_(readable_arg),
+      writable_(writable_arg),
+      seqbnd_read_writer_(content::GetIOThreadTaskRunner({}), fs_url_arg) {}
+
+Server::FuseFileMapEntry::FuseFileMapEntry(FuseFileMapEntry&&) = default;
+
+Server::FuseFileMapEntry::~FuseFileMapEntry() = default;
+
+void Server::FuseFileMapEntry::DoRead2(
+    const fusebox_staging::Read2RequestProto& request,
+    Server::Read2Callback callback) {
+  int64_t offset = request.has_offset() ? request.offset() : 0;
+  int64_t length = request.has_length() ? request.length() : 0;
+  seqbnd_read_writer_.AsyncCall(&Server::ReadWriter::Read)
+      .WithArgs(fs_context_, offset, length, std::move(callback));
+}
 
 Server::PrefixMapEntry::PrefixMapEntry(std::string fs_url_prefix_arg,
                                        bool read_only_arg)
@@ -478,6 +603,37 @@ void Server::Close(const std::string& fs_url_as_string,
   std::move(callback).Run(ENOTSUP);
 }
 
+void Server::Close2(const fusebox_staging::Close2RequestProto& request_proto,
+                    Close2Callback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  uint64_t fuse_handle =
+      request_proto.has_fuse_handle() ? request_proto.fuse_handle() : 0;
+  auto iter = fuse_file_map_.find(fuse_handle);
+  if (iter == fuse_file_map_.end()) {
+    fusebox_staging::Close2ResponseProto response_proto;
+    response_proto.set_posix_error_code(ENOENT);
+    std::move(callback).Run(response_proto);
+    return;
+  }
+  FuseFileMapEntry& entry = iter->second;
+  base::circular_deque<PendingRead2> pending_reads =
+      std::move(entry.pending_reads_);
+
+  fuse_file_map_.erase(iter);
+
+  fusebox_staging::Close2ResponseProto response_proto;
+  std::move(callback).Run(response_proto);
+
+  if (!pending_reads.empty()) {
+    fusebox_staging::Read2ResponseProto read2_response_proto;
+    read2_response_proto.set_posix_error_code(EBUSY);
+    for (auto& pending_read : pending_reads) {
+      std::move(pending_read.second).Run(read2_response_proto);
+    }
+  }
+}
+
 void Server::MkDir(const fusebox_staging::MkDirRequestProto& request_proto,
                    MkDirCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -530,6 +686,46 @@ void Server::Open(const std::string& fs_url_as_string, OpenCallback callback) {
   std::move(callback).Run(ENOTSUP);
 }
 
+void Server::Open2(const fusebox_staging::Open2RequestProto& request_proto,
+                   Open2Callback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  std::string fs_url_as_string = request_proto.has_file_system_url()
+                                     ? request_proto.file_system_url()
+                                     : std::string();
+  fusebox_staging::AccessMode access_mode =
+      request_proto.has_access_mode() ? request_proto.access_mode()
+                                      : fusebox_staging::AccessMode::NO_ACCESS;
+
+  auto common = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
+  if (common.error_code != base::File::Error::FILE_OK) {
+    fusebox_staging::Open2ResponseProto response_proto;
+    response_proto.set_posix_error_code(FileErrorToErrno(common.error_code));
+    std::move(callback).Run(response_proto);
+    return;
+  }
+
+  bool readable = (access_mode == fusebox_staging::AccessMode::READ_ONLY) ||
+                  (access_mode == fusebox_staging::AccessMode::READ_WRITE);
+  bool writable = !common.read_only &&
+                  ((access_mode == fusebox_staging::AccessMode::WRITE_ONLY) ||
+                   (access_mode == fusebox_staging::AccessMode::READ_WRITE));
+
+  static uint64_t next_fuse_handle = 0;
+  uint64_t fuse_handle = ++next_fuse_handle;
+  // As the fusebox.proto comment says, "The high bit (also known as the 1<<63
+  // bit) is also always zero for valid values".
+  DCHECK((fuse_handle >> 63) == 0);
+  fuse_file_map_.insert(
+      {fuse_handle,
+       FuseFileMapEntry(std::move(common.fs_context), std::move(common.fs_url),
+                        readable, writable)});
+
+  fusebox_staging::Open2ResponseProto response_proto;
+  response_proto.set_fuse_handle(fuse_handle);
+  std::move(callback).Run(response_proto);
+}
+
 void Server::Read(const std::string& fs_url_as_string,
                   int64_t offset,
                   int32_t length,
@@ -546,6 +742,35 @@ void Server::Read(const std::string& fs_url_as_string,
       FROM_HERE,
       base::BindOnce(&ReadOnIOThread, common.fs_context, common.fs_url, offset,
                      static_cast<int64_t>(length), std::move(callback)));
+}
+
+void Server::Read2(const fusebox_staging::Read2RequestProto& request_proto,
+                   Read2Callback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  uint64_t fuse_handle =
+      request_proto.has_fuse_handle() ? request_proto.fuse_handle() : 0;
+  auto iter = fuse_file_map_.find(fuse_handle);
+  if (iter == fuse_file_map_.end()) {
+    fusebox_staging::Read2ResponseProto response_proto;
+    response_proto.set_posix_error_code(ENOENT);
+    std::move(callback).Run(response_proto);
+    return;
+  } else if (!iter->second.readable_) {
+    fusebox_staging::Read2ResponseProto response_proto;
+    response_proto.set_posix_error_code(EACCES);
+    std::move(callback).Run(response_proto);
+    return;
+  } else if (iter->second.has_in_flight_read_) {
+    iter->second.pending_reads_.emplace_back(request_proto,
+                                             std::move(callback));
+    return;
+  }
+  iter->second.has_in_flight_read_ = true;
+  iter->second.DoRead2(
+      request_proto,
+      base::BindOnce(&Server::OnRead2, weak_ptr_factory_.GetWeakPtr(),
+                     fuse_handle, std::move(callback)));
 }
 
 void Server::ReadDir2(const ReadDir2RequestProto& request_proto,
@@ -778,6 +1003,35 @@ void Server::RemoveTempDir(const std::string& fusebox_file_path) {
             // No-op other than running the base::ScopedTempDir destructor.
           },
           std::move(scoped_temp_dir)));
+}
+
+void Server::OnRead2(
+    uint64_t fuse_handle,
+    Read2Callback callback,
+    const fusebox_staging::Read2ResponseProto& response_proto) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto iter = fuse_file_map_.find(fuse_handle);
+  if (iter == fuse_file_map_.end()) {
+    fusebox_staging::Read2ResponseProto enoent_response_proto;
+    enoent_response_proto.set_posix_error_code(ENOENT);
+    std::move(callback).Run(enoent_response_proto);
+    return;
+  }
+  FuseFileMapEntry& entry = iter->second;
+  entry.has_in_flight_read_ = false;
+
+  std::move(callback).Run(std::move(response_proto));
+
+  if (entry.pending_reads_.empty()) {
+    return;
+  }
+  PendingRead2 pending = std::move(entry.pending_reads_.front());
+  entry.pending_reads_.pop_front();
+  entry.has_in_flight_read_ = true;
+  entry.DoRead2(pending.first,
+                base::BindOnce(&Server::OnRead2, weak_ptr_factory_.GetWeakPtr(),
+                               fuse_handle, std::move(pending.second)));
 }
 
 void Server::OnReadDirectory(
