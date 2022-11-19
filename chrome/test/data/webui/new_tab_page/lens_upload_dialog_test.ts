@@ -25,7 +25,7 @@ suite('LensUploadDialogTest', () => {
   let submittedUrl: string|null = null;
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     metrics = fakeMetricsPrivate();
     windowProxy = installMock(WindowProxy);
     windowProxy.setResultFor('onLine', true);

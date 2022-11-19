@@ -519,6 +519,7 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
   webui::SetupWebUIDataSource(
       source, base::make_span(kNewTabPageResources, kNewTabPageResourcesSize),
       IDR_NEW_TAB_PAGE_NEW_TAB_PAGE_HTML);
+  webui::EnableTrustedTypesCSP(source);
 
   // Allow embedding of iframes for the doodle and
   // chrome-untrusted://new-tab-page for other external content and resources.

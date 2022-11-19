@@ -2637,7 +2637,7 @@ suite('NewTabPageRealboxTest', () => {
       loadTimeData.overrideValues({
         realboxLensSearch: true,
       });
-      document.body.innerHTML = '';
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
       realbox = document.createElement('ntp-realbox');
       document.body.appendChild(realbox);
       const whenOpenLensSearch = eventToPromise('open-lens-search', realbox);

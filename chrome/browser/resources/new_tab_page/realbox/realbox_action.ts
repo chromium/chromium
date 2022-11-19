@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Action} from '../realbox.mojom-webui.js';
@@ -67,7 +68,7 @@ class RealboxActionElement extends PolymerElement {
   action: Action;
   matchIndex: number;
   override ariaLabel: string;
-  private hintHtml_: string;
+  private hintHtml_: TrustedHTML;
   private tooltip_: string;
 
   //============================================================================
@@ -81,11 +82,11 @@ class RealboxActionElement extends PolymerElement {
     return '';
   }
 
-  private computeHintHtml_(): string {
+  private computeHintHtml_(): TrustedHTML {
     if (this.action.hint) {
-      return decodeString16(this.action.hint);
+      return sanitizeInnerHtml(decodeString16(this.action.hint));
     }
-    return '';
+    return window.trustedTypes!.emptyHTML;
   }
 
   private computeTooltip_(): string {

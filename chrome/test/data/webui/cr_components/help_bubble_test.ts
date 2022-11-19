@@ -9,6 +9,7 @@ import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {HELP_BUBBLE_DISMISSED_EVENT, HELP_BUBBLE_TIMED_OUT_EVENT, HelpBubbleDismissedEvent, HelpBubbleElement, HelpBubbleTimedOutEvent} from 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 import {HelpBubbleArrowPosition, HelpBubbleButtonParams} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -138,7 +139,7 @@ suite('CrComponentsHelpBubbleTest', () => {
   }
 
   setup(() => {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
     <div id='container'>
       <h1 id='title'>This is the title</h1>
       <p id='p1'>Some paragraph text</p>

@@ -14,6 +14,7 @@ import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser
 import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
+import {getTrustedScriptURL} from 'chrome://resources/js/static_types.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {DomIf, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -71,7 +72,7 @@ function recordClick(element: NtpElement) {
 function ensureLazyLoaded() {
   const script = document.createElement('script');
   script.type = 'module';
-  script.src = './lazy_load.js';
+  script.src = getTrustedScriptURL`./lazy_load.js`;
   document.body.appendChild(script);
 }
 

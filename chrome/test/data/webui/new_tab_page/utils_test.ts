@@ -4,7 +4,7 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {createScrollBorders, decodeString16, mojoString16} from 'chrome://new-tab-page/new_tab_page.js';
+import {createScrollBorders, decodeString16, getTrustedHTML, mojoString16} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -24,7 +24,7 @@ suite('scroll borders', () => {
   }
 
   setup(async () => {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
         <div scroll-border></div>
         <div id="container"><div id="content"></div></div>
         <div scroll-border></div>`;

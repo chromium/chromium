@@ -99,10 +99,10 @@ export class RecipesModuleElement extends I18nMixin
         loadTimeData.getString('modulesRecipeTasksLower');
   }
 
-  private computeInfo_(): string {
+  private computeInfo_(): TrustedHTML {
     return loadTimeData.getBoolean('moduleRecipeExtendedExperimentEnabled') ?
-        loadTimeData.getString('modulesRecipeExtendedInfo') :
-        loadTimeData.getString('modulesRecipeInfo');
+        this.i18nAdvanced('modulesRecipeExtendedInfo') :
+        this.i18nAdvanced('modulesRecipeInfo');
   }
 
   private computeShowRelatedSearches_(): boolean {
