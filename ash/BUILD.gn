@@ -1019,6 +1019,8 @@ component("ash") {
     "style/checkbox_group.h",
     "style/close_button.cc",
     "style/close_button.h",
+    "style/color_palette_controller.cc",
+    "style/color_palette_controller.h",
     "style/color_util.cc",
     "style/color_util.h",
     "style/dark_light_mode_controller_impl.cc",
