@@ -122,7 +122,8 @@ bool TouchSelectionMenuViews::IsMenuAvailable(
 }
 
 void TouchSelectionMenuViews::CloseMenu() {
-  DisconnectOwner();
+  if (owner_)
+    DisconnectOwner();
   // Closing the widget will self-destroy this object.
   Widget* widget = GetWidget();
   if (widget && !widget->IsClosed())
