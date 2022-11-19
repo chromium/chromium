@@ -76,7 +76,7 @@ class RulesetManagerTest : public DNRTestBase {
 
     constexpr char kRulesetID[] = "id";
     constexpr char kJSONRulesFilename[] = "rules_file.json";
-    TestRulesetInfo info(kRulesetID, kJSONRulesFilename, *ToListValue(rules));
+    TestRulesetInfo info(kRulesetID, kJSONRulesFilename, ToListValue(rules));
     WriteManifestAndRuleset(extension_dir, info, host_permissions, flags);
 
     last_loaded_extension_ =

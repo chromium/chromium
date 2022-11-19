@@ -22,42 +22,42 @@ namespace {
 const base::FilePath::CharType kBackgroundScriptFilepath[] =
     FILE_PATH_LITERAL("background.js");
 
-std::unique_ptr<base::Value> ToValue(const std::string& t) {
-  return std::make_unique<base::Value>(t);
+base::Value ToValue(const std::string& t) {
+  return base::Value(t);
 }
 
-std::unique_ptr<base::Value> ToValue(int t) {
-  return std::make_unique<base::Value>(t);
+base::Value ToValue(int t) {
+  return base::Value(t);
 }
 
-std::unique_ptr<base::Value> ToValue(bool t) {
-  return std::make_unique<base::Value>(t);
+base::Value ToValue(bool t) {
+  return base::Value(t);
 }
 
-std::unique_ptr<base::Value> ToValue(const DictionarySource& source) {
-  return source.ToValue();
+base::Value ToValue(const DictionarySource& source) {
+  return base::Value(source.ToValue());
 }
 
-std::unique_ptr<base::Value> ToValue(const TestRulesetInfo& info) {
-  return info.GetManifestValue();
+base::Value ToValue(const TestRulesetInfo& info) {
+  return base::Value(info.GetManifestValue());
 }
 
 template <typename T>
-std::unique_ptr<base::ListValue> ToValue(const std::vector<T>& vec) {
+base::Value::List ToValue(const std::vector<T>& vec) {
   ListBuilder builder;
   for (const T& t : vec)
     builder.Append(ToValue(t));
-  return builder.Build();
+  return builder.BuildList();
 }
 
 template <typename T>
-void SetValue(base::DictionaryValue* dict,
+void SetValue(base::Value::Dict& dict,
               const char* key,
               const absl::optional<T>& value) {
   if (!value)
     return;
 
-  dict->SetKey(key, base::Value::FromUniquePtrValue(ToValue(*value)));
+  dict.Set(key, ToValue(*value));
 }
 
 }  // namespace
@@ -68,26 +68,24 @@ TestRuleCondition::TestRuleCondition(const TestRuleCondition&) = default;
 TestRuleCondition& TestRuleCondition::operator=(const TestRuleCondition&) =
     default;
 
-std::unique_ptr<base::DictionaryValue> TestRuleCondition::ToValue() const {
-  auto dict = std::make_unique<base::DictionaryValue>();
-  SetValue(dict.get(), kUrlFilterKey, url_filter);
-  SetValue(dict.get(), kRegexFilterKey, regex_filter);
-  SetValue(dict.get(), kIsUrlFilterCaseSensitiveKey,
-           is_url_filter_case_sensitive);
-  SetValue(dict.get(), kDomainsKey, domains);
-  SetValue(dict.get(), kExcludedDomainsKey, excluded_domains);
-  SetValue(dict.get(), kInitiatorDomainsKey, initiator_domains);
-  SetValue(dict.get(), kExcludedInitiatorDomainsKey,
-           excluded_initiator_domains);
-  SetValue(dict.get(), kRequestDomainsKey, request_domains);
-  SetValue(dict.get(), kExcludedRequestDomainsKey, excluded_request_domains);
-  SetValue(dict.get(), kRequestMethodsKey, request_methods);
-  SetValue(dict.get(), kExcludedRequestMethodsKey, excluded_request_methods);
-  SetValue(dict.get(), kResourceTypesKey, resource_types);
-  SetValue(dict.get(), kExcludedResourceTypesKey, excluded_resource_types);
-  SetValue(dict.get(), kTabIdsKey, tab_ids);
-  SetValue(dict.get(), kExcludedTabIdsKey, excluded_tab_ids);
-  SetValue(dict.get(), kDomainTypeKey, domain_type);
+base::Value::Dict TestRuleCondition::ToValue() const {
+  base::Value::Dict dict;
+  SetValue(dict, kUrlFilterKey, url_filter);
+  SetValue(dict, kRegexFilterKey, regex_filter);
+  SetValue(dict, kIsUrlFilterCaseSensitiveKey, is_url_filter_case_sensitive);
+  SetValue(dict, kDomainsKey, domains);
+  SetValue(dict, kExcludedDomainsKey, excluded_domains);
+  SetValue(dict, kInitiatorDomainsKey, initiator_domains);
+  SetValue(dict, kExcludedInitiatorDomainsKey, excluded_initiator_domains);
+  SetValue(dict, kRequestDomainsKey, request_domains);
+  SetValue(dict, kExcludedRequestDomainsKey, excluded_request_domains);
+  SetValue(dict, kRequestMethodsKey, request_methods);
+  SetValue(dict, kExcludedRequestMethodsKey, excluded_request_methods);
+  SetValue(dict, kResourceTypesKey, resource_types);
+  SetValue(dict, kExcludedResourceTypesKey, excluded_resource_types);
+  SetValue(dict, kTabIdsKey, tab_ids);
+  SetValue(dict, kExcludedTabIdsKey, excluded_tab_ids);
+  SetValue(dict, kDomainTypeKey, domain_type);
 
   return dict;
 }
@@ -99,11 +97,11 @@ TestRuleQueryKeyValue::TestRuleQueryKeyValue(const TestRuleQueryKeyValue&) =
 TestRuleQueryKeyValue& TestRuleQueryKeyValue::operator=(
     const TestRuleQueryKeyValue&) = default;
 
-std::unique_ptr<base::DictionaryValue> TestRuleQueryKeyValue::ToValue() const {
-  auto dict = std::make_unique<base::DictionaryValue>();
-  SetValue(dict.get(), kQueryKeyKey, key);
-  SetValue(dict.get(), kQueryValueKey, value);
-  SetValue(dict.get(), kQueryReplaceOnlyKey, replace_only);
+base::Value::Dict TestRuleQueryKeyValue::ToValue() const {
+  base::Value::Dict dict;
+  SetValue(dict, kQueryKeyKey, key);
+  SetValue(dict, kQueryValueKey, value);
+  SetValue(dict, kQueryReplaceOnlyKey, replace_only);
   return dict;
 }
 
@@ -114,11 +112,10 @@ TestRuleQueryTransform::TestRuleQueryTransform(const TestRuleQueryTransform&) =
 TestRuleQueryTransform& TestRuleQueryTransform::operator=(
     const TestRuleQueryTransform&) = default;
 
-std::unique_ptr<base::DictionaryValue> TestRuleQueryTransform::ToValue() const {
-  auto dict = std::make_unique<base::DictionaryValue>();
-  SetValue(dict.get(), kQueryTransformRemoveParamsKey, remove_params);
-  SetValue(dict.get(), kQueryTransformAddReplaceParamsKey,
-           add_or_replace_params);
+base::Value::Dict TestRuleQueryTransform::ToValue() const {
+  base::Value::Dict dict;
+  SetValue(dict, kQueryTransformRemoveParamsKey, remove_params);
+  SetValue(dict, kQueryTransformAddReplaceParamsKey, add_or_replace_params);
   return dict;
 }
 
@@ -128,17 +125,17 @@ TestRuleTransform::TestRuleTransform(const TestRuleTransform&) = default;
 TestRuleTransform& TestRuleTransform::operator=(const TestRuleTransform&) =
     default;
 
-std::unique_ptr<base::DictionaryValue> TestRuleTransform::ToValue() const {
-  auto dict = std::make_unique<base::DictionaryValue>();
-  SetValue(dict.get(), kTransformSchemeKey, scheme);
-  SetValue(dict.get(), kTransformHostKey, host);
-  SetValue(dict.get(), kTransformPortKey, port);
-  SetValue(dict.get(), kTransformPathKey, path);
-  SetValue(dict.get(), kTransformQueryKey, query);
-  SetValue(dict.get(), kTransformQueryTransformKey, query_transform);
-  SetValue(dict.get(), kTransformFragmentKey, fragment);
-  SetValue(dict.get(), kTransformUsernameKey, username);
-  SetValue(dict.get(), kTransformPasswordKey, password);
+base::Value::Dict TestRuleTransform::ToValue() const {
+  base::Value::Dict dict;
+  SetValue(dict, kTransformSchemeKey, scheme);
+  SetValue(dict, kTransformHostKey, host);
+  SetValue(dict, kTransformPortKey, port);
+  SetValue(dict, kTransformPathKey, path);
+  SetValue(dict, kTransformQueryKey, query);
+  SetValue(dict, kTransformQueryTransformKey, query_transform);
+  SetValue(dict, kTransformFragmentKey, fragment);
+  SetValue(dict, kTransformUsernameKey, username);
+  SetValue(dict, kTransformPasswordKey, password);
   return dict;
 }
 
@@ -148,12 +145,12 @@ TestRuleRedirect::TestRuleRedirect(const TestRuleRedirect&) = default;
 TestRuleRedirect& TestRuleRedirect::operator=(const TestRuleRedirect&) =
     default;
 
-std::unique_ptr<base::DictionaryValue> TestRuleRedirect::ToValue() const {
-  auto dict = std::make_unique<base::DictionaryValue>();
-  SetValue(dict.get(), kExtensionPathKey, extension_path);
-  SetValue(dict.get(), kTransformKey, transform);
-  SetValue(dict.get(), kRedirectUrlKey, url);
-  SetValue(dict.get(), kRegexSubstitutionKey, regex_substitution);
+base::Value::Dict TestRuleRedirect::ToValue() const {
+  base::Value::Dict dict;
+  SetValue(dict, kExtensionPathKey, extension_path);
+  SetValue(dict, kTransformKey, transform);
+  SetValue(dict, kRedirectUrlKey, url);
+  SetValue(dict, kRegexSubstitutionKey, regex_substitution);
   return dict;
 }
 
@@ -167,11 +164,11 @@ TestHeaderInfo::~TestHeaderInfo() = default;
 TestHeaderInfo::TestHeaderInfo(const TestHeaderInfo&) = default;
 TestHeaderInfo& TestHeaderInfo::operator=(const TestHeaderInfo&) = default;
 
-std::unique_ptr<base::DictionaryValue> TestHeaderInfo::ToValue() const {
-  auto dict = std::make_unique<base::DictionaryValue>();
-  SetValue(dict.get(), kHeaderNameKey, header);
-  SetValue(dict.get(), kHeaderOperationKey, operation);
-  SetValue(dict.get(), kHeaderValueKey, value);
+base::Value::Dict TestHeaderInfo::ToValue() const {
+  base::Value::Dict dict;
+  SetValue(dict, kHeaderNameKey, header);
+  SetValue(dict, kHeaderOperationKey, operation);
+  SetValue(dict, kHeaderValueKey, value);
   return dict;
 }
 
@@ -180,12 +177,12 @@ TestRuleAction::~TestRuleAction() = default;
 TestRuleAction::TestRuleAction(const TestRuleAction&) = default;
 TestRuleAction& TestRuleAction::operator=(const TestRuleAction&) = default;
 
-std::unique_ptr<base::DictionaryValue> TestRuleAction::ToValue() const {
-  auto dict = std::make_unique<base::DictionaryValue>();
-  SetValue(dict.get(), kRuleActionTypeKey, type);
-  SetValue(dict.get(), kRequestHeadersKey, request_headers);
-  SetValue(dict.get(), kResponseHeadersKey, response_headers);
-  SetValue(dict.get(), kRedirectKey, redirect);
+base::Value::Dict TestRuleAction::ToValue() const {
+  base::Value::Dict dict;
+  SetValue(dict, kRuleActionTypeKey, type);
+  SetValue(dict, kRequestHeadersKey, request_headers);
+  SetValue(dict, kResponseHeadersKey, response_headers);
+  SetValue(dict, kRedirectKey, redirect);
   return dict;
 }
 
@@ -194,12 +191,12 @@ TestRule::~TestRule() = default;
 TestRule::TestRule(const TestRule&) = default;
 TestRule& TestRule::operator=(const TestRule&) = default;
 
-std::unique_ptr<base::DictionaryValue> TestRule::ToValue() const {
-  auto dict = std::make_unique<base::DictionaryValue>();
-  SetValue(dict.get(), kIDKey, id);
-  SetValue(dict.get(), kPriorityKey, priority);
-  SetValue(dict.get(), kRuleConditionKey, condition);
-  SetValue(dict.get(), kRuleActionKey, action);
+base::Value::Dict TestRule::ToValue() const {
+  base::Value::Dict dict;
+  SetValue(dict, kIDKey, id);
+  SetValue(dict, kPriorityKey, priority);
+  SetValue(dict, kRuleConditionKey, condition);
+  SetValue(dict, kRuleActionKey, action);
   return dict;
 }
 
@@ -246,14 +243,12 @@ TestRulesetInfo::TestRulesetInfo(const TestRulesetInfo& info)
                       info.rules_value,
                       info.enabled) {}
 
-std::unique_ptr<base::DictionaryValue> TestRulesetInfo::GetManifestValue()
-    const {
+base::Value::Dict TestRulesetInfo::GetManifestValue() const {
   dnr_api::Ruleset ruleset;
   ruleset.id = manifest_id;
   ruleset.path = relative_file_path;
   ruleset.enabled = enabled;
-  return base::DictionaryValue::From(
-      base::Value::ToUniquePtrValue(base::Value(ruleset.ToValue())));
+  return ruleset.ToValue();
 }
 
 std::unique_ptr<base::DictionaryValue> CreateManifest(
@@ -307,14 +302,12 @@ std::unique_ptr<base::DictionaryValue> CreateManifest(
       .Build();
 }
 
-std::unique_ptr<base::ListValue> ToListValue(
-    const std::vector<std::string>& vec) {
-  return ToValue(vec);
+base::Value ToListValue(const std::vector<std::string>& vec) {
+  return base::Value(ToValue(vec));
 }
 
-std::unique_ptr<base::ListValue> ToListValue(
-    const std::vector<TestRule>& rules) {
-  return ToValue(rules);
+base::Value ToListValue(const std::vector<TestRule>& rules) {
+  return base::Value(ToValue(rules));
 }
 
 void WriteManifestAndRulesets(const base::FilePath& extension_dir,

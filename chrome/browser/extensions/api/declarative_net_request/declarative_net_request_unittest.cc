@@ -263,11 +263,11 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
                               const std::vector<TestRule>& rules_to_add,
                               RulesetScope scope,
                               const std::string* expected_error = nullptr) {
-    std::unique_ptr<base::Value> ids_to_remove_value =
+    base::Value::List ids_to_remove_value =
         ListBuilder()
             .Append(rule_ids_to_remove.begin(), rule_ids_to_remove.end())
-            .Build();
-    std::unique_ptr<base::Value> rules_to_add_value = ToListValue(rules_to_add);
+            .BuildList();
+    base::Value rules_to_add_value = ToListValue(rules_to_add);
 
     constexpr const char kParams[] = R"(
       [{
@@ -275,9 +275,8 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
         "removeRuleIds": $2
       }]
     )";
-    const std::string json_args =
-        content::JsReplace(kParams, std::move(*rules_to_add_value),
-                           std::move(*ids_to_remove_value));
+    const std::string json_args = content::JsReplace(
+        kParams, std::move(rules_to_add_value), std::move(ids_to_remove_value));
 
     scoped_refptr<ExtensionFunction> update_function;
     switch (scope) {
@@ -335,10 +334,8 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
       const std::vector<std::string>& ruleset_ids_to_remove,
       const std::vector<std::string>& ruleset_ids_to_add,
       absl::optional<std::string> expected_error) {
-    std::unique_ptr<base::Value> ids_to_remove_value =
-        ToListValue(ruleset_ids_to_remove);
-    std::unique_ptr<base::Value> ids_to_add_value =
-        ToListValue(ruleset_ids_to_add);
+    base::Value ids_to_remove_value = ToListValue(ruleset_ids_to_remove);
+    base::Value ids_to_add_value = ToListValue(ruleset_ids_to_add);
 
     constexpr const char kParams[] = R"(
       [{
@@ -347,7 +344,7 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
       }]
     )";
     const std::string json_args = content::JsReplace(
-        kParams, std::move(*ids_to_remove_value), std::move(*ids_to_add_value));
+        kParams, std::move(ids_to_remove_value), std::move(ids_to_add_value));
 
     auto function = base::MakeRefCounted<
         DeclarativeNetRequestUpdateEnabledRulesetsFunction>();
@@ -481,9 +478,7 @@ class SingleRulesetTest : public DeclarativeNetRequestUnittest {
   void AddRule(const TestRule& rule) { rules_list_.push_back(rule); }
 
   // This takes precedence over the AddRule method.
-  void SetRules(std::unique_ptr<base::Value> rules) {
-    rules_value_ = std::move(rules);
-  }
+  void SetRules(base::Value rules) { rules_value_ = std::move(rules); }
 
   void set_persist_invalid_json_file() { persist_invalid_json_file_ = true; }
 
@@ -549,7 +544,7 @@ class SingleRulesetTest : public DeclarativeNetRequestUnittest {
   }
 
   std::vector<TestRule> rules_list_;
-  std::unique_ptr<base::Value> rules_value_;
+  absl::optional<base::Value> rules_value_;
   bool persist_invalid_json_file_ = false;
   bool persist_initial_indexed_ruleset_ = false;
 };
@@ -638,7 +633,7 @@ TEST_P(SingleRulesetTest, InvalidRedirectURL) {
 }
 
 TEST_P(SingleRulesetTest, ListNotPassed) {
-  SetRules(std::make_unique<base::DictionaryValue>());
+  SetRules(base::Value(base::Value::Dict()));
   LoadAndExpectError(kErrorListNotPassed);
 }
 
@@ -779,7 +774,7 @@ TEST_P(SingleRulesetTest, InvalidJSONRules_Parsed) {
       }
     ]
   )";
-  SetRules(base::JSONReader::ReadDeprecated(kRules));
+  SetRules(*base::JSONReader::Read(kRules));
 
   extension_loader()->set_ignore_manifest_warnings(true);
 
@@ -1052,10 +1047,11 @@ TEST_P(SingleRulesetTest, SessionRules) {
   ASSERT_NO_FATAL_FAILURE(RunUpdateRulesFunction(
       *extension(), {}, {rule_1, rule_2}, RulesetScope::kSession));
   RunGetRulesFunction(*extension(), RulesetScope::kSession, &result);
-  EXPECT_THAT(result.GetList(),
-              ::testing::UnorderedElementsAre(
-                  ::testing::Eq(std::cref(*rule_1.ToValue())),
-                  ::testing::Eq(std::cref(*rule_2.ToValue()))));
+  base::Value::Dict rule_1_value = rule_1.ToValue();
+  base::Value::Dict rule_2_value = rule_2.ToValue();
+  EXPECT_THAT(result.GetList(), ::testing::UnorderedElementsAre(
+                                    ::testing::Eq(std::cref(rule_1_value)),
+                                    ::testing::Eq(std::cref(rule_2_value))));
   VerifyPublicRulesetIDs(*extension(),
                          {kDefaultRulesetID, dnr_api::SESSION_RULESET_ID});
 
@@ -1066,8 +1062,9 @@ TEST_P(SingleRulesetTest, SessionRules) {
   ASSERT_NO_FATAL_FAILURE(RunUpdateRulesFunction(*extension(), {*rule_2.id}, {},
                                                  RulesetScope::kSession));
   RunGetRulesFunction(*extension(), RulesetScope::kSession, &result);
-  EXPECT_THAT(result.GetList(), ::testing::UnorderedElementsAre(::testing::Eq(
-                                    std::cref(*rule_1.ToValue()))));
+  rule_1_value = rule_1.ToValue();
+  EXPECT_THAT(result.GetList(), ::testing::UnorderedElementsAre(
+                                    ::testing::Eq(std::cref(rule_1_value))));
   RunGetRulesFunction(*extension(), RulesetScope::kDynamic, &result);
   EXPECT_TRUE(result.GetList().empty());
 }
@@ -1379,7 +1376,7 @@ class MultipleRulesetsTest : public DeclarativeNetRequestUnittest {
     for (size_t i = 0; i < num_regex_rules; ++i, ++id)
       rules.push_back(CreateRegexRule(id));
 
-    return TestRulesetInfo(manifest_id_and_path, *ToListValue(rules), enabled);
+    return TestRulesetInfo(manifest_id_and_path, ToListValue(rules), enabled);
   }
 
   // |expected_rules_count| and |expected_enabled_rules_count| refer to the
@@ -1446,7 +1443,7 @@ TEST_P(MultipleRulesetsTest, EmptyRulesets) {
 // specifying an invalid rules file.
 TEST_P(MultipleRulesetsTest, ListNotPassed) {
     std::vector<TestRule> rules({CreateGenericRule()});
-    AddRuleset(TestRulesetInfo(kId1, "path1", *ToListValue(rules)));
+    AddRuleset(TestRulesetInfo(kId1, "path1", ToListValue(rules)));
 
     // Persist a ruleset with an invalid rules file.
     AddRuleset(TestRulesetInfo(kId2, "path2", base::DictionaryValue()));
@@ -1474,7 +1471,7 @@ TEST_P(MultipleRulesetsTest, InstallWarnings) {
     rule.condition->regex_filter = kLargeRegexFilter;
     rules.push_back(rule);
 
-    TestRulesetInfo info(kId1, "path1", *ToListValue(rules), true);
+    TestRulesetInfo info(kId1, "path1", ToListValue(rules), true);
     AddRuleset(info);
 
     expected_warnings.push_back(

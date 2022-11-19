@@ -344,9 +344,9 @@ void RulesMonitorService::UpdateEnabledStaticRulesets(
       std::move(callback));
 }
 
-const base::ListValue& RulesMonitorService::GetSessionRulesValue(
+const base::Value::List& RulesMonitorService::GetSessionRulesValue(
     const ExtensionId& extension_id) const {
-  static const base::NoDestructor<base::ListValue> empty_rules;
+  static const base::NoDestructor<base::Value::List> empty_rules;
   auto it = session_rules_.find(extension_id);
   return it == session_rules_.end() ? *empty_rules : it->second;
 }
@@ -356,7 +356,7 @@ RulesMonitorService::GetSessionRules(const ExtensionId& extension_id) const {
   std::vector<api::declarative_net_request::Rule> result;
   std::u16string error;
   bool populate_result = json_schema_compiler::util::PopulateArrayFromList(
-      GetSessionRulesValue(extension_id).GetList(), &result, &error);
+      GetSessionRulesValue(extension_id), &result, &error);
   DCHECK(populate_result);
   DCHECK(error.empty());
   return result;
@@ -670,9 +670,8 @@ void RulesMonitorService::UpdateSessionRulesInternal(
     }
   }
 
-  std::unique_ptr<base::ListValue> new_rules_value =
-      base::ListValue::From(base::Value::ToUniquePtrValue(base::Value(
-          json_schema_compiler::util::CreateValueFromArray(new_rules))));
+  base::Value::List new_rules_value =
+      json_schema_compiler::util::CreateValueFromArray(new_rules);
 
   std::string error;
   std::unique_ptr<RulesetMatcher> matcher =
@@ -682,7 +681,7 @@ void RulesMonitorService::UpdateSessionRulesInternal(
     return;
   }
 
-  session_rules_[extension_id] = std::move(*new_rules_value);
+  session_rules_[extension_id] = std::move(new_rules_value);
   UpdateRulesetMatcher(*extension, std::move(matcher));
   std::move(callback).Run(absl::nullopt /* error */);
 }

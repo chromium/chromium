@@ -35,12 +35,11 @@ namespace declarative_net_request {
 namespace {
 
 api::declarative_net_request::Rule GetAPIRule(const TestRule& rule) {
-  std::unique_ptr<base::DictionaryValue> value = rule.ToValue();
-  EXPECT_TRUE(value);
+  base::Value value(rule.ToValue());
   api::declarative_net_request::Rule result;
   std::u16string error;
   EXPECT_TRUE(
-      api::declarative_net_request::Rule::Populate(*value, &result, &error))
+      api::declarative_net_request::Rule::Populate(value, &result, &error))
       << error;
   EXPECT_TRUE(error.empty()) << error;
   return result;

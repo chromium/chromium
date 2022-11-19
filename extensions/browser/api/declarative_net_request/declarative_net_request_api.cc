@@ -215,8 +215,8 @@ DeclarativeNetRequestGetSessionRulesFunction::Run() {
       declarative_net_request::RulesMonitorService::Get(browser_context());
   DCHECK(rules_monitor_service);
 
-  return RespondNow(OneArgument(
-      rules_monitor_service->GetSessionRulesValue(extension_id()).Clone()));
+  return RespondNow(OneArgument(base::Value(
+      rules_monitor_service->GetSessionRulesValue(extension_id()).Clone())));
 }
 
 DeclarativeNetRequestUpdateEnabledRulesetsFunction::
