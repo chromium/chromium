@@ -8,8 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/debug/stack_trace.h"
-#include "base/format_macros.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/abseil_string_conversions.h"
@@ -253,15 +251,12 @@ bool Http2Connection::HandleData(int rv) {
   if (connection_listener_)
     connection_listener_->ReadFromSocket(*socket_, rv);
 
-  char* remaining_buffer = read_buf_->data();
-  int bytes_remaining = rv;
-  while (bytes_remaining > 0) {
-    int result = adapter_->ProcessBytes(
-        absl::string_view(remaining_buffer, bytes_remaining));
+  absl::string_view remaining_buffer(read_buf_->data(), rv);
+  while (!remaining_buffer.empty()) {
+    int result = adapter_->ProcessBytes(remaining_buffer);
     if (result < 0)
       return false;
-    remaining_buffer += result;
-    bytes_remaining -= result;
+    remaining_buffer = remaining_buffer.substr(result);
   }
 
   // Any frames and data sources will be queued up and sent all at once below
