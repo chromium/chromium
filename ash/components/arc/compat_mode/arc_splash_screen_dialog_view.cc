@@ -53,9 +53,6 @@ namespace arc {
 
 namespace {
 
-constexpr ui::ColorId kDialogBackgroundColorId =
-    ash::kColorAshDialogBackgroundColor;
-
 // Draws the blue-ish highlight border to the parent view according to the
 // highlight path.
 class HighlightBorder : public views::View {
@@ -151,7 +148,6 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
   set_parent_window(parent);
   set_title_margins(gfx::Insets());
   set_margins(gfx::Insets());
-  set_color_id(kDialogBackgroundColorId);
   SetAnchorView(anchor_);
   SetTitle(l10n_util::GetStringUTF16(IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_TITLE));
   SetShowTitle(false);
@@ -178,7 +174,7 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
   constexpr gfx::Size kLogoImageSize(152, 126);
   AddChildView(views::Builder<views::ImageView>()  // Logo
                    .SetImage(ui::ImageModel::FromVectorIcon(
-                       kCompatModeSplashscreenIcon, kDialogBackgroundColorId,
+                       kCompatModeSplashscreenIcon, background_color_id_,
                        kLogoImageSize.width()))
                    .Build());
   AddChildView(views::Builder<views::Label>()  // Header
@@ -255,6 +251,11 @@ void ArcSplashScreenDialogView::AddedToWidget() {
   auto* const frame = GetBubbleFrameView();
   if (frame)
     frame->SetCornerRadius(kCornerRadius);
+}
+
+void ArcSplashScreenDialogView::OnThemeChanged() {
+  views::BubbleDialogDelegateView::OnThemeChanged();
+  set_color(GetColorProvider()->GetColor(background_color_id_));
 }
 
 void ArcSplashScreenDialogView::OnViewIsDeleting(View* observed_view) {
