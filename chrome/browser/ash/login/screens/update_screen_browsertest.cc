@@ -612,7 +612,8 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestTemporaryPortalNetwork) {
   histogram_tester_.ExpectTotalCount(kTimeFinalize, 0);
 }
 
-IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestTwoOfflineNetworks) {
+// Flaky. crbug.com/1385850
+IN_PROC_BROWSER_TEST_P(UpdateScreenTest, DISABLED_TestTwoOfflineNetworks) {
   // Change ethernet state to portal.
   network_portal_detector_.SimulateDefaultNetworkState(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
