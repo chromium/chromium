@@ -7,6 +7,7 @@ OS window manager and system UI. The name comes from **L**inux **A**nd
 **C**h**R**ome **OS**.
 
 Googlers: [go/lacros](http://go/lacros) has internal docs.
+More Lacros documents in //docs/lacros.
 
 ## Technical details
 
@@ -96,25 +97,7 @@ binary (lacros or ash) a feature should live in.
 
 ## Testing
 
-Most test suites require ash-chrome to be running in order to provide a basic
-Wayland server. This requires a special test runner:
-
-`./build/lacros/test_runner.py test out/lacros/browser_tests --gtest_filter=BrowserTest.Title`
-
-Some test suites require ash-chrome to provide both a Wayland server and a valid
-mojo crosapi connection. This requires the test target
-`lacros_chrome_browsertests`:
-
-`./build/lacros/test_runner.py test out/lacros/lacros_chrome_browsertests --gtest_filter=ScreenManagerLacrosBrowserTest.*`
-
-By default, the test runner downloads a prebuilt ash-chrome, add the
-`--ash-chrome-path` command line argument to run the test against a locally
-built version of Ash:
-
-`./build/lacros/test_runner.py test --ash-chrome-path=out/ash/chrome out/lacros/lacros_chrome_browsertests --gtest_filter=ScreenManagerLacrosBrowserTest.*`
-
-If you're sshing to your desktop, please prefix the command with
-`./testing/xvfb.py`.
+See [Test instructions](lacros/test_instructions.md).
 
 For sheriffs: Test failures that should have been caught by the CQ should be
 treated like test failures on any other platform: investigated and fixed or
