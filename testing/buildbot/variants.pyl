@@ -698,7 +698,7 @@
     'skylab': {
       'cros_board': 'strongbad',
       'cros_chrome_version': '110.0.5421.0',
-      'cros_img': 'strongbad-release/R110-15247.0.0',
+      'cros_img': 'strongbad-release/R110-15248.0.0',
     },
     'enabled': True,
     'identifier': 'STRONGBAD_RELEASE_LKGM',
