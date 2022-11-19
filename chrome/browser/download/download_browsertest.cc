@@ -5676,9 +5676,11 @@ IN_PROC_BROWSER_TEST_F(DownloadShelfTest, CloseShelfOnDownloadsTab) {
   EXPECT_FALSE(browser()->window()->IsDownloadShelfVisible());
 }
 
+// Flaky. crbug.com/1383009
 // Test that when downloading an item in Incognito mode, the download surface is
 // not visible after closing the Incognito window.
-IN_PROC_BROWSER_TEST_F(DownloadTest, IncognitoDownloadSurfaceVisibility) {
+IN_PROC_BROWSER_TEST_F(DownloadTest,
+                       DISABLED_IncognitoDownloadSurfaceVisibility) {
   Browser* incognito = CreateIncognitoBrowser();
   ASSERT_TRUE(incognito);
 

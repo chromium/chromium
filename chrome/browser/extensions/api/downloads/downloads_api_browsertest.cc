@@ -4849,9 +4849,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(GetDownloadToolbarButton()->IsShowing());
 }
 
+// Flaky. crbug.com/1386043
 IN_PROC_BROWSER_TEST_F(
     DownloadExtensionBubbleEnabledTest,
-    DownloadExtensionBubbleEnabledTest_SetUiOptionsShowDetails) {
+    DISABLED_DownloadExtensionBubbleEnabledTest_SetUiOptionsShowDetails) {
   LoadExtension("downloads_split");
   DownloadManager::DownloadVector items;
   CreateFirstSlowTestDownload();
