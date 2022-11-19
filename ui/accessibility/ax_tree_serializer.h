@@ -260,7 +260,9 @@ template <typename AXSourceNode>
 AXTreeSerializer<AXSourceNode>::~AXTreeSerializer() {
   // Clear |tree_| to prevent any additional calls to the tree source
   // during teardown.
+  // TODO(accessibility) How would that happen?
   tree_ = nullptr;
+  // Free up any resources allocated on the heap that are stored with raw_ptr.
   Reset();
 }
 
@@ -278,11 +280,8 @@ void AXTreeSerializer<AXSourceNode>::InternalReset() {
   // but Reset() needs to work even if the tree is in a broken state.
   // Instead, iterate over |client_id_map_| to ensure we clear all nodes and
   // start from scratch.
-  for (auto&& item : client_id_map_) {
-    if (tree_)
-      tree_->SerializerClearedNode(item.first);
+  for (auto&& item : client_id_map_)
     delete item.second;
-  }
   client_id_map_.clear();
   client_root_ = nullptr;
 }
@@ -562,7 +561,6 @@ void AXTreeSerializer<AXSourceNode>::DeleteClientSubtree(
 #endif
   } else {
     DeleteDescendants(client_node);
-    tree_->SerializerClearedNode(client_node->id);
     client_id_map_.erase(client_node->id);
     delete client_node;
   }

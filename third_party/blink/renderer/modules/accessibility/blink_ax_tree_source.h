@@ -52,7 +52,6 @@ class MODULES_EXPORT BlinkAXTreeSource
   bool IsEqual(AXObject* node1, AXObject* node2) const override;
   AXObject* GetNull() const override;
   std::string GetDebugString(AXObject* node) const override;
-  void SerializerClearedNode(int32_t node_id) override;
 
   // Set the id of the node to fetch image data for. Normally the content
   // of images is not part of the accessibility tree, but one node at a

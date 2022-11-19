@@ -370,10 +370,6 @@ std::string BlinkAXTreeSource::GetDebugString(AXObject* node) const {
   return node->ToString(true).Utf8();
 }
 
-void BlinkAXTreeSource::SerializerClearedNode(int32_t node_id) {
-  ax_object_cache_->SerializerClearedNode(node_id);
-}
-
 void BlinkAXTreeSource::SerializeNode(AXObject* src,
                                       ui::AXNodeData* dst) const {
 #if DCHECK_IS_ON()

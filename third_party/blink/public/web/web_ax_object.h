@@ -109,8 +109,6 @@ class BLINK_EXPORT WebAXObject {
   void Serialize(ui::AXNodeData* node_data,
                  ui::AXMode accessibility_mode) const;
 
-  void SerializerClearedNode(int node_id) const;
-
   void InvalidateSerializerSubtree() const;
   bool SerializeChanges(ui::AXTreeUpdate* update);
   bool IsInClientTree();

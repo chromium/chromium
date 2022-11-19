@@ -208,10 +208,6 @@ void WebAXObject::Serialize(ui::AXNodeData* node_data,
   private_->Serialize(node_data, accessibility_mode);
 }
 
-void WebAXObject::SerializerClearedNode(int node_id) const {
-  private_->AXObjectCache().SerializerClearedNode(node_id);
-}
-
 void WebAXObject::InvalidateSerializerSubtree() const {
   if (IsDetached())
     return;

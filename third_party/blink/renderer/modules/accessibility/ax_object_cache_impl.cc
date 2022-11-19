@@ -685,6 +685,7 @@ void AXObjectCacheImpl::Dispose() {
   }
 
   permission_observer_receiver_.reset();
+  cached_bounding_boxes_.clear();
 }
 
 void AXObjectCacheImpl::AddInspectorAgent(InspectorAccessibilityAgent* agent) {
@@ -1894,10 +1895,17 @@ void AXObjectCacheImpl::RemoveAXID(AXObject* object) {
   DCHECK(!HashTraits<AXID>::IsDeletedValue(obj_id));
   DCHECK(ids_in_use_.Contains(obj_id));
   object->SetAXObjectID(0);
+  // Clear AXIDs from maps. Note: do not need to erase id from
+  // changed_bounds_ids_, a set which is cleared each time
+  // SerializeLocationChanges() is finished. Also, do not need to eerae id from
+  // invalidated_ids_main_ or invalidated_ids_popup_, which are cleared each
+  // time ProcessInvalidatedObjects() finishes, and having extra ids in those
+  // sets is not harmful.
   ids_in_use_.erase(obj_id);
   autofill_state_map_.erase(obj_id);
   fixed_or_sticky_node_ids_.erase(obj_id);
-
+  cached_bounding_boxes_.erase(obj_id);
+  // Clear id from relation cache.
   relation_cache_->RemoveAXID(obj_id);
 }
 
@@ -3927,6 +3935,7 @@ void AXObjectCacheImpl::SerializeLocationChanges() {
   changes.reserve(changed_bounds_ids_.size());
   for (AXID changed_bounds_id : changed_bounds_ids_) {
     if (AXObject* obj = ObjectFromAXID(changed_bounds_id)) {
+      DCHECK(!obj->IsDetached());
       // Only update locations that are already known.
       auto bounds = cached_bounding_boxes_.find(changed_bounds_id);
       if (bounds == cached_bounding_boxes_.end())
@@ -4405,10 +4414,6 @@ void AXObjectCacheImpl::SetCachedBoundingBox(
     AXID id,
     const ui::AXRelativeBounds& bounds) {
   cached_bounding_boxes_.Set(id, bounds);
-}
-
-void AXObjectCacheImpl::SerializerClearedNode(AXID id) {
-  cached_bounding_boxes_.erase(id);
 }
 
 void AXObjectCacheImpl::HandleScrollPositionChanged(

@@ -77,12 +77,6 @@ class AXTreeSource {
     return node_data.ToString();
   }
 
-  // This is called by AXTreeSerializer when it serializes a tree and
-  // discovers that a node previously in the tree is no longer part of
-  // the tree. It can be used to allow an AXTreeSource to keep a cache
-  // indexed by node ID and delete nodes when they're no longer needed.
-  virtual void SerializerClearedNode(AXNodeID node_id) {}
-
   // The following methods should be overridden in order to add or remove an
   // `AXTreeSourceObserver`, which is notified when nodes are added, removed or
   // updated in this tree source.
