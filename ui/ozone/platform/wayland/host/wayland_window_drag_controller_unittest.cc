@@ -153,7 +153,7 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
 // 1. With a single 1 window open,
 // 2. Move pointer into it, press left button, move cursor a bit (drag),
 // 3. Run move loop, drag it within the window bounds and drop.
-TEST_F(WaylandWindowDragControllerTest, DragInsideWindowAndDrop) {
+TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop) {
   // Ensure there is no window currently focused
   EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   EXPECT_EQ(gfx::kNullAcceleratedWidget,
@@ -244,7 +244,7 @@ TEST_F(WaylandWindowDragControllerTest, DragInsideWindowAndDrop) {
 // 1. With a single window open,
 // 2. Touch down and move the touch point a bit (drag),
 // 3. Run move loop, drag it within the window bounds and drop.
-TEST_F(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
+TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
   ASSERT_TRUE(GetWmMoveLoopHandler(*window_));
   ASSERT_TRUE(GetWaylandExtension(*window_));
 
@@ -333,7 +333,7 @@ TEST_F(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
 //
 // NOTE: This bug isn't noticed on DUT, but seems to be frequent on ash/chrome
 // linux desktop builds (with ozone/x11 underneath).
-TEST_F(WaylandWindowDragControllerTest,
+TEST_P(WaylandWindowDragControllerTest,
        DragAndDropWithExtraneousPointerEnterEvent_TOUCH) {
   // Init and open |target_window|.
   PlatformWindowInitProperties properties{gfx::Rect{80, 80}};
@@ -384,7 +384,7 @@ TEST_F(WaylandWindowDragControllerTest,
 // 4. Drag pointer to outside the window and release the mouse button, and make
 //    sure RELEASE and EXIT mouse events are delivered even when the drop
 //    happens outside the bounds of any surface.
-TEST_F(WaylandWindowDragControllerTest, DragExitWindowAndDrop) {
+TEST_P(WaylandWindowDragControllerTest, DragExitWindowAndDrop) {
   // Ensure there is no window currently focused
   EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   EXPECT_EQ(gfx::kNullAcceleratedWidget,
@@ -480,7 +480,7 @@ TEST_F(WaylandWindowDragControllerTest, DragExitWindowAndDrop) {
 // 5. Drag it a bit more (within window 2) and then calls EndMoveLoop(),
 //    emulating a window snap), and then
 // 6. With the window in "snapped" state, drag it further and then drop.
-TEST_F(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop) {
+TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop) {
   // Init and open |target_window|.
   PlatformWindowInitProperties properties{gfx::Rect{80, 80}};
   properties.type = PlatformWindowType::kWindow;
@@ -635,7 +635,7 @@ TEST_F(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop) {
 // 5. Drag it a bit more (within window 2) and then calls EndMoveLoop(),
 //    emulating a window snap), and then
 // 6. With the window in "snapped" state, drag it further and then drop.
-TEST_F(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop_TOUCH) {
+TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop_TOUCH) {
   // Init and open |target_window|.
   PlatformWindowInitProperties properties{gfx::Rect{80, 80}};
   properties.type = PlatformWindowType::kWindow;
@@ -760,7 +760,7 @@ TEST_F(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop_TOUCH) {
 
 // Verifies wl_data_device::leave events are properly handled and propagated
 // while in window dragging "attached" mode.
-TEST_F(WaylandWindowDragControllerTest, DragExitAttached) {
+TEST_P(WaylandWindowDragControllerTest, DragExitAttached) {
   // Ensure there is no window currently focused
   EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   EXPECT_EQ(gfx::kNullAcceleratedWidget,
@@ -804,7 +804,7 @@ TEST_F(WaylandWindowDragControllerTest, DragExitAttached) {
 
 // Verifies wl_data_device::leave events are properly handled and propagated
 // while in window dragging "attached" mode.
-TEST_F(WaylandWindowDragControllerTest, DragExitAttached_TOUCH) {
+TEST_P(WaylandWindowDragControllerTest, DragExitAttached_TOUCH) {
   // Ensure there is no window currently focused
   EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   EXPECT_EQ(gfx::kNullAcceleratedWidget,
@@ -839,7 +839,7 @@ TEST_F(WaylandWindowDragControllerTest, DragExitAttached_TOUCH) {
 
 using BoundsChange = PlatformWindowDelegate::BoundsChange;
 
-TEST_F(WaylandWindowDragControllerTest, RestoreDuringWindowDragSession) {
+TEST_P(WaylandWindowDragControllerTest, RestoreDuringWindowDragSession) {
   const gfx::Rect original_bounds = window_->GetBoundsInDIP();
   wl::ScopedWlArray states({XDG_TOPLEVEL_STATE_ACTIVATED});
 
@@ -885,7 +885,7 @@ TEST_F(WaylandWindowDragControllerTest, RestoreDuringWindowDragSession) {
 //
 // Verifies window drag controller is resistant to issues such as
 // https://crbug.com/1148021.
-TEST_F(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
+TEST_P(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
   // Ensure there is no window currently focused
   EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   EXPECT_EQ(gfx::kNullAcceleratedWidget,
@@ -1018,7 +1018,7 @@ TEST_F(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
 }
 
 // Regression test for https://crbug.com/1169446.
-TEST_F(WaylandWindowDragControllerTest, MotionEventsSkippedWhileReattaching) {
+TEST_P(WaylandWindowDragControllerTest, MotionEventsSkippedWhileReattaching) {
   auto* dragged_window = window_.get();
   EXPECT_TRUE(dragged_window);
 
@@ -1084,7 +1084,7 @@ TEST_F(WaylandWindowDragControllerTest, MotionEventsSkippedWhileReattaching) {
 
 // Test that cursor position is using DIP coordinates and is updated correctly
 // on DragMotion event.
-TEST_F(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
+TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
   const gfx::Rect output_bounds(0, 0, 1920, 1080);
   PostToServerAndWait([output_bounds](wl::TestWaylandServerThread* server) {
     // Configure the first output with scale 1.
@@ -1202,7 +1202,7 @@ TEST_F(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
 // after quitting the move loop. Regression test for crbug.com/1267791 and
 // should be caught in both regular and ASAN builds, where more details about
 // the actual memory issue is provided.
-TEST_F(WaylandWindowDragControllerTest,
+TEST_P(WaylandWindowDragControllerTest,
        HandleDraggedWindowDestructionAfterMoveLoop) {
   // 1. Ensure there is no window currently focused
   EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
@@ -1247,7 +1247,7 @@ TEST_F(WaylandWindowDragControllerTest,
 
 // Ensure no memory issues happen when the dragged and/or events grabber windows
 // get destroyed while the move loop is running.
-TEST_F(WaylandWindowDragControllerTest,
+TEST_P(WaylandWindowDragControllerTest,
        HandleWindowsDestructionDuringMoveLoop) {
   // 1. Send some initial pointer events to |window_|.
   ASSERT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
@@ -1332,7 +1332,7 @@ TEST_F(WaylandWindowDragControllerTest,
 //    Wayland Compositor.
 //
 //  Regression test for https://crbug.com/1366504.
-TEST_F(WaylandWindowDragControllerTest, ExtendedDragUnavailable) {
+TEST_P(WaylandWindowDragControllerTest, ExtendedDragUnavailable) {
   ASSERT_TRUE(GetWmMoveLoopHandler(*window_));
   ASSERT_TRUE(GetWaylandExtension(*window_));
   drag_controller()->set_extended_drag_available_for_testing(false);
@@ -1390,5 +1390,9 @@ TEST_F(WaylandWindowDragControllerTest, ExtendedDragUnavailable) {
   EXPECT_EQ(window_.get(),
             window_manager()->GetCurrentPointerOrTouchFocusedWindow());
 }
+
+INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
+                         WaylandWindowDragControllerTest,
+                         Values(wl::ServerConfig{}));
 
 }  // namespace ui

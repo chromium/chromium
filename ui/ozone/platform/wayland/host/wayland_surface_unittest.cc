@@ -15,12 +15,19 @@
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 
 namespace ui {
+namespace {
 
 using ::testing::ElementsAre;
 
-using WaylandSurfaceTest = WaylandTestSimple;
+class WaylandSurfaceTest : public WaylandTest {
+ public:
+  WaylandSurfaceTest() : WaylandTest(WaylandTest::TestServerMode::kAsync) {}
+  WaylandSurfaceTest(const WaylandSurfaceTest&) = delete;
+  WaylandSurfaceTest& operator=(const WaylandSurfaceTest&) = delete;
+  ~WaylandSurfaceTest() override = default;
+};
 
-TEST_F(WaylandSurfaceTest, SurfaceReenterOutput) {
+TEST_P(WaylandSurfaceTest, SurfaceReenterOutput) {
   WaylandSurface* wayland_surface = window_->root_surface();
   EXPECT_TRUE(wayland_surface->entered_outputs().empty());
 
@@ -51,4 +58,9 @@ TEST_F(WaylandSurfaceTest, SurfaceReenterOutput) {
   EXPECT_THAT(wayland_surface->entered_outputs(), ElementsAre(output_id));
 }
 
+INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
+                         WaylandSurfaceTest,
+                         ::testing::Values(wl::ServerConfig{}));
+
+}  // namespace
 }  // namespace ui

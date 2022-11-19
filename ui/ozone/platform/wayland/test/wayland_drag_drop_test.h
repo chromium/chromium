@@ -33,7 +33,7 @@ class TestWaylandOSExchangeDataProvideFactory
 // Base class for Wayland drag-and-drop tests. Public methods allow test code to
 // emulate dnd-related events from the test compositor and can be used in both
 // data and window dragging test cases.
-class WaylandDragDropTest : public WaylandTestSimple {
+class WaylandDragDropTest : public WaylandTest {
  public:
   WaylandDragDropTest();
   WaylandDragDropTest(const WaylandDragDropTest&) = delete;

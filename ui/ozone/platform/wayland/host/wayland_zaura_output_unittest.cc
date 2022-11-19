@@ -15,10 +15,17 @@
 
 namespace ui {
 
-class WaylandZAuraOutputTest : public WaylandTestSimple {
+using ::testing::Values;
+namespace {
+class WaylandZAuraOutputTest : public WaylandTest {
  public:
+  WaylandZAuraOutputTest() : WaylandTest(TestServerMode::kAsync) {}
+  WaylandZAuraOutputTest(const WaylandZAuraOutputTest&) = delete;
+  WaylandZAuraOutputTest& operator=(const WaylandZAuraOutputTest&) = delete;
+  ~WaylandZAuraOutputTest() override = default;
+
   void SetUp() override {
-    WaylandTestSimple::SetUp();
+    WaylandTest::SetUp();
 
     // Set default values for the output.
     PostToServerAndWait([](wl::TestWaylandServerThread* server) {
@@ -43,7 +50,9 @@ class WaylandZAuraOutputTest : public WaylandTestSimple {
   std::unique_ptr<WaylandScreen> platform_screen_;
 };
 
-TEST_F(WaylandZAuraOutputTest, HandleInsets) {
+}  // namespace
+
+TEST_P(WaylandZAuraOutputTest, HandleInsets) {
   WaylandOutput* wayland_output = output_manager_->GetPrimaryOutput();
   ASSERT_TRUE(wayland_output);
   EXPECT_TRUE(wayland_output->IsReady());
@@ -70,7 +79,7 @@ TEST_F(WaylandZAuraOutputTest, HandleInsets) {
   EXPECT_EQ(wayland_output->insets(), insets);
 }
 
-TEST_F(WaylandZAuraOutputTest, HandleLogicalTransform) {
+TEST_P(WaylandZAuraOutputTest, HandleLogicalTransform) {
   WaylandOutput* wayland_output = output_manager_->GetPrimaryOutput();
   ASSERT_TRUE(wayland_output);
   EXPECT_TRUE(wayland_output->IsReady());
@@ -89,7 +98,7 @@ TEST_F(WaylandZAuraOutputTest, HandleLogicalTransform) {
 }
 
 // Test edge case display ids are converted correctly.
-TEST_F(WaylandZAuraOutputTest, DisplayIdConversions) {
+TEST_P(WaylandZAuraOutputTest, DisplayIdConversions) {
   const int64_t kTestIds[] = {
       std::numeric_limits<int64_t>::min(),
       std::numeric_limits<int64_t>::min() + 1,
@@ -112,5 +121,9 @@ TEST_F(WaylandZAuraOutputTest, DisplayIdConversions) {
     EXPECT_EQ(id, aura_output.display_id().value());
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
+                         WaylandZAuraOutputTest,
+                         Values(wl::ServerConfig{}));
 
 }  // namespace ui
