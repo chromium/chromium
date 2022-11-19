@@ -8,7 +8,7 @@ import {assert} from './assert_ts.js';
  * Alias for document.getElementById. Found elements must be HTMLElements.
  */
 export function $<T extends HTMLElement = HTMLElement>(id: string): (T|null) {
-  const el = document.querySelector<T>(`${id}`);
+  const el = document.querySelector<T>(`#${id}`);
   if (el) {
     assert(el instanceof HTMLElement);
     return el;
@@ -21,7 +21,7 @@ export function $<T extends HTMLElement = HTMLElement>(id: string): (T|null) {
  */
 export function getRequiredElement<T extends HTMLElement = HTMLElement>(
     id: string): T {
-  const el = document.querySelector<T>(`${id}`);
+  const el = document.querySelector<T>(`#${id}`);
   assert(el);
   assert(el instanceof HTMLElement);
   return el;

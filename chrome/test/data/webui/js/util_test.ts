@@ -2,11 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {quoteString} from 'chrome://resources/js/util_ts.js';
 import {quoteString as quoteStringJs} from 'chrome://resources/js/util.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {$, getRequiredElement, quoteString} from 'chrome://resources/js/util_ts.js';
+import {assertEquals, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('UtilModuleTest', function() {
+  test('get elements', function() {
+    const element = document.createElement('div');
+    element.id = 'foo';
+    document.body.appendChild(element);
+    assertEquals(element, $('foo'));
+    assertEquals(element, getRequiredElement('foo'));
+
+    // $ should not throw if the element does not exist.
+    assertEquals(null, $('bar'));
+
+    // getRequiredElement should throw.
+    assertThrows(() => getRequiredElement('bar'));
+  });
+
   test('quote string', function() {
     // Basic cases.
     assertEquals('\"test\"', quoteString('"test"'));
