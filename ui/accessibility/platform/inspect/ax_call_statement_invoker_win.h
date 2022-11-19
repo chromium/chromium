@@ -78,16 +78,19 @@ class AX_EXPORT AXCallStatementInvokerWin final {
   AXOptionalObject InvokeForIA2Value(IA2ValueComPtr target,
                                      const AXPropertyNode& property_node) const;
 
+  // IUnknown functionality.
+  AXOptionalObject QueryInterface(const IAccessibleComPtr target,
+                                  std::string interface_name) const;
+
   // IAccessible functionality.
   AXOptionalObject GetRole(IAccessibleComPtr target) const;
   AXOptionalObject GetName(const IAccessibleComPtr target) const;
   AXOptionalObject GetDescription(const IAccessibleComPtr target) const;
   AXOptionalObject HasState(const IAccessibleComPtr target,
                             std::string state) const;
-  AXOptionalObject GetInterface(const IAccessibleComPtr target,
-                                std::string interface_name) const;
 
   // IAccessible2 functionality.
+  AXOptionalObject GetIA2Role(IA2ComPtr target) const;
   AXOptionalObject GetIA2Attribute(const IA2ComPtr target,
                                    std::string attribute) const;
   AXOptionalObject HasIA2State(const IA2ComPtr target, std::string state) const;

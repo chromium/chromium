@@ -10,6 +10,13 @@
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_win.h"
 #include "ui/accessibility/platform/inspect/ax_property_node.h"
 
+#define DEFINE_IA2_QI_ENTRY(ia2_interface)                                \
+  if (interface_name == #ia2_interface) {                                 \
+    Microsoft::WRL::ComPtr<ia2_interface> obj;                            \
+    if (S_OK == ui::IA2QueryInterface<ia2_interface>(target.Get(), &obj)) \
+      return AXOptionalObject(Target(obj));                               \
+  }
+
 namespace ui {
 
 std::string AXCallStatementInvokerWin::ToString(AXOptionalObject& optional) {
@@ -185,14 +192,14 @@ AXOptionalObject AXCallStatementInvokerWin::InvokeForAXElement(
     return GetDescription(target);
   }
 
-  if (property_node.name_or_value == "getInterface") {
+  if (property_node.name_or_value == "QueryInterface") {
     if (!property_node.arguments.size()) {
       LOG(ERROR) << "Error: " << property_node.name_or_value
                  << "called without argument";
       return AXOptionalObject::Error();
     }
     std::string interface_name = property_node.arguments[0].name_or_value;
-    return GetInterface(target, interface_name);
+    return QueryInterface(target, interface_name);
   }
 
   if (property_node.name_or_value == "hasState") {
@@ -219,6 +226,9 @@ AXOptionalObject AXCallStatementInvokerWin::InvokeForAXElement(
 AXOptionalObject AXCallStatementInvokerWin::InvokeForIA2(
     IA2ComPtr target,
     const AXPropertyNode& property_node) const {
+  if (property_node.name_or_value == "role")
+    return GetIA2Role(target);
+
   if (property_node.name_or_value == "getAttribute") {
     if (!property_node.arguments.size()) {
       LOG(ERROR) << "Error: " << property_node.name_or_value
@@ -345,49 +355,24 @@ AXOptionalObject AXCallStatementInvokerWin::HasState(IAccessibleComPtr target,
   return AXOptionalObject::Error();
 }
 
-AXOptionalObject AXCallStatementInvokerWin::GetInterface(
+AXOptionalObject AXCallStatementInvokerWin::QueryInterface(
     IAccessibleComPtr target,
     std::string interface_name) const {
-  if (interface_name == "IAccessible2") {
-    Microsoft::WRL::ComPtr<IAccessible2> ia2;
-    if (S_OK == ui::IA2QueryInterface<IAccessible2>(target.Get(), &ia2))
-      return AXOptionalObject(Target(ia2));
-  }
+  DEFINE_IA2_QI_ENTRY(IAccessible2)
+  DEFINE_IA2_QI_ENTRY(IAccessibleHypertext)
+  DEFINE_IA2_QI_ENTRY(IAccessibleTable)
+  DEFINE_IA2_QI_ENTRY(IAccessibleTableCell)
+  DEFINE_IA2_QI_ENTRY(IAccessibleText)
+  DEFINE_IA2_QI_ENTRY(IAccessibleValue)
 
-  if (interface_name == "IAccessibleHypertext") {
-    Microsoft::WRL::ComPtr<IAccessibleHypertext> ia2hyper;
-    if (S_OK ==
-        ui::IA2QueryInterface<IAccessibleHypertext>(target.Get(), &ia2hyper))
-      return AXOptionalObject(Target(ia2hyper));
-  }
+  return AXOptionalObject::Error();
+}
 
-  if (interface_name == "IAccessibleTable") {
-    Microsoft::WRL::ComPtr<IAccessibleTable> ia2table;
-    if (S_OK ==
-        ui::IA2QueryInterface<IAccessibleTable>(target.Get(), &ia2table))
-      return AXOptionalObject(Target(ia2table));
-  }
-
-  if (interface_name == "IAccessibleTableCell") {
-    Microsoft::WRL::ComPtr<IAccessibleTableCell> ia2cell;
-    if (S_OK ==
-        ui::IA2QueryInterface<IAccessibleTableCell>(target.Get(), &ia2cell))
-      return AXOptionalObject(Target(ia2cell));
-  }
-
-  if (interface_name == "IAccessibleText") {
-    Microsoft::WRL::ComPtr<IAccessibleText> ia2text;
-    if (S_OK == ui::IA2QueryInterface<IAccessibleText>(target.Get(), &ia2text))
-      return AXOptionalObject(Target(ia2text));
-  }
-
-  if (interface_name == "IAccessibleValue") {
-    Microsoft::WRL::ComPtr<IAccessibleValue> ia2value;
-    if (S_OK ==
-        ui::IA2QueryInterface<IAccessibleValue>(target.Get(), &ia2value))
-      return AXOptionalObject(Target(ia2value));
-  }
-
+AXOptionalObject AXCallStatementInvokerWin::GetIA2Role(IA2ComPtr target) const {
+  LONG role = 0;
+  if (SUCCEEDED(target->role(&role)))
+    return AXOptionalObject(
+        Target(base::WideToUTF8(IAccessible2RoleToString(role))));
   return AXOptionalObject::Error();
 }
 
