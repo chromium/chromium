@@ -3112,6 +3112,25 @@ Unknown properties are collapsed to zero. -->
   <int value="8" label="NOT_SENT_UNCONSENTED"/>
 </enum>
 
+<enum name="ApnAuthenticationType">
+  <int value="0" label="Automatic"/>
+  <int value="1" label="PAP"/>
+  <int value="2" label="CHAP"/>
+</enum>
+
+<enum name="ApnIpType">
+  <int value="0" label="Automatic"/>
+  <int value="1" label="IPv4"/>
+  <int value="2" label="IPv6"/>
+  <int value="3" label="IPv4 or IPv6"/>
+</enum>
+
+<enum name="ApnTypes">
+  <int value="0" label="Default"/>
+  <int value="1" label="Attach"/>
+  <int value="2" label="Default and Attach"/>
+</enum>
+
 <enum name="AppBannersBeforeInstallEvent">
   <int value="1" label="Event created and dispatched"/>
   <int value="2" label="Showing the banner"/>

@@ -19,8 +19,24 @@ class NetworkMetadataStore;
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
     : public ConnectionInfoMetricsLogger::Observer {
  public:
+  // This enum is tied directly to the ApnTypes UMA enum defined in
+  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+  // change one without changing the other).
+  enum class ApnTypes {
+    kDefault = 0,
+    kAttach = 1,
+    kDefaultAndAttach = 2,
+    kMaxValue = kDefaultAndAttach
+  };
+
   static constexpr char kCustomApnCreatedResultHistogram[] =
       "Network.Ash.Cellular.Apn.CreateCustomApn.Result";
+  static constexpr char kCustomApnCreatedAuthenticationTypeHistogram[] =
+      "Network.Ash.Cellular.Apn.CreateCustomApn.AuthenticationType";
+  static constexpr char kCustomApnCreatedIpTypeHistogram[] =
+      "Network.Ash.Cellular.Apn.CreateCustomApn.IpType";
+  static constexpr char kCustomApnCreatedApnTypesHistogram[] =
+      "Network.Ash.Cellular.Apn.CreateCustomApn.ApnTypes";
 
   CellularNetworkMetricsLogger(
       NetworkStateHandler* network_state_handler,

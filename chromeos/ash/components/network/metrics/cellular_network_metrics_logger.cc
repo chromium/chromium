@@ -13,6 +13,33 @@
 #include "components/device_event_log/device_event_log.h"
 
 namespace ash {
+namespace {
+
+using ApnType = chromeos::network_config::mojom::ApnType;
+
+absl::optional<CellularNetworkMetricsLogger::ApnTypes> GetApnTypes(
+    std::vector<ApnType> apn_types) {
+  if (apn_types.empty())
+    return absl::nullopt;
+
+  bool is_default = false;
+  bool is_attach = false;
+  for (const auto& apn_type : apn_types) {
+    if (apn_type == ApnType::kDefault)
+      is_default = true;
+    if (apn_type == ApnType::kAttach)
+      is_attach = true;
+  }
+  if (is_default && is_attach)
+    return CellularNetworkMetricsLogger::ApnTypes::kDefaultAndAttach;
+
+  if (is_attach)
+    return CellularNetworkMetricsLogger::ApnTypes::kAttach;
+
+  return CellularNetworkMetricsLogger::ApnTypes::kDefault;
+}
+
+}  // namespace
 
 CellularNetworkMetricsLogger::CellularNetworkMetricsLogger(
     NetworkStateHandler* network_state_handler,
@@ -33,7 +60,24 @@ void CellularNetworkMetricsLogger::LogCreateCustomApnResult(
     bool success,
     chromeos::network_config::mojom::ApnPropertiesPtr apn) {
   base::UmaHistogramBoolean(kCustomApnCreatedResultHistogram, success);
-  // TODO(b/162365553): Log metrics related to specific properties.
+
+  // Only emit APN property metrics if the APN was successfully added.
+  if (!success)
+    return;
+
+  base::UmaHistogramEnumeration(kCustomApnCreatedAuthenticationTypeHistogram,
+                                apn->authentication_type);
+  base::UmaHistogramEnumeration(kCustomApnCreatedIpTypeHistogram, apn->ip_type);
+
+  absl::optional<CellularNetworkMetricsLogger::ApnTypes> apn_types =
+      GetApnTypes(apn->apn_types);
+  if (!apn_types.has_value()) {
+    NET_LOG(DEBUG) << "CreateCustomApn.ApnTypes not logged for APN because it "
+                   << "doesn't have any APN types.";
+    return;
+  }
+  base::UmaHistogramEnumeration(kCustomApnCreatedApnTypesHistogram,
+                                apn_types.value());
 }
 
 void CellularNetworkMetricsLogger::OnConnectionResult(

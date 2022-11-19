@@ -61,6 +61,8 @@ namespace network_config {
 
 namespace {
 
+using ApnTypes = ash::CellularNetworkMetricsLogger::ApnTypes;
+
 constexpr int kSimRetriesLeft = 3;
 constexpr char kCellularGuid[] = "cellular_guid";
 constexpr char kCellularDevicePath[] = "/device/stub_cellular_device";
@@ -905,6 +907,35 @@ class CrosNetworkConfigTest : public testing::Test {
     histogram_tester_.ExpectBucketCount(
         ash::CellularNetworkMetricsLogger::kCustomApnCreatedResultHistogram,
         false, num_failure);
+    histogram_tester_.ExpectTotalCount(
+        ash::CellularNetworkMetricsLogger::
+            kCustomApnCreatedAuthenticationTypeHistogram,
+        num_success);
+    histogram_tester_.ExpectTotalCount(
+        ash::CellularNetworkMetricsLogger::kCustomApnCreatedIpTypeHistogram,
+        num_success);
+    histogram_tester_.ExpectTotalCount(
+        ash::CellularNetworkMetricsLogger::kCustomApnCreatedApnTypesHistogram,
+        num_success);
+  }
+
+  void AssertCreateCustomApnPropertiesBucketCount(
+      mojom::ApnAuthenticationType auth_type,
+      size_t auth_type_count,
+      mojom::ApnIpType ip_type,
+      size_t ip_type_count,
+      ApnTypes apn_types,
+      size_t apn_types_count) {
+    histogram_tester_.ExpectBucketCount(
+        ash::CellularNetworkMetricsLogger::
+            kCustomApnCreatedAuthenticationTypeHistogram,
+        auth_type, auth_type_count);
+    histogram_tester_.ExpectBucketCount(
+        ash::CellularNetworkMetricsLogger::kCustomApnCreatedIpTypeHistogram,
+        ip_type, ip_type_count);
+    histogram_tester_.ExpectBucketCount(
+        ash::CellularNetworkMetricsLogger::kCustomApnCreatedApnTypesHistogram,
+        apn_types, apn_types_count);
   }
 
   NetworkHandlerTestHelper* helper() { return helper_.get(); }
@@ -1700,10 +1731,8 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_NoListSaved) {
   test_apn1.username = kCellularTestApnUsername1;
   test_apn1.password = kCellularTestApnPassword1;
   test_apn1.attach = kCellularTestApnAttach1;
-  test_apn1.mojo_apn_types = {mojom::ApnType::kDefault,
-                              mojom::ApnType::kAttach};
-  test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault,
-                             ::onc::cellular_apn::kApnTypeAttach};
+  test_apn1.mojo_apn_types = {mojom::ApnType::kDefault};
+  test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault};
   CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn());
 
   // Verify that the API called sent the right values to Shill
@@ -1717,6 +1746,10 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_NoListSaved) {
     EXPECT_TRUE(UserApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
   }
   AssertCreateCustomApnResultBucketCount(/*num_success=*/1, /*num_failure=*/0);
+  AssertCreateCustomApnPropertiesBucketCount(
+      mojom::ApnAuthenticationType::kAutomatic,
+      /*auth_type_count=*/1, mojom::ApnIpType::kAutomatic,
+      /*ip_type_count=*/1, ApnTypes::kDefault, /*apn_types_count=*/1);
 }
 
 TEST_F(CrosNetworkConfigTest, CreateCustomApn_EmptyList) {
@@ -1740,10 +1773,13 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_EmptyList) {
   test_apn1.username = kCellularTestApnUsername1;
   test_apn1.password = kCellularTestApnPassword1;
   test_apn1.attach = kCellularTestApnAttach1;
-  test_apn1.mojo_apn_types = {mojom::ApnType::kDefault,
-                              mojom::ApnType::kAttach};
-  test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault,
-                             ::onc::cellular_apn::kApnTypeAttach};
+  test_apn1.mojo_ip_type = mojom::ApnIpType::kIpv4;
+  test_apn1.onc_ip_type = ::onc::cellular_apn::kIpTypeIpv4;
+  test_apn1.mojo_authentication_type = mojom::ApnAuthenticationType::kPap;
+  test_apn1.onc_authentication_type =
+      ::onc::cellular_apn::kAuthenticationTypePap;
+  test_apn1.mojo_apn_types = {mojom::ApnType::kAttach};
+  test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeAttach};
   CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn());
 
   // Verify that the API called sent the right values to Shill
@@ -1757,6 +1793,10 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_EmptyList) {
     EXPECT_TRUE(UserApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
   }
   AssertCreateCustomApnResultBucketCount(/*num_success=*/1, /*num_failure=*/0);
+  AssertCreateCustomApnPropertiesBucketCount(
+      mojom::ApnAuthenticationType::kPap,
+      /*auth_type_count=*/1, mojom::ApnIpType::kIpv4,
+      /*ip_type_count=*/1, ApnTypes::kAttach, /*apn_types_count=*/1);
 
   // Call the API to create a second user APN
   TestApnData test_apn2;
@@ -1765,6 +1805,11 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_EmptyList) {
   test_apn2.username = kCellularTestApnUsername2;
   test_apn2.password = kCellularTestApnPassword2;
   test_apn2.attach = kCellularTestApnAttach2;
+  test_apn2.mojo_ip_type = mojom::ApnIpType::kIpv4Ipv6;
+  test_apn2.onc_ip_type = ::onc::cellular_apn::kIpTypeIpv4Ipv6;
+  test_apn2.mojo_authentication_type = mojom::ApnAuthenticationType::kChap;
+  test_apn2.onc_authentication_type =
+      ::onc::cellular_apn::kAuthenticationTypeChap;
   test_apn2.mojo_apn_types = {mojom::ApnType::kDefault,
                               mojom::ApnType::kAttach};
   test_apn2.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault,
@@ -1782,6 +1827,10 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_EmptyList) {
     EXPECT_TRUE(UserApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
   }
   AssertCreateCustomApnResultBucketCount(/*num_success=*/2, /*num_failure=*/0);
+  AssertCreateCustomApnPropertiesBucketCount(
+      mojom::ApnAuthenticationType::kChap,
+      /*auth_type_count=*/1, mojom::ApnIpType::kIpv4Ipv6,
+      /*ip_type_count=*/1, ApnTypes::kDefaultAndAttach, /*apn_types_count=*/1);
 }
 
 TEST_F(CrosNetworkConfigTest, CreateCustomApn_InvalidGuid) {
@@ -1939,6 +1988,7 @@ TEST_F(CrosNetworkConfigTest, RemoveCustomApn) {
                                               network_config_observer));
     EXPECT_TRUE(UserApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
   }
+  AssertCreateCustomApnResultBucketCount(/*num_success=*/2, /*num_failure=*/0);
 }
 
 TEST_F(CrosNetworkConfigTest, CreateCustomApn_MaxAmountAllowed) {
