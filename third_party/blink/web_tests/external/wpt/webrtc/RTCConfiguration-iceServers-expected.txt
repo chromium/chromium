@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 59 tests; 49 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 59 tests; 51 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS new RTCPeerConnection() should have default configuration.iceServers of undefined
 PASS new RTCPeerConnection(config) - {} should succeed
 PASS setConfiguration(config) - {} should succeed
@@ -49,14 +49,8 @@ PASS new RTCPeerConnection(config) - with relative url should throw SyntaxError
 PASS setConfiguration(config) - with relative url should throw SyntaxError
 PASS new RTCPeerConnection(config) - with http url should throw SyntaxError
 PASS setConfiguration(config) - with http url should throw SyntaxError
-FAIL new RTCPeerConnection(config) - with invalid turn url should throw SyntaxError assert_throws_dom: function "() =>
-      makePc({ iceServers: [{
-        urls: 'turn://example.org/foo?x=y'
-      }] })" threw object "InvalidAccessError: Failed to construct 'RTCPeerConnection': Both username and credential are required when the URL scheme is "turn" or "turns"." that is not a DOMException SyntaxError: property "code" is equal to 15, expected 12
-FAIL setConfiguration(config) - with invalid turn url should throw SyntaxError assert_throws_dom: function "() =>
-      makePc({ iceServers: [{
-        urls: 'turn://example.org/foo?x=y'
-      }] })" threw object "InvalidAccessError: Failed to execute 'setConfiguration' on 'RTCPeerConnection': Both username and credential are required when the URL scheme is "turn" or "turns"." that is not a DOMException SyntaxError: property "code" is equal to 15, expected 12
+PASS new RTCPeerConnection(config) - with invalid turn url should throw SyntaxError
+PASS setConfiguration(config) - with invalid turn url should throw SyntaxError
 PASS new RTCPeerConnection(config) - with invalid stun url should throw SyntaxError
 PASS setConfiguration(config) - with invalid stun url should throw SyntaxError
 PASS new RTCPeerConnection(config) - with empty urls should throw SyntaxError

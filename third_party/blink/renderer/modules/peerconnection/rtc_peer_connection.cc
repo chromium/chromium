@@ -247,6 +247,30 @@ webrtc::PeerConnectionInterface::IceTransportsType IceTransportPolicyFromString(
   return webrtc::PeerConnectionInterface::kAll;
 }
 
+bool IsValidStunURL(const KURL& url) {
+  if (!url.ProtocolIs("stun") && !url.ProtocolIs("stuns")) {
+    return false;
+  }
+  if (!url.Query().empty()) {
+    return false;
+  }
+  return true;
+}
+
+bool IsValidTurnURL(const KURL& url) {
+  if (!url.ProtocolIs("turn") && !url.ProtocolIs("turns")) {
+    return false;
+  }
+  if (!url.Query().empty()) {
+    Vector<String> query_parts;
+    url.Query().Split("=", query_parts);
+    if (query_parts.size() < 2 || query_parts[0] != "transport") {
+      return false;
+    }
+  }
+  return true;
+}
+
 webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
     ExecutionContext* context,
     const RTCConfiguration* configuration,
@@ -314,16 +338,14 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
               "'" + url_string + "' is not a valid URL.");
           return {};
         }
-        if (!(url.ProtocolIs("turn") || url.ProtocolIs("turns") ||
-              url.ProtocolIs("stun"))) {
+        bool is_valid_turn = IsValidTurnURL(url);
+        if (!is_valid_turn && !IsValidStunURL(url)) {
           exception_state->ThrowDOMException(
               DOMExceptionCode::kSyntaxError,
-              "'" + url.Protocol() +
-                  "' is not one of the supported URL schemes "
-                  "'stun', 'turn' or 'turns'.");
+              "'" + url_string + "' is not a valid stun or turn URL.");
           return {};
         }
-        if ((url.ProtocolIs("turn") || url.ProtocolIs("turns")) &&
+        if (is_valid_turn &&
             (!ice_server->hasUsername() || !ice_server->hasCredential())) {
           exception_state->ThrowDOMException(
               DOMExceptionCode::kInvalidAccessError,

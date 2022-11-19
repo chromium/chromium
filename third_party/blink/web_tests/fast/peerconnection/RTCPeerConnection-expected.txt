@@ -20,7 +20,7 @@ PASS new RTCPeerConnection({iceServers:true}); threw exception TypeError: Failed
 PASS new RTCPeerConnection({iceServers:[1, 2, 3]}); threw exception TypeError: Failed to construct 'RTCPeerConnection': Failed to read the 'iceServers' property from 'RTCConfiguration': The provided value is not of type 'RTCIceServer'..
 PASS new RTCPeerConnection({iceServers:[{}]}); threw exception TypeError: Failed to construct 'RTCPeerConnection': Malformed RTCIceServer.
 PASS new RTCPeerConnection({iceServers:[{url:'foo'}]}); threw exception SyntaxError: Failed to construct 'RTCPeerConnection': 'foo' is not a valid URL..
-PASS new RTCPeerConnection({iceServers:[{urls:'unsupported:scheme'}]}); threw exception SyntaxError: Failed to construct 'RTCPeerConnection': 'unsupported' is not one of the supported URL schemes 'stun', 'turn' or 'turns'..
+PASS new RTCPeerConnection({iceServers:[{urls:'unsupported:scheme'}]}); threw exception SyntaxError: Failed to construct 'RTCPeerConnection': 'unsupported:scheme' is not a valid stun or turn URL..
 PASS new RTCPeerConnection({iceServers:[{urls:[1, 'turn:foo.com']}]}); threw exception SyntaxError: Failed to construct 'RTCPeerConnection': '1' is not a valid URL..
 PASS new RTCPeerConnection({iceServers:[], iceTransportPolicy:'relay'}); did not throw exception.
 PASS new RTCPeerConnection({iceServers:[], iceTransportPolicy:'all'}); did not throw exception.
