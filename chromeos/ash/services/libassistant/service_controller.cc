@@ -142,8 +142,9 @@ void ServiceController::Initialize(
   settings_controller_->SetDarkModeEnabled(config->dark_mode_enabled);
 
   CreateAndRegisterChromiumApiDelegate(std::move(url_loader_factory));
-
-  SetServerExperiments(assistant_client_.get());
+  if (!chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+    SetServerExperiments(assistant_client_.get());
+  }
 
   for (auto& observer : assistant_client_observers_) {
     observer.OnAssistantClientCreated(assistant_client_.get());
@@ -276,6 +277,10 @@ AssistantClient* ServiceController::assistant_client() {
 
 void ServiceController::OnAllServicesReady() {
   DVLOG(1) << "Libassistant services are ready.";
+
+  if (chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+    SetServerExperiments(assistant_client_.get());
+  }
 
   // Notify observers on Libassistant services ready.
   SetStateAndInformObservers(mojom::ServiceState::kRunning);
