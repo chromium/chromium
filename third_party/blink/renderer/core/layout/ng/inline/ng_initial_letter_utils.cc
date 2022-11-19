@@ -1,0 +1,311 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_initial_letter_utils.h"
+
+#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
+#include "third_party/blink/renderer/core/layout/ng/exclusions/ng_exclusion.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_line_info.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_logical_line_item.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
+#include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
+
+namespace blink {
+
+namespace {
+
+// Returns border-box block offset of initial letter box to contain initial
+// letter text and shift down amount of surrounding text in
+// `initial_letter_block_start_adjust`,
+LayoutUnit ComputeInitialLetterBoxBlockOffset(
+    const LayoutUnit block_size,
+    const ComputedStyle& initial_letter_box_style,
+    const ComputedStyle& paragraph_style,
+    LayoutUnit* initial_letter_block_start_adjust) {
+  const auto& initial_letter = initial_letter_box_style.InitialLetter();
+  DCHECK(!initial_letter.IsNormal());
+
+  // Note: `line_height` may be smaller than actual line height due by
+  // using taller inline item or fallback font, e.g. using Japanese text with
+  // English font.
+  const LayoutUnit line_height = paragraph_style.ComputedLineHeightAsFixed();
+
+  const int size = std::ceil(block_size / line_height.ToFloat());
+
+  const int sink = initial_letter.IsRaise() || initial_letter.IsIntegerSink()
+                       ? initial_letter.Sink()
+                       : size;
+
+  // Block-axis positioning[1]:
+  //   size >= sink: => under alignment with shift (sink - 1) * line_height
+  //   size < sink   => over alignment
+  //
+  // Note: Even if the spec[2] says baseline of initial letter text to align
+  // with n'th line of baseline. It is hard to do so, because the first line
+  // has half leading but following lines are not, all lines have half leading
+  // in quirk mode.
+  // [1] https://drafts.csswg.org/css-inline/#initial-letter-block-position
+  // [2] https://drafts.csswg.org/css-inline/#drop-initial
+
+  if (size < sink) {
+    // Example: `initial-letter: 5 7`
+    //  *     * line 1                      line 1
+    //  *     * line 2                      line 2
+    //  ******* line 3  = sink =>   *     * line 3
+    //  *     * line 4              *     * line 4
+    //  *     * line 5              ******* line 5
+    //  line 6                      *     * line 6
+    //  line 7                      *     * line 7
+    return line_height * sink - block_size;
+  }
+
+  // Shift down surrounding text
+  // Example: `initial-letter: 5 2`
+  //    *     * line 1              *     *
+  //    *     * line 2              *     *
+  //    ******* line 3  = shift =>  ******* line 1
+  //    *     * line 4              *     * line 2
+  //    *     * line 5              *     * line 3
+  //    line 6                      line 4
+  //    line 7                      line 5
+  *initial_letter_block_start_adjust = line_height * (size - sink);
+
+  if (paragraph_style.IsHorizontalWritingMode() ||
+      initial_letter_box_style.GetTextOrientation() ==
+          ETextOrientation::kSideways) {
+    // `writing-mode: horizontal-tb` or `text-orientation: sideways`
+    const LayoutUnit block_offset = line_height * size - block_size;
+    const FontHeight text_metrics = paragraph_style.GetFontHeight();
+    FontHeight line_metrics = text_metrics;
+    line_metrics.AddLeading(paragraph_style.ComputedLineHeightAsFixed());
+    const LayoutUnit descent = line_metrics.descent;
+    if (size > initial_letter.Size()) {
+      // The initial letter text ink overflow crosses baseline. Align to
+      // line over with half leading.
+      // See `NGInlineBoxState::ComputeTextMetrics()` about leading.
+      return block_offset - (line_metrics.descent - text_metrics.descent);
+    }
+    return block_offset - descent;
+  }
+
+  // In vertical writing mode, `block_offset` will be physical offset x.
+  // Align initial letter box in center.
+  return (line_height * size - block_size) / 2;
+}
+
+// Returns left-top origin of text ink bounds.
+LogicalRect ComputeTextInkBounds(const ShapeResultView& shape_result,
+                                 const ComputedStyle& style,
+                                 LayoutUnit* out_baseline = nullptr) {
+  // The origin is the alphabetic baseline.
+  const gfx::RectF text_ink_float_bounds = shape_result.ComputeInkBounds();
+
+  // We get same ink bounds for all `writing-mode` aka logical rect.
+  const LogicalRect text_ink_bounds =
+      LogicalRect::EnclosingRect(text_ink_float_bounds);
+
+  // Calculation of `ascent` should be as same as
+  // `NGTextFragmentPainter::Paint()`
+  const FontMetrics& font_metrics =
+      style.GetFont().PrimaryFont()->GetFontMetrics();
+  const int ascent = font_metrics.Ascent();
+  if (out_baseline)
+    *out_baseline = LayoutUnit(ascent);
+
+  // Convert to left-top origin.
+  return text_ink_bounds + LogicalOffset(LayoutUnit(), LayoutUnit(ascent));
+}
+
+// `origin` holds left-top for LTR, right-top for RTL.
+const NGExclusion* CreateExclusionSpaceForInitialLetterBox(
+    EFloat float_type,
+    NGBfcOffset origin,
+    const NGBfcOffset& border_box_offset,
+    const LogicalSize& border_box_size,
+    const NGBoxStrut& margins) {
+  // Note: In case of `margins.inline_start` or `margins.line_over` are
+  // negative, left top of `NGExclusionSpace` are out of `ConstraintSpace`.
+  const NGBfcOffset local_start_offset(
+      border_box_offset.line_offset - margins.inline_start,
+      border_box_offset.block_offset - margins.block_start);
+
+  // Size of box should be grater than or equal to zero, even if negative
+  // margins, e.g. `margin-right: -100px; width: 50px`.
+  const LogicalSize margin_box_size(
+      (border_box_size.inline_size + margins.InlineSum()).ClampNegativeToZero(),
+      (border_box_size.block_size + margins.BlockSum()).ClampNegativeToZero());
+
+  // Note: The block offset of `NGExclusionSpace` is `origin.block_offset`
+  // when initial letter positioned below the first line.
+  //
+  // Example:
+  // initial-letter 3 5
+  //
+  // `origin.block_offset`
+  //  +----------------->
+  //  |         line 1
+  //  |         line 2
+  //  |  *****  line 3
+  //  |    *    line 4
+  //  |    *    line 5
+  //  |    *    line 6
+  //  V         line 7
+  const NGBfcOffset start_offset(
+      float_type == EFloat::kLeft
+          ? origin.line_offset + local_start_offset.line_offset
+          : origin.line_offset - margin_box_size.inline_size +
+                margins.inline_end,
+      origin.block_offset +
+          std::min(local_start_offset.block_offset, LayoutUnit()));
+
+  const NGBfcOffset end_offset(
+      start_offset.line_offset + margin_box_size.inline_size,
+      origin.block_offset + local_start_offset.block_offset +
+          margin_box_size.block_size);
+
+  return NGExclusion::CreateForInitialLetterBox(
+      NGBfcRect(start_offset, end_offset), float_type);
+}
+
+}  // namespace
+
+FontHeight AdjustInitialLetterInTextPosition(const NGLineInfo& line_info,
+                                             const FontHeight& line_box_metrics,
+                                             NGLogicalLineItems* line_box) {
+  // TODO(crbug.com/1276900): Once we get a sample having more than one
+  // `NGLogicalLinteItem` in `line_box`, we should support it.
+  DCHECK_EQ(line_box->size(), 1u);
+
+  NGLogicalLineItem& line_item = *line_box->begin();
+  DCHECK(line_item.shape_result);
+
+  LayoutUnit baseline;
+  const ComputedStyle& style = *line_item.Style();
+  const LogicalRect text_ink_bounds =
+      ComputeTextInkBounds(*line_item.shape_result, style, &baseline);
+
+  // Set `line_item.rect`, text paint origin, to left-top of `text_ink_bounds`.
+  // Note: ` NGTextFragmentPainter::Paint()` adds font ascent to block offset.
+  line_item.rect.offset.inline_offset += -text_ink_bounds.offset.inline_offset;
+  line_item.rect.offset.block_offset = -style.GetFontHeight().ascent;
+
+  if (style.IsHorizontalWritingMode() ||
+      style.GetTextOrientation() == ETextOrientation::kSideways) {
+    const LayoutUnit line_height = text_ink_bounds.size.block_size;
+    const LayoutUnit ascent = baseline - text_ink_bounds.offset.block_offset;
+    return FontHeight(ascent, LayoutUnit(line_height - ascent));
+  }
+
+  const LayoutUnit line_height = text_ink_bounds.size.block_size;
+  const LayoutUnit ascent = LayoutUnit::FromFloatFloor(line_height / 2);
+  return FontHeight(LayoutUnit(ascent), LayoutUnit(line_height - ascent));
+}
+
+LayoutUnit CalculateInitialLetterBoxInlineSize(const NGLineInfo& line_info) {
+  // TODO(crbug.com/1276900): Once we get a sample having more than one
+  // `NGInlineItemResult` in `line_info`, we should support it.
+  DCHECK_EQ(line_info.Results().size(), 1u);
+
+  const NGInlineItemResult& initial_letter_text_item_result =
+      line_info.Results().front();
+  const ShapeResultView* const shape_result =
+      initial_letter_text_item_result.shape_result.get();
+  if (!shape_result)
+    return LayoutUnit();
+
+  const auto& style = *initial_letter_text_item_result.item->Style();
+  const LogicalRect text_ink_bounds =
+      ComputeTextInkBounds(*shape_result, style);
+
+  // Example of `text_ink_bounds`
+  //   - <i>f</i>   -16,18+59x81
+  //   - <i>T</i>   6,21+53x59
+  //   - T          2,21+51x59
+  //   - U+05E9     2,20+50x79 (HEBREW)
+  //   - U+3042     5,10+80x73 (HIRAGANA LETTER)
+  // See also `AdjustInitialLetterInTextPosition()`.
+  return text_ink_bounds.size.inline_size + line_info.TextIndent();
+}
+
+const NGExclusion* PostPlaceInitialLetterBox(
+    const FontHeight& line_box_metrics,
+    const NGBoxStrut& initial_letter_box_margins,
+    NGLogicalLineItems* line_box,
+    const NGBfcOffset& line_origin,
+    NGLineInfo* line_info) {
+  NGLogicalLineItem* const initial_letter_line_item = std::find_if(
+      line_box->begin(), line_box->end(),
+      [](const auto& line_item) { return line_item.IsInitialLetterBox(); });
+  DCHECK(initial_letter_line_item->PhysicalFragment()->IsInitialLetterBox());
+  DCHECK(!initial_letter_line_item->PhysicalFragment()
+              ->Style()
+              .InitialLetter()
+              .IsNormal());
+
+  const ComputedStyle& line_style = line_info->LineStyle();
+  const WritingDirectionMode writing_direction_mode =
+      line_style.GetWritingDirection();
+
+  const LogicalSize initial_letter_box_size =
+      NGFragment(writing_direction_mode,
+                 *initial_letter_line_item->PhysicalFragment())
+          .Size();
+
+  LayoutUnit initial_letter_block_start_adjust;
+  const LayoutUnit initial_letter_border_box_block_offset =
+      ComputeInitialLetterBoxBlockOffset(initial_letter_box_size.block_size,
+                                         *initial_letter_line_item->Style(),
+                                         line_style,
+                                         &initial_letter_block_start_adjust) +
+      initial_letter_box_margins.block_start;
+  DCHECK_GE(initial_letter_block_start_adjust, LayoutUnit());
+  line_info->SetInitialLetterBlockStartAdjustment(
+      initial_letter_block_start_adjust);
+
+  LayoutUnit adjusted_block_offset = initial_letter_border_box_block_offset;
+
+  // Surrounding texts are shift down by `initial_letter_block_start_adjust`,
+  // but initial letter box.
+  adjusted_block_offset -= initial_letter_block_start_adjust;
+
+  if (writing_direction_mode.IsFlippedLines()) {
+    // Note: `NGFragmentItemsBuilder::ConvertToPhysical()` uses `kVerticalRl`
+    // for items in line, by `ToLineWritingMode(kVerticalLR)`.
+    // Conversion is done as below expression:
+    //   * physical.x = outer_width - logical.block_offset - inner_width
+    //   * logical.block_offset = outer_width - inner_width - physical.x
+    //   * where outer_width = line_height, inner_width = physical.width
+    adjusted_block_offset = line_style.ComputedLineHeightAsFixed() +
+                            -adjusted_block_offset +
+                            -initial_letter_box_size.block_size;
+  }
+
+  // Convert to baseline origin block offset.
+  initial_letter_line_item->rect.offset.block_offset =
+      adjusted_block_offset - line_box_metrics.ascent;
+
+  const LayoutUnit initial_letter_border_box_inline_offset =
+      initial_letter_line_item->rect.offset.inline_offset;
+
+  const NGBfcOffset initial_letter_box_origin(
+      writing_direction_mode.IsLtr()
+          ? line_origin.line_offset
+          : line_origin.line_offset + initial_letter_border_box_inline_offset +
+                initial_letter_box_size.inline_size,
+      line_origin.block_offset);
+
+  const NGExclusion* exclusion = CreateExclusionSpaceForInitialLetterBox(
+      writing_direction_mode.IsLtr() ? EFloat::kLeft : EFloat::kRight,
+      initial_letter_box_origin,
+      NGBfcOffset(initial_letter_border_box_inline_offset,
+                  initial_letter_border_box_block_offset +
+                      line_info->ComputeInitialLetterBoxBlockStartAdjustment()),
+      initial_letter_box_size, initial_letter_box_margins);
+
+  line_info->SetInitialLetterBoxBlockSize(exclusion->rect.BlockSize());
+  return exclusion;
+}
+
+}  // namespace blink

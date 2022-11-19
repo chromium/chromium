@@ -73,6 +73,18 @@ struct CORE_EXPORT LogicalRect {
   void Unite(const LogicalRect&);
   void UniteEvenIfEmpty(const LogicalRect&);
 
+  // You can use this function only if we know `rect` is logical. See also:
+  //  * `EnclosingLayoutRect() -> LayoutRect`
+  //  * `PhysicalRect::EnclosingRect() -> PhysicalRect`
+  static LogicalRect EnclosingRect(const gfx::RectF& rect) {
+    const LogicalOffset offset(LayoutUnit::FromFloatFloor(rect.x()),
+                               LayoutUnit::FromFloatFloor(rect.y()));
+    const LogicalSize size(
+        LayoutUnit::FromFloatCeil(rect.right()) - offset.inline_offset,
+        LayoutUnit::FromFloatCeil(rect.bottom()) - offset.block_offset);
+    return LogicalRect(offset, size);
+  }
+
   String ToString() const;
 };
 

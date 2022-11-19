@@ -99,6 +99,11 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
     }
   }
 
+  LayoutUnit ClearanceOffsetIncludingInitialLetter(EClear clear_type) const {
+    return std::max(ClearanceOffset(clear_type),
+                    InitialLetterClearanceOffset(EClear::kBoth));
+  }
+
   LayoutUnit InitialLetterClearanceOffset(EClear clear_type) const {
     switch (clear_type) {
       case EClear::kNone:
@@ -631,6 +636,12 @@ class CORE_EXPORT NGExclusionSpace {
     if (!exclusion_space_)
       return LayoutUnit::Min();
     return exclusion_space_->ClearanceOffset(clear_type);
+  }
+
+  LayoutUnit ClearanceOffsetIncludingInitialLetter(EClear clear_type) const {
+    if (!exclusion_space_)
+      return LayoutUnit::Min();
+    return exclusion_space_->ClearanceOffsetIncludingInitialLetter(clear_type);
   }
 
   LayoutUnit InitialLetterClearanceOffset(EClear clear_type) const {

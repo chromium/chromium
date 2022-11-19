@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_bidi_paragraph.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_initial_letter_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_box_state.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_child_layout_context.h"
@@ -219,8 +220,7 @@ void NGInlineLayoutAlgorithm::CreateLine(
     const NGLineLayoutOpportunity& opportunity,
     NGLineInfo* line_info,
     NGLogicalLineItems* line_box,
-    NGLineBreaker* line_breaker,
-    LayoutUnit* ruby_block_start_adjust) {
+    NGLineBreaker* line_breaker) {
   // Needs MutableResults to move ShapeResult out of the NGLineInfo.
   NGInlineItemResults* line_items = line_info->MutableResults();
   // Clear the current line without releasing the buffer.
@@ -244,6 +244,7 @@ void NGInlineLayoutAlgorithm::CreateLine(
   bool has_out_of_flow_positioned_items = false;
   bool has_floating_items = false;
   bool has_relative_positioned_items = false;
+  const NGInlineItemResult* initial_letter_item_result = nullptr;
 
   // List items trigger strict line height, i.e. we make room for the line box
   // strut, for *every* line. This matches other browsers. The intention may
@@ -345,6 +346,17 @@ void NGInlineLayoutAlgorithm::CreateLine(
           item.Style()->GetPosition() == EPosition::kRelative;
     } else if (item.Type() == NGInlineItem::kBidiControl) {
       line_box->AddChild(item.BidiLevel());
+    } else if (UNLIKELY(item.Type() == NGInlineItem::kInitialLetterBox)) {
+      // The initial letter does not increase the logical height of the line
+      // box in which it participates[1]. So, we should not changes
+      // `NGInlineBoxState::metrics`, or not call ` ComputeTextMetrics()` to
+      // incorporate from `ComputedStyle::GetFont()` of the initial letter box.
+      // See also `NGLineInfo::ComputeTotalBlockSize()` for calculation of
+      // layout opportunities.
+      // [1] https://drafts.csswg.org/css-inline/#initial-letter-block-position
+      DCHECK(!initial_letter_item_result);
+      initial_letter_item_result = &item_result;
+      PlaceInitialLetterBox(item, *line_info, &item_result, line_box);
     }
   }
 
@@ -418,8 +430,34 @@ void NGInlineLayoutAlgorithm::CreateLine(
   const FontHeight& line_box_metrics = box_states_->LineBoxState().metrics;
 
   if (UNLIKELY(Node().HasRuby() && !line_info->IsEmptyLine())) {
-    *ruby_block_start_adjust =
-        SetAnnotationOverflow(*line_info, *line_box, line_box_metrics);
+    line_info->SetAnnotationBlockStartAdjustment(
+        SetAnnotationOverflow(*line_info, *line_box, line_box_metrics));
+  }
+
+  if (UNLIKELY(initial_letter_item_result)) {
+    DCHECK(!line_info->IsEmptyLine());
+    // `container_builder_.BfcLineOffset()` holds left edge of current line
+    // after applying `text-align` and `text-indent`.
+    //
+    //       *                                  *
+    //       |                                  |
+    //      +V------------------+          +----V---------------+
+    //  LTR | this is line 1.   |     RTL  |     this is line 1.|
+    //
+    // Margins should be `NGBoxStrut` instead of `NGLineBoxStrut` for
+    // calculating block offset. Test[1], for flipped line writing mode,
+    // verifies differences between them.
+    // [1]
+    // https://wpt.live/css/css-inline/initial-letter/initial-letter-block-position-margins-vlr.html
+    const NGExclusion* exclusion = PostPlaceInitialLetterBox(
+        line_box_metrics,
+        NGBoxStrut(initial_letter_item_result->margins,
+                   line_info->LineStyle().IsFlippedLinesWritingMode()),
+        line_box,
+        NGBfcOffset(container_builder_.BfcLineOffset(),
+                    line_info->BfcOffset().block_offset),
+        line_info);
+    ExclusionSpace().Add(exclusion);
   }
 
   // Place out-of-flow positioned objects.
@@ -437,8 +475,12 @@ void NGInlineLayoutAlgorithm::CreateLine(
   // needed the line height to correctly determine their final position.
   if (has_floating_items) {
     DCHECK(!line_info->IsBlockInInline());
+    // Test[1] has a float to be pushed down to next line.
+    // [1]
+    // https://wpt.live/css/css-inline/initial-letter/initial-letter-floats-005.html
     PlaceFloatingObjects(*line_info, line_box_metrics, opportunity,
-                         *ruby_block_start_adjust, line_box, line_breaker);
+                         line_info->ComputeBlockStartAdjustment(), line_box,
+                         line_breaker);
   }
 
   // Apply any relative positioned offsets to *items* which have relative
@@ -489,15 +531,22 @@ void NGInlineLayoutAlgorithm::CreateLine(
   //
   // For text-combine-upright:all, the block offset should be zero to make
   // combined text in 1em x 1em box.
-  if (LIKELY(!Node().IsSvgText() && !Node().IsTextCombine()))
-    line_box->MoveInBlockDirection(line_box_metrics.ascent);
-
   if (UNLIKELY(Node().IsTextCombine())) {
     // The effective size of combined text is 1em square[1]
     // [1] https://drafts.csswg.org/css-writing-modes-3/#text-combine-layout
     const auto one_em = Node().Style().ComputedFontSizeAsFixed();
     inline_size = std::min(inline_size, one_em);
+  } else if (UNLIKELY(Node().IsInitialLetterBox())) {
+    const FontHeight& adjusted_metrics = AdjustInitialLetterInTextPosition(
+        *line_info, line_box_metrics, line_box);
+    container_builder_.SetMetrics(adjusted_metrics);
+    line_box->MoveInBlockDirection(adjusted_metrics.ascent);
+  } else if (LIKELY(!Node().IsSvgText())) {
+    // Convert baseline relative block offset of `NGLogicalLineItem::rect` to
+    // to line box relative block offset.
+    line_box->MoveInBlockDirection(line_box_metrics.ascent);
   }
+
   container_builder_.SetInlineSize(inline_size);
 }
 
@@ -665,6 +714,30 @@ void NGInlineLayoutAlgorithm::PlaceBlockInInline(
   line_box->AddChild(std::move(item_result->layout_result),
                      /* offset */ LogicalOffset(), item_result->inline_size,
                      /* children_count */ 0, item.BidiLevel());
+}
+
+void NGInlineLayoutAlgorithm::PlaceInitialLetterBox(
+    const NGInlineItem& item,
+    const NGLineInfo& line_info,
+    NGInlineItemResult* item_result,
+    NGLogicalLineItems* line_box) {
+  DCHECK(item_result->layout_result);
+  DCHECK(!IsA<LayoutNGTextCombine>(item.GetLayoutObject()));
+  DCHECK(!item_result->spacing_before);
+
+  item_result->has_edge = true;
+
+  // Because of the initial letter box should not contribute baseline position
+  // to surrounding text, we should not update `NGInlineBoxState` for avoiding
+  // to affect `line_box_metrics`.
+  //
+  // Note: `item.Style()` which holds style of `<::first-letter>` should not be
+  // include in `NGInlineBoxState::font_metrics` and `metrics`, because they
+  // don't affect baseline of surrounding text.
+  line_box->AddChild(
+      std::move(item_result->layout_result),
+      LogicalOffset{item_result->margins.inline_start, LayoutUnit()},
+      item_result->inline_size, /* children_count */ 0, item.BidiLevel());
 }
 
 // Place all out-of-flow objects in |line_box_|.
@@ -1141,6 +1214,34 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
     is_pushed_by_floats = true;
   }
 
+  // For initial letter, we should clear previous block's initial letter[1]
+  // if:
+  //   - new formatting context
+  //   - starts with an initial letter
+  //   - `clear` in start direction of initial letter containing block.
+  //
+  // [1] https://drafts.csswg.org/css-inline/#short-para-initial-letter
+  if (context_->LogicalLineItems()->IsEmpty()) {
+    const EClear clear_type =
+        UNLIKELY(Node().HasInitialLetterBox())
+            ? EClear::kBoth
+            : Node().Style().Clear(ConstraintSpace().Direction());
+    const LayoutUnit initial_letter_clearance =
+        ConstraintSpace().ExclusionSpace().InitialLetterClearanceOffset(
+            clear_type);
+    if (initial_letter_clearance > bfc_block_offset) {
+      // The initial letter box causes container separation to reuse layout
+      // result, e.g.
+      //    <div class="initial-letter-1">abc</div>
+      //    <!-- change to 11px and will result in a bad layout -->
+      //    <div style="height: 1px"></div>
+      //    <div class="initial-letter-2">xyz</div>
+      //
+      bfc_block_offset = initial_letter_clearance;
+      is_pushed_by_floats = true;
+    }
+  }
+
   // We query all the layout opportunities on the initial exclusion space up
   // front, as if the line breaker may add floats and change the opportunities.
   const LayoutOpportunityVector& opportunities =
@@ -1195,6 +1296,18 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
         line_opportunity, leading_floats, handled_leading_floats_index,
         break_token, column_spanner_path_, &ExclusionSpace());
     line_breaker.NextLine(&line_info);
+
+    if (UNLIKELY(Node().IsInitialLetterBox())) {
+      // Because `NGLineBreaker` doesn't calculate the inline size of initial
+      // letter box from text ink bounds as performance reason. We calculate
+      // here for `NGLineInfo::Width()` for text alignment and RTL[1][2].
+      // [1]
+      // https://wpt.live/css/css-inline/initial-letter/initial-letter-indentation-rtl.html
+      // [2]
+      // https://wpt.live/css/css-inline/initial-letter/initial-letter-indentation.html
+      line_info.SetWidth(line_info.AvailableWidth(),
+                         CalculateInitialLetterBoxInlineSize(line_info));
+    }
 
     const auto* block_in_inline_result = line_info.BlockInInlineLayoutResult();
     if (block_in_inline_result) {
@@ -1267,28 +1380,45 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
 
     PrepareBoxStates(line_info, break_token);
 
-    LayoutUnit ruby_block_start_adjust;
-    CreateLine(line_opportunity, &line_info, line_box, &line_breaker,
-               &ruby_block_start_adjust);
+    CreateLine(line_opportunity, &line_info, line_box, &line_breaker);
     is_line_created = true;
 
-    // Adjust the line BFC block-offset if we have a ruby annotation.
-    if (UNLIKELY(ruby_block_start_adjust)) {
+    // Adjust the line BFC block-offset if we have a ruby annotation, raise
+    // initial letter or sunken initial letter.
+    const LayoutUnit block_start_adjust =
+        line_info.ComputeBlockStartAdjustment();
+    if (UNLIKELY(block_start_adjust)) {
       DCHECK(container_builder_.BfcBlockOffset());
       DCHECK(container_builder_.LineBoxBfcBlockOffset());
       DCHECK(!line_info.IsEmptyLine());
       container_builder_.SetLineBoxBfcBlockOffset(
-          line_info.BfcOffset().block_offset + ruby_block_start_adjust);
+          line_info.BfcOffset().block_offset + block_start_adjust);
       container_builder_.SetAnnotationBlockOffsetAdjustment(
-          ruby_block_start_adjust);
+          line_info.ComputeAnnotationBlockOffsetAdjustment());
     }
 
     // We now can check the block-size of the fragment, and it fits within the
     // opportunity. Also include the ruby annotations so that they don't
     // intersect with any floats.
-    const LayoutUnit total_block_size =
-        container_builder_.LineHeight() + ruby_block_start_adjust +
-        container_builder_.AnnotationOverflow().ClampNegativeToZero();
+    //
+    // To use next opportunity, `total_block_size` contains initial letter box
+    // block-size.
+    //
+    // opportunities[0] 111    ***** his is first line.
+    //                  111      *   This is second line.
+    // opportunities[1] 222222   *   This is third line.
+    //                  222222   *   This is fourth line.
+    //                  This is fifth line.
+    // opportunities[2] 333 This is sixth line.
+    //
+    // where '1', '2', '3' are `float:left` with `clear:left`.
+    //
+    // If we don't set `initial_letter_box_block_size`, the test[1] fails.
+    // [1]
+    // https://wpt.live/css/css-inline/initial-letter/initial-letter-floats-003.html
+    const LayoutUnit total_block_size = line_info.ComputeTotalBlockSize(
+        container_builder_.LineHeight(),
+        container_builder_.AnnotationOverflow().ClampNegativeToZero());
 
     // Now that we have the block-size of the line, we can re-test the layout
     // opportunity to see if we fit into the (potentially) non-rectangular

@@ -53,8 +53,7 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
   void CreateLine(const NGLineLayoutOpportunity&,
                   NGLineInfo*,
                   NGLogicalLineItems* line_box,
-                  NGLineBreaker*,
-                  LayoutUnit* ruby_block_start_adjust);
+                  NGLineBreaker*);
 
   const NGLayoutResult* Layout() override;
 
@@ -105,6 +104,10 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
                           const NGLineInfo&,
                           NGInlineItemResult*,
                           NGLogicalLineItems* line_box);
+  void PlaceInitialLetterBox(const NGInlineItem&,
+                             const NGLineInfo&,
+                             NGInlineItemResult*,
+                             NGLogicalLineItems* line_box);
   void PlaceLayoutResult(NGInlineItemResult*,
                          NGLogicalLineItems* line_box,
                          NGInlineBoxState*,

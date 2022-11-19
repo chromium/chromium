@@ -848,7 +848,8 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
   // all of our floats.
   if (ConstraintSpace().IsNewFormattingContext()) {
     intrinsic_block_size_ = std::max(
-        intrinsic_block_size_, ExclusionSpace().ClearanceOffset(EClear::kBoth));
+        intrinsic_block_size_,
+        ExclusionSpace().ClearanceOffsetIncludingInitialLetter(EClear::kBoth));
   }
 
   // If line clamping occurred, the intrinsic block-size comes from the
@@ -1523,9 +1524,9 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
   if (!IsBreakInside(child_break_token)) {
     // The origin offset is where we should start looking for layout
     // opportunities. It needs to be adjusted by the child's clearance.
-    AdjustToClearance(
-        ExclusionSpace().ClearanceOffset(child_style.Clear(Style())),
-        &origin_offset);
+    AdjustToClearance(ExclusionSpace().ClearanceOffsetIncludingInitialLetter(
+                          child_style.Clear(Style())),
+                      &origin_offset);
   }
   DCHECK(container_builder_.BfcBlockOffset());
 

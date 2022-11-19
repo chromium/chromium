@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_bidi_paragraph.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_initial_letter_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_items_builder.h"
@@ -1808,10 +1809,16 @@ static LayoutUnit ComputeContentSize(
         ForceLineBreak(line_info);
     }
   };
+
+  if (UNLIKELY(node.IsInitialLetterBox())) {
+    NGLineInfo line_info;
+    line_breaker.NextLine(&line_info);
+    DCHECK(line_breaker.IsFinished());
+    return CalculateInitialLetterBoxInlineSize(line_info);
+  }
+
   FloatsMaxSize floats_max_size(float_input);
-  // Because `NGLineBreaker` has a special logic for initial letter text,
-  // `ComputeContentSize()` for `kMaxContent` doesn't work well.
-  bool can_compute_max_size_from_min_size = !node.IsInitialLetterBox();
+  bool can_compute_max_size_from_min_size = true;
   MaxSizeFromMinSize max_size_from_min_size(items_data, *max_size_cache,
                                             &floats_max_size);
 

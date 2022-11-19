@@ -141,6 +141,13 @@ struct NGLogicalLineItem {
         bfc_offset(bfc_offset),
         bidi_level(bidi_level) {}
 
+  bool IsFloating() const {
+    return layout_result && layout_result->PhysicalFragment().IsFloating();
+  }
+  bool IsInitialLetterBox() const {
+    return layout_result &&
+           layout_result->PhysicalFragment().IsInitialLetterBox();
+  }
   bool IsInlineBox() const {
     return layout_result && layout_result->PhysicalFragment().IsInlineBox();
   }

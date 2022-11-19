@@ -200,6 +200,16 @@ inline bool NGLineBreaker::ShouldAutoWrap(const ComputedStyle& style) const {
   // Combine text should not cause line break.
   if (UNLIKELY(is_text_combine_))
     return false;
+  // TODO(crbug.com/1276900): Once we implement multiple line initial letter,
+  // we should allow auto wrap. Below example causes multiple lines text in
+  // initial letter box.
+  //   <style>
+  //    p::.first-letter { line-break: anywhere; }
+  //    p { width: 0px; }
+  //  </style>
+  //  <p>(A) punctuation characters can be part of ::first-letter.</p>
+  if (UNLIKELY(is_initial_letter_box_))
+    return false;
   return style.AutoWrap();
 }
 
@@ -227,6 +237,7 @@ NGLineBreaker::NGLineBreaker(NGInlineNode node,
     : line_opportunity_(line_opportunity),
       node_(node),
       mode_(mode),
+      is_initial_letter_box_(node.IsInitialLetterBox()),
       is_svg_text_(node.IsSvgText()),
       is_text_combine_(node.IsTextCombine()),
       is_first_formatted_line_((!break_token || (!break_token->ItemIndex() &&
@@ -2255,8 +2266,8 @@ void NGLineBreaker::HandleFloat(const NGInlineItem& item,
 
 void NGLineBreaker::HandleInitialLetter(const NGInlineItem& item,
                                         NGLineInfo* line_info) {
-  // TODO(yosin): We'll have something if needed. This is for
-  // `NGInlineNodeTest`.
+  // TODO(crbug.com/1276900): We should check behavior when line breaking
+  // after initial letter box.
   HandleAtomicInline(item, line_info);
 }
 

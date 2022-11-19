@@ -264,6 +264,9 @@ class CORE_EXPORT NGLineBreaker {
 
   NGLineBreakerMode mode_;
 
+  // True if node_ is an initial letter box.
+  const bool is_initial_letter_box_;
+
   // True if node_ is an SVG <text>.
   const bool is_svg_text_;
 

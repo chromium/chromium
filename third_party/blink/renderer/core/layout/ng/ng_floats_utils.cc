@@ -45,9 +45,13 @@ NGLayoutOpportunity FindLayoutOpportunityForFloat(
     LayoutUnit inline_size) {
   NGBfcOffset adjusted_origin_point = AdjustToTopEdgeAlignmentRule(
       exclusion_space, unpositioned_float.origin_bfc_offset);
-  LayoutUnit clearance_offset =
-      exclusion_space.ClearanceOffset(unpositioned_float.ClearType(
-          unpositioned_float.parent_space.Direction()));
+
+  const TextDirection direction = unpositioned_float.parent_space.Direction();
+  const EClear clear_type = unpositioned_float.ClearType(direction);
+  const EFloat float_type = unpositioned_float.node.Style().Floating(direction);
+  const LayoutUnit clearance_offset =
+      std::max({exclusion_space.ClearanceOffset(clear_type),
+                exclusion_space.InitialLetterClearanceOffset(float_type)});
 
   AdjustToClearance(clearance_offset, &adjusted_origin_point);
 

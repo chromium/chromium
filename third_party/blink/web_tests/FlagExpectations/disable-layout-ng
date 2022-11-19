@@ -2231,6 +2231,9 @@ crbug.com/591099 editing/selection/paint-hyphen.html [ Failure Pass ]
 
 crbug.com/1012289 external/wpt/css/css-lists/list-style-type-string-005b.html [ Failure ]
 
+# The initial-letter implements only in LayoutNG.
+crbug.com/1276900 external/wpt/css/css-inline/initial-letter/* [ Skip ]
+
 # crbug.com/1339051: some ref tests generate output with minor differences.
 crbug.com/1339051 external/wpt/css/css-transforms/perspective-split-by-zero-w.html [ Failure ]
 crbug.com/1339051 virtual/backface-visibility-interop/external/wpt/css/css-transforms/perspective-split-by-zero-w.html [ Failure ]
