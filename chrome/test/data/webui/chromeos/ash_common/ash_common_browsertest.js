@@ -26,9 +26,13 @@ const testSuites = 'chromeos/ash_common/ash_common_unified_test.js';
 this['AshCommon'] = class extends PolymerTest {
   /** @override */
   get browsePreload() {
-    // TODO(joonbug): Find a more generic way to load tests
-    return `chrome://new-tab-page/test_loader.html?module=${
+    return `chrome://webui-test/test_loader.html?module=${
         testSuites}&host=test`;
+  }
+
+  /** @override */
+  get webuiHost() {
+    return 'dummyurl';
   }
 };
 

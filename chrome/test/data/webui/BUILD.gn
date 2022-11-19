@@ -162,6 +162,7 @@ if (include_js_tests) {
         "../../../browser/ui/webui/ash/certificate_manager_dialog_browsertest.js",
         "chromeos/account_manager/account_manager_browsertest.js",
         "chromeos/arc_account_picker/arc_account_picker_browsertest.js",
+        "chromeos/ash_common/ash_common_browsertest.js",
         "chromeos/ash_common/ash_common_resources_browsertest.js",
         "chromeos/ash_common/post_message_api/post_message_api_browsertest.js",
         "chromeos/edu_coexistence/edu_coexistence_browsertest.js",
@@ -223,7 +224,6 @@ if (include_js_tests) {
       deps = [ "//chrome/browser/ui" ]
 
       sources = [
-        "chromeos/ash_common/ash_common_browsertest.js",
         "chromeos/cloud_upload/cloud_upload_browsertest.js",
         "chromeos/crostini_installer_browsertest.js",
         "chromeos/crostini_upgrader_browsertest.js",
