@@ -10,6 +10,7 @@ source_set("connectivity") {
   deps = [
     ":decoder",
     "//base",
+    "//chrome/browser/nearby_sharing/public/cpp",
     "//components/cbor",
     "//crypto",
     "//device/bluetooth",
@@ -27,6 +28,8 @@ source_set("connectivity") {
     "incoming_connection.h",
     "random_session_id.cc",
     "random_session_id.h",
+    "target_device_client_base.cc",
+    "target_device_client_base.h",
     "target_device_connection_broker.cc",
     "target_device_connection_broker.h",
     "target_device_connection_broker_factory.cc",
@@ -70,6 +73,8 @@ source_set("unit_tests") {
     ":decoder",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/nearby_sharing/public/cpp",
+    "//chrome/test:test_support",
     "//chromeos/ash/services/nearby/public/mojom",
     "//chromeos/constants",
     "//components/cbor",
@@ -81,6 +86,7 @@ source_set("unit_tests") {
     "fast_pair_advertiser_unittest.cc",
     "incoming_connection_unittest.cc",
     "quick_start_decoder_unittest.cc",
+    "target_device_client_base_unittest.cc",
     "target_device_connection_broker_impl_unittest.cc",
     "target_fido_controller_unittest.cc",
   ]
