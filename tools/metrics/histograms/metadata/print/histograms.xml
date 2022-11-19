@@ -142,31 +142,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PrintPreview.RegeneratePreviewRequest.BeforeCancel"
-    units="units" expires_after="M77">
-  <owner>thestig@chromium.org</owner>
-  <summary>
-    The number of times regenerate preview requests received before the user
-    clicked the cancel button.
-  </summary>
-</histogram>
-
 <histogram name="PrintPreview.RegeneratePreviewRequest.BeforeFirstData"
     units="units" expires_after="2020-02-23">
   <owner>thestig@chromium.org</owner>
   <summary>
     The number of times regenerate preview requests received before the first
     preview data is available.
-  </summary>
-</histogram>
-
-<histogram name="PrintPreview.RegeneratePreviewRequest.BeforePrint"
-    units="units" expires_after="2021-05-10">
-  <owner>thestig@chromium.org</owner>
-  <owner>dhoss@chromium.org</owner>
-  <summary>
-    The number of times regenerate preview requests received before the user
-    clicked the print button.
   </summary>
 </histogram>
 
@@ -203,13 +184,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Count how frequently a set of pre-defined print preview errors occur.
   </summary>
-</histogram>
-
-<histogram name="PrintPreview.RenderPDFPageTime" units="ms"
-    expires_after="2021-05-10">
-  <owner>thestig@chromium.org</owner>
-  <owner>awscreen@chromium.org</owner>
-  <summary>Time taken to render each PDF page for print preview.</summary>
 </histogram>
 
 <histogram name="PrintPreview.RenderToPDFTime" units="ms"

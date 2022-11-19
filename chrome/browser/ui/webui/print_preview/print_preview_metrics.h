@@ -81,14 +81,6 @@ void ReportPrintSettingsStats(const base::Value::Dict& print_settings,
                               const base::Value::Dict& preview_settings,
                               bool is_pdf);
 
-// Record the number of times the user requests to regenerate preview data
-// before cancelling.
-void ReportRegeneratePreviewRequestCountBeforeCancel(size_t count);
-
-// Record the number of times the user requests to regenerate preview data
-// before printing.
-void ReportRegeneratePreviewRequestCountBeforePrint(size_t count);
-
 void ReportUserActionHistogram(UserActionBuckets event);
 
 }  // namespace printing

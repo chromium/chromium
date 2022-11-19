@@ -167,16 +167,6 @@ void ReportPrintSettingsStats(const base::Value::Dict& print_settings,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-void ReportRegeneratePreviewRequestCountBeforeCancel(size_t count) {
-  base::UmaHistogramCounts1M(
-      "PrintPreview.RegeneratePreviewRequest.BeforeCancel", count);
-}
-
-void ReportRegeneratePreviewRequestCountBeforePrint(size_t count) {
-  base::UmaHistogramCounts1M(
-      "PrintPreview.RegeneratePreviewRequest.BeforePrint", count);
-}
-
 void ReportUserActionHistogram(UserActionBuckets event) {
   // Use macro because this histogram is called multiple times in succession.
   UMA_HISTOGRAM_ENUMERATION("PrintPreview.UserAction", event);
