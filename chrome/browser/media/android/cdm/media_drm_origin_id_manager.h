@@ -15,6 +15,7 @@
 #include "base/unguessable_token.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "media/base/media_drm_storage.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class MediaDrmOriginIdManagerFactory;
 class PrefRegistrySimple;
@@ -75,6 +76,10 @@ class MediaDrmOriginIdManager : public KeyedService {
   // MediaDrmOriginIdManagerFactory.
   explicit MediaDrmOriginIdManager(PrefService* pref_service);
 
+  // Complete the pre-provisioning steps.
+  void ResumePreProvisionIfNecessary(
+      bool is_per_application_provisioning_supported);
+
   // Asynchronously call StartProvisioning() on a sequence using different
   // priorities, depending on |run_in_background|.
   void StartProvisioningAsync(bool run_in_background);
@@ -82,6 +87,10 @@ class MediaDrmOriginIdManager : public KeyedService {
   // Called when provisioning of |origin_id| is done. The provisioning of
   // |origin_id| was successful if |origin_id| is not nullopt.
   void OriginIdProvisioned(const MediaDrmOriginId& origin_id);
+
+  // Check if per application provisioning is supported or not. Uses
+  // `is_per_application_provisioning_supported_`, and if not set, sets it.
+  bool IsPerApplicationProvisioningSupported();
 
   // If called, record the current number of pre-provisioned origin IDs to UMA.
   void RecordCountOfPreprovisionedOriginIds();
@@ -94,6 +103,10 @@ class MediaDrmOriginIdManager : public KeyedService {
   // True if this class is currently pre-provisioning origin IDs,
   // false otherwise.
   bool is_provisioning_ = false;
+
+  // True if per-application provisioning is supported. If nullopt, then
+  // support has not yet been determined.
+  absl::optional<bool> is_per_application_provisioning_supported_;
 
   // When testing don't call MediaDrm to provision the origin ID, just call
   // this CB and use the value returned to indicate if provisioning succeeded or

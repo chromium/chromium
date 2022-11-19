@@ -282,6 +282,8 @@ bool MediaDrmBridge::IsKeySystemSupported(const std::string& key_system) {
 bool MediaDrmBridge::IsPerApplicationProvisioningSupported() {
   // Start by checking "ro.product.first_api_level", which may not exist.
   // If it is non-zero, then it is the API level.
+  // Checking FirstApiLevel is known to be expensive (see crbug.com/1366106),
+  // and thus is cached.
   static int first_api_level = GetFirstApiLevel();
   DVLOG(1) << "first_api_level = " << first_api_level;
   if (first_api_level >= base::android::SDK_VERSION_OREO)
