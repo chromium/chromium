@@ -8820,6 +8820,22 @@
             ]
         }
     ],
+    "PrivacyHub": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "PrivacyHubDogfoodStudy",
+                    "enable_features": [
+                        "CrosPrivacyHubV0"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivacySandboxV3": [
         {
             "platforms": [
