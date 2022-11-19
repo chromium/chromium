@@ -148,7 +148,6 @@ crbug.com/402379 storage/indexeddb/mozilla/indexes.html [ Slow ]
 crbug.com/504703 inspector-protocol/debugger/debugger-step-into-dedicated-worker.js [ Slow ]
 
 crbug.com/331186 [ Debug ] css3/flexbox/position-absolute-child.html [ Slow ]
-crbug.com/362509 [ Debug ] fast/parser/xml-error-adopted.xml [ Slow ]
 
 crbug.com/372424 fast/dom/DOMImplementation/createDocument-with-used-doctype.html [ Slow ]
 
@@ -753,7 +752,6 @@ crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/idb-explicit-commit.any.html 
 crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/idb-explicit-commit.any.worker.html [ Slow ]
 crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/idbindex_getAll.html [ Slow ]
 crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/idbindex_getAllKeys.html [ Slow ]
-crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/idbtransaction_objectStoreNames.html [ Slow ]
 crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/keygenerator-explicit.html [ Slow ]
 crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/keypath-special-identifiers.htm [ Slow ]
 
