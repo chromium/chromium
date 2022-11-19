@@ -27,6 +27,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
 namespace updater::test {
 
 const char kChromeAppId[] = "{8A69D345-D564-463C-AFF1-A69D9E530F96}";
@@ -92,6 +96,11 @@ void MaybeExcludePathsFromWindowsDefender() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(kTestLauncherExcludePathsFromWindowDefender))
     return;
+
+  if (base::win::GetVersion() <= base::win::Version::WIN7) {
+    VLOG(1) << "Skip changing Windows Defender settings for Win7 and below.";
+    return;
+  }
 
   base::FilePath program_files;
   base::FilePath program_files_x86;
