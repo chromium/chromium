@@ -30,18 +30,6 @@ chromium-metrics-reviews@google.com.
   <summary>Specified DevTools action has been taken.</summary>
 </histogram>
 
-<histogram name="DevTools.BackgroundService.StartRecording"
-    enum="DevToolsBackgroundService" expires_after="2022-07-09">
-  <owner>yangguo@chromium.org</owner>
-  <owner>bmeurer@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    Records the Background Service for which `Recording` mode was enabled. This
-    is called if the developer toggles the record button in the relevant
-    Bakground Service DevTools panel.
-  </summary>
-</histogram>
-
 <histogram name="DevTools.BreakpointEditDialogRevealedFrom"
     enum="DevToolsBreakpointEditDialogRevealedFrom" expires_after="2023-12-01">
   <owner>yangguo@chromium.org</owner>

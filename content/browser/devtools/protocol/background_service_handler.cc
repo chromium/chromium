@@ -211,8 +211,6 @@ Response BackgroundServiceHandler::SetRecording(bool should_record,
 
   if (should_record) {
     devtools_context_->StartRecording(service_enum);
-    base::UmaHistogramEnumeration("DevTools.BackgroundService.StartRecording",
-                                  service_enum, devtools::proto::COUNT);
   } else {
     devtools_context_->StopRecording(service_enum);
   }
