@@ -6226,80 +6226,6 @@
             ]
         }
     ],
-    "JourneysArPlRuZh": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20220502",
-                    "params": {
-                        "JourneysLocaleOrLanguageAllowlist": "de,en,en-AU,en-CA,en-GB,en-US,es,fr,it,nl,pt,tr,ar,pl,ru,zh",
-                        "supported_locales": "de,en,en-AU,en-CA,en-GB,en-US,es,fr,it,nl,pt,tr,ar,pl,ru,zh"
-                    },
-                    "enable_features": [
-                        "Journeys",
-                        "PageEntitiesPageContentAnnotations"
-                    ]
-                }
-            ]
-        }
-    ],
-    "JourneysHaTSSurvey": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledOmniboxEntrypoint",
-                    "params": {
-                        "en_site_id": "5GjwX6M8T0ugnJ3q1cK0SahkU1Bm",
-                        "probability": "1.0",
-                        "survey": "journeys-omnibox-entrypoint",
-                        "survey-delay-duration": "6s"
-                    },
-                    "enable_features": [
-                        "JourneysSurveyForOmniboxEntrypoint"
-                    ]
-                }
-            ]
-        }
-    ],
-    "JourneysHideSingleDomainClusters": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20220518",
-                    "params": {
-                        "hide_single_domain_clusters_on_prominent_ui_surfaces": "true"
-                    },
-                    "enable_features": [
-                        "HistoryClustersOnDeviceClustering"
-                    ]
-                }
-            ]
-        }
-    ],
     "JourneysPersistence": [
         {
             "platforms": [
@@ -6316,30 +6242,6 @@
                     "params": {},
                     "enable_features": [
                         "HistoryClustersPersistedClusters"
-                    ]
-                }
-            ]
-        }
-    ],
-    "JourneysSearchTermsKeywords": [
-        {
-            "platforms": [
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20220912",
-                    "params": {
-                        "keyword_filter_on_categories": "false",
-                        "keyword_filter_on_entity_aliases": "false",
-                        "keyword_filter_on_noisy_visits": "false",
-                        "keyword_filter_on_search_terms": "true"
-                    },
-                    "enable_features": [
-                        "JourneysKeywordFiltering"
                     ]
                 }
             ]

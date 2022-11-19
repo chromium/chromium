@@ -32,7 +32,6 @@
 #include "components/history_clusters/core/on_device_clustering_util.h"
 #include "components/history_clusters/core/ranking_cluster_finalizer.h"
 #include "components/history_clusters/core/similar_visit_deduper_cluster_finalizer.h"
-#include "components/history_clusters/core/single_domain_cluster_finalizer.h"
 #include "components/history_clusters/core/single_visit_cluster_finalizer.h"
 #include "components/optimization_guide/core/batch_entity_metadata_task.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
@@ -357,10 +356,6 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
   if (GetConfig().should_hide_single_visit_clusters_on_prominent_ui_surfaces) {
     cluster_finalizers.push_back(
         std::make_unique<SingleVisitClusterFinalizer>());
-  }
-  if (GetConfig().should_hide_single_domain_clusters_on_prominent_ui_surfaces) {
-    cluster_finalizers.push_back(
-        std::make_unique<SingleDomainClusterFinalizer>());
   }
   // Add feature to turn on/off site engagement score filter.
   if (engagement_score_provider_is_valid &&

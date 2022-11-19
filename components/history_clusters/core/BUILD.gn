@@ -66,8 +66,6 @@ static_library("core") {
     "similar_visit.h",
     "similar_visit_deduper_cluster_finalizer.cc",
     "similar_visit_deduper_cluster_finalizer.h",
-    "single_domain_cluster_finalizer.cc",
-    "single_domain_cluster_finalizer.h",
     "single_visit_cluster_finalizer.cc",
     "single_visit_cluster_finalizer.h",
     "url_constants.cc",
@@ -116,7 +114,6 @@ source_set("unit_tests") {
     "query_clusters_state_unittest.cc",
     "ranking_cluster_finalizer_unittest.cc",
     "similar_visit_deduper_cluster_finalizer_unittest.cc",
-    "single_domain_cluster_finalizer_unittest.cc",
     "single_visit_cluster_finalizer_unittest.cc",
   ]
   deps = [
