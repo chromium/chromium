@@ -614,25 +614,6 @@
         },
         'os_type': 'android',
       },
-      'Marshmallow Tablet Tester': {
-        'test_suites': {
-          'gtest_tests': 'android_marshmallow_gtests',
-        },
-        'mixins': [
-          'has_native_resultdb_integration'
-        ],
-        'swarming': {
-          'dimension_sets': [
-            {
-              'device_os': 'MRA58Z',
-              'device_type': 'flo',
-              'os': 'Android',
-            },
-          ],
-          'expiration': 10800,
-        },
-        'os_type': 'android',
-      },
       'Nougat Phone Tester': {
         'test_suites': {
           'gtest_tests': 'android_nougat_gtests',

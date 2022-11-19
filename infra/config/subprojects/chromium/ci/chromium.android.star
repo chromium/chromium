@@ -529,42 +529,6 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
-    name = "Marshmallow Tablet Tester",
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "android",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "android",
-            apply_configs = [
-                "download_vr_test_apks",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_bits = 32,
-            target_platform = builder_config.target_platform.ANDROID,
-        ),
-        android_config = builder_config.android_config(
-            config = "main_builder_mb",
-        ),
-        build_gs_bucket = "chromium-android-archive",
-        run_tests_serially = True,
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "tester|tablet",
-        short_name = "M",
-    ),
-    # We have limited tablet capacity and thus limited ability to run
-    # tests in parallel, hence the high timeout.
-    execution_timeout = 15 * time.hour,
-    triggered_by = ["ci/Android arm Builder (dbg)"],
-    sheriff_rotations = args.ignore_default(None),
-)
-
-ci.thin_tester(
     name = "Nougat Phone Tester",
     branch_selector = branches.STANDARD_MILESTONE,
     builder_spec = builder_config.builder_spec(
