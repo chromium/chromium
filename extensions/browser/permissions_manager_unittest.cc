@@ -424,4 +424,28 @@ TEST_F(PermissionsManagerUnittest, GetSiteAccess_NoHostPermissions) {
   }
 }
 
+TEST_F(PermissionsManagerUnittest, CanAffectExtension_ByLocation) {
+  struct {
+    mojom::ManifestLocation location;
+    bool can_be_affected;
+  } test_cases[] = {
+      {mojom::ManifestLocation::kInternal, true},
+      {mojom::ManifestLocation::kExternalPref, true},
+      {mojom::ManifestLocation::kUnpacked, true},
+      {mojom::ManifestLocation::kExternalPolicyDownload, false},
+      {mojom::ManifestLocation::kComponent, false},
+  };
+
+  for (const auto& test_case : test_cases) {
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder("test")
+            .SetLocation(test_case.location)
+            .AddPermission("<all_urls>")
+            .Build();
+    EXPECT_EQ(manager_->CanAffectExtension(*extension),
+              test_case.can_be_affected)
+        << test_case.location;
+  }
+}
+
 }  // namespace extensions

@@ -505,33 +505,6 @@ TEST_F(ScriptingPermissionsModifierUnitTest, GrantHostPermission) {
   }
 }
 
-TEST_F(ScriptingPermissionsModifierUnitTest, CanAffectExtensionByLocation) {
-  InitializeEmptyExtensionService();
-
-  struct {
-    ManifestLocation location;
-    bool can_be_affected;
-  } test_cases[] = {
-      {ManifestLocation::kInternal, true},
-      {ManifestLocation::kExternalPref, true},
-      {ManifestLocation::kUnpacked, true},
-      {ManifestLocation::kExternalPolicyDownload, false},
-      {ManifestLocation::kComponent, false},
-  };
-
-  for (const auto& test_case : test_cases) {
-    scoped_refptr<const Extension> extension =
-        ExtensionBuilder("test")
-            .SetLocation(test_case.location)
-            .AddPermission("<all_urls>")
-            .Build();
-    EXPECT_EQ(
-        test_case.can_be_affected,
-        PermissionsManager::Get(profile())->CanAffectExtension(*extension))
-        << test_case.location;
-  }
-}
-
 TEST_F(ScriptingPermissionsModifierUnitTest,
        ExtensionsInitializedWithSavedRuntimeGrantedHostPermissionsAcrossLoad) {
   InitializeEmptyExtensionService();
