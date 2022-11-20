@@ -2,30 +2,39 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import './emoji_button.js';
+import './emoji_variants.js';
 
+import {assertInstanceof} from 'chrome://resources/js/assert_ts.js';
+import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './emoji_group.html.js';
 import {createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_VARIANTS_SHOWN} from './events.js';
 import {CategoryEnum, EmojiVariants} from './types.js';
 
-/**
- * @enum {string}
- */
-export const EmojiGroupLayoutType = {
-  GRID_LAYOUT: 'grid-layout',
-  FLEX_LAYOUT: 'flex-layout',
-};
+// Note - these names are used directly in CSS.
+export enum EmojiGroupLayoutType {
+  GRID_LAYOUT = 'grid-layout',
+  FLEX_LAYOUT = 'flex-layout',
+}
+
 
 const DEFAULT_CATEGORY_LAYOUTS = {
   [CategoryEnum.EMOJI]: EmojiGroupLayoutType.GRID_LAYOUT,
   [CategoryEnum.EMOTICON]: EmojiGroupLayoutType.FLEX_LAYOUT,
 };
 
+export interface EmojiGroupComponent {
+  $: {
+    tooltip: PaperTooltipElement,
+  };
+}
+
 export class EmojiGroupComponent extends PolymerElement {
   static get is() {
-    return 'emoji-group';
+    return 'emoji-group' as const;
   }
 
   static get template() {
@@ -34,51 +43,49 @@ export class EmojiGroupComponent extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {!Array<EmojiVariants>} */
       data: {type: Array, readonly: true},
-      /** @type {?string} */
       group: {type: String, value: null, readonly: true},
-      /** @type {Object<string,string>} */
       preferred: {type: Object, value: () => ({})},
-      /** @type {boolean} */
       clearable: {type: Boolean, value: false},
-      /** @type {string} */
       category: {
         type: String,
         value: CategoryEnum.EMOJI,
         readonly: true,
       },
-      /** @type {?string} */
       layoutType: {
         type: String,
         value: null,
       },
-      /** @type {boolean} */
       showClearRecents: {type: Boolean, value: false},
-      /** @private {?EmojiVariants} */
       focusedEmoji: {type: Object, value: null},
-      /** @private {?number} */
       shownEmojiVariantIndex: {type: Number, value: null},
-      /** @private {?boolean} */
       isLangEnglish: {type: Boolean, value: false},
     };
   }
+  data: EmojiVariants[];
+  group: string|null;
+  preferred: {[index: string]: string};
+  clearable: boolean;
+  category: CategoryEnum;
+  layoutType: string|null;
+  showClearRecents: boolean;
+  private focusedEmoji: EmojiVariants|null;
+  private shownEmojiVariantIndex: number|null;
+  private isLangEnglish: boolean;
 
   constructor() {
     super();
 
     // TODO(crbug/1227852): Remove after setting arial label to emoji.
-    this.isLangEnglish = navigator.languages.some(
-      lang => lang.startsWith('en')) > 0;
+    this.isLangEnglish =
+        navigator.languages.some(lang => lang.startsWith('en'));
   }
 
   /**
    * Handles the click event for show-clear button which results
    * in showing "clear recently used emojis" button.
-   *
-   * @param {Event} ev
    */
-  onClearClick(ev) {
+  onClearClick(ev: Event): void {
     ev.preventDefault();
     ev.stopPropagation();
     this.showClearRecents = true;
@@ -88,16 +95,13 @@ export class EmojiGroupComponent extends PolymerElement {
    * Handles the event for clicking on the "clear recently used" button.
    * It makes "show-clear" button disappear and fires an event
    * indicating that the "clear recently used" is clicked.
-   *
-   * @fires CustomEvent#`EMOJI_CLEAR_RECENTS_CLICK`
-   * @param {Event} ev
    */
-  onClearRecentsClick(ev) {
+  private onClearRecentsClick(ev: Event): void {
     ev.preventDefault();
     ev.stopPropagation();
     this.showClearRecents = false;
     this.dispatchEvent(createCustomEvent(
-      EMOJI_CLEAR_RECENTS_CLICK,  {category: this.category}));
+        EMOJI_CLEAR_RECENTS_CLICK, {category: this.category}));
   }
 
   /**
@@ -105,10 +109,11 @@ export class EmojiGroupComponent extends PolymerElement {
    * By handling the on-focus and on-mouseenter events using this function,
    * one single paper-tool is reused for all emojis in the emoji-group.
    *
-   * @param {MouseEvent|FocusEvent} event
    */
-  showTooltip(event) {
-    const emoji = this.findEmojiOfEmojiButton(event.target);
+  private showTooltip(event: MouseEvent|FocusEvent): void {
+    // Target must always exist since this is triggered by a mouse/focus on an
+    // element.
+    const emoji = this.findEmojiOfEmojiButton(event.target as HTMLElement);
 
     // If the event is for an emoji button that is not already
     // focused, then replace the target of paper-tooltip with the new
@@ -131,11 +136,10 @@ export class EmojiGroupComponent extends PolymerElement {
    * Note: Initially, it validates and returns if the event is not for an
    * emoji button.
    *
-   * @fires CustomEvent#`EMOJI_BUTTON_CLICK`
-   * @param {MouseEvent} event Click event
    */
-  onEmojiClick(event) {
-    const emoji = this.findEmojiOfEmojiButton(event.target);
+  private onEmojiClick(event: MouseEvent): void {
+    const emoji =
+        this.findEmojiOfEmojiButton(event.target as HTMLElement | null);
 
     // Ensure target is an emoji button.
     if (!emoji) {
@@ -159,12 +163,10 @@ export class EmojiGroupComponent extends PolymerElement {
    * are shown as the context menu.
    * Note: Initially, it validates and returns if the event is not for an
    * emoji button.
-   *
-   * @fires CustomEvent#`EMOJI_VARIANTS_SHOWN`
-   * @param {Event} event
    */
-  onEmojiContextMenu(event) {
-    const emoji = this.findEmojiOfEmojiButton(event.target);
+  private onEmojiContextMenu(event: Event): void {
+    const emoji =
+        this.findEmojiOfEmojiButton(event.target as HTMLElement | null);
 
     // Ensure target is an emoji button.
     if (!emoji) {
@@ -172,13 +174,17 @@ export class EmojiGroupComponent extends PolymerElement {
     }
     event.preventDefault();
 
-    const dataIndex = parseInt(event.target.getAttribute('data-index'), 10);
+    assertInstanceof(event.target, HTMLElement);
+    const dataIndex = Number(
+        // This assert is safe as this can only be triggered via right click on
+        // an html element.
+        event.target.getAttribute('data-index'));
 
     // If the variants of the emoji is already shown, then hide it.
     // Otherwise, show the variants if there are some.
     if (emoji.alternates && emoji.alternates.length &&
         dataIndex !== this.shownEmojiVariantIndex) {
-          this.shownEmojiVariantIndex = dataIndex;
+      this.shownEmojiVariantIndex = dataIndex;
     } else {
       this.shownEmojiVariantIndex = null;
     }
@@ -188,7 +194,7 @@ export class EmojiGroupComponent extends PolymerElement {
     // Polymer.
     beforeNextRender(this, () => {
       const variants = this.shownEmojiVariantIndex ?
-          this.shadowRoot.getElementById(this.getEmojiVariantId(dataIndex)) :
+          this.shadowRoot!.getElementById(this.getEmojiVariantId(dataIndex)) :
           null;
 
       this.dispatchEvent(createCustomEvent(EMOJI_VARIANTS_SHOWN, {
@@ -201,32 +207,24 @@ export class EmojiGroupComponent extends PolymerElement {
 
   /**
    * Returns the id of an emoji button element at a specific data index.
-   *
-   * @param {number} index Index of the emoji button in `this.data`.
-   * @returns {string} The id of the element.
+   * TODO(b/257860449): inline these functions below
    */
-  getEmojiButtonId(index) {
+  private getEmojiButtonId(index: number): string {
     return `emoji-${index}`;
   }
 
   /**
    * Returns the id of an emoji variants element for an emoji at a
    * specific data index.
-   *
-   * @param {number} index Index of the emoji in `this.data`.
-   * @returns {string} The id of the element.
    */
-  getEmojiVariantId(index) {
+  private getEmojiVariantId(index: number): string {
     return `emoji-variant-${index}`;
   }
 
   /**
    * Returns HTML class attribute of an emoji button.
-   *
-   * @param {EmojiVariants} emoji The emoji to be shown.
-   * @returns {string} HTML class attribute of the button.
    */
-  getEmojiButtonClassName(emoji) {
+  private getEmojiButtonClassName(emoji: EmojiVariants): string {
     if (emoji.alternates && emoji.alternates.length > 0) {
       return 'emoji-button has-variants';
     } else {
@@ -236,33 +234,29 @@ export class EmojiGroupComponent extends PolymerElement {
 
   /**
    * Returns HTML class attribute of an emoji groups.
-   *
-   * @param {EmojiGroupLayoutType} layoutType Layout type of the group.
-   * @param {CategoryEnum} category Category of the data.
-   * @returns {string} HTML class attribute of the button.
    */
-  getLayoutClassName(layoutType, category) {
-    if(layoutType) {
+  private getLayoutClassName(
+      layoutType: EmojiGroupLayoutType,
+      category: CategoryEnum): EmojiGroupLayoutType {
+    if (layoutType) {
       return layoutType;
     }
 
     // If layout type is not provided then choose a default value based
     // on the category.
     return DEFAULT_CATEGORY_LAYOUTS[category] ||
-            EmojiGroupLayoutType.GRID_LAYOUT;
+        EmojiGroupLayoutType.GRID_LAYOUT;
   }
 
   /**
    * Returns the arial label of an emoji.
-   *
-   * @param {EmojiVariants} emoji The emoji to be shown.
-   * @returns {string} Arial label for the input emoji.
    */
-  getEmojiAriaLabel(emoji) {
+  private getEmojiAriaLabel(emoji: EmojiVariants): string {
     // TODO(crbug/1227852): Just use emoji as the tooltip once ChromeVox can
     // announce them properly.
     const emojiLabel = this.isLangEnglish ?
-        emoji.base.name : this.getDisplayEmojiForEmoji(emoji.base.string);
+        emoji.base.name :
+        this.getDisplayEmojiForEmoji(emoji.base.string);
     if (emoji.alternates && emoji.alternates.length > 0) {
       return emojiLabel + ' with variants.';
     } else {
@@ -272,30 +266,23 @@ export class EmojiGroupComponent extends PolymerElement {
 
   /**
    * Returns the character to be shown for the emoji.
-   *
-   * @param {string} baseEmoji Base emoji character.
-   * @returns {string} Character to be shown for the emoji.
    */
-  getDisplayEmojiForEmoji(baseEmoji) {
+  private getDisplayEmojiForEmoji(baseEmoji: string): string {
     return this.preferred[baseEmoji] || baseEmoji;
   }
 
   /**
    * Return weather variants of an emoji is visible or not.
-   *
-   * @param {number} emojiIndex Index of an emoji in `this.data`.
-   * @param {?number} shownEmojiVariantIndex Index of an emoji variant that is
-   *    shown.
-   * @returns {boolean} True if the variants is shown and false otherwise.
    */
-  isEmojiVariantVisible(emojiIndex, shownEmojiVariantIndex) {
+  private isEmojiVariantVisible(
+      emojiIndex: number, shownEmojiVariantIndex: number): boolean {
     return emojiIndex === shownEmojiVariantIndex;
   }
 
   /**
    * Hides emoji variants if any is visible.
    */
-  hideEmojiVariants() {
+  private hideEmojiVariants(): void {
     this.shownEmojiVariantIndex = null;
   }
 
@@ -304,28 +291,29 @@ export class EmojiGroupComponent extends PolymerElement {
    * data-index and event target information.
    * The result will be null if the target is not for a button element
    * or it does not have data-index attribute.
-   *
-   * @param {?EventTarget} target focused element
-   * @returns {?EmojiVariants} Emoji details.
    */
-  findEmojiOfEmojiButton(target){
-    // TODO(b/234074956): Use optional chaining when converting to TS.
-    const dataIndex = target ? target.getAttribute('data-index') : null;
+  private findEmojiOfEmojiButton(target: HTMLElement|null): EmojiVariants
+      |undefined {
+    const dataIndex = target?.getAttribute('data-index');
 
-    if (target.nodeName !== 'BUTTON' || !dataIndex) {
-      return null;
+    if (target?.nodeName !== 'BUTTON' || !dataIndex) {
+      return undefined;
     }
-    return this.data[parseInt(dataIndex, 10)];
+    return this.data[Number(dataIndex)];
   }
 
   /**
    * Returns the first emoji button in the group.
-   *
-   * @returns {HTMLButtonElement} The first button if exist, otherwise null.
    */
-   firstEmojiButton() {
-    return /** @type {HTMLButtonElement} */ (
-      this.shadowRoot.querySelector('.emoji-button'));
+  firstEmojiButton(): HTMLElement|null {
+    // !. is safe for shadowRoot as it always exists
+    return this.shadowRoot!.querySelector<HTMLElement>('.emoji-button');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [EmojiGroupComponent.is]: EmojiGroupComponent;
   }
 }
 

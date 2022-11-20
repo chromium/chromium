@@ -27,7 +27,7 @@
 
 <cr-icon-button
   id="category-button"
-  class$="[[_className(active, searchActive)]]"
+  class$="[[calculateClassName(active)]]"
   iron-icon="[[icon]]"
   on-click="handleClick"
   aria-label="[[name]]"

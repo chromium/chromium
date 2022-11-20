@@ -78,7 +78,6 @@ group("closure_compile") {
     "crostini_installer:closure_compile",
     "crostini_upgrader:closure_compile",
     "edu_coexistence:closure_compile",
-    "emoji_picker:closure_compile",
     "emulator:closure_compile",
     "gaia_action_buttons:closure_compile",
     "internet_config_dialog:closure_compile",

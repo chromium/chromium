@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_wrapper.gni")
@@ -11,8 +10,8 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 
 web_component_files = [
   "emoji_button.js",
-  "emoji_category_button.js",
-  "emoji_group.js",
+  "emoji_category_button.ts",
+  "emoji_group.ts",
   "emoji_group_button.ts",
   "emoji_picker.js",
   "emoji_search.js",
@@ -186,132 +185,6 @@ action("symbol_data") {
 copy("symbol_test_data") {
   sources = [ "./symbol_test_ordering.json" ]
   outputs = [ "$target_gen_dir/symbol_test_ordering.json" ]
-}
-
-js_library("emoji_picker") {
-  deps = [
-    ":constants",
-    ":emoji_group",
-    ":emoji_picker_api_proxy",
-    ":emoji_search",
-    ":events",
-    ":metadata_extension",
-    ":store",
-    ":text_group_button",
-    ":trie",
-    ":types",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert",
-  ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("emoji_picker_api_proxy") {
-  deps = [
-    "//ash/webui/common/resources:cr_deprecated",
-    "//chrome/browser/ui/webui/ash/emoji:mojo_bindings_webui_js",
-  ]
-}
-
-js_library("emoji_category_button") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("emoji_group") {
-  deps = [
-    ":emoji_button",
-    ":types",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("emoji_button") {
-  deps = [
-    ":emoji_variants",
-    ":events",
-    ":types",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("emoji_variants") {
-  # technically depends on :emoji_button, but that causes circular dependency.
-  deps = [
-    ":types",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("emoji_search") {
-  deps = [
-    ":types",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-
-  externs_list = [ "//ui/webui/resources/cr_elements/cr_search_field/cr_search_field_externs.js" ]
-}
-
-js_library("types") {
-}
-
-js_library("constants") {
-}
-
-js_library("events") {
-}
-
-js_library("trie") {
-  sources = [ "./structs/trie.js" ]
-}
-
-js_library("prefix_search") {
-  sources = [ "./prefix_search.js" ]
-  deps = [ ":trie" ]
-}
-
-js_library("metadata_extension") {
-  deps = [ ":types" ]
-}
-
-js_library("store") {
-  deps = [ ":types" ]
-}
-
-js_library("text_group_button") {
-  deps = [
-    ":events",
-    ":types",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js" ]
-}
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags =
-      default_closure_args + mojom_js_args + [
-        "js_module_root=" + rebase_path(".", root_build_dir),
-        "js_module_root=" + rebase_path(
-                "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/ash/emoji",
-                root_build_dir),
-      ]
-  deps = [
-    ":constants",
-    ":emoji_button",
-    ":emoji_category_button",
-    ":emoji_group",
-    ":emoji_picker",
-    ":emoji_picker_api_proxy",
-    ":emoji_search",
-    ":emoji_variants",
-    ":events",
-    ":store",
-    ":text_group_button",
-    ":types",
-  ]
 }
 
 html_to_wrapper("html_wrapper_files") {

@@ -12,7 +12,7 @@ import {CATEGORY_BUTTON_CLICK, createCustomEvent} from './events.js';
 
 export class EmojiCategoryButton extends PolymerElement {
   static get is() {
-    return 'emoji-category-button';
+    return 'emoji-category-button' as const;
   }
 
   static get template() {
@@ -21,32 +21,33 @@ export class EmojiCategoryButton extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {!string} */
       name: {type: String, readonly: true},
-      /** @type {!string} */
       icon: {type: String, readonly: true},
-      /** @type {!boolean} */
       active: {type: Boolean, value: false},
       /** @type {!boolean} */
       searchActive: {type: Boolean, value: false},
     };
   }
+  name: string;
+  icon: string;
+  active: boolean;
 
-  constructor() {
-    super();
-  }
 
-  handleClick() {
+  private handleClick(): void {
     this.dispatchEvent(
         createCustomEvent(CATEGORY_BUTTON_CLICK, {categoryName: this.name}));
   }
 
-  _className(active, searchActive) {
-    if (searchActive) {
-      return 'category-button-primary';
-    }
+  private calculateClassName(active: boolean): string {
     return active ? 'category-button-active' : '';
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [EmojiCategoryButton.is]: EmojiCategoryButton;
+  }
+}
+
 
 customElements.define(EmojiCategoryButton.is, EmojiCategoryButton);
