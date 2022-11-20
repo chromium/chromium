@@ -188,8 +188,9 @@ HttpCache::Transaction::Transaction(RequestPriority priority, HttpCache* cache)
     : trace_id_(GetNextTraceId(cache)),
       priority_(priority),
       cache_(cache->GetWeakPtr()) {
-  TRACE_EVENT1("net", "HttpCacheTransaction::Transaction", "priority",
-               RequestPriorityToString(priority));
+  TRACE_EVENT_WITH_FLOW1("net", "HttpCacheTransaction::Transaction",
+                         TRACE_ID_LOCAL(trace_id_), TRACE_EVENT_FLAG_FLOW_OUT,
+                         "priority", RequestPriorityToString(priority));
   static_assert(HttpCache::Transaction::kNumValidationHeaders ==
                     std::size(kValidationHeaders),
                 "invalid number of validation headers");
@@ -199,7 +200,8 @@ HttpCache::Transaction::Transaction(RequestPriority priority, HttpCache* cache)
 }
 
 HttpCache::Transaction::~Transaction() {
-  TRACE_EVENT0("net", "HttpCacheTransaction::~Transaction");
+  TRACE_EVENT_WITH_FLOW0("net", "HttpCacheTransaction::~Transaction",
+                         TRACE_ID_LOCAL(trace_id_), TRACE_EVENT_FLAG_FLOW_IN);
   RecordHistograms();
 
   // We may have to issue another IO, but we should never invoke the callback_
@@ -239,7 +241,8 @@ int HttpCache::Transaction::Start(const HttpRequestInfo* request,
   DCHECK(request->IsConsistent());
   DCHECK(!callback.is_null());
   TRACE_EVENT_WITH_FLOW1("net", "HttpCacheTransaction::Start",
-                         TRACE_ID_LOCAL(trace_id_), TRACE_EVENT_FLAG_FLOW_OUT,
+                         TRACE_ID_LOCAL(trace_id_),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
                          "url", request->url.spec());
 
   // Ensure that we only have one asynchronous call at a time.
