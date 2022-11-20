@@ -2741,6 +2741,9 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     SetColumnWidthInternal(0);
   }
 
+  // content
+  ContentData* GetContentData() const { return ContentInternal().Get(); }
+
   // counter-*
   CounterDirectiveMap& AccessCounterDirectives() {
     std::unique_ptr<CounterDirectiveMap>& map =
@@ -2782,6 +2785,7 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     if (CursorDataInternal())
       SetCursorDataInternal(nullptr);
   }
+  CursorList* Cursors() const { return CursorDataInternal().Get(); }
 
   // filter
   FilterOperations& MutableFilter() {
@@ -2869,6 +2873,9 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   void SetMaskBoxImageWidth(const BorderImageLengthBox& slices) {
     MutableMaskBoxImageInternal().SetBorderSlices(slices);
   }
+  StyleImage* MaskBoxImageSource() const {
+    return MaskBoxImageInternal().GetImage();
+  }
 
   // opacity
   void SetOpacity(float f) {
@@ -2931,6 +2938,9 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
         ClampTo<float>(shape_image_threshold, 0, 1);
     SetShapeImageThresholdInternal(clamped_shape_image_threshold);
   }
+
+  // shape-outside
+  ShapeValue* ShapeOutside() const { return ShapeOutsideInternal().Get(); }
 
   // tab-size
   void SetTabSize(const TabSize& t) {
