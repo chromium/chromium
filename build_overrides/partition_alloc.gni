@@ -79,5 +79,5 @@ enable_backup_ref_ptr_support_default = _is_brp_supported
 enable_mte_checked_ptr_support_default = false
 
 put_ref_count_in_previous_slot_default = true
-enable_backup_ref_ptr_slow_checks_default = is_mac
+enable_backup_ref_ptr_slow_checks_default = false
 enable_dangling_raw_ptr_checks_default = false
