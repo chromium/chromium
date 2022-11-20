@@ -22,7 +22,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/rounded_container.h"
 #include "ash/system/ime_menu/ime_list_view.h"
@@ -46,6 +46,7 @@
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
@@ -157,14 +158,12 @@ class ImeTitleView : public views::BoxLayoutView {
  public:
   METADATA_HEADER(ImeTitleView);
   ImeTitleView() {
-    auto* color_provider = AshColorProvider::Get();
     // QsRevamp doesn't show a separator between title area and list.
     if (!features::IsQsRevampEnabled()) {
       SetBorder(views::CreatePaddedBorder(
-          views::CreateSolidSidedBorder(
+          views::CreateThemedSolidSidedBorder(
               gfx::Insets::TLBR(0, 0, kMenuSeparatorWidth, 0),
-              color_provider->GetContentLayerColor(
-                  AshColorProvider::ContentLayerType::kSeparatorColor)),
+              kColorAshSeparatorColor),
           gfx::Insets::VH(kMenuSeparatorVerticalPadding - kMenuSeparatorWidth,
                           0)));
     }
@@ -177,8 +176,7 @@ class ImeTitleView : public views::BoxLayoutView {
     title_label->SetBorder(views::CreateEmptyBorder(
         gfx::Insets::TLBR(0, kMenuEdgeEffectivePadding, 1, 0)));
     title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    title_label->SetEnabledColor(color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    title_label->SetEnabledColorId(kColorAshTextColorPrimary);
     TrayPopupUtils::SetLabelFontList(title_label,
                                      TrayPopupUtils::FontStyle::kPodMenuHeader);
     SetFlexForView(title_label, 1);
@@ -252,10 +250,9 @@ class ImeButtonsView : public views::View {
           gfx::Insets::VH(0, kMenuExtraMarginFromLeftEdge)));
     } else {
       SetBorder(views::CreatePaddedBorder(
-          views::CreateSolidSidedBorder(
+          views::CreateThemedSolidSidedBorder(
               gfx::Insets::TLBR(kMenuSeparatorWidth, 0, 0, 0),
-              AshColorProvider::Get()->GetContentLayerColor(
-                  AshColorProvider::ContentLayerType::kSeparatorColor)),
+              kColorAshSeparatorColor),
           gfx::Insets::VH(kMenuSeparatorVerticalPadding - kMenuSeparatorWidth,
                           kMenuExtraMarginFromLeftEdge)));
     }
@@ -626,18 +623,15 @@ void ImeMenuTray::UpdateTrayLabel() {
   // IME.
   if (extension_ime_util::IsArcIME(current_ime.id)) {
     CreateImageView();
-    image_view_->SetImage(gfx::CreateVectorIcon(
-        kShelfGlobeIcon,
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPrimary)));
+    image_view_->SetImage(ui::ImageModel::FromVectorIcon(
+        kShelfGlobeIcon, kColorAshIconColorPrimary));
     return;
   }
 
   // Updates the tray label based on the current input method.
   CreateLabel();
 
-  label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary));
+  label_->SetEnabledColorId(kColorAshIconColorPrimary);
 
   if (current_ime.third_party)
     label_->SetText(current_ime.short_name + u"*");

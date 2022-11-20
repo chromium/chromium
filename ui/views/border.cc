@@ -348,6 +348,11 @@ std::unique_ptr<Border> CreateSolidSidedBorder(const gfx::Insets& insets,
   return std::make_unique<SolidSidedBorder>(insets, color);
 }
 
+std::unique_ptr<Border> CreateThemedSolidSidedBorder(const gfx::Insets& insets,
+                                                     ui::ColorId color_id) {
+  return std::make_unique<ThemedSolidSidedBorder>(insets, color_id);
+}
+
 std::unique_ptr<Border> CreatePaddedBorder(std::unique_ptr<Border> border,
                                            const gfx::Insets& insets) {
   return std::make_unique<ExtraInsetsBorder>(std::move(border), insets);

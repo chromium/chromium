@@ -127,6 +127,12 @@ VIEWS_EXPORT std::unique_ptr<Border> CreateSolidSidedBorder(
     const gfx::Insets& insets,
     SkColor color);
 
+// Creates a border of the specified color with thickness on each side specified
+// in |insets|. The border updates on theme changes.
+VIEWS_EXPORT std::unique_ptr<Border> CreateThemedSolidSidedBorder(
+    const gfx::Insets& insets,
+    ui::ColorId color_id);
+
 // Creates a new border that draws |border| and adds additional padding. This is
 // equivalent to changing the insets of |border| without changing how or what it
 // paints. Example:
