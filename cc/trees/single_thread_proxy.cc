@@ -775,9 +775,12 @@ void SingleThreadProxy::CompositeImmediatelyForTest(
     // a commit here.
     commit_requested_ = true;
     StopDeferringCommits(PaintHoldingCommitTrigger::kFeatureDisabled);
+    layer_tree_host_->RecordStartOfFrameMetrics();
     DoBeginMainFrame(begin_frame_args);
     commit_requested_ = false;
     DoPainting(begin_frame_args);
+    layer_tree_host_->RecordEndOfFrameMetrics(frame_begin_time,
+                                              /* trackers */ 0u);
     DoCommit(begin_frame_args);
     DoPostCommit();
 
@@ -1006,9 +1009,10 @@ void SingleThreadProxy::BeginMainFrame(
   ScopedAbortRemainingSwapPromises swap_promise_checker(
       layer_tree_host_->GetSwapPromiseManager());
 
+  base::TimeTicks frame_start_time = base::TimeTicks::Now();
+
   if (scheduler_on_impl_thread_) {
-    scheduler_on_impl_thread_->NotifyBeginMainFrameStarted(
-        base::TimeTicks::Now());
+    scheduler_on_impl_thread_->NotifyBeginMainFrameStarted(frame_start_time);
   }
 
   commit_requested_ = false;
@@ -1046,9 +1050,10 @@ void SingleThreadProxy::BeginMainFrame(
   // Check now if we should stop deferring commits. Do this before
   // DoBeginMainFrame because the latter updates scroll offsets, which
   // we should avoid if deferring commits.
-  if (IsDeferringCommits() && base::TimeTicks::Now() > commits_restart_time_)
+  if (IsDeferringCommits() && frame_start_time > commits_restart_time_)
     StopDeferringCommits(ReasonToTimeoutTrigger(*paint_holding_reason_));
 
+  layer_tree_host_->RecordStartOfFrameMetrics();
   DoBeginMainFrame(begin_frame_args);
 
   // New commits requested inside UpdateLayers should be respected.
@@ -1062,11 +1067,15 @@ void SingleThreadProxy::BeginMainFrame(
                          TRACE_EVENT_SCOPE_THREAD);
     BeginMainFrameAbortedOnImplThread(
         CommitEarlyOutReason::ABORTED_DEFERRED_COMMIT);
+    layer_tree_host_->RecordEndOfFrameMetrics(frame_start_time,
+                                              /* trackers */ 0u);
     layer_tree_host_->DidBeginMainFrame();
     return;
   }
 
   DoPainting(begin_frame_args);
+  layer_tree_host_->RecordEndOfFrameMetrics(frame_start_time,
+                                            /* trackers */ 0u);
 }
 
 void SingleThreadProxy::DoBeginMainFrame(

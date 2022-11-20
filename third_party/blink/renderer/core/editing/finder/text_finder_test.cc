@@ -761,11 +761,12 @@ TEST_F(TextFinderSimTest, BeforeMatchExpandedHiddenMatchableUkm) {
     <!DOCTYPE html>
     <div id=hiddenid hidden=until-found>hidden</div>
   )HTML");
-  Compositor().BeginFrame();
-
   GetDocument().ukm_recorder_ = std::make_unique<ukm::TestUkmRecorder>();
   auto* recorder =
       static_cast<ukm::TestUkmRecorder*>(GetDocument().UkmRecorder());
+  GetDocument().View()->ResetUkmAggregatorForTesting();
+
+  Compositor().BeginFrame();
   EXPECT_EQ(recorder->entries_count(), 0u);
 
   GetTextFinder().Find(/*identifier=*/0, WebString(String("hidden")),

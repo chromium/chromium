@@ -38,7 +38,14 @@ SimCanvas::Commands SimCompositor::BeginFrame(double time_delta_in_seconds,
   DCHECK(NeedsBeginFrame());
   DCHECK_GT(time_delta_in_seconds, 0);
 
-  last_frame_time_ += base::Seconds(time_delta_in_seconds);
+  base::TimeTicks now = base::TimeTicks::Now();
+  base::TimeTicks start =
+      last_frame_time_ + base::Seconds(time_delta_in_seconds);
+  // Depending on the value of time_delta_in_seconds, `start` might be ahead of
+  // the global clock, which can confuse LocalFrameUkmAggregator. So just sleep
+  // until `start` is definitely in the past.
+  base::PlatformThread::Sleep(start - now);
+  last_frame_time_ = start;
 
   SimCanvas::Commands commands;
   paint_commands_ = &commands;

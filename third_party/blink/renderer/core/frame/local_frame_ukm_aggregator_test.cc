@@ -828,9 +828,6 @@ TEST_F(LocalFrameUkmAggregatorSimTest, DidReachFirstContentfulPaintMetric) {
 
   // Do a pre-FCP frame.
   Compositor().BeginFrame();
-  GetDocument().View()->EnsureUkmAggregator().BeginMainFrame();
-  GetDocument().View()->EnsureUkmAggregator().RecordEndOfFrameMetrics(
-      base::TimeTicks(), base::TimeTicks() + base::Microseconds(10), 0);
 
   // Cause FCP on the next frame.
   Element* target = GetDocument().getElementById("target");
@@ -838,9 +835,6 @@ TEST_F(LocalFrameUkmAggregatorSimTest, DidReachFirstContentfulPaintMetric) {
 
   // Do a frame that will cause FCP, but the frame itself will still be pre-FCP.
   Compositor().BeginFrame();
-  GetDocument().View()->EnsureUkmAggregator().BeginMainFrame();
-  GetDocument().View()->EnsureUkmAggregator().RecordEndOfFrameMetrics(
-      base::TimeTicks(), base::TimeTicks() + base::Microseconds(10), 0);
 
   GetDocument().Shutdown();
 
@@ -893,9 +887,6 @@ TEST_F(LocalFrameUkmAggregatorSimTest, DidNotReachFirstContentfulPaintMetric) {
 
   // Do a pre-FCP frame.
   Compositor().BeginFrame();
-  GetDocument().View()->EnsureUkmAggregator().BeginMainFrame();
-  GetDocument().View()->EnsureUkmAggregator().RecordEndOfFrameMetrics(
-      base::TimeTicks(), base::TimeTicks() + base::Microseconds(10), 0);
 
   // Make a change that does not result in FCP on the next frame.
   Element* target = GetDocument().getElementById("target");
@@ -903,9 +894,6 @@ TEST_F(LocalFrameUkmAggregatorSimTest, DidNotReachFirstContentfulPaintMetric) {
 
   // Do another pre-FCP frame.
   Compositor().BeginFrame();
-  GetDocument().View()->EnsureUkmAggregator().BeginMainFrame();
-  GetDocument().View()->EnsureUkmAggregator().RecordEndOfFrameMetrics(
-      base::TimeTicks(), base::TimeTicks() + base::Microseconds(10), 0);
 
   GetDocument().Shutdown();
 
@@ -931,9 +919,6 @@ TEST_F(LocalFrameUkmAggregatorSimTest, PrePostFCPMetricsWithChildFrameFCP) {
 
   // Do a pre-FCP frame.
   Compositor().BeginFrame();
-  GetDocument().View()->EnsureUkmAggregator().BeginMainFrame();
-  GetDocument().View()->EnsureUkmAggregator().RecordEndOfFrameMetrics(
-      base::TimeTicks(), base::TimeTicks() + base::Microseconds(10), 0);
   EXPECT_TRUE(IsBeforeFCPForTesting());
   histogram_tester.ExpectTotalCount("Blink.MainFrame.UpdateTime.PreFCP", 1);
   histogram_tester.ExpectTotalCount("Blink.MainFrame.UpdateTime.PostFCP", 0);
@@ -947,9 +932,6 @@ TEST_F(LocalFrameUkmAggregatorSimTest, PrePostFCPMetricsWithChildFrameFCP) {
 
   // Do a frame that reaches FCP.
   Compositor().BeginFrame();
-  GetDocument().View()->EnsureUkmAggregator().BeginMainFrame();
-  GetDocument().View()->EnsureUkmAggregator().RecordEndOfFrameMetrics(
-      base::TimeTicks(), base::TimeTicks() + base::Microseconds(10), 0);
   EXPECT_FALSE(IsBeforeFCPForTesting());
   histogram_tester.ExpectTotalCount("Blink.MainFrame.UpdateTime.PreFCP", 2);
   histogram_tester.ExpectTotalCount("Blink.MainFrame.UpdateTime.PostFCP", 0);
@@ -959,9 +941,6 @@ TEST_F(LocalFrameUkmAggregatorSimTest, PrePostFCPMetricsWithChildFrameFCP) {
 
   // Do a post-FCP frame.
   Compositor().BeginFrame();
-  GetDocument().View()->EnsureUkmAggregator().BeginMainFrame();
-  GetDocument().View()->EnsureUkmAggregator().RecordEndOfFrameMetrics(
-      base::TimeTicks(), base::TimeTicks() + base::Microseconds(10), 0);
   EXPECT_FALSE(IsBeforeFCPForTesting());
   histogram_tester.ExpectTotalCount("Blink.MainFrame.UpdateTime.PreFCP", 2);
   histogram_tester.ExpectTotalCount("Blink.MainFrame.UpdateTime.PostFCP", 1);
