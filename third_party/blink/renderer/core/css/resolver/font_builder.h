@@ -152,9 +152,8 @@ class CORE_EXPORT FontBuilder {
   // generic font family has changed. -dwh
   void CheckForGenericFamilyChange(const FontDescription&, FontDescription&);
   void UpdateSpecifiedSize(FontDescription&,
-                           const ComputedStyle&,
-                           const ComputedStyle* parent_style);
-  void UpdateComputedSize(FontDescription&, const ComputedStyle&);
+                           const FontDescription& parent_description);
+  void UpdateComputedSize(FontDescription&, const ComputedStyleBuilder&);
   void UpdateAdjustedSize(FontDescription&, FontSelector*);
 
   float GetComputedSizeFromSpecifiedSize(FontDescription&,
