@@ -8,7 +8,7 @@
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service_factory.h"
-#include "chrome/browser/ui/app_list/search/ranking/types.h"
+#include "chrome/browser/ui/app_list/search/types.h"
 
 namespace app_list {
 namespace {

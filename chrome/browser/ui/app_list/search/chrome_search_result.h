@@ -13,7 +13,8 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
-#include "chrome/browser/ui/app_list/search/ranking/types.h"
+#include "chrome/browser/ui/app_list/search/types.h"
+#include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -156,6 +157,13 @@ class ChromeSearchResult {
   double relevance() const { return relevance_; }
   void set_relevance(double relevance) { relevance_ = relevance; }
 
+  crosapi::mojom::SearchResult::AnswerType answer_type() const {
+    return answer_type_;
+  }
+  void set_answer_type(crosapi::mojom::SearchResult::AnswerType answer_type) {
+    answer_type_ = answer_type;
+  }
+
   app_list::Scoring& scoring() { return scoring_; }
 
   const app_list::Scoring& scoring() const { return scoring_; }
@@ -215,6 +223,8 @@ class ChromeSearchResult {
   //
   // Only used when the categorical search flag is enabled.
   app_list::Scoring scoring_;
+
+  crosapi::mojom::SearchResult::AnswerType answer_type_;
 
   // Relevance scores keyed by a string describing the ranking method it was
   // obtained from. These can include scores from intermediate ranking steps, as

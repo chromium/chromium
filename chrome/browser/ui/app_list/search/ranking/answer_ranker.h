@@ -7,7 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/app_list/search/ranking/ranker.h"
-#include "chrome/browser/ui/app_list/search/ranking/types.h"
+#include "chrome/browser/ui/app_list/search/types.h"
 
 namespace app_list {
 

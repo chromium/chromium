@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_QUERY_HIGHLIGHTER_H_
 
 #include "chrome/browser/ui/app_list/search/ranking/ranker.h"
-#include "chrome/browser/ui/app_list/search/ranking/types.h"
+#include "chrome/browser/ui/app_list/search/types.h"
 
 namespace app_list {
 

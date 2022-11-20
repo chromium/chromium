@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_TYPES_H_
-#define CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_TYPES_H_
+#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_TYPES_H_
+#define CHROME_BROWSER_UI_APP_LIST_SEARCH_TYPES_H_
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/files/file_path.h"
@@ -86,4 +86,4 @@ CategoriesList CreateAllCategories();
 
 }  // namespace app_list
 
-#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_TYPES_H_
+#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_TYPES_H_

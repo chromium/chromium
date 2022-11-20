@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_RANKER_H_
 
 #include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
-#include "chrome/browser/ui/app_list/search/ranking/types.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "chrome/browser/ui/app_list/search/types.h"
 
 #include <string>
 

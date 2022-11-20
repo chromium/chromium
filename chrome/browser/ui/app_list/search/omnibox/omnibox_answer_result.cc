@@ -150,6 +150,8 @@ OmniboxAnswerResult::OmniboxAnswerResult(
   UpdateIcon();
   UpdateTitleAndDetails();
 
+  set_answer_type(search_result_->answer_type);
+
   if (auto* dark_light_mode_controller = ash::DarkLightModeController::Get())
     dark_light_mode_controller->AddObserver(this);
 }

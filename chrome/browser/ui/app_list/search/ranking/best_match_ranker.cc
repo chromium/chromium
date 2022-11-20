@@ -12,8 +12,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/ranking/constants.h"
-#include "chrome/browser/ui/app_list/search/ranking/types.h"
 #include "chrome/browser/ui/app_list/search/ranking/util.h"
+#include "chrome/browser/ui/app_list/search/types.h"
 
 namespace app_list {
 namespace {

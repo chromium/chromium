@@ -10,8 +10,8 @@
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/app_list/search/ranking/types.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "chrome/browser/ui/app_list/search/types.h"
 
 namespace app_list {
 

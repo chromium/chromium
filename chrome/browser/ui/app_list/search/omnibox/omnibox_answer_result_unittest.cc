@@ -62,6 +62,13 @@ TEST_F(OmniboxAnswerResultTest, CalculatorResult) {
   ASSERT_EQ(details.GetType(), ash::SearchResultTextItemType::kString);
   EXPECT_EQ(details.GetText(), u"4");
   EXPECT_TRUE(details.GetTextTags().empty());
+  EXPECT_EQ(result.answer_type(),
+            crosapi::mojom::SearchResult::AnswerType::kCalculator);
+
+  std::stringstream out;
+  out << result;
+  EXPECT_EQ(out.str(),
+            "omnibox_answer:// {0.00 | nr:0.00 rs:0.00 bm:-1 cr:-1 bi:0}");
 }
 
 TEST_F(OmniboxAnswerResultTest, CalculatorResultNoDescription) {
@@ -89,6 +96,8 @@ TEST_F(OmniboxAnswerResultTest, CalculatorResultNoDescription) {
   ASSERT_EQ(details.GetType(), ash::SearchResultTextItemType::kString);
   EXPECT_EQ(details.GetText(), u"4");
   EXPECT_TRUE(details.GetTextTags().empty());
+  EXPECT_EQ(result.answer_type(),
+            crosapi::mojom::SearchResult::AnswerType::kCalculator);
 }
 
 TEST_F(OmniboxAnswerResultTest, WeatherResult) {
@@ -146,6 +155,9 @@ TEST_F(OmniboxAnswerResultTest, WeatherResult) {
   ASSERT_EQ(details.GetType(), ash::SearchResultTextItemType::kString);
   EXPECT_EQ(details.GetText(), u"additional two");
   EXPECT_TRUE(details.GetTextTags().empty());
+
+  EXPECT_EQ(result.answer_type(),
+            crosapi::mojom::SearchResult::AnswerType::kWeather);
 }
 
 TEST_F(OmniboxAnswerResultTest, AnswerResult) {
@@ -216,6 +228,9 @@ TEST_F(OmniboxAnswerResultTest, AnswerResult) {
   EXPECT_THAT(details[2].GetTextTags(),
               testing::UnorderedElementsAre(
                   TagEquals(Tag(Tag::Style::GREEN, 0, length))));
+
+  EXPECT_EQ(result.answer_type(),
+            crosapi::mojom::SearchResult::AnswerType::kFinance);
 }
 
 TEST_F(OmniboxAnswerResultTest, DictionaryResultMultiline) {
@@ -244,6 +259,81 @@ TEST_F(OmniboxAnswerResultTest, DictionaryResultMultiline) {
                                   AutocompleteInput()),
       u"query");
   EXPECT_TRUE(result.multiline_details());
+  EXPECT_EQ(result.answer_type(),
+            crosapi::mojom::SearchResult::AnswerType::kDictionary);
+}
+
+TEST_F(OmniboxAnswerResultTest, TranslationResult) {
+  // This comes from SuggestionAnswer::AnswerType::ANSWER_TYPE_TRANSLATION.
+  const int kTranslationType = 7;
+  SuggestionAnswer answer;
+  answer.set_type(kTranslationType);
+
+  AutocompleteMatch match;
+  match.answer = answer;
+
+  OmniboxAnswerResult result(
+      /*profile=*/nullptr, /*list_controller=*/nullptr,
+      crosapi::CreateAnswerResult(match, /*controller=*/nullptr,
+                                  u"hello in Spanish", AutocompleteInput()),
+      u"hello in Spanish");
+  EXPECT_EQ(result.answer_type(),
+            crosapi::mojom::SearchResult::AnswerType::kTranslation);
+}
+
+TEST_F(OmniboxAnswerResultTest, CurrencyResult) {
+  // This comes from SuggestionAnswer::AnswerType::ANSWER_TYPE_CURRENCY.
+  const int kCurrencyType = 10;
+  SuggestionAnswer answer;
+  answer.set_type(kCurrencyType);
+
+  AutocompleteMatch match;
+  match.answer = answer;
+
+  OmniboxAnswerResult result(
+      /*profile=*/nullptr, /*list_controller=*/nullptr,
+      crosapi::CreateAnswerResult(match, /*controller=*/nullptr,
+                                  u"100 usd in aud", AutocompleteInput()),
+      u"100 usd in aud");
+  EXPECT_EQ(result.answer_type(),
+            crosapi::mojom::SearchResult::AnswerType::kCurrency);
+}
+
+TEST_F(OmniboxAnswerResultTest, SunriseResult) {
+  // This comes from SuggestionAnswer::AnswerType::ANSWER_TYPE_SUNRISE.
+  const int kSunriseType = 6;
+  SuggestionAnswer answer;
+  answer.set_type(kSunriseType);
+
+  AutocompleteMatch match;
+  match.answer = answer;
+
+  OmniboxAnswerResult result(
+      /*profile=*/nullptr, /*list_controller=*/nullptr,
+      crosapi::CreateAnswerResult(match, /*controller=*/nullptr,
+                                  u"sunrise time in Sydney",
+                                  AutocompleteInput()),
+      u"sunrise time in Sydney");
+  EXPECT_EQ(result.answer_type(),
+            crosapi::mojom::SearchResult::AnswerType::kSunrise);
+}
+
+TEST_F(OmniboxAnswerResultTest, WhenIsResult) {
+  // This comes from SuggestionAnswer::AnswerType::ANSWER_TYPE_WHEN_IS.
+  const int kWhenIsType = 9;
+  SuggestionAnswer answer;
+  answer.set_type(kWhenIsType);
+
+  AutocompleteMatch match;
+  match.answer = answer;
+
+  OmniboxAnswerResult result(
+      /*profile=*/nullptr, /*list_controller=*/nullptr,
+      crosapi::CreateAnswerResult(match, /*controller=*/nullptr,
+                                  u"when is christmas", AutocompleteInput()),
+      u"when is christmas");
+  EXPECT_EQ(result.answer_type(),
+            crosapi::mojom::SearchResult::AnswerType::kWhenIs);
 }
 
 }  // namespace app_list
