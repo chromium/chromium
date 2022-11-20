@@ -95,9 +95,7 @@ PositionTemplate<Strategy> PositionTemplate<Strategy>::EditingPositionOf(
 template <typename Strategy>
 PositionTemplate<Strategy>::PositionTemplate(const Node* anchor_node,
                                              PositionAnchorType anchor_type)
-    : anchor_node_(const_cast<Node*>(anchor_node)),
-      offset_(0),
-      anchor_type_(anchor_type) {
+    : anchor_node_(const_cast<Node*>(anchor_node)), anchor_type_(anchor_type) {
 #if DCHECK_IS_ON()
   DCHECK(anchor_node_);
   DCHECK_NE(anchor_type_, PositionAnchorType::kOffsetInAnchor);
@@ -123,9 +121,7 @@ PositionTemplate<Strategy>::PositionTemplate(const Node* anchor_node,
 template <typename Strategy>
 PositionTemplate<Strategy>::PositionTemplate(const Node* anchor_node,
                                              int offset)
-    : anchor_node_(const_cast<Node*>(anchor_node)),
-      offset_(offset),
-      anchor_type_(PositionAnchorType::kOffsetInAnchor) {
+    : anchor_node_(const_cast<Node*>(anchor_node)), offset_(offset) {
 #if DCHECK_IS_ON()
   DCHECK(CanBeAnchorNode<Strategy>(anchor_node_.Get())) << anchor_node_;
   if (!anchor_node_) {
@@ -148,6 +144,9 @@ template <typename Strategy>
 PositionTemplate<Strategy>::PositionTemplate(const Node& anchor_node,
                                              int offset)
     : PositionTemplate(&anchor_node, offset) {}
+
+template <typename Strategy>
+PositionTemplate<Strategy>::PositionTemplate() = default;
 
 template <typename Strategy>
 PositionTemplate<Strategy>::PositionTemplate(const PositionTemplate&) = default;

@@ -50,8 +50,7 @@ class PositionTemplate {
   DISALLOW_NEW();
 
  public:
-  PositionTemplate()
-      : offset_(0), anchor_type_(PositionAnchorType::kOffsetInAnchor) {}
+  PositionTemplate();
 
   static const TreeScope* CommonAncestorTreeScope(
       const PositionTemplate<Strategy>&,
@@ -232,8 +231,8 @@ class PositionTemplate {
   // EditingIgnoresContent(anchor_node_) returns true, then other places in
   // editing will treat offset_ == 0 as "before the anchor" and offset_ > 0 as
   // "after the anchor node".  See ParentAnchoredEquivalent for more info.
-  int offset_;
-  PositionAnchorType anchor_type_;
+  int offset_ = 0;
+  PositionAnchorType anchor_type_ = PositionAnchorType::kOffsetInAnchor;
 };
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT
