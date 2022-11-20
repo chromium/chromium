@@ -154,6 +154,7 @@ class SessionService : public SessionServiceBase {
   FRIEND_TEST_ALL_PREFIXES(SessionServiceTest, WorkspaceSavedOnOpened);
   FRIEND_TEST_ALL_PREFIXES(SessionServiceTest, VisibleOnAllWorkspaces);
   FRIEND_TEST_ALL_PREFIXES(NoStartupWindowTest, DontInitSessionServiceForApps);
+  FRIEND_TEST_ALL_PREFIXES(SessionServiceTest, PinnedAfterReset);
 
   using IdToRange = std::map<SessionID, std::pair<int, int>>;
 

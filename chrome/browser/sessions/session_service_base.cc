@@ -560,6 +560,11 @@ void SessionServiceBase::BuildCommandsForTab(
                                                    index_in_window));
   }
 
+  if (is_pinned) {
+    command_storage_manager()->AppendRebuildCommand(
+        sessions::CreatePinnedStateCommand(session_id, true));
+  }
+
   // Record the association between the sessionStorage namespace and the tab.
   content::SessionStorageNamespace* session_storage_namespace =
       tab->GetController().GetDefaultSessionStorageNamespace();

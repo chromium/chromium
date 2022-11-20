@@ -42,6 +42,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/sessions/content/content_test_helper.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sessions/core/session_command.h"
 #include "components/sessions/core/session_types.h"
@@ -1293,6 +1294,37 @@ TEST_F(SessionServiceTest, VisibleOnAllWorkspaces) {
     }
   }
   EXPECT_TRUE(found_visible_on_all_workspaces_command);
+}
+
+TEST_F(SessionServiceTest, PinnedAfterReset) {
+  AddTab(browser(), GURL("http://foo/1"));
+  browser()->tab_strip_model()->SetTabPinned(0, true);
+  // Force a reset, to verify that SessionService::BuildCommandsForBrowser
+  // handles pinned tabs correctly.
+  service()->ResetFromCurrentBrowsers();
+
+  sessions::CommandStorageManager* command_storage_manager =
+      service()->GetCommandStorageManagerForTest();
+  const std::vector<std::unique_ptr<sessions::SessionCommand>>&
+      pending_commands = command_storage_manager->pending_commands();
+  bool found_pinned_command = false;
+
+  sessions::SessionTabHelper* session_tab_helper =
+      sessions::SessionTabHelper::FromWebContents(
+          browser()->tab_strip_model()->GetWebContentsAt(0));
+  std::unique_ptr<sessions::SessionCommand> pinned_command =
+      sessions::CreatePinnedStateCommand(session_tab_helper->session_id(),
+                                         true);
+
+  for (const auto& command : pending_commands) {
+    if (command->id() == pinned_command->id() &&
+        command->contents_as_string_piece() ==
+            pinned_command->contents_as_string_piece()) {
+      found_pinned_command = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_pinned_command);
 }
 
 // Functions used by GetSessionsAndDestroy.

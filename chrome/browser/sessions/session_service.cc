@@ -588,11 +588,6 @@ void SessionService::BuildCommandsForTab(
       sessions::SessionTabHelper::FromWebContents(tab);
   const SessionID& session_id(session_tab_helper->session_id());
 
-  if (is_pinned) {
-    command_storage_manager()->AppendRebuildCommand(
-        sessions::CreatePinnedStateCommand(session_id, true));
-  }
-
   const blink::UserAgentOverride& ua_override = tab->GetUserAgentOverride();
 
   if (!ua_override.ua_string_override.empty()) {
