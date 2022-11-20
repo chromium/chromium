@@ -488,16 +488,6 @@ bool PositionTemplate<Strategy>::AtStartOfTree() const {
   return !Strategy::Parent(*AnchorNode()) && offset_ == 0;
 }
 
-template <typename Strategy>
-bool PositionTemplate<Strategy>::AtEndOfTree() const {
-  if (IsNull())
-    return true;
-  // TODO(yosin) We should use |Strategy::lastOffsetForEditing()| instead of
-  // DOM tree version.
-  return !Strategy::Parent(*AnchorNode()) &&
-         offset_ >= EditingStrategy::LastOffsetForEditing(AnchorNode());
-}
-
 // static
 template <typename Strategy>
 PositionTemplate<Strategy> PositionTemplate<Strategy>::InParentBeforeNode(

@@ -196,7 +196,6 @@ class PositionTemplate {
   bool AtLastEditingPositionForNode() const;
 
   bool AtStartOfTree() const;
-  bool AtEndOfTree() const;
 
   static PositionTemplate<Strategy> BeforeNode(const Node& anchor_node);
   static PositionTemplate<Strategy> AfterNode(const Node& anchor_node);
