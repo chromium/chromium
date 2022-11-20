@@ -1753,27 +1753,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.CodecImage.CodecBufferWaitCoordinator.FrameTimedOut"
-    enum="BooleanTimedOut" expires_after="M95">
-  <owner>vikassoni@chromium.org</owner>
-  <owner>liberato@chromium.org</owner>
-  <summary>
-    Whether we exceeded the timeout in CodecBufferWaitCoordinator::
-    WaitForFrameAvailable and will proceed without a frame ready.
-  </summary>
-</histogram>
-
-<histogram name="Media.CodecImage.CodecBufferWaitCoordinator.WaitTimeForFrame"
-    units="ms" expires_after="M95">
-  <owner>vikassoni@chromium.org</owner>
-  <owner>liberato@chromium.org</owner>
-  <summary>
-    Time spent waiting for a frame to become available in a Non Overlay
-    (TextureOwner mode) so that MediaCodec can render it. This time is recorded
-    before the frame is rendered.
-  </summary>
-</histogram>
-
 <histogram name="Media.ConditionalFocus.Decision"
     enum="ConditionalFocusDecision" expires_after="2023-07-18">
   <owner>eladalon@chromium.org</owner>
