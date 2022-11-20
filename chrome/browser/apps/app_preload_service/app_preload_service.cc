@@ -5,16 +5,21 @@
 #include "chrome/browser/apps/app_preload_service/app_preload_service.h"
 
 #include <memory>
+#include <vector>
 
-#include "base/bind.h"
+#include "base/barrier_callback.h"
+#include "base/containers/cxx20_erase_set.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service_factory.h"
 #include "chrome/browser/apps/app_preload_service/device_info_manager.h"
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
+#include "chrome/browser/apps/app_preload_service/web_app_preload_installer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 
 namespace {
 
@@ -42,7 +47,8 @@ static constexpr char kApsStateManager[] =
 AppPreloadService::AppPreloadService(Profile* profile)
     : profile_(profile),
       server_connector_(std::make_unique<AppPreloadServerConnector>()),
-      device_info_manager_(std::make_unique<DeviceInfoManager>(profile)) {
+      device_info_manager_(std::make_unique<DeviceInfoManager>(profile)),
+      web_app_installer_(std::make_unique<WebAppPreloadInstaller>(profile)) {
   // Check to see if the service has been run before.
   auto is_first_run = GetStateManager().FindBool(kFirstLoginFlowCompletedKey);
   if (is_first_run == absl::nullopt) {
@@ -77,6 +83,26 @@ void AppPreloadService::StartAppInstallationForFirstLogin(
 
 void AppPreloadService::OnGetAppsForFirstLoginCompleted(
     std::vector<PreloadAppDefinition> apps) {
+  // Filter out any apps that should not be installed.
+  base::EraseIf(apps, [](const PreloadAppDefinition& app) {
+    return app.GetPlatform() != AppType::kWeb;
+  });
+
+  // Request installation of any remaining apps. If there are no apps to
+  // install, OnAllAppInstallationFinished will be called immediately.
+  const auto install_barrier_callback_ = base::BarrierCallback<bool>(
+      apps.size(),
+      base::BindOnce(&AppPreloadService::OnAllAppInstallationFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  for (const PreloadAppDefinition& app : apps) {
+    web_app_installer_->InstallApp(app, install_barrier_callback_);
+  }
+}
+
+void AppPreloadService::OnAllAppInstallationFinished(
+    const std::vector<bool>& results) {
+  // TODO(b/259152331): Handle failed app installs.
   ScopedDictPrefUpdate(profile_->GetPrefs(), prefs::kApsStateManager)
       ->Set(kFirstLoginFlowCompletedKey, true);
 

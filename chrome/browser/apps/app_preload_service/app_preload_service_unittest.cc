@@ -12,11 +12,18 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service_factory.h"
 #include "chrome/browser/apps/app_preload_service/proto/app_provisioning.pb.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_update.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -63,6 +70,8 @@ class AppPreloadServiceTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &url_loader_factory_));
     profile_ = profile_builder.Build();
+
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(GetProfile());
   }
 
   Profile* GetProfile() { return profile_.get(); }
@@ -134,6 +143,40 @@ TEST_F(AppPreloadServiceTest, FirstLoginPrefSet) {
                      base::Unretained(this), run_loop.QuitClosure());
 
   run_loop.Run();
+}
+
+TEST_F(AppPreloadServiceTest, WebAppInstall) {
+  proto::AppProvisioningResponse response;
+  auto* app = response.add_apps_to_install();
+  app->set_name("Peanut Types");
+  app->set_platform(proto::AppProvisioningResponse::PLATFORM_WEB);
+  app->set_install_reason(proto::AppProvisioningResponse::INSTALL_REASON_OEM);
+  auto* web_extras = app->mutable_web_extras();
+  web_extras->set_start_url("https://peanuttypes.com/app");
+  web_extras->set_scope("https://peanuttypes.com/");
+  web_extras->set_display_mode(
+      proto::AppProvisioningResponse::DISPLAY_MODE_STANDALONE);
+
+  url_loader_factory_.AddResponse(
+      AppPreloadServerConnector::GetServerUrl().spec(),
+      response.SerializeAsString());
+
+  base::test::TestFuture<void> result;
+  auto* service = AppPreloadService::Get(GetProfile());
+  service->check_first_pref_set_callback_ = result.GetCallback();
+  ASSERT_TRUE(result.Wait());
+
+  auto app_id = web_app::GenerateAppId(absl::nullopt,
+                                       GURL("https://peanuttypes.com/app"));
+  bool found =
+      AppServiceProxyFactory::GetForProfile(GetProfile())
+          ->AppRegistryCache()
+          .ForOneApp(app_id, [](const AppUpdate& update) {
+            EXPECT_EQ(update.Name(), "Peanut Types");
+            EXPECT_EQ(update.InstallReason(), InstallReason::kOem);
+            EXPECT_EQ(update.PublisherId(), "https://peanuttypes.com/app");
+          });
+  ASSERT_TRUE(found);
 }
 
 }  // namespace apps

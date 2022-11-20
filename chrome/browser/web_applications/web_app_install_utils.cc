@@ -1081,7 +1081,7 @@ void ApplyParamsToWebAppInstallInfo(const WebAppInstallParams& install_params,
   if (install_params.user_display_mode.has_value())
     web_app_info.user_display_mode = install_params.user_display_mode;
 
-  if (!install_params.override_manifest_id.has_value())
+  if (install_params.override_manifest_id.has_value())
     web_app_info.manifest_id = install_params.override_manifest_id;
 
   // If `additional_search_terms` was a manifest property, it would be

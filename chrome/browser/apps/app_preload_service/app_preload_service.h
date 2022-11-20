@@ -24,8 +24,8 @@ class PrefRegistrySyncable;
 namespace apps {
 
 class DeviceInfoManager;
-
 class PreloadAppDefinition;
+class WebAppPreloadInstaller;
 
 struct DeviceInfo;
 
@@ -50,15 +50,18 @@ class AppPreloadService : public KeyedService {
  private:
   friend class AppPreloadServiceTest;
   FRIEND_TEST_ALL_PREFIXES(AppPreloadServiceTest, FirstLoginPrefSet);
+  FRIEND_TEST_ALL_PREFIXES(AppPreloadServiceTest, WebAppInstall);
 
   // Processes the list of apps retrieved by the server connector.
   void OnGetAppsForFirstLoginCompleted(std::vector<PreloadAppDefinition> apps);
+  void OnAllAppInstallationFinished(const std::vector<bool>& results);
 
   const base::Value::Dict& GetStateManager() const;
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<AppPreloadServerConnector> server_connector_;
   std::unique_ptr<DeviceInfoManager> device_info_manager_;
+  std::unique_ptr<WebAppPreloadInstaller> web_app_installer_;
 
   // For testing
   base::OnceClosure check_first_pref_set_callback_;
