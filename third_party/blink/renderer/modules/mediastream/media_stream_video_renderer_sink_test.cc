@@ -109,8 +109,8 @@ class MediaStreamVideoRendererSinkTest : public testing::Test {
 
  private:
   void RunIOUntilIdle() const {
-    // |media_stream_component_| uses IO thread to send frames to sinks. Make
-    // sure that tasks on IO thread are completed before moving on.
+    // |media_stream_component_| uses video task runner to send frames to sinks.
+    // Make sure that tasks on video task runner are completed before moving on.
     base::RunLoop run_loop;
     Platform::Current()->GetIOTaskRunner()->PostTaskAndReply(
         FROM_HERE, base::BindOnce([] {}), run_loop.QuitClosure());

@@ -283,15 +283,17 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
     auto deliver_frame = [&]() {
       platform_support_->GetIOTaskRunner()->PostTask(
           FROM_HERE,
-          base::BindOnce(&VideoTrackAdapter::DeliverFrameOnIO, adapter_, frame,
+          base::BindOnce(&VideoTrackAdapter::DeliverFrameOnVideoTaskRunner,
+                         adapter_, frame,
                          std::vector<scoped_refptr<media::VideoFrame>>(),
                          estimated_capture_time));
     };
 
     frame_received_.Reset();
-    // Bounce the call to DeliverFrameOnIO off |testing_render_thread_| to
-    // synchronize with the AddTrackOnIO / ReconfigureTrackOnIO that would be
-    // invoked through ConfigureTrack.
+    // Bounce the call to DeliverFrameOnVideoTaskRunner off
+    // |testing_render_thread_| to synchronize with the
+    // AddTrackOnVideoTaskRunner / ReconfigureTrackOnVideoTaskRunner that would
+    // be invoked through ConfigureTrack.
     testing_render_thread_.task_runner()->PostTask(
         FROM_HERE, base::BindLambdaForTesting(deliver_frame));
     frame_received_.Wait();
@@ -536,7 +538,7 @@ TEST_F(VideoTrackAdapterEncodedTest, DeliverEncodedVideoFrame) {
   base::OnceClosure quit_closure = run_loop.QuitClosure();
   platform_support_->GetIOTaskRunner()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
-        adapter_->DeliverEncodedVideoFrameOnIO(
+        adapter_->DeliverEncodedVideoFrameOnVideoTaskRunner(
             base::MakeRefCounted<MockEncodedVideoFrame>(), base::TimeTicks());
         std::move(quit_closure).Run();
       }));

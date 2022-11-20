@@ -93,14 +93,14 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
   void RemoveCropVersionCallback(uint32_t crop_version) override;
 
   // Add |sink| to receive state changes on the main render thread and video
-  // frames in the |callback| method on the IO-thread.
+  // frames in the |callback| method on the video task runner.
   // |callback| will be reset on the render thread.
   void AddSink(WebMediaStreamSink* sink,
                const VideoCaptureDeliverFrameCB& callback,
                MediaStreamVideoSink::IsSecure is_secure,
                MediaStreamVideoSink::UsesAlpha uses_alpha) override;
   // Sets |sink|'s dropped frame notification callback which will receive calls
-  // on the IO thread. |callback| will be reset on the render thread.
+  // on the video task runner. |callback| will be reset on the render thread.
   // Note: the method needs to be called after a sink has been added.
   void SetSinkNotifyFrameDroppedCallback(
       WebMediaStreamSink* sink,
@@ -110,9 +110,9 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
   // Returns the number of currently connected sinks.
   size_t CountSinks() const;
 
-  // Adds |callback| for encoded frame output on the IO thread. The function
-  // will cause generation of a keyframe from the source.
-  // Encoded sinks are not secure.
+  // Adds |callback| for encoded frame output on the video task runner. The
+  // function will cause generation of a keyframe from the source. Encoded sinks
+  // are not secure.
   void AddEncodedSink(WebMediaStreamSink* sink, EncodedVideoFrameCB callback);
 
   // Removes encoded callbacks associated with |sink|.
@@ -218,7 +218,7 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
   Vector<WebMediaStreamSink*> encoded_sinks_;
 
   // |FrameDeliverer| is an internal helper object used for delivering video
-  // frames on the IO-thread using callbacks to all registered tracks.
+  // frames on the video task runner using callbacks to all registered tracks.
   class FrameDeliverer;
   scoped_refptr<FrameDeliverer> frame_deliverer_;
 

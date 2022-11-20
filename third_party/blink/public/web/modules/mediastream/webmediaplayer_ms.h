@@ -81,7 +81,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
       WebMediaPlayerDelegate* delegate,
       std::unique_ptr<media::MediaLog> media_log,
       scoped_refptr<base::SingleThreadTaskRunner> main_render_task_runner,
-      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> video_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
       scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       scoped_refptr<base::TaskRunner> worker_task_runner,
@@ -304,7 +304,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   std::unique_ptr<MediaStreamRendererFactory> renderer_factory_;
 
   const scoped_refptr<base::SingleThreadTaskRunner> main_render_task_runner_;
-  const scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> video_task_runner_;
   const scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
 

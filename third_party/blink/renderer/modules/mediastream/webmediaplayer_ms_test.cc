@@ -431,7 +431,7 @@ class MockRenderFactory : public MediaStreamRendererFactory {
   scoped_refptr<WebMediaStreamVideoRenderer> GetVideoRenderer(
       const WebMediaStream& web_stream,
       const WebMediaStreamVideoRenderer::RepaintCB& repaint_cb,
-      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> video_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> main_render_task_runner)
       override;
 
@@ -469,7 +469,7 @@ class MockRenderFactory : public MediaStreamRendererFactory {
 scoped_refptr<WebMediaStreamVideoRenderer> MockRenderFactory::GetVideoRenderer(
     const WebMediaStream& web_stream,
     const WebMediaStreamVideoRenderer::RepaintCB& repaint_cb,
-    scoped_refptr<base::SequencedTaskRunner> io_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> video_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> main_render_task_runner) {
   if (!support_video_renderer_)
     return nullptr;

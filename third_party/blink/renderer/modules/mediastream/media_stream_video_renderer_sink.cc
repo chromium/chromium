@@ -26,10 +26,10 @@ const int kMinFrameSize = 2;
 namespace blink {
 
 // FrameDeliverer is responsible for delivering frames received on
-// OnVideoFrame() to |repaint_cb_| on the IO thread.
+// OnVideoFrame() to |repaint_cb_| on the video task runner.
 //
 // It is created on the main thread, but methods should be called and class
-// should be destructed on the IO thread.
+// should be destructed on the video task runner.
 class MediaStreamVideoRendererSink::FrameDeliverer {
  public:
   FrameDeliverer(
@@ -43,21 +43,21 @@ class MediaStreamVideoRendererSink::FrameDeliverer {
         state_(kStopped),
         frame_size_(kMinFrameSize, kMinFrameSize),
         emit_frame_drop_events_(true) {
-    DETACH_FROM_SEQUENCE(io_sequence_checker_);
+    DETACH_FROM_SEQUENCE(video_sequence_checker_);
   }
 
   FrameDeliverer(const FrameDeliverer&) = delete;
   FrameDeliverer& operator=(const FrameDeliverer&) = delete;
 
   ~FrameDeliverer() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
     DCHECK(state_ == kStarted || state_ == kPaused) << state_;
   }
 
   void OnVideoFrame(scoped_refptr<media::VideoFrame> frame,
                     std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
                     base::TimeTicks /*current_time*/) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
     DCHECK(frame);
     TRACE_EVENT_INSTANT1("webrtc",
                          "MediaStreamVideoRendererSink::"
@@ -84,7 +84,7 @@ class MediaStreamVideoRendererSink::FrameDeliverer {
   }
 
   void RenderEndOfStream() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
     // This is necessary to make sure audio can play if the video tag src is a
     // MediaStream video track that has been rejected or ended. It also ensure
     // that the renderer doesn't hold a reference to a real video frame if no
@@ -103,19 +103,19 @@ class MediaStreamVideoRendererSink::FrameDeliverer {
   }
 
   void Start() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
     DCHECK_EQ(state_, kStopped);
     SetState(kStarted);
   }
 
   void Resume() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
     if (state_ == kPaused)
       SetState(kStarted);
   }
 
   void Pause() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
     if (state_ == kStarted)
       SetState(kPaused);
   }
@@ -136,7 +136,7 @@ class MediaStreamVideoRendererSink::FrameDeliverer {
   bool emit_frame_drop_events_;
 
   // Used for DCHECKs to ensure method calls are executed on the correct thread.
-  SEQUENCE_CHECKER(io_sequence_checker_);
+  SEQUENCE_CHECKER(video_sequence_checker_);
 };
 
 MediaStreamVideoRendererSink::MediaStreamVideoRendererSink(
@@ -171,9 +171,9 @@ void MediaStreamVideoRendererSink::Start() {
 
   MediaStreamVideoSink::ConnectToTrack(
       WebMediaStreamTrack(video_component_.Get()),
-      // This callback is run on IO thread. It is safe to use base::Unretained
-      // here because |frame_receiver_| will be destroyed on IO thread after
-      // sink is disconnected from track.
+      // This callback is run on video task runner. It is safe to use
+      // base::Unretained here because |frame_receiver_| will be destroyed on
+      // video task runner after sink is disconnected from track.
       ConvertToBaseRepeatingCallback(WTF::CrossThreadBindRepeating(
           &FrameDeliverer::OnVideoFrame,
           WTF::CrossThreadUnretained(frame_deliverer_.get()))),

@@ -12,7 +12,7 @@ namespace blink {
 namespace {
 
 // Calls to these methods must be done on the main render thread.
-// Note that |callback| for frame delivery happens on the IO thread.
+// Note that |callback| for frame delivery happens on the video task runner.
 // Warning: Calling RemoveSinkFromMediaStreamTrack does not immediately stop
 // frame delivery through the |callback|, since frames are being delivered on
 // a different thread.

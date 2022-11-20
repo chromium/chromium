@@ -79,12 +79,14 @@ void MediaStreamVideoSource::AddTrack(
       state_ = STARTING;
       StartSourceImpl(
           ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-              &VideoTrackAdapter::DeliverFrameOnIO, GetTrackAdapter())),
-          ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-              &VideoTrackAdapter::DeliverEncodedVideoFrameOnIO,
+              &VideoTrackAdapter::DeliverFrameOnVideoTaskRunner,
               GetTrackAdapter())),
           ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-              &VideoTrackAdapter::NewCropVersionOnIO, GetTrackAdapter()))
+              &VideoTrackAdapter::DeliverEncodedVideoFrameOnVideoTaskRunner,
+              GetTrackAdapter())),
+          ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+              &VideoTrackAdapter::NewCropVersionOnVideoTaskRunner,
+              GetTrackAdapter()))
 
       );
       break;
@@ -229,7 +231,7 @@ void MediaStreamVideoSource::StopForRestart(RestartCallback callback,
                                     : gfx::Size(kDefaultWidth, kDefaultHeight));
     PostCrossThreadTask(
         *video_task_runner(), FROM_HERE,
-        CrossThreadBindOnce(&VideoTrackAdapter::DeliverFrameOnIO,
+        CrossThreadBindOnce(&VideoTrackAdapter::DeliverFrameOnVideoTaskRunner,
                             GetTrackAdapter(), black_frame,
                             std::vector<scoped_refptr<media::VideoFrame>>(),
                             base::TimeTicks::Now()));

@@ -35,7 +35,7 @@ class VideoTrackAdapterSettings;
 // The constraints can be set as max width and height as well as max and min
 // aspect ratio.
 // Video frames are delivered to a track using a VideoCaptureDeliverFrameCB on
-// the IO-thread.
+// the video task runner.
 // Adaptations is done by wrapping the original media::VideoFrame in a new
 // media::VideoFrame with a new visible_rect and natural_size.
 class MODULES_EXPORT VideoTrackAdapter
@@ -69,21 +69,22 @@ class MODULES_EXPORT VideoTrackAdapter
                         const VideoTrackAdapterSettings& settings);
 
   // Delivers |frame| to all tracks that have registered a callback.
-  // Must be called on the IO-thread.
-  void DeliverFrameOnIO(
+  // Must be called on the video task runner.
+  void DeliverFrameOnVideoTaskRunner(
       scoped_refptr<media::VideoFrame> video_frame,
       std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
       base::TimeTicks estimated_capture_time);
 
   // Delivers |encoded_frame| to all tracks that have registered a callback.
-  // Must be called on the IO-thread.
-  void DeliverEncodedVideoFrameOnIO(scoped_refptr<EncodedVideoFrame> frame,
-                                    base::TimeTicks estimated_capture_time);
+  // Must be called on the video task runner.
+  void DeliverEncodedVideoFrameOnVideoTaskRunner(
+      scoped_refptr<EncodedVideoFrame> frame,
+      base::TimeTicks estimated_capture_time);
 
   // Called when it is guaranteed that all subsequent frames delivered
-  // over DeliverFrameOnIO() will have a crop version that is
+  // over DeliverFrameOnVideoTaskRunner() will have a crop version that is
   // equal-to-or-greater-than the given crop version.
-  void NewCropVersionOnIO(uint32_t crop_version);
+  void NewCropVersionOnVideoTaskRunner(uint32_t crop_version);
 
   base::SequencedTaskRunner* video_task_runner() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -91,8 +92,9 @@ class MODULES_EXPORT VideoTrackAdapter
   }
 
   // Start monitor that frames are delivered to this object. I.E, that
-  // |DeliverFrameOnIO| is called with a frame rate of |source_frame_rate|.
-  // |on_muted_callback| is triggered on the main render thread.
+  // |DeliverFrameOnVideoTaskRunner| is called with a frame rate of
+  // |source_frame_rate|. |on_muted_callback| is triggered on the main render
+  // thread.
   void StartFrameMonitoring(double source_frame_rate,
                             const OnMutedCallback& on_muted_callback);
   void StopFrameMonitoring();
@@ -137,7 +139,7 @@ class MODULES_EXPORT VideoTrackAdapter
       WTF::CrossThreadFunction<void(gfx::Size frame_size, double frame_rate)>;
   using VideoTrackFormatInternalCallback =
       WTF::CrossThreadFunction<void(const media::VideoCaptureFormat&)>;
-  void AddTrackOnIO(
+  void AddTrackOnVideoTaskRunner(
       const MediaStreamVideoTrack* track,
       VideoCaptureDeliverFrameInternalCallback frame_callback,
       VideoCaptureNotifyFrameDroppedInternalCallback
@@ -148,20 +150,22 @@ class MODULES_EXPORT VideoTrackAdapter
       VideoTrackFormatInternalCallback track_callback,
       const VideoTrackAdapterSettings& settings);
 
-  void RemoveTrackOnIO(const MediaStreamVideoTrack* track);
-  void ReconfigureTrackOnIO(const MediaStreamVideoTrack* track,
-                            const VideoTrackAdapterSettings& settings);
+  void RemoveTrackOnVideoTaskRunner(const MediaStreamVideoTrack* track);
+  void ReconfigureTrackOnVideoTaskRunner(
+      const MediaStreamVideoTrack* track,
+      const VideoTrackAdapterSettings& settings);
 
   using OnMutedInternalCallback =
       WTF::CrossThreadFunction<void(bool mute_state)>;
-  void StartFrameMonitoringOnIO(OnMutedInternalCallback on_muted_state_callback,
-                                double source_frame_rate);
-  void StopFrameMonitoringOnIO();
-  void SetSourceFrameSizeOnIO(const gfx::Size& frame_size);
+  void StartFrameMonitoringOnVideoTaskRunner(
+      OnMutedInternalCallback on_muted_state_callback,
+      double source_frame_rate);
+  void StopFrameMonitoringOnVideoTaskRunner();
+  void SetSourceFrameSizeOnVideoTaskRunner(const gfx::Size& frame_size);
 
   // Compare |old_frame_counter_snapshot_| with the current |frame_counter_|,
   // and inform of the situation (muted, not muted) via |on_muted_callback_|.
-  void CheckFramesReceivedOnIO();
+  void CheckFramesReceivedOnVideoTaskRunner();
 
   // |thread_checker_| is bound to the main render thread.
   SEQUENCE_CHECKER(sequence_checker_);
@@ -174,29 +178,32 @@ class MODULES_EXPORT VideoTrackAdapter
   // VideoCaptureDeliverFrameCB is released on the main render thread.
   const scoped_refptr<base::SingleThreadTaskRunner> renderer_task_runner_;
 
-  // VideoFrameResolutionAdapter is an inner class that lives on the IO-thread.
-  // It does the resolution adaptation and delivers frames to all registered
-  // tracks.
+  // VideoFrameResolutionAdapter is an inner class that lives on the video task
+  // runner. It does the resolution adaptation and delivers frames to all
+  // registered tracks.
   class VideoFrameResolutionAdapter;
   using FrameAdapters = WTF::Vector<scoped_refptr<VideoFrameResolutionAdapter>>;
   FrameAdapters adapters_;
 
-  // Is non-null while frame monitoring. It is only accessed on the IO-thread.
+  // Is non-null while frame monitoring. It is only accessed on the video task
+  // runner.
   std::unique_ptr<LowPrecisionTimer> monitoring_frame_rate_timer_;
   OnMutedInternalCallback on_muted_callback_;
 
   // Keeps track of it frames have been received. It is only accessed on the
-  // IO-thread.
+  // video task runner.
   bool muted_state_;
 
-  // Running frame counter, accessed on the IO-thread.
+  // Running frame counter, accessed on the video task runner.
   uint64_t frame_counter_;
   uint64_t old_frame_counter_snapshot_;
 
-  // Frame rate configured on the video source, accessed on the IO-thread.
+  // Frame rate configured on the video source, accessed on the video task
+  // runner.
   float source_frame_rate_;
 
-  // Resolution configured on the video source, accessed on the IO-thread.
+  // Resolution configured on the video source, accessed on the video task
+  // runner.
   absl::optional<gfx::Size> source_frame_size_;
 };
 

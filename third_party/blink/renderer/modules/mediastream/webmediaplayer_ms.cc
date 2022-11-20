@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -149,10 +150,10 @@ const gfx::Size WebMediaPlayerMS::kUseGpuMemoryBufferVideoFramesMinResolution =
 #endif  // BUILDFLAG(IS_WIN)
 
 // FrameDeliverer is responsible for delivering frames received on
-// the IO thread by calling of EnqueueFrame() method of |compositor_|.
+// the video task runner by calling of EnqueueFrame() method of |compositor_|.
 //
 // It is created on the main thread, but methods should be called and class
-// should be destructed on the IO thread.
+// should be destructed on the video task runner.
 class WebMediaPlayerMS::FrameDeliverer {
  public:
   using RepaintCB = WTF::CrossThreadRepeatingFunction<
@@ -168,7 +169,7 @@ class WebMediaPlayerMS::FrameDeliverer {
         media_task_runner_(media_task_runner),
         worker_task_runner_(worker_task_runner),
         gpu_factories_(gpu_factories) {
-    DETACH_FROM_THREAD(io_thread_checker_);
+    DETACH_FROM_SEQUENCE(video_sequence_checker_);
 
     CreateGpuMemoryBufferPoolIfNecessary();
   }
@@ -177,12 +178,12 @@ class WebMediaPlayerMS::FrameDeliverer {
   FrameDeliverer& operator=(const FrameDeliverer&) = delete;
 
   ~FrameDeliverer() {
-    DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
     FreeGpuMemoryBufferPool();
   }
 
   void OnVideoFrame(scoped_refptr<media::VideoFrame> frame) {
-    DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
 
 // On Android, stop passing frames.
 #if BUILDFLAG(IS_ANDROID)
@@ -239,7 +240,7 @@ class WebMediaPlayerMS::FrameDeliverer {
   }
 
   void SetRenderFrameSuspended(bool render_frame_suspended) {
-    DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
     render_frame_suspended_ = render_frame_suspended;
     if (render_frame_suspended_) {
       // Drop GpuMemoryBuffer pool to free memory.
@@ -270,7 +271,7 @@ class WebMediaPlayerMS::FrameDeliverer {
   }
 
   void FreeGpuMemoryBufferPool() {
-    DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
 
     if (gpu_memory_buffer_pool_) {
       DropCurrentPoolTasks();
@@ -281,7 +282,7 @@ class WebMediaPlayerMS::FrameDeliverer {
 
   void EnqueueFrame(media::VideoFrame::ID original_frame_id,
                     scoped_refptr<media::VideoFrame> frame) {
-    DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
 
     {
       bool tracing_enabled = false;
@@ -301,7 +302,7 @@ class WebMediaPlayerMS::FrameDeliverer {
   }
 
   void DropCurrentPoolTasks() {
-    DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
     DCHECK(gpu_memory_buffer_pool_);
 
     if (!weak_factory_for_pool_.HasWeakPtrs())
@@ -332,7 +333,7 @@ class WebMediaPlayerMS::FrameDeliverer {
   media::GpuVideoAcceleratorFactories* const gpu_factories_;
 
   // Used for DCHECKs to ensure method calls are executed on the correct thread.
-  THREAD_CHECKER(io_thread_checker_);
+  SEQUENCE_CHECKER(video_sequence_checker_);
 
   base::WeakPtrFactory<FrameDeliverer> weak_factory_for_pool_{this};
   base::WeakPtrFactory<FrameDeliverer> weak_factory_{this};
@@ -344,7 +345,7 @@ WebMediaPlayerMS::WebMediaPlayerMS(
     WebMediaPlayerDelegate* delegate,
     std::unique_ptr<media::MediaLog> media_log,
     scoped_refptr<base::SingleThreadTaskRunner> main_render_task_runner,
-    scoped_refptr<base::SequencedTaskRunner> io_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> video_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
     scoped_refptr<base::SequencedTaskRunner> media_task_runner,
     scoped_refptr<base::TaskRunner> worker_task_runner,
@@ -364,7 +365,7 @@ WebMediaPlayerMS::WebMediaPlayerMS(
       media_log_(std::move(media_log)),
       renderer_factory_(std::make_unique<MediaStreamRendererFactory>()),
       main_render_task_runner_(std::move(main_render_task_runner)),
-      io_task_runner_(std::move(io_task_runner)),
+      video_task_runner_(std::move(video_task_runner)),
       compositor_task_runner_(std::move(compositor_task_runner)),
       media_task_runner_(std::move(media_task_runner)),
       worker_task_runner_(std::move(worker_task_runner)),
@@ -411,7 +412,7 @@ WebMediaPlayerMS::~WebMediaPlayerMS() {
   }
 
   if (frame_deliverer_)
-    io_task_runner_->DeleteSoon(FROM_HERE, frame_deliverer_.release());
+    video_task_runner_->DeleteSoon(FROM_HERE, frame_deliverer_.release());
 
   if (compositor_)
     compositor_->StopUsingProvider();
@@ -462,7 +463,7 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
   watch_time_reporter_.reset();
 
   compositor_ = base::MakeRefCounted<WebMediaPlayerMSCompositor>(
-      compositor_task_runner_, io_task_runner_, web_stream_,
+      compositor_task_runner_, video_task_runner_, web_stream_,
       std::move(submitter_), use_surface_layer_, weak_this_);
 
   // We can receive a call to RequestVideoFrameCallback() before |compositor_|
@@ -489,7 +490,7 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
   video_frame_provider_ = renderer_factory_->GetVideoRenderer(
       web_stream_,
       ConvertToBaseRepeatingCallback(frame_deliverer_->GetRepaintCallback()),
-      io_task_runner_, main_render_task_runner_);
+      video_task_runner_, main_render_task_runner_);
 
   if (internal_frame_->web_frame()) {
     WebURL url = source.GetAsURL();
@@ -691,7 +692,7 @@ void WebMediaPlayerMS::ReloadVideo() {
           web_stream_,
           ConvertToBaseRepeatingCallback(
               frame_deliverer_->GetRepaintCallback()),
-          io_task_runner_, main_render_task_runner_);
+          video_task_runner_, main_render_task_runner_);
       DCHECK(video_frame_provider_);
       video_frame_provider_->Start();
       break;
@@ -1103,7 +1104,7 @@ void WebMediaPlayerMS::OnFrameHidden() {
   // back, so we can't rely on |render_frame_suspended_| being false here.
   if (frame_deliverer_ && !in_picture_in_picture) {
     PostCrossThreadTask(
-        *io_task_runner_, FROM_HERE,
+        *video_task_runner_, FROM_HERE,
         CrossThreadBindOnce(&FrameDeliverer::SetRenderFrameSuspended,
                             CrossThreadUnretained(frame_deliverer_.get()),
                             true));
@@ -1137,7 +1138,7 @@ void WebMediaPlayerMS::SuspendForFrameClosed() {
 
   if (frame_deliverer_) {
     PostCrossThreadTask(
-        *io_task_runner_, FROM_HERE,
+        *video_task_runner_, FROM_HERE,
         CrossThreadBindOnce(&FrameDeliverer::SetRenderFrameSuspended,
                             CrossThreadUnretained(frame_deliverer_.get()),
                             true));
@@ -1152,7 +1153,7 @@ void WebMediaPlayerMS::OnFrameShown() {
 
   if (frame_deliverer_) {
     PostCrossThreadTask(
-        *io_task_runner_, FROM_HERE,
+        *video_task_runner_, FROM_HERE,
         CrossThreadBindOnce(&FrameDeliverer::SetRenderFrameSuspended,
                             CrossThreadUnretained(frame_deliverer_.get()),
                             false));

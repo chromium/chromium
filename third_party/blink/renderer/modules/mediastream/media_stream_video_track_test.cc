@@ -189,7 +189,7 @@ TEST_F(MediaStreamVideoTrackTest, AddAndRemoveSink) {
       gfx::Size(MediaStreamVideoSource::kDefaultWidth,
                 MediaStreamVideoSource::kDefaultHeight));
   mock_source()->DeliverVideoFrame(frame);
-  // Wait for the IO thread to complete delivering frames.
+  // Wait for the video task runner to complete delivering frames.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2, sink.number_of_frames());
 }
