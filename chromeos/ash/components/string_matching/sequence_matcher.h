@@ -14,7 +14,6 @@ namespace ash::string_matching {
 namespace {
 
 constexpr double kNumMatchingBlocksPenalty = 0.1;
-constexpr bool kUseEditDistance = false;
 constexpr bool kUseTextLengthAgnosticism = false;
 
 }  // namespace
@@ -23,10 +22,10 @@ constexpr bool kUseTextLengthAgnosticism = false;
 // functionality is inspired by python's difflib.SequenceMatcher library.
 // (https://docs.python.org/2/library/difflib.html#difflib.SequenceMatcher)
 //
-// TODO(crbug.com/1336160): This class contains two mutually exclusive
-// pathways (edit distance and block matching), with distinct algorithms
-// and ratio calculations. The edit distance pathway is currently unused.
-// Consider removing / refactoring.
+// TODO(crbug.com/1336160): The unused edit distance pathway has been removed.
+// Consider coming up with a new edit-distance method having the awareness of
+// string structures. (e.g., awareness of block matching and token break
+// locations).
 class SequenceMatcher {
  public:
   // Representing a common substring between `first_string_` and
@@ -45,13 +44,11 @@ class SequenceMatcher {
   // `num_matching_blocks_penalty` is used to penalize too many small matching
   // blocks. For the same number of matching characters, we prefer fewer
   // matching blocks. Value equal to 0 means no penalty. Values greater than 0
-  // means heavier penalty will be applied to larger number of blocks. This is
-  // only applied if `use_edit_distance` is false.
+  // means heavier penalty will be applied to larger number of blocks.
   SequenceMatcher(
       const std::u16string& first_string,
       const std::u16string& second_string,
-      double num_matching_blocks_penalty = kNumMatchingBlocksPenalty,
-      bool use_edit_distance = kUseEditDistance);
+      double num_matching_blocks_penalty = kNumMatchingBlocksPenalty);
 
   SequenceMatcher(const SequenceMatcher&) = delete;
   SequenceMatcher& operator=(const SequenceMatcher&) = delete;
@@ -71,16 +68,6 @@ class SequenceMatcher {
   // `use_text_length_agnosticism` is true, and it only works for the block
   // matching algorithm.
   double Ratio(bool use_text_length_agnosticism = kUseTextLengthAgnosticism);
-  // Calculates the Damerau–Levenshtein restricted edit distance between
-  // `first_string_` and `second_string_`. Also known as the "optimal string
-  // alignment distance".
-  //
-  // The algorithm considers the following edit operations: insertion, deletion,
-  // substitution, and two-character transposition. It does not consider
-  // multiple adjacent transpositions. See
-  // https://en.wikipedia.org/wiki/Damerau–Levenshtein_distance for more
-  // details.
-  int EditDistance();
   // Finds the longest common substring between
   // `first_string_[first_start:first_end]` and
   // `second_string_[second_start:second_end]`. Used by
@@ -106,13 +93,9 @@ class SequenceMatcher {
   std::u16string first_string_;
   std::u16string second_string_;
   double num_matching_blocks_penalty_;
-  double edit_distance_ratio_ = -1.0;
   double block_matching_ratio_ = -1.0;
   std::vector<Match> matching_blocks_;
 
-  // Controls whether to use edit distance to calculate ratio.
-  bool use_edit_distance_;
-  int edit_distance_ = -1;
   // For each character `c` in `second_string_`, this variable
   // `char_to_positions_` stores all positions where `c` occurs in
   // `second_string_`.
