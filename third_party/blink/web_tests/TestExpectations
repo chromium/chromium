@@ -1189,7 +1189,6 @@ crbug.com/1054656 external/wpt/css/css-text-decor/text-decoration-skip-ink-005.h
 crbug.com/1163436 wpt_internal/css/css-text-decor/text-decoration-line-grammar-error-001.html [ Failure ]
 crbug.com/1163436 wpt_internal/css/css-text-decor/text-decoration-line-spelling-error-001.html [ Failure ]
 
-crbug.com/722825 [ Linux ] media/controls/video-enter-exit-fullscreen-while-hovering-shows-controls.html [ Pass Timeout ]
 
 crbug.com/846753 [ Mac ] http/tests/media/reload-after-dialog.html [ Failure Pass Timeout ]
 
@@ -4018,7 +4017,6 @@ crbug.com/874162 [ Mac ] fast/events/middleClickAutoscroll-event-fired.html [ Cr
 crbug.com/874162 [ Mac ] fast/events/middleClickAutoscroll-latching.html [ Crash Failure Pass Timeout ]
 crbug.com/874162 [ Mac ] fast/events/middleClickAutoscroll-nested-divs-forbidden.html [ Crash Failure Pass Timeout ]
 # The next also fails due to crbug.com/891427, thus disabled on all platforms.
-crbug.com/874162 [ Mac ] fast/events/selection-autoscroll-borderbelt.html [ Crash Failure Pass Timeout ]
 
 
 # Passes in threaded mode, fails without it. This is a real bug.
@@ -4656,7 +4654,6 @@ crbug.com/1046784 [ Linux ] http/tests/devtools/tracing/timeline-misc/timeline-e
 crbug.com/1108786 [ Linux ] http/tests/devtools/tracing/timeline-js/timeline-gc-event.js [ Failure Pass ]
 
 # Sheriff 2020-07-27
-crbug.com/1107944 [ Mac ] http/tests/devtools/tracing/timeline-paint/timeline-paint.js [ Failure Pass ]
 
 crbug.com/1092794 fast/canvas/OffscreenCanvas-2d-placeholder-willReadFrequently.html [ Failure Pass ]
 
@@ -5503,7 +5500,6 @@ crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/elements/styles-2/nested-p
 # mac-arm CI 10-05-2021
 crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/directly-composited-image-orientation.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] virtual/gpu-rasterization/images/directly-composited-image-orientation.html [ Failure Pass ]
-crbug.com/1249176 [ Mac12-arm64 ] fast/replaced/no-focus-ring-object.html [ Failure Pass ]
 
 crbug.com/1249176 [ Mac11-arm64 ] svg/animations/animate-setcurrenttime.html [ Crash ]
 
