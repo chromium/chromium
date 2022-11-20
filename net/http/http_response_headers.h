@@ -396,11 +396,13 @@ class NET_EXPORT HttpResponseHeaders
                    std::string::const_iterator value_begin,
                    std::string::const_iterator value_end);
 
-  // Replaces the current headers with the merged version of |raw_headers| and
-  // the current headers without the headers in |headers_to_remove|. Note that
-  // |headers_to_remove| are removed from the current headers (before the
+  // Replaces the current headers with the merged version of `raw_headers` and
+  // the current headers without the headers in `headers_to_remove`. Note that
+  // `headers_to_remove` are removed from the current headers (before the
   // merge), not after the merge.
-  void MergeWithHeaders(const std::string& raw_headers,
+  // `raw_headers` is a std::string, not a const reference to a std::string,
+  // to avoid a potentially excessive copy.
+  void MergeWithHeaders(std::string raw_headers,
                         const HeaderSet& headers_to_remove);
 
   // Adds the values from any 'cache-control: no-cache="foo,bar"' headers.

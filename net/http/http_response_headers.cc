@@ -304,12 +304,11 @@ void HttpResponseHeaders::Update(const HttpResponseHeaders& new_headers) {
   }
 
   // Now, build the new raw headers.
-  MergeWithHeaders(new_raw_headers, updated_headers);
+  MergeWithHeaders(std::move(new_raw_headers), updated_headers);
 }
 
-void HttpResponseHeaders::MergeWithHeaders(const std::string& raw_headers,
+void HttpResponseHeaders::MergeWithHeaders(std::string raw_headers,
                                            const HeaderSet& headers_to_remove) {
-  std::string new_raw_headers(raw_headers);
   for (size_t i = 0; i < parsed_.size(); ++i) {
     DCHECK(!parsed_[i].is_continuation());
 
@@ -322,18 +321,18 @@ void HttpResponseHeaders::MergeWithHeaders(const std::string& raw_headers,
         base::MakeStringPiece(parsed_[i].name_begin, parsed_[i].name_end));
     if (headers_to_remove.find(name) == headers_to_remove.end()) {
       // It's ok to preserve this header in the final result.
-      new_raw_headers.append(parsed_[i].name_begin, parsed_[k].value_end);
-      new_raw_headers.push_back('\0');
+      raw_headers.append(parsed_[i].name_begin, parsed_[k].value_end);
+      raw_headers.push_back('\0');
     }
 
     i = k;
   }
-  new_raw_headers.push_back('\0');
+  raw_headers.push_back('\0');
 
   // Make this object hold the new data.
   raw_headers_.clear();
   parsed_.clear();
-  Parse(new_raw_headers);
+  Parse(raw_headers);
 }
 
 void HttpResponseHeaders::RemoveHeader(base::StringPiece name) {
@@ -343,7 +342,7 @@ void HttpResponseHeaders::RemoveHeader(base::StringPiece name) {
 
   HeaderSet to_remove;
   to_remove.insert(base::ToLowerASCII(name));
-  MergeWithHeaders(new_raw_headers, to_remove);
+  MergeWithHeaders(std::move(new_raw_headers), to_remove);
 }
 
 void HttpResponseHeaders::RemoveHeaders(
@@ -356,7 +355,7 @@ void HttpResponseHeaders::RemoveHeaders(
   for (const auto& header_name : header_names) {
     to_remove.insert(base::ToLowerASCII(header_name));
   }
-  MergeWithHeaders(new_raw_headers, to_remove);
+  MergeWithHeaders(std::move(new_raw_headers), to_remove);
 }
 
 void HttpResponseHeaders::RemoveHeaderLine(const std::string& name,
@@ -427,7 +426,7 @@ void HttpResponseHeaders::ReplaceStatusLine(const std::string& new_status) {
   new_raw_headers.push_back('\0');
 
   HeaderSet empty_to_remove;
-  MergeWithHeaders(new_raw_headers, empty_to_remove);
+  MergeWithHeaders(std::move(new_raw_headers), empty_to_remove);
 }
 
 void HttpResponseHeaders::UpdateWithNewRange(const HttpByteRange& byte_range,
