@@ -311,6 +311,14 @@ fuzzer_test("sandbox_policy_rule_fuzzer") {
   ]
 }
 
+fuzzer_test("sandbox_nt_utils_fuzzer") {
+  sources = [ "fuzzer/sandbox_nt_utils_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//sandbox",
+  ]
+}
+
 source_set("common") {
   sources = [
     "fuzzer/fuzzer_types.h",
