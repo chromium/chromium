@@ -100,7 +100,7 @@ TEST_F(CocoaImmersiveModeControllerTest, ImmersiveModeController) {
           &view_will_appear_ran));
   immersive_mode_controller->Enable();
   EXPECT_TRUE(view_will_appear_ran);
-  EXPECT_EQ(browser().titlebarAccessoryViewControllers.count, 1u);
+  EXPECT_EQ(browser().titlebarAccessoryViewControllers.count, 2u);
 }
 
 // Test that child windows in immersive mode properly balance the revealed lock
@@ -142,15 +142,23 @@ TEST_F(CocoaImmersiveModeControllerTest,
   immersive_mode_controller->RevealLock();
   EXPECT_EQ(immersive_mode_controller->revealed_lock_count(), 3);
 
-  // One controller for Top Chrome and another hidden controller that pins the
-  // Title Bar.
-  EXPECT_EQ(browser().titlebarAccessoryViewControllers.count, 2u);
+  // One controller for Top Chrome, one for an AppKit workaround
+  // (https://crbug.com/1369643) and another hidden controller that pins the
+  // titlebar.
+  EXPECT_EQ(browser().titlebarAccessoryViewControllers.count, 3u);
 
   // Ensure the clear controller's view covers the browser view.
   NSTitlebarAccessoryViewController* clear_controller =
-      browser().titlebarAccessoryViewControllers.lastObject;
+      browser().titlebarAccessoryViewControllers[2];
+  EXPECT_TRUE(clear_controller);
+
+  NSTitlebarAccessoryViewController* thin_controller =
+      browser().titlebarAccessoryViewControllers[1];
+  EXPECT_TRUE(thin_controller);
+
   EXPECT_EQ(clear_controller.view.frame.size.height,
-            browser().contentView.frame.size.height);
+            browser().contentView.frame.size.height -
+                thin_controller.view.frame.size.height);
   EXPECT_EQ(clear_controller.view.frame.size.width,
             browser().contentView.frame.size.width);
 
@@ -159,11 +167,11 @@ TEST_F(CocoaImmersiveModeControllerTest,
   immersive_mode_controller->RevealUnlock();
   immersive_mode_controller->RevealUnlock();
   EXPECT_EQ(immersive_mode_controller->revealed_lock_count(), 1);
-  EXPECT_EQ(browser().titlebarAccessoryViewControllers.count, 2u);
+  EXPECT_EQ(browser().titlebarAccessoryViewControllers.count, 3u);
 
   immersive_mode_controller->RevealUnlock();
   EXPECT_EQ(immersive_mode_controller->revealed_lock_count(), 0);
-  EXPECT_EQ(browser().titlebarAccessoryViewControllers.count, 1u);
+  EXPECT_EQ(browser().titlebarAccessoryViewControllers.count, 2u);
 }
 
 // Test ImmersiveModeController construction and destruction.

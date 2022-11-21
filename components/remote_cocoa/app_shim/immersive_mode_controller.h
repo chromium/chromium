@@ -59,10 +59,30 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   NSWindow* const browser_widget_;
   NSWindow* const overlay_widget_;
 
+  // A controller for top chrome.
   base::scoped_nsobject<ImmersiveModeTitlebarViewController>
       immersive_mode_titlebar_view_controller_;
+
+  // A "clear" controller for locking the titlebar in place. Unfortunately
+  // there is no discovered way to make a controller actually clear. The
+  // controller's view is added to a discrete NSWindow controlled by AppKit.
+  // Making the view clear will simply make the underling portion of the
+  // NSWindow visible. To achieve "clear" this controller immediately hides
+  // itself. This has the side effect of still extending the mouse capture area
+  // allowing the title bar to stay visible while this controller's view is
+  // hidden.
   base::scoped_nsobject<ClearTitlebarViewController>
       clear_titlebar_view_controller_;
+
+  // A controller that keeps a small portion (0.5px) of the fullscreen AppKit
+  // NSWindow on screen.
+  // This controller is used as a workaround for an AppKit bug that displays a
+  // black bar when changing a NSTitlebarAccessoryViewController's
+  // fullScreenMinHeight from zero to non-zero.
+  // TODO(https://crbug.com/1369643): Remove when fixed by Apple.
+  base::scoped_nsobject<NSTitlebarAccessoryViewController>
+      thin_titlebar_view_controller_;
+
   base::scoped_nsobject<ImmersiveModeMapper> immersive_mode_mapper_;
   base::scoped_nsobject<ImmersiveModeWindowObserver>
       immersive_mode_window_observer_;
