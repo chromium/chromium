@@ -615,10 +615,10 @@ class CORE_EXPORT PaintLayerScrollableArea final
   void RemoveScrollbarsForReconstruction();
 
   void DidUpdateCullRect() {
-    last_cull_rect_update_scroll_offset_ = scroll_offset_;
+    last_cull_rect_update_scroll_position_ = ScrollPosition();
   }
-  ScrollOffset LastCullRectUpdateScrollOffset() const {
-    return last_cull_rect_update_scroll_offset_;
+  gfx::PointF LastCullRectUpdateScrollPosition() const {
+    return last_cull_rect_update_scroll_position_;
   }
 
  private:
@@ -796,7 +796,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   gfx::Rect vertical_scrollbar_visual_rect_;
   gfx::Rect scroll_corner_and_resizer_visual_rect_;
 
-  ScrollOffset last_cull_rect_update_scroll_offset_;
+  gfx::PointF last_cull_rect_update_scroll_position_;
 
   class ScrollingBackgroundDisplayItemClient final
       : public GarbageCollected<ScrollingBackgroundDisplayItemClient>,

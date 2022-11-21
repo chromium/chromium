@@ -67,7 +67,7 @@ TEST_P(CullRectUpdaterTest, WideLayerCullRect) {
   EXPECT_EQ(gfx::Rect(0, 0, 4800, 600), GetCullRect("target").Rect());
 }
 
-TEST_P(CullRectUpdaterTest, VerticalRightLeftWritingModeDocument) {
+TEST_P(CullRectUpdaterTest, VerticalRLWritingModeDocument) {
   SetBodyInnerHTML(R"HTML(
     <style>
       html { writing-mode: vertical-rl; }
@@ -77,14 +77,32 @@ TEST_P(CullRectUpdaterTest, VerticalRightLeftWritingModeDocument) {
     </div>
   )HTML");
 
-  GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(-5000, 0), mojom::blink::ScrollType::kProgrammatic);
+  GetDocument().domWindow()->scrollTo(-5000, 0);
   UpdateAllLifecyclePhasesForTest();
 
   // A scroll by -5000px is equivalent to a scroll by (10000 - 5000 - 800)px =
   // 4200px in non-RTL mode. Expanding the resulting rect by 4000px in each
   // direction and clipping by the contents rect yields this result.
   EXPECT_EQ(gfx::Rect(200, 0, 8800, 600), GetCullRect("target").Rect());
+}
+
+TEST_P(CullRectUpdaterTest, VerticalRLWritingModeScrollDiv) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      html { writing-mode: vertical-rl; }
+    </style>
+    <div id="scroller" style="width: 200px; height: 200px; overflow: scroll;
+                              background: white">
+      <div style="width: 10000px; height: 200px"></div>
+    </div>
+  )HTML");
+
+  GetDocument().getElementById("scroller")->scrollTo(-5000, 0);
+  UpdateAllLifecyclePhasesForTest();
+
+  // Similar to the previous test case.
+  EXPECT_EQ(gfx::Rect(800, 0, 8200, 200),
+            GetContentsCullRect("scroller").Rect());
 }
 
 TEST_P(CullRectUpdaterTest, ScaledCullRect) {

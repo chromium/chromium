@@ -166,7 +166,8 @@ bool HasScrolledEnough(const LayoutObject& object) {
       const auto* scrollable_area = To<LayoutBox>(object).GetScrollableArea();
       DCHECK(scrollable_area);
       gfx::Vector2dF delta = -scroll_translation->Translation2D() -
-                             scrollable_area->LastCullRectUpdateScrollOffset();
+                             scrollable_area->LastCullRectUpdateScrollPosition()
+                                 .OffsetFromOrigin();
       return object.FirstFragment().GetContentsCullRect().HasScrolledEnough(
           delta, *scroll_translation);
     }
