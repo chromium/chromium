@@ -40,7 +40,6 @@
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/resource_coordinator/tab_manager_resource_coordinator_signal_observer.h"
-#include "chrome/browser/resource_coordinator/tab_manager_web_contents_data.h"
 #include "chrome/browser/resource_coordinator/time.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/browser.h"
@@ -113,25 +112,17 @@ class TabManager::TabManagerSessionRestoreObserver final
   raw_ptr<TabManager> tab_manager_;
 };
 
-TabManager::TabManager(TabLoadTracker* tab_load_tracker)
-    : browser_tab_strip_tracker_(this, nullptr),
-      is_session_restore_loading_tabs_(false),
-      restored_tab_count_(0u),
-      tab_load_tracker_(tab_load_tracker) {
+TabManager::TabManager()
+    : is_session_restore_loading_tabs_(false), restored_tab_count_(0u) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   delegate_ =
       std::make_unique<TabManagerDelegate>(weak_ptr_factory_.GetWeakPtr());
 #endif
-  browser_tab_strip_tracker_.Init();
   session_restore_observer_ =
       std::make_unique<TabManagerSessionRestoreObserver>(this);
-
-  tab_load_tracker_->AddObserver(this);
 }
 
-TabManager::~TabManager() {
-  tab_load_tracker_->RemoveObserver(this);
-}
+TabManager::~TabManager() = default;
 
 void TabManager::Start() {
   // On Linux, there is no tab discarding because MemoryPressureMonitor is not
@@ -248,16 +239,6 @@ int TabManager::GetTabCount() const {
   return tab_count;
 }
 
-// static
-bool TabManager::IsTabInSessionRestore(WebContents* web_contents) {
-  return GetWebContentsData(web_contents)->is_in_session_restore();
-}
-
-// static
-bool TabManager::IsTabRestoredInForeground(WebContents* web_contents) {
-  return GetWebContentsData(web_contents)->is_restored_in_foreground();
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // TabManager, private:
 
@@ -324,39 +305,6 @@ void TabManager::UnregisterMemoryPressureListener() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-void TabManager::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (change.type() == TabStripModelChange::kReplaced) {
-    auto* replace = change.GetReplace();
-    WebContentsData::CopyState(replace->old_contents, replace->new_contents);
-  }
-}
-
-void TabManager::OnStartTracking(content::WebContents* web_contents,
-                                 LoadingState loading_state) {
-  GetWebContentsData(web_contents)->SetTabLoadingState(loading_state);
-}
-
-void TabManager::OnLoadingStateChange(content::WebContents* web_contents,
-                                      LoadingState old_loading_state,
-                                      LoadingState new_loading_state) {
-  GetWebContentsData(web_contents)->SetTabLoadingState(new_loading_state);
-}
-
-void TabManager::OnStopTracking(content::WebContents* web_contents,
-                                LoadingState loading_state) {
-  GetWebContentsData(web_contents)->SetTabLoadingState(loading_state);
-}
-
-// static
-TabManager::WebContentsData* TabManager::GetWebContentsData(
-    content::WebContents* contents) {
-  WebContentsData::CreateForWebContents(contents);
-  return WebContentsData::FromWebContents(contents);
-}
-
 // TODO(jamescook): This should consider tabs with references to other tabs,
 // such as tabs created with JavaScript window.open(). Potentially consider
 // discarding the entire set together, or use that in the priority computation.
@@ -393,11 +341,6 @@ void TabManager::OnSessionRestoreFinishedLoadingTabs() {
 }
 
 void TabManager::OnWillRestoreTab(WebContents* contents) {
-  WebContentsData* data = GetWebContentsData(contents);
-  DCHECK(!data->is_in_session_restore());
-  data->SetIsInSessionRestore(true);
-  data->SetIsRestoredInForeground(contents->GetVisibility() !=
-                                  content::Visibility::HIDDEN);
   restored_tab_count_++;
 
   // TabUIHelper is initialized in TabHelpers::AttachTabHelpers. But this place

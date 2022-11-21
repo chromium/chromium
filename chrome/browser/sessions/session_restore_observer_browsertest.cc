@@ -39,38 +39,6 @@
 using content::WebContents;
 using content::NavigationHandle;
 
-// This class records session-restore states of a tab when it starts navigation.
-class NavigationStartWebContentsObserver : public content::WebContentsObserver {
- public:
-  explicit NavigationStartWebContentsObserver(WebContents* contents)
-      : WebContentsObserver(contents) {}
-
-  NavigationStartWebContentsObserver(
-      const NavigationStartWebContentsObserver&) = delete;
-  NavigationStartWebContentsObserver& operator=(
-      const NavigationStartWebContentsObserver&) = delete;
-
-  // content::WebContentsObserver implementation:
-  void DidStartNavigation(NavigationHandle* navigation_handle) override {
-    WebContents* contents = navigation_handle->GetWebContents();
-    resource_coordinator::TabManager* tab_manager =
-        g_browser_process->GetTabManager();
-    ASSERT_TRUE(tab_manager);
-
-    is_session_restored_ = tab_manager->IsTabInSessionRestore(contents);
-    is_restored_in_foreground_ =
-        tab_manager->IsTabRestoredInForeground(contents);
-  }
-
-  // Returns the session-restore states at the navigation start.
-  bool is_session_restored() const { return is_session_restored_; }
-  bool is_restored_in_foreground() const { return is_restored_in_foreground_; }
-
- private:
-  bool is_session_restored_ = false;
-  bool is_restored_in_foreground_ = false;
-};
-
 class MockSessionRestoreObserver : public SessionRestoreObserver {
  public:
   MockSessionRestoreObserver() { SessionRestore::AddObserver(this); }
@@ -96,21 +64,9 @@ class MockSessionRestoreObserver : public SessionRestoreObserver {
     session_restore_events_.emplace_back(
         SessionRestoreEvent::kFinishedLoadingTabs);
   }
-  void OnWillRestoreTab(WebContents* contents) override {
-    navigation_start_observers_.emplace(
-        contents, new NavigationStartWebContentsObserver(contents));
-  }
-
-  NavigationStartWebContentsObserver*
-  GetNavigationStartWebContentsObserverForTab(WebContents* contents) {
-    return navigation_start_observers_[contents].get();
-  }
 
  private:
   std::vector<SessionRestoreEvent> session_restore_events_;
-  std::unordered_map<WebContents*,
-                     std::unique_ptr<NavigationStartWebContentsObserver>>
-      navigation_start_observers_;
 };
 
 class SessionRestoreObserverTest : public InProcessBrowserTest {
@@ -201,24 +157,6 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreObserverTest,
   EXPECT_EQ(
       MockSessionRestoreObserver::SessionRestoreEvent::kFinishedLoadingTabs,
       session_restore_events()[1]);
-
-  // The only restored tab should be in foreground.
-  NavigationStartWebContentsObserver* observer =
-      session_restore_observer().GetNavigationStartWebContentsObserverForTab(
-          new_browser->tab_strip_model()->GetWebContentsAt(0));
-  EXPECT_TRUE(observer->is_session_restored());
-  EXPECT_TRUE(observer->is_restored_in_foreground());
-
-  // A new foreground tab should not be created by session restore.
-  ui_test_utils::NavigateToURLWithDisposition(
-      new_browser, GetTestURL(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  resource_coordinator::TabManager* tab_manager =
-      g_browser_process->GetTabManager();
-  WebContents* contents = new_browser->tab_strip_model()->GetWebContentsAt(1);
-  ASSERT_TRUE(contents);
-  EXPECT_FALSE(tab_manager->IsTabInSessionRestore(contents));
-  EXPECT_FALSE(tab_manager->IsTabRestoredInForeground(contents));
 }
 
 IN_PROC_BROWSER_TEST_F(SessionRestoreObserverTest, MultipleTabSessionRestore) {
@@ -243,20 +181,4 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreObserverTest, MultipleTabSessionRestore) {
   EXPECT_EQ(
       MockSessionRestoreObserver::SessionRestoreEvent::kFinishedLoadingTabs,
       session_restore_events()[1]);
-
-  // The first tab should be restored in foreground.
-  NavigationStartWebContentsObserver* observer =
-      session_restore_observer().GetNavigationStartWebContentsObserverForTab(
-          new_browser->tab_strip_model()->GetWebContentsAt(0));
-  ASSERT_TRUE(observer);
-  EXPECT_TRUE(observer->is_session_restored());
-  EXPECT_TRUE(observer->is_restored_in_foreground());
-
-  // The second tab should be restored in background.
-  observer =
-      session_restore_observer().GetNavigationStartWebContentsObserverForTab(
-          new_browser->tab_strip_model()->GetWebContentsAt(1));
-  ASSERT_TRUE(observer);
-  EXPECT_TRUE(observer->is_session_restored());
-  EXPECT_FALSE(observer->is_restored_in_foreground());
 }

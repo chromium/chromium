@@ -237,15 +237,12 @@ TEST_F(SessionRestoreObserverTest, TabManagerShouldObserveSessionRestore) {
   resource_coordinator::TabManager* tab_manager =
       g_browser_process->GetTabManager();
   EXPECT_FALSE(tab_manager->IsSessionRestoreLoadingTabs());
-  EXPECT_FALSE(tab_manager->IsTabInSessionRestore(test_contents.get()));
 
   SessionRestore::NotifySessionRestoreStartedLoadingTabs();
   SessionRestore::OnWillRestoreTab(test_contents.get());
   EXPECT_TRUE(tab_manager->IsSessionRestoreLoadingTabs());
-  EXPECT_TRUE(tab_manager->IsTabInSessionRestore(test_contents.get()));
   TabLoader::RestoreTabs(restored_tabs, base::TimeTicks());
 
   LoadWebContents(test_contents.get());
   EXPECT_FALSE(tab_manager->IsSessionRestoreLoadingTabs());
-  EXPECT_FALSE(tab_manager->IsTabInSessionRestore(test_contents.get()));
 }

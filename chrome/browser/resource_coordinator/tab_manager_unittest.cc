@@ -30,7 +30,6 @@
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/resource_coordinator/tab_manager_resource_coordinator_signal_observer.h"
-#include "chrome/browser/resource_coordinator/tab_manager_web_contents_data.h"
 #include "chrome/browser/resource_coordinator/time.h"
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/sessions/tab_loader.h"
@@ -180,18 +179,6 @@ TEST_F(TabManagerTest, MAYBE_DiscardTabWithNonVisibleTabs) {
   // Tabs with a committed URL must be closed explicitly to avoid DCHECK errors.
   tab_strip1->CloseAllTabs();
   tab_strip2->CloseAllTabs();
-}
-
-TEST_F(TabManagerTest, IsTabRestoredInForeground) {
-  std::unique_ptr<WebContents> contents = CreateWebContents();
-  contents->WasShown();
-  tab_manager_->OnWillRestoreTab(contents.get());
-  EXPECT_TRUE(tab_manager_->IsTabRestoredInForeground(contents.get()));
-
-  contents = CreateWebContents();
-  contents->WasHidden();
-  tab_manager_->OnWillRestoreTab(contents.get());
-  EXPECT_FALSE(tab_manager_->IsTabRestoredInForeground(contents.get()));
 }
 
 TEST_F(TabManagerTest, GetSortedLifecycleUnits) {
