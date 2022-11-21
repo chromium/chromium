@@ -359,6 +359,16 @@
       "use_goma": true
     }
   },
+  "linux-chromeos-compile-chrome": {
+    "gn_args": {
+      "exclude_unwind_tables": false,
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "symbol_level": 1,
+      "target_os": "chromeos",
+      "use_goma": true
+    }
+  },
   "linux-finch-smoke-chrome": {
     "gn_args": {
       "is_chrome_branded": true,

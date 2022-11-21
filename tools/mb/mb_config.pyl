@@ -911,6 +911,7 @@
       'linux-chrome-beta': 'official_goma',
       'linux-chrome-stable': 'official_goma',
       'linux-chromeos-chrome': 'official_goma_chromeos_include_unwind_tables',
+      'linux-chromeos-compile-chrome': 'official_goma_chromeos_include_unwind_tables',
       'linux-finch-smoke-chrome': 'official_goma',
       'mac-arm64-finch-smoke-chrome': 'official_goma_mac_arm',
       'mac-chrome': 'official_goma_mac',
