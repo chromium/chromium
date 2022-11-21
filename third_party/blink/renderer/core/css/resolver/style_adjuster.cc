@@ -914,7 +914,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   AdjustForForcedColorsMode(style, builder);
 
   // Let the theme also have a crack at adjusting the style.
-  LayoutTheme::GetTheme().AdjustStyle(element, style, builder);
+  LayoutTheme::GetTheme().AdjustStyle(element, builder);
 
   AdjustStyleForInert(builder, element);
 

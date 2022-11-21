@@ -149,16 +149,16 @@ LayoutTheme::LayoutTheme() : has_custom_focus_ring_color_(false) {
 
 ControlPart LayoutTheme::AdjustAppearanceWithAuthorStyle(
     ControlPart part,
-    const ComputedStyle& style) {
-  if (IsControlStyled(part, style))
+    const ComputedStyleBuilder& builder) {
+  if (IsControlStyled(part, builder))
     return part == kMenulistPart ? kMenulistButtonPart : kNoControlPart;
   return part;
 }
 
 ControlPart LayoutTheme::AdjustAppearanceWithElementType(
-    const ComputedStyle& style,
+    const ComputedStyleBuilder& builder,
     const Element* element) {
-  ControlPart part = style.EffectiveAppearance();
+  ControlPart part = builder.EffectiveAppearance();
   if (!element)
     return kNoControlPart;
 
@@ -225,32 +225,31 @@ ControlPart LayoutTheme::AdjustAppearanceWithElementType(
 }
 
 void LayoutTheme::AdjustStyle(const Element* element,
-                              ComputedStyle& style,
                               ComputedStyleBuilder& builder) {
-  ControlPart original_part = style.Appearance();
+  ControlPart original_part = builder.Appearance();
   builder.SetEffectiveAppearance(original_part);
   if (original_part == ControlPart::kNoControlPart)
     return;
 
   // Force inline and table display styles to be inline-block (except for table-
   // which is block)
-  if (style.Display() == EDisplay::kInline ||
-      style.Display() == EDisplay::kInlineTable ||
-      style.Display() == EDisplay::kTableRowGroup ||
-      style.Display() == EDisplay::kTableHeaderGroup ||
-      style.Display() == EDisplay::kTableFooterGroup ||
-      style.Display() == EDisplay::kTableRow ||
-      style.Display() == EDisplay::kTableColumnGroup ||
-      style.Display() == EDisplay::kTableColumn ||
-      style.Display() == EDisplay::kTableCell ||
-      style.Display() == EDisplay::kTableCaption)
+  if (builder.Display() == EDisplay::kInline ||
+      builder.Display() == EDisplay::kInlineTable ||
+      builder.Display() == EDisplay::kTableRowGroup ||
+      builder.Display() == EDisplay::kTableHeaderGroup ||
+      builder.Display() == EDisplay::kTableFooterGroup ||
+      builder.Display() == EDisplay::kTableRow ||
+      builder.Display() == EDisplay::kTableColumnGroup ||
+      builder.Display() == EDisplay::kTableColumn ||
+      builder.Display() == EDisplay::kTableCell ||
+      builder.Display() == EDisplay::kTableCaption)
     builder.SetDisplay(EDisplay::kInlineBlock);
-  else if (style.Display() == EDisplay::kListItem ||
-           style.Display() == EDisplay::kTable)
+  else if (builder.Display() == EDisplay::kListItem ||
+           builder.Display() == EDisplay::kTable)
     builder.SetDisplay(EDisplay::kBlock);
 
   ControlPart part = AdjustAppearanceWithAuthorStyle(
-      AdjustAppearanceWithElementType(style, element), style);
+      AdjustAppearanceWithElementType(builder, element), builder);
   builder.SetEffectiveAppearance(part);
   DCHECK_NE(part, kAutoPart);
   if (part == kNoControlPart)
@@ -395,20 +394,20 @@ Color LayoutTheme::PlatformInactiveListBoxSelectionForegroundColor(
 }
 
 bool LayoutTheme::IsControlStyled(ControlPart part,
-                                  const ComputedStyle& style) const {
+                                  const ComputedStyleBuilder& builder) const {
   switch (part) {
     case kPushButtonPart:
     case kSquareButtonPart:
     case kButtonPart:
     case kProgressBarPart:
-      return style.HasAuthorBackground() || style.HasAuthorBorder();
+      return builder.HasAuthorBackground() || builder.HasAuthorBorder();
 
     case kMenulistPart:
     case kSearchFieldPart:
     case kTextAreaPart:
     case kTextFieldPart:
-      return style.HasAuthorBackground() || style.HasAuthorBorder() ||
-             style.BoxShadow();
+      return builder.HasAuthorBackground() || builder.HasAuthorBorder() ||
+             builder.BoxShadow();
 
     default:
       return false;

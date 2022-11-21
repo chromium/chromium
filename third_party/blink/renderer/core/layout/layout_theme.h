@@ -66,7 +66,7 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   // selection of control size based off the font, the disabling of appearance
   // when certain other properties like "border" are set, or if the appearance
   // is not supported by the theme.
-  void AdjustStyle(const Element*, ComputedStyle&, ComputedStyleBuilder&);
+  void AdjustStyle(const Element*, ComputedStyleBuilder&);
 
   // The remaining methods should be implemented by the platform-specific
   // portion of the theme, e.g., layout_theme_mac.mm for macOS.
@@ -78,7 +78,8 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
 
   // Whether or not the control has been styled enough by the author to disable
   // the native appearance.
-  virtual bool IsControlStyled(ControlPart part, const ComputedStyle&) const;
+  virtual bool IsControlStyled(ControlPart part,
+                               const ComputedStyleBuilder&) const;
 
   bool ShouldDrawDefaultFocusRing(const Node*, const ComputedStyle&) const;
 
@@ -238,11 +239,12 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   // implementation to hand back the appropriate platform theme.
   static LayoutTheme& NativeTheme();
 
-  ControlPart AdjustAppearanceWithAuthorStyle(ControlPart part,
-                                              const ComputedStyle& style);
+  ControlPart AdjustAppearanceWithAuthorStyle(
+      ControlPart part,
+      const ComputedStyleBuilder& style);
 
-  ControlPart AdjustAppearanceWithElementType(const ComputedStyle& style,
-                                              const Element* element);
+  ControlPart AdjustAppearanceWithElementType(const ComputedStyleBuilder&,
+                                              const Element*);
 
   void UpdateForcedColorsState();
 

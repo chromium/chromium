@@ -2593,6 +2593,8 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
 
  public:
   friend class ColorPropertyFunctions;
+  // Access to Appearance().
+  friend class LayoutTheme;
   friend class StyleAdjuster;
   friend class StyleResolverState;
   // Access to UserModify().
