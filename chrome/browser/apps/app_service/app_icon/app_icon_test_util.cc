@@ -1,0 +1,70 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/apps/app_service/app_icon/app_icon_test_util.h"
+
+#include "base/callback.h"
+#include "base/run_loop.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
+#include "extensions/grit/extensions_browser_resources.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/layout.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_unittest_util.h"
+
+namespace apps {
+
+void EnsureRepresentationsLoaded(gfx::ImageSkia& output_image_skia) {
+  for (auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
+    // Force the icon to be loaded.
+    output_image_skia.GetRepresentation(
+        ui::GetScaleForResourceScaleFactor(scale_factor));
+  }
+}
+
+void LoadDefaultIcon(gfx::ImageSkia& output_image_skia) {
+  base::RunLoop run_loop;
+  apps::LoadIconFromResource(
+      apps::IconType::kUncompressed, kSizeInDip, IDR_APP_DEFAULT_ICON,
+      false /* is_placeholder_icon */, apps::IconEffects::kNone,
+      base::BindOnce(
+          [](gfx::ImageSkia* image, base::OnceClosure load_app_icon_callback,
+             apps::IconValuePtr icon) {
+            *image = icon->uncompressed;
+            std::move(load_app_icon_callback).Run();
+          },
+          &output_image_skia, run_loop.QuitClosure()));
+  run_loop.Run();
+  EnsureRepresentationsLoaded(output_image_skia);
+}
+
+void VerifyIcon(const gfx::ImageSkia& src, const gfx::ImageSkia& dst) {
+  ASSERT_FALSE(src.isNull());
+  ASSERT_FALSE(dst.isNull());
+
+  const std::vector<ui::ResourceScaleFactor>& scale_factors =
+      ui::GetSupportedResourceScaleFactors();
+  ASSERT_EQ(2U, scale_factors.size());
+
+  for (auto& scale_factor : scale_factors) {
+    const float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
+    ASSERT_TRUE(src.HasRepresentation(scale));
+    ASSERT_TRUE(dst.HasRepresentation(scale));
+    ASSERT_TRUE(
+        gfx::test::AreBitmapsEqual(src.GetRepresentation(scale).GetBitmap(),
+                                   dst.GetRepresentation(scale).GetBitmap()));
+  }
+}
+
+void VerifyCompressedIcon(const std::vector<uint8_t>& src_data,
+                          const apps::IconValue& icon) {
+  ASSERT_EQ(apps::IconType::kCompressed, icon.icon_type);
+  ASSERT_FALSE(icon.is_placeholder_icon);
+  ASSERT_FALSE(icon.compressed.empty());
+  ASSERT_EQ(src_data, icon.compressed);
+}
+
+}  // namespace apps
