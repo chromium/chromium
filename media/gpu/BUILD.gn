@@ -361,7 +361,7 @@ source_set("common") {
       "av1_picture.cc",
       "av1_picture.h",
     ]
-    public_deps += [ "//third_party/libgav1:libgav1" ]
+    public_deps += [ "//third_party/libgav1:libgav1_parser" ]
   }
 }
 

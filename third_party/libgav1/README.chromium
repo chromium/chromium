@@ -22,6 +22,5 @@ Please follow these steps to update libgav1 src code
 
   Use the generated commit message for the roll.
 
-2. Generate .gni and update Date and Commit in README.chromium
-  cd third_party/libgav1
-  go run generate_libgav1_src_gni.go
+2. Update Date and Commit in README.chromium:
+  go run update_readme.go

@@ -414,7 +414,7 @@ executable("decode_test") {
     "//media:test_support",
     "//media/gpu:common",
     "//media/parsers:parsers",
-    "//third_party/libgav1:libgav1",
+    "//third_party/libgav1:libgav1_parser",
     "//third_party/libyuv",
     "//ui/gfx/codec:codec",
     "//ui/gfx/geometry",
