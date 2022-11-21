@@ -7,8 +7,10 @@
 #include "base/base64.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
+#include "base/hash/legacy_hash.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -195,6 +197,16 @@ bool CheckAllPathsExist(
     }
   }
   return true;
+}
+
+std::string GetModelCacheKeyHash(proto::ModelCacheKey model_cache_key) {
+  std::string bytes;
+  model_cache_key.SerializeToString(&bytes);
+  uint64_t hash =
+      base::legacy::CityHash64(base::as_bytes(base::make_span(bytes)));
+  // Convert the hash to hex encoding and not as base64 and other encodings,
+  // since it will be used as filepath names.
+  return base::HexEncode(base::as_bytes(base::make_span(&hash, 1)));
 }
 
 }  // namespace optimization_guide

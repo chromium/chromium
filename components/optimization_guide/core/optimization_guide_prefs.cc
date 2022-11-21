@@ -54,6 +54,14 @@ const char kPreviouslyRegisteredOptimizationTypes[] =
 const char kStoreFilePathsToDelete[] =
     "optimization_guide.store_file_paths_to_delete";
 
+namespace localstate {
+
+// A dictionary pref that stores the lightweight metadata of all the models in
+// the store, keyed by the optimization target and ModelCacheKey.
+const char kModelStoreMetadata[] = "optimization_guide.model_store_metadata";
+
+}  // namespace localstate
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterInt64Pref(
       kHintsFetcherLastFetchAttempt,
@@ -74,6 +82,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                    PrefRegistry::LOSSY_PREF);
   registry->RegisterDictionaryPref(kStoreFilePathsToDelete,
                                    PrefRegistry::LOSSY_PREF);
+}
+
+void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterDictionaryPref(localstate::kModelStoreMetadata);
 }
 
 }  // namespace prefs

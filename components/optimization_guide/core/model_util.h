@@ -50,6 +50,10 @@ GetModelOverrideForOptimizationTarget(
 // Checks all the files in |file_paths_to_check| exists.
 bool CheckAllPathsExist(const std::vector<base::FilePath>& file_paths_to_check);
 
+// Returns the hash of |model_cache_key| that can be used as key in a
+// persistent dict, or can be used as file paths.
+std::string GetModelCacheKeyHash(proto::ModelCacheKey model_cache_key);
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_UTIL_H_

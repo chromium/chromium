@@ -6,6 +6,8 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_test_util.h"
@@ -20,6 +22,12 @@ const char kOtherAbsoluteFilePath[] = "C:\\other\\absolute\\file\\path";
 #else
 const char kOtherAbsoluteFilePath[] = "/other/abs/file/path";
 #endif
+
+proto::ModelCacheKey CreateModelCacheKey(const std::string& locale) {
+  proto::ModelCacheKey model_cache_key;
+  model_cache_key.set_locale(locale);
+  return model_cache_key;
+}
 
 }  // namespace
 
@@ -167,6 +175,16 @@ TEST(ModelUtilTest, GetModelOverrideForOptimizationTargetMultipleFilePath) {
   ASSERT_TRUE(file_path_and_metadata);
   EXPECT_EQ(kOtherAbsoluteFilePath, file_path_and_metadata->first);
   EXPECT_EQ("sometypeurl", file_path_and_metadata->second->type_url());
+}
+
+TEST(ModelUtilTest, ModelCacheKeyHash) {
+  EXPECT_EQ(GetModelCacheKeyHash(CreateModelCacheKey("en-US")),
+            GetModelCacheKeyHash(CreateModelCacheKey("en-US")));
+  EXPECT_NE(GetModelCacheKeyHash(CreateModelCacheKey("en-US")),
+            GetModelCacheKeyHash(CreateModelCacheKey("en-UK")));
+  EXPECT_TRUE(
+      base::ranges::all_of(GetModelCacheKeyHash(CreateModelCacheKey("en-US")),
+                           [](char ch) { return base::IsHexDigit(ch); }));
 }
 
 }  // namespace optimization_guide

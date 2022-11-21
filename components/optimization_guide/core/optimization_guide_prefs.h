@@ -10,6 +10,7 @@ class PrefRegistrySimple;
 namespace optimization_guide {
 namespace prefs {
 
+// User profile prefs.
 extern const char kHintsFetcherLastFetchAttempt[];
 extern const char kModelAndFeaturesLastFetchAttempt[];
 extern const char kModelLastFetchSuccess[];
@@ -18,8 +19,18 @@ extern const char kPendingHintsProcessingVersion[];
 extern const char kPreviouslyRegisteredOptimizationTypes[];
 extern const char kStoreFilePathsToDelete[];
 
+namespace localstate {
+
+// Local state prefs.
+extern const char kModelStoreMetadata[];
+
+}  // namespace localstate
+
 // Registers the optimization guide's prefs.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+// Registers the local state prefs.
+void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 }  // namespace prefs
 }  // namespace optimization_guide
