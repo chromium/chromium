@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/files/file_path.h"
 #include "content/browser/utility_sandbox_delegate.h"
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/services/screen_ai/public/cpp/utilities.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -209,6 +210,7 @@ bool XrCompositingPreSpawnTarget(sandbox::TargetConfig* config,
   return true;
 }
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 bool ScreenAIPreSpawnTarget(sandbox::TargetConfig* config,
                             sandbox::mojom::Sandbox sandbox_type) {
   DCHECK(!config->IsConfigured());
@@ -236,6 +238,7 @@ bool ScreenAIPreSpawnTarget(sandbox::TargetConfig* config,
                            library_binary_path.value().c_str());
   return result == sandbox::SBOX_ALL_OK;
 }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 }  // namespace
 
@@ -309,10 +312,12 @@ bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
         return false;
     }
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     if (sandbox_type_ == sandbox::mojom::Sandbox::kScreenAI) {
       if (!ScreenAIPreSpawnTarget(config, sandbox_type_))
         return false;
     }
+#endif
 
     if (sandbox_type_ == sandbox::mojom::Sandbox::kSpeechRecognition) {
       auto result = config->SetIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);

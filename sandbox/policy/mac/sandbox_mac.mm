@@ -12,6 +12,7 @@
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/mac/audio.sb.h"
@@ -25,7 +26,9 @@
 #include "sandbox/policy/mac/print_backend.sb.h"
 #include "sandbox/policy/mac/print_compositor.sb.h"
 #include "sandbox/policy/mac/renderer.sb.h"
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "sandbox/policy/mac/screen_ai.sb.h"
+#endif
 #include "sandbox/policy/mac/speech_recognition.sb.h"
 #include "sandbox/policy/mac/utility.sb.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
@@ -84,9 +87,11 @@ std::string GetSandboxProfile(sandbox::mojom::Sandbox sandbox_type) {
     case sandbox::mojom::Sandbox::kPrintCompositor:
       profile += kSeatbeltPolicyString_print_compositor;
       break;
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     case sandbox::mojom::Sandbox::kScreenAI:
       profile += kSeatbeltPolicyString_screen_ai;
       break;
+#endif
     case sandbox::mojom::Sandbox::kSpeechRecognition:
       profile += kSeatbeltPolicyString_speech_recognition;
       break;
