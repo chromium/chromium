@@ -129,19 +129,6 @@ SharedImageManager::Register(std::unique_ptr<SharedImageBacking> backing,
   return factory_ref;
 }
 
-void SharedImageManager::OnContextLost(const Mailbox& mailbox) {
-  CALLED_ON_VALID_THREAD();
-
-  AutoLock autolock(this);
-  auto found = images_.find(mailbox);
-  if (found == images_.end()) {
-    LOG(ERROR) << "SharedImageManager::OnContextLost: Trying to mark constext "
-                  "lost on a non existent mailbox.";
-    return;
-  }
-  (*found)->OnContextLost();
-}
-
 std::unique_ptr<GLTextureImageRepresentation>
 SharedImageManager::ProduceGLTexture(const Mailbox& mailbox,
                                      MemoryTypeTracker* tracker) {

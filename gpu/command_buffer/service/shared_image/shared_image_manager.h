@@ -50,9 +50,6 @@ class GPU_GLES2_EXPORT SharedImageManager
       std::unique_ptr<SharedImageBacking> backing,
       MemoryTypeTracker* ref);
 
-  // Marks the backing associated with a mailbox as context lost.
-  void OnContextLost(const Mailbox& mailbox);
-
   // Accessors which return a SharedImageRepresentation. Representations also
   // take a ref on the mailbox, releasing it when the representation is
   // destroyed.
