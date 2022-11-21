@@ -3346,7 +3346,6 @@ crbug.com/366553 external/wpt/svg/text/reftests/text-inline-size-101.svg [ Failu
 crbug.com/626703 external/wpt/clear-site-data/executionContexts.sub.html [ Timeout ]
 crbug.com/626703 external/wpt/content-security-policy/securitypolicyviolation/targeting.html [ Timeout ]
 crbug.com/626703 external/wpt/web-animations/timing-model/timelines/update-and-send-events.html [ Failure ]
-crbug.com/626703 external/wpt/screen-orientation/orientation-reading.html [ Timeout ]
 
 
 crbug.com/1380987 external/wpt/html/user-activation/detached-iframe.html [ Failure ]
@@ -6950,3 +6949,4 @@ crbug.com/1325457 http/tests/devtools/oopif/oopif-presentation-console-messages.
 # Sheriff 2022-11-21 - EMEA
 crbug.com/1376986 [ Mac ] virtual/compute-pressure/external/wpt/compute-pressure/compute_pressure_duplicate_updates.tentative.https.window.html [ Timeout Failure ]
 crbug.com/1376986 [ Linux ] virtual/compute-pressure/external/wpt/compute-pressure/compute_pressure_duplicate_updates.tentative.https.window.html [ Timeout Failure ]
+crbug.com/1392077 external/wpt/screen-orientation/orientation-reading.html [ Timeout Failure ]
