@@ -5,12 +5,15 @@
 /**
  * @fileoverview Interface for the central output class for ChromeVox.
  */
+import {CursorRange} from '../../../common/cursors/range.js';
 import {Spannable} from '../../common/spannable.js';
 
 import {OutputFormatTree} from './output_format_tree.js';
-import {OutputAction, OutputFormattingData} from './output_types.js';
+import {OutputFormatLogger} from './output_logger.js';
+import * as outputTypes from './output_types.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
+const EventType = chrome.automation.EventType;
 
 /** @interface */
 export class OutputInterface {
@@ -34,40 +37,40 @@ export class OutputInterface {
    * Find the earcon for a given node (including ancestry).
    * @param {!AutomationNode} node
    * @param {!AutomationNode=} opt_prevNode
-   * @return {OutputAction}
+   * @return {outputTypes.OutputAction}
    */
   findEarcon_(node, opt_prevNode) {}
 
   /**
    * Format the node given the format specifier.
-   * @param {!OutputFormattingData} params All the required and
+   * @param {!outputTypes.OutputFormattingData} params All the required and
    *     optional parameters for formatting.
    */
   format_(params) {}
 
   /**
-   * @param {!OutputFormattingData} data
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
    */
   formatAsFieldAccessor_(data, token, options) {}
 
   /**
-   * @param {!OutputFormattingData} data
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
    */
   formatAsStateValue_(data, token, options) {}
 
   /**
-   * @param {!OutputFormattingData} data
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
    */
   formatCellIndexText_(data, token, options) {}
 
   /**
-   * @param {!OutputFormattingData} data
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
    * @param {!OutputFormatTree} tree
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
@@ -75,32 +78,26 @@ export class OutputInterface {
   formatCustomFunction_(data, token, tree, options) {}
 
   /**
-   * @param {!OutputFormattingData} data
-   * @param {string} token
-   */
-  formatDescendants_(data, token) {}
-
-  /**
-   * @param {!OutputFormattingData} data
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
    */
   formatInputType_(data, token, options) {}
 
   /**
-   * @param {!OutputFormattingData} data
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
    */
   formatJoinedDescendants_(data, token, options) {}
 
   /**
-   * @param {!OutputFormattingData} data
+   * @param {!outputTypes.OutputFormattingData} data
    */
   formatListNestedLevel_(data) {}
 
   /**
-   * @param {!OutputFormattingData} data
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
    * @param {!OutputFormatTree} tree
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
@@ -108,7 +105,7 @@ export class OutputInterface {
   formatMessage_(data, token, tree, options) {}
 
   /**
-   * @param {!OutputFormattingData} data
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
    * @param {!OutputFormatTree} tree
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
@@ -116,35 +113,47 @@ export class OutputInterface {
   formatNode_(data, token, tree, options) {}
 
   /**
-   * @param {!OutputFormattingData} data
+   * @param {!outputTypes.OutputFormattingData} data
    */
   formatPhoneticReading_(data) {}
 
   /**
-   * @param {!OutputFormattingData} data
+   * @param {!outputTypes.OutputFormattingData} data
    */
   formatPrecedingBullet_(data) {}
 
   /**
-   * @param {!OutputFormattingData} data
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
    */
   formatRole_(data, token, options) {}
 
   /**
-   * @param {!OutputFormattingData} data
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
    */
   formatTableCellIndex_(data, token, options) {}
 
   /**
-   * @param {!OutputFormattingData} data
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
    */
   formatTextContent_(data, token, options) {}
+
+  /**
+   * Renders the given range using optional context previous range and event
+   * type.
+   * @param {!CursorRange} range
+   * @param {CursorRange} prevRange
+   * @param {EventType|outputTypes.OutputEventType} type
+   * @param {!Array<Spannable>} buff Buffer to receive rendered output.
+   * @param {!OutputFormatLogger} formatLog
+   * @param {{suppressStartEndAncestry: (boolean|undefined)}} optionalArgs
+   */
+  render_(range, prevRange, type, buff, formatLog, optionalArgs) {}
 
   /**
    * @param {string} token

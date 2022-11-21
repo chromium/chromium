@@ -625,17 +625,7 @@ export class Output {
     return true;
   }
 
-  /**
-   * Renders the given range using optional context previous range and event
-   * type.
-   * @param {!CursorRange} range
-   * @param {CursorRange} prevRange
-   * @param {!outputTypes.OutputEventType} type
-   * @param {!Array<Spannable>} buff Buffer to receive rendered output.
-   * @param {!OutputFormatLogger} formatLog
-   * @param {{suppressStartEndAncestry: (boolean|undefined)}} optionalArgs
-   * @private
-   */
+  /** @override */
   render_(range, prevRange, type, buff, formatLog, optionalArgs = {}) {
     if (prevRange && !prevRange.isValid()) {
       prevRange = null;
@@ -677,52 +667,6 @@ export class Output {
   format_(params) {
     const formatter = new OutputFormatter(this, params);
     new OutputFormatParser(formatter).parse(params.outputFormat);
-  }
-
-  /** @override */
-  formatDescendants_(data, token) {
-    const buff = data.outputBuffer;
-    const node = data.node;
-    const formatLog = data.outputFormatLogger;
-
-    if (!node) {
-      return;
-    }
-
-    let leftmost = node;
-    let rightmost = node;
-    if (AutomationPredicate.leafOrStaticText(node)) {
-      // Find any deeper leaves, if any, by starting from one level
-      // down.
-      leftmost = node.firstChild;
-      rightmost = node.lastChild;
-      if (!leftmost || !rightmost) {
-        return;
-      }
-    }
-
-    // Construct a range to the leftmost and rightmost leaves. This
-    // range gets rendered below which results in output that is the
-    // same as if a user navigated through the entire subtree of |node|.
-    leftmost = AutomationUtil.findNodePre(
-        leftmost, Dir.FORWARD, AutomationPredicate.leafOrStaticText);
-    rightmost = AutomationUtil.findNodePre(
-        rightmost, Dir.BACKWARD, AutomationPredicate.leafOrStaticText);
-    if (!leftmost || !rightmost) {
-      return;
-    }
-
-    const subrange = new CursorRange(
-        new Cursor(leftmost, CURSOR_NODE_INDEX),
-        new Cursor(rightmost, CURSOR_NODE_INDEX));
-    let prev = null;
-    if (node) {
-      prev = CursorRange.fromNode(node);
-    }
-    formatLog.writeToken(token);
-    this.render_(
-        subrange, prev, outputTypes.OutputCustomEvent.NAVIGATE, buff, formatLog,
-        {suppressStartEndAncestry: true});
   }
 
   /** @override */

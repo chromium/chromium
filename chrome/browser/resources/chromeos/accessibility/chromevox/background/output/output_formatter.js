@@ -5,6 +5,11 @@
 /**
  * @fileoverview Class that formats the parsed output tree.
  */
+import {AutomationPredicate} from '../../../common/automation_predicate.js';
+import {AutomationUtil} from '../../../common/automation_util.js';
+import {constants} from '../../../common/constants.js';
+import {Cursor, CURSOR_NODE_INDEX} from '../../../common/cursors/cursor.js';
+import {CursorRange} from '../../../common/cursors/range.js';
 import {Msgs} from '../../common/msgs.js';
 
 import {OutputFormatParserObserver} from './output_format_parser.js';
@@ -12,6 +17,7 @@ import {OutputFormatTree} from './output_format_tree.js';
 import {OutputInterface} from './output_interface.js';
 import * as outputTypes from './output_types.js';
 
+const Dir = constants.Dir;
 const NameFromType = chrome.automation.NameFromType;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
@@ -70,7 +76,7 @@ export class OutputFormatter {
     } else if (token === 'find') {
       this.formatFind_(this.params_, token, tree);
     } else if (token === 'descendants') {
-      this.output_.formatDescendants_(this.params_, token);
+      this.formatDescendants_(this.params_, token);
     } else if (token === 'joinedDescendants') {
       this.output_.formatJoinedDescendants_(this.params_, token, options);
     } else if (token === 'role') {
@@ -193,6 +199,56 @@ export class OutputFormatter {
         outputFormatLogger: formatLog,
       });
     }
+  }
+
+  /**
+   * @param {!outputTypes.OutputFormattingData} data
+   * @param {string} token
+   * @private
+   */
+  formatDescendants_(data, token) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const formatLog = data.outputFormatLogger;
+
+    if (!node) {
+      return;
+    }
+
+    let leftmost = node;
+    let rightmost = node;
+    if (AutomationPredicate.leafOrStaticText(node)) {
+      // Find any deeper leaves, if any, by starting from one level
+      // down.
+      leftmost = node.firstChild;
+      rightmost = node.lastChild;
+      if (!leftmost || !rightmost) {
+        return;
+      }
+    }
+
+    // Construct a range to the leftmost and rightmost leaves. This
+    // range gets rendered below which results in output that is the
+    // same as if a user navigated through the entire subtree of |node|.
+    leftmost = AutomationUtil.findNodePre(
+        leftmost, Dir.FORWARD, AutomationPredicate.leafOrStaticText);
+    rightmost = AutomationUtil.findNodePre(
+        rightmost, Dir.BACKWARD, AutomationPredicate.leafOrStaticText);
+    if (!leftmost || !rightmost) {
+      return;
+    }
+
+    const subrange = new CursorRange(
+        new Cursor(leftmost, CURSOR_NODE_INDEX),
+        new Cursor(rightmost, CURSOR_NODE_INDEX));
+    let prev = null;
+    if (node) {
+      prev = CursorRange.fromNode(node);
+    }
+    formatLog.writeToken(token);
+    this.output_.render_(
+        subrange, prev, outputTypes.OutputCustomEvent.NAVIGATE, buff, formatLog,
+        {suppressStartEndAncestry: true});
   }
 
   /**
