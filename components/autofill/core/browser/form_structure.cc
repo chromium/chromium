@@ -634,6 +634,11 @@ void FormStructure::ProcessQueryResponse(
     // TODO(crbug.com/1154080): By calling this with true, autocomplete section
     // attributes will be ignored.
     form->IdentifySections(/*ignore_autocomplete=*/true);
+    // Metrics are intentionally only emitted after the sever response, not when
+    // determining heuristic types. This is done to reduce noise in the metrics,
+    // since generally only this sectioning result is used.
+    LogSectioningMetrics(form->form_signature(), form->fields_,
+                         form_interactions_ukm_logger);
   }
 
   AutofillMetrics::ServerQueryMetric metric;

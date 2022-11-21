@@ -10,6 +10,7 @@
 
 #include "autofill_test_utils.h"
 #include "base/check_op.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -18,6 +19,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/autofill/core/common/signatures.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -30,6 +32,14 @@ using autofill::features::kAutofillUseParameterizedSectioning;
 namespace autofill {
 
 namespace {
+
+using base::Bucket;
+using base::BucketsAre;
+
+constexpr char kNumberOfSectionsHistogram[] =
+    "Autofill.Sectioning.NumberOfSections";
+constexpr char kFieldsPerSectionHistogram[] =
+    "Autofill.Sectioning.FieldsPerSection";
 
 // The key information from which we build the `FormFieldData` objects for a
 // unittest.
@@ -73,6 +83,17 @@ std::vector<Section> GetSections(
 }
 
 class FormStructureSectioningTest : public testing::Test {
+ public:
+  void AssignSectionsAndLogMetrics(
+      const std::vector<std::unique_ptr<AutofillField>>& fields) {
+    AssignSections(fields);
+    // Since only the UMA metrics are tested, the form signature and UKM logger
+    // are irrelevant.
+    LogSectioningMetrics(FormSignature(0UL), fields,
+                         /*form_interactions_ukm_logger=*/nullptr);
+  }
+
+ private:
   test::AutofillEnvironment autofill_environment_;
 };
 
@@ -101,7 +122,8 @@ TEST_F(FormStructureSectioningTest, ExampleFormNoSectioningMode) {
       features::kAutofillUseParameterizedSectioning, feature_parameters);
 
   auto fields = CreateExampleFields();
-  AssignSections(fields);
+  base::HistogramTester histogram_tester;
+  AssignSectionsAndLogMetrics(fields);
 
   // The evaluation order of the `Section::FromFieldIdentifier()` expressions
   // does not matter, as all `FormFieldData::host_frame` are identical.
@@ -118,6 +140,10 @@ TEST_F(FormStructureSectioningTest, ExampleFormNoSectioningMode) {
                   Section::FromFieldIdentifier(*fields[6], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[6], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[4], frame_token_ids)));
+  EXPECT_EQ(ComputeSectioningSignature(fields), StrToHash32Bit("001022332"));
+  histogram_tester.ExpectUniqueSample(kNumberOfSectionsHistogram, 4, 1);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kFieldsPerSectionHistogram),
+              BucketsAre(Bucket(1, 1), Bucket(2, 1), Bucket(3, 2)));
 }
 
 TEST_F(FormStructureSectioningTest,
@@ -132,7 +158,8 @@ TEST_F(FormStructureSectioningTest,
       features::kAutofillUseParameterizedSectioning, feature_parameters);
 
   auto fields = CreateExampleFields();
-  AssignSections(fields);
+  base::HistogramTester histogram_tester;
+  AssignSectionsAndLogMetrics(fields);
 
   // The evaluation order of the `Section::FromFieldIdentifier()` expressions
   // does not matter, as all `FormFieldData::host_frame` are identical.
@@ -148,6 +175,10 @@ TEST_F(FormStructureSectioningTest,
                   Section::FromFieldIdentifier(*fields[6], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[6], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[4], frame_token_ids)));
+  EXPECT_EQ(ComputeSectioningSignature(fields), StrToHash32Bit("001122332"));
+  histogram_tester.ExpectUniqueSample(kNumberOfSectionsHistogram, 4, 1);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kFieldsPerSectionHistogram),
+              BucketsAre(Bucket(2, 3), Bucket(3, 1)));
 }
 
 TEST_F(FormStructureSectioningTest, ExampleFormSectioningModeCreateGaps) {
@@ -161,7 +192,8 @@ TEST_F(FormStructureSectioningTest, ExampleFormSectioningModeCreateGaps) {
       features::kAutofillUseParameterizedSectioning, feature_parameters);
 
   auto fields = CreateExampleFields();
-  AssignSections(fields);
+  base::HistogramTester histogram_tester;
+  AssignSectionsAndLogMetrics(fields);
 
   // The evaluation order of the `Section::FromFieldIdentifier()` expressions
   // does not matter, as all `FormFieldData::host_frame` are identical.
@@ -178,6 +210,10 @@ TEST_F(FormStructureSectioningTest, ExampleFormSectioningModeCreateGaps) {
                   Section::FromFieldIdentifier(*fields[6], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[6], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[4], frame_token_ids)));
+  EXPECT_EQ(ComputeSectioningSignature(fields), StrToHash32Bit("001233443"));
+  histogram_tester.ExpectUniqueSample(kNumberOfSectionsHistogram, 5, 1);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kFieldsPerSectionHistogram),
+              BucketsAre(Bucket(1, 2), Bucket(2, 2), Bucket(3, 1)));
 }
 
 TEST_F(FormStructureSectioningTest, ExampleFormSectioningModeExpand) {
@@ -191,7 +227,8 @@ TEST_F(FormStructureSectioningTest, ExampleFormSectioningModeExpand) {
       features::kAutofillUseParameterizedSectioning, feature_parameters);
 
   auto fields = CreateExampleFields();
-  AssignSections(fields);
+  base::HistogramTester histogram_tester;
+  AssignSectionsAndLogMetrics(fields);
 
   // The evaluation order of the `Section::FromFieldIdentifier()` expressions
   // does not matter, as all `FormFieldData::host_frame` are identical.
@@ -208,6 +245,10 @@ TEST_F(FormStructureSectioningTest, ExampleFormSectioningModeExpand) {
                   Section::FromFieldIdentifier(*fields[4], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[4], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[4], frame_token_ids)));
+  EXPECT_EQ(ComputeSectioningSignature(fields), StrToHash32Bit("001022222"));
+  histogram_tester.ExpectUniqueSample(kNumberOfSectionsHistogram, 3, 1);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kFieldsPerSectionHistogram),
+              BucketsAre(Bucket(1, 1), Bucket(3, 1), Bucket(5, 1)));
 }
 
 }  // namespace

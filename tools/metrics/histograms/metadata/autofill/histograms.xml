@@ -3451,6 +3451,29 @@ chromium-metrics-reviews@google.com.
   <summary>Usage of the &quot;Scan card&quot; control item.</summary>
 </histogram>
 
+<histogram name="Autofill.Sectioning.FieldsPerSection" units="Fields"
+    expires_after="2023-03-31">
+  <owner>fleimgruber@google.com</owner>
+  <owner>schwering@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The number of fields per section after sectioning a form using
+    kAutofillUseParameterizedSectioning. Emitted once per section every time
+    sectioning is done.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Sectioning.NumberOfSections" units="Sections"
+    expires_after="2023-03-31">
+  <owner>fleimgruber@google.com</owner>
+  <owner>schwering@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The number of sections after sectioning a form using
+    kAutofillUseParameterizedSectioning. Emitted every time sectioning is done.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ServerCardLinkClicked" enum="AutofillSyncState"
     expires_after="2023-09-30">
   <owner>jsaul@google.com</owner>
