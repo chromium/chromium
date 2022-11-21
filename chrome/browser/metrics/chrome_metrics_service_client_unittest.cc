@@ -178,7 +178,7 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
   size_t expected_providers = 2;
 
   // This is the number of metrics providers that are outside any #if macros.
-  expected_providers += 23;
+  expected_providers += 22;
 
   int sample_rate;
   if (ChromeMetricsServicesManagerClient::GetSamplingRatePerMille(
@@ -251,6 +251,11 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
   // DesktopSessionMetricsProvider
   expected_providers += 1;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // BluetoothMetricsProvider
+  expected_providers += 1;
+#endif
 
   std::unique_ptr<TestChromeMetricsServiceClient>
       chrome_metrics_service_client =

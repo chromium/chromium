@@ -7,11 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "chrome/browser/mac/bluetooth_utility.h"
 #include "components/metrics/metrics_provider.h"
-#include "device/bluetooth/bluetooth_adapter.h"
-
-using bluetooth_utility::BluetoothAvailability;
 
 namespace metrics {
 
@@ -24,7 +20,7 @@ enum class BluetoothStackName {
   kMaxValue = kUnknown
 };
 
-// BluetoothMetricsProvider reports the Bluetooth usage and stack identifiers.
+// BluetoothMetricsProvider reports the Bluetooth stack identifiers.
 class BluetoothMetricsProvider : public metrics::MetricsProvider {
  public:
   BluetoothMetricsProvider();
@@ -37,19 +33,6 @@ class BluetoothMetricsProvider : public metrics::MetricsProvider {
   // metrics::MetricsProvider:
   void ProvideCurrentSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto) override;
-
- private:
-  void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
-  void GetBluetoothAvailability();
-
-  // bluetooth_availability_ is initialized to BLUETOOTH_AVAILABILITY_ERROR here
-  // as a precaution to the asynchronized fetch of Bluetooth adapter
-  // availability. This variable gets updated only once during the class
-  // construction time through GetBluetoothAvailability() and its callback
-  // OnGetAdapter().
-  BluetoothAvailability bluetooth_availability_ =
-      BluetoothAvailability::BLUETOOTH_AVAILABILITY_ERROR;
-  base::WeakPtrFactory<BluetoothMetricsProvider> weak_ptr_factory_{this};
 };
 
 }  // namespace metrics

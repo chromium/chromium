@@ -43,7 +43,6 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/metrics/bluetooth_metrics_provider.h"
 #include "chrome/browser/metrics/cached_metrics_profile.h"
 #include "chrome/browser/metrics/chrome_metrics_extensions_helper.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -196,6 +195,10 @@
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/metrics/power/power_metrics_provider_mac.h"
 #endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/metrics/bluetooth_metrics_provider.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -788,8 +791,10 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<safe_browsing::SafeBrowsingMetricsProvider>());
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::BluetoothMetricsProvider>());
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
   metrics_service_->RegisterMetricsProvider(
