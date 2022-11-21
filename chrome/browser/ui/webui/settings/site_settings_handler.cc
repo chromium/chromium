@@ -93,6 +93,10 @@
 #include "components/user_manager/user_manager.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/media/cdm_document_service_impl.h"
+#endif
+
 using extensions::mojom::APIPermissionID;
 
 namespace settings {
@@ -2224,6 +2228,29 @@ void SiteSettingsHandler::RemoveNonTreeModelData(
   // by the model.
   for (const auto& origin : origins)
     browsing_data_model_->RemoveBrowsingData(origin.host(), base::DoNothing());
+
+#if BUILDFLAG(IS_WIN)
+  // Removes any Media License Data associated with the origin that is not
+  // stored in quota nodes. This should only be on Windows as ChromeOS does
+  // not support removing Media License Data per origin, and
+  // site_settings_handler.cc does not handle Android site specific code.
+  // The code for Android site specific code is located in
+  // components/browser_ui/site_settings/android/website_preference_bridge.cc
+  // TODO(b/248311157) - When CrOS supports the ability to delete platform
+  // keys by domain, implement the CrOS specific logic regarding clearing site
+  // specific media license data.
+  // TODO(b/248311157) - When the migration to BrowsingDataModel is finished,
+  // remove this and integrate the media license data removal steps there.
+  auto filter_builder = content::BrowsingDataFilterBuilder::Create(
+      content::BrowsingDataFilterBuilder::Mode::kDelete);
+
+  for (const auto& origin : origins)
+    filter_builder->AddOrigin(origin);
+
+  CdmDocumentServiceImpl::ClearCdmData(
+      profile_, base::Time::Min(), base::Time::Max(),
+      filter_builder->BuildUrlFilter(), base::DoNothing());
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void SiteSettingsHandler::SetModelsForTesting(

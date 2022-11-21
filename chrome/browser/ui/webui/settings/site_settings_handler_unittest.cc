@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
+#include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
@@ -2770,6 +2771,45 @@ TEST_P(SiteSettingsHandlerTest, HandleClearUnpartitionedUsage) {
 
   EXPECT_EQ(0, std::distance(handler()->browsing_data_model_->begin(),
                              handler()->browsing_data_model_->end()));
+
+// Clearing Site Specific Media Licenses Tests
+#if BUILDFLAG(IS_WIN)
+  PrefService* user_prefs = profile()->GetPrefs();
+
+  // In the beginning, there should be nothing stored in the origin data.
+  ASSERT_EQ(0u, user_prefs->GetDict(prefs::kMediaCdmOriginData).size());
+
+  base::Value::Dict entry_google;
+  entry_google.Set(
+      "https://www.google.com/",
+      base::UnguessableTokenToValue(base::UnguessableToken::Create()));
+
+  base::Value::Dict entry_example;
+  entry_example.Set(
+      "https://www.example.com/",
+      base::UnguessableTokenToValue(base::UnguessableToken::Create()));
+
+  {
+    ScopedDictPrefUpdate update(user_prefs, prefs::kMediaCdmOriginData);
+
+    base::Value::Dict& dict = update.Get();
+    dict.Set("https://www.google.com/", std::move(entry_google));
+    dict.Set("https://www.example.com/", std::move(entry_example));
+  }
+  // The code above adds origin data for both google and example.com
+  EXPECT_EQ(2u, user_prefs->GetDict(prefs::kMediaCdmOriginData).size());
+
+  args = base::Value::List();
+  args.Append("https://www.google.com/");
+  handler()->HandleClearUnpartitionedUsage(args);
+
+  // The code clears the origin data for just google.com, so there should still
+  // be the origin data for example.com left.
+  EXPECT_EQ(1u, user_prefs->GetDict(prefs::kMediaCdmOriginData).size());
+  EXPECT_TRUE(user_prefs->GetDict(prefs::kMediaCdmOriginData)
+                  .contains("https://www.example.com/"));
+
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 TEST_F(SiteSettingsHandlerTest, ClearClientHints) {
