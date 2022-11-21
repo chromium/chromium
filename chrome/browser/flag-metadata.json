@@ -6396,12 +6396,12 @@
   {
     "name": "sync-standalone-invalidations",
     "owners": [ "treib", "rushans" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 115
   },
   {
     "name": "sync-standalone-invalidations-wallet-and-offer",
     "owners": [ "treib", "rushans" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 115
   },
   {
     "name": "sync-trusted-vault-passphrase-promo",
