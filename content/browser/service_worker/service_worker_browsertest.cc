@@ -4123,18 +4123,35 @@ class ServiceWorkerBrowserTestWithStoragePartitioning
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     ServiceWorkerBrowserTestWithStoragePartitioning);
 
-IN_PROC_BROWSER_TEST_P(ServiceWorkerBrowserTestWithStoragePartitioning,
-                       StorageKeyWithHostPermissionsWithDedicatedWorkers) {
+// http://crbug.com/1385779
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_StorageKeyWithHostPermissionsWithDedicatedWorkers \
+  DISABLED_StorageKeyWithHostPermissionsWithDedicatedWorkers
+#else
+#define MAYBE_StorageKeyWithHostPermissionsWithDedicatedWorkers \
+  StorageKeyWithHostPermissionsWithDedicatedWorkers
+#endif
+IN_PROC_BROWSER_TEST_P(
+    ServiceWorkerBrowserTestWithStoragePartitioning,
+    MAYBE_StorageKeyWithHostPermissionsWithDedicatedWorkers) {
   RunTestWithWorkers("with-worker");
 }
 
 // Android does not have Shared Workers, so skip the shared worker test.
 #if !BUILDFLAG(IS_ANDROID)
+// http://crbug.com/1385779
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_StorageKeyWithHostPermissionsWithSharedWorkers \
+  DISABLED_StorageKeyWithHostPermissionsWithSharedWorkers
+#else
+#define MAYBE_StorageKeyWithHostPermissionsWithSharedWorkers \
+  StorageKeyWithHostPermissionsWithSharedWorkers
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(ServiceWorkerBrowserTestWithStoragePartitioning,
-                       StorageKeyWithHostPermissionsWithSharedWorkers) {
+                       MAYBE_StorageKeyWithHostPermissionsWithSharedWorkers) {
   RunTestWithWorkers("with-shared-worker");
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 enum class SpeculativeStartupNavigationType {
   kBrowserInitiatedNavigation,
