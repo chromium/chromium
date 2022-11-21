@@ -12,13 +12,14 @@ import './strings.m.js';
 import './signin_shared.css.js';
 import './signin_vars.css.js';
 
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './sync_confirmation_app.html.js';
-import {SyncConfirmationBrowserProxy, SyncConfirmationBrowserProxyImpl} from './sync_confirmation_browser_proxy.js';
+import {SyncBenefit, SyncConfirmationBrowserProxy, SyncConfirmationBrowserProxyImpl} from './sync_confirmation_browser_proxy.js';
 
 
 interface AccountInfo {
@@ -26,7 +27,8 @@ interface AccountInfo {
   showEnterpriseBadge: boolean;
 }
 
-const SyncConfirmationAppElementBase = WebUiListenerMixin(PolymerElement);
+const SyncConfirmationAppElementBase =
+    WebUiListenerMixin(I18nMixin(PolymerElement));
 
 export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
   static get is() {
@@ -76,6 +78,14 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
         type: Boolean,
         value: false,
       },
+
+      /**
+       * Sync benefits list supplied by SyncConfirmationBrowserProxy.
+       */
+      syncBenefitsList_: {
+        type: Array,
+        value: () => [],
+      },
     };
   }
 
@@ -85,6 +95,7 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
   private isSigninInterceptFre_: boolean;
   private isTangibleSync_: boolean;
   private showEnterpriseBadge_: boolean;
+  private syncBenefitsList_: SyncBenefit[];
   private syncConfirmationBrowserProxy_: SyncConfirmationBrowserProxy =
       SyncConfirmationBrowserProxyImpl.getInstance();
 
@@ -94,6 +105,8 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
     this.addWebUIListener(
         'account-info-changed', this.handleAccountInfoChanged_.bind(this));
     this.syncConfirmationBrowserProxy_.requestAccountInfo();
+    this.syncConfirmationBrowserProxy_.getSyncBenefitsList().then(
+        list => this.syncBenefitsList_ = list);
   }
 
   private onConfirm_(e: Event) {
