@@ -250,6 +250,14 @@ bool MatchedPropertiesCache::IsCacheable(const StyleResolverState& state) {
     return false;
   }
 
+  // Pending animation updates rely on CanAffectAnimations() flag to be set
+  // during Apply for the StyleCascade in order to store the old computed style
+  // for multi-pass recalcs for container queries. Alternatively, we could set
+  // this flag on the cached ComputedStyle and set the flag back onto the
+  // StyleResolverState when applying an entry from the MatchedPropertiesCache.
+  if (state.CanAffectAnimations())
+    return false;
+
   return true;
 }
 
