@@ -801,6 +801,8 @@ bool AuthSessionAuthenticator::ResolveCryptohomeError(
     case user_data_auth::CRYPTOHOME_ADD_CREDENTIALS_FAILED:
     case user_data_auth::CRYPTOHOME_REMOVE_CREDENTIALS_FAILED:
     case user_data_auth::CRYPTOHOME_UPDATE_CREDENTIALS_FAILED:
+    case user_data_auth::CRYPTOHOME_ERROR_RECOVERY_TRANSIENT:
+    case user_data_auth::CRYPTOHOME_ERROR_RECOVERY_FATAL:
     // Fatal errors that can not be handled gracefully:
     case user_data_auth::CRYPTOHOME_ERROR_LOCKBOX_SIGNATURE_INVALID:
     case user_data_auth::CRYPTOHOME_ERROR_LOCKBOX_CANNOT_SIGN:
