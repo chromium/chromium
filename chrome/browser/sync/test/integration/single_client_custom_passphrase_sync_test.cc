@@ -201,8 +201,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
                                 kKeyParams);
   SetNigoriInFakeServer(BuildCustomPassphraseNigoriSpecifics(kKeyParams),
                         GetFakeServer());
-  SetDecryptionPassphraseForClient(/*index=*/0, "hunter2");
   ASSERT_TRUE(SetupSync(WAIT_FOR_SYNC_SETUP_TO_COMPLETE));
+  EXPECT_TRUE(GetSyncService()->GetUserSettings()->SetDecryptionPassphrase(
+      kKeyParams.password));
   EXPECT_TRUE(WaitForPassphraseAccepted());
 
   EXPECT_TRUE(WaitForClientBookmarkWithTitle("PBKDF2-encrypted bookmark"));
@@ -214,8 +215,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
       Pbkdf2PassphraseKeyParamsForTesting("hunter2");
   SetNigoriInFakeServer(BuildCustomPassphraseNigoriSpecifics(kKeyParams),
                         GetFakeServer());
-  SetDecryptionPassphraseForClient(/*index=*/0, "hunter2");
   ASSERT_TRUE(SetupSync(WAIT_FOR_SYNC_SETUP_TO_COMPLETE));
+  EXPECT_TRUE(GetSyncService()->GetUserSettings()->SetDecryptionPassphrase(
+      kKeyParams.password));
   EXPECT_TRUE(WaitForPassphraseAccepted());
 
   const std::string kTitle = "Should be encrypted";
@@ -235,9 +237,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
                                 kKeyParams);
   SetNigoriInFakeServer(BuildCustomPassphraseNigoriSpecifics(kKeyParams),
                         GetFakeServer());
-  SetDecryptionPassphraseForClient(/*index=*/0, "hunter2");
 
   ASSERT_TRUE(SetupSync(WAIT_FOR_SYNC_SETUP_TO_COMPLETE));
+  EXPECT_TRUE(GetSyncService()->GetUserSettings()->SetDecryptionPassphrase(
+      kKeyParams.password));
   EXPECT_TRUE(WaitForPassphraseAccepted());
 
   EXPECT_TRUE(WaitForClientBookmarkWithTitle("scypt-encrypted bookmark"));
@@ -249,8 +252,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
       ScryptPassphraseKeyParamsForTesting("hunter2");
   SetNigoriInFakeServer(BuildCustomPassphraseNigoriSpecifics(kKeyParams),
                         GetFakeServer());
-  SetDecryptionPassphraseForClient(/*index=*/0, "hunter2");
   ASSERT_TRUE(SetupSync(WAIT_FOR_SYNC_SETUP_TO_COMPLETE));
+  EXPECT_TRUE(GetSyncService()->GetUserSettings()->SetDecryptionPassphrase(
+      kKeyParams.password));
   EXPECT_TRUE(WaitForPassphraseAccepted());
 
   const std::string kTitle = "Should be encrypted";
@@ -270,8 +274,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
       Pbkdf2PassphraseKeyParamsForTesting("hunter2");
   SetNigoriInFakeServer(BuildCustomPassphraseNigoriSpecifics(key_params),
                         GetFakeServer());
-  SetDecryptionPassphraseForClient(/*index=*/0, key_params.password);
   ASSERT_TRUE(SetupSync(WAIT_FOR_SYNC_SETUP_TO_COMPLETE));
+  ASSERT_TRUE(GetSyncService()->GetUserSettings()->SetDecryptionPassphrase(
+      key_params.password));
+  ASSERT_TRUE(WaitForPassphraseAccepted());
 }
 
 // Client should be able to decrypt with keystore keys, regardless whether they

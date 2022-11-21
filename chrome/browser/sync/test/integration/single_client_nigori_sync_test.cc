@@ -367,8 +367,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest,
       password_form, kKeyParams.password, kKeyParams.derivation_params,
       GetFakeServer());
 
-  SetDecryptionPassphraseForClient(/*index=*/0, kKeyParams.password);
   ASSERT_TRUE(SetupSync());
+  EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->SetDecryptionPassphrase(
+      kKeyParams.password));
   EXPECT_TRUE(WaitForPasswordForms({password_form}));
 }
 
