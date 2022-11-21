@@ -6897,6 +6897,7 @@ crbug.com/1386017 external/wpt/performance-timeline/not-restored-reasons/perform
 # Sheriff 2022-11-18
 crbug.com/1386241 virtual/web-bluetooth-new-permissions-backend/wpt_internal/bluetooth/characteristic/getDescriptor/gen-descriptor-garbage-collection-ran-during-error.https.html [ Failure Pass ]
 crbug.com/1386241 virtual/web-bluetooth-new-permissions-backend/wpt_internal/bluetooth/characteristic/getDescriptor/gen-descriptor-garbage-collection-ran-during-success.https.html [ Failure Pass ]
+crbug.com/1386241 virtual/web-bluetooth-new-permissions-backend/wpt_internal/bluetooth/characteristic/getDescriptors/gen-descriptor-garbage-collection-ran-during-error.https.html [ Failure Pass ]
 crbug.com/1386241 virtual/web-bluetooth-new-permissions-backend/wpt_internal/bluetooth/characteristic/getDescriptors/gen-descriptor-garbage-collection-ran-during-error-with-uuid.https.html [ Failure Pass ]
 crbug.com/1386241 virtual/web-bluetooth-new-permissions-backend/wpt_internal/bluetooth/characteristic/getDescriptors/gen-descriptor-garbage-collection-ran-during-success-with-uuid.https.html [ Failure Pass ]
 crbug.com/1386241 virtual/web-bluetooth-new-permissions-backend/wpt_internal/bluetooth/characteristic/getDescriptors/gen-descriptor-garbage-collection-ran-during-success.https.html [ Failure Pass ]
@@ -6937,7 +6938,9 @@ crbug.com/1386241 wpt_internal/bluetooth/characteristic/writeValueWithResponse/g
 crbug.com/1386241 wpt_internal/bluetooth/characteristic/writeValueWithResponse/gen-gatt-op-garbage-collection-ran-during-success.https.html [ Failure Pass ]
 crbug.com/1386241 wpt_internal/bluetooth/descriptor/readValue/gen-io-op-garbage-collection-ran-during-error.https.html [ Failure Pass ]
 crbug.com/1386241 wpt_internal/bluetooth/descriptor/readValue/gen-io-op-garbage-collection-ran-during-success.https.html [ Failure Pass ]
+crbug.com/1386241 wpt_internal/bluetooth/descriptor/writeValue/gen-io-op-garbage-collection-ran-during-error.https.html [ Failure Pass ]
 crbug.com/1386241 wpt_internal/bluetooth/descriptor/writeValue/gen-io-op-garbage-collection-ran-during-success.https.html [ Failure Pass ]
+crbug.com/1386241 wpt_internal/bluetooth/server/connect/garbage-collection-ran-during-error.https.html [ Failure Pass ]
 crbug.com/1386241 wpt_internal/bluetooth/service/getCharacteristic/gen-garbage-collection-ran-during-success.https.html [ Failure Pass ]
 crbug.com/1386241 wpt_internal/bluetooth/service/getCharacteristics/gen-garbage-collection-ran-during-success-with-uuid.https.html [ Failure Pass ]
 crbug.com/1386241 wpt_internal/bluetooth/service/getCharacteristics/gen-garbage-collection-ran-during-success.https.html [ Failure Pass ]
