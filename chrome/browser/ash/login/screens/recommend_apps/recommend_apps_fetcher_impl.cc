@@ -531,25 +531,23 @@ void RecommendAppsFetcherImpl::Retry() {
 
 absl::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
     const base::Value& parsed_json) {
-  base::Value output(base::Value::Type::LIST);
+  base::Value::List output;
 
   // If the response is a dictionary, it is an error message in the
   // following format:
   //   {"Error code":"error code","Error message":"Error message"}
   if (parsed_json.is_dict()) {
-    const base::Value* response_error_code_value =
-        parsed_json.FindKeyOfType("Error code", base::Value::Type::STRING);
-    if (!response_error_code_value) {
+    const std::string* response_error_code_str =
+        parsed_json.FindStringKey("Error code");
+    if (!response_error_code_str) {
       LOG(ERROR) << "Unable to find error code";
       RecordUmaResponseParseResult(
           RECOMMEND_APPS_RESPONSE_PARSE_RESULT_INVALID_JSON);
       return absl::nullopt;
     }
 
-    base::StringPiece response_error_code_str =
-        response_error_code_value->GetString();
     int response_error_code = 0;
-    if (!base::StringToInt(response_error_code_str, &response_error_code)) {
+    if (!base::StringToInt(*response_error_code_str, &response_error_code)) {
       LOG(WARNING) << "Unable to parse error code: " << response_error_code_str;
       RecordUmaResponseParseResult(
           RECOMMEND_APPS_RESPONSE_PARSE_RESULT_INVALID_ERROR_CODE);
@@ -579,24 +577,23 @@ absl::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
   }
 
   for (auto& item : app_list) {
-    base::Value output_map(base::Value::Type::DICTIONARY);
-
     if (!item.is_dict()) {
       DVLOG(1) << "Cannot parse item.";
       continue;
     }
 
+    base::Value::Dict output_map;
     // Retrieve the app title.
     const base::Value* title =
         item.FindPathOfType({"title_", "name_"}, base::Value::Type::STRING);
     if (title)
-      output_map.SetKey("name", base::Value(title->GetString()));
+      output_map.Set("name", title->GetString());
 
     // Retrieve the package name.
     const base::Value* package_name =
         item.FindPathOfType({"id_", "id_"}, base::Value::Type::STRING);
     if (package_name)
-      output_map.SetKey("package_name", base::Value(package_name->GetString()));
+      output_map.Set("package_name", package_name->GetString());
 
     // Retrieve the icon URL for the app.
     //
@@ -610,9 +607,9 @@ absl::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
         {"icon_", "url_", "privateDoNotAccessOrElseSafeUrlWrappedValue_"},
         base::Value::Type::STRING);
     if (icon_url)
-      output_map.SetKey("icon", base::Value(icon_url->GetString()));
+      output_map.Set("icon", icon_url->GetString());
 
-    if (output_map.DictEmpty()) {
+    if (output_map.empty()) {
       DVLOG(1) << "Invalid app item.";
       continue;
     }
@@ -621,9 +618,9 @@ absl::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
   }
 
   RecordUmaResponseParseResult(RECOMMEND_APPS_RESPONSE_PARSE_RESULT_NO_ERROR);
-  RecordUmaResponseAppCount(static_cast<int>(output.GetList().size()));
+  RecordUmaResponseAppCount(static_cast<int>(output.size()));
 
-  return output;
+  return base::Value(std::move(output));
 }
 
 void RecommendAppsFetcherImpl::OnJsonParsed(
