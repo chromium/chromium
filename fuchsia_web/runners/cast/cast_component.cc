@@ -195,8 +195,13 @@ void CastComponent::StartComponent() {
   fuchsia::web::ContentAreaSettings settings;
   // Disable scrollbars on all Cast applications.
   settings.set_hide_scrollbars(true);
-  // Get the theme from the system service.
-  settings.set_theme(fuchsia::settings::ThemeType::DEFAULT);
+
+  // Get the theme from `fuchsia.settings.Display`, except in headless mode
+  // where the service may not be available.
+  if (!is_headless_) {
+    settings.set_theme(fuchsia::settings::ThemeType::DEFAULT);
+  }
+
   frame()->SetContentAreaSettings(std::move(settings));
 }
 
