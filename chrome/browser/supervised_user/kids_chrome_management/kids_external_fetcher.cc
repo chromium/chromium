@@ -36,8 +36,8 @@ using ::base::BindOnce;
 using ::base::JoinString;
 using ::base::StrCat;
 using ::base::StringPiece;
-using ::base::Time;
 using ::base::TimeDelta;
+using ::base::TimeTicks;
 using ::base::UmaHistogramEnumeration;
 using ::base::UmaHistogramTimes;
 using ::base::Unretained;
@@ -198,10 +198,10 @@ class FetcherImpl final : public KidsExternalFetcher<Request, Response> {
 
  private:
   static void WrapCallbackWithMetrics(Callback callback,
-                                      Time start_time,
+                                      TimeTicks start_time,
                                       KidsExternalFetcherStatus status,
                                       std::unique_ptr<Response> response) {
-    TimeDelta latency = Time::Now() - start_time;
+    TimeDelta latency = TimeTicks::Now() - start_time;
     UmaHistogramEnumeration(CreateMetricKey<Request>("Status"), status.state());
     UmaHistogramTimes(CreateMetricKey<Request>("Latency"), latency);
     UmaHistogramTimes(CreateMetricKey<Request>(
@@ -223,8 +223,8 @@ class FetcherImpl final : public KidsExternalFetcher<Request, Response> {
     DCHECK(
         callback);  // https://chromium.googlesource.com/chromium/src/+/main/docs/callback.md#creating-a-callback-that-does-nothing
 
-    Callback callback_with_metrics =
-        BindOnce(WrapCallbackWithMetrics, std::move(callback), Time::Now());
+    Callback callback_with_metrics = BindOnce(
+        WrapCallbackWithMetrics, std::move(callback), TimeTicks::Now());
 
     if (!access_token.has_value()) {
       std::move(callback_with_metrics)
