@@ -223,6 +223,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   [[maybe_unused]] bool enable_brp_zapping = false;
   [[maybe_unused]] bool split_main_partition = false;
   [[maybe_unused]] bool use_dedicated_aligned_partition = false;
+  [[maybe_unused]] bool add_dummy_ref_count = false;
   [[maybe_unused]] bool process_affected_by_brp_flag = false;
 
 #if (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
@@ -302,6 +303,14 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
         split_main_partition = true;
         use_dedicated_aligned_partition = true;
         break;
+
+      case base::features::BackupRefPtrMode::kDisabledButAddDummyRefCount:
+        split_main_partition = true;
+        add_dummy_ref_count = true;
+#if !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+        use_dedicated_aligned_partition = true;
+#endif
+        break;
     }
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR) &&
@@ -314,6 +323,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       allocator_shim::SplitMainPartition(split_main_partition),
       allocator_shim::UseDedicatedAlignedPartition(
           use_dedicated_aligned_partition),
+      allocator_shim::AddDummyRefCount(add_dummy_ref_count),
       allocator_shim::AlternateBucketDistribution(
           base::features::kPartitionAllocAlternateBucketDistributionParam
               .Get()));

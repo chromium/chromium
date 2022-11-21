@@ -336,6 +336,7 @@ class PartitionAllocTest
         partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
         partition_alloc::PartitionOptions::BackupRefPtrZapping::kDisabled,
         partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
+        partition_alloc::PartitionOptions::AddDummyRefCount::kDisabled,
         pkey_ != kInvalidPkey ? pkey_ : kDefaultPkey,
     });
     if (UsePkeyPool() && pkey_ != kInvalidPkey) {
@@ -347,6 +348,7 @@ class PartitionAllocTest
           partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
           partition_alloc::PartitionOptions::BackupRefPtrZapping::kDisabled,
           partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
+          partition_alloc::PartitionOptions::AddDummyRefCount::kDisabled,
           pkey_,
       });
       return;

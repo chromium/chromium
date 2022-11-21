@@ -82,18 +82,21 @@ void Partitions::Initialize() {
 bool Partitions::InitializeOnce() {
   base::features::BackupRefPtrMode brp_mode =
       base::features::kBackupRefPtrModeParam.Get();
-  const bool enable_brp =
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
+  const bool process_affected_by_brp_flag =
+      base::features::kBackupRefPtrEnabledProcessesParam.Get() ==
+          base::features::BackupRefPtrEnabledProcesses::kAllProcesses ||
+      base::features::kBackupRefPtrEnabledProcessesParam.Get() ==
+          base::features::BackupRefPtrEnabledProcesses::kBrowserAndRenderer;
+  const bool enable_brp =
       base::FeatureList::IsEnabled(
           base::features::kPartitionAllocBackupRefPtr) &&
       (brp_mode == base::features::BackupRefPtrMode::kEnabled ||
        brp_mode == base::features::BackupRefPtrMode::kEnabledWithoutZapping) &&
-      (base::features::kBackupRefPtrEnabledProcessesParam.Get() ==
-           base::features::BackupRefPtrEnabledProcesses::kAllProcesses ||
-       base::features::kBackupRefPtrEnabledProcessesParam.Get() ==
-           base::features::BackupRefPtrEnabledProcesses::kBrowserAndRenderer);
+      process_affected_by_brp_flag;
 #else
-      false;
+  const bool process_affected_by_brp_flag = false;
+  const bool enable_brp = false;
 #endif
   const auto brp_setting =
       enable_brp ? partition_alloc::PartitionOptions::BackupRefPtr::kEnabled
@@ -102,6 +105,12 @@ bool Partitions::InitializeOnce() {
       enable_brp && brp_mode == base::features::BackupRefPtrMode::kEnabled
           ? partition_alloc::PartitionOptions::BackupRefPtrZapping::kEnabled
           : partition_alloc::PartitionOptions::BackupRefPtrZapping::kDisabled;
+  const auto add_dummy_ref_count_setting =
+      process_affected_by_brp_flag &&
+              brp_mode ==
+                  base::features::BackupRefPtrMode::kDisabledButAddDummyRefCount
+          ? partition_alloc::PartitionOptions::AddDummyRefCount::kEnabled
+          : partition_alloc::PartitionOptions::AddDummyRefCount::kDisabled;
   scan_is_enabled_ =
       !enable_brp &&
 #if defined(PA_ALLOW_PCSCAN)
@@ -138,6 +147,7 @@ bool Partitions::InitializeOnce() {
         brp_setting,
         brp_zapping_setting,
         partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
+        add_dummy_ref_count_setting,
     });
     fast_malloc_root_ = fast_malloc_allocator->root();
   }
@@ -154,6 +164,7 @@ bool Partitions::InitializeOnce() {
       brp_setting,
       brp_zapping_setting,
       partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
+      add_dummy_ref_count_setting,
   });
   buffer_root_ = buffer_allocator->root();
 

@@ -561,6 +561,7 @@ void ConfigurePartitions(
     EnableBrpZapping enable_brp_zapping,
     SplitMainPartition split_main_partition,
     UseDedicatedAlignedPartition use_dedicated_aligned_partition,
+    AddDummyRefCount add_dummy_ref_count,
     AlternateBucketDistribution use_alternate_bucket_distribution) {
   // BRP cannot be enabled without splitting the main partition. Furthermore, in
   // the "before allocation" mode, it can't be enabled without further splitting
@@ -610,7 +611,7 @@ void ConfigurePartitions(
   // shouldn't bite us here. Mentioning just in case we move this code earlier.
   static partition_alloc::internal::base::NoDestructor<
       partition_alloc::ThreadSafePartitionRoot>
-      new_main_partition(partition_alloc::PartitionOptions{
+      new_main_partition(partition_alloc::PartitionOptions(
           !use_dedicated_aligned_partition
               ? partition_alloc::PartitionOptions::AlignedAlloc::kAllowed
               : partition_alloc::PartitionOptions::AlignedAlloc::kDisallowed,
@@ -625,7 +626,10 @@ void ConfigurePartitions(
               : partition_alloc::PartitionOptions::BackupRefPtrZapping::
                     kDisabled,
           partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
-      });
+          add_dummy_ref_count
+              ? partition_alloc::PartitionOptions::AddDummyRefCount::kEnabled
+              : partition_alloc::PartitionOptions::AddDummyRefCount::
+                    kDisabled));
   partition_alloc::ThreadSafePartitionRoot* new_root = new_main_partition.get();
 
   partition_alloc::ThreadSafePartitionRoot* new_aligned_root;

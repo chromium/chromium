@@ -314,6 +314,9 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
       case features::BackupRefPtrMode::kDisabledButSplitPartitions3Way:
         brp_group_name = "DisabledBut3WaySplit";
         break;
+      case features::BackupRefPtrMode::kDisabledButAddDummyRefCount:
+        brp_group_name = "DisabledButAddDummyRefCount";
+        break;
     }
 
     if (features::kBackupRefPtrModeParam.Get() !=

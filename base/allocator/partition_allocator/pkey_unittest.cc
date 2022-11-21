@@ -102,6 +102,7 @@ class PkeyTest : public testing::Test {
         partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
         partition_alloc::PartitionOptions::BackupRefPtrZapping::kDisabled,
         partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
+        partition_alloc::PartitionOptions::AddDummyRefCount::kDisabled,
         isolatedGlobals.pkey,
     });
     isolatedGlobals.allocatorRoot = isolatedGlobals.allocator->root();
