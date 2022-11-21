@@ -49,7 +49,7 @@ class FencedFrameBenchmark(_AdFramesBase):
 
   @classmethod
   def Name(cls):
-    return 'UNSCHEDULED_ad_frames.fencedframe'
+    return 'ad_frames.fencedframe'
 
 
 @benchmark.Info(emails=['lbrady@google.com'],

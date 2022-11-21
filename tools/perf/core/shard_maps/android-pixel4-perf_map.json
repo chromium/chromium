@@ -1,11 +1,14 @@
 {
     "0": {
         "benchmarks": {
+            "ad_frames.fencedframe": {
+                "abridged": false
+            },
             "blink_perf.accessibility": {
                 "abridged": false
             },
             "blink_perf.bindings": {
-                "end": 31,
+                "end": 26,
                 "abridged": false
             },
             "jetstream2": {
@@ -19,7 +22,7 @@
     "1": {
         "benchmarks": {
             "blink_perf.bindings": {
-                "begin": 31,
+                "begin": 26,
                 "abridged": false
             },
             "blink_perf.css": {
@@ -32,10 +35,7 @@
                 "abridged": false
             },
             "blink_perf.image_decoder": {
-                "abridged": false
-            },
-            "blink_perf.layout": {
-                "end": 4,
+                "end": 9,
                 "abridged": false
             },
             "jetstream2": {
@@ -48,9 +48,12 @@
     },
     "2": {
         "benchmarks": {
+            "blink_perf.image_decoder": {
+                "begin": 9,
+                "abridged": false
+            },
             "blink_perf.layout": {
-                "begin": 4,
-                "end": 102,
+                "end": 101,
                 "abridged": false
             },
             "jetstream2": {
@@ -64,7 +67,7 @@
     "3": {
         "benchmarks": {
             "blink_perf.layout": {
-                "begin": 102,
+                "begin": 101,
                 "abridged": false
             },
             "blink_perf.owp_storage": {
@@ -453,15 +456,15 @@
         }
     },
     "extra_infos": {
-        "num_stories": 1242,
-        "predicted_min_shard_time": 1193.0,
-        "predicted_min_shard_index": 3,
+        "num_stories": 1249,
+        "predicted_min_shard_time": 1206.0,
+        "predicted_min_shard_index": 21,
         "predicted_max_shard_time": 1573.0,
         "predicted_max_shard_index": 27,
-        "shard #0": 1270.0,
-        "shard #1": 1268.0,
-        "shard #2": 1271.0,
-        "shard #3": 1193.0,
+        "shard #0": 1271.0,
+        "shard #1": 1273.0,
+        "shard #2": 1255.0,
+        "shard #3": 1273.0,
         "shard #4": 1312.0,
         "shard #5": 1271.0,
         "shard #6": 1252.0,

@@ -1,6 +1,9 @@
 {
     "0": {
         "benchmarks": {
+            "ad_frames.fencedframe": {
+                "abridged": false
+            },
             "blink_perf.accessibility": {
                 "abridged": false
             },
@@ -163,12 +166,12 @@
         }
     },
     "extra_infos": {
-        "num_stories": 1199,
+        "num_stories": 1204,
         "predicted_min_shard_time": 25857.0,
         "predicted_min_shard_index": 3,
-        "predicted_max_shard_time": 26028.0,
+        "predicted_max_shard_time": 26078.0,
         "predicted_max_shard_index": 0,
-        "shard #0": 26028.0,
+        "shard #0": 26078.0,
         "shard #1": 25922.0,
         "shard #2": 25909.0,
         "shard #3": 25857.0
