@@ -194,6 +194,15 @@ std::unique_ptr<ScrollEvent> CreateScrollEvent(EventType type,
     GetFlingDataFromXEvent(xev, &x_offset, &y_offset, &x_offset_ordinal,
                            &y_offset_ordinal, nullptr);
   }
+  // When lifting up fingers x_offset and y_offset both have the value 0
+  // If this is the case ET_SCROLL_FLING_START needs to be emitted, in order to
+  // trigger touchpad overscroll navigation gesture.
+  // x_offset and y_offset should not be manipulated, however, since some X11
+  // drivers such as synaptics simulate the fling themselves
+  if (!x_offset && !y_offset) {
+    type = ET_SCROLL_FLING_START;
+  }
+
   auto event = std::make_unique<ScrollEvent>(
       type, EventLocationFromXEvent(xev), EventTimeFromXEvent(xev),
       EventFlagsFromXEvent(xev), x_offset, y_offset, x_offset_ordinal,
@@ -203,7 +212,8 @@ std::unique_ptr<ScrollEvent> CreateScrollEvent(EventType type,
   // We need to filter zero scroll offset here. Because MouseWheelEventQueue
   // assumes we'll never get a zero scroll offset event and we need delta to
   // determine which element to scroll on phaseBegan.
-  return (event->x_offset() != 0.0 || event->y_offset() != 0.0)
+  return (event->x_offset() != 0.0 || event->y_offset() != 0.0 ||
+          event->type() == ET_SCROLL_FLING_START)
              ? std::move(event)
              : nullptr;
 }

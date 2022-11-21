@@ -238,4 +238,44 @@ TEST(XEventTranslationTest, KeyModifiersCounterpartRepeat) {
   EXPECT_EQ(ET_KEY_RELEASED, keyev_shift_r_released->type());
 }
 
+// Verifies that scroll events remain ET_SCROLL type or are translated to
+// ET_SCROLL_FLING_START depending on their X and Y offsets.
+TEST(XEventTranslationTest, ScrollEventType) {
+  int device_id = 1;
+  ui::SetUpTouchPadForTest(device_id);
+
+  struct ScrollEventTestData {
+    int x_offset_;
+    int y_offset_;
+    int x_offset_ordinal_;
+    int y_offset_ordinal_;
+    EventType expectedEventType_;
+  };
+  const std::vector<ScrollEventTestData> test_data = {
+      // Ordinary horizontal scrolling remains ET_SCROLL.
+      {1, 0, 1, 0, EventType::ET_SCROLL},
+      // Ordinary vertical scrolling remains ET_SCROLL.
+      {0, 10, 0, 10, EventType::ET_SCROLL},
+      // Ordinary diagonal scrolling remains ET_SCROLL.
+      {47, -11, 47, -11, EventType::ET_SCROLL},
+      // If x_offset and y_offset both are 0, expected event type is
+      // ET_SCROLL_FLING_START and not ET_SCROLL.
+      {0, 0, 0, 0, EventType::ET_SCROLL_FLING_START}};
+
+  for (const auto& data : test_data) {
+    ui::ScopedXI2Event xev;
+    xev.InitScrollEvent(device_id, data.x_offset_, data.y_offset_,
+                        data.x_offset_ordinal_, data.y_offset_ordinal_, 2);
+
+    const auto event = BuildEventFromXEvent(*xev);
+    EXPECT_TRUE(event);
+    EXPECT_EQ(event->type(), data.expectedEventType_);
+
+    const ScrollEvent* scroll_event = static_cast<ScrollEvent*>(event.get());
+    EXPECT_EQ(scroll_event->x_offset(), data.x_offset_);
+    EXPECT_EQ(scroll_event->y_offset(), data.y_offset_);
+    EXPECT_EQ(scroll_event->x_offset_ordinal(), data.x_offset_ordinal_);
+    EXPECT_EQ(scroll_event->y_offset_ordinal(), data.y_offset_ordinal_);
+  }
+}
 }  // namespace ui
