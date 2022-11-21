@@ -3030,7 +3030,6 @@ crbug.com/626703 [ Mac12 ] external/wpt/html/browsers/browsing-the-web/overlappi
 crbug.com/626703 [ Win11 ] external/wpt/speculation-rules/prerender/opt-out.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-video.https.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-video.https.html [ Timeout ]
-crbug.com/626703 [ Win10.20h2 ] virtual/close-watcher/external/wpt/close-watcher/user-activation.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/prerender/external/wpt/speculation-rules/prerender/opt-out.html [ Skip Timeout ]
 crbug.com/626703 [ Win11 ] wpt_internal/bluetooth/characteristic/notifications/gc-with-pending-stop.https.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/css/css-grid/subgrid/grid-gap-010.html [ Failure ]
@@ -6942,3 +6941,7 @@ crbug.com/1386241 wpt_internal/bluetooth/service/getCharacteristics/gen-garbage-
 # Sheriff 2022-11-21
 crbug.com/1380188 external/wpt/html/browsers/browsing-the-web/history-traversal/event-order/before-load-hash.html [ Failure Pass ]
 crbug.com/1385809 external/wpt/clipboard-apis/async-navigator-clipboard-basics.https.html [ Failure Pass Timeout ]
+crbug.com/1385548 [ Win ] external/wpt/close-watcher/user-activation.html [ Pass Timeout ]
+crbug.com/1385548 [ Mac ] external/wpt/close-watcher/user-activation.html [ Pass Timeout ]
+crbug.com/1385548 [ Win ] virtual/close-watcher/external/wpt/close-watcher/user-activation.html [ Pass Timeout ]
+crbug.com/1385548 [ Mac ] virtual/close-watcher/external/wpt/close-watcher/user-activation.html [ Pass Timeout ]
