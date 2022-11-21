@@ -2969,18 +2969,6 @@ void AXObjectCacheImpl::FireAXEventImmediately(
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
 #endif  // DCHECK_IS_ON()
 
-  if (event_type == ax::mojom::blink::Event::kChildrenChanged &&
-      obj->CachedParentObject()) {
-    const bool was_ignored = obj->LastKnownIsIgnoredValue();
-    const bool was_in_tree = obj->LastKnownIsIncludedInTreeValue();
-    obj->UpdateCachedAttributeValuesIfNeeded(false);
-    const bool is_ignored = obj->LastKnownIsIgnoredValue();
-    const bool is_in_tree = obj->LastKnownIsIncludedInTreeValue();
-
-    if (is_ignored != was_ignored || was_in_tree != is_in_tree)
-      ChildrenChangedWithCleanLayout(obj->CachedParentObject());
-  }
-
   PostPlatformNotification(obj, event_type, event_from, event_from_action,
                            event_intents);
 }
