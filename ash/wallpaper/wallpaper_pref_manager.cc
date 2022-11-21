@@ -141,11 +141,6 @@ bool GetWallpaperInfo(const AccountId& account_id,
     return false;
 
   WallpaperType wallpaper_type = static_cast<WallpaperType>(type.value());
-  if (!features::IsWallpaperGooglePhotosIntegrationEnabled() &&
-      (wallpaper_type == WallpaperType::kOnceGooglePhotos ||
-       wallpaper_type == WallpaperType::kDailyGooglePhotos)) {
-    return false;
-  }
   info->type = wallpaper_type;
 
   int64_t date_val;

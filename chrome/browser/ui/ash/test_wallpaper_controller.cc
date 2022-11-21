@@ -81,10 +81,6 @@ void TestWallpaperController::SetGooglePhotosWallpaper(
     const ash::GooglePhotosWallpaperParams& params,
     SetWallpaperCallback callback) {
   ++set_google_photos_wallpaper_count_;
-  if (!ash::features::IsWallpaperGooglePhotosIntegrationEnabled()) {
-    std::move(callback).Run(/*success=*/false);
-    return;
-  }
   wallpaper_info_ = ash::WallpaperInfo(params);
   std::move(callback).Run(/*success=*/true);
 }

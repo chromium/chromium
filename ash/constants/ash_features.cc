@@ -2068,11 +2068,6 @@ BASE_FEATURE(kWallpaperFullScreenPreview,
              "WallpaperFullScreenPreview",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable Google Photos integration in the new wallpaper experience.
-BASE_FEATURE(kWallpaperGooglePhotosIntegration,
-             "WallpaperGooglePhotosIntegration",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable different wallpapers per desk.
 BASE_FEATURE(kWallpaperPerDesk,
              "WallpaperPerDesk",
@@ -3125,10 +3120,6 @@ bool IsWallpaperFastRefreshEnabled() {
 
 bool IsWallpaperFullScreenPreviewEnabled() {
   return base::FeatureList::IsEnabled(kWallpaperFullScreenPreview);
-}
-
-bool IsWallpaperGooglePhotosIntegrationEnabled() {
-  return base::FeatureList::IsEnabled(kWallpaperGooglePhotosIntegration);
 }
 
 bool IsWallpaperPerDeskEnabled() {

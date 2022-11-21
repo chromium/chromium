@@ -352,8 +352,7 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
                      features::IsWallpaperFullScreenPreviewEnabled());
 
   source->AddBoolean("isGooglePhotosIntegrationEnabled",
-                     features::IsWallpaperGooglePhotosIntegrationEnabled() &&
-                         wallpaper_provider_->IsEligibleForGooglePhotos());
+                     wallpaper_provider_->IsEligibleForGooglePhotos());
 
   source->AddBoolean("isDarkLightModeEnabled",
                      features::IsDarkLightModeEnabled());

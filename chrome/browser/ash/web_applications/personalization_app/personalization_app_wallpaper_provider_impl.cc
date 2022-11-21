@@ -265,16 +265,6 @@ void PersonalizationAppWallpaperProviderImpl::FetchImagesForCollection(
 void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosAlbums(
     const absl::optional<std::string>& resume_token,
     FetchGooglePhotosAlbumsCallback callback) {
-  if (!ash::features::IsWallpaperGooglePhotosIntegrationEnabled()) {
-    mojo::ReportBadMessage(
-        "Cannot call `FetchGooglePhotosAlbums()` without Google Photos "
-        "Wallpaper integration enabled.");
-    std::move(callback).Run(
-        ash::personalization_app::mojom::FetchGooglePhotosAlbumsResponse::New(
-            absl::nullopt, absl::nullopt));
-    return;
-  }
-
   if (!is_google_photos_enterprise_enabled_) {
     mojo::ReportBadMessage(
         "Cannot call `FetchGooglePhotosAlbums()` without confirming that the "
@@ -296,7 +286,7 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosAlbums(
 
 void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosEnabled(
     FetchGooglePhotosEnabledCallback callback) {
-  if (!ash::features::IsWallpaperGooglePhotosIntegrationEnabled()) {
+  if (!IsEligibleForGooglePhotos()) {
     mojo::ReportBadMessage(
         "Cannot call `FetchGooglePhotosEnabled()` without Google Photos "
         "Wallpaper integration enabled.");
@@ -322,16 +312,6 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosPhotos(
     const absl::optional<std::string>& album_id,
     const absl::optional<std::string>& resume_token,
     FetchGooglePhotosPhotosCallback callback) {
-  if (!ash::features::IsWallpaperGooglePhotosIntegrationEnabled()) {
-    mojo::ReportBadMessage(
-        "Cannot call `FetchGooglePhotosPhotos()` without Google Photos "
-        "Wallpaper integration enabled.");
-    std::move(callback).Run(
-        ash::personalization_app::mojom::FetchGooglePhotosPhotosResponse::New(
-            absl::nullopt, absl::nullopt));
-    return;
-  }
-
   if (!is_google_photos_enterprise_enabled_) {
     mojo::ReportBadMessage(
         "Cannot call `FetchGooglePhotosPhotos()` without confirming that the "

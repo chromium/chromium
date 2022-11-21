@@ -23,8 +23,7 @@ var PersonalizationAppComponentBrowserTest = class extends PolymerTest {
   get featureList() {
     return {
       enabled: [
-        'ash::features::kWallpaperGooglePhotosIntegration',
-        'ash::features::kAmbientSubpageUIChange'
+        'ash::features::kAmbientSubpageUIChange',
       ]
     };
   }

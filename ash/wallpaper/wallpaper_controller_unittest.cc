@@ -2236,10 +2236,6 @@ TEST_F(WallpaperControllerTest, UpdateCurrentWallpaperLayout) {
   EXPECT_EQ(wallpaper_info, expected_custom_wallpaper_info);
 
   {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures(
-        {ash::features::kWallpaperGooglePhotosIntegration}, {});
-
     // Now set a Google Photos wallpaper. Verify that it's set successfully and
     // the wallpaper info is updated.
     ClearWallpaperCount();
@@ -4355,15 +4351,7 @@ class WallpaperControllerGooglePhotosWallpaperTest
     : public WallpaperControllerTest,
       public testing::WithParamInterface<bool> {
  public:
-  WallpaperControllerGooglePhotosWallpaperTest() {
-    if (GooglePhotosEnabled()) {
-      scoped_feature_list_.InitWithFeatures(
-          {ash::features::kWallpaperGooglePhotosIntegration}, {});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {}, {ash::features::kWallpaperGooglePhotosIntegration});
-    }
-  }
+  WallpaperControllerGooglePhotosWallpaperTest() = default;
 
   WallpaperControllerGooglePhotosWallpaperTest(
       const WallpaperControllerGooglePhotosWallpaperTest&) = delete;
@@ -4371,8 +4359,6 @@ class WallpaperControllerGooglePhotosWallpaperTest
       const WallpaperControllerGooglePhotosWallpaperTest&) = delete;
 
   ~WallpaperControllerGooglePhotosWallpaperTest() override = default;
-
-  bool GooglePhotosEnabled() const { return GetParam(); }
 
   void WaitForWallpaperCount(int count) {
     base::RunLoop run_loop;
@@ -4386,17 +4372,9 @@ class WallpaperControllerGooglePhotosWallpaperTest
                           }));
     run_loop.Run();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         WallpaperControllerGooglePhotosWallpaperTest,
-                         testing::Bool());
-
-TEST_P(WallpaperControllerGooglePhotosWallpaperTest, SetGooglePhotosWallpaper) {
-  bool feature_enabled = GooglePhotosEnabled();
+TEST_F(WallpaperControllerGooglePhotosWallpaperTest, SetGooglePhotosWallpaper) {
   SimulateUserLogin(kAccountId1);
 
   // First set the wallpaper to an Online one so we can tell for sure if setting
@@ -4428,22 +4406,20 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest, SetGooglePhotosWallpaper) {
                                      /*preview_mode=*/false, "dedup_key");
 
   controller_->SetGooglePhotosWallpaper(params, base::DoNothing());
-  if (feature_enabled)
-    ++expected_wallpaper_count;
+  ++expected_wallpaper_count;
 
   WaitForWallpaperCount(expected_wallpaper_count);
 
-  EXPECT_EQ(feature_enabled, controller_->GetWallpaperType() ==
-                                 WallpaperType::kOnceGooglePhotos);
+  EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnceGooglePhotos);
 
   WallpaperInfo wallpaper_info;
   EXPECT_TRUE(
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
   WallpaperInfo expected_wallpaper_info(params);
-  EXPECT_EQ(feature_enabled, wallpaper_info == expected_wallpaper_info);
+  EXPECT_EQ(wallpaper_info, expected_wallpaper_info);
 }
 
-TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
+TEST_F(WallpaperControllerGooglePhotosWallpaperTest,
        SetGooglePhotosWallpaperFails) {
   SimulateUserLogin(kAccountId1);
 
@@ -4486,7 +4462,7 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
   EXPECT_EQ(wallpaper_info, expected_wallpaper_info);
 }
 
-TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
+TEST_F(WallpaperControllerGooglePhotosWallpaperTest,
        RetryTimerTriggersOnFailedFetchPhotoForStalenessCheck) {
   using base::Time;
 
@@ -4504,16 +4480,11 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
       controller_->GetUpdateWallpaperTimerForTesting().desired_run_time();
   base::TimeDelta delay = run_time - Time::Now();
 
-  // If the feature is disabled, setting a GooglePhotos wallpaper is a nop.
-  if (GooglePhotosEnabled()) {
-    base::TimeDelta one_day = base::Days(1);
-    // Leave a little wiggle room, as well as account for the hour fuzzing that
-    // we do.
-    EXPECT_GE(delay, one_day - base::Minutes(1));
-    EXPECT_LE(delay, one_day + base::Minutes(61));
-  } else {
-    EXPECT_FALSE(controller_->GetUpdateWallpaperTimerForTesting().IsRunning());
-  }
+  base::TimeDelta one_day = base::Days(1);
+  // Leave a little wiggle room, as well as account for the hour fuzzing that
+  // we do.
+  EXPECT_GE(delay, one_day - base::Minutes(1));
+  EXPECT_LE(delay, one_day + base::Minutes(61));
 
   client_.set_fetch_google_photos_photo_fails(true);
 
@@ -4528,14 +4499,12 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
 
   // The cache check does not happen when the feature is disabled, since the
   // local `WallpaperInfo` is rejected.
-  if (GooglePhotosEnabled()) {
-    // Leave a little wiggle room.
-    EXPECT_GE(delay, one_hour - base::Minutes(1));
-    EXPECT_LE(delay, one_hour + base::Minutes(1));
-  }
+  // Leave a little wiggle room.
+  EXPECT_GE(delay, one_hour - base::Minutes(1));
+  EXPECT_LE(delay, one_hour + base::Minutes(1));
 }
 
-TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
+TEST_F(WallpaperControllerGooglePhotosWallpaperTest,
        ResetToDefaultForDeletedPhotoOnStalenessCheck) {
   SimulateUserLogin(kAccountId1);
 
@@ -4547,14 +4516,12 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
   client_.set_google_photo_has_been_deleted(true);
   // Trigger Google Photos wallpaper cache check.
   controller_->OnActiveUserSessionChanged(kAccountId1);
-  if (GooglePhotosEnabled())
-    WaitForWallpaperCount(1);
+  WaitForWallpaperCount(1);
 
-  EXPECT_EQ(GooglePhotosEnabled(),
-            controller_->GetWallpaperType() == WallpaperType::kDefault);
+  EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kDefault);
 }
 
-TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
+TEST_F(WallpaperControllerGooglePhotosWallpaperTest,
        GooglePhotosAreCachedOnDisk) {
   SimulateUserLogin(kAccountId1);
 
@@ -4565,17 +4532,17 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
        WALLPAPER_LAYOUT_STRETCH,
        /*preview_mode=*/false, "dedup_key"},
       google_photos_future.GetCallback());
-  EXPECT_EQ(GooglePhotosEnabled(), google_photos_future.Get());
+  EXPECT_TRUE(google_photos_future.Get());
   RunAllTasksUntilIdle();
 
   base::FilePath saved_wallpaper = online_wallpaper_dir_.GetPath()
                                        .Append("google_photos/")
                                        .Append(kAccountId1.GetAccountIdKey())
                                        .Append(kFakeGooglePhotosPhotoId);
-  ASSERT_EQ(GooglePhotosEnabled(), base::PathExists(saved_wallpaper));
+  ASSERT_TRUE(base::PathExists(saved_wallpaper));
 }
 
-TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
+TEST_F(WallpaperControllerGooglePhotosWallpaperTest,
        GooglePhotosAreCachedInMemory) {
   SimulateUserLogin(kAccountId1);
 
@@ -4591,20 +4558,19 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
        WALLPAPER_LAYOUT_STRETCH,
        /*preview_mode=*/false, "dedup_key"},
       google_photos_future.GetCallback());
-  EXPECT_EQ(GooglePhotosEnabled(), google_photos_future.Get());
+  EXPECT_TRUE(google_photos_future.Get());
   RunAllTasksUntilIdle();
 
   // We store an empty path for Google Photos wallpapers in the in-memory cache
   // because storing the real path correctly would require updating the cache
   // after the asynchronous save operation, and we have no use for it anyway.
-  EXPECT_EQ(GooglePhotosEnabled(),
-            controller_->GetPathFromCache(kAccountId1, &path));
+  EXPECT_TRUE(controller_->GetPathFromCache(kAccountId1, &path));
   EXPECT_TRUE(path.empty());
-  EXPECT_EQ(GooglePhotosEnabled(),
-            controller_->GetWallpaperFromCache(kAccountId1, &cached_wallpaper));
+  EXPECT_TRUE(
+      controller_->GetWallpaperFromCache(kAccountId1, &cached_wallpaper));
 }
 
-TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
+TEST_F(WallpaperControllerGooglePhotosWallpaperTest,
        GooglePhotosAreReadFromCache) {
   SimulateUserLogin(kAccountId1);
 
@@ -4616,7 +4582,7 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
                                       /*preview_mode=*/false, "dedup_key"});
   controller_->SetGooglePhotosWallpaper(params,
                                         google_photos_future.GetCallback());
-  EXPECT_EQ(GooglePhotosEnabled(), google_photos_future.Get());
+  EXPECT_TRUE(google_photos_future.Get());
   RunAllTasksUntilIdle();
 
   controller_->ShowUserWallpaper(kAccountId1);
@@ -4624,16 +4590,14 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
   // When Google Photos is disabled, the wallpaper will not be in disk cache,
   // so it will attempt to read from disk, fail to find it, and then reset to
   // the default wallpaper.
-  const size_t expected_decodes = GooglePhotosEnabled() ? 0 : 1;
-  const WallpaperType expected_type = GooglePhotosEnabled()
-                                          ? WallpaperType::kOnceGooglePhotos
-                                          : WallpaperType::kDefault;
+  const size_t expected_decodes = 0;
+  const WallpaperType expected_type = WallpaperType::kOnceGooglePhotos;
 
   EXPECT_EQ(expected_decodes, GetDecodeFilePaths().size());
   EXPECT_EQ(expected_type, controller_->GetWallpaperType());
 }
 
-TEST_P(WallpaperControllerGooglePhotosWallpaperTest, ConfirmPreviewWallpaper) {
+TEST_F(WallpaperControllerGooglePhotosWallpaperTest, ConfirmPreviewWallpaper) {
   // Verify the user starts with a default wallpaper and the user wallpaper info
   // is initialized with default values.
   SimulateUserLogin(kAccountId1);
@@ -4665,42 +4629,36 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest, ConfirmPreviewWallpaper) {
       {kAccountId1, photo_id, /*daily_refresh_enabled=*/false, layout,
        /*preview_mode=*/true, "dedup_key"},
       google_photos_future.GetCallback());
-  EXPECT_EQ(google_photos_future.Get(), GooglePhotosEnabled());
+  EXPECT_TRUE(google_photos_future.Get());
   RunAllTasksUntilIdle();
-  EXPECT_EQ(GetWallpaperCount(), GooglePhotosEnabled() ? 1 : 0);
-  EXPECT_EQ(controller_->GetWallpaperType(),
-            GooglePhotosEnabled() ? WallpaperType::kOnceGooglePhotos
-                                  : WallpaperType::kDefault);
+  EXPECT_EQ(GetWallpaperCount(), 1);
+  EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnceGooglePhotos);
 
   // Verify that the user wallpaper info remains unchanged during the preview.
   EXPECT_TRUE(
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &user_wallpaper_info));
   EXPECT_EQ(user_wallpaper_info, default_wallpaper_info);
-  histogram_tester().ExpectTotalCount("Ash.Wallpaper.Preview.Show",
-                                      GooglePhotosEnabled() ? 1 : 0);
+  histogram_tester().ExpectTotalCount("Ash.Wallpaper.Preview.Show", 1);
 
-  if (GooglePhotosEnabled()) {
-    // Now confirm the preview wallpaper, verify that there's no wallpaper
-    // change because the wallpaper is already shown.
-    ClearWallpaperCount();
-    controller_->ConfirmPreviewWallpaper();
-    RunAllTasksUntilIdle();
-    EXPECT_EQ(GetWallpaperCount(), 0);
-    EXPECT_EQ(controller_->GetWallpaperType(),
-              WallpaperType::kOnceGooglePhotos);
+  // Now confirm the preview wallpaper, verify that there's no wallpaper
+  // change because the wallpaper is already shown.
+  ClearWallpaperCount();
+  controller_->ConfirmPreviewWallpaper();
+  RunAllTasksUntilIdle();
+  EXPECT_EQ(GetWallpaperCount(), 0);
+  EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnceGooglePhotos);
 
-    // Verify that the user wallpaper info is now updated to the Google Photos
-    // wallpaper info.
-    WallpaperInfo google_photos_wallpaper_info(
-        photo_id, layout, WallpaperType::kOnceGooglePhotos,
-        base::Time::Now().LocalMidnight());
-    EXPECT_TRUE(
-        pref_manager_->GetUserWallpaperInfo(kAccountId1, &user_wallpaper_info));
-    EXPECT_EQ(user_wallpaper_info, google_photos_wallpaper_info);
-  }
+  // Verify that the user wallpaper info is now updated to the Google Photos
+  // wallpaper info.
+  WallpaperInfo google_photos_wallpaper_info(photo_id, layout,
+                                             WallpaperType::kOnceGooglePhotos,
+                                             base::Time::Now().LocalMidnight());
+  EXPECT_TRUE(
+      pref_manager_->GetUserWallpaperInfo(kAccountId1, &user_wallpaper_info));
+  EXPECT_EQ(user_wallpaper_info, google_photos_wallpaper_info);
 }
 
-TEST_P(WallpaperControllerGooglePhotosWallpaperTest, CancelPreviewWallpaper) {
+TEST_F(WallpaperControllerGooglePhotosWallpaperTest, CancelPreviewWallpaper) {
   // Verify the user starts with a default wallpaper and the user wallpaper info
   // is initialized with default values.
   SimulateUserLogin(kAccountId1);
@@ -4731,33 +4689,28 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest, CancelPreviewWallpaper) {
       {kAccountId1, photo_id, /*daily_refresh_enabled=*/false,
        WALLPAPER_LAYOUT_STRETCH, /*preview_mode=*/true, "dedup_key"},
       google_photos_future.GetCallback());
-  EXPECT_EQ(google_photos_future.Get(), GooglePhotosEnabled());
+  EXPECT_TRUE(google_photos_future.Get());
   RunAllTasksUntilIdle();
-  EXPECT_EQ(GetWallpaperCount(), GooglePhotosEnabled() ? 1 : 0);
-  EXPECT_EQ(controller_->GetWallpaperType(),
-            GooglePhotosEnabled() ? WallpaperType::kOnceGooglePhotos
-                                  : WallpaperType::kDefault);
+  EXPECT_EQ(GetWallpaperCount(), 1);
+  EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnceGooglePhotos);
 
   // Verify that the user wallpaper info remains unchanged during the preview.
   EXPECT_TRUE(
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &user_wallpaper_info));
   EXPECT_EQ(user_wallpaper_info, default_wallpaper_info);
-  histogram_tester().ExpectTotalCount("Ash.Wallpaper.Preview.Show",
-                                      GooglePhotosEnabled() ? 1 : 0);
+  histogram_tester().ExpectTotalCount("Ash.Wallpaper.Preview.Show", 1);
 
-  if (GooglePhotosEnabled()) {
-    // Now cancel the preview. Verify the wallpaper changes back to the default
-    // and the user wallpaper info remains unchanged.
-    ClearWallpaperCount();
-    controller_->CancelPreviewWallpaper();
-    RunAllTasksUntilIdle();
-    EXPECT_EQ(GetWallpaperCount(), 1);
-    EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kDefault);
-    EXPECT_EQ(user_wallpaper_info, default_wallpaper_info);
-  }
+  // Now cancel the preview. Verify the wallpaper changes back to the default
+  // and the user wallpaper info remains unchanged.
+  ClearWallpaperCount();
+  controller_->CancelPreviewWallpaper();
+  RunAllTasksUntilIdle();
+  EXPECT_EQ(GetWallpaperCount(), 1);
+  EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kDefault);
+  EXPECT_EQ(user_wallpaper_info, default_wallpaper_info);
 }
 
-TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
+TEST_F(WallpaperControllerGooglePhotosWallpaperTest,
        WallpaperSyncedDuringPreview) {
   // Verify the user starts with a default wallpaper and the user wallpaper info
   // is initialized with default values.
@@ -4790,60 +4743,54 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
       {kAccountId1, photo_id, /*daily_refresh_enabled=*/false, layout,
        /*preview_mode=*/true, "dedup_key"},
       google_photos_future.GetCallback());
-  EXPECT_EQ(google_photos_future.Get(), GooglePhotosEnabled());
+  EXPECT_TRUE(google_photos_future.Get());
   RunAllTasksUntilIdle();
-  EXPECT_EQ(GetWallpaperCount(), GooglePhotosEnabled() ? 1 : 0);
-  EXPECT_EQ(controller_->GetWallpaperType(),
-            GooglePhotosEnabled() ? WallpaperType::kOnceGooglePhotos
-                                  : WallpaperType::kDefault);
+  EXPECT_EQ(GetWallpaperCount(), 1);
+  EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnceGooglePhotos);
 
   // Verify that the user wallpaper info remains unchanged during the preview.
   EXPECT_TRUE(
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &user_wallpaper_info));
   EXPECT_EQ(user_wallpaper_info, default_wallpaper_info);
-  histogram_tester().ExpectTotalCount("Ash.Wallpaper.Preview.Show",
-                                      GooglePhotosEnabled() ? 1 : 0);
+  histogram_tester().ExpectTotalCount("Ash.Wallpaper.Preview.Show", 1);
 
   // Now set a custom wallpaper for the user and disable preview (this happens
   // if a custom wallpaper set on another device is being synced). Verify
   // there's no wallpaper change since preview mode shouldn't be interrupted.
-  if (GooglePhotosEnabled()) {
-    gfx::ImageSkia synced_custom_wallpaper =
-        CreateImage(640, 480, kWallpaperColor);
-    ClearWallpaperCount();
-    controller_->SetDecodedCustomWallpaper(
-        kAccountId1, kFileName1, layout,
-        /*preview_mode=*/false, base::DoNothing(),
-        /*file_path=*/"", synced_custom_wallpaper);
-    RunAllTasksUntilIdle();
-    EXPECT_EQ(GetWallpaperCount(), 0);
-    EXPECT_EQ(controller_->GetWallpaperType(),
-              WallpaperType::kOnceGooglePhotos);
+  gfx::ImageSkia synced_custom_wallpaper =
+      CreateImage(640, 480, kWallpaperColor);
+  ClearWallpaperCount();
+  controller_->SetDecodedCustomWallpaper(
+      kAccountId1, kFileName1, layout,
+      /*preview_mode=*/false, base::DoNothing(),
+      /*file_path=*/"", synced_custom_wallpaper);
+  RunAllTasksUntilIdle();
+  EXPECT_EQ(GetWallpaperCount(), 0);
+  EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnceGooglePhotos);
 
-    // However, the user wallpaper info should already be updated to the new
-    // info.
-    WallpaperInfo synced_custom_wallpaper_info(
-        base::FilePath(kWallpaperFilesId1).Append(kFileName1).value(), layout,
-        WallpaperType::kCustomized, base::Time::Now().LocalMidnight());
-    EXPECT_TRUE(
-        pref_manager_->GetUserWallpaperInfo(kAccountId1, &user_wallpaper_info));
-    EXPECT_EQ(user_wallpaper_info, synced_custom_wallpaper_info);
+  // However, the user wallpaper info should already be updated to the new
+  // info.
+  WallpaperInfo synced_custom_wallpaper_info(
+      base::FilePath(kWallpaperFilesId1).Append(kFileName1).value(), layout,
+      WallpaperType::kCustomized, base::Time::Now().LocalMidnight());
+  EXPECT_TRUE(
+      pref_manager_->GetUserWallpaperInfo(kAccountId1, &user_wallpaper_info));
+  EXPECT_EQ(user_wallpaper_info, synced_custom_wallpaper_info);
 
-    // Now cancel the preview. Verify the synced custom wallpaper is shown
-    // instead of the initial default wallpaper, and the user wallpaper info is
-    // still correct.
-    ClearWallpaperCount();
-    controller_->CancelPreviewWallpaper();
-    RunAllTasksUntilIdle();
-    EXPECT_EQ(GetWallpaperCount(), 1);
-    EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kCustomized);
-    EXPECT_TRUE(
-        pref_manager_->GetUserWallpaperInfo(kAccountId1, &user_wallpaper_info));
-    EXPECT_EQ(user_wallpaper_info, synced_custom_wallpaper_info);
-  }
+  // Now cancel the preview. Verify the synced custom wallpaper is shown
+  // instead of the initial default wallpaper, and the user wallpaper info is
+  // still correct.
+  ClearWallpaperCount();
+  controller_->CancelPreviewWallpaper();
+  RunAllTasksUntilIdle();
+  EXPECT_EQ(GetWallpaperCount(), 1);
+  EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kCustomized);
+  EXPECT_TRUE(
+      pref_manager_->GetUserWallpaperInfo(kAccountId1, &user_wallpaper_info));
+  EXPECT_EQ(user_wallpaper_info, synced_custom_wallpaper_info);
 }
 
-TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
+TEST_F(WallpaperControllerGooglePhotosWallpaperTest,
        UpdateGooglePhotosDailyRefreshWallpaper) {
   // The `TestWallpaperControllerClient` sends back the reversed
   // `collection_id` when asked to fetch a daily photo.
@@ -4863,16 +4810,12 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
   RunAllTasksUntilIdle();
 
   WallpaperInfo expected_info;
-  bool success =
-      pref_manager_->GetUserWallpaperInfo(kAccountId1, &expected_info);
-  EXPECT_EQ(success, GooglePhotosEnabled());
-  if (success) {
-    EXPECT_EQ(expected_photo_id, expected_info.location);
-    EXPECT_EQ(kFakeGooglePhotosAlbumId, expected_info.collection_id);
-  }
+  EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(kAccountId1, &expected_info));
+  EXPECT_EQ(expected_photo_id, expected_info.location);
+  EXPECT_EQ(kFakeGooglePhotosAlbumId, expected_info.collection_id);
 }
 
-TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
+TEST_F(WallpaperControllerGooglePhotosWallpaperTest,
        DailyRefreshTimerStartsForDailyGooglePhotos) {
   SimulateUserLogin(kAccountId1);
 
@@ -4892,15 +4835,11 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
   base::TimeDelta update_time =
       (base::Time::Now() + base::Days(1)).ToDeltaSinceWindowsEpoch();
 
-  if (GooglePhotosEnabled()) {
-    EXPECT_GE(run_time, update_time - base::Minutes(1));
-    EXPECT_LE(run_time, update_time + base::Minutes(61));
-  } else {
-    EXPECT_FALSE(timer.IsRunning());
-  }
+  EXPECT_GE(run_time, update_time - base::Minutes(1));
+  EXPECT_LE(run_time, update_time + base::Minutes(61));
 }
 
-TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
+TEST_F(WallpaperControllerGooglePhotosWallpaperTest,
        DailyRefreshRetryTimerStartsOnFailedFetch) {
   SimulateUserLogin(kAccountId1);
 
@@ -4922,15 +4861,11 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
   base::TimeDelta update_time =
       (base::Time::Now() + base::Hours(1)).ToDeltaSinceWindowsEpoch();
 
-  if (GooglePhotosEnabled()) {
-    EXPECT_GE(run_time, update_time - base::Minutes(1));
-    EXPECT_LE(run_time, update_time + base::Minutes(1));
-  } else {
-    EXPECT_FALSE(controller_->GetUpdateWallpaperTimerForTesting().IsRunning());
-  }
+  EXPECT_GE(run_time, update_time - base::Minutes(1));
+  EXPECT_LE(run_time, update_time + base::Minutes(1));
 }
 
-TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
+TEST_F(WallpaperControllerGooglePhotosWallpaperTest,
        EmptyDailyGooglePhotosAlbumsDoNothing) {
   SimulateUserLogin(kAccountId1);
 
@@ -4960,7 +4895,7 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
   EXPECT_EQ(online_info, current_info);
 }
 
-TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
+TEST_F(WallpaperControllerGooglePhotosWallpaperTest,
        ResetToDefaultForDeletedDailyGooglePhotosAlbums) {
   SimulateUserLogin(kAccountId1);
 
@@ -4970,14 +4905,13 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
        WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
        /*preview_mode=*/false, /*dedup_key=*/absl::nullopt},
       google_photos_future.GetCallback());
-  EXPECT_EQ(GooglePhotosEnabled(), google_photos_future.Get());
+  EXPECT_TRUE(google_photos_future.Get());
   RunAllTasksUntilIdle();
 
   WallpaperInfo current_info;
   pref_manager_->GetUserWallpaperInfo(kAccountId1, &current_info);
 
-  EXPECT_EQ(GooglePhotosEnabled(),
-            WallpaperType::kDailyGooglePhotos == current_info.type);
+  EXPECT_EQ(WallpaperType::kDailyGooglePhotos, current_info.type);
 
   // This makes the test fetch in `client_` return a null photo, but a
   // successful call, which is the sign for a deleted or empty album.
@@ -4988,11 +4922,10 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
 
   pref_manager_->GetUserWallpaperInfo(kAccountId1, &current_info);
 
-  EXPECT_EQ(GooglePhotosEnabled(),
-            WallpaperType::kDefault == current_info.type);
+  EXPECT_EQ(WallpaperType::kDefault, current_info.type);
 }
 
-TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
+TEST_F(WallpaperControllerGooglePhotosWallpaperTest,
        DailyGooglePhotosAreCached) {
   SimulateUserLogin(kAccountId1);
   // The `TestWallpaperControllerClient` sends back the reversed
@@ -5006,23 +4939,21 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
        WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
        /*preview_mode=*/false, /*dedup_key=*/absl::nullopt},
       google_photos_future.GetCallback());
-  EXPECT_EQ(GooglePhotosEnabled(), google_photos_future.Get());
+  EXPECT_TRUE(google_photos_future.Get());
   RunAllTasksUntilIdle();
 
   base::FilePath saved_wallpaper = online_wallpaper_dir_.GetPath()
                                        .Append("google_photos/")
                                        .Append(kAccountId1.GetAccountIdKey())
                                        .Append(expected_photo_id);
-  ASSERT_EQ(GooglePhotosEnabled(), base::PathExists(saved_wallpaper));
+  ASSERT_TRUE(base::PathExists(saved_wallpaper));
 }
 
-TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
+TEST_F(WallpaperControllerGooglePhotosWallpaperTest,
        ResetToDefaultWhenLoadingInvalidWallpaper) {
   SimulateUserLogin(kAccountId1);
 
-  const WallpaperType type = GooglePhotosEnabled()
-                                 ? WallpaperType::kCount
-                                 : WallpaperType::kOnceGooglePhotos;
+  const WallpaperType type = WallpaperType::kCount;
 
   WallpaperInfo info = {kFakeGooglePhotosPhotoId, WALLPAPER_LAYOUT_CENTER, type,
                         base::Time::Now()};
@@ -5033,7 +4964,7 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
   EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kDefault);
 }
 
-TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
+TEST_F(WallpaperControllerGooglePhotosWallpaperTest,
        SetGooglePhotosDailyRefreshAlbumId_UpdatesDailyRefreshTimer) {
   using base::Time;
 
@@ -5053,19 +4984,17 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
   pref_manager_->GetUserWallpaperInfo(kAccountId1, &actual);
   // Type should be `WallpaperType::kDailyGooglePhotos` now, and collection_id
   // should be updated.
-  if (GooglePhotosEnabled()) {
-    EXPECT_EQ(expected, actual);
-    EXPECT_EQ(album_id,
-              controller_->GetGooglePhotosDailyRefreshAlbumId(kAccountId1));
-    Time run_time =
-        controller_->GetUpdateWallpaperTimerForTesting().desired_run_time();
-    base::TimeDelta delay = run_time - Time::Now();
-    base::TimeDelta one_day = base::Days(1);
-    // Leave a little wiggle room, as well as account for the hour fuzzing that
-    // we do.
-    EXPECT_GE(delay, one_day - base::Minutes(1));
-    EXPECT_LE(delay, one_day + base::Minutes(61));
-  }
+  EXPECT_EQ(expected, actual);
+  EXPECT_EQ(album_id,
+            controller_->GetGooglePhotosDailyRefreshAlbumId(kAccountId1));
+  Time run_time =
+      controller_->GetUpdateWallpaperTimerForTesting().desired_run_time();
+  base::TimeDelta delay = run_time - Time::Now();
+  base::TimeDelta one_day = base::Days(1);
+  // Leave a little wiggle room, as well as account for the hour fuzzing that
+  // we do.
+  EXPECT_GE(delay, one_day - base::Minutes(1));
+  EXPECT_LE(delay, one_day + base::Minutes(61));
 }
 
 }  // namespace ash

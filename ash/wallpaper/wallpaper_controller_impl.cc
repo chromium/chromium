@@ -1152,10 +1152,6 @@ void WallpaperControllerImpl::SetOnlineWallpaperFromData(
 void WallpaperControllerImpl::SetGooglePhotosWallpaper(
     const GooglePhotosWallpaperParams& params,
     WallpaperController::SetWallpaperCallback callback) {
-  if (!features::IsWallpaperGooglePhotosIntegrationEnabled()) {
-    std::move(callback).Run(false);
-    return;
-  }
   if (!Shell::Get()->session_controller()->IsActiveUserSessionStarted() ||
       !CanSetUserWallpaper(params.account_id)) {
     std::move(callback).Run(/*success=*/false);
@@ -3296,10 +3292,6 @@ void WallpaperControllerImpl::HandleDailyWallpaperInfoSyncedIn(
 void WallpaperControllerImpl::HandleGooglePhotosWallpaperInfoSyncedIn(
     const AccountId& account_id,
     const WallpaperInfo& info) {
-  if (!features::IsWallpaperGooglePhotosIntegrationEnabled()) {
-    NOTREACHED();
-    return;
-  }
   bool daily_refresh_enabled = info.type == WallpaperType::kDailyGooglePhotos;
   if (daily_refresh_enabled) {
     // We only want to update the user's `WallpaperInfo` if this is a new
