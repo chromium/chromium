@@ -20,6 +20,7 @@ import './privacy_page/privacy_guide/privacy_guide_dialog.js';
 import './privacy_page/privacy_guide/privacy_guide_history_sync_fragment.js';
 import './privacy_page/privacy_guide/privacy_guide_msbb_fragment.js';
 import './privacy_page/privacy_guide/privacy_guide_page.js';
+import './privacy_page/privacy_sandbox/privacy_sandbox_page.js';
 import './privacy_page/security_keys_subpage.js';
 import './privacy_page/security_keys_phones_subpage.js';
 import './privacy_page/security_keys_phones_list.js';
