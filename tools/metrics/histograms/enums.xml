@@ -102673,6 +102673,7 @@ Full version information for the fingerprint enum values:
   <int value="64" label="kErrorCodeRepeatedFpFromOmahaError"/>
   <int value="65" label="kErrorCodeInvalidateLastUpdate"/>
   <int value="66" label="kErrorCodeOmahaUpdateIgnoredOverMetered"/>
+  <int value="67" label="kErrorCodeNonCriticalUpdateEnrollmentRecovery"/>
 </enum>
 
 <enum name="UpdateEngineInstallDateProvisioningSource">
