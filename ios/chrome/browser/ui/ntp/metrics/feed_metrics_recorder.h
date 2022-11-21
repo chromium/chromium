@@ -122,10 +122,10 @@ class Time;
 - (void)recordCommandID:(int)commandID;
 
 // Records that a card was shown at `index`.
-- (void)recordCardShownAtIndex:(int)index;
+- (void)recordCardShownAtIndex:(NSUInteger)index;
 
 // Records that a card was opened at `index`.
-- (void)recordCardTappedAtIndex:(int)index;
+- (void)recordCardTappedAtIndex:(NSUInteger)index;
 
 // Records if a notice card was presented at the time the feed was initially
 // loaded. e.g. Launch time, user refreshes, and account switches.
@@ -187,8 +187,10 @@ class Time;
 // Records that the feed is about to be refreshed.
 - (void)recordFeedWillRefresh;
 
-// Records that a given `feedType` was selected.
-- (void)recordFeedSelected:(FeedType)feedType;
+// Records that a given `feedType` was explicitly selected. Logs position in
+// previous feed as `index`.
+- (void)recordFeedSelected:(FeedType)feedType
+    fromPreviousFeedPosition:(NSUInteger)index;
 
 // Records the user's current follow count after a given event `logReason`.
 - (void)recordFollowCount:(NSUInteger)followCount

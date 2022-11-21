@@ -38,6 +38,9 @@
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
+// Returns the index of the last visible feed card.
+- (NSUInteger)lastVisibleFeedCardIndex;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_FEED_WRAPPER_VIEW_CONTROLLER_H_

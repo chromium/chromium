@@ -330,7 +330,7 @@ using feed::FeedUserActionType;
   base::UmaHistogramSparse(kDiscoverFeedUserActionCommandHistogram, commandID);
 }
 
-- (void)recordCardShownAtIndex:(int)index {
+- (void)recordCardShownAtIndex:(NSUInteger)index {
   switch ([self.feedControlDelegate selectedFeed]) {
     case FeedTypeDiscover:
       UMA_HISTOGRAM_EXACT_LINEAR(kDiscoverFeedCardShownAtIndex, index,
@@ -342,7 +342,7 @@ using feed::FeedUserActionType;
   }
 }
 
-- (void)recordCardTappedAtIndex:(int)index {
+- (void)recordCardTappedAtIndex:(NSUInteger)index {
   switch ([self.feedControlDelegate selectedFeed]) {
     case FeedTypeDiscover:
       UMA_HISTOGRAM_EXACT_LINEAR(kDiscoverFeedCardOpenedAtIndex, index,
@@ -461,7 +461,8 @@ using feed::FeedUserActionType;
   base::RecordAction(base::UserMetricsAction(kFeedWillRefresh));
 }
 
-- (void)recordFeedSelected:(FeedType)feedType {
+- (void)recordFeedSelected:(FeedType)feedType
+    fromPreviousFeedPosition:(NSUInteger)index {
   DCHECK(self.followDelegate);
   switch (feedType) {
     case FeedTypeDiscover:
@@ -469,12 +470,16 @@ using feed::FeedUserActionType;
                                                       kDiscoverFeedSelected
                                     asInteraction:NO];
       base::RecordAction(base::UserMetricsAction(kDiscoverFeedSelected));
+      UMA_HISTOGRAM_EXACT_LINEAR(kFollowingIndexWhenSwitchingFeed, index,
+                                 kMaxCardsInFeed);
       break;
     case FeedTypeFollowing:
       [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
                                                       kFollowingFeedSelected
                                     asInteraction:NO];
       base::RecordAction(base::UserMetricsAction(kFollowingFeedSelected));
+      UMA_HISTOGRAM_EXACT_LINEAR(kDiscoverIndexWhenSwitchingFeed, index,
+                                 kMaxCardsInFeed);
       NSUInteger followCount = [self.followDelegate followedPublisherCount];
       if (followCount > 0 &&
           [self.followDelegate doesFollowingFeedHaveContent]) {
