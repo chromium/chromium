@@ -82,21 +82,14 @@ void PressureObserver::observe(ScriptState* script_state,
   manager_->AddObserver(source, this);
 }
 
-// TODO(crbug.com/1306819): Unobserve is supposed to only stop observing
-// one source but should continue to observe other sources.
-// For now, since "cpu" is the only source, unobserve() has the same
-// functionality as disconnect().
 void PressureObserver::unobserve(V8PressureSource source) {
   // Wrong order of calls.
   if (!manager_)
     return;
 
-  // TODO(crbug.com/1306819):
-  // 1. observer needs to be dequeued from active observer list of
-  // requested source.
-  // 2. observer records from the source need to be removed from `records_`
-  // For now 'cpu' is the only source.
+  // https://wicg.github.io/compute-pressure/#the-unobserve-method
   manager_->RemoveObserver(source, this);
+  last_record_map_[static_cast<size_t>(source.AsEnum())].Clear();
   switch (source.AsEnum()) {
     case V8PressureSource::Enum::kCpu:
       records_.clear();
@@ -109,7 +102,10 @@ void PressureObserver::disconnect() {
   if (!manager_)
     return;
 
+  // https://wicg.github.io/compute-pressure/#the-disconnect-method
   manager_->RemoveObserverFromAllSources(this);
+  for (auto& last_record : last_record_map_)
+    last_record.Clear();
   records_.clear();
 }
 
