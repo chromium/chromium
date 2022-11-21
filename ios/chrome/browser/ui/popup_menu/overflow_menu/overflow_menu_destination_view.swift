@@ -164,7 +164,7 @@ struct OverflowMenuDestinationButton: ButtonStyle {
             )
             // Pad the color circle by 0.5, otherwise the color shows up faintly
             // around the border.
-            .background(Circle().foregroundColor(.blue500).padding(0.5))
+            .background(Circle().foregroundColor(.blue600).padding(0.5))
             .frame(width: Dimensions.badgeWidth, height: Dimensions.badgeWidth)
             .offset(x: Dimensions.iconWidth / 2, y: -Dimensions.iconWidth / 2)
         } else if destination.badge == .newLabel {
