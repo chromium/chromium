@@ -23,8 +23,10 @@
  * DAMAGE.
  */
 
-#include <algorithm>
 #include "third_party/blink/renderer/modules/webaudio/delay_dsp_kernel.h"
+
+#include <algorithm>
+
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 

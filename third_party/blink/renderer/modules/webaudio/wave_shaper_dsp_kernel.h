@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_WAVE_SHAPER_DSP_KERNEL_H_
 
 #include <memory>
+
 #include "third_party/blink/renderer/modules/webaudio/wave_shaper_processor.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/audio/audio_dsp_kernel.h"

@@ -23,9 +23,11 @@
  * DAMAGE.
  */
 
-#include <algorithm>
-#include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_summing_junction.h"
+
+#include <algorithm>
+
+#include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 
 namespace blink {
 

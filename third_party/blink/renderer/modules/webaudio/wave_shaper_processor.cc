@@ -23,11 +23,12 @@
  * DAMAGE.
  */
 
+#include "third_party/blink/renderer/modules/webaudio/wave_shaper_processor.h"
+
 #include <memory>
 
 #include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/modules/webaudio/wave_shaper_dsp_kernel.h"
-#include "third_party/blink/renderer/modules/webaudio/wave_shaper_processor.h"
 
 namespace blink {
 
