@@ -4,11 +4,13 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_wasm_response_extensions.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
+#include "components/crash/core/common/crash_key.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -599,6 +601,16 @@ void StreamFromResponseCallback(
                     : protocol == "blob"
                         ? WasmStreamingInputType::kValidBlob
                         : WasmStreamingInputType::kValidOtherProtocol;
+    // Temporarily sample 0.1% of the other protocols; remove this once we
+    // identified missing protocols and added them to the
+    // "WasmStreamingInputType" enum.
+    if (protocol_type == WasmStreamingInputType::kValidOtherProtocol &&
+        base::RandInt(0, 999) == 0) {
+      static crash_reporter::CrashKeyString<16> protocol_key(
+          "wasm-streaming-protocol");
+      protocol_key.Set(protocol.Ascii().c_str());
+      base::debug::DumpWithoutCrashing();
+    }
   }
   base::UmaHistogramEnumeration("V8.WasmStreamingInputType", protocol_type);
 
