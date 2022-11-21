@@ -21,6 +21,7 @@ source_set("resource_format") {
     "//base",
     "//mojo/public/cpp/bindings",
   ]
+  deps = [ "//ui/gfx/geometry:geometry" ]
 }
 
 always_enable_blending_for_primary = is_castos || is_cast_android

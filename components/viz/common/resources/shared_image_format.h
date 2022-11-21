@@ -13,6 +13,7 @@
 #include "components/viz/common/resources/resource_format.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace viz {
 
@@ -108,6 +109,9 @@ class SharedImageFormat {
 
   // Returns true is `plane_index` is valid.
   bool IsValidPlaneIndex(int plane_index) const;
+
+  // Returns the size for a plane given `plane_index`.
+  gfx::Size GetPlaneSize(int plane_index, const gfx::Size& size) const;
 
   std::string ToString() const;
 
