@@ -12163,6 +12163,25 @@
             ]
         }
     ],
+    "WebContentsCaptureHiDPI": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebContentsCaptureHiDPI"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebFeedsMVP": [
         {
             "platforms": [
