@@ -674,7 +674,8 @@ void ImageLoader::UpdateFromElement(
     delay_until_do_update_from_element_ = nullptr;
   }
 
-  if (ShouldLoadImmediately(ImageSourceToKURL(image_source_url))) {
+  if (ShouldLoadImmediately(ImageSourceToKURL(image_source_url)) &&
+      update_behavior != kUpdateFromMicrotask) {
     DoUpdateFromElement(element_->GetExecutionContext()->GetCurrentWorld(),
                         update_behavior, referrer_policy, UpdateType::kSync,
                         force_blocking);
@@ -960,7 +961,8 @@ ScriptPromise ImageLoader::Decode(ScriptState* script_state,
 
 void ImageLoader::LoadDeferredImage(
     network::mojom::ReferrerPolicy referrer_policy,
-    bool force_blocking) {
+    bool force_blocking,
+    bool update_from_microtask) {
   if (lazy_image_load_state_ != LazyImageLoadState::kDeferred)
     return;
   DCHECK(!image_complete_);
@@ -968,7 +970,9 @@ void ImageLoader::LoadDeferredImage(
 
   // If the image has been fully deferred (no placeholder fetch), report it as
   // fully loaded now.
-  UpdateFromElement(kUpdateNormal, referrer_policy, force_blocking);
+  UpdateFromElement(
+      update_from_microtask ? kUpdateFromMicrotask : kUpdateNormal,
+      referrer_policy, force_blocking);
 }
 
 void ImageLoader::ElementDidMoveToNewDocument() {

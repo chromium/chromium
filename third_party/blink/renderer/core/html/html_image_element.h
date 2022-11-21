@@ -100,11 +100,14 @@ class CORE_EXPORT HTMLImageElement final
   ImageResourceContent* CachedImage() const {
     return GetImageLoader().GetContent();
   }
-  void LoadDeferredImage() {
-    GetImageLoader().LoadDeferredImage(referrer_policy_);
+  void LoadDeferredImageFromMicrotask() {
+    GetImageLoader().LoadDeferredImage(referrer_policy_,
+                                       /*force_blocking*/ false,
+                                       /*update_from_microtask*/ true);
   }
   void LoadDeferredImageBlockingLoad() {
-    GetImageLoader().LoadDeferredImage(referrer_policy_, true);
+    GetImageLoader().LoadDeferredImage(referrer_policy_,
+                                       /*force_blocking*/ true);
   }
   void SetImageForTest(ImageResourceContent* content) {
     GetImageLoader().SetImageForTest(content);

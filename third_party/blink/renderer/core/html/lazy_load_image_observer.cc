@@ -224,14 +224,14 @@ void LazyLoadImageObserver::LoadIfNearViewport(
         // Check that style was null because it was not computed since the
         // element was in an invisible subtree.
         DCHECK(style || IsElementInInvisibleSubTree(*element));
-        image_element->LoadDeferredImage();
+        image_element->LoadDeferredImageFromMicrotask();
         lazy_load_intersection_observer_->unobserve(element);
       }
     }
     if (!entry->isIntersecting())
       continue;
     if (image_element)
-      image_element->LoadDeferredImage();
+      image_element->LoadDeferredImageFromMicrotask();
 
     // Load the background image if the element has one deferred.
     if (const ComputedStyle* style = element->GetComputedStyle())
