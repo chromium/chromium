@@ -276,10 +276,7 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
   const int kHorizontalMargin =
       provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordStrengthIndicator)) {
-    // TODO(crbug.com/1345766): Adjust according to the calculated password
-    // strength.
+  if (controller_->IsUserTypedPasswordWeak()) {
     auto* password_strength_view = AddChildView(CreatePasswordStrengthView(
         l10n_util::GetStringUTF16(IDS_PASSWORD_WEAKNESS_INDICATOR)));
     password_strength_view->SetBorder(views::CreateEmptyBorder(

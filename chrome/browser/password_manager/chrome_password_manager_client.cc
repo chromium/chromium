@@ -1754,7 +1754,16 @@ void ChromePasswordManagerClient::ShowPasswordGenerationPopup(
       driver->AsWeakPtr(), observer_, web_contents(),
       driver->render_frame_host());
   popup_controller_->UpdateTypedPassword(ui_data.user_typed_password);
-  popup_controller_->Show(PasswordGenerationPopupController::kOfferGeneration);
+
+  // TODO(crbug.com/1345766): Add separate flag for calculating strength and use
+  // this one only when UI needs to be displayed.
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordStrengthIndicator)) {
+    popup_controller_->UpdatePopupBasedOnTypedPasswordStrength();
+  } else {
+    popup_controller_->Show(
+        PasswordGenerationPopupController::kOfferGeneration);
+  }
 }
 
 gfx::RectF ChromePasswordManagerClient::TransformToRootCoordinates(
