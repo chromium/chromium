@@ -29,7 +29,6 @@ enum Code : int32_t {
   NOT_FOUND = 5,
   ALREADY_EXISTS = 6,
   PERMISSION_DENIED = 7,
-  UNAUTHENTICATED = 16,
   RESOURCE_EXHAUSTED = 8,
   FAILED_PRECONDITION = 9,
   ABORTED = 10,
@@ -38,6 +37,7 @@ enum Code : int32_t {
   INTERNAL = 13,
   UNAVAILABLE = 14,
   DATA_LOSS = 15,
+  UNAUTHENTICATED = 16,
   // The value should always be kept last.
   MAX_VALUE
 };

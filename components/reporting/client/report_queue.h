@@ -113,6 +113,10 @@ class ReportQueue {
   // A FlushCallback is called on the completion of |Flush| call.
   using FlushCallback = base::OnceCallback<void(Status)>;
 
+  // Enqueue metrics name
+  static constexpr char kEnqueueMetricsName[] =
+      "Browser.ERP.EventEnqueueResult";
+
   virtual ~ReportQueue();
 
   // Enqueue asynchronously stores and delivers a record.  The |callback| will

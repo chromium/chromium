@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -45,6 +46,12 @@ StatusOr<std::string> ProtoToString(
   }
   return protobuf_record;
 }
+
+void EnqueueResponded(ReportQueue::EnqueueCallback callback, Status status) {
+  base::UmaHistogramEnumeration(ReportQueue::kEnqueueMetricsName, status.code(),
+                                error::Code::MAX_VALUE);
+  std::move(callback).Run(status);
+}
 }  // namespace
 
 ReportQueue::~ReportQueue() = default;
@@ -57,14 +64,15 @@ void ReportQueue::Enqueue(std::string record,
                           return std::move(record);
                         },
                         std::move(record)),
-                    priority, std::move(callback));
+                    priority,
+                    base::BindOnce(&EnqueueResponded, std::move(callback)));
 }
 
 void ReportQueue::Enqueue(base::Value::Dict record,
                           Priority priority,
                           ReportQueue::EnqueueCallback callback) const {
   AddProducedRecord(base::BindOnce(&ValueToJson, std::move(record)), priority,
-                    std::move(callback));
+                    base::BindOnce(&EnqueueResponded, std::move(callback)));
 }
 
 void ReportQueue::Enqueue(
@@ -72,7 +80,7 @@ void ReportQueue::Enqueue(
     Priority priority,
     ReportQueue::EnqueueCallback callback) const {
   AddProducedRecord(base::BindOnce(&ProtoToString, std::move(record)), priority,
-                    std::move(callback));
+                    base::BindOnce(&EnqueueResponded, std::move(callback)));
 }
 
 }  // namespace reporting

@@ -139,6 +139,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Browser.ERP.EventEnqueueResult"
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2023-11-17">
+  <owner>lbaraz@chromium.org</owner>
+  <owner>xuhong@chromium.org</owner>
+  <owner>src/components/reporting/OWNERS</owner>
+  <summary>
+    Recorded when ReportQueue::Enqueue is called to post an event to ERP. It
+    counts occurrences of the call returning success or each possible error
+    Status.
+  </summary>
+</histogram>
+
 <histogram name="Browser.ERP.EventUploadSizeAdjustment.{Param}" units="bytes"
     expires_after="2023-06-30">
   <owner>xuhong@chromium.org</owner>

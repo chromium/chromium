@@ -5,7 +5,9 @@
 #include "components/reporting/client/report_queue.h"
 
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -17,6 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
+using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::WithArg;
 
@@ -29,6 +32,8 @@ class ReportQueueTest : public ::testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(ReportQueueTest, EnqueueTest) {
@@ -40,6 +45,29 @@ TEST_F(ReportQueueTest, EnqueueTest) {
   test::TestEvent<Status> e;
   queue.Enqueue("Record", FAST_BATCH, e.cb());
   ASSERT_OK(e.result());
+  histogram_tester_.ExpectBucketCount(ReportQueue::kEnqueueMetricsName,
+                                      error::OK,
+                                      /*expected_count=*/1);
+  histogram_tester_.ExpectTotalCount(ReportQueue::kEnqueueMetricsName,
+                                     /*count=*/1);
+}
+
+TEST_F(ReportQueueTest, EnqueueWithErrorTest) {
+  MockReportQueue queue;
+  EXPECT_CALL(queue, AddRecord(_, _, _))
+      .WillOnce(WithArg<2>(Invoke([](ReportQueue::EnqueueCallback cb) {
+        std::move(cb).Run(Status(error::CANCELLED, "Cancelled by test"));
+      })));
+  test::TestEvent<Status> e;
+  queue.Enqueue("Record", FAST_BATCH, e.cb());
+  const auto result = e.result();
+  ASSERT_FALSE(result.ok());
+  ASSERT_THAT(result.error_code(), Eq(error::CANCELLED));
+  histogram_tester_.ExpectBucketCount(ReportQueue::kEnqueueMetricsName,
+                                      error::CANCELLED,
+                                      /*expected_count=*/1);
+  histogram_tester_.ExpectTotalCount(ReportQueue::kEnqueueMetricsName,
+                                     /*count=*/1);
 }
 
 TEST_F(ReportQueueTest, FlushTest) {
@@ -52,6 +80,5 @@ TEST_F(ReportQueueTest, FlushTest) {
   queue.Flush(MANUAL_BATCH, e.cb());
   ASSERT_OK(e.result());
 }
-
 }  // namespace
 }  // namespace reporting
