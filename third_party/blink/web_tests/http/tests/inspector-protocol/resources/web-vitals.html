@@ -2,6 +2,7 @@
 <html>
   <body>
     <script>
+      (new PerformanceObserver(console.log)).observe({ entryTypes: ["layout-shift"] });
       window.setTimeout(() => {
         const img = document.querySelector('img');
         img.setAttribute('src', './big-image.png');
