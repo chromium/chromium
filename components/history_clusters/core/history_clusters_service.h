@@ -25,11 +25,14 @@
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/clustering_backend.h"
+#include "components/history_clusters/core/context_clusterer_history_service_observer.h"
 #include "components/history_clusters/core/history_clusters_service_task_get_most_recent_clusters.h"
 #include "components/history_clusters/core/history_clusters_service_task_update_clusters.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+class TemplateURLService;
 
 namespace optimization_guide {
 class EntityMetadataProvider;
@@ -93,6 +96,7 @@ class HistoryClustersService : public base::SupportsUserData,
       optimization_guide::EntityMetadataProvider* entity_metadata_provider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       site_engagement::SiteEngagementScoreProvider* engagement_score_provider,
+      TemplateURLService* template_url_service,
       optimization_guide::NewOptimizationGuideDecider*
           optimization_guide_decider);
   HistoryClustersService(const HistoryClustersService&) = delete;
@@ -281,6 +285,8 @@ class HistoryClustersService : public base::SupportsUserData,
   base::ObserverList<Observer> observers_;
 
   VisitDeletionObserver visit_deletion_observer_;
+
+  ContextClustererHistoryServiceObserver context_clusterer_observer_;
 
   // Weak pointers issued from this factory never get invalidated before the
   // service is destroyed.

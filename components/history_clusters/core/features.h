@@ -67,6 +67,10 @@ BASE_DECLARE_FEATURE(kHistoryClustersVisitDeduping);
 // Enables visits from other synced devices to be included in clusters.
 BASE_DECLARE_FEATURE(kJourneysIncludeSyncedVisits);
 
+// Enables context clustering to be performed at navigation time rather than in
+// batches.
+BASE_DECLARE_FEATURE(kHistoryClustersNavigationContextClustering);
+
 // Order consistently with config.h.
 
 }  // namespace internal

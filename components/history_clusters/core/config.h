@@ -338,6 +338,9 @@ struct Config {
   // visits within a cluster. Will always be greater than or equal to 0.
   float search_results_page_ranking_weight = 2.0;
 
+  // The `kHistoryClustersNavigationContextClustering` feature and child params.
+  base::TimeDelta context_clustering_clean_up_duration = base::Minutes(10);
+
   // Lonely features without child params.
 
   // Enables debug info in non-user-visible surfaces, like Chrome Inspector.

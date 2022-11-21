@@ -1077,6 +1077,39 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="History.Clusters.ContextClusterer.NumClusters.AtCleanUp"
+    units="num clusters" expires_after="2023-10-01">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Number of clusters that are in-progress. Recorded once an hour
+    (Finch-configurable) prior to the clean-up pass.
+  </summary>
+</histogram>
+
+<histogram name="History.Clusters.ContextClusterer.NumClusters.CleanedUp"
+    units="num clusters" expires_after="2023-10-01">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Number of clusters that were cleaned up in the clean-up pass. Recorded once
+    an hour (Finch-configurable) during the clean-up pass.
+  </summary>
+</histogram>
+
+<histogram name="History.Clusters.ContextClusterer.NumClusters.PostCleanUp"
+    units="num clusters" expires_after="2023-10-01">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Number of clusters that are in-progress. Recorded once an hour
+    (Finch-configurable) after the clean-up pass.
+  </summary>
+</histogram>
+
 <histogram name="History.Clusters.KeywordCache.Latency" units="ms"
     expires_after="2023-10-01">
   <owner>tommycli@chromium.org</owner>

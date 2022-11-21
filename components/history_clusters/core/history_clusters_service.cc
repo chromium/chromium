@@ -58,12 +58,16 @@ HistoryClustersService::HistoryClustersService(
     optimization_guide::EntityMetadataProvider* entity_metadata_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     site_engagement::SiteEngagementScoreProvider* engagement_score_provider,
+    TemplateURLService* template_url_service,
     optimization_guide::NewOptimizationGuideDecider* optimization_guide_decider)
     : is_journeys_enabled_(
           GetConfig().is_journeys_enabled_no_locale_check &&
           IsApplicationLocaleSupportedByJourneys(application_locale)),
       history_service_(history_service),
-      visit_deletion_observer_(this) {
+      visit_deletion_observer_(this),
+      context_clusterer_observer_(history_service,
+                                  template_url_service,
+                                  optimization_guide_decider) {
   DCHECK(history_service_);
 
   visit_deletion_observer_.AttachToHistoryService(history_service);

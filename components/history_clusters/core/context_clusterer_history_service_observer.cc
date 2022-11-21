@@ -1,0 +1,250 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/history_clusters/core/context_clusterer_history_service_observer.h"
+
+#include "base/metrics/histogram_functions.h"
+#include "base/time/default_clock.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history_clusters/core/config.h"
+#include "components/optimization_guide/core/new_optimization_guide_decider.h"
+#include "components/search_engines/template_url_service.h"
+
+namespace history_clusters {
+
+namespace {
+
+// Returns whether `visit` should be added to `cluster`.
+bool ShouldAddVisitToCluster(const history::VisitRow& new_visit,
+                             const std::u16string& search_terms,
+                             const InProgressCluster& in_progress_cluster) {
+  if ((new_visit.visit_time - in_progress_cluster.last_visit_time) >
+      GetConfig().cluster_navigation_time_cutoff) {
+    return false;
+  }
+
+  if (!search_terms.empty()) {
+    return search_terms == in_progress_cluster.search_terms;
+  }
+
+  return true;
+}
+
+}  // namespace
+
+InProgressCluster::InProgressCluster() = default;
+InProgressCluster::~InProgressCluster() = default;
+InProgressCluster::InProgressCluster(const InProgressCluster&) = default;
+
+ContextClustererHistoryServiceObserver::ContextClustererHistoryServiceObserver(
+    history::HistoryService* history_service,
+    TemplateURLService* template_url_service,
+    optimization_guide::NewOptimizationGuideDecider* optimization_guide_decider)
+    : template_url_service_(template_url_service),
+      optimization_guide_decider_(optimization_guide_decider),
+      clock_(base::DefaultClock::GetInstance()) {
+  if (history_service) {
+    // History service is only null in tests.
+    history_service_observation_.Observe(history_service);
+  }
+
+  if (optimization_guide_decider_) {
+    optimization_guide_decider_->RegisterOptimizationTypes(
+        {optimization_guide::proto::HISTORY_CLUSTERS});
+  }
+  clean_up_clusters_repeating_timer_.Start(
+      FROM_HERE, GetConfig().context_clustering_clean_up_duration, this,
+      &ContextClustererHistoryServiceObserver::CleanUpClusters);
+}
+ContextClustererHistoryServiceObserver::
+    ~ContextClustererHistoryServiceObserver() = default;
+
+void ContextClustererHistoryServiceObserver::OnURLVisited(
+    history::HistoryService* history_service,
+    const history::URLRow& url_row,
+    const history::VisitRow& new_visit) {
+  if (new_visit.is_known_to_sync) {
+    // Skip synced visits.
+    //
+    // Although local visits that have been synced can have this bit flipped,
+    // local visits do not automatically get sent to sync when they just get
+    // created.
+    return;
+  }
+
+  if (optimization_guide_decider_ &&
+      optimization_guide_decider_->CanApplyOptimization(
+          url_row.url(), optimization_guide::proto::HISTORY_CLUSTERS,
+          /*optimization_metadata=*/nullptr) !=
+          optimization_guide::OptimizationGuideDecision::kTrue) {
+    // Skip visits that are on the blocklist.
+    return;
+  }
+
+  // Update the normalized URL if it's a search URL.
+  std::string normalized_url = url_row.url().possibly_invalid_spec();
+  std::u16string search_terms;
+  if (template_url_service_) {
+    absl::optional<TemplateURLService::SearchMetadata> search_metadata =
+        template_url_service_->ExtractSearchMetadata(url_row.url());
+    if (search_metadata) {
+      normalized_url = search_metadata->normalized_url.possibly_invalid_spec();
+      search_terms = search_metadata->search_terms;
+    }
+  }
+
+  // See what cluster we should add it to.
+  absl::optional<int64_t> cluster_idx;
+
+  std::vector<history::VisitID> previous_visit_ids_to_check;
+  if (new_visit.opener_visit != 0) {
+    previous_visit_ids_to_check.push_back(new_visit.opener_visit);
+  }
+  if (new_visit.referring_visit != 0) {
+    previous_visit_ids_to_check.push_back(new_visit.referring_visit);
+  }
+  if (!previous_visit_ids_to_check.empty()) {
+    // See if we have clustered any of the previous visits with opener taking
+    // precedence.
+    for (history::VisitID previous_visit_id : previous_visit_ids_to_check) {
+      auto it = visit_id_to_cluster_map_.find(previous_visit_id);
+      if (it != visit_id_to_cluster_map_.end()) {
+        cluster_idx = it->second;
+        break;
+      }
+    }
+  } else {
+    // See if we have clustered the URL. (forward-back, reload, etc.)
+    auto it = visit_url_to_cluster_map_.find(normalized_url);
+    if (it != visit_url_to_cluster_map_.end()) {
+      cluster_idx = it->second;
+    }
+  }
+
+  // See if we should add to cluster.
+  if (cluster_idx) {
+    auto& in_progress_cluster = in_progress_clusters_.at(*cluster_idx);
+    if (!ShouldAddVisitToCluster(new_visit, search_terms,
+                                 in_progress_cluster)) {
+      FinalizeCluster(*cluster_idx);
+
+      cluster_idx = absl::nullopt;
+    }
+  }
+
+  // Add a new cluster if we haven't assigned one already.
+  if (!cluster_idx) {
+    cluster_idx_counter_++;
+    cluster_idx = cluster_idx_counter_;
+
+    in_progress_clusters_.emplace(*cluster_idx, InProgressCluster());
+  }
+
+  // Add to cluster maps.
+  auto& in_progress_cluster = in_progress_clusters_.at(*cluster_idx);
+  in_progress_cluster.last_visit_time = new_visit.visit_time;
+  in_progress_cluster.visit_urls.insert(normalized_url);
+  in_progress_cluster.visit_ids.emplace_back(new_visit.visit_id);
+  in_progress_cluster.search_terms = search_terms;
+  visit_id_to_cluster_map_[new_visit.visit_id] = *cluster_idx;
+  visit_url_to_cluster_map_[normalized_url] = *cluster_idx;
+
+  // TODO(b/259466296): Persist visit.
+}
+
+void ContextClustererHistoryServiceObserver::OnURLsDeleted(
+    history::HistoryService* history_service,
+    const history::DeletionInfo& deletion_info) {
+  // Clear out everything if the user deleted all history.
+  if (deletion_info.IsAllHistory()) {
+    in_progress_clusters_.clear();
+    visit_url_to_cluster_map_.clear();
+    visit_id_to_cluster_map_.clear();
+    return;
+  }
+
+  // Delete relevant visits from in-progress clusters.
+  base::flat_set<int64_t> clusters_to_finalize;
+  for (const auto& deleted_url : deletion_info.deleted_rows()) {
+    std::string normalized_deleted_url =
+        deleted_url.url().possibly_invalid_spec();
+    if (template_url_service_) {
+      absl::optional<TemplateURLService::SearchMetadata> search_metadata =
+          template_url_service_->ExtractSearchMetadata(deleted_url.url());
+      if (search_metadata) {
+        normalized_deleted_url =
+            search_metadata->normalized_url.possibly_invalid_spec();
+      }
+    }
+    auto it = visit_url_to_cluster_map_.find(normalized_deleted_url);
+    if (it != visit_url_to_cluster_map_.end()) {
+      // TODO(b/259466296): Maybe check time range.
+      clusters_to_finalize.insert(it->second);
+    }
+  }
+
+  // Finalize clusters.
+  for (int64_t cluster_idx : clusters_to_finalize) {
+    FinalizeCluster(cluster_idx);
+  }
+}
+
+void ContextClustererHistoryServiceObserver::CleanUpClusters() {
+  if (in_progress_clusters_.empty()) {
+    // Nothing to clean up, just return.
+    return;
+  }
+
+  base::UmaHistogramCounts1000(
+      "History.Clusters.ContextClusterer.NumClusters.AtCleanUp",
+      in_progress_clusters_.size());
+
+  // See which clusters we need to clean up.
+  base::flat_set<int64_t> clusters_to_finalize;
+  for (const auto& cluster_id_and_cluster : in_progress_clusters_) {
+    if ((clock_->Now() - cluster_id_and_cluster.second.last_visit_time) >
+        GetConfig().cluster_navigation_time_cutoff) {
+      clusters_to_finalize.insert(cluster_id_and_cluster.first);
+    }
+  }
+
+  // Finalize clusters.
+  for (int64_t cluster_idx : clusters_to_finalize) {
+    FinalizeCluster(cluster_idx);
+  }
+
+  base::UmaHistogramCounts1000(
+      "History.Clusters.ContextClusterer.NumClusters.CleanedUp",
+      clusters_to_finalize.size());
+
+  base::UmaHistogramCounts1000(
+      "History.Clusters.ContextClusterer.NumClusters.PostCleanUp",
+      in_progress_clusters_.size());
+}
+
+void ContextClustererHistoryServiceObserver::FinalizeCluster(
+    int64_t cluster_idx) {
+  DCHECK(in_progress_clusters_.find(cluster_idx) !=
+         in_progress_clusters_.end());
+
+  // Delete relevant visits from in-progress maps.
+  auto& cluster = in_progress_clusters_.at(cluster_idx);
+  for (const auto& visit_url : cluster.visit_urls) {
+    visit_url_to_cluster_map_.erase(visit_url);
+  }
+  for (const auto visit_id : cluster.visit_ids) {
+    visit_id_to_cluster_map_.erase(visit_id);
+  }
+
+  // TODO(b/259466296): Kick off persisting keywords and prominence bits.
+
+  in_progress_clusters_.erase(cluster_idx);
+}
+
+void ContextClustererHistoryServiceObserver::OverrideClockForTesting(
+    const base::Clock* clock) {
+  clock_ = clock;
+}
+
+}  // namespace history_clusters

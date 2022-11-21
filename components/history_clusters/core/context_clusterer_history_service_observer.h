@@ -1,0 +1,125 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_HISTORY_CLUSTERS_CORE_CONTEXT_CLUSTERER_HISTORY_SERVICE_OBSERVER_H_
+#define COMPONENTS_HISTORY_CLUSTERS_CORE_CONTEXT_CLUSTERER_HISTORY_SERVICE_OBSERVER_H_
+
+#include <map>
+#include <vector>
+
+#include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "base/time/clock.h"
+#include "base/timer/timer.h"
+#include "components/history/core/browser/history_service_observer.h"
+
+class TemplateURLService;
+
+namespace history {
+class HistoryService;
+}  // namespace history
+
+namespace optimization_guide {
+class NewOptimizationGuideDecider;
+}  // namespace optimization_guide
+
+namespace history_clusters {
+
+// Information required for determine pending cluster.
+struct InProgressCluster {
+  InProgressCluster();
+  ~InProgressCluster();
+  InProgressCluster(const InProgressCluster&);
+
+  // The visit IDs that were added to this in-progress cluster.
+  std::vector<history::VisitID> visit_ids;
+  // The normalized URLs that are a part of this in-progress cluster.
+  base::flat_set<std::string> visit_urls;
+  // The visit time of the last visit added to this in-progress cluster.
+  base::Time last_visit_time;
+  // The search terms associated with this in-progress cluster. It will only be
+  // set once if a search visit is part of this in-progress cluster.
+  std::u16string search_terms;
+};
+
+// A HistoryServiceObserver responsible for grouping visits into clusters.
+//
+// This groups visits together based on their navigation graph (previous visit,
+// forward-back, reload, etc.). It is responsible for determining when a cluster
+// is closed based on navigational factors as well as a timer that regularly
+// cleans up in-progress clusters.
+//
+// Still todo are to persist the visits to the clusters database as they come
+// in. After this is fully rolled out, there should not be any concept of
+// "incomplete" visits and that the on-device clustering backend will receive a
+// vector of clusters to combine or add metadata to.
+class ContextClustererHistoryServiceObserver
+    : public history::HistoryServiceObserver {
+ public:
+  ContextClustererHistoryServiceObserver(
+      history::HistoryService* history_service,
+      TemplateURLService* template_url_service,
+      optimization_guide::NewOptimizationGuideDecider*
+          optimization_guide_decider);
+  ~ContextClustererHistoryServiceObserver() override;
+
+  // history::HistoryServiceObserver:
+  void OnURLVisited(history::HistoryService* history_service,
+                    const history::URLRow& url_row,
+                    const history::VisitRow& visit_row) override;
+  void OnURLsDeleted(history::HistoryService* history_service,
+                     const history::DeletionInfo& deletion_info) override;
+
+ private:
+  friend class ContextClustererHistoryServiceObserverTest;
+
+  // Cleans up clusters that have not been interacted with for awhile.
+  void CleanUpClusters();
+
+  // Finalizes the cluster with index, `cluster_idx`.
+  void FinalizeCluster(int64_t cluster_idx);
+
+  // Overrides `clock_` for testing.
+  void OverrideClockForTesting(const base::Clock* clock);
+
+  // Returns the number of clusters created since the start of the session.
+  int64_t num_clusters_created() const { return cluster_idx_counter_; }
+
+  // Mapping from cluster ID to the contents of the in-progress cluster.
+  std::map<int64_t, InProgressCluster> in_progress_clusters_;
+
+  // Mapping from visit ID to the in-progress cluster ID it belongs to.
+  std::map<history::VisitID, int64_t> visit_id_to_cluster_map_;
+
+  // Mapping from normalized URL spec to the in-progress cluster ID it belongs
+  // to.
+  std::map<std::string, int64_t> visit_url_to_cluster_map_;
+
+  // A running counter that is used to index the in-progress clusters.
+  int64_t cluster_idx_counter_ = 0;
+
+  // Used to invoke `CleanUpClusters()` periodically.
+  base::RepeatingTimer clean_up_clusters_repeating_timer_;
+
+  // The Template URL Service used to determine if a visit is a search visit.
+  raw_ptr<TemplateURLService> template_url_service_;
+
+  // The Optimization Guide decider used to determine whether to include a visit
+  // in a cluster.
+  raw_ptr<optimization_guide::NewOptimizationGuideDecider>
+      optimization_guide_decider_;
+
+  // The clock used to schedule the clean up of clusters.
+  raw_ptr<const base::Clock> clock_;
+
+  // Tracks the observed history service, for cleanup.
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
+};
+
+}  // namespace history_clusters
+
+#endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_CONTEXT_CLUSTERER_HISTORY_SERVICE_OBSERVER_H_

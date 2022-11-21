@@ -371,6 +371,15 @@ Config::Config() {
     DCHECK_GE(search_results_page_ranking_weight, 0.0f);
   }
 
+  // The `kHistoryClustersNavigationContextClustering` feature and child params.
+  {
+    context_clustering_clean_up_duration =
+        base::Minutes(GetFieldTrialParamByFeatureAsInt(
+            internal::kHistoryClustersNavigationContextClustering,
+            "clean_up_duration_minutes",
+            context_clustering_clean_up_duration.InMinutes()));
+  }
+
   // Lonely features without child params.
   {
     non_user_visible_debug =
