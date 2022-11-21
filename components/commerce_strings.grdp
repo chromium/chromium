@@ -197,16 +197,16 @@
   </if>
 
   <!-- For Price Tracking on all platforms -->
-  <message name="IDS_PRICE_DROP_POPUP_CONTENT_TITLE" desc="Text shown on the price drop popup notification. It tells users how much price drop on the corresponding product.">
-    <ph name="PRICE_DROP">$1<ex>$100</ex></ph> price drop on <ph name="PRODUCT_NAME">$2<ex>Chromebook</ex></ph>
+  <message name="IDS_PRICE_DROP_POPUP_CONTENT_TITLE" desc="Text shown on the price drop popup notification. It tells users how much price drop on the corresponding product." formatter_data="android_java">
+    <ph name="PRICE_DROP">%1$s<ex>$100</ex></ph> price drop on <ph name="PRODUCT_NAME">%2$s<ex>Chromebook</ex></ph>
   </message>
-  <message name="IDS_PRICE_DROP_POPUP_CONTENT_TEXT" desc="Text shown on the price drop popup notification below the content title. It tells users the current price of the product and the source website.">
-    Now <ph name="CURRENT_PRICE">$1<ex>$799</ex></ph> on <ph name="SOURCE_WEBSITE">$2<ex>amazon.com</ex></ph>
+  <message name="IDS_PRICE_DROP_POPUP_CONTENT_TEXT" desc="Text shown on the price drop popup notification below the content title. It tells users the current price of the product and the source website." formatter_data="android_java">
+    Now <ph name="CURRENT_PRICE">%1$s<ex>$799</ex></ph> on <ph name="SOURCE_WEBSITE">%2$s<ex>amazon.com</ex></ph>
   </message>
-  <message name="IDS_PRICE_DROP_POPUP_ACTION_BUTTON" desc="Text shown on the price drop popup notification below the content text. When users click this button, we send them to the source website.">
+  <message name="IDS_PRICE_DROP_POPUP_ACTION_BUTTON" desc="Text shown on the price drop popup notification below the content text. When users click this button, we send them to the source website." formatter_data="android_java">
     Visit site
   </message>
-  <message name="IDS_PRICE_DROP_POPUP_UNTRACK_BUTTON" desc="Text shown on the price drop popup notification below the content text. When users click this button, we untrack this product and will no longer send its price drop to users.">
+  <message name="IDS_PRICE_DROP_POPUP_UNTRACK_BUTTON" desc="Text shown on the price drop popup notification below the content text. When users click this button, we untrack this product and will no longer send its price drop to users." formatter_data="android_java">
     Untrack price
   </message>
 </grit-part>
