@@ -833,21 +833,8 @@ GURL AutocompleteMatch::GURLToStrippedGURL(
     const GURL& url,
     const AutocompleteInput& input,
     const TemplateURLService* template_url_service,
-    const std::u16string& keyword) {
-  static const bool optimize =
-      base::FeatureList::IsEnabled(omnibox::kStrippedGurlOptimization);
-  return optimize ? GURLToStrippedGURLOptimized(url, input,
-                                                template_url_service, keyword)
-                  : GURLToStrippedGURLControl(url, input, template_url_service,
-                                              keyword);
-}
-
-// static
-GURL AutocompleteMatch::GURLToStrippedGURLControl(
-    const GURL& url,
-    const AutocompleteInput& input,
-    const TemplateURLService* template_url_service,
-    const std::u16string& keyword) {
+    const std::u16string& keyword,
+    const bool keep_search_intent_params) {
   if (!url.is_valid())
     return url;
 
@@ -860,106 +847,33 @@ GURL AutocompleteMatch::GURLToStrippedGURLControl(
   GURL stripped_destination_url = url;
 
   // If the destination URL looks like it was generated from a TemplateURL,
-  // remove all substitutions other than the search terms.  This allows us
-  // to eliminate cases like past search URLs from history that differ only
-  // by some obscure query param from each other or from the search/keyword
-  // provider matches.
+  // remove all substitutions other than the search terms and optionally the
+  // search intent params. This allows eliminating cases like past search URLs
+  // from history that differ only by some obscure query param from each other
+  // or from the search/keyword provider matches.
   const TemplateURL* template_url = GetTemplateURLWithKeyword(
       template_url_service, keyword, stripped_destination_url.host());
   if (template_url != nullptr &&
       template_url->SupportsReplacement(
           template_url_service->search_terms_data())) {
-    std::u16string search_terms;
-    if (template_url->ExtractSearchTermsFromURL(
-            stripped_destination_url, template_url_service->search_terms_data(),
-            &search_terms)) {
-      stripped_destination_url =
-          GURL(template_url->url_ref().ReplaceSearchTerms(
-              TemplateURLRef::SearchTermsArgs(search_terms),
-              template_url_service->search_terms_data()));
-    }
-  }
-
-  // |replacements| keeps all the substitutions we're going to make to
-  // from {destination_url} to {stripped_destination_url}.  |need_replacement|
-  // is a helper variable that helps us keep track of whether we need
-  // to apply the replacement.
-  bool needs_replacement = false;
-  GURL::Replacements replacements;
-
-  // Remove the www. prefix from the host.
-  static const char prefix[] = "www.";
-  static const size_t prefix_len = std::size(prefix) - 1;
-  std::string host = stripped_destination_url.host();
-  if (host.compare(0, prefix_len, prefix) == 0 && host.length() > prefix_len) {
-    replacements.SetHostStr(base::StringPiece(host).substr(prefix_len));
-    needs_replacement = true;
-  }
-
-  // Replace https protocol with http, as long as the user didn't explicitly
-  // specify one of the two.
-  if (stripped_destination_url.SchemeIs(url::kHttpsScheme) &&
-      (input.terms_prefixed_by_http_or_https().empty() ||
-       !WordMatchesURLContent(input.terms_prefixed_by_http_or_https(), url))) {
-    replacements.SetSchemeStr(url::kHttpScheme);
-    needs_replacement = true;
-  }
-
-  if (input.parts().ref.is_empty() && url.has_ref()) {
-    replacements.ClearRef();
-    needs_replacement = true;
-  }
-
-  if (needs_replacement)
-    stripped_destination_url =
-        stripped_destination_url.ReplaceComponents(replacements);
-  return stripped_destination_url;
-}
-
-// static
-GURL AutocompleteMatch::GURLToStrippedGURLOptimized(
-    const GURL& url,
-    const AutocompleteInput& input,
-    const TemplateURLService* template_url_service,
-    const std::u16string& keyword) {
-  if (!url.is_valid())
-    return url;
-
-  // Special-case canonicalizing Docs URLs. This logic is self-contained and
-  // will not participate in the TemplateURL canonicalization.
-  GURL docs_url = DocumentProvider::GetURLForDeduping(url);
-  if (docs_url.is_valid())
-    return docs_url;
-
-  GURL stripped_destination_url = url;
-
-  // If the destination URL looks like it was generated from a TemplateURL,
-  // remove all substitutions other than the search terms.  This allows us
-  // to eliminate cases like past search URLs from history that differ only
-  // by some obscure query param from each other or from the search/keyword
-  // provider matches.
-  const TemplateURL* template_url = GetTemplateURLWithKeyword(
-      template_url_service, keyword, stripped_destination_url.host());
-  if (template_url != nullptr &&
-      template_url->SupportsReplacement(
-          template_url_service->search_terms_data())) {
-    static base::LRUCache<std::pair<const TemplateURL*, GURL>, GURL>
-        template_cache(30);
-    const std::pair<const TemplateURL*, GURL> cache_key = {template_url, url};
-    const auto& cached = template_cache.Get(cache_key);
-    if (cached != template_cache.end()) {
-      stripped_destination_url = cached->second;
-    } else {
-      std::u16string search_terms;
-      if (template_url->ExtractSearchTermsFromURL(
-              stripped_destination_url,
-              template_url_service->search_terms_data(), &search_terms)) {
-        stripped_destination_url =
-            GURL(template_url->url_ref().ReplaceSearchTerms(
-                TemplateURLRef::SearchTermsArgs(search_terms),
-                template_url_service->search_terms_data()));
+    static const bool optimize =
+        base::FeatureList::IsEnabled(omnibox::kStrippedGurlOptimization);
+    if (optimize) {
+      using CacheKey = std::tuple<const TemplateURL*, GURL, bool>;
+      static base::LRUCache<CacheKey, GURL> template_cache(30);
+      const CacheKey cache_key = {template_url, url, keep_search_intent_params};
+      const auto& cached = template_cache.Get(cache_key);
+      if (cached != template_cache.end()) {
+        stripped_destination_url = cached->second;
+      } else if (template_url->KeepSearchTermsInURL(
+                     url, template_url_service->search_terms_data(),
+                     keep_search_intent_params, &stripped_destination_url)) {
         template_cache.Put(cache_key, stripped_destination_url);
       }
+    } else {
+      template_url->KeepSearchTermsInURL(
+          url, template_url_service->search_terms_data(),
+          keep_search_intent_params, &stripped_destination_url);
     }
   }
 
@@ -1083,8 +997,9 @@ void AutocompleteMatch::ComputeStrippedDestinationURL(
   // the document provider, and overwriting them here would be wasteful and, in
   // the case of the document provider, prevent potential deduping.
   if (stripped_destination_url.is_empty()) {
-    stripped_destination_url = GURLToStrippedGURL(
-        destination_url, input, template_url_service, keyword);
+    stripped_destination_url =
+        GURLToStrippedGURL(destination_url, input, template_url_service,
+                           keyword, /*keep_search_intent_params=*/false);
   }
 }
 

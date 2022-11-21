@@ -156,6 +156,12 @@ BASE_FEATURE(kDisambiguateEntitySuggestions,
              "DisambiguateEntitySuggestions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, takes the search intent query params into account for triggering
+// switch to tab actions on matches.
+BASE_FEATURE(kDisambiguateTabMatchingForEntitySuggestions,
+             "DisambiguateTabMatchingForEntitySuggestions",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Used to adjust the relevance for the local history zero-prefix suggestions.
 // If enabled, the relevance is determined by this feature's companion
 // parameter, OmniboxFieldTrial::kLocalHistoryZeroSuggestRelevanceScore.

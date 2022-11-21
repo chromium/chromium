@@ -370,41 +370,41 @@ struct AutocompleteMatch {
       const std::u16string& keyword,
       const std::string& host);
 
-  // Returns |url| altered by stripping off "www.", converting https protocol
-  // to http, and stripping excess query parameters.  These conversions are
-  // merely to allow comparisons to remove likely duplicates; these URLs are
-  // not used as actual destination URLs.
-  // - |input| is used to decide if the scheme is allowed to be altered during
+  // Returns `url` altered by stripping off "www.", converting https protocol
+  // to http, and stripping query params other than the search terms. If
+  // `keep_search_intent_params` is true, also keep search intent params which
+  // disambiguate the search terms and determine the fulfillment.
+  // These conversions are meant to allow URL comparisons to find likely
+  // duplicates; and these URLs are not used as actual destination URLs.
+  // In most use cases `keep_search_intent_params` need not be true, e.g., when
+  // computing `stripped_destination_url` for matches. Otherwise, keeping the
+  // search intent params would create an unnecessary level of granularity which
+  // prevents proper deduping of matches from various local or remote providers.
+  // If a provider wishes to prevent its matches (or a subset of them) from
+  // being deduped with other matches with the same search terms, it must
+  // precompute `stripped_destination_url` while maintaining the search intent
+  // params. A notable example is when multiple entity suggestions with the same
+  // search terms are offered by SearchProvider or ZeroSuggestProvider. In that
+  // case, the entity matches (with the exception of the first one) keep their
+  // search intent params in `stripped_destination_url` to avoid being deduped.
+  // - `input` is used to decide if the scheme is allowed to be altered during
   //   stripping.  If this URL, minus the scheme and separator, starts with any
   //   the terms in input.terms_prefixed_by_http_or_https(), we avoid converting
   //   an HTTPS scheme to HTTP.  This means URLs that differ only by these
   //   schemes won't be marked as dupes, since the distinction seems to matter
   //   to the user.
-  // - If |template_url_service| is not NULL, it is used to get a template URL
-  //   corresponding to this match, which is used to strip off query args other
-  //   than the search terms themselves that would otherwise prevent doing
-  //   proper deduping.
-  // - If the match's keyword is known, it can be provided in |keyword|.
+  // - If `template_url_service` is not NULL, it is used to get a template URL
+  //   corresponding to this match, which is used to strip off query params
+  //   other than the search terms (and optionally search intent params) that
+  //   would otherwise prevent proper comparison/deduping.
+  // - If the match's keyword is known, it can be provided in `keyword`.
   //   Otherwise, it can be left empty and the template URL (if any) is
   //   determined from the destination's hostname.
   static GURL GURLToStrippedGURL(const GURL& url,
                                  const AutocompleteInput& input,
                                  const TemplateURLService* template_url_service,
-                                 const std::u16string& keyword);
-
-  // One of these 2 helpers are called by `GURLToStrippedGURL()` depending on
-  // whether optimizations (i.e., caching search term replacements) are enabled.
-  // They will be removed after experiments end.
-  static GURL GURLToStrippedGURLControl(
-      const GURL& url,
-      const AutocompleteInput& input,
-      const TemplateURLService* template_url_service,
-      const std::u16string& keyword);
-  static GURL GURLToStrippedGURLOptimized(
-      const GURL& url,
-      const AutocompleteInput& input,
-      const TemplateURLService* template_url_service,
-      const std::u16string& keyword);
+                                 const std::u16string& keyword,
+                                 const bool keep_search_intent_params);
 
   // Sets the |match_in_scheme| and |match_in_subdomain| flags based on the
   // provided |url| and list of substring |match_positions|. |match_positions|

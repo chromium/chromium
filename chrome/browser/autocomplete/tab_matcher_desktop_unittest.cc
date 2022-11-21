@@ -58,3 +58,52 @@ TEST_F(TabMatcherDesktopTest, GetOpenTabsOnlyWithinProfile) {
 
   other_browser->tab_strip_model()->CloseAllTabs();
 }
+
+TEST_F(TabMatcherDesktopTest, IsTabOpenUsesCanonicalSearchURL) {
+  TemplateURLService turl_service(kServiceInitializers, 2);
+  TabMatcherDesktop matcher(&turl_service, profile());
+
+  TemplateURLData data;
+  data.SetURL("http://example.com/search?q={searchTerms}");
+  data.search_intent_params = {"intent"};
+  TemplateURL turl(data);
+  auto* default_turl = turl_service.Add(std::make_unique<TemplateURL>(data));
+  turl_service.SetUserSelectedDefaultSearchProvider(default_turl);
+
+  {
+    TemplateURLRef::SearchTermsArgs search_terms_args(u"foo");
+    search_terms_args.additional_query_params = "wiz=baz";
+    std::string foo_url = default_turl->url_ref().ReplaceSearchTerms(
+        search_terms_args, turl_service.search_terms_data());
+    EXPECT_EQ("http://example.com/search?wiz=baz&q=foo", foo_url);
+    AddTab(browser(), GURL(foo_url));
+    // The last tab is active. IsTabOpenWithURL() does not match the active tab.
+    AddTab(browser(), GURL("http://active.chromium.org"));
+
+    EXPECT_TRUE(matcher.IsTabOpenWithURL(
+        GURL("http://example.com/search?q=foo"), nullptr));
+    EXPECT_TRUE(matcher.IsTabOpenWithURL(
+        GURL("http://example.com/search?wiz=baz&q=foo"), nullptr));
+    EXPECT_FALSE(matcher.IsTabOpenWithURL(
+        GURL("http://example.com/search?wiz=baz&intent=INTENT&q=foo"),
+        nullptr));
+  }
+  {
+    TemplateURLRef::SearchTermsArgs search_terms_args(u"bar");
+    search_terms_args.additional_query_params = "intent=INTENT";
+    std::string bar_url = default_turl->url_ref().ReplaceSearchTerms(
+        search_terms_args, turl_service.search_terms_data());
+    EXPECT_EQ("http://example.com/search?intent=INTENT&q=bar", bar_url);
+    AddTab(browser(), GURL(bar_url));
+    // The last tab is active. IsTabOpenWithURL() does not match the active tab.
+    AddTab(browser(), GURL("http://active.chromium.org"));
+
+    EXPECT_FALSE(matcher.IsTabOpenWithURL(
+        GURL("http://example.com/search?q=bar"), nullptr));
+    EXPECT_FALSE(matcher.IsTabOpenWithURL(
+        GURL("http://example.com/search?wiz=baz&q=bar"), nullptr));
+    EXPECT_TRUE(matcher.IsTabOpenWithURL(
+        GURL("http://example.com/search?wiz=baz&intent=INTENT&q=bar"),
+        nullptr));
+  }
+}

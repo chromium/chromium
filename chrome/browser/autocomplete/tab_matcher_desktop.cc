@@ -4,10 +4,12 @@
 
 #include "chrome/browser/autocomplete/tab_matcher_desktop.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace {
@@ -24,14 +26,18 @@ class AutocompleteClientWebContentsUserData
   void UpdateLastCommittedStrippedURL(
       int last_committed_index,
       const GURL& last_committed_url,
-      const TemplateURLService* template_url_service) {
+      const TemplateURLService* template_url_service,
+      const bool keep_search_intent_params) {
     if (last_committed_url.is_valid()) {
       last_committed_entry_index_ = last_committed_index;
-      // Use blank input since we will re-use this stripped URL with other
-      // inputs.
+      // Use a blank input as the stripped URL will be reused with other inputs.
+      // Also keep the search intent params. Otherwise, this can result in over
+      // triggering of the Switch to Tab action on plain-text suggestions for
+      // open entity SRPs, or vice versa, on entity suggestions for open
+      // plain-text SRPs.
       last_committed_stripped_url_ = AutocompleteMatch::GURLToStrippedGURL(
           last_committed_url, AutocompleteInput(), template_url_service,
-          std::u16string());
+          std::u16string(), keep_search_intent_params);
     }
   }
 
@@ -59,10 +65,20 @@ bool TabMatcherDesktop::IsTabOpenWithURL(const GURL& url,
   const AutocompleteInput empty_input;
   if (!input)
     input = &empty_input;
+
+  // Use a blank input as the stripped URL will be reused with other inputs.
+  // Also keep the search intent params. Otherwise, this can result in over
+  // triggering of the Switch to Tab action on plain-text suggestions for
+  // open entity SRPs, or vice versa, on entity suggestions for open plain-text
+  // SRPs.
+  const bool keep_search_intent_params = base::FeatureList::IsEnabled(
+      omnibox::kDisambiguateTabMatchingForEntitySuggestions);
   const GURL stripped_url = AutocompleteMatch::GURLToStrippedGURL(
-      url, *input, template_url_service_, std::u16string());
+      url, *input, template_url_service_, std::u16string(),
+      keep_search_intent_params);
   for (auto* web_contents : GetOpenTabs()) {
-    if (IsStrippedURLEqualToWebContentsURL(stripped_url, web_contents))
+    if (IsStrippedURLEqualToWebContentsURL(stripped_url, web_contents,
+                                           keep_search_intent_params))
       return true;
   }
   return false;
@@ -91,7 +107,8 @@ std::vector<content::WebContents*> TabMatcherDesktop::GetOpenTabs() const {
 
 bool TabMatcherDesktop::IsStrippedURLEqualToWebContentsURL(
     const GURL& stripped_url,
-    content::WebContents* web_contents) const {
+    content::WebContents* web_contents,
+    const bool keep_search_intent_params) const {
   AutocompleteClientWebContentsUserData::CreateForWebContents(web_contents);
   AutocompleteClientWebContentsUserData* user_data =
       AutocompleteClientWebContentsUserData::FromWebContents(web_contents);
@@ -100,7 +117,8 @@ bool TabMatcherDesktop::IsStrippedURLEqualToWebContentsURL(
       web_contents->GetController().GetLastCommittedEntryIndex()) {
     user_data->UpdateLastCommittedStrippedURL(
         web_contents->GetController().GetLastCommittedEntryIndex(),
-        web_contents->GetLastCommittedURL(), template_url_service_);
+        web_contents->GetLastCommittedURL(), template_url_service_,
+        keep_search_intent_params);
   }
   return stripped_url == user_data->GetLastCommittedStrippedURL();
 }

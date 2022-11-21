@@ -4,10 +4,9 @@
 
 #include "chrome/browser/android/autocomplete/tab_matcher_android.h"
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "content/public/browser/web_contents_user_data.h"
-
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_android_user_data.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
@@ -17,8 +16,10 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_user_data.h"
 
 namespace {
 class AutocompleteClientTabAndroidUserData
@@ -34,11 +35,18 @@ class AutocompleteClientTabAndroidUserData
   bool IsInitialized() const { return initialized_; }
 
   void UpdateStrippedURL(const GURL& url,
-                         const TemplateURLService* template_url_service) {
+                         const TemplateURLService* template_url_service,
+                         const bool keep_search_intent_params) {
     initialized_ = true;
     if (url.is_valid()) {
+      // Use a blank input as the stripped URL will be reused with other inputs.
+      // Also keep the search intent params. Otherwise, this can result in over
+      // triggering of the Switch to Tab action on plain-text suggestions for
+      // open entity SRPs, or vice versa, on entity suggestions for open
+      // plain-text SRPs.
       stripped_url_ = AutocompleteMatch::GURLToStrippedGURL(
-          url, AutocompleteInput(), template_url_service, std::u16string());
+          url, AutocompleteInput(), template_url_service, std::u16string(),
+          keep_search_intent_params);
     }
   }
 
@@ -69,9 +77,19 @@ bool TabMatcherAndroid::IsTabOpenWithURL(const GURL& url,
   const AutocompleteInput empty_input;
   if (!input)
     input = &empty_input;
+
+  // Use a blank input as the stripped URL will be reused with other inputs.
+  // Also keep the search intent params. Otherwise, this can result in over
+  // triggering of the Switch to Tab action on plain-text suggestions for
+  // open entity SRPs, or vice versa, on entity suggestions for open plain-text
+  // SRPs.
+  const bool keep_search_intent_params = base::FeatureList::IsEnabled(
+      omnibox::kDisambiguateTabMatchingForEntitySuggestions);
   const GURL stripped_url = AutocompleteMatch::GURLToStrippedGURL(
-      url, *input, template_url_service_, std::u16string());
-  const auto all_tabs = GetAllHiddenAndNonCCTTabInfos();
+      url, *input, template_url_service_, std::u16string(),
+      keep_search_intent_params);
+  const auto all_tabs =
+      GetAllHiddenAndNonCCTTabInfos(keep_search_intent_params);
   return all_tabs.find(stripped_url) != all_tabs.end();
 }
 
@@ -82,12 +100,15 @@ void TabMatcherAndroid::FindMatchingTabs(GURLToTabInfoMap* map,
   const AutocompleteInput empty_input;
   if (!input)
     input = &empty_input;
-  auto all_tabs = GetAllHiddenAndNonCCTTabInfos();
+
+  const bool keep_search_intent_params = base::FeatureList::IsEnabled(
+      omnibox::kDisambiguateTabMatchingForEntitySuggestions);
+  auto all_tabs = GetAllHiddenAndNonCCTTabInfos(keep_search_intent_params);
 
   for (auto& gurl_to_tab_info : *map) {
     const GURL stripped_url = AutocompleteMatch::GURLToStrippedGURL(
-        gurl_to_tab_info.first, *input, template_url_service_,
-        std::u16string());
+        gurl_to_tab_info.first, *input, template_url_service_, std::u16string(),
+        keep_search_intent_params);
     auto found_tab = all_tabs.find(stripped_url);
     if (found_tab != all_tabs.end()) {
       gurl_to_tab_info.second = found_tab->second;
@@ -95,8 +116,8 @@ void TabMatcherAndroid::FindMatchingTabs(GURLToTabInfoMap* map,
   }
 }
 
-TabMatcher::GURLToTabInfoMap TabMatcherAndroid::GetAllHiddenAndNonCCTTabInfos()
-    const {
+TabMatcher::GURLToTabInfoMap TabMatcherAndroid::GetAllHiddenAndNonCCTTabInfos(
+    const bool keep_search_intent_params) const {
   using chrome::android::ActivityType;
   GURLToTabInfoMap tab_infos;
 
@@ -152,7 +173,8 @@ TabMatcher::GURLToTabInfoMap TabMatcherAndroid::GetAllHiddenAndNonCCTTabInfos()
         AutocompleteClientTabAndroidUserData::FromTabAndroid(tab);
     DCHECK(user_data);
     if (!user_data->IsInitialized()) {
-      user_data->UpdateStrippedURL(tab->GetURL(), template_url_service_);
+      user_data->UpdateStrippedURL(tab->GetURL(), template_url_service_,
+                                   keep_search_intent_params);
     }
 
     const GURL& tab_stripped_url = user_data->GetStrippedURL();

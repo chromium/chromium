@@ -44,6 +44,7 @@ BASE_DECLARE_FEATURE(kRetainSuggestionsWithHeaders);
 
 // Entity suggestion disambiguation.
 BASE_DECLARE_FEATURE(kDisambiguateEntitySuggestions);
+BASE_DECLARE_FEATURE(kDisambiguateTabMatchingForEntitySuggestions);
 
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions.
 BASE_DECLARE_FEATURE(kAdjustLocalHistoryZeroSuggestRelevanceScore);
