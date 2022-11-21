@@ -1,4 +1,5 @@
 # Action base name,                                   Mac,Win,Lin,Cros
+check_app_icon,                                        🌕, 🌕,  🌕,   🌕,
 check_app_in_list_icon_correct,                        🌕, 🌕,  🌕,   🌕,
 check_app_in_list_not_locally_installed,               🌓, 🌓,  🌓,   🌓,
 check_app_in_list_tabbed,                              🌓, 🌓,  🌓,   🌓,
@@ -40,6 +41,7 @@ launch_from_chrome_apps,                               🌓, 🌓,  🌓,   🌓
 launch_from_launch_icon,                               🌕, 🌕,  🌕,   🌕,
 launch_from_menu_option,                               🌕, 🌕,  🌕,   🌕,
 launch_from_platform_shortcut,                         🌓, 🌓,  🌓,   🌑,
+manifest_update_icon,                                  🌕, 🌕,  🌕,   🌕,
 manifest_update_display,                               🌕, 🌕,  🌕,   🌕,
 manifest_update_scope_to,                              🌕, 🌕,  🌕,   🌕,
 navigate_browser,                                      🌕, 🌕,  🌕,   🌕,
