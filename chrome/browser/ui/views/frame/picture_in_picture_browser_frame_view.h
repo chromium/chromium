@@ -147,6 +147,9 @@ class PictureInPictureBrowserFrameView
   // Returns the insets of the window frame borders.
   gfx::Insets FrameBorderInsets() const;
 
+  // Returns the insets of the window frame borders for resizing.
+  gfx::Insets ResizeBorderInsets() const;
+
   // Returns the height of the top bar area, including the window top border.
   int GetTopAreaHeight() const;
 

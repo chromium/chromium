@@ -39,6 +39,14 @@
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/wm/window_util.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/ui/frame/interior_resize_handler_targeter.h"
+#endif
+
 namespace {
 
 // TODO(https://crbug.com/1346734): Check whether any of the below should be
@@ -50,13 +58,12 @@ constexpr int kBackToTabImageSize = 14;
 // The height of the controls bar at the top of the window.
 constexpr int kTopControlsHeight = 30;
 
+#if BUILDFLAG(IS_LINUX)
 // Frame border when window shadow is not drawn.
 constexpr int kFrameBorderThickness = 4;
-
-#if BUILDFLAG(IS_LINUX)
-constexpr int kResizeBorder = 10;
 #endif
 
+constexpr int kResizeBorder = 10;
 constexpr int kResizeAreaCornerSize = 16;
 
 // The window has a smaller minimum size than normal Chrome windows.
@@ -164,6 +171,16 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
 #if BUILDFLAG(IS_LINUX)
   frame_background_ = std::make_unique<views::FrameBackground>();
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::window_util::InstallResizeHandleWindowTargeterForWindow(
+      frame->GetNativeWindow());
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  frame->GetNativeWindow()->SetEventTargeter(
+      std::make_unique<chromeos::InteriorResizeHandleTargeter>());
+#endif
 }
 
 PictureInPictureBrowserFrameView::~PictureInPictureBrowserFrameView() = default;
@@ -222,7 +239,7 @@ int PictureInPictureBrowserFrameView::NonClientHitTest(
 
   // Allow dragging and resizing the window.
   int window_component = GetHTComponentForFrame(
-      point, FrameBorderInsets(), kResizeAreaCornerSize, kResizeAreaCornerSize,
+      point, ResizeBorderInsets(), kResizeAreaCornerSize, kResizeAreaCornerSize,
       GetWidget()->widget_delegate()->CanResize());
   if (window_component != HTNOWHERE)
     return window_component;
@@ -608,7 +625,15 @@ gfx::Insets PictureInPictureBrowserFrameView::FrameBorderInsets() const {
       ShouldDrawFrameShadow(), gfx::Insets(kFrameBorderThickness),
       frame()->tiled_edges(), GetShadowValues(), kResizeBorder);
 #else
-  return gfx::Insets(kFrameBorderThickness);
+  return gfx::Insets();
+#endif
+}
+
+gfx::Insets PictureInPictureBrowserFrameView::ResizeBorderInsets() const {
+#if BUILDFLAG(IS_LINUX)
+  return FrameBorderInsets();
+#else
+  return gfx::Insets(kResizeBorder);
 #endif
 }
 
