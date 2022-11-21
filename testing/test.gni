@@ -494,9 +494,6 @@ template("test") {
     }
 
     use_v2_script = use_v2_script_default
-    if (target_cpu == "x64") {
-      use_v2_script = false
-    }
     if (defined(invoker.fuchsia_legacy_script_required) &&
         invoker.fuchsia_legacy_script_required) {
       use_v2_script = false
