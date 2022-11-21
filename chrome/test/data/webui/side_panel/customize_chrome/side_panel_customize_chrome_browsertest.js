@@ -26,7 +26,8 @@ class SidePanelCustomizeChromeBrowserTest extends PolymerTest {
   };
 }
 
-var ShortcutsTest = class extends SidePanelCustomizeChromeBrowserTest {
+var SidePanelCustomizeChromeShortcutsTest =
+    class extends SidePanelCustomizeChromeBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://customize-chrome-side-panel.top-chrome/test_loader.html' +
@@ -34,6 +35,58 @@ var ShortcutsTest = class extends SidePanelCustomizeChromeBrowserTest {
   }
 };
 
-TEST_F('ShortcutsTest', 'All', function() {
+var SidePanelCustomizeChromeAppTest =
+    class extends SidePanelCustomizeChromeBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://customize-chrome-side-panel.top-chrome/test_loader.html' +
+        '?module=side_panel_customize_chrome/app_test.js';
+  }
+};
+
+var SidePanelCustomizeChromeAppearanceTest =
+    class extends SidePanelCustomizeChromeBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://customize-chrome-side-panel.top-chrome/test_loader.html' +
+        '?module=side_panel_customize_chrome/appearance_test.js';
+  }
+};
+
+var SidePanelCustomizeChromeCategoriesTest =
+    class extends SidePanelCustomizeChromeBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://customize-chrome-side-panel.top-chrome/test_loader.html' +
+        '?module=side_panel_customize_chrome/categories_test.js';
+  }
+};
+
+var SidePanelCustomizeChromeThemesTest =
+    class extends SidePanelCustomizeChromeBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://customize-chrome-side-panel.top-chrome/test_loader.html' +
+        '?module=side_panel_customize_chrome/themes_test.js';
+  }
+};
+
+TEST_F('SidePanelCustomizeChromeShortcutsTest', 'All', function() {
+  mocha.run();
+});
+
+TEST_F('SidePanelCustomizeChromeAppTest', 'All', function() {
+  mocha.run();
+});
+
+TEST_F('SidePanelCustomizeChromeAppearanceTest', 'All', function() {
+  mocha.run();
+});
+
+TEST_F('SidePanelCustomizeChromeCategoriesTest', 'All', function() {
+  mocha.run();
+});
+
+TEST_F('SidePanelCustomizeChromeThemesTest', 'All', function() {
   mocha.run();
 });

@@ -15,6 +15,9 @@ build_webui("build") {
   web_component_files = [
     "app.ts",
     "shortcuts.ts",
+    "categories.ts",
+    "appearance.ts",
+    "themes.ts",
   ]
 
   non_web_component_files = [ "customize_chrome_api_proxy.ts" ]

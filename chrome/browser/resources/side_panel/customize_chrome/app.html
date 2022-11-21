@@ -1,3 +1,16 @@
-<div id="body">
+<iron-pages selected="[[page_]]" attr-for-selected="page-name">
+  <div page-name="overview" id="overviewPage">
+    <customize-chrome-appearance on-edit-theme-click="onEditThemeClick_"
+        id="appearanceElement">
+    </customize-chrome-appearance>
     <customize-chrome-shortcuts></customize-chrome-shortcuts>
-</div>
+  </div>
+  <customize-chrome-categories on-back-click="onBackClick_"
+      on-category-select="onCategorySelect_" page-name="categories"
+      id="categoriesPage">
+  </customize-chrome-categories>
+  <customize-chrome-themes on-back-click="onBackClick_"
+      on-theme-select="onThemeSelect_" page-name="themes"
+      id="themesPage">
+  </customize-chrome-themes>
+</iron-pages>
