@@ -295,14 +295,6 @@ void StyleInvalidator::Invalidate(Element& element, SiblingData& sibling_data) {
     if (UNLIKELY(element.NeedsStyleInvalidation()))
       PushInvalidationSetsForContainerNode(element, sibling_data);
 
-    // When a slot element is invalidated, the slotted elements are also
-    // invalidated by HTMLSlotElement::DidRecalcStyle. So if WholeSubtreeInvalid
-    // is true, they will be included even though they are not part of the
-    // subtree. It's not necessary to fully recalc style for the slotted
-    // elements in that case as they just need to pick up changed inherited
-    // styles but we do it. If we ever stop doing that then this code and the
-    // PushInvalidationSetsForContainerNode above need to move out of the
-    // if-block.
     auto* html_slot_element = DynamicTo<HTMLSlotElement>(element);
     if (html_slot_element && InvalidatesSlotted())
       InvalidateSlotDistributedElements(*html_slot_element);

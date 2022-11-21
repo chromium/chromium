@@ -2970,11 +2970,18 @@ scoped_refptr<ComputedStyle> Element::StyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
   DCHECK(GetDocument().InStyleRecalc());
 
-  // FIXME: Instead of clearing updates that may have been added from calls to
-  // ResolveStyle outside RecalcStyle, we should just never set them if we're
-  // not inside RecalcStyle.
-  if (ElementAnimations* element_animations = GetElementAnimations())
+  if (ElementAnimations* element_animations = GetElementAnimations()) {
+    // For multiple style recalc passes for the same element in the same
+    // lifecycle, which can happen for container queries, we may end up having
+    // pending updates from the previous pass. In that case the update from the
+    // previous pass should be dropped as it will be re-added if necessary. It
+    // may be that an update detected in the previous pass would no longer be
+    // necessary if the animated property flipped back to the old style with no
+    // change as the result.
+    DCHECK(GetDocument().GetStyleEngine().InContainerQueryStyleRecalc() ||
+           element_animations->CssAnimations().PendingUpdate().IsEmpty());
     element_animations->CssAnimations().ClearPendingUpdate();
+  }
 
   scoped_refptr<ComputedStyle> style =
       HasCustomStyleCallbacks()
