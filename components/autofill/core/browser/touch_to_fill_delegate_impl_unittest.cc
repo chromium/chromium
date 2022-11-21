@@ -12,6 +12,7 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 using testing::_;
 using testing::ElementsAreArray;
@@ -90,6 +91,9 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
 class TouchToFillDelegateImplUnitTest : public testing::Test {
  protected:
   void SetUp() override {
+    test::CreateTestCreditCardFormData(&form_, /*is_https=*/true,
+                                       /*use_month_type=*/false);
+
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     autofill_client_.GetPersonalDataManager()->SetPrefService(
         autofill_client_.GetPrefs());
@@ -104,7 +108,7 @@ class TouchToFillDelegateImplUnitTest : public testing::Test {
     browser_autofill_manager_->SetTouchToFillDelegateImplForTest(
         std::move(touch_to_fill_delegate));
 
-    // Default setup for successful |TryToShowTouchToFill|.
+    // Default setup for successful `TryToShowTouchToFill`.
     field_.is_focusable = true;
     autofill_client_.GetPersonalDataManager()->AddCreditCard(
         test::GetCreditCard());
@@ -132,6 +136,7 @@ class TouchToFillDelegateImplUnitTest : public testing::Test {
   FormFieldData field_;
 
   base::test::TaskEnvironment task_environment_;
+  test::AutofillEnvironment autofill_environment_;
   NiceMock<MockAutofillClient> autofill_client_;
   std::unique_ptr<NiceMock<MockAutofillDriver>> autofill_driver_;
   std::unique_ptr<MockBrowserAutofillManager> browser_autofill_manager_;
@@ -158,6 +163,27 @@ TEST_F(TouchToFillDelegateImplUnitTest,
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
   EXPECT_CALL(autofill_client_, IsTouchToFillCreditCardSupported)
       .WillOnce(Return(false));
+
+  TryToShowTouchToFill(/*expected_success=*/false);
+}
+
+TEST_F(TouchToFillDelegateImplUnitTest,
+       TryToShowTouchToFillFailsIfFormIsNotSecure) {
+  // Simulate non-secure form.
+  test::CreateTestCreditCardFormData(&form_, /*is_https=*/false,
+                                     /*use_month_type=*/false);
+
+  ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
+
+  TryToShowTouchToFill(/*expected_success=*/false);
+}
+
+TEST_F(TouchToFillDelegateImplUnitTest,
+       TryToShowTouchToFillFailsIfClientIsNotSecure) {
+  // Simulate non-secure client.
+  autofill_client_.set_form_origin(GURL("http://example.com"));
+
+  ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 
   TryToShowTouchToFill(/*expected_success=*/false);
 }

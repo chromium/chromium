@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/touch_to_fill_delegate_impl.h"
 
+#include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -32,6 +33,9 @@ bool TouchToFillDelegateImpl::TryToShowTouchToFill(int query_id,
     return false;
   // Trigger only on supported platforms.
   if (!manager_->client()->IsTouchToFillCreditCardSupported())
+    return false;
+  // Trigger only if the client and the form are not insecure.
+  if (IsFormOrClientNonSecure(manager_->client(), form))
     return false;
   // Trigger only if not shown before.
   if (ttf_credit_card_state_ != TouchToFillState::kShouldShow)
