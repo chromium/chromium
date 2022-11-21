@@ -106,80 +106,71 @@ struct MEDIA_EXPORT StatusData {
   UKMPackedType packed_root_cause = 0;
 };
 
+#define NAME_DETECTOR(detector_name, field)                            \
+  template <typename T>                                                \
+  struct detector_name {                                               \
+    template <typename, typename>                                      \
+    struct field##is_enum {                                            \
+      constexpr static bool value = false;                             \
+    };                                                                 \
+    template <typename V>                                              \
+    struct field##is_enum<V, decltype(V::field)> {                     \
+      constexpr static bool value = true;                              \
+    };                                                                 \
+    template <typename, typename>                                      \
+    struct field##_is_member {                                         \
+      constexpr static bool value = false;                             \
+    };                                                                 \
+    template <typename V>                                              \
+    struct field##_is_member<                                          \
+        V,                                                             \
+        std::enable_if_t<std::is_pointer_v<decltype(&V::field)>, V>> { \
+      constexpr static bool value = true;                              \
+    };                                                                 \
+    constexpr static bool as_enum_value = field##is_enum<T, T>::value; \
+    constexpr static bool as_method = field##_is_member<T, T>::value;  \
+  }
+
+NAME_DETECTOR(HasOkCode, kOk);
+NAME_DETECTOR(HasPackExtraData, PackExtraData);
+NAME_DETECTOR(HasSetDefaultOk, DefaultEnumValue);
+
+#undef NAME_DETECTOR
+
 // Helper class to allow traits with no default enum.
 template <typename T>
 struct StatusTraitsHelper {
+  static constexpr bool has_ok = HasOkCode<typename T::Codes>::as_enum_value;
+  static constexpr bool has_default = HasSetDefaultOk<T>::as_method;
+  static constexpr bool has_pack = HasPackExtraData<T>::as_method;
+
   // If T defines DefaultEnumValue(), then return it. Otherwise, return an
-  // empty optional.
-  static constexpr absl::optional<typename T::Codes> DefaultEnumValue() {
-    return DefaultEnumValueImpl(0);
+  // T::Codes::kOk if that's defined, or absl::nullopt if its not.
+  // TODO: rename |DefaultEnumValue| to |OkEnumValue|.
+  static constexpr absl::optional<typename T::Codes> OkEnumValue() {
+    if constexpr (has_default) {
+      return T::DefaultEnumValue();
+    } else if constexpr (has_ok) {
+      return T::Codes::kOk;
+    } else {
+      return absl::nullopt;
+    }
   }
 
   // If T defined PackExtraData(), then evaluate it. Otherwise, return a default
   // value. |PackExtraData| is an optional method that can operate on the
   // internal status data in order to pack it into a 32-bit entry for UKM.
   static constexpr uint32_t PackExtraData(const StatusData& info) {
-    return DefaultPackExtraData(info, 0);
-  }
-
- private:
-  // Call with an (ignored) int, which will choose the first one if it isn't
-  // removed by SFINAE, else will use the varargs one below.
-  template <typename X = T>
-  static constexpr typename std::enable_if_t<
-      std::is_pointer_v<decltype(&X::DefaultEnumValue)>,
-      absl::optional<typename T::Codes>>
-  DefaultEnumValueImpl(int) {
-    // Make sure the signature is correct, just for sanity.
-    static_assert(
-        std::is_same<decltype(T::DefaultEnumValue), typename T::Codes()>::value,
-        "TypedStatus::Traits::DefaultEnumValue() must return Traits::Codes.");
-    return T::DefaultEnumValue();
-  }
-
-  static constexpr absl::optional<typename T::Codes> DefaultEnumValueImpl(...) {
-    return {};
-  }
-
-  template <typename X = T>
-  static constexpr
-      typename std::enable_if_t<std::is_pointer_v<decltype(&X::PackExtraData)>,
-                                uint32_t>
-      DefaultPackExtraData(const StatusData& info, int) {
-    static_assert(
-        std::is_same_v<decltype(T::PackExtraData(info)), uint32_t>,
-        "Traits::PackExtraData(const StatusData&) must return uint32_t");
-    return T::PackExtraData(info);
-  }
-
-  static constexpr int DefaultPackExtraData(const StatusData&, ...) {
-    return 0;
+    if constexpr (has_pack) {
+      return T::PackExtraData(info);
+    } else {
+      return 0;
+    }
   }
 };
 
-template <typename, typename>
-struct OkStatusDetectorHelper {
-  constexpr static bool has_ok = false;
-};
-
-// Matches <T,T> if T::kOk exists.
-template <typename T>
-struct OkStatusDetectorHelper<T, decltype(T::kOk)> {
-  constexpr static bool has_ok = true;
-};
-
-// Does T have a T::kOk?
-template <typename T>
-constexpr bool DoesHaveOkCode = OkStatusDetectorHelper<T, T>::has_ok;
-
-// Implicitly converts to `kOk` TypedStatus, for any traits.  Also converts to
-// the enum code 'kOk', for any enum that has a 'kOk'.
-struct OkStatusImplicitConstructionHelper {
-  template <typename T>
-  operator T() const {
-    return T::kOk;
-  }
-};
+// Implicitly converts to an ok value for any implementation of TypedStatus.
+struct OkStatusImplicitConstructionHelper {};
 
 // For gtest, so it can print this.  Otherwise, it tries to convert to an
 // integer for printing.  That'd be okay, except our implicit cast matches the
@@ -217,9 +208,9 @@ class MEDIA_EXPORT TypedStatus {
     // compile-time, so the later clauses don't have to be compilable if the
     // the earlier ones match.  Specifically, it's okay to reference `kOk` even
     // if `T::Codes` doesn't have `kOk`, since we check for it first.
-    if constexpr (!internal::DoesHaveOkCode<typename T::Codes>)
+    if constexpr (!internal::StatusTraitsHelper<T>::has_ok)
       return true;
-    else if constexpr (!internal::StatusTraitsHelper<T>::DefaultEnumValue())
+    else if constexpr (!internal::StatusTraitsHelper<T>::has_default)
       return true;
     else
       return T::DefaultEnumValue() == T::Codes::kOk;
@@ -244,7 +235,7 @@ class MEDIA_EXPORT TypedStatus {
   // Special constructor use by OkStatus() to implicitly be cast to any required
   // status type.
   TypedStatus(const internal::OkStatusImplicitConstructionHelper&)
-      : TypedStatus(Codes::kOk) {}
+      : TypedStatus() {}
 
   // Used to implicitly create a TypedStatus from a TypedStatus::Codes value.
   TypedStatus(Codes code,
@@ -321,7 +312,7 @@ class MEDIA_EXPORT TypedStatus {
               const base::Location& location = base::Location::Current()) {
     // Note that |message| would be dropped when code is the default value,
     // so DCHECK that it is not set.
-    if (code == internal::StatusTraitsHelper<Traits>::DefaultEnumValue()) {
+    if (code == internal::StatusTraitsHelper<Traits>::OkEnumValue()) {
       DCHECK(!!message.empty());
       return;
     }
@@ -340,19 +331,11 @@ class MEDIA_EXPORT TypedStatus {
     return *this;
   }
 
-  // If `Codes` has a `kOk` value, then check return true if we're `kOk`.  If
-  // there is no `kOk`, or if we're some other value, then return false.
-  bool is_ok() const {
-    if constexpr (internal::DoesHaveOkCode<Codes>) {
-      return code() == Codes::kOk;
-    } else {
-      return false;
-    }
-  }
+  bool is_ok() const { return !data_; }
 
   Codes code() const {
     if (!data_)
-      return *internal::StatusTraitsHelper<Traits>::DefaultEnumValue();
+      return *internal::StatusTraitsHelper<Traits>::OkEnumValue();
     return static_cast<Codes>(data_->code);
   }
 
@@ -464,7 +447,7 @@ class MEDIA_EXPORT TypedStatus {
 
     // Create an Or type implicitly from a TypedStatus
     Or(TypedStatus<T>&& error) : error_(std::move(error)) {
-      // `error_` must not be `kOk`, if there is such a value.
+      // `error_` must not be ok.
       DCHECK(!error_->is_ok());
     }
 
@@ -502,15 +485,12 @@ class MEDIA_EXPORT TypedStatus {
 
     bool has_value() const { return value_.has_value(); }
 
-    // If we have an error, verify that `code` matches.  If we have a value,
-    // then this should match if an only if `code` is `kOk`.  If there is no
-    // `kOk`, then it does not match even if we have a value.
     inline bool operator==(typename T::Codes code) const {
-      if constexpr (internal::DoesHaveOkCode<typename T::Codes>) {
-        return code == this->code();
-      } else {
-        return error_ ? code == error_->code() : false;
-      }
+      // We can't use Or<T>::code() directly, since it might not be allowed
+      // due to not having an OK or default code.
+      if (error_)
+        return error_->code() == code;
+      return internal::StatusTraitsHelper<Traits>::OkEnumValue() == code;
     }
 
     inline bool operator!=(typename T::Codes code) const {
@@ -549,15 +529,11 @@ class MEDIA_EXPORT TypedStatus {
 
     typename T::Codes code() const {
       DCHECK(error_ || value_);
-      // It is invalid to call |code()| on an |Or| with a value that
-      // is specialized in a TypedStatus with no `kOk`.  Instead, you should
-      // explicitly call has_value() / error().code().
-      static_assert(internal::DoesHaveOkCode<typename T::Codes>,
-                    "Cannot call Or::code() if there is no kOk code.");
-      // TODO: should this DCHECK(error_) if we don't have kOk?  It's not as
-      // strong as the static_assert, but maybe we want to allow this for types
-      // that don't have `kOk`.
-      return error_ ? error_->code() : T::Codes::kOk;
+      using helper = internal::StatusTraitsHelper<Traits>;
+      static_assert(
+          helper::OkEnumValue().has_value(),
+          "Cannot call Or::code() without OkEnumValue or kOk defined");
+      return error_ ? error_->code() : *helper::OkEnumValue();
     }
 
     template <typename FnType,

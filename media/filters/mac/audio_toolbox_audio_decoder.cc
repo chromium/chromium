@@ -163,7 +163,7 @@ void AudioToolboxAudioDecoder::Initialize(const AudioDecoderConfig& config,
   output_cb_ = output_cb;
   BindToCurrentLoop(std::move(init_cb))
       .Run(CreateAACDecoder(config)
-               ? OkStatus()
+               ? DecoderStatus::Codes::kOk
                : DecoderStatus::Codes::kFailedToCreateDecoder);
 }
 

@@ -38,6 +38,12 @@ struct NoOkStatusTypeTraits {
   static constexpr StatusGroupType Group() { return "NoDefaultNoOkType"; }
 };
 
+struct CustomDefaultValue {
+  enum class Codes : StatusCodeType { kFoo = 0, kBar = 1, kBaz = 2 };
+  static constexpr StatusGroupType Group() { return "CustomOkCode"; }
+  static constexpr Codes DefaultEnumValue() { return Codes::kFoo; }
+};
+
 struct ZeroValueOkTypeTraits {
   enum class Codes : StatusCodeType { kOk = 0, kFoo = 1, kBar = 2, kBaz = 3 };
   static constexpr StatusGroupType Group() { return "ZeroValueOkTypeTraits"; }
@@ -495,10 +501,20 @@ TEST_F(StatusTest, Okayness) {
                   .is_ok());
 }
 
-TEST_F(StatusTest, CanConvertOkToCode) {
-  // OkStatus() should also be convertible to the enum directly.
-  ZeroValueOkTypeTraits::Codes code = OkStatus();
-  EXPECT_EQ(code, ZeroValueOkTypeTraits::Codes::kOk);
+TEST_F(StatusTest, MustHaveOkOrHelperMethod) {
+  static_assert(internal::StatusTraitsHelper<CustomDefaultValue>::has_default,
+                "WOW");
+
+  auto nook = internal::StatusTraitsHelper<NoOkStatusTypeTraits>::OkEnumValue();
+  ASSERT_FALSE(nook.has_value());
+
+  auto kok = internal::StatusTraitsHelper<ZeroValueOkTypeTraits>::OkEnumValue();
+  ASSERT_TRUE(kok.has_value());
+  ASSERT_EQ(*kok, ZeroValueOkTypeTraits::Codes::kOk);
+
+  auto custom = internal::StatusTraitsHelper<CustomDefaultValue>::OkEnumValue();
+  ASSERT_TRUE(custom.has_value());
+  ASSERT_EQ(*custom, CustomDefaultValue::Codes::kFoo);
 }
 
 TEST_F(StatusTest, OkStatusInitializesToOk) {
