@@ -33,7 +33,8 @@ class BASE_EXPORT ScopedServiceBinding {
   // Published a public service in the specified |outgoing_directory|.
   // |outgoing_directory| and |impl| must outlive the binding.
   ScopedServiceBinding(sys::OutgoingDirectory* outgoing_directory,
-                       Interface* impl, base::StringPiece name = Interface::Name_)
+                       Interface* impl,
+                       base::StringPiece name = Interface::Name_)
       : publisher_(outgoing_directory, bindings_.GetHandler(impl), name) {}
 
   // Publishes a service in the specified |pseudo_dir|. |pseudo_dir| and |impl|
@@ -81,6 +82,18 @@ class BASE_EXPORT ScopedSingleClientServiceBinding {
       : binding_(impl) {
     publisher_.emplace(
         outgoing_directory,
+        fit::bind_member(this, &ScopedSingleClientServiceBinding::BindClient),
+        name);
+    binding_.set_error_handler(fit::bind_member(
+        this, &ScopedSingleClientServiceBinding::OnBindingEmpty));
+  }
+
+  ScopedSingleClientServiceBinding(vfs::PseudoDir* publish_to,
+                                   Interface* impl,
+                                   base::StringPiece name = Interface::Name_)
+      : binding_(impl) {
+    publisher_.emplace(
+        publish_to,
         fit::bind_member(this, &ScopedSingleClientServiceBinding::BindClient),
         name);
     binding_.set_error_handler(fit::bind_member(

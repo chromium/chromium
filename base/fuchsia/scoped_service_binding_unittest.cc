@@ -37,6 +37,24 @@ TEST_F(ScopedServiceBindingTest, ConnectTwiceNewName) {
   VerifyTestInterface(&stub2, ZX_OK);
 }
 
+// Verify that we can publish a debug service.
+TEST_F(ScopedServiceBindingTest, ConnectDebugService) {
+  // Remove the public service binding.
+  service_binding_.reset();
+
+  // Publish the test service to the "debug" directory.
+  ScopedServiceBinding<testfidl::TestInterface> debug_service_binding(
+      outgoing_directory_->debug_dir(), &test_service_);
+
+  auto debug_stub =
+      debug_service_directory_->Connect<testfidl::TestInterface>();
+  VerifyTestInterface(&debug_stub, ZX_OK);
+
+  auto release_stub =
+      public_service_directory_->Connect<testfidl::TestInterface>();
+  VerifyTestInterface(&release_stub, ZX_ERR_PEER_CLOSED);
+}
+
 // Verifies that ScopedSingleClientServiceBinding allows a different name.
 TEST_F(ScopedServiceBindingTest, SingleClientConnectNewName) {
   const char kInterfaceName[] = "fuchsia.TestInterface2";
@@ -117,13 +135,12 @@ TEST_F(ScopedServiceBindingTest, SingleClientDefaultIsPreferNew) {
   VerifyTestInterface(&new_client, ZX_OK);
 }
 
-// Verify that we can publish a debug service.
-TEST_F(ScopedServiceBindingTest, ConnectDebugService) {
+// Verify that single-client bindings support publishing to a PseudoDir.
+TEST_F(ScopedServiceBindingTest, SingleClientPublishToPseudoDir) {
   // Remove the public service binding.
   service_binding_.reset();
 
-  // Publish the test service to the "debug" directory.
-  ScopedServiceBinding<testfidl::TestInterface> debug_service_binding(
+  ScopedSingleClientServiceBinding<testfidl::TestInterface> binding(
       outgoing_directory_->debug_dir(), &test_service_);
 
   auto debug_stub =
