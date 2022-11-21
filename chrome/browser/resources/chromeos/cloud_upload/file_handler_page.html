@@ -52,19 +52,45 @@
     border: 2px solid var(--cros-color-prominent);
   }
 
-  .icon-placeholder {
-    background-color: white;
+  .icon {
+    background: no-repeat center var(--cros-bg-color-elevation-3);
     border-radius: 50%;
-    height: 22px;
+    height: 24px;
     margin-inline-end: 12px;
     margin-inline-start: 20px;
-    width: 22px;
+    width: 24px;
+  }
+
+  .icon.docs::before,
+  .icon.sheets::before,
+  .icon.slides::before {
+    -webkit-mask: url(icons/docs.svg) center 22px;
+    background-color: var(--cros-icon-color-blue);
+    content: '';
+    height: 22px;
+    position: absolute;
+    width: 24px;
+  }
+
+  .icon.sheets::before {
+    -webkit-mask-image: url(icons/sheets.svg);
+    background-color: var(--cros-icon-color-green);
+  }
+
+  .icon.slides::before {
+    -webkit-mask-image: url(icons/slides.svg);
+    background-color: var(--cros-icon-color-yellow);
+  }
+
+  .icon.office {
+    background-image: url(icons/office.svg);
+    background-size: 20px;
   }
 </style>
 
 <!-- TODO(b:251046594): Use localized strings -->
 <div class="title">
-  Choose an application to open <span id="file-name"></span>.
+  Choose an application to open “<span id="file-name"></span>”
 </div>
 <form>
   <div class="normal-text">
@@ -74,7 +100,7 @@
   <label class="radio-label">
     <input type="radio" name="app-choice" id="drive" value="drive" checked
         autofocus>
-    <div class="icon-placeholder"></div>
+    <div class="icon" id="drive-app-icon"></div>
     <span id="drive-app-name"></span>
   </label>
   <div class="normal-text" id="available-to-install">
@@ -83,7 +109,7 @@
 
   <label class="radio-label">
     <input type="radio" name="app-choice" id="onedrive" value="onedrive">
-    <div class="icon-placeholder"></div>
+    <div class="icon office"></div>
     Microsoft Office
   </label>
 </form>

@@ -9,7 +9,11 @@ build_webui("build") {
 
   static_files = [
     "icons/check.svg",
+    "icons/docs.svg",
     "icons/download.svg",
+    "icons/office.svg",
+    "icons/sheets.svg",
+    "icons/slides.svg",
     "main.html",
   ]
   web_component_files = [

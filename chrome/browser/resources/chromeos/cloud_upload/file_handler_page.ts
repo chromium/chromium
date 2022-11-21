@@ -54,30 +54,37 @@ export class FileHandlerPageElement extends HTMLElement {
       assert(fileNameElement);
       fileNameElement.innerText = dialogArgs.args.fileNames[0] || '';
 
+      const {name, icon} = this.getDriveAppInfo(dialogArgs.args.fileNames);
       const driveAppNameElement =
           this.shadowRoot!.querySelector<HTMLSpanElement>('#drive-app-name');
       assert(driveAppNameElement);
-      driveAppNameElement.innerText =
-          this.getDriveAppName(dialogArgs.args.fileNames);
+      driveAppNameElement.innerText = name;
+
+      const driveAppIconElement =
+          this.shadowRoot!.querySelector<HTMLSpanElement>('#drive-app-icon');
+      assert(driveAppIconElement);
+      driveAppIconElement.classList.add(icon);
+
+
     } catch (e) {
       // TODO(b:243095484) Define expected behavior.
       console.error(`Unable to get dialog arguments . Error: ${e}.`);
     }
   }
 
-  // Return the names of the specific Google app i.e. Docs/Sheets/Slides that
-  // will be used to open these files. When there are multiple files of
+  // Return the name and icon of the specific Google app i.e. Docs/Sheets/Slides
+  // that will be used to open these files. When there are multiple files of
   // different types, or any error finding the right app, we just default to
   // Docs.
-  private getDriveAppName(fileNames: string[]) {
+  private getDriveAppInfo(fileNames: string[]) {
     // TODO(b:254586358): i18n these names.
     const fileName = fileNames[0] || '';
     if (/\.xlsx?$/.test(fileName)) {
-      return 'Google Sheets';
+      return {name: 'Google Sheets', icon: 'sheets'};
     } else if (/\.pptx?$/.test(fileName)) {
-      return 'Google Slides';
+      return {name: 'Google Slides', icon: 'slides'};
     } else {
-      return 'Google Docs';
+      return {name: 'Google Docs', icon: 'docs'};
     }
   }
 
