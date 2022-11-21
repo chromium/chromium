@@ -887,7 +887,7 @@ TEST_F(DlpFilesControllerTest, DownloadToLocalAllowed) {
   EXPECT_CALL(cb, Run(/*is_allowed=*/true)).Times(1);
 
   files_controller_->CheckIfDownloadAllowed(
-      GURL(kExampleUrl1),
+      DlpFilesController::DlpFileDestination(kExampleUrl1),
       base::FilePath(
           "/home/chronos/u-0123456789abcdef/MyFiles/Downloads/img.jpg"),
       cb.Get());
@@ -1472,8 +1472,9 @@ TEST_P(DlpFilesExternalDestinationTest, FileDownloadBlocked) {
       blink::StorageKey(), mount_name, base::FilePath(path));
   ASSERT_TRUE(dst_url.is_valid());
 
-  files_controller_->CheckIfDownloadAllowed(GURL(kExampleUrl1), dst_url.path(),
-                                            cb.Get());
+  files_controller_->CheckIfDownloadAllowed(
+      DlpFilesController::DlpFileDestination(kExampleUrl1), dst_url.path(),
+      cb.Get());
 
   ASSERT_EQ(events.size(), 1u);
 
@@ -1642,8 +1643,9 @@ TEST_P(DlpFilesWarningDialogChoiceTest, FileDownloadWarned) {
       blink::StorageKey(), "removable", file_path);
   ASSERT_TRUE(dst_url.is_valid());
 
-  files_controller_->CheckIfDownloadAllowed(GURL(kExampleUrl1), dst_url.path(),
-                                            cb.Get());
+  files_controller_->CheckIfDownloadAllowed(
+      DlpFilesController::DlpFileDestination(kExampleUrl1), dst_url.path(),
+      cb.Get());
 
   auto CreateEvent =
       [&](absl::optional<DlpRulesManager::Level> level) -> DlpPolicyEvent {

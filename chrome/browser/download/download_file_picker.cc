@@ -21,10 +21,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "ui/aura/window.h"
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #endif
 
 using download::DownloadItem;
@@ -113,49 +109,10 @@ DownloadFilePicker::~DownloadFilePicker() {
 }
 
 void DownloadFilePicker::OnFileSelected(const base::FilePath& path) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto* web_contents =
-      download_item_
-          ? content::DownloadItemUtils::GetWebContents(download_item_)
-          : nullptr;
-  if (web_contents && !path.empty()) {
-    DCHECK(download_item_);
-
-    policy::DlpFilesController* files_controller = nullptr;
-    policy::DlpRulesManager* rules_manager =
-        policy::DlpRulesManagerFactory::GetForPrimaryProfile();
-
-    if (rules_manager)
-      files_controller = rules_manager->GetDlpFilesController();
-
-    if (files_controller) {
-      const GURL authority_url = download::BaseFile::GetEffectiveAuthorityURL(
-          download_item_->GetURL(), download_item_->GetReferrerUrl());
-      files_controller->CheckIfDownloadAllowed(
-          authority_url, path,
-          base::BindOnce(&DownloadFilePicker::CompleteFileSelection,
-                         base::Unretained(this), path));
-    } else {
-      CompleteFileSelection(path, /*is_allowed=*/true);
-    }
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  CompleteFileSelection(path, /*is_allowed=*/true);
-  // Deletes |this|
-}
-
-void DownloadFilePicker::CompleteFileSelection(const base::FilePath& path,
-                                               bool is_allowed) {
-  base::FilePath selected_path(path);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!is_allowed)
-    selected_path.clear();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   std::move(file_selected_callback_)
-      .Run(selected_path.empty() ? DownloadConfirmationResult::CANCELED
-                                 : DownloadConfirmationResult::CONFIRMED,
-           selected_path);
+      .Run(path.empty() ? DownloadConfirmationResult::CANCELED
+                        : DownloadConfirmationResult::CONFIRMED,
+           path);
   delete this;
 }
 

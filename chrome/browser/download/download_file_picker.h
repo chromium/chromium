@@ -45,14 +45,9 @@ class DownloadFilePicker : public ui::SelectFileDialog::Listener,
                      ConfirmationCallback callback);
   ~DownloadFilePicker() override;
 
-  // Gets restricted sources for selected files according to DataLeakPravention
-  // policy.
-  void OnFileSelected(const base::FilePath& virtual_path);
-
-  // Called when `is_allowed` is obtained.
-  // Runs |file_selected_callback_| with |path| and then deletes this
+  // Runs |file_selected_callback_| with |virtual_path| and then deletes this
   // object.
-  void CompleteFileSelection(const base::FilePath& path, bool is_allowed);
+  void OnFileSelected(const base::FilePath& virtual_path);
 
   // SelectFileDialog::Listener implementation.
   void FileSelected(const base::FilePath& path,

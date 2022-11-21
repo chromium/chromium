@@ -152,8 +152,13 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
       std::unique_ptr<ui::SelectFilePolicy> policy);
   ~SelectFileDialogExtension() override;
 
+  // Applies DLP policies if there's any, then notifies listeners accordingly.
+  void ApplyPolicyAndNotifyListener(
+      absl::optional<policy::DlpFilesController::DlpFileDestination>
+          dialog_caller);
+
   // Invokes the appropriate file selection callback on our listener.
-  void NotifyListener();
+  void NotifyListener(std::vector<ui::SelectedFileInfo> selection_files);
 
   // Adds this to the list of pending dialogs, used for testing.
   void AddPending(RoutingID routing_id);
@@ -180,6 +185,9 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
 
   // Information about the dialog's owner, such as the window or app type.
   Owner owner_;
+
+  // Dialog type.
+  Type type_;
 
   // We defer the callback into SelectFileDialog::Listener until the window
   // closes, to match the semantics of file selection on Windows and Mac.

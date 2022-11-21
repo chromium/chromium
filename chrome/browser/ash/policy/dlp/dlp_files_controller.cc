@@ -546,7 +546,7 @@ void DlpFilesController::FilterDisallowedUploads(
 }
 
 void DlpFilesController::CheckIfDownloadAllowed(
-    const GURL& download_url,
+    const DlpFileDestination& download_src,
     const base::FilePath& file_path,
     CheckIfDownloadAllowedCallback result_callback) {
   auto* profile = ProfileManager::GetPrimaryUserProfile();
@@ -561,7 +561,13 @@ void DlpFilesController::CheckIfDownloadAllowed(
     return;
   }
 
-  FileDaemonInfo file_info({}, file_path, download_url.spec());
+  if (!download_src.url_or_path.has_value()) {
+    // Currently we only support urls as sources.
+    std::move(result_callback).Run(true);
+    return;
+  }
+
+  FileDaemonInfo file_info({}, file_path, download_src.url_or_path.value());
   IsFilesTransferRestricted(
       {std::move(file_info)}, DlpFileDestination(file_path.value()),
       FileAction::kDownload,

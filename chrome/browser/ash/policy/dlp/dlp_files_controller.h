@@ -186,11 +186,12 @@ class DlpFilesController {
       const GURL& destination,
       FilterDisallowedUploadsCallback result_callback);
 
-  // Checks whether the file download from `download_url` to `file_path` is
+  // Checks whether the file download from `download_src` to `file_path` is
   // allowed.
-  void CheckIfDownloadAllowed(const GURL& download_url,
-                              const base::FilePath& file_path,
-                              CheckIfDownloadAllowedCallback result_callback);
+  virtual void CheckIfDownloadAllowed(
+      const DlpFileDestination& download_src,
+      const base::FilePath& file_path,
+      CheckIfDownloadAllowedCallback result_callback);
 
   // Checks whether launching `app_update` with `intent` is allowed.
   void CheckIfLaunchAllowed(const apps::AppUpdate& app_update,
