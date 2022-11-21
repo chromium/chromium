@@ -417,10 +417,9 @@ void AppIconLoader::LoadWebAppIcon(const std::string& web_app_id,
       for (auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
         auto size_and_purpose = icon_manager.FindIconMatchBigger(
             web_app_id, {*icon_purpose_to_read},
-            gfx::ScaleToFlooredSize(
-                gfx::Size(size_hint_in_dip_, size_hint_in_dip_),
-                ui::GetScaleForResourceScaleFactor(scale_factor))
-                .width());
+            apps_util::ConvertDipToPxForScale(
+                size_hint_in_dip_,
+                ui::GetScaleForResourceScaleFactor(scale_factor)));
         DCHECK(size_and_purpose.has_value());
         if (!base::Contains(icon_pixel_sizes, size_and_purpose->size_px)) {
           icon_pixel_sizes.emplace_back(size_and_purpose->size_px);
@@ -796,9 +795,7 @@ void AppIconLoader::OnReadWebAppIcon(std::map<int, SkBitmap> icon_bitmaps) {
   for (auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
     float icon_scale = ui::GetScaleForResourceScaleFactor(scale_factor);
     int icon_size_in_px =
-        gfx::ScaleToFlooredSize(gfx::Size(size_hint_in_dip_, size_hint_in_dip_),
-                                icon_scale)
-            .width();
+        apps_util::ConvertDipToPxForScale(size_hint_in_dip_, icon_scale);
 
     while (it != icon_bitmaps.end() && it->first < icon_size_in_px) {
       ++it;

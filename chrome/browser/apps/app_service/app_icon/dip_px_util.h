@@ -18,6 +18,7 @@ namespace apps_util {
 
 int ConvertDipToPx(int dip, bool quantize_to_supported_scale_factor);
 int ConvertPxToDip(int px, bool quantize_to_supported_scale_factor);
+int ConvertDipToPxForScale(int dip, float scale);
 ui::ResourceScaleFactor GetPrimaryDisplayUIScaleFactor();
 
 }  // namespace apps_util

@@ -37,7 +37,7 @@ int ConvertBetweenDipAndPx(int value,
   if (invert) {
     scale = 1 / scale;
   }
-  return gfx::ScaleToFlooredSize(gfx::Size(value, value), scale).width();
+  return apps_util::ConvertDipToPxForScale(value, scale);
 }
 
 }  // namespace
@@ -50,6 +50,10 @@ int ConvertDipToPx(int dip, bool quantize_to_supported_scale_factor) {
 
 int ConvertPxToDip(int px, bool quantize_to_supported_scale_factor) {
   return ConvertBetweenDipAndPx(px, quantize_to_supported_scale_factor, true);
+}
+
+int ConvertDipToPxForScale(int dip, float scale) {
+  return gfx::ScaleToFlooredSize(gfx::Size(dip, dip), scale).width();
 }
 
 ui::ResourceScaleFactor GetPrimaryDisplayUIScaleFactor() {

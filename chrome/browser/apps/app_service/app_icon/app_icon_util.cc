@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "ui/base/layout.h"
 #include "ui/gfx/geometry/size.h"
@@ -54,10 +55,8 @@ ReadIconFilesOnBackgroundThread(const base::FilePath& base_path,
                                 int32_t size_in_dip) {
   std::map<ui::ResourceScaleFactor, std::vector<uint8_t>> result;
   for (auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
-    int icon_size_in_px = gfx::ScaleToFlooredSize(
-                              gfx::Size(size_in_dip, size_in_dip),
-                              ui::GetScaleForResourceScaleFactor(scale_factor))
-                              .width();
+    int icon_size_in_px = apps_util::ConvertDipToPxForScale(
+        size_in_dip, ui::GetScaleForResourceScaleFactor(scale_factor));
     result[scale_factor] =
         ReadOnBackgroundThread(base_path, app_id, icon_size_in_px);
   }
