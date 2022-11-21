@@ -45,6 +45,31 @@
 
 namespace blink {
 
+namespace {
+
+AffineTransform DeprecatedCalculateTransformToLayer(
+    const LayoutObject* layout_object) {
+  AffineTransform transform;
+  while (layout_object) {
+    transform = layout_object->LocalToSVGParentTransform() * transform;
+    if (layout_object->IsSVGRoot())
+      break;
+    layout_object = layout_object->Parent();
+  }
+
+  // Continue walking up the layer tree, accumulating CSS transforms.
+  PaintLayer* layer = layout_object ? layout_object->EnclosingLayer() : nullptr;
+  while (layer) {
+    if (gfx::Transform* layer_transform = layer->Transform())
+      transform = AffineTransform::FromTransform(*layer_transform) * transform;
+    layer = layer->Parent();
+  }
+
+  return transform;
+}
+
+}  // namespace
+
 struct SearchCandidate {
   DISALLOW_NEW();
 
@@ -385,27 +410,6 @@ SubtreeContentTransformScope::SubtreeContentTransformScope(
 
 SubtreeContentTransformScope::~SubtreeContentTransformScope() {
   current_content_transformation_ = saved_content_transformation_;
-}
-
-AffineTransform SVGLayoutSupport::DeprecatedCalculateTransformToLayer(
-    const LayoutObject* layout_object) {
-  AffineTransform transform;
-  while (layout_object) {
-    transform = layout_object->LocalToSVGParentTransform() * transform;
-    if (layout_object->IsSVGRoot())
-      break;
-    layout_object = layout_object->Parent();
-  }
-
-  // Continue walking up the layer tree, accumulating CSS transforms.
-  PaintLayer* layer = layout_object ? layout_object->EnclosingLayer() : nullptr;
-  while (layer) {
-    if (gfx::Transform* layer_transform = layer->Transform())
-      transform = AffineTransform::FromTransform(*layer_transform) * transform;
-    layer = layer->Parent();
-  }
-
-  return transform;
 }
 
 float SVGLayoutSupport::CalculateScreenFontSizeScalingFactor(

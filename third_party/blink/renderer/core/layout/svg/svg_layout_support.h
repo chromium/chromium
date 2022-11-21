@@ -121,8 +121,6 @@ class CORE_EXPORT SVGLayoutSupport {
   static bool WillIsolateBlendingDescendantsForObject(const LayoutObject*);
   static bool IsIsolationRequired(const LayoutObject*);
 
-  static AffineTransform DeprecatedCalculateTransformToLayer(
-      const LayoutObject*);
   static float CalculateScreenFontSizeScalingFactor(const LayoutObject*);
 
   // This returns a LayoutSVGText, a LayoutNGSVGText, or nullptr.
