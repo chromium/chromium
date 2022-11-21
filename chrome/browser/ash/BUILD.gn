@@ -2376,6 +2376,7 @@ source_set("ash") {
     "policy/reporting/metrics_reporting/audio/audio_events_observer.h",
     "policy/reporting/metrics_reporting/cros_healthd_metric_sampler.cc",
     "policy/reporting/metrics_reporting/cros_healthd_metric_sampler.h",
+    "policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_sampler_handler.h",
     "policy/reporting/metrics_reporting/cros_reporting_settings.cc",
     "policy/reporting/metrics_reporting/cros_reporting_settings.h",
     "policy/reporting/metrics_reporting/metric_reporting_manager.cc",
