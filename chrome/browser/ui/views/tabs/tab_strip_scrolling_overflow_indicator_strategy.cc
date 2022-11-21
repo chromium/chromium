@@ -44,6 +44,8 @@ TabStripScrollingOverflowIndicatorStrategy::CreateFromFeatureFlag(
 
   switch (overview_feature_flag) {
     case OverflowFeatureFlag::kDivider:
+      return std::make_unique<DividerOverflowIndicatorStrategy>(scroll_view,
+                                                                tab_strip);
     case OverflowFeatureFlag::kFade:
       return std::make_unique<FadeOverflowIndicatorStrategy>(scroll_view,
                                                              tab_strip);
@@ -222,4 +224,43 @@ void FadeOverflowIndicatorStrategy::FrameColorsChanged() {
 
   left_overflow_indicator()->SetShadowColor(frame_color);
   right_overflow_indicator()->SetShadowColor(frame_color);
+}
+
+DividerOverflowIndicatorStrategy::DividerOverflowIndicatorStrategy(
+    views::ScrollView* scroll_view,
+    TabStrip* tab_strip)
+    : GradientOverflowIndicatorStrategy(scroll_view, tab_strip) {}
+
+void DividerOverflowIndicatorStrategy::Init() {
+  scroll_view()->SetDrawOverflowIndicator(true);
+
+  std::unique_ptr<GradientIndicatorView> left_overflow_indicator =
+      std::make_unique<GradientIndicatorView>(
+          views::OverflowIndicatorAlignment::kLeft);
+  left_overflow_indicator_ = left_overflow_indicator.get();
+
+  std::unique_ptr<GradientIndicatorView> right_overflow_indicator =
+      std::make_unique<GradientIndicatorView>(
+          views::OverflowIndicatorAlignment::kRight);
+  right_overflow_indicator_ = right_overflow_indicator.get();
+
+  left_overflow_indicator_->SetOpaqueWidth(0);
+  right_overflow_indicator_->SetOpaqueWidth(0);
+
+  scroll_view()->SetCustomOverflowIndicator(
+      views::OverflowIndicatorAlignment::kLeft,
+      std::move(left_overflow_indicator),
+      left_overflow_indicator_->GetTotalWidth(), false);
+
+  scroll_view()->SetCustomOverflowIndicator(
+      views::OverflowIndicatorAlignment::kRight,
+      std::move(right_overflow_indicator),
+      right_overflow_indicator_->GetTotalWidth(), false);
+}
+
+void DividerOverflowIndicatorStrategy::FrameColorsChanged() {
+  SkColor4f shadow_color = SkColor4f::FromColor(
+      tab_strip()->GetColorProvider()->GetColor(ui::kColorShadowBase));
+  left_overflow_indicator()->SetShadowColor(shadow_color);
+  right_overflow_indicator()->SetShadowColor(shadow_color);
 }

@@ -153,4 +153,15 @@ class FadeOverflowIndicatorStrategy : public GradientOverflowIndicatorStrategy {
   void FrameColorsChanged() override;
 };
 
+class DividerOverflowIndicatorStrategy
+    : public GradientOverflowIndicatorStrategy {
+ public:
+  DividerOverflowIndicatorStrategy(views::ScrollView* scroll_view,
+                                   TabStrip* tab_strip);
+  ~DividerOverflowIndicatorStrategy() override = default;
+
+  void Init() override;
+  void FrameColorsChanged() override;
+};
+
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_SCROLLING_OVERFLOW_INDICATOR_STRATEGY_H_
