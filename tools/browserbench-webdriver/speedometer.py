@@ -11,7 +11,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 class Speedometer(browserbench.BrowserBench):
   def __init__(self):
-    super(Speedometer, self).__init__('speedometer', '2.0')
+    super(Speedometer, self).__init__('speedometer', '2.1')
 
   def AddExtraParserOptions(self, parser):
     pass
@@ -20,7 +20,7 @@ class Speedometer(browserbench.BrowserBench):
     pass
 
   def RunAndExtractMeasurements(self, driver, optargs):
-    URL = 'https://browserbench.org/Speedometer2.0/'
+    URL = 'https://browserbench.org/Speedometer2.1/'
     driver.get(URL)
     # Wait a short amount of time for the system to settle down before starting.
     time.sleep(2)
