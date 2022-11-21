@@ -198,10 +198,10 @@
              shareURL:(GURL)URL
                 title:(NSString*)title
            originView:(UIView*)originView {
-  ActivityParams* params =
-      [[ActivityParams alloc] initWithURL:URL
-                                    title:title
-                                 scenario:ActivityScenario::MostVisitedEntry];
+  ActivityParams* params = [[ActivityParams alloc]
+      initWithURL:URL
+            title:title
+         scenario:ActivityScenario::OmniboxMostVisitedEntry];
   self.sharingCoordinator = [[SharingCoordinator alloc]
       initWithBaseViewController:self.popupViewController
                          browser:self.browser
