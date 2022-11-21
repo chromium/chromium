@@ -107,12 +107,22 @@ GLuint GetGrGLBackendTextureFormat(
     const gles2::FeatureInfo* feature_info,
     viz::ResourceFormat resource_format,
     sk_sp<GrContextThreadSafeProxy> gr_context_thread_safe) {
+  GLenum gl_storage_format = viz::TextureStorageFormat(
+      resource_format,
+      feature_info->feature_flags().angle_rgbx_internal_format);
+  return GetGrGLBackendTextureFormat(feature_info, gl_storage_format,
+                                     gr_context_thread_safe);
+}
+
+GLuint GetGrGLBackendTextureFormat(
+    const gles2::FeatureInfo* feature_info,
+    GLenum gl_storage_format,
+    sk_sp<GrContextThreadSafeProxy> gr_context_thread_safe) {
+  // TODO(hitawala): Internalize the skia version specifics to a
+  // SharedImageFormat util function after getting the TextureStorageFormat.
   const gl::GLVersionInfo* version_info = &feature_info->gl_version_info();
-  GLuint internal_format = gl::GetInternalFormat(
-      version_info,
-      viz::TextureStorageFormat(
-          resource_format,
-          feature_info->feature_flags().angle_rgbx_internal_format));
+  GLuint internal_format =
+      gl::GetInternalFormat(version_info, gl_storage_format);
 
   bool use_version_es2 = false;
 #if BUILDFLAG(IS_ANDROID)
@@ -135,7 +145,7 @@ GLuint GetGrGLBackendTextureFormat(
   }
 
   // Map ETC1 to ETC2 type depending on conversion by skia
-  if (resource_format == viz::ResourceFormat::ETC1) {
+  if (gl_storage_format == GL_ETC1_RGB8_OES) {
     GrGLFormat gr_gl_format =
         gr_context_thread_safe
             ->compressedBackendFormat(SkImage::kETC1_CompressionType)
@@ -163,6 +173,21 @@ bool GetGrBackendTexture(const gles2::FeatureInfo* feature_info,
                          viz::ResourceFormat resource_format,
                          sk_sp<GrContextThreadSafeProxy> gr_context_thread_safe,
                          GrBackendTexture* gr_texture) {
+  GLenum gl_storage_format = viz::TextureStorageFormat(
+      resource_format,
+      feature_info->feature_flags().angle_rgbx_internal_format);
+  return GetGrBackendTexture(feature_info, target, size, service_id,
+                             gl_storage_format, gr_context_thread_safe,
+                             gr_texture);
+}
+
+bool GetGrBackendTexture(const gles2::FeatureInfo* feature_info,
+                         GLenum target,
+                         const gfx::Size& size,
+                         GLuint service_id,
+                         GLenum gl_storage_format,
+                         sk_sp<GrContextThreadSafeProxy> gr_context_thread_safe,
+                         GrBackendTexture* gr_texture) {
   if (target != GL_TEXTURE_2D && target != GL_TEXTURE_RECTANGLE_ARB &&
       target != GL_TEXTURE_EXTERNAL_OES) {
     LOG(ERROR) << "GetGrBackendTexture: invalid texture target.";
@@ -173,7 +198,7 @@ bool GetGrBackendTexture(const gles2::FeatureInfo* feature_info,
   texture_info.fID = service_id;
   texture_info.fTarget = target;
   texture_info.fFormat = GetGrGLBackendTextureFormat(
-      feature_info, resource_format, gr_context_thread_safe);
+      feature_info, gl_storage_format, gr_context_thread_safe);
   *gr_texture = GrBackendTexture(size.width(), size.height(), GrMipMapped::kNo,
                                  texture_info);
   return true;
