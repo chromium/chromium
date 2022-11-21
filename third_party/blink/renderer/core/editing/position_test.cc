@@ -10,6 +10,12 @@ namespace blink {
 
 class PositionTest : public EditingTestBase {};
 
+TEST_F(PositionTest, AtStartOfTreeWithAfterChildren) {
+  ASSERT_TRUE(GetDocument().firstChild()) << "We should have <html>.";
+  EXPECT_TRUE(Position(GetDocument(), 0).AtStartOfTree());
+  EXPECT_FALSE(Position::LastPositionInNode(GetDocument()).AtStartOfTree());
+}
+
 TEST_F(PositionTest, IsEquivalent) {
   SetBodyContent("<a id=sample>0<b>1</b>2</a>");
 

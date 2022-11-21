@@ -485,7 +485,7 @@ template <typename Strategy>
 bool PositionTemplate<Strategy>::AtStartOfTree() const {
   if (IsNull())
     return true;
-  return !Strategy::Parent(*AnchorNode()) && offset_ == 0;
+  return !Strategy::Parent(*AnchorNode()) && !ComputeNodeBeforePosition();
 }
 
 // static
