@@ -66,12 +66,6 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
 
   static get properties() {
     return {
-      /** Preferences state. */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       versionInfo_: Object,
 
       channelInfo_: Object,

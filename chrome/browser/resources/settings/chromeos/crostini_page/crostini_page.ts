@@ -63,11 +63,6 @@ class SettingsCrostiniPageElement extends SettingsCrostiniPageElementBase {
 
   static get properties() {
     return {
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       focusConfig_: {
         type: Object,
         value() {

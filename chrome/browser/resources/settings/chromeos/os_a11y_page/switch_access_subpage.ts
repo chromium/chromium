@@ -83,11 +83,6 @@ class SettingsSwitchAccessSubpageElement extends
 
   static get properties() {
     return {
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       selectAssignments_: {
         type: Array,
         value: [],

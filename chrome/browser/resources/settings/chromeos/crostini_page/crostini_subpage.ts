@@ -68,12 +68,6 @@ class SettingsCrostiniSubpageElement extends
 
   static get properties() {
     return {
-      /** Preferences state. */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       /**
        * Whether export / import UI should be displayed.
        */

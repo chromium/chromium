@@ -162,11 +162,6 @@ class SettingsSwitchAccessSetupGuideDialogElement extends
 
   static get properties() {
     return {
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       autoScanSpeedRangeMs_: {
         type: Array,
         value: [],

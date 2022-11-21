@@ -61,12 +61,6 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
 
   static get properties() {
     return {
-      /** Preferences state. */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       showAddPortDialog_: {
         type: Boolean,
         value: false,

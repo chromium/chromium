@@ -46,11 +46,6 @@ class SettingsPointersElement extends SettingsPointersElementBase {
 
   static get properties() {
     return {
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       hasMouse: Boolean,
 
       hasPointingStick: Boolean,
