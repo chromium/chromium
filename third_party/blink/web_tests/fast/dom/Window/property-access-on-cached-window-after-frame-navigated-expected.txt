@@ -8,6 +8,7 @@ PASS oldChildWindow.cookieStore.onchange is newChildWindow.cookieStore.onchange
 PASS oldChildWindow.crossOriginEmbedderPolicy is newChildWindow.crossOriginEmbedderPolicy
 PASS oldChildWindow.crossOriginIsolated is newChildWindow.crossOriginIsolated
 PASS oldChildWindow.devicePixelRatio is newChildWindow.devicePixelRatio
+PASS oldChildWindow.documentPictureInPicture.window is newChildWindow.documentPictureInPicture.window
 PASS oldChildWindow.innerHeight is newChildWindow.innerHeight
 PASS oldChildWindow.innerWidth is newChildWindow.innerWidth
 PASS oldChildWindow.isSecureContext is newChildWindow.isSecureContext
@@ -49,7 +50,6 @@ PASS oldChildWindow.navigator.deviceMemory is newChildWindow.navigator.deviceMem
 PASS oldChildWindow.navigator.devicePosture.onchange is newChildWindow.navigator.devicePosture.onchange
 PASS oldChildWindow.navigator.devicePosture.type is newChildWindow.navigator.devicePosture.type
 PASS oldChildWindow.navigator.doNotTrack is newChildWindow.navigator.doNotTrack
-PASS oldChildWindow.navigator.documentPictureInPicture.window is newChildWindow.navigator.documentPictureInPicture.window
 PASS oldChildWindow.navigator.hardwareConcurrency is newChildWindow.navigator.hardwareConcurrency
 PASS oldChildWindow.navigator.hid.onconnect is newChildWindow.navigator.hid.onconnect
 PASS oldChildWindow.navigator.hid.ondisconnect is newChildWindow.navigator.hid.ondisconnect

@@ -870,11 +870,9 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
     ScriptState* script_state =
         ToScriptStateForMainWorld(GetDocument().GetFrame());
     ScriptState::Scope entered_context_scope(script_state);
-    EXPECT_EQ(
-        pictureInPictureWindow,
-        DocumentPictureInPicture::From(ExecutionContext::From(script_state),
-                                       *GetDocument().domWindow()->navigator())
-            ->window(script_state));
+    EXPECT_EQ(pictureInPictureWindow,
+              DocumentPictureInPicture::From(*GetDocument().domWindow())
+                  ->window(script_state));
   }
 }
 

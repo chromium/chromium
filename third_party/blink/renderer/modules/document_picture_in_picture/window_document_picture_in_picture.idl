@@ -9,6 +9,6 @@
     Exposed=Window,
     RuntimeEnabled=DocumentPictureInPictureAPI
 ]
-partial interface Navigator {
-    [CallWith=ScriptState, SameObject] readonly attribute DocumentPictureInPicture documentPictureInPicture;
+partial interface Window {
+    [SameObject] readonly attribute DocumentPictureInPicture documentPictureInPicture;
 };

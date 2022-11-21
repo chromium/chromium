@@ -42,7 +42,7 @@ enum WebNavigationPolicy {
   kWebNavigationPolicyNewPopup,
 
   // The navigation request is for a Picture-in-Picture window opened via
-  // |navigator.documentPictureInPicture.requestWindow()|.
+  // |documentPictureInPicture.requestWindow()|.
   kWebNavigationPolicyPictureInPicture,
 };
 

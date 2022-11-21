@@ -16,20 +16,19 @@ namespace blink {
 class DocumentPictureInPictureOptions;
 class DOMWindow;
 class ExceptionState;
-class ExecutionContext;
-class Navigator;
+class LocalDOMWindow;
 class ScriptPromise;
 class ScriptState;
 
-class MODULES_EXPORT DocumentPictureInPicture : public ScriptWrappable,
-                                                public Supplement<Navigator> {
+class MODULES_EXPORT DocumentPictureInPicture
+    : public ScriptWrappable,
+      public Supplement<LocalDOMWindow> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static DocumentPictureInPicture* From(ExecutionContext* execution_context,
-                                        Navigator& navigator);
+  static DocumentPictureInPicture* From(LocalDOMWindow& window);
 
-  DocumentPictureInPicture(ExecutionContext*, Navigator&);
+  explicit DocumentPictureInPicture(LocalDOMWindow&);
 
   ScriptPromise requestWindow(ScriptState*,
                               DocumentPictureInPictureOptions*,
@@ -37,8 +36,7 @@ class MODULES_EXPORT DocumentPictureInPicture : public ScriptWrappable,
 
   DOMWindow* window(ScriptState*) const;
 
-  static DocumentPictureInPicture* documentPictureInPicture(ScriptState*,
-                                                            Navigator&);
+  static DocumentPictureInPicture* documentPictureInPicture(LocalDOMWindow&);
 
   static const char kSupplementName[];
 

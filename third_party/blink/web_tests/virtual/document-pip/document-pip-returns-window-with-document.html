@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Test that navigator.documentPictureInPicture.requestWindow()
+<title>Test that documentPictureInPicture.requestWindow()
   returns a Window object</title>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
@@ -11,11 +11,11 @@ const div = document.getElementById('div');
 
 async_test((t) => {
   focusWithUserGesture(window);
-  navigator.documentPictureInPicture.requestWindow().then(t.step_func_done(
+  documentPictureInPicture.requestWindow().then(t.step_func_done(
       (pipWindow) => {
     assert_true(!!pipWindow.document,
         'Window should contain a document');
-    assert_true(navigator.documentPictureInPicture.window === pipWindow,
+    assert_true(documentPictureInPicture.window === pipWindow,
         'DocumentPictureInPicture.window should match the current window');
 
     // We should be able to move an element to that document.

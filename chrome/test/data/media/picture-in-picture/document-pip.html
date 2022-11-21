@@ -1,7 +1,7 @@
 <script>
 var pipSession;
 async function createDocumentPipWindow() {
-    pipSession = await navigator.documentPictureInPicture.requestWindow();
+    pipSession = await documentPictureInPicture.requestWindow();
     pipSession.window.document.write("Hello, world.<a name='top'>top</a>");
     return true;
 }

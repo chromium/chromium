@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Test that navigator.documentPictureInPicture.window
+<title>Test that documentPictureInPicture.window
   is cleared when the PiP window in closed.</title>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
@@ -11,13 +11,13 @@ const div = document.getElementById('div');
 
 async_test((t) => {
   focusWithUserGesture(window);
-  navigator.documentPictureInPicture.requestWindow().then( () => {
-    const pipWindow = navigator.documentPictureInPicture.window;
+  documentPictureInPicture.requestWindow().then( () => {
+    const pipWindow = documentPictureInPicture.window;
     assert_true(!!pipWindow, "pipWindow should exist with PiP is opened");
     pipWindow.addEventListener('unload', () => {
       // `window` is still set until event processing is complete.
       scheduler.postTask(t.step_func_done( () => {
-        assert_true(!navigator.documentPictureInPicture.window,
+        assert_true(!documentPictureInPicture.window,
                     "window should be cleared when PiP is closed");
       }))
     });
