@@ -5,16 +5,16 @@
 <script>
 var longStr = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 for (var i = 0; i < 15; i++)
-    longStr = longStr + longStr;
+  longStr = longStr + longStr;
 var binary = atob(longStr);
 
 PerfTestRunner.measureRunsPerSecond({
-    description: "This benchmark covers `btoa`.",
-    setup: function() {
-    },
-    run: function() {
-      btoa(binary);
-}});
+description: "This benchmark covers `btoa`.",
+  setup: function() {},
+  run: function() {
+    btoa(binary);
+  }
+});
 </script>
 </body>
 </html>
