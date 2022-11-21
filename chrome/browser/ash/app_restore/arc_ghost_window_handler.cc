@@ -69,6 +69,9 @@ ArcGhostWindowHandler::~ArcGhostWindowHandler() {
     if (lifetime_manager)
       lifetime_manager->RemoveObserver(this);
   }
+  for (auto& observer : observer_list_) {
+    observer.OnGhostWindowHandlerDestroy();
+  }
   g_instance = nullptr;
 }
 
