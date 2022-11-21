@@ -69,6 +69,8 @@ std::string GetHatsTriggerForFeatureArea(
         return kHatsSurveyTriggerTrustSafetyV2TrustedSurface;
       case (TrustSafetySentimentService::FeatureArea::kSafetyCheck):
         return kHatsSurveyTriggerTrustSafetyV2SafetyCheck;
+      case (TrustSafetySentimentService::FeatureArea::kPasswordCheck):
+        return kHatsSurveyTriggerTrustSafetyV2PasswordCheck;
       default:
         NOTREACHED();
         return "";
@@ -126,6 +128,7 @@ bool VersionCheck(TrustSafetySentimentService::FeatureArea feature_area) {
       return isV2 == false;
     // Version 2 only
     case (TrustSafetySentimentService::FeatureArea::kSafetyCheck):
+    case (TrustSafetySentimentService::FeatureArea::kPasswordCheck):
       return isV2 == true;
     // Both Versions
     case (TrustSafetySentimentService::FeatureArea::kTrustedSurface):
@@ -150,6 +153,10 @@ bool ProbabilityCheck(TrustSafetySentimentService::FeatureArea feature_area) {
       case (TrustSafetySentimentService::FeatureArea::kSafetyCheck):
         return base::RandDouble() <
                features::kTrustSafetySentimentSurveyV2SafetyCheckProbability
+                   .Get();
+      case (TrustSafetySentimentService::FeatureArea::kPasswordCheck):
+        return base::RandDouble() <
+               features::kTrustSafetySentimentSurveyV2PasswordCheckProbability
                    .Get();
       default:
         NOTREACHED();
@@ -466,7 +473,7 @@ void TrustSafetySentimentService::SavedCard() {
 }
 
 void TrustSafetySentimentService::RanPasswordCheck() {
-  // TODO(crbug.com/1382134): Add FeatureArea and survey trigger
+  TriggerOccurred(FeatureArea::kPasswordCheck, {});
 }
 
 void TrustSafetySentimentService::InteractedWithPrivacySandbox3(

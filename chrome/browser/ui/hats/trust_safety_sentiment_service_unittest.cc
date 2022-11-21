@@ -123,8 +123,10 @@ class TrustSafetySentimentServiceTest : public testing::Test {
     std::string ntp_visits_min_range = "2";
     std::string ntp_visits_max_range = "4";
     std::string trusted_surface_time = "5s";
+    std::string password_check_probability = "0.4";
     std::string safety_check_probability = "0.4";
     std::string trusted_surface_probability = "0.4";
+    std::string password_check_trigger_id = "password-check-test";
     std::string safety_check_trigger_id = "safety-check-test";
     std::string trusted_surface_trigger_id = "trusted-surface-test";
   };
@@ -138,8 +140,10 @@ class TrustSafetySentimentServiceTest : public testing::Test {
             {"ntp-visits-min-range", params.ntp_visits_min_range},
             {"ntp-visits-max-range", params.ntp_visits_max_range},
             {"trusted-surface-time", params.trusted_surface_time},
+            {"password-check-probability", params.password_check_probability},
             {"safety-check-probability", params.safety_check_probability},
             {"trusted-surface-probability", params.trusted_surface_probability},
+            {"password-check-trigger-id", params.password_check_trigger_id},
             {"safety-check-trigger-id", params.safety_check_trigger_id},
             {"trusted-surface-trigger-id", params.trusted_surface_trigger_id},
         });
@@ -900,4 +904,23 @@ TEST_F(TrustSafetySentimentServiceTest, V2_SafetyCheck) {
   service()->OpenedNewTabPage();
   CheckHistograms({TrustSafetySentimentService::FeatureArea::kSafetyCheck},
                   {TrustSafetySentimentService::FeatureArea::kSafetyCheck});
+}
+
+TEST_F(TrustSafetySentimentServiceTest, V2_PasswordCheck) {
+  // Running password check should make a user eligible to receive a survey.
+  FeatureParamsV2 params;
+  params.password_check_probability = "1.0";
+  params.min_time_to_prompt = "0s";
+  params.ntp_visits_min_range = "0";
+  params.ntp_visits_max_range = "0";
+  SetupFeatureParametersV2(params);
+
+  // The correct survey should be launched.
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchSurvey(kHatsSurveyTriggerTrustSafetyV2PasswordCheck, _, _, _, _));
+  service()->RanPasswordCheck();
+  service()->OpenedNewTabPage();
+  CheckHistograms({TrustSafetySentimentService::FeatureArea::kPasswordCheck},
+                  {TrustSafetySentimentService::FeatureArea::kPasswordCheck});
 }

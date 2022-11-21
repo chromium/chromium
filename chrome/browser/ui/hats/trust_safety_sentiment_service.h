@@ -97,7 +97,8 @@ class TrustSafetySentimentService : public KeyedService,
     kPrivacySandbox3NoticeSettings = 8,
     kPrivacySandbox3NoticeLearnMore = 9,
     kSafetyCheck = 10,
-    kMaxValue = kSafetyCheck,
+    kPasswordCheck = 11,
+    kMaxValue = kPasswordCheck,
   };
 
   // Called when the user interacts with Privacy Sandbox 3, |feature_area|
@@ -125,6 +126,7 @@ class TrustSafetySentimentService : public KeyedService,
                            Eligibility_V1FeatureWhileV2Enabled);
   FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest, V2_SafetyCheck);
   FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest, V2_TrustedSurface);
+  FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest, V2_PasswordCheck);
 
   // Struct representing a trigger (user action relevant to T&S) that previously
   // occurred, and is awaiting the appropriate eligibility steps before causing

@@ -101983,6 +101983,7 @@ Full version information for the fingerprint enum values:
   <int value="8" label="Privacy Sandbox 3 Notice Settings"/>
   <int value="9" label="Privacy Sandbox 3 Learn More"/>
   <int value="10" label="Safety Check"/>
+  <int value="11" label="Password Check"/>
 </enum>
 
 <enum name="TrustTokenRequestHelperFactoryOutcome">
