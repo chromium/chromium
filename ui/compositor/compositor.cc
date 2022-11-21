@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/power_monitor/power_monitor.h"
@@ -241,6 +242,9 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   if (command_line->HasSwitch(cc::switches::kLogOnUIDoubleBackgroundBlur))
     settings.log_on_ui_double_background_blur = true;
 #endif
+
+  settings.enable_shared_image_cache_for_gpu =
+      base::FeatureList::IsEnabled(features::kUIEnableSharedImageCacheForGpu);
 
   animation_host_ = cc::AnimationHost::CreateMainInstance();
 
