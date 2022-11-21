@@ -86,23 +86,6 @@ constexpr char kJsonResponse[] =
   }
   ]})json";
 
-struct FakeAppInfo {
- public:
-  FakeAppInfo(const std::string& package_name, const std::string& name)
-      : package_name(package_name), name(name) {}
-  ~FakeAppInfo() = default;
-
-  base::Value ToValue() const {
-    base::Value result(base::Value::Type::DICTIONARY);
-    result.SetKey("package_name", base::Value(package_name));
-    result.SetKey("name", base::Value(name));
-    return result;
-  }
-
-  const std::string package_name;
-  const std::string name;
-};
-
 class StubRecommendAppsFetcher : public RecommendAppsFetcher {
  public:
   explicit StubRecommendAppsFetcher(RecommendAppsFetcherDelegate* delegate)
@@ -263,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, BasicSelection) {
       ProfileManager::GetActiveUserProfile()->GetPrefs()->GetList(
           arc::prefs::kArcFastAppReinstallPackages);
 
-  base::Value expected_pref_value(base::Value::Type::LIST);
+  base::Value::List expected_pref_value;
   expected_pref_value.Append("test.app.foo.app1");
   expected_pref_value.Append("test.app.foo.app2");
   EXPECT_EQ(expected_pref_value, fast_reinstall_packages);
@@ -297,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, SelectionChange) {
       ProfileManager::GetActiveUserProfile()->GetPrefs()->GetList(
           arc::prefs::kArcFastAppReinstallPackages);
 
-  base::Value expected_pref_value(base::Value::Type::LIST);
+  base::Value::List expected_pref_value;
   expected_pref_value.Append("test.app.foo.app2");
   EXPECT_EQ(expected_pref_value, fast_reinstall_packages);
 }
@@ -328,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, SkipWithSelectedApps) {
   const base::Value::List& fast_reinstall_packages =
       ProfileManager::GetActiveUserProfile()->GetPrefs()->GetList(
           arc::prefs::kArcFastAppReinstallPackages);
-  EXPECT_EQ(base::Value(base::Value::Type::LIST), fast_reinstall_packages);
+  EXPECT_EQ(base::Value::List(), fast_reinstall_packages);
 }
 
 IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, SkipWithNoAppsSelected) {
@@ -360,15 +343,13 @@ IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, SkipWithNoAppsSelected) {
   const base::Value::List& fast_reinstall_packages =
       ProfileManager::GetActiveUserProfile()->GetPrefs()->GetList(
           arc::prefs::kArcFastAppReinstallPackages);
-  EXPECT_EQ(base::Value(base::Value::Type::LIST), fast_reinstall_packages);
+  EXPECT_EQ(base::Value::List(), fast_reinstall_packages);
 }
 
 IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest,
                        InstallWithNoAppsSelectedDisabled) {
   ShowScreenAndExpectLoadingStep();
 
-  std::vector<FakeAppInfo> test_apps = {
-      FakeAppInfo("test.app.foo.app1", "Test app 1")};
   recommend_apps_fetcher_->SimulateSuccess();
 
   ExpectAppSelectionStep();
@@ -390,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, NoRecommendedApps) {
   const base::Value::List& fast_reinstall_packages =
       ProfileManager::GetActiveUserProfile()->GetPrefs()->GetList(
           arc::prefs::kArcFastAppReinstallPackages);
-  EXPECT_EQ(base::Value(base::Value::Type::LIST), fast_reinstall_packages);
+  EXPECT_EQ(base::Value::List(), fast_reinstall_packages);
 }
 
 IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, ParseError) {
