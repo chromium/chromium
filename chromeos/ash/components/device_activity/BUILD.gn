@@ -52,7 +52,6 @@ component("device_activity") {
     "fresnel_pref_names.h",
     "monthly_use_case_impl.cc",
     "monthly_use_case_impl.h",
-    "trigger.h",
   ]
 }
 
