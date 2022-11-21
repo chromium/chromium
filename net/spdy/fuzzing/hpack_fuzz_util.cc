@@ -102,7 +102,8 @@ Http2HeaderBlock HpackFuzzUtil::NextGeneratedHeaderSet(
 
 // static
 size_t HpackFuzzUtil::SampleExponential(size_t mean, size_t sanity_bound) {
-  return std::min(static_cast<size_t>(-std::log(base::RandDouble()) * mean),
+  // Use `1-base::RandDouble()` to avoid log(0).
+  return std::min(static_cast<size_t>(-std::log(1 - base::RandDouble()) * mean),
                   sanity_bound);
 }
 
