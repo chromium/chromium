@@ -141,9 +141,13 @@ void BorealisApps::CallWithBorealisAllowed(
       base::BindOnce(
           [](base::OnceCallback<void(bool)> callback,
              borealis::BorealisFeatures::AllowStatus allow_status) {
-            std::move(callback).Run(
-                allow_status ==
-                borealis::BorealisFeatures::AllowStatus::kAllowed);
+            bool allowed = allow_status ==
+                           borealis::BorealisFeatures::AllowStatus::kAllowed;
+            if (!allowed) {
+              LOG(WARNING) << "Borealis not allowed: "
+                           << static_cast<int>(allow_status);
+            }
+            std::move(callback).Run(allowed);
           },
           std::move(callback)));
 }
