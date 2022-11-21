@@ -181,10 +181,17 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
 
 void WaylandDataDragController::UpdateDragImage(const gfx::ImageSkia& image,
                                                 const gfx::Vector2d& offset) {
-  DCHECK(icon_surface_);
-  DCHECK(origin_window_);
-
   icon_bitmap_ = GetDragImage(image);
+
+  if (icon_surface_ && window_) {
+    icon_surface_->set_surface_buffer_scale(window_->window_scale());
+    icon_surface_->ApplyPendingState();
+
+    icon_offset_ = gfx::ScaleToRoundedPoint({offset.x(), offset.y()},
+                                            1.0f / window_->window_scale());
+  } else {
+    icon_offset_ = {offset.x(), offset.y()};
+  }
 
   DrawIconInternal();
 }
