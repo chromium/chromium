@@ -117,16 +117,37 @@ const LayerData GetLayerDataEntry(
   return iter == layers_data.end() ? LayerData{} : iter->second;
 }
 
+// Get the z-order of all-desk `window` in `desk` for `root`. If it does not
+// exist, then nullopt is returned. Please note, the z-order information is
+// retrieved from the stored stacking data of `desk` for all-desk windows.
+absl::optional<size_t> GetWindowZOrderForDeskAndRoot(const aura::Window* window,
+                                                     const Desk* desk,
+                                                     const aura::Window* root) {
+  const auto& adw_by_root = desk->all_desk_window_stacking();
+
+  if (auto it = adw_by_root.find(root); it != adw_by_root.end()) {
+    for (auto& adw : it->second) {
+      if (adw.window == window)
+        return adw.order;
+    }
+  }
+
+  return absl::nullopt;
+}
+
 // Appends clones of all the visible on all desks windows' layers to
-// |out_desk_container_children|. Should only be called if
-// |visible_on_all_desks_windows| is not empty.
+// `out_desk_container_children`. Should only be called if
+// `visible_on_all_desks_windows` is not empty.
 void AppendVisibleOnAllDesksWindowsToDeskLayer(
     const base::flat_set<aura::Window*>& visible_on_all_desks_windows,
     const base::flat_map<ui::Layer*, LayerData>& layers_data,
-    std::vector<ui::Layer*>* out_desk_container_children) {
+    std::vector<ui::Layer*>* out_desk_container_children,
+    aura::Window* desk_container) {
   DCHECK(!visible_on_all_desks_windows.empty());
   auto mru_windows =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kAllDesks);
+  const Desk* desk = desks_util::GetDeskForContext(desk_container);
+  aura::Window* root = desk_container->GetRootWindow();
 
   for (auto* window : visible_on_all_desks_windows) {
     const LayerData layer_data =
@@ -138,36 +159,53 @@ void AppendVisibleOnAllDesksWindowsToDeskLayer(
     if (window_iter == mru_windows.end())
       continue;
 
-    auto closest_window_below_iter = std::next(window_iter);
-    while (closest_window_below_iter != mru_windows.end() &&
-           !base::Contains(*out_desk_container_children,
-                           (*closest_window_below_iter)->layer())) {
-      // Find the closest window to |window| in the MRU tracker whose layer also
-      // is in |out_desk_container_children|. This window will be used to
-      // determine the stacking order of the visible on all desks window in the
-      // preview view.
-      closest_window_below_iter = std::next(closest_window_below_iter);
+    auto insertion_point_iter = out_desk_container_children->end();
+    auto desk_windows = desk_container->children();
+
+    // Find z order of `window`. If `features::IsPerDeskZOrderEnabled()` is not
+    // on, default value of zero will be used so `window` would be put on top.
+    size_t window_order =
+        GetWindowZOrderForDeskAndRoot(window, desk, root).value_or(0);
+
+    // If `desk` has no child window, or `window` has lowest z order, use
+    // default `insertion_point_iter` to put it on top.
+    if (!desk_windows.empty() && window_order) {
+      // Find the nearest window that should be on top of `window`.
+      size_t order = 0, target_idx = desk_windows.size();
+      for (int i = desk_windows.size() - 1; i >= 0 && order < window_order;
+           i--) {
+        if (desks_util::IsZOrderTracked(window)) {
+          target_idx = static_cast<size_t>(i);
+          ++order;
+        }
+      }
+
+      // Move to the next nearest window until its layer is in the
+      // `out_desk_container_children`.
+      for (size_t i = target_idx; i < desk_windows.size(); i++) {
+        if (base::Contains(*out_desk_container_children,
+                           desk_windows[i]->layer())) {
+          insertion_point_iter = base::ranges::find(
+              *out_desk_container_children, desk_windows[i]->layer());
+          break;
+        }
+      }
     }
 
-    auto insertion_point_iter =
-        closest_window_below_iter == mru_windows.end()
-            ? out_desk_container_children->begin()
-            : std::next(
-                  base::ranges::find(*out_desk_container_children,
-                                     (*closest_window_below_iter)->layer()));
     out_desk_container_children->insert(insertion_point_iter, window->layer());
   }
 }
 
-// Recursively mirrors |source_layer| and its children and adds them as children
-// of |parent|, taking into account the given |layers_data|. If the layer data
-// of |source_layer| has |should_clear_transform| set to true, the transforms of
+// Recursively mirrors `source_layer` and its children and adds them as children
+// of `parent`, taking into account the given |layers_data|. If the layer data
+// of `source_layer` has `should_clear_transform` set to true, the transforms of
 // its mirror layers will be reset to identity.
-void MirrorLayerTree(ui::Layer* source_layer,
-                     ui::Layer* parent,
-                     const base::flat_map<ui::Layer*, LayerData>& layers_data,
-                     const base::flat_set<aura::Window*>&
-                         visible_on_all_desks_windows_to_mirror) {
+void MirrorLayerTree(
+    ui::Layer* source_layer,
+    ui::Layer* parent,
+    const base::flat_map<ui::Layer*, LayerData>& layers_data,
+    const base::flat_set<aura::Window*>& visible_on_all_desks_windows_to_mirror,
+    aura::Window* desk_container) {
   const LayerData layer_data = GetLayerDataEntry(layers_data, source_layer);
   if (layer_data.should_skip_layer)
     return;
@@ -181,13 +219,14 @@ void MirrorLayerTree(ui::Layer* source_layer,
     // preview so for inactive desks, we need to append the layers of visible on
     // all desks windows.
     AppendVisibleOnAllDesksWindowsToDeskLayer(
-        visible_on_all_desks_windows_to_mirror, layers_data, &children);
+        visible_on_all_desks_windows_to_mirror, layers_data, &children,
+        desk_container);
   }
   for (auto* child : children) {
     // Visible on all desks windows only needed to be added to the subtree once
     // so use an empty set for subsequent calls.
-    MirrorLayerTree(child, mirror, layers_data,
-                    base::flat_set<aura::Window*>());
+    MirrorLayerTree(child, mirror, layers_data, base::flat_set<aura::Window*>(),
+                    desk_container);
   }
 
   mirror->set_sync_bounds_with_source(true);
@@ -378,14 +417,16 @@ void DeskPreviewView::RecreateDeskContentsMirrorLayers() {
 
   auto* desk_container_layer = desk_container->layer();
   MirrorLayerTree(desk_container_layer, mirrored_content_root_layer.get(),
-                  layers_data, visible_on_all_desks_windows_to_mirror);
+                  layers_data, visible_on_all_desks_windows_to_mirror,
+                  desk_container);
 
   // Since floated window is not stored in desk container, we need to mirror it
   // separately.
   if (floated_window) {
     auto* floated_window_layer = floated_window->layer();
     MirrorLayerTree(floated_window_layer, mirrored_content_root_layer.get(),
-                    layers_data, /*visible_on_all_desks_windows_to_mirror=*/{});
+                    layers_data, /*visible_on_all_desks_windows_to_mirror=*/{},
+                    desk_container);
   }
 
   // Add the root of the mirrored layer tree as a child of the

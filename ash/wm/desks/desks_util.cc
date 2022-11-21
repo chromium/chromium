@@ -18,6 +18,7 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "base/containers/adapters.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
@@ -192,6 +193,27 @@ bool IsDraggingAnyDesk() {
 bool IsWindowVisibleOnAllWorkspaces(const aura::Window* window) {
   return window->GetProperty(aura::client::kWindowWorkspaceKey) ==
          aura::client::kWindowWorkspaceVisibleOnAllWorkspaces;
+}
+
+bool IsZOrderTracked(aura::Window* window) {
+  return window->GetType() == aura::client::WindowType::WINDOW_TYPE_NORMAL &&
+         window->GetProperty(aura::client::kZOrderingKey) ==
+             ui::ZOrderLevel::kNormal;
+}
+
+absl::optional<size_t> GetWindowZOrder(
+    const std::vector<aura::Window*>& windows,
+    aura::Window* window) {
+  size_t position = 0;
+  for (aura::Window* w : base::Reversed(windows)) {
+    if (IsZOrderTracked(w)) {
+      if (w == window)
+        return position;
+      ++position;
+    }
+  }
+
+  return absl::nullopt;
 }
 
 }  // namespace desks_util

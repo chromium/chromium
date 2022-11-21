@@ -50,6 +50,18 @@ class ASH_EXPORT Desk {
     virtual void OnDeskNameChanged(const std::u16string& new_name) = 0;
   };
 
+  // Tracks stacking order for a window that is visible on all desks. This is
+  // used to support per-desk z-orders for all-desk windows. Entries are stored
+  // in ascending `order`.
+  struct AllDeskWindowStackingData {
+    aura::Window* window = nullptr;
+    // The z-order of the window.
+    // Note: this is reversed from how child windows are ordered in
+    // `aura::Window`, so an entry with `order == 0` means topmost.
+    // Note: this order ignores non-normal windows.
+    size_t order = 0;
+  };
+
   explicit Desk(int associated_container_id, bool desk_being_restored = false);
 
   Desk(const Desk&) = delete;
@@ -99,6 +111,11 @@ class ASH_EXPORT Desk {
   bool interacted_with_this_week() const { return interacted_with_this_week_; }
   void set_interacted_with_this_week(bool interacted_with_this_week) {
     interacted_with_this_week_ = interacted_with_this_week;
+  }
+
+  const base::flat_map<aura::Window*, std::vector<AllDeskWindowStackingData>>&
+  all_desk_window_stacking() const {
+    return all_desk_window_stacking_;
   }
 
   void AddObserver(Observer* observer);
@@ -289,18 +306,6 @@ class ASH_EXPORT Desk {
   // creation.
   int first_day_visited_ = -1;
   int last_day_visited_ = -1;
-
-  // Tracks stacking order for a window that is visible on all desks. This is
-  // used to support per-desk z-orders for all-desk windows. Entries are stored
-  // in ascending `order`.
-  struct AllDeskWindowStackingData {
-    aura::Window* window = nullptr;
-    // The z-order of the window.
-    // Note: this is reversed from how child windows are ordered in
-    // `aura::Window`, so an entry with `order == 0` means topmost.
-    // Note: this order ignores non-normal windows.
-    size_t order = 0;
-  };
 
   // Stacking data for all all-desk windows. Ordered from topmost and
   // down. Keyed by root window.

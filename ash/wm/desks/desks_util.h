@@ -80,6 +80,17 @@ ASH_EXPORT bool IsDraggingAnyDesk();
 // Returns whether a |window| is visible on all workspaces.
 ASH_EXPORT bool IsWindowVisibleOnAllWorkspaces(const aura::Window* window);
 
+// Returns true for windows that are interesting from an all-desk z-order
+// tracking perspective.
+ASH_EXPORT bool IsZOrderTracked(aura::Window* window);
+
+// Get the position of `window` in `windows` (as filtered by `IsZOrderTracked`)
+// in reverse order. If `window` is not in the list (or isn't z-order tracked),
+// then nullopt is returned.
+ASH_EXPORT absl::optional<size_t> GetWindowZOrder(
+    const std::vector<aura::Window*>& windows,
+    aura::Window* window);
+
 // Move an item at |old_index| to |new_index|.
 template <typename T>
 ASH_EXPORT void ReorderItem(std::vector<T>& items,
