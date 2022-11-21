@@ -536,20 +536,18 @@ TEST_F(WebRequestRulesRegistryTest, IgnoreRulesByTag) {
       "  \"priority\": 300                                               \n"
       "}                                                                 ";
 
-  std::unique_ptr<base::Value> value1 =
-      base::JSONReader::ReadDeprecated(kRule1);
-  ASSERT_TRUE(value1.get());
-  std::unique_ptr<base::Value> value2 =
-      base::JSONReader::ReadDeprecated(kRule2);
-  ASSERT_TRUE(value2.get());
+  absl::optional<base::Value> value1 = base::JSONReader::Read(kRule1);
+  ASSERT_TRUE(value1);
+  absl::optional<base::Value> value2 = base::JSONReader::Read(kRule2);
+  ASSERT_TRUE(value2);
 
   std::vector<const api::events::Rule*> rules;
   api::events::Rule rule1;
   api::events::Rule rule2;
   rules.push_back(&rule1);
   rules.push_back(&rule2);
-  ASSERT_TRUE(api::events::Rule::Populate(*value1, &rule1));
-  ASSERT_TRUE(api::events::Rule::Populate(*value2, &rule2));
+  ASSERT_TRUE(api::events::Rule::Populate(value1.value(), &rule1));
+  ASSERT_TRUE(api::events::Rule::Populate(value2.value(), &rule2));
 
   scoped_refptr<WebRequestRulesRegistry> registry(
       new TestWebRequestRulesRegistry(&profile_));

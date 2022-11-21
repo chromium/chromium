@@ -152,13 +152,13 @@ IN_PROC_BROWSER_TEST_F(ChromeAppAPITest, IsInstalled) {
           browser()->tab_strip_model()->GetActiveWebContents(),
           kGetAppDetails,
           &result));
-  std::unique_ptr<base::DictionaryValue> app_details(
-      static_cast<base::DictionaryValue*>(
-          base::JSONReader::ReadDeprecated(result).release()));
+  absl::optional<base::Value> result_value = base::JSONReader::Read(result);
+  ASSERT_TRUE(result_value);
+  base::Value app_details(std::move(*result_value));
+
   // extension->manifest() does not contain the id.
-  app_details->RemoveKey("id");
-  EXPECT_TRUE(app_details.get());
-  EXPECT_EQ(*app_details, *extension->manifest()->value());
+  app_details.RemoveKey("id");
+  EXPECT_EQ(app_details, *extension->manifest()->value());
 
   // Try to change app.isInstalled.  Should silently fail, so
   // that isInstalled should have the initial value.

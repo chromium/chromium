@@ -40,11 +40,10 @@ static void AssertEmptyPermission(const SocketsManifestPermission* permission) {
   EXPECT_EQ(0u, permission->entries().size());
 }
 
-static std::unique_ptr<base::Value> ParsePermissionJSON(
-    const std::string& json) {
-  std::unique_ptr<base::Value> result(base::JSONReader::ReadDeprecated(json));
+static base::Value ParsePermissionJSON(const std::string& json) {
+  absl::optional<base::Value> result = base::JSONReader::Read(json);
   EXPECT_TRUE(result) << "Invalid JSON string: " << json;
-  return result;
+  return std::move(result.value());
 }
 
 static std::unique_ptr<SocketsManifestPermission> PermissionFromValue(
@@ -58,8 +57,8 @@ static std::unique_ptr<SocketsManifestPermission> PermissionFromValue(
 
 static std::unique_ptr<SocketsManifestPermission> PermissionFromJSON(
     const std::string& json) {
-  std::unique_ptr<base::Value> value(ParsePermissionJSON(json));
-  return PermissionFromValue(*value);
+  base::Value value = ParsePermissionJSON(json);
+  return PermissionFromValue(value);
 }
 
 struct CheckFormatEntry {
@@ -270,34 +269,31 @@ TEST(SocketsManifestPermissionTest, JSONFormats) {
 }
 
 TEST(SocketsManifestPermissionTest, FromToValue) {
-  std::unique_ptr<base::Value> udp_send(
-      ParsePermissionJSON(kUdpBindPermission));
-  std::unique_ptr<base::Value> udp_bind(
-      ParsePermissionJSON(kUdpSendPermission));
-  std::unique_ptr<base::Value> tcp_connect(
-      ParsePermissionJSON(kTcpConnectPermission));
-  std::unique_ptr<base::Value> tcp_server_listen(
-      ParsePermissionJSON(kTcpServerListenPermission));
+  base::Value udp_send = ParsePermissionJSON(kUdpBindPermission);
+  base::Value udp_bind = ParsePermissionJSON(kUdpSendPermission);
+  base::Value tcp_connect = ParsePermissionJSON(kTcpConnectPermission);
+  base::Value tcp_server_listen =
+      ParsePermissionJSON(kTcpServerListenPermission);
 
   // FromValue()
   std::unique_ptr<SocketsManifestPermission> permission1(
       new SocketsManifestPermission());
-  EXPECT_TRUE(permission1->FromValue(udp_send.get()));
+  EXPECT_TRUE(permission1->FromValue(&udp_send));
   EXPECT_EQ(2u, permission1->entries().size());
 
   std::unique_ptr<SocketsManifestPermission> permission2(
       new SocketsManifestPermission());
-  EXPECT_TRUE(permission2->FromValue(udp_bind.get()));
+  EXPECT_TRUE(permission2->FromValue(&udp_bind));
   EXPECT_EQ(2u, permission2->entries().size());
 
   std::unique_ptr<SocketsManifestPermission> permission3(
       new SocketsManifestPermission());
-  EXPECT_TRUE(permission3->FromValue(tcp_connect.get()));
+  EXPECT_TRUE(permission3->FromValue(&tcp_connect));
   EXPECT_EQ(2u, permission3->entries().size());
 
   std::unique_ptr<SocketsManifestPermission> permission4(
       new SocketsManifestPermission());
-  EXPECT_TRUE(permission4->FromValue(tcp_server_listen.get()));
+  EXPECT_TRUE(permission4->FromValue(&tcp_server_listen));
   EXPECT_EQ(2u, permission4->entries().size());
 
   // ToValue()
