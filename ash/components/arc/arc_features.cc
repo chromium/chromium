@@ -104,12 +104,12 @@ BASE_FEATURE(kEnableVirtioBlkForData,
 // Controls whether to pop up ghost window for ARC app before fixup finishes.
 BASE_FEATURE(kFixupWindowFeature,
              "ArcFixupWindowFeature",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether new UI style for ARC ghost window.
 BASE_FEATURE(kGhostWindowNewStyle,
              "ArcGhostWindowNewStyle",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Used for overriding config params for the virtio-blk feature above.
 BASE_FEATURE(kVirtioBlkDataConfigOverride,
