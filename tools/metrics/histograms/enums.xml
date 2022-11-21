@@ -91246,6 +91246,20 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
              start)"/>
 </enum>
 
+<enum name="SecagentdBpfAttachResult">
+  <int value="0" label="BPF loaded and attached successfully"/>
+  <int value="1" label="BPF failed to Open"/>
+  <int value="2" label="BPF failed to Load"/>
+  <int value="3" label="BPF failed to Attach"/>
+  <int value="4" label="BPF failed Ring Buffer creation"/>
+</enum>
+
+<enum name="SecagentdPolicy">
+  <int value="0"
+      label="Device XDR reporting policy was checked at startup (baseline)"/>
+  <int value="1" label="XDR reporting was enabled by Device policy"/>
+</enum>
+
 <enum name="SecondaryAccountConsentLoggerResult">
   <obsolete>
     Deprecated in M91 after v2 EduCoexistence.

@@ -1811,6 +1811,35 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Secagentd.Bpf.{Bpf}.AttachResult"
+    enum="SecagentdBpfAttachResult" expires_after="2023-05-18">
+  <owner>aashay@google.com</owner>
+  <owner>cros-enterprise-security@google.com</owner>
+  <summary>
+    Records the initialization status of the {Bpf} BPF used by the CrOS
+    secagentd daemon. Emits either a success or a specific error value.
+  </summary>
+  <token key="Bpf">
+    <variant name="Process" summary="Process BPF"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Secagentd.Policy" enum="SecagentdPolicy"
+    expires_after="2023-05-18">
+  <owner>aashay@google.com</owner>
+  <owner>cros-enterprise-security@google.com</owner>
+  <summary>
+    Records whether the XDR event reporting policy was found enabled for a
+    device. Also provides an on-check enum for baseline. All of the
+    functionality of the CrOS secagentd daemon is gated by this enterprise
+    policy.
+
+    Note that even though the daemon regularly polls device policy for updates,
+    it will emit exactly one on-check value and at most one enabled value during
+    its lifetime (generally per device per boot).
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.SecurityAnomaly" enum="SecurityAnomaly"
     expires_after="2023-04-16">
   <owner>jorgelo@chromium.org</owner>
