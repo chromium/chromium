@@ -868,8 +868,7 @@ public class VrShellDelegate
     }
 
     private int getGvrKeyboardPackageVersion() {
-        return PackageUtils.getPackageVersion(
-                ContextUtils.getApplicationContext(), GVR_KEYBOARD_PACKAGE_ID);
+        return PackageUtils.getPackageVersion(GVR_KEYBOARD_PACKAGE_ID);
     }
 
     protected boolean isVrBrowsingEnabled() {

@@ -10,11 +10,13 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -29,38 +31,50 @@ public class PackageUtils {
     private static final char[] HEX_CHAR_LOOKUP = "0123456789ABCDEF".toCharArray();
 
     /**
+     * Retrieves the PackageInfo for the given package, or null if it is not installed.
+     */
+    public static @Nullable PackageInfo getPackageInfo(String packageName, int flags) {
+        PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
+        try {
+            return pm.getPackageInfo(packageName, flags);
+        } catch (PackageManager.NameNotFoundException e) {
+            return null;
+        }
+    }
+
+    /**
      * Retrieves the version of the given package installed on the device.
      *
-     * @param context Any context.
      * @param packageName Name of the package to find.
      * @return The package's version code if found, -1 otherwise.
      */
-    public static int getPackageVersion(Context context, String packageName) {
-        int versionCode = -1;
-        PackageManager pm = context.getPackageManager();
-        try {
-            PackageInfo packageInfo = pm.getPackageInfo(packageName, 0);
-            if (packageInfo != null) versionCode = packageInfo.versionCode;
-        } catch (PackageManager.NameNotFoundException e) {
-            // Do nothing, versionCode stays -1
-        }
-        return versionCode;
+    public static int getPackageVersion(String packageName) {
+        PackageInfo packageInfo = getPackageInfo(packageName, 0);
+        if (packageInfo != null) return packageInfo.versionCode;
+        return -1;
+    }
+
+    // TODO(agrieve): Delete downstream references.
+    public static int getPackageVersion(Context unused, String packageName) {
+        return getPackageVersion(packageName);
     }
 
     /**
      * Checks if the app has been installed on the system.
      * @return true if the PackageManager reports that the app is installed, false otherwise.
-     * @param context Any context.
      * @param packageName Name of the package to check.
      */
-    public static boolean isPackageInstalled(Context context, String packageName) {
-        PackageManager pm = context.getPackageManager();
-        try {
-            pm.getPackageInfo(packageName, 0);
-        } catch (PackageManager.NameNotFoundException e) {
-            return false;
-        }
-        return true;
+    public static boolean isPackageInstalled(String packageName) {
+        return getPackageInfo(packageName, 0) != null;
+    }
+
+    /**
+     * Returns the PackageInfo for the current app, as retrieve by PackageManager.
+     */
+    public static PackageInfo getApplicationPackageInfo(int flags) {
+        PackageInfo ret = getPackageInfo(BuildInfo.getInstance().packageName, flags);
+        assert ret != null;
+        return ret;
     }
 
     /**
@@ -72,14 +86,8 @@ public class PackageUtils {
      */
     @SuppressLint("PackageManagerGetSignatures")
     // https://stackoverflow.com/questions/39192844/android-studio-warning-when-using-packagemanager-get-signatures
-    public static List<String> getCertificateSHA256FingerprintForPackage(
-            PackageManager pm, String packageName) {
-        PackageInfo packageInfo;
-        try {
-            packageInfo = pm.getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
-        } catch (PackageManager.NameNotFoundException e) {
-            return null;
-        }
+    public static List<String> getCertificateSHA256FingerprintForPackage(String packageName) {
+        PackageInfo packageInfo = getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
 
         if (packageInfo == null) return null;
 
@@ -94,11 +102,9 @@ public class PackageUtils {
                                 .generateCertificate(input);
                 hexString = byteArrayToHexString(
                         MessageDigest.getInstance("SHA256").digest(certificate.getEncoded()));
-            } catch (CertificateEncodingException e) {
-                Log.w(TAG, "Certificate type X509 encoding failed");
-                return null;
             } catch (CertificateException | NoSuchAlgorithmException e) {
-                // This shouldn't happen.
+                Log.w(TAG, "Exception", e);
+                return null;
             }
 
             fingerprints.add(hexString);
@@ -112,6 +118,7 @@ public class PackageUtils {
      * @param byteArray The array to be converted.
      * @return A string with two letters representing each byte and : in between.
      */
+    @VisibleForTesting
     static String byteArrayToHexString(byte[] byteArray) {
         StringBuilder hexString = new StringBuilder(byteArray.length * 3 - 1);
         for (int i = 0; i < byteArray.length; ++i) {

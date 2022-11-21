@@ -374,7 +374,7 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
     public static void reportStartupUserEligibility(Context context) {
         AssistantVoiceSearchService service =
                 new AssistantVoiceSearchService(context, ExternalAuthUtils.getInstance(),
-                        TemplateUrlServiceFactory.get(), GSAState.getInstance(context),
+                        TemplateUrlServiceFactory.get(), GSAState.getInstance(),
                         /*observer=*/null, SharedPreferencesManager.getInstance(),
                         IdentityServicesProvider.get().getIdentityManager(
                                 Profile.getLastUsedRegularProfile()),

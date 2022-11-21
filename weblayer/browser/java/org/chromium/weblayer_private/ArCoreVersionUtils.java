@@ -4,11 +4,9 @@
 
 package org.chromium.weblayer_private;
 
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -24,25 +22,16 @@ class ArCoreVersionUtils {
 
     @CalledByNative
     public static boolean isEnabled() {
-        Context context = ContextUtils.getApplicationContext();
-        PackageManager pm = context.getPackageManager();
-        try {
-            // If the appropriate metadata entries are not present in the app manifest, the feature
-            // should be disabled.
-            Bundle metaData =
-                    pm.getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA)
-                            .metaData;
-            return metaData.containsKey(AR_CORE_PACKAGE)
-                    && metaData.containsKey(METADATA_KEY_MIN_APK_VERSION)
-                    && isInstalledAndCompatible();
-        } catch (PackageManager.NameNotFoundException e) {
-        }
-        return false;
+        // If the appropriate metadata entries are not present in the app manifest, the feature
+        // should be disabled.
+        Bundle metaData = PackageUtils.getApplicationPackageInfo(PackageManager.GET_META_DATA)
+                                  .applicationInfo.metaData;
+        return metaData.containsKey(AR_CORE_PACKAGE)
+                && metaData.containsKey(METADATA_KEY_MIN_APK_VERSION) && isInstalledAndCompatible();
     }
 
     @CalledByNative
     public static boolean isInstalledAndCompatible() {
-        return PackageUtils.getPackageVersion(ContextUtils.getApplicationContext(), AR_CORE_PACKAGE)
-                >= MIN_APK_VERSION;
+        return PackageUtils.getPackageVersion(AR_CORE_PACKAGE) >= MIN_APK_VERSION;
     }
 }

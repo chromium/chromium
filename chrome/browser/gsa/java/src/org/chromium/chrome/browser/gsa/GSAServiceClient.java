@@ -74,7 +74,7 @@ public class GSAServiceClient {
             String account = mGsaHelper.getGSAAccountFromState(bundle.getByteArray(KEY_GSA_STATE));
             RecordHistogram.recordEnumeratedHistogram(ACCOUNT_CHANGE_HISTOGRAM,
                     ACCOUNT_CHANGE_SOURCE_SERVICE, ACCOUNT_CHANGE_SOURCE_COUNT);
-            GSAState.getInstance(mContext).setGsaAccount(account);
+            GSAState.getInstance().setGsaAccount(account);
             if (mOnMessageReceived != null) mOnMessageReceived.onResult(bundle);
         }
     }

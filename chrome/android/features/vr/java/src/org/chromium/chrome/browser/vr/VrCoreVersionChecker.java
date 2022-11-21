@@ -52,9 +52,7 @@ public class VrCoreVersionChecker {
             // trigger this exception even though VrCore is installed.
             // Double check package manager to make sure we are not telling user to install
             // when it should just be an update.
-            if (PackageUtils.getPackageVersion(
-                        ContextUtils.getApplicationContext(), VR_CORE_PACKAGE_ID)
-                    != -1) {
+            if (PackageUtils.isPackageInstalled(VR_CORE_PACKAGE_ID)) {
                 return VrCoreCompatibility.VR_OUT_OF_DATE;
             }
             return VrCoreCompatibility.VR_NOT_AVAILABLE;

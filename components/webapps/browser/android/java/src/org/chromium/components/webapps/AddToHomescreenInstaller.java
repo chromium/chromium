@@ -26,7 +26,7 @@ class AddToHomescreenInstaller {
     private static boolean installOrOpenNativeApp(WebContents webContents, AppData appData) {
         Context context = ContextUtils.getApplicationContext();
         Intent launchIntent;
-        if (PackageUtils.isPackageInstalled(context, appData.packageName())) {
+        if (PackageUtils.isPackageInstalled(appData.packageName())) {
             launchIntent =
                     context.getPackageManager().getLaunchIntentForPackage(appData.packageName());
         } else {

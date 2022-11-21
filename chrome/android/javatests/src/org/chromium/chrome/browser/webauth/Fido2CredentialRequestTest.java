@@ -31,7 +31,6 @@ import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
@@ -455,12 +454,8 @@ public class Fido2CredentialRequestTest {
      * Used to enable early exit of tests on bots that don't support GmsCore v16.1+
      */
     private boolean gmsVersionSupported() {
-        if (PackageUtils.getPackageVersion(
-                    ContextUtils.getApplicationContext(), GOOGLE_PLAY_SERVICES_PACKAGE)
-                >= AuthenticatorImpl.GMSCORE_MIN_VERSION) {
-            return true;
-        }
-        return false;
+        return PackageUtils.getPackageVersion(GOOGLE_PLAY_SERVICES_PACKAGE)
+                >= AuthenticatorImpl.GMSCORE_MIN_VERSION;
     }
 
     @Test

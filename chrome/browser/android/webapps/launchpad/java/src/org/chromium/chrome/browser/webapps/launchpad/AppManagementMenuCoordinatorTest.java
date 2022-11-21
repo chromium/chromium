@@ -8,17 +8,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.View;
@@ -36,7 +31,10 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -86,9 +84,6 @@ public class AppManagementMenuCoordinatorTest {
     public JniMocker mocker = new JniMocker();
 
     @Mock
-    private PackageManager mPackageManager;
-
-    @Mock
     private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
 
     @Mock
@@ -112,7 +107,6 @@ public class AppManagementMenuCoordinatorTest {
         modalDialogManagerSupplier.set(mModalDialogManager);
 
         mActivity = Mockito.spy(Robolectric.buildActivity(Activity.class).setup().get());
-        when(mActivity.getPackageManager()).thenReturn(mPackageManager);
 
         mCoordinator = new AppManagementMenuCoordinator(
                 mActivity, modalDialogManagerSupplier, mSettingsLauncher);
@@ -199,13 +193,15 @@ public class AppManagementMenuCoordinatorTest {
     }
 
     @Test
-    public void testClickUninstallMenuItem() throws NameNotFoundException {
+    public void testClickUninstallMenuItem() {
         ListView shortcutsView = openDialogAndGetShortcutsListView(MOCK_ITEM);
         ListItem uninstallItem = (ListItem) shortcutsView.getAdapter().getItem(0);
 
-        PackageInfo packageInfo = Mockito.mock(PackageInfo.class);
-        when(mPackageManager.getPackageInfo(eq(APP_PACKAGE_NAME), anyInt()))
-                .thenReturn(packageInfo);
+        ShadowPackageManager pm =
+                Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager());
+        PackageInfo packageInfo = new PackageInfo();
+        packageInfo.packageName = APP_PACKAGE_NAME;
+        pm.installPackage(packageInfo);
 
         uninstallItem.model.get(ShortcutItemProperties.ON_CLICK)
                 .onClick(shortcutsView.getChildAt(0));
@@ -214,12 +210,9 @@ public class AppManagementMenuCoordinatorTest {
     }
 
     @Test
-    public void testClickUninstallMenuItem_appNotExist() throws NameNotFoundException {
+    public void testClickUninstallMenuItem_appNotExist() {
         ListView shortcutsView = openDialogAndGetShortcutsListView(MOCK_ITEM);
         ListItem uninstallItem = (ListItem) shortcutsView.getAdapter().getItem(0);
-
-        when(mPackageManager.getPackageInfo(eq(APP_PACKAGE_NAME), anyInt()))
-                .thenThrow(new PackageManager.NameNotFoundException());
 
         uninstallItem.model.get(ShortcutItemProperties.ON_CLICK)
                 .onClick(shortcutsView.getChildAt(0));

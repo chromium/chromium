@@ -132,7 +132,7 @@ public abstract class OriginVerifier {
         PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
 
         mSignatureFingerprints =
-                PackageUtils.getCertificateSHA256FingerprintForPackage(pm, packageName);
+                PackageUtils.getCertificateSHA256FingerprintForPackage(packageName);
 
         mRelation = relation;
         mWebContents = webContents;

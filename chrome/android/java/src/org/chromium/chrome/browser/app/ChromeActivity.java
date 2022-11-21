@@ -1260,7 +1260,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     @Override
     public void onStopWithNative() {
-        if (GSAState.getInstance(this).isGsaAvailable() && !SysUtils.isLowEndDevice()) {
+        if (GSAState.getInstance().isGsaAvailable() && !SysUtils.isLowEndDevice()) {
             if (mGSAAccountChangeListener != null) mGSAAccountChangeListener.disconnect();
         }
         if (mSyncStateChangedListener != null) {
@@ -1372,7 +1372,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (!SysUtils.isLowEndDevice()) {
             if (isActivityFinishingOrDestroyed()) return;
             DeferredStartupHandler.getInstance().addDeferredTask(() -> {
-                if (!GSAState.getInstance(this).isGsaAvailable()) {
+                if (!GSAState.getInstance().isGsaAvailable()) {
                     ContextReporter.reportStatus(ContextReporter.STATUS_GSA_NOT_AVAILABLE);
                     return;
                 }

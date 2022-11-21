@@ -222,8 +222,7 @@ public class SpeechRecognitionImpl {
 
             // No need to verify package version if packageMinVersion != -1.
             if (packageMinVersion != -1) {
-                if (PackageUtils.getPackageVersion(context, service.packageName)
-                        < packageMinVersion) {
+                if (PackageUtils.getPackageVersion(service.packageName) < packageMinVersion) {
                     continue;
                 }
             }

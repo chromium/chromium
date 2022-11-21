@@ -60,7 +60,7 @@ public class GSAAccountChangeListener {
             RecordHistogram.recordEnumeratedHistogram(GSAServiceClient.ACCOUNT_CHANGE_HISTOGRAM,
                     GSAServiceClient.ACCOUNT_CHANGE_SOURCE_BROADCAST,
                     GSAServiceClient.ACCOUNT_CHANGE_SOURCE_COUNT);
-            GSAState.getInstance(context.getApplicationContext()).setGsaAccount(accountName);
+            GSAState.getInstance().setGsaAccount(accountName);
         }
     }
 
@@ -114,7 +114,7 @@ public class GSAAccountChangeListener {
                     Context applicationContext = context.getApplicationContext();
                     // We no longer know the account, but GSA will tell us momentarily (through
                     // the service).
-                    GSAState.getInstance(applicationContext).setGsaAccount(null);
+                    GSAState.getInstance().setGsaAccount(null);
                     // GSA has been updated, it might no longer support the broadcast. Reconnect to
                     // check.
                     mClient = null;

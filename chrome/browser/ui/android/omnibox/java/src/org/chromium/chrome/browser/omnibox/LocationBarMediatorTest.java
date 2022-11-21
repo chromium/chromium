@@ -151,7 +151,7 @@ public class LocationBarMediatorTest {
     static class GSAStateShadow {
         private static GSAState sGSAState;
         @Implementation
-        public static GSAState getInstance(Context context) {
+        public static GSAState getInstance() {
             return sGSAState;
         }
 

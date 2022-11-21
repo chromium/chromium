@@ -165,7 +165,7 @@ class AppManagementMenuCoordinator implements ModalDialogProperties.Controller {
     }
 
     private void onUninstallMenuItemClicked(String packageName) {
-        if (!PackageUtils.isPackageInstalled(mContext, packageName)) {
+        if (!PackageUtils.isPackageInstalled(packageName)) {
             Log.e(TAG, "WebApk not found:" + packageName);
             return;
         }

@@ -88,7 +88,7 @@ class DirectWritingServiceBinder {
         // Direct Writing service package. This is to prevent any attacker from spoofing the package
         // name and tricking Chrome into connecting to it.
         List<String> fingerprints = PackageUtils.getCertificateSHA256FingerprintForPackage(
-                context.getPackageManager(), DirectWritingConstants.SERVICE_PKG_NAME);
+                DirectWritingConstants.SERVICE_PKG_NAME);
         if (fingerprints == null || fingerprints.size() > 1
                 || !(fingerprints.get(0).equals(
                              DirectWritingConstants.SERVICE_PKG_SHA_256_FINGERPRINT_RELEASE)

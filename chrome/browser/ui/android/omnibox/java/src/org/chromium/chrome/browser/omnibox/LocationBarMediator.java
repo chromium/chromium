@@ -322,8 +322,8 @@ class LocationBarMediator
             templateUrlService.addObserver(this);
         }
         mAssistantVoiceSearchServiceSupplier.set(new AssistantVoiceSearchService(mContext,
-                ExternalAuthUtils.getInstance(), templateUrlService, GSAState.getInstance(mContext),
-                this, SharedPreferencesManager.getInstance(),
+                ExternalAuthUtils.getInstance(), templateUrlService, GSAState.getInstance(), this,
+                SharedPreferencesManager.getInstance(),
                 IdentityServicesProvider.get().getIdentityManager(
                         Profile.getLastUsedRegularProfile()),
                 AccountManagerFacadeProvider.getInstance()));

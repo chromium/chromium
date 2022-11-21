@@ -4,26 +4,22 @@
 
 package org.chromium.chrome.browser.gsa;
 
-import static org.mockito.Mockito.doReturn;
-
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.IntentHandler;
 
 /**
  * Tests of {@link GSAState}.
@@ -31,26 +27,37 @@ import org.chromium.chrome.browser.IntentHandler;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public final class GSAStateUnitTest {
-    @Mock
-    Context mContext;
-    @Mock
-    ComponentName mComponentName;
-    @Mock
-    PackageManager mPackageManager;
-
-    GSAState mGsaState;
+    private GSAState mGsaState;
 
     @Before
     public void setUp() throws NameNotFoundException {
-        MockitoAnnotations.initMocks(this);
+        mGsaState = new GSAState();
+    }
 
-        PackageInfo packageInfo = Mockito.mock(PackageInfo.class);
-        doReturn(mContext).when(mContext).getApplicationContext();
-        doReturn(mPackageManager).when(mContext).getPackageManager();
-        doReturn(IntentHandler.PACKAGE_GSA).when(mComponentName).getPackageName();
-        doReturn(packageInfo).when(mPackageManager).getPackageInfo(IntentHandler.PACKAGE_GSA, 0);
+    private static void initPackageManager(boolean addResolveInfo) {
+        ShadowPackageManager pm =
+                Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager());
+        PackageInfo packageInfo = new PackageInfo();
+        packageInfo.packageName = GSAState.PACKAGE_NAME;
+        pm.installPackage(packageInfo);
 
-        mGsaState = new GSAState(mContext);
+        if (addResolveInfo) {
+            ComponentName componentName = new ComponentName(GSAState.PACKAGE_NAME, "Activity");
+            pm.addActivityIfNotPresent(componentName);
+            IntentFilter intentFilter = new IntentFilter(Intent.ACTION_SEARCH);
+            intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
+            try {
+                pm.addIntentFilterForActivity(componentName, intentFilter);
+            } catch (NameNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private static Intent createAgsaIntent() {
+        Intent intent = new Intent(Intent.ACTION_SEARCH);
+        intent.setPackage(GSAState.PACKAGE_NAME);
+        return intent;
     }
 
     @Test
@@ -70,38 +77,31 @@ public final class GSAStateUnitTest {
 
     @Test
     public void canAgsaHandleIntent() {
-        Intent intent = Mockito.mock(Intent.class);
-        doReturn(IntentHandler.PACKAGE_GSA).when(intent).getPackage();
-        doReturn(mComponentName).when(intent).resolveActivity(mPackageManager);
-
+        initPackageManager(true);
+        Intent intent = createAgsaIntent();
         Assert.assertTrue(mGsaState.canAgsaHandleIntent(intent));
     }
 
     @Test
     public void canAgsaHandleIntent_PackageDoesNotMatch() {
-        Intent intent = Mockito.mock(Intent.class);
-        doReturn("com.test.app").when(intent).getPackage();
-        doReturn(mComponentName).when(intent).resolveActivity(mPackageManager);
-
+        initPackageManager(true);
+        Intent intent = createAgsaIntent();
+        intent.setPackage("com.test.app");
         Assert.assertFalse(mGsaState.canAgsaHandleIntent(intent));
     }
 
     @Test
     public void canAgsaHandleIntent_ActivityNull() {
-        Intent intent = Mockito.mock(Intent.class);
-        doReturn(IntentHandler.PACKAGE_GSA).when(intent).getPackage();
-        doReturn(null).when(intent).resolveActivity(mPackageManager);
-
+        initPackageManager(false);
+        Intent intent = createAgsaIntent();
         Assert.assertFalse(mGsaState.canAgsaHandleIntent(intent));
     }
 
     @Test
     public void canAgsaHandleIntent_PackageInfoNull() throws NameNotFoundException {
-        Intent intent = Mockito.mock(Intent.class);
-        doReturn(IntentHandler.PACKAGE_GSA).when(intent).getPackage();
-        doReturn(mComponentName).when(intent).resolveActivity(mPackageManager);
-        doReturn(null).when(mPackageManager).getPackageInfo(IntentHandler.PACKAGE_GSA, 0);
-
+        Intent intent = createAgsaIntent();
+        // Setting intent ComponentInfo causes intent.resolveActivity() to short-circuit.
+        intent.setClassName(GSAState.PACKAGE_NAME, "class");
         Assert.assertFalse(mGsaState.canAgsaHandleIntent(intent));
     }
 

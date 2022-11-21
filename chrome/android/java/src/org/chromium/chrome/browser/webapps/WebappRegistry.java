@@ -267,8 +267,7 @@ public class WebappRegistry {
         for (HashMap.Entry<String, WebappDataStorage> entry : mStorages.entrySet()) {
             WebappDataStorage storage = entry.getValue();
             if (!TextUtils.isEmpty(storage.getPendingUpdateRequestPath())
-                    && PackageUtils.isPackageInstalled(ContextUtils.getApplicationContext(),
-                               storage.getWebApkPackageName())) {
+                    && PackageUtils.isPackageInstalled(storage.getWebApkPackageName())) {
                 webApkIdsWithPendingUpdate.add(entry.getKey());
             }
         }
@@ -381,8 +380,7 @@ public class WebappRegistry {
                         ChromePreferenceKeys.WEBAPK_UNINSTALLED_PACKAGES);
         if (webApkPackagesWithPendingUkm.contains(webApkPackageName)) return false;
 
-        return !PackageUtils.isPackageInstalled(
-                ContextUtils.getApplicationContext(), webApkPackageName);
+        return !PackageUtils.isPackageInstalled(webApkPackageName);
     }
 
     public InstalledWebappPermissionStore getPermissionStore() {

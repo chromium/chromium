@@ -973,7 +973,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     LensMetrics.LensSupportStatus.ACTIVITY_NOT_ACCESSIBLE);
             return false;
         }
-        if (GSAState.getInstance(mContext).isAgsaVersionBelowMinimum(
+        if (GSAState.getInstance().isAgsaVersionBelowMinimum(
                     versionName, LensUtils.getMinimumAgsaVersionForLensSupport())) {
             LensMetrics.recordLensSupportStatus(
                     LENS_SUPPORT_STATUS_HISTOGRAM_NAME, LensMetrics.LensSupportStatus.OUT_OF_DATE);

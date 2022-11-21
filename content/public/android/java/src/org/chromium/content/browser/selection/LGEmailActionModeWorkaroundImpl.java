@@ -60,7 +60,7 @@ public final class LGEmailActionModeWorkaroundImpl {
 
     private static boolean shouldAllowActionModeDestroyOnNonUiThread(Context context) {
         String appName = context.getPackageName();
-        int versionCode = PackageUtils.getPackageVersion(context, appName);
+        int versionCode = PackageUtils.getPackageVersion(appName);
         if (versionCode == -1) return false;
 
         int appTargetSdkVersion = context.getApplicationInfo().targetSdkVersion;

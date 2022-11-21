@@ -152,7 +152,7 @@ public class ChromeOriginVerifier extends OriginVerifier {
             String packageName, Origin origin, @Relation int relation) {
         PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
         List<String> fingerprints =
-                PackageUtils.getCertificateSHA256FingerprintForPackage(pm, packageName);
+                PackageUtils.getCertificateSHA256FingerprintForPackage(packageName);
 
         // Some tests rely on passing in a package name that doesn't exist on the device, so the
         // fingerprints returned will be null. In this case, the package name will be overridden

@@ -9,14 +9,13 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.PackageManagerUtils;
@@ -71,10 +70,6 @@ public class GSAState {
     private static final Pattern MAJOR_MINOR_VERSION_PATTERN =
             Pattern.compile("^(\\d+)\\.(\\d+)(\\.\\d+)*$");
 
-    /**
-     * The application context to use.
-     */
-    private final Context mContext;
     private final ObserverList<Observer> mObserverList = new ObserverList<>();
 
     /**
@@ -88,14 +83,17 @@ public class GSAState {
      */
     private @Nullable String mGsaAccount;
 
+    // TODO(agrieve): Delete internal references.
+    public static GSAState getInstance(Context unused) {
+        return getInstance();
+    }
+
     /**
      * Returns the singleton instance of GSAState and creates one if necessary.
-     * @param context The context to use.
-     * @return The state object.
      */
-    public static GSAState getInstance(Context context) {
+    public static GSAState getInstance() {
         if (sGSAState == null) {
-            sGSAState = new GSAState(context);
+            sGSAState = new GSAState();
         }
         return sGSAState;
     }
@@ -109,9 +107,7 @@ public class GSAState {
 
     /* Private constructor, since this is a singleton */
     @VisibleForTesting
-    GSAState(Context context) {
-        mContext = context.getApplicationContext();
-    }
+    GSAState() {}
 
     /**
      * Update the GSA logged in account name and whether we are in GSA holdback.
@@ -165,12 +161,7 @@ public class GSAState {
 
     /** Returns whether the GSA package is installed on device. */
     public boolean isGsaInstalled() {
-        try {
-            PackageInfo packageInfo = mContext.getPackageManager().getPackageInfo(PACKAGE_NAME, 0);
-            return true;
-        } catch (NameNotFoundException e) {
-            return false;
-        }
+        return PackageUtils.isPackageInstalled(PACKAGE_NAME);
     }
 
     /**
@@ -181,7 +172,7 @@ public class GSAState {
      *         required version.
      */
     private boolean isPackageAboveVersion(String packageName, int minVersion) {
-        return PackageUtils.getPackageVersion(mContext, packageName) >= minVersion;
+        return PackageUtils.getPackageVersion(packageName) >= minVersion;
     }
 
     /**
@@ -226,17 +217,10 @@ public class GSAState {
     public boolean canAgsaHandleIntent(@NonNull Intent intent) {
         if (!intent.getPackage().equals(PACKAGE_NAME)) return false;
 
-        PackageManager packageManager = mContext.getPackageManager();
-        try {
-            ComponentName activity = intent.resolveActivity(packageManager);
-            if (activity == null) return false;
-            PackageInfo packageInfo = packageManager.getPackageInfo(activity.getPackageName(), 0);
-            if (packageInfo == null) return false;
-        } catch (NameNotFoundException e) {
-            return false;
-        }
-
-        return true;
+        ComponentName activity =
+                intent.resolveActivity(ContextUtils.getApplicationContext().getPackageManager());
+        if (activity == null) return false;
+        return PackageUtils.isPackageInstalled(activity.getPackageName());
     }
 
     /**
@@ -245,12 +229,8 @@ public class GSAState {
      * @return The version name of the Agsa package or null if it can't be found.
      */
     public @Nullable String getAgsaVersionName() {
-        try {
-            PackageInfo packageInfo = mContext.getPackageManager().getPackageInfo(PACKAGE_NAME, 0);
-            return packageInfo.versionName;
-        } catch (NameNotFoundException e) {
-            return null;
-        }
+        PackageInfo packageInfo = PackageUtils.getPackageInfo(PACKAGE_NAME, 0);
+        return packageInfo == null ? null : packageInfo.versionName;
     }
 
     /**

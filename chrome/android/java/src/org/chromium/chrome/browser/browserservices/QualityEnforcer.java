@@ -151,7 +151,7 @@ public class QualityEnforcer {
                     packageName = mClientPackageNameProvider.get();
                     PackageManager pm = mActivity.getPackageManager();
                     List<String> signatures =
-                            PackageUtils.getCertificateSHA256FingerprintForPackage(pm, packageName);
+                            PackageUtils.getCertificateSHA256FingerprintForPackage(packageName);
 
                     // Sometimes information about the current package cannot be found - perhaps
                     // the user uninstalled the TWA while using it? See https://crbug.com/1358864.

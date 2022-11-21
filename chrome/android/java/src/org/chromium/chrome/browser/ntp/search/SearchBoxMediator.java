@@ -87,7 +87,7 @@ class SearchBoxMediator
     public void onFinishNativeInitialization() {
         mAssistantVoiceSearchService = new AssistantVoiceSearchService(mContext,
                 ExternalAuthUtils.getInstance(), TemplateUrlServiceFactory.get(),
-                GSAState.getInstance(mContext), this, SharedPreferencesManager.getInstance(),
+                GSAState.getInstance(), this, SharedPreferencesManager.getInstance(),
                 IdentityServicesProvider.get().getIdentityManager(
                         Profile.getLastUsedRegularProfile()),
                 AccountManagerFacadeProvider.getInstance());

@@ -86,7 +86,7 @@ class BrandingChecker extends AsyncTask<Integer> {
         @BrandingDecision
         Integer brandingDecision = null;
         long startTime = SystemClock.elapsedRealtime();
-        mIsPackageValid = PackageUtils.isPackageInstalled(mContext, mPackageName);
+        mIsPackageValid = PackageUtils.isPackageInstalled(mPackageName);
         if (mIsPackageValid) {
             long timeLastBranding = mStorage.get(mPackageName);
             brandingDecision = makeBrandingDecisionFromLaunchTime(startTime, timeLastBranding);

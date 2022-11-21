@@ -5,7 +5,6 @@
 package org.chromium.components.webauthn;
 
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.util.Pair;
@@ -13,7 +12,6 @@ import android.util.Pair;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.Authenticator;
@@ -96,8 +94,7 @@ public final class AuthenticatorImpl implements Authenticator {
         mSupportLevel = supportLevel;
         mOrigin = mRenderFrameHost.getLastCommittedOrigin();
 
-        Context context = ContextUtils.getApplicationContext();
-        mGmsCorePackageVersion = PackageUtils.getPackageVersion(context, GMSCORE_PACKAGE_NAME);
+        mGmsCorePackageVersion = PackageUtils.getPackageVersion(GMSCORE_PACKAGE_NAME);
     }
 
     public static void overrideFido2CredentialRequestForTesting(Fido2CredentialRequest request) {

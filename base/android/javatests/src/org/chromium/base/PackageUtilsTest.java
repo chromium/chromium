@@ -54,7 +54,7 @@ public class PackageUtilsTest {
     @SmallTest
     public void testSHA256CertificateChecks() {
         PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
-        List<String> fingerprints = getCertificateSHA256FingerprintForPackage(pm, PACKAGE_NAME);
+        List<String> fingerprints = getCertificateSHA256FingerprintForPackage(PACKAGE_NAME);
 
         assertThat(fingerprints,
                 anyOf(is(Collections.singletonList(SHA_256_FINGERPRINT_PUBLIC)),

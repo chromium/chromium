@@ -130,7 +130,7 @@ public class WebApkUpdateReportAbuseDialog implements ModalDialogProperties.Cont
     }
 
     private void showAppInfoToUninstall() {
-        if (!PackageUtils.isPackageInstalled(mActivityContext, mAppPackageName)) {
+        if (!PackageUtils.isPackageInstalled(mAppPackageName)) {
             Log.i(TAG, "WebApk not found: " + mAppPackageName);
             return;
         }
