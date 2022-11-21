@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL Constructor property enumeration order of "length", "name", and "prototype" assert_array_equals: expected property 2 to be "prototype" but got "arguments" (expected array ["length", "name", "prototype"] got ["length", "name", "arguments"])
+PASS Method property enumeration order of "length" and "name"
+PASS Getter property enumeration order of "length" and "name"
+Harness: the test ran to completion.
+
