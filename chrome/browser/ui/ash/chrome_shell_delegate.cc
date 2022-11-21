@@ -13,7 +13,6 @@
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/system_sounds_delegate.h"
-#include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -150,11 +149,6 @@ ChromeShellDelegate::CreateDesksTemplatesDelegate() const {
 std::unique_ptr<ash::SystemSoundsDelegate>
 ChromeShellDelegate::CreateSystemSoundsDelegate() const {
   return std::make_unique<SystemSoundsDelegateImpl>();
-}
-
-std::unique_ptr<ash::VideoConferenceTrayController>
-ChromeShellDelegate::CreateVideoConferenceTrayController() const {
-  return std::make_unique<ash::VideoConferenceTrayController>();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

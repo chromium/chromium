@@ -15,7 +15,6 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test_shell_delegate.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -43,7 +42,7 @@ class VideoConferenceTrayTest : public AshTestBase {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kVcControlsUi);
 
-    AshTestBase::SetUp(std::make_unique<TestShellDelegate>());
+    AshTestBase::SetUp();
   }
 
   VideoConferenceTray* video_conference_tray() {

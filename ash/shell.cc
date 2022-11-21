@@ -160,6 +160,7 @@
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/usb_peripheral/usb_peripheral_notification_controller.h"
+#include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ash/touch/ash_touch_transform_controller.h"
 #include "ash/touch/touch_devices_controller.h"
@@ -1440,8 +1441,12 @@ void Shell::Init(
   // may be observers of it, and will assume it exists for as long as they
   // themselves exist.
   if (features::IsVcControlsUiEnabled()) {
+    // `VideoConferenceTrayController` relies on audio and camera services to
+    // function properly, so we will use the fake version when `dbus_bus` is not
+    // available so that this works on linux-chromeos and unit tests.
     video_conference_tray_controller_ =
-        shell_delegate_->CreateVideoConferenceTrayController();
+        dbus_bus ? std::make_unique<VideoConferenceTrayController>()
+                 : std::make_unique<FakeVideoConferenceTrayController>();
   }
 
   window_tree_host_manager_->InitHosts();
