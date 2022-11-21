@@ -920,6 +920,7 @@
       'win-chrome': 'official_goma_x86',
       'win-chrome-beta': 'official_goma_x86',
       'win-chrome-stable': 'official_goma_x86',
+      'win-compile-chrome': 'official_goma_x86_minimal_symbols',
       'win-finch-smoke-chrome': 'official_goma',
       'win64-chrome': 'official_goma_x64',
       'win64-chrome-beta': 'official_goma_x64',
@@ -3340,6 +3341,10 @@
 
     'official_goma_x86': [
       'official', 'goma', 'x86',
+    ],
+
+    'official_goma_x86_minimal_symbols': [
+      'official', 'goma', 'x86', 'minimal_symbols',
     ],
 
     'official_goma_x86_pgo': [

@@ -444,6 +444,15 @@
       "use_goma": true
     }
   },
+  "win-compile-chrome": {
+    "gn_args": {
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "use_goma": true
+    }
+  },
   "win-finch-smoke-chrome": {
     "gn_args": {
       "is_chrome_branded": true,
