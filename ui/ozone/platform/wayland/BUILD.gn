@@ -586,6 +586,7 @@ source_set("wayland_unittests") {
     ":test_support",
     ":wayland",
     "//build:chromeos_buildflags",
+    "//build/config/linux/libdrm",
     "//components/crash/core/common:crash_key",
     "//components/exo/wayland/protocol:aura_shell_protocol",
     "//testing/gmock",
@@ -628,7 +629,6 @@ source_set("wayland_unittests") {
       "wayland_buffer_manager_unittest.cc",
     ]
     deps += [
-      "//build/config/linux/libdrm",
       "//ui/gfx/linux:drm",
       "//ui/gfx/linux:gbm",
     ]
