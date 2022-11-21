@@ -365,9 +365,9 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
                 IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
                         .getPrimaryAccountInfo(ConsentLevel.SYNC));
+        // May happen if account is removed from the device while this screen is shown.
         if (signedInAccountName == null) {
-            // May happen if account is removed from the device while this screen is shown.
-            getActivity().finish();
+            if (getActivity() != null) getActivity().finish();
             return;
         }
 
