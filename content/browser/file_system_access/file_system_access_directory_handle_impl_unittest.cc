@@ -399,7 +399,7 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, RemoveEntry) {
   }
 
   // Acquire a shared lock on a file before removing to simulate when the file
-  // has an open writable.
+  // has an open writable. This should also fail.
   {
     base::CreateTemporaryFileInDir(dir, &file);
     auto base_name = storage::FilePathToString(file.BaseName());
@@ -412,8 +412,10 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, RemoveEntry) {
     base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
     handle->RemoveEntry(base_name,
                         /*recurse=*/false, future.GetCallback());
-    EXPECT_EQ(future.Get()->status, blink::mojom::FileSystemAccessStatus::kOk);
-    EXPECT_FALSE(base::PathExists(file));
+    EXPECT_EQ(
+        future.Get()->status,
+        blink::mojom::FileSystemAccessStatus::kNoModificationAllowedError);
+    EXPECT_TRUE(base::PathExists(file));
   }
 }
 

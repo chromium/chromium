@@ -114,7 +114,7 @@ class CONTENT_EXPORT FileSystemAccessFileWriterImpl
   // most filesystems, this move operation is atomic.
   storage::FileSystemURL swap_url_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Shared write lock on the file. It is released on destruction.
+  // Exclusive write lock on the file. It is released on destruction.
   scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

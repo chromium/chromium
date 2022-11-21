@@ -8,6 +8,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_writer.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
@@ -40,6 +41,16 @@ class FileSystemUnderlyingSink final : public UnderlyingSinkBase {
   void Trace(Visitor*) const override;
 
  private:
+  // Helpers which ensure `writer_remote_` is reset when there's an error.
+  // A WritableStream becomes unusable once there's been an error on the stream.
+  // Resetting the remote destroys the corresponding receiver, thereby releasing
+  // any locks tied to the writer.
+  void ThrowDOMExceptionAndInvalidateSink(ExceptionState& exception_state,
+                                          DOMExceptionCode error,
+                                          const char* message);
+  void ThrowTypeErrorAndInvalidateSink(ExceptionState& exception_state,
+                                       const char* message);
+
   ScriptPromise HandleParams(ScriptState*, const WriteParams&, ExceptionState&);
   ScriptPromise WriteData(
       ScriptState*,

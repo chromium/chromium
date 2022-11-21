@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_error.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_writable_file_stream.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -67,8 +68,9 @@ ScriptPromise FileSystemUnderlyingSink::write(
 ScriptPromise FileSystemUnderlyingSink::close(ScriptState* script_state,
                                               ExceptionState& exception_state) {
   if (!writer_remote_.is_bound() || pending_operation_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Object reached an invalid state");
+    ThrowDOMExceptionAndInvalidateSink(exception_state,
+                                       DOMExceptionCode::kInvalidStateError,
+                                       "Object reached an invalid state");
     return ScriptPromise();
   }
   pending_operation_ =
@@ -97,8 +99,8 @@ ScriptPromise FileSystemUnderlyingSink::HandleParams(
     ExceptionState& exception_state) {
   if (params.type() == "truncate") {
     if (!params.hasSizeNonNull()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kSyntaxError,
+      ThrowDOMExceptionAndInvalidateSink(
+          exception_state, DOMExceptionCode::kSyntaxError,
           "Invalid params passed. truncate requires a size argument");
       return ScriptPromise();
     }
@@ -107,8 +109,8 @@ ScriptPromise FileSystemUnderlyingSink::HandleParams(
 
   if (params.type() == "seek") {
     if (!params.hasPositionNonNull()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kSyntaxError,
+      ThrowDOMExceptionAndInvalidateSink(
+          exception_state, DOMExceptionCode::kSyntaxError,
           "Invalid params passed. seek requires a position argument");
       return ScriptPromise();
     }
@@ -119,21 +121,23 @@ ScriptPromise FileSystemUnderlyingSink::HandleParams(
     uint64_t position =
         params.hasPositionNonNull() ? params.positionNonNull() : offset_;
     if (!params.hasData()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kSyntaxError,
+      ThrowDOMExceptionAndInvalidateSink(
+          exception_state, DOMExceptionCode::kSyntaxError,
           "Invalid params passed. write requires a data argument");
       return ScriptPromise();
     }
     if (!params.data()) {
-      exception_state.ThrowTypeError(
+      ThrowTypeErrorAndInvalidateSink(
+          exception_state,
           "Invalid params passed. write requires a non-null data");
       return ScriptPromise();
     }
     return WriteData(script_state, position, params.data(), exception_state);
   }
 
-  exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                    "Object reached an invalid state");
+  ThrowDOMExceptionAndInvalidateSink(exception_state,
+                                     DOMExceptionCode::kInvalidStateError,
+                                     "Object reached an invalid state");
   return ScriptPromise();
 }
 
@@ -313,15 +317,25 @@ bool CreateDataPipe(uint64_t data_size,
   options.capacity_num_bytes = BlobUtils::GetDataPipeCapacity(data_size);
 
   MojoResult rv = CreateDataPipe(&options, producer, consumer);
-  if (rv != MOJO_RESULT_OK) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Failed to create datapipe");
-    return false;
-  }
-  return true;
+  return rv == MOJO_RESULT_OK;
 }
 
 }  // namespace
+
+void FileSystemUnderlyingSink::ThrowDOMExceptionAndInvalidateSink(
+    ExceptionState& exception_state,
+    DOMExceptionCode error,
+    const char* message) {
+  exception_state.ThrowDOMException(error, message);
+  writer_remote_.reset();
+}
+
+void FileSystemUnderlyingSink::ThrowTypeErrorAndInvalidateSink(
+    ExceptionState& exception_state,
+    const char* message) {
+  exception_state.ThrowTypeError(message);
+  writer_remote_.reset();
+}
 
 ScriptPromise FileSystemUnderlyingSink::WriteData(
     ScriptState* script_state,
@@ -331,8 +345,9 @@ ScriptPromise FileSystemUnderlyingSink::WriteData(
   DCHECK(data);
 
   if (!writer_remote_.is_bound() || pending_operation_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Object reached an invalid state");
+    ThrowDOMExceptionAndInvalidateSink(exception_state,
+                                       DOMExceptionCode::kInvalidStateError,
+                                       "Object reached an invalid state");
     return ScriptPromise();
   }
 
@@ -380,6 +395,9 @@ ScriptPromise FileSystemUnderlyingSink::WriteData(
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
   if (!CreateDataPipe(data_size, exception_state, producer_handle,
                       consumer_handle)) {
+    ThrowDOMExceptionAndInvalidateSink(exception_state,
+                                       DOMExceptionCode::kInvalidStateError,
+                                       "Failed to create datapipe");
     return ScriptPromise();
   }
 
@@ -422,8 +440,9 @@ ScriptPromise FileSystemUnderlyingSink::Truncate(
     uint64_t size,
     ExceptionState& exception_state) {
   if (!writer_remote_.is_bound() || pending_operation_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Object reached an invalid state");
+    ThrowDOMExceptionAndInvalidateSink(exception_state,
+                                       DOMExceptionCode::kInvalidStateError,
+                                       "Object reached an invalid state");
     return ScriptPromise();
   }
   pending_operation_ =
@@ -439,8 +458,9 @@ ScriptPromise FileSystemUnderlyingSink::Seek(ScriptState* script_state,
                                              uint64_t offset,
                                              ExceptionState& exception_state) {
   if (!writer_remote_.is_bound() || pending_operation_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Object reached an invalid state");
+    ThrowDOMExceptionAndInvalidateSink(exception_state,
+                                       DOMExceptionCode::kInvalidStateError,
+                                       "Object reached an invalid state");
     return ScriptPromise();
   }
   offset_ = offset;

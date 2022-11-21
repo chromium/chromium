@@ -4,6 +4,7 @@
 
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 
+#include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
@@ -40,6 +41,12 @@ using blink::mojom::FileSystemAccessHandle;
 using blink::mojom::FileSystemAccessStatus;
 using blink::mojom::FileSystemAccessTransferToken;
 using storage::FileSystemOperationRunner;
+
+namespace features {
+BASE_FEATURE(kFileSystemAccessRemoveEntryExclusiveLock,
+             "FileSystemAccessRemoveEntryExclusiveLock",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace features
 
 namespace content {
 
@@ -384,15 +391,13 @@ void FileSystemAccessDirectoryHandleImpl::RemoveEntry(
     return;
   }
 
-  // TODO(crbug.com/1254078): Consider requiring an exclusive lock to match the
-  // behavior of `remove()`.
-  //
-  // Use a shared write lock to allow the file to be removed if it has an open
-  // writable, but not if it has an open access handle.
+  auto lock_type = base::FeatureList::IsEnabled(
+                       features::kFileSystemAccessRemoveEntryExclusiveLock)
+                       ? WriteLockType::kExclusive
+                       : WriteLockType::kShared;
   RunWithWritePermission(
       base::BindOnce(&FileSystemAccessHandleBase::DoRemove,
-                     weak_factory_.GetWeakPtr(), child_url, recurse,
-                     WriteLockType::kShared),
+                     weak_factory_.GetWeakPtr(), child_url, recurse, lock_type),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
                         RemoveEntryCallback callback) {
         std::move(callback).Run(std::move(result));
