@@ -67,17 +67,9 @@ IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest,
                        IgnoreOtherPaymentAppsInTwaWhenHaveAppStoreBilling) {
   ScopedTestSupport scoped_test_support;
 
-  std::string method_name = https_server()->GetURL("a.com", "/").spec();
-  method_name = method_name.substr(0, method_name.length() - 1);
-  ASSERT_NE('/', method_name[method_name.length() - 1]);
-  NavigateTo("a.com", "/payment_handler_installer.html");
-  ASSERT_EQ(
-      "success",
-      content::EvalJs(
-          GetActiveWebContents(),
-          content::JsReplace(
-              "install('payment_request_success_responder.js', [$1], false)",
-              method_name)));
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
+                    &method_name);
 
   // The "payment_request_success_responder.js" always replies with "{status:
   // success}", so the |response| here has to be distinct.

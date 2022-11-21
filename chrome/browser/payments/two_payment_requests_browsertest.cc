@@ -15,16 +15,8 @@ class TwoPaymentRequestsTest : public PaymentRequestPlatformBrowserTestBase {};
 // Instantiating two PaymentRequest objects at the same time should provide
 // identical results.
 IN_PROC_BROWSER_TEST_F(TwoPaymentRequestsTest, Smoke) {
-  std::string app_host = "alicepay.com";
-  std::string method_name = https_server()->GetURL(app_host, "/").spec();
-  EXPECT_EQ('/', method_name[method_name.size() - 1]);
-  method_name = method_name.substr(0, method_name.size() - 1);
-  EXPECT_NE('/', method_name[method_name.size() - 1]);
-
-  std::string install_script = content::JsReplace(
-      "install('alicepay.com/app1/app.js', [$1], false)", method_name);
-  NavigateTo(app_host, "/payment_handler_installer.html");
-  EXPECT_EQ("success", content::EvalJs(GetActiveWebContents(), install_script));
+  std::string method_name;
+  InstallPaymentApp("alicepay.com", "/alicepay.com/app1/app.js", &method_name);
 
   NavigateTo("test.com", "/two_payment_requests.html");
   EXPECT_EQ(

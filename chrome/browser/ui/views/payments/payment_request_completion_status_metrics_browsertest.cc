@@ -18,19 +18,11 @@ namespace payments {
 using PaymentRequestCompletionStatusMetricsTest = PaymentRequestBrowserTestBase;
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest, Completed) {
-  NavigateTo("a.com", "/payment_handler_installer.html");
   base::HistogramTester histogram_tester;
 
-  std::string method_name = https_server()->GetURL("a.com", "/").spec();
-  method_name = method_name.substr(0, method_name.length() - 1);
-  ASSERT_NE('/', method_name[method_name.length() - 1]);
-  ASSERT_EQ(
-      "success",
-      content::EvalJs(
-          GetActiveWebContents(),
-          content::JsReplace(
-              "install('payment_request_success_responder.js', [$1], false)",
-              method_name)));
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
+                    &method_name);
 
   NavigateTo("b.com", "/payment_request_can_make_payment_metrics_test.html");
 
