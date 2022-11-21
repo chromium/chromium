@@ -122,32 +122,32 @@ namespace {
 bool IsIOSTestProcess() {
   // On iOS, only applications with the extended virtual addressing entitlement
   // can use a large address space. Since Earl Grey test runner apps cannot get
-  // entitlements, they must use a much smaller pool size.
-  uint32_t executable_length = 0;
-  _NSGetExecutablePath(NULL, &executable_length);
-  PA_DCHECK(executable_length > 0);
+  // entitlements, they must use a much smaller pool size. Similarly,
+  // integration tests for ChromeWebView end up with two PartitionRoots since
+  // both the integration tests and ChromeWebView have a copy of base/. Even
+  // with the entitlement, there is insufficient address space for two
+  // PartitionRoots, so a smaller pool size is needed.
 
-  // 'new' cannot be used here, since this function is called during
-  // PartitionAddressSpace initialization, at which point 'new' interception
-  // is already active. 'malloc' is safe to use, since on Apple platforms,
-  // InitializeDefaultAllocatorPartitionRoot() is called before 'malloc'
-  // interception is set up.
-  char* executable_path = (char*)malloc(executable_length);
+  // Use a fixed buffer size to avoid allocation inside the allocator.
+  constexpr size_t path_buffer_size = 8192;
+  char executable_path[path_buffer_size];
+
+  uint32_t executable_length = path_buffer_size;
   int rv = _NSGetExecutablePath(executable_path, &executable_length);
-  PA_DCHECK(!rv);
+  PA_CHECK(!rv);
   size_t executable_path_length =
       std::char_traits<char>::length(executable_path);
 
-  const char kTestProcessSuffix[] = "Runner";
-  size_t test_process_suffix_length =
-      std::char_traits<char>::length(kTestProcessSuffix);
+  auto has_suffix = [&](const char* suffix) -> bool {
+    size_t suffix_length = std::char_traits<char>::length(suffix);
+    if (executable_path_length < suffix_length)
+      return false;
+    return std::char_traits<char>::compare(
+               executable_path + (executable_path_length - suffix_length),
+               suffix, suffix_length) == 0;
+  };
 
-  if (executable_path_length < test_process_suffix_length)
-    return false;
-
-  return !std::char_traits<char>::compare(
-      executable_path + (executable_path_length - test_process_suffix_length),
-      kTestProcessSuffix, test_process_suffix_length);
+  return has_suffix("Runner") || has_suffix("ios_web_view_inttests");
 }
 }  // namespace
 
