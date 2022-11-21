@@ -250,8 +250,6 @@
       }
     }, {
       "name": "setBadgeTextColor",
-      // TODO(https://crbug.com/1337783): Remove once on stable channel.
-      "nodoc": "true",
       "type": "function",
       "description": "Sets the text color for the badge.",
       "parameters": [
@@ -286,8 +284,6 @@
       }
     }, {
       "name": "getBadgeTextColor",
-      // TODO(https://crbug.com/1337783): Remove once on stable channel.
-      "nodoc": "true",
       "type": "function",
       "description": "Gets the text color of the action.",
       "parameters": [
