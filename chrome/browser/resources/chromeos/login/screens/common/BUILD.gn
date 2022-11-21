@@ -530,6 +530,7 @@ js_library("recommend_apps.m") {
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
     "../../components/dialogs:oobe_loading_dialog.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "$externs_path/webview_tag.js" ]

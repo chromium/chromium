@@ -12,9 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-#include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_delegate.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "components/prefs/pref_service.h"
 
 namespace base {
@@ -22,13 +19,11 @@ class Value;
 }
 
 namespace ash {
-class RecommendAppsFetcher;
 class RecommendAppsScreenView;
 
 // This is Recommend Apps screen that is displayed as a part of user first
 // sign-in flow.
-class RecommendAppsScreen : public BaseScreen,
-                            public RecommendAppsFetcherDelegate {
+class RecommendAppsScreen : public BaseScreen {
  public:
   using TView = RecommendAppsScreenView;
 
@@ -57,14 +52,6 @@ class RecommendAppsScreen : public BaseScreen,
 
   void SetSkipForTesting() { skip_for_testing_ = true; }
 
-  // TODO(crbug.com/1261902): Clean-up old implementation once feature is
-  // launched.
-  // These are used when OobeNewRecommendApps is disabled and the screen is
-  // RecommendAppsFetcherDelegate:
-  void OnLoadSuccess(base::Value app_list) override;
-  void OnLoadError() override;
-  void OnParseResponseError() override;
-
   // BaseScreen:
   bool MaybeSkip(WizardContext& context) override;
 
@@ -78,16 +65,16 @@ class RecommendAppsScreen : public BaseScreen,
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
 
-  // These are used when OobeNewRecommendApps is enabled and AppDiscoveryService
-  // is RecommendAppsFetcherDelegate:
   void OnRecommendationsDownloaded(const std::vector<apps::Result>& result,
                                    apps::DiscoveryError error);
   void UnpackResultAndShow(const std::vector<apps::Result>& result);
 
+  void OnLoadError();
+  void OnParseResponseError();
+
   base::WeakPtr<RecommendAppsScreenView> view_;
   ScreenExitCallback exit_callback_;
 
-  std::unique_ptr<RecommendAppsFetcher> recommend_apps_fetcher_;
   base::raw_ptr<apps::AppDiscoveryService> app_discovery_service_ = nullptr;
 
   // Skip the screen for testing if set to true.

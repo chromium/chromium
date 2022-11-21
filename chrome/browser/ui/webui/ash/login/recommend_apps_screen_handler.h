@@ -26,9 +26,6 @@ class RecommendAppsScreenView
   // Shows the contents of the screen.
   virtual void Show() = 0;
 
-  // Hides the contents of the screen.
-  virtual void Hide() = 0;
-
   // Called when the download of the recommend app list is successful. Shows the
   // downloaded `app_list` to the user.
   virtual void OnLoadSuccess(base::Value app_list) = 0;
@@ -55,11 +52,9 @@ class RecommendAppsScreenHandler : public BaseScreenHandler,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void GetAdditionalParameters(base::Value::Dict* dict) override;
 
   // RecommendAppsScreenView:
   void Show() override;
-  void Hide() override;
   void OnLoadSuccess(base::Value app_list) override;
   void OnParseResponseError() override;
 

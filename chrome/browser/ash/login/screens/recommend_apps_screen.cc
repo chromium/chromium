@@ -5,19 +5,16 @@
 #include "chrome/browser/ash/login/screens/recommend_apps_screen.h"
 
 #include "ash/components/arc/arc_prefs.h"
-#include "ash/constants/ash_features.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service_factory.h"
 #include "chrome/browser/apps/app_discovery_service/play_extras.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
-#include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_fast_app_reinstall_starter.h"
 #include "chrome/browser/ui/webui/ash/login/recommend_apps_screen_handler.h"
-#include "chrome/common/chrome_features.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash {
@@ -134,27 +131,15 @@ void RecommendAppsScreen::ShowImpl() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   pref_service_ = profile->GetPrefs();
 
-  if (features::IsOobeNewRecommendAppsEnabled() &&
-      base::FeatureList::IsEnabled(::features::kAppDiscoveryForOobe)) {
-    app_discovery_service_ =
-        apps::AppDiscoveryServiceFactory::GetForProfile(profile);
-    app_discovery_service_->GetApps(
-        apps::ResultType::kRecommendedArcApps,
-        base::BindOnce(&RecommendAppsScreen::OnRecommendationsDownloaded,
-                       weak_factory_.GetWeakPtr()));
-  } else {
-    recommend_apps_fetcher_ = RecommendAppsFetcher::Create(this);
-    recommend_apps_fetcher_->Start();
-  }
+  app_discovery_service_ =
+      apps::AppDiscoveryServiceFactory::GetForProfile(profile);
+  app_discovery_service_->GetApps(
+      apps::ResultType::kRecommendedArcApps,
+      base::BindOnce(&RecommendAppsScreen::OnRecommendationsDownloaded,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void RecommendAppsScreen::HideImpl() {}
-
-void RecommendAppsScreen::OnLoadSuccess(base::Value app_list) {
-  recommended_app_count_ = app_list.is_list() ? app_list.GetList().size() : 0;
-  if (view_)
-    view_->OnLoadSuccess(std::move(app_list));
-}
 
 void RecommendAppsScreen::OnRecommendationsDownloaded(
     const std::vector<apps::Result>& results,

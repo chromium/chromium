@@ -93,11 +93,6 @@ enum class ArcState {
   kAcceptTermsRecommendAppsNewLayout
 };
 
-bool IsNewRecommendedAppsEnabled() {
-  return features::IsOobeNewRecommendAppsEnabled() &&
-         base::FeatureList::IsEnabled(::features::kAppDiscoveryForOobe);
-}
-
 std::string ArcStateToString(ArcState arc_state) {
   switch (arc_state) {
     case ArcState::kNotAvailable:
@@ -290,50 +285,8 @@ void HandleRecommendAppsScreen() {
       .CreateVisibilityWaiter(true, {"recommend-apps", "appsDialog"})
       ->Wait();
 
-  if (IsNewRecommendedAppsEnabled()) {
-    test::OobeJS().ClickOnPath(
-        {"recommend-apps", "appsList", R"(test\\.package)"});
-  } else {
-    test::OobeJS().ExpectPathDisplayed(true, {"recommend-apps", "appView"});
-
-    std::string toggle_apps_script = base::StringPrintf(
-        R"((function() {
-          if (!document.getElementById('recommend-apps-container'))
-            return false;
-          var items =
-              Array.from(document.getElementById('recommend-apps-container')
-                 .querySelectorAll('.item') || [])
-                 .filter(i => '%s' == i.getAttribute('data-packagename'));
-          if (items.length == 0)
-            return false;
-          items.forEach(i => i.querySelector('.image-picker').click());
-          return true;
-        })();)",
-        "test.package");
-
-    const std::string webview_path =
-        test::GetOobeElementPath({"recommend-apps", "appView"});
-    const std::string script = base::StringPrintf(
-        R"((function() {
-          var toggleApp = function() {
-            %s.executeScript({code: `%s`}, r => {
-              if (!r || !r[0]) {
-                setTimeout(toggleApp, 50);
-                return;
-              }
-              window.domAutomationController.send(true);
-            });
-          };
-          toggleApp();
-        })();)",
-        webview_path.c_str(), toggle_apps_script.c_str());
-
-    bool result;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        LoginDisplayHost::default_host()->GetOobeWebContents(), script,
-        &result));
-    EXPECT_TRUE(result);
-  }
+  test::OobeJS().ClickOnPath(
+      {"recommend-apps", "appsList", R"(test\\.package)"});
 
   const std::initializer_list<base::StringPiece> install_button = {
       "recommend-apps", "installButton"};
@@ -469,24 +422,16 @@ class FakeRecommendAppsFetcher : public RecommendAppsFetcher {
 
   // RecommendAppsFetcher:
   void Start() override {
-    if (IsNewRecommendedAppsEnabled()) {
-      base::Value::Dict app;
-      app.Set("packageName", "test.package");
-      app.Set("title", "TestName");
-      base::Value::Dict big_app;
-      big_app.Set("androidApp", std::move(app));
-      base::Value::List app_list;
-      app_list.Append(std::move(big_app));
-      base::Value::Dict response_dict;
-      response_dict.Set("recommendedApp", std::move(app_list));
-      delegate_->OnLoadSuccess(base::Value(std::move(response_dict)));
-      return;
-    }
     base::Value::Dict app;
-    app.Set("package_name", "test.package");
+    app.Set("packageName", "test.package");
+    app.Set("title", "TestName");
+    base::Value::Dict big_app;
+    big_app.Set("androidApp", std::move(app));
     base::Value::List app_list;
-    app_list.Append(std::move(app));
-    delegate_->OnLoadSuccess(base::Value(std::move(app_list)));
+    app_list.Append(std::move(big_app));
+    base::Value::Dict response_dict;
+    response_dict.Set("recommendedApp", std::move(app_list));
+    delegate_->OnLoadSuccess(base::Value(std::move(response_dict)));
   }
 
   void Retry() override { NOTREACHED(); }
@@ -608,13 +553,6 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
       enabled_features.push_back(features::kOobeRemoveShutdownButton);
     } else {
       disabled_features.push_back(features::kOobeRemoveShutdownButton);
-    }
-    if (params_.arc_state == ArcState::kAcceptTermsRecommendAppsNewLayout) {
-      enabled_features.push_back(::features::kAppDiscoveryForOobe);
-      enabled_features.push_back(features::kOobeNewRecommendApps);
-    } else {
-      disabled_features.push_back(::features::kAppDiscoveryForOobe);
-      disabled_features.push_back(features::kOobeNewRecommendApps);
     }
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }

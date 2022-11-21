@@ -1170,23 +1170,6 @@
     No thanks
   </message>
 
-  <!-- TODO(crbug.com/1261902): Clean-up old strings once feature is launched. -->
-  <message name="IDS_LOGIN_RECOMMEND_APPS_OLD_SCREEN_TITLE" desc="The title of the dialog that recommend apps to user">
-    Find apps for work and play
-  </message>
-  <message name="IDS_LOGIN_RECOMMEND_APPS_OLD_SCREEN_DESCRIPTION" desc="The description of the 'Recommend Apps' section">
-    Get creative, be productive, and stay entertained with apps on the Google Play Store
-  </message>
-  <message name="IDS_LOGIN_RECOMMEND_APPS_OLD_SELECT_ALL" desc="The label on the button that selects all recommended apps">
-    Select all
-  </message>
-  <message name="IDS_LOGIN_RECOMMEND_APPS_DO_IT_LATER" desc="The label on the button that skips installing any recomended apps">
-    Do it later
-  </message>
-  <message name="IDS_LOGIN_RECOMMEND_APPS_DONE" desc="The label on the button that installs the user selected apps">
-    Done
-  </message>
-
   <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_TITLE" desc="The title of the dialog that recommend apps to user">
     Install apps for your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> from the Google Play Store
   </message>

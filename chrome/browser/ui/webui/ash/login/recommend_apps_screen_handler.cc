@@ -4,10 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/login/recommend_apps_screen_handler.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
@@ -42,19 +40,7 @@ RecommendAppsScreenHandler::~RecommendAppsScreenHandler() = default;
 
 void RecommendAppsScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
-  // TODO(crbug.com/1261902): Clean-up old strings once feature is launched.
   builder->Add("recommendAppsLoading", IDS_LOGIN_RECOMMEND_APPS_SCREEN_LOADING);
-  if (!features::IsOobeNewRecommendAppsEnabled()) {
-    builder->Add("recommendAppsScreenTitle",
-                 IDS_LOGIN_RECOMMEND_APPS_OLD_SCREEN_TITLE);
-    builder->Add("recommendAppsScreenDescription",
-                 IDS_LOGIN_RECOMMEND_APPS_OLD_SCREEN_DESCRIPTION);
-    builder->Add("recommendAppsSkip", IDS_LOGIN_RECOMMEND_APPS_DO_IT_LATER);
-    builder->Add("recommendAppsInstall", IDS_LOGIN_RECOMMEND_APPS_DONE);
-    builder->Add("recommendAppsSelectAll",
-                 IDS_LOGIN_RECOMMEND_APPS_OLD_SELECT_ALL);
-    return;
-  }
   builder->AddF("recommendAppsScreenTitle",
                 IDS_LOGIN_RECOMMEND_APPS_SCREEN_TITLE,
                 ui::GetChromeOSDeviceName());
@@ -73,18 +59,9 @@ void RecommendAppsScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_RECOMMEND_APPS_SCREEN_DESCRIPTION_EXPAND_BUTTON);
 }
 
-void RecommendAppsScreenHandler::GetAdditionalParameters(
-    base::Value::Dict* dict) {
-  dict->Set("isOobeNewRecommendAppsEnabled",
-            features::IsOobeNewRecommendAppsEnabled());
-  BaseScreenHandler::GetAdditionalParameters(dict);
-}
-
 void RecommendAppsScreenHandler::Show() {
   ShowInWebUI();
 }
-
-void RecommendAppsScreenHandler::Hide() {}
 
 void RecommendAppsScreenHandler::OnLoadSuccess(base::Value app_list) {
   LoadAppListInUI(std::move(app_list));
@@ -96,16 +73,6 @@ void RecommendAppsScreenHandler::OnParseResponseError() {
 
 void RecommendAppsScreenHandler::LoadAppListInUI(base::Value app_list) {
   RecordUmaScreenState(RecommendAppsScreenState::SHOW);
-  // TODO(crbug.com/1261902): Clean-up old implementation once feature is
-  // launched.
-  if (!features::IsOobeNewRecommendAppsEnabled() ||
-      !base::FeatureList::IsEnabled(::features::kAppDiscoveryForOobe)) {
-    const ui::ResourceBundle& resource_bundle =
-        ui::ResourceBundle::GetSharedInstance();
-    std::string app_list_webview = resource_bundle.LoadDataResourceString(
-        IDR_ARC_SUPPORT_RECOMMEND_APP_LIST_VIEW_HTML);
-    CallExternalAPI("setWebview", app_list_webview);
-  }
   CallExternalAPI("loadAppList", std::move(app_list));
 }
 
