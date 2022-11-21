@@ -3041,63 +3041,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.History.DatabaseSize" units="KB"
-    expires_after="2021-08-09">
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    The size of the Media History database. Recorded once on startup.
-  </summary>
-</histogram>
-
-<histogram name="Media.History.Init.Result" enum="MediaHistoryInitResult"
-    expires_after="2021-08-09">
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Recorded when Media History is initialized when the browser is started. This
-    is not recorded in incognito mode or if &quot;save browsing history&quot; is
-    disabled.
-  </summary>
-</histogram>
-
-<histogram name="Media.History.Init.ResultAfterDelete"
-    enum="MediaHistoryInitResult" expires_after="2021-08-09">
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Recorded when Media History is recreated when the browser is started and the
-    Media History database has been corrupted to the point where we need to
-    delete it and start again. This is not recorded in incognito mode or if
-    &quot;save browsing history&quot; is disabled.
-  </summary>
-</histogram>
-
-<histogram name="Media.History.Playback.WriteResult"
-    enum="MediaHistoryPlaybackWriteResult" expires_after="2021-03-07">
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Recorded when Media History records a playback to the database. Playbacks
-    are recorded when the player is destroyed and are are recorded on a
-    per-player level and might be called multiple times on a single page.
-    Playbacks are not recorded in incognito mode or if &quot;save browsing
-    history&quot; is disabled.
-  </summary>
-</histogram>
-
-<histogram name="Media.History.Session.WriteResult"
-    enum="MediaHistorySessionWriteResult" expires_after="2021-03-07">
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Recorded when Media History records a sessions to the database. Sessions are
-    recorded once per WebContents on navigation if there was playback on the
-    page. Playbacks are not recorded in incognito mode or if &quot;save browsing
-    history&quot; is disabled.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Media.InitialDecoderSelectionTime" units="ms"
     expires_after="2023-03-25">
   <owner>cassew@google.com</owner>

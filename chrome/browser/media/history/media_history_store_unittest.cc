@@ -12,7 +12,6 @@
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/pooled_sequenced_task_runner.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
@@ -64,8 +63,6 @@ class MediaHistoryStoreUnitTest
  public:
   MediaHistoryStoreUnitTest() = default;
   void SetUp() override {
-    base::HistogramTester histogram_tester;
-
     // Set up the profile.
     TestingProfile::Builder profile_builder;
     profile_builder.AddTestingFactory(
@@ -82,10 +79,6 @@ class MediaHistoryStoreUnitTest
     // create the database and tables before proceeding with the tests and
     // tearing down the temporary directory.
     WaitForDB();
-
-    histogram_tester.ExpectBucketCount(
-        MediaHistoryStore::kInitResultHistogramName,
-        MediaHistoryStore::InitResult::kSuccess, 1);
 
     // Set up the media history store for OTR.
     otr_service_ = std::make_unique<MediaHistoryKeyedService>(
@@ -204,8 +197,6 @@ INSTANTIATE_TEST_SUITE_P(
                     TestState::kSavingBrowserHistoryDisabled));
 
 TEST_P(MediaHistoryStoreUnitTest, SavePlayback) {
-  base::HistogramTester histogram_tester;
-
   const auto now_before = (base::Time::Now() - base::Minutes(1)).ToJsTime();
 
   // Create a media player watch time and save it to the playbacks table.
@@ -264,10 +255,6 @@ TEST_P(MediaHistoryStoreUnitTest, SavePlayback) {
   // The OTR service should have the same data.
   EXPECT_EQ(origins, GetOriginRowsSync(otr_service()));
   EXPECT_EQ(playbacks, GetPlaybackRowsSync(otr_service()));
-
-  histogram_tester.ExpectBucketCount(
-      MediaHistoryStore::kPlaybackWriteResultHistogramName,
-      MediaHistoryStore::PlaybackWriteResult::kSuccess, IsReadOnly() ? 0 : 2);
 }
 
 TEST_P(MediaHistoryStoreUnitTest, SavePlayback_BadOrigin) {
@@ -347,8 +334,6 @@ TEST_P(MediaHistoryStoreUnitTest, GetStats) {
 }
 
 TEST_P(MediaHistoryStoreUnitTest, UrlShouldBeUniqueForSessions) {
-  base::HistogramTester histogram_tester;
-
   GURL url_a("https://www.google.com");
   GURL url_b("https://www.example.org");
 
@@ -414,10 +399,6 @@ TEST_P(MediaHistoryStoreUnitTest, UrlShouldBeUniqueForSessions) {
     // The OTR service should have the same data.
     EXPECT_EQ(sessions, GetPlaybackSessionsSync(otr_service(), 5));
   }
-
-  histogram_tester.ExpectBucketCount(
-      MediaHistoryStore::kSessionWriteResultHistogramName,
-      MediaHistoryStore::SessionWriteResult::kSuccess, IsReadOnly() ? 0 : 3);
 }
 
 TEST_P(MediaHistoryStoreUnitTest, SavePlayback_IncrementAggregateWatchtime) {
