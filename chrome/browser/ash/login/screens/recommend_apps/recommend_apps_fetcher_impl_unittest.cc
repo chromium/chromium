@@ -9,19 +9,13 @@
 #include <vector>
 
 #include "ash/components/arc/arc_features_parser.h"
-#include "ash/constants/ash_features.h"
 #include "base/base64url.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
-#include "base/values.h"
-#include "chrome/browser/apps/app_discovery_service/recommended_arc_app_fetcher.h"
 #include "chrome/browser/ash/login/screens/recommend_apps/fake_recommend_apps_fetcher_delegate.h"
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
@@ -55,18 +49,7 @@ const char* const kTestArcAbiList[] = {"x86", "x86_64"};
 const char* const kTestArcFeatures[] = {"android.hardware.faketouch",
                                         "android.software.home_screen"};
 
-const std::string kOneAppResponse =
-    R"([{
-           "title_": {"name_": "Test app 1"},
-           "id_": {"id_": "test.app1"},
-           "icon_": {
-             "url_": {
-               "privateDoNotAccessOrElseSafeUrlWrappedValue_": "http://test.app"
-              }
-            }
-         }])";
-
-const std::string kOneAppResponseNew = R"({"recommendedApp": [{
+constexpr char kOneAppResponse[] = R"({"recommendedApp": [{
     "androidApp": {
       "packageName": "com.game.name",
       "title": "NameOfFunGame",
@@ -79,11 +62,6 @@ const std::string kOneAppResponseNew = R"({"recommendedApp": [{
       }
     }
   }]})";
-
-bool IsNewRecommendedAppsEnabled() {
-  return features::IsOobeNewRecommendAppsEnabled() &&
-         base::FeatureList::IsEnabled(::features::kAppDiscoveryForOobe);
-}
 
 // Creates a fake ARC features to be used for these tests.
 arc::ArcFeatures CreateArcFeaturesForTest() {
@@ -356,30 +334,6 @@ class RecommendAppsFetcherImplTest : public testing::Test {
               header_reader.GetSystemAvailableFeatures());
   }
 
-  void CheckOneAppResponseResult(network::ResourceRequest* request) {
-    // In the new version we have RecommendedArcAppFetcherTest unit tests which
-    // cover testing of response processing.
-    if (IsNewRecommendedAppsEnabled())
-      return;
-
-    test_url_loader_factory_.AddResponse(request->url.spec(), kOneAppResponse);
-    EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::SUCCESS,
-              delegate_.WaitForResult());
-    base::Value::List expected_apps;
-    base::Value::Dict app;
-    app.Set("name", base::Value("Test app 1"));
-    app.Set("icon", base::Value("http://test.app"));
-    app.Set("package_name", base::Value("test.app1"));
-    expected_apps.Append(std::move(app));
-
-    EXPECT_EQ(expected_apps, delegate_.loaded_apps());
-    EXPECT_TRUE(test_url_loader_factory_.pending_requests()->empty());
-  }
-
-  void EnableAppDiscoveryFlag() {
-    scoped_feature_list_.InitAndEnableFeature(::features::kAppDiscoveryForOobe);
-  }
-
   FakeRecommendAppsFetcherDelegate delegate_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<RecommendAppsFetcher> recommend_apps_fetcher_;
@@ -392,17 +346,10 @@ class RecommendAppsFetcherImplTest : public testing::Test {
 
  private:
   void InterceptRequest(const network::ResourceRequest& request) {
-    if (base::FeatureList::IsEnabled(::features::kAppDiscoveryForOobe)) {
-      ASSERT_EQ(
-          "https://android.clients.google.com/fdfe/chrome/"
-          "getSetupAppRecommendations",
-          request.url.spec());
-    } else {
-      ASSERT_EQ(
-          "https://android.clients.google.com/fdfe/chrome/"
-          "getfastreinstallappslist",
-          request.url.spec());
-    }
+    ASSERT_EQ(
+        "https://android.clients.google.com/fdfe/chrome/"
+        "getSetupAppRecommendations",
+        request.url.spec());
     if (request_waiter_)
       request_waiter_->Quit();
   }
@@ -413,7 +360,6 @@ class RecommendAppsFetcherImplTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
 
   std::unique_ptr<base::RunLoop> request_waiter_;
@@ -456,8 +402,6 @@ TEST_F(RecommendAppsFetcherImplTest, ExtraLargeScreenWithTouch) {
   EXPECT_EQ(
       device_configuration::DeviceConfigurationProto_ScreenLayout_EXTRA_LARGE,
       header_reader.screen_layout());
-
-  CheckOneAppResponseResult(request);
 }
 
 TEST_F(RecommendAppsFetcherImplTest, NoArcFeatures) {
@@ -502,8 +446,6 @@ TEST_F(RecommendAppsFetcherImplTest, NoArcFeatures) {
   EXPECT_EQ(
       device_configuration::DeviceConfigurationProto_ScreenLayout_EXTRA_LARGE,
       header_reader.screen_layout());
-
-  CheckOneAppResponseResult(request);
 }
 
 TEST_F(RecommendAppsFetcherImplTest, HasHardKeyboard) {
@@ -544,8 +486,6 @@ TEST_F(RecommendAppsFetcherImplTest, HasHardKeyboard) {
   EXPECT_EQ(
       device_configuration::DeviceConfigurationProto_ScreenLayout_EXTRA_LARGE,
       header_reader.screen_layout());
-
-  CheckOneAppResponseResult(request);
 }
 
 TEST_F(RecommendAppsFetcherImplTest, NoKeyboard) {
@@ -580,8 +520,6 @@ TEST_F(RecommendAppsFetcherImplTest, NoKeyboard) {
   EXPECT_EQ(
       device_configuration::DeviceConfigurationProto_ScreenLayout_EXTRA_LARGE,
       header_reader.screen_layout());
-
-  CheckOneAppResponseResult(request);
 }
 
 TEST_F(RecommendAppsFetcherImplTest, ExtraLargeScreenWithStylus) {
@@ -623,8 +561,6 @@ TEST_F(RecommendAppsFetcherImplTest, ExtraLargeScreenWithStylus) {
   EXPECT_EQ(
       device_configuration::DeviceConfigurationProto_ScreenLayout_EXTRA_LARGE,
       header_reader.screen_layout());
-
-  CheckOneAppResponseResult(request);
 }
 
 TEST_F(RecommendAppsFetcherImplTest, LargeScreenWithoutTouchScreen) {
@@ -661,8 +597,6 @@ TEST_F(RecommendAppsFetcherImplTest, LargeScreenWithoutTouchScreen) {
   EXPECT_EQ(1200, header_reader.screen_height());
   EXPECT_EQ(device_configuration::DeviceConfigurationProto_ScreenLayout_LARGE,
             header_reader.screen_layout());
-
-  CheckOneAppResponseResult(request);
 }
 
 TEST_F(RecommendAppsFetcherImplTest, NormalScreenWithoutTouchScreen) {
@@ -699,8 +633,6 @@ TEST_F(RecommendAppsFetcherImplTest, NormalScreenWithoutTouchScreen) {
   EXPECT_EQ(512, header_reader.screen_height());
   EXPECT_EQ(device_configuration::DeviceConfigurationProto_ScreenLayout_NORMAL,
             header_reader.screen_layout());
-
-  CheckOneAppResponseResult(request);
 }
 
 TEST_F(RecommendAppsFetcherImplTest, SmallScreenWithoutTouchScreen) {
@@ -738,8 +670,6 @@ TEST_F(RecommendAppsFetcherImplTest, SmallScreenWithoutTouchScreen) {
   EXPECT_EQ(456, header_reader.screen_height());
   EXPECT_EQ(device_configuration::DeviceConfigurationProto_ScreenLayout_SMALL,
             header_reader.screen_layout());
-
-  CheckOneAppResponseResult(request);
 }
 
 TEST_F(RecommendAppsFetcherImplTest, ArcFeaturesReadyBeforeAsh) {
@@ -777,8 +707,6 @@ TEST_F(RecommendAppsFetcherImplTest, ArcFeaturesReadyBeforeAsh) {
   EXPECT_EQ(456, header_reader.screen_height());
   EXPECT_EQ(device_configuration::DeviceConfigurationProto_ScreenLayout_SMALL,
             header_reader.screen_layout());
-
-  CheckOneAppResponseResult(request);
 }
 
 TEST_F(RecommendAppsFetcherImplTest, RetryCalledBeforeFirstRequest) {
@@ -804,8 +732,6 @@ TEST_F(RecommendAppsFetcherImplTest, RetryCalledBeforeFirstRequest) {
 
   network::ResourceRequest* request = WaitForAppListRequest();
   ASSERT_TRUE(request);
-
-  CheckOneAppResponseResult(request);
 }
 
 TEST_F(RecommendAppsFetcherImplTest, EmptyResponse) {
@@ -847,16 +773,9 @@ TEST_F(RecommendAppsFetcherImplTest, EmptyAppList) {
   network::ResourceRequest* request = WaitForAppListRequest();
   ASSERT_TRUE(request);
   test_url_loader_factory_.AddResponse(request->url.spec(), "[]");
-
-  // In the new version we have RecommendedArcAppFetcherTest unit tests which
-  // cover testing of response processing.
-  if (IsNewRecommendedAppsEnabled())
-    return;
-  EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::PARSE_ERROR,
-            delegate_.WaitForResult());
 }
 
-TEST_F(RecommendAppsFetcherImplTest, ResponseWithLeadeingBrackets) {
+TEST_F(RecommendAppsFetcherImplTest, ResponseWithLeadingBrackets) {
   ASSERT_TRUE(recommend_apps_fetcher_);
 
   recommend_apps_fetcher_->Start();
@@ -870,8 +789,6 @@ TEST_F(RecommendAppsFetcherImplTest, ResponseWithLeadeingBrackets) {
 
   network::ResourceRequest* request = WaitForAppListRequest();
   ASSERT_TRUE(request);
-
-  CheckOneAppResponseResult(request);
 }
 
 TEST_F(RecommendAppsFetcherImplTest, MalformedJsonResponse) {
@@ -911,13 +828,6 @@ TEST_F(RecommendAppsFetcherImplTest, UnexpectedResponseType) {
   ASSERT_TRUE(request);
 
   test_url_loader_factory_.AddResponse(request->url.spec(), "\"abcd\"");
-
-  // In the new version we have RecommendedArcAppFetcherTest unit tests which
-  // cover testing of response processing.
-  if (IsNewRecommendedAppsEnabled())
-    return;
-  EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::PARSE_ERROR,
-            delegate_.WaitForResult());
 }
 
 TEST_F(RecommendAppsFetcherImplTest, ResponseWithMultipleApps) {
@@ -949,25 +859,6 @@ TEST_F(RecommendAppsFetcherImplTest, ResponseWithMultipleApps) {
          }])";
 
   test_url_loader_factory_.AddResponse(request->url.spec(), response);
-
-  // In the new version we have RecommendedArcAppFetcherTest unit tests which
-  // cover testing of response processing.
-  if (IsNewRecommendedAppsEnabled())
-    return;
-  EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::SUCCESS,
-            delegate_.WaitForResult());
-  base::Value expected_apps(base::Value::Type::LIST);
-  base::Value app1(base::Value::Type::DICTIONARY);
-  app1.SetKey("name", base::Value("Test app 1"));
-  app1.SetKey("icon", base::Value("http://test.app"));
-  app1.SetKey("package_name", base::Value("test.app1"));
-  expected_apps.Append(std::move(app1));
-
-  base::Value app2(base::Value::Type::DICTIONARY);
-  app2.SetKey("package_name", base::Value("test.app2"));
-  expected_apps.Append(std::move(app2));
-
-  EXPECT_EQ(expected_apps, delegate_.loaded_apps());
 }
 
 TEST_F(RecommendAppsFetcherImplTest, InvalidAppItemsIgnored) {
@@ -997,25 +888,6 @@ TEST_F(RecommendAppsFetcherImplTest, InvalidAppItemsIgnored) {
          }, [], 2, {"id_": {"id_": "test.app2"}}, {"a": "b"}])";
 
   test_url_loader_factory_.AddResponse(request->url.spec(), response);
-
-  // In the new version we have RecommendedArcAppFetcherTest unit tests which
-  // cover testing of response processing.
-  if (IsNewRecommendedAppsEnabled())
-    return;
-  EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::SUCCESS,
-            delegate_.WaitForResult());
-  base::Value expected_apps(base::Value::Type::LIST);
-  base::Value app1(base::Value::Type::DICTIONARY);
-  app1.SetKey("name", base::Value("Test app 1"));
-  app1.SetKey("icon", base::Value("http://test.app"));
-  app1.SetKey("package_name", base::Value("test.app1"));
-  expected_apps.Append(std::move(app1));
-
-  base::Value app2(base::Value::Type::DICTIONARY);
-  app2.SetKey("package_name", base::Value("test.app2"));
-  expected_apps.Append(std::move(app2));
-
-  EXPECT_EQ(expected_apps, delegate_.loaded_apps());
 }
 
 TEST_F(RecommendAppsFetcherImplTest, DictionaryResponse) {
@@ -1034,13 +906,6 @@ TEST_F(RecommendAppsFetcherImplTest, DictionaryResponse) {
   ASSERT_TRUE(request);
 
   test_url_loader_factory_.AddResponse(request->url.spec(), "{}");
-
-  // In the new version we have RecommendedArcAppFetcherTest unit tests which
-  // cover testing of response processing.
-  if (IsNewRecommendedAppsEnabled())
-    return;
-  EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::PARSE_ERROR,
-            delegate_.WaitForResult());
 }
 
 TEST_F(RecommendAppsFetcherImplTest, InvalidErrorCodeType) {
@@ -1060,12 +925,6 @@ TEST_F(RecommendAppsFetcherImplTest, InvalidErrorCodeType) {
 
   test_url_loader_factory_.AddResponse(request->url.spec(),
                                        R"({"Error code": ""})");
-  // In the new version we have RecommendedArcAppFetcherTest unit tests which
-  // cover testing of response processing.
-  if (IsNewRecommendedAppsEnabled())
-    return;
-  EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::PARSE_ERROR,
-            delegate_.WaitForResult());
 }
 
 TEST_F(RecommendAppsFetcherImplTest, ResponseWithErrorCode) {
@@ -1085,12 +944,6 @@ TEST_F(RecommendAppsFetcherImplTest, ResponseWithErrorCode) {
 
   test_url_loader_factory_.AddResponse(request->url.spec(),
                                        R"({"Error code": "6"})");
-  // In the new version we have RecommendedArcAppFetcherTest unit tests which
-  // cover testing of response processing.
-  if (IsNewRecommendedAppsEnabled())
-    return;
-  EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::PARSE_ERROR,
-            delegate_.WaitForResult());
 }
 
 TEST_F(RecommendAppsFetcherImplTest, NotEnoughAppsError) {
@@ -1110,12 +963,6 @@ TEST_F(RecommendAppsFetcherImplTest, NotEnoughAppsError) {
 
   test_url_loader_factory_.AddResponse(request->url.spec(),
                                        R"({"Error code": "5"})");
-  // In the new version we have RecommendedArcAppFetcherTest unit tests which
-  // cover testing of response processing.
-  if (IsNewRecommendedAppsEnabled())
-    return;
-  EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::PARSE_ERROR,
-            delegate_.WaitForResult());
 }
 
 TEST_F(RecommendAppsFetcherImplTest, AppListRequestFailure) {
@@ -1157,22 +1004,6 @@ TEST_F(RecommendAppsFetcherImplTest, SuccessOnRetry) {
 
   test_url_loader_factory_.AddResponse(request->url.spec(),
                                        R"({"Error code": "5"})");
-
-  // In the new version we have RecommendedArcAppFetcherTest unit tests which
-  // cover testing of response processing.
-  if (IsNewRecommendedAppsEnabled())
-    return;
-  EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::PARSE_ERROR,
-            delegate_.WaitForResult());
-  delegate_.Reset();
-  test_url_loader_factory_.ClearResponses();
-
-  recommend_apps_fetcher_->Retry();
-
-  request = WaitForAppListRequest();
-  ASSERT_TRUE(request);
-
-  CheckOneAppResponseResult(request);
 }
 
 TEST_F(RecommendAppsFetcherImplTest, FailureOnRetry) {
@@ -1191,25 +1022,6 @@ TEST_F(RecommendAppsFetcherImplTest, FailureOnRetry) {
   ASSERT_TRUE(request);
   test_url_loader_factory_.AddResponse(request->url.spec(),
                                        R"({"Error code": "5"})");
-  // In the new version we have RecommendedArcAppFetcherTest unit tests which
-  // cover testing of response processing.
-  if (IsNewRecommendedAppsEnabled())
-    return;
-  EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::PARSE_ERROR,
-            delegate_.WaitForResult());
-  delegate_.Reset();
-  test_url_loader_factory_.ClearResponses();
-
-  recommend_apps_fetcher_->Retry();
-
-  request = WaitForAppListRequest();
-  ASSERT_TRUE(request);
-
-  test_url_loader_factory_.AddResponse(request->url.spec(),
-                                       R"({"Error code": "10"})");
-
-  EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::PARSE_ERROR,
-            delegate_.WaitForResult());
 }
 
 TEST_F(RecommendAppsFetcherImplTest, GpuInfo) {
@@ -1228,8 +1040,6 @@ TEST_F(RecommendAppsFetcherImplTest, GpuInfo) {
 }
 
 TEST_F(RecommendAppsFetcherImplTest, AppDiscoveryValidResponse) {
-  EnableAppDiscoveryFlag();
-
   ASSERT_TRUE(recommend_apps_fetcher_);
 
   recommend_apps_fetcher_->Start();
@@ -1244,15 +1054,13 @@ TEST_F(RecommendAppsFetcherImplTest, AppDiscoveryValidResponse) {
   network::ResourceRequest* request = WaitForAppListRequest();
   ASSERT_TRUE(request);
 
-  test_url_loader_factory_.AddResponse(request->url.spec(), kOneAppResponseNew);
+  test_url_loader_factory_.AddResponse(request->url.spec(), kOneAppResponse);
 
   EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::SUCCESS,
             delegate_.WaitForResult());
 }
 
 TEST_F(RecommendAppsFetcherImplTest, AppDiscoveryParseErrorResponse) {
-  EnableAppDiscoveryFlag();
-
   ASSERT_TRUE(recommend_apps_fetcher_);
 
   recommend_apps_fetcher_->Start();

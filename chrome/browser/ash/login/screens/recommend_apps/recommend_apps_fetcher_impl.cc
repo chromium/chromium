@@ -16,7 +16,6 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_delegate.h"
-#include "chrome/common/chrome_features.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "extensions/common/api/system_display.h"
 #include "gpu/config/gpu_info.h"
@@ -36,9 +35,6 @@
 
 namespace ash {
 namespace {
-
-constexpr const char kGetAppListUrl[] =
-    "https://android.clients.google.com/fdfe/chrome/getfastreinstallappslist";
 
 constexpr const char kGetRevisedAppListUrl[] =
     "https://android.clients.google.com/fdfe/chrome/getSetupAppRecommendations";
@@ -410,9 +406,7 @@ void RecommendAppsFetcherImpl::OnArcFeaturesRead(
 
     android_sdk_version_ = GetAndroidSdkVersion(read_result.value());
 
-    if (base::FeatureList::IsEnabled(features::kAppDiscoveryForOobe)) {
-      device_fingerprint_ = GetDeviceFingerprint(read_result.value());
-    }
+    device_fingerprint_ = GetDeviceFingerprint(read_result.value());
   }
 
   MaybeStartCompressAndEncodeProtoMessage();
@@ -443,13 +437,9 @@ void RecommendAppsFetcherImpl::StartDownload() {
         })");
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  if (base::FeatureList::IsEnabled(features::kAppDiscoveryForOobe)) {
-    resource_request->url = GURL(kGetRevisedAppListUrl);
-    resource_request->headers.SetHeader("X-DFE-Device-Fingerprint",
-                                        device_fingerprint_);
-  } else {
-    resource_request->url = GURL(kGetAppListUrl);
-  }
+  resource_request->url = GURL(kGetRevisedAppListUrl);
+  resource_request->headers.SetHeader("X-DFE-Device-Fingerprint",
+                                      device_fingerprint_);
   resource_request->method = "GET";
   resource_request->load_flags =
       net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
@@ -638,28 +628,11 @@ absl::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
 
 void RecommendAppsFetcherImpl::OnJsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
-  if (base::FeatureList::IsEnabled(features::kAppDiscoveryForOobe)) {
-    if (!result.has_value()) {
-      delegate_->OnParseResponseError();
-      return;
-    }
-    delegate_->OnLoadSuccess(std::move(*result));
-    return;
-  }
-
-  if (!result.has_value() || (!result->is_list() && !result->is_dict())) {
-    RecordUmaResponseParseResult(
-        RECOMMEND_APPS_RESPONSE_PARSE_RESULT_INVALID_JSON);
+  if (!result.has_value()) {
     delegate_->OnParseResponseError();
     return;
   }
-  absl::optional<base::Value> output = ParseResponse(*result);
-  if (!output.has_value()) {
-    RecordUmaResponseAppCount(0);
-    delegate_->OnParseResponseError();
-    return;
-  }
-  delegate_->OnLoadSuccess(std::move(output.value()));
+  delegate_->OnLoadSuccess(std::move(*result));
 }
 
 }  // namespace ash
