@@ -25,7 +25,6 @@ import {ChromeVoxState} from './chromevox_state.js';
 import {ChromeVoxBackground} from './classic_background.js';
 import {ClipboardHandler} from './clipboard_handler.js';
 import {CommandHandler} from './command_handler.js';
-import {CommandHandlerInterface} from './command_handler_interface.js';
 import {DesktopAutomationHandler} from './desktop_automation_handler.js';
 import {DesktopAutomationInterface} from './desktop_automation_interface.js';
 import {DownloadHandler} from './download_handler.js';
@@ -123,6 +122,7 @@ export class Background extends ChromeVoxState {
     BackgroundKeyboardHandler.init();
     BrailleCommandHandler.init();
     ClipboardHandler.init();
+    CommandHandler.init();
     DesktopAutomationHandler.init();
     DownloadHandler.init();
     EventStreamLogger.init();

@@ -83,7 +83,30 @@ export class CommandHandler extends CommandHandlerInterface {
     this.languageLoggingEnabled_ = false;
 
     SmartStickyMode.init();
-    this.init();
+    this.init_();
+  }
+
+  /** @private */
+  init_() {
+    chrome.commandLinePrivate.hasSwitch(
+        'enable-experimental-accessibility-language-detection', enabled => {
+          if (enabled) {
+            this.languageLoggingEnabled_ = true;
+          }
+        });
+    chrome.commandLinePrivate.hasSwitch(
+        'enable-experimental-accessibility-language-detection-dynamic',
+        enabled => {
+          if (enabled) {
+            this.languageLoggingEnabled_ = true;
+          }
+        });
+
+    chrome.chromeosInfoPrivate.get(['sessionType'], result => {
+      /** @type {boolean} */
+      this.isKioskSession_ = result['sessionType'] ===
+          chrome.chromeosInfoPrivate.SessionType.KIOSK;
+    });
   }
 
   /** @override */
@@ -1836,40 +1859,20 @@ export class CommandHandler extends CommandHandlerInterface {
   /**
    * Performs global initialization.
    */
-  init() {
-    ChromeVoxKbHandler.commandHandler = command => this.onCommand(command);
+  static init() {
+    CommandHandlerInterface.instance = new CommandHandler();
+    ChromeVoxKbHandler.commandHandler = command =>
+        CommandHandlerInterface.instance.onCommand(command);
 
-    chrome.commandLinePrivate.hasSwitch(
-        'enable-experimental-accessibility-language-detection', enabled => {
-          if (enabled) {
-            this.languageLoggingEnabled_ = true;
+    BridgeHelper.registerHandler(
+        BridgeConstants.CommandHandler.TARGET,
+        BridgeConstants.CommandHandler.Action.ON_COMMAND, command => {
+          if (Object.values(Command).includes(command)) {
+            CommandHandlerInterface.instance.onCommand(
+                /** @type {Command} */ (command));
+          } else {
+            console.warn('ChromeVox got an unrecognized command: ' + command);
           }
         });
-    chrome.commandLinePrivate.hasSwitch(
-        'enable-experimental-accessibility-language-detection-dynamic',
-        enabled => {
-          if (enabled) {
-            this.languageLoggingEnabled_ = true;
-          }
-        });
-
-    chrome.chromeosInfoPrivate.get(['sessionType'], result => {
-      /** @type {boolean} */
-      this.isKioskSession_ = result['sessionType'] ===
-          chrome.chromeosInfoPrivate.SessionType.KIOSK;
-    });
   }
 }
-
-CommandHandlerInterface.instance = new CommandHandler();
-
-BridgeHelper.registerHandler(
-    BridgeConstants.CommandHandler.TARGET,
-    BridgeConstants.CommandHandler.Action.ON_COMMAND, command => {
-      if (Object.values(Command).includes(command)) {
-        CommandHandlerInterface.instance.onCommand(
-            /** @type {Command} */ (command));
-      } else {
-        console.warn('ChromeVox got an unrecognized command: ' + command);
-      }
-    });
