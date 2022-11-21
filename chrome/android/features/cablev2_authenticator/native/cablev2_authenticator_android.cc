@@ -37,7 +37,6 @@
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaByteArrayToByteVector;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
@@ -214,41 +213,17 @@ enum class CableV2MobileResult {
   kMaxValue = 12,
 };
 
-// JavaByteArrayToSpan returns a span that aliases |data|. Be aware that the
-// reference for |data| must outlive the span.
-base::span<const uint8_t> JavaByteArrayToSpan(
+// JavaByteArrayToByteVector returns a copy of the contents of |data|.
+std::vector<uint8_t> JavaByteArrayToByteVector(
     JNIEnv* env,
     const JavaParamRef<jbyteArray>& data) {
   if (data.is_null()) {
-    return base::span<const uint8_t>();
+    return std::vector<uint8_t>();
   }
 
-  const size_t data_len = env->GetArrayLength(data);
-  const jbyte* data_bytes = env->GetByteArrayElements(data, /*iscopy=*/nullptr);
-  return base::as_bytes(base::make_span(data_bytes, data_len));
-}
-
-// JavaByteArrayToFixedSpan returns a span that aliases |data|, or |nullopt| if
-// the span is not of the correct length. Be aware that the reference for |data|
-// must outlive the span.
-template <size_t N>
-absl::optional<base::span<const uint8_t, N>> JavaByteArrayToFixedSpan(
-    JNIEnv* env,
-    const JavaParamRef<jbyteArray>& data) {
-  static_assert(N != 0,
-                "Zero case is different from JavaByteArrayToSpan as null "
-                "inputs will always be rejected here.");
-
-  if (data.is_null()) {
-    return absl::nullopt;
-  }
-
-  const size_t data_len = env->GetArrayLength(data);
-  if (data_len != N) {
-    return absl::nullopt;
-  }
-  const jbyte* data_bytes = env->GetByteArrayElements(data, /*iscopy=*/nullptr);
-  return base::as_bytes(base::make_span<N>(data_bytes, data_len));
+  std::vector<uint8_t> ret;
+  base::android::JavaByteArrayToByteVector(env, data, &ret);
+  return ret;
 }
 
 // GlobalData holds all the state for ongoing security key operations. Since
@@ -629,7 +604,7 @@ static void JNI_CableAuthenticator_Setup(JNIEnv* env,
   // The root_secret may not be provided when triggered for server-link. It
   // won't be used in that case either, but we need to be able to grab it if
   // setup() is called called for a different type of exchange.
-  base::span<const uint8_t> root_secret = JavaByteArrayToSpan(env, secret);
+  std::vector<uint8_t> root_secret = JavaByteArrayToByteVector(env, secret);
   if (!root_secret.empty() && !global_data.root_secret) {
     global_data.root_secret.emplace();
     CHECK_EQ(global_data.root_secret->size(), root_secret.size());
@@ -735,16 +710,18 @@ ParseServerLinkData(JNIEnv* env,
                     const JavaParamRef<jbyteArray>& server_link_data_java) {
   constexpr size_t kDataSize =
       device::kP256X962Length + device::cablev2::kQRSecretSize;
-  const absl::optional<base::span<const uint8_t, kDataSize>> server_link_data =
-      JavaByteArrayToFixedSpan<kDataSize>(env, server_link_data_java);
+  const std::vector<uint8_t> server_link_data_vec =
+      JavaByteArrayToByteVector(env, server_link_data_java);
   // validateServerLinkData should have been called to check this already.
-  CHECK(server_link_data);
+  CHECK_EQ(server_link_data_vec.size(), kDataSize);
+  base::span<const uint8_t> server_link_data =
+      base::make_span(server_link_data_vec);
 
   const base::span<const uint8_t, device::kP256X962Length> peer_identity =
-      server_link_data->subspan<0, device::kP256X962Length>();
+      server_link_data.subspan<0, device::kP256X962Length>();
   const base::span<const uint8_t, device::cablev2::kQRSecretSize> qr_secret =
       server_link_data
-          ->subspan<device::kP256X962Length, device::cablev2::kQRSecretSize>();
+          .subspan<device::kP256X962Length, device::cablev2::kQRSecretSize>();
   const std::array<uint8_t, device::cablev2::kTunnelIdSize> tunnel_id =
       device::cablev2::Derive<device::cablev2::kTunnelIdSize>(
           qr_secret, base::span<uint8_t>(),
@@ -793,7 +770,7 @@ static jlong JNI_CableAuthenticator_StartCloudMessage(
 
   auto event =
       device::cablev2::authenticator::Registration::Event::FromSerialized(
-          JavaByteArrayToSpan(env, serialized_event));
+          JavaByteArrayToByteVector(env, serialized_event));
   if (!event) {
     LOG(ERROR) << "Failed to parse event";
     return 0;
@@ -830,14 +807,15 @@ static void JNI_CableAuthenticator_Stop(JNIEnv* env, jlong instance_num) {
 static int JNI_CableAuthenticator_ValidateServerLinkData(
     JNIEnv* env,
     const JavaParamRef<jbyteArray>& jdata) {
-  base::span<const uint8_t> data = JavaByteArrayToSpan(env, jdata);
+  std::vector<uint8_t> data = JavaByteArrayToByteVector(env, jdata);
   if (data.size() != device::kP256X962Length + device::cablev2::kQRSecretSize) {
     RecordResult(nullptr, CableV2MobileResult::kInvalidServerLink);
     return static_cast<int>(device::cablev2::authenticator::Platform::Error::
                                 SERVER_LINK_WRONG_LENGTH);
   }
 
-  base::span<const uint8_t> x962 = data.subspan(0, device::kP256X962Length);
+  base::span<const uint8_t> x962 =
+      base::make_span(data).subspan(0, device::kP256X962Length);
   bssl::UniquePtr<EC_GROUP> p256(
       EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
   bssl::UniquePtr<EC_POINT> point(EC_POINT_new(p256.get()));
@@ -887,14 +865,14 @@ static void JNI_CableAuthenticator_OnAuthenticatorAttestationResponse(
   auto callback = std::move(*global_data.pending_make_credential_callback);
   global_data.pending_make_credential_callback.reset();
 
-  absl::optional<base::span<const uint8_t>> device_public_key_signature;
+  absl::optional<std::vector<uint8_t>> device_public_key_signature;
   if (jdevice_public_key_signature) {
     device_public_key_signature =
-        JavaByteArrayToSpan(env, jdevice_public_key_signature);
+        JavaByteArrayToByteVector(env, jdevice_public_key_signature);
   }
 
   std::move(callback).Run(ctap_status,
-                          JavaByteArrayToSpan(env, jattestation_object),
+                          JavaByteArrayToByteVector(env, jattestation_object),
                           device_public_key_signature);
 }
 
@@ -914,8 +892,8 @@ static void JNI_CableAuthenticator_OnAuthenticatorAssertionResponse(
 
   if (ctap_status ==
       static_cast<jint>(device::CtapDeviceResponseCode::kSuccess)) {
-    base::span<const uint8_t> response_bytes =
-        JavaByteArrayToSpan(env, jresponse_bytes);
+    std::vector<uint8_t> response_bytes =
+        JavaByteArrayToByteVector(env, jresponse_bytes);
     auto response = blink::mojom::GetAssertionAuthenticatorResponse::New();
     if (blink::mojom::GetAssertionAuthenticatorResponse::Deserialize(
             response_bytes.data(), response_bytes.size(), &response)) {
@@ -954,6 +932,6 @@ static void JNI_USBHandler_OnUSBData(JNIEnv* env,
   if (!usb_data) {
     global_data.usb_callback->Run(absl::nullopt);
   } else {
-    global_data.usb_callback->Run(JavaByteArrayToSpan(env, usb_data));
+    global_data.usb_callback->Run(JavaByteArrayToByteVector(env, usb_data));
   }
 }
