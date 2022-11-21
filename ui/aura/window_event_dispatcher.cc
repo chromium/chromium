@@ -10,7 +10,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/notreached.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -590,6 +590,21 @@ ui::EventDispatchDetails WindowEventDispatcher::PreDispatchEvent(
   }
   if (details.dispatcher_destroyed || details.target_destroyed)
     return details;
+
+  // TODO(crbug/1381787): Remove.
+  // Suspect there is a code path that "target_destroyed" is not reported.
+  if (target_window_tracker.windows().empty()) {
+    // Dump once per chrome run.
+    static bool has_dumped = false;
+    if (!has_dumped) {
+      LOG(ERROR) << "Target destroyed not reported"
+                 << ", event=" << event->ToString();
+      has_dumped = base::debug::DumpWithoutCrashing();
+    }
+
+    details.target_destroyed = true;
+    return details;
+  }
 
   old_dispatch_target_ = event_dispatch_target_;
   event_dispatch_target_ = target_window;
