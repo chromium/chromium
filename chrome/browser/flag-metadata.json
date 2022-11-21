@@ -603,7 +603,7 @@
   {
     "name": "autofill-use-consistent-popup-settings-icons",
     "owners": [ "koerber", "mamir" ],
-    "expiry_milestone": 106
+    "expiry_milestone": 110
   },
   {
     "name": "autofill-use-improved-label-disambiguation",
