@@ -305,16 +305,15 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   [self.delegate signoutActionSheetCoordinatorPreventUserInteraction:self];
 
   __weak SignoutActionSheetCoordinator* weakSelf = self;
-  self.authenticationService->SignOut(
-      signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS, forceClearData, ^{
-        __strong SignoutActionSheetCoordinator* strongSelf = weakSelf;
-        if (!strongSelf) {
-          return;
-        }
-        [strongSelf.delegate
-            signoutActionSheetCoordinatorAllowUserInteraction:strongSelf];
-        strongSelf.completion(YES);
-      });
+  self.authenticationService->SignOut(_signout_source_metric, forceClearData, ^{
+    __strong SignoutActionSheetCoordinator* strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+    [strongSelf.delegate
+        signoutActionSheetCoordinatorAllowUserInteraction:strongSelf];
+    strongSelf.completion(YES);
+  });
   // Get UMA metrics on the usage of different options for signout available
   // for users with non-managed accounts.
   if (!self.authenticationService->HasPrimaryIdentityManaged(

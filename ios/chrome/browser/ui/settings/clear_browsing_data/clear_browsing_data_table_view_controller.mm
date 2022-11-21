@@ -349,9 +349,6 @@
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)url {
   if (url.gurl == GURL(kCBDSignOutOfChromeURL)) {
     DCHECK(base::FeatureList::IsEnabled(switches::kEnableCbdSignOut));
-    // TODO(crbug.com/1341654): Log a user action indicating that the user
-    // clicked on the sign out link from the footer. Remove the action
-    // indicating that this came from signin > signout.
     [self showSignOutWithItemView:[view contentView]];
     return;
   }
@@ -554,6 +551,7 @@
 
 // Offer the user to sign-out near itemView
 // If they sync, they can keep or delete their data.
+// TODO(crbug.com/1385791) Test that correct histogram is registered.
 - (void)showSignOutWithItemView:(UIView*)itemView {
   if (_signoutCoordinator) {
     // An action is already in progress, ignore user's request.
