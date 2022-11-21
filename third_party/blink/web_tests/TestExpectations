@@ -4016,8 +4016,6 @@ crbug.com/874162 [ Mac ] fast/events/middleClickAutoscroll-drag.html [ Crash Fai
 crbug.com/874162 [ Mac ] fast/events/middleClickAutoscroll-event-fired.html [ Crash Failure Pass Timeout ]
 crbug.com/874162 [ Mac ] fast/events/middleClickAutoscroll-latching.html [ Crash Failure Pass Timeout ]
 crbug.com/874162 [ Mac ] fast/events/middleClickAutoscroll-nested-divs-forbidden.html [ Crash Failure Pass Timeout ]
-# The next also fails due to crbug.com/891427, thus disabled on all platforms.
-
 
 # Passes in threaded mode, fails without it. This is a real bug.
 crbug.com/1112183 fast/scrolling/autoscroll-iframe-no-scrolling.html [ Failure ]
@@ -4652,8 +4650,6 @@ crbug.com/1046784 [ Linux ] http/tests/devtools/tracing/timeline-misc/timeline-e
 
 # Sheriff 2020-07-23
 crbug.com/1108786 [ Linux ] http/tests/devtools/tracing/timeline-js/timeline-gc-event.js [ Failure Pass ]
-
-# Sheriff 2020-07-27
 
 crbug.com/1092794 fast/canvas/OffscreenCanvas-2d-placeholder-willReadFrequently.html [ Failure Pass ]
 
