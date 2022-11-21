@@ -188,4 +188,58 @@ CREATE VIEW cpu_power_first_top_level_slice_after_powerup AS
   HAVING ts = MIN(ts)
   ORDER BY ts ASC;
 
+--
+-- Chrome-specific analyses.
+--
+
+-- Bring in the Chrome tasks table.
+SELECT RUN_METRIC("chrome/chrome_tasks.sql");
+
+-- Rename fields of the 'chrome_tasks' table, so that a subsequent
+-- 'span_join' can work.
+DROP VIEW IF EXISTS chrome_tasks_view_with_renamed_fields;
+CREATE VIEW chrome_tasks_view_with_renamed_fields AS
+  SELECT
+    ts,
+    dur,
+    slice_id,
+    name AS slice_name,
+    full_name,
+    task_type,
+    utid,
+    thread_name,
+    process_name,
+    upid
+  FROM chrome_tasks;
+
+-- A table with Chrome-related slices that executed within the scheduler
+-- slice that ran on a CPU after a power-up.
+--
+-- Schema:
+--   ts           : Timestamp of the slice.
+--   dur          : Duration of the slice.
+--   slice_id     : The ID of the Chrome slice in the 'slice' table.
+--   slice_name   : The name of the slice.
+--   full_name    : The complete name of the Chrome task that ran in the slice.
+--   task_type    : The type of Chrome task that ran in the slice.
+--   utid         : The thread in which this slice executed.
+--   thread_name  : The name of the thread in which this slice executed.
+--   upid         : The process in which the slice executed.
+--   process_name : The name of the process in which this slice executed.
+DROP TABLE IF EXISTS cpu_power_chrome_slices_after_powerup;
+CREATE VIRTUAL TABLE cpu_power_chrome_slices_after_powerup
+USING
+  SPAN_JOIN(cpu_power_first_sched_slice_after_powerup PARTITIONED utid,
+            chrome_tasks_view_with_renamed_fields PARTITIONED utid);
+
+-- The first Chrome slice that executed after a CPU power-up.
+DROP VIEW IF EXISTS cpu_power_first_chrome_slice_after_powerup;
+CREATE VIEW cpu_power_first_chrome_slice_after_powerup AS
+  SELECT
+    *
+  FROM cpu_power_chrome_slices_after_powerup
+  GROUP BY cpu, powerup_id
+  HAVING ts = MIN(ts)
+  ORDER BY ts ASC;
+
 SELECT "cpu_powerups"; -- Keep the Perfetto trace processor's |.read| happy.
