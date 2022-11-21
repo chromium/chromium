@@ -289,14 +289,17 @@ public class FeedSurfaceMediator
     private void updateLayout(boolean isSmallLayoutWidth) {
         ListLayoutHelper listLayoutHelper =
                 mCoordinator.getHybridListRenderer().getListLayoutHelper();
-        if (!FeedFeatures.isMultiColumnFeedEnabled(mContext) || listLayoutHelper == null) return;
+        if (!FeedFeatures.isMultiColumnFeedEnabled(mContext) || listLayoutHelper == null
+                || mCurrentStream == null) {
+            return;
+        }
         int spanCount = shouldUseSingleSpan(isSmallLayoutWidth) ? SPAN_COUNT_SMALL_WIDTH
                                                                 : SPAN_COUNT_LARGE_WIDTH;
         listLayoutHelper.setSpanCount(spanCount);
     }
 
     private boolean shouldUseSingleSpan(boolean isSmallLayoutWidth) {
-        boolean supportsOptions = mCurrentStream != null && mCurrentStream.supportsOptions();
+        boolean supportsOptions = mCurrentStream.supportsOptions();
         boolean isFollowingFeedSortDisabled =
                 (!ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED_SORT)
                         && mCurrentStream.getStreamKind() == StreamKind.FOLLOWING);
@@ -326,7 +329,6 @@ public class FeedSurfaceMediator
                     .set(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY,
                             ViewVisibility.VISIBLE);
         }
-        updateLayout(false);
         if (!mSettingUpStreams) {
             logSwitchedFeeds(newStream);
             bindStream(newStream, /*shouldScrollToTop=*/true);
@@ -633,6 +635,7 @@ public class FeedSurfaceMediator
             return;
         }
         mCurrentStream = stream;
+        updateLayout(false);
         mCurrentStream.addOnContentChangedListener(mStreamContentChangedListener);
 
         if (FeedFeatures.isAutoScrollToTopEnabled() && mRestoreScrollState == null) {
