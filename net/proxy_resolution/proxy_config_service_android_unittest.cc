@@ -12,7 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/net_test_jni_headers/AndroidProxyConfigServiceTestUtil_jni.h"
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
 #include "net/proxy_resolution/proxy_info.h"
@@ -68,8 +68,8 @@ class ProxyConfigServiceAndroidTestBase : public TestWithTaskEnvironment {
       const StringMap& initial_configuration)
       : configuration_(initial_configuration),
         service_(
-            base::ThreadTaskRunnerHandle::Get(),
-            base::ThreadTaskRunnerHandle::Get(),
+            base::SingleThreadTaskRunner::GetCurrentDefault(),
+            base::SingleThreadTaskRunner::GetCurrentDefault(),
             base::BindRepeating(&ProxyConfigServiceAndroidTestBase::GetProperty,
                                 base::Unretained(this))) {}
 

@@ -16,7 +16,6 @@
 #include "base/one_shot_event.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -220,7 +219,7 @@ void RuntimeAPI::OnExtensionLoaded(content::BrowserContext* browser_context,
     return;
 
   // Dispatch the onInstalled event with reason "chrome_update".
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&RuntimeEventRouter::DispatchOnInstalledEvent,
                      browser_context_, extension->id(), base::Version(), true));
@@ -578,7 +577,7 @@ void RuntimeAPI::OnExtensionInstalledAndLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     const base::Version& previous_version) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&RuntimeEventRouter::DispatchOnInstalledEvent,
                                 browser_context_, extension->id(),
                                 previous_version, false));

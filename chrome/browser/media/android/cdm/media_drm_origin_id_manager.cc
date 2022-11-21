@@ -17,7 +17,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
@@ -351,7 +350,7 @@ MediaDrmOriginIdManager::MediaDrmOriginIdManager(PrefService* pref_service)
   if (base::FeatureList::IsEnabled(media::kMediaDrmPreprovisioningAtStartup)) {
     // Running this after a delay of |kStartupDelay| in order to not do too much
     // extra work when the profile is loaded.
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&MediaDrmOriginIdManager::PreProvisionIfNecessary,
                        weak_factory_.GetWeakPtr()),
@@ -361,7 +360,7 @@ MediaDrmOriginIdManager::MediaDrmOriginIdManager(PrefService* pref_service)
   // In order to determine how devices are pre-provisioning origin IDs, post a
   // task to check how many pre-provisioned origin IDs are available after a
   // delay of |kCheckDelay|.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
           &MediaDrmOriginIdManager::RecordCountOfPreprovisionedOriginIds,

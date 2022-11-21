@@ -5,9 +5,8 @@
 #include "google_apis/gaia/oauth2_access_token_fetcher_immediate_error.h"
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-
 
 OAuth2AccessTokenFetcherImmediateError::FailCaller::FailCaller(
     OAuth2AccessTokenFetcherImmediateError* fetcher)
@@ -54,7 +53,7 @@ void OAuth2AccessTokenFetcherImmediateError::Start(
     const std::string& client_secret,
     const std::vector<std::string>& scopes) {
   failer_ = new FailCaller(this);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&OAuth2AccessTokenFetcherImmediateError::FailCaller::run,
                      failer_));

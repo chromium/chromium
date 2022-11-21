@@ -19,7 +19,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_file_util.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/autocomplete/in_memory_url_index_factory.h"
@@ -182,7 +181,7 @@ TestingProfile::TestingProfile(const base::FilePath& path, Delegate* delegate)
   }
   Init(/*is_supervised_profile=*/false);
   if (delegate_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&TestingProfile::FinishInit, base::Unretained(this)));
   } else {
@@ -259,7 +258,7 @@ TestingProfile::TestingProfile(
   // TODO(atwilson): See if this is still required once we convert the current
   // users of the constructor that takes a Delegate* param.
   if (delegate_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&TestingProfile::FinishInit, base::Unretained(this)));
   } else {
@@ -562,7 +561,7 @@ TestingProfile::CreateZoomLevelDelegate(const base::FilePath& partition_path) {
 }
 
 scoped_refptr<base::SequencedTaskRunner> TestingProfile::GetIOTaskRunner() {
-  return base::ThreadTaskRunnerHandle::Get();
+  return base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
 sync_preferences::TestingPrefServiceSyncable*

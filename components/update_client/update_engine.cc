@@ -16,7 +16,7 @@
 #include "base/guid.h"
 #include "base/location.h"
 #include "base/strings/strcat.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/buildflags.h"
 #include "components/update_client/component.h"
@@ -131,14 +131,14 @@ base::RepeatingClosure UpdateEngine::Update(
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (ids.empty()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), Error::INVALID_ARGUMENT));
     return base::DoNothing();
   }
 
   if (IsThrottled(is_foreground)) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), Error::RETRY_LATER));
     return base::DoNothing();
   }
@@ -147,7 +147,7 @@ base::RepeatingClosure UpdateEngine::Update(
   const std::vector<absl::optional<CrxComponent>> crx_components =
       std::move(crx_data_callback).Run(ids);
   if (crx_components.size() < ids.size()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), Error::BAD_CRX_DATA_CALLBACK));
     return base::DoNothing();
@@ -191,7 +191,7 @@ base::RepeatingClosure UpdateEngine::Update(
     }
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(update_context->components_to_check_for_updates.empty()
                          ? &UpdateEngine::HandleComponent
@@ -254,7 +254,7 @@ void UpdateEngine::UpdateCheckResultsAvailable(
       component->SetUpdateCheckResult(absl::nullopt,
                                       ErrorCategory::kUpdateCheck, error);
     }
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&UpdateEngine::UpdateCheckComplete, this,
                                   update_context));
     return;
@@ -298,7 +298,7 @@ void UpdateEngine::UpdateCheckResultsAvailable(
     }
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&UpdateEngine::UpdateCheckComplete, this, update_context));
 }
@@ -319,7 +319,7 @@ void UpdateEngine::UpdateCheckComplete(
     component->Handle(base::DoNothing());
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&UpdateEngine::HandleComponent, this, update_context));
 }
@@ -336,7 +336,7 @@ void UpdateEngine::HandleComponent(
                             ? Error::UPDATE_CHECK_ERROR
                             : Error::NONE;
 
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&UpdateEngine::UpdateComplete, this,
                                   update_context, error));
     return;
@@ -349,7 +349,7 @@ void UpdateEngine::HandleComponent(
 
   auto& next_update_delay = update_context->next_update_delay;
   if (!next_update_delay.is_zero() && component->IsUpdateAvailable()) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&UpdateEngine::HandleComponent, this, update_context),
         next_update_delay);
@@ -390,7 +390,8 @@ void UpdateEngine::HandleComponentComplete(
     }
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(callback));
 }
 
 void UpdateEngine::UpdateComplete(scoped_refptr<UpdateContext> update_context,
@@ -401,7 +402,7 @@ void UpdateEngine::UpdateComplete(scoped_refptr<UpdateContext> update_context,
   const auto num_erased = update_contexts_.erase(update_context->session_id);
   DCHECK_EQ(1u, num_erased);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(update_context->callback), error));
 }
 
@@ -466,7 +467,7 @@ void UpdateEngine::SendUninstallPing(const CrxComponent& crx_component,
 
   update_context->component_queue.push(id);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&UpdateEngine::HandleComponent, this, update_context));
 }

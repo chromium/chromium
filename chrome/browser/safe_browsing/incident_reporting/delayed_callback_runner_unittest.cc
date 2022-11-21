@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,7 +52,7 @@ class DelayedCallbackRunnerTest : public testing::Test {
 
   void SetUp() override {
     instance_ = std::make_unique<safe_browsing::DelayedCallbackRunner>(
-        base::TimeDelta(), base::ThreadTaskRunnerHandle::Get());
+        base::TimeDelta(), base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   void TearDown() override { instance_.reset(); }
@@ -128,7 +128,7 @@ TEST_F(DelayedCallbackRunnerTest, AddWhileRunningRun) {
   const std::string name2("two");
 
   // Post a task to register a new callback after Start() is called.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&DelayedCallbackRunnerTest::RegisterTestCallback,
                      base::Unretained(this), name2));

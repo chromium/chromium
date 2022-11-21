@@ -24,7 +24,6 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -73,7 +72,7 @@ class TestThroughputAnalyzer : public internal::ThroughputAnalyzer {
       : internal::ThroughputAnalyzer(
             network_quality_estimator,
             params,
-            base::ThreadTaskRunnerHandle::Get(),
+            base::SingleThreadTaskRunner::GetCurrentDefault(),
             base::BindRepeating(
                 &TestThroughputAnalyzer::OnNewThroughputObservationAvailable,
                 base::Unretained(this)),

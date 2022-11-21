@@ -11,8 +11,8 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -135,7 +135,7 @@ RootCompositorFrameSinkImpl::Create(
       synthetic_begin_frame_source =
           std::make_unique<BackToBackBeginFrameSource>(
               std::make_unique<DelayBasedTimeSource>(
-                  base::ThreadTaskRunnerHandle::Get().get()));
+                  base::SingleThreadTaskRunner::GetCurrentDefault().get()));
     } else if (output_surface->capabilities().supports_gpu_vsync) {
 #if BUILDFLAG(IS_WIN)
       hw_support_for_multiple_refresh_rates =
@@ -153,7 +153,7 @@ RootCompositorFrameSinkImpl::Create(
       synthetic_begin_frame_source =
           std::make_unique<DelayBasedBeginFrameSource>(
               std::make_unique<DelayBasedTimeSource>(
-                  base::ThreadTaskRunnerHandle::Get().get()),
+                  base::SingleThreadTaskRunner::GetCurrentDefault().get()),
               restart_id);
     }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -164,7 +164,7 @@ RootCompositorFrameSinkImpl::Create(
     begin_frame_source = external_begin_frame_source.get();
   DCHECK(begin_frame_source);
 
-  auto task_runner = base::ThreadTaskRunnerHandle::Get();
+  auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
 
   const auto& capabilities = output_surface->capabilities();
   DCHECK_GT(capabilities.pending_swap_params.max_pending_swaps, 0);

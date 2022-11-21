@@ -17,7 +17,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_container.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -722,7 +722,7 @@ void AnimatingLayoutManager::PostQueuedActions() {
   // * Keep "AnimatingLayoutManager::RunQueuedActions" in the stack frame.
   // * Tie the task lifetimes to AnimatingLayoutManager.
   run_queued_actions_is_pending_ =
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&AnimatingLayoutManager::RunQueuedActions,
                                     weak_ptr_factory_.GetWeakPtr()));
 }

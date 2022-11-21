@@ -17,7 +17,6 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
@@ -49,7 +48,7 @@ class UsageTrackerTestQuotaClient : public mojom::QuotaClient {
                       GetBucketUsageCallback callback) override {
     EXPECT_EQ(StorageType::kTemporary, bucket.type);
     int64_t usage = GetUsage(bucket);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), usage));
   }
 
@@ -59,7 +58,7 @@ class UsageTrackerTestQuotaClient : public mojom::QuotaClient {
     std::set<StorageKey> storage_keys;
     for (const auto& bucket_usage_pair : bucket_usage_map_)
       storage_keys.emplace(bucket_usage_pair.first.storage_key);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   std::vector<StorageKey>(storage_keys.begin(),
                                                           storage_keys.end())));
@@ -69,7 +68,7 @@ class UsageTrackerTestQuotaClient : public mojom::QuotaClient {
                         DeleteBucketDataCallback callback) override {
     EXPECT_EQ(StorageType::kTemporary, bucket.type);
     bucket_usage_map_.erase(bucket);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), QuotaStatusCode::kOk));
   }
 
@@ -103,7 +102,7 @@ class UsageTrackerTest : public testing::Test {
     EXPECT_TRUE(base_.CreateUniqueTempDir());
     quota_manager_ = base::MakeRefCounted<QuotaManagerImpl>(
         /*is_incognito=*/false, base_.GetPath(),
-        base::ThreadTaskRunnerHandle::Get().get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         /*quota_change_callback=*/base::DoNothing(), storage_policy_.get(),
         GetQuotaSettingsFunc());
     usage_tracker_ = std::make_unique<UsageTracker>(

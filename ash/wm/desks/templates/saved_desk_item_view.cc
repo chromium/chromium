@@ -540,7 +540,7 @@ void SavedDeskItemView::OnViewBlurred(views::View* observed_view) {
       saved_desk_util::GetSavedDeskPresenter()->FindOtherEntryWithName(
           name_view_->GetText(), desk_template().type(), uuid());
   if (template_to_replace) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&SavedDeskItemView::MaybeShowReplaceDialog,
                                   weak_ptr_factory_.GetWeakPtr(),
                                   template_to_replace->type(),

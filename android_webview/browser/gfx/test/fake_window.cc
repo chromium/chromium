@@ -11,8 +11,8 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
@@ -118,7 +118,7 @@ void FakeWindow::PostInvalidate() {
   if (on_draw_hardware_pending_)
     return;
   on_draw_hardware_pending_ = true;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&FakeWindow::OnDrawHardware,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
@@ -273,7 +273,7 @@ void FakeFunctor::ReleaseOnUIWithoutInvoke(base::OnceClosure callback) {
           &FakeFunctor::ReleaseOnRT, base::Unretained(this),
           base::BindOnce(
               base::IgnoreResult(&base::SingleThreadTaskRunner::PostTask),
-              base::ThreadTaskRunnerHandle::Get(), FROM_HERE,
+              base::SingleThreadTaskRunner::GetCurrentDefault(), FROM_HERE,
               std::move(callback))));
 }
 

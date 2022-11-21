@@ -17,7 +17,6 @@
 #include "base/stl_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/win/windows_version.h"
 #include "device/base/features.h"
 #include "device/bluetooth/bluetooth_adapter_winrt.h"
@@ -313,7 +312,7 @@ void BluetoothAdapterWin::StopScan(DiscoverySessionResultCallback callback) {
 
 void BluetoothAdapterWin::Initialize(base::OnceClosure init_callback) {
   init_callback_ = std::move(init_callback);
-  ui_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  ui_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
   socket_thread_ = BluetoothSocketThread::Get();
   task_manager_ =
       base::MakeRefCounted<BluetoothTaskManagerWin>(ui_task_runner_);
@@ -330,7 +329,7 @@ void BluetoothAdapterWin::InitForTest(
   init_callback_ = std::move(init_callback);
   ui_task_runner_ = ui_task_runner;
   if (!ui_task_runner_)
-    ui_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+    ui_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
   task_manager_ = BluetoothTaskManagerWin::CreateForTesting(
       std::move(classic_wrapper), std::move(le_wrapper), ui_task_runner_);
   task_manager_->AddObserver(this);

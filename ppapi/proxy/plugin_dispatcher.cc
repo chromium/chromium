@@ -11,7 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "ipc/ipc_message.h"
@@ -214,9 +214,9 @@ bool PluginDispatcher::InitPluginWithChannel(
     base::ProcessId peer_pid,
     const IPC::ChannelHandle& channel_handle,
     bool is_client) {
-  if (!Dispatcher::InitWithChannel(delegate, peer_pid, channel_handle,
-                                   is_client,
-                                   base::ThreadTaskRunnerHandle::Get()))
+  if (!Dispatcher::InitWithChannel(
+          delegate, peer_pid, channel_handle, is_client,
+          base::SingleThreadTaskRunner::GetCurrentDefault()))
     return false;
   plugin_delegate_ = delegate;
   plugin_dispatcher_id_ = plugin_delegate_->Register(this);

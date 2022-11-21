@@ -6,8 +6,8 @@
 
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromecast/browser/cast_media_blocker.h"
 #include "chromecast/browser/test/cast_browser_test.h"
 #include "chromecast/chromecast_buildflags.h"
@@ -62,7 +62,7 @@ class CastMediaBlockerBrowserTest : public CastBrowserTest {
     for (size_t i = 0; i < 5; i++) {
       LOG(INFO) << "Checking media blocking, re-try = " << i;
       base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
       run_loop.Run();
 

@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/strings/strcat.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/apdu/apdu_response.h"
 #include "components/cbor/writer.h"
 #include "device/fido/device_response_converter.h"
@@ -141,8 +141,8 @@ void MockFidoDevice::ExpectCtap2CommandAndRespondWith(
     base::TimeDelta delay,
     testing::Matcher<base::span<const uint8_t>> request_matcher) {
   auto data = fido_parsing_utils::MaterializeOrNull(response);
-  auto send_response = [ data(std::move(data)), delay ](DeviceCallback & cb) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  auto send_response = [data(std::move(data)), delay](DeviceCallback& cb) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, base::BindOnce(std::move(cb), std::move(data)), delay);
   };
 
@@ -167,8 +167,8 @@ void MockFidoDevice::ExpectRequestAndRespondWith(
     absl::optional<base::span<const uint8_t>> response,
     base::TimeDelta delay) {
   auto data = fido_parsing_utils::MaterializeOrNull(response);
-  auto send_response = [ data(std::move(data)), delay ](DeviceCallback & cb) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  auto send_response = [data(std::move(data)), delay](DeviceCallback& cb) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, base::BindOnce(std::move(cb), std::move(data)), delay);
   };
 

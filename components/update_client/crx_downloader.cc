@@ -10,8 +10,8 @@
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #if BUILDFLAG(IS_WIN)
 #include "components/update_client/background_downloader_win.h"
@@ -32,7 +32,7 @@ CrxDownloader::DownloadMetrics::DownloadMetrics()
       download_time_ms(0) {}
 
 CrxDownloader::CrxDownloader(scoped_refptr<CrxDownloader> successor)
-    : main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+    : main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       successor_(std::move(successor)) {}
 
 CrxDownloader::~CrxDownloader() = default;

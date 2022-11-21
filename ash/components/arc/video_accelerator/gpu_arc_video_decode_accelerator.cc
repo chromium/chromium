@@ -550,7 +550,7 @@ void GpuArcVideoDecodeAccelerator::ContinueDecode(
       // Note: we PostTask() in order to keep the right order of input buffers
       // and to avoid having to reason about the re-entrancy of Decode() and/or
       // ContinueDecode().
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&GpuArcVideoDecodeAccelerator::
                              ResumeDecodingAfterFirstSecureBuffer,

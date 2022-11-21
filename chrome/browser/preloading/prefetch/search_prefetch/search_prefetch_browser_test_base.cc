@@ -166,7 +166,7 @@ std::string SearchPrefetchBaseBrowserTest::GetDocumentInnerHTML() const {
 
 void SearchPrefetchBaseBrowserTest::WaitForDuration(base::TimeDelta duration) {
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), duration);
   run_loop.Run();
 }

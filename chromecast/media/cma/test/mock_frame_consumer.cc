@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/cma/base/coded_frame_provider.h"
@@ -42,7 +41,7 @@ void MockFrameConsumer::Start(base::OnceClosure done_cb) {
 
   pattern_idx_ = 0;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&MockFrameConsumer::ReadFrame, base::Unretained(this)));
 }
@@ -92,12 +91,12 @@ void MockFrameConsumer::OnNewFrame(
   pattern_idx_ = (pattern_idx_ + 1) % delayed_task_pattern_.size();
 
   if (delayed) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&MockFrameConsumer::ReadFrame, base::Unretained(this)),
         base::Milliseconds(1));
   } else {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&MockFrameConsumer::ReadFrame, base::Unretained(this)));
   }

@@ -26,7 +26,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "http_request_info.h"
@@ -1045,7 +1044,7 @@ void HttpCache::DoomEntryValidationNoMatch(ActiveEntry* entry) {
   // for the transaction to not be found in this entry.
   for (auto* transaction : entry->add_to_entry_queue) {
     transaction->ResetCachePendingState();
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(transaction->io_callback(), net::ERR_CACHE_RACE));
   }
@@ -1115,7 +1114,7 @@ void HttpCache::ProcessQueuedTransactions(ActiveEntry* entry) {
 
   // Post a task instead of invoking the io callback of another transaction here
   // to avoid re-entrancy.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&HttpCache::OnProcessQueuedTransactions, GetWeakPtr(),
                      base::UnsafeDanglingUntriaged(entry)));
@@ -1547,7 +1546,7 @@ void HttpCache::OnBackendCreated(int result, PendingOp* pending_op) {
     // go away from the callback.
     pending_op->writer = std::move(pending_item);
 
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&HttpCache::OnBackendCreated, GetWeakPtr(),
                                   result, pending_op));
   } else {

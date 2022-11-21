@@ -15,7 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
 #include "components/favicon/core/large_icon_service.h"
@@ -142,7 +142,7 @@ void ContentSuggestionsService::FetchSuggestionImage(
   if (!providers_by_category_.count(suggestion_id.category())) {
     LOG(WARNING) << "Requested image for suggestion " << suggestion_id
                  << " for unavailable category " << suggestion_id.category();
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), gfx::Image()));
     return;
   }
@@ -156,7 +156,7 @@ void ContentSuggestionsService::FetchSuggestionImageData(
   if (!providers_by_category_.count(suggestion_id.category())) {
     LOG(WARNING) << "Requested image for suggestion " << suggestion_id
                  << " for unavailable category " << suggestion_id.category();
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::string()));
     return;
   }
@@ -172,7 +172,7 @@ void ContentSuggestionsService::FetchSuggestionFavicon(
     ImageFetchedCallback callback) {
   const GURL& domain_with_favicon = GetFaviconDomain(suggestion_id);
   if (!domain_with_favicon.is_valid() || !large_icon_service_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), gfx::Image()));
     return;
   }

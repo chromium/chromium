@@ -469,7 +469,7 @@ class WebRtcVideoCaptureServiceBrowserTest : public ContentBrowserTest {
       VirtualDeviceExerciser* device_exerciser) {
     DCHECK(virtual_device_thread_.task_runner()->RunsTasksInCurrentSequence());
     device_exerciser->PushNextFrame(CalculateTimeSinceFirstInvocation());
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&WebRtcVideoCaptureServiceBrowserTest::
                            PushDummyFrameAndScheduleNextPush,
@@ -519,7 +519,7 @@ class WebRtcVideoCaptureServiceBrowserTest : public ContentBrowserTest {
 
   void Initialize() {
     DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-    main_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+    main_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
   }
 
   base::Thread virtual_device_thread_;

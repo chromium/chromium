@@ -280,7 +280,7 @@ void LaunchCrostiniAppImpl(
           profile, app_id, std::move(registration), display_id, args,
           std::move(callback)));
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&AddSpinner, restart_id, app_id, profile),
       base::Milliseconds(kDelayBeforeSpinnerMs));
 }

@@ -4375,7 +4375,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // Wait an action timeout and assert the URL is correct.
   {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::action_timeout());
     run_loop.Run();
   }
@@ -4406,7 +4406,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // Wait an action timeout and assert the URL is correct.
   {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::action_timeout());
     run_loop.Run();
   }

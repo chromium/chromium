@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(FeatureDiscoveryDurationReporterBrowserTest,
 
   // Wait for some time so that the cumulated time is not zero.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
   run_loop.Run();
 }

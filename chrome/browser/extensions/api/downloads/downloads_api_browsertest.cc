@@ -23,10 +23,10 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/bubble/download_bubble_controller.h"
@@ -1932,7 +1932,7 @@ class CustomResponse : public net::test_server::HttpResponse {
     if (first_request_) {
       *callback_ = base::BindOnce(
           &net::test_server::HttpResponseDelegate::FinishResponse, delegate);
-      *task_runner_ = base::ThreadTaskRunnerHandle::Get().get();
+      *task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault().get();
       delegate->SendResponseHeaders(net::HTTP_OK, "OK", headers);
       delegate->SendContents(contents);
     } else {

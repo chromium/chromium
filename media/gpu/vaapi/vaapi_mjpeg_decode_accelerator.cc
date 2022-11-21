@@ -23,7 +23,6 @@
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "media/base/bind_to_current_loop.h"
@@ -115,7 +114,7 @@ void VaapiMjpegDecodeAccelerator::VideoFrameReady(int32_t task_id) {
 
 VaapiMjpegDecodeAccelerator::VaapiMjpegDecodeAccelerator(
     const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner)
-    : task_runner_(base::ThreadTaskRunnerHandle::Get()),
+    : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       io_task_runner_(io_task_runner),
       client_(nullptr),
       decoder_thread_("VaapiMjpegDecoderThread"),

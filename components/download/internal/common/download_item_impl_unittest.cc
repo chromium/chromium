@@ -321,9 +321,9 @@ class DownloadItemTest : public testing::Test {
       mock_download_file = new StrictMock<MockDownloadFile>;
       download_file.reset(mock_download_file);
       EXPECT_CALL(*mock_download_file, Initialize(_, _, _))
-          .WillOnce(
-              ScheduleCallbackWithParams(DOWNLOAD_INTERRUPT_REASON_NONE, 0,
-                                         base::ThreadTaskRunnerHandle::Get()));
+          .WillOnce(ScheduleCallbackWithParams(
+              DOWNLOAD_INTERRUPT_REASON_NONE, 0,
+              base::SingleThreadTaskRunner::GetCurrentDefault()));
       EXPECT_CALL(*mock_download_file, FullPath())
           .WillRepeatedly(ReturnRefOfCopy(base::FilePath()));
     }
@@ -363,7 +363,7 @@ class DownloadItemTest : public testing::Test {
       DownloadDangerType danger_type) {
     base::FilePath target_path(kDummyTargetPath);
     base::FilePath intermediate_path(kDummyIntermediatePath);
-    auto task_runner = base::ThreadTaskRunnerHandle::Get();
+    auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
     SetRenameExpectation(download_file, task_runner, intermediate_path,
                          DOWNLOAD_INTERRUPT_REASON_NONE);
 
@@ -393,7 +393,7 @@ class DownloadItemTest : public testing::Test {
     EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload_(_, _))
         .WillOnce(Return(true));
     base::FilePath final_path(kDummyTargetPath);
-    auto task_runner = base::ThreadTaskRunnerHandle::Get();
+    auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
     EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _, _))
         .WillOnce(WithArg<5>([&task_runner, &final_path](
                                  DownloadFile::RenameCompletionCallback cb) {
@@ -622,7 +622,7 @@ TEST_F(DownloadItemTest, NotificationAfterOnDownloadTargetDetermined) {
   base::FilePath intermediate_path(target_path.InsertBeforeExtensionASCII("x"));
   base::FilePath new_intermediate_path(
       target_path.InsertBeforeExtensionASCII("y"));
-  auto task_runner = base::ThreadTaskRunnerHandle::Get();
+  auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   SetRenameExpectation(download_file, task_runner, new_intermediate_path,
                        DOWNLOAD_INTERRUPT_REASON_NONE);
 
@@ -839,7 +839,7 @@ TEST_F(DownloadItemTest, UnresumableInterrupt) {
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_delegate(), GetRenameHandlerForDownload(item))
       .WillOnce(Return(ByMove(std::unique_ptr<DownloadItemRenameHandler>())));
-  auto task_runner = base::ThreadTaskRunnerHandle::Get();
+  auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   EXPECT_CALL(
       *download_file,
       RenameAndAnnotate(base::FilePath(kDummyTargetPath), _, _, _, _, _))
@@ -909,7 +909,7 @@ TEST_F(DownloadItemTest, AutomaticResumption_AttemptLimit) {
 
     base::FilePath target_path(kDummyTargetPath);
     base::FilePath intermediate_path(kDummyIntermediatePath);
-    auto task_runner = base::ThreadTaskRunnerHandle::Get();
+    auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
     // RenameAndUniquify is only called the first time. In all the subsequent
     // iterations, the intermediate file already has the correct name, hence
     // no rename is necessary.
@@ -1212,7 +1212,7 @@ TEST_F(DownloadItemTest, DisplayName) {
       base::FilePath(kDummyTargetPath).AppendASCII("foo.bar"));
   base::FilePath intermediate_path(target_path.InsertBeforeExtensionASCII("x"));
   EXPECT_EQ(FILE_PATH_LITERAL(""), item->GetFileNameToReportUser().value());
-  auto task_runner = base::ThreadTaskRunnerHandle::Get();
+  auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   SetRenameExpectation(download_file, task_runner, intermediate_path,
                        DOWNLOAD_INTERRUPT_REASON_NONE);
   std::move(callback).Run(
@@ -1255,7 +1255,7 @@ TEST_F(DownloadItemTest, InitDownloadFileFails) {
   EXPECT_CALL(*file, Initialize(_, _, _))
       .WillOnce(ScheduleCallbackWithParams(
           DOWNLOAD_INTERRUPT_REASON_FILE_ACCESS_DENIED, 0,
-          base::ThreadTaskRunnerHandle::Get()));
+          base::SingleThreadTaskRunner::GetCurrentDefault()));
 
   DownloadItemImplDelegate::DownloadTargetCallback download_target_callback;
   EXPECT_CALL(*mock_delegate(), DetermineDownloadTarget_(item, _))
@@ -1341,7 +1341,7 @@ TEST_F(DownloadItemTest, CallbackAfterRename) {
   base::FilePath intermediate_path(final_path.InsertBeforeExtensionASCII("x"));
   base::FilePath new_intermediate_path(
       final_path.InsertBeforeExtensionASCII("y"));
-  auto task_runner = base::ThreadTaskRunnerHandle::Get();
+  auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   SetRenameExpectation(download_file, task_runner, new_intermediate_path,
                        DOWNLOAD_INTERRUPT_REASON_NONE);
 
@@ -1391,7 +1391,7 @@ TEST_F(DownloadItemTest, CallbackAfterInterruptedRename) {
   base::FilePath intermediate_path(final_path.InsertBeforeExtensionASCII("x"));
   base::FilePath new_intermediate_path(
       final_path.InsertBeforeExtensionASCII("y"));
-  auto task_runner = base::ThreadTaskRunnerHandle::Get();
+  auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   SetRenameExpectation(download_file, task_runner, new_intermediate_path,
                        DOWNLOAD_INTERRUPT_REASON_FILE_FAILED);
   EXPECT_CALL(*download_file, Cancel()).Times(1);
@@ -1456,7 +1456,7 @@ TEST_F(DownloadItemTest, InterruptedBeforeIntermediateRename_Restart) {
   base::FilePath intermediate_path(final_path.InsertBeforeExtensionASCII("x"));
   base::FilePath new_intermediate_path(
       final_path.InsertBeforeExtensionASCII("y"));
-  auto task_runner = base::ThreadTaskRunnerHandle::Get();
+  auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   SetRenameExpectation(download_file, task_runner, new_intermediate_path,
                        DOWNLOAD_INTERRUPT_REASON_NONE);
 
@@ -1502,7 +1502,7 @@ TEST_F(DownloadItemTest, InterruptedBeforeIntermediateRename_Continue) {
   base::FilePath intermediate_path(final_path.InsertBeforeExtensionASCII("x"));
   base::FilePath new_intermediate_path(
       final_path.InsertBeforeExtensionASCII("y"));
-  auto task_runner = base::ThreadTaskRunnerHandle::Get();
+  auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   SetRenameExpectation(download_file, task_runner, new_intermediate_path,
                        DOWNLOAD_INTERRUPT_REASON_NONE);
   EXPECT_CALL(*download_file, FullPath())
@@ -1546,7 +1546,7 @@ TEST_F(DownloadItemTest, InterruptedBeforeIntermediateRename_Failed) {
   base::FilePath intermediate_path(final_path.InsertBeforeExtensionASCII("x"));
   base::FilePath new_intermediate_path(
       final_path.InsertBeforeExtensionASCII("y"));
-  auto task_runner = base::ThreadTaskRunnerHandle::Get();
+  auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   SetRenameExpectation(download_file, task_runner, new_intermediate_path,
                        DOWNLOAD_INTERRUPT_REASON_FILE_FAILED);
   EXPECT_CALL(*download_file, Cancel()).Times(1);
@@ -1643,7 +1643,7 @@ TEST_F(DownloadItemTest, DownloadTargetDetermined_NewMimeType) {
   MockDownloadFile* file = CallDownloadItemStart(item, &callback);
   base::FilePath target_path(FILE_PATH_LITERAL("/foo/bar"));
   base::FilePath intermediate_path(target_path.InsertBeforeExtensionASCII("x"));
-  auto task_runner = base::ThreadTaskRunnerHandle::Get();
+  auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   SetRenameExpectation(file, task_runner, intermediate_path,
                        DOWNLOAD_INTERRUPT_REASON_NONE);
 
@@ -1821,7 +1821,7 @@ TEST_F(DownloadItemTest, EnabledActionsForNormalDownload) {
   EXPECT_TRUE(item->CanOpenDownload());
 
   // Complete
-  auto task_runner = base::ThreadTaskRunnerHandle::Get();
+  auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _, _))
       .WillOnce(
           WithArg<5>([&task_runner](DownloadFile::RenameCompletionCallback cb) {
@@ -1866,7 +1866,7 @@ TEST_F(DownloadItemTest, EnabledActionsForTemporaryDownload) {
   EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload_(item, _))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_delegate(), GetRenameHandlerForDownload(item)).Times(0);
-  auto task_runner = base::ThreadTaskRunnerHandle::Get();
+  auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _, _))
       .WillOnce(
           WithArg<5>([&task_runner](DownloadFile::RenameCompletionCallback cb) {
@@ -1939,7 +1939,7 @@ TEST_F(DownloadItemTest, CompleteDelegate_ReturnTrue) {
   EXPECT_FALSE(item->IsDangerous());
 
   // Make sure the download can complete.
-  auto task_runner = base::ThreadTaskRunnerHandle::Get();
+  auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   EXPECT_CALL(
       *download_file,
       RenameAndAnnotate(base::FilePath(kDummyTargetPath), _, _, _, _, _))
@@ -1984,7 +1984,7 @@ TEST_F(DownloadItemTest, CompleteDelegate_BlockOnce) {
   EXPECT_FALSE(item->IsDangerous());
 
   // Make sure the download can complete.
-  auto task_runner = base::ThreadTaskRunnerHandle::Get();
+  auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   EXPECT_CALL(
       *download_file,
       RenameAndAnnotate(base::FilePath(kDummyTargetPath), _, _, _, _, _))
@@ -2032,7 +2032,7 @@ TEST_F(DownloadItemTest, CompleteDelegate_SetDanger) {
   EXPECT_TRUE(item->IsDangerous());
 
   // Make sure the download doesn't complete until we've validated it.
-  auto task_runner = base::ThreadTaskRunnerHandle::Get();
+  auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   EXPECT_CALL(
       *download_file,
       RenameAndAnnotate(base::FilePath(kDummyTargetPath), _, _, _, _, _))
@@ -2087,7 +2087,7 @@ TEST_F(DownloadItemTest, CompleteDelegate_BlockTwice) {
   EXPECT_FALSE(item->IsDangerous());
 
   // Make sure the download can complete.
-  auto task_runner = base::ThreadTaskRunnerHandle::Get();
+  auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   EXPECT_CALL(
       *download_file,
       RenameAndAnnotate(base::FilePath(kDummyTargetPath), _, _, _, _, _))
@@ -2204,7 +2204,7 @@ TEST_F(DownloadItemTest, AnnotationWithEmptyURLInIncognito) {
   MockDownloadFile* download_file =
       DoIntermediateRename(item, DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
   // Target file should be annotated with the source URL.
-  auto task_runner = base::ThreadTaskRunnerHandle::Get();
+  auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   EXPECT_CALL(*download_file,
               RenameAndAnnotate(_, _, create_info()->url(), _, _, _))
       .WillOnce(
@@ -2457,7 +2457,7 @@ class DownloadItemDestinationUpdateRaceTest
       const ObservationList& observations,
       base::WeakPtr<DownloadDestinationObserver> observer) {
     for (const auto& action : observations)
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(action, observer));
   }
 

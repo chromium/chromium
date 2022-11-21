@@ -845,7 +845,7 @@ OverlayProcessorWebView::LockResult OverlayProcessorWebView::LockResource(
                                   weak_ptr_factory_.GetWeakPtr(), resource_id,
                                   overlay.surface_id);
   auto return_cb_on_thread = base::BindPostTask(
-      base::ThreadTaskRunnerHandle::Get(), std::move(return_cb));
+      base::SingleThreadTaskRunner::GetCurrentDefault(), std::move(return_cb));
 
   result.unlock_cb = base::ScopedClosureRunner(std::move(return_cb_on_thread));
   return result;

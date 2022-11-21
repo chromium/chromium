@@ -391,7 +391,7 @@ class AudioSystemToServiceAdapterDisconnectTest : public testing::Test {
     void GetAssociatedOutputDeviceID(
         const std::string& input_device_id,
         GetAssociatedOutputDeviceIDCallback callback) override {
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE, base::BindOnce(std::move(callback), kValidReplyId),
           kResponseDelay);
     }

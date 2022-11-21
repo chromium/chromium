@@ -4,6 +4,7 @@
 
 #include "base/memory/raw_ptr.h"
 
+#include "base/task/single_thread_task_runner.h"
 #import "content/browser/renderer_host/render_widget_host_view_mac_editcommand_helper.h"
 
 #import <Cocoa/Cocoa.h>
@@ -12,7 +13,6 @@
 
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/compositor/test/test_image_transport_factory.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
@@ -161,7 +161,8 @@ TEST_F(RenderWidgetHostViewMacEditCommandHelperWithTaskEnvTest,
             /*hidden=*/false, /*renderer_initiated_creation=*/false,
             std::make_unique<FrameTokenMessageQueue>());
 
-    ui::WindowResizeHelperMac::Get()->Init(base::ThreadTaskRunnerHandle::Get());
+    ui::WindowResizeHelperMac::Get()->Init(
+        base::SingleThreadTaskRunner::GetCurrentDefault());
 
     // Owned by its |GetInProcessNSView()|, i.e. |rwhv_cocoa|.
     RenderWidgetHostViewMac* rwhv_mac =

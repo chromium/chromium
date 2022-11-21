@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -78,7 +78,7 @@ void CacheAliasSearchPrefetchURLLoader::StartPrefetchRequest() {
       network_url_loader_.BindNewPipeAndPassReceiver(), 0,
       network::mojom::kURLLoadOptionNone, prefetch_request,
       url_loader_receiver_.BindNewPipeAndPassRemote(
-          base::ThreadTaskRunnerHandle::Get()),
+          base::SingleThreadTaskRunner::GetCurrentDefault()),
       net::MutableNetworkTrafficAnnotationTag(network_traffic_annotation_));
   url_loader_receiver_.set_disconnect_handler(base::BindOnce(
       &CacheAliasSearchPrefetchURLLoader::MojoDisconnectForPrefetch,
@@ -101,7 +101,7 @@ void CacheAliasSearchPrefetchURLLoader::RestartDirect() {
           network::mojom::kURLLoadOptionSendSSLInfoForCertificateError,
       *resource_request_,
       url_loader_receiver_.BindNewPipeAndPassRemote(
-          base::ThreadTaskRunnerHandle::Get()),
+          base::SingleThreadTaskRunner::GetCurrentDefault()),
       net::MutableNetworkTrafficAnnotationTag(network_traffic_annotation_));
   url_loader_receiver_.set_disconnect_handler(base::BindOnce(
       &CacheAliasSearchPrefetchURLLoader::MojoDisconnectWithNoFallback,

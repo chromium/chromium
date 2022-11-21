@@ -12,7 +12,6 @@
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 
 namespace base {
@@ -44,7 +43,7 @@ namespace {
 // causes a compiler error.
 scoped_refptr<base::SingleThreadTaskRunner> GetMainThreadTaskRunner() {
   static scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      base::ThreadTaskRunnerHandle::Get();
+      base::SingleThreadTaskRunner::GetCurrentDefault();
   return task_runner;
 }
 

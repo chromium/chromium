@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/math_constants.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "net/base/io_buffer.h"
 #include "remoting/base/leaky_bucket.h"
@@ -181,7 +180,7 @@ FakePacketSocketFactory::PendingPacket::~PendingPacket() = default;
 
 FakePacketSocketFactory::FakePacketSocketFactory(
     FakeNetworkDispatcher* dispatcher)
-    : task_runner_(base::ThreadTaskRunnerHandle::Get()),
+    : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       dispatcher_(dispatcher),
       address_(dispatcher_->AllocateAddress()),
       out_of_order_rate_(0.0),

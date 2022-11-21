@@ -33,7 +33,6 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -386,12 +385,12 @@ void GpuChannelMessageFilter::CreateCommandBuffer(
 
   main_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&gpu::GpuChannel::CreateCommandBuffer,
-                     gpu_channel_->AsWeakPtr(), std::move(params), routing_id,
-                     std::move(shared_state), std::move(receiver),
-                     std::move(client),
-                     base::BindPostTask(base::ThreadTaskRunnerHandle::Get(),
-                                        std::move(callback))));
+      base::BindOnce(
+          &gpu::GpuChannel::CreateCommandBuffer, gpu_channel_->AsWeakPtr(),
+          std::move(params), routing_id, std::move(shared_state),
+          std::move(receiver), std::move(client),
+          base::BindPostTask(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                             std::move(callback))));
 }
 
 void GpuChannelMessageFilter::DestroyCommandBuffer(
@@ -483,10 +482,11 @@ void GpuChannelMessageFilter::WaitForTokenInRange(
   }
   main_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&gpu::GpuChannel::WaitForTokenInRange,
-                     gpu_channel_->AsWeakPtr(), routing_id, start, end,
-                     base::BindPostTask(base::ThreadTaskRunnerHandle::Get(),
-                                        std::move(callback))));
+      base::BindOnce(
+          &gpu::GpuChannel::WaitForTokenInRange, gpu_channel_->AsWeakPtr(),
+          routing_id, start, end,
+          base::BindPostTask(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                             std::move(callback))));
 }
 
 void GpuChannelMessageFilter::WaitForGetOffsetInRange(
@@ -502,11 +502,11 @@ void GpuChannelMessageFilter::WaitForGetOffsetInRange(
   }
   main_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&gpu::GpuChannel::WaitForGetOffsetInRange,
-                     gpu_channel_->AsWeakPtr(), routing_id,
-                     set_get_buffer_count, start, end,
-                     base::BindPostTask(base::ThreadTaskRunnerHandle::Get(),
-                                        std::move(callback))));
+      base::BindOnce(
+          &gpu::GpuChannel::WaitForGetOffsetInRange, gpu_channel_->AsWeakPtr(),
+          routing_id, set_get_buffer_count, start, end,
+          base::BindPostTask(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                             std::move(callback))));
 }
 
 GpuChannel::GpuChannel(

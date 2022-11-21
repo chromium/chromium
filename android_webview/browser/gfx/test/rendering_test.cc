@@ -15,8 +15,8 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/test/compositor_frame_helpers.h"
@@ -51,7 +51,7 @@ class TestBrowserViewRenderer : public BrowserViewRenderer {
 
 RenderingTest::RenderingTest()
     : task_environment_(std::make_unique<base::test::TaskEnvironment>()) {
-  ui_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  ui_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
   android_webview::GpuServiceWebView::GetInstance();
 }
 
@@ -69,15 +69,16 @@ void RenderingTest::SetUpTestHarness() {
   DCHECK(!browser_view_renderer_.get());
   DCHECK(!functor_.get());
   browser_view_renderer_ = std::make_unique<TestBrowserViewRenderer>(
-      this, base::ThreadTaskRunnerHandle::Get());
+      this, base::SingleThreadTaskRunner::GetCurrentDefault());
   browser_view_renderer_->SetActiveFrameSinkId(viz::FrameSinkId(1, 0));
   browser_view_renderer_->SetDipScale(1.0f);
   InitializeCompositor();
   std::unique_ptr<FakeWindow> window(
       new FakeWindow(browser_view_renderer_.get(), this, gfx::Rect(100, 100)));
   functor_ = std::make_unique<FakeFunctor>();
-  functor_->Init(window.get(), std::make_unique<RenderThreadManager>(
-                                   base::ThreadTaskRunnerHandle::Get()));
+  functor_->Init(window.get(),
+                 std::make_unique<RenderThreadManager>(
+                     base::SingleThreadTaskRunner::GetCurrentDefault()));
   browser_view_renderer_->SetCurrentCompositorFrameConsumer(
       functor_->GetCompositorFrameConsumer());
   window_ = std::move(window);

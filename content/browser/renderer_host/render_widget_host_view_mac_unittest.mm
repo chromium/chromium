@@ -16,10 +16,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/child_local_surface_id_allocator.h"
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
@@ -1219,7 +1219,7 @@ TEST_F(RenderWidgetHostViewMacTest, TimerBasedPhaseInfo) {
   // Wait for the mouse_wheel_end_dispatch_timer_ to expire, the pending wheel
   // event gets dispatched.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitWhenIdleClosure(), base::Milliseconds(100));
   run_loop.Run();
 
@@ -1290,7 +1290,7 @@ TEST_F(RenderWidgetHostViewMacTest,
   // because of an attempt to send the pending wheel end event.
   // https://crbug.com/770057
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(),
       max_time_between_phase_ended_and_momentum_phase_began);
   run_loop.Run();
@@ -2266,8 +2266,8 @@ TEST_F(RenderWidgetHostViewMacTest, ConflictingAllocationsResolve) {
   // RenderWidgetHostImpl has delayed auto-resize processing. Yield here to
   // let it complete.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                run_loop.QuitClosure());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
 
   viz::LocalSurfaceId local_surface_id4(rwhv_mac_->GetLocalSurfaceId());

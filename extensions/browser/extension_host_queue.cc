@@ -10,7 +10,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "extensions/browser/deferred_start_render_host.h"
 
 namespace extensions {
@@ -38,7 +37,7 @@ void ExtensionHostQueue::Remove(DeferredStartRenderHost* host) {
 
 void ExtensionHostQueue::PostTask() {
   if (!pending_create_) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ExtensionHostQueue::ProcessOneHost,
                        ptr_factory_.GetWeakPtr()),

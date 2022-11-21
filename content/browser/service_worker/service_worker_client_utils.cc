@@ -14,7 +14,6 @@
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -553,7 +552,7 @@ void GetClient(ServiceWorkerContainerHost* container_host,
     blink::mojom::ServiceWorkerClientInfoPtr info = GetWindowClientInfo(
         container_host->GetRenderFrameHostId(), container_host->create_time(),
         container_host->client_uuid());
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(info)));
     return;
   }
@@ -567,7 +566,7 @@ void GetClient(ServiceWorkerContainerHost* container_host,
       /*is_focused=*/false,
       blink::mojom::ServiceWorkerClientLifecycleState::kActive,
       base::TimeTicks(), container_host->create_time());
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(client_info)));
 }
 

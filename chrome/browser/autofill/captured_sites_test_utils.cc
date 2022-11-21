@@ -458,7 +458,7 @@ content::RenderFrameHost* IFrameWaiter::WaitForFrameMatchingName(
   } else {
     query_type_ = NAME;
     frame_name_ = name;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop_.QuitClosure(), timeout);
     run_loop_.Run();
     return target_frame_;
@@ -476,7 +476,7 @@ content::RenderFrameHost* IFrameWaiter::WaitForFrameMatchingOrigin(
   } else {
     query_type_ = ORIGIN;
     origin_ = origin;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop_.QuitClosure(), timeout);
     run_loop_.Run();
     return target_frame_;
@@ -494,7 +494,7 @@ content::RenderFrameHost* IFrameWaiter::WaitForFrameMatchingUrl(
   } else {
     query_type_ = URL;
     url_ = url;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop_.QuitClosure(), timeout);
     run_loop_.Run();
     return target_frame_;
@@ -618,7 +618,7 @@ bool WebPageReplayServerWrapper::Start(
   // TODO(crbug.com/847910): create a process std stream reader class to use the
   // process output to determine when the server is ready
   base::RunLoop wpr_launch_waiter;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, wpr_launch_waiter.QuitClosure(), base::Seconds(5));
   wpr_launch_waiter.Run();
 
@@ -952,7 +952,7 @@ void TestRecipeReplayer::WaitTillPageIsIdle(
   while (true) {
     {
       base::RunLoop heart_beat;
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE, heart_beat.QuitClosure(), wait_for_idle_loop_length);
       heart_beat.Run();
     }
@@ -976,7 +976,7 @@ void TestRecipeReplayer::WaitTillPageIsIdle(
         GetWebContents());
     {
       base::RunLoop heart_beat;
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE, heart_beat.QuitClosure(), wait_for_idle_loop_length);
       heart_beat.Run();
     }
@@ -1005,7 +1005,7 @@ bool TestRecipeReplayer::WaitForVisualUpdate(base::TimeDelta timeout) {
       GetWebContents());
   while (frame_submission_observer.render_frame_count() == 0) {
     base::RunLoop heart_beat;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, heart_beat.QuitClosure(), wait_for_idle_loop_length);
     heart_beat.Run();
     if ((base::TimeTicks::Now() - start_time) > timeout) {
@@ -1086,7 +1086,7 @@ bool TestRecipeReplayer::ReplayRecordedActions(
                 &execution_state, &thread_finished));
         while (!thread_finished) {
           base::RunLoop run_loop;
-          base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
               FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(1000));
           run_loop.Run();
         }
@@ -1332,7 +1332,7 @@ bool TestRecipeReplayer::ExecuteCoolOffAction(base::Value::Dict action) {
     int seconds = pause_time_container->GetInt();
     cool_off_time = base::Seconds(seconds);
   }
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, heart_beat.QuitClosure(), cool_off_time);
   VLOG(1) << "Pausing execution for '" << cool_off_time.InSeconds()
           << "' seconds";

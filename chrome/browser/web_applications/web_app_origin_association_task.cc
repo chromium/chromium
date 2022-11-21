@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "components/webapps/services/web_app_origin_association/public/mojom/web_app_origin_association_parser.mojom.h"
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_fetcher.h"
@@ -143,7 +143,7 @@ void WebAppOriginAssociationManager::Task::MaybeStartNextUrlHandler() {
 void WebAppOriginAssociationManager::Task::Finalize() {
   apps::UrlHandlers result = std::move(result_);
   result_.clear();
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback_), std::move(result)));
   owner_->OnTaskCompleted();
 }

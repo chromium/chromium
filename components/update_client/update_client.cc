@@ -16,8 +16,8 @@
 #include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/observer_list.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/crx_update_item.h"
@@ -131,7 +131,7 @@ void UpdateClientImpl::Update(const std::vector<std::string>& ids,
 
 void UpdateClientImpl::RunTask(scoped_refptr<Task> task) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&Task::Run, base::Unretained(task.get())));
   tasks_.insert(task);
 }
@@ -142,7 +142,7 @@ void UpdateClientImpl::OnTaskComplete(Callback callback,
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(task);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), error));
 
   // Remove the task from the set of the running tasks. Only tasks handled by

@@ -12,7 +12,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/types/optional_util.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/simple_sync_token_client.h"
@@ -177,7 +177,7 @@ void MojoVideoDecoderService::Construct(
   client_.Bind(std::move(client));
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      base::ThreadTaskRunnerHandle::Get();
+      base::SingleThreadTaskRunner::GetCurrentDefault();
 
   media_log_ =
       std::make_unique<MojoMediaLog>(std::move(media_log), task_runner);

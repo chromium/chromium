@@ -14,7 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -212,7 +212,7 @@ class OmniboxViewTest : public InProcessBrowserTest {
                            int modifiers) {
     // Press the accelerator after starting to wait for a browser to close as
     // the close may be synchronous.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             [](const Browser* browser, ui::KeyboardCode key, int modifiers) {
@@ -1453,7 +1453,7 @@ class NavigationMetricsRecorderIDNABrowserTest : public InProcessBrowserTest {
     // Press enter and wait for the navigation to finish.
     content::TestNavigationObserver navigation_observer(
         browser()->tab_strip_model()->GetActiveWebContents(), 1);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             [](const Browser* browser) {

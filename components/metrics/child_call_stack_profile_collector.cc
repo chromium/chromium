@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/synchronization/lock.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
 
@@ -46,7 +46,7 @@ void ChildCallStackProfileCollector::SetParentProfileCollector(
   // retaining profiles after construction.
   DCHECK(retain_profiles_);
   retain_profiles_ = false;
-  task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
   // This should only be set one time per child process.
   DCHECK(!parent_collector_);
   // If |parent_collector| is mojo::NullRemote(), it skips Bind since
@@ -71,8 +71,8 @@ void ChildCallStackProfileCollector::Collect(base::TimeTicks start_timestamp,
   if (task_runner_ &&
       // The profiler thread does not have a task runner. Attempting to
       // invoke Get() on it results in a DCHECK.
-      (!base::ThreadTaskRunnerHandle::IsSet() ||
-       base::ThreadTaskRunnerHandle::Get() != task_runner_)) {
+      (!base::SingleThreadTaskRunner::HasCurrentDefault() ||
+       base::SingleThreadTaskRunner::GetCurrentDefault() != task_runner_)) {
     // Post back to the thread that owns the the parent interface.
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&ChildCallStackProfileCollector::Collect,

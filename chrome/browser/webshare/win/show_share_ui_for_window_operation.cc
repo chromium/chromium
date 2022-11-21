@@ -10,7 +10,7 @@
 #include <wrl/event.h>
 
 #include "base/callback.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/windows_version.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -148,7 +148,7 @@ void ShowShareUIForWindowOperation::Run(
   // therefore never comes)
   if (SUCCEEDED(hr) && weak_ptr && data_requested_callback_) {
     remove_data_requested_listener_ = std::move(remove_data_requested_listener);
-    if (!base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    if (!base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(&ShowShareUIForWindowOperation::Cancel, weak_ptr),
             kMaxExecutionTime)) {

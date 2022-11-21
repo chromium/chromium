@@ -82,7 +82,7 @@ class MockServerSocket : public net::ServerSocket {
     run_loop_.Quit();
 
     if (mode_ == net::ASYNC) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&MockServerSocket::CompleteAccept,
                                     base::Unretained(this), accept_result_));
       return net::ERR_IO_PENDING;

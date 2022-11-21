@@ -9,7 +9,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
@@ -252,7 +252,7 @@ void FakeHermesEuiccClient::InstallProfileFromActivationCode(
     const std::string& activation_code,
     const std::string& confirmation_code,
     InstallCarrierProfileCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&FakeHermesEuiccClient::DoInstallProfileFromActivationCode,
                      weak_ptr_factory_.GetWeakPtr(), euicc_path,
@@ -265,7 +265,7 @@ void FakeHermesEuiccClient::InstallPendingProfile(
     const dbus::ObjectPath& carrier_profile_path,
     const std::string& confirmation_code,
     HermesResponseCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&FakeHermesEuiccClient::DoInstallPendingProfile,
                      weak_ptr_factory_.GetWeakPtr(), euicc_path,
@@ -279,7 +279,7 @@ void FakeHermesEuiccClient::RefreshInstalledProfiles(
     bool restore_slot,
     HermesResponseCallback callback) {
   last_restore_slot_arg_ = restore_slot;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&FakeHermesEuiccClient::DoRequestInstalledProfiles,
                      weak_ptr_factory_.GetWeakPtr(), euicc_path,
@@ -291,7 +291,7 @@ void FakeHermesEuiccClient::RequestPendingProfiles(
     const dbus::ObjectPath& euicc_path,
     const std::string& root_smds,
     HermesResponseCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&FakeHermesEuiccClient::DoRequestPendingProfiles,
                      weak_ptr_factory_.GetWeakPtr(), euicc_path,
@@ -303,7 +303,7 @@ void FakeHermesEuiccClient::UninstallProfile(
     const dbus::ObjectPath& euicc_path,
     const dbus::ObjectPath& carrier_profile_path,
     HermesResponseCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&FakeHermesEuiccClient::DoUninstallProfile,
                      weak_ptr_factory_.GetWeakPtr(), euicc_path,
@@ -315,7 +315,7 @@ void FakeHermesEuiccClient::ResetMemory(
     const dbus::ObjectPath& euicc_path,
     hermes::euicc::ResetOptions reset_option,
     HermesResponseCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&FakeHermesEuiccClient::DoResetMemory,
                      weak_ptr_factory_.GetWeakPtr(), euicc_path, reset_option,
@@ -543,7 +543,7 @@ void FakeHermesEuiccClient::CreateCellularService(
 void FakeHermesEuiccClient::CallNotifyPropertyChanged(
     const dbus::ObjectPath& object_path,
     const std::string& property_name) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeHermesEuiccClient::NotifyPropertyChanged,
                      base::Unretained(this), object_path, property_name));

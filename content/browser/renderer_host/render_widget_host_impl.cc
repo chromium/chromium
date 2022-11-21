@@ -36,7 +36,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/optional_trace_event.h"
 #include "base/trace_event/trace_event.h"
@@ -3421,7 +3420,7 @@ void RenderWidgetHostImpl::GotResponseToForceRedraw(int snapshot_id) {
   // snapshot will actually pick up that content. Insert a manual delay of
   // 1/6th of a second (to simulate 10 frames at 60 fps) before actually
   // taking the snapshot.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&RenderWidgetHostImpl::WindowSnapshotReachedScreen,
                      weak_factory_.GetWeakPtr(), snapshot_id),

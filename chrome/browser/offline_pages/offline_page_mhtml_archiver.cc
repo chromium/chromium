@@ -15,8 +15,8 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/offline_pages/offline_page_utils.h"
 #include "components/offline_pages/core/archive_validator.h"
 #include "components/offline_pages/core/model/offline_page_model_utils.h"
@@ -161,7 +161,7 @@ void OfflinePageMHTMLArchiver::OnComputeDigestDone(
         OfflineTimeNow() - digest_start_time);
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback_), ArchiverResult::SUCCESSFULLY_CREATED,
                      url, file_path, title, file_size, digest));
@@ -177,7 +177,7 @@ void OfflinePageMHTMLArchiver::DeleteFileAndReportFailure(
 
 void OfflinePageMHTMLArchiver::ReportFailure(ArchiverResult result) {
   DCHECK(result != ArchiverResult::SUCCESSFULLY_CREATED);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback_), result, GURL(), base::FilePath(),
                      std::u16string(), 0, std::string()));

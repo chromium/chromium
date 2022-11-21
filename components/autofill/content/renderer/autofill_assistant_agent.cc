@@ -4,7 +4,7 @@
 
 #include "components/autofill/content/renderer/autofill_assistant_agent.h"
 
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
 
@@ -29,7 +29,8 @@ void AutofillAssistantAgent::DisableKeyboard() {
 }
 
 void AutofillAssistantAgent::OnDestruct() {
-  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                                this);
 }
 
 }  // namespace autofill

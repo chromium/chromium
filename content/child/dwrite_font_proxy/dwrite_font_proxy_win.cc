@@ -461,7 +461,7 @@ HRESULT DWriteFontCollectionProxy::RuntimeClassInitialize(
   factory_ = factory;
   if (proxy)
     font_proxy_.GetOrCreateValue().Bind(std::move(proxy));
-  main_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  main_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
   // |prewarm_task_runner_| needs to be initialized later because ThreadPool is
   // not setup yet when |this| is instantiated. See |InitializePrewarmer|.
 

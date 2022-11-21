@@ -6,8 +6,8 @@
 
 #include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/segmentation_platform/internal/database/mock_signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
@@ -67,7 +67,7 @@ class TestDefaultModelManager : public DefaultModelManager {
   void GetAllSegmentInfoFromDefaultModel(
       const base::flat_set<SegmentId>& segment_ids,
       MultipleSegmentInfoCallback callback) override {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   DefaultModelManager::SegmentInfoList()));
   }

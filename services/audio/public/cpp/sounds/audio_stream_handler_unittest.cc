@@ -14,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_message_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/simple_sources.h"
 #include "media/audio/test_audio_thread.h"
@@ -77,12 +76,12 @@ TEST_F(AudioStreamHandlerTest, ConsecutivePlayRequests) {
   EXPECT_EQ(base::Microseconds(20u), audio_stream_handler->duration());
 
   ASSERT_TRUE(audio_stream_handler->Play());
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(base::IgnoreResult(&AudioStreamHandler::Play),
                      base::Unretained(audio_stream_handler.get())),
       base::Seconds(1));
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&AudioStreamHandler::Stop,
                      base::Unretained(audio_stream_handler.get())),

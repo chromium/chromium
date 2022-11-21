@@ -293,7 +293,7 @@ void Euicc::OnRequestPendingProfilesResult(
 
   // TODO(crbug.com/1216693) Update with more robust way of waiting for eSIM
   // profile objects to be loaded.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(std::move(callback), operation_result),
       kPendingProfileRefreshDelay);
 

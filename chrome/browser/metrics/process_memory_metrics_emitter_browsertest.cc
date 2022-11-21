@@ -81,8 +81,8 @@ int GetNumRenderers(Browser* browser) {
 void RequestGlobalDumpCallback(base::OnceClosure quit_closure,
                                bool success,
                                uint64_t) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                std::move(quit_closure));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(quit_closure));
   ASSERT_TRUE(success);
 }
 

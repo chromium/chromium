@@ -27,7 +27,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/color_plane_layout.h"
@@ -170,7 +169,7 @@ base::AtomicRefCount V4L2VideoEncodeAccelerator::num_instances_(0);
 V4L2VideoEncodeAccelerator::V4L2VideoEncodeAccelerator(
     scoped_refptr<V4L2Device> device)
     : can_use_encoder_(num_instances_.Increment() < kMaxNumOfInstances),
-      child_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      child_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       native_input_mode_(false),
       output_buffer_byte_size_(0),
       output_format_fourcc_(0),

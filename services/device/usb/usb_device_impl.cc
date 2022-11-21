@@ -15,7 +15,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/usb/usb_context.h"
@@ -59,7 +58,8 @@ void UsbDeviceImpl::Open(OpenCallback callback) {
   blocking_task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&UsbDeviceImpl::OpenOnBlockingThread, this,
-                     std::move(callback), base::ThreadTaskRunnerHandle::Get(),
+                     std::move(callback),
+                     base::SingleThreadTaskRunner::GetCurrentDefault(),
                      blocking_task_runner));
 }
 

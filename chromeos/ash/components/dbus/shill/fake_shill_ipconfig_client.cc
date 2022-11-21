@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -39,7 +38,7 @@ void FakeShillIPConfigClient::GetProperties(
   const base::Value* dict = ipconfigs_.FindDictKey(ipconfig_path.value());
   if (!dict)
     return;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), dict->Clone()));
 }
 
@@ -56,7 +55,7 @@ void FakeShillIPConfigClient::SetProperty(
 
   // Update existing ip config stub object's properties.
   dict->SetKey(name, value.Clone());
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
@@ -64,14 +63,14 @@ void FakeShillIPConfigClient::ClearProperty(
     const dbus::ObjectPath& ipconfig_path,
     const std::string& name,
     chromeos::VoidDBusMethodCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
 void FakeShillIPConfigClient::Remove(
     const dbus::ObjectPath& ipconfig_path,
     chromeos::VoidDBusMethodCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 

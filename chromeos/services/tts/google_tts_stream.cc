@@ -122,7 +122,7 @@ void GoogleTtsStream::Speak(const std::vector<uint8_t>& text_jspb,
   tts_player_.Play(std::move(callback));
   is_buffering_ = true;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&GoogleTtsStream::ReadMoreFrames,
                      weak_factory_.GetWeakPtr(), true /* is_first_buffer */));
@@ -178,7 +178,7 @@ void GoogleTtsStream::ReadMoreFrames(bool is_first_buffer) {
     return;
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&GoogleTtsStream::ReadMoreFrames,
                      weak_factory_.GetWeakPtr(), false /* is_first_buffer */));

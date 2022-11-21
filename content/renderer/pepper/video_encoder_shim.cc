@@ -14,7 +14,6 @@
 #include "base/location.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "content/renderer/pepper/pepper_video_encoder_host.h"
 #include "content/renderer/render_thread_impl.h"
@@ -152,9 +151,8 @@ class VideoEncoderShim::EncoderImpl {
 VideoEncoderShim::EncoderImpl::EncoderImpl(
     const base::WeakPtr<VideoEncoderShim>& shim)
     : shim_(shim),
-      renderer_task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      initialized_(false) {
-}
+      renderer_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
+      initialized_(false) {}
 
 VideoEncoderShim::EncoderImpl::~EncoderImpl() {
   if (initialized_)

@@ -16,7 +16,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/no_destructor.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "components/exo/input_trace.h"
 #include "components/exo/keyboard_delegate.h"
@@ -499,7 +499,7 @@ void Keyboard::ProcessExpiredPendingKeyAcks() {
 void Keyboard::ScheduleProcessExpiredPendingKeyAcks(base::TimeDelta delay) {
   DCHECK(!process_expired_pending_key_acks_pending_);
   process_expired_pending_key_acks_pending_ = true;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&Keyboard::ProcessExpiredPendingKeyAcks,
                      weak_ptr_factory_.GetWeakPtr()),

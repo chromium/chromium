@@ -11,7 +11,6 @@
 #include "base/location.h"
 #include "base/memory/raw_ref.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/android/chrome_jni_headers/ConnectivityChecker_jni.h"
@@ -54,7 +53,7 @@ void JNI_ConnectivityChecker_PostCallback(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_callback,
     ConnectivityCheckResult result) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ExecuteCallback,
                      base::android::ScopedJavaGlobalRef<jobject>(j_callback),
@@ -115,7 +114,8 @@ void ConnectivityChecker::OnURLLoadComplete(
   else
     ExecuteCallback(java_callback_, CONNECTIVITY_CHECK_RESULT_NOT_CONNECTED);
 
-  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                                this);
 }
 
 ConnectivityChecker::ConnectivityChecker(
@@ -152,7 +152,8 @@ void ConnectivityChecker::OnTimeout() {
   is_being_destroyed_ = true;
   url_loader_.reset();
   ExecuteCallback(java_callback_, CONNECTIVITY_CHECK_RESULT_TIMEOUT);
-  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                                this);
 }
 
 }  // namespace

@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/browser/accessibility/render_accessibility_host.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
@@ -360,7 +360,7 @@ void RenderFrameHostImpl::SetUpMojoConnection() {
       remote_interfaces.InitWithNewPipeAndPassReceiver());
 
   remote_interfaces_ = std::make_unique<service_manager::InterfaceProvider>(
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   remote_interfaces_->Bind(std::move(remote_interfaces));
 
   // Called to bind the receiver for this interface to the local frame. We need

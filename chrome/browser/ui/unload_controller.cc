@@ -9,7 +9,6 @@
 #include "base/location.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/ui/browser.h"
@@ -400,7 +399,7 @@ void UnloadController::ClearUnloadState(content::WebContents* web_contents,
       // Do not post a new task if there is already any.
       if (weak_factory_.HasWeakPtrs())
         return;
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&UnloadController::ProcessPendingTabs,
                                     weak_factory_.GetWeakPtr(), false));
     }

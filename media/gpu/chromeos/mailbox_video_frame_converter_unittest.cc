@@ -5,10 +5,10 @@
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
 
 #include "base/bind.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "media/base/simple_sync_token_client.h"
 #include "media/video/fake_gpu_memory_buffer.h"
@@ -140,7 +140,8 @@ class MailboxVideoFrameConverterWithUnwrappedFramesTest
         std::move(mock_gpu_delegate),
         /*enable_unsafe_webgpu=*/false));
     converter_->Initialize(
-        /*parent_task_runner=*/base::ThreadTaskRunnerHandle::Get(),
+        /*parent_task_runner=*/base::SingleThreadTaskRunner::
+            GetCurrentDefault(),
         mock_output_cb_.Get());
   }
   MailboxVideoFrameConverterWithUnwrappedFramesTest(

@@ -15,7 +15,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "components/cronet/native/test/test_upload_data_provider.h"
 #include "components/cronet/native/test/test_url_request_callback.h"
@@ -130,7 +129,7 @@ class Callback : public cronet::test::TestUrlRequestCallback {
  public:
   Callback()
       : TestUrlRequestCallback(true),
-        task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+        task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
   ~Callback() override { Cronet_UrlRequestCallback_Destroy(callback_); }
 
   // Start one repeated UrlRequest. |iterations_completed| is used to keep track

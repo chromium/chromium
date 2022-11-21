@@ -22,9 +22,9 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/supports_user_data.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/download/database/in_progress/download_entry.h"
 #include "components/download/public/common/download_create_info.h"
@@ -1146,7 +1146,7 @@ void DownloadManagerImpl::PostInitialization(
       in_progress_cache_initialized_ = true;
       // Post a task to load downloads from history db.
       if (load_history_downloads_cb_) {
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, std::move(load_history_downloads_cb_));
       }
       break;

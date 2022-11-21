@@ -13,7 +13,7 @@
 #include "ash/touch/ash_touch_transform_controller.h"
 #include "base/bind.h"
 #include "base/ranges/algorithm.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/display/manager/touch_device_manager.h"
 #include "ui/display/screen.h"
@@ -158,7 +158,7 @@ void TouchCalibratorController::StopCalibrationAndResetParams() {
   state_ = CalibrationState::kInactive;
 
   if (opt_callback_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(opt_callback_), false /* failure */));
     opt_callback_.Reset();
@@ -187,7 +187,7 @@ void TouchCalibratorController::CompleteCalibration(
   }
 
   if (opt_callback_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(opt_callback_), true /* success */));
     opt_callback_.Reset();

@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace query_tiles {
 
@@ -37,7 +37,7 @@ void InitAwareTileService::GetQueryTiles(GetTilesCallback callback) {
   }
 
   if (IsFailed()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), TileList()));
     return;
   }
@@ -55,7 +55,7 @@ void InitAwareTileService::GetTile(const std::string& tile_id,
   }
 
   if (IsFailed()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }
@@ -75,7 +75,7 @@ void InitAwareTileService::StartFetchForTiles(
   }
 
   if (IsFailed()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), false /*need_reschedule*/));
     return;

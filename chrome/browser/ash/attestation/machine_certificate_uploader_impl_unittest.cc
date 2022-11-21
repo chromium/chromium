@@ -11,7 +11,6 @@
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/attestation_key_payload.pb.h"
 #include "chrome/browser/ash/attestation/machine_certificate_uploader_impl.h"
@@ -44,20 +43,20 @@ constexpr char kFakeCertificate[] = "fake_cert";
 
 void CertCallbackUnspecifiedFailure(
     AttestationFlow::CertificateCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), ATTESTATION_UNSPECIFIED_FAILURE, ""));
 }
 
 void CertCallbackBadRequestFailure(
     AttestationFlow::CertificateCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
                                 ATTESTATION_SERVER_BAD_REQUEST_FAILURE, ""));
 }
 
 void StatusCallbackSuccess(policy::CloudPolicyClient::StatusCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 

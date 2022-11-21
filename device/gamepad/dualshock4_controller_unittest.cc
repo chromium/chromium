@@ -155,14 +155,14 @@ class Dualshock4ControllerTest : public testing::Test {
         mojom::GamepadEffectParameters::New(
             kDurationMillis, start_delay, strong_magnitude, weak_magnitude,
             /*left_trigger=*/0, /*right_trigger=*/0),
-        std::move(callback), base::ThreadTaskRunnerHandle::Get());
+        std::move(callback), base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   void PostResetVibration(
       Dualshock4Controller* gamepad,
       mojom::GamepadHapticsManager::ResetVibrationActuatorCallback callback) {
     gamepad->ResetVibration(std::move(callback),
-                            base::ThreadTaskRunnerHandle::Get());
+                            base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   // Callback for PlayEffect or ResetVibration.

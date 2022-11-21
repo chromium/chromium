@@ -1643,7 +1643,7 @@ void RenderWidgetHostViewMac::SyncIsWidgetForMainFrame(
 
 void RenderWidgetHostViewMac::RequestShutdown() {
   if (!weak_factory_.HasWeakPtrs()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&RenderWidgetHostViewMac::ShutdownHost,
                                   weak_factory_.GetWeakPtr()));
   }

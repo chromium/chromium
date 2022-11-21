@@ -5,7 +5,7 @@
 #include "chrome/browser/web_applications/web_app_icon_downloader.h"
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "content/public/browser/navigation_handle.h"
@@ -159,7 +159,7 @@ void WebAppIconDownloader::WebContentsDestroyed() {
 
 void WebAppIconDownloader::CompleteCallback() {
   DCHECK(callback_);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback_), IconsDownloadedResult::kCompleted,
                      std::move(icons_map_), std::move(icons_http_results_)));

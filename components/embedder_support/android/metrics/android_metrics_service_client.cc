@@ -534,7 +534,7 @@ void AndroidMetricsServiceClient::CollectFinalMetricsForLog(
   // child processes. |timeout| specifies how long to wait before absolutely
   // calling us back on the task.
   content::FetchHistogramsAsynchronously(
-      base::ThreadTaskRunnerHandle::Get(),
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
       CreateChainedClosure(std::move(done_callback),
                            on_final_metrics_collected_listener_),
       timeout);

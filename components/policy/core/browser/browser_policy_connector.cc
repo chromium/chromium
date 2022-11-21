@@ -15,7 +15,7 @@
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -59,7 +59,8 @@ void BrowserPolicyConnector::InitInternal(
   policy_statistics_collector_ =
       std::make_unique<policy::PolicyStatisticsCollector>(
           base::BindRepeating(&GetChromePolicyDetails), GetChromeSchema(),
-          GetPolicyService(), local_state, base::ThreadTaskRunnerHandle::Get());
+          GetPolicyService(), local_state,
+          base::SingleThreadTaskRunner::GetCurrentDefault());
   policy_statistics_collector_->Initialize();
 }
 

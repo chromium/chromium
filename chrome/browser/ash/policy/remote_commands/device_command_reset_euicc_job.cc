@@ -14,7 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/syslog_logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chromeos/ash/components/network/cellular_esim_uninstall_handler.h"
@@ -107,7 +107,7 @@ void DeviceCommandResetEuiccJob::OnResetMemoryResponse(
 void DeviceCommandResetEuiccJob::RunResultCallback(
     CallbackWithResult callback) {
   // Post |callback| to ensure async execution as required for RunImpl.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), /*result_payload=*/nullptr));
 }

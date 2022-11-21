@@ -456,8 +456,8 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
 
     // Waits for main thread callback scheduled by `PaintManager`.
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  run_loop.QuitClosure());
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
   }
 

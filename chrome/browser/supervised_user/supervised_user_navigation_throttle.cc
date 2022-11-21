@@ -11,7 +11,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_interstitial.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
@@ -193,7 +192,7 @@ void SupervisedUserNavigationThrottle::ShowInterstitial(
   // NavigationThrottle. This also lets OnInterstitialResult to be invoked
   // synchronously, once a callback is passed into the
   // SupervisedUserNavigationObserver.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&SupervisedUserNavigationThrottle::ShowInterstitialAsync,
                      weak_ptr_factory_.GetWeakPtr(), reason));

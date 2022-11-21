@@ -175,7 +175,7 @@ bool CustomManagePasswordsUIController::WaitForFallbackForSaving(
   base::RunLoop run_loop;
   wait_for_fallback_ = true;
   run_loop_ = &run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop_->QuitClosure(), timeout);
   run_loop_->Run();
   bool shownFallbackForSaving = !wait_for_fallback_;

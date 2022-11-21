@@ -8,7 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
@@ -109,7 +109,7 @@ gpu::ContextResult InProcessContextProvider::BindToCurrentSequence() {
     return bind_result_;
 
   cache_controller_ = std::make_unique<viz::ContextCacheController>(
-      impl_base_, base::ThreadTaskRunnerHandle::Get());
+      impl_base_, base::SingleThreadTaskRunner::GetCurrentDefault());
   if (support_locking_)
     cache_controller_->SetLock(GetLock());
 

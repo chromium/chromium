@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/android/vr/cardboard_input_delegate.h"
 #include "chrome/browser/android/vr/gvr_input_delegate.h"
 #include "chrome/browser/android/vr/gvr_scheduler_delegate.h"
@@ -72,7 +72,7 @@ std::unique_ptr<BrowserRenderer> BrowserRendererFactory::Create(
       graphics_delegate.get(), params->ui_initial_state.in_web_vr,
       params->cardboard_gamepad, kSlidingAverageSize);
   graphics_delegate->set_webxr_presentation_state(scheduler_delegate->webxr());
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&GvrGraphicsDelegate::Init,
                      graphics_delegate->GetWeakPtr(),

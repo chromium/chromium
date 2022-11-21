@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -25,7 +25,7 @@ FakeInstallableManager::~FakeInstallableManager() {}
 
 void FakeInstallableManager::GetData(const InstallableParams& params,
                                      InstallableCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeInstallableManager::RunCallback,
                      weak_factory_.GetWeakPtr(), std::move(callback)));

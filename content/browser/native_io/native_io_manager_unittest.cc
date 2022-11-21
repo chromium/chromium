@@ -246,9 +246,10 @@ class NativeIOManagerTest : public testing::TestWithParam<bool> {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
     quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
         /*is_incognito=*/false, data_dir_.GetPath(),
-        base::ThreadTaskRunnerHandle::Get(), special_storage_policy_);
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        special_storage_policy_);
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
-        quota_manager(), base::ThreadTaskRunnerHandle::Get());
+        quota_manager(), base::SingleThreadTaskRunner::GetCurrentDefault());
     manager_ = std::make_unique<NativeIOManager>(data_dir_.GetPath(),
 #if BUILDFLAG(IS_MAC)
                                                  allow_set_length_ipc(),
@@ -888,10 +889,12 @@ TEST_P(NativeIOManagerTest, GetStorageKeyUsage_NonexistingStorageKeyUsage) {
 TEST_P(NativeIOManagerTest, IncognitoQuota) {
   auto quota_manager = base::MakeRefCounted<storage::MockQuotaManager>(
       /*is_incognito=*/true, base::FilePath(),
-      base::ThreadTaskRunnerHandle::Get().get(), special_storage_policy_);
+      base::SingleThreadTaskRunner::GetCurrentDefault().get(),
+      special_storage_policy_);
   auto quota_manager_proxy =
       base::MakeRefCounted<storage::MockQuotaManagerProxy>(
-          quota_manager.get(), base::ThreadTaskRunnerHandle::Get());
+          quota_manager.get(),
+          base::SingleThreadTaskRunner::GetCurrentDefault());
   auto manager = std::make_unique<NativeIOManager>(base::FilePath(),
 #if BUILDFLAG(IS_MAC)
                                                    allow_set_length_ipc(),

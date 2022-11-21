@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/cast_streaming/public/remoting_proto_enum_utils.h"
 #include "components/cast_streaming/public/remoting_proto_utils.h"
 #include "media/base/bind_to_current_loop.h"
@@ -56,7 +55,7 @@ StreamProvider::MediaStream::MediaStream(
     Type type,
     int remote_handle,
     const scoped_refptr<base::SequencedTaskRunner>& media_task_runner)
-    : main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+    : main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       media_task_runner_(media_task_runner),
       rpc_messenger_(rpc_messenger),
       type_(type),
@@ -428,7 +427,7 @@ void StreamProvider::MediaStream::OnError(const std::string& error) {
 StreamProvider::StreamProvider(
     ReceiverController* receiver_controller,
     const scoped_refptr<base::SequencedTaskRunner>& media_task_runner)
-    : main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+    : main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       media_task_runner_(media_task_runner),
       receiver_controller_(receiver_controller),
       rpc_messenger_(receiver_controller_->rpc_messenger()) {

@@ -119,7 +119,7 @@ void FakeDataRetriever::BuildDefaultDataToRetrieve(const GURL& url,
 
 void FakeDataRetriever::ScheduleCompletionCallback() {
   // If |this| DataRetriever destroyed, the completion callback gets cancelled.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&FakeDataRetriever::CallCompletionCallback,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

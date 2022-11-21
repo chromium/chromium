@@ -12,7 +12,6 @@
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/device_identity/device_oauth2_token_store.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -328,7 +327,7 @@ void DeviceOAuth2TokenService::FailRequest(
                 GoogleServiceAuthError::InvalidGaiaCredentialsReason::
                     CREDENTIALS_REJECTED_BY_SERVER)
           : GoogleServiceAuthError(error);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&OAuth2AccessTokenManager::RequestImpl::InformConsumer,
                      request->AsWeakPtr(), auth_error,

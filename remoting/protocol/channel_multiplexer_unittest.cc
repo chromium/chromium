@@ -14,7 +14,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "net/base/completion_repeating_callback.h"
 #include "net/base/net_errors.h"
 #include "net/socket/socket.h"
@@ -43,7 +42,7 @@ const char kTestChannelName2[] = "test2";
 
 
 void QuitCurrentThread() {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
 }
 

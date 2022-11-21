@@ -27,7 +27,6 @@
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -787,7 +786,7 @@ void MockHostResolverBase::ResolveAllPending() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(ondemand_mode_);
   for (auto& [id, request] : state_->mutable_requests()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&MockHostResolverBase::ResolveNow, AsWeakPtr(), id));
   }
@@ -949,7 +948,7 @@ int MockHostResolverBase::Resolve(RequestImpl* request) {
   state_->mutable_requests()[id] = request;
 
   if (!ondemand_mode_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&MockHostResolverBase::ResolveNow, AsWeakPtr(), id));
   }

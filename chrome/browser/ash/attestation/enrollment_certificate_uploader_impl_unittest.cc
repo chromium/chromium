@@ -12,7 +12,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/attestation_key_payload.pb.h"
 #include "chrome/browser/ash/attestation/enrollment_certificate_uploader_impl.h"
@@ -41,30 +40,30 @@ constexpr int kRetryLimit = 3;
 
 void CertCallbackSuccess(CertCallback callback,
                          const std::string& certificate) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), ATTESTATION_SUCCESS, certificate));
 }
 
 void CertCallbackUnspecifiedFailure(CertCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), ATTESTATION_UNSPECIFIED_FAILURE, ""));
 }
 
 void CertCallbackBadRequestFailure(CertCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
                                 ATTESTATION_SERVER_BAD_REQUEST_FAILURE, ""));
 }
 
 void StatusCallbackFailure(policy::CloudPolicyClient::StatusCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), false));
 }
 
 void StatusCallbackSuccess(policy::CloudPolicyClient::StatusCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 

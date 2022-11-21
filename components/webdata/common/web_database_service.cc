@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/webdata/common/web_data_request_manager.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_data_service_consumer.h"
@@ -22,7 +22,8 @@ class WebDatabaseService::BackendDelegate
  public:
   BackendDelegate(const base::WeakPtr<WebDatabaseService>& web_database_service)
       : web_database_service_(web_database_service),
-        callback_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+        callback_task_runner_(
+            base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
   void DBLoaded(sql::InitStatus status,
                 const std::string& diagnostics) override {

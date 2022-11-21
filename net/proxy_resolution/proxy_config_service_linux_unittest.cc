@@ -25,7 +25,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_service_common_unittest.h"
@@ -311,8 +310,8 @@ class SyncConfigGetter : public ProxyConfigService::Observer {
   // default glib main loop, which is the glib thread).
   void SetupAndInitialFetch() {
     config_service_->SetupAndFetchInitialConfig(
-        base::ThreadTaskRunnerHandle::Get(), main_thread_.task_runner(),
-        TRAFFIC_ANNOTATION_FOR_TESTS);
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        main_thread_.task_runner(), TRAFFIC_ANNOTATION_FOR_TESTS);
   }
   // Synchronously gets the proxy config.
   ProxyConfigService::ConfigAvailability SyncGetLatestProxyConfig(

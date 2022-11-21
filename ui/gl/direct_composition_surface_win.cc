@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
@@ -51,7 +51,7 @@ DirectCompositionSurfaceWin::DirectCompositionSurfaceWin(
       child_window_(parent_window),
       vsync_callback_(std::move(vsync_callback)),
       vsync_thread_(VSyncThreadWin::GetInstance()),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       max_pending_frames_(settings.max_pending_frames),
       root_surface_(new DirectCompositionChildSurfaceWin(
           display,

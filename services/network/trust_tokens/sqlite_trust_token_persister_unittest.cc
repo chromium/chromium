@@ -11,9 +11,9 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/sqlite_proto/key_value_data.h"
 #include "services/network/trust_tokens/trust_token_database_owner.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -41,7 +41,7 @@ TEST(SQLiteTrustTokenPersister, PutReinitializeAndGet) {
   {
     std::unique_ptr<SQLiteTrustTokenPersister> persister;
     SQLiteTrustTokenPersister::CreateForFilePath(
-        base::ThreadTaskRunnerHandle::Get(), temp_path,
+        base::SingleThreadTaskRunner::GetCurrentDefault(), temp_path,
         /*flush_delay_for_writes=*/base::TimeDelta(),
         base::BindLambdaForTesting(
             [&persister](std::unique_ptr<SQLiteTrustTokenPersister> created) {
@@ -64,7 +64,7 @@ TEST(SQLiteTrustTokenPersister, PutReinitializeAndGet) {
 
   std::unique_ptr<SQLiteTrustTokenPersister> persister;
   SQLiteTrustTokenPersister::CreateForFilePath(
-      base::ThreadTaskRunnerHandle::Get(), temp_path,
+      base::SingleThreadTaskRunner::GetCurrentDefault(), temp_path,
       /*flush_delay_for_writes=*/base::TimeDelta(),
       base::BindLambdaForTesting(
           [&persister](std::unique_ptr<SQLiteTrustTokenPersister> created) {
@@ -101,7 +101,7 @@ TEST(SQLiteTrustTokenPersister, NonexistentDirectory) {
 
   std::unique_ptr<SQLiteTrustTokenPersister> persister;
   SQLiteTrustTokenPersister::CreateForFilePath(
-      base::ThreadTaskRunnerHandle::Get(), temp_path,
+      base::SingleThreadTaskRunner::GetCurrentDefault(), temp_path,
       /*flush_delay_for_writes=*/base::TimeDelta(),
       base::BindLambdaForTesting(
           [&persister](std::unique_ptr<SQLiteTrustTokenPersister> created) {

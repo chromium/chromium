@@ -10,8 +10,8 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
@@ -93,7 +93,7 @@ class PrefProxyConfigTrackerImplTest : public testing::Test {
     delegate_service_ =
         new TestProxyConfigService(fixed_config_, delegate_config_availability);
     proxy_config_tracker_ = std::make_unique<PrefProxyConfigTrackerImpl>(
-        pref_service_.get(), base::ThreadTaskRunnerHandle::Get());
+        pref_service_.get(), base::SingleThreadTaskRunner::GetCurrentDefault());
     proxy_config_service_ =
         proxy_config_tracker_->CreateTrackingProxyConfigService(
             std::unique_ptr<net::ProxyConfigService>(delegate_service_));

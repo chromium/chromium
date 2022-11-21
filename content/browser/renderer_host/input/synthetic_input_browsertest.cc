@@ -171,7 +171,7 @@ IN_PROC_BROWSER_TEST_P(SyntheticInputTest, DestroyWidgetWithOngoingGesture) {
 
   while (!gesture_observer.HasSeenGestureScrollBegin()) {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
     run_loop.Run();
   }

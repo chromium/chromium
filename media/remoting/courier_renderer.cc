@@ -13,7 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_math.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "components/cast_streaming/public/remoting_proto_enum_utils.h"
@@ -83,7 +83,7 @@ CourierRenderer::CourierRenderer(
     const base::WeakPtr<RendererController>& controller,
     VideoRendererSink* video_renderer_sink)
     : state_(STATE_UNINITIALIZED),
-      main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       media_task_runner_(std::move(media_task_runner)),
       media_resource_(nullptr),
       client_(nullptr),

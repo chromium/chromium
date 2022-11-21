@@ -14,8 +14,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/system/system_monitor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chromeos/ash/components/audio/audio_devices_pref_handler.h"
 #include "chromeos/ash/components/audio/audio_devices_pref_handler_stub.h"
@@ -537,7 +537,7 @@ class HDMIRediscoverWaiter {
 
   void WaitUntilTimeOut(int wait_duration_in_ms) {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(),
         base::Milliseconds(wait_duration_in_ms));
     run_loop.Run();
@@ -548,7 +548,7 @@ class HDMIRediscoverWaiter {
       std::move(quit_loop_func).Run();
       return;
     }
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&HDMIRediscoverWaiter::CheckHDMIRediscoverGracePeriodEnd,
                        base::Unretained(this), std::move(quit_loop_func)),

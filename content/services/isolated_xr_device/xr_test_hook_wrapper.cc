@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/services/isolated_xr_device/xr_test_hook_wrapper.h"
-
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace device {
 
@@ -205,7 +204,7 @@ void XRTestHookWrapper::AttachCurrentThread() {
   if (pending_hook_)
     hook_.Bind(std::move(pending_hook_));
 
-  current_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  current_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
 void XRTestHookWrapper::DetachCurrentThread() {

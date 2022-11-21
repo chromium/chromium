@@ -11,7 +11,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -30,7 +30,7 @@ const char kBluetoothToastIdPrefix[] = "cros_bluetooth_device_toast_id-";
 BluetoothDeviceStatusUiHandler::BluetoothDeviceStatusUiHandler() {
   // Asynchronously bind to CrosBluetoothConfig so that we don't want to attempt
   // to bind to it before it has initialized.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&BluetoothDeviceStatusUiHandler::BindToCrosBluetoothConfig,
                      weak_ptr_factory_.GetWeakPtr()));

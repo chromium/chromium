@@ -24,7 +24,7 @@
 #include "base/numerics/math_constants.h"
 #include "base/ranges/algorithm.h"
 #include "base/ranges/functional.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "cc/paint/paint_flags.h"
@@ -520,7 +520,7 @@ void DownloadItemView::OnDownloadOpened() {
     label->SetText(filename);
     StyleFilename(*label, 0, filename.length());
   };
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(reenable), weak_ptr_factory_.GetWeakPtr()),
       base::Seconds(3));
@@ -1310,7 +1310,7 @@ void DownloadItemView::ShowContextMenuImpl(const gfx::Rect& rect,
     // function (which wants to know if the button was already pressed) is
     // reached -- so delay marking the button as "released" until the callstack
     // unwinds.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&DownloadItemView::SetDropdownPressed,
                                   std::move(view), false));
   };

@@ -209,7 +209,7 @@ class OnScreenKeyboardDisplayManagerInputPane::VirtualKeyboardInputPane
 OnScreenKeyboardDisplayManagerInputPane::
     OnScreenKeyboardDisplayManagerInputPane(HWND hwnd)
     : hwnd_(hwnd),
-      main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       background_task_runner_(
           base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})),
       virtual_keyboard_input_pane_(

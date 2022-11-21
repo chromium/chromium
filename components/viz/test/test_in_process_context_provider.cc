@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "base/lazy_instance.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/types/optional_util.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
 #include "components/viz/common/resources/platform_color.h"
@@ -117,7 +117,7 @@ gpu::ContextResult TestInProcessContextProvider::BindToCurrentSequence() {
   }
 
   cache_controller_ = std::make_unique<ContextCacheController>(
-      ContextSupport(), base::ThreadTaskRunnerHandle::Get());
+      ContextSupport(), base::SingleThreadTaskRunner::GetCurrentDefault());
   cache_controller_->SetLock(GetLock());
 
   return gpu::ContextResult::kSuccess;

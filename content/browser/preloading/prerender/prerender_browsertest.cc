@@ -1213,7 +1213,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // still permit the prerender so it continues.
   {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::action_timeout());
     run_loop.Run();
     ASSERT_NE(GetHostForUrl(kPrerenderingUrl),

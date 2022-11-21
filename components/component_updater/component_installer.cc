@@ -26,7 +26,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_checker.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -67,7 +66,7 @@ ComponentInstaller::ComponentInstaller(
     : current_version_(kNullVersion),
       installer_policy_(std::move(installer_policy)),
       action_handler_(action_handler),
-      main_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+      main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 ComponentInstaller::~ComponentInstaller() = default;
 

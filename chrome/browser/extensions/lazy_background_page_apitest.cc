@@ -336,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest,
   DevToolsWindowCreationObserver devtools_observer;
   // base::Unretained is safe because of
   // DevToolsWindowCreationObserver::WaitForLoad()
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &LazyBackgroundPageApiTest::OpenDevToolsWindowForAnInactiveEventPage,

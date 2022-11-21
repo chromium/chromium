@@ -23,8 +23,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/chromecast_buildflags.h"
 #include "content/public/browser/audio_stream_broker.h"
 #include "content/public/browser/browser_accessibility_state.h"
@@ -683,7 +683,7 @@ void FrameImpl::OnMediaPlayerDisconnect() {
 bool FrameImpl::OnAccessibilityError(zx_status_t error) {
   // The task is posted so |accessibility_bridge_| does not tear |this| down
   // while events are still being processed.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&FrameImpl::CloseAndDestroyFrame,
                                 weak_factory_.GetWeakPtr(), error));
 

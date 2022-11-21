@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
 #include "components/prefs/pref_service.h"
@@ -80,7 +80,7 @@ void FCMInvalidationListener::InvalidationReceived(
   Invalidation inv =
       Invalidation::Init(*expected_public_topic, version, payload);
   inv.SetAckHandler(weak_factory_.GetWeakPtr(),
-                    base::ThreadTaskRunnerHandle::Get());
+                    base::SingleThreadTaskRunner::GetCurrentDefault());
   DVLOG(1) << "Received invalidation with version " << inv.version() << " for "
            << *expected_public_topic;
 
@@ -167,9 +167,10 @@ void FCMInvalidationListener::DoSubscriptionUpdate() {
       continue;
     }
 
-    unacked.second.ExportInvalidations(weak_factory_.GetWeakPtr(),
-                                       base::ThreadTaskRunnerHandle::Get(),
-                                       &topic_invalidation_map);
+    unacked.second.ExportInvalidations(
+        weak_factory_.GetWeakPtr(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        &topic_invalidation_map);
   }
 
   // There's no need to run these through DispatchInvalidations(); they've

@@ -19,7 +19,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
 #include "extensions/browser/api/device_permissions_manager.h"
@@ -138,7 +137,7 @@ void HidDeviceManager::GetApiDevices(
 
   if (enumeration_ready_) {
     base::Value::List devices = CreateApiDeviceList(extension, filters);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(devices)));
   } else {
     pending_enumerations_.push_back(std::make_unique<GetApiDevicesParams>(

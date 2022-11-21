@@ -47,11 +47,11 @@ class MediaLicenseManagerTest : public testing::Test {
     ASSERT_TRUE(profile_path_.CreateUniqueTempDir());
     quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
         in_memory_, in_memory_ ? base::FilePath() : profile_path_.GetPath(),
-        base::ThreadTaskRunnerHandle::Get().get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         /*special storage policy=*/nullptr);
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
         static_cast<storage::MockQuotaManager*>(quota_manager_.get()),
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     manager_ = std::make_unique<MediaLicenseManager>(
         in_memory_,
         /*special storage policy=*/nullptr, quota_manager_proxy_);

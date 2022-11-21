@@ -21,7 +21,7 @@
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
@@ -289,7 +289,7 @@ class ReporterRunnerTest
     // message loop. Since the test calls LaunchReporter instead of actually
     // doing a blocking reporter launch, it doesn't matter that the task runner
     // doesn't have the MayBlock trait.
-    return base::ThreadTaskRunnerHandle::Get().get();
+    return base::SingleThreadTaskRunner::GetCurrentDefault().get();
   }
 
   void ResetReporterRuns(int exit_code_to_report) {

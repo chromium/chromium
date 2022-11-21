@@ -216,7 +216,7 @@ void ListCerts(content::BrowserContext* const context,
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&ListCertsWithDbGetterOnIO,
-                     base::ThreadTaskRunnerHandle::Get(), slot,
+                     base::SingleThreadTaskRunner::GetCurrentDefault(), slot,
                      std::move(callback),
                      NssServiceFactory::GetForContext(context)
                          ->CreateNSSCertDatabaseGetterForIOThread()));

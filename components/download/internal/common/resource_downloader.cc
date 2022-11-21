@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/download/public/common/stream_handle_input_stream.h"
 #include "components/download/public/common/url_loader_factory_provider.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -112,7 +112,8 @@ void ResourceDownloader::InterceptNavigationResponse(
           &UrlDownloadHandler::Delegate::OnUrlDownloadHandlerCreated, delegate,
           UrlDownloadHandler::UniqueUrlDownloadHandlerPtr(
               std::move(downloader).release(),
-              base::OnTaskRunnerDeleter(base::ThreadTaskRunnerHandle::Get()))));
+              base::OnTaskRunnerDeleter(
+                  base::SingleThreadTaskRunner::GetCurrentDefault()))));
   raw_downloader->InterceptResponse(
       std::move(url_chain), cert_status, std::move(response_head),
       std::move(response_body), std::move(url_loader_client_endpoints));
@@ -250,7 +251,8 @@ void ResourceDownloader::OnResponseStarted(
           std::make_unique<StreamHandleInputStream>(std::move(stream_handle)),
           URLLoaderFactoryProvider::URLLoaderFactoryProviderPtr(
               new URLLoaderFactoryProvider(url_loader_factory_),
-              base::OnTaskRunnerDeleter(base::ThreadTaskRunnerHandle::Get())),
+              base::OnTaskRunnerDeleter(
+                  base::SingleThreadTaskRunner::GetCurrentDefault())),
           this, std::move(callback_)));
 }
 

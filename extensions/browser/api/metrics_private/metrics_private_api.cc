@@ -276,7 +276,7 @@ ExtensionFunction::ResponseAction MetricsPrivateGetHistogramFunction::Run() {
   // Collect histogram data from other processes before responding. Otherwise,
   // we'd report stale data for histograms that are e.g. recorded by renderers.
   content::FetchHistogramsAsynchronously(
-      base::ThreadTaskRunnerHandle::Get(),
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
       base::BindOnce(
           &MetricsPrivateGetHistogramFunction::RespondOnHistogramsFetched, this,
           params->name),

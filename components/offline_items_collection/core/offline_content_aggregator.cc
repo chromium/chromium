@@ -8,7 +8,7 @@
 #include "base/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/offline_items_collection/core/offline_item.h"
 
@@ -130,7 +130,7 @@ void OfflineContentAggregator::GetItemById(const ContentId& id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = providers_.find(id.name_space);
   if (it == providers_.end()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }
@@ -167,7 +167,7 @@ void OfflineContentAggregator::GetAllItems(MultipleItemCallback callback) {
   }
 
   if (pending_providers_.empty()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), OfflineItemList()));
     return;
   }
@@ -199,7 +199,7 @@ void OfflineContentAggregator::GetVisualsForItem(const ContentId& id,
   auto it = providers_.find(id.name_space);
 
   if (it == providers_.end()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), id, nullptr));
     return;
   }
@@ -212,7 +212,7 @@ void OfflineContentAggregator::GetShareInfoForItem(const ContentId& id,
   auto it = providers_.find(id.name_space);
 
   if (it == providers_.end()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), id, nullptr));
     return;
   }
@@ -225,7 +225,7 @@ void OfflineContentAggregator::RenameItem(const ContentId& id,
                                           RenameCallback callback) {
   auto it = providers_.find(id.name_space);
   if (it == providers_.end()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), RenameResult::FAILURE_UNAVAILABLE));
     return;

@@ -235,7 +235,7 @@ void NavigationControllerImpl::OnNavigationEntryChanged() {
                         &pending_navigation_event_);
   previous_navigation_state_ = std::move(new_state);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&NavigationControllerImpl::MaybeSendNavigationEvent,
                      weak_factory_.GetWeakPtr()));

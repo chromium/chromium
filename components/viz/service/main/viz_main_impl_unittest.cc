@@ -84,7 +84,7 @@ class MockPowerMonitorSource : public base::PowerMonitorSource {
 TEST(VizMainImplTest, OopVizDependencyInjection) {
   VizMainImpl::ExternalDependencies external_deps;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      base::ThreadTaskRunnerHandle::Get();
+      base::SingleThreadTaskRunner::GetCurrentDefault();
 
   // |VizMainImpl| is supposed to use the |UkmRecorder| injected through
   // |ExternalDependencies|.

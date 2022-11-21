@@ -6,8 +6,8 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
@@ -54,7 +54,7 @@ class CheckWaiter {
       // task to check again, because the pump would be allowed to run it
       // immediately without processing system events (system events are
       // required for the state to change).
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(base::IgnoreResult(&CheckWaiter::Check),
                          base::Unretained(this)),

@@ -63,8 +63,9 @@ class MockSafeBrowsingDatabaseManager
     : public safe_browsing::TestSafeBrowsingDatabaseManager {
  public:
   MockSafeBrowsingDatabaseManager()
-      : TestSafeBrowsingDatabaseManager(base::ThreadTaskRunnerHandle::Get(),
-                                        base::ThreadTaskRunnerHandle::Get()) {}
+      : TestSafeBrowsingDatabaseManager(
+            base::SingleThreadTaskRunner::GetCurrentDefault(),
+            base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
   MOCK_METHOD2(CheckUrlForAccuracyTips, bool(const GURL&, Client*));
 
@@ -130,8 +131,8 @@ class AccuracyServiceTest : public content::RenderViewHostTestHarness {
     sb_database_ = base::MakeRefCounted<MockSafeBrowsingDatabaseManager>();
     service_ = std::make_unique<AccuracyService>(
         std::move(delegate), &prefs_, sb_database_, nullptr,
-        base::ThreadTaskRunnerHandle::Get(),
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     clock_.SetNow(base::Time::Now());
     service_->SetClockForTesting(&clock_);
   }

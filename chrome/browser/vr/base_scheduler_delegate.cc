@@ -5,7 +5,7 @@
 #include "chrome/browser/vr/base_scheduler_delegate.h"
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/vr/scheduler_ui_interface.h"
 
@@ -19,7 +19,7 @@ BaseSchedulerDelegate::BaseSchedulerDelegate(SchedulerUiInterface* ui,
       webxr_mode_(start_in_webxr_mode),
       webxr_spinner_timeout_seconds_(webxr_spinner_timeout),
       webxr_initial_frame_timeout_seconds_(webxr_initial_frame_timeout),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 BaseSchedulerDelegate::~BaseSchedulerDelegate() = default;
 

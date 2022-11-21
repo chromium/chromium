@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -441,7 +441,7 @@ void ProfilePolicyConnector::OnProxiedPoliciesPropagated(
   // Do not delete |proxied_policies_propagated_watcher_| synchronously, as the
   // PolicyService it is observing is expected to be iterating its observer
   // list.
-  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
       FROM_HERE, std::move(proxied_policies_propagated_watcher_));
 }
 #endif

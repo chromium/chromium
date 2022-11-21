@@ -24,7 +24,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "components/policy/core/common/cloud/cloud_external_data_store.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -391,7 +390,8 @@ CloudExternalDataManagerBase::CloudExternalDataManagerBase(
     : backend_task_runner_(std::move(backend_task_runner)),
       backend_(new Backend(get_policy_details,
                            backend_task_runner_,
-                           base::ThreadTaskRunnerHandle::Get())) {}
+                           base::SingleThreadTaskRunner::GetCurrentDefault())) {
+}
 
 CloudExternalDataManagerBase::~CloudExternalDataManagerBase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

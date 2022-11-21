@@ -850,7 +850,7 @@ class FileTransferAnalysisDelegateAuditOnlyTest : public BaseTest {
               kDestinationVolumeInfo.fs_config_string);
 
     // Simulate a response.
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), path,
                        safe_browsing::BinaryUploadService::Result::SUCCESS,

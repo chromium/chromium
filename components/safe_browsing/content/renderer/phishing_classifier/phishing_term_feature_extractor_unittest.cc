@@ -19,7 +19,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
@@ -125,7 +124,7 @@ class PhishingTermFeatureExtractorTest : public ::testing::Test {
         page_text, features, shingle_hashes,
         base::BindOnce(&PhishingTermFeatureExtractorTest::ExtractionDone,
                        base::Unretained(this)));
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&PhishingTermFeatureExtractorTest::QuitExtraction,
                        base::Unretained(this)));

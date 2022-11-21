@@ -16,7 +16,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -125,7 +124,7 @@ TEST_F(DesktopSessionAgentTest, StartDesktopSessionAgent) {
   proxy = IPC::ChannelProxy::Create(
       agent_->Initialize(delegate->GetWeakPtr()).release(),
       IPC::Channel::MODE_CLIENT, &listener, task_runner_,
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   mojo::AssociatedRemote<mojom::DesktopSessionAgent> desktop_session_agent;
   proxy->GetRemoteAssociatedInterface(&desktop_session_agent);

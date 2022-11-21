@@ -345,7 +345,8 @@ ManualFillingControllerImpl::ManualFillingControllerImpl(
   }
 
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-      this, "ManualFillingCache", base::ThreadTaskRunnerHandle::Get());
+      this, "ManualFillingCache",
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 ManualFillingControllerImpl::ManualFillingControllerImpl(
@@ -360,7 +361,8 @@ ManualFillingControllerImpl::ManualFillingControllerImpl(
       cc_controller_(std::move(cc_controller)),
       view_(std::move(view)) {
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-      this, "ManualFillingCache", base::ThreadTaskRunnerHandle::Get());
+      this, "ManualFillingCache",
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 bool ManualFillingControllerImpl::OnMemoryDump(

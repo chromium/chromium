@@ -24,9 +24,9 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/win/windows_version.h"
 #include "components/winhttp/net_util.h"
 #include "components/winhttp/proxy_info.h"
@@ -63,7 +63,8 @@ void CrackUrl(const GURL& url,
 NetworkFetcher::NetworkFetcher(
     const HINTERNET& session_handle,
     scoped_refptr<ProxyConfiguration> proxy_configuration)
-    : main_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+    : main_thread_task_runner_(
+          base::SingleThreadTaskRunner::GetCurrentDefault()),
       session_handle_(session_handle),
       proxy_configuration_(proxy_configuration) {}
 

@@ -12,7 +12,7 @@
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service_factory.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
@@ -115,7 +115,7 @@ void FloatingWorkspaceService::
     // If local session is the most recently modified or no remote session,
     // dispatch a delayed task to check whether any foreign session got updated.
     // If remote session is not updated after the delay, launch local session.
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
             &FloatingWorkspaceService::TryRestoreMostRecentlyUsedSession,

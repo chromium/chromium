@@ -18,7 +18,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/sys_byteorder.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/browser/speech/speech_recognition_engine.h"
 #include "content/browser/speech/speech_recognition_manager_impl.h"
@@ -276,7 +275,7 @@ class SpeechRecognitionBrowserTest : public ContentBrowserTest {
 
     const int n_buffers = duration_ms / ms_per_buffer;
     for (int i = 0; i < n_buffers; ++i) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&FeedSingleBufferToAudioCapturerSource, audio_params,
                          capture_callback, buffer_size, feed_with_noise));

@@ -16,9 +16,9 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/favicon/content/large_favicon_provider_getter.h"
 #include "components/favicon/core/large_favicon_provider.h"
@@ -342,7 +342,7 @@ void AddToHomescreenDataFetcher::OnFaviconFetched(
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&CreateLauncherIconFromFaviconInBackground,
                      shortcut_info_.url, bitmap_result,
-                     base::ThreadTaskRunnerHandle::Get(),
+                     base::SingleThreadTaskRunner::GetCurrentDefault(),
                      base::BindOnce(&AddToHomescreenDataFetcher::OnIconCreated,
                                     weak_ptr_factory_.GetWeakPtr(),
                                     /*use_for_launcher=*/true)));
@@ -361,7 +361,8 @@ void AddToHomescreenDataFetcher::CreateIconForView(const SkBitmap& base_icon,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(
           &CreateLauncherIconInBackground, shortcut_info_.url, base_icon,
-          has_maskable_primary_icon_, base::ThreadTaskRunnerHandle::Get(),
+          has_maskable_primary_icon_,
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
           base::BindOnce(&AddToHomescreenDataFetcher::OnIconCreated,
                          weak_ptr_factory_.GetWeakPtr(), use_for_launcher)));
 }

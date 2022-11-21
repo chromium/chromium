@@ -18,8 +18,8 @@
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/token.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -323,7 +323,7 @@ class ServiceManagerTest : public testing::Test,
     connector()->WarmService(filter);
     if (!expect_service_started) {
       // Wait briefly and test no new service was created.
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE, loop.QuitClosure(), base::Seconds(1));
     }
 

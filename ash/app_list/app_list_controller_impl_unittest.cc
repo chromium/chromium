@@ -409,7 +409,7 @@ TEST_F(AppListControllerImplTest,
   const base::TimeDelta delta = base::Milliseconds(200);
   do {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), delta);
     run_loop.Run();
   } while (IsAppListBoundsAnimationRunning());

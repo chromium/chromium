@@ -17,7 +17,6 @@
 #include "base/pickle.h"
 #include "base/rand_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -402,8 +401,8 @@ void NaClBrowser::CheckWaiting() {
     // directly.  For example, this could result in use-after-free of the
     // process host.
     for (auto iter = waiting_.begin(); iter != waiting_.end(); ++iter) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                    std::move(*iter));
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(*iter));
     }
     waiting_.clear();
   }
@@ -539,7 +538,7 @@ void NaClBrowser::MarkValidationCacheAsModified() {
   if (!validation_cache_is_modified_) {
     // Wait before persisting to disk.  This can coalesce multiple cache
     // modifications info a single disk write.
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&NaClBrowser::PersistValidationCache,
                        base::Unretained(this)),

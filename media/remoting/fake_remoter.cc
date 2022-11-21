@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/buildflag.h"
 #include "media/media_buildflags.h"
 #include "media/remoting/renderer_controller.h"
@@ -127,11 +127,11 @@ FakeRemoter::~FakeRemoter() = default;
 
 void FakeRemoter::Start() {
   if (start_will_fail_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&FakeRemoter::StartFailed, weak_factory_.GetWeakPtr()));
   } else {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&FakeRemoter::Started, weak_factory_.GetWeakPtr()));
   }
@@ -156,7 +156,7 @@ void FakeRemoter::StartDataStreams(
 }
 
 void FakeRemoter::Stop(mojom::RemotingStopReason reason) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&FakeRemoter::Stopped,
                                 weak_factory_.GetWeakPtr(), reason));
 }

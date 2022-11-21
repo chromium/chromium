@@ -660,7 +660,7 @@ TEST_F(ExtendedDragSourceTest, CancelDraggingOperation) {
     drag_drop_controller_->DragCancel();
     EXPECT_FALSE(toplevel_handler->is_drag_in_progress());
   });
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(task_1)));
 
   base::RunLoop().RunUntilIdle();

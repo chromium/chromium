@@ -8,7 +8,7 @@
 #include <linux/input.h>
 
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/ozone/platform/wayland/emulate/wayland_input_emulate.h"
@@ -184,8 +184,8 @@ void WaylandOzoneUIControlsTestHelper::SendMouseMotionNotifyEvent(
 
   if (!closure.is_null()) {
     // PostTask to avoid re-entrancy.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(closure));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(closure));
   }
 }
 
@@ -252,8 +252,8 @@ void WaylandOzoneUIControlsTestHelper::SendMouseEvent(
   }
   if (!closure.is_null()) {
     // PostTask to avoid re-entrancy.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(closure));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(closure));
   }
 }
 
@@ -285,8 +285,8 @@ void WaylandOzoneUIControlsTestHelper::SendTouchEvent(
   waiter.Wait();
   if (!closure.is_null()) {
     // PostTask to avoid re-entrancy.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(closure));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(closure));
   }
 }
 #endif
@@ -348,8 +348,8 @@ void WaylandOzoneUIControlsTestHelper::SendKeyPressInternal(
   }
   if (!closure.is_null()) {
     // PostTask to avoid re-entrancy.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(closure));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(closure));
   }
 }
 

@@ -16,7 +16,7 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/process/process.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/arc/process/arc_process_service.h"
 
@@ -145,7 +145,7 @@ void ArcProcessTaskProvider::ScheduleNextRequest(base::OnceClosure task) {
   // TODO(nya): Remove this timer once ARC starts to send us UpdateProcessList
   // message when the process list changed. As of today, ARC does not send
   // the process list unless we request it by RequestAppProcessList message.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, std::move(task),
       arc::ArcProcessService::kProcessSnapshotRefreshTime);
 }

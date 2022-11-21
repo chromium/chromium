@@ -9,8 +9,8 @@
 #include "base/files/file_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/download/public/background_service/download_metadata.h"
 #include "components/download/public/background_service/service_config.h"
@@ -57,11 +57,11 @@ void TestDownloadService::StartDownload(
     download::DownloadParams download_params) {
   if (!download_dir_.IsValid())
     CHECK(download_dir_.CreateUniqueTempDir());
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(download_params.callback), download_params.guid,
                      download::DownloadParams::ACCEPTED));
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&TestDownloadService::FinishDownload,
                                 base::Unretained(this), download_params.guid));
 }

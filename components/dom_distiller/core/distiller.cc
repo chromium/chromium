@@ -19,7 +19,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/dom_distiller/core/distiller_page.h"
@@ -343,7 +342,8 @@ void DistillerImpl::OnFetchImageDone(int page_num,
   // callback is invoked by the |url_fetcher|.
   fetcher_it->release();
   page_data->image_fetchers_.erase(fetcher_it);
-  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, url_fetcher);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                                url_fetcher);
 
   DistilledPageProto_Image* image =
       page_data->distilled_page_proto->data.add_image();

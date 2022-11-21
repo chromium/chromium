@@ -21,7 +21,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/bind_to_current_loop.h"
@@ -278,7 +277,8 @@ class VideoCaptureDeviceTest
 
   VideoCaptureDeviceTest()
       : task_environment_(kMainThreadType),
-        main_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+        main_thread_task_runner_(
+            base::SingleThreadTaskRunner::GetCurrentDefault()),
         video_capture_client_(CreateDeviceClient()),
         image_capture_client_(new MockImageCaptureClient()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -301,8 +301,8 @@ class VideoCaptureDeviceTest
       CameraHalDispatcherImpl::GetInstance()->DisableSensorForTesting();
     }
 #endif
-    video_capture_device_factory_ =
-        CreateVideoCaptureDeviceFactory(base::ThreadTaskRunnerHandle::Get());
+    video_capture_device_factory_ = CreateVideoCaptureDeviceFactory(
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   void SetUp() override {

@@ -19,7 +19,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_observer.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -68,7 +67,7 @@ void DeferredQuitRunLoop(base::OnceClosure quit_task, int num_quit_deferrals) {
   if (num_quit_deferrals <= 0) {
     std::move(quit_task).Run();
   } else {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&DeferredQuitRunLoop, std::move(quit_task),
                                   num_quit_deferrals - 1));
   }

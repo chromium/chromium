@@ -11,8 +11,8 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
-#include "base/threading/thread_task_runner_handle.h"
 
 namespace remoting {
 
@@ -175,7 +175,7 @@ CertificateWatcher::CertificateWatcher(
     const base::RepeatingClosure& restart_action,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
     : restart_action_(restart_action),
-      caller_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      caller_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       io_task_runner_(io_task_runner),
       delay_(base::Seconds(kReadDelayInSeconds)) {
   if (!base::PathService::Get(base::DIR_HOME, &cert_watch_path_)) {

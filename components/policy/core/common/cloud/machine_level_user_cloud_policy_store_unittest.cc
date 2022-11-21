@@ -8,8 +8,8 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
@@ -66,7 +66,8 @@ class MachineLevelUserCloudPolicyStoreTest : public ::testing::Test {
         MachineLevelUserCloudPolicyStore::Create(
             DMToken::CreateValidTokenForTesting(PolicyBuilder::kFakeToken),
             PolicyBuilder::kFakeDeviceId, updater_policy_dir_,
-            tmp_policy_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get());
+            tmp_policy_dir_.GetPath(),
+            base::SingleThreadTaskRunner::GetCurrentDefault());
     store->AddObserver(&observer_);
     return store;
   }

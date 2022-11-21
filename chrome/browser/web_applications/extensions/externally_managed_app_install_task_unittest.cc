@@ -20,9 +20,9 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/test/fake_data_retriever.h"
 #include "chrome/browser/web_applications/test/fake_install_finalizer.h"
@@ -161,7 +161,7 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
     const GURL& url = web_app_info.start_url;
     bool is_placeholder = web_app_info.is_placeholder;
     WebAppManagement::Type source = options.source;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindLambdaForTesting([&, app_id, url, code, is_placeholder,
                                     source,
@@ -189,7 +189,7 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
                                UninstallWebAppCallback callback) override {
     UnregisterApp(app_id);
 
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   webapps::UninstallResultCode::kSuccess));
   }
@@ -207,7 +207,7 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
     std::tie(app_id, code) = next_uninstall_external_web_app_results_[app_url];
     next_uninstall_external_web_app_results_.erase(app_url);
 
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindLambdaForTesting(
             [&, app_id, code, callback = std::move(callback)]() mutable {

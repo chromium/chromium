@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/typed_macros.h"
 #include "net/test/embedded_test_server/http_response.h"
 
@@ -33,8 +33,8 @@ class ControllableHttpResponse::Interceptor : public HttpResponse {
     controller_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&ControllableHttpResponse::OnRequest, controller_,
-                       base::ThreadTaskRunnerHandle::Get(), delegate,
-                       std::move(http_request_)));
+                       base::SingleThreadTaskRunner::GetCurrentDefault(),
+                       delegate, std::move(http_request_)));
   }
 
   base::WeakPtr<ControllableHttpResponse> controller_;
@@ -50,8 +50,8 @@ ControllableHttpResponse::ControllableHttpResponse(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   embedded_test_server->RegisterRequestHandler(base::BindRepeating(
       RequestHandler, weak_ptr_factory_.GetWeakPtr(),
-      base::ThreadTaskRunnerHandle::Get(), base::Owned(new bool(true)),
-      relative_url, relative_url_is_prefix));
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      base::Owned(new bool(true)), relative_url, relative_url_is_prefix));
 }
 
 ControllableHttpResponse::~ControllableHttpResponse() = default;

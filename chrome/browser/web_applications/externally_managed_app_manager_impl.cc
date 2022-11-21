@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/externally_managed_app_registration_task.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -148,7 +148,7 @@ void ExternallyManagedAppManagerImpl::OnRegistrationFinished(
 }
 
 void ExternallyManagedAppManagerImpl::PostMaybeStartNext() {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ExternallyManagedAppManagerImpl::MaybeStartNext,
                      weak_ptr_factory_.GetWeakPtr()));

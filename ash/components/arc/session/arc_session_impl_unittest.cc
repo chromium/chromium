@@ -22,9 +22,9 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/system/scheduler_configuration_manager_base.h"
 #include "components/version_info/channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -65,7 +65,7 @@ class FakeArcClientAdapter : public ArcClientAdapter {
   void StartMiniArc(StartParams params,
                     chromeos::VoidDBusMethodCallback callback) override {
     last_start_params_ = std::move(params);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&FakeArcClientAdapter::OnMiniArcStarted,
                                   base::Unretained(this), std::move(callback),
                                   arc_available_));
@@ -74,14 +74,14 @@ class FakeArcClientAdapter : public ArcClientAdapter {
   void UpgradeArc(UpgradeParams params,
                   chromeos::VoidDBusMethodCallback callback) override {
     last_upgrade_params_ = std::move(params);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&FakeArcClientAdapter::OnArcUpgraded,
                                   base::Unretained(this), std::move(callback),
                                   !force_upgrade_failure_));
   }
 
   void StopArcInstance(bool on_shutdown, bool should_backup_log) override {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&FakeArcClientAdapter::NotifyArcInstanceStopped,
                        base::Unretained(this), false /* is_system_shutdown */));
@@ -93,7 +93,7 @@ class FakeArcClientAdapter : public ArcClientAdapter {
 
   void SetDemoModeDelegate(DemoModeDelegate* delegate) override {}
   void TrimVmMemory(TrimVmMemoryCallback callback, int page_limit) override {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), true, std::string()));
   }
 
@@ -157,7 +157,7 @@ class FakeDelegate : public ArcSessionImpl::Delegate {
   // ArcSessionImpl::Delegate overrides:
   void CreateSocket(CreateSocketCallback callback) override {
     // Open /dev/null as a dummy FD.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   base::ScopedFD(open("/dev/null",
                                                       O_RDONLY | O_CLOEXEC))));
@@ -192,7 +192,7 @@ class FakeDelegate : public ArcSessionImpl::Delegate {
 
  private:
   void PostCallback(ConnectMojoCallback callback) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             std::move(callback),

@@ -11,7 +11,6 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "remoting/signaling/signaling_id_util.h"
 #include "remoting/signaling/xmpp_constants.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
@@ -28,7 +27,7 @@ void FakeSignalStrategy::Connect(FakeSignalStrategy* peer1,
 }
 
 FakeSignalStrategy::FakeSignalStrategy(const SignalingAddress& address)
-    : main_thread_(base::ThreadTaskRunnerHandle::Get()),
+    : main_thread_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       address_(address),
       last_id_(0) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -160,7 +159,7 @@ bool FakeSignalStrategy::SendStanza(std::unique_ptr<jingle_xmpp::XmlElement> sta
   if (send_delay_.is_zero()) {
     peer_callback_.Run(std::move(stanza));
   } else {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, base::BindOnce(peer_callback_, std::move(stanza)),
         send_delay_);
   }

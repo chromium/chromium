@@ -17,7 +17,6 @@
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/extensions/api/runtime/chrome_runtime_api_delegate.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -120,7 +119,7 @@ class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
       auto no_update = no_updates_.find(id);
       if (no_update != no_updates_.end()) {
         no_updates_.erase(no_update);
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(
                 &ExtensionDownloaderDelegate::OnExtensionDownloadFailed,
@@ -136,7 +135,7 @@ class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
         crx_info.expected_version = update->second.version;
         crx_info.extension_id = id;
         updates_.erase(update);
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(
                 &ExtensionDownloaderDelegate::OnExtensionDownloadFinished,

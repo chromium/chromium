@@ -22,10 +22,10 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/capture_client.h"
@@ -1320,15 +1320,15 @@ TEST_F(DragDropControllerTest, EventTarget) {
   ui::test::EventGenerator generator(window->GetRootWindow(), window.get());
   generator.PressLeftButton();
   // For drag enter
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&ui::test::EventGenerator::MoveMouseBy,
                                 base::Unretained(&generator), 0, 1));
   // For drag update
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&ui::test::EventGenerator::MoveMouseBy,
                                 base::Unretained(&generator), 0, 1));
   // For perform drop
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&ui::test::EventGenerator::ReleaseLeftButton,
                                 base::Unretained(&generator)));
 
@@ -1363,11 +1363,11 @@ TEST_F(DragDropControllerTest, DragTabChangesDragOperationToMove) {
   ui::test::EventGenerator generator(window->GetRootWindow(), window);
   generator.PressLeftButton();
   // For drag enter.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&ui::test::EventGenerator::MoveMouseBy,
                                 base::Unretained(&generator), 0, 1));
   // For perform drop.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&ui::test::EventGenerator::ReleaseLeftButton,
                                 base::Unretained(&generator)));
 

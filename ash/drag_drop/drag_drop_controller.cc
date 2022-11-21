@@ -13,8 +13,8 @@
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/hang_watcher.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/drag_drop_client_observer.h"
 #include "ui/aura/client/drag_drop_delegate.h"
@@ -766,7 +766,7 @@ void DragDropController::ScheduleForwardPendingLongTap() {
   }
 
   // See comment about this in OnGestureEvent().
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&DragDropController::ForwardPendingLongTap,
                                 weak_factory_.GetWeakPtr()));
 }

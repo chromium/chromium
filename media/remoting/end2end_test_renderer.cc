@@ -12,7 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/notreached.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/cast_streaming/public/remoting_proto_utils.h"
 #include "media/base/demuxer_stream.h"
 #include "media/mojo/common/mojo_data_pipe_read_write.h"
@@ -263,7 +263,8 @@ End2EndTestRenderer::End2EndTestRenderer(std::unique_ptr<Renderer> renderer)
       base::BindRepeating(&End2EndTestRenderer::SendFrameToSink,
                           weak_factory_.GetWeakPtr()));
   courier_renderer_ = std::make_unique<CourierRenderer>(
-      base::ThreadTaskRunnerHandle::Get(), controller_->GetWeakPtr(), nullptr);
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      controller_->GetWeakPtr(), nullptr);
 
   // create receiver components
   media_remotee_ = std::make_unique<TestRemotee>(controller_.get());
@@ -285,7 +286,7 @@ End2EndTestRenderer::End2EndTestRenderer(std::unique_ptr<Renderer> renderer)
 
   receiver_ = std::make_unique<Receiver>(
       receiver_renderer_handle_, sender_renderer_handle_, receiver_controller_,
-      base::ThreadTaskRunnerHandle::Get(), std::move(renderer),
+      base::SingleThreadTaskRunner::GetCurrentDefault(), std::move(renderer),
       base::BindOnce(&End2EndTestRenderer::OnAcquireRendererDone,
                      weak_factory_.GetWeakPtr()));
 
@@ -293,7 +294,7 @@ End2EndTestRenderer::End2EndTestRenderer(std::unique_ptr<Renderer> renderer)
   media_remotee_->BindMojoReceiver(remotee.InitWithNewPipeAndPassReceiver());
   receiver_controller_->Initialize(std::move(remotee));
   stream_provider_ = std::make_unique<StreamProvider>(
-      receiver_controller_, base::ThreadTaskRunnerHandle::Get());
+      receiver_controller_, base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 End2EndTestRenderer::~End2EndTestRenderer() {

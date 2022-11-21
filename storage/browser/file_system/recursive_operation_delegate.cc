@@ -11,7 +11,6 @@
 #include "base/containers/queue.h"
 #include "base/files/file.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 
@@ -150,7 +149,7 @@ void RecursiveOperationDelegate::ProcessPendingFiles() {
 
   // Run ProcessFile.
   scoped_refptr<base::SingleThreadTaskRunner> current_task_runner =
-      base::ThreadTaskRunnerHandle::Get();
+      base::SingleThreadTaskRunner::GetCurrentDefault();
   if (!pending_files_.empty()) {
     current_task_runner->PostTask(
         FROM_HERE,

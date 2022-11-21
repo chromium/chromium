@@ -9,7 +9,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
@@ -27,7 +27,7 @@ class MockProxyHostResolver::RequestImpl
   int Start(net::CompletionOnceCallback callback) override {
     if (!synchronous_mode_) {
       callback_ = std::move(callback);
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&RequestImpl::SendResults, AsWeakPtr()));
       return net::ERR_IO_PENDING;
     }

@@ -8,7 +8,7 @@
 #include <unordered_map>
 
 #include "base/memory/raw_ptr.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "cc/animation/animation_host.h"
 #include "cc/input/scrollbar_animation_controller.h"
 #include "cc/layers/append_quads_data.h"
@@ -127,7 +127,8 @@ class BaseScrollbarLayerTest : public testing::Test {
     layer_tree_host_->SetUIResourceManagerForTesting(
         std::move(fake_ui_resource_manager));
     layer_tree_host_->InitializeSingleThreaded(
-        &single_thread_client_, base::ThreadTaskRunnerHandle::Get());
+        &single_thread_client_,
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     layer_tree_host_->SetVisible(true);
     fake_client_.SetLayerTreeHost(layer_tree_host_.get());
   }

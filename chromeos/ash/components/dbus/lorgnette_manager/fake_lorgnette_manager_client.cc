@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 
 namespace ash {
 
@@ -21,14 +20,14 @@ void FakeLorgnetteManagerClient::Init(dbus::Bus* bus) {}
 
 void FakeLorgnetteManagerClient::ListScanners(
     chromeos::DBusMethodCallback<lorgnette::ListScannersResponse> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), list_scanners_response_));
 }
 
 void FakeLorgnetteManagerClient::GetScannerCapabilities(
     const std::string& device_name,
     chromeos::DBusMethodCallback<lorgnette::ScannerCapabilities> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), capabilities_response_));
 }
 
@@ -44,18 +43,18 @@ void FakeLorgnetteManagerClient::StartScan(
       // Simulate progress reporting for the scan job.
       if (progress_callback) {
         for (const uint32_t progress : {7, 22, 40, 42, 59, 74, 95}) {
-          base::ThreadTaskRunnerHandle::Get()->PostTask(
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE,
               base::BindOnce(progress_callback, progress, page_number));
         }
       }
 
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(page_callback, page_data, ++page_number));
     }
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(completion_callback),
                                 scan_response_.has_value()
                                     ? lorgnette::SCAN_FAILURE_MODE_NO_FAILURE
@@ -65,7 +64,7 @@ void FakeLorgnetteManagerClient::StartScan(
 
 void FakeLorgnetteManagerClient::CancelScan(
     chromeos::VoidDBusMethodCallback completion_callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(completion_callback), true));
 }
 

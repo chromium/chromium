@@ -81,13 +81,13 @@ class AbstractHapticGamepadTest : public testing::Test {
         mojom::GamepadEffectParameters::New(
             duration, start_delay, kStrongMagnitude, kWeakMagnitude,
             /*left_trigger=*/0, /*right_trigger=*/0),
-        std::move(callback), base::ThreadTaskRunnerHandle::Get());
+        std::move(callback), base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   void PostResetVibration(
       mojom::GamepadHapticsManager::ResetVibrationActuatorCallback callback) {
     gamepad_->ResetVibration(std::move(callback),
-                             base::ThreadTaskRunnerHandle::Get());
+                             base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   // Callback for the first PlayEffect or ResetVibration call in a test.

@@ -15,7 +15,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -148,7 +147,7 @@ BrowserGpuChannelHostFactory::EstablishRequest::EstablishRequest(
 #if BUILDFLAG(IS_MAC)
       main_task_runner_(ui::WindowResizeHelperMac::Get()->task_runner())
 #else
-      main_task_runner_(base::ThreadTaskRunnerHandle::Get())
+      main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault())
 #endif
 {
 }

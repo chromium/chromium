@@ -10,8 +10,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
@@ -232,7 +232,7 @@ EnterpriseReportingPrivateGetPersistentSecretFunction::Run() {
           base::BindOnce(
               &EnterpriseReportingPrivateGetPersistentSecretFunction::
                   OnDataRetrieved,
-              this, base::ThreadTaskRunnerHandle::Get())));
+              this, base::SingleThreadTaskRunner::GetCurrentDefault())));
   return RespondLater();
 }
 
@@ -283,7 +283,7 @@ EnterpriseReportingPrivateGetDeviceDataFunction::Run() {
           &RetrieveDeviceData, params->id,
           base::BindOnce(
               &EnterpriseReportingPrivateGetDeviceDataFunction::OnDataRetrieved,
-              this, base::ThreadTaskRunnerHandle::Get())));
+              this, base::SingleThreadTaskRunner::GetCurrentDefault())));
   return RespondLater();
 }
 
@@ -339,7 +339,7 @@ EnterpriseReportingPrivateSetDeviceDataFunction::Run() {
           &StoreDeviceData, params->id, std::move(params->data),
           base::BindOnce(
               &EnterpriseReportingPrivateSetDeviceDataFunction::OnDataStored,
-              this, base::ThreadTaskRunnerHandle::Get())));
+              this, base::SingleThreadTaskRunner::GetCurrentDefault())));
   return RespondLater();
 }
 

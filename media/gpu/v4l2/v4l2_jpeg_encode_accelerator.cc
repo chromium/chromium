@@ -16,7 +16,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
@@ -1805,7 +1805,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::NotifyError(
 
 V4L2JpegEncodeAccelerator::V4L2JpegEncodeAccelerator(
     const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner)
-    : child_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+    : child_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       io_task_runner_(io_task_runner),
       client_(nullptr),
       encoder_thread_("V4L2JpegEncodeThread"),

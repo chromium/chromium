@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/android/jni_string.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/feature_engagement/public/jni_headers/CppWrappedTestTracker_jni.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -114,7 +114,7 @@ bool WrappingTestTracker::IsInitialized() const {
 
 void WrappingTestTracker::AddOnInitializedCallback(
     OnInitializedCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), IsInitialized()));
 }
 

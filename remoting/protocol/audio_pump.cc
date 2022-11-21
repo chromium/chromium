@@ -12,7 +12,6 @@
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/channel_layout.h"
@@ -132,7 +131,7 @@ AudioPump::Core::Core(base::WeakPtr<AudioPump> pump,
                       std::unique_ptr<AudioSource> audio_source,
                       std::unique_ptr<AudioEncoder> audio_encoder)
     : pump_(pump),
-      pump_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      pump_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       audio_source_(std::move(audio_source)),
       audio_encoder_(std::move(audio_encoder)),
       enabled_(true),

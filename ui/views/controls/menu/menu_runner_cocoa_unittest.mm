@@ -4,6 +4,7 @@
 
 #include "base/memory/raw_ptr.h"
 
+#include "base/task/single_thread_task_runner.h"
 #import "ui/views/controls/menu/menu_runner_impl_cocoa.h"
 
 #import <Cocoa/Cocoa.h>
@@ -13,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_timeouts.h"
-#include "base/threading/thread_task_runner_handle.h"
 #import "testing/gtest_mac.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -163,7 +163,7 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
       // Cancelling an async menu under MenuControllerCocoa::OpenMenuImpl()
       // (which invokes WillShowMenu()) will cause a UAF when that same function
       // tries to show the menu. So post a task instead.
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, std::move(wrapped_callback));
     } else {
       menu_->set_menu_open_callback(
@@ -196,8 +196,8 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
         base::Unretained(this));
 
     if (IsAsync()) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                    std::move(callback));
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(callback));
     } else {
       menu_->set_menu_open_callback(std::move(callback));
     }
@@ -307,7 +307,7 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
 
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, quit_closure_, TestTimeouts::action_timeout());
     run_loop.Run();
 

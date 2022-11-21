@@ -13,8 +13,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
@@ -93,7 +93,8 @@ InMemoryURLIndex::InMemoryURLIndex(bookmarks::BookmarkModel* bookmark_model,
     history_service_observation_.Observe(history_service_.get());
 
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-      this, "InMemoryURLIndex", base::ThreadTaskRunnerHandle::Get());
+      this, "InMemoryURLIndex",
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 InMemoryURLIndex::~InMemoryURLIndex() {

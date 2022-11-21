@@ -17,7 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -253,7 +253,7 @@ void WebAppInstallFinalizer::UninstallExternalWebAppByUrl(
   if (!app_id.has_value()) {
     LOG(WARNING) << "Couldn't uninstall web app with url " << app_url
                  << "; No corresponding web app for url.";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        webapps::UninstallResultCode::kNoAppToUninstall));
@@ -324,7 +324,7 @@ void WebAppInstallFinalizer::FinalizeUpdate(
   if (!existing_web_app ||
       existing_web_app->is_from_sync_and_pending_installation() ||
       app_id != existing_web_app->app_id()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), AppId(),
                                   webapps::InstallResultCode::kWebAppDisabled,
                                   OsHooksErrors()));

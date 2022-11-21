@@ -15,7 +15,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -210,7 +210,7 @@ void ArcAppQueueRestoreHandler::OnAppConnectionReady() {
 }
 
 void ArcAppQueueRestoreHandler::OnShelfReady() {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&ArcAppQueueRestoreHandler::PrepareLaunchApps,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

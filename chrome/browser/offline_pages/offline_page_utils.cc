@@ -14,7 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/net/net_error_tab_helper.h"
@@ -188,7 +188,7 @@ void OfflinePageUtils::SelectPagesWithCriteria(
   OfflinePageModel* offline_page_model =
       OfflinePageModelFactory::GetForKey(key);
   if (!offline_page_model) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), std::vector<OfflinePageItem>()));
     return;

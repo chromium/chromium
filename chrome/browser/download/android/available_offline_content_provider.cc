@@ -159,10 +159,10 @@ class ThumbnailFetch {
   }
 
   void Complete() {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(complete_callback_), std::move(visuals_)));
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             [](ThumbnailFetch* thumbnail_fetch) { delete thumbnail_fetch; },

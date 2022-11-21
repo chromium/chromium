@@ -11,9 +11,9 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/perf_time_logger.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -83,7 +83,7 @@ void PingPongTest::RunTest(int iterations, int batch_size, int message_size) {
 
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   quit_closure_ = run_loop.QuitClosure();
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&PingPongTest::DoPing, base::Unretained(this)));
   run_loop.Run();
 }
@@ -115,7 +115,7 @@ class MojoE2EPerftest : public core::test::MojoTestBase {
   void RunTestOnTaskRunner(base::TaskRunner* runner,
                            MojoHandle client_mp,
                            const std::string& test_name) {
-    if (runner == base::ThreadTaskRunnerHandle::Get().get()) {
+    if (runner == base::SingleThreadTaskRunner::GetCurrentDefault().get()) {
       RunTests(client_mp, test_name);
     } else {
       base::RunLoop run_loop;

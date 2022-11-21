@@ -235,7 +235,7 @@ void CryptohomeRecoveryServiceClient::OnFetchEpochComplete(
       epoch_retry_backoff_.Reset();
       std::move(callback).Run(absl::nullopt, status_code);
     } else {
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&CryptohomeRecoveryServiceClient::FetchEpoch,
                          weak_ptr_factory_.GetWeakPtr(), access_token,
@@ -277,7 +277,7 @@ void CryptohomeRecoveryServiceClient::OnFetchRecoveryResponseComplete(
       recovery_retry_backoff_.Reset();
       std::move(callback).Run(absl::nullopt, status_code);
     } else {
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(
               &CryptohomeRecoveryServiceClient::FetchRecoveryResponse,

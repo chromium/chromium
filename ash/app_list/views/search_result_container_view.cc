@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 
 namespace ash {
 
@@ -149,7 +148,7 @@ void SearchResultContainerView::ScheduleUpdate() {
   if (!update_factory_.HasWeakPtrs()) {
     if (delegate_)
       delegate_->OnSearchResultContainerResultsChanging();
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&SearchResultContainerView::Update,
                                   update_factory_.GetWeakPtr()));
   }

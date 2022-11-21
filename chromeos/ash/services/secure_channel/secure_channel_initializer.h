@@ -11,7 +11,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/ash/services/secure_channel/secure_channel_base.h"
@@ -35,7 +35,7 @@ class SecureChannelInitializer : public SecureChannelBase {
    public:
     static std::unique_ptr<SecureChannelBase> Create(
         scoped_refptr<base::TaskRunner> task_runner =
-            base::ThreadTaskRunnerHandle::Get());
+            base::SingleThreadTaskRunner::GetCurrentDefault());
     static void SetFactoryForTesting(Factory* test_factory);
 
    protected:

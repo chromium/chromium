@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/ssl/ssl_info.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_filter.h"
@@ -44,7 +44,7 @@ SSLCertificateErrorJob::SSLCertificateErrorJob(URLRequest* request)
 SSLCertificateErrorJob::~SSLCertificateErrorJob() = default;
 
 void SSLCertificateErrorJob::Start() {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&SSLCertificateErrorJob::NotifyError,
                                 weak_factory_.GetWeakPtr()));
 }

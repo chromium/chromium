@@ -445,7 +445,7 @@ void TrainingDataCollectorImpl::OnGetTrainingTensorsAtDecisionTime(
   for (int i = 0; i < training_config.observation_trigger_size(); i++) {
     const auto& trigger = training_config.observation_trigger(i);
     if (trigger.has_delay_sec()) {
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&TrainingDataCollectorImpl::OnObservationTrigger,
                          weak_ptr_factory_.GetWeakPtr(), request_id,

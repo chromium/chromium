@@ -41,7 +41,7 @@ class SystemTracingServiceTest : public testing::Test {
 
     // Use the current thread as the Perfetto task runner.
     test_handle_ = tracing::PerfettoTracedProcess::SetupForTesting(
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   void TearDown() override {

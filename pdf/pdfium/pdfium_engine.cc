@@ -28,7 +28,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
@@ -260,9 +260,10 @@ void SetUpV8() {
   }
 
   DCHECK(!g_isolate_holder);
-  g_isolate_holder = new gin::IsolateHolder(
-      base::ThreadTaskRunnerHandle::Get(), gin::IsolateHolder::kSingleThread,
-      gin::IsolateHolder::IsolateType::kUtility);
+  g_isolate_holder =
+      new gin::IsolateHolder(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                             gin::IsolateHolder::kSingleThread,
+                             gin::IsolateHolder::IsolateType::kUtility);
 
 #if defined(PDF_ENABLE_XFA)
   gin::InitializeCppgcFromV8Platform();
@@ -597,7 +598,7 @@ void PDFiumEngine::PluginSizeUpdated(const gfx::Size& size) {
     // asynchronously to avoid observable differences between this path and the
     // normal loading path.
     document_pending_ = false;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&PDFiumEngine::FinishLoadingDocument,
                                   weak_factory_.GetWeakPtr()));
   }
@@ -1832,7 +1833,7 @@ void PDFiumEngine::StartFind(const std::string& text, bool case_sensitive) {
   if (doc_loader_set_for_testing_) {
     ContinueFind(case_sensitive);
   } else {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&PDFiumEngine::ContinueFind,
                        find_weak_factory_.GetWeakPtr(), case_sensitive));

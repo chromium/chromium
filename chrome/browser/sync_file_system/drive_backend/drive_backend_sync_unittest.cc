@@ -15,9 +15,9 @@
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/sync_file_system/drive_backend/callback_helper.h"
 #include "chrome/browser/sync_file_system/drive_backend/drive_backend_constants.h"
 #include "chrome/browser/sync_file_system/drive_backend/fake_drive_service_helper.h"
@@ -119,7 +119,7 @@ class DriveBackendSyncTest : public testing::Test,
         drive_service.get(), uploader.get(), kSyncRootFolderTitle);
 
     remote_sync_service_.reset(new SyncEngine(
-        base::ThreadTaskRunnerHandle::Get(),  // ui_task_runner
+        base::SingleThreadTaskRunner::GetCurrentDefault(),  // ui_task_runner
         worker_task_runner_.get(), drive_task_runner.get(), base_dir_.GetPath(),
         nullptr,  // task_logger
         nullptr,  // notification_manager

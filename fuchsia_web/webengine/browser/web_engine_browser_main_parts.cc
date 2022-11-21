@@ -27,8 +27,8 @@
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "components/fuchsia_component_support/inspect.h"
@@ -87,7 +87,7 @@ void FetchHistogramsFromChildProcesses(
     base::OnceCallback<void(std::vector<fuchsia::legacymetrics::Event>)>
         done_cb) {
   content::FetchHistogramsAsynchronously(
-      base::ThreadTaskRunnerHandle::Get(),
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
       base::BindOnce(std::move(done_cb),
                      std::vector<fuchsia::legacymetrics::Event>()),
       kChildProcessHistogramFetchTimeout);

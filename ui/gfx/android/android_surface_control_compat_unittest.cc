@@ -7,8 +7,8 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gfx {
@@ -53,8 +53,8 @@ class SurfaceControlTransactionTest : public testing::Test {
 
   void RunRemainingTasks() {
     base::RunLoop runloop;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  runloop.QuitClosure());
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, runloop.QuitClosure());
     runloop.Run();
   }
 
@@ -70,10 +70,10 @@ TEST_F(SurfaceControlTransactionTest, CallbackCalledAfterApply) {
   gfx::SurfaceControl::Transaction transaction;
   transaction.SetOnCompleteCb(
       CreateOnCompleteCb(&on_complete_called, &on_complete_destroyed),
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   transaction.SetOnCommitCb(
       CreateOnCommitCb(&on_commit_called, &on_commit_destroyed),
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   // Nothing should have been called yet.
   EXPECT_FALSE(on_complete_called);
@@ -101,10 +101,10 @@ TEST_F(SurfaceControlTransactionTest, CallbackDestroyedWithoutApply) {
     SurfaceControl::Transaction transaction;
     transaction.SetOnCompleteCb(
         CreateOnCompleteCb(&on_complete_called, &on_complete_destroyed),
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     transaction.SetOnCommitCb(
         CreateOnCommitCb(&on_commit_called, &on_commit_destroyed),
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
 
     // Nothing should have been called yet.
     EXPECT_FALSE(on_complete_called);
@@ -128,10 +128,10 @@ TEST_F(SurfaceControlTransactionTest, CallbackSetupAfterGetTransaction) {
   gfx::SurfaceControl::Transaction transaction;
   transaction.SetOnCompleteCb(
       CreateOnCompleteCb(&on_complete_called, &on_complete_destroyed),
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   transaction.SetOnCommitCb(
       CreateOnCommitCb(&on_commit_called, &on_commit_destroyed),
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   // Nothing should have been called yet.
   EXPECT_FALSE(on_complete_called);

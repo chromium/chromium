@@ -576,7 +576,7 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness,
 
     // Post a task to simulate a prompt event during a call to
     // RequestScanningStart().
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindLambdaForTesting(
                        [&callback_loop, &event, &request_loop, this]() {
                          browser_client_.bluetooth_delegate()
@@ -703,7 +703,7 @@ TEST_F(WebBluetoothServiceImplTest, DestroyedDuringRequestScanningStart) {
 
   // Post a task to delete the WebBluetoothService state during a call to
   // RequestScanningStart().
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([this]() {
         std::exchange(service_, nullptr)->ResetAndDeleteThis();
       }));

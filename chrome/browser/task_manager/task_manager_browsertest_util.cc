@@ -16,7 +16,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/task_manager/task_manager_tester.h"
@@ -79,8 +78,8 @@ class ResourceChangeObserver {
     if (!IsSatisfied())
       return;
 
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  run_loop_.QuitClosure());
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop_.QuitClosure());
   }
 
   bool IsSatisfied() { return CountMatches() == required_count_; }
@@ -129,8 +128,8 @@ class ResourceChangeObserver {
   }
 
   void OnTimeout() {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  run_loop_.QuitClosure());
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop_.QuitClosure());
     FAIL() << "Timed out.\n" << DumpTaskManagerModel();
   }
 

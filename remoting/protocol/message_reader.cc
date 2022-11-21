@@ -12,7 +12,6 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "remoting/base/compound_buffer.h"
@@ -102,7 +101,7 @@ void MessageReader::OnDataReceived(net::IOBuffer* data, int data_size) {
     CompoundBuffer* buffer = message_decoder_.GetNextMessage();
     if (!buffer)
       break;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&MessageReader::RunCallback, weak_factory_.GetWeakPtr(),
                        base::WrapUnique(buffer)));

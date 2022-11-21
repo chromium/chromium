@@ -26,7 +26,6 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
@@ -117,7 +116,7 @@ class WebControllerBrowserTest : public BaseBrowserTest,
       // Runs a loop for 3 seconds to see if the renderer is idle.
       {
         base::RunLoop heart_beat;
-        base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE, heart_beat.QuitClosure(), base::Seconds(3));
         heart_beat.Run();
       }

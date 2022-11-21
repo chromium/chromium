@@ -1331,7 +1331,7 @@ void ShelfLayoutManager::LockAutoHideState(bool lock_auto_hide_state) {
   // If unlocking, recompute the current state, but do it after the current
   // event is processed.
   if (!is_auto_hide_state_locked_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&ShelfLayoutManager::UpdateAutoHideState,
                                   weak_factory_.GetWeakPtr()));
   }
@@ -3002,7 +3002,7 @@ void ShelfLayoutManager::OnShelfTrayBubbleVisibilityChanged(bool bubble_shown) {
   // created/destructed. Meanwhile, we rely on the state of tray bubble to
   // calculate the auto-hide state.
   // Use ThreadTaskRunnerHandle to specify that the task runs on the UI thread.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, visibility_update_for_tray_callback_.callback());
 }
 

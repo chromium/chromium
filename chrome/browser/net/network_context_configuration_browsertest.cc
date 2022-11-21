@@ -19,9 +19,9 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -1885,7 +1885,7 @@ class NetworkContextConfigurationProxySettingsBrowserTest
 
     // Then wait for any remaining connections that we should NOT get.
     base::RunLoop ugly_100ms_wait;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, ugly_100ms_wait.QuitClosure(), base::Milliseconds(100));
     ugly_100ms_wait.Run();
 

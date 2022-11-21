@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/ash/lock_screen_apps/toast_dialog_view.h"
 #include "chrome/browser/profiles/profile.h"
@@ -123,7 +123,7 @@ void FirstAppRunToastManager::OnAppWindowActivated(
 
     // Start toast dialog creation asynchronously so it happens after app window
     // activation completes.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&FirstAppRunToastManager::CreateAndShowToastDialog,
                        weak_ptr_factory_.GetWeakPtr()));

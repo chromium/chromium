@@ -16,7 +16,6 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "extensions/browser/api/api_resource_manager.h"
 #include "extensions/browser/api/serial/serial_port_manager.h"
 #include "extensions/common/api/serial.h"
@@ -405,7 +404,7 @@ void SerialConnection::StartPolling(const ReceiveEventCallback& callback) {
 void SerialConnection::Send(const std::vector<uint8_t>& data,
                             SendCompleteCallback callback) {
   if (send_complete_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), 0,
                                   api::serial::SEND_ERROR_PENDING));
     return;
@@ -426,7 +425,7 @@ void SerialConnection::Send(const std::vector<uint8_t>& data,
   if (send_timeout_ > 0) {
     send_timeout_task_.Reset(base::BindOnce(&SerialConnection::OnSendTimeout,
                                             weak_factory_.GetWeakPtr()));
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, send_timeout_task_.callback(),
         base::Milliseconds(send_timeout_));
   }
@@ -537,7 +536,7 @@ void SerialConnection::SetTimeoutCallback() {
   if (receive_timeout_ > 0) {
     receive_timeout_task_.Reset(base::BindOnce(
         &SerialConnection::OnReceiveTimeout, weak_factory_.GetWeakPtr()));
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, receive_timeout_task_.callback(),
         base::Milliseconds(receive_timeout_));
   }

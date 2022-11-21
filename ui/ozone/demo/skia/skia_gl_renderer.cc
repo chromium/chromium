@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -128,7 +128,7 @@ void SkiaGlRenderer::PostRenderFrameTask(gfx::SwapCompletionResult result) {
   if (!result.release_fence.is_null())
     gfx::GpuFence(std::move(result.release_fence)).Wait();
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&SkiaGlRenderer::RenderFrame,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

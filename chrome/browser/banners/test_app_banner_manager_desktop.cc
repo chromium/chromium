@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "content/public/browser/web_contents.h"
 
@@ -175,8 +175,8 @@ void TestAppBannerManagerDesktop::SetPromotable(bool promotable) {
 
 void TestAppBannerManagerDesktop::OnFinished() {
   if (on_done_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(on_done_));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(on_done_));
   }
 }
 

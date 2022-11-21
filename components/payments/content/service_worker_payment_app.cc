@@ -15,7 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/payments/content/payment_event_response_util.h"
 #include "components/payments/content/payment_handler_host.h"
 #include "components/payments/content/payment_request_converter.h"
@@ -198,7 +198,7 @@ void ServiceWorkerPaymentApp::OnCanMakePaymentEventSkipped(
   // |can_make_payment| is true as long as there is a matching payment handler.
   can_make_payment_result_ = true;
   has_enrolled_instrument_result_ = false;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), this, can_make_payment_result_));
 }
@@ -211,7 +211,7 @@ void ServiceWorkerPaymentApp::OnCanMakePaymentEventResponded(
   has_enrolled_instrument_result_ = response->can_make_payment;
   base::UmaHistogramBoolean("PaymentRequest.EventResponse.CanMakePayment",
                             response->can_make_payment);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), this, can_make_payment_result_));
 }

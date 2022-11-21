@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/blocklist.h"
 #include "chrome/browser/extensions/blocklist_state_fetcher.h"
 #include "chrome/browser/extensions/fake_safe_browsing_database_manager.h"
@@ -36,7 +36,7 @@ void BlocklistStateFetcherMock::Request(const std::string& id,
   if (base::Contains(states_, id))
     result = states_[id];
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 

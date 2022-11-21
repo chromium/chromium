@@ -11,10 +11,10 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/gcm_driver/crypto/gcm_decryption_result.h"
 #include "components/gcm_driver/crypto/gcm_encryption_provider.h"
 #include "components/gcm_driver/crypto/gcm_encryption_result.h"
@@ -151,14 +151,15 @@ void GCMDriverBaseTest::CreateDriver() {
   chrome_build_info.product_category_for_subtypes = "com.chrome.macosx";
   driver_ = std::make_unique<GCMDriverDesktop>(
       std::make_unique<FakeGCMClientFactory>(
-          base::ThreadTaskRunnerHandle::Get(), io_thread_.task_runner()),
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
+          io_thread_.task_runner()),
       chrome_build_info, &prefs_, temp_dir_.GetPath(),
       /*remove_account_mappings_with_email_key=*/true, base::DoNothing(),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_),
       network::TestNetworkConnectionTracker::GetInstance(),
-      base::ThreadTaskRunnerHandle::Get(), io_thread_.task_runner(),
-      task_environment_.GetMainThreadTaskRunner());
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      io_thread_.task_runner(), task_environment_.GetMainThreadTaskRunner());
 }
 
 void GCMDriverBaseTest::ShutdownDriver() {

@@ -10,9 +10,9 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/attestation/attestation_flow_status_reporter.h"
 #include "chromeos/ash/components/attestation/mock_attestation_flow.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -64,7 +64,7 @@ TEST_F(AttestationFlowTypeDeciderTest,
 
   EXPECT_CALL(server_proxy_, CheckIfAnyProxyPresent(_))
       .WillOnce(Invoke([](ServerProxy::ProxyPresenceCallback callback) {
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback), false));
       }));
   reporter_ = std::make_unique<AttestationFlowStatusReporter>();
@@ -88,7 +88,7 @@ TEST_F(AttestationFlowTypeDeciderTest,
 
   EXPECT_CALL(server_proxy_, CheckIfAnyProxyPresent(_))
       .WillOnce(Invoke([](ServerProxy::ProxyPresenceCallback callback) {
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback), true));
       }));
   reporter_ = std::make_unique<AttestationFlowStatusReporter>();

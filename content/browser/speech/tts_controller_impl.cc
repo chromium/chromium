@@ -17,7 +17,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -511,7 +511,7 @@ void TtsControllerImpl::OnBrowserContextDestroyed(
   // to access the BrowserContext that's being deleted. Note that it's
   // safe to use base::Unretained because this is a singleton.
   if (did_clear_utterances) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&TtsControllerImpl::StopAndClearQueue,
                                   base::Unretained(this), GURL()));
   }

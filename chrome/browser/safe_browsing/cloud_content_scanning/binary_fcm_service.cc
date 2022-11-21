@@ -9,7 +9,7 @@
 #include "base/base64.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
@@ -96,7 +96,7 @@ void BinaryFCMService::QueueGetInstanceIDCallback(
   pending_token_calls_.push_back(
       base::BindOnce(&BinaryFCMService::GetInstanceID,
                      weakptr_factory_.GetWeakPtr(), std::move(callback)));
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&BinaryFCMService::MaybeRunNextQueuedOperation,
                      weakptr_factory_.GetWeakPtr()),
@@ -162,7 +162,7 @@ void BinaryFCMService::MaybeRunNextQueuedOperation() {
     pending_token_calls_.pop_front();
     std::move(pending_operation).Run();
 
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&BinaryFCMService::MaybeRunNextQueuedOperation,
                        weakptr_factory_.GetWeakPtr()),

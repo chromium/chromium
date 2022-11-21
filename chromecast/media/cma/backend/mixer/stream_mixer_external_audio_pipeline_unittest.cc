@@ -9,8 +9,8 @@
 #include "base/location.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromecast/media/audio/fake_external_audio_pipeline_support.h"
 #include "chromecast/media/audio/mixer_service/loopback_connection.h"
 #include "chromecast/media/audio/mixer_service/mixer_socket.h"
@@ -88,7 +88,7 @@ class ExternalAudioPipelineTest : public ::testing::Test {
     external_audio_pipeline_support_->SetSupported();
 
     mixer_ = std::make_unique<StreamMixer>(
-        nullptr, base::ThreadTaskRunnerHandle::Get(), "{}");
+        nullptr, base::SingleThreadTaskRunner::GetCurrentDefault(), "{}");
   }
 
   void TearDown() override {
@@ -98,8 +98,8 @@ class ExternalAudioPipelineTest : public ::testing::Test {
   // Run async operations in the stream mixer.
   void RunLoopForMixer() {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  run_loop.QuitClosure());
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
   }
 

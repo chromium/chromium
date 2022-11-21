@@ -6,7 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ui/base/cocoa/nswindow_test_util.h"
 
 namespace remote_cocoa {
@@ -236,7 +236,7 @@ void NativeWidgetNSWindowFullscreenController::HandlePendingState() {
           // explicitly).
           SetStateAndCancelPostedTasks(
               State::kWindowedMovingToFullscreenTarget);
-          base::ThreadTaskRunnerHandle::Get()->PostTask(
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE,
               base::BindOnce(&NativeWidgetNSWindowFullscreenController::
                                  MoveToTargetDisplayThenToggleFullscreen,
@@ -245,7 +245,7 @@ void NativeWidgetNSWindowFullscreenController::HandlePendingState() {
         } else {
           // Handle entering fullscreen on the default display.
           SetStateAndCancelPostedTasks(State::kEnterFullscreenTransition);
-          base::ThreadTaskRunnerHandle::Get()->PostTask(
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE,
               base::BindOnce(
                   &NativeWidgetNSWindowFullscreenController::ToggleFullscreen,
@@ -256,7 +256,7 @@ void NativeWidgetNSWindowFullscreenController::HandlePendingState() {
         // and having called setFrame during some transition. It is necessary
         // to restore the original frame prior to having entered fullscreen.
         SetStateAndCancelPostedTasks(State::kWindowedRestoringOriginalFrame);
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(
                 &NativeWidgetNSWindowFullscreenController::RestoreWindowedFrame,
@@ -286,7 +286,7 @@ void NativeWidgetNSWindowFullscreenController::HandlePendingState() {
           pending_state_.reset();
         }
         SetStateAndCancelPostedTasks(State::kExitFullscreenTransition);
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(
                 &NativeWidgetNSWindowFullscreenController::ToggleFullscreen,

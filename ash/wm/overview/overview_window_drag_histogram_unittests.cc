@@ -21,9 +21,9 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/location.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
@@ -108,7 +108,7 @@ class OverviewWindowDragHistogramTest : public AshTestBase {
         EnterOverviewAndGetItemCenterPoint());
     generator->PressTouch();
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(2));
     run_loop.Run();
 

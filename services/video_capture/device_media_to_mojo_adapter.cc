@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -124,7 +124,7 @@ void DeviceMediaToMojoAdapter::StartInternal(
   if (start_in_process) {
     DCHECK(frame_handler);
     media_receiver = std::make_unique<media::VideoFrameReceiverOnTaskRunner>(
-        frame_handler, base::ThreadTaskRunnerHandle::Get());
+        frame_handler, base::SingleThreadTaskRunner::GetCurrentDefault());
     video_frame_receiver = frame_handler;
   } else {
     DCHECK(handler_pending_remote);
@@ -137,7 +137,8 @@ void DeviceMediaToMojoAdapter::StartInternal(
     receiver_ =
         std::make_unique<ReceiverMojoToMediaAdapter>(std::move(handler_remote));
     media_receiver = std::make_unique<media::VideoFrameReceiverOnTaskRunner>(
-        receiver_->GetWeakPtr(), base::ThreadTaskRunnerHandle::Get());
+        receiver_->GetWeakPtr(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     video_frame_receiver = receiver_->GetWeakPtr();
   }
 
@@ -257,8 +258,8 @@ void DeviceMediaToMojoAdapter::Stop() {
     // because |device_->StopAndDeAllocate()| may post messages (e.g.
     // OnBufferRetired()) to a WeakPtr to |receiver_| to this queue,
     // and we need those messages to be sent before we invalidate the WeakPtr.
-    base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE,
-                                                    std::move(receiver_));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(receiver_));
   }
 }
 

@@ -7,7 +7,7 @@
 #import "content/browser/accessibility/browser_accessibility_mac.h"
 
 #include "base/debug/stack_trace.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #import "content/browser/accessibility/browser_accessibility_cocoa.h"
 #include "content/browser/accessibility/browser_accessibility_manager_mac.h"
@@ -101,7 +101,7 @@ void BrowserAccessibilityMac::ReplaceNativeObject() {
   // We use 1000ms; however, this magic number isn't necessary to avoid
   // use-after-free or anything scary like that. The worst case scenario if this
   // gets destroyed too early is that VoiceOver announces the wrong thing once.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
           [](base::scoped_nsobject<AXPlatformNodeCocoa> destroyed) {

@@ -12,7 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/window.h"
@@ -108,7 +108,7 @@ class FakePlatformWindow : public ui::PlatformWindow, public ui::WmDragHandler {
                  WmDragHandler::LocationDelegate* delegate) override {
     drag_finished_callback_ = std::move(callback);
     source_data_ = std::make_unique<OSExchangeData>(data.provider().Clone());
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&FakePlatformWindow::ProcessDrag, base::Unretained(this),
                        std::move(source_data_), operation));

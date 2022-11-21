@@ -90,7 +90,7 @@ void FakeVideoCaptureDeviceLauncher::LaunchDeviceAsync(
   auto device_client = std::make_unique<media::VideoCaptureDeviceClient>(
       media::VideoCaptureBufferType::kSharedMemory,
       std::make_unique<media::VideoFrameReceiverOnTaskRunner>(
-          receiver, base::ThreadTaskRunnerHandle::Get()),
+          receiver, base::SingleThreadTaskRunner::GetCurrentDefault()),
       std::move(buffer_pool), base::BindRepeating([]() {
         return std::unique_ptr<media::VideoCaptureJpegDecoder>();
       }));
@@ -98,7 +98,7 @@ void FakeVideoCaptureDeviceLauncher::LaunchDeviceAsync(
   auto device_client = std::make_unique<media::VideoCaptureDeviceClient>(
       media::VideoCaptureBufferType::kSharedMemory,
       std::make_unique<media::VideoFrameReceiverOnTaskRunner>(
-          receiver, base::ThreadTaskRunnerHandle::Get()),
+          receiver, base::SingleThreadTaskRunner::GetCurrentDefault()),
       std::move(buffer_pool));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   device->AllocateAndStart(params, std::move(device_client));

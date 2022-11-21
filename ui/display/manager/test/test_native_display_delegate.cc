@@ -8,7 +8,6 @@
 #include "base/location.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "ui/display/manager/test/action_logger.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
@@ -66,7 +65,7 @@ void TestNativeDisplayDelegate::GetDisplays(GetDisplaysCallback callback) {
     observer.OnDisplaySnapshotsInvalidated();
 
   if (run_async_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), outputs_));
   } else {
     std::move(callback).Run(outputs_);
@@ -141,7 +140,7 @@ void TestNativeDisplayDelegate::Configure(
   log_->AppendAction(config_outcome);
 
   if (run_async_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), config_success));
   } else {
     std::move(callback).Run(config_success);
@@ -151,7 +150,7 @@ void TestNativeDisplayDelegate::Configure(
 void TestNativeDisplayDelegate::GetHDCPState(const DisplaySnapshot& output,
                                              GetHDCPStateCallback callback) {
   if (run_async_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), get_hdcp_expectation_,
                                   hdcp_state_, content_protection_method_));
   } else {
@@ -166,7 +165,7 @@ void TestNativeDisplayDelegate::SetHDCPState(
     ContentProtectionMethod protection_method,
     SetHDCPStateCallback callback) {
   if (run_async_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&TestNativeDisplayDelegate::DoSetHDCPState,
                        base::Unretained(this), output.display_id(), state,

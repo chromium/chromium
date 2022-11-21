@@ -20,7 +20,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/events/event_constants.h"
@@ -713,7 +712,7 @@ bool XkbKeyboardLayoutEngine::SetCurrentLayoutByNameWithCallback(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&LoadKeymap, layout_name,
-                     base::ThreadTaskRunnerHandle::Get(),
+                     base::SingleThreadTaskRunner::GetCurrentDefault(),
                      std::move(reply_callback)));
 #else
   NOTIMPLEMENTED();

@@ -5,8 +5,8 @@
 #include "chrome/browser/signin/force_signin_verifier.h"
 
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/network_service_instance.h"
@@ -141,8 +141,8 @@ void ConfigureNetworkConnectionTracker(NetworkConnectionType connection_type,
 // MetworkConnectionTracker is returning results asynchronously.
 void SpinCurrentSequenceTaskRunner() {
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                run_loop.QuitClosure());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
 }
 

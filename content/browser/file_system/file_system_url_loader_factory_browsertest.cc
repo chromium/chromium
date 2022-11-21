@@ -121,7 +121,7 @@ void ReadDataPipeInternal(mojo::DataPipeConsumerHandle handle,
         std::move(quit_closure).Run();
         return;
       case MOJO_RESULT_SHOULD_WAIT:
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(&ReadDataPipeInternal, handle, result,
                                       std::move(quit_closure)));
         return;
@@ -246,7 +246,8 @@ class FileSystemURLLoaderFactoryTest
         additional_providers;
     additional_providers.push_back(
         std::make_unique<storage::TestFileSystemBackend>(
-            base::ThreadTaskRunnerHandle::Get().get(), mnt_point));
+            base::SingleThreadTaskRunner::GetCurrentDefault().get(),
+            mnt_point));
 
     std::vector<storage::URLRequestAutoMountHandler> handlers = {
         base::BindRepeating(&TestAutoMountForURLRequest)};

@@ -8,8 +8,8 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,8 +43,9 @@ class TestTask {
 class TestScheduler : public CacheStorageScheduler {
  public:
   TestScheduler()
-      : CacheStorageScheduler(CacheStorageSchedulerClient::kStorage,
-                              base::ThreadTaskRunnerHandle::Get()) {}
+      : CacheStorageScheduler(
+            CacheStorageSchedulerClient::kStorage,
+            base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
   void SetDoneStartingClosure(base::OnceClosure done_closure) {
     CHECK(!done_closure_);
@@ -54,8 +55,8 @@ class TestScheduler : public CacheStorageScheduler {
  protected:
   void DoneStartingAvailableOperations() override {
     if (done_closure_) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                    std::move(done_closure_));
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(done_closure_));
     }
     CacheStorageScheduler::DoneStartingAvailableOperations();
   }

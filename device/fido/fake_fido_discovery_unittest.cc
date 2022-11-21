@@ -6,9 +6,9 @@
 
 #include <utility>
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_test_data.h"
@@ -76,7 +76,7 @@ TEST_F(FakeFidoDiscoveryTest, WaitThenStartStopDiscovery) {
   MockFidoDiscoveryObserver observer;
   discovery.set_observer(&observer);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() { discovery.Start(); }));
 
   discovery.WaitForCallToStart();

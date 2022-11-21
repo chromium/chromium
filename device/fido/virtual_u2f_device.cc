@@ -14,7 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/apdu/apdu_command.h"
 #include "components/apdu/apdu_response.h"
 #include "components/cbor/reader.h"
@@ -74,7 +74,7 @@ FidoDevice::CancelToken VirtualU2fDevice::DeviceTransact(
 
   // If malformed U2F request is received, respond with error immediately.
   if (!parsed_command) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             std::move(cb),
@@ -87,7 +87,7 @@ FidoDevice::CancelToken VirtualU2fDevice::DeviceTransact(
     auto response = apdu::ApduResponse(std::move(nonsense),
                                        apdu::ApduResponse::Status::SW_NO_ERROR)
                         .GetEncodedResponse();
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(cb), std::move(response)));
     return 0;
   }
@@ -114,7 +114,7 @@ FidoDevice::CancelToken VirtualU2fDevice::DeviceTransact(
   if (response) {
     // Call |callback| via the |MessageLoop| because |AuthenticatorImpl| doesn't
     // support callback hairpinning.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(cb), std::move(response)));
   }
   return 0;

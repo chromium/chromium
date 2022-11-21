@@ -17,7 +17,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
@@ -377,7 +377,7 @@ void DlpContentManagerAsh::OnScreenRestrictionsChanged(
   if (removed_restrictions.GetRestrictionLevel(
           DlpContentRestriction::kPrivacyScreen) ==
       DlpRulesManager::Level::kBlock) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
             &DlpContentManagerAsh::MaybeRemovePrivacyScreenEnforcement,

@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/network/device_state.h"
@@ -29,7 +29,7 @@ WifiHotspotConnector::WifiHotspotConnector(
       network_connect_(network_connect),
       timer_(std::make_unique<base::OneShotTimer>()),
       clock_(base::DefaultClock::GetInstance()),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   network_state_handler_observer_.Observe(network_state_handler_);
 }
 

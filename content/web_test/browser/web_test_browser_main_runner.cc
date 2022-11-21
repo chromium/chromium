@@ -19,7 +19,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -307,7 +306,7 @@ void WebTestBrowserMainRunner::RunBrowserMain(
   RunTests(main_runner.get());
 
   // Shell::Shutdown() will cause the |main_runner| loop to quit.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&Shell::Shutdown));
   main_runner->Run();
 

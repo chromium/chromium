@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "ui/gfx/vsync_provider.h"
 #include "ui/gl/egl_timestamps.h"
@@ -381,7 +381,7 @@ void GLSurfacePresentationHelper::ScheduleCheckPendingFrames(
     return;
 
   if (!align_with_next_vsync) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&GLSurfacePresentationHelper::CheckPendingFramesCallback,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -395,7 +395,7 @@ void GLSurfacePresentationHelper::ScheduleCheckPendingFrames(
       vsync_interval_.is_zero() ? base::Seconds(1) / 60 : vsync_interval_;
   auto now = base::TimeTicks::Now();
   auto next_vsync = now.SnappedToNextTick(vsync_timebase_, interval);
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&GLSurfacePresentationHelper::CheckPendingFramesCallback,
                      weak_ptr_factory_.GetWeakPtr()),

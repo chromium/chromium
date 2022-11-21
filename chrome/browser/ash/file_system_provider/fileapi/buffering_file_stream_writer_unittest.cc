@@ -13,7 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -65,7 +65,7 @@ class FakeFileStreamWriter : public storage::FileStreamWriter {
     DCHECK(write_log_);
     write_log_->push_back(std::string(buf->data(), buf_len));
     pending_bytes_ += buf_len;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        write_error_ == net::OK ? buf_len : write_error_));
@@ -76,7 +76,7 @@ class FakeFileStreamWriter : public storage::FileStreamWriter {
     DCHECK(cancel_counter_);
     DCHECK_EQ(net::OK, write_error_);
     ++(*cancel_counter_);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), net::OK));
     return net::ERR_IO_PENDING;
   }
@@ -85,7 +85,7 @@ class FakeFileStreamWriter : public storage::FileStreamWriter {
     DCHECK(flush_log_);
     flush_log_->push_back(pending_bytes_);
     pending_bytes_ = 0;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), net::OK));
     return net::ERR_IO_PENDING;
   }

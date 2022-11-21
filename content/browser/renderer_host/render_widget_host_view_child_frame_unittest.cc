@@ -14,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/test/begin_frame_args_test.h"
@@ -174,8 +173,8 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
 
     browser_context_.reset();
 
-    base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE,
-                                                    browser_context_.release());
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, browser_context_.release());
     base::RunLoop().RunUntilIdle();
 #if !BUILDFLAG(IS_ANDROID)
     ImageTransportFactory::Terminate();

@@ -12,7 +12,6 @@
 #include "base/location.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/dom_distiller/core/distilled_content_store.h"
 #include "components/dom_distiller/core/proto/distilled_article.pb.h"
 #include "components/dom_distiller/core/task_tracker.h"
@@ -120,7 +119,8 @@ void DomDistillerService::CancelTask(TaskTracker* task) {
   if (it != tasks_.end()) {
     it->release();
     tasks_.erase(it);
-    base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, task);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                                  task);
   }
 }
 

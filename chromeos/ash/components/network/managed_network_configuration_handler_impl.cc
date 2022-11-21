@@ -18,7 +18,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
@@ -592,7 +591,7 @@ void ManagedNetworkConfigurationHandlerImpl::SchedulePolicyApplication(
     return;
   }
   policy_application_info.task_scheduled = true;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &ManagedNetworkConfigurationHandlerImpl::StartPolicyApplication,
@@ -784,7 +783,7 @@ void ManagedNetworkConfigurationHandlerImpl::OnPoliciesApplied(
   PolicyApplicationInfo& policy_application_info =
       policy_application_info_map_[userhash];
 
-  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
       FROM_HERE, std::move(policy_application_info.running_policy_applicator));
 
   TriggerCellularPolicyApplication(profile, new_cellular_policy_guids);
@@ -1042,7 +1041,7 @@ ManagedNetworkConfigurationHandlerImpl::GetPoliciesForProfile(
 
 ManagedNetworkConfigurationHandlerImpl::
     ManagedNetworkConfigurationHandlerImpl() {
-  CHECK(base::ThreadTaskRunnerHandle::IsSet());
+  CHECK(base::SingleThreadTaskRunner::HasCurrentDefault());
 }
 
 ManagedNetworkConfigurationHandlerImpl::

@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/no_destructor.h"
 #include "base/system/sys_info.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "cc/raster/single_thread_task_graph_runner.h"
 #include "components/viz/client/frame_eviction_manager.h"
@@ -105,7 +105,8 @@ void CompositorDependenciesAndroid::CreateVizFrameSinkManager() {
   // Setup HostFrameSinkManager with interface endpoints.
   host_frame_sink_manager_.BindAndSetManager(
       std::move(frame_sink_manager_client_receiver),
-      base::ThreadTaskRunnerHandle::Get(), std::move(frame_sink_manager));
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      std::move(frame_sink_manager));
 
   // Set up a pending request which will be run once we've successfully
   // connected to the GPU process.
@@ -154,7 +155,7 @@ void CompositorDependenciesAndroid::EnqueueLowEndBackgroundCleanup() {
     low_end_background_cleanup_task_.Reset(base::BindOnce(
         &CompositorDependenciesAndroid::DoLowEndBackgroundCleanup,
         base::Unretained(this)));
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, low_end_background_cleanup_task_.callback(),
         base::Seconds(5));
   }

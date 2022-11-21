@@ -8,11 +8,11 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/cdm_context.h"
@@ -78,7 +78,7 @@ class MockDecoder : public VideoDecoderMixin {
  public:
   MockDecoder()
       : VideoDecoderMixin(std::make_unique<MockMediaLog>(),
-                          base::ThreadTaskRunnerHandle::Get(),
+                          base::SingleThreadTaskRunner::GetCurrentDefault(),
                           base::WeakPtr<VideoDecoderMixin::Client>(nullptr)) {}
   ~MockDecoder() override = default;
 
@@ -184,9 +184,9 @@ class VideoDecoderPipelineTest
     auto pool = std::make_unique<MockVideoFramePool>();
     pool_ = pool.get();
     decoder_ = base::WrapUnique(new VideoDecoderPipeline(
-        gpu::GpuDriverBugWorkarounds(), base::ThreadTaskRunnerHandle::Get(),
-        std::move(pool), std::move(converter_),
-        std::make_unique<MockMediaLog>(),
+        gpu::GpuDriverBugWorkarounds(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(), std::move(pool),
+        std::move(converter_), std::make_unique<MockMediaLog>(),
         // This callback needs to be configured in the individual tests.
         base::BindOnce(&VideoDecoderPipelineTest::CreateNullMockDecoder)));
 

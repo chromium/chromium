@@ -5,7 +5,7 @@
 #include "chromeos/ash/components/dbus/cec_service/fake_cec_service_client.h"
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 
 namespace ash {
@@ -25,7 +25,7 @@ void FakeCecServiceClient::SendWakeUp() {
 
 void FakeCecServiceClient::QueryDisplayCecPowerState(
     CecServiceClient::PowerStateCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), tv_power_states_));
 }
 

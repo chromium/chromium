@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace ash {
 
@@ -25,7 +25,7 @@ void FakeVirtualFileProviderClient::GenerateVirtualFileId(
   else
     id = result_id_;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(id)));
 }
 
@@ -38,7 +38,7 @@ void FakeVirtualFileProviderClient::OpenFileById(
   else
     fd = std::move(result_fd_);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(fd)));
 }
 

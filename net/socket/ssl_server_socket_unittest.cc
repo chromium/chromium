@@ -35,7 +35,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "crypto/rsa_private_key.h"
 #include "net/base/address_list.h"
@@ -151,7 +150,7 @@ class FakeDataChannel {
         return ERR_CONNECTION_RESET;
       write_called_after_close_ = true;
       write_callback_ = std::move(callback);
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&FakeDataChannel::DoWriteCallback,
                                     weak_factory_.GetWeakPtr()));
       return ERR_IO_PENDING;
@@ -160,7 +159,7 @@ class FakeDataChannel {
     data_.push(base::MakeRefCounted<DrainableIOBuffer>(
         base::MakeRefCounted<StringIOBuffer>(std::string(buf->data(), buf_len)),
         buf_len));
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&FakeDataChannel::DoReadCallback,
                                   weak_factory_.GetWeakPtr()));
     return buf_len;
@@ -173,7 +172,7 @@ class FakeDataChannel {
   void Close() {
     closed_ = true;
     if (!read_callback_.is_null()) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&FakeDataChannel::DoReadCallback,
                                     weak_factory_.GetWeakPtr()));
     }
@@ -1152,7 +1151,7 @@ TEST_F(SSLServerSocketTest, ClientWriteAfterServerClose) {
   EXPECT_GT(client_ret, 0);
 
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(10));
   run_loop.Run();
 }

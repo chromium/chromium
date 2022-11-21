@@ -10,7 +10,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "content/public/common/content_client.h"
 #include "content/public/utility/content_utility_client.h"
@@ -75,7 +75,7 @@ void ExposeUtilityInterfacesToBrowser(mojo::BinderMap* binders) {
   if (bind_usage_reporter) {
     binders->Add<mojom::ResourceUsageReporter>(
         base::BindRepeating(&CreateResourceUsageReporter),
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

@@ -1366,7 +1366,7 @@ TEST_F(AuthenticatorImplTest, NavigationDuringOperation) {
   // Simulate a navigation while waiting for the user to press the token.
   virtual_device_factory_->mutable_state()->simulate_press_callback =
       base::BindLambdaForTesting([&](device::VirtualFidoDevice* device) {
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindLambdaForTesting(
                            [&]() { NavigateAndCommit(GURL(kTestOrigin2)); }));
         return false;

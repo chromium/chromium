@@ -13,7 +13,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
@@ -63,7 +62,7 @@ void FakeShillProfileClient::GetProperties(
   base::Value properties = profile->properties.Clone();
   properties.SetKey(shill::kEntriesProperty, std::move(entry_paths));
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(properties)));
 }
 
@@ -78,7 +77,8 @@ void FakeShillProfileClient::SetProperty(const dbus::ObjectPath& profile_path,
     return;
   }
   profile->properties.SetKey(name, property.Clone());
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(callback));
 }
 
 void FakeShillProfileClient::SetObjectPathProperty(
@@ -93,7 +93,8 @@ void FakeShillProfileClient::SetObjectPathProperty(
     return;
   }
   profile->properties.SetStringKey(name, property.value());
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(callback));
 }
 
 void FakeShillProfileClient::GetEntry(
@@ -114,7 +115,7 @@ void FakeShillProfileClient::GetEntry(
     return;
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), entry->Clone()));
 }
 
@@ -126,7 +127,7 @@ void FakeShillProfileClient::DeleteEntry(const dbus::ObjectPath& profile_path,
     case FakeShillSimulatedResult::kSuccess:
       break;
     case FakeShillSimulatedResult::kFailure:
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(error_callback), "Error",
                                     "Simulated failure"));
       return;
@@ -137,7 +138,7 @@ void FakeShillProfileClient::DeleteEntry(const dbus::ObjectPath& profile_path,
 
   ProfileProperties* profile = GetProfile(profile_path);
   if (!profile) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(error_callback), "Error.InvalidProfile",
                        profile_path.value()));
@@ -145,7 +146,7 @@ void FakeShillProfileClient::DeleteEntry(const dbus::ObjectPath& profile_path,
   }
 
   if (!profile->entries.RemoveKey(entry_path)) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(error_callback),
                                   "Error.InvalidProfileEntry", entry_path));
     return;
@@ -155,7 +156,8 @@ void FakeShillProfileClient::DeleteEntry(const dbus::ObjectPath& profile_path,
       ->GetTestInterface()
       ->ClearConfiguredServiceProperties(entry_path);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(callback));
 }
 
 ShillProfileClient::TestInterface* FakeShillProfileClient::GetTestInterface() {

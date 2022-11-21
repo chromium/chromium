@@ -6,9 +6,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
@@ -25,11 +25,11 @@ class QuotaManagerProxyTest : public testing::Test {
     EXPECT_TRUE(profile_path_.CreateUniqueTempDir());
     quota_manager_ = base::MakeRefCounted<QuotaManagerImpl>(
         /*is_incognito*/ false, profile_path_.GetPath(),
-        base::ThreadTaskRunnerHandle::Get().get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         /*quota_change_callback=*/base::DoNothing(),
         /*storage_policy=*/nullptr, GetQuotaSettingsFunc());
     quota_manager_proxy_ = base::MakeRefCounted<QuotaManagerProxy>(
-        quota_manager_.get(), base::ThreadTaskRunnerHandle::Get(),
+        quota_manager_.get(), base::SingleThreadTaskRunner::GetCurrentDefault(),
         profile_path_.GetPath());
   }
 
@@ -52,7 +52,8 @@ TEST_F(QuotaManagerProxyTest, GetBucketPath) {
       blink::StorageKey::CreateFromStringForTesting("http://example.com"),
       "draft_bucket");
   quota_manager_proxy_->UpdateOrCreateBucket(
-      params, base::ThreadTaskRunnerHandle::Get(), future.GetCallback());
+      params, base::SingleThreadTaskRunner::GetCurrentDefault(),
+      future.GetCallback());
   auto bucket = future.Take();
   EXPECT_TRUE(bucket.ok());
 
@@ -70,7 +71,8 @@ TEST_F(QuotaManagerProxyTest, GetClientBucketPath) {
       blink::StorageKey::CreateFromStringForTesting("http://example.com"),
       "draft_bucket");
   quota_manager_proxy_->UpdateOrCreateBucket(
-      params, base::ThreadTaskRunnerHandle::Get(), future.GetCallback());
+      params, base::SingleThreadTaskRunner::GetCurrentDefault(),
+      future.GetCallback());
   auto bucket = future.Take();
   EXPECT_TRUE(bucket.ok());
 

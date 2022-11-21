@@ -14,8 +14,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_test_data.h"
@@ -603,7 +603,7 @@ TEST_F(FidoHidDeviceTest, TestCancel) {
       // Device response with a significant delay.
       .WillOnce(Invoke([&](device::mojom::HidConnection::ReadCallback* cb) {
         auto delay = base::Seconds(2);
-        base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(std::move(*cb), true, 0,
                            CreateMockResponseWithChannelId(
@@ -628,7 +628,7 @@ TEST_F(FidoHidDeviceTest, TestCancel) {
   auto delay_before_cancel = base::Seconds(1);
   auto cancel_callback = base::BindOnce(
       &FidoHidDevice::Cancel, device->weak_factory_.GetWeakPtr(), token);
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, std::move(cancel_callback), delay_before_cancel);
   task_environment_.FastForwardUntilNoTasksRemain();
 }
@@ -719,7 +719,7 @@ TEST_F(FidoHidDeviceTest, TestCancelAfterWriting) {
       .WillOnce(Invoke([&read_callback, &device, &token](
                            device::mojom::HidConnection::ReadCallback* cb) {
         read_callback = std::move(*cb);
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(
                 [](FidoDevice* device, FidoDevice::CancelToken token) {
@@ -841,7 +841,7 @@ TEST_F(FidoHidDeviceTest, TestGetInfoFailsOnDeviceError) {
       // Device response with a significant delay.
       .WillOnce(Invoke([&](device::mojom::HidConnection::ReadCallback* cb) {
         auto delay = base::Seconds(2);
-        base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(std::move(*cb), true, 0,
                            CreateMockResponseWithChannelId(
@@ -881,7 +881,7 @@ TEST_F(FidoHidDeviceTest, TestDeviceMessageError) {
       // Device response with a significant delay.
       .WillOnce(Invoke([&](device::mojom::HidConnection::ReadCallback* cb) {
         auto delay = base::Seconds(2);
-        base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(std::move(*cb), true, 0,
                            CreateMockResponseWithChannelId(

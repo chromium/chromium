@@ -11,9 +11,9 @@
 #include "base/containers/queue.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "media/base/cdm_context.h"
 #include "media/base/decoder_buffer.h"
@@ -442,7 +442,7 @@ void AsyncSysmemBufferStream::EnqueueBuffer(
     is_at_end_of_stream_ = true;
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&AsyncSysmemBufferStream::DoEnqueueBuffer,
                                 weak_factory_.GetWeakPtr(), std::move(buffer)));
 }

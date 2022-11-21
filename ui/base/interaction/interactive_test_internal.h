@@ -9,8 +9,8 @@
 
 #include "base/logging.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/rectify_callback.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -123,7 +123,7 @@ InteractiveTestPrivate::MultiStep InteractiveTestPrivate::PostTask(T&& task) {
       InteractionSequence::StepBuilder()
           .SetElementID(kInteractiveTestPivotElementId)
           .SetStartCallback(base::BindOnce([](ui::TrackedElement* el) {
-            base::ThreadTaskRunnerHandle::Get()->PostTask(
+            base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE,
                 base::BindOnce(
                     [](ElementIdentifier id, ElementContext context) {

@@ -10,8 +10,8 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "components/policy/proto/install_attributes.pb.h"
@@ -66,7 +66,7 @@ void FakeInstallAttributesClient::InstallAttributesGetStatus(
     InstallAttributesGetStatusCallback callback) {
   absl::optional<::user_data_auth::InstallAttributesGetStatusReply> reply =
       BlockingInstallAttributesGetStatus(request);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), reply));
 }
 void FakeInstallAttributesClient::RemoveFirmwareManagementParameters(
@@ -155,7 +155,7 @@ FakeInstallAttributesClient::BlockingInstallAttributesGetStatus(
 void FakeInstallAttributesClient::WaitForServiceToBeAvailable(
     chromeos::WaitForServiceToBeAvailableCallback callback) {
   if (service_is_available_ || service_reported_not_available_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), service_is_available_));
   } else {
     pending_wait_for_service_to_be_available_callbacks_.push_back(
@@ -188,7 +188,7 @@ template <typename ReplyType>
 void FakeInstallAttributesClient::ReturnProtobufMethodCallback(
     const ReplyType& reply,
     chromeos::DBusMethodCallback<ReplyType> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), reply));
 }
 

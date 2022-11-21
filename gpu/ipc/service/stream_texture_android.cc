@@ -9,7 +9,7 @@
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/abstract_texture_impl.h"
@@ -111,9 +111,10 @@ StreamTexture::StreamTexture(
           base::MakeRefCounted<SchedulerTaskRunner>(*channel_->scheduler(),
                                                     sequence_)) {
   channel_->AddRoute(route_id, sequence_);
-  texture_owner_->SetFrameAvailableCallback(base::BindRepeating(
-      &StreamTexture::RunCallback, base::ThreadTaskRunnerHandle::Get(),
-      weak_factory_.GetWeakPtr()));
+  texture_owner_->SetFrameAvailableCallback(
+      base::BindRepeating(&StreamTexture::RunCallback,
+                          base::SingleThreadTaskRunner::GetCurrentDefault(),
+                          weak_factory_.GetWeakPtr()));
 }
 
 StreamTexture::~StreamTexture() {

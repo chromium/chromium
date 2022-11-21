@@ -49,7 +49,7 @@ class PlatformNotificationContextTriggerTest : public ::testing::Test {
         base::MakeRefCounted<PlatformNotificationContextImpl>(
             base::FilePath(), &browser_context_, nullptr);
     platform_notification_context_->SetTaskRunnerForTesting(
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     platform_notification_context_->Initialize();
     base::RunLoop().RunUntilIdle();
   }

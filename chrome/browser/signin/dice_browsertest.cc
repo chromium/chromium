@@ -18,8 +18,8 @@
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/shortcut_manager.h"
@@ -131,8 +131,8 @@ class BlockedHttpResponse : public net::test_server::BasicHttpResponse {
     // Unblock the response from any thread by posting a task to the IO thread.
     base::OnceClosure unblock_any_thread =
         base::BindOnce(base::IgnoreResult(&base::TaskRunner::PostTask),
-                       base::ThreadTaskRunnerHandle::Get(), FROM_HERE,
-                       std::move(unblock_io_thread));
+                       base::SingleThreadTaskRunner::GetCurrentDefault(),
+                       FROM_HERE, std::move(unblock_io_thread));
     // Pass |unblock_any_thread| to the caller on the UI thread.
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,

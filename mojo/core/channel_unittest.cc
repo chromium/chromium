@@ -13,10 +13,10 @@
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "mojo/core/platform_handle_utils.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -284,7 +284,8 @@ TEST(ChannelTest, PeerShutdownDuringRead) {
   // is received.
   base::RunLoop run_loop;
   ChannelTestShutdownAndWriteDelegate server_delegate(
-      channel.TakeLocalEndpoint(), base::ThreadTaskRunnerHandle::Get(),
+      channel.TakeLocalEndpoint(),
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
       std::move(client_channel), std::move(client_thread),
       run_loop.QuitClosure());
 
@@ -332,14 +333,14 @@ TEST(ChannelTest, RejectHandles) {
       Channel::Create(&receiver_delegate,
                       ConnectionParams(platform_channel.TakeLocalEndpoint()),
                       Channel::HandlePolicy::kRejectHandles,
-                      base::ThreadTaskRunnerHandle::Get());
+                      base::SingleThreadTaskRunner::GetCurrentDefault());
   receiver->Start();
 
   RejectHandlesDelegate sender_delegate;
   scoped_refptr<Channel> sender = Channel::Create(
       &sender_delegate, ConnectionParams(platform_channel.TakeRemoteEndpoint()),
       Channel::HandlePolicy::kRejectHandles,
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   sender->Start();
 
   // Create another platform channel just to stuff one of its endpoint handles
@@ -471,7 +472,7 @@ TEST(ChannelTest, PeerStressTest) {
   scoped_refptr<Channel> channel_a = Channel::Create(
       &delegate_a, ConnectionParams(platform_channel.TakeLocalEndpoint()),
       Channel::HandlePolicy::kRejectHandles,
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   CountingChannelDelegate delegate_b(
       quit_when_both_channels_received_final_message);
@@ -498,11 +499,11 @@ TEST(ChannelTest, PeerStressTest) {
   send_lots_of_messages(channel_a);
   send_lots_of_messages(channel_b);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(send_lots_of_messages, channel_a));
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(send_lots_of_messages, channel_a));
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(send_final_message, channel_a));
 
   peer_thread.task_runner()->PostTask(
@@ -571,14 +572,14 @@ TEST(ChannelTest, MessageSizeTest) {
       Channel::Create(&receiver_delegate,
                       ConnectionParams(platform_channel.TakeLocalEndpoint()),
                       Channel::HandlePolicy::kAcceptHandles,
-                      base::ThreadTaskRunnerHandle::Get());
+                      base::SingleThreadTaskRunner::GetCurrentDefault());
   receiver->Start();
 
   MockChannelDelegate sender_delegate;
   scoped_refptr<Channel> sender = Channel::Create(
       &sender_delegate, ConnectionParams(platform_channel.TakeRemoteEndpoint()),
       Channel::HandlePolicy::kAcceptHandles,
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   sender->Start();
 
   for (uint32_t i = 0; i < base::GetPageSize() * 4; ++i) {
@@ -655,7 +656,7 @@ TEST(ChannelTest, SendToDeadMachPortName) {
   scoped_refptr<Channel> channel_a = Channel::Create(
       &delegate_a, ConnectionParams(platform_channel.TakeLocalEndpoint()),
       Channel::HandlePolicy::kAcceptHandles,
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   channel_a->Start();
 
   // Channel B gets the receive right.

@@ -72,7 +72,7 @@ ProfileNameResolver::ProfileNameResolver(
   extended_account_info_timeout_closure_.Reset(
       base::BindOnce(&ProfileNameResolver::OnProfileNameResolved,
                      weak_ptr_factory_.GetWeakPtr(), fallback_profile_name));
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, extended_account_info_timeout_closure_.callback(),
       g_extended_account_info_timeout_for_testing.value_or(
           kDefaultExtendedAccountInfoTimeout));

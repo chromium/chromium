@@ -910,7 +910,7 @@ class CrostiniManagerRestartTest : public CrostiniManagerTest,
       vm_tools::concierge::VmStoppedSignal signal;
       signal.set_owner_id(CryptohomeIdForProfile(profile()));
       signal.set_name(kVmName);
-      base::ThreadTaskRunnerHandle::Get()->PostTaskAndReply(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTaskAndReply(
           FROM_HERE,
           base::BindOnce(&CrostiniManager::OnVmStopped,
                          base::Unretained(crostini_manager()), signal),
@@ -2570,7 +2570,7 @@ class CrostiniManagerUpgradeContainerTest
   }
 
   void SendProgressSignal() {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&ash::FakeCiceroneClient::NotifyUpgradeContainerProgress,
                        base::Unretained(fake_cicerone_client_),

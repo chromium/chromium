@@ -14,7 +14,6 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/unguessable_token.h"
 #include "media/base/android/android_util.h"
 #include "media/base/android/media_drm_bridge.h"
@@ -34,7 +33,7 @@ using base::android::ToJavaByteArray;
 namespace media {
 
 MediaDrmStorageBridge::MediaDrmStorageBridge()
-    : task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+    : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 MediaDrmStorageBridge::~MediaDrmStorageBridge() = default;
 

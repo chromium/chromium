@@ -42,7 +42,7 @@ class TestConciergeClient : public FakeConciergeClient {
     if (!service_is_available_) {
       callbacks_.push_back(std::move(callback));
     } else {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(callback), service_is_available_));
     }

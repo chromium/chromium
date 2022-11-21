@@ -17,7 +17,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_waitable_event.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "storage/browser/quota/quota_client_type.h"
 
@@ -251,7 +250,7 @@ void MockQuotaManager::GetBucketsModifiedBetween(StorageType type,
           info.bucket.name == kDefaultBucketName));
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&MockQuotaManager::DidGetModifiedInTimeRange,
                                 weak_factory_.GetWeakPtr(), std::move(callback),
                                 std::move(buckets_to_return), type));
@@ -271,7 +270,7 @@ void MockQuotaManager::DeleteBucketData(const BucketLocator& bucket,
     }
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&MockQuotaManager::DidDeleteBucketData,
                                 weak_factory_.GetWeakPtr(), std::move(callback),
                                 blink::mojom::QuotaStatusCode::kOk));

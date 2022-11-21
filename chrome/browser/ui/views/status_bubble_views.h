@@ -167,8 +167,8 @@ class StatusBubbleViews : public StatusBubble {
   bool is_expanded_ = false;
 
   // Used for posting tasks. This is typically
-  // base::ThreadTaskRunnerHandle::Get(), but may be set to something else for
-  // tests.
+  // base::SingleThreadTaskRunner::GetCurrentDefault(), but may be set to
+  // something else for tests.
   raw_ptr<base::SequencedTaskRunner> task_runner_;
 
   // Times expansion of status bubble when URL is too long for standard width.

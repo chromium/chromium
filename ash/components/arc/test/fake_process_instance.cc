@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace arc {
 
@@ -53,7 +53,7 @@ void FakeProcessInstance::ApplyHostMemoryPressure(
   host_memory_pressure_reclaim_target_ = reclaim_target;
 
   DCHECK(host_memory_pressure_response_);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), host_memory_pressure_response_->first,
                      host_memory_pressure_response_->second));
@@ -63,7 +63,7 @@ void FakeProcessInstance::ApplyHostMemoryPressure(
 void FakeProcessInstance::RequestLowMemoryKillCounts(
     RequestLowMemoryKillCountsCallback callback) {
   DCHECK(low_memory_kill_counts_response_);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
                                 std::move(*low_memory_kill_counts_response_)));
 }

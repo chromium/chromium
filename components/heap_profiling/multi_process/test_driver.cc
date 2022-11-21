@@ -466,7 +466,7 @@ bool TestDriver::CheckOrStartProfilingOnUIThreadWithAsyncSignalling() {
       bool already_initialized = SetOnInitAllocatorShimCallbackForTesting(
           base::BindOnce(&base::WaitableEvent::Signal,
                          base::Unretained(&wait_for_ui_thread_)),
-          base::ThreadTaskRunnerHandle::Get());
+          base::SingleThreadTaskRunner::GetCurrentDefault());
       if (!already_initialized) {
         wait_for_profiling_to_start_ = true;
       }
@@ -483,7 +483,7 @@ bool TestDriver::CheckOrStartProfilingOnUIThreadWithAsyncSignalling() {
     SetOnInitAllocatorShimCallbackForTesting(
         base::BindOnce(&base::WaitableEvent::Signal,
                        base::Unretained(&wait_for_ui_thread_)),
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   } else {
     start_callback = base::BindOnce(&base::WaitableEvent::Signal,
                                     base::Unretained(&wait_for_ui_thread_));
@@ -521,7 +521,8 @@ bool TestDriver::CheckOrStartProfilingOnUIThreadWithNestedRunLoops() {
   // start. Otherwise, wait for the Supervisor to start.
   if (ShouldProfileBrowser()) {
     SetOnInitAllocatorShimCallbackForTesting(
-        run_loop->QuitClosure(), base::ThreadTaskRunnerHandle::Get());
+        run_loop->QuitClosure(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   } else {
     start_callback = run_loop->QuitClosure();
   }

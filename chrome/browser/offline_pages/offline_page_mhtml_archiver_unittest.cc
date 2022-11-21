@@ -16,8 +16,8 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
 #include "components/offline_pages/core/model/offline_page_model_utils.h"
@@ -97,7 +97,7 @@ void TestMHTMLArchiver::GenerateMHTML(
   EXPECT_EQ(kDownloadNamespace, create_archive_params.name_space);
   base::FilePath archive_file_path =
       archives_dir.AppendASCII(url_.ExtractFileName());
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&TestMHTMLArchiver::OnGenerateMHTMLDone,
                      base::Unretained(this), url_, archive_file_path,

@@ -43,7 +43,7 @@ extern std::unique_ptr<VideoEncodeAccelerator> CreateAndInitializeFakeVEA(
     std::unique_ptr<MediaLog> media_log) {
   // Use FakeVEA as scoped_ptr to guarantee proper destruction via Destroy().
   auto vea = std::make_unique<FakeVideoEncodeAccelerator>(
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   const bool result = vea->Initialize(config, client, media_log->Clone());
 
   // Mimic the behaviour of GpuVideoEncodeAcceleratorFactory::CreateVEA().

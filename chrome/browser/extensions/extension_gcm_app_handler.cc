@@ -10,7 +10,6 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/api/gcm/gcm_api.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
@@ -131,7 +130,7 @@ void ExtensionGCMAppHandler::OnExtensionUnloaded(
     // the single function ExtensionService::AddExtension.
     AddDummyAppHandler();
 
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&ExtensionGCMAppHandler::RemoveDummyAppHandler,
                        weak_factory_.GetWeakPtr()));
@@ -190,7 +189,7 @@ void ExtensionGCMAppHandler::OnDeleteIDCompleted(
   // InstanceIDDriver::RemoveInstanceID will delete the InstanceID itself.
   // Postpone to do it outside this calling context to avoid any risk to
   // the caller.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&ExtensionGCMAppHandler::RemoveInstanceID,
                                 weak_factory_.GetWeakPtr(), app_id));
 }

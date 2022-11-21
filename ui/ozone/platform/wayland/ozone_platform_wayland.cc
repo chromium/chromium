@@ -16,7 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/cursor/cursor_factory.h"
@@ -374,7 +374,7 @@ class OzonePlatformWayland : public OzonePlatform,
     // Please note this call happens on the gpu.
     auto gpu_task_runner = buffer_manager_->gpu_thread_runner();
     if (!gpu_task_runner)
-      gpu_task_runner = base::ThreadTaskRunnerHandle::Get();
+      gpu_task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
 
     binders->Add<ozone::mojom::WaylandBufferManagerGpu>(
         base::BindRepeating(

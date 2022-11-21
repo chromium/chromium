@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/browser/data_url_loader_factory.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
@@ -616,7 +616,8 @@ void WorkerScriptFetcher::Start(
   url_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
       std::move(shared_url_loader_factory), std::move(throttles), request_id_,
       network::mojom::kURLLoadOptionNone, resource_request_.get(), this,
-      kWorkerScriptLoadTrafficAnnotation, base::ThreadTaskRunnerHandle::Get());
+      kWorkerScriptLoadTrafficAnnotation,
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 void WorkerScriptFetcher::OnReceiveEarlyHints(

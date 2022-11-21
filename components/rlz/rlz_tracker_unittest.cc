@@ -10,8 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -40,7 +40,7 @@ class TestRLZTrackerDelegate : public RLZTrackerDelegate {
  public:
   TestRLZTrackerDelegate()
       : request_context_getter_(new net::TestURLRequestContextGetter(
-            base::ThreadTaskRunnerHandle::Get())) {}
+            base::SingleThreadTaskRunner::GetCurrentDefault())) {}
 
   TestRLZTrackerDelegate(const TestRLZTrackerDelegate&) = delete;
   TestRLZTrackerDelegate& operator=(const TestRLZTrackerDelegate&) = delete;

@@ -263,7 +263,7 @@ void DevicePairingHandlerImpl::OnDeviceConnect(
   // TODO(b/209531279): Remove this delay and |is_canceling_pairing_| when the
   // root cause of issue is fixed.
   if (!is_canceling_pairing_) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&DevicePairingHandlerImpl::HandlePairingFailed,
                        weak_ptr_factory_.GetWeakPtr(), error_code.value()),

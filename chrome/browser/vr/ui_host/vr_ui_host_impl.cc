@@ -126,7 +126,8 @@ VRUiHostImpl::VRUiHostImpl(
     device::mojom::XRDeviceId device_id,
     mojo::PendingRemote<device::mojom::XRCompositorHost> compositor)
     : compositor_(std::move(compositor)),
-      main_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      main_thread_task_runner_(
+          base::SingleThreadTaskRunner::GetCurrentDefault()),
       triggered_capturing_transience_(&triggered_capturing_state_model_) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DVLOG(1) << __func__;

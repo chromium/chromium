@@ -9,7 +9,6 @@
 #include "base/location.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
@@ -91,7 +90,7 @@ URLRequestFailedJob::URLRequestFailedJob(URLRequest* request, int net_error)
 URLRequestFailedJob::~URLRequestFailedJob() = default;
 
 void URLRequestFailedJob::Start() {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&URLRequestFailedJob::StartAsync,
                                 weak_factory_.GetWeakPtr()));
 }
@@ -101,7 +100,7 @@ int URLRequestFailedJob::ReadRawData(IOBuffer* buf, int buf_size) {
   if (net_error_ == ERR_IO_PENDING || phase_ == READ_SYNC)
     return net_error_;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&URLRequestFailedJob::ReadRawDataComplete,
                                 weak_factory_.GetWeakPtr(), net_error_));
   return ERR_IO_PENDING;

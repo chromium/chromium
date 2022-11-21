@@ -101,7 +101,7 @@ class AnchorElementPreloaderBrowserTest
 
   void GiveItSomeTime(const base::TimeDelta& t) {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), t);
     run_loop.Run();
   }

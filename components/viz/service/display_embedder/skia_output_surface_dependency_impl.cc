@@ -9,7 +9,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/task/bind_post_task.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "gpu/command_buffer/service/command_buffer_task_executor.h"
@@ -26,7 +26,8 @@ SkiaOutputSurfaceDependencyImpl::SkiaOutputSurfaceDependencyImpl(
     gpu::SurfaceHandle surface_handle)
     : gpu_service_impl_(gpu_service_impl),
       surface_handle_(surface_handle),
-      client_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+      client_thread_task_runner_(
+          base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 SkiaOutputSurfaceDependencyImpl::~SkiaOutputSurfaceDependencyImpl() = default;
 

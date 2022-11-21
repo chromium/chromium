@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/memory_dump_request_args.h"
@@ -82,7 +81,8 @@ class MemoryTracingTest : public ContentBrowserTest {
     uint32_t request_index = next_request_index_++;
     auto callback = base::BindOnce(
         &MemoryTracingTest::OnGlobalMemoryDumpDone, base::Unretained(this),
-        base::ThreadTaskRunnerHandle::Get(), std::move(closure), request_index);
+        base::SingleThreadTaskRunner::GetCurrentDefault(), std::move(closure),
+        request_index);
     if (from_renderer_thread) {
       PostTaskToInProcessRendererAndWait(base::BindOnce(
           &memory_instrumentation::MemoryInstrumentation::

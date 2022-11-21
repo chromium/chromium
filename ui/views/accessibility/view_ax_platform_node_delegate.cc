@@ -14,7 +14,7 @@
 #include "base/containers/adapters.h"
 #include "base/lazy_instance.h"
 #include "base/ranges/algorithm.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_dummy_tree_manager.h"
@@ -114,7 +114,8 @@ void PostFlushEventQueueTaskIfNecessary() {
   if (!g_is_queueing_events) {
     g_is_queueing_events = true;
     base::OnceCallback<void()> cb = base::BindOnce(&FlushQueue);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(cb));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                                std::move(cb));
   }
 }
 

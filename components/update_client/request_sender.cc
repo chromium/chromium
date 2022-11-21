@@ -13,7 +13,7 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/client_update_protocol/ecdsa.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/network.h"
@@ -104,7 +104,7 @@ void RequestSender::SendInternal() {
 
   network_fetcher_ = config_->GetNetworkFetcherFactory()->Create();
   if (!network_fetcher_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&RequestSender::SendInternalComplete,
                        base::Unretained(this),
@@ -129,7 +129,7 @@ void RequestSender::SendInternalComplete(
 
   if (!error) {
     if (!use_signing_) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(request_sender_callback_), 0,
                                     response_body, retry_after_sec));
       return;
@@ -140,7 +140,7 @@ void RequestSender::SendInternalComplete(
     if (signer_->ValidateResponse(
             response_body,
             SelectCupServerProof(response_cup_server_proof, response_etag))) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(request_sender_callback_), 0,
                                     response_body, retry_after_sec));
       return;
@@ -154,7 +154,7 @@ void RequestSender::SendInternalComplete(
   // A positive |retry_after_sec| is a hint from the server that the client
   // should not send further request until the cooldown has expired.
   if (retry_after_sec <= 0 && ++cur_url_ != urls_.end() &&
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&RequestSender::SendInternal,
                                     base::Unretained(this)))) {
     return;
@@ -192,7 +192,7 @@ void RequestSender::OnNetworkFetcherComplete(
   if (original_url.SchemeIsCryptographic() && error > 0)
     retry_after_sec = base::saturated_cast<int>(xheader_retry_after_sec);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&RequestSender::SendInternalComplete,
                      base::Unretained(this), error,
@@ -201,7 +201,7 @@ void RequestSender::OnNetworkFetcherComplete(
 }
 
 void RequestSender::HandleSendError(int error, int retry_after_sec) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(request_sender_callback_), error,
                                 std::string(), retry_after_sec));
 }

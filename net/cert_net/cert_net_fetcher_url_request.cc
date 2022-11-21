@@ -71,7 +71,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/io_buffer.h"
@@ -773,7 +772,7 @@ class CertNetFetcherRequestImpl : public CertNetFetcher::Request {
 }  // namespace
 
 CertNetFetcherURLRequest::CertNetFetcherURLRequest()
-    : task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+    : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 CertNetFetcherURLRequest::~CertNetFetcherURLRequest() {
   // The fetcher must be shutdown (at which point |context_| will be set to

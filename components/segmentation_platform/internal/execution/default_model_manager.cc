@@ -4,7 +4,7 @@
 
 #include "components/segmentation_platform/internal/execution/default_model_manager.h"
 
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 
 namespace segmentation_platform {
@@ -63,7 +63,7 @@ void DefaultModelManager::GetNextSegmentInfoFromDefaultModel(
 
   if (!default_provider) {
     // If there are no more default providers, return the result so far.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(*result)));
     return;
   }

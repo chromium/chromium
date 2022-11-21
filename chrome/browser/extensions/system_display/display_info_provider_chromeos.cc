@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/system_display/display_info_provider_chromeos.h"
+#include "base/task/single_thread_task_runner.h"
 
 #include <stdint.h>
 #include <cmath>
@@ -15,7 +16,6 @@
 
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/extensions/system_display/display_info_provider.h"
 #include "chrome/browser/extensions/system_display/display_info_provider_utils.h"
 #include "extensions/common/api/system_display.h"
@@ -246,7 +246,7 @@ void RunResultCallback(DisplayInfoProvider::ErrorCallback callback,
                        absl::optional<std::string> error) {
   if (error)
     LOG(ERROR) << "API call failed: " << *error;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(error)));
 }
 
@@ -486,7 +486,7 @@ void DisplayInfoProviderChromeOS::OnGetDisplayUnitInfoList(
     SetDisplayUnitInfoLayoutProperties(*layout, &display);
     all_displays.push_back(std::move(display));
   }
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(all_displays)));
 }
 

@@ -11,7 +11,7 @@
 #include "ash/constants/app_types.h"
 #include "base/bind.h"
 #include "base/no_destructor.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_info.h"
@@ -172,7 +172,7 @@ void FullRestoreReadHandler::ReadFromFile(const base::FilePath& profile_path,
     // in FullRestoreAppLaunchHandler calls the init function of
     // FullRestoreService. If we don't use post task, and call the callback
     // function directly, it could cause deadloop.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        (it->second ? it->second->Clone() : nullptr)));

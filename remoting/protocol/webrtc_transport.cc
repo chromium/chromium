@@ -22,7 +22,6 @@
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/webrtc/net_address_utils.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "remoting/base/constants.h"
@@ -685,7 +684,7 @@ void WebrtcTransport::ClosePeerConnection(
   if (!control_data_channel || !event_data_channel) {
     LOG(WARNING) << "One or more data channels were not initialized, "
                  << "destroying PeerConnection.";
-    base::ThreadTaskRunnerHandle::Get()->DeleteSoon(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, peer_connection_wrapper.release());
     return;
   }
@@ -693,7 +692,7 @@ void WebrtcTransport::ClosePeerConnection(
   if ((base::Time::Now() - start_time) > kWaitForDataChannelsClosedTimeout) {
     LOG(ERROR) << "Timed out waiting for data channels to close, "
                << "destroying PeerConnection.";
-    base::ThreadTaskRunnerHandle::Get()->DeleteSoon(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, peer_connection_wrapper.release());
     return;
   }
@@ -708,12 +707,12 @@ void WebrtcTransport::ClosePeerConnection(
   if (event_data_channel->state() == DataChannelState::kClosed &&
       control_data_channel->state() == DataChannelState::kClosed) {
     VLOG(0) << "Data channels closed, destroying PeerConnection.";
-    base::ThreadTaskRunnerHandle::Get()->DeleteSoon(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, peer_connection_wrapper.release());
     return;
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ClosePeerConnection, std::move(control_data_channel),
                      std::move(event_data_channel),
@@ -1135,7 +1134,7 @@ void WebrtcTransport::RequestNegotiation() {
 
   if (!negotiation_pending_) {
     negotiation_pending_ = true;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&WebrtcTransport::SendOffer,
                                   weak_factory_.GetWeakPtr()));
   }

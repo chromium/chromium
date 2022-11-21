@@ -23,7 +23,7 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -711,7 +711,7 @@ void EventRouter::AddFileWatch(const base::FilePath& local_path,
     file_watchers_[local_path] = std::move(watcher);
   } else {
     iter->second->AddListener(listener_origin);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), true));
   }
 }

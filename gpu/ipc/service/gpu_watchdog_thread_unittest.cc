@@ -9,8 +9,8 @@
 #include "base/power_monitor/power_monitor_source.h"
 #include "base/system/sys_info.h"
 #include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/power_monitor_test.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -110,7 +110,7 @@ class GpuWatchdogPowerTest : public GpuWatchdogTest {
 };
 
 void GpuWatchdogTest::SetUp() {
-  ASSERT_TRUE(base::ThreadTaskRunnerHandle::IsSet());
+  ASSERT_TRUE(base::SingleThreadTaskRunner::HasCurrentDefault());
   ASSERT_TRUE(base::CurrentThread::IsSet());
 
   enum TimeOutType {

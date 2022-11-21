@@ -11,7 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -72,8 +72,8 @@ class UploadFileElementReaderTest : public testing::TestWithParam<bool>,
       base::Time expected_modification_time) {
     if (GetParam()) {
       return std::make_unique<UploadFileElementReader>(
-          base::ThreadTaskRunnerHandle::Get().get(), temp_file_path_, offset,
-          length, expected_modification_time);
+          base::SingleThreadTaskRunner::GetCurrentDefault().get(),
+          temp_file_path_, offset, length, expected_modification_time);
     }
 
     // The base::File::FLAG_WIN_SHARE_DELETE lets the file be deleted without
@@ -88,7 +88,8 @@ class UploadFileElementReaderTest : public testing::TestWithParam<bool>,
     base::File file(temp_file_path_, open_flags);
     EXPECT_TRUE(file.IsValid());
     return std::make_unique<UploadFileElementReader>(
-        base::ThreadTaskRunnerHandle::Get().get(), std::move(file),
+        base::SingleThreadTaskRunner::GetCurrentDefault().get(),
+        std::move(file),
         // Use an incorrect path, to make sure that the file is never re-opened.
         base::FilePath(FILE_PATH_LITERAL("this_should_be_ignored")), offset,
         length, expected_modification_time);
@@ -320,7 +321,7 @@ TEST_P(UploadFileElementReaderTest, InexactExpectedTimeStamp) {
 TEST_P(UploadFileElementReaderTest, WrongPath) {
   const base::FilePath wrong_path(FILE_PATH_LITERAL("wrong_path"));
   reader_ = std::make_unique<UploadFileElementReader>(
-      base::ThreadTaskRunnerHandle::Get().get(), wrong_path, 0,
+      base::SingleThreadTaskRunner::GetCurrentDefault().get(), wrong_path, 0,
       std::numeric_limits<uint64_t>::max(), base::Time());
   TestCompletionCallback init_callback;
   ASSERT_THAT(reader_->Init(init_callback.callback()), IsError(ERR_IO_PENDING));

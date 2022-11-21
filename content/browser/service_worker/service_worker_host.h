@@ -158,7 +158,7 @@ class CONTENT_EXPORT ServiceWorkerHost : public BucketContext {
   std::unique_ptr<ServiceWorkerContainerHost> container_host_;
 
   service_manager::InterfaceProvider remote_interfaces_{
-      base::ThreadTaskRunnerHandle::Get()};
+      base::SingleThreadTaskRunner::GetCurrentDefault()};
 
   // CodeCacheHost processes requests to fetch / write generated code for
   // JavaScript / WebAssembly resources.

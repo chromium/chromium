@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_task_manager.h"
 #include "chrome/browser/sync_file_system/drive_backend/task_dependency_manager.h"
@@ -25,11 +25,11 @@ const int64_t SyncTaskToken::kMinimumBackgroundTaskTokenID = 1;
 // static
 std::unique_ptr<SyncTaskToken> SyncTaskToken::CreateForTesting(
     SyncStatusCallback callback) {
-  return base::WrapUnique(new SyncTaskToken(base::WeakPtr<SyncTaskManager>(),
-                                            base::ThreadTaskRunnerHandle::Get(),
-                                            kTestingTaskTokenID,
-                                            nullptr,  // task_blocker
-                                            std::move(callback)));
+  return base::WrapUnique(new SyncTaskToken(
+      base::WeakPtr<SyncTaskManager>(),
+      base::SingleThreadTaskRunner::GetCurrentDefault(), kTestingTaskTokenID,
+      nullptr,  // task_blocker
+      std::move(callback)));
 }
 
 // static

@@ -12,8 +12,8 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
@@ -38,7 +38,7 @@ int RemoteWebAuthnMain(int argc, char** argv) {
   base::AtExitManager exit_manager;
   base::SingleThreadTaskExecutor task_executor(base::MessagePumpType::IO);
   base::ThreadPoolInstance::Create("RemoteWebAuthn");
-  auto task_runner = base::ThreadTaskRunnerHandle::Get();
+  auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
 
   base::CommandLine::Init(argc, argv);
   InitHostLogging();

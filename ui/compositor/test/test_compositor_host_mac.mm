@@ -5,6 +5,7 @@
 #include "ui/compositor/test/test_compositor_host.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSOpenGL.h>
@@ -16,7 +17,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac.h"
@@ -136,7 +136,7 @@ TestCompositorHostMac::TestCompositorHostMac(
     : bounds_(bounds),
       compositor_(context_factory->AllocateFrameSinkId(),
                   context_factory,
-                  base::ThreadTaskRunnerHandle::Get(),
+                  base::SingleThreadTaskRunner::GetCurrentDefault(),
                   false /* enable_pixel_canvas */),
       window_(nil) {}
 

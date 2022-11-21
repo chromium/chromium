@@ -169,7 +169,7 @@ void DesksTextfield::OnBlur() {
   // still being activated. In this case, we want to set the stored focus view
   // to nullptr after the stack of the call to `FocusManager::ClearFocus()`
   // returns completely.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(
                      [](base::WeakPtr<views::Widget> w) {
                        if (w)

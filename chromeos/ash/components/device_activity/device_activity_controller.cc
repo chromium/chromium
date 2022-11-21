@@ -167,7 +167,7 @@ DeviceActivityController::DeviceActivityController(
   DCHECK(!g_ash_device_activity_controller);
   g_ash_device_activity_controller = this;
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&device_activity::DeviceActivityController::Start,
                      weak_factory_.GetWeakPtr(), local_state,

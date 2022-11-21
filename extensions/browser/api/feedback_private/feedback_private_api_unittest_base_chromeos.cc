@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/api/api_resource_manager.h"
@@ -61,7 +61,7 @@ class TestSingleLogSource : public SystemLogsSource {
     // Do not directly pass the result to the callback, because that's not how
     // log sources actually work. Instead, simulate the asynchronous operation
     // of a SystemLogsSource by invoking the callback separately.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(result_map)));
   }
 

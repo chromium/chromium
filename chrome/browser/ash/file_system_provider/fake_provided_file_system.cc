@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "net/base/io_buffer.h"
@@ -288,10 +288,10 @@ AbortCallback FakeProvidedFileSystem::ReadFile(
     buffer->data()[current_offset - offset] = entry->contents[current_offset];
     const bool has_more =
         (current_offset + 1 < *entry->metadata->size) && (current_length - 1);
-    const int task_id =
-        tracker_.PostTask(base::ThreadTaskRunnerHandle::Get().get(), FROM_HERE,
-                          base::BindOnce(callback, 1 /* chunk_length */,
-                                         has_more, base::File::FILE_OK));
+    const int task_id = tracker_.PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault().get(), FROM_HERE,
+        base::BindOnce(callback, 1 /* chunk_length */, has_more,
+                       base::File::FILE_OK));
     task_ids.push_back(task_id);
     current_offset++;
     current_length--;
@@ -523,8 +523,8 @@ FakeProvidedFileSystem::GetWeakPtr() {
 AbortCallback FakeProvidedFileSystem::PostAbortableTask(
     base::OnceClosure callback) {
   const int task_id =
-      tracker_.PostTask(base::ThreadTaskRunnerHandle::Get().get(), FROM_HERE,
-                        std::move(callback));
+      tracker_.PostTask(base::SingleThreadTaskRunner::GetCurrentDefault().get(),
+                        FROM_HERE, std::move(callback));
   return base::BindOnce(&FakeProvidedFileSystem::Abort,
                         weak_ptr_factory_.GetWeakPtr(), task_id);
 }

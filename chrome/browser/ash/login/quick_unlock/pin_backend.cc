@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_cryptohome.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_prefs.h"
@@ -43,7 +43,7 @@ QuickUnlockStorage* GetPrefsBackend(const AccountId& account_id) {
 }
 
 void PostResponse(PinBackend::BoolCallback result, bool value) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(result), value));
 }
 
@@ -54,7 +54,7 @@ void PostResponse(AuthOperationCallback result,
   if (!success) {
     error = AuthenticationError{AuthFailure::UNLOCK_FAILED};
   }
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(result), std::move(user_context),
                                 std::move(error)));
 }

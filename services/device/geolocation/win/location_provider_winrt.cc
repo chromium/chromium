@@ -244,7 +244,7 @@ void LocationProviderWinrt::RegisterCallbacks() {
     hr = geo_locator_->add_PositionChanged(
         Microsoft::WRL::Callback<
             ITypedEventHandler<Geolocator*, PositionChangedEventArgs*>>(
-            [task_runner(base::ThreadTaskRunnerHandle::Get()),
+            [task_runner(base::SingleThreadTaskRunner::GetCurrentDefault()),
              callback(
                  base::BindRepeating(&LocationProviderWinrt::OnPositionChanged,
                                      weak_ptr_factory_.GetWeakPtr()))](
@@ -282,7 +282,7 @@ void LocationProviderWinrt::RegisterCallbacks() {
     hr = geo_locator_->add_StatusChanged(
         Microsoft::WRL::Callback<
             ITypedEventHandler<Geolocator*, StatusChangedEventArgs*>>(
-            [task_runner(base::ThreadTaskRunnerHandle::Get()),
+            [task_runner(base::SingleThreadTaskRunner::GetCurrentDefault()),
              callback(
                  base::BindRepeating(&LocationProviderWinrt::OnStatusChanged,
                                      weak_ptr_factory_.GetWeakPtr()))](

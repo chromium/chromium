@@ -13,7 +13,6 @@
 #include "base/process/process_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromecast/base/chromecast_switches.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 
@@ -67,7 +66,7 @@ CastSystemMemoryPressureEvaluator::CastSystemMemoryPressureEvaluator(
           GetSwitchValueDouble(switches::kCastMemoryPressureModerateFraction,
                                -1.0f)),
       system_reserved_kb_(GetSystemReservedKb()),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       weak_ptr_factory_(this) {
   relaxed_critical_memory_fraction_ = kRelaxedCriticalMemoryFraction;
   relaxed_moderate_memory_fraction_ = kRelaxedModerateMemoryFraction;

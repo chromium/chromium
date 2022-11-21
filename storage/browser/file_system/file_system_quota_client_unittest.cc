@@ -66,9 +66,11 @@ class FileSystemQuotaClientTest : public testing::Test {
 
     quota_manager_ = base::MakeRefCounted<MockQuotaManager>(
         /*is_incognito_=*/false, data_dir_.GetPath(),
-        base::ThreadTaskRunnerHandle::Get(), special_storage_policy_);
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        special_storage_policy_);
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
-        quota_manager_.get(), base::ThreadTaskRunnerHandle::Get());
+        quota_manager_.get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
 
     file_system_context_ = CreateFileSystemContextForTesting(
         quota_manager_proxy_, data_dir_.GetPath());

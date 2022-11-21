@@ -19,10 +19,10 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "net/base/net_errors.h"
@@ -142,8 +142,9 @@ class GeolocationNetworkProviderTest : public testing::Test {
     fake_geolocation_manager_ = std::make_unique<FakeGeolocationManager>();
     auto provider = std::make_unique<NetworkLocationProvider>(
         test_url_loader_factory_.GetSafeWeakWrapper(),
-        fake_geolocation_manager_.get(), base::ThreadTaskRunnerHandle::Get(),
-        api_key, &position_cache_);
+        fake_geolocation_manager_.get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(), api_key,
+        &position_cache_);
     // For macOS we must simulate the granting of location permission
     if (grant_system_permission_by_default_) {
       fake_geolocation_manager_->SetSystemPermission(
@@ -154,7 +155,8 @@ class GeolocationNetworkProviderTest : public testing::Test {
     auto provider = std::make_unique<NetworkLocationProvider>(
         test_url_loader_factory_.GetSafeWeakWrapper(),
         /*geolocation_system_permission_manager=*/nullptr,
-        base::ThreadTaskRunnerHandle::Get(), api_key, &position_cache_);
+        base::SingleThreadTaskRunner::GetCurrentDefault(), api_key,
+        &position_cache_);
 #endif
     if (set_permission_granted)
       provider->OnPermissionGranted();

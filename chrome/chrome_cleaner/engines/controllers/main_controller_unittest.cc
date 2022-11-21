@@ -10,8 +10,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/chrome_cleaner/components/component_api.h"
 #include "chrome/chrome_cleaner/components/component_manager.h"
@@ -59,7 +59,7 @@ class TestEngineFacade : public EngineFacadeInterface {
                DoneCallback done_callback) override {
       start_called_ = true;
       pups_to_remove_ = pup_ids;
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE, base::BindOnce(std::move(done_callback), clean_result_),
           delay_before_done_);
     }
@@ -68,7 +68,7 @@ class TestEngineFacade : public EngineFacadeInterface {
                          DoneCallback done_callback) override {
       pups_to_remove_ = pup_ids;
       post_reboot_clean_called_ = true;
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(std::move(done_callback),
                          post_reboot_clean_return_value_),
@@ -104,10 +104,10 @@ class TestEngineFacade : public EngineFacadeInterface {
     bool Start(const FoundUwSCallback& found_uws_callback,
                DoneCallback done_callback) override {
       for (UwSId pup_id : found_pups_) {
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(found_uws_callback, pup_id));
       }
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(std::move(done_callback), scan_result_, found_pups_),
           delay_before_done_);
@@ -180,7 +180,7 @@ class TestMainController : public MainController {
         const FilePathSet& files_to_remove,
         const std::vector<std::wstring>& registry_keys) override {
       confirm_cleanup_called_ = true;
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&MainDialogDelegate::AcceptedCleanup,
                          base::Unretained(delegate()), accept_cleanup_),

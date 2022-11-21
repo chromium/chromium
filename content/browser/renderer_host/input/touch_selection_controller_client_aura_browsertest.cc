@@ -668,7 +668,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
   // child frame's compositor frame.
   {
     base::RunLoop loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, loop.QuitClosure(), TestTimeouts::tiny_timeout());
     loop.Run();
   }

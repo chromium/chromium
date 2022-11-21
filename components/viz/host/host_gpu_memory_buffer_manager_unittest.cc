@@ -285,7 +285,7 @@ class HostGpuMemoryBufferManagerTest : public ::testing::Test {
     gpu_memory_buffer_manager_ = std::make_unique<HostGpuMemoryBufferManager>(
         std::move(gpu_service_provider), 1,
         std::move(gpu_memory_buffer_support),
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     if (MustSignalGmbConfigReadyForTest())
       gpu_memory_buffer_manager_->native_configurations_initialized_.Set();
   }

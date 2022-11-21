@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/system/sys_info.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/android/chrome_jni_headers/NearOomMonitor_jni.h"
 #include "chrome/browser/android/oom_intervention/oom_intervention_config.h"
 
@@ -25,7 +25,7 @@ NearOomMonitor* NearOomMonitor::Create() {
   auto* config = OomInterventionConfig::GetInstance();
   if (!config->is_swap_monitor_enabled())
     return nullptr;
-  return new NearOomMonitor(base::ThreadTaskRunnerHandle::Get(),
+  return new NearOomMonitor(base::SingleThreadTaskRunner::GetCurrentDefault(),
                             config->swapfree_threshold());
 }
 

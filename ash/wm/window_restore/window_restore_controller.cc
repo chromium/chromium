@@ -27,7 +27,7 @@
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/account_id/account_id.h"
 #include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/full_restore_utils.h"
@@ -360,7 +360,7 @@ void WindowRestoreController::OnWindowPropertyChanged(aura::Window* window,
     restore_property_clear_callbacks_.emplace(
         window, base::BindOnce(&WindowRestoreController::ClearLaunchedKey,
                                weak_ptr_factory_.GetWeakPtr(), window));
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, restore_property_clear_callbacks_[window].callback(),
         kAllowActivationDelay);
   }
@@ -569,7 +569,7 @@ void WindowRestoreController::RestoreStateTypeAndClearLaunchedKey(
               (app_type == AppType::ARC_APP && is_real_arc_window)
           ? kAllowActivationDelay
           : base::TimeDelta();
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, restore_property_clear_callbacks_[window].callback(), delay);
 }
 

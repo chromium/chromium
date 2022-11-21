@@ -9,8 +9,8 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/enrollment_certificate_uploader_impl.h"
 #include "chrome/browser/ash/policy/core/dm_token_storage.h"
@@ -44,7 +44,7 @@ const char kClientId[] = "fake-client-id";
 
 void CertCallbackSuccess(
     ash::attestation::AttestationFlow::CertificateCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), ash::attestation::ATTESTATION_SUCCESS,
                      "fake_cert"));
@@ -84,7 +84,7 @@ class FakeDMTokenStorage : public DMTokenStorageBase {
   }
   void RetrieveDMToken(RetrieveCallback callback) override {
     if (!delay_response_.is_zero()) {
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE, base::BindOnce(std::move(callback), dm_token_),
           delay_response_);
     } else {

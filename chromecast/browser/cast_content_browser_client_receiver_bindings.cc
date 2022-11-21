@@ -10,8 +10,8 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_local_storage_slot.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chromecast/browser/application_media_info_manager.h"
 #include "chromecast/browser/cast_browser_interface_binders.h"
@@ -81,13 +81,13 @@ void CastContentBrowserClient::ExposeInterfacesToRenderer(
       base::BindRepeating(
           &media::MediaCapsImpl::AddReceiver,
           base::Unretained(cast_browser_main_parts_->media_caps())),
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   registry->AddInterface<metrics::mojom::MetricsHelper>(
       base::BindRepeating(
           &metrics::MetricsHelperImpl::AddReceiver,
           base::Unretained(cast_browser_main_parts_->metrics_helper())),
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
   if (!memory_pressure_controller_) {
@@ -97,7 +97,7 @@ void CastContentBrowserClient::ExposeInterfacesToRenderer(
   registry->AddInterface<mojom::MemoryPressureController>(
       base::BindRepeating(&MemoryPressureControllerImpl::AddReceiver,
                           base::Unretained(memory_pressure_controller_.get())),
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 }
 
@@ -178,7 +178,8 @@ void CastContentBrowserClient::CreateVideoGeometrySetterServiceOnMediaThread() {
       std::unique_ptr<media::VideoGeometrySetterService,
                       base::OnTaskRunnerDeleter>(
           new media::VideoGeometrySetterService,
-          base::OnTaskRunnerDeleter(base::ThreadTaskRunnerHandle::Get()));
+          base::OnTaskRunnerDeleter(
+              base::SingleThreadTaskRunner::GetCurrentDefault()));
 }
 
 void CastContentBrowserClient::BindVideoGeometrySetterServiceOnMediaThread(

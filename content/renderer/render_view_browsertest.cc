@@ -23,7 +23,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -1587,8 +1586,8 @@ TEST_F(RenderViewImplTextInputStateChanged, ActiveElementGetLayoutBounds) {
   ExecuteJavaScriptForTests("document.getElementById('test').focus();");
   // This RunLoop is waiting for focus to be processed for the active element.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                run_loop.QuitClosure());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
   // Update the IME status and verify if our IME backend sends an IPC message
   // to notify layout bounds of the EditContext.
@@ -1614,16 +1613,16 @@ TEST_F(RenderViewImplTextInputStateChanged, ActiveElementGetLayoutBounds) {
       "\"px\";document.getElementById('test').style.left = 350 + \"px\";");
   // This RunLoop is waiting for styles to be processed for the active element.
   base::RunLoop run_loop2;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                run_loop2.QuitClosure());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop2.QuitClosure());
   run_loop2.Run();
   // Update the IME status and verify if our IME backend sends an IPC message
   // to notify layout bounds of the EditContext.
   main_frame_widget()->UpdateTextInputState();
   // This RunLoop is to flush the TextInputState update message.
   base::RunLoop run_loop3;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                run_loop3.QuitClosure());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop3.QuitClosure());
   run_loop3.Run();
   EXPECT_EQ(2u, updated_states().size());
   controller->GetLayoutBounds(&expected_control_bounds, &temp_selection_bounds);
@@ -1650,16 +1649,16 @@ TEST_F(RenderViewImplTextInputStateChanged,
   ExecuteJavaScriptForTests("document.getElementById('test').focus();");
   // This RunLoop is waiting for focus to be processed for the active element.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                run_loop.QuitClosure());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
   // Update the IME status and verify if our IME backend sends an IPC message
   // to notify layout bounds of the EditContext.
   main_frame_widget()->UpdateTextInputState();
   // This RunLoop is to flush the TextInputState update message.
   base::RunLoop run_loop2;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                run_loop2.QuitClosure());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop2.QuitClosure());
   run_loop2.Run();
   EXPECT_EQ(1u, updated_states().size());
   blink::WebInputMethodController* controller =
@@ -1678,8 +1677,8 @@ TEST_F(RenderViewImplTextInputStateChanged,
   main_frame_widget()->UpdateTextInputState();
   // This RunLoop is to flush the TextInputState update message.
   base::RunLoop run_loop3;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                run_loop3.QuitClosure());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop3.QuitClosure());
   run_loop3.Run();
   EXPECT_EQ(1u, updated_states().size());
 }
@@ -1696,8 +1695,8 @@ TEST_F(RenderViewImplTextInputStateChanged,
   ExecuteJavaScriptForTests("document.getElementById('test').focus();");
   // This RunLoop is waiting for focus to be processed for the active element.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                run_loop.QuitClosure());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
   double zoom_level = blink::PageZoomFactorToZoomLevel(1.25);
   // Change the zoom level to 125% and check if the view gets the change.
@@ -1707,8 +1706,8 @@ TEST_F(RenderViewImplTextInputStateChanged,
   main_frame_widget()->UpdateTextInputState();
   // This RunLoop is to flush the TextInputState update message.
   base::RunLoop run_loop2;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                run_loop2.QuitClosure());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop2.QuitClosure());
   run_loop2.Run();
   EXPECT_EQ(1u, updated_states().size());
   blink::WebInputMethodController* controller =
@@ -1739,8 +1738,8 @@ TEST_F(RenderViewImplTextInputStateChanged, VirtualKeyboardPolicyAuto) {
   ExecuteJavaScriptForTests("document.getElementById('test').focus();");
   // This RunLoop is waiting for focus to be processed for the active element.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                run_loop.QuitClosure());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
   // Update the text input state and verify the virtualkeyboardpolicy attribute
   // value.
@@ -1767,8 +1766,8 @@ TEST_F(RenderViewImplTextInputStateChanged, VirtualKeyboardPolicyAutoToManual) {
   ExecuteJavaScriptForTests("document.getElementById('test').focus();");
   // This RunLoop is waiting for focus to be processed for the active element.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                run_loop.QuitClosure());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
   // Update the IME status and verify if our IME backend sends an IPC message
   // to notify virtualkeyboardpolicy change of the focused element.
@@ -1800,8 +1799,8 @@ TEST_F(RenderViewImplTextInputStateChanged,
       "navigator.virtualKeyboard.show();");
   // This RunLoop is waiting for focus to be processed for the active element.
   base::RunLoop run_loop1;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                run_loop1.QuitClosure());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop1.QuitClosure());
   run_loop1.Run();
   // Update the IME status and verify if our IME backend sends an IPC message
   // to notify virtualkeyboardpolicy change of the focused element and the show
@@ -1817,8 +1816,8 @@ TEST_F(RenderViewImplTextInputStateChanged,
       "document.getElementById('test1').focus(); "
       "navigator.virtualKeyboard.hide();");
   base::RunLoop run_loop2;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                run_loop2.QuitClosure());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop2.QuitClosure());
   run_loop2.Run();
   ClearState();
   // Update the IME status and verify if our IME backend sends an IPC message
@@ -1851,8 +1850,8 @@ TEST_F(RenderViewImplTextInputStateChanged,
       "navigator.virtualKeyboard.show();");
   // This RunLoop is waiting for focus to be processed for the active element.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                run_loop.QuitClosure());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
   // Update the IME status and verify if our IME backend sends an IPC message
   // to notify virtualkeyboardpolicy change of the focused element and the show

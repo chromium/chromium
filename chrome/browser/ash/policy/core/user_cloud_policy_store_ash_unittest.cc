@@ -17,7 +17,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/cryptohome/account_identifier_operators.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -135,8 +134,8 @@ class UserCloudPolicyStoreAshTest : public testing::Test {
         std::make_unique<FakeSessionManagerClient>(user_policy_dir());
     store_ = std::make_unique<UserCloudPolicyStoreAsh>(
         &cryptohome_misc_client_, session_manager_client_.get(),
-        base::ThreadTaskRunnerHandle::Get(), account_id_, user_policy_dir(),
-        false /* is_active_directory */);
+        base::SingleThreadTaskRunner::GetCurrentDefault(), account_id_,
+        user_policy_dir(), false /* is_active_directory */);
     store_->AddObserver(&observer_);
 
     // Install the initial public key, so that by default the validation of

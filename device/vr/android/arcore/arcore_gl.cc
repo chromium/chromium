@@ -17,7 +17,7 @@
 #include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -131,7 +131,7 @@ ArCoreGlInitializeResult::~ArCoreGlInitializeResult() = default;
 
 // The ArCompositor is currently only supported if we're using shared buffers.
 ArCoreGl::ArCoreGl(std::unique_ptr<ArImageTransport> ar_image_transport)
-    : gl_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+    : gl_thread_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       ar_image_transport_(std::move(ar_image_transport)),
       use_ar_compositor_(ArImageTransport::UseSharedBuffer()),
       webxr_(std::make_unique<WebXrPresentationState>()),

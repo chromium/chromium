@@ -12,7 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/arc/arc.pb.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -142,7 +142,7 @@ class ArcContainerClientAdapter : public ArcClientAdapter,
   // The interface is only for ARCVM.
   void TrimVmMemory(TrimVmMemoryCallback callback, int) override {
     NOTREACHED();
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), /*success=*/true,
                        /*failure_reason=*/"ARC container is not supported."));

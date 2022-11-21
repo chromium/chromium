@@ -27,7 +27,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -166,7 +165,7 @@ class RasterBufferProviderTest
 
   RasterBufferProviderTest()
       : all_tile_tasks_finished_(
-            base::ThreadTaskRunnerHandle::Get().get(),
+            base::SingleThreadTaskRunner::GetCurrentDefault().get(),
             base::BindRepeating(&RasterBufferProviderTest::AllTileTasksFinished,
                                 base::Unretained(this))),
         timeout_seconds_(5),
@@ -185,10 +184,10 @@ class RasterBufferProviderTest
       case RASTER_BUFFER_PROVIDER_TYPE_ONE_COPY:
         Create3dResourceProvider();
         raster_buffer_provider_ = std::make_unique<OneCopyRasterBufferProvider>(
-            base::ThreadTaskRunnerHandle::Get().get(), context_provider_.get(),
-            worker_context_provider_.get(), &gpu_memory_buffer_manager_,
-            kMaxBytesPerCopyOperation, false, false, kMaxStagingBuffers,
-            viz::RGBA_8888);
+            base::SingleThreadTaskRunner::GetCurrentDefault().get(),
+            context_provider_.get(), worker_context_provider_.get(),
+            &gpu_memory_buffer_manager_, kMaxBytesPerCopyOperation, false,
+            false, kMaxStagingBuffers, viz::RGBA_8888);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_GPU:
         Create3dResourceProvider();
@@ -208,7 +207,8 @@ class RasterBufferProviderTest
 
     pool_ = std::make_unique<ResourcePool>(
         resource_provider_.get(), context_provider_.get(),
-        base::ThreadTaskRunnerHandle::Get(), base::TimeDelta(), true);
+        base::SingleThreadTaskRunner::GetCurrentDefault(), base::TimeDelta(),
+        true);
     tile_task_manager_ = TileTaskManagerImpl::Create(&task_graph_runner_);
   }
 

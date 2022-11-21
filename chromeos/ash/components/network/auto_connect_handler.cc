@@ -11,7 +11,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
@@ -280,7 +279,7 @@ void AutoConnectHandler::CheckBestConnection() {
 
   // Request ScanAndConnectToBestServices after processing any pending DBus
   // calls.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&AutoConnectHandler::CallShillScanAndConnectToBestServices,
                      weak_ptr_factory_.GetWeakPtr()));

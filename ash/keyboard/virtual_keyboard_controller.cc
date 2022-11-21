@@ -169,7 +169,7 @@ void VirtualKeyboardController::OnKeyboardHidden(bool is_temporary_hide) {
     return;
 
   // Post a task to reset the virtual keyboard to its original state.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(ResetVirtualKeyboard));
 }
 

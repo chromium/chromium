@@ -16,8 +16,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
@@ -111,7 +111,7 @@ class TimeZoneMonitorLinuxImpl
       TimeZoneMonitorLinux* owner,
       scoped_refptr<base::SequencedTaskRunner> file_task_runner)
       : base::RefCountedThreadSafe<TimeZoneMonitorLinuxImpl>(),
-        main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+        main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
         file_task_runner_(file_task_runner),
         owner_(owner) {
     DCHECK(main_task_runner_->RunsTasksInCurrentSequence());

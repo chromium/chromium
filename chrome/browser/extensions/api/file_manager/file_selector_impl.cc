@@ -60,7 +60,7 @@ void FileSelectorImpl::SelectFile(
 
   if (!StartSelectFile(suggested_name, allowed_extensions, browser)) {
     // If dialog didn't launch, asynchronously report failure.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&FileSelectorImpl::FileSelectionCanceled,
                        base::Unretained(this), static_cast<void*>(nullptr)));

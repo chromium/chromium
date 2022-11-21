@@ -17,7 +17,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/context_state.h"
@@ -2233,7 +2233,8 @@ void TextureManager::Initialize() {
   // so don't register a dump provider.
   if (memory_tracker_) {
     base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-        this, "gpu::TextureManager", base::ThreadTaskRunnerHandle::Get());
+        this, "gpu::TextureManager",
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 }
 

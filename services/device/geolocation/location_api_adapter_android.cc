@@ -8,7 +8,7 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "services/device/geolocation/geolocation_jni_headers/LocationProviderAdapter_jni.h"
 #include "services/device/geolocation/location_provider_android.h"
@@ -133,7 +133,7 @@ LocationApiAdapterAndroid* LocationApiAdapterAndroid::GetInstance() {
 }
 
 LocationApiAdapterAndroid::LocationApiAdapterAndroid()
-    : task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+    : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 LocationApiAdapterAndroid::~LocationApiAdapterAndroid() {
   DCHECK(thread_checker_.CalledOnValidThread());

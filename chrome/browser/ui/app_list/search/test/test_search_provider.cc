@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
@@ -35,7 +35,7 @@ ash::AppListSearchResultType TestSearchProvider::ResultType() const {
 void TestSearchProvider::Start(const std::u16string& query) {
   if (ash::IsZeroStateResultType(result_type_))
     return;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&TestSearchProvider::SetResults,
                      query_weak_factory_.GetWeakPtr()),
@@ -49,7 +49,7 @@ void TestSearchProvider::StopQuery() {
 void TestSearchProvider::StartZeroState() {
   if (!ash::IsZeroStateResultType(result_type_))
     return;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&TestSearchProvider::SetResults, base::Unretained(this)),
       delay_);

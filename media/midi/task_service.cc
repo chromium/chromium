@@ -9,8 +9,8 @@
 #include "base/bind.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 
 namespace midi {
@@ -48,7 +48,7 @@ bool TaskService::BindInstance() {
   bound_instance_id_ = ++next_instance_id_;
 
   DCHECK(!default_task_runner_);
-  default_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  default_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 
   return true;
 }

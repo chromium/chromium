@@ -69,7 +69,7 @@ void WaitForAnimationEnded(ui::Layer* layer) {
 // Waits for a time delta `time`.
 void WaitForTimeDelta(base::TimeDelta time) {
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), time);
   run_loop.Run();
 }
@@ -982,7 +982,7 @@ TEST_F(ToastManagerImplTest, ShowAndCloseToastsOnAllRootWindows) {
       }
       case CancellationSource::kToastDuration: {
         base::RunLoop run_loop;
-        base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE, run_loop.QuitClosure(),
             ToastData::kDefaultToastDuration);
         run_loop.Run();

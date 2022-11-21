@@ -6,7 +6,7 @@
 
 #include "ash/fast_ink/laser/laser_segment_utils.h"
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkTypes.h"
@@ -226,7 +226,7 @@ void LaserPointerView::ScheduleUpdateBuffer() {
     return;
 
   pending_update_buffer_ = true;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&LaserPointerView::UpdateBuffer,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

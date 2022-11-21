@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "remoting/proto/control.pb.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
@@ -85,7 +85,7 @@ void KeyboardLayoutMonitorChromeOs::OnLayoutChanging(
   // current layout as, from observation, the current keyboard layout name and
   // the actual layout map aren't updated atomically meaning the name will
   // change before the layout is actually loaded.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&KeyboardLayoutMonitorChromeOs::QueryLayout,
                      weak_ptr_factory_.GetWeakPtr()),

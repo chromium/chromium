@@ -10,7 +10,7 @@
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/predictors/predictors_switches.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
@@ -276,7 +276,7 @@ void PrefetchManager::PrefetchUrl(
           std::move(factory), std::move(throttles),
           content::GlobalRequestID::MakeBrowserInitiated().request_id, options,
           &request, client.get(), kPrefetchTrafficAnnotation,
-          base::ThreadTaskRunnerHandle::Get(),
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
           /*cors_exempt_header_list=*/absl::nullopt);
 
   delegate_->PrefetchInitiated(info.url, job->url);

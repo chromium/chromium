@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/extensions/api/messaging/native_message_process_host.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/api/messaging/message.h"
@@ -92,9 +91,9 @@ NativeMessagePort::NativeMessagePort(
     : weak_channel_delegate_(channel_delegate),
       host_task_runner_(native_message_host->task_runner()),
       port_id_(port_id) {
-  core_ = std::make_unique<Core>(std::move(native_message_host),
-                                 weak_factory_.GetWeakPtr(),
-                                 base::ThreadTaskRunnerHandle::Get());
+  core_ = std::make_unique<Core>(
+      std::move(native_message_host), weak_factory_.GetWeakPtr(),
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 NativeMessagePort::~NativeMessagePort() {

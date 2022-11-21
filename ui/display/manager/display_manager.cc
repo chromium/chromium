@@ -26,7 +26,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -1568,7 +1568,7 @@ void DisplayManager::UpdateZoomFactor(int64_t display_id, float zoom_factor) {
     on_display_zoom_modify_timeout_.Cancel();
     on_display_zoom_modify_timeout_.Reset(
         base::BindOnce(&OnInternalDisplayZoomChanged, zoom_factor));
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, on_display_zoom_modify_timeout_.callback(),
         base::Seconds(kDisplayZoomModifyTimeoutSec));
   }
@@ -1648,7 +1648,7 @@ void DisplayManager::CreateMirrorWindowAsyncIfAny() {
   // ash::Shell::Init() will call this after the compositor is initialized.
   if (software_mirroring_display_list_.empty() || !delegate_)
     return;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&DisplayManager::CreateMirrorWindowIfAny,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

@@ -110,7 +110,7 @@ void SendKey(ui::KeyboardCode key_code,
 
 void WaitForSeconds(int seconds) {
   base::RunLoop loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, loop.QuitClosure(), base::Seconds(seconds));
   loop.Run();
 }

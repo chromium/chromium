@@ -14,7 +14,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 
 namespace ash {
@@ -31,7 +30,7 @@ SystemSaltGetter::~SystemSaltGetter() = default;
 
 void SystemSaltGetter::GetSystemSalt(GetSystemSaltCallback callback) {
   if (!system_salt_.empty()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), system_salt_));
     return;
   }

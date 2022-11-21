@@ -10,7 +10,7 @@
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/cable/fido_ble_frames.h"
 #include "device/fido/cable/fido_ble_uuids.h"
@@ -128,7 +128,7 @@ FidoDevice::CancelToken FidoCableDevice::DeviceTransact(
     std::vector<uint8_t> command,
     DeviceCallback callback) {
   if (!encryption_data_ || !EncryptOutgoingMessage(&command)) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     state_ = State::kDeviceError;
     FIDO_LOG(ERROR) << "Failed to encrypt outgoing caBLE message.";

@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -511,7 +510,7 @@ void EventFactoryEvdev::WarpCursorTo(gfx::AcceleratedWidget widget,
 
   cursor_->MoveCursorTo(widget, location);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &EventFactoryEvdev::DispatchMouseMoveEvent,

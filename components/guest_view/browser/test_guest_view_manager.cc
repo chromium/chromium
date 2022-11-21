@@ -151,7 +151,7 @@ void TestGuestViewManager::WaitUntilAttached(GuestViewBase* guest_view) {
   // considered in progress.
   while (!guest_view->attached()) {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
     run_loop.Run();
   }

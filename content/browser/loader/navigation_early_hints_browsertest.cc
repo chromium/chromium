@@ -108,7 +108,7 @@ class PreconnectListener
     : public net::test_server::EmbeddedTestServerConnectionListener {
  public:
   PreconnectListener()
-      : task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
         weak_ptr_factory_(this) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   }

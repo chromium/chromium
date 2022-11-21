@@ -14,7 +14,8 @@ namespace {}
 namespace device {
 
 FakeArCore::FakeArCore()
-    : gl_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+    : gl_thread_task_runner_(
+          base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 FakeArCore::~FakeArCore() = default;
 

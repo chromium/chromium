@@ -90,7 +90,7 @@ WebAppMetrics::WebAppMetrics(Profile* profile)
   if (base::FeatureList::IsEnabled(features::kDesktopPWAsIconHealthChecks) &&
       !g_disable_automatic_icon_health_checks_for_testing) {
     AfterStartupTaskUtils::PostTask(
-        FROM_HERE, base::ThreadTaskRunnerHandle::Get(),
+        FROM_HERE, base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::BindOnce(&WebAppIconHealthChecks::Start,
                        icon_health_checks_.GetWeakPtr(), base::DoNothing()));
   }

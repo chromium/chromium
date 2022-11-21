@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/process/process.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/task_manager/providers/render_process_host_task_provider.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_task_provider.h"
 #include "content/public/browser/browser_thread.h"
@@ -104,7 +104,7 @@ void FallbackTaskProvider::ShowTaskLater(Task* task) {
     it->second.InvalidateWeakPtrs();
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&FallbackTaskProvider::ShowPendingTask,
                      it->second.GetWeakPtr(), task),

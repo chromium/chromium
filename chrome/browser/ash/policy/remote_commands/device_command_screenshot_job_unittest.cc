@@ -13,7 +13,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
@@ -101,12 +100,12 @@ void MockUploadJob::Start() {
   DCHECK(delegate_);
   EXPECT_EQ(kMockUploadUrl, upload_url_.spec());
   if (error_code_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&UploadJob::Delegate::OnFailure,
                                   base::Unretained(delegate_), *error_code_));
     return;
   }
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&UploadJob::Delegate::OnSuccess,
                                 base::Unretained(delegate_)));
 }
@@ -170,7 +169,7 @@ void MockScreenshotDelegate::TakeSnapshot(gfx::NativeWindow window,
   const int height = source_rect.height();
   scoped_refptr<base::RefCountedBytes> test_png =
       GenerateTestPNG(width, height);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), test_png));
 }
 

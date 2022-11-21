@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace ash {
@@ -71,14 +70,14 @@ FakeLorgnetteScannerManager::~FakeLorgnetteScannerManager() = default;
 
 void FakeLorgnetteScannerManager::GetScannerNames(
     GetScannerNamesCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), scanner_names_));
 }
 
 void FakeLorgnetteScannerManager::GetScannerCapabilities(
     const std::string& scanner_name,
     GetScannerCapabilitiesCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), scanner_capabilities_));
 }
 
@@ -111,18 +110,18 @@ void FakeLorgnetteScannerManager::Scan(const std::string& scanner_name,
     for (const std::string& page_data : scan_data_.value()) {
       if (progress_callback) {
         for (const uint32_t progress : {7, 22, 40, 42, 59, 74, 95}) {
-          base::ThreadTaskRunnerHandle::Get()->PostTask(
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE,
               base::BindOnce(progress_callback, progress, page_number));
         }
       }
 
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(page_callback, page_data, page_number++));
     }
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(completion_callback),
                      scan_data_.has_value()
@@ -131,7 +130,7 @@ void FakeLorgnetteScannerManager::Scan(const std::string& scanner_name,
 }
 
 void FakeLorgnetteScannerManager::CancelScan(CancelCallback cancel_callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(cancel_callback), true));
 }
 

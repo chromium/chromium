@@ -77,14 +77,14 @@ ACTION_P(ScheduleGeneratorCallback, request_number) {
   ReportRequestQueue requests;
   for (int i = 0; i < request_number; i++)
     requests.push(std::make_unique<ReportRequest>(ReportType::kFull));
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(arg0), std::move(requests)));
 }
 
 ACTION(ScheduleProfileRequestGeneratorCallback) {
   ReportRequestQueue requests;
   requests.push(std::make_unique<ReportRequest>(ReportType::kProfileReport));
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(arg0), std::move(requests)));
 }
 

@@ -12,7 +12,7 @@
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/style/ash_color_id.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -143,7 +143,7 @@ void TopIconAnimationView::OnImplicitAnimationsCompleted() {
   for (auto& observer : observers_)
     observer.OnTopIconAnimationsComplete(this);
   DCHECK(parent());
-  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
       FROM_HERE, parent()->RemoveChildViewT(this));
 }
 

@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 
 namespace net::testing {
 
@@ -74,8 +73,8 @@ void MockFileStream::ReleaseCallbacks() {
   throttled_ = false;
 
   if (!throttled_task_.is_null()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(throttled_task_));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(throttled_task_));
   }
 }
 
@@ -101,7 +100,7 @@ void MockFileStream::DoCallback64(Int64CompletionOnceCallback callback,
 int MockFileStream::ErrorCallback(CompletionOnceCallback callback) {
   CHECK_NE(OK, forced_error_);
   if (async_error_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), forced_error_));
     clear_forced_error();
     return ERR_IO_PENDING;
@@ -114,7 +113,7 @@ int MockFileStream::ErrorCallback(CompletionOnceCallback callback) {
 int64_t MockFileStream::ErrorCallback64(Int64CompletionOnceCallback callback) {
   CHECK_NE(OK, forced_error_);
   if (async_error_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), forced_error_));
     clear_forced_error();
     return ERR_IO_PENDING;

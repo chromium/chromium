@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/ntp_snippets/category.h"
 #include "components/reading_list/core/reading_list_entry.h"
@@ -81,14 +81,14 @@ void ReadingListSuggestionsProvider::DismissSuggestion(
 void ReadingListSuggestionsProvider::FetchSuggestionImage(
     const ContentSuggestion::ID& suggestion_id,
     ImageFetchedCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), gfx::Image()));
 }
 
 void ReadingListSuggestionsProvider::FetchSuggestionImageData(
     const ContentSuggestion::ID& suggestion_id,
     ImageDataFetchedCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::string()));
 }
 
@@ -97,7 +97,7 @@ void ReadingListSuggestionsProvider::Fetch(
     const std::set<std::string>& known_suggestion_ids,
     FetchDoneCallback callback) {
   LOG(DFATAL) << "ReadingListSuggestionsProvider has no |Fetch| functionality!";
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),
                      Status(StatusCode::PERMANENT_ERROR,

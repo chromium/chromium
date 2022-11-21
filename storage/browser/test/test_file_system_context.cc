@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -25,9 +25,10 @@ scoped_refptr<FileSystemContext> CreateFileSystemContextForTesting(
     const base::FilePath& base_path) {
   std::vector<std::unique_ptr<FileSystemBackend>> additional_providers;
   additional_providers.push_back(std::make_unique<TestFileSystemBackend>(
-      base::ThreadTaskRunnerHandle::Get().get(), base_path));
+      base::SingleThreadTaskRunner::GetCurrentDefault().get(), base_path));
   return CreateFileSystemContextWithAdditionalProvidersForTesting(
-      base::ThreadTaskRunnerHandle::Get(), base::ThreadTaskRunnerHandle::Get(),
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
       std::move(quota_manager_proxy), std::move(additional_providers),
       base_path);
 }
@@ -71,7 +72,7 @@ scoped_refptr<FileSystemContext> CreateIncognitoFileSystemContextForTesting(
     const base::FilePath& base_path) {
   std::vector<std::unique_ptr<FileSystemBackend>> additional_providers;
   additional_providers.push_back(std::make_unique<TestFileSystemBackend>(
-      base::ThreadTaskRunnerHandle::Get().get(), base_path));
+      base::SingleThreadTaskRunner::GetCurrentDefault().get(), base_path));
   return CreateIncognitoFileSystemContextWithAdditionalProvidersForTesting(
       std::move(io_task_runner), std::move(file_task_runner),
       std::move(quota_manager_proxy), std::move(additional_providers),

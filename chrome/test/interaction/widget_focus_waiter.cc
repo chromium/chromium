@@ -14,7 +14,8 @@ WidgetFocusWaiter::~WidgetFocusWaiter() {
 
 void WidgetFocusWaiter::WaitAfter(base::OnceClosure action) {
   CHECK(closure_.is_null());
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(action));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(action));
   closure_ = run_loop_.QuitClosure();
   run_loop_.Run();
 }

@@ -7,7 +7,7 @@
 #include "ash/webui/camera_app_ui/document_scanner_service_client.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace ash {
 
@@ -62,7 +62,7 @@ void DocumentScannerInstaller::TriggerInstall() {
 }
 
 DocumentScannerInstaller::DocumentScannerInstaller()
-    : ui_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+    : ui_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 void DocumentScannerInstaller::OnInstalled(
     const DlcserviceClient::InstallResult& install_result) {

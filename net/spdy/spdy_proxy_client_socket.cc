@@ -14,7 +14,6 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "net/base/auth.h"
 #include "net/base/io_buffer.h"
@@ -283,7 +282,7 @@ void SpdyProxyClientSocket::RunWriteCallback(CompletionOnceCallback callback,
   std::move(callback).Run(result);
 
   if (end_stream_state_ == EndStreamState::kEndStreamReceived) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&SpdyProxyClientSocket::MaybeSendEndStream,
                                   weak_factory_.GetMutableWeakPtr()));
   }
@@ -482,7 +481,7 @@ void SpdyProxyClientSocket::OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) {
     if (end_stream_state_ == EndStreamState::kNone) {
       // The peer sent END_STREAM. Schedule a DATA frame with END_STREAM.
       end_stream_state_ = EndStreamState::kEndStreamReceived;
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&SpdyProxyClientSocket::MaybeSendEndStream,
                                     weak_factory_.GetWeakPtr()));
     }
@@ -515,7 +514,7 @@ void SpdyProxyClientSocket::OnDataSent() {
 
   // Proxy write callbacks result in deep callback chains. Post to allow the
   // stream's write callback chain to unwind (see crbug.com/355511).
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&SpdyProxyClientSocket::RunWriteCallback,
                                 write_callback_weak_factory_.GetWeakPtr(),
                                 std::move(write_callback_), rv));

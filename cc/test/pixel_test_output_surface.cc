@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/output_surface_frame.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -38,7 +38,7 @@ void PixelTestOutputSurface::Reshape(const ReshapeParams& params) {
 }
 
 void PixelTestOutputSurface::SwapBuffers(viz::OutputSurfaceFrame frame) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&PixelTestOutputSurface::SwapBuffersCallback,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

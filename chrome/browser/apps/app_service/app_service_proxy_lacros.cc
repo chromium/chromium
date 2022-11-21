@@ -552,7 +552,7 @@ void AppServiceProxyLacros::Initialize() {
 
   if (!profile_->AsTestingProfile()) {
     metrics_service_ = std::make_unique<WebsiteMetricsServiceLacros>(profile_);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&AppServiceProxyLacros::InitWebsiteMetrics,
                                   weak_ptr_factory_.GetWeakPtr()));
   }

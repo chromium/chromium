@@ -8,7 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/floss/bluetooth_adapter_floss.h"
 #include "device/bluetooth/floss/bluetooth_remote_gatt_characteristic_floss.h"
@@ -192,7 +192,7 @@ void BluetoothRemoteGattDescriptorFloss::OnWriteDescriptor(
       std::move(callback), std::move(error_callback), std::move(data));
 
   // Ensure callbacks don't get dropped if no |GattDescriptorWrite| received.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&BluetoothRemoteGattDescriptorFloss::OnWriteTimeout,
                      weak_ptr_factory_.GetWeakPtr()),

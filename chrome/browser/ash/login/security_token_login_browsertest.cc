@@ -18,8 +18,8 @@
 #include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
@@ -196,7 +196,7 @@ class ChallengeResponseFakeUserDataAuthClient : public FakeUserDataAuthClient {
     if (error != net::OK || signature.empty())
       reply.set_error(
           ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_MOUNT_FATAL);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), reply));
   }
 
@@ -209,7 +209,7 @@ class ChallengeResponseFakeUserDataAuthClient : public FakeUserDataAuthClient {
       ::user_data_auth::AuthenticateAuthSessionReply reply;
       reply.set_error(
           ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_MOUNT_FATAL);
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), reply));
       return;
     }
@@ -226,7 +226,7 @@ class ChallengeResponseFakeUserDataAuthClient : public FakeUserDataAuthClient {
       ::user_data_auth::AuthenticateAuthFactorReply reply;
       reply.set_error(
           ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_MOUNT_FATAL);
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), reply));
       return;
     }

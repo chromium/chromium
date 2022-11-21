@@ -12,8 +12,8 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
 #include "components/account_id/account_id.h"
@@ -35,7 +35,7 @@ class TestUpstartClient : public ash::FakeUpstartClient {
   void StartJob(const std::string& job,
                 const std::vector<std::string>& upstart_env,
                 chromeos::VoidDBusMethodCallback callback) override {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), arc_available_));
   }
 

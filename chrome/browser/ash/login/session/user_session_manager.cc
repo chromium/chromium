@@ -32,7 +32,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/version.h"
@@ -1244,7 +1243,7 @@ void UserSessionManager::VoteForSavingLoginPassword(
     // task triggered by this can handle it. This could happen if chrome has
     // been restarted (e.g. due to a crash) within an active Chrome OS user
     // session.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&UserSessionManager::LoadShillProfile,
                                   GetUserSessionManagerAsWeakPtr(),
                                   user_context_.GetAccountId()));
@@ -1589,7 +1588,7 @@ void UserSessionManager::UserProfileInitialized(Profile* profile,
               &UserSessionManager::CompleteProfileCreateAfterAuthTransfer,
               GetUserSessionManagerAsWeakPtr(), profile));
     } else {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(
               &UserSessionManager::CompleteProfileCreateAfterAuthTransfer,
@@ -1840,7 +1839,7 @@ bool MaybeShowManagedTermsOfService(Profile* profile) {
 bool UserSessionManager::InitializeUserSession(Profile* profile) {
   TRACE_EVENT0(kEventCategoryChromeOS, kEventInitUserDesktop);
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&UserSessionManager::StopChildStatusObserving,
                      GetUserSessionManagerAsWeakPtr(), profile),

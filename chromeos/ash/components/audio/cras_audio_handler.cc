@@ -21,7 +21,6 @@
 #include "base/system/sys_info.h"
 #include "base/system/system_monitor.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/audio_devices_pref_handler_stub.h"
 #include "chromeos/ash/components/dbus/audio/floss_media_client.h"
@@ -971,8 +970,8 @@ CrasAudioHandler::CrasAudioHandler(
   BindMediaControllerObserver();
   InitializeAudioState();
   // Unittest may not have the task runner for the current thread.
-  if (base::ThreadTaskRunnerHandle::IsSet())
-    main_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  if (base::SingleThreadTaskRunner::HasCurrentDefault())
+    main_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 
   DCHECK(!g_cras_audio_handler);
   g_cras_audio_handler = this;

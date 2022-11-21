@@ -13,7 +13,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/webrtc/thread_wrapper.h"
@@ -101,7 +100,7 @@ class IceTransportTest : public testing::Test {
 
   void ProcessTransportInfo(std::unique_ptr<IceTransport>* target_transport,
                             std::unique_ptr<jingle_xmpp::XmlElement> transport_info) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&IceTransportTest::DeliverTransportInfo,
                        base::Unretained(this), target_transport,

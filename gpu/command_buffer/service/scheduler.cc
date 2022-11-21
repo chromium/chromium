@@ -15,7 +15,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
@@ -424,7 +423,8 @@ SequenceId Scheduler::CreateSequence(
 
 SequenceId Scheduler::CreateSequenceForTesting(SchedulingPriority priority) {
   // This will create the sequence on the thread on which this method is called.
-  return CreateSequence(priority, base::ThreadTaskRunnerHandle::Get());
+  return CreateSequence(priority,
+                        base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 void Scheduler::DestroySequence(SequenceId sequence_id) {
@@ -643,7 +643,7 @@ Scheduler::RebuildSchedulingQueueIfNeeded(
 
 void Scheduler::RunNextTask() {
   base::AutoLock auto_lock(lock_);
-  auto* task_runner = base::ThreadTaskRunnerHandle::Get().get();
+  auto* task_runner = base::SingleThreadTaskRunner::GetCurrentDefault().get();
   auto* thread_state = &per_thread_state_map_[task_runner];
 
   const bool log_histograms =

@@ -5,7 +5,7 @@
 #include "chromeos/ash/components/dbus/resourced/fake_resourced_client.h"
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace ash {
 
@@ -23,7 +23,7 @@ void FakeResourcedClient::SetGameModeWithTimeout(
     enter_game_mode_count_++;
   }
   previous_game_mode_state_ = state;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), response));
 }
 
@@ -38,7 +38,7 @@ void FakeResourcedClient::SetMemoryMarginsBps(
       total_system_memory_kb_ * ((critical_margin_bps_ / 100.0) / 100.0));
   uint32_t moderate_kb = static_cast<uint32_t>(
       total_system_memory_kb_ * ((moderate_margin_bps_ / 100.0) / 100.0));
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), true, critical_kb, moderate_kb));
 }

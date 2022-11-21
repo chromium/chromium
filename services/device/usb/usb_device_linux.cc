@@ -16,7 +16,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/usb/usb_descriptors.h"
 #include "services/device/usb/usb_device_handle_usbfs.h"
@@ -75,7 +75,8 @@ void UsbDeviceLinux::Open(OpenCallback callback) {
   blocking_task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&UsbDeviceLinux::OpenOnBlockingThread, this,
-                     std::move(callback), base::ThreadTaskRunnerHandle::Get(),
+                     std::move(callback),
+                     base::SingleThreadTaskRunner::GetCurrentDefault(),
                      blocking_task_runner));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }

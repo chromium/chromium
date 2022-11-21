@@ -637,7 +637,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
     if (content.find("HTTP ERROR 404") != std::string::npos)
       break;
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
     run_loop.Run();
   }

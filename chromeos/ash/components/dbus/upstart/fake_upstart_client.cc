@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/authpolicy/fake_authpolicy_client.h"
 #include "chromeos/ash/components/dbus/kerberos/fake_kerberos_client.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_client.h"
@@ -39,7 +39,7 @@ void FakeUpstartClient::StartJob(const std::string& job,
                                  chromeos::VoidDBusMethodCallback callback) {
   const bool result =
       start_job_cb_ ? start_job_cb_.Run(job, upstart_env) : true;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
@@ -49,7 +49,7 @@ void FakeUpstartClient::StartJobWithErrorDetails(
     StartJobWithErrorDetailsCallback callback) {
   const bool result =
       start_job_cb_ ? start_job_cb_.Run(job, upstart_env) : true;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result, absl::nullopt,
                                 absl::nullopt));
 }
@@ -58,7 +58,7 @@ void FakeUpstartClient::StopJob(const std::string& job,
                                 const std::vector<std::string>& upstart_env,
                                 chromeos::VoidDBusMethodCallback callback) {
   const bool result = stop_job_cb_ ? stop_job_cb_.Run(job, upstart_env) : true;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
@@ -81,7 +81,7 @@ void FakeUpstartClient::StartMediaAnalytics(
   DLOG_IF(WARNING, FakeMediaAnalyticsClient::Get()->process_running())
       << "Trying to start media analytics which is already started.";
   FakeMediaAnalyticsClient::Get()->set_process_running(true);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
@@ -90,7 +90,7 @@ void FakeUpstartClient::RestartMediaAnalytics(
   FakeMediaAnalyticsClient::Get()->set_process_running(false);
   FakeMediaAnalyticsClient::Get()->set_process_running(true);
   FakeMediaAnalyticsClient::Get()->SetStateSuspended();
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
@@ -103,32 +103,32 @@ void FakeUpstartClient::StopMediaAnalytics() {
 void FakeUpstartClient::StopMediaAnalytics(
     chromeos::VoidDBusMethodCallback callback) {
   FakeMediaAnalyticsClient::Get()->set_process_running(false);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
 void FakeUpstartClient::StartWilcoDtcService(
     chromeos::VoidDBusMethodCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
 void FakeUpstartClient::StopWilcoDtcService(
     chromeos::VoidDBusMethodCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
 void FakeUpstartClient::StartArcDataSnapshotd(
     const std::vector<std::string>& upstart_env,
     chromeos::VoidDBusMethodCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
 void FakeUpstartClient::StopArcDataSnapshotd(
     chromeos::VoidDBusMethodCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 

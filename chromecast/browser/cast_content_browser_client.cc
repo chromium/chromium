@@ -20,7 +20,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "chromecast/base/cast_constants.h"
@@ -214,7 +214,8 @@ CastContentBrowserClient::GetMediaTaskRunner() {
     // and we want to initialize it with the correct task runner before any
     // tasks that might use it are posted to the media thread.
     media_resource_tracker_ = new media::MediaResourceTracker(
-        base::ThreadTaskRunnerHandle::Get(), media_thread_->task_runner());
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        media_thread_->task_runner());
   }
   return media_thread_->task_runner();
 }

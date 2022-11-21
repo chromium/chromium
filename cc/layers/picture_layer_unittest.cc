@@ -8,7 +8,7 @@
 
 #include <utility>
 
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "cc/animation/animation_host.h"
 #include "cc/base/completion_event.h"
 #include "cc/layers/append_quads_data.h"
@@ -266,7 +266,7 @@ TEST(PictureLayerTest, NonMonotonicSourceFrameNumber) {
   params.client = &host_client1;
   params.settings = &settings;
   params.task_graph_runner = &task_graph_runner;
-  params.main_task_runner = base::ThreadTaskRunnerHandle::Get();
+  params.main_task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   params.mutator_host = animation_host.get();
   std::unique_ptr<LayerTreeHost> host1 = LayerTreeHost::CreateSingleThreaded(
       &single_thread_client, std::move(params));
@@ -279,7 +279,7 @@ TEST(PictureLayerTest, NonMonotonicSourceFrameNumber) {
   params2.client = &host_client1;
   params2.settings = &settings;
   params2.task_graph_runner = &task_graph_runner;
-  params2.main_task_runner = base::ThreadTaskRunnerHandle::Get();
+  params2.main_task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   params2.client = &host_client2;
   params2.mutator_host = animation_host2.get();
   std::unique_ptr<LayerTreeHost> host2 = LayerTreeHost::CreateSingleThreaded(
@@ -338,7 +338,7 @@ TEST(PictureLayerTest, ChangingHostsWithCollidingFrames) {
   params.client = &host_client1;
   params.settings = &settings;
   params.task_graph_runner = &task_graph_runner;
-  params.main_task_runner = base::ThreadTaskRunnerHandle::Get();
+  params.main_task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   params.mutator_host = animation_host.get();
   std::unique_ptr<LayerTreeHost> host1 = LayerTreeHost::CreateSingleThreaded(
       &single_thread_client, std::move(params));
@@ -351,7 +351,7 @@ TEST(PictureLayerTest, ChangingHostsWithCollidingFrames) {
   params2.client = &host_client1;
   params2.settings = &settings;
   params2.task_graph_runner = &task_graph_runner;
-  params2.main_task_runner = base::ThreadTaskRunnerHandle::Get();
+  params2.main_task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   params2.client = &host_client2;
   params2.mutator_host = animation_host2.get();
   std::unique_ptr<LayerTreeHost> host2 = LayerTreeHost::CreateSingleThreaded(

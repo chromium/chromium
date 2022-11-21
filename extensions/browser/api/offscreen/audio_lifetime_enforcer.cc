@@ -55,7 +55,7 @@ void AudioLifetimeEnforcer::OnAudioStateChanged(bool audible) {
 }
 
 void AudioLifetimeEnforcer::PostTimeoutTask() {
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&AudioLifetimeEnforcer::OnAudioTimeout,
                      weak_factory_.GetWeakPtr()),

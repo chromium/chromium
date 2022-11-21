@@ -16,7 +16,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/attestation/enrollment_id_upload_manager.h"
 #include "chrome/browser/ash/attestation/mock_enrollment_certificate_uploader.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
@@ -39,7 +38,7 @@ using ::testing::WithArgs;
 constexpr int kRetryLimit = 3;
 
 void StatusCallbackSuccess(policy::CloudPolicyClient::StatusCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 

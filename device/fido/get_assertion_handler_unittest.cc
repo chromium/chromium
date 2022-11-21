@@ -690,7 +690,7 @@ TEST_F(FidoGetAssertionHandlerTest, DeviceFailsImmediately) {
               ::testing::Invoke([this](FidoDevice::DeviceCallback& callback) {
                 std::vector<uint8_t> response = {static_cast<uint8_t>(
                     CtapDeviceResponseCode::kCtap2ErrInvalidCBOR)};
-                base::ThreadTaskRunnerHandle::Get()->PostTask(
+                base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
                     FROM_HERE,
                     base::BindOnce(std::move(callback), std::move(response)));
 

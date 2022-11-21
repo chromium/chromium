@@ -13,11 +13,11 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/favicon/core/favicon_client.h"
 #include "components/favicon/core/favicon_service_impl.h"
@@ -62,13 +62,13 @@ const favicon_base::IconType kTestIconTypeForServerRequests =
 const char kTestGoogleServerClientParam[] = "test_chrome";
 
 ACTION(FailFetch) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(*arg2), gfx::Image(),
                                 image_fetcher::RequestMetadata()));
 }
 
 ACTION_P2(PassFetch, width, height) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(*arg2), gfx::test::CreateImage(width, height),
                      image_fetcher::RequestMetadata()));

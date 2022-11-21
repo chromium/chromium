@@ -17,7 +17,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/services/storage/public/cpp/quota_client_callback_wrapper.h"
 #include "content/browser/log_console_message.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -380,7 +379,7 @@ void ServiceWorkerContextCore::HasMainFrameWindowClient(
                                            /*include_reserved_clients=*/false);
 
   if (container_host_iterator->IsAtEnd()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
@@ -399,7 +398,7 @@ void ServiceWorkerContextCore::HasMainFrameWindowClient(
     container_host_iterator->Advance();
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), has_main_frame));
 }
 
@@ -855,7 +854,7 @@ void ServiceWorkerContextCore::UnprotectVersion(int64_t version_id) {
 
 void ServiceWorkerContextCore::ScheduleDeleteAndStartOver() const {
   registry()->PrepareForDeleteAndStartOver();
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ServiceWorkerContextWrapper::DeleteAndStartOver,
                      wrapper_));

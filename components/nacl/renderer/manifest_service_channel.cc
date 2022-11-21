@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "content/public/renderer/render_thread.h"
 #include "ipc/ipc_channel.h"
@@ -33,7 +33,7 @@ ManifestServiceChannel::ManifestServiceChannel(
           IPC::Channel::MODE_CLIENT,
           this,
           content::RenderThread::Get()->GetIOTaskRunner(),
-          base::ThreadTaskRunnerHandle::Get(),
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
           true,
           waitable_event)),
       peer_pid_(base::kNullProcessId) {}

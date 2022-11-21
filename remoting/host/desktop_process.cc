@@ -172,7 +172,7 @@ bool DesktopProcess::Start(
   // Connect to the daemon.
   daemon_channel_ = IPC::ChannelProxy::Create(
       daemon_channel_handle_.release(), IPC::Channel::MODE_CLIENT, this,
-      io_task_runner_, base::ThreadTaskRunnerHandle::Get());
+      io_task_runner_, base::SingleThreadTaskRunner::GetCurrentDefault());
 
   daemon_channel_->GetRemoteAssociatedInterface(
       &desktop_session_request_handler_);

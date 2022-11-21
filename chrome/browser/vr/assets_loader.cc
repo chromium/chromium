@@ -10,7 +10,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/vr/model/assets.h"
 #include "chrome/browser/vr/vr_buildflags.h"
@@ -89,10 +88,11 @@ void AssetsLoader::OnComponentReady(const base::Version& version,
 
 void AssetsLoader::Load(OnAssetsLoadedCallback on_loaded) {
   main_thread_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&AssetsLoader::LoadInternal,
-                                weak_ptr_factory_.GetWeakPtr(),
-                                base::ThreadTaskRunnerHandle::Get(),
-                                std::move(on_loaded)));
+      FROM_HERE,
+      base::BindOnce(&AssetsLoader::LoadInternal,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::SingleThreadTaskRunner::GetCurrentDefault(),
+                     std::move(on_loaded)));
 }
 
 bool AssetsLoader::ComponentReady() {

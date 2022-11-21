@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_fence.h"
@@ -81,7 +81,7 @@ void GlRenderer::PostRenderFrameTask(gfx::SwapCompletionResult result) {
   if (!result.release_fence.is_null())
     gfx::GpuFence(std::move(result.release_fence)).Wait();
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&GlRenderer::RenderFrame, weak_ptr_factory_.GetWeakPtr()));
 }

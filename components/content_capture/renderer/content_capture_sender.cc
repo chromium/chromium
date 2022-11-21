@@ -5,7 +5,7 @@
 #include "components/content_capture/renderer/content_capture_sender.h"
 
 #include "base/metrics/histogram_macros.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/content_capture/common/content_capture_data.h"
 #include "components/content_capture/common/content_capture_features.h"
 #include "content/public/renderer/render_frame.h"
@@ -77,7 +77,8 @@ void ContentCaptureSender::StopCapture() {
 }
 
 void ContentCaptureSender::OnDestruct() {
-  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                                this);
 }
 
 void ContentCaptureSender::FillContentCaptureData(

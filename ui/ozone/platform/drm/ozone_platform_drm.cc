@@ -15,8 +15,8 @@
 #include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -239,7 +239,7 @@ class OzonePlatformDrm : public OzonePlatform {
       setenv("MINIGBM_DEBUG", "nocompression", 1);
     }
 
-    gpu_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+    gpu_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 
     // NOTE: Can't start the thread here since this is called before sandbox
     // initialization in multi-process Chrome.

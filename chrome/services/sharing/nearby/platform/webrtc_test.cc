@@ -63,7 +63,7 @@ class WebRtcMediumTest : public ::testing::Test {
                        mdns_responder_factory_,
                        ice_config_fetcher_,
                        messenger_,
-                       base::ThreadTaskRunnerHandle::Get()) {}
+                       base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
   ~WebRtcMediumTest() override {
     // Let libjingle threads finish.

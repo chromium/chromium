@@ -11,7 +11,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -36,9 +36,10 @@ DisplayResourceProvider::DisplayResourceProvider(Mode mode)
   // In certain cases, ThreadTaskRunnerHandle isn't set (Android Webview).
   // Don't register a dump provider in these cases.
   // TODO(crbug.com/517156): Get this working in Android Webview.
-  if (base::ThreadTaskRunnerHandle::IsSet()) {
+  if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
     base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-        this, "cc::ResourceProvider", base::ThreadTaskRunnerHandle::Get());
+        this, "cc::ResourceProvider",
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 }
 

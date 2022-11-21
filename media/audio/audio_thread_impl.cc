@@ -5,7 +5,7 @@
 #include "media/audio/audio_thread_impl.h"
 
 #include "base/message_loop/message_pump_type.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "build/build_config.h"
 #include "media/audio/audio_thread_hang_monitor.h"
@@ -29,7 +29,7 @@ AudioThreadImpl::AudioThreadImpl()
 #if BUILDFLAG(IS_MAC)
   // On Mac, the audio task runner must belong to the main thread.
   // See http://crbug.com/158170.
-  task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 #else
   task_runner_ = thread_.task_runner();
 #endif

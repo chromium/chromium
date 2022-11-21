@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/win/async_operation.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/test/fake_bluetooth_le_device_winrt.h"
@@ -131,7 +131,7 @@ HRESULT FakeGattDeviceServiceWinrt::OpenAsync(
   }
 
   auto async_op = Make<base::win::AsyncOperation<GattOpenStatus>>();
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(async_op->callback(), status));
   *operation = async_op.Detach();
   return S_OK;
@@ -147,7 +147,7 @@ HRESULT FakeGattDeviceServiceWinrt::GetCharacteristicsAsync(
     return E_NOTIMPL;
 
   auto async_op = Make<base::win::AsyncOperation<GattCharacteristicsResult*>>();
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(async_op->callback(),
                                 Make<FakeGattCharacteristicsResultWinrt>(
                                     fake_characteristics_)));

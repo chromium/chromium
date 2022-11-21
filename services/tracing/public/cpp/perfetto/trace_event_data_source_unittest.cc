@@ -114,14 +114,14 @@ class TraceEventDataSourceTest
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     PerfettoTracedProcess::GetTaskRunner()->ResetTaskRunnerForTesting(
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     TrackNameRecorder::GetInstance();
     CustomEventRecorder::GetInstance();  //->ResetForTesting();
     TraceEventMetadataSource::GetInstance()->ResetForTesting();
 #else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     PerfettoTracedProcess::GetTaskRunner()->GetOrCreateTaskRunner();
     auto perfetto_wrapper = std::make_unique<base::tracing::PerfettoTaskRunner>(
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     producer_client_ =
         std::make_unique<TestProducerClient>(std::move(perfetto_wrapper));
     TraceEventMetadataSource::GetInstance()->ResetForTesting();
@@ -2528,7 +2528,8 @@ TEST_F(TraceEventDataSourceTest, HistogramSampleTraceConfigNotEmpty) {
 }
 
 TEST_F(TraceEventDataSourceTest, UserActionEvent) {
-  base::SetRecordActionTaskRunner(base::ThreadTaskRunnerHandle::Get());
+  base::SetRecordActionTaskRunner(
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   StartTraceEventDataSource(/*privacy_filtering_enabled=*/false,
                             "-*,disabled-by-default-user_action_samples");

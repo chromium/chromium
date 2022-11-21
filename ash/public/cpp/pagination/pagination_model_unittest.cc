@@ -175,7 +175,7 @@ class PaginationModelTest : public views::test::WidgetTest {
   void WaitForRevertAnimation() {
     while (pagination()->IsRevertingCurrentTransition()) {
       base::RunLoop run_loop;
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
       run_loop.Run();
     }

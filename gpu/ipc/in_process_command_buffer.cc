@@ -23,7 +23,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
@@ -238,7 +237,8 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
             ->GetTracingProcessId();
     memory_tracker = std::make_unique<GpuCommandBufferMemoryTracker>(
         GetCommandBufferID(), client_tracing_id,
-        base::ThreadTaskRunnerHandle::Get(), /* obserer=*/nullptr);
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        /* obserer=*/nullptr);
   }
 
   auto feature_info = base::MakeRefCounted<gles2::FeatureInfo>(

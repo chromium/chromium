@@ -14,7 +14,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/win/windows_version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/platform_util.h"
@@ -41,8 +40,8 @@ class ManageCertificatesDialog : public ui::BaseShellDialogImpl {
   // must ensure the ManageCertificatesDialog remains valid until then.
   void Show(HWND parent, base::OnceClosure callback) {
     if (IsRunningDialogForOwner(parent)) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                    std::move(callback));
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(callback));
       return;
     }
 

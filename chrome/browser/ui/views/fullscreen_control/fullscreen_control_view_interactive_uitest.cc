@@ -7,8 +7,8 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
@@ -158,7 +158,7 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
   void RunLoopUntilVisibilityChanges() {
     base::RunLoop run_loop;
     SetPopupVisibilityChangedCallback(run_loop.QuitClosure());
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), kPopupEventTimeout);
     run_loop.Run();
   }
@@ -542,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
 
   base::RunLoop show_run_loop;
   SetPopupVisibilityChangedCallback(show_run_loop.QuitClosure());
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, show_run_loop.QuitClosure(), kPopupEventTimeout);
 
   // Send a key press event to show the popup.
@@ -556,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
 
   base::RunLoop hide_run_loop;
   SetPopupVisibilityChangedCallback(hide_run_loop.QuitClosure());
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, hide_run_loop.QuitClosure(), kPopupEventTimeout);
 
   // Send a key press event to hide the popup.

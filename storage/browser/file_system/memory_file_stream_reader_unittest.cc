@@ -46,9 +46,9 @@ class MemoryFileStreamReaderTest : public FileStreamReaderTest {
       int64_t initial_offset,
       const base::Time& expected_modification_time) override {
     return std::make_unique<MemoryFileStreamReader>(
-        base::ThreadTaskRunnerHandle::Get(), file_util_->GetWeakPtr(),
-        test_dir().AppendASCII(file_name), initial_offset,
-        expected_modification_time);
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        file_util_->GetWeakPtr(), test_dir().AppendASCII(file_name),
+        initial_offset, expected_modification_time);
   }
 
   void WriteFile(const std::string& file_name,

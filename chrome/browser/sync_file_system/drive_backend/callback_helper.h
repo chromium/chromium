@@ -13,7 +13,7 @@
 #include "base/check.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 // TODO(tzik): Merge this file to media/base/bind_to_current_loop.h.
 
@@ -113,8 +113,9 @@ base::RepeatingCallback<void(Args...)> RelayCallbackToTaskRunner(
 template <typename CallbackType>
 CallbackType RelayCallbackToCurrentThread(const base::Location& from_here,
                                           CallbackType callback) {
-  return RelayCallbackToTaskRunner(base::ThreadTaskRunnerHandle::Get(),
-                                   from_here, std::move(callback));
+  return RelayCallbackToTaskRunner(
+      base::SingleThreadTaskRunner::GetCurrentDefault(), from_here,
+      std::move(callback));
 }
 
 }  // namespace drive_backend

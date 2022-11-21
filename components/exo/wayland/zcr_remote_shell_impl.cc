@@ -598,7 +598,7 @@ void WaylandRemoteShell::OnTabletModeEnded() {}
 
 void WaylandRemoteShell::ScheduleSendDisplayMetrics(int delay_ms) {
   needs_send_display_metrics_ = true;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&WaylandRemoteShell::SendDisplayMetrics,
                      weak_ptr_factory_.GetWeakPtr()),

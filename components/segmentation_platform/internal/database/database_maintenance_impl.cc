@@ -17,7 +17,7 @@
 #include "base/callback_helpers.h"
 #include "base/check_is_test.h"
 #include "base/containers/adapters.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
@@ -233,7 +233,7 @@ void DatabaseMaintenanceImpl::CompactSamples(
     }
     compaction_day -= base::Days(1);
   }
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&DatabaseMaintenanceImpl::CompactSamplesDone,
                      weak_ptr_factory_.GetWeakPtr(), std::move(next_action),

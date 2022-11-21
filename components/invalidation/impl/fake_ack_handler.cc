@@ -5,7 +5,7 @@
 #include "components/invalidation/impl/fake_ack_handler.h"
 
 #include "base/ranges/algorithm.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/invalidation/public/ack_handle.h"
 #include "components/invalidation/public/invalidation.h"
 
@@ -34,7 +34,8 @@ FakeAckHandler::~FakeAckHandler() = default;
 
 void FakeAckHandler::RegisterInvalidation(Invalidation* invalidation) {
   unacked_invalidations_.push_back(*invalidation);
-  invalidation->SetAckHandler(AsWeakPtr(), base::ThreadTaskRunnerHandle::Get());
+  invalidation->SetAckHandler(
+      AsWeakPtr(), base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 void FakeAckHandler::RegisterUnsentInvalidation(Invalidation* invalidation) {

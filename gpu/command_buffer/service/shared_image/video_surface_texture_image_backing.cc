@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -61,7 +61,7 @@ VideoSurfaceTextureImageBacking::VideoSurfaceTextureImageBacking(
                                /*is_thread_safe=*/false),
       stream_texture_sii_(std::move(stream_texture_sii)),
       context_state_(std::move(context_state)),
-      gpu_main_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+      gpu_main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   DCHECK(stream_texture_sii_);
   DCHECK(context_state_);
 

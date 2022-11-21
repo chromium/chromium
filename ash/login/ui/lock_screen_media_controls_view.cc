@@ -18,7 +18,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/power_monitor/power_monitor.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/media_message_center/media_controls_progress_view.h"
 #include "components/media_message_center/media_notification_util.h"
 #include "components/vector_icons/vector_icons.h"
@@ -252,7 +252,7 @@ LockScreenMediaControlsView::LockScreenMediaControlsView(
           this)) {
     // The system is in the power suspended state. Post OnSuspend call to run
     // after LockContentsView is initialized.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&LockScreenMediaControlsView::OnSuspend,
                                   weak_ptr_factory_.GetWeakPtr()));
   }

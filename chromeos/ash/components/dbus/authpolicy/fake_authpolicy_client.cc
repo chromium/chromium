@@ -13,8 +13,8 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
@@ -46,7 +46,7 @@ void OnStorePolicy(AuthPolicyClient::RefreshPolicyCallback callback,
 // Posts |closure| on the ThreadTaskRunner with |delay|.
 void PostDelayedClosure(base::OnceClosure closure,
                         const base::TimeDelta& delay) {
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, std::move(closure), delay);
 }
 
@@ -225,7 +225,7 @@ void FakeAuthPolicyClient::RefreshDevicePolicy(RefreshPolicyCallback callback) {
 void FakeAuthPolicyClient::RefreshUserPolicy(const AccountId& account_id,
                                              RefreshPolicyCallback callback) {
   if (refresh_user_policy_error_.has_value()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   refresh_user_policy_error_.value()));
     refresh_user_policy_error_.reset();

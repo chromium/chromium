@@ -29,13 +29,13 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/base/auth.h"
@@ -13217,8 +13217,8 @@ TEST_F(HttpNetworkTransactionTest, UploadFileSmallerThanLength) {
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
   element_readers.push_back(std::make_unique<UploadFileElementReader>(
-      base::ThreadTaskRunnerHandle::Get().get(), temp_file_path, 0,
-      std::numeric_limits<uint64_t>::max(), base::Time()));
+      base::SingleThreadTaskRunner::GetCurrentDefault().get(), temp_file_path,
+      0, std::numeric_limits<uint64_t>::max(), base::Time()));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
   HttpRequestInfo request;
@@ -13266,7 +13266,7 @@ TEST_F(HttpNetworkTransactionTest, UploadUnreadableFile) {
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
   element_readers.push_back(std::make_unique<UploadFileElementReader>(
-      base::ThreadTaskRunnerHandle::Get().get(), temp_file, 0,
+      base::SingleThreadTaskRunner::GetCurrentDefault().get(), temp_file, 0,
       std::numeric_limits<uint64_t>::max(), base::Time()));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 

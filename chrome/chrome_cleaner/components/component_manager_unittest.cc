@@ -5,8 +5,8 @@
 #include "chrome/chrome_cleaner/components/component_manager.h"
 
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/chrome_cleaner/components/component_api.h"
 #include "chrome/chrome_cleaner/test/test_component.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,26 +38,26 @@ class TestComponentManagerDelegate : public ComponentManagerDelegate {
   void PreScanDone() override {
     calls_->pre_scan = true;
     if (quit_closure_)
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                    std::move(quit_closure_));
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(quit_closure_));
   }
   void PostScanDone() override {
     calls_->post_scan = true;
     if (quit_closure_)
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                    std::move(quit_closure_));
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(quit_closure_));
   }
   void PreCleanupDone() override {
     calls_->pre_cleanup = true;
     if (quit_closure_)
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                    std::move(quit_closure_));
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(quit_closure_));
   }
   void PostCleanupDone() override {
     calls_->post_cleanup = true;
     if (quit_closure_)
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                    std::move(quit_closure_));
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(quit_closure_));
   }
 
  private:

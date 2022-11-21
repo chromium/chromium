@@ -5,7 +5,7 @@
 #include "components/viz/test/fake_output_surface.h"
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/resources/returned_resource.h"
@@ -35,7 +35,7 @@ void FakeSoftwareOutputSurface::SwapBuffers(OutputSurfaceFrame frame) {
   last_sent_frame_ = std::make_unique<OutputSurfaceFrame>(std::move(frame));
   ++num_sent_frames_;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&FakeSoftwareOutputSurface::SwapBuffersAck,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

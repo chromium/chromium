@@ -10,7 +10,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "ui/compositor/compositor.h"
@@ -67,7 +67,7 @@ TestCompositorHostOzone::TestCompositorHostOzone(
     : bounds_(bounds),
       compositor_(context_factory->AllocateFrameSinkId(),
                   context_factory,
-                  base::ThreadTaskRunnerHandle::Get(),
+                  base::SingleThreadTaskRunner::GetCurrentDefault(),
                   false /* enable_pixel_canvas */),
       window_delegate_(std::make_unique<StubPlatformWindowDelegate>()) {}
 

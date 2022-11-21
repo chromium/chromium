@@ -22,7 +22,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_config.h"
 #include "base/tracing/protos/grit/tracing_proto_resources.h"
@@ -190,7 +190,7 @@ TracingControllerImpl::TracingControllerImpl()
 #endif
 
   tracing::PerfettoTracedProcess::Get()->SetConsumerConnectionFactory(
-      &GetTracingService, base::ThreadTaskRunnerHandle::Get());
+      &GetTracingService, base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 TracingControllerImpl::~TracingControllerImpl() = default;

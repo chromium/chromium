@@ -15,7 +15,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/feature_engagement/internal/availability_model_impl.h"
 #include "components/feature_engagement/internal/chrome_variations_configuration.h"
@@ -351,7 +351,7 @@ bool TrackerImpl::IsInitialized() const {
 
 void TrackerImpl::AddOnInitializedCallback(OnInitializedCallback callback) {
   if (IsInitializationFinished()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), IsInitialized()));
     return;
   }
@@ -389,7 +389,7 @@ void TrackerImpl::MaybePostInitializedCallbacks() {
   DVLOG(2) << "Initialization finished.";
 
   for (auto& callback : on_initialized_callbacks_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), IsInitialized()));
   }
 

@@ -7,7 +7,7 @@
 #include <string>
 
 #include "base/strings/strcat.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_controller.h"
 #include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
@@ -94,7 +94,7 @@ void CardUnmaskOtpInputDialogViews::Dismiss(
     progress_throbber_->Stop();
     progress_label_->SetText(controller_->GetConfirmationMessage());
     progress_throbber_->SetChecked(true);
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&CardUnmaskOtpInputDialogViews::CloseWidget,
                        weak_ptr_factory_.GetWeakPtr(), user_closed_dialog,
@@ -213,7 +213,7 @@ void CardUnmaskOtpInputDialogViews::CreateOtpInputView() {
 void CardUnmaskOtpInputDialogViews::OnNewCodeLinkClicked() {
   controller_->OnNewCodeLinkClicked();
   SetDialogFooter(/*enabled=*/false);
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&CardUnmaskOtpInputDialogViews::EnableNewCodeLink,
                      weak_ptr_factory_.GetWeakPtr()),

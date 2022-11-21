@@ -18,7 +18,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -103,7 +102,7 @@ class ComponentCloudPolicyServiceTest : public testing::Test {
         core_(dm_protocol::kChromeUserPolicyType,
               std::string(),
               &store_,
-              base::ThreadTaskRunnerHandle::Get(),
+              base::SingleThreadTaskRunner::GetCurrentDefault(),
               network::TestNetworkConnectionTracker::CreateGetter()) {
     builder_.SetDefaultSigningKey();
     builder_.policy_data().set_policy_type(
@@ -124,7 +123,7 @@ class ComponentCloudPolicyServiceTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     owned_cache_ = std::make_unique<ResourceCache>(
-        temp_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get(),
+        temp_dir_.GetPath(), base::SingleThreadTaskRunner::GetCurrentDefault(),
         /* max_cache_size */ absl::nullopt);
     cache_ = owned_cache_.get();
   }
@@ -143,7 +142,8 @@ class ComponentCloudPolicyServiceTest : public testing::Test {
             &loader_factory_));
     service_ = std::make_unique<ComponentCloudPolicyService>(
         dm_protocol::kChromeExtensionPolicyType, &delegate_, &registry_, &core_,
-        client_, std::move(owned_cache_), base::ThreadTaskRunnerHandle::Get());
+        client_, std::move(owned_cache_),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
 
     client_->SetDMToken(ComponentCloudPolicyBuilder::kFakeToken);
     EXPECT_EQ(1u, client_->types_to_fetch_.size());

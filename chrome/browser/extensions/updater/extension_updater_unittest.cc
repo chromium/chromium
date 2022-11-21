@@ -29,10 +29,10 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "build/branding_buildflags.h"
@@ -582,7 +582,7 @@ class ExtensionUpdaterTest : public testing::Test {
 
   void SetUp() override {
     prefs_ = std::make_unique<TestExtensionPrefs>(
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   void TearDown() override {
@@ -2155,7 +2155,7 @@ class ExtensionUpdaterTest : public testing::Test {
     // Set up 2 mock extensions, one with a google.com update url and one
     // without.
     prefs_ = std::make_unique<TestExtensionPrefs>(
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     ExtensionDownloaderTestHelper helper;
     ServiceForManifestTests service(prefs_.get(), helper.url_loader_factory());
     ExtensionList tmp;

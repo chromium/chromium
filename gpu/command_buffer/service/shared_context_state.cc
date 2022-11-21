@@ -7,7 +7,7 @@
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
@@ -209,9 +209,10 @@ SharedContextState::SharedContextState(
       break;
   }
 
-  if (base::ThreadTaskRunnerHandle::IsSet()) {
+  if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
     base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-        this, "SharedContextState", base::ThreadTaskRunnerHandle::Get());
+        this, "SharedContextState",
+        base::SingleThreadTaskRunner::GetCurrentDefault());
 
     // Create |gr_cache_controller_| only if we have task runner.
     gr_cache_controller_.emplace(this);

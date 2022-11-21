@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/file_system_provider/abort_callback.h"
 #include "chrome/browser/ash/file_system_provider/fileapi/provider_async_file_util.h"
@@ -248,7 +248,7 @@ int FileStreamWriter::Cancel(net::CompletionOnceCallback callback) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&OperationRunner::CloseRunnerOnUIThread, runner_));
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), net::OK));
 
   // If a write is in progress, mark it as completed.
@@ -262,7 +262,7 @@ int FileStreamWriter::Flush(net::CompletionOnceCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK_NE(CANCELLING, state_);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),
                      state_ == INITIALIZED ? net::OK : net::ERR_FAILED));

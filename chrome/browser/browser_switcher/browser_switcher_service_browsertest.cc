@@ -185,7 +185,7 @@ class BrowserSwitcherServiceTest : public InProcessBrowserTest {
 
   void WaitForActionTimeout() {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::action_timeout());
     run_loop.Run();
   }

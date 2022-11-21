@@ -15,7 +15,6 @@
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
@@ -53,7 +52,7 @@ FakeDemuxerStream::FakeDemuxerStream(int num_configs,
                                      bool is_encrypted,
                                      gfx::Size start_coded_size,
                                      gfx::Vector2dF coded_size_delta)
-    : task_runner_(base::ThreadTaskRunnerHandle::Get()),
+    : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       num_configs_(num_configs),
       num_buffers_in_one_config_(num_buffers_in_one_config),
       config_changes_(num_configs > 1),

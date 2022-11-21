@@ -53,7 +53,7 @@ bool TakePrimaryDisplayScreenshotAndSave(const base::FilePath& file_path) {
 
 void GiveItSomeTimeForDebugging(base::TimeDelta time_duration) {
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), time_duration);
   run_loop.Run();
 }

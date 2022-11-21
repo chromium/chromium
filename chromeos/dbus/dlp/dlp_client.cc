@@ -9,7 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "chromeos/dbus/dlp/fake_dlp_client.h"
 #include "dbus/bus.h"
@@ -66,7 +66,7 @@ class DlpClientImpl : public DlpClient {
       dlp::SetDlpFilesPolicyResponse response;
       response.set_error_message(base::StrCat(
           {"Failure to call d-bus method: ", dlp::kSetDlpFilesPolicyMethod}));
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), response));
       return;
     }
@@ -86,7 +86,7 @@ class DlpClientImpl : public DlpClient {
       dlp::AddFileResponse response;
       response.set_error_message(base::StrCat(
           {"Failure to call d-bus method: ", dlp::kAddFileMethod}));
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), response));
       return;
     }
@@ -107,7 +107,7 @@ class DlpClientImpl : public DlpClient {
       dlp::GetFilesSourcesResponse response;
       response.set_error_message(base::StrCat(
           {"Failure to call d-bus method: ", dlp::kGetFilesSourcesMethod}));
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), response));
       return;
     }
@@ -128,7 +128,7 @@ class DlpClientImpl : public DlpClient {
       dlp::CheckFilesTransferResponse response;
       response.set_error_message(base::StrCat(
           {"Failure to call d-bus method: ", dlp::kCheckFilesTransferMethod}));
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), response));
       return;
     }
@@ -149,7 +149,7 @@ class DlpClientImpl : public DlpClient {
       dlp::RequestFileAccessResponse response;
       response.set_error_message(base::StrCat(
           {"Failure to call d-bus method: ", dlp::kRequestFileAccessMethod}));
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(callback), response, base::ScopedFD()));
       return;

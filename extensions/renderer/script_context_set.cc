@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "extensions/common/extension.h"
@@ -84,7 +83,8 @@ ScriptContext* ScriptContextSet::Register(
 void ScriptContextSet::Remove(ScriptContext* context) {
   if (contexts_.erase(context)) {
     context->Invalidate();
-    base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, context);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                                  context);
   }
 }
 

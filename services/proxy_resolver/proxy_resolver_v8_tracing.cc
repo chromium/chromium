@@ -20,7 +20,6 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
@@ -353,7 +352,7 @@ class ProxyResolverV8TracingImpl : public ProxyResolverV8Tracing {
 
 Job::Job(const Job::Params* params,
          std::unique_ptr<ProxyResolverV8Tracing::Bindings> bindings)
-    : origin_runner_(base::ThreadTaskRunnerHandle::Get()),
+    : origin_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       params_(params),
       bindings_(std::move(bindings)),
       event_(base::WaitableEvent::ResetPolicy::MANUAL,

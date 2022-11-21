@@ -11,7 +11,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/authpolicy/fake_authpolicy_client.h"
 #include "components/account_id/account_id.h"
 #include "dbus/bus.h"
@@ -79,7 +79,7 @@ class AuthPolicyClientImpl : public AuthPolicyClient {
                                  authpolicy::kJoinADDomainMethod);
     dbus::MessageWriter writer(&method_call);
     if (!writer.AppendProtoAsArrayOfBytes(request)) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(callback), authpolicy::ERROR_DBUS_FAILURE,
                          std::string()));
@@ -99,7 +99,7 @@ class AuthPolicyClientImpl : public AuthPolicyClient {
                                  authpolicy::kAuthenticateUserMethod);
     dbus::MessageWriter writer(&method_call);
     if (!writer.AppendProtoAsArrayOfBytes(request)) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(callback), authpolicy::ERROR_DBUS_FAILURE,
                          authpolicy::ActiveDirectoryAccountInfo()));
@@ -119,7 +119,7 @@ class AuthPolicyClientImpl : public AuthPolicyClient {
                                  authpolicy::kGetUserStatusMethod);
     dbus::MessageWriter writer(&method_call);
     if (!writer.AppendProtoAsArrayOfBytes(request)) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(callback), authpolicy::ERROR_DBUS_FAILURE,
                          authpolicy::ActiveDirectoryUserStatus()));

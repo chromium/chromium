@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -713,7 +713,7 @@ int QuicHttpStream::ProcessResponseHeaders(
   // take care of 0-RTT where request is sent before handshake is confirmed.
   connect_timing_ = quic_session()->GetConnectTiming();
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&QuicHttpStream::ReadTrailingHeaders,
                                 weak_factory_.GetWeakPtr()));
 

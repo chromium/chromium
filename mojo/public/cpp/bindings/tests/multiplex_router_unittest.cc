@@ -10,8 +10,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
@@ -43,10 +43,10 @@ class MultiplexRouterTest : public testing::Test {
     MessagePipe pipe;
     router0_ = MultiplexRouter::CreateAndStartReceiving(
         std::move(pipe.handle0), MultiplexRouter::MULTI_INTERFACE, false,
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     router1_ = MultiplexRouter::CreateAndStartReceiving(
         std::move(pipe.handle1), MultiplexRouter::MULTI_INTERFACE, true,
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     ScopedInterfaceEndpointHandle::CreatePairPendingAssociation(&endpoint0_,
                                                                 &endpoint1_);
     auto id = router0_->AssociateInterface(std::move(endpoint1_));
@@ -75,13 +75,13 @@ class MultiplexRouterTest : public testing::Test {
 TEST_F(MultiplexRouterTest, BasicRequestResponse) {
   InterfaceEndpointClient client0(
       std::move(endpoint0_), nullptr, std::make_unique<PassThroughFilter>(), {},
-      base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName,
+      base::SingleThreadTaskRunner::GetCurrentDefault(), 0u, kTestInterfaceName,
       MessageToMethodInfo, MessageToMethodName);
   ResponseGenerator generator;
   InterfaceEndpointClient client1(
       std::move(endpoint1_), &generator, std::make_unique<PassThroughFilter>(),
-      {}, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName,
-      MessageToMethodInfo, MessageToMethodName);
+      {}, base::SingleThreadTaskRunner::GetCurrentDefault(), 0u,
+      kTestInterfaceName, MessageToMethodInfo, MessageToMethodName);
 
   Message request;
   AllocRequestMessage(1, "hello", &request);
@@ -124,13 +124,13 @@ TEST_F(MultiplexRouterTest, BasicRequestResponse) {
 TEST_F(MultiplexRouterTest, BasicRequestResponse_Synchronous) {
   InterfaceEndpointClient client0(
       std::move(endpoint0_), nullptr, std::make_unique<PassThroughFilter>(), {},
-      base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName,
+      base::SingleThreadTaskRunner::GetCurrentDefault(), 0u, kTestInterfaceName,
       MessageToMethodInfo, MessageToMethodName);
   ResponseGenerator generator;
   InterfaceEndpointClient client1(
       std::move(endpoint1_), &generator, std::make_unique<PassThroughFilter>(),
-      {}, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName,
-      MessageToMethodInfo, MessageToMethodName);
+      {}, base::SingleThreadTaskRunner::GetCurrentDefault(), 0u,
+      kTestInterfaceName, MessageToMethodInfo, MessageToMethodName);
 
   Message request;
   AllocRequestMessage(1, "hello", &request);
@@ -173,15 +173,15 @@ TEST_F(MultiplexRouterTest, BasicRequestResponse_Synchronous) {
 TEST_F(MultiplexRouterTest, LazyResponses) {
   InterfaceEndpointClient client0(
       std::move(endpoint0_), nullptr, base::WrapUnique(new PassThroughFilter()),
-      {}, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName,
-      MessageToMethodInfo, MessageToMethodName);
+      {}, base::SingleThreadTaskRunner::GetCurrentDefault(), 0u,
+      kTestInterfaceName, MessageToMethodInfo, MessageToMethodName);
   base::RunLoop run_loop;
   LazyResponseGenerator generator(run_loop.QuitClosure());
-  InterfaceEndpointClient client1(std::move(endpoint1_), &generator,
-                                  base::WrapUnique(new PassThroughFilter()), {},
-                                  base::ThreadTaskRunnerHandle::Get(), 0u,
-                                  kTestInterfaceName, MessageToMethodInfo,
-                                  MessageToMethodName);
+  InterfaceEndpointClient client1(
+      std::move(endpoint1_), &generator,
+      base::WrapUnique(new PassThroughFilter()), {},
+      base::SingleThreadTaskRunner::GetCurrentDefault(), 0u, kTestInterfaceName,
+      MessageToMethodInfo, MessageToMethodName);
 
   Message request;
   AllocRequestMessage(1, "hello", &request);
@@ -247,19 +247,19 @@ TEST_F(MultiplexRouterTest, MissingResponses) {
   base::RunLoop run_loop0, run_loop1;
   InterfaceEndpointClient client0(
       std::move(endpoint0_), nullptr, base::WrapUnique(new PassThroughFilter()),
-      {}, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName,
-      MessageToMethodInfo, MessageToMethodName);
+      {}, base::SingleThreadTaskRunner::GetCurrentDefault(), 0u,
+      kTestInterfaceName, MessageToMethodInfo, MessageToMethodName);
   bool error_handler_called0 = false;
   client0.set_connection_error_handler(base::BindOnce(
       &ForwardErrorHandler, &error_handler_called0, run_loop0.QuitClosure()));
 
   base::RunLoop run_loop3;
   LazyResponseGenerator generator(run_loop3.QuitClosure());
-  InterfaceEndpointClient client1(std::move(endpoint1_), &generator,
-                                  base::WrapUnique(new PassThroughFilter()), {},
-                                  base::ThreadTaskRunnerHandle::Get(), 0u,
-                                  kTestInterfaceName, MessageToMethodInfo,
-                                  MessageToMethodName);
+  InterfaceEndpointClient client1(
+      std::move(endpoint1_), &generator,
+      base::WrapUnique(new PassThroughFilter()), {},
+      base::SingleThreadTaskRunner::GetCurrentDefault(), 0u, kTestInterfaceName,
+      MessageToMethodInfo, MessageToMethodName);
   bool error_handler_called1 = false;
   client1.set_connection_error_handler(base::BindOnce(
       &ForwardErrorHandler, &error_handler_called1, run_loop1.QuitClosure()));
@@ -306,13 +306,13 @@ TEST_F(MultiplexRouterTest, LateResponse) {
   {
     InterfaceEndpointClient client0(
         std::move(endpoint0_), nullptr, std::make_unique<PassThroughFilter>(),
-        {}, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName,
-        MessageToMethodInfo, MessageToMethodName);
-    InterfaceEndpointClient client1(std::move(endpoint1_), &generator,
-                                    std::make_unique<PassThroughFilter>(), {},
-                                    base::ThreadTaskRunnerHandle::Get(), 0u,
-                                    kTestInterfaceName, MessageToMethodInfo,
-                                    MessageToMethodName);
+        {}, base::SingleThreadTaskRunner::GetCurrentDefault(), 0u,
+        kTestInterfaceName, MessageToMethodInfo, MessageToMethodName);
+    InterfaceEndpointClient client1(
+        std::move(endpoint1_), &generator,
+        std::make_unique<PassThroughFilter>(), {},
+        base::SingleThreadTaskRunner::GetCurrentDefault(), 0u,
+        kTestInterfaceName, MessageToMethodInfo, MessageToMethodName);
 
     Message request;
     AllocRequestMessage(1, "hello", &request);

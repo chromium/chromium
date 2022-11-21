@@ -29,7 +29,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -2148,7 +2147,8 @@ void TabsCaptureVisibleTabFunction::OnCaptureSuccess(const SkBitmap& bitmap) {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&TabsCaptureVisibleTabFunction::EncodeBitmapOnWorkerThread,
-                     this, base::ThreadTaskRunnerHandle::Get(), bitmap));
+                     this, base::SingleThreadTaskRunner::GetCurrentDefault(),
+                     bitmap));
 }
 
 void TabsCaptureVisibleTabFunction::EncodeBitmapOnWorkerThread(
@@ -2257,7 +2257,7 @@ ExtensionFunction::ResponseAction TabsDetectLanguageFunction::Run() {
   if (!chrome_translate_client->GetLanguageState().source_language().empty()) {
     // Delay the callback invocation until after the current JS call has
     // returned.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             &TabsDetectLanguageFunction::RespondWithLanguage, this,

@@ -222,7 +222,7 @@ void FakeContentAnalysisDelegate::UploadTextForDeepScanning(
       }));
 
   // Simulate a response.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&FakeContentAnalysisDelegate::Response,
                      weakptr_factory_.GetWeakPtr(), data.contents,
@@ -242,7 +242,7 @@ void FakeContentAnalysisDelegate::FakeUploadFileForDeepScanning(
   }
 
   // Simulate a response.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&FakeContentAnalysisDelegate::Response,
                      weakptr_factory_.GetWeakPtr(), std::string(), path,
@@ -258,7 +258,7 @@ void FakeContentAnalysisDelegate::UploadPageForDeepScanning(
   }
 
   // Simulate a response.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&FakeContentAnalysisDelegate::Response,
                      weakptr_factory_.GetWeakPtr(), std::string(),

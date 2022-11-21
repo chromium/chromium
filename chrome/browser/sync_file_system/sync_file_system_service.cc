@@ -18,7 +18,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/apps/platform_apps/api/sync_file_system/extension_sync_event_observer.h"
 #include "chrome/browser/apps/platform_apps/api/sync_file_system/sync_file_system_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -337,7 +336,7 @@ void SyncFileSystemService::GetFileSyncStatus(const FileSystemURL& url,
 
   // It's possible to get an invalid FileEntry.
   if (!url.is_valid()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), SYNC_FILE_ERROR_INVALID_URL,
                        SYNC_FILE_STATUS_UNKNOWN));

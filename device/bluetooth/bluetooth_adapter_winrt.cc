@@ -30,7 +30,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/win/com_init_util.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/post_async_results.h"
@@ -614,7 +613,7 @@ IDeviceWatcher* BluetoothAdapterWinrt::GetPoweredRadioWatcherForTesting() {
 }
 
 BluetoothAdapterWinrt::BluetoothAdapterWinrt() {
-  ui_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  ui_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
 BluetoothAdapterWinrt::~BluetoothAdapterWinrt() {

@@ -116,7 +116,8 @@ void ConnectionTracker::ResetCounts() {
 
 ConnectionTracker::ConnectionListener::ConnectionListener(
     ConnectionTracker* tracker)
-    : task_runner_(base::ThreadTaskRunnerHandle::Get()), tracker_(tracker) {}
+    : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
+      tracker_(tracker) {}
 
 ConnectionTracker::ConnectionListener::~ConnectionListener() = default;
 

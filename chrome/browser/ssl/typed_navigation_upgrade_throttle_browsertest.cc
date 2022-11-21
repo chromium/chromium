@@ -353,7 +353,7 @@ class TypedNavigationUpgradeThrottleBrowserTest
     content::TestNavigationObserver navigation_observer(
         browser()->tab_strip_model()->GetActiveWebContents(),
         num_expected_navigations);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             [](const Browser* browser, bool ctrl_key) {

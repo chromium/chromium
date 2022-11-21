@@ -726,7 +726,7 @@ void ShelfView::ButtonPressed(views::Button* sender,
   scoped_display_for_new_windows_ =
       std::make_unique<display::ScopedDisplayForNewWindows>(
           window->GetRootWindow());
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ShelfView::DestroyScopedDisplay,
                      weak_factory_.GetWeakPtr()),

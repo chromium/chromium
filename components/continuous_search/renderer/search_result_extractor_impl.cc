@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/continuous_search/common/title_validator.h"
 #include "components/continuous_search/renderer/config.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
@@ -248,7 +248,8 @@ void SearchResultExtractorImpl::ExtractCurrentSearchResults(
 
 void SearchResultExtractorImpl::OnDestruct() {
   receiver_.reset();
-  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                                this);
 }
 
 void SearchResultExtractorImpl::BindSearchResultExtractor(

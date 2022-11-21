@@ -5,7 +5,7 @@
 #include "chromeos/ash/components/network/network_handler.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/network/auto_connect_handler.h"
 #include "chromeos/ash/components/network/cellular_connection_handler.h"
 #include "chromeos/ash/components/network/cellular_esim_installer.h"
@@ -48,7 +48,7 @@ namespace ash {
 static NetworkHandler* g_network_handler = NULL;
 
 NetworkHandler::NetworkHandler()
-    : task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+    : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   network_state_handler_.reset(new NetworkStateHandler());
   network_device_handler_.reset(new NetworkDeviceHandlerImpl());
   cellular_inhibitor_.reset(new CellularInhibitor());

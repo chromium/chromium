@@ -11,7 +11,6 @@
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "components/dom_distiller/content/browser/distillability_driver.h"
 #include "components/dom_distiller/content/browser/distiller_javascript_utils.h"
@@ -40,7 +39,7 @@ void IsDistillablePageForDetector(content::WebContents* web_contents,
                                   base::OnceCallback<void(bool)> callback) {
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   if (!main_frame) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }

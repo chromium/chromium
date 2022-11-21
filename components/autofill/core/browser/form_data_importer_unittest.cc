@@ -22,10 +22,10 @@
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -533,17 +533,17 @@ class FormDataImporterTestBase {
   void SetUpHelper() {
     prefs_ = test::PrefServiceForTesting();
     base::FilePath path(WebDatabase::kInMemoryPath);
-    web_database_ =
-        new WebDatabaseService(path, base::ThreadTaskRunnerHandle::Get(),
-                               base::ThreadTaskRunnerHandle::Get());
+    web_database_ = new WebDatabaseService(
+        path, base::SingleThreadTaskRunner::GetCurrentDefault(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
 
     // Hacky: hold onto a pointer but pass ownership.
     autofill_table_ = new AutofillTable;
     web_database_->AddTable(std::unique_ptr<WebDatabaseTable>(autofill_table_));
     web_database_->LoadDatabase();
     autofill_database_service_ = new AutofillWebDataService(
-        web_database_, base::ThreadTaskRunnerHandle::Get(),
-        base::ThreadTaskRunnerHandle::Get());
+        web_database_, base::SingleThreadTaskRunner::GetCurrentDefault(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     autofill_database_service_->Init(base::NullCallback());
 
     autofill_client_ = std::make_unique<TestAutofillClient>();

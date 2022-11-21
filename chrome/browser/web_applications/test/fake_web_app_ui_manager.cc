@@ -8,8 +8,8 @@
 
 #include "base/callback.h"
 #include "base/containers/contains.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
@@ -52,7 +52,7 @@ size_t FakeWebAppUiManager::GetNumWindowsForApp(const AppId& app_id) {
 void FakeWebAppUiManager::NotifyOnAllAppWindowsClosed(
     const AppId& app_id,
     base::OnceClosure callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting(
                      [&, app_id, callback = std::move(callback)]() mutable {
                        app_id_to_num_windows_map_[app_id] = 0;

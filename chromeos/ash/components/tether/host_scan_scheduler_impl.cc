@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -51,7 +51,7 @@ HostScanSchedulerImpl::HostScanSchedulerImpl(
       session_manager_(session_manager),
       host_scan_batch_timer_(std::make_unique<base::OneShotTimer>()),
       clock_(base::DefaultClock::GetInstance()),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       is_screen_locked_(session_manager_->IsScreenLocked()) {
   network_state_handler_observer_.Observe(network_state_handler_);
   host_scanner_->AddObserver(this);

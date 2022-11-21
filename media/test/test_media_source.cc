@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/stream_parser.h"
 #include "media/base/test_data_util.h"
 #include "media/base/timestamp_constants.h"
@@ -261,7 +261,7 @@ void TestMediaSource::Shutdown() {
 }
 
 void TestMediaSource::DemuxerOpened() {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&TestMediaSource::DemuxerOpenedTask,
                                 base::Unretained(this)));
 }

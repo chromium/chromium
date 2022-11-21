@@ -14,9 +14,9 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/tests/message_queue.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -115,9 +115,9 @@ class ConnectorTest : public testing::Test {
 
 TEST_F(ConnectorTest, Basic) {
   Connector connector0(std::move(handle0_), Connector::SINGLE_THREADED_SEND,
-                       base::ThreadTaskRunnerHandle::Get());
+                       base::SingleThreadTaskRunner::GetCurrentDefault());
   Connector connector1(std::move(handle1_), Connector::SINGLE_THREADED_SEND,
-                       base::ThreadTaskRunnerHandle::Get());
+                       base::SingleThreadTaskRunner::GetCurrentDefault());
 
   const char kText[] = "hello world";
   Message message = CreateMessage(kText);
@@ -141,9 +141,9 @@ TEST_F(ConnectorTest, Basic) {
 
 TEST_F(ConnectorTest, Basic_Synchronous) {
   Connector connector0(std::move(handle0_), Connector::SINGLE_THREADED_SEND,
-                       base::ThreadTaskRunnerHandle::Get());
+                       base::SingleThreadTaskRunner::GetCurrentDefault());
   Connector connector1(std::move(handle1_), Connector::SINGLE_THREADED_SEND,
-                       base::ThreadTaskRunnerHandle::Get());
+                       base::SingleThreadTaskRunner::GetCurrentDefault());
 
   const char kText[] = "hello world";
   Message message = CreateMessage(kText);
@@ -166,9 +166,9 @@ TEST_F(ConnectorTest, Basic_Synchronous) {
 
 TEST_F(ConnectorTest, Basic_EarlyIncomingReceiver) {
   Connector connector0(std::move(handle0_), Connector::SINGLE_THREADED_SEND,
-                       base::ThreadTaskRunnerHandle::Get());
+                       base::SingleThreadTaskRunner::GetCurrentDefault());
   Connector connector1(std::move(handle1_), Connector::SINGLE_THREADED_SEND,
-                       base::ThreadTaskRunnerHandle::Get());
+                       base::SingleThreadTaskRunner::GetCurrentDefault());
 
   base::RunLoop run_loop;
   MessageAccumulator accumulator(run_loop.QuitClosure());
@@ -192,9 +192,9 @@ TEST_F(ConnectorTest, Basic_EarlyIncomingReceiver) {
 
 TEST_F(ConnectorTest, Basic_TwoMessages) {
   Connector connector0(std::move(handle0_), Connector::SINGLE_THREADED_SEND,
-                       base::ThreadTaskRunnerHandle::Get());
+                       base::SingleThreadTaskRunner::GetCurrentDefault());
   Connector connector1(std::move(handle1_), Connector::SINGLE_THREADED_SEND,
-                       base::ThreadTaskRunnerHandle::Get());
+                       base::SingleThreadTaskRunner::GetCurrentDefault());
 
   const char* kText[] = {"hello", "world"};
   for (size_t i = 0; i < std::size(kText); ++i) {
@@ -224,9 +224,9 @@ TEST_F(ConnectorTest, Basic_TwoMessages) {
 
 TEST_F(ConnectorTest, Basic_TwoMessages_Synchronous) {
   Connector connector0(std::move(handle0_), Connector::SINGLE_THREADED_SEND,
-                       base::ThreadTaskRunnerHandle::Get());
+                       base::SingleThreadTaskRunner::GetCurrentDefault());
   Connector connector1(std::move(handle1_), Connector::SINGLE_THREADED_SEND,
-                       base::ThreadTaskRunnerHandle::Get());
+                       base::SingleThreadTaskRunner::GetCurrentDefault());
 
   const char* kText[] = {"hello", "world"};
   for (size_t i = 0; i < std::size(kText); ++i) {
@@ -253,7 +253,7 @@ TEST_F(ConnectorTest, Basic_TwoMessages_Synchronous) {
 
 TEST_F(ConnectorTest, WriteToClosedPipe) {
   Connector connector0(std::move(handle0_), Connector::SINGLE_THREADED_SEND,
-                       base::ThreadTaskRunnerHandle::Get());
+                       base::SingleThreadTaskRunner::GetCurrentDefault());
 
   const char kText[] = "hello world";
   Message message = CreateMessage(kText);
@@ -281,9 +281,9 @@ TEST_F(ConnectorTest, WriteToClosedPipe) {
 
 TEST_F(ConnectorTest, MessageWithHandles) {
   Connector connector0(std::move(handle0_), Connector::SINGLE_THREADED_SEND,
-                       base::ThreadTaskRunnerHandle::Get());
+                       base::SingleThreadTaskRunner::GetCurrentDefault());
   Connector connector1(std::move(handle1_), Connector::SINGLE_THREADED_SEND,
-                       base::ThreadTaskRunnerHandle::Get());
+                       base::SingleThreadTaskRunner::GetCurrentDefault());
 
   const char kText[] = "hello world";
 
@@ -314,12 +314,12 @@ TEST_F(ConnectorTest, MessageWithHandles) {
   // to the orginal pipe.
   auto pipe_handle = ScopedMessagePipeHandle::From(
       std::move(message_received.mutable_handles()->front()));
-  Connector connector_received(std::move(pipe_handle),
-                               Connector::SINGLE_THREADED_SEND,
-                               base::ThreadTaskRunnerHandle::Get());
-  Connector connector_original(std::move(pipe.handle1),
-                               Connector::SINGLE_THREADED_SEND,
-                               base::ThreadTaskRunnerHandle::Get());
+  Connector connector_received(
+      std::move(pipe_handle), Connector::SINGLE_THREADED_SEND,
+      base::SingleThreadTaskRunner::GetCurrentDefault());
+  Connector connector_original(
+      std::move(pipe.handle1), Connector::SINGLE_THREADED_SEND,
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   Message message2 = CreateMessage(kText);
   connector_received.Accept(&message2);
@@ -339,7 +339,7 @@ TEST_F(ConnectorTest, MessageWithHandles) {
 
 TEST_F(ConnectorTest, WaitForIncomingMessageWithError) {
   Connector connector0(std::move(handle0_), Connector::SINGLE_THREADED_SEND,
-                       base::ThreadTaskRunnerHandle::Get());
+                       base::SingleThreadTaskRunner::GetCurrentDefault());
   // Close the other end of the pipe.
   handle1_.reset();
   ASSERT_FALSE(connector0.WaitForIncomingMessage());
@@ -347,10 +347,10 @@ TEST_F(ConnectorTest, WaitForIncomingMessageWithError) {
 
 TEST_F(ConnectorTest, WaitForIncomingMessageWithDeletion) {
   Connector connector0(std::move(handle0_), Connector::SINGLE_THREADED_SEND,
-                       base::ThreadTaskRunnerHandle::Get());
+                       base::SingleThreadTaskRunner::GetCurrentDefault());
   Connector* connector1 =
       new Connector(std::move(handle1_), Connector::SINGLE_THREADED_SEND,
-                    base::ThreadTaskRunnerHandle::Get());
+                    base::SingleThreadTaskRunner::GetCurrentDefault());
 
   const char kText[] = "hello world";
   Message message = CreateMessage(kText);
@@ -374,9 +374,9 @@ TEST_F(ConnectorTest, WaitForIncomingMessageWithDeletion) {
 
 TEST_F(ConnectorTest, WaitForIncomingMessageWithReentrancy) {
   Connector connector0(std::move(handle0_), Connector::SINGLE_THREADED_SEND,
-                       base::ThreadTaskRunnerHandle::Get());
+                       base::SingleThreadTaskRunner::GetCurrentDefault());
   Connector connector1(std::move(handle1_), Connector::SINGLE_THREADED_SEND,
-                       base::ThreadTaskRunnerHandle::Get());
+                       base::SingleThreadTaskRunner::GetCurrentDefault());
 
   const char* kText[] = {"hello", "world"};
   for (size_t i = 0; i < std::size(kText); ++i) {
@@ -414,13 +414,13 @@ void ForwardErrorHandler(bool* called, base::OnceClosure callback) {
 TEST_F(ConnectorTest, RaiseError) {
   base::RunLoop run_loop, run_loop2;
   Connector connector0(std::move(handle0_), Connector::SINGLE_THREADED_SEND,
-                       base::ThreadTaskRunnerHandle::Get());
+                       base::SingleThreadTaskRunner::GetCurrentDefault());
   bool error_handler_called0 = false;
   connector0.set_connection_error_handler(base::BindOnce(
       &ForwardErrorHandler, &error_handler_called0, run_loop.QuitClosure()));
 
   Connector connector1(std::move(handle1_), Connector::SINGLE_THREADED_SEND,
-                       base::ThreadTaskRunnerHandle::Get());
+                       base::SingleThreadTaskRunner::GetCurrentDefault());
   bool error_handler_called1 = false;
   connector1.set_connection_error_handler(base::BindOnce(
       &ForwardErrorHandler, &error_handler_called1, run_loop2.QuitClosure()));
@@ -470,9 +470,9 @@ void PauseConnectorAndRunClosure(Connector* connector,
 
 TEST_F(ConnectorTest, PauseWithQueuedMessages) {
   Connector connector0(std::move(handle0_), Connector::SINGLE_THREADED_SEND,
-                       base::ThreadTaskRunnerHandle::Get());
+                       base::SingleThreadTaskRunner::GetCurrentDefault());
   Connector connector1(std::move(handle1_), Connector::SINGLE_THREADED_SEND,
-                       base::ThreadTaskRunnerHandle::Get());
+                       base::SingleThreadTaskRunner::GetCurrentDefault());
 
   const char kText[] = "hello world";
 
@@ -506,9 +506,9 @@ void AccumulateWithNestedLoop(MessageAccumulator* accumulator,
 
 TEST_F(ConnectorTest, ProcessWhenNested) {
   Connector connector0(std::move(handle0_), Connector::SINGLE_THREADED_SEND,
-                       base::ThreadTaskRunnerHandle::Get());
+                       base::SingleThreadTaskRunner::GetCurrentDefault());
   Connector connector1(std::move(handle1_), Connector::SINGLE_THREADED_SEND,
-                       base::ThreadTaskRunnerHandle::Get());
+                       base::SingleThreadTaskRunner::GetCurrentDefault());
 
   const char kText[] = "hello world";
 
@@ -534,7 +534,7 @@ TEST_F(ConnectorTest, ProcessWhenNested) {
 TEST_F(ConnectorTest, DestroyOnDifferentThreadAfterClose) {
   std::unique_ptr<Connector> connector(
       new Connector(std::move(handle0_), Connector::SINGLE_THREADED_SEND,
-                    base::ThreadTaskRunnerHandle::Get()));
+                    base::SingleThreadTaskRunner::GetCurrentDefault()));
 
   connector->CloseMessagePipe();
 

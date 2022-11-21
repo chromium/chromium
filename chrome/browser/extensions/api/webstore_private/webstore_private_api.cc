@@ -20,7 +20,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "build/chromeos_buildflags.h"
@@ -239,8 +239,8 @@ void ShowBlockedByParentDialog(const Extension* extension,
 
   if (ScopedTestDialogAutoConfirm::GetAutoConfirmValue() !=
       ScopedTestDialogAutoConfirm::NONE) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(done_callback));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(done_callback));
     return;
   }
 
@@ -930,8 +930,8 @@ void WebstorePrivateBeginInstallWithManifest3Function::
 
   if (extensions::ScopedTestDialogAutoConfirm::GetAutoConfirmValue() !=
       extensions::ScopedTestDialogAutoConfirm::NONE) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(done_callback));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(done_callback));
     return;
   }
 

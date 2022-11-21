@@ -20,7 +20,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
@@ -206,7 +205,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
              "document.querySelector('iframe').style.visibility = 'hidden';"));
   while (!frame_connector_delegate->IsHidden()) {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
     run_loop.Run();
   }
@@ -231,7 +230,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
              "document.querySelector('iframe').style.visibility = 'visible';"));
   while (frame_connector_delegate->IsHidden()) {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
     run_loop.Run();
   }

@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "ui/views/widget/widget.h"
 
@@ -57,7 +57,7 @@ class InteractionTestUtilMouse::DragEnder
   }
 
   void PostCancel() {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&DragEnder::CancelDrag, weak_ptr_factory_.GetWeakPtr()));
   }
@@ -216,7 +216,8 @@ void InteractionTestUtilMouse::QueueNextGesture() {
     to_post = base::BindOnce(&InteractionTestUtilMouse::PerformNextGesture,
                              weak_ptr_factory_.GetWeakPtr());
   }
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(to_post));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(to_post));
 }
 
 void InteractionTestUtilMouse::PerformNextGesture() {

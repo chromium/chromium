@@ -10,7 +10,6 @@
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 
 namespace remoting {
@@ -30,7 +29,7 @@ LogMessageHandler* g_log_message_handler = nullptr;
 LogMessageHandler::LogMessageHandler(const Delegate& delegate)
     : delegate_(delegate),
       suppress_logging_(false),
-      caller_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+      caller_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   base::AutoLock lock(g_log_message_handler_lock.Get());
   if (g_log_message_handler) {
     LOG(FATAL) << "LogMessageHandler is already registered. Only one instance "

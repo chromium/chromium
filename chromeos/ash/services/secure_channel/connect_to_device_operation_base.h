@@ -7,7 +7,7 @@
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/services/secure_channel/connect_to_device_operation.h"
 #include "chromeos/ash/services/secure_channel/device_id_pair.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
@@ -39,7 +39,7 @@ class ConnectToDeviceOperationBase
       const DeviceIdPair& device_id_pair,
       ConnectionPriority connection_priority,
       scoped_refptr<base::TaskRunner> task_runner =
-          base::ThreadTaskRunnerHandle::Get())
+          base::SingleThreadTaskRunner::GetCurrentDefault())
       : ConnectToDeviceOperation<FailureDetailType>(std::move(success_callback),
                                                     std::move(failure_callback),
                                                     connection_priority),

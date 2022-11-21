@@ -24,7 +24,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "base/win/enum_variant.h"
 #include "base/win/scoped_bstr.h"
@@ -5543,7 +5543,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_bulkFetch(
   result.SetKey("height", base::Value(bounds.height()));
   std::string json_result;
   base::JSONWriter::Write(result, &json_result);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &SendBulkFetchResponse,

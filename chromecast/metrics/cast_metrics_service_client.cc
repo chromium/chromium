@@ -14,7 +14,7 @@
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chromecast/base/cast_sys_info_util.h"
 #include "chromecast/base/chromecast_switches.h"
@@ -290,7 +290,7 @@ CastMetricsServiceClient::CastMetricsServiceClient(
     : delegate_(delegate),
       pref_service_(pref_service),
       client_info_loaded_(false),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       url_loader_factory_(url_loader_factory),
       cast_sys_info_(CreateSysInfo()) {}
 

@@ -133,14 +133,13 @@ RecordingService::RecordingService(
     : audio_parameters_(GetAudioParameters()),
       receiver_(this, std::move(receiver)),
       consumer_receiver_(this),
-      main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       encoding_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           // We use |USER_VISIBLE| here as opposed to |BEST_EFFORT| since the
           // latter is extremely low priority and may stall encoding for random
           // reasons.
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
-}
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
 
 RecordingService::~RecordingService() {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);

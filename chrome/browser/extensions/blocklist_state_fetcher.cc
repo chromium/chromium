@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/strings/escape.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/common/safe_browsing/crx_info.pb.h"
@@ -43,7 +43,7 @@ void BlocklistStateFetcher::Request(const std::string& id,
       SetSafeBrowsingConfig(
           g_browser_process->safe_browsing_service()->GetV4ProtocolConfig());
     } else {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), BLOCKLISTED_UNKNOWN));
       return;
     }

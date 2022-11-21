@@ -6,7 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "media/midi/midi_manager.h"
 #include "media/midi/midi_switches.h"
@@ -55,7 +55,8 @@ void MidiService::StartSession(MidiManagerClient* client) {
   if (!manager_) {
     manager_ = manager_factory_->Create(this);
     DCHECK(!manager_destructor_runner_);
-    manager_destructor_runner_ = base::ThreadTaskRunnerHandle::Get();
+    manager_destructor_runner_ =
+        base::SingleThreadTaskRunner::GetCurrentDefault();
   }
   manager_->StartSession(client);
 }

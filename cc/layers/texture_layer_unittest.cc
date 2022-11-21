@@ -23,7 +23,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/animation/animation_host.h"
@@ -99,7 +98,7 @@ class MockLayerTreeHost : public LayerTreeHost {
   explicit MockLayerTreeHost(LayerTreeHost::InitParams params)
       : LayerTreeHost(std::move(params), CompositorMode::SINGLE_THREADED) {
     InitializeSingleThreaded(&single_thread_client_,
-                             base::ThreadTaskRunnerHandle::Get());
+                             base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   StubLayerTreeHostSingleThreadClient single_thread_client_;
@@ -256,7 +255,7 @@ TEST_F(TextureLayerTest, ShutdownWithResource) {
     params.mutator_host = animation_host_.get();
     LayerTreeSettings settings;
     params.settings = &settings;
-    params.main_task_runner = base::ThreadTaskRunnerHandle::Get();
+    params.main_task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
     auto host = LayerTreeHost::CreateSingleThreaded(&single_thread_client,
                                                     std::move(params));
 

@@ -15,7 +15,6 @@
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
@@ -277,7 +276,7 @@ void SpeechRecognitionManagerImpl::RecognitionAllowedCallback(int session_id,
   }
 
   if (is_allowed) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&SpeechRecognitionManagerImpl::DispatchEvent,
                        weak_factory_.GetWeakPtr(), session_id, EVENT_START));
@@ -286,7 +285,7 @@ void SpeechRecognitionManagerImpl::RecognitionAllowedCallback(int session_id,
         session_id, blink::mojom::SpeechRecognitionError(
                         blink::mojom::SpeechRecognitionErrorCode::kNotAllowed,
                         blink::mojom::SpeechAudioErrorDetails::kNone));
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&SpeechRecognitionManagerImpl::DispatchEvent,
                        weak_factory_.GetWeakPtr(), session_id, EVENT_ABORT));
@@ -357,7 +356,7 @@ void SpeechRecognitionManagerImpl::AbortSessionImpl(int session_id) {
 
   iter->second->abort_requested = true;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&SpeechRecognitionManagerImpl::DispatchEvent,
                      weak_factory_.GetWeakPtr(), session_id, EVENT_ABORT));
@@ -379,7 +378,7 @@ void SpeechRecognitionManagerImpl::StopAudioCaptureForSession(int session_id) {
 
   iter->second->ui.reset();
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&SpeechRecognitionManagerImpl::DispatchEvent,
                                 weak_factory_.GetWeakPtr(), session_id,
                                 EVENT_STOP_CAPTURE));
@@ -468,7 +467,7 @@ void SpeechRecognitionManagerImpl::OnAudioEnd(int session_id) {
     delegate_listener->OnAudioEnd(session_id);
   if (SpeechRecognitionEventListener* listener = GetListener(session_id))
     listener->OnAudioEnd(session_id);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&SpeechRecognitionManagerImpl::DispatchEvent,
                                 weak_factory_.GetWeakPtr(), session_id,
                                 EVENT_AUDIO_ENDED));
@@ -521,7 +520,7 @@ void SpeechRecognitionManagerImpl::OnRecognitionEnd(int session_id) {
     delegate_listener->OnRecognitionEnd(session_id);
   if (SpeechRecognitionEventListener* listener = GetListener(session_id))
     listener->OnRecognitionEnd(session_id);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&SpeechRecognitionManagerImpl::DispatchEvent,
                                 weak_factory_.GetWeakPtr(), session_id,
                                 EVENT_RECOGNITION_ENDED));

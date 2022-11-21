@@ -8,7 +8,6 @@
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "net/base/net_errors.h"
 #include "net/quic/address_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_clock.h"
@@ -66,7 +65,7 @@ void QuicChromiumPacketReader::StartReading() {
       // Data was read, process it.
       // Schedule the work through the message loop to 1) prevent infinite
       // recursion and 2) avoid blocking the thread for too long.
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&QuicChromiumPacketReader::OnReadComplete,
                                     weak_factory_.GetWeakPtr(), rv));
     } else {

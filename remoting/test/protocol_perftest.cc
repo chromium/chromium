@@ -18,7 +18,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "net/base/network_change_notifier.h"
@@ -349,8 +348,8 @@ class ProtocolPerfTest
         protocol::NetworkSettings::NAT_TRAVERSAL_OUTGOING);
 
     // Initialize client.
-    client_context_ =
-        std::make_unique<ClientContext>(base::ThreadTaskRunnerHandle::Get());
+    client_context_ = std::make_unique<ClientContext>(
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     client_context_->Start();
 
     std::unique_ptr<FakePortAllocatorFactory> port_allocator_factory(

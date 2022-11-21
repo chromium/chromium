@@ -20,7 +20,6 @@
 #include "base/third_party/dynamic_annotations/dynamic_annotations.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/gamepad_data_fetcher_manager.h"
@@ -101,7 +100,8 @@ constexpr int64_t kPollingIntervalMilliseconds = 4;  // ~250 Hz
 
 GamepadProvider::GamepadProvider(GamepadChangeClient* gamepad_change_client)
     : gamepad_shared_buffer_(std::make_unique<GamepadSharedBuffer>()),
-      main_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      main_thread_task_runner_(
+          base::SingleThreadTaskRunner::GetCurrentDefault()),
       gamepad_change_client_(gamepad_change_client) {
   Initialize(std::unique_ptr<GamepadDataFetcher>());
 }
@@ -111,7 +111,8 @@ GamepadProvider::GamepadProvider(GamepadChangeClient* gamepad_change_client,
                                  std::unique_ptr<base::Thread> polling_thread)
     : gamepad_shared_buffer_(std::make_unique<GamepadSharedBuffer>()),
       polling_thread_(std::move(polling_thread)),
-      main_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      main_thread_task_runner_(
+          base::SingleThreadTaskRunner::GetCurrentDefault()),
       gamepad_change_client_(gamepad_change_client) {
   Initialize(std::move(fetcher));
 }
@@ -157,7 +158,8 @@ void GamepadProvider::PlayVibrationEffectOnce(
       FROM_HERE,
       base::BindOnce(&GamepadProvider::PlayEffectOnPollingThread,
                      Unretained(this), pad_index, type, std::move(params),
-                     std::move(callback), base::ThreadTaskRunnerHandle::Get()));
+                     std::move(callback),
+                     base::SingleThreadTaskRunner::GetCurrentDefault()));
 }
 
 void GamepadProvider::ResetVibrationActuator(
@@ -167,7 +169,7 @@ void GamepadProvider::ResetVibrationActuator(
       FROM_HERE,
       base::BindOnce(&GamepadProvider::ResetVibrationOnPollingThread,
                      Unretained(this), pad_index, std::move(callback),
-                     base::ThreadTaskRunnerHandle::Get()));
+                     base::SingleThreadTaskRunner::GetCurrentDefault()));
 }
 
 void GamepadProvider::Pause() {
@@ -198,8 +200,8 @@ void GamepadProvider::Resume() {
 
 void GamepadProvider::RegisterForUserGesture(base::OnceClosure closure) {
   base::AutoLock lock(user_gesture_lock_);
-  user_gesture_observers_.emplace_back(std::move(closure),
-                                       base::ThreadTaskRunnerHandle::Get());
+  user_gesture_observers_.emplace_back(
+      std::move(closure), base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 void GamepadProvider::OnDevicesChanged(base::SystemMonitor::DeviceType type) {
@@ -475,7 +477,7 @@ void GamepadProvider::ScheduleDoPoll() {
       return;
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&GamepadProvider::DoPoll, Unretained(this)),
       sampling_interval_delta_);
   have_scheduled_do_poll_ = true;

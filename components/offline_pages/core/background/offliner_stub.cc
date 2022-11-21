@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/offline_pages/core/background/save_page_request.h"
 
 namespace offline_pages {
@@ -34,9 +34,9 @@ bool OfflinerStub::LoadAndSave(const SavePageRequest& request,
   // Post the callback on the run loop.
   if (enable_callback_) {
     const int64_t arbitrary_size = 153LL;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(progress_callback, request, arbitrary_size));
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(completion_callback_), *pending_request_,
                        Offliner::RequestStatus::SAVED));
@@ -49,7 +49,7 @@ bool OfflinerStub::Cancel(CancelCallback callback) {
   if (!pending_request_)
     return false;
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(std::move(callback), *pending_request_),
       cancel_delay_);
   pending_request_.reset();
@@ -57,7 +57,7 @@ bool OfflinerStub::Cancel(CancelCallback callback) {
 }
 
 void OfflinerStub::TerminateLoadIfInProgress() {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(completion_callback_), *pending_request_,
                      Offliner::RequestStatus::FOREGROUND_CANCELED));
@@ -66,7 +66,7 @@ void OfflinerStub::TerminateLoadIfInProgress() {
 
 bool OfflinerStub::HandleTimeout(int64_t request_id) {
   if (snapshot_on_last_retry_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(completion_callback_), *pending_request_,
                        Offliner::RequestStatus::SAVED));

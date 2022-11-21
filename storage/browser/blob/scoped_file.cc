@@ -9,8 +9,8 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 
 namespace storage {
 
@@ -41,7 +41,7 @@ ScopedFile::~ScopedFile() {
 void ScopedFile::AddScopeOutCallback(ScopeOutCallback callback,
                                      base::TaskRunner* callback_runner) {
   if (!callback_runner)
-    callback_runner = base::ThreadTaskRunnerHandle::Get().get();
+    callback_runner = base::SingleThreadTaskRunner::GetCurrentDefault().get();
   scope_out_callbacks_.emplace_back(std::move(callback), callback_runner);
 }
 

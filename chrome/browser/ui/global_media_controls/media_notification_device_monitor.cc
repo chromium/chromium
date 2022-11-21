@@ -12,7 +12,6 @@
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
@@ -85,7 +84,7 @@ constexpr int kPollingIntervalSeconds = 10;
 PollingDeviceMonitorImpl::PollingDeviceMonitorImpl(
     MediaNotificationDeviceProvider* device_provider)
     : device_provider_(device_provider),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 void PollingDeviceMonitorImpl::StartMonitoring() {
   if (is_monitoring_)

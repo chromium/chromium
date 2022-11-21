@@ -14,7 +14,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/location.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/update_client/component.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/persisted_data.h"
@@ -75,7 +75,7 @@ void PingSender::SendPing(const Component& component,
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (component.events().empty()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), kErrorNoEvents, ""));
     return;
   }
@@ -87,7 +87,7 @@ void PingSender::SendPing(const Component& component,
     RemoveUnsecureUrls(&urls);
 
   if (urls.empty()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), kErrorNoUrl, ""));
     return;
   }

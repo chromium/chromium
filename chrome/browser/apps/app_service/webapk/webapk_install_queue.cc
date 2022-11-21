@@ -12,8 +12,8 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_install_task.h"
 #include "chrome/browser/profiles/profile.h"
 
@@ -40,7 +40,7 @@ void WebApkInstallQueue::InstallOrUpdate(const std::string& app_id) {
 }
 
 void WebApkInstallQueue::PostMaybeStartNext() {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&WebApkInstallQueue::MaybeStartNext,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

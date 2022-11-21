@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/ranges/algorithm.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 
@@ -223,7 +223,7 @@ void ClientFrameSinkVideoCapturer::EstablishConnection() {
 void ClientFrameSinkVideoCapturer::OnConnectionError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ClientFrameSinkVideoCapturer::EstablishConnection,
                      weak_factory_.GetWeakPtr()),

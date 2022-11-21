@@ -9,16 +9,14 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/webvtt_util.h"
 
 namespace media {
 
 FakeTextTrackStream::FakeTextTrackStream()
-    : task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      stopping_(false) {
-}
+    : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
+      stopping_(false) {}
 
 FakeTextTrackStream::~FakeTextTrackStream() {
   DCHECK(!read_cb_);

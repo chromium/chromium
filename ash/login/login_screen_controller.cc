@@ -119,7 +119,7 @@ void LoginScreenController::AuthenticateUserWithPasswordOrPin(
       // true.
       LOG(WARNING) << "crbug.com/1339004 : Dummy auth state";
       authentication_stage_ = AuthenticationStage::kDoAuthenticate;
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&LoginScreenController::OnAuthenticateComplete,
                          weak_factory_.GetWeakPtr(), std::move(callback),

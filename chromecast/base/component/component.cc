@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 
 namespace chromecast {
 
@@ -28,7 +27,7 @@ class DependencyCount : public base::RefCountedThreadSafe<DependencyCount> {
  public:
   explicit DependencyCount(ComponentBase* component)
       : component_(component),
-        task_runner_(base::ThreadTaskRunnerHandle::Get()),
+        task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
         dep_count_(0),
         disabling_(false) {
     DCHECK(component_);
@@ -250,7 +249,7 @@ ScopedReferenceBase::~ScopedReferenceBase() {
 }  // namespace subtle
 
 ComponentBase::ComponentBase()
-    : task_runner_(base::ThreadTaskRunnerHandle::Get()),
+    : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       state_(kStateDisabled),
       async_call_in_progress_(false),
       pending_dependency_count_(0),

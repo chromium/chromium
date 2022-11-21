@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/syslog_logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -56,7 +56,7 @@ void DeviceCommandSetVolumeJob::RunImpl(CallbackWithResult succeeded_callback,
   bool mute = audio_handler->IsOutputVolumeBelowDefaultMuteLevel();
   audio_handler->SetOutputMute(mute);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(succeeded_callback), nullptr));
 }
 

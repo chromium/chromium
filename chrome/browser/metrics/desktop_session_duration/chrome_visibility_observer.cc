@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -45,7 +45,7 @@ void ChromeVisibilityObserver::OnBrowserNoLongerActive(Browser* browser) {
   if (visibility_gap_timeout_.InMicroseconds() == 0) {
     SendVisibilityChangeEvent(false, base::TimeDelta());
   } else {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ChromeVisibilityObserver::SendVisibilityChangeEvent,
                        weak_factory_.GetWeakPtr(), false,

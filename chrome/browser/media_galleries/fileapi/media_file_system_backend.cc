@@ -18,7 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -234,7 +234,7 @@ void MediaFileSystemBackend::ResolveURL(const FileSystemURL& url,
                                         storage::OpenFileSystemMode mode,
                                         ResolveURLCallback callback) {
   // We never allow opening a new FileSystem via usual ResolveURL.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), GURL(), std::string(),
                                 base::File::FILE_ERROR_SECURITY));
 }

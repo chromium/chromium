@@ -4,7 +4,7 @@
 
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/optimization_guide/chrome_hints_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -131,7 +131,7 @@ void OptimizationGuideWebContentsObserver::DidFinishNavigation(
       NavigationHandleData::GetForNavigationHandle(*navigation_handle);
   if (!navigation_handle_data)
     return;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &OptimizationGuideWebContentsObserver::NotifyNavigationFinish,
@@ -151,7 +151,7 @@ void OptimizationGuideWebContentsObserver::PostFetchHintsUsingManager() {
   if (!optimization_guide_keyed_service_)
     return;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &OptimizationGuideWebContentsObserver::FetchHintsUsingManager,

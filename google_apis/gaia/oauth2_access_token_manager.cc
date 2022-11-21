@@ -9,7 +9,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -384,7 +384,8 @@ void OAuth2AccessTokenManager::Fetcher::InformWaitingRequestsAndDelete() {
   // be added when it calls back the waiting requests.
   oauth2_access_token_manager_->OnFetchComplete(this);
   InformWaitingRequests();
-  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                                this);
 }
 
 void OAuth2AccessTokenManager::Fetcher::AddWaitingRequest(
@@ -650,7 +651,7 @@ OAuth2AccessTokenManager::StartRequestForClientWithContext(
                                           error, base::Time());
     }
 
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&RequestImpl::InformConsumer, request->AsWeakPtr(),
                        error, OAuth2AccessTokenConsumer::TokenResponse()));
@@ -688,7 +689,7 @@ void OAuth2AccessTokenManager::InformConsumerWithCachedTokenResponse(
         request_parameters.scopes, GoogleServiceAuthError::AuthErrorNone(),
         cache_token_response->expiration_time);
   }
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&RequestImpl::InformConsumer, request->AsWeakPtr(),
                      GoogleServiceAuthError(GoogleServiceAuthError::NONE),

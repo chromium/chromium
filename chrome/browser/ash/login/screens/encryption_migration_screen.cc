@@ -17,8 +17,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/arc_migration_constants.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -418,7 +418,7 @@ void EncryptionMigrationScreen::UpdateUIState(
   // Record which screen is visible to the user.
   // We record it after delay to make sure that the user was actually able
   // to see the screen (i.e. the screen is not just a flash).
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&EncryptionMigrationScreen::OnDelayedRecordVisibleScreen,
                      weak_ptr_factory_.GetWeakPtr(), state),

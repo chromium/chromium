@@ -3959,8 +3959,8 @@ class BrowserAddedWaiter final : public BrowserListObserver {
     BrowserList::RemoveObserver(this);
     // Post a task to ensure the Remove event has been dispatched to all
     // observers.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  run_loop_.QuitClosure());
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop_.QuitClosure());
   }
 
  private:

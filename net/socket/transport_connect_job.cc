@@ -14,7 +14,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "net/base/features.h"
@@ -298,7 +298,7 @@ int TransportConnectJob::DoResolveHostComplete(int result) {
             ToLegacyDestinationEndpoint(params_->destination()),
             *request_->GetEndpointResults(), *request_->GetDnsAliasResults());
     if (callback_result == OnHostResolutionCallbackResult::kMayBeDeletedAsync) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&TransportConnectJob::OnIOComplete,
                                     weak_ptr_factory_.GetWeakPtr(), OK));
       return ERR_IO_PENDING;

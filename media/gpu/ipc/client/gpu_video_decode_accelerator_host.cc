@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "ipc/ipc_mojo_bootstrap.h"
@@ -19,7 +19,7 @@ GpuVideoDecodeAcceleratorHost::GpuVideoDecodeAcceleratorHost(
     gpu::CommandBufferProxyImpl* impl)
     : client_(nullptr),
       impl_(impl),
-      media_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+      media_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   DCHECK(impl_);
 
   weak_this_ = weak_this_factory_.GetWeakPtr();

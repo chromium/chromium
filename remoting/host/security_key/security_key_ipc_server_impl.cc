@@ -13,8 +13,8 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel.h"
@@ -93,7 +93,7 @@ bool SecurityKeyIpcServerImpl::CreateChannel(
   mojo_connection_ = std::make_unique<mojo::IsolatedConnection>();
   ipc_channel_ = IPC::Channel::CreateServer(
       mojo_connection_->Connect(channel.TakeServerEndpoint()).release(), this,
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   auto* associated_interface_support =
       ipc_channel_->GetAssociatedInterfaceSupport();

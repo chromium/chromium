@@ -8,8 +8,8 @@
 
 #include "base/bind.h"
 #include "base/strings/string_piece.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "net/base/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/canonical_cookie.h"
@@ -46,7 +46,7 @@ CookieMonsterChangeDispatcher::Subscription::Subscription(
       cookie_partition_key_(std::move(cookie_partition_key)),
       callback_(std::move(callback)),
       same_party_attribute_enabled_(same_party_attribute_enabled),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   DCHECK(url_.is_valid() || url_.is_empty());
   DCHECK_EQ(url_.is_empty(), domain_key_ == kGlobalDomainKey);
 }

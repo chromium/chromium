@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/token.h"
 #include "build/build_config.h"
@@ -323,7 +323,7 @@ void FrameSinkVideoCaptureDevice::AllocateCapturer(
       base::BindOnce(&MouseCursorOverlayController::Start,
                      cursor_controller_->GetWeakPtr(),
                      capturer_->CreateOverlay(kMouseCursorStackingIndex),
-                     base::ThreadTaskRunnerHandle::Get()));
+                     base::SingleThreadTaskRunner::GetCurrentDefault()));
 #endif
 }
 

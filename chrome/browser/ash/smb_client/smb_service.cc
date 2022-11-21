@@ -13,7 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/file_manager/file_manager_pref_names.h"
@@ -142,7 +142,7 @@ SmbService::SmbService(Profile* profile,
   // Post a task to complete setup. This is to allow unit tests to perform
   // expectations setup after constructing an instance. It also mirrors the
   // behaviour when Kerberos is being used.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&SmbService::CompleteSetup, AsWeakPtr()));
 }
 

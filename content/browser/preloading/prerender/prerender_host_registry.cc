@@ -863,8 +863,9 @@ void PrerenderHostRegistry::DidReceiveMemoryDump(
 
 scoped_refptr<base::SingleThreadTaskRunner>
 PrerenderHostRegistry::GetTimerTaskRunner() {
-  return timer_task_runner_for_testing_ ? timer_task_runner_for_testing_
-                                        : base::ThreadTaskRunnerHandle::Get();
+  return timer_task_runner_for_testing_
+             ? timer_task_runner_for_testing_
+             : base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
 void PrerenderHostRegistry::SetTaskRunnerForTesting(

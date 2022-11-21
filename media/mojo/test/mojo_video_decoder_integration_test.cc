@@ -132,7 +132,7 @@ class MockVideoDecoder : public VideoDecoder {
       if (buffer->data_size() == kErrorDataSize) {
         // This size buffer indicates that decoder should return an error.
         // |decode_cb| must not be called from the same stack.
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(decode_cb),
                                       DecoderStatus::Codes::kFailed));
         return;
@@ -153,15 +153,15 @@ class MockVideoDecoder : public VideoDecoder {
     }
 
     // |decode_cb| must not be called from the same stack.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(decode_cb), DecoderStatus::Codes::kOk));
   }
 
   void DoReset(base::OnceClosure& reset_cb) {
     // |reset_cb| must not be called from the same stack.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(reset_cb));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(reset_cb));
   }
 
   base::WeakPtr<MockVideoDecoder> GetWeakPtr() {
@@ -243,8 +243,9 @@ class MojoVideoDecoderIntegrationTest : public ::testing::Test {
     // TODO(sandersd): Pass a GpuVideoAcceleratorFactories so that the cache can
     // be tested.
     client_ = std::make_unique<MojoVideoDecoder>(
-        base::ThreadTaskRunnerHandle::Get(), nullptr, &client_media_log_,
-        CreateRemoteVideoDecoder(), RequestOverlayInfoCB(), gfx::ColorSpace());
+        base::SingleThreadTaskRunner::GetCurrentDefault(), nullptr,
+        &client_media_log_, CreateRemoteVideoDecoder(), RequestOverlayInfoCB(),
+        gfx::ColorSpace());
     if (writer_capacity_)
       client_->set_writer_capacity_for_testing(writer_capacity_);
   }

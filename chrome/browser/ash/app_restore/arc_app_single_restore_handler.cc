@@ -158,7 +158,7 @@ bool ArcAppSingleRestoreHandler::IsAppPendingRestore(
 
 void ArcAppSingleRestoreHandler::OnShelfReady() {
   if (!not_ready_callback_.is_null()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(not_ready_callback_));
   }
   is_shelf_ready_ = true;

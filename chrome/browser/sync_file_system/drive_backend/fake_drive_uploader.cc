@@ -9,7 +9,7 @@
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "google_apis/drive/drive_api_parser.h"
 #include "google_apis/drive/drive_common_callbacks.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,7 +39,7 @@ void DidAddFileForUploadNew(UploadCompletionCallback callback,
                             std::unique_ptr<FileResource> entry) {
   ASSERT_EQ(google_apis::HTTP_CREATED, error);
   ASSERT_TRUE(entry);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), google_apis::HTTP_SUCCESS,
                                 GURL(), std::move(entry)));
 }
@@ -47,7 +47,7 @@ void DidAddFileForUploadNew(UploadCompletionCallback callback,
 void DidGetFileResourceForUploadExisting(UploadCompletionCallback callback,
                                          ApiErrorCode error,
                                          std::unique_ptr<FileResource> entry) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), error, GURL(), std::move(entry)));
 }

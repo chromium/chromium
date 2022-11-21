@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/location.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromecast/public/media/cast_decoder_buffer.h"
 
 namespace chromecast {
@@ -39,7 +39,7 @@ MediaPipelineBackend::BufferStatus VideoDecoderNull::PushBuffer(
   DCHECK(delegate_);
   DCHECK(buffer);
   if (buffer->end_of_stream()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&VideoDecoderNull::OnEndOfStream,
                                   weak_factory_.GetWeakPtr()));
   }

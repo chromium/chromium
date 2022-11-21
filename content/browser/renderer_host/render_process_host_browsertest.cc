@@ -105,7 +105,7 @@ class DelayedHttpResponseWithResolver final
       }
 
       scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-          base::ThreadTaskRunnerHandle::Get();
+          base::SingleThreadTaskRunner::GetCurrentDefault();
       if (task_runner_) {
         DCHECK_EQ(task_runner_, task_runner);
       } else {

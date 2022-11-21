@@ -28,9 +28,9 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -293,7 +293,7 @@ void MCSProbe::Start() {
       endpoints, kDefaultBackoffPolicy,
       base::BindRepeating(&MCSProbe::RequestProxyResolvingSocketFactory,
                           base::Unretained(this)),
-      base::ThreadTaskRunnerHandle::Get(), &recorder_,
+      base::SingleThreadTaskRunner::GetCurrentDefault(), &recorder_,
       network_connection_tracker_.get());
   gcm_store_ = std::make_unique<GCMStoreImpl>(
       gcm_store_path_, /*remove_account_mappings_with_email_key=*/true,
@@ -301,7 +301,7 @@ void MCSProbe::Start() {
 
   mcs_client_ = std::make_unique<MCSClient>(
       "probe", &clock_, connection_factory_.get(), gcm_store_.get(),
-      base::ThreadTaskRunnerHandle::Get(), &recorder_);
+      base::SingleThreadTaskRunner::GetCurrentDefault(), &recorder_);
   run_loop_ = std::make_unique<base::RunLoop>();
   gcm_store_->Load(
       GCMStore::CREATE_IF_MISSING,
@@ -411,8 +411,8 @@ void MCSProbe::CheckIn() {
   checkin_request_ = std::make_unique<CheckinRequest>(
       GServicesSettings().GetCheckinURL(), request_info, kDefaultBackoffPolicy,
       base::BindOnce(&MCSProbe::OnCheckInCompleted, base::Unretained(this)),
-      shared_url_loader_factory_, base::ThreadTaskRunnerHandle::Get(),
-      &recorder_);
+      shared_url_loader_factory_,
+      base::SingleThreadTaskRunner::GetCurrentDefault(), &recorder_);
   checkin_request_->Start();
 }
 

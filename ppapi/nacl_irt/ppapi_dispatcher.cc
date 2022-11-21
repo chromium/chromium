@@ -45,9 +45,9 @@ PpapiDispatcher::PpapiDispatcher(
   // Delay initializing the SyncChannel until after we add filters. This
   // ensures that the filters won't miss any messages received by
   // the channel.
-  channel_ = IPC::SyncChannel::Create(this, GetIPCTaskRunner(),
-                                      base::ThreadTaskRunnerHandle::Get(),
-                                      GetShutdownEvent());
+  channel_ = IPC::SyncChannel::Create(
+      this, GetIPCTaskRunner(),
+      base::SingleThreadTaskRunner::GetCurrentDefault(), GetShutdownEvent());
   scoped_refptr<ppapi::proxy::PluginMessageFilter> plugin_filter(
       new ppapi::proxy::PluginMessageFilter(
           NULL, globals->resource_reply_thread_registrar()));

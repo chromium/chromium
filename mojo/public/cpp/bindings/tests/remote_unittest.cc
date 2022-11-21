@@ -16,11 +16,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -228,7 +228,7 @@ class EndToEndRemoteTest : public RemoteTest {
   void RunTest(const scoped_refptr<base::SequencedTaskRunner> runner) {
     base::RunLoop run_loop;
     done_closure_ = run_loop.QuitClosure();
-    done_runner_ = base::ThreadTaskRunnerHandle::Get();
+    done_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
     runner->PostTask(FROM_HERE, base::BindOnce(&EndToEndRemoteTest::RunTestImpl,
                                                base::Unretained(this)));
     run_loop.Run();
@@ -264,7 +264,7 @@ class EndToEndRemoteTest : public RemoteTest {
 };
 
 TEST_P(EndToEndRemoteTest, EndToEnd) {
-  RunTest(base::ThreadTaskRunnerHandle::Get());
+  RunTest(base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 TEST_P(EndToEndRemoteTest, EndToEndOnSequence) {

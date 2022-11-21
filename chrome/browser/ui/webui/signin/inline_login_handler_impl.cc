@@ -22,7 +22,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -363,7 +362,8 @@ void InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened(
 #else
     NOTREACHED() << "Google Credential Provider is only available on Windows";
 #endif  // BUILDFLAG(IS_WIN)
-    base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                                  this);
     return;
   }
 
@@ -415,14 +415,16 @@ void InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened(
     CreateSyncStarter(result.refresh_token);
   }
 
-  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                                this);
 }
 
 void InlineSigninHelper::UntrustedSigninConfirmed(
     const std::string& refresh_token,
     bool confirmed) {
   DCHECK(signin_util::IsForceSigninEnabled());
-  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                                this);
   if (confirmed) {
     CreateSyncStarter(refresh_token);
     return;
@@ -479,7 +481,8 @@ void InlineSigninHelper::OnClientOAuthFailure(
     about_signin_internals->OnRefreshTokenReceived("Failure");
   }
 
-  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                                this);
 }
 
 InlineLoginHandlerImpl::InlineLoginHandlerImpl()

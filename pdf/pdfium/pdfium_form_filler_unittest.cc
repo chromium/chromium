@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "gin/public/isolate_holder.h"
 #include "pdf/pdfium/pdfium_engine.h"
@@ -210,7 +210,7 @@ TEST_P(FormFillerJavaScriptTest, IsolateScoping) {
   PDFiumEngine engine(&client, PDFiumFormFiller::ScriptOption::kJavaScript);
 
   gin::IsolateHolder pdfium_test_isolate_holder(
-      base::ThreadTaskRunnerHandle::Get(),
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
       gin::IsolateHolder::IsolateType::kTest);
   v8::Isolate* pdfium_test_isolate = pdfium_test_isolate_holder.isolate();
 

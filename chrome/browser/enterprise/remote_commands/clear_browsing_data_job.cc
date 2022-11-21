@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
@@ -123,7 +123,7 @@ void ClearBrowsingDataJob::RunImpl(CallbackWithResult succeeded_callback,
     // If the payload's profile path doesn't correspond to an existing profile,
     // there's nothing to do. The most likely scenario is that the profile was
     // deleted by the time the command was received.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(failed_callback),
                                   std::make_unique<ResultPayload>(types)));
     return;
@@ -134,7 +134,7 @@ void ClearBrowsingDataJob::RunImpl(CallbackWithResult succeeded_callback,
 
   if (types == 0) {
     // There's nothing to clear, invoke the success callback and be done.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(succeeded_callback_),
                                   std::make_unique<ResultPayload>(
                                       /* failed_types= */ 0)));
@@ -160,11 +160,11 @@ void ClearBrowsingDataJob::OnBrowsingDataRemoverDone(
   auto payload = std::make_unique<ResultPayload>(failed_data_types);
 
   if (failed_data_types != 0) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(failed_callback_), std::move(payload)));
   } else {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(succeeded_callback_), std::move(payload)));
   }

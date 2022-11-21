@@ -12,7 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/app/chrome_command_ids.h"  // IDC_HISTORY_MENU
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/app_controller_mac.h"
@@ -215,7 +215,7 @@ HistoryMenuBridge::HistoryItem* HistoryMenuBridge::HistoryItemForMenuItem(
 void HistoryMenuBridge::SetIsMenuOpen(bool flag) {
   is_menu_open_ = flag;
   if (!is_menu_open_ && need_recreate_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&HistoryMenuBridge::CreateMenu,
                                   weak_factory_.GetWeakPtr()));
   }

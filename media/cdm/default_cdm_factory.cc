@@ -8,7 +8,6 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "media/base/cdm_config.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/key_system_names.h"
@@ -40,7 +39,7 @@ void DefaultCdmFactory::Create(
     const SessionExpirationUpdateCB& session_expiration_update_cb,
     CdmCreatedCB cdm_created_cb) {
   if (!ShouldCreateAesDecryptor(cdm_config.key_system)) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(cdm_created_cb), nullptr,
                                   "Unsupported key system."));
     return;
@@ -49,7 +48,7 @@ void DefaultCdmFactory::Create(
   scoped_refptr<ContentDecryptionModule> cdm(
       new AesDecryptor(session_message_cb, session_closed_cb,
                        session_keys_change_cb, session_expiration_update_cb));
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(cdm_created_cb), cdm, ""));
 }
 

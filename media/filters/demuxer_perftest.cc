@@ -10,8 +10,8 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/media.h"
@@ -121,8 +121,8 @@ void StreamReader::Read() {
   base::RunLoop run_loop;
   streams_[index]->Read(base::BindOnce(
       &StreamReader::OnReadDone, base::Unretained(this),
-      base::ThreadTaskRunnerHandle::Get(), run_loop.QuitWhenIdleClosure(),
-      &end_of_stream, &timestamp));
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      run_loop.QuitWhenIdleClosure(), &end_of_stream, &timestamp));
   run_loop.Run();
 
   CHECK(end_of_stream || timestamp != media::kNoTimestamp);
@@ -187,9 +187,9 @@ static void RunDemuxerBenchmark(const std::string& filename) {
         base::BindRepeating(&OnEncryptedMediaInitData);
     Demuxer::MediaTracksUpdatedCB tracks_updated_cb =
         base::BindRepeating(&OnMediaTracksUpdated);
-    FFmpegDemuxer demuxer(base::ThreadTaskRunnerHandle::Get(), &data_source,
-                          encrypted_media_init_data_cb, tracks_updated_cb,
-                          &media_log_, true);
+    FFmpegDemuxer demuxer(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                          &data_source, encrypted_media_init_data_cb,
+                          tracks_updated_cb, &media_log_, true);
 
     {
       base::RunLoop run_loop;

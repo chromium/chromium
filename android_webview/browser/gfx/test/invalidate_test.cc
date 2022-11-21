@@ -269,7 +269,8 @@ class InvalidateTest
       : task_environment_(std::make_unique<base::test::TaskEnvironment>()) {
     begin_frame_source_ = std::make_unique<viz::ExternalBeginFrameSource>(this);
     root_frame_sink_proxy_ = std::make_unique<RootFrameSinkProxy>(
-        base::ThreadTaskRunnerHandle::Get(), this, begin_frame_source_.get());
+        base::SingleThreadTaskRunner::GetCurrentDefault(), this,
+        begin_frame_source_.get());
 
     root_frame_sink_proxy_->AddChildFrameSinkId(kRootClientSinkId);
 
@@ -279,7 +280,7 @@ class InvalidateTest
     // use single thread for both as we want to control timing of two threads
     // explicitly.
     render_thread_manager_ = std::make_unique<RenderThreadManager>(
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     surface_ = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplayEGL(),
                                                   gfx::Size(100, 100));
     DCHECK(surface_);
@@ -381,8 +382,8 @@ class InvalidateTest
     // Client could have unsubscribed from begin frames or called invalidate
     // without BF, make sure it was propagated to UI thread.
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  run_loop.QuitClosure());
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
 
     if (did_invalidate_)
@@ -738,8 +739,8 @@ TEST_P(InvalidateTest, VeryLateFrame) {
   // Client could have subscribed to begin frames, make sure it was
   // propagated to UI thread.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                run_loop.QuitClosure());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
 
   for (int i = 0; i < 3; i++) {

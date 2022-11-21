@@ -19,7 +19,6 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/log/net_log.h"
@@ -371,7 +370,8 @@ void Executor::StartJob(scoped_refptr<Job> job) {
   job->FinishedWaitingForThread();
   thread_->task_runner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&Job::Run, job, base::ThreadTaskRunnerHandle::Get()));
+      base::BindOnce(&Job::Run, job,
+                     base::SingleThreadTaskRunner::GetCurrentDefault()));
 }
 
 void Executor::OnJobCompleted(Job* job) {

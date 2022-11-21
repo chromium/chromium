@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/loader/browser_initiated_resource_request.h"
 #include "content/browser/service_worker/service_worker_cache_writer.h"
@@ -183,7 +183,8 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
       network::SharedURLLoaderFactory::Create(loader_factory->Clone()),
       std::move(throttles), GlobalRequestID::MakeBrowserInitiated().request_id,
       options, &resource_request, network_client_remote_.get(),
-      kUpdateCheckTrafficAnnotation, base::ThreadTaskRunnerHandle::Get());
+      kUpdateCheckTrafficAnnotation,
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   DCHECK_EQ(network_loader_state_,
             ServiceWorkerUpdatedScriptLoader::LoaderState::kNotStarted);
   network_loader_state_ =

@@ -11,7 +11,7 @@
 #include "ash/components/arc/session/connection_holder.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/apps/apk_web_app_service_factory.h"
@@ -647,7 +647,7 @@ void ApkWebAppService::MaybeRemoveArcPackageForWebApp(
   // Post task to make sure that all observers get fired before the callback
   // called.
   if (web_app_uninstalled_callback_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(web_app_uninstalled_callback_),
                                   package_name.value_or(""), web_app_id));
   }

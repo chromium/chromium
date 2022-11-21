@@ -15,7 +15,6 @@
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "ipc/ipc_sync_channel.h"
 #include "ipc/message_filter.h"
 #include "ppapi/c/pp_errors.h"
@@ -326,7 +325,7 @@ PluginProxyMultiThreadTest::~PluginProxyMultiThreadTest() {
 void PluginProxyMultiThreadTest::RunTest() {
   main_thread_task_runner_ = PpapiGlobals::Get()->GetMainThreadMessageLoop();
   ASSERT_EQ(main_thread_task_runner_.get(),
-            base::ThreadTaskRunnerHandle::Get().get());
+            base::SingleThreadTaskRunner::GetCurrentDefault().get());
   nested_main_thread_message_loop_ = std::make_unique<base::RunLoop>();
 
   secondary_thread_ = std::make_unique<base::DelegateSimpleThread>(
@@ -448,9 +447,9 @@ void HostProxyTestHarness::SetUpHarnessWithChannel(
   host_dispatcher_ = std::make_unique<HostDispatcher>(
       pp_module(), &MockGetInterface, PpapiPermissions::AllPermissions());
   ppapi::Preferences preferences;
-  host_dispatcher_->InitHostWithChannel(&delegate_mock_, base::kNullProcessId,
-                                        channel_handle, is_client, preferences,
-                                        base::ThreadTaskRunnerHandle::Get());
+  host_dispatcher_->InitHostWithChannel(
+      &delegate_mock_, base::kNullProcessId, channel_handle, is_client,
+      preferences, base::SingleThreadTaskRunner::GetCurrentDefault());
   HostDispatcher::SetForInstance(pp_instance(), host_dispatcher_.get());
 }
 

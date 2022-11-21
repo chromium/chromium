@@ -28,7 +28,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_advertisement_mac.h"
@@ -563,7 +562,7 @@ bool BluetoothAdapterMac::StartDiscovery(
 
 void BluetoothAdapterMac::Initialize(base::OnceClosure callback) {
   // Real initialization is deferred to LazyInitialize().
-  ui_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  ui_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
   std::move(callback).Run();
 }
 

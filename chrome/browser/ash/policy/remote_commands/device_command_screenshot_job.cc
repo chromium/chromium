@@ -15,7 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/uploading/upload_job_impl.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -106,7 +106,7 @@ enterprise_management::RemoteCommand_Type DeviceCommandScreenshotJob::GetType()
 
 void DeviceCommandScreenshotJob::OnSuccess() {
   SYSLOG(INFO) << "Upload successful.";
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(succeeded_callback_),
                                 std::make_unique<Payload>(SUCCESS)));
 }
@@ -123,7 +123,7 @@ void DeviceCommandScreenshotJob::OnFailure(UploadJob::ErrorCode error_code) {
       result_code = FAILURE_SERVER;
       break;
   }
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(failed_callback_),
                                 std::make_unique<Payload>(result_code)));
 }
@@ -192,7 +192,7 @@ void DeviceCommandScreenshotJob::RunImpl(CallbackWithResult succeeded_callback,
   // Fail if the delegate says screenshots are not allowed in this session.
   if (!screenshot_delegate_->IsScreenshotAllowed()) {
     SYSLOG(ERROR) << "Screenshots are not allowed.";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(failed_callback_),
                        std::make_unique<Payload>(FAILURE_USER_INPUT)));
@@ -203,7 +203,7 @@ void DeviceCommandScreenshotJob::RunImpl(CallbackWithResult succeeded_callback,
   // Immediately fail if the upload url is invalid.
   if (!upload_url_.is_valid()) {
     SYSLOG(ERROR) << upload_url_ << " is not a valid URL.";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(failed_callback_),
                        std::make_unique<Payload>(FAILURE_INVALID_URL)));
@@ -213,7 +213,7 @@ void DeviceCommandScreenshotJob::RunImpl(CallbackWithResult succeeded_callback,
   // Immediately fail if there are no attached screens.
   if (root_windows.size() == 0) {
     SYSLOG(ERROR) << "No attached screens.";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(failed_callback_),
                                   std::make_unique<Payload>(
                                       FAILURE_SCREENSHOT_ACQUISITION)));
@@ -229,7 +229,7 @@ void DeviceCommandScreenshotJob::RunImpl(CallbackWithResult succeeded_callback,
       root_windows.size(),
       base::BindOnce(&DeviceCommandScreenshotJob::OnScreenshotsReady,
                      weak_ptr_factory_.GetWeakPtr(),
-                     base::ThreadTaskRunnerHandle::Get()));
+                     base::SingleThreadTaskRunner::GetCurrentDefault()));
   for (size_t screen_index = 0; screen_index < root_windows.size();
        ++screen_index) {
     aura::Window* root_window = root_windows[screen_index];

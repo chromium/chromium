@@ -9,8 +9,8 @@
 #include <algorithm>
 
 #include "base/logging.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
@@ -370,8 +370,8 @@ void VulkanSurface::PostSubBufferCompleted(
     feedback = gfx::PresentationFeedback(timestamp, interval, /*flags=*/0);
   }
 
-  if (base::ThreadTaskRunnerHandle::IsSet()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+  if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(presentation_callback), feedback));
   } else {
     // For webview_instrumentation_test, ThreadTaskRunnerHandle is not set, so

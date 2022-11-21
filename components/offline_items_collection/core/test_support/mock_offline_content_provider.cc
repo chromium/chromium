@@ -5,7 +5,7 @@
 #include "components/offline_items_collection/core/test_support/mock_offline_content_provider.h"
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace offline_items_collection {
 
@@ -51,13 +51,13 @@ void MockOfflineContentProvider::GetVisualsForItem(const ContentId& id,
     if (iter != visuals_.end()) {
       visuals = std::make_unique<OfflineItemVisuals>(iter->second);
     }
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), id, std::move(visuals)));
   }
 }
 
 void MockOfflineContentProvider::GetAllItems(MultipleItemCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), items_));
 }
 
@@ -71,7 +71,7 @@ void MockOfflineContentProvider::GetItemById(const ContentId& id,
     }
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 

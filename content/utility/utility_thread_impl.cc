@@ -18,7 +18,7 @@
 #include "base/no_destructor.h"
 #include "base/process/current_process.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
 #include "content/child/child_process.h"
@@ -84,8 +84,8 @@ class ServiceBinderImpl {
 
     termination_callback =
         base::BindOnce(base::IgnoreResult(&base::SequencedTaskRunner::PostTask),
-                       base::ThreadTaskRunnerHandle::Get(), FROM_HERE,
-                       std::move(termination_callback));
+                       base::SingleThreadTaskRunner::GetCurrentDefault(),
+                       FROM_HERE, std::move(termination_callback));
     main_thread_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&ServiceBinderImpl::TryRunMainThreadService,
@@ -145,7 +145,7 @@ ChildThreadImpl::Options::ServiceBinder GetServiceBinder() {
   // NOTE: This may already be initialized from a previous call if we're in
   // single-process mode.
   if (!storage)
-    storage.emplace(base::ThreadTaskRunnerHandle::Get());
+    storage.emplace(base::SingleThreadTaskRunner::GetCurrentDefault());
   return base::BindRepeating(&ServiceBinderImpl::BindServiceInterface,
                              base::Unretained(&storage.value()));
 }

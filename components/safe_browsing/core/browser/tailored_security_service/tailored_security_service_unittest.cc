@@ -13,7 +13,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -171,7 +170,7 @@ class TestRequest : public TailoredSecurityService::Request {
 
   void Start() override {
     is_pending_ = true;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&TestRequest::MimicReturnFromFetch,
                                   base::Unretained(this)));
   }
@@ -287,8 +286,8 @@ class TailoredSecurityServiceTest : public testing::Test {
 
   void TearDown() override {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  run_loop.QuitClosure());
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -317,7 +316,7 @@ TEST_F(TailoredSecurityServiceTest, GetTailoredSecurityServiceEnabled) {
   tailored_security_service()->StartRequest(base::BindOnce(
       &TestingTailoredSecurityService::GetTailoredSecurityServiceCallback,
       base::Unretained(tailored_security_service())));
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &TestingTailoredSecurityService::EnsureNoPendingRequestsRemain,
@@ -337,7 +336,7 @@ TEST_F(TailoredSecurityServiceTest,
           &TestingTailoredSecurityService::SetTailoredSecurityServiceCallback,
           base::Unretained(tailored_security_service())),
       TRAFFIC_ANNOTATION_FOR_TESTS);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &TestingTailoredSecurityService::EnsureNoPendingRequestsRemain,
@@ -356,7 +355,7 @@ TEST_F(TailoredSecurityServiceTest, SetTailoredSecurityBitForTestingFalse) {
           &TestingTailoredSecurityService::SetTailoredSecurityServiceCallback,
           base::Unretained(tailored_security_service())),
       TRAFFIC_ANNOTATION_FOR_TESTS);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &TestingTailoredSecurityService::EnsureNoPendingRequestsRemain,
@@ -383,7 +382,7 @@ TEST_F(TailoredSecurityServiceTest, MultipleRequests) {
                      base::Unretained(tailored_security_service())));
 
   // Check that both requests are no longer pending.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &TestingTailoredSecurityService::EnsureNoPendingRequestsRemain,

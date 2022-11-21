@@ -130,17 +130,19 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
 
     quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
-        is_incognito, dir_.GetPath(), base::ThreadTaskRunnerHandle::Get(),
+        is_incognito, dir_.GetPath(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::MakeRefCounted<storage::MockSpecialStoragePolicy>());
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
-        quota_manager_.get(), base::ThreadTaskRunnerHandle::Get());
+        quota_manager_.get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
 
     if (is_incognito) {
       file_system_context_ =
           storage::CreateIncognitoFileSystemContextForTesting(
-              base::ThreadTaskRunnerHandle::Get(),
-              base::ThreadTaskRunnerHandle::Get(), quota_manager_proxy_.get(),
-              dir_.GetPath());
+              base::SingleThreadTaskRunner::GetCurrentDefault(),
+              base::SingleThreadTaskRunner::GetCurrentDefault(),
+              quota_manager_proxy_.get(), dir_.GetPath());
     } else {
       file_system_context_ = storage::CreateFileSystemContextForTesting(
           quota_manager_proxy_.get(), dir_.GetPath());

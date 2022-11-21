@@ -22,7 +22,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -96,7 +95,7 @@ const uint8_t kEncryptedMediaInitData[] = {
 static void EosOnReadDone(bool* got_eos_buffer,
                           DemuxerStream::Status status,
                           scoped_refptr<DecoderBuffer> buffer) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
 
   EXPECT_EQ(status, DemuxerStream::kOk);
@@ -347,7 +346,7 @@ class FFmpegDemuxerTest : public testing::Test {
         &FFmpegDemuxerTest::OnMediaTracksUpdated, base::Unretained(this));
 
     demuxer_ = std::make_unique<FFmpegDemuxer>(
-        base::ThreadTaskRunnerHandle::Get(), data_source_.get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(), data_source_.get(),
         encrypted_media_init_data_cb, tracks_updated_cb, media_log, false);
   }
 
@@ -1182,7 +1181,7 @@ static void ValidateAnnexB(DemuxerStream* stream,
   EXPECT_EQ(status, DemuxerStream::kOk);
 
   if (buffer->end_of_stream()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
     return;
   }
@@ -1199,7 +1198,7 @@ static void ValidateAnnexB(DemuxerStream* stream,
 
   if (!is_valid) {
     LOG(ERROR) << "Buffer contains invalid Annex B data.";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
     return;
   }

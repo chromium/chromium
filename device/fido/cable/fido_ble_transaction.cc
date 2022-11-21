@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/cable/fido_ble_connection.h"
 #include "device/fido/fido_constants.h"
@@ -29,7 +29,7 @@ void FidoBleTransaction::WriteRequestFrame(FidoBleFrame request_frame,
   if (control_point_length_ < 3u) {
     FIDO_LOG(DEBUG) << "Control Point Length is too short: "
                     << control_point_length_;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }

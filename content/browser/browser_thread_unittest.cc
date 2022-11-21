@@ -20,7 +20,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/browser_process_io_thread.h"
@@ -162,7 +161,8 @@ class UIThreadDestructionObserver
  public:
   explicit UIThreadDestructionObserver(bool* did_shutdown,
                                        base::OnceClosure callback)
-      : callback_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      : callback_task_runner_(
+            base::SingleThreadTaskRunner::GetCurrentDefault()),
         ui_task_runner_(GetUIThreadTaskRunner({})),
         callback_(std::move(callback)),
         did_shutdown_(did_shutdown) {

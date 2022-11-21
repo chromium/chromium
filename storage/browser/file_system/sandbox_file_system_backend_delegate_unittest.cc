@@ -10,8 +10,8 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_options.h"
@@ -37,9 +37,10 @@ class SandboxFileSystemBackendDelegateTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
     quota_manager_proxy_ = base::MakeRefCounted<MockQuotaManagerProxy>(
-        nullptr, base::ThreadTaskRunnerHandle::Get());
+        nullptr, base::SingleThreadTaskRunner::GetCurrentDefault());
     delegate_ = std::make_unique<SandboxFileSystemBackendDelegate>(
-        quota_manager_proxy_.get(), base::ThreadTaskRunnerHandle::Get().get(),
+        quota_manager_proxy_.get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         data_dir_.GetPath(), /*special_storage_policy=*/nullptr,
         CreateAllowFileAccessOptions(), /*env_override=*/nullptr);
   }

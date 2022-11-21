@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "components/device_event_log/device_event_log.h"
 #include "dbus/message.h"
@@ -30,7 +30,7 @@ class ShillClientHelper::RefHolder {
  public:
   explicit RefHolder(base::WeakPtr<ShillClientHelper> helper)
       : helper_(helper),
-        origin_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+        origin_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
     helper_->AddRef();
   }
   ~RefHolder() {

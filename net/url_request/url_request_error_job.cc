@@ -8,7 +8,6 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "net/base/net_errors.h"
 
 namespace net {
@@ -19,7 +18,7 @@ URLRequestErrorJob::URLRequestErrorJob(URLRequest* request, int error)
 URLRequestErrorJob::~URLRequestErrorJob() = default;
 
 void URLRequestErrorJob::Start() {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&URLRequestErrorJob::StartAsync,
                                 weak_factory_.GetWeakPtr()));
 }

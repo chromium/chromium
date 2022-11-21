@@ -12,8 +12,8 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/events/ozone/evdev/cursor_delegate_evdev.h"
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
@@ -35,7 +35,7 @@ class EvdevThread : public base::Thread {
         dispatcher_(std::move(dispatcher)),
         cursor_(cursor),
         init_callback_(std::move(callback)),
-        init_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+        init_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
   ~EvdevThread() override { Stop(); }
 
   void Init() override {
@@ -45,8 +45,9 @@ class EvdevThread : public base::Thread {
                                     std::make_unique<InputDeviceOpenerEvdev>());
 
     std::unique_ptr<InputDeviceFactoryEvdevProxy> proxy(
-        new InputDeviceFactoryEvdevProxy(base::ThreadTaskRunnerHandle::Get(),
-                                         input_device_factory_->GetWeakPtr()));
+        new InputDeviceFactoryEvdevProxy(
+            base::SingleThreadTaskRunner::GetCurrentDefault(),
+            input_device_factory_->GetWeakPtr()));
 
     if (cursor_)
       cursor_->InitializeOnEvdev();

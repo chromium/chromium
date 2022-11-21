@@ -12,7 +12,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/data_url_loader_factory.h"
 #include "content/browser/loader/single_request_url_loader_factory.h"
@@ -162,7 +162,8 @@ void SignedExchangeCertFetcher::Start() {
       std::move(shared_url_loader_factory_), std::move(throttles_),
       signed_exchange_utils::MakeRequestID() /* request_id */,
       network::mojom::kURLLoadOptionNone, resource_request_.get(), this,
-      kCertFetcherTrafficAnnotation, base::ThreadTaskRunnerHandle::Get());
+      kCertFetcherTrafficAnnotation,
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 void SignedExchangeCertFetcher::Abort() {

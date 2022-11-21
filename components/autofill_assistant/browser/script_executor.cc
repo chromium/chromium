@@ -14,7 +14,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill_assistant/browser/actions/action.h"
@@ -823,7 +822,7 @@ void ScriptExecutor::MaybeShowSlowConnectionWarning() {
     delay = delegate_->GetSettings().minimum_warning_duration;
   }
   connection_warning_already_shown_ |= warning_was_shown;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ScriptExecutor::ProcessNextAction,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -998,7 +997,7 @@ void ScriptExecutor::ProcessNextAction() {
       current_action_->proto().clean_contextual_ui();
   int delay_ms = current_action_->proto().action_delay_ms();
   if (delay_ms > 0) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ScriptExecutor::ProcessCurrentAction,
                        weak_ptr_factory_.GetWeakPtr()),

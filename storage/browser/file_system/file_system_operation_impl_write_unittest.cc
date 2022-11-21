@@ -13,9 +13,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_file_util.h"
@@ -69,7 +69,8 @@ class FileSystemOperationImplWriteTest : public testing::Test {
 
     quota_manager_ = base::MakeRefCounted<MockQuotaManager>(
         /* is_incognito= */ false, data_dir_.GetPath(),
-        base::ThreadTaskRunnerHandle::Get(), special_storage_policy_);
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        special_storage_policy_);
 
     file_system_context_ = CreateFileSystemContextForTesting(
         quota_manager_->proxy(), data_dir_.GetPath());

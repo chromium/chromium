@@ -281,7 +281,7 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest,
                  callback) {
             // Note: We post this to the end of the message queue to make it
             // asynchronous.
-            base::ThreadTaskRunnerHandle::Get()->PostTask(
+            base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE,
                 base::BindOnce(
                     [](mojo::PendingRemote<

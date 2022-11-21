@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/ui/captive_portal_window_proxy.h"
 
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/login/ui/captive_portal_view.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -99,7 +99,7 @@ void CaptivePortalWindowProxy::Show() {
     // InternetDetailDialog is being shown, don't cover it.
     // Close window asynchronously to prevent `CaptivePortalView` reset in the
     // middle of the `NavigationControllerImpl::NotifyNavigationEntryCommitted`
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&CaptivePortalWindowProxy::Close,
                                   weak_factory_.GetWeakPtr()));
     return;

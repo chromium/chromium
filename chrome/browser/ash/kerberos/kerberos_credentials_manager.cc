@@ -12,7 +12,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/authpolicy/data_pipe_utils.h"
 #include "chrome/browser/ash/kerberos/kerberos_ticket_expiry_notification.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
@@ -90,7 +90,7 @@ bool NormalizePrincipalOrPostCallback(
     KerberosCredentialsManager::ResultCallback* callback) {
   if (NormalizePrincipal(principal_name))
     return true;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(*callback),
                                 kerberos::ERROR_PARSE_PRINCIPAL_FAILED));
   return false;

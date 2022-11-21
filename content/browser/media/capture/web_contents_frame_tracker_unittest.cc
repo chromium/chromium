@@ -118,9 +118,10 @@ class WebContentsFrameTrackerTest : public RenderViewHostTestHarness {
     // cleaner to do so in case we want to switch to a different threading model
     // for the tests in the future.
     GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&WebContentsFrameTrackerTest::SetUpOnUIThread,
-                                  base::Unretained(this),
-                                  base::ThreadTaskRunnerHandle::Get()));
+        FROM_HERE,
+        base::BindOnce(&WebContentsFrameTrackerTest::SetUpOnUIThread,
+                       base::Unretained(this),
+                       base::SingleThreadTaskRunner::GetCurrentDefault()));
     RunAllTasksUntilIdle();
   }
 

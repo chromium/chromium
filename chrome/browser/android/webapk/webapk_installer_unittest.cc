@@ -16,7 +16,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
@@ -90,7 +89,7 @@ class TestWebApkInstaller : public WebApkInstaller {
   }
 
   void PostTaskToRunSuccessCallback() {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&TestWebApkInstaller::OnResult, base::Unretained(this),
                        webapps::WebApkInstallResult::SUCCESS));

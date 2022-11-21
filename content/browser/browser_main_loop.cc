@@ -43,7 +43,6 @@
 #include "base/task/thread_pool/initialization_util.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/hi_res_timer_manager.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -633,10 +632,10 @@ void BrowserMainLoop::CreateMainMessageLoop() {
 
   // Register the main thread. The main thread's task runner should already have
   // been initialized but it's not yet known as BrowserThread::UI.
-  DCHECK(base::ThreadTaskRunnerHandle::IsSet());
+  DCHECK(base::SingleThreadTaskRunner::HasCurrentDefault());
   DCHECK(base::CurrentUIThread::IsSet());
   main_thread_.reset(new BrowserThreadImpl(
-      BrowserThread::UI, base::ThreadTaskRunnerHandle::Get()));
+      BrowserThread::UI, base::SingleThreadTaskRunner::GetCurrentDefault()));
 }
 
 void BrowserMainLoop::PostCreateMainMessageLoop() {
@@ -778,7 +777,8 @@ int BrowserMainLoop::PreCreateThreads() {
   // The WindowResizeHelper allows the UI thread to wait on specific renderer
   // and GPU messages from the IO thread. Initializing it before the IO thread
   // starts ensures the affected IO thread messages always have somewhere to go.
-  ui::WindowResizeHelperMac::Get()->Init(base::ThreadTaskRunnerHandle::Get());
+  ui::WindowResizeHelperMac::Get()->Init(
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 #endif
 
   // GpuDataManager should be initialized in parts_->PreCreateThreads through
@@ -823,7 +823,8 @@ void BrowserMainLoop::CreateStartupTasks() {
       GetUIThreadTaskRunner({BrowserTaskType::kDefault}));
 #else
   startup_task_runner_ = std::make_unique<StartupTaskRunner>(
-      base::OnceCallback<void(int)>(), base::ThreadTaskRunnerHandle::Get());
+      base::OnceCallback<void(int)>(),
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 #endif
   StartupTask pre_create_threads = base::BindOnce(
       &BrowserMainLoop::PreCreateThreads, base::Unretained(this));
@@ -870,9 +871,10 @@ BrowserMainLoop::GetResizeTaskRunner() {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       ui::WindowResizeHelperMac::Get()->task_runner();
   // In tests, WindowResizeHelperMac task runner might not be initialized.
-  return task_runner ? task_runner : base::ThreadTaskRunnerHandle::Get();
+  return task_runner ? task_runner
+                     : base::SingleThreadTaskRunner::GetCurrentDefault();
 #else
-  return base::ThreadTaskRunnerHandle::Get();
+  return base::SingleThreadTaskRunner::GetCurrentDefault();
 #endif
 }
 
@@ -1371,7 +1373,8 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
     TRACE_EVENT0("startup",
                  "BrowserMainLoop::PostCreateThreads::InitUserInputMonitor");
     user_input_monitor_ = media::UserInputMonitor::Create(
-        io_thread_->task_runner(), base::ThreadTaskRunnerHandle::Get());
+        io_thread_->task_runner(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   {

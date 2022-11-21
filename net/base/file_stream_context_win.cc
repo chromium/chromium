@@ -15,7 +15,6 @@
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 
@@ -73,7 +72,7 @@ int FileStream::Context::Read(IOBuffer* buf,
       base::BindOnce(&FileStream::Context::ReadAsync, base::Unretained(this),
                      file_.GetPlatformFile(), base::WrapRefCounted(buf),
                      buf_len, &io_context_.overlapped,
-                     base::ThreadTaskRunnerHandle::Get()));
+                     base::SingleThreadTaskRunner::GetCurrentDefault()));
   return ERR_IO_PENDING;
 }
 

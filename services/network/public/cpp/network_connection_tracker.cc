@@ -9,8 +9,8 @@
 #include "base/bind.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -41,7 +41,7 @@ static const int32_t kConnectionTypeInvalid = -1;
 
 NetworkConnectionTracker::NetworkConnectionTracker(BindingCallback callback)
     : bind_receiver_callback_(callback),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       connection_type_(kConnectionTypeInvalid),
       network_change_observer_list_(
           new base::ObserverListThreadSafe<NetworkConnectionObserver>(

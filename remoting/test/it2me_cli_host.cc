@@ -9,7 +9,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "net/base/network_change_notifier.h"
 #include "remoting/base/auto_thread_task_runner.h"
@@ -79,7 +79,7 @@ void It2MeCliHost::Start() {
 
   base::RunLoop ui_loop;
   ui_task_runner_ = new AutoThreadTaskRunner(
-      base::ThreadTaskRunnerHandle::Get(), ui_loop.QuitClosure());
+      base::SingleThreadTaskRunner::GetCurrentDefault(), ui_loop.QuitClosure());
 
   token_getter_->CallWithToken(base::BindOnce(
       &It2MeCliHost::StartCRDHostAndGetCode, base::Unretained(this)));
@@ -153,7 +153,7 @@ void It2MeCliHost::SendMessageToHost(const std::string& type,
   std::string message_json;
   params.SetKey(kMessageType, base::Value(type));
   base::JSONWriter::Write(params, &message_json);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&It2MeCliHost::DoSendMessage,
                                 weak_factory_.GetWeakPtr(), message_json));
 }
@@ -199,7 +199,7 @@ void It2MeCliHost::StartCRDHostAndGetCode(OAuthTokenGetter::Status status,
 void It2MeCliHost::ShutdownHost() {
   if (!host_)
     return;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&It2MeCliHost::DoShutdownHost,
                                 weak_factory_.GetWeakPtr()));
 }

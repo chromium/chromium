@@ -18,8 +18,8 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -118,8 +118,9 @@ class SubresourceFilterComponentInstallerTest : public PlatformTest {
         pref_service_.registry());
 
     auto test_ruleset_service = std::make_unique<TestRulesetService>(
-        &pref_service_, base::ThreadTaskRunnerHandle::Get(),
-        ruleset_service_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get());
+        &pref_service_, base::SingleThreadTaskRunner::GetCurrentDefault(),
+        ruleset_service_dir_.GetPath(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     test_ruleset_service_ = test_ruleset_service.get();
 
     TestingBrowserProcess::GetGlobal()->SetRulesetService(

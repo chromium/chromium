@@ -14,10 +14,10 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "net/base/auth.h"
 #include "net/base/chunked_upload_data_stream.h"
@@ -332,7 +332,7 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment {
 
     std::vector<std::unique_ptr<UploadElementReader>> element_readers;
     element_readers.push_back(std::make_unique<UploadFileElementReader>(
-        base::ThreadTaskRunnerHandle::Get().get(), file_path, 0,
+        base::SingleThreadTaskRunner::GetCurrentDefault().get(), file_path, 0,
         kUploadDataSize, base::Time()));
     upload_data_stream_ = std::make_unique<ElementsUploadDataStream>(
         std::move(element_readers), 0);
@@ -353,7 +353,7 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment {
 
     std::vector<std::unique_ptr<UploadElementReader>> element_readers;
     element_readers.push_back(std::make_unique<UploadFileElementReader>(
-        base::ThreadTaskRunnerHandle::Get().get(), file_path, 0,
+        base::SingleThreadTaskRunner::GetCurrentDefault().get(), file_path, 0,
         kUploadDataSize, base::Time()));
     upload_data_stream_ = std::make_unique<ElementsUploadDataStream>(
         std::move(element_readers), 0);
@@ -377,8 +377,8 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment {
     element_readers.push_back(std::make_unique<UploadBytesElementReader>(
         kUploadData, kFileRangeOffset));
     element_readers.push_back(std::make_unique<UploadFileElementReader>(
-        base::ThreadTaskRunnerHandle::Get().get(), file_path, kFileRangeOffset,
-        kFileRangeLength, base::Time()));
+        base::SingleThreadTaskRunner::GetCurrentDefault().get(), file_path,
+        kFileRangeOffset, kFileRangeLength, base::Time()));
     element_readers.push_back(std::make_unique<UploadBytesElementReader>(
         kUploadData + kFileRangeOffset + kFileRangeLength,
         kUploadDataSize - (kFileRangeOffset + kFileRangeLength)));

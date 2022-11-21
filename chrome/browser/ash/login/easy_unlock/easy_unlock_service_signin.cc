@@ -18,7 +18,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/system/sys_info.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_challenge_wrapper.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_manager.h"
@@ -85,7 +85,7 @@ void RetryDataLoadOnError(
     return;
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&LoadDataForUser, account_id, next_backoff_ms,
                      std::move(callback)),

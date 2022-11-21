@@ -11,7 +11,7 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -213,7 +213,7 @@ void AvatarToolbarButton::MaybeShowProfileSwitchIPH() {
   // delay for a smoother animation.
   base::TimeDelta time_since_creation = base::TimeTicks::Now() - creation_time_;
   if (time_since_creation < g_iph_min_delay_after_creation) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&AvatarToolbarButton::MaybeShowProfileSwitchIPH,
                        weak_ptr_factory_.GetWeakPtr()),

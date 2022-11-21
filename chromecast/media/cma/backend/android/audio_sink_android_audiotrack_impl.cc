@@ -13,7 +13,6 @@
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/cma/backend/android/audio_track_jni_headers/AudioSinkAudioTrackImpl_jni.h"
@@ -87,7 +86,7 @@ AudioSinkAndroidAudioTrackImpl::AudioSinkAndroidAudioTrackImpl(
           use_hw_av_sync_)),
       feeder_thread_("AudioTrack feeder thread"),
       feeder_task_runner_(nullptr),
-      caller_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      caller_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       state_(kStateUninitialized),
       weak_factory_(this) {
   LOG(INFO) << __func__ << "(" << this << "):"

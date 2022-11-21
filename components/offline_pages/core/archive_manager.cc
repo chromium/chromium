@@ -15,7 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 
 namespace offline_pages {
@@ -125,7 +125,8 @@ void ArchiveManager::GetStorageStats(StorageStatsCallback callback) const {
       FROM_HERE,
       base::BindOnce(GetStorageStatsImpl, temporary_archives_dir_,
                      private_archives_dir_, public_archives_dir_,
-                     base::ThreadTaskRunnerHandle::Get(), std::move(callback)));
+                     base::SingleThreadTaskRunner::GetCurrentDefault(),
+                     std::move(callback)));
 }
 
 const base::FilePath& ArchiveManager::GetTemporaryArchivesDir() const {

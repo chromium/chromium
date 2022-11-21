@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 // Necessary to convert async media::VideoDecoder to sync CdmVideoDecoder.
@@ -22,7 +23,6 @@
 // ClearKeyCdm is only for testing.
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "media/base/decoder_status.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
@@ -142,7 +142,7 @@ bool ToCdmVideoFrame(const VideoFrame& video_frame,
 void SetupGlobalEnvironmentIfNeeded() {
   // Creating a base::SingleThreadTaskExecutor to setup
   // base::ThreadTaskRunnerHandle.
-  if (!base::ThreadTaskRunnerHandle::IsSet()) {
+  if (!base::SingleThreadTaskRunner::HasCurrentDefault()) {
     static base::NoDestructor<base::SingleThreadTaskExecutor> task_executor;
   }
 

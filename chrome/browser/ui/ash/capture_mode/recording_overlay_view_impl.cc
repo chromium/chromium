@@ -28,7 +28,7 @@ RecordingOverlayViewImpl::RecordingOverlayViewImpl(Profile* profile)
   // Loading the annotator app in `web_view_` can take a long time, so in order
   // to avoid stalling the initialization of recording, we will do this
   // asynchronously.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&RecordingOverlayViewImpl::InitializeAnnotator,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

@@ -18,8 +18,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/bind_to_current_loop.h"
@@ -451,7 +451,7 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeTask(
 
 VaapiJpegEncodeAccelerator::VaapiJpegEncodeAccelerator(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
-    : task_runner_(base::ThreadTaskRunnerHandle::Get()),
+    : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       io_task_runner_(std::move(io_task_runner)),
       encoder_thread_("VaapiJpegEncoderThread"),
       weak_this_factory_(this) {

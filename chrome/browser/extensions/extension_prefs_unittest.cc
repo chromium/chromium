@@ -11,7 +11,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/install_tracker.h"
@@ -54,7 +54,7 @@ static void AddPattern(URLPatternSet* extent, const std::string& pattern) {
 }
 
 ExtensionPrefsTest::ExtensionPrefsTest()
-    : prefs_(base::ThreadTaskRunnerHandle::Get()) {}
+    : prefs_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 ExtensionPrefsTest::~ExtensionPrefsTest() {
 }
@@ -1154,7 +1154,7 @@ TEST_F(ExtensionPrefsSimpleTest, OldWithholdingPrefMigration) {
   constexpr char kNewPrefKey[] = "withholding_permissions";
 
   content::BrowserTaskEnvironment task_environment_;
-  TestExtensionPrefs prefs(base::ThreadTaskRunnerHandle::Get());
+  TestExtensionPrefs prefs(base::SingleThreadTaskRunner::GetCurrentDefault());
 
   std::string previous_false_id = prefs.AddExtensionAndReturnId("Old false");
   std::string previous_true_id = prefs.AddExtensionAndReturnId("Old true");
@@ -1222,7 +1222,7 @@ TEST_F(ExtensionPrefsSimpleTest, OldWithholdingPrefMigration) {
 // TODO(devlin): Remove this when we remove the migration code, circa M84.
 TEST_F(ExtensionPrefsSimpleTest, MigrateToNewExternalUninstallBits) {
   content::BrowserTaskEnvironment task_environment;
-  TestExtensionPrefs prefs(base::ThreadTaskRunnerHandle::Get());
+  TestExtensionPrefs prefs(base::SingleThreadTaskRunner::GetCurrentDefault());
 
   auto has_extension_pref_entry = [&prefs](const std::string& id) {
     const base::Value::Dict& extensions_dictionary =
@@ -1281,7 +1281,7 @@ TEST_F(ExtensionPrefsSimpleTest, ProfileExtensionPrefsMapTest) {
                                      PrefScope::kProfile};
 
   content::BrowserTaskEnvironment task_environment_;
-  TestExtensionPrefs prefs(base::ThreadTaskRunnerHandle::Get());
+  TestExtensionPrefs prefs(base::SingleThreadTaskRunner::GetCurrentDefault());
 
   auto* registry = prefs.pref_registry().get();
   registry->RegisterBooleanPref(kTestBooleanPref.name, false);
@@ -1330,7 +1330,7 @@ TEST_F(ExtensionPrefsSimpleTest, ExtensionSpecificPrefsMapTest) {
                                      PrefScope::kExtensionSpecific};
 
   content::BrowserTaskEnvironment task_environment_;
-  TestExtensionPrefs prefs(base::ThreadTaskRunnerHandle::Get());
+  TestExtensionPrefs prefs(base::SingleThreadTaskRunner::GetCurrentDefault());
 
   std::string extension_id = prefs.AddExtensionAndReturnId("1");
   prefs.prefs()->SetBooleanPref(extension_id, kTestBooleanPref, true);

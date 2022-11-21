@@ -25,7 +25,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
@@ -518,7 +517,7 @@ class ReadableFakeWebSocketStream : public FakeWebSocketStream {
       return ERR_IO_PENDING;
     if (responses_[index_]->async == ASYNC) {
       read_frames_pending_ = true;
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&ReadableFakeWebSocketStream::DoCallback,
                          base::Unretained(this), frames, std::move(callback)));
@@ -625,7 +624,7 @@ class EchoeyFakeWebSocketStream : public FakeWebSocketStream {
 
  private:
   void PostCallback() {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&EchoeyFakeWebSocketStream::DoCallback,
                                   base::Unretained(this)));
   }
@@ -677,13 +676,13 @@ class ResetOnWriteFakeWebSocketStream : public FakeWebSocketStream {
 
   int WriteFrames(std::vector<std::unique_ptr<WebSocketFrame>>* frames,
                   CompletionOnceCallback callback) override {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             &ResetOnWriteFakeWebSocketStream::CallCallbackUnlessClosed,
             weak_ptr_factory_.GetWeakPtr(), std::move(callback),
             ERR_CONNECTION_RESET));
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             &ResetOnWriteFakeWebSocketStream::CallCallbackUnlessClosed,

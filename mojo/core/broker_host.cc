@@ -10,7 +10,7 @@
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/ranges/algorithm.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/core/broker_messages.h"
 #include "mojo/core/platform_handle_utils.h"
@@ -45,7 +45,7 @@ BrokerHost::BrokerHost(base::Process client_process,
                                      .IsValid()
                                  ? Channel::HandlePolicy::kAcceptHandles
                                  : Channel::HandlePolicy::kRejectHandles,
-                             base::ThreadTaskRunnerHandle::Get());
+                             base::SingleThreadTaskRunner::GetCurrentDefault());
   channel_->Start();
 }
 

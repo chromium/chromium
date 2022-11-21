@@ -5,10 +5,10 @@
 #include "extensions/browser/load_and_localize_file.h"
 
 #include "base/ranges/algorithm.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "extensions/browser/component_extension_resource_manager.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/file_reader.h"
@@ -130,7 +130,7 @@ void LoadAndLocalizeResources(const Extension& extension,
     // Even if no localization is necessary, we post the task asynchronously
     // so that |callback| is not run re-entrantly.
     if (!localize_file) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(callback), std::move(data), absl::nullopt));
     } else {

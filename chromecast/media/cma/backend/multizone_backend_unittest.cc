@@ -17,9 +17,9 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_checker.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromecast/base/task_runner_impl.h"
 #include "chromecast/media/cma/base/decoder_buffer_adapter.h"
@@ -226,7 +226,7 @@ void BufferFeeder::Start() {
   ASSERT_LE(playback_rate_, 2.0f);
   ASSERT_TRUE(backend_->Start(kStartPts));
   ASSERT_TRUE(backend_->SetPlaybackRate(playback_rate_));
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&BufferFeeder::FeedBuffer, base::Unretained(this)));
 }
@@ -319,7 +319,7 @@ void BufferFeeder::OnPushBufferComplete(BufferStatus status) {
   if (feeding_completed_)
     return;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&BufferFeeder::FeedBuffer, base::Unretained(this)));
 }

@@ -15,7 +15,7 @@
 #include "base/containers/contains.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/ptr_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -91,7 +91,7 @@ InputDeviceFactoryEvdev::InputDeviceFactoryEvdev(
     std::unique_ptr<DeviceEventDispatcherEvdev> dispatcher,
     CursorDelegateEvdev* cursor,
     std::unique_ptr<InputDeviceOpener> input_device_opener)
-    : task_runner_(base::ThreadTaskRunnerHandle::Get()),
+    : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       cursor_(cursor),
       shared_palm_state_(new SharedPalmDetectionFilterState),
 #if defined(USE_EVDEV_GESTURES)
@@ -120,7 +120,7 @@ void InputDeviceFactoryEvdev::AddInputDevice(int id,
   std::unique_ptr<EventConverterEvdev> converter =
       input_device_opener_->OpenInputDevice(params);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&InputDeviceFactoryEvdev::AttachInputDevice,
                      weak_ptr_factory_.GetWeakPtr(), std::move(converter)));
@@ -641,7 +641,7 @@ void InputDeviceFactoryEvdev::EnablePalmSuppression(bool enabled) {
 
   // This function can be called while disabling pen devices, so don't disable
   // inline here.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&InputDeviceFactoryEvdev::EnableDevices,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

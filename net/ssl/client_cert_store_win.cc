@@ -21,7 +21,6 @@
 #include "base/scoped_generic.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner_util.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/win/wincrypt_shim.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_win.h"
@@ -112,7 +111,7 @@ ClientCertIdentityList GetClientCertsImpl(HCERTSTORE cert_store,
   ClientCertIdentityList selected_identities;
 
   scoped_refptr<base::SingleThreadTaskRunner> current_thread =
-      base::ThreadTaskRunnerHandle::Get();
+      base::SingleThreadTaskRunner::GetCurrentDefault();
 
   const size_t auth_count = request.cert_authorities.size();
   std::vector<CERT_NAME_BLOB> issuers(auth_count);

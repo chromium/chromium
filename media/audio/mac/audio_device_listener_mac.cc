@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "media/audio/audio_manager.h"
 #include "media/audio/mac/core_audio_util_mac.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -96,7 +95,7 @@ class AudioDeviceListenerMac::PropertyListener {
                    const AudioObjectPropertyAddress* property)
       : monitored_object_(monitored_object),
         property_(property),
-        task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+        task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     weak_this_for_events_ = weak_factory_.GetWeakPtr();
   }
@@ -211,7 +210,7 @@ void AudioDeviceListenerMac::PropertyListenerDeleter::operator()(
 
   // The listener has been listening to changes; defer its deletion in case
   // there is a notification in progress on another thread - to avoid a race.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
           [](PropertyListener* listener) {

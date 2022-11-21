@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "device/bluetooth/bluetooth_adapter_win.h"
 #include "device/bluetooth/bluetooth_gatt_notify_session.h"
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor_win.h"
@@ -261,7 +261,8 @@ void BluetoothRemoteGattCharacteristicWin::UnsubscribeFromNotifications(
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   // TODO(crbug.com/735828): Implement this method.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(callback));
 }
 
 void BluetoothRemoteGattCharacteristicWin::OnGetIncludedDescriptorsCallback(

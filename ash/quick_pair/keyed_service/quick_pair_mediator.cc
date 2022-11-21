@@ -30,7 +30,7 @@
 #include "ash/quick_pair/scanning/scanner_broker_impl.h"
 #include "ash/quick_pair/ui/actions.h"
 #include "ash/quick_pair/ui/ui_broker_impl.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/services/bluetooth_config/fast_pair_delegate.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_process.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_process_manager_impl.h"
@@ -111,7 +111,7 @@ Mediator::Mediator(
 
   // Asynchronously bind to CrosBluetoothConfig so that we don't attempt to
   // bind to it before it has initialized.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&Mediator::BindToCrosBluetoothConfig,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

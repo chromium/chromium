@@ -15,7 +15,7 @@
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/numerics/math_constants.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/vr/content_input_delegate.h"
 #include "chrome/browser/vr/elements/content_element.h"
@@ -777,7 +777,7 @@ void Ui::HandleMenuButtonEvents(InputEventList* input_event_list) {
         case InputEvent::kMenuButtonClicked:
           // Post a task, rather than calling directly, to avoid modifying UI
           // state in the midst of frame rendering.
-          base::ThreadTaskRunnerHandle::Get()->PostTask(
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE,
               base::BindOnce(&Ui::OnMenuButtonClicked, base::Unretained(this)));
           break;

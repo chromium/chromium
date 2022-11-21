@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "media/base/format_utils.h"
 #include "media/base/video_util.h"
@@ -53,7 +53,8 @@ class PlatformVideoFramePoolTest
     SetCreateFrameCB(
         base::BindRepeating(&CreateGpuMemoryBufferVideoFrame<
                             gfx::NativePixmapHandle::kNoModifier>));
-    pool_->set_parent_task_runner(base::ThreadTaskRunnerHandle::Get());
+    pool_->set_parent_task_runner(
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   bool Initialize(const Fourcc& fourcc) {

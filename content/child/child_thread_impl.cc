@@ -38,7 +38,6 @@
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_local.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
@@ -533,8 +532,9 @@ ChildThreadImpl::ChildThreadImpl(base::RepeatingClosure quit_closure,
           new base::WeakPtrFactory<ChildThreadImpl>(this)),
       ipc_task_runner_(options.ipc_task_runner) {
   io_thread_state_ = base::MakeRefCounted<IOThreadState>(
-      base::ThreadTaskRunnerHandle::Get(), weak_factory_.GetWeakPtr(),
-      quit_closure_, std::move(options.service_binder));
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      weak_factory_.GetWeakPtr(), quit_closure_,
+      std::move(options.service_binder));
 
   // |ExposeInterfacesToBrowser()| must be called exactly once. Subclasses which
   // set |exposes_interfaces_to_browser| in Options signify that they take
@@ -566,7 +566,7 @@ void ChildThreadImpl::Init(const Options& options) {
   TRACE_EVENT0("startup", "ChildThreadImpl::Init");
   g_lazy_child_thread_impl_tls.Pointer()->Set(this);
   on_channel_error_called_ = false;
-  main_thread_runner_ = base::ThreadTaskRunnerHandle::Get();
+  main_thread_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 #if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
   // We must make sure to instantiate the IPC Logger *before* we create the
   // channel, otherwise we can get a callback on the IO thread which creates
@@ -578,7 +578,7 @@ void ChildThreadImpl::Init(const Options& options) {
     channel_ = IPC::SyncChannel::Create(
         this, ChildProcess::current()->io_task_runner(),
         ipc_task_runner_ ? ipc_task_runner_
-                         : base::ThreadTaskRunnerHandle::Get(),
+                         : base::SingleThreadTaskRunner::GetCurrentDefault(),
         ChildProcess::current()->GetShutDownEvent());
 #if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
     if (!IsInBrowserProcess())
@@ -696,8 +696,9 @@ void ChildThreadImpl::Init(const Options& options) {
     channel_->Init(IPC::ChannelMojo::CreateClientFactory(
                        std::move(legacy_ipc_bootstrap_pipe),
                        ChildProcess::current()->io_task_runner(),
-                       ipc_task_runner_ ? ipc_task_runner_
-                                        : base::ThreadTaskRunnerHandle::Get()),
+                       ipc_task_runner_
+                           ? ipc_task_runner_
+                           : base::SingleThreadTaskRunner::GetCurrentDefault()),
                    /*create_pipe_now=*/true);
   } else {
     DCHECK(options.startup_filters.empty());

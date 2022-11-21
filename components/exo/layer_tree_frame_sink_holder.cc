@@ -5,7 +5,7 @@
 #include "components/exo/layer_tree_frame_sink_holder.h"
 
 #include "base/containers/contains.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "components/exo/surface_tree_host.h"
 #include "components/viz/common/frame_timing_details.h"
@@ -153,7 +153,8 @@ void LayerTreeFrameSinkHolder::ScheduleDelete() {
   if (delete_pending_)
     return;
   delete_pending_ = true;
-  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                                this);
 }
 
 void LayerTreeFrameSinkHolder::OnDestroyed() {

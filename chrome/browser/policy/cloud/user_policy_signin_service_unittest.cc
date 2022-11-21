@@ -9,9 +9,9 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -90,7 +90,7 @@ std::unique_ptr<UserCloudPolicyManager> BuildCloudPolicyManager() {
   return std::make_unique<UserCloudPolicyManager>(
       std::move(store), base::FilePath(),
       /*cloud_external_data_manager=*/nullptr,
-      base::ThreadTaskRunnerHandle::Get(),
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
       network::TestNetworkConnectionTracker::CreateGetter());
 }
 

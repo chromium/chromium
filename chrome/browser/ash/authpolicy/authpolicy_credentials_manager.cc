@@ -215,7 +215,7 @@ void AuthPolicyCredentialsManager::ScheduleGetUserStatus() {
   // TODO(rsorokin): This does not re-schedule after wake from sleep
   // (and thus the maximal interval between two calls can be (sleep time +
   // kGetUserStatusCallsInterval)) (see crbug.com/726672).
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, scheduled_get_user_status_call_.callback(),
       kGetUserStatusCallsInterval);
 }

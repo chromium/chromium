@@ -249,8 +249,8 @@ void UIControlsOzone::SendEventToSink(ui::Event* event,
   // Post the task before processing the event. This is necessary in case
   // processing the event results in a nested message loop.
   if (closure) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(closure));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(closure));
   }
   WindowTreeHost* host = optional_host ? optional_host : host_.get();
   ui::EventSourceTestApi event_source_test(host->GetEventSource());
@@ -263,7 +263,7 @@ void UIControlsOzone::PostKeyEvent(ui::EventType type,
                                    int64_t display_id,
                                    base::OnceClosure closure,
                                    WindowTreeHost* optional_host) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&UIControlsOzone::PostKeyEventTask,
                                 base::Unretained(this), type, key_code, flags,
                                 display_id, std::move(closure), optional_host));
@@ -297,7 +297,7 @@ void UIControlsOzone::PostMouseEvent(ui::EventType type,
                                      int changed_button_flags,
                                      int64_t display_id,
                                      base::OnceClosure closure) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&UIControlsOzone::PostMouseEventTask,
                      base::Unretained(this), type, host_location, flags,
@@ -325,7 +325,7 @@ void UIControlsOzone::PostTouchEvent(ui::EventType type,
                                      int id,
                                      int64_t display_id,
                                      base::OnceClosure closure) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&UIControlsOzone::PostTouchEventTask,
                                 base::Unretained(this), type, host_location, id,
                                 display_id, std::move(closure)));

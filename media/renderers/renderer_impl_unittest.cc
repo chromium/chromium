@@ -11,11 +11,11 @@
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "media/base/mock_filters.h"
 #include "media/base/test_helpers.h"
@@ -54,11 +54,11 @@ ACTION_P2(SetError, renderer_client, error) {
 }
 
 ACTION(PostCallback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, arg0);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE, arg0);
 }
 
 ACTION(PostQuitWhenIdle) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
 }
 

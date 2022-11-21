@@ -6,7 +6,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -197,7 +197,7 @@ ProfileOAuth2TokenService::StartRequestForMultilogin(
   // in the access token field.
   OAuth2AccessTokenConsumer::TokenResponse token_response =
       TokenResponseBuilder().WithAccessToken(refresh_token).build();
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&OAuth2AccessTokenManager::RequestImpl::InformConsumer,
                      request.get()->AsWeakPtr(),

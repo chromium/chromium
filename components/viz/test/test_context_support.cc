@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 
 namespace viz {
 
@@ -26,7 +25,7 @@ void TestContextSupport::FlushPendingWork() {}
 void TestContextSupport::SignalSyncToken(const gpu::SyncToken& sync_token,
                                          base::OnceClosure callback) {
   sync_point_callbacks_.push_back(std::move(callback));
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&TestContextSupport::CallAllSyncPointCallbacks,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
@@ -38,7 +37,7 @@ bool TestContextSupport::IsSyncTokenSignaled(const gpu::SyncToken& sync_token) {
 void TestContextSupport::SignalQuery(uint32_t query,
                                      base::OnceClosure callback) {
   sync_point_callbacks_.push_back(std::move(callback));
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&TestContextSupport::CallAllSyncPointCallbacks,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
@@ -54,12 +53,12 @@ void TestContextSupport::CallAllSyncPointCallbacks() {
   size_t size = sync_point_callbacks_.size();
   if (out_of_order_callbacks_) {
     for (size_t i = size; i > 0; --i) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, std::move(sync_point_callbacks_[i - 1]));
     }
   } else {
     for (size_t i = 0; i < size; ++i) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, std::move(sync_point_callbacks_[i]));
     }
   }

@@ -11,9 +11,9 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/cast_streaming/public/remoting_proto_enum_utils.h"
 #include "components/cast_streaming/public/remoting_proto_utils.h"
 #include "media/base/media_util.h"
@@ -362,9 +362,9 @@ class CourierRendererTest : public testing::Test {
     controller_->OnMetadataChanged(DefaultMetadata());
 
     RewireSendMessageCallbackToSink();
-    renderer_ =
-        std::make_unique<CourierRenderer>(base::ThreadTaskRunnerHandle::Get(),
-                                          controller_->GetWeakPtr(), nullptr);
+    renderer_ = std::make_unique<CourierRenderer>(
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        controller_->GetWeakPtr(), nullptr);
     renderer_->clock_ = &clock_;
     clock_.Advance(base::Seconds(1));
 

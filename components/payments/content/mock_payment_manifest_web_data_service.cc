@@ -5,7 +5,7 @@
 #include "components/payments/content/mock_payment_manifest_web_data_service.h"
 
 #include "base/files/file_path.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/webdata/common/web_database_service.h"
 
 namespace payments {
@@ -14,9 +14,9 @@ MockPaymentManifestWebDataService::MockPaymentManifestWebDataService()
     : payments::PaymentManifestWebDataService(
           base::MakeRefCounted<WebDatabaseService>(
               base::FilePath(),
-              base::ThreadTaskRunnerHandle::Get(),
-              base::ThreadTaskRunnerHandle::Get()),
-          base::ThreadTaskRunnerHandle::Get()) {}
+              base::SingleThreadTaskRunner::GetCurrentDefault(),
+              base::SingleThreadTaskRunner::GetCurrentDefault()),
+          base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 MockPaymentManifestWebDataService::~MockPaymentManifestWebDataService() =
     default;

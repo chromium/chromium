@@ -40,10 +40,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/hang_watcher.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -776,7 +776,8 @@ void ChromeBrowserMainParts::PostCreateMainMessageLoop() {
   UpgradeDetector::GetInstance()->Init();
 #endif
 
-  ThreadProfiler::SetMainThreadTaskRunner(base::ThreadTaskRunnerHandle::Get());
+  ThreadProfiler::SetMainThreadTaskRunner(
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   // TODO(sebmarchand): Allow this to be created earlier if startup tracing is
   // enabled.
@@ -1975,7 +1976,7 @@ bool ChromeBrowserMainParts::ProcessSingletonNotificationCallback(
   // cross-apartment shell objects (via IVirtualDesktopManager). That is not
   // allowed within a SendMessage handler, which this function is a part of.
   // So, we post a task to asynchronously finish the command line processing.
-  return base::ThreadTaskRunnerHandle::Get()->PostTask(
+  return base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&ProcessSingletonNotificationCallbackImpl,
                                 command_line, current_directory));
 }

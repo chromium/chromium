@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_device_handler.h"
@@ -187,7 +187,7 @@ void CellularInhibitor::OnUninhibit(bool success) {
     TransitionToState(State::kInhibited);
     uninhibit_attempts_so_far_++;
 
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&CellularInhibitor::AttemptUninhibit,
                        weak_ptr_factory_.GetWeakPtr()),

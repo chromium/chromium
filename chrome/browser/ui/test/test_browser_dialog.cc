@@ -11,7 +11,7 @@
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,7 +39,7 @@ namespace {
 class WidgetCloser {
  public:
   WidgetCloser(views::Widget* widget, bool async) : widget_(widget) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&WidgetCloser::CloseWidget,
                                   weak_ptr_factory_.GetWeakPtr(), async));
   }

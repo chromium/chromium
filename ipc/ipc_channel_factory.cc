@@ -5,7 +5,7 @@
 #include "ipc/ipc_channel_factory.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel_mojo.h"
 #include "mojo/public/cpp/bindings/lib/message_quota_checker.h"
@@ -35,7 +35,8 @@ class PlatformChannelFactory : public ChannelFactory {
     DCHECK(handle_.is_mojo_channel_handle());
     return ChannelMojo::Create(
         mojo::ScopedMessagePipeHandle(handle_.mojo_handle), mode_, listener,
-        ipc_task_runner_, base::ThreadTaskRunnerHandle::Get(), quota_checker_);
+        ipc_task_runner_, base::SingleThreadTaskRunner::GetCurrentDefault(),
+        quota_checker_);
 #endif
   }
 

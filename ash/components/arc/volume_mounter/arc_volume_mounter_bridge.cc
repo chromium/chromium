@@ -23,7 +23,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/ash/components/disks/disk.h"
@@ -330,7 +330,7 @@ void ArcVolumeMounterBridge::RequestAllMountPoints() {
   // Deferring the SendAllMountEvents as a task to current thread to not
   // block the mojo request since SendAllMountEvents might take non trivial
   // amount of time.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&ArcVolumeMounterBridge::SendAllMountEvents,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
@@ -384,7 +384,7 @@ void ArcVolumeMounterBridge::SetUpExternalStorageMountPoints(
   ash::UpstartClient::Get()->StartJobWithErrorDetails(
       kArcVmMediaSharingServicesJobName, std::move(environment),
       base::BindPostTask(
-          base::ThreadTaskRunnerHandle::Get(),
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
           base::BindOnce(
               &ArcVolumeMounterBridge::OnSetUpExternalStorageMountPoints,
               weak_ptr_factory_.GetWeakPtr(), std::move(callback))));

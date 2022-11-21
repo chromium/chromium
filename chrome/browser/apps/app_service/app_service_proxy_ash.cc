@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
@@ -146,7 +146,7 @@ void AppServiceProxyAsh::Initialize() {
   if (!profile_->AsTestingProfile()) {
     app_platform_metrics_service_ =
         std::make_unique<AppPlatformMetricsService>(profile_);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&AppServiceProxyAsh::InitAppPlatformMetrics,
                                   weak_ptr_factory_.GetWeakPtr()));
   }

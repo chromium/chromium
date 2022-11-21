@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button_delegate.h"
 
 #include "base/check_op.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -191,7 +191,7 @@ void AvatarToolbarButtonDelegate::ShowHighlightAnimation() {
   DCHECK_NE(GetState(), AvatarToolbarButton::State::kGuestSession);
   avatar_toolbar_button_->UpdateText();
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&AvatarToolbarButtonDelegate::HideHighlightAnimation,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -400,7 +400,7 @@ void AvatarToolbarButtonDelegate::ShowIdentityAnimation() {
 
   // Hide the pill after a while.
   ++identity_animation_timeout_count_;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&AvatarToolbarButtonDelegate::OnIdentityAnimationTimeout,
                      weak_ptr_factory_.GetWeakPtr()),

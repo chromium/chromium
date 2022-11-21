@@ -12,8 +12,8 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/offline_pages/core/model/add_page_task.h"
 #include "components/offline_pages/core/model/get_pages_task.h"
 #include "components/offline_pages/core/offline_page_types.h"
@@ -48,13 +48,14 @@ void OfflinePageMetadataStoreTestUtil::BuildStore() {
   }
 
   store_ = std::make_unique<OfflinePageMetadataStore>(
-      base::ThreadTaskRunnerHandle::Get(), temp_directory_.GetPath());
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      temp_directory_.GetPath());
   store_ptr_ = store_.get();
 }
 
 void OfflinePageMetadataStoreTestUtil::BuildStoreInMemory() {
   store_ = std::make_unique<OfflinePageMetadataStore>(
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   store_ptr_ = store_.get();
 }
 

@@ -56,7 +56,7 @@ class ObservableFakeSessionManagerClient : public FakeSessionManagerClient {
 
     // Run the task just after the |callback| is invoked.
     if (!on_retrieve_device_policy_called_.is_null()) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, on_retrieve_device_policy_called_);
     }
   }

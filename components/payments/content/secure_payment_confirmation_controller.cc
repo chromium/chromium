@@ -9,7 +9,7 @@
 #include "base/location.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/payments/content/content_payment_request_delegate.h"
 #include "components/payments/content/payment_request.h"
@@ -241,7 +241,7 @@ void SecurePaymentConfirmationController::OnCancel() {
   if (!request_)
     return;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&PaymentRequest::OnUserCancelled, request_));
 }
 
@@ -254,7 +254,7 @@ void SecurePaymentConfirmationController::OnOptOut() {
   if (!request_)
     return;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&PaymentRequest::OnUserOptedOut, request_));
 }
 
@@ -268,7 +268,7 @@ void SecurePaymentConfirmationController::OnConfirm() {
   // with its animated processing spinner. For example, on Linux, there's no
   // OS-level UI, while on MacOS, there's an OS-level prompt for the Touch ID
   // that shows on top of Chrome.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&PaymentRequest::Pay, request_));
 }
 

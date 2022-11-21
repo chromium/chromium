@@ -17,7 +17,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_pkcs11_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_pkcs11_client.h"
@@ -60,7 +59,8 @@ class FakeTaskRunner : public base::TaskRunner {
                        base::OnceClosure task,
                        base::TimeDelta delay) override {
     delays_->push_back(delay.InMilliseconds());
-    base::ThreadTaskRunnerHandle::Get()->PostTask(from_here, std::move(task));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        from_here, std::move(task));
     return true;
   }
 
@@ -137,7 +137,7 @@ class TestCryptohomePkcs11Client : public FakeCryptohomePkcs11Client {
 
     if (get_tpm_token_info_failure_count_ > 0) {
       --get_tpm_token_info_failure_count_;
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
       return;
     }
@@ -146,7 +146,7 @@ class TestCryptohomePkcs11Client : public FakeCryptohomePkcs11Client {
       --get_tpm_token_info_not_set_count_;
       ::user_data_auth::Pkcs11GetTpmTokenInfoReply reply;
       reply.mutable_token_info()->set_slot(-1);
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), reply));
       return;
     }

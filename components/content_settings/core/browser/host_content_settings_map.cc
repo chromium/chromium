@@ -17,7 +17,7 @@
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -244,7 +244,7 @@ HostContentSettingsMap::HostContentSettingsMap(PrefService* prefs,
                                                bool store_last_modified,
                                                bool restore_session,
                                                bool should_record_metrics)
-    : RefcountedKeyedService(base::ThreadTaskRunnerHandle::Get()),
+    : RefcountedKeyedService(base::SingleThreadTaskRunner::GetCurrentDefault()),
 #ifndef NDEBUG
       used_from_thread_id_(base::PlatformThread::CurrentId()),
 #endif

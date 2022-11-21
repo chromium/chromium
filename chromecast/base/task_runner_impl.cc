@@ -7,13 +7,12 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 
 namespace chromecast {
 
 TaskRunnerImpl::TaskRunnerImpl()
-    : TaskRunnerImpl(base::ThreadTaskRunnerHandle::Get()) {}
+    : TaskRunnerImpl(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 TaskRunnerImpl::TaskRunnerImpl(
     scoped_refptr<base::SingleThreadTaskRunner> runner)

@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/common/base/decoder_config_logging.h"
 
@@ -136,7 +136,7 @@ bool AudioDecoderSoftwareWrapper::CreateSoftwareDecoder(
   }
   // TODO(kmackay) Consider using planar float instead.
   software_decoder_ = media::CastAudioDecoder::Create(
-      base::ThreadTaskRunnerHandle::Get(), config,
+      base::SingleThreadTaskRunner::GetCurrentDefault(), config,
       media::CastAudioDecoder::kOutputSigned16);
   if (!software_decoder_) {
     decoder_error_ = true;

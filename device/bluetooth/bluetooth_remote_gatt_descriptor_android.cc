@@ -13,7 +13,6 @@
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service_android.h"
 #include "device/bluetooth/jni_headers/ChromeBluetoothRemoteGattDescriptor_jni.h"
 
@@ -82,7 +81,7 @@ BluetoothRemoteGattDescriptorAndroid::GetPermissions() const {
 void BluetoothRemoteGattDescriptorAndroid::ReadRemoteDescriptor(
     ValueCallback callback) {
   if (read_pending_ || write_pending_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        BluetoothGattService::GattErrorCode::kInProgress,
@@ -92,7 +91,7 @@ void BluetoothRemoteGattDescriptorAndroid::ReadRemoteDescriptor(
 
   if (!Java_ChromeBluetoothRemoteGattDescriptor_readRemoteDescriptor(
           AttachCurrentThread(), j_descriptor_)) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   BluetoothGattService::GattErrorCode::kFailed,
                                   /*value=*/std::vector<uint8_t>()));
@@ -108,7 +107,7 @@ void BluetoothRemoteGattDescriptorAndroid::WriteRemoteDescriptor(
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   if (read_pending_ || write_pending_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(error_callback),
                        BluetoothGattService::GattErrorCode::kInProgress));
@@ -118,7 +117,7 @@ void BluetoothRemoteGattDescriptorAndroid::WriteRemoteDescriptor(
   JNIEnv* env = AttachCurrentThread();
   if (!Java_ChromeBluetoothRemoteGattDescriptor_writeRemoteDescriptor(
           env, j_descriptor_, base::android::ToJavaByteArray(env, new_value))) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             std::move(error_callback),

@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -290,7 +290,7 @@ auto RunTracing(
 auto RunVideoCapture(
     mojo::PendingReceiver<video_capture::mojom::VideoCaptureService> receiver) {
   return std::make_unique<UtilityThreadVideoCaptureServiceImpl>(
-      std::move(receiver), base::ThreadTaskRunnerHandle::Get());
+      std::move(receiver), base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 #if BUILDFLAG(ENABLE_VR) && !BUILDFLAG(IS_ANDROID)

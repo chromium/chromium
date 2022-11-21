@@ -59,8 +59,8 @@ AwProxyConfigMonitor::AwProxyConfigMonitor() {
   TRACE_EVENT0("startup", "AwProxyConfigMonitor");
   proxy_config_service_android_ =
       std::make_unique<net::ProxyConfigServiceAndroid>(
-          base::ThreadTaskRunnerHandle::Get(),
-          base::ThreadTaskRunnerHandle::Get());
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
+          base::SingleThreadTaskRunner::GetCurrentDefault());
   proxy_config_service_android_->set_exclude_pac_url(true);
   proxy_config_service_android_->AddObserver(this);
 }

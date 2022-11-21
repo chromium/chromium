@@ -22,7 +22,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/features.h"
@@ -382,7 +381,7 @@ class TestConnectJob : public ConnectJob {
         // abstract time for the purpose of unittests. Unfortunately, we have
         // a lot of third-party components that directly call the various
         // time functions, so this change would be rather invasive.
-        base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(base::IgnoreResult(&TestConnectJob::DoConnect),
                            weak_factory_.GetWeakPtr(), true /* successful */,
@@ -391,7 +390,7 @@ class TestConnectJob : public ConnectJob {
         return ERR_IO_PENDING;
       case kMockPendingFailingJob:
         set_load_state(LOAD_STATE_CONNECTING);
-        base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(base::IgnoreResult(&TestConnectJob::DoConnect),
                            weak_factory_.GetWeakPtr(), false /* error */,
@@ -408,7 +407,7 @@ class TestConnectJob : public ConnectJob {
                          true /* cert_error */);
       case kMockPendingCertErrorJob:
         set_load_state(LOAD_STATE_CONNECTING);
-        base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(base::IgnoreResult(&TestConnectJob::DoConnect),
                            weak_factory_.GetWeakPtr(), false /* error */,
@@ -422,7 +421,7 @@ class TestConnectJob : public ConnectJob {
       case kMockPendingAdditionalErrorStateJob:
         set_load_state(LOAD_STATE_CONNECTING);
         store_additional_error_state_ = true;
-        base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(base::IgnoreResult(&TestConnectJob::DoConnect),
                            weak_factory_.GetWeakPtr(), false /* error */,
@@ -483,7 +482,7 @@ class TestConnectJob : public ConnectJob {
 
   void DoAdvanceAuthChallenge(int remaining_challenges,
                               bool succeed_after_last_challenge) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&TestConnectJob::InvokeNextProxyAuthCallback,
                        weak_factory_.GetWeakPtr(), remaining_challenges,
@@ -4303,7 +4302,7 @@ TEST_F(ClientSocketPoolBaseTest, PreconnectWithoutBackupJob) {
   // *would* complete if it were created.
   base::RunLoop loop;
   connect_job_factory_->set_job_type(TestConnectJob::kMockPendingJob);
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, loop.QuitClosure(), base::Seconds(1));
   loop.Run();
   EXPECT_FALSE(pool_->HasGroupForTesting(TestGroupId("a")));

@@ -37,8 +37,8 @@ class MicroBenchmarkControllerTest : public testing::Test {
         &layer_tree_host_client_, &task_graph_runner_, animation_host_.get());
     layer_tree_host_->SetRootLayer(Layer::Create());
     layer_tree_host_->InitializeForTesting(
-        TaskRunnerProvider::Create(base::ThreadTaskRunnerHandle::Get(),
-                                   nullptr),
+        TaskRunnerProvider::Create(
+            base::SingleThreadTaskRunner::GetCurrentDefault(), nullptr),
         std::unique_ptr<Proxy>(new FakeProxy));
   }
 

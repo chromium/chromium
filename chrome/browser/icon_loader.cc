@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -38,7 +38,7 @@ IconLoader::~IconLoader() = default;
 
 #if !BUILDFLAG(IS_CHROMEOS)
 void IconLoader::Start() {
-  target_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  target_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 
   base::ThreadPool::PostTask(
       FROM_HERE, traits(),

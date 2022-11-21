@@ -15,7 +15,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/syslog_logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
@@ -178,7 +178,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
         int value = length_seconds.value();
         if (value < 0) {
           SYSLOG(ERROR) << "Invalid parameters for Urandom routine.";
-          base::ThreadTaskRunnerHandle::Get()->PostTask(
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE, std::move(invalid_parameters_callback));
           break;
         }
@@ -208,7 +208,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
           !PopulateMojoEnumValueIfValid(expected_status.value(),
                                         &expected_status_enum)) {
         SYSLOG(ERROR) << "Invalid parameters for AC Power routine.";
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, std::move(invalid_parameters_callback));
         break;
       }
@@ -230,7 +230,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
         int value = length_seconds.value();
         if (value < 0) {
           SYSLOG(ERROR) << "Invalid parameters for CPU cache routine.";
-          base::ThreadTaskRunnerHandle::Get()->PostTask(
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE, std::move(invalid_parameters_callback));
           break;
         }
@@ -250,7 +250,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
         int value = length_seconds.value();
         if (value < 0) {
           SYSLOG(ERROR) << "Invalid parameters for CPU stress routine.";
-          base::ThreadTaskRunnerHandle::Get()->PostTask(
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE, std::move(invalid_parameters_callback));
           break;
         }
@@ -272,7 +272,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
         if (value < 0) {
           SYSLOG(ERROR)
               << "Invalid parameters for floating point accuracy routine.";
-          base::ThreadTaskRunnerHandle::Get()->PostTask(
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE, std::move(invalid_parameters_callback));
           break;
         }
@@ -293,7 +293,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
         int value = wear_level_threshold.value();
         if (value < 0) {
           SYSLOG(ERROR) << "Invalid parameters for NVMe wear level routine.";
-          base::ThreadTaskRunnerHandle::Get()->PostTask(
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE, std::move(invalid_parameters_callback));
           break;
         }
@@ -313,7 +313,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
           !PopulateMojoEnumValueIfValid(nvme_self_test_type.value(),
                                         &nvme_self_test_type_enum)) {
         SYSLOG(ERROR) << "Invalid parameters for NVMe self-test routine.";
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, std::move(invalid_parameters_callback));
         break;
       }
@@ -336,7 +336,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
           !type.has_value() ||
           !PopulateMojoEnumValueIfValid(type.value(), &type_enum)) {
         SYSLOG(ERROR) << "Invalid parameters for disk read routine.";
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, std::move(invalid_parameters_callback));
         break;
       }
@@ -355,7 +355,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
         int value = length_seconds.value();
         if (value < 0) {
           SYSLOG(ERROR) << "Invalid parameters for prime search routine.";
-          base::ThreadTaskRunnerHandle::Get()->PostTask(
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE, std::move(invalid_parameters_callback));
           break;
         }
@@ -379,7 +379,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
           length_seconds.value() < 0 ||
           maximum_discharge_percent_allowed.value() < 0) {
         SYSLOG(ERROR) << "Invalid parameters for BatteryDischarge routine.";
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, std::move(invalid_parameters_callback));
         break;
       }
@@ -402,7 +402,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
           length_seconds.value() < 0 ||
           minimum_charge_percent_required.value() < 0) {
         SYSLOG(ERROR) << "Invalid parameters for BatteryCharge routine.";
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, std::move(invalid_parameters_callback));
         break;
       }
@@ -522,12 +522,12 @@ void DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived(
     ash::cros_healthd::mojom::RunRoutineResponsePtr response) {
   if (!response) {
     SYSLOG(ERROR) << "No RunRoutineResponse received from cros_healthd.";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(failed_callback), nullptr));
     return;
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(succeeded_callback),
                      std::make_unique<Payload>(std::move(response))));

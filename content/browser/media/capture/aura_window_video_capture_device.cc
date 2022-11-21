@@ -12,7 +12,7 @@
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -41,7 +41,7 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
                 MouseCursorOverlayController* cursor_controller,
                 const DesktopMediaID& source_id)
       : device_(std::move(device)),
-        device_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+        device_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
         cursor_controller_(cursor_controller),
         target_type_(source_id.type) {
     DCHECK(device_task_runner_);

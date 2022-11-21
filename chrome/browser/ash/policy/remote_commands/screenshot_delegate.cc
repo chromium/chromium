@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/syslog_logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/uploading/status_uploader.h"
@@ -84,7 +84,7 @@ std::unique_ptr<UploadJob> ScreenshotDelegate::CreateUploadJob(
       device_oauth2_token_service->GetAccessTokenManager(),
       g_browser_process->shared_url_loader_factory(), delegate,
       base::WrapUnique(new UploadJobImpl::RandomMimeBoundaryGenerator),
-      traffic_annotation, base::ThreadTaskRunnerHandle::Get()));
+      traffic_annotation, base::SingleThreadTaskRunner::GetCurrentDefault()));
 }
 
 void ScreenshotDelegate::OnScreenshotTaken(

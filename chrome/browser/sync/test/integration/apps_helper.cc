@@ -289,7 +289,7 @@ AppsStatusChangeChecker::AppsStatusChangeChecker()
         ->updater()
         ->SetUpdatingStartedCallbackForTesting(base::BindLambdaForTesting(
             [self = weak_ptr_factory_.GetWeakPtr(), profile]() {
-              base::ThreadTaskRunnerHandle::Get()->PostTask(
+              base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
                   FROM_HERE,
                   base::BindOnce(&AppsStatusChangeChecker::InstallSyncedApps,
                                  self, base::Unretained(profile)));

@@ -12,10 +12,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/favicon/core/favicon_client.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
@@ -56,13 +56,13 @@ const char kDummyIconUrl[] = "http://www.example.com/touch_icon.png";
 const SkColor kTestColor = SK_ColorRED;
 
 ACTION_P(PostFetchReply, p0) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(*arg2), p0, image_fetcher::RequestMetadata()));
 }
 
 ACTION_P2(PostFetchReplyWithMetadata, p0, p1) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(*arg2), p0, p1));
 }
 
@@ -140,7 +140,7 @@ TEST_F(LargeIconServiceTest, ShouldGetFromGoogleServer) {
               CanSetOnDemandFavicons(GURL(kDummyUrl),
                                      favicon_base::IconType::kTouchIcon, _))
       .WillOnce([](auto, auto, base::OnceCallback<void(bool)> callback) {
-        return base::ThreadTaskRunnerHandle::Get()->PostTask(
+        return base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback), true));
       });
 
@@ -154,7 +154,7 @@ TEST_F(LargeIconServiceTest, ShouldGetFromGoogleServer) {
                                   favicon_base::IconType::kTouchIcon, _, _))
       .WillOnce(
           [](auto, auto, auto, auto, base::OnceCallback<void(bool)> callback) {
-            return base::ThreadTaskRunnerHandle::Get()->PostTask(
+            return base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE, base::BindOnce(std::move(callback), true));
           });
 
@@ -182,7 +182,7 @@ TEST_F(LargeIconServiceTest, ShouldGetFromGoogleServerWithOriginalUrl) {
               CanSetOnDemandFavicons(GURL(kDummyUrl),
                                      favicon_base::IconType::kTouchIcon, _))
       .WillOnce([](auto, auto, base::OnceCallback<void(bool)> callback) {
-        return base::ThreadTaskRunnerHandle::Get()->PostTask(
+        return base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback), true));
       });
 
@@ -199,7 +199,7 @@ TEST_F(LargeIconServiceTest, ShouldGetFromGoogleServerWithOriginalUrl) {
                                   favicon_base::IconType::kTouchIcon, _, _))
       .WillOnce(
           [](auto, auto, auto, auto, base::OnceCallback<void(bool)> callback) {
-            return base::ThreadTaskRunnerHandle::Get()->PostTask(
+            return base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE, base::BindOnce(std::move(callback), true));
           });
 
@@ -226,7 +226,7 @@ TEST_F(LargeIconServiceTest, ShouldTrimQueryParametersForGoogleServer) {
               CanSetOnDemandFavicons(GURL(kDummyUrlWithQuery),
                                      favicon_base::IconType::kTouchIcon, _))
       .WillOnce([](auto, auto, base::OnceCallback<void(bool)> callback) {
-        return base::ThreadTaskRunnerHandle::Get()->PostTask(
+        return base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback), true));
       });
 
@@ -253,7 +253,7 @@ TEST_F(LargeIconServiceTest, ShouldNotCheckOnPublicUrls) {
               CanSetOnDemandFavicons(GURL(kDummyUrl),
                                      favicon_base::IconType::kTouchIcon, _))
       .WillOnce([](auto, auto, base::OnceCallback<void(bool)> callback) {
-        return base::ThreadTaskRunnerHandle::Get()->PostTask(
+        return base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback), true));
       });
 
@@ -330,7 +330,7 @@ TEST_F(LargeIconServiceTest, ShouldReportUnavailableIfFetchFromServerFails) {
               CanSetOnDemandFavicons(GURL(kDummyUrl),
                                      favicon_base::IconType::kTouchIcon, _))
       .WillOnce([](auto, auto, base::OnceCallback<void(bool)> callback) {
-        return base::ThreadTaskRunnerHandle::Get()->PostTask(
+        return base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback), true));
       });
   EXPECT_CALL(mock_favicon_service_, SetOnDemandFavicons).Times(0);
@@ -389,7 +389,7 @@ TEST_F(LargeIconServiceTest, ShouldNotGetFromGoogleServerIfCannotSet) {
               CanSetOnDemandFavicons(GURL(kDummyUrl),
                                      favicon_base::IconType::kTouchIcon, _))
       .WillOnce([](auto, auto, base::OnceCallback<void(bool)> callback) {
-        return base::ThreadTaskRunnerHandle::Get()->PostTask(
+        return base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback), false));
       });
 
@@ -480,8 +480,8 @@ class LargeIconServiceGetterTest : public LargeIconServiceTest,
                            favicon_base::FaviconRawBitmapCallback callback,
                            base::CancelableTaskTracker* tracker) {
           return tracker->PostTask(
-              base::ThreadTaskRunnerHandle::Get().get(), FROM_HERE,
-              base::BindOnce(std::move(callback), mock_result));
+              base::SingleThreadTaskRunner::GetCurrentDefault().get(),
+              FROM_HERE, base::BindOnce(std::move(callback), mock_result));
         });
   }
 

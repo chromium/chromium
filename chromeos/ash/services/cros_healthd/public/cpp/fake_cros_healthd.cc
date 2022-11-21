@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/notreached.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
@@ -487,7 +487,7 @@ void FakeCrosHealthd::GetServiceStatus(GetServiceStatusCallback callback) {
 
 void FakeCrosHealthd::GetAvailableRoutines(
     GetAvailableRoutinesCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(std::move(callback), available_routines_),
       callback_delay_);
 }
@@ -499,7 +499,7 @@ void FakeCrosHealthd::GetRoutineUpdate(
     GetRoutineUpdateCallback callback) {
   routine_update_params_ =
       FakeCrosHealthd::RoutineUpdateParams(id, command, include_output);
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
           std::move(callback),
@@ -513,7 +513,7 @@ void FakeCrosHealthd::GetRoutineUpdate(
 void FakeCrosHealthd::RunUrandomRoutine(mojom::NullableUint32Ptr length_seconds,
                                         RunUrandomRoutineCallback callback) {
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kUrandom;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_.Clone()),
       callback_delay_);
@@ -522,7 +522,7 @@ void FakeCrosHealthd::RunUrandomRoutine(mojom::NullableUint32Ptr length_seconds,
 void FakeCrosHealthd::RunBatteryCapacityRoutine(
     RunBatteryCapacityRoutineCallback callback) {
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kBatteryCapacity;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_.Clone()),
       callback_delay_);
@@ -531,7 +531,7 @@ void FakeCrosHealthd::RunBatteryCapacityRoutine(
 void FakeCrosHealthd::RunBatteryHealthRoutine(
     RunBatteryHealthRoutineCallback callback) {
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kBatteryHealth;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_.Clone()),
       callback_delay_);
@@ -540,7 +540,7 @@ void FakeCrosHealthd::RunBatteryHealthRoutine(
 void FakeCrosHealthd::RunSmartctlCheckRoutine(
     RunSmartctlCheckRoutineCallback callback) {
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kSmartctlCheck;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_.Clone()),
       callback_delay_);
@@ -551,7 +551,7 @@ void FakeCrosHealthd::RunAcPowerRoutine(
     const absl::optional<std::string>& expected_power_type,
     RunAcPowerRoutineCallback callback) {
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kAcPower;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_.Clone()),
       callback_delay_);
@@ -561,7 +561,7 @@ void FakeCrosHealthd::RunCpuCacheRoutine(
     mojom::NullableUint32Ptr length_seconds,
     RunCpuCacheRoutineCallback callback) {
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kCpuCache;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_.Clone()),
       callback_delay_);
@@ -571,7 +571,7 @@ void FakeCrosHealthd::RunCpuStressRoutine(
     mojom::NullableUint32Ptr length_seconds,
     RunCpuStressRoutineCallback callback) {
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kCpuStress;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_.Clone()),
       callback_delay_);
@@ -581,7 +581,7 @@ void FakeCrosHealthd::RunFloatingPointAccuracyRoutine(
     mojom::NullableUint32Ptr length_seconds,
     RunFloatingPointAccuracyRoutineCallback callback) {
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kFloatingPointAccuracy;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_.Clone()),
       callback_delay_);
@@ -591,7 +591,7 @@ void FakeCrosHealthd::DEPRECATED_RunNvmeWearLevelRoutine(
     uint32_t wear_level_threshold,
     RunNvmeWearLevelRoutineCallback callback) {
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kNvmeWearLevel;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_.Clone()),
       callback_delay_);
@@ -601,7 +601,7 @@ void FakeCrosHealthd::RunNvmeWearLevelRoutine(
     mojom::NullableUint32Ptr wear_level_threshold,
     RunNvmeWearLevelRoutineCallback callback) {
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kNvmeWearLevel;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_.Clone()),
       callback_delay_);
@@ -611,7 +611,7 @@ void FakeCrosHealthd::RunNvmeSelfTestRoutine(
     mojom::NvmeSelfTestTypeEnum nvme_self_test_type,
     RunNvmeSelfTestRoutineCallback callback) {
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kNvmeSelfTest;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_.Clone()),
       callback_delay_);
@@ -622,7 +622,7 @@ void FakeCrosHealthd::RunDiskReadRoutine(mojom::DiskReadRoutineTypeEnum type,
                                          uint32_t file_size_mb,
                                          RunDiskReadRoutineCallback callback) {
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kDiskRead;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_.Clone()),
       callback_delay_);
@@ -632,7 +632,7 @@ void FakeCrosHealthd::RunPrimeSearchRoutine(
     mojom::NullableUint32Ptr length_seconds,
     RunPrimeSearchRoutineCallback callback) {
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kPrimeSearch;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_.Clone()),
       callback_delay_);
@@ -643,7 +643,7 @@ void FakeCrosHealthd::RunBatteryDischargeRoutine(
     uint32_t maximum_discharge_percent_allowed,
     RunBatteryDischargeRoutineCallback callback) {
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kBatteryDischarge;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_.Clone()),
       callback_delay_);
@@ -654,7 +654,7 @@ void FakeCrosHealthd::RunBatteryChargeRoutine(
     uint32_t minimum_charge_percent_required,
     RunBatteryChargeRoutineCallback callback) {
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kBatteryCharge;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_.Clone()),
       callback_delay_);
@@ -662,7 +662,7 @@ void FakeCrosHealthd::RunBatteryChargeRoutine(
 
 void FakeCrosHealthd::RunMemoryRoutine(RunMemoryRoutineCallback callback) {
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kMemory;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_.Clone()),
       callback_delay_);
@@ -779,7 +779,7 @@ void FakeCrosHealthd::RunPrivacyScreenRoutine(
     bool target_state,
     RunPrivacyScreenRoutineCallback callback) {
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kPrivacyScreen;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_.Clone()),
       callback_delay_);
@@ -824,7 +824,7 @@ void FakeCrosHealthd::AddUsbObserver(
 void FakeCrosHealthd::ProbeTelemetryInfo(
     const std::vector<mojom::ProbeCategoryEnum>& categories,
     ProbeTelemetryInfoCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), telemetry_response_info_.Clone()),
       callback_delay_);
@@ -832,7 +832,7 @@ void FakeCrosHealthd::ProbeTelemetryInfo(
 
 void FakeCrosHealthd::ProbeProcessInfo(const uint32_t process_id,
                                        ProbeProcessInfoCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(std::move(callback), process_response_.Clone()),
       callback_delay_);
 }
@@ -841,7 +841,7 @@ void FakeCrosHealthd::ProbeMultipleProcessInfo(
     const absl::optional<std::vector<uint32_t>>& process_ids,
     bool ignore_single_process_error,
     ProbeMultipleProcessInfoCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), multiple_process_response_.Clone()),
       callback_delay_);

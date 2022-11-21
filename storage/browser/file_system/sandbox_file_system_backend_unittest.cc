@@ -15,11 +15,11 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_features.h"
@@ -107,8 +107,9 @@ class SandboxFileSystemBackendTest
   void SetUpNewDelegate(const FileSystemOptions& options) {
     incognito_env_override_ = leveldb_chrome::NewMemEnv("FileSystem");
     delegate_ = std::make_unique<SandboxFileSystemBackendDelegate>(
-        quota_manager_->proxy(), base::ThreadTaskRunnerHandle::Get(),
-        data_dir_.GetPath(), /*special_storage_policy=*/nullptr, options,
+        quota_manager_->proxy(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(), data_dir_.GetPath(),
+        /*special_storage_policy=*/nullptr, options,
         options.is_in_memory() ? incognito_env_override_.get() : nullptr);
   }
 

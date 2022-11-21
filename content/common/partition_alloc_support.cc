@@ -23,6 +23,7 @@
 #include "base/memory/nonscannable_memory.h"
 #include "base/memory/raw_ptr_asan_service.h"
 #include "base/no_destructor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/public/common/content_features.h"
@@ -34,7 +35,6 @@
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
-#include "base/threading/thread_task_runner_handle.h"
 #endif
 
 namespace content {
@@ -457,7 +457,8 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
   }
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  base::allocator::StartMemoryReclaimer(base::ThreadTaskRunnerHandle::Get());
+  base::allocator::StartMemoryReclaimer(
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 #endif
 
   if (base::FeatureList::IsEnabled(
@@ -506,7 +507,7 @@ void PartitionAllocSupport::OnBackgrounded() {
   // in the meantime, the worst case is a few more system calls.
   //
   // TODO(lizeb): Remove once/if the behavior of idle tasks changes.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce([]() {
         ::partition_alloc::MemoryReclaimer::Instance()->ReclaimAll();
       }),

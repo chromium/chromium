@@ -15,7 +15,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/blocklist_factory.h"
 #include "chrome/browser/extensions/blocklist_state_fetcher.h"
@@ -101,7 +100,8 @@ class SafeBrowsingClientImpl
 
   SafeBrowsingClientImpl(const std::set<std::string>& extension_ids,
                          OnResultCallback callback)
-      : callback_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      : callback_task_runner_(
+            base::SingleThreadTaskRunner::GetCurrentDefault()),
         callback_(std::move(callback)) {}
 
   ~SafeBrowsingClientImpl() override {}
@@ -189,7 +189,7 @@ void Blocklist::GetBlocklistedIDs(const std::set<std::string>& ids,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (ids.empty() || !GetDatabaseManager().get()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), BlocklistStateMap()));
     return;
   }

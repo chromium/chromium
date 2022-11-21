@@ -7,7 +7,7 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/common/content_navigation_policy.h"
@@ -157,8 +157,8 @@ void PageLifecycleStateManager::SendUpdatesToRendererIfNeeded(
     // TODO(https://crbug.com/1153155): For some tests, |render_view_host_impl_|
     // does not have the associated page.
     if (done_cb) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                    std::move(done_cb));
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(done_cb));
     }
     return;
   }

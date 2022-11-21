@@ -10,7 +10,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/local_discovery/service_discovery_client_impl.h"
 #include "net/base/net_errors.h"
 #include "net/dns/mdns_client_impl.h"
@@ -220,7 +219,7 @@ class ServiceDiscoveryTest : public ::testing::Test {
   void RunFor(base::TimeDelta time_period) {
     base::RunLoop run_loop;
     base::CancelableOnceClosure callback(run_loop.QuitWhenIdleClosure());
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, callback.callback(), time_period);
     run_loop.Run();
     callback.Cancel();

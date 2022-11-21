@@ -831,7 +831,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheNetworkLimitBrowserTest,
   // Make sure enough time passed to trigger network request eviction if the
   // load above didn't finish.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(),
       kGracePeriodToFinishLoading + base::Seconds(1));
   run_loop.Run();
@@ -874,7 +874,7 @@ IN_PROC_BROWSER_TEST_F(
   // Make sure enough time passed to trigger network request eviction if the
   // load above didn't finish.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(),
       kGracePeriodToFinishLoading + base::Seconds(1));
   run_loop.Run();

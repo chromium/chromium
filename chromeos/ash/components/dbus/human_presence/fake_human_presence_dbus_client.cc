@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -43,14 +43,14 @@ void FakeHumanPresenceDBusClient::RemoveObserver(Observer* observer) {
 void FakeHumanPresenceDBusClient::GetResultHpsSense(GetResultCallback cb) {
   ++hps_sense_count_;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(cb), hps_sense_result_));
 }
 
 void FakeHumanPresenceDBusClient::GetResultHpsNotify(GetResultCallback cb) {
   ++hps_notify_count_;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(cb), hps_notify_result_));
 }
 
@@ -74,7 +74,7 @@ void FakeHumanPresenceDBusClient::DisableHpsNotify() {
 
 void FakeHumanPresenceDBusClient::WaitForServiceToBeAvailable(
     dbus::ObjectProxy::WaitForServiceToBeAvailableCallback cb) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(cb), hps_service_is_available_));
 }
 

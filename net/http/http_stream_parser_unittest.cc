@@ -19,8 +19,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "net/base/chunked_upload_data_stream.h"
 #include "net/base/elements_upload_data_stream.h"
 #include "net/base/io_buffer.h"
@@ -86,7 +86,7 @@ class ReadErrorUploadDataStream : public UploadDataStream {
 
   int ReadInternal(IOBuffer* buf, int buf_len) override {
     if (async_ == FailureMode::ASYNC) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&ReadErrorUploadDataStream::CompleteRead,
                                     weak_factory_.GetWeakPtr()));
       return ERR_IO_PENDING;
@@ -213,7 +213,7 @@ class InitAsyncUploadDataStream : public ChunkedUploadDataStream {
   void CompleteInit() { UploadDataStream::OnInitCompleted(OK); }
 
   int InitInternal(const NetLogWithSource& net_log) override {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&InitAsyncUploadDataStream::CompleteInit,
                                   weak_factory_.GetWeakPtr()));
     return ERR_IO_PENDING;
@@ -388,8 +388,8 @@ TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBody_FileBody) {
     std::vector<std::unique_ptr<UploadElementReader>> element_readers;
 
     element_readers.push_back(std::make_unique<UploadFileElementReader>(
-        base::ThreadTaskRunnerHandle::Get().get(), temp_file_path, 0, 0,
-        base::Time()));
+        base::SingleThreadTaskRunner::GetCurrentDefault().get(), temp_file_path,
+        0, 0, base::Time()));
 
     std::unique_ptr<UploadDataStream> body(
         std::make_unique<ElementsUploadDataStream>(std::move(element_readers),

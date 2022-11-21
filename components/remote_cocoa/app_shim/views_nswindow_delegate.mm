@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/mac/mac_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_fullscreen_controller.h"
@@ -179,7 +179,7 @@
     // Use a block: The argument to -endSheet: must be retained, since it's the
     // window that is closing and -performSelector: won't retain the argument
     // (putting |window| on the stack above causes this block to retain it).
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(base::RetainBlock(^{
           [sheetParent endSheet:window];
         })));

@@ -2856,7 +2856,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
     // Posted because Stop() will destroy the NavigationRequest but
     // DisableJsEviction will be called from inside the navigation which may
     // not be a safe place to destruct a NavigationRequest.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&WebContentsImpl::Stop,
                                   base::Unretained(web_contents())));
   }));

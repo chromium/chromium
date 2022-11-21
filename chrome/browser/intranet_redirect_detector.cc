@@ -15,7 +15,6 @@
 #include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -51,7 +50,7 @@ IntranetRedirectDetector::IntranetRedirectDetector()
   // browser is starting up, and if so, come back later", but there is currently
   // no function to do this.
   static constexpr base::TimeDelta kStartFetchDelay = base::Seconds(7);
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&IntranetRedirectDetector::FinishSleep,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -97,7 +96,7 @@ void IntranetRedirectDetector::Restart() {
   // delay this a little bit.
   in_sleep_ = true;
   static constexpr base::TimeDelta kRestartDelay = base::Seconds(1);
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&IntranetRedirectDetector::FinishSleep,
                      weak_ptr_factory_.GetWeakPtr()),

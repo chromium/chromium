@@ -6,7 +6,7 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/public/renderer/render_frame.h"
 #include "crypto/sha2.h"
 #include "services/image_annotation/public/mojom/image_annotation.mojom.h"
@@ -135,7 +135,7 @@ void ContentPageAnnotatorDriver::DidDispatchDOMContentLoadedEvent() {
   //                         delay to wait for a stable DOM) and can cause jank;
   //                         reinvestigate it once we are done prototyping the
   //                         feature.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ContentPageAnnotatorDriver::FindAndTrackImages,
                      weak_ptr_factory_.GetWeakPtr()),

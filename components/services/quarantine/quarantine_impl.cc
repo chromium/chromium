@@ -5,8 +5,8 @@
 #include "components/services/quarantine/quarantine_impl.h"
 
 #include "base/bind.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/services/quarantine/quarantine.h"
 
@@ -44,14 +44,15 @@ void QuarantineImpl::QuarantineFile(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
 #else   // BUILDFLAG(IS_MAC)
   scoped_refptr<base::TaskRunner> task_runner =
-      base::ThreadTaskRunnerHandle::Get();
+      base::SingleThreadTaskRunner::GetCurrentDefault();
 #endif  // BUILDFLAG(IS_MAC)
   task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(
           &quarantine::QuarantineFile, full_path, source_url, referrer_url,
           client_guid,
-          base::BindOnce(&ReplyToCallback, base::ThreadTaskRunnerHandle::Get(),
+          base::BindOnce(&ReplyToCallback,
+                         base::SingleThreadTaskRunner::GetCurrentDefault(),
                          std::move(callback))));
 }
 

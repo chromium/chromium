@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/no_destructor.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/crash/core/common/crash_key.h"
@@ -267,7 +267,7 @@ void AutomationManagerAura::PostEvent(int id,
     return;
 
   processing_posted_ = true;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&AutomationManagerAura::SendPendingEvents,
                                 base::Unretained(this)));
 }

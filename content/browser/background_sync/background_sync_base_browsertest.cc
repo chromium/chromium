@@ -52,7 +52,7 @@ bool BackgroundSyncBaseBrowserTest::RegistrationPending(
   auto callback = base::BindOnce(
       &BackgroundSyncBaseBrowserTest::RegistrationPendingCallback,
       base::Unretained(this), run_loop.QuitClosure(),
-      base::ThreadTaskRunnerHandle::Get(), &is_pending);
+      base::SingleThreadTaskRunner::GetCurrentDefault(), &is_pending);
 
   RegistrationPendingOnCoreThread(base::WrapRefCounted(sync_context),
                                   base::WrapRefCounted(service_worker_context),

@@ -8,9 +8,9 @@
 #include <tuple>
 #include <utility>
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {
@@ -142,7 +142,7 @@ TEST(TestCallbackReceiver, WaitForCallback) {
   EXPECT_FALSE(closure_receiver.was_called());
   EXPECT_TRUE(closure);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindLambdaForTesting([&closure]() { std::move(closure).Run(); }));
 

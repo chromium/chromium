@@ -153,7 +153,7 @@ class VideoAcceleratorFactoryService : public mojom::VideoAcceleratorFactory {
     // blocklist. Note: base::Unretained(this) is safe because *|this| should
     // never die. See the CHECK() in the destructor.
     const scoped_refptr<base::SingleThreadTaskRunner>& task_runner =
-        base::ThreadTaskRunnerHandle::Get();
+        base::SingleThreadTaskRunner::GetCurrentDefault();
     CHECK(task_runner);
     auto gpu_feature_checker = content::GpuFeatureChecker::Create(
         gpu::GpuFeatureType::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE,

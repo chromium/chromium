@@ -13,10 +13,10 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "google/protobuf/io/coded_stream.h"
 #include "google/protobuf/io/zero_copy_stream_impl_lite.h"
@@ -285,7 +285,8 @@ void GCMConnectionHandlerImplTest::PumpLoop() {
 void GCMConnectionHandlerImplTest::Connect(
     ScopedMessage* dst_proto) {
   connection_handler_ = std::make_unique<ConnectionHandlerImpl>(
-      base::ThreadTaskRunnerHandle::Get(), TestTimeouts::tiny_timeout(),
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      TestTimeouts::tiny_timeout(),
       base::BindRepeating(&GCMConnectionHandlerImplTest::ReadContinuation,
                           base::Unretained(this), dst_proto),
       base::BindRepeating(&GCMConnectionHandlerImplTest::WriteContinuation,

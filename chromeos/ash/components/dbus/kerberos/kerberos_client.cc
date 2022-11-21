@@ -10,7 +10,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/kerberos/fake_kerberos_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -195,7 +195,7 @@ class KerberosClientImpl : public KerberosClient {
     if (!writer.AppendProtoAsArrayOfBytes(request)) {
       TResponse response;
       response.set_error(kerberos::ERROR_DBUS_FAILURE);
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), response));
       return;
     }

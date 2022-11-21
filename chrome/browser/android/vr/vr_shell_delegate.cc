@@ -53,7 +53,7 @@ VrShellDelegateProviderFactory::CreateGvrDelegateProvider() {
 }  // namespace
 
 VrShellDelegate::VrShellDelegate(JNIEnv* env, jobject obj)
-    : task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+    : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   DVLOG(1) << __FUNCTION__ << "=" << this;
   j_vr_shell_delegate_.Reset(env, obj);
 }

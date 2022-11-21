@@ -37,7 +37,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -473,7 +472,7 @@ void BlockingNetworkDelegate::DoCallback(int response) {
 
   // |callback| may trigger completion of a request, so post it as a task, so
   // it will run under a subsequent TestDelegate::RunUntilComplete() loop.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&BlockingNetworkDelegate::RunCallback,
                                 weak_factory_.GetWeakPtr(), response,
                                 std::move(callback)));
@@ -563,7 +562,7 @@ int BlockingNetworkDelegate::MaybeBlockStage(
       return retval_;
 
     case AUTO_CALLBACK:
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&BlockingNetworkDelegate::RunCallback,
                                     weak_factory_.GetWeakPtr(), retval_,
                                     std::move(callback)));
@@ -574,7 +573,7 @@ int BlockingNetworkDelegate::MaybeBlockStage(
       stage_blocked_for_callback_ = stage;
       // We may reach here via a callback prior to RunUntilBlocked(), so post
       // a task to fetch and run the |on_blocked_| closure.
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&BlockingNetworkDelegate::OnBlocked,
                                     weak_factory_.GetWeakPtr()));
       return ERR_IO_PENDING;
@@ -5081,7 +5080,7 @@ class AsyncDelegateLogger : public base::RefCounted<AsyncDelegateLogger> {
     LoadStateWithParam load_state = url_request_->GetLoadState();
     EXPECT_EQ(expected_first_load_state_, load_state.state);
     EXPECT_NE(kFirstDelegateInfo16, load_state.param);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&AsyncDelegateLogger::LogSecondDelegate, this));
   }
@@ -5095,7 +5094,7 @@ class AsyncDelegateLogger : public base::RefCounted<AsyncDelegateLogger> {
     } else {
       EXPECT_NE(kSecondDelegateInfo16, load_state.param);
     }
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&AsyncDelegateLogger::LogComplete, this));
   }
 
@@ -5876,7 +5875,7 @@ TEST_F(URLRequestTestHTTP, PostFileTest) {
     path = path.Append(kTestFilePath);
     path = path.Append(FILE_PATH_LITERAL("with-headers.html"));
     element_readers.push_back(std::make_unique<UploadFileElementReader>(
-        base::ThreadTaskRunnerHandle::Get().get(), path, 0,
+        base::SingleThreadTaskRunner::GetCurrentDefault().get(), path, 0,
         std::numeric_limits<uint64_t>::max(), base::Time()));
     r->set_upload(std::make_unique<ElementsUploadDataStream>(
         std::move(element_readers), 0));
@@ -5917,7 +5916,7 @@ TEST_F(URLRequestTestHTTP, PostUnreadableFileTest) {
     std::vector<std::unique_ptr<UploadElementReader>> element_readers;
 
     element_readers.push_back(std::make_unique<UploadFileElementReader>(
-        base::ThreadTaskRunnerHandle::Get().get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         base::FilePath(FILE_PATH_LITERAL(
             "c:\\path\\to\\non\\existant\\file.randomness.12345")),
         0, std::numeric_limits<uint64_t>::max(), base::Time()));
@@ -9981,7 +9980,7 @@ class TestSSLPrivateKey : public SSLPrivateKey {
             SignCallback callback) override {
     sign_count_++;
     if (fail_signing_) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback),
                                     ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED,
                                     std::vector<uint8_t>()));

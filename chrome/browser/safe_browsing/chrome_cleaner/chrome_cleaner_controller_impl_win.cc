@@ -18,9 +18,9 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/sw_reporter_installer_win.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -599,7 +599,7 @@ void ChromeCleanerControllerImpl::OnChromeCleanerFetchedAndVerified(
       base::BindOnce(&ChromeCleanerControllerImpl::OnCleanerProcessDone,
                      weak_factory_.GetWeakPtr()),
       // Our callbacks should be dispatched to the UI thread only.
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   time_scanning_started_ = base::Time::Now();
 }

@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(ShellDesktopControllerAuraBrowserTest, CloseAppWindow) {
   bool test_succeeded = false;
 
   // Post a task so everything runs after the DesktopController starts.
-  base::ThreadTaskRunnerHandle::Get()->PostTaskAndReply(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTaskAndReply(
       FROM_HERE,
       // Asynchronously launch the app.
       base::BindOnce(&ShellDesktopControllerAuraBrowserTest::LoadAndLaunchApp,
@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(ShellDesktopControllerAuraBrowserTest, TwoAppWindows) {
   bool test_succeeded = false;
 
   // Post a task so everything runs after the DesktopController starts.
-  base::ThreadTaskRunnerHandle::Get()->PostTaskAndReply(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTaskAndReply(
       FROM_HERE,
       // Asynchronously launch the app.
       base::BindOnce(&ShellDesktopControllerAuraBrowserTest::LoadAndLaunchApp,
@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(ShellDesktopControllerAuraBrowserTest, TwoAppWindows) {
 
         // One window is still open, so the DesktopController should still be
         // running. Post a task to close the last window.
-        base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE, base::BindLambdaForTesting([this, &test_succeeded]() {
               GetAppWindow()->OnNativeClose();
               test_succeeded = true;
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(ShellDesktopControllerAuraBrowserTest, ReloadApp) {
   bool test_succeeded = false;
 
   // Post a task so everything runs after the DesktopController starts.
-  base::ThreadTaskRunnerHandle::Get()->PostTaskAndReply(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTaskAndReply(
       FROM_HERE,
       // Asynchronously launch the app.
       base::BindOnce(&ShellDesktopControllerAuraBrowserTest::LoadAndLaunchApp,
@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(ShellDesktopControllerAuraBrowserTest, ReloadApp) {
 
         // Close the new window after a delay. DesktopController should remain
         // open until the window closes.
-        base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE, base::BindLambdaForTesting([this, &test_succeeded]() {
               AppWindow* app_window = AppWindowRegistry::Get(browser_context())
                                           ->app_windows()

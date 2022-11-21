@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_view.h"
 
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -109,7 +109,7 @@ SendTabToSelfToolbarBubbleView::SendTabToSelfToolbarBubbleView(
   AddChildView(std::move(button));
 
   base::TimeDelta kTimeoutMs = base::Milliseconds(30000);
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&SendTabToSelfToolbarBubbleView::Timeout,
                      weak_ptr_factory_.GetWeakPtr()),

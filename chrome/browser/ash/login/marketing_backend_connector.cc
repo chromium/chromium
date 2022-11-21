@@ -11,7 +11,7 @@
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -96,7 +96,7 @@ void MarketingBackendConnector::UpdateEmailPreferences(
 
   scoped_refptr<MarketingBackendConnector> ref =
       new MarketingBackendConnector(profile);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&MarketingBackendConnector::PerformRequest, ref,
                                 country_code));
 }

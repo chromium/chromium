@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/data_url.h"
 #include "net/base/network_isolation_key.h"
@@ -97,7 +97,7 @@ void WebApkIconHasher::DownloadAndComputeMurmur2HashWithTimeout(
     int timeout_ms,
     Murmur2HashCallback callback) {
   if (!icon_url.is_valid()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), Icon{}));
     return;
   }
@@ -110,7 +110,7 @@ void WebApkIconHasher::DownloadAndComputeMurmur2HashWithTimeout(
       icon.hash = ComputeMurmur2Hash(data);
       icon.unsafe_data = std::move(data);
     }
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(icon)));
     return;
   }

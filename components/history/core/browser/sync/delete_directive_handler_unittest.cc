@@ -8,9 +8,9 @@
 #include <utility>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_backend_client.h"
@@ -71,7 +71,8 @@ void ScheduleDBTask(scoped_refptr<HistoryBackend> history_backend,
   base::CancelableTaskTracker::IsCanceledCallback is_canceled;
   tracker->NewTrackedTaskId(&is_canceled);
   history_backend->ProcessDBTask(
-      std::move(task), base::ThreadTaskRunnerHandle::Get(), is_canceled);
+      std::move(task), base::SingleThreadTaskRunner::GetCurrentDefault(),
+      is_canceled);
 }
 
 // Closure function that runs periodically to check result of delete directive
@@ -87,7 +88,7 @@ void CheckDirectiveProcessingResult(
   }
 
   base::PlatformThread::Sleep(base::Milliseconds(100));
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&CheckDirectiveProcessingResult, timeout,
                                 change_processor, num_changes));
 }
@@ -98,7 +99,7 @@ class HistoryDeleteDirectiveHandlerTest : public testing::Test {
       : history_backend_(base::MakeRefCounted<HistoryBackend>(
             std::make_unique<TestHistoryBackendDelegate>(),
             /*backend_client=*/nullptr,
-            base::ThreadTaskRunnerHandle::Get())) {}
+            base::SingleThreadTaskRunner::GetCurrentDefault())) {}
 
   void SetUp() override {
     ASSERT_TRUE(test_dir_.CreateUniqueTempDir());
@@ -250,7 +251,7 @@ TEST_F(HistoryDeleteDirectiveHandlerTest, ProcessGlobalIdDeleteDirective) {
 
   // Inject a task to check status and keep message loop filled before directive
   // processing finishes.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&CheckDirectiveProcessingResult,
                                 base::Time::Now() + base::Seconds(10),
                                 &change_processor, 2));
@@ -316,7 +317,7 @@ TEST_F(HistoryDeleteDirectiveHandlerTest, ProcessTimeRangeDeleteDirective) {
 
   // Inject a task to check status and keep message loop filled before
   // directive processing finishes.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&CheckDirectiveProcessingResult,
                                 base::Time::Now() + base::Seconds(10),
                                 &change_processor, 2));
@@ -382,7 +383,7 @@ TEST_F(HistoryDeleteDirectiveHandlerTest, ProcessUrlDeleteDirective) {
 
   // Inject a task to check status and keep message loop filled before
   // directive processing finishes.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&CheckDirectiveProcessingResult,
                                 base::Time::Now() + base::Seconds(10),
                                 &change_processor, 2));

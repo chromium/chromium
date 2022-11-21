@@ -125,8 +125,8 @@ class TestExternallyManagedAppInstallTaskManager {
       return;
     }
     // Post a task to simulate tasks completing asynchronously.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(install_request));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(install_request));
   }
 
   void ProcessSavedRequests() {
@@ -362,7 +362,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
         : ExternallyManagedAppRegistrationTaskBase(install_url),
           externally_managed_app_manager_impl_(
               externally_managed_app_manager_impl) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&TestExternallyManagedAppRegistrationTask::OnProgress,
                          weak_ptr_factory_.GetWeakPtr(), install_url));

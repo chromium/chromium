@@ -9,7 +9,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/importer/importer_lock_dialog.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -54,7 +53,7 @@ ImportLockDialogView::ImportLockDialogView(
 
   auto done_callback = [](ImportLockDialogView* dialog, bool accepted) {
     if (dialog->callback_) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(dialog->callback_), accepted));
     }
   };

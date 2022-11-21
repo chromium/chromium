@@ -5,7 +5,7 @@
 #include "components/navigation_interception/intercept_navigation_throttle.h"
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/public/browser/navigation_handle.h"
 #include "url/gurl.h"
 
@@ -22,7 +22,7 @@ InterceptNavigationThrottle::InterceptNavigationThrottle(
     SynchronyMode async_mode)
     : content::NavigationThrottle(navigation_handle),
       should_ignore_callback_(should_ignore_callback),
-      ui_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      ui_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       mode_(async_mode) {}
 
 InterceptNavigationThrottle::~InterceptNavigationThrottle() = default;

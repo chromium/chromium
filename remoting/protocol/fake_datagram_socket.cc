@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "net/base/address_list.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -18,7 +17,8 @@
 namespace remoting::protocol {
 
 FakeDatagramSocket::FakeDatagramSocket()
-    : input_pos_(0), task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+    : input_pos_(0),
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 FakeDatagramSocket::~FakeDatagramSocket() {
   EXPECT_TRUE(task_runner_->BelongsToCurrentThread());
@@ -124,7 +124,7 @@ int FakeDatagramSocket::CopyReadData(const scoped_refptr<net::IOBuffer>& buf,
 }
 
 FakeDatagramChannelFactory::FakeDatagramChannelFactory()
-    : task_runner_(base::ThreadTaskRunnerHandle::Get()),
+    : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       asynchronous_create_(false),
       fail_create_(false) {}
 

@@ -13,7 +13,6 @@
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/tpm/tpm_token_info_getter.h"
 #include "crypto/nss_util.h"
 
@@ -67,7 +66,7 @@ TPMTokenLoader::TPMTokenLoader(bool initialized_for_test)
       tpm_token_state_(TPM_STATE_UNKNOWN),
       tpm_token_info_getter_(TPMTokenInfoGetter::CreateForSystemToken(
           CryptohomePkcs11Client::Get(),
-          base::ThreadTaskRunnerHandle::Get())),
+          base::SingleThreadTaskRunner::GetCurrentDefault())),
       tpm_token_slot_id_(-1),
       can_start_before_login_(false) {
   if (!initialized_for_test_ && LoginState::IsInitialized())
@@ -151,7 +150,8 @@ void TPMTokenLoader::ContinueTokenInitialization() {
           base::BindOnce(
               &crypto::InitializeTPMTokenAndSystemSlot, tpm_token_slot_id_,
               base::BindOnce(
-                  &PostResultToTaskRunner, base::ThreadTaskRunnerHandle::Get(),
+                  &PostResultToTaskRunner,
+                  base::SingleThreadTaskRunner::GetCurrentDefault(),
                   base::BindOnce(&TPMTokenLoader::OnTPMTokenInitialized,
                                  weak_factory_.GetWeakPtr()))));
       return;

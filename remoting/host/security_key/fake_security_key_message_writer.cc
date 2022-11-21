@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "remoting/host/security_key/security_key_message.h"
 
 namespace remoting {
@@ -33,7 +33,8 @@ bool FakeSecurityKeyMessageWriter::WriteMessage(
   last_message_type_ = message_type;
   last_message_payload_.clear();
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, write_callback_);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                              write_callback_);
 
   return write_request_succeeded_;
 }
@@ -44,7 +45,8 @@ bool FakeSecurityKeyMessageWriter::WriteMessageWithPayload(
   last_message_type_ = message_type;
   last_message_payload_ = message_payload;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, write_callback_);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                              write_callback_);
 
   return write_request_succeeded_;
 }

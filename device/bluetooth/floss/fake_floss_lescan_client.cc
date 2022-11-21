@@ -6,7 +6,7 @@
 
 #include "base/logging.h"
 #include "base/observer_list.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
 
 namespace floss {
@@ -22,7 +22,7 @@ void FakeFlossLEScanClient::Init(dbus::Bus* bus,
 void FakeFlossLEScanClient::RegisterScanner(
     ResponseCallback<device::BluetoothUUID> callback) {
   scanners_registered_++;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), device::BluetoothUUID(kTestUuidStr)));
 }
@@ -33,7 +33,7 @@ void FakeFlossLEScanClient::UnregisterScanner(ResponseCallback<bool> callback,
     scanners_registered_--;
   }
   scanner_ids_.clear();
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
@@ -43,7 +43,7 @@ void FakeFlossLEScanClient::StartScan(ResponseCallback<BtifStatus> callback,
                                       const ScanFilter& filters) {
   // TODO (b/217274013): filters are currently being ignored
   scanner_ids_.insert(scanner_id);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), BtifStatus::kSuccess));
 }
 

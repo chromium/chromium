@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "tools/android/forwarder2/command.h"
 #include "tools/android/forwarder2/forwarder.h"
 #include "tools/android/forwarder2/socket.h"
@@ -67,7 +66,7 @@ DeviceListener::DeviceListener(std::unique_ptr<Socket> listener_socket,
       listener_socket_(std::move(listener_socket)),
       host_socket_(std::move(host_socket)),
       listener_port_(port),
-      deletion_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      deletion_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       thread_("DeviceListener") {
   CHECK(host_socket_.get());
   DCHECK(deletion_task_runner_.get());

@@ -34,7 +34,7 @@ class DeviceMediaToMojoAdapterTest : public ::testing::Test {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     adapter_ = std::make_unique<DeviceMediaToMojoAdapter>(
         std::move(mock_device), base::DoNothing(),
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
 #elif BUILDFLAG(IS_WIN)
     adapter_ = std::make_unique<DeviceMediaToMojoAdapter>(
         std::move(mock_device), nullptr);

@@ -57,7 +57,8 @@ class ContentFaviconDriverTest : public content::RenderViewHostTestHarness {
                           favicon_base::FaviconResultsCallback callback,
                           base::CancelableTaskTracker* tracker) {
           return tracker->PostTask(
-              base::ThreadTaskRunnerHandle::Get().get(), FROM_HERE,
+              base::SingleThreadTaskRunner::GetCurrentDefault().get(),
+              FROM_HERE,
               base::BindOnce(
                   std::move(callback),
                   std::vector<favicon_base::FaviconRawBitmapResult>()));
@@ -67,7 +68,8 @@ class ContentFaviconDriverTest : public content::RenderViewHostTestHarness {
                           favicon_base::FaviconResultsCallback callback,
                           base::CancelableTaskTracker* tracker) {
           return tracker->PostTask(
-              base::ThreadTaskRunnerHandle::Get().get(), FROM_HERE,
+              base::SingleThreadTaskRunner::GetCurrentDefault().get(),
+              FROM_HERE,
               base::BindOnce(
                   std::move(callback),
                   std::vector<favicon_base::FaviconRawBitmapResult>()));

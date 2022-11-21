@@ -10,8 +10,8 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/update_client/component.h"
 #include "components/update_client/task_traits.h"
 
@@ -19,7 +19,7 @@ namespace update_client {
 
 ActionRunner::ActionRunner(const Component& component)
     : component_(component),
-      main_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+      main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 ActionRunner::~ActionRunner() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

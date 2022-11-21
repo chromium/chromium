@@ -17,10 +17,10 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -331,7 +331,7 @@ class RequestInterceptor {
     }
 
     if (!got_all_data) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&RequestInterceptor::ReadBody, base::Unretained(this),
                          std::move(completion_callback)));
@@ -350,7 +350,8 @@ class RequestInterceptor {
     if (request_intercepted_)
       return false;
     request_intercepted_ = true;
-    interceptor_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+    interceptor_task_runner_ =
+        base::SingleThreadTaskRunner::GetCurrentDefault();
 
     // Modify |params| if requested.
     if (request_initiator_to_inject_.has_value())

@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_prompt_view_tester.h"
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
@@ -97,7 +96,7 @@ class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
     } else if (expected_failure_permanent_) {
       verification_message = u"This card can't be verified right now.";
     }
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&TestCardUnmaskPromptController::ShowVerificationResult,
                        weak_factory_.GetWeakPtr(), verification_message,
@@ -245,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(CardUnmaskPromptViewBrowserTest,
   // Simulate the user clicking [x] before the "Success!" message disappears.
   CardUnmaskPromptViewTester::For(controller()->view())->Close();
   // Wait a little while; there should be no crash.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&content::MessageLoopRunner::Quit,
                      base::Unretained(runner_.get())),

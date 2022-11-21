@@ -15,7 +15,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -89,7 +88,7 @@ base::Time MockQuotaClient::IncrementMockTime() {
 
 void MockQuotaClient::GetBucketUsage(const BucketLocator& bucket,
                                      GetBucketUsageCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&MockQuotaClient::RunGetBucketUsage,
                      weak_factory_.GetWeakPtr(), bucket, std::move(callback)));
@@ -98,7 +97,7 @@ void MockQuotaClient::GetBucketUsage(const BucketLocator& bucket,
 void MockQuotaClient::GetStorageKeysForType(
     blink::mojom::StorageType type,
     GetStorageKeysForTypeCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&MockQuotaClient::RunGetStorageKeysForType,
                      weak_factory_.GetWeakPtr(), type, std::move(callback)));
@@ -106,7 +105,7 @@ void MockQuotaClient::GetStorageKeysForType(
 
 void MockQuotaClient::DeleteBucketData(const BucketLocator& bucket,
                                        DeleteBucketDataCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&MockQuotaClient::RunDeleteBucketData,
                      weak_factory_.GetWeakPtr(), bucket, std::move(callback)));

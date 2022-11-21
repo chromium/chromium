@@ -104,7 +104,7 @@ void DemoHost::EmbedClients(DemoClient* embedder_client,
     // Embed another client after a second. This could embed the client
     // immediately here too if desired. The delay is to demonstrate asynchronous
     // usage of the API.
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&DemoHost::EmbedClients, base::Unretained(this),
                        embedded_client.get(), gfx::Rect(125, 125, 150, 150)),
@@ -159,7 +159,7 @@ void DemoHost::Initialize(
   root_client_->Initialize(std::move(client_receiver), std::move(sink_remote));
 
   // Embed a new client into the root after the first second.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&DemoHost::EmbedClients, base::Unretained(this),
                      root_client_.get(), gfx::Rect(50, 50, 300, 300)),

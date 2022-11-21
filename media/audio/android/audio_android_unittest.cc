@@ -16,9 +16,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/audio/android/audio_manager_android.h"
@@ -519,9 +519,10 @@ class AudioAndroidOutputTest : public testing::Test {
     EXPECT_CALL(source, OnMoreData(_, _, 0, NotNull()))
         .Times(AtLeast(num_callbacks))
         .WillRepeatedly(
-            DoAll(CheckCountAndPostQuitTask(&count, num_callbacks,
-                                            base::ThreadTaskRunnerHandle::Get(),
-                                            run_loop.QuitWhenIdleClosure()),
+            DoAll(CheckCountAndPostQuitTask(
+                      &count, num_callbacks,
+                      base::SingleThreadTaskRunner::GetCurrentDefault(),
+                      run_loop.QuitWhenIdleClosure()),
                   Invoke(RealOnMoreData)));
     EXPECT_CALL(source, OnError(_)).Times(0);
 
@@ -658,7 +659,8 @@ class AudioAndroidInputTest : public AudioAndroidOutputTest,
     EXPECT_CALL(sink, OnData(NotNull(), _, _))
         .Times(AtLeast(num_callbacks))
         .WillRepeatedly(CheckCountAndPostQuitTask(
-            &count, num_callbacks, base::ThreadTaskRunnerHandle::Get(),
+            &count, num_callbacks,
+            base::SingleThreadTaskRunner::GetCurrentDefault(),
             run_loop.QuitWhenIdleClosure()));
     EXPECT_CALL(sink, OnError()).Times(0);
 

@@ -6,7 +6,7 @@
 
 #include "base/logging.h"
 #include "base/observer_list.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
 
 namespace floss {
@@ -30,7 +30,7 @@ void FakeFlossAdvertiserClient::StartAdvertisingSet(
     StartSuccessCallback success_callback,
     ErrorCallback error_callback) {
   start_advertising_set_called_++;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(success_callback), adv_id_++));
 }
 
@@ -39,8 +39,8 @@ void FakeFlossAdvertiserClient::StopAdvertisingSet(
     StopSuccessCallback success_callback,
     ErrorCallback error_callback) {
   stop_advertising_set_called_++;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                std::move(success_callback));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(success_callback));
 }
 
 void FakeFlossAdvertiserClient::SetAdvertisingParameters(
@@ -49,8 +49,8 @@ void FakeFlossAdvertiserClient::SetAdvertisingParameters(
     SetAdvParamsSuccessCallback success_callback,
     ErrorCallback error_callback) {
   set_advertising_parameters_called_++;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                std::move(success_callback));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(success_callback));
 }
 
 }  // namespace floss

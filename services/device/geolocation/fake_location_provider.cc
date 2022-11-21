@@ -14,12 +14,13 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace device {
 
 FakeLocationProvider::FakeLocationProvider()
-    : provider_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+    : provider_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
+}
 
 FakeLocationProvider::~FakeLocationProvider() = default;
 

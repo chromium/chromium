@@ -17,7 +17,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "media/base/video_frame.h"
 #include "media/capture/mojom/image_capture_types.h"
 #include "media/capture/video/blob_utils.h"
@@ -728,7 +727,7 @@ void FileVideoCaptureDevice::OnCaptureTask() {
     if (next_frame_time_ < current_time)
       next_frame_time_ = current_time;
   }
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&FileVideoCaptureDevice::OnCaptureTask,
                      base::Unretained(this)),

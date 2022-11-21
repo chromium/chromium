@@ -16,7 +16,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromecast/media/cma/base/balanced_media_task_runner_factory.h"
 #include "chromecast/media/cma/base/media_task_runner.h"
@@ -110,7 +109,7 @@ void BalancedMediaTaskRunnerTest::SetupTest(
   for (size_t k = 0; k < n; k++) {
     contexts_[k].media_task_runner =
         media_task_runner_factory_->CreateMediaTaskRunner(
-            base::ThreadTaskRunnerHandle::Get());
+            base::SingleThreadTaskRunner::GetCurrentDefault());
     contexts_[k].is_pending_task = false;
     contexts_[k].task_index = 0;
     contexts_[k].task_timestamp_list.resize(
@@ -129,7 +128,7 @@ void BalancedMediaTaskRunnerTest::SetupTest(
 }
 
 void BalancedMediaTaskRunnerTest::ProcessAllTasks() {
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&BalancedMediaTaskRunnerTest::OnTestTimeout,
                      base::Unretained(this)),
@@ -159,7 +158,7 @@ void BalancedMediaTaskRunnerTest::ScheduleTask() {
   if (context.task_index >= context.task_timestamp_list.size() ||
       context.is_pending_task) {
     pattern_index_ = next_pattern_index;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&BalancedMediaTaskRunnerTest::ScheduleTask,
                                   base::Unretained(this)));
     return;
@@ -185,7 +184,7 @@ void BalancedMediaTaskRunnerTest::ScheduleTask() {
 
   context.task_index++;
   pattern_index_ = next_pattern_index;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&BalancedMediaTaskRunnerTest::ScheduleTask,
                                 base::Unretained(this)));
 }

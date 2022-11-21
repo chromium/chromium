@@ -12,7 +12,6 @@
 #include "base/numerics/ostream_operators.h"
 #include "base/numerics/safe_math.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "media/base/audio_bus.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/ppb_audio_buffer.h"
@@ -73,18 +72,20 @@ PepperMediaStreamAudioTrackHost::AudioSink::AudioSink(
       active_buffers_generation_(0),
       active_buffer_frame_offset_(0),
       buffers_generation_(0),
-      main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       number_of_buffers_(kDefaultNumberOfAudioBuffers),
       bytes_per_second_(0),
       bytes_per_frame_(0),
       user_buffer_duration_(kDefaultDuration) {}
 
 PepperMediaStreamAudioTrackHost::AudioSink::~AudioSink() {
-  DCHECK_EQ(main_task_runner_, base::ThreadTaskRunnerHandle::Get());
+  DCHECK_EQ(main_task_runner_,
+            base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 void PepperMediaStreamAudioTrackHost::AudioSink::EnqueueBuffer(int32_t index) {
-  DCHECK_EQ(main_task_runner_, base::ThreadTaskRunnerHandle::Get());
+  DCHECK_EQ(main_task_runner_,
+            base::SingleThreadTaskRunner::GetCurrentDefault());
   DCHECK_GE(index, 0);
   DCHECK_LT(index, host_->buffer_manager()->number_of_buffers());
   base::AutoLock lock(lock_);
@@ -94,7 +95,8 @@ void PepperMediaStreamAudioTrackHost::AudioSink::EnqueueBuffer(int32_t index) {
 int32_t PepperMediaStreamAudioTrackHost::AudioSink::Configure(
     int32_t number_of_buffers, int32_t duration,
     const ppapi::host::ReplyMessageContext& context) {
-  DCHECK_EQ(main_task_runner_, base::ThreadTaskRunnerHandle::Get());
+  DCHECK_EQ(main_task_runner_,
+            base::SingleThreadTaskRunner::GetCurrentDefault());
 
   if (pending_configure_reply_.is_valid()) {
     return PP_ERROR_INPROGRESS;
@@ -139,7 +141,8 @@ void PepperMediaStreamAudioTrackHost::AudioSink::SetFormatOnMainThread(
 }
 
 void PepperMediaStreamAudioTrackHost::AudioSink::InitBuffers() {
-  DCHECK_EQ(main_task_runner_, base::ThreadTaskRunnerHandle::Get());
+  DCHECK_EQ(main_task_runner_,
+            base::SingleThreadTaskRunner::GetCurrentDefault());
   {
     base::AutoLock lock(lock_);
     // Clear |buffers_|, so the audio thread will drop all incoming audio data.
@@ -186,7 +189,8 @@ void PepperMediaStreamAudioTrackHost::AudioSink::InitBuffers() {
 void PepperMediaStreamAudioTrackHost::AudioSink::
     SendEnqueueBufferMessageOnMainThread(int32_t index,
                                          int32_t buffers_generation) {
-  DCHECK_EQ(main_task_runner_, base::ThreadTaskRunnerHandle::Get());
+  DCHECK_EQ(main_task_runner_,
+            base::SingleThreadTaskRunner::GetCurrentDefault());
   // If |InitBuffers()| is called after this task being posted from the audio
   // thread, the buffer should become invalid already. We should ignore it.
   // And because only the main thread modifies the |buffers_generation_|,

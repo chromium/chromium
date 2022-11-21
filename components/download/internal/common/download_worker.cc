@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/download/internal/common/resource_downloader.h"
 #include "components/download/public/common/download_create_info.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
@@ -90,14 +90,15 @@ void DownloadWorker::SendRequest(
     URLLoaderFactoryProvider* url_loader_factory_provider,
     mojo::PendingRemote<device::mojom::WakeLockProvider> wake_lock_provider) {
   GetIOTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&CreateUrlDownloadHandler, std::move(params),
-                                weak_factory_.GetWeakPtr(),
-                                // This is safe because URLLoaderFactoryProvider
-                                // deleter is called on the same task sequence.
-                                base::Unretained(url_loader_factory_provider),
-                                base::BindRepeating(&IsURLSafe),
-                                std::move(wake_lock_provider),
-                                base::ThreadTaskRunnerHandle::Get()));
+      FROM_HERE,
+      base::BindOnce(&CreateUrlDownloadHandler, std::move(params),
+                     weak_factory_.GetWeakPtr(),
+                     // This is safe because URLLoaderFactoryProvider
+                     // deleter is called on the same task sequence.
+                     base::Unretained(url_loader_factory_provider),
+                     base::BindRepeating(&IsURLSafe),
+                     std::move(wake_lock_provider),
+                     base::SingleThreadTaskRunner::GetCurrentDefault()));
 }
 
 void DownloadWorker::Pause() {

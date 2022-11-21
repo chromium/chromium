@@ -11,9 +11,9 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/test/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/apps/app_discovery_service/game_extras.h"
 #include "chrome/browser/apps/app_provisioning_service/proto/app_data.pb.h"
 #include "chrome/common/chrome_paths.h"
@@ -80,7 +80,7 @@ TEST_F(GameFetcherTest, RegisterForUpdates) {
             run_loop.Quit();
           }));
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([this]() {
         base::FilePath path;
         EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &path));
@@ -118,7 +118,7 @@ TEST_F(GameFetcherTest, RegisterForUpdatesLocaleWithNoResults) {
             run_loop.Quit();
           }));
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([this]() {
         base::FilePath path;
         EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &path));

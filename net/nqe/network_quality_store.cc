@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/observer_list.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/network_change_notifier.h"
 
 namespace net::nqe::internal {
@@ -171,7 +171,7 @@ void NetworkQualityStore::AddNetworkQualitiesCacheObserver(
 
   // Notify the |observer| on the next message pump since |observer| may not
   // be completely set up for receiving the callbacks.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&NetworkQualityStore::NotifyCacheObserverIfPresent,
                      weak_ptr_factory_.GetWeakPtr(), observer));

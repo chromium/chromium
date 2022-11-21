@@ -120,11 +120,11 @@ class TracingSampleProfilerTest
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     PerfettoTracedProcess::GetTaskRunner()->ResetTaskRunnerForTesting(
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     TracingSamplerProfiler::ResetDataSourceForTesting();
 #else
     auto perfetto_wrapper = std::make_unique<base::tracing::PerfettoTaskRunner>(
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     producer_ =
         std::make_unique<TestProducerClient>(std::move(perfetto_wrapper),
                                              /*log_only_main_thread=*/false);
@@ -520,7 +520,7 @@ class TracingProfileBuilderTest : public TracingUnitTest {
     TracingUnitTest::SetUp();
 
     auto perfetto_wrapper = std::make_unique<base::tracing::PerfettoTaskRunner>(
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     producer_client_ = std::make_unique<TestProducerClient>(
         std::move(perfetto_wrapper), /*log_only_main_thread=*/false);
   }

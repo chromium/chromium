@@ -286,7 +286,7 @@ void CaptureLabelView::StartCountDown(
         .SetOpacity(animation_layer, 0.f);
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&CaptureLabelView::FadeInAndOutCounter,
                      weak_factory_.GetWeakPtr(), kCountDownStartSeconds),

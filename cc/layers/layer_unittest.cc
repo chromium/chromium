@@ -11,7 +11,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_id_provider.h"
 #include "cc/base/math_util.h"
@@ -117,7 +117,7 @@ class MockLayerTreeHost : public LayerTreeHost {
                     LayerTreeHost::InitParams params)
       : LayerTreeHost(std::move(params), CompositorMode::SINGLE_THREADED) {
     InitializeSingleThreaded(single_thread_client,
-                             base::ThreadTaskRunnerHandle::Get());
+                             base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   CommitState* GetPendingCommitState() { return pending_commit_state(); }
@@ -1191,7 +1191,7 @@ class LayerTreeHostFactory {
     params.client = &client_;
     params.task_graph_runner = &task_graph_runner_;
     params.settings = &settings;
-    params.main_task_runner = base::ThreadTaskRunnerHandle::Get();
+    params.main_task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
     params.mutator_host = mutator_host;
 
     return LayerTreeHost::CreateSingleThreaded(&single_thread_client_,

@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/win/window_impl.h"
@@ -24,7 +24,8 @@ class TestCompositorHostWin : public TestCompositorHost,
     Init(NULL, bounds);
     compositor_ = std::make_unique<ui::Compositor>(
         context_factory->AllocateFrameSinkId(), context_factory,
-        base::ThreadTaskRunnerHandle::Get(), false /* enable_pixel_canvas */);
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        false /* enable_pixel_canvas */);
     allocator_.GenerateId();
     compositor_->SetAcceleratedWidget(hwnd());
     compositor_->SetScaleAndSize(1.0f, GetSize(),

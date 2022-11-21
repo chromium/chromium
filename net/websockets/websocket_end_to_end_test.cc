@@ -29,7 +29,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "net/base/auth.h"
 #include "net/base/features.h"
@@ -226,7 +225,7 @@ void ConnectTestingEventInterface::OnSSLCertificateError(
     int net_error,
     const SSLInfo& ssl_info,
     bool fatal) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&SSLErrorCallbacks::CancelSSLRequest,
                                 base::Owned(ssl_error_callbacks.release()),
                                 ERR_SSL_PROTOCOL_ERROR, &ssl_info));

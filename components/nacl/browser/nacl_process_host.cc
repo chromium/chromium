@@ -31,7 +31,6 @@
 #include "base/sys_byteorder.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/nacl/browser/nacl_browser.h"
@@ -818,8 +817,8 @@ bool NaClProcessHost::StartPPAPIProxy(
 
   ipc_proxy_channel_ = IPC::ChannelProxy::Create(
       channel_handle.release(), IPC::Channel::MODE_CLIENT, nullptr,
-      base::ThreadTaskRunnerHandle::Get().get(),
-      base::ThreadTaskRunnerHandle::Get().get());
+      base::SingleThreadTaskRunner::GetCurrentDefault().get(),
+      base::SingleThreadTaskRunner::GetCurrentDefault().get());
   // Create the browser ppapi host and enable PPAPI message dispatching to the
   // browser process.
   ppapi_host_.reset(content::BrowserPpapiHost::CreateExternalPluginProcess(
@@ -1054,7 +1053,8 @@ bool NaClProcessHost::AttachDebugExceptionHandler(const std::string& info,
                info);
   }
   NaClStartDebugExceptionHandlerThread(
-      std::move(process), info, base::ThreadTaskRunnerHandle::Get(),
+      std::move(process), info,
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
       base::BindRepeating(
           &NaClProcessHost::OnDebugExceptionHandlerLaunchedByBroker,
           weak_factory_.GetWeakPtr()));

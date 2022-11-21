@@ -11,8 +11,8 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/sys_byteorder.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_address.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -118,7 +118,7 @@ int FakeSocket::Write(
   DCHECK(!write_pending_);
 
   if (async_write_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&FakeSocket::DoAsyncWrite, base::Unretained(this),
                        scoped_refptr<net::IOBuffer>(buf), buf_len,

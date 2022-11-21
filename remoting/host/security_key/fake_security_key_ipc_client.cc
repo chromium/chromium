@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ipc/ipc_channel.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,7 +47,7 @@ bool FakeSecurityKeyIpcClient::SendSecurityKeyRequest(
     const std::string& request_payload,
     ResponseCallback response_callback) {
   if (send_security_request_should_succeed_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(response_callback, security_key_response_payload_));
   }
@@ -72,7 +72,7 @@ bool FakeSecurityKeyIpcClient::ConnectViaIpc(
   mojo_connection_ = std::make_unique<mojo::IsolatedConnection>();
   client_channel_ = IPC::Channel::CreateClient(
       mojo_connection_->Connect(std::move(endpoint)).release(), this,
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   if (!client_channel_->Connect()) {
     ADD_FAILURE() << "Failed to connect to the IPC channel.";
     return false;

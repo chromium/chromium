@@ -846,7 +846,7 @@ void OmniboxViewViews::SetAccessibilityLabel(const std::u16string& display_text,
   // with an explicit announcement. Use PostTask to ensure that this
   // announcement happens after the text change notification, otherwise
   // the text change can interrupt the announcement.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&OmniboxViewViews::AnnounceFriendlySuggestionText,
                      weak_factory_.GetWeakPtr()));

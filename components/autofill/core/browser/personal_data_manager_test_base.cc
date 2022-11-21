@@ -49,9 +49,9 @@ void PersonalDataManagerTestBase::SetUpTest() {
   OSCryptMocker::SetUp();
   prefs_ = test::PrefServiceForTesting();
   base::FilePath path(WebDatabase::kInMemoryPath);
-  profile_web_database_ =
-      new WebDatabaseService(path, base::ThreadTaskRunnerHandle::Get(),
-                             base::ThreadTaskRunnerHandle::Get());
+  profile_web_database_ = new WebDatabaseService(
+      path, base::SingleThreadTaskRunner::GetCurrentDefault(),
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   // Hacky: hold onto a pointer but pass ownership.
   profile_autofill_table_ = new AutofillTable;
@@ -59,20 +59,21 @@ void PersonalDataManagerTestBase::SetUpTest() {
       std::unique_ptr<WebDatabaseTable>(profile_autofill_table_));
   profile_web_database_->LoadDatabase();
   profile_database_service_ = new AutofillWebDataService(
-      profile_web_database_, base::ThreadTaskRunnerHandle::Get(),
-      base::ThreadTaskRunnerHandle::Get());
+      profile_web_database_, base::SingleThreadTaskRunner::GetCurrentDefault(),
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   profile_database_service_->Init(base::NullCallback());
 
-  account_web_database_ = new WebDatabaseService(
-      base::FilePath(WebDatabase::kInMemoryPath),
-      base::ThreadTaskRunnerHandle::Get(), base::ThreadTaskRunnerHandle::Get());
+  account_web_database_ =
+      new WebDatabaseService(base::FilePath(WebDatabase::kInMemoryPath),
+                             base::SingleThreadTaskRunner::GetCurrentDefault(),
+                             base::SingleThreadTaskRunner::GetCurrentDefault());
   account_autofill_table_ = new AutofillTable;
   account_web_database_->AddTable(
       std::unique_ptr<WebDatabaseTable>(account_autofill_table_));
   account_web_database_->LoadDatabase();
   account_database_service_ = new AutofillWebDataService(
-      account_web_database_, base::ThreadTaskRunnerHandle::Get(),
-      base::ThreadTaskRunnerHandle::Get());
+      account_web_database_, base::SingleThreadTaskRunner::GetCurrentDefault(),
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   account_database_service_->Init(base::NullCallback());
 
   strike_database_ = std::make_unique<TestInMemoryStrikeDatabase>();

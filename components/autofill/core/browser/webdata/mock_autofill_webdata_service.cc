@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_service.h"
-
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace autofill {
 
 MockAutofillWebDataService::MockAutofillWebDataService()
-    : AutofillWebDataService(base::ThreadTaskRunnerHandle::Get(),
-                             base::ThreadTaskRunnerHandle::Get()) {}
+    : AutofillWebDataService(
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
+          base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 MockAutofillWebDataService::~MockAutofillWebDataService() = default;
 

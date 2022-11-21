@@ -11,7 +11,6 @@
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_support_android.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/java/system/jni_headers/MojoTestRule_jni.h"
 
@@ -58,7 +57,7 @@ static void JNI_MojoTestRule_RunLoop(JNIEnv* env,
                                      jlong timeout_ms) {
   base::RunLoop run_loop;
   if (timeout_ms) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitWhenIdleClosure(),
         base::Milliseconds(timeout_ms));
     run_loop.Run();

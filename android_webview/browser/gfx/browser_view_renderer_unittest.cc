@@ -16,7 +16,6 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/public/test/test_synchronous_compositor_android.h"
@@ -359,7 +358,7 @@ RENDERING_TEST_F(CompositorNoFrameTest);
 class ClientIsVisibleOnConstructionTest : public RenderingTest {
   void SetUpTestHarness() override {
     browser_view_renderer_ = std::make_unique<BrowserViewRenderer>(
-        this, base::ThreadTaskRunnerHandle::Get());
+        this, base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   void StartTest() override {
@@ -627,8 +626,9 @@ class RenderThreadManagerSwitchTest : public ResourceRenderingTest {
       case 1: {
         // Switch to new RTM.
         std::unique_ptr<FakeFunctor> functor(new FakeFunctor);
-        functor->Init(window_.get(), std::make_unique<RenderThreadManager>(
-                                         base::ThreadTaskRunnerHandle::Get()));
+        functor->Init(window_.get(),
+                      std::make_unique<RenderThreadManager>(
+                          base::SingleThreadTaskRunner::GetCurrentDefault()));
         browser_view_renderer_->SetCurrentCompositorFrameConsumer(
             functor->GetCompositorFrameConsumer());
         saved_functor_ = std::move(functor_);

@@ -21,7 +21,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/extension_garbage_collector_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -179,7 +178,7 @@ void ExtensionGarbageCollector::GarbageCollectExtensions() {
     // Don't garbage collect while there are installations in progress,
     // which may be using the temporary installation directory. Try to garbage
     // collect again later.
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ExtensionGarbageCollector::GarbageCollectExtensions,
                        weak_factory_.GetWeakPtr()),

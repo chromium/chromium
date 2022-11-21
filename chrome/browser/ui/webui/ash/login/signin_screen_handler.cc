@@ -15,7 +15,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/login/error_screens_histogram_helper.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/profile_auth_data.h"
@@ -152,7 +151,7 @@ void SigninScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
     update_state_callback_.Reset(
         base::BindOnce(&SigninScreenHandler::UpdateStateInternal,
                        weak_factory_.GetWeakPtr(), reason, true));
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, update_state_callback_.callback(),
         is_offline_timeout_for_test_set_ ? offline_timeout_for_test_
                                          : kOfflineTimeout);
@@ -166,7 +165,7 @@ void SigninScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
       connecting_callback_.Reset(
           base::BindOnce(&SigninScreenHandler::UpdateStateInternal,
                          weak_factory_.GetWeakPtr(), reason, true));
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE, connecting_callback_.callback(), kConnectingTimeout);
     }
     return;
@@ -293,7 +292,7 @@ void SigninScreenHandler::Observe(int type,
         // considering network update notifications again (hoping the network
         // will become ONLINE by then).
         update_state_callback_.Cancel();
-        base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(
                 &SigninScreenHandler::ReenableNetworkStateUpdatesAfterProxyAuth,

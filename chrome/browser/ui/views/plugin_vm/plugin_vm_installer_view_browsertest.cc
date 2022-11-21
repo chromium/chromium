@@ -184,8 +184,8 @@ class PluginVmInstallerViewBrowserTest : public DialogBrowserTest {
   }
 
   static void OnSetupFinished(base::OnceClosure quit_closure, bool success) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(quit_closure));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(quit_closure));
   }
 };
 

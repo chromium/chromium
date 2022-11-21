@@ -19,9 +19,9 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_checker.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/update_client/activity_data_service.h"
 #include "components/update_client/component.h"
@@ -305,7 +305,8 @@ void UpdateCheckerImpl::UpdateCheckSucceeded(
     return;
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(reply));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                              std::move(reply));
 }
 
 void UpdateCheckerImpl::UpdateCheckFailed(ErrorCategory error_category,
@@ -314,7 +315,7 @@ void UpdateCheckerImpl::UpdateCheckFailed(ErrorCategory error_category,
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK_NE(0, error);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(update_check_callback_), absl::nullopt,
                      error_category, error, retry_after_sec));

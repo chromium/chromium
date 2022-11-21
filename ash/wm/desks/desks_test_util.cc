@@ -180,7 +180,7 @@ bool GetDeskActionVisibilityForMiniView(const DeskMiniView* mini_view) {
 
 void WaitForMilliseconds(int milliseconds) {
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(milliseconds));
   run_loop.Run();
 }

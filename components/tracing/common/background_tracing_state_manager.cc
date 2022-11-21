@@ -5,7 +5,7 @@
 #include "components/tracing/common/background_tracing_state_manager.h"
 
 #include "base/json/values_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/tracing/common/pref_names.h"
 #include "content/public/browser/background_tracing_config.h"
 #include "content/public/browser/browser_thread.h"
@@ -165,7 +165,7 @@ bool BackgroundTracingStateManager::DidRecentlyUploadForScenario(
 void BackgroundTracingStateManager::NotifyTracingStarted() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   SetState(BackgroundTracingState::STARTED);
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce([]() {
         BackgroundTracingStateManager::GetInstance().SetState(
             BackgroundTracingState::RAN_30_SECONDS);

@@ -12,8 +12,8 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/common/conflicts/module_event_sink_win.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -91,8 +91,8 @@ class RemoteModuleWatcherTest : public testing::Test,
 }  // namespace
 
 TEST_F(RemoteModuleWatcherTest, ModuleEvents) {
-  auto remote_module_watcher =
-      RemoteModuleWatcher::Create(base::ThreadTaskRunnerHandle::Get(), Bind());
+  auto remote_module_watcher = RemoteModuleWatcher::Create(
+      base::SingleThreadTaskRunner::GetCurrentDefault(), Bind());
 
   // Wait until the watcher is initialized and events for already loaded modules
   // are received.

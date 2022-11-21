@@ -14,7 +14,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "media/base/callback_timeout_helpers.h"
@@ -291,7 +290,7 @@ Decryptor* MojoCdm::GetDecryptor() {
   base::AutoLock auto_lock(lock_);
 
   if (!decryptor_task_runner_)
-    decryptor_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+    decryptor_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
   DCHECK(decryptor_task_runner_->BelongsToCurrentThread());
 
   if (decryptor_)

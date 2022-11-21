@@ -18,7 +18,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "chromeos/version/version_loader.h"
@@ -276,7 +275,7 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
     dbus::MessageWriter writer(&method_call);
     if (!writer.AppendProtoAsArrayOfBytes(config)) {
       LOG(ERROR) << "Failed to encode ApplyUpdateConfig protobuf.";
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, std::move(failure_callback));
       return;
     }
@@ -355,7 +354,7 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
 
     if (!writer.AppendProtoAsArrayOfBytes(update_params)) {
       LOG(ERROR) << "Failed to encode UpdateParams protobuf";
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), UPDATE_RESULT_FAILED));
       return;
     }
@@ -649,7 +648,7 @@ class UpdateEngineClientDesktopFake : public UpdateEngineClient {
     last_status_.set_new_version("0.0.0.0");
     last_status_.set_new_size(0);
     last_status_.set_is_enterprise_rollback(false);
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&UpdateEngineClientDesktopFake::StateTransition,
                        weak_factory_.GetWeakPtr(), apply_update),
@@ -769,7 +768,7 @@ class UpdateEngineClientDesktopFake : public UpdateEngineClient {
     for (auto& observer : observers_)
       observer.UpdateStatusChanged(last_status_);
     if (last_status_.current_operation() != update_engine::Operation::IDLE) {
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&UpdateEngineClientDesktopFake::StateTransition,
                          weak_factory_.GetWeakPtr(), apply_update),

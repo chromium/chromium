@@ -16,7 +16,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/win/windows_version.h"
@@ -1739,7 +1738,7 @@ TEST_F(WidgetCaptureTest, DisableCaptureWidgetFromMousePress) {
   first->Show();
 
   gfx::Point location(20, 20);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &Widget::OnMouseEvent, base::Unretained(second),

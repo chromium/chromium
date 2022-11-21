@@ -266,7 +266,7 @@ class BrowserSideFlingBrowserTest : public ContentBrowserTest {
 
   void GiveItSomeTime(int64_t time_delta_ms = 10) {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(time_delta_ms));
     run_loop.Run();
   }

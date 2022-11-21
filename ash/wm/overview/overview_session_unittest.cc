@@ -4628,7 +4628,7 @@ TEST_F(SplitViewOverviewSessionTest, OverviewDragControllerBehavior) {
 
   // Simulate a long press, which is required to snap windows.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(2));
   run_loop.Run();
 
@@ -5593,7 +5593,7 @@ TEST_F(SplitViewOverviewSessionTest,
   generator->PressTouch();
   {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(2));
     run_loop.Run();
   }
@@ -5615,7 +5615,7 @@ TEST_F(SplitViewOverviewSessionTest,
   generator->PressTouch();
   {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(2));
     run_loop.Run();
   }

@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewMacInteractiveTest,
                 // loop which will close the tab (and cancel tracking in
                 // ~PopupMenuHelper()) and quit the outer run loop to continue
                 // the test.
-                base::ThreadTaskRunnerHandle::Get()->PostTask(
+                base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
                     FROM_HERE, base::BindLambdaForTesting([&] {
                       browser()->tab_strip_model()->CloseWebContentsAt(1, 0);
                     }));

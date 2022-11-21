@@ -21,7 +21,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -215,8 +214,7 @@ class IncidentReportingService::Receiver : public IncidentReceiver {
 IncidentReportingService::Receiver::Receiver(
     const base::WeakPtr<IncidentReportingService>& service)
     : service_(service),
-      thread_runner_(base::ThreadTaskRunnerHandle::Get()) {
-}
+      thread_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 IncidentReportingService::Receiver::~Receiver() {
 }

@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "dbus/object_path.h"
@@ -37,7 +36,7 @@ void FakeSMSClient::GetAll(const std::string& service_name,
                    "FakeSMSClient: Test Message: " + object_path.value());
   sms.SetStringKey("Timestamp", "Fri Jun  8 13:26:04 EDT 2012");
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(sms)));
 }
 

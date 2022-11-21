@@ -7,7 +7,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace segmentation_platform {
 
@@ -67,7 +67,7 @@ void SegmentInfoDatabase::GetSegmentInfoForSegments(
       cache_->GetSegmentInfoForSegments(segment_ids, ids_needing_update);
 
   if (ids_needing_update.empty()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), std::move(segments_so_far)));
     return;

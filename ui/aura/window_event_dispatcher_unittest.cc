@@ -16,7 +16,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
@@ -2374,7 +2373,7 @@ TEST_F(WindowEventDispatcherTest, HeldTouchMoveWithRunLoop) {
   point.Offset(10, 10);
   // Schedule another move event which should cause another SCROLL_UPDATE and
   // quit the run_loop within the handler.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         ui::TouchEvent ev2(ui::ET_TOUCH_MOVED, point, base::TimeTicks::Now(),
                            ui::PointerDetails());
@@ -2430,13 +2429,13 @@ class WindowEventDispatcherTestWithMessageLoop
     std::unique_ptr<ui::MouseEvent> mouse(new ui::MouseEvent(
         ui::ET_MOUSE_PRESSED, gfx::Point(10, 10), gfx::Point(10, 10),
         ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE));
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             &WindowEventDispatcherTestWithMessageLoop::RepostEventHelper,
             host()->dispatcher(), std::move(mouse)));
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  loop.QuitWhenIdleClosure());
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, loop.QuitWhenIdleClosure());
 
     loop.Run();
     EXPECT_EQ(0, handler_.num_mouse_events());
@@ -2473,7 +2472,7 @@ TEST_F(WindowEventDispatcherTestWithMessageLoop, EventRepostedInNonNestedLoop) {
   ASSERT_FALSE(base::RunLoop::IsRunningOnCurrentThread());
   // Perform the test in a callback, so that it runs after the message-loop
   // starts.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&WindowEventDispatcherTestWithMessageLoop::RunTest,
                      base::Unretained(this)));
@@ -2588,7 +2587,7 @@ class TriggerNestedLoopOnRightMousePress : public ui::test::TestEventHandler {
         mouse->IsOnlyRightMouseButton()) {
       base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
       scoped_refptr<base::TaskRunner> task_runner =
-          base::ThreadTaskRunnerHandle::Get();
+          base::SingleThreadTaskRunner::GetCurrentDefault();
       if (!callback_.is_null())
         task_runner->PostTask(FROM_HERE, callback_);
       task_runner->PostTask(FROM_HERE, run_loop.QuitClosure());

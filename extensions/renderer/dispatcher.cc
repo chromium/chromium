@@ -257,7 +257,7 @@ scoped_refptr<Extension> ConvertToExtension(
 
 Dispatcher::PendingServiceWorker::PendingServiceWorker(
     blink::WebServiceWorkerContextProxy* context_proxy)
-    : task_runner(base::ThreadTaskRunnerHandle::Get()),
+    : task_runner(base::SingleThreadTaskRunner::GetCurrentDefault()),
       context_proxy(context_proxy) {
   DCHECK(context_proxy);
 }

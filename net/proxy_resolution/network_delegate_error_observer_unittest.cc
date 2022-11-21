@@ -11,7 +11,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_delegate_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,7 +44,8 @@ TEST(NetworkDelegateErrorObserverTest, CallOnThread) {
   thread.Start();
   TestNetworkDelegate network_delegate;
   NetworkDelegateErrorObserver observer(
-      &network_delegate, base::ThreadTaskRunnerHandle::Get().get());
+      &network_delegate,
+      base::SingleThreadTaskRunner::GetCurrentDefault().get());
   thread.task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&NetworkDelegateErrorObserver::OnPACScriptError,
@@ -61,7 +61,7 @@ TEST(NetworkDelegateErrorObserverTest, NoDelegate) {
   base::Thread thread("test_thread");
   thread.Start();
   NetworkDelegateErrorObserver observer(
-      nullptr, base::ThreadTaskRunnerHandle::Get().get());
+      nullptr, base::SingleThreadTaskRunner::GetCurrentDefault().get());
   thread.task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&NetworkDelegateErrorObserver::OnPACScriptError,

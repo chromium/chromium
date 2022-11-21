@@ -11,7 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -49,7 +49,7 @@ void FakeImageLoaderClient::RegisterComponent(
   registered_components_[name] = version;
   component_install_paths_[name] =
       base::FilePath(component_folder_abs_path).AppendASCII(version);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), absl::make_optional(true)));
 }
@@ -59,20 +59,20 @@ void FakeImageLoaderClient::LoadComponent(
     chromeos::DBusMethodCallback<std::string> callback) {
   const auto& version_it = registered_components_.find(name);
   if (version_it == registered_components_.end()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }
 
   const auto& mount_path_it = mount_paths_.find(name);
   if (mount_path_it == mount_paths_.end()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }
 
   loaded_components_.insert(name);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           std::move(callback),
@@ -86,7 +86,7 @@ void FakeImageLoaderClient::LoadComponentAtPath(
     chromeos::DBusMethodCallback<base::FilePath> callback) {
   const auto& mount_path_it = mount_paths_.find(name);
   if (mount_path_it == mount_paths_.end()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }
@@ -94,7 +94,7 @@ void FakeImageLoaderClient::LoadComponentAtPath(
   loaded_components_.insert(name);
   component_install_paths_[name] = path;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
                                 absl::make_optional(mount_path_it->second)));
 }
@@ -112,11 +112,11 @@ void FakeImageLoaderClient::RequestComponentVersion(
     chromeos::DBusMethodCallback<std::string> callback) {
   const auto& version_it = registered_components_.find(name);
   if (version_it == registered_components_.end()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
                                 absl::make_optional(version_it->second)));
 }
@@ -126,7 +126,7 @@ void FakeImageLoaderClient::UnmountComponent(
     chromeos::DBusMethodCallback<bool> callback) {
   loaded_components_.erase(name);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), absl::make_optional(true)));
 }

@@ -20,8 +20,8 @@
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/scoped_thread_priority.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "google_apis/gcm/base/encryptor.h"
 #include "google_apis/gcm/base/gcm_constants.h"
@@ -1245,7 +1245,7 @@ GCMStoreImpl::GCMStoreImpl(
     std::unique_ptr<Encryptor> encryptor)
     : backend_(new Backend(path,
                            remove_account_mappings_with_email_key,
-                           base::ThreadTaskRunnerHandle::Get(),
+                           base::SingleThreadTaskRunner::GetCurrentDefault(),
                            std::move(encryptor))),
       blocking_task_runner_(blocking_task_runner) {}
 

@@ -45,10 +45,12 @@ class FileStreamForwarderTest : public testing::Test {
 
     base::FilePath temp_path = temp_dir_.GetPath();
     quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
-        /*is_incognito=*/false, temp_path, base::ThreadTaskRunnerHandle::Get(),
+        /*is_incognito=*/false, temp_path,
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::MakeRefCounted<storage::MockSpecialStoragePolicy>());
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
-        quota_manager_.get(), base::ThreadTaskRunnerHandle::Get());
+        quota_manager_.get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     context_ = storage::CreateFileSystemContextForTesting(
         quota_manager_proxy_.get(), temp_path);
 

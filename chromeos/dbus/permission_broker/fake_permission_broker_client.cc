@@ -17,8 +17,8 @@
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/unguessable_token.h"
 
 namespace chromeos {
@@ -127,7 +127,7 @@ void FakePermissionBrokerClient::OpenPath(const std::string& path,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&chromeos::OpenPath, path, std::move(callback),
                      std::move(error_callback),
-                     base::ThreadTaskRunnerHandle::Get()));
+                     base::SingleThreadTaskRunner::GetCurrentDefault()));
 }
 
 void FakePermissionBrokerClient::ClaimDevicePath(

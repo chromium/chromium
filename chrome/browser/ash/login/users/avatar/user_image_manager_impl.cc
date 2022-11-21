@@ -21,9 +21,9 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
@@ -954,7 +954,8 @@ void UserImageManagerImpl::OnJobChangedUserImage() {
 
 void UserImageManagerImpl::OnJobDone() {
   if (job_.get())
-    base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, job_.release());
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, job_.release());
   else
     NOTREACHED();
 }

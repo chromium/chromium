@@ -17,7 +17,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
@@ -47,7 +46,7 @@ void ErrorFunction(const std::string& device_path,
 
 void PostError(const std::string& error,
                ShillDeviceClient::ErrorCallback error_callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(error_callback), error, kFailedMessage));
 }
@@ -85,7 +84,7 @@ void FakeShillDeviceClient::RemovePropertyChangedObserver(
 void FakeShillDeviceClient::GetProperties(
     const dbus::ObjectPath& device_path,
     chromeos::DBusMethodCallback<base::Value> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeShillDeviceClient::PassStubDeviceProperties,
                      weak_ptr_factory_.GetWeakPtr(), device_path,
@@ -100,7 +99,7 @@ void FakeShillDeviceClient::SetProperty(const dbus::ObjectPath& device_path,
   if (property_change_delay_.has_value()) {
     // Return callback immediately and set property after delay.
     std::move(callback).Run();
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&FakeShillDeviceClient::SetPropertyInternal,
                        weak_ptr_factory_.GetWeakPtr(), device_path, name,
@@ -142,12 +141,13 @@ void FakeShillDeviceClient::SetPropertyInternal(
   }
   device_properties->SetKey(name, value.Clone());
   if (notify_changed) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&FakeShillDeviceClient::NotifyObserversPropertyChanged,
                        weak_ptr_factory_.GetWeakPtr(), device_path, name));
   }
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(callback));
 }
 
 void FakeShillDeviceClient::ClearProperty(
@@ -175,7 +175,7 @@ void FakeShillDeviceClient::RequirePin(const dbus::ObjectPath& device_path,
     return;
   }
   if (!SimTryPin(device_path.value(), pin)) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(error_callback),
                                   shill::kErrorResultIncorrectPin, ""));
     return;
@@ -184,7 +184,8 @@ void FakeShillDeviceClient::RequirePin(const dbus::ObjectPath& device_path,
   status.lock_enabled = require;
   SetSimLockStatus(device_path.value(), status);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(callback));
 }
 
 void FakeShillDeviceClient::EnterPin(const dbus::ObjectPath& device_path,
@@ -197,14 +198,15 @@ void FakeShillDeviceClient::EnterPin(const dbus::ObjectPath& device_path,
     return;
   }
   if (!SimTryPin(device_path.value(), pin)) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(error_callback),
                                   shill::kErrorResultIncorrectPin, ""));
     return;
   }
   SetSimLocked(device_path.value(), false);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(callback));
 }
 
 void FakeShillDeviceClient::UnblockPin(const dbus::ObjectPath& device_path,
@@ -218,13 +220,13 @@ void FakeShillDeviceClient::UnblockPin(const dbus::ObjectPath& device_path,
     return;
   }
   if (!SimTryPuk(device_path.value(), puk)) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(error_callback),
                                   shill::kErrorResultIncorrectPin, ""));
     return;
   }
   if (pin.length() < kSimPinMinLength) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(error_callback),
                                   shill::kErrorResultInvalidArguments, ""));
     return;
@@ -232,7 +234,8 @@ void FakeShillDeviceClient::UnblockPin(const dbus::ObjectPath& device_path,
   sim_pin_[device_path.value()] = pin;
   SetSimLocked(device_path.value(), false);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(callback));
 }
 
 void FakeShillDeviceClient::ChangePin(const dbus::ObjectPath& device_path,
@@ -246,20 +249,21 @@ void FakeShillDeviceClient::ChangePin(const dbus::ObjectPath& device_path,
     return;
   }
   if (!SimTryPin(device_path.value(), old_pin)) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(error_callback),
                                   shill::kErrorResultIncorrectPin, ""));
     return;
   }
   if (new_pin.length() < kSimPinMinLength) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(error_callback),
                                   shill::kErrorResultInvalidArguments, ""));
     return;
   }
   sim_pin_[device_path.value()] = new_pin;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(callback));
 }
 
 void FakeShillDeviceClient::Register(const dbus::ObjectPath& device_path,
@@ -283,7 +287,8 @@ void FakeShillDeviceClient::Register(const dbus::ObjectPath& device_path,
     std::string status = id == network_id ? "current" : "available";
     network.SetKey(shill::kStatusProperty, base::Value(status));
   }
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(callback));
 }
 
 void FakeShillDeviceClient::Reset(const dbus::ObjectPath& device_path,
@@ -293,7 +298,8 @@ void FakeShillDeviceClient::Reset(const dbus::ObjectPath& device_path,
     PostNotFoundError(std::move(error_callback));
     return;
   }
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(callback));
 }
 
 void FakeShillDeviceClient::SetUsbEthernetMacAddressSource(
@@ -320,7 +326,8 @@ void FakeShillDeviceClient::SetUsbEthernetMacAddressSource(
                     shill::kUsbEthernetMacAddressSourceProperty,
                     base::Value(source), /*notify_changed=*/true);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(callback));
 }
 
 ShillDeviceClient::TestInterface* FakeShillDeviceClient::GetTestInterface() {
@@ -420,7 +427,7 @@ void FakeShillDeviceClient::AddCellularFoundNetwork(
   new_result.SetKey(shill::kTechnologyProperty, base::Value("GSM"));
   new_result.SetKey(shill::kStatusProperty, base::Value("available"));
   scan_results->Append(std::move(new_result));
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeShillDeviceClient::NotifyObserversPropertyChanged,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -564,7 +571,7 @@ void FakeShillDeviceClient::PassStubDeviceProperties(
 void FakeShillDeviceClient::PostVoidCallback(
     chromeos::VoidDBusMethodCallback callback,
     bool result) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 

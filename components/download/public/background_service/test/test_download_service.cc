@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/no_destructor.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/client.h"
@@ -84,7 +84,7 @@ void TestDownloadService::StartDownload(DownloadParams params) {
   if (!is_ready_)
     return;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&TestDownloadService::ProcessDownload,
                                 base::Unretained(this)));
 }

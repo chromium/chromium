@@ -49,7 +49,7 @@ VRBrowserRendererThreadWin* VRBrowserRendererThreadWin::instance_for_testing_ =
 VRBrowserRendererThreadWin::VRBrowserRendererThreadWin(
     device::mojom::XRCompositorHost* compositor)
     : compositor_(compositor),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   DCHECK(instance_for_testing_ == nullptr);
   instance_for_testing_ = this;
 }

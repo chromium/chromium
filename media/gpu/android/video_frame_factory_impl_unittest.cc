@@ -11,7 +11,6 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/service/mock_texture_owner.h"
 #include "gpu/command_buffer/service/ref_counted_lock_for_test.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -60,7 +59,7 @@ class MockFrameInfoHelper : public FrameInfoHelper,
 class VideoFrameFactoryImplTest : public testing::Test {
  public:
   VideoFrameFactoryImplTest()
-      : task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+      : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
     auto image_provider = std::make_unique<MockSharedImageVideoProvider>();
     image_provider_raw_ = image_provider.get();
 

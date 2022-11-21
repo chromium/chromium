@@ -162,7 +162,8 @@ void DecoderWrapper::CreateDecoderTask(base::WaitableEvent* done) {
     case DecoderImplementation::kVD:
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
       decoder_ = VideoDecoderPipeline::Create(
-          gpu::GpuDriverBugWorkarounds(), base::ThreadTaskRunnerHandle::Get(),
+          gpu::GpuDriverBugWorkarounds(),
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
           std::make_unique<PlatformVideoFramePool>(),
           std::make_unique<VideoFrameConverter>(),
           std::make_unique<NullMediaLog>(),

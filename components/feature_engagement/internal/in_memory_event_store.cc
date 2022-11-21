@@ -12,7 +12,6 @@
 #include "base/feature_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/feature_engagement/internal/event_store.h"
 
 namespace feature_engagement {
@@ -44,7 +43,7 @@ void InMemoryEventStore::DeleteEvent(const std::string& event_name) {
 
 void InMemoryEventStore::HandleLoadResult(OnLoadedCallback callback,
                                           bool success) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), success, std::move(events_)));
   ready_ = success;

@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "device/bluetooth/public/mojom/test/fake_bluetooth.mojom.h"
 
 namespace bluetooth {
@@ -63,7 +63,7 @@ FakeRemoteGattDescriptor::GetCharacteristic() const {
 }
 
 void FakeRemoteGattDescriptor::ReadRemoteDescriptor(ValueCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeRemoteGattDescriptor::DispatchReadResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -73,7 +73,7 @@ void FakeRemoteGattDescriptor::WriteRemoteDescriptor(
     const std::vector<uint8_t>& value,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeRemoteGattDescriptor::DispatchWriteResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),

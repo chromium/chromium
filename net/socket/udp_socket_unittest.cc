@@ -17,7 +17,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -230,7 +229,7 @@ void UDPSocketTest::ConnectTest(bool use_nonblocking_io, bool use_async) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   // Client sends to the server.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&UDPSocketTest::WriteSocketIgnoreResult,
                      base::Unretained(this), client.get(), simple_message));

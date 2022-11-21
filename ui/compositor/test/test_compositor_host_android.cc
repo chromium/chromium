@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/native_widget_types.h"
@@ -20,7 +20,8 @@ class TestCompositorHostAndroid : public TestCompositorHost {
                             ui::ContextFactory* context_factory) {
     compositor_ = std::make_unique<ui::Compositor>(
         context_factory->AllocateFrameSinkId(), context_factory,
-        base::ThreadTaskRunnerHandle::Get(), false /* enable_pixel_canvas */);
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        false /* enable_pixel_canvas */);
     // TODO(sievers): Support onscreen here.
     compositor_->SetAcceleratedWidget(gfx::kNullAcceleratedWidget);
     compositor_->SetScaleAndSize(1.0f,

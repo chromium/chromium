@@ -94,7 +94,7 @@ SupervisedUserManagerImpl::SupervisedUserManagerImpl(
     : owner_(owner), cros_settings_(CrosSettings::Get()) {
   // SupervisedUserManager instance should be used only on UI thread.
   // (or in unit_tests)
-  if (base::ThreadTaskRunnerHandle::IsSet())
+  if (base::SingleThreadTaskRunner::HasCurrentDefault())
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 

@@ -8,7 +8,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/ranges/algorithm.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/compositor/layer.h"
@@ -404,7 +404,7 @@ void MessagePopupCollection::TransitionToAnimation() {
     // This function may be called by a child MessageView when a notification is
     // expanded by the user.  Deleting the pop-up should be delayed so we are
     // out of the child view's call stack. See crbug.com/957033.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&MessagePopupCollection::ClosePopupsOutsideWorkArea,
                        weak_ptr_factory_.GetWeakPtr()));

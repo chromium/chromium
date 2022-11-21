@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -74,7 +74,7 @@ void DiceInterceptedSessionStartupHelper::Startup(base::OnceClosure callback) {
     // Adding accounts to the cookies can be an expensive operation. In
     // particular the ExternalCCResult fetch may time out after multiple seconds
     // (see kExternalCCResultTimeoutSeconds and https://crbug.com/750316#c37).
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, on_cookie_update_timeout_.callback(), base::Seconds(12));
 
     accounts_in_cookie_observer_.Observe(identity_manager);

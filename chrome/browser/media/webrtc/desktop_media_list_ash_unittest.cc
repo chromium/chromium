@@ -9,7 +9,6 @@
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_observer.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
@@ -63,7 +62,7 @@ class DesktopMediaListAshTest : public ChromeAshTestBase {
 };
 
 ACTION(QuitMessageLoop) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
 }
 

@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/file_system/request_file_system_notification.h"
@@ -105,7 +105,7 @@ void ConsentProviderImpl::RequestConsent(content::RenderFrameHost* host,
   // If an allowlisted component, then no need to ask or inform the user.
   if (extension.location() == mojom::ManifestLocation::kComponent &&
       delegate_->IsAllowlistedComponent(extension)) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), CONSENT_GRANTED));
     return;
   }
@@ -115,7 +115,7 @@ void ConsentProviderImpl::RequestConsent(content::RenderFrameHost* host,
   if (delegate_->IsAutoLaunched(extension)) {
     delegate_->ShowNotification(extension.id(), extension.name(), volume_id,
                                 volume_label, writable);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), CONSENT_GRANTED));
     return;
   }
@@ -179,7 +179,7 @@ void ConsentProviderDelegate::ShowDialog(
   DCHECK(host);
   // Reject if |profile_| is gone.
   if (!profile_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), ui::DIALOG_BUTTON_NONE));
     return;
   }
@@ -200,7 +200,7 @@ void ConsentProviderDelegate::ShowDialog(
     web_contents = GetWebContentsForAppId(profile_, extension_id);
 
   if (!web_contents) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), ui::DIALOG_BUTTON_NONE));
     return;
   }
@@ -208,7 +208,7 @@ void ConsentProviderDelegate::ShowDialog(
   // Short circuit the user consent dialog for tests. This is far from a pretty
   // code design.
   if (g_auto_dialog_button_for_test != ui::DIALOG_BUTTON_NONE) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   /*result=*/g_auto_dialog_button_for_test));
     return;

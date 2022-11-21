@@ -5,7 +5,7 @@
 #include "components/download/public/common/url_download_handler_factory.h"
 
 #include "base/synchronization/lock.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/download/internal/common/resource_downloader.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_utils.h"
@@ -33,7 +33,8 @@ UrlDownloadHandlerFactory::Create(
           GURL(), GURL(), true, true, std::move(wake_lock_provider),
           false /* is_background_mode */, task_runner)
           .release(),
-      base::OnTaskRunnerDeleter(base::ThreadTaskRunnerHandle::Get()));
+      base::OnTaskRunnerDeleter(
+          base::SingleThreadTaskRunner::GetCurrentDefault()));
 }
 
 }  // namespace download

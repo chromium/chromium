@@ -105,6 +105,6 @@ bool MixedContentDownloadInfoBarDelegate::Cancel() {
 
 void MixedContentDownloadInfoBarDelegate::PostReply(bool should_download) {
   DCHECK(callback_);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback_), should_download));
 }

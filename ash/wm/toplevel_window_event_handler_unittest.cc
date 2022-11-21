@@ -29,7 +29,7 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
@@ -189,7 +189,7 @@ TEST_F(ToplevelWindowEventHandlerTest, WindowPositionAutoManagement) {
   generator.PressLeftButton();
   ::wm::WindowMoveClient* move_client =
       ::wm::GetWindowMoveClient(w1->GetRootWindow());
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ContinueAndCompleteDrag, base::Unretained(&generator),
                      base::Unretained(window_state),
@@ -208,7 +208,7 @@ TEST_F(ToplevelWindowEventHandlerTest, WindowPositionAutoManagement) {
   // restored after drag completes.
   window_state->SetWindowPositionManaged(false);
   generator.PressLeftButton();
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ContinueAndCompleteDrag, base::Unretained(&generator),
                      base::Unretained(window_state),
@@ -1030,7 +1030,7 @@ TEST_F(ToplevelWindowEventHandlerTest, CaptureLossAfterMouseRelease) {
 
   ::wm::WindowMoveClient* move_client =
       ::wm::GetWindowMoveClient(window->GetRootWindow());
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&SendMouseReleaseAndReleaseCapture,
                                 base::Unretained(&generator),
                                 base::Unretained(window.get())));
@@ -1057,7 +1057,7 @@ TEST_F(ToplevelWindowEventHandlerTest, GestureDragCaptureLoss) {
 
   ::wm::WindowMoveClient* move_client =
       ::wm::GetWindowMoveClient(window->GetRootWindow());
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&CheckHasCaptureAndReleaseCapture,
                                 base::Unretained(window.get())));
   EXPECT_EQ(::wm::MOVE_SUCCESSFUL,

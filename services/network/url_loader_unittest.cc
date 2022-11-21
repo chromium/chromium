@@ -29,12 +29,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "mojo/public/c/system/data_pipe.h"
@@ -206,7 +206,7 @@ class URLRequestMultipleWritesJob : public net::URLRequestJob {
 
   // net::URLRequestJob implementation:
   void Start() override {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&URLRequestMultipleWritesJob::StartAsync,
                                   weak_factory_.GetWeakPtr()));
   }
@@ -224,7 +224,7 @@ class URLRequestMultipleWritesJob : public net::URLRequestJob {
     }
 
     if (async_reads_) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&URLRequestMultipleWritesJob::ReadRawDataComplete,
                          weak_factory_.GetWeakPtr(), result));
@@ -291,7 +291,7 @@ class URLRequestEternalSyncReadsJob : public net::URLRequestJob {
 
   // net::URLRequestJob implementation:
   void Start() override {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&URLRequestEternalSyncReadsJob::StartAsync,
                                   weak_factory_.GetWeakPtr()));
   }
@@ -368,7 +368,7 @@ class URLRequestSimulatedCacheJob : public net::URLRequestJob {
 
   // net::URLRequestJob implementation:
   void Start() override {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&URLRequestSimulatedCacheJob::StartAsync,
                                   weak_factory_.GetWeakPtr()));
   }
@@ -472,7 +472,7 @@ class URLRequestFakeTransportInfoJob : public net::URLRequestJob {
 
   // net::URLRequestJob implementation:
   void Start() override {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&URLRequestFakeTransportInfoJob::StartAsync,
                                   weak_factory_.GetWeakPtr()));
   }
@@ -2588,7 +2588,7 @@ TEST_F(URLLoaderTest, CloseResponseBodyConsumerBeforeProducer) {
   // (Please note that this doesn't guarantee that the pipe is filled to the
   // point that it is not writable anymore.)
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
   run_loop.Run();
 
@@ -2652,7 +2652,7 @@ TEST_F(URLLoaderTest, PauseReadingBodyFromNetBeforeResponseHeaders) {
   // Wait for a little amount of time so that if the loader mistakenly reads
   // response body from the underlying URLRequest, it is easier to find out.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
   run_loop.Run();
 
@@ -4363,7 +4363,7 @@ class TestSSLPrivateKey : public net::SSLPrivateKey {
             SignCallback callback) override {
     sign_count_++;
     if (fail_signing_) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback),
                                     net::ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED,
                                     std::vector<uint8_t>()));
@@ -5706,7 +5706,7 @@ class MockTrustTokenRequestHelper : public TrustTokenRequestHelper {
         return;
       }
       case SyncOrAsync::kAsync: {
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(
                 &MockTrustTokenRequestHelper::OnDoneBeginning,
@@ -5732,7 +5732,7 @@ class MockTrustTokenRequestHelper : public TrustTokenRequestHelper {
         return;
       }
       case SyncOrAsync::kAsync: {
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(done), result));
         return;
       }
@@ -5826,7 +5826,7 @@ class MockTrustTokenRequestHelperFactory
           return;
         }
         case SyncOrAsync::kAsync:
-          base::ThreadTaskRunnerHandle::Get()->PostTask(
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE, base::BindOnce(std::move(done),
                                         std::move(*creation_failure_error_)));
           return;
@@ -5839,7 +5839,7 @@ class MockTrustTokenRequestHelperFactory
         return;
       }
       case SyncOrAsync::kAsync:
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(done), std::move(helper_)));
         return;
     }

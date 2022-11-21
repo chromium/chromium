@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/battery/battery_status_manager.h"
 #include "services/device/battery/battery_status_service.h"
@@ -62,7 +62,7 @@ class FakeBatteryStatusManager : public BatteryStatusManager {
 
   void InvokeUpdateCallback() {
     // Invoke asynchronously to mimic the OS-specific battery managers.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(callback_, status_));
   }
 

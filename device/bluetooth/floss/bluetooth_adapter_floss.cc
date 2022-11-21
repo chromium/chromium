@@ -14,7 +14,6 @@
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_socket_thread.h"
@@ -88,7 +87,7 @@ scoped_refptr<BluetoothAdapterFloss> BluetoothAdapterFloss::CreateAdapter() {
 }
 
 BluetoothAdapterFloss::BluetoothAdapterFloss() {
-  ui_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  ui_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
   socket_thread_ = device::BluetoothSocketThread::Get();
 }
 
@@ -103,7 +102,7 @@ void BluetoothAdapterFloss::Initialize(base::OnceClosure callback) {
   // Go ahead to Init() if object manager support is already known (e.g. when
   // using fake clients), otherwise find out object manager support first below.
   if (floss::FlossDBusManager::Get()->IsObjectManagerSupportKnown()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&BluetoothAdapterFloss::Init,
                                   weak_ptr_factory_.GetWeakPtr()));
     return;
@@ -111,7 +110,7 @@ void BluetoothAdapterFloss::Initialize(base::OnceClosure callback) {
 
   // Queue a task to check for ObjectManager support and init once the support
   // is known.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&InitWhenObjectManagerKnown,
                      base::BindOnce(&BluetoothAdapterFloss::Init,

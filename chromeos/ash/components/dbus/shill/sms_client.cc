@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/fake_sms_client.h"
 #include "dbus/bus.h"
@@ -69,7 +69,7 @@ class SMSReceiveHandler {
       // Move |callback_| to the task to ensure that |callback_| is only called
       // once. Since |callback_| may destruct this object, schedule it to the
       // task runner to run after this method returns.
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback_), std::move(sms)));
       return;
     }

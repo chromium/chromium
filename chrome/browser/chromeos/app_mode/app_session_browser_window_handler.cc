@@ -115,7 +115,7 @@ void AppSessionBrowserWindowHandler::HandleNewSettingsWindow(
 }
 
 void AppSessionBrowserWindowHandler::OnBrowserAdded(Browser* browser) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&AppSessionBrowserWindowHandler::HandleNewBrowserWindow,
                      weak_ptr_factory_.GetWeakPtr(), browser));

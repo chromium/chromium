@@ -11,7 +11,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "net/base/load_flags.h"
@@ -104,7 +104,7 @@ BidirectionalStream::BidirectionalStream(
   }
 
   if (!request_info_->url.SchemeIs(url::kHttpsScheme)) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&BidirectionalStream::NotifyFailed,
                        weak_factory_.GetWeakPtr(), ERR_DISALLOWED_URL_SCHEME));

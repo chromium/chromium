@@ -10,8 +10,8 @@
 #include "base/callback_helpers.h"
 #include "base/strings/string_split.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "net/base/test_completion_callback.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -40,7 +40,7 @@ SlowHttpResponse::GotRequestCallback SlowHttpResponse::NoResponse() {
 }
 
 SlowHttpResponse::SlowHttpResponse(GotRequestCallback got_request)
-    : main_thread_(base::ThreadTaskRunnerHandle::Get()),
+    : main_thread_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       got_request_(std::move(got_request)) {}
 
 SlowHttpResponse::~SlowHttpResponse() = default;
@@ -69,7 +69,7 @@ void SlowHttpResponse::SendResponse(
 
   // SendResponse() runs off the test's main thread so we must have these tasks
   // post back from the test's main thread to this thread.
-  auto task_runner = base::ThreadTaskRunnerHandle::Get();
+  auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   auto send_headers = base::BindPostTask(
       task_runner, base::BindOnce(&HttpResponseDelegate::SendResponseHeaders,
                                   delegate, status, status_reason, headers));

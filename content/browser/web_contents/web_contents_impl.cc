@@ -41,7 +41,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/optional_trace_event.h"
 #include "base/trace_event/trace_event.h"
@@ -7542,7 +7541,7 @@ void WebContentsImpl::DidChangeLoadProgressForPrimaryMainFrame() {
   if (min_delay == base::Milliseconds(0)) {
     SendChangeLoadProgress();
   } else {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&WebContentsImpl::SendChangeLoadProgress,
                        loading_weak_factory_.GetWeakPtr()),
@@ -8274,7 +8273,7 @@ service_manager::InterfaceProvider* WebContentsImpl::GetJavaInterfaces() {
     BindInterfaceRegistryForWebContents(
         provider.InitWithNewPipeAndPassReceiver(), this);
     java_interfaces_ = std::make_unique<service_manager::InterfaceProvider>(
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     java_interfaces_->Bind(std::move(provider));
   }
   return java_interfaces_.get();

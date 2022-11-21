@@ -39,7 +39,7 @@ bool ArImageTransport::UseSharedBuffer() {
 
 ArImageTransport::ArImageTransport(
     std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge)
-    : gl_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+    : gl_thread_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       mailbox_bridge_(std::move(mailbox_bridge)) {
   DVLOG(2) << __func__;
 }

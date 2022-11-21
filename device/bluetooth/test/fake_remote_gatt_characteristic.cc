@@ -130,7 +130,7 @@ device::BluetoothRemoteGattService* FakeRemoteGattCharacteristic::GetService()
 
 void FakeRemoteGattCharacteristic::ReadRemoteCharacteristic(
     ValueCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeRemoteGattCharacteristic::DispatchReadResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -157,12 +157,12 @@ void FakeRemoteGattCharacteristic::WriteRemoteCharacteristic(
   if (write_type == WriteType::kWithoutResponse) {
     last_written_value_ = value;
     last_write_type_ = mojom_write_type;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(callback));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
     return;
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeRemoteGattCharacteristic::DispatchWriteResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
@@ -180,12 +180,12 @@ void FakeRemoteGattCharacteristic::DeprecatedWriteRemoteCharacteristic(
   if (properties_ & PROPERTY_WRITE_WITHOUT_RESPONSE) {
     last_written_value_ = value;
     last_write_type_ = write_type;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(callback));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
     return;
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeRemoteGattCharacteristic::DispatchWriteResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
@@ -208,7 +208,7 @@ void FakeRemoteGattCharacteristic::SubscribeToNotifications(
 #endif  // BUILDFLAG(IS_CHROMEOS)
     base::OnceClosure callback,
     ErrorCallback error_callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeRemoteGattCharacteristic::
                          DispatchSubscribeToNotificationsResponse,
@@ -220,7 +220,7 @@ void FakeRemoteGattCharacteristic::UnsubscribeFromNotifications(
     device::BluetoothRemoteGattDescriptor* ccc_descriptor,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeRemoteGattCharacteristic::
                          DispatchUnsubscribeFromNotificationsResponse,

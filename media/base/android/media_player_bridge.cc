@@ -16,7 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/android/media_common_android.h"
 #include "media/base/android/media_jni_headers/MediaPlayerBridge_jni.h"
 #include "media/base/android/media_resource_getter.h"
@@ -101,7 +101,8 @@ MediaPlayerBridge::MediaPlayerBridge(
                                        base::Unretained(this))),
       client_(client) {
   listener_ = std::make_unique<MediaPlayerListener>(
-      base::ThreadTaskRunnerHandle::Get(), weak_factory_.GetWeakPtr());
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      weak_factory_.GetWeakPtr());
 }
 
 MediaPlayerBridge::~MediaPlayerBridge() {

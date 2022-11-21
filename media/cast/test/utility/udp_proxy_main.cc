@@ -17,7 +17,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "media/cast/test/utility/udp_proxy.h"
 #include "net/base/ip_address.h"
@@ -127,7 +126,7 @@ void CheckByteCounters() {
 
     counter->last_printout = now;
   }
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&CheckByteCounters), base::Milliseconds(100));
 }
 

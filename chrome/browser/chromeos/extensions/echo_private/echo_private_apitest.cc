@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/notifications/echo_dialog_view.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
@@ -82,12 +82,12 @@ class ExtensionEchoPrivateApiTest : public extensions::ExtensionApiTest {
     // The dialog should stay around until AcceptWindow or CancelWindow is
     // called, so base::Unretained is safe.
     if (dialog_action == DIALOG_TEST_ACTION_ACCEPT) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(base::IgnoreResult(&ash::EchoDialogView::Accept),
                          base::Unretained(dialog)));
     } else if (dialog_action == DIALOG_TEST_ACTION_CANCEL) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(base::IgnoreResult(&ash::EchoDialogView::Cancel),
                          base::Unretained(dialog)));

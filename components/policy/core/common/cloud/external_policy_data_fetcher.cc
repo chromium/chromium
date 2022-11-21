@@ -11,7 +11,7 @@
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -222,7 +222,7 @@ ExternalPolicyDataFetcher::ExternalPolicyDataFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : task_runner_(std::move(task_runner)),
-      job_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+      job_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   // |url_loader_factory| is null in some tests.
   if (url_loader_factory)
     pending_url_loader_factory_ = url_loader_factory->Clone();

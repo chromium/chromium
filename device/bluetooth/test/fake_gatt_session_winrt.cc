@@ -6,8 +6,8 @@
 
 #include <wrl/client.h>
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/win/async_operation.h"
 #include "device/bluetooth/test/bluetooth_test_win.h"
 
@@ -179,7 +179,7 @@ HRESULT FakeGattSessionStaticsWinrt::FromDeviceIdAsync(
     IAsyncOperation<GattSession*>** operation) {
   DCHECK(device_id);
   auto async_op = Make<base::win::AsyncOperation<GattSession*>>();
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(async_op->callback(),
                      Make<FakeGattSessionWinrt>(bluetooth_test_winrt_)));

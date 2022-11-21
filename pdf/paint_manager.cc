@@ -18,7 +18,7 @@
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "pdf/paint_ready_rect.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -181,7 +181,7 @@ void PaintManager::EnsureCallbackPending() {
   if (manual_callback_pending_)
     return;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&PaintManager::OnManualCallbackComplete,
                                 weak_factory_.GetWeakPtr()));
   manual_callback_pending_ = true;

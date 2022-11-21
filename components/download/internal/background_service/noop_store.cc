@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/download/internal/background_service/entry.h"
 
 namespace download {
@@ -23,7 +23,7 @@ bool NoopStore::IsInitialized() {
 void NoopStore::Initialize(InitCallback callback) {
   DCHECK(!IsInitialized());
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&NoopStore::OnInitFinished, weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback)));
@@ -31,17 +31,17 @@ void NoopStore::Initialize(InitCallback callback) {
 
 void NoopStore::HardRecover(StoreCallback callback) {
   initialized_ = true;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
 void NoopStore::Update(const Entry& entry, StoreCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true /** success */));
 }
 
 void NoopStore::Remove(const std::string& guid, StoreCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true /** success */));
 }
 

@@ -15,8 +15,8 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "net/base/chunked_upload_data_stream.h"
@@ -203,7 +203,7 @@ class ReadErrorUploadDataStream : public UploadDataStream {
 
   int ReadInternal(IOBuffer* buf, int buf_len) override {
     if (async_ == FailureMode::ASYNC) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&ReadErrorUploadDataStream::CompleteRead,
                                     weak_factory_.GetWeakPtr()));
       return ERR_IO_PENDING;
@@ -378,8 +378,9 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
     connection_ = new TestQuicConnection(
         quic::test::SupportedVersions(version_), connection_id_, peer_addr_,
         helper_.get(), alarm_factory_.get(),
-        new QuicChromiumPacketWriter(socket.get(),
-                                     base::ThreadTaskRunnerHandle::Get().get()),
+        new QuicChromiumPacketWriter(
+            socket.get(),
+            base::SingleThreadTaskRunner::GetCurrentDefault().get()),
         connection_id_generator_);
     connection_->set_visitor(&visitor_);
     connection_->SetSendAlgorithm(send_algorithm_);
@@ -423,7 +424,7 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
         "CONNECTION_UNKNOWN", dns_start, dns_end,
         std::make_unique<quic::QuicClientPushPromiseIndex>(), nullptr,
         base::DefaultTickClock::GetInstance(),
-        base::ThreadTaskRunnerHandle::Get().get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         /*socket_performance_watcher=*/nullptr, NetLog::Get());
     session_->Initialize();
 

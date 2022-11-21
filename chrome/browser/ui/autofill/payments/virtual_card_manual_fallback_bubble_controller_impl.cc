@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/autofill/payments/virtual_card_manual_fallback_bubble_controller_impl.h"
 
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/browser.h"
@@ -62,7 +62,7 @@ void VirtualCardManualFallbackBubbleControllerImpl::ShowBubble(
 
   // Delay the showing of the manual fallback bubble so that the form filling
   // and the manual fallback bubble appearance do not happen at the same time.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&VirtualCardManualFallbackBubbleControllerImpl::Show,
                      weak_ptr_factory_.GetWeakPtr()),

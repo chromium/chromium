@@ -14,7 +14,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "crypto/random.h"
 
@@ -269,7 +269,8 @@ void InstanceIDImpl::RunWhenReady(base::OnceClosure task) {
   if (!delayed_task_controller_.CanRunTaskWithoutDelay())
     delayed_task_controller_.AddTask(std::move(task));
   else
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(task));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(task));
 }
 
 }  // namespace instance_id

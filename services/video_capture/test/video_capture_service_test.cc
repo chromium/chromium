@@ -5,7 +5,7 @@
 #include "services/video_capture/test/video_capture_service_test.h"
 
 #include "base/command_line.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/media_switches.h"
 #include "services/video_capture/public/cpp/mock_producer.h"
 #include "services/video_capture/public/mojom/constants.mojom.h"
@@ -33,7 +33,7 @@ void VideoCaptureServiceTest::SetUp() {
 
   service_impl_ = std::make_unique<VideoCaptureServiceImpl>(
       service_remote_.BindNewPipeAndPassReceiver(),
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   // Note, that we explicitly do *not* call
   // |service_remote_->InjectGpuDependencies()| here. Test case

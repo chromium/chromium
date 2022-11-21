@@ -6,8 +6,8 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
@@ -115,7 +115,8 @@ TEST_F(NetworkQualitySocketWatcherTest, NotificationsThrottled) {
 
   SocketWatcher socket_watcher(
       SocketPerformanceWatcherFactory::PROTOCOL_TCP, address_list,
-      base::Milliseconds(2000), false, base::ThreadTaskRunnerHandle::Get(),
+      base::Milliseconds(2000), false,
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
       base::BindRepeating(OnUpdatedRTTAvailable),
       base::BindRepeating(ShouldNotifyRTTCallback), &tick_clock);
 
@@ -159,7 +160,8 @@ TEST_F(NetworkQualitySocketWatcherTest, QuicFirstNotificationDropped) {
 
   SocketWatcher socket_watcher(
       SocketPerformanceWatcherFactory::PROTOCOL_QUIC, address_list,
-      base::Milliseconds(2000), false, base::ThreadTaskRunnerHandle::Get(),
+      base::Milliseconds(2000), false,
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
       base::BindRepeating(OnUpdatedRTTAvailableStoreParams),
       base::BindRepeating(ShouldNotifyRTTCallback), &tick_clock);
 
@@ -219,7 +221,8 @@ TEST_F(NetworkQualitySocketWatcherTest, MAYBE_PrivateAddressRTTNotNotified) {
 
     SocketWatcher socket_watcher(
         SocketPerformanceWatcherFactory::PROTOCOL_TCP, address_list,
-        base::Milliseconds(2000), false, base::ThreadTaskRunnerHandle::Get(),
+        base::Milliseconds(2000), false,
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::BindRepeating(OnUpdatedRTTAvailable),
         base::BindRepeating(ShouldNotifyRTTCallback), &tick_clock);
 
@@ -258,7 +261,8 @@ TEST_F(NetworkQualitySocketWatcherTest, RemoteHostIPHashComputedCorrectly) {
 
     SocketWatcher socket_watcher(
         SocketPerformanceWatcherFactory::PROTOCOL_TCP, address_list,
-        base::Milliseconds(2000), false, base::ThreadTaskRunnerHandle::Get(),
+        base::Milliseconds(2000), false,
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::BindRepeating(OnUpdatedRTTAvailableStoreParams),
         base::BindRepeating(ShouldNotifyRTTCallback), &tick_clock);
     EXPECT_TRUE(socket_watcher.ShouldNotifyUpdatedRTT());

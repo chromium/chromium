@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "tools/android/forwarder2/command.h"
 #include "tools/android/forwarder2/device_listener.h"
 #include "tools/android/forwarder2/socket.h"
@@ -48,12 +47,13 @@ DeviceController::DeviceController(std::unique_ptr<Socket> host_socket,
                                    int exit_notifier_fd)
     : host_socket_(std::move(host_socket)),
       exit_notifier_fd_(exit_notifier_fd),
-      construction_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+      construction_task_runner_(
+          base::SingleThreadTaskRunner::GetCurrentDefault()) {
   host_socket_->AddEventFd(exit_notifier_fd);
 }
 
 void DeviceController::AcceptHostCommandSoon() {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&DeviceController::AcceptHostCommandInternal,
                                 base::Unretained(this)));
 }

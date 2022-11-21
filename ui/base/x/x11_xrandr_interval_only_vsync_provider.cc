@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/no_destructor.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ui/base/x/x11_display_util.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
@@ -72,7 +72,7 @@ XrandrIntervalOnlyVSyncProvider::~XrandrIntervalOnlyVSyncProvider() = default;
 
 void XrandrIntervalOnlyVSyncProvider::GetVSyncParameters(
     UpdateVSyncCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), base::TimeTicks(),
                                 XRandrHelper::GetInterval()));
 }

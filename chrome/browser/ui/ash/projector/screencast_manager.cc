@@ -96,7 +96,7 @@ void GetVideoMetadata(const base::FilePath& video_path,
       size_in_byte, kProjectorMediaMimeType,
       /*get_attached_images=*/false,
       std::make_unique<LocalMediaDataSourceFactory>(
-          video_path, base::ThreadTaskRunnerHandle::Get()));
+          video_path, base::SingleThreadTaskRunner::GetCurrentDefault()));
 
   // Uses raw pointer since the `parser` is moved before calling Start().
   SafeMediaMetadataParser* parser_ptr = parser.get();

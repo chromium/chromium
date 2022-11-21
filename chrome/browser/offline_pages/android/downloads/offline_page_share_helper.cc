@@ -10,7 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/download/android/download_controller_base.h"
 #include "chrome/browser/download/android/download_utils.h"
 #include "chrome/browser/offline_pages/offline_page_mhtml_archiver.h"
@@ -123,7 +123,7 @@ void OfflinePageShareHelper::NotifyCompletion(
     ShareResult result,
     std::unique_ptr<OfflineItemShareInfo> share_info) {
   DCHECK(result_cb_);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(result_cb_), result, content_id_,
                                 std::move(share_info)));
 }

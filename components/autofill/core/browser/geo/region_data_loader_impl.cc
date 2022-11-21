@@ -5,7 +5,7 @@
 #include "components/autofill/core/browser/geo/region_data_loader_impl.h"
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/region_data.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/region_data_builder.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/source.h"
@@ -61,7 +61,7 @@ void RegionDataLoaderImpl::OnRegionDataLoaded(bool success,
   }
   // The deletion must be asynchronous since the caller is not quite done with
   // the preload supplier.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&RegionDataLoaderImpl::DeleteThis,
                                 base::Unretained(this)));
 }

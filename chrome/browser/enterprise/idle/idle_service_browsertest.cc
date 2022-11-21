@@ -104,7 +104,8 @@ class IdleServiceTest : public InProcessBrowserTest {
       profile->GetPrefs()->ClearPref("idle_profile_close_timeout");
     }
     ASSERT_FALSE(polling_service().IsPollingForTest());
-    polling_service().SetTaskRunnerForTest(base::ThreadTaskRunnerHandle::Get());
+    polling_service().SetTaskRunnerForTest(
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   MockIdleTimeProvider& provider() { return *time_provider_; }

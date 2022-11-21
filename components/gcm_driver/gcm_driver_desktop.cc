@@ -15,8 +15,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner_util.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -1034,7 +1034,7 @@ void GCMDriverDesktop::GetInstanceIDData(const std::string& app_id,
     DLOG(ERROR)
         << "Unable to get the InstanceID data: cannot start the GCM Client";
     // Resolve the |callback| to not leave it hanging indefinitely.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), std::string(), std::string()));
     return;

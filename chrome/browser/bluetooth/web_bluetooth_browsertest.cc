@@ -213,7 +213,7 @@ class FakeBluetoothGattCharacteristic
       // renderer of the change. Do the same for |callback| to ensure
       // StartNotifySession completes after the value change notification is
       // received.
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(callback), std::move(fake_notify_session)));
     } else {

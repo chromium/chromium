@@ -23,7 +23,7 @@
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/wm/core/window_util.h"
@@ -167,7 +167,7 @@ TEST_F(NoSessionShelfTest, SetAlignmentDuringDisplayDisconnect) {
   base::RunLoop().RunUntilIdle();
 
   // The task indirectly triggers Shelf::SetAlignment() via a SessionObserver.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](TestSessionControllerClient* session) {

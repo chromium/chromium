@@ -11,7 +11,7 @@ TtsPlayer::TtsPlayer(
     mojo::PendingRemote<media::mojom::AudioStreamFactory> factory,
     const media::AudioParameters& params)
     : output_device_(std::move(factory), params, this, std::string()),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 TtsPlayer::~TtsPlayer() = default;
 

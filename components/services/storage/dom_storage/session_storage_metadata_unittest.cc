@@ -13,10 +13,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/dom_storage/testing_legacy_session_storage_database.h"
@@ -436,7 +436,8 @@ class SessionStorageMetadataMigrationTest : public testing::Test {
     ASSERT_TRUE(s.ok()) << s.ToString();
     old_ss_database_ =
         base::MakeRefCounted<TestingLegacySessionStorageDatabase>(
-            temp_path_.GetPath(), base::ThreadTaskRunnerHandle::Get().get());
+            temp_path_.GetPath(),
+            base::SingleThreadTaskRunner::GetCurrentDefault().get());
     old_ss_database_->SetDatabaseForTesting(std::move(db));
   }
 

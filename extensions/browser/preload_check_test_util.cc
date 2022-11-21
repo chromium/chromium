@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -67,7 +66,7 @@ void PreloadCheckStub::Start(ResultCallback callback) {
   if (is_async_) {
     // TODO(michaelpg): Bind the callback directly and remove RunCallback
     // once crbug.com/704027 is addressed.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&PreloadCheckStub::RunCallback,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

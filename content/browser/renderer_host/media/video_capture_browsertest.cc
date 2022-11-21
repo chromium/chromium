@@ -161,7 +161,7 @@ class VideoCaptureBrowserTest : public ContentBrowserTest,
     // VideoCaptureControllerEventHandler. To satisfy this, we have to post our
     // invocation to the end of the IO message queue.
     if (post_to_end_of_message_queue) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(
               &VideoCaptureBrowserTest::TearDownCaptureDeviceOnIOThread,

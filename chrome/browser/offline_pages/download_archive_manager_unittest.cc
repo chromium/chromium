@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -54,7 +54,8 @@ void DownloadArchiveManagerTest::SetUp() {
   // Create a DownloadArchiveManager to use.
   archive_manager_ = std::make_unique<DownloadArchiveManager>(
       base::FilePath(kTemporaryDir), base::FilePath(kPrivateDir),
-      base::FilePath(kPublicDir), base::ThreadTaskRunnerHandle::Get(), prefs());
+      base::FilePath(kPublicDir),
+      base::SingleThreadTaskRunner::GetCurrentDefault(), prefs());
 }
 
 void DownloadArchiveManagerTest::TearDown() {
@@ -69,7 +70,8 @@ TEST_F(DownloadArchiveManagerTest, UseDownloadDirFromPreferences) {
 TEST_F(DownloadArchiveManagerTest, NullPrefs) {
   DownloadArchiveManager download_archive_manager(
       base::FilePath(kTemporaryDir), base::FilePath(kPrivateDir),
-      base::FilePath(kPublicDir), base::ThreadTaskRunnerHandle::Get(), nullptr);
+      base::FilePath(kPublicDir),
+      base::SingleThreadTaskRunner::GetCurrentDefault(), nullptr);
 
   base::FilePath download_dir = download_archive_manager.GetPublicArchivesDir();
   ASSERT_EQ(kPublicDir, download_dir.AsUTF8Unsafe());

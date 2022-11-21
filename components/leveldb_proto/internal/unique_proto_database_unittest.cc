@@ -18,9 +18,9 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/leveldb_proto/internal/leveldb_database.h"
 #include "components/leveldb_proto/internal/proto_database_impl.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
@@ -231,7 +231,7 @@ class UniqueProtoDatabaseTest : public testing::Test {
   void SetUp() override {
     db_ = std::make_unique<ProtoDatabaseImpl<TestProto>>(
         ProtoDbType::TEST_DATABASE0, base::FilePath(),
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   void TearDown() override {

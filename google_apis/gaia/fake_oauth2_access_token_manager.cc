@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 using TokenResponseBuilder = OAuth2AccessTokenConsumer::TokenResponse::Builder;
@@ -190,7 +189,7 @@ void FakeOAuth2AccessTokenManager::FetchOAuth2Token(
   pending_requests_.push_back(pending_request);
 
   if (auto_post_fetch_response_on_message_loop_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&FakeOAuth2AccessTokenManager::CompleteRequests,
                        weak_ptr_factory_.GetWeakPtr(), account_id,

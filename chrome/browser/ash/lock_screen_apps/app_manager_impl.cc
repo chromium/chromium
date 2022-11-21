@@ -23,7 +23,7 @@
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -466,7 +466,7 @@ AppManagerImpl::State AppManagerImpl::AddAppToLockScreenProfile(
                   &AppManagerImpl::CompleteLockScreenChromeAppInstall,
                   weak_ptr_factory_.GetWeakPtr(), install_count_,
                   tick_clock_->NowTicks()),
-              base::ThreadTaskRunnerHandle::Get())));
+              base::SingleThreadTaskRunner::GetCurrentDefault())));
   return State::kActivating;
 }
 

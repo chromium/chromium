@@ -34,7 +34,7 @@ namespace {
 
 void WaitForMilliseconds(int ms) {
   base::RunLoop loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, loop.QuitClosure(), base::Milliseconds(ms));
   loop.Run();
 }

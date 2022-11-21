@@ -8,7 +8,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_salt_storage.h"
@@ -131,7 +131,7 @@ void OnCryptohomedServiceAvailable(int attempt,
   }
   if (!is_available) {
     const int retry_delay_in_milliseconds = 500 * (1 << attempt);
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&CheckForCryptohomedService, attempt + 1,
                        std::move(result)),

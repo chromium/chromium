@@ -288,7 +288,7 @@ void XrBrowserTestBase::BlockOnCondition(
     }
     // In the case where the condition is met fast enough that the given
     // RunLoop hasn't started yet, spin until it's available.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&XrBrowserTestBase::BlockOnCondition,
                        base::Unretained(this), std::move(condition),
@@ -303,7 +303,7 @@ void XrBrowserTestBase::BlockOnCondition(
     return;
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&XrBrowserTestBase::BlockOnCondition,
                      base::Unretained(this), std::move(condition),

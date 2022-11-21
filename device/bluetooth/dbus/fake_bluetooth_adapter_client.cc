@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "dbus/bus.h"
 #include "device/bluetooth/bluez/bluetooth_service_record_bluez.h"
@@ -371,7 +370,7 @@ void FakeBluetoothAdapterClient::OnPropertyChanged(
 }
 
 void FakeBluetoothAdapterClient::PostDelayedTask(base::OnceClosure callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, std::move(callback),
       base::Milliseconds(simulation_interval_ms_));
 }

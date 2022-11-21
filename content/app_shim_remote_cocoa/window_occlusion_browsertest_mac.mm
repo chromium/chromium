@@ -167,7 +167,7 @@ struct FeatureState {
   // a turn of the run loop. So, we don't have to worry that it might have
   // already been called, which would block us here until the test timed out.
   base::RunLoop runLoop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, runLoop.QuitClosure(),
       base::Milliseconds(delayInMilliseconds));
   (*[WebContentVisibilityUpdateWatcher runLoop]) = &runLoop;

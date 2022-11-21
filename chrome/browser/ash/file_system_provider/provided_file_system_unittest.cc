@@ -14,7 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/ash/file_system_provider/icon_set.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
@@ -173,7 +173,7 @@ class Observer : public ProvidedFileSystemObserver {
   // Completes handling the OnWatcherChanged event.
   void CompleteOnWatcherChanged() {
     DCHECK(!complete_callback_.is_null());
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(complete_callback_));
   }
 
@@ -294,13 +294,13 @@ TEST_F(FileSystemProviderProvidedFileSystemTest, AutoUpdater) {
   // callbacks.
   EXPECT_EQ(0u, log.size());
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                std::move(first_callback));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(first_callback));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0u, log.size());
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                std::move(second_callback));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(second_callback));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, log.size());
 }

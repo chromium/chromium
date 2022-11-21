@@ -14,8 +14,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner_util.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "storage/browser/blob/shareable_file_reference.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -245,10 +245,11 @@ void AsyncFileUtilAdapter::ReadDirectory(
   FileSystemOperationContext* context_ptr = context.release();
   const bool success = context_ptr->task_runner()->PostTask(
       FROM_HERE,
-      BindOnce(&ReadDirectoryHelper, sync_file_util_.get(),
-               base::Owned(context_ptr), url,
-               base::RetainedRef(base::ThreadTaskRunnerHandle::Get()),
-               callback));
+      BindOnce(
+          &ReadDirectoryHelper, sync_file_util_.get(), base::Owned(context_ptr),
+          url,
+          base::RetainedRef(base::SingleThreadTaskRunner::GetCurrentDefault()),
+          callback));
   DCHECK(success);
 }
 

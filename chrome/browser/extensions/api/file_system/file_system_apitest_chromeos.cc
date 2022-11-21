@@ -11,7 +11,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
@@ -98,8 +98,8 @@ class ScopedAddListenerObserver : public EventRouter::Observer {
     if (details.extension_id != extension_id_ || !callback_)
       return;
 
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(callback_));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback_));
   }
 
  private:

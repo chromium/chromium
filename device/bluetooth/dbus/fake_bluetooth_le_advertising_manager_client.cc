@@ -8,7 +8,6 @@
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
@@ -66,8 +65,8 @@ void FakeBluetoothLEAdvertisingManagerClient::RegisterAdvertisement(
              "Maximum advertisements reached");
   } else {
     currently_registered_.push_back(advertisement_object_path);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(callback));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
   }
 }
 
@@ -98,8 +97,8 @@ void FakeBluetoothLEAdvertisingManagerClient::UnregisterAdvertisement(
              "Does not exist");
   } else {
     currently_registered_.erase(reg_iter);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(callback));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
   }
 }
 

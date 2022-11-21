@@ -67,7 +67,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -3002,7 +3002,7 @@ void AutotestPrivateGetPrinterListFunction::OnEnterprisePrintersInitialized() {
   // We have to respond in separate task on the same thread, because it will
   // cause a destruction of CupsPrintersManager which needs to happen after
   // we return and on the same thread.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&AutotestPrivateGetPrinterListFunction::RespondWithSuccess,
                      this));

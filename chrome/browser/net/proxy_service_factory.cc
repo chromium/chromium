@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
@@ -55,7 +55,7 @@ ProxyServiceFactory::CreateProxyConfigService(PrefProxyConfigTracker* tracker,
   // include command line and configuration policy).
 
   base_service = net::ProxyConfigService::CreateSystemProxyConfigService(
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   return tracker->CreateTrackingProxyConfigService(std::move(base_service));

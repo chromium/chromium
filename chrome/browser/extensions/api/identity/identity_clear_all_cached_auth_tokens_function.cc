@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/api/identity/identity_api.h"
 #include "chrome/browser/extensions/api/identity/identity_constants.h"
 #include "chrome/browser/extensions/api/identity/web_auth_flow.h"
@@ -64,7 +64,7 @@ void IdentityClearAllCachedAuthTokensFunction::OnCookiesDeleted(
 
   // Post a task to ensure Respond() is not synchronously called from Run(). The
   // object is retained by this task.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&IdentityClearAllCachedAuthTokensFunction::Respond, this,
                      NoArguments()));

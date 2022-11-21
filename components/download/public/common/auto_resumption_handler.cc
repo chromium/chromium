@@ -12,7 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/download/public/common/download_item.h"
@@ -112,7 +112,7 @@ void AutoResumptionHandler::SetResumableDownloads(
     download->AddObserver(this);
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&AutoResumptionHandler::ResumePendingDownloads,
                      weak_factory_.GetWeakPtr()),
@@ -155,7 +155,7 @@ void AutoResumptionHandler::OnDownloadUpdated(download::DownloadItem* item) {
   if (item->GetState() == download::DownloadItem::INTERRUPTED &&
       IsAutoResumableDownload(item) && ShouldResumeNow(item)) {
     downloads_to_retry_.insert(item);
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&AutoResumptionHandler::ResumeDownloadImmediately,
                        weak_factory_.GetWeakPtr()),
@@ -207,7 +207,7 @@ void AutoResumptionHandler::RecomputeTaskParams() {
     return;
 
   recompute_task_params_scheduled_ = true;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&AutoResumptionHandler::RescheduleTaskIfNecessary,
                      weak_factory_.GetWeakPtr()),

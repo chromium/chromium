@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/i18n/message_formatter.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -132,7 +132,7 @@ class HeadlessEnterpriseStartupDialogImpl : public EnterpriseStartupDialog {
       // no one to accept or dismiss it. So just dismiss the dialog
       // right away without accepting the prompt and not allowing
       // browser to show its window.
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(callback_), /*was_accepted=*/false,
                          /*can_show_browser_window_=*/false));
@@ -178,7 +178,7 @@ EnterpriseStartupDialogView::EnterpriseStartupDialogView(
   SetBorder(views::CreateEmptyBorder(GetDialogInsets()));
   CreateDialogWidget(this, nullptr, nullptr)->Show();
 #if BUILDFLAG(IS_MAC)
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&EnterpriseStartupDialogView::StartModalDialog,
                                 weak_factory_.GetWeakPtr()));
 #endif
@@ -246,7 +246,7 @@ void EnterpriseStartupDialogView::RunDialogCallback(bool was_accepted) {
   if (can_show_browser_window_) {
     std::move(callback_).Run(was_accepted, can_show_browser_window_);
   } else {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback_), was_accepted,
                                   can_show_browser_window_));
   }

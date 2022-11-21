@@ -17,8 +17,8 @@
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner_util.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "crypto/sha2.h"
 #include "net/base/features.h"
@@ -300,7 +300,7 @@ TransportSecurityPersister::TransportSecurityPersister(
     const base::FilePath& data_path)
     : transport_security_state_(state),
       writer_(data_path, background_runner),
-      foreground_runner_(base::ThreadTaskRunnerHandle::Get()),
+      foreground_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       background_runner_(background_runner) {
   transport_security_state_->SetDelegate(this);
 

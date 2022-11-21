@@ -9,7 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -257,7 +257,7 @@ void LinkToTextMenuObserver::StartLinkGenerationRequestWithTimeout() {
   GetRemote()->RequestSelector(
       base::BindOnce(&LinkToTextMenuObserver::OnRequestLinkGenerationCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&LinkToTextMenuObserver::Timeout,
                      weak_ptr_factory_.GetWeakPtr()),

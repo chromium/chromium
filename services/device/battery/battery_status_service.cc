@@ -11,14 +11,14 @@
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_local_storage_slot.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "services/device/battery/battery_monitor_impl.h"
 #include "services/device/battery/battery_status_manager.h"
 
 namespace device {
 
 BatteryStatusService::BatteryStatusService()
-    : main_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+    : main_thread_task_runner_(
+          base::SingleThreadTaskRunner::GetCurrentDefault()),
       update_callback_(
           base::BindRepeating(&BatteryStatusService::NotifyConsumers,
                               base::Unretained(this))),
@@ -106,7 +106,7 @@ void BatteryStatusService::SetBatteryManagerForTesting(
   status_ = mojom::BatteryStatus();
   status_updated_ = false;
   is_shutdown_ = false;
-  main_thread_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  main_thread_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
 }  // namespace device

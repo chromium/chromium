@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/enterprise/browser/enterprise_switches.h"
 
 namespace policy {
@@ -128,7 +128,7 @@ FakeBrowserDMTokenStorage::MockDelegate::DeleteDMTokenTask(
 
 scoped_refptr<base::TaskRunner>
 FakeBrowserDMTokenStorage::MockDelegate::SaveDMTokenTaskRunner() {
-  return base::ThreadTaskRunnerHandle::Get();
+  return base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
 }  // namespace policy

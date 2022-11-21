@@ -43,7 +43,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/alsa/alsa_util.h"
@@ -164,7 +164,7 @@ AlsaPcmOutputStream::AlsaPcmOutputStream(const std::string& device_name,
       stop_stream_(false),
       wrapper_(wrapper),
       manager_(manager),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       playback_handle_(nullptr),
       frames_per_packet_(packet_size_ / bytes_per_frame_),
       state_(kCreated),

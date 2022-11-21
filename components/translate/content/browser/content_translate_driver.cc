@@ -17,7 +17,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/google/core/common/google_util.h"
 #include "components/language/core/browser/url_language_histogram.h"
 #include "components/translate/content/browser/content_record_page_language.h"
@@ -92,7 +91,7 @@ void ContentTranslateDriver::InitiateTranslation(const std::string& page_lang,
   // has finished.
   if (web_contents()->IsLoading() && attempt < max_reload_check_attempts_) {
     int backoff = attempt * kMaxTranslateLoadCheckAttempts;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ContentTranslateDriver::InitiateTranslation,
                        weak_pointer_factory_.GetWeakPtr(), page_lang,
@@ -232,7 +231,7 @@ void ContentTranslateDriver::InitiateTranslationIfReload(
   // by WebContentsObservers is undefined and might result in the current
   // infobars being removed. Since the translation initiation process might add
   // an infobar, it must be done after that.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ContentTranslateDriver::InitiateTranslation,
                      weak_pointer_factory_.GetWeakPtr(),

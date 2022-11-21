@@ -11,7 +11,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ui/display/manager/display_layout_store.h"
 #include "ui/display/manager/display_manager.h"
 
@@ -42,14 +42,14 @@ void DisplayConfigurationObserver::OnTabletModeStarted() {
   // Setting mirror mode may destroy the secondary SystemTray, so use
   // PostTask to set mirror mode in the next frame in case other
   // TabletModeObserver entries are owned by the SystemTray.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&DisplayConfigurationObserver::StartMirrorMode,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DisplayConfigurationObserver::OnTabletModeEnded() {
   // See comment for OnTabletModeStarted.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&DisplayConfigurationObserver::EndMirrorMode,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

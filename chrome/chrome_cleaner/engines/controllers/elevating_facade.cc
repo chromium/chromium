@@ -16,7 +16,7 @@
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/chrome_cleaner/constants/chrome_cleaner_switches.h"
 #include "chrome/chrome_cleaner/logging/logging_service_api.h"
@@ -187,7 +187,7 @@ class ElevatingCleaner : public Cleaner {
       ReportDone(static_cast<ResultCode>(result));
       privileged_process_.Close();
     } else {
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&ElevatingCleaner::CheckDone, base::Unretained(this)),
           kCheckPeriod);
@@ -196,7 +196,7 @@ class ElevatingCleaner : public Cleaner {
 
   // Reports result code of the underlying process.
   void ReportDone(ResultCode result) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(done_callback_), result));
   }
 

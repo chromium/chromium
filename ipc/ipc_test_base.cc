@@ -11,7 +11,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel_mojo.h"
 
@@ -31,10 +30,10 @@ void IPCChannelMojoTestBase::TearDown() {
 }
 
 void IPCChannelMojoTestBase::CreateChannel(IPC::Listener* listener) {
-  channel_ =
-      IPC::ChannelMojo::Create(TakeHandle(), IPC::Channel::MODE_SERVER,
-                               listener, base::ThreadTaskRunnerHandle::Get(),
-                               base::ThreadTaskRunnerHandle::Get(), nullptr);
+  channel_ = IPC::ChannelMojo::Create(
+      TakeHandle(), IPC::Channel::MODE_SERVER, listener,
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      base::SingleThreadTaskRunner::GetCurrentDefault(), nullptr);
 }
 
 bool IPCChannelMojoTestBase::ConnectChannel() {
@@ -58,10 +57,10 @@ void IpcChannelMojoTestClient::Init(mojo::ScopedMessagePipeHandle handle) {
 }
 
 void IpcChannelMojoTestClient::Connect(IPC::Listener* listener) {
-  channel_ =
-      IPC::ChannelMojo::Create(std::move(handle_), IPC::Channel::MODE_CLIENT,
-                               listener, base::ThreadTaskRunnerHandle::Get(),
-                               base::ThreadTaskRunnerHandle::Get(), nullptr);
+  channel_ = IPC::ChannelMojo::Create(
+      std::move(handle_), IPC::Channel::MODE_CLIENT, listener,
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      base::SingleThreadTaskRunner::GetCurrentDefault(), nullptr);
   CHECK(channel_->Connect());
 }
 
@@ -69,7 +68,7 @@ void IpcChannelMojoTestClient::Close() {
   channel_->Close();
 
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                run_loop.QuitClosure());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
 }

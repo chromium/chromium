@@ -12,7 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/onc/onc_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
@@ -58,7 +58,7 @@ NetworkingPrivateServiceClient::NetworkingPrivateServiceClient(
       base::BindOnce(
           &WiFiService::SetEventObservers,
           base::Unretained(wifi_service_.get()),
-          base::ThreadTaskRunnerHandle::Get(),
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
           base::BindRepeating(
               &NetworkingPrivateServiceClient::OnNetworksChangedEventOnUIThread,
               weak_factory_.GetWeakPtr()),

@@ -15,7 +15,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/drive/drive.pb.h"
 #include "components/drive/file_system_core_util.h"
 #include "content/public/test/browser_task_environment.h"
@@ -58,7 +57,8 @@ class ResourceMetadataStorageTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     storage_.reset(new ResourceMetadataStorage(
-        temp_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get().get()));
+        temp_dir_.GetPath(),
+        base::SingleThreadTaskRunner::GetCurrentDefault().get()));
     ASSERT_TRUE(storage_->Initialize());
   }
 
@@ -307,7 +307,8 @@ TEST_F(ResourceMetadataStorageTest, OpenExistingDB) {
 
   // Close DB and reopen.
   storage_.reset(new ResourceMetadataStorage(
-      temp_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get().get()));
+      temp_dir_.GetPath(),
+      base::SingleThreadTaskRunner::GetCurrentDefault().get()));
   ASSERT_TRUE(storage_->Initialize());
 
   // Can read data.
@@ -353,7 +354,8 @@ TEST_F(ResourceMetadataStorageTest, IncompatibleDB_M29) {
   storage_.reset();
   EXPECT_TRUE(UpgradeOldDB());
   storage_.reset(new ResourceMetadataStorage(
-      temp_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get().get()));
+      temp_dir_.GetPath(),
+      base::SingleThreadTaskRunner::GetCurrentDefault().get()));
   ASSERT_TRUE(storage_->Initialize());
 
   // Resource-ID-to-local-ID mapping is added.
@@ -405,7 +407,8 @@ TEST_F(ResourceMetadataStorageTest, IncompatibleDB_M32) {
   storage_.reset();
   EXPECT_TRUE(UpgradeOldDB());
   storage_.reset(new ResourceMetadataStorage(
-      temp_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get().get()));
+      temp_dir_.GetPath(),
+      base::SingleThreadTaskRunner::GetCurrentDefault().get()));
   ASSERT_TRUE(storage_->Initialize());
 
   // Data is erased, except cache and id mapping entries.
@@ -466,7 +469,8 @@ TEST_F(ResourceMetadataStorageTest, IncompatibleDB_M33) {
   storage_.reset();
   EXPECT_TRUE(UpgradeOldDB());
   storage_.reset(new ResourceMetadataStorage(
-      temp_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get().get()));
+      temp_dir_.GetPath(),
+      base::SingleThreadTaskRunner::GetCurrentDefault().get()));
   ASSERT_TRUE(storage_->Initialize());
 
   // largest_changestamp is cleared.
@@ -505,7 +509,8 @@ TEST_F(ResourceMetadataStorageTest, IncompatibleDB_Unknown) {
   storage_.reset();
   EXPECT_FALSE(UpgradeOldDB());
   storage_.reset(new ResourceMetadataStorage(
-      temp_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get().get()));
+      temp_dir_.GetPath(),
+      base::SingleThreadTaskRunner::GetCurrentDefault().get()));
   ASSERT_TRUE(storage_->Initialize());
 
   // Data is erased because of the incompatible version.
@@ -545,7 +550,8 @@ TEST_F(ResourceMetadataStorageTest, IncompatibleDB_M37) {
   storage_.reset();
   EXPECT_TRUE(UpgradeOldDB());
   storage_.reset(new ResourceMetadataStorage(
-      temp_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get().get()));
+      temp_dir_.GetPath(),
+      base::SingleThreadTaskRunner::GetCurrentDefault().get()));
   ASSERT_TRUE(storage_->Initialize());
 
   // Only the unused entry is deleted.
@@ -568,7 +574,7 @@ TEST_F(ResourceMetadataStorageTest, WrongPath) {
   ASSERT_TRUE(base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &path));
 
   storage_.reset(new ResourceMetadataStorage(
-      path, base::ThreadTaskRunnerHandle::Get().get()));
+      path, base::SingleThreadTaskRunner::GetCurrentDefault().get()));
   // Cannot initialize DB beacause the path does not point a directory.
   ASSERT_FALSE(storage_->Initialize());
 }
@@ -597,7 +603,8 @@ TEST_F(ResourceMetadataStorageTest, RecoverCacheEntriesFromTrashedResourceMap) {
 
   // Reopen. This should result in trashing the DB.
   storage_.reset(new ResourceMetadataStorage(
-      temp_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get().get()));
+      temp_dir_.GetPath(),
+      base::SingleThreadTaskRunner::GetCurrentDefault().get()));
   ASSERT_TRUE(storage_->Initialize());
 
   // Recover cache entries from the trashed DB.
@@ -707,7 +714,8 @@ TEST_F(ResourceMetadataStorageTest, UpgradeDBv15) {
   storage_.reset();
   EXPECT_TRUE(UpgradeOldDB());
   storage_.reset(new ResourceMetadataStorage(
-      temp_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get().get()));
+      temp_dir_.GetPath(),
+      base::SingleThreadTaskRunner::GetCurrentDefault().get()));
   ASSERT_TRUE(storage_->Initialize());
 
   int64_t largest_changestamp = 0;
@@ -749,7 +757,8 @@ TEST_F(ResourceMetadataStorageTest, UpgradeDBv16) {
   storage_.reset();
   EXPECT_TRUE(UpgradeOldDB());
   storage_.reset(new ResourceMetadataStorage(
-      temp_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get().get()));
+      temp_dir_.GetPath(),
+      base::SingleThreadTaskRunner::GetCurrentDefault().get()));
   ASSERT_TRUE(storage_->Initialize());
 
   // Changestamps are reset.

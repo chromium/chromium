@@ -22,10 +22,10 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
@@ -433,7 +433,7 @@ class TestCacheStorageCache : public CacheStorageCache {
                           cache_name,
                           path,
                           cache_storage,
-                          base::ThreadTaskRunnerHandle::Get(),
+                          base::SingleThreadTaskRunner::GetCurrentDefault(),
                           quota_manager_proxy,
                           std::move(blob_storage_context),
                           0 /* cache_size */,
@@ -548,12 +548,13 @@ class CacheStorageCacheTest : public testing::Test {
 
     quota_policy_ = base::MakeRefCounted<storage::MockSpecialStoragePolicy>();
     mock_quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
-        is_incognito, temp_dir_path_, base::ThreadTaskRunnerHandle::Get(),
-        quota_policy_);
+        is_incognito, temp_dir_path_,
+        base::SingleThreadTaskRunner::GetCurrentDefault(), quota_policy_);
     SetQuota(1024 * 1024 * 100);
 
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
-        mock_quota_manager_.get(), base::ThreadTaskRunnerHandle::Get());
+        mock_quota_manager_.get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
 
     CreateRequests(blob_storage_context);
 
@@ -571,8 +572,9 @@ class CacheStorageCacheTest : public testing::Test {
     // CacheStorageCacheHandle reference counting.  A CacheStorage
     // must be present to be notified when a cache becomes unreferenced.
     mock_cache_storage_ = std::make_unique<MockCacheStorage>(
-        temp_dir_path_, MemoryOnly(), base::ThreadTaskRunnerHandle::Get().get(),
-        base::ThreadTaskRunnerHandle::Get(), quota_manager_proxy_,
+        temp_dir_path_, MemoryOnly(),
+        base::SingleThreadTaskRunner::GetCurrentDefault().get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(), quota_manager_proxy_,
         blob_storage_context_, /* cache_storage_manager = */ nullptr,
         bucket_locator, storage::mojom::CacheStorageOwner::kCacheAPI);
 
@@ -589,7 +591,8 @@ class CacheStorageCacheTest : public testing::Test {
     base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
     quota_manager_proxy_->UpdateOrCreateBucket(
         storage::BucketInitParams(storage_key, storage::kDefaultBucketName),
-        base::ThreadTaskRunnerHandle::Get(), future.GetCallback());
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        future.GetCallback());
     auto bucket = future.Take();
     EXPECT_TRUE(bucket.ok());
     return bucket->ToBucketLocator();

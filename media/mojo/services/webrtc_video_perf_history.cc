@@ -15,7 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/media_switches.h"
@@ -223,8 +223,8 @@ void WebrtcVideoPerfHistory::OnDatabaseInit(bool success) {
 
   // Post all the deferred API calls as if they're just now coming in.
   for (auto& deferred_call : init_deferred_api_calls_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(deferred_call));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(deferred_call));
   }
   init_deferred_api_calls_.clear();
 }

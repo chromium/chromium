@@ -14,7 +14,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/scoped_hstring.h"
 #include "base/win/winrt_storage_util.h"
@@ -183,7 +183,7 @@ void BluetoothAdvertisementWinrt::Register(SuccessCallback callback,
       base::BindRepeating(&BluetoothAdvertisementWinrt::OnStatusChanged,
                           weak_ptr_factory_.GetWeakPtr()));
   if (!status_changed_token_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(error_callback),
                                   ERROR_STARTING_ADVERTISEMENT));
     return;
@@ -194,7 +194,7 @@ void BluetoothAdvertisementWinrt::Register(SuccessCallback callback,
     BLUETOOTH_LOG(ERROR)
         << "Starting IBluetoothLEAdvertisementPublisher failed: "
         << logging::SystemErrorCodeToString(hr);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(error_callback),
                                   ERROR_STARTING_ADVERTISEMENT));
     RemoveStatusChangedHandler(publisher_.Get(), *status_changed_token_);
@@ -216,7 +216,7 @@ void BluetoothAdvertisementWinrt::Unregister(SuccessCallback success_callback,
 
   if (pending_unregister_callbacks_) {
     BLUETOOTH_LOG(ERROR) << "An Unregister Operation is already in progress.";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(error_callback), ERROR_RESET_ADVERTISING));
     return;
@@ -227,7 +227,7 @@ void BluetoothAdvertisementWinrt::Unregister(SuccessCallback success_callback,
   if (FAILED(hr)) {
     BLUETOOTH_LOG(ERROR) << "Getting the Publisher Status failed: "
                          << logging::SystemErrorCodeToString(hr);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(error_callback), ERROR_RESET_ADVERTISING));
     return;
@@ -235,7 +235,7 @@ void BluetoothAdvertisementWinrt::Unregister(SuccessCallback success_callback,
 
   if (status == BluetoothLEAdvertisementPublisherStatus_Aborted) {
     // Report an error if the publisher is in the aborted state.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(error_callback), ERROR_RESET_ADVERTISING));
     return;
@@ -243,8 +243,8 @@ void BluetoothAdvertisementWinrt::Unregister(SuccessCallback success_callback,
 
   if (status == BluetoothLEAdvertisementPublisherStatus_Stopped) {
     // Report success if the publisher is already stopped.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(success_callback));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(success_callback));
     return;
   }
 
@@ -253,7 +253,7 @@ void BluetoothAdvertisementWinrt::Unregister(SuccessCallback success_callback,
     BLUETOOTH_LOG(ERROR)
         << "IBluetoothLEAdvertisementPublisher::Stop() failed: "
         << logging::SystemErrorCodeToString(hr);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(error_callback), ERROR_RESET_ADVERTISING));
     return;

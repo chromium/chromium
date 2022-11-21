@@ -10,7 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "extensions/browser/image_loader.h"
 #include "extensions/common/extension.h"
 #include "ui/base/layout.h"
@@ -220,7 +220,7 @@ void IconImage::LoadImageForScaleAsync(float scale) {
     // If there is no resource found, update from the default icon.
     const gfx::ImageSkiaRep& rep = default_icon_.GetRepresentation(scale);
     if (!rep.is_null()) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&IconImage::OnImageRepLoaded,
                                     weak_ptr_factory_.GetWeakPtr(), rep));
     }

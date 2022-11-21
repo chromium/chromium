@@ -16,7 +16,7 @@
 #include "base/format_macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "cc/animation/animation_host.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/layer_impl.h"
@@ -125,8 +125,9 @@ class TreeSynchronizerTest : public testing::Test {
     host_.reset();
     host_ = FakeLayerTreeHost::Create(&client_, &task_graph_runner_,
                                       animation_host_.get(), settings);
-    host_->InitializeSingleThreaded(&single_thread_client_,
-                                    base::ThreadTaskRunnerHandle::Get());
+    host_->InitializeSingleThreaded(
+        &single_thread_client_,
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     host_->host_impl()->CreatePendingTree();
   }
 

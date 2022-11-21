@@ -51,15 +51,15 @@ class ProxyRunner : public IPC::Listener {
     if (for_server) {
       factory = IPC::ChannelMojo::CreateServerFactory(
           std::move(pipe), ipc_task_runner,
-          base::ThreadTaskRunnerHandle::Get());
+          base::SingleThreadTaskRunner::GetCurrentDefault());
     } else {
       factory = IPC::ChannelMojo::CreateClientFactory(
           std::move(pipe), ipc_task_runner,
-          base::ThreadTaskRunnerHandle::Get());
+          base::SingleThreadTaskRunner::GetCurrentDefault());
     }
-    channel_ =
-        IPC::ChannelProxy::Create(std::move(factory), this, ipc_task_runner,
-                                  base::ThreadTaskRunnerHandle::Get());
+    channel_ = IPC::ChannelProxy::Create(
+        std::move(factory), this, ipc_task_runner,
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   void ShutDown() { channel_.reset(); }

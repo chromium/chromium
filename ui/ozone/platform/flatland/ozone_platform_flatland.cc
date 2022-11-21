@@ -172,7 +172,7 @@ class OzonePlatformFlatland : public OzonePlatform,
     if (!surface_factory_)
       surface_factory_ = std::make_unique<FlatlandSurfaceFactory>();
 
-    if (base::ThreadTaskRunnerHandle::IsSet())
+    if (base::SingleThreadTaskRunner::HasCurrentDefault())
       BindInMainProcessIfNecessary();
 
     return true;
@@ -211,7 +211,7 @@ class OzonePlatformFlatland : public OzonePlatform,
   void AddInterfaces(mojo::BinderMap* binders) override {
     binders->Add<mojom::ScenicGpuService>(
         flatland_gpu_service_->GetBinderCallback(),
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   bool IsNativePixmapConfigSupported(gfx::BufferFormat format,

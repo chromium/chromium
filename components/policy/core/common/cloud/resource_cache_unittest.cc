@@ -12,7 +12,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -56,7 +55,8 @@ class ResourceCacheTest : public testing::Test {
 };
 
 TEST_F(ResourceCacheTest, StoreAndLoad) {
-  ResourceCache cache(temp_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get(),
+  ResourceCache cache(temp_dir_.GetPath(),
+                      base::SingleThreadTaskRunner::GetCurrentDefault(),
                       /* max_cache_size */ absl::nullopt);
 
   // No data initially.
@@ -145,7 +145,8 @@ TEST_F(ResourceCacheTest, StoreAndLoad) {
 }
 
 TEST_F(ResourceCacheTest, FilterSubkeys) {
-  ResourceCache cache(temp_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get(),
+  ResourceCache cache(temp_dir_.GetPath(),
+                      base::SingleThreadTaskRunner::GetCurrentDefault(),
                       /* max_cache_size */ absl::nullopt);
 
   // Store some data.
@@ -182,7 +183,8 @@ TEST_F(ResourceCacheTest, FilterSubkeys) {
 }
 
 TEST_F(ResourceCacheTest, StoreWithEnabledCacheLimit) {
-  ResourceCache cache(temp_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get(),
+  ResourceCache cache(temp_dir_.GetPath(),
+                      base::SingleThreadTaskRunner::GetCurrentDefault(),
                       kMaxCacheSize);
   task_environment_.RunUntilIdle();
 
@@ -227,7 +229,8 @@ TEST_F(ResourceCacheTest, StoreInDirectoryWithCycleSymlinks) {
   base::FilePath symlink_to_parent = inner_dir.AppendASCII("symlink");
   ASSERT_TRUE(base::CreateSymbolicLink(temp_dir_.GetPath(), symlink_to_parent));
 
-  ResourceCache cache(temp_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get(),
+  ResourceCache cache(temp_dir_.GetPath(),
+                      base::SingleThreadTaskRunner::GetCurrentDefault(),
                       kMaxCacheSize);
   task_environment_.RunUntilIdle();
 
@@ -242,7 +245,8 @@ TEST_F(ResourceCacheTest, StoreInDirectoryWithSymlinkToRoot) {
   base::FilePath symlink_to_root = temp_dir_.GetPath().AppendASCII("symlink");
   ASSERT_TRUE(base::CreateSymbolicLink(root_path, symlink_to_root));
 
-  ResourceCache cache(temp_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get(),
+  ResourceCache cache(temp_dir_.GetPath(),
+                      base::SingleThreadTaskRunner::GetCurrentDefault(),
                       kMaxCacheSize);
   task_environment_.RunUntilIdle();
 

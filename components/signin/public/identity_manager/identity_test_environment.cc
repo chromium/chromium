@@ -15,7 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/image_fetcher/core/fake_image_decoder.h"
@@ -194,7 +194,7 @@ IdentityTestEnvironment::IdentityTestEnvironment(
 }
 
 void IdentityTestEnvironment::Initialize() {
-  DCHECK(base::ThreadTaskRunnerHandle::Get())
+  DCHECK(base::SingleThreadTaskRunner::GetCurrentDefault())
       << "IdentityTestEnvironment requires a properly set up task "
          "environment. "
          "If your test has an existing one, move it to be initialized before "

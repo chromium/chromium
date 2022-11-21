@@ -12,7 +12,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -141,7 +140,7 @@ class TestRequest : public WebHistoryService::Request {
 
   void Start() override {
     is_pending_ = true;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&TestRequest::MimicReturnFromFetch,
                                   base::Unretained(this)));
   }
@@ -228,8 +227,8 @@ class WebHistoryServiceTest : public testing::Test {
 
   void TearDown() override {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  run_loop.QuitClosure());
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -252,7 +251,7 @@ TEST_F(WebHistoryServiceTest, GetAudioHistoryEnabled) {
       base::BindOnce(&TestingWebHistoryService::GetAudioHistoryCallback,
                      base::Unretained(web_history_service())),
       PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&TestingWebHistoryService::EnsureNoPendingRequestsRemain,
                      base::Unretained(web_history_service())));
@@ -269,7 +268,7 @@ TEST_F(WebHistoryServiceTest, SetAudioHistoryEnabledTrue) {
       base::BindOnce(&TestingWebHistoryService::SetAudioHistoryCallback,
                      base::Unretained(web_history_service())),
       PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&TestingWebHistoryService::EnsureNoPendingRequestsRemain,
                      base::Unretained(web_history_service())));
@@ -286,7 +285,7 @@ TEST_F(WebHistoryServiceTest, SetAudioHistoryEnabledFalse) {
       base::BindOnce(&TestingWebHistoryService::SetAudioHistoryCallback,
                      base::Unretained(web_history_service())),
       PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&TestingWebHistoryService::EnsureNoPendingRequestsRemain,
                      base::Unretained(web_history_service())));
@@ -313,7 +312,7 @@ TEST_F(WebHistoryServiceTest, MultipleRequests) {
       PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Check that both requests are no longer pending.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&TestingWebHistoryService::EnsureNoPendingRequestsRemain,
                      base::Unretained(web_history_service())));

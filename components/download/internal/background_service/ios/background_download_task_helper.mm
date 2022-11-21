@@ -21,7 +21,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/download_params.h"
 #include "components/download/public/background_service/features.h"
@@ -356,7 +355,8 @@ class BackgroundDownloadTaskHelperImpl : public BackgroundDownloadTaskHelper {
           FROM_HERE,
           {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
           base::BindOnce(&CreateNSURLSession,
-                         base::ThreadTaskRunnerHandle::Get(), std::move(cb)));
+                         base::SingleThreadTaskRunner::GetCurrentDefault(),
+                         std::move(cb)));
       return;
     }
 

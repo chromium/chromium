@@ -259,7 +259,7 @@ TEST_F(GeolocationServiceTest, PermissionGrantedAsync) {
       /*allow_via_permissions_policy=*/true);
   permission_manager()->SetRequestCallback(
       base::BindRepeating([](PermissionCallback permission_callback) {
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(permission_callback),
                                       std::vector{PermissionStatus::GRANTED}));
       }));
@@ -289,7 +289,7 @@ TEST_F(GeolocationServiceTest, PermissionDeniedAsync) {
       /*allow_via_permissions_policy=*/true);
   permission_manager()->SetRequestCallback(
       base::BindRepeating([](PermissionCallback permission_callback) {
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(permission_callback),
                                       std::vector{PermissionStatus::DENIED}));
       }));

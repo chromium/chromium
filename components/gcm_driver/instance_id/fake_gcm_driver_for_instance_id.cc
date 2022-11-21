@@ -11,14 +11,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/gcm_driver/gcm_client.h"
 
 namespace instance_id {
 
 FakeGCMDriverForInstanceID::FakeGCMDriverForInstanceID()
     : gcm::FakeGCMDriver(base::FilePath(),
-                         base::ThreadTaskRunnerHandle::Get()) {}
+                         base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 FakeGCMDriverForInstanceID::FakeGCMDriverForInstanceID(
     const base::FilePath& store_path,
@@ -54,7 +53,7 @@ void FakeGCMDriverForInstanceID::GetInstanceIDData(
     instance_id = iter->second.first;
     extra_data = iter->second.second;
   }
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), instance_id, extra_data));
 }
 
@@ -77,7 +76,7 @@ void FakeGCMDriverForInstanceID::GetToken(
   last_gettoken_app_id_ = app_id;
   last_gettoken_authorized_entity_ = authorized_entity;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), token, gcm::GCMClient::SUCCESS));
 }
@@ -88,7 +87,7 @@ void FakeGCMDriverForInstanceID::ValidateToken(
     const std::string& scope,
     const std::string& token,
     ValidateTokenCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true /* is_valid */));
 }
 
@@ -116,7 +115,7 @@ void FakeGCMDriverForInstanceID::DeleteToken(
 
   last_deletetoken_app_id_ = app_id;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), gcm::GCMClient::SUCCESS));
 }
 

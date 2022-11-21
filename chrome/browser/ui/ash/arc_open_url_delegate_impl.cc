@@ -172,7 +172,7 @@ GURL ConvertToMonikerFileUrl(Profile* profile, GURL content_url) {
   // Share API. We could be cleverer about scheduling the clean up, but "destroy
   // after a fixed amount of time" is simple and works well enough in
   // practice.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
           [](fusebox::Moniker moniker) {

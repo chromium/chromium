@@ -28,7 +28,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/file_access/file_access_copy_or_move_delegate_factory.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
@@ -106,7 +105,7 @@ class TestValidatorFactory : public CopyOrMoveFileValidatorFactory {
 
     void StartPreWriteValidation(ResultCallback result_callback) override {
       // Post the result since a real validator must do work asynchronously.
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(result_callback), result_));
     }
 
@@ -118,7 +117,7 @@ class TestValidatorFactory : public CopyOrMoveFileValidatorFactory {
         result = base::File::FILE_ERROR_SECURITY;
       }
       // Post the result since a real validator must do work asynchronously.
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(result_callback), result));
     }
 
@@ -307,10 +306,12 @@ class CopyOrMoveOperationTestHelper {
     ASSERT_TRUE(base_.CreateUniqueTempDir());
     base::FilePath base_dir = base_.GetPath();
     quota_manager_ = base::MakeRefCounted<MockQuotaManager>(
-        false /* is_incognito */, base_dir, base::ThreadTaskRunnerHandle::Get(),
+        false /* is_incognito */, base_dir,
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
         special_storage_policy_);
     quota_manager_proxy_ = base::MakeRefCounted<MockQuotaManagerProxy>(
-        quota_manager_.get(), base::ThreadTaskRunnerHandle::Get());
+        quota_manager_.get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     file_system_context_ =
         CreateFileSystemContextForTesting(quota_manager_proxy_, base_dir);
 
@@ -1271,7 +1272,7 @@ TEST(LocalFileSystemCopyOrMoveOperationTest, StreamCopyHelper_Cancel) {
       base::TimeDelta());  // For testing, we need all the progress.
 
   // Call Cancel() later.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&CopyOrMoveOperationDelegate::StreamCopyHelper::Cancel,
                      base::Unretained(&helper)));
@@ -1311,10 +1312,12 @@ class CopyOrMoveOperationDelegateTestHelper {
     ASSERT_TRUE(base_.CreateUniqueTempDir());
     base::FilePath base_dir = base_.GetPath();
     quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
-        /*is_incognito=*/false, base_dir, base::ThreadTaskRunnerHandle::Get(),
+        /*is_incognito=*/false, base_dir,
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::MakeRefCounted<storage::MockSpecialStoragePolicy>());
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
-        quota_manager_.get(), base::ThreadTaskRunnerHandle::Get());
+        quota_manager_.get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     // Prepare file system.
     file_system_context_ = storage::CreateFileSystemContextForTesting(
         quota_manager_proxy_.get(), base_dir);

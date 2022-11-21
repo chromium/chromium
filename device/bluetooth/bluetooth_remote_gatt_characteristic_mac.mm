@@ -8,7 +8,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "device/bluetooth/bluetooth_adapter_mac.h"
 #include "device/bluetooth/bluetooth_device_mac.h"
 #include "device/bluetooth/bluetooth_gatt_notify_session.h"
@@ -133,7 +133,7 @@ void BluetoothRemoteGattCharacteristicMac::ReadRemoteCharacteristic(
     ValueCallback callback) {
   if (!IsReadable()) {
     DVLOG(1) << *this << ": Characteristic not readable.";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        BluetoothGattService::GattErrorCode::kNotPermitted,
@@ -142,7 +142,7 @@ void BluetoothRemoteGattCharacteristicMac::ReadRemoteCharacteristic(
   }
   if (destructor_called_ || HasPendingRead() || HasPendingWrite()) {
     DVLOG(1) << *this << ": Characteristic read already in progress.";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        BluetoothGattService::GattErrorCode::kInProgress,
@@ -161,7 +161,7 @@ void BluetoothRemoteGattCharacteristicMac::WriteRemoteCharacteristic(
     ErrorCallback error_callback) {
   if (destructor_called_ || HasPendingRead() || HasPendingWrite()) {
     DVLOG(1) << *this << ": Characteristic write already in progress.";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(error_callback),
                        BluetoothGattService::GattErrorCode::kInProgress));
@@ -187,7 +187,7 @@ void BluetoothRemoteGattCharacteristicMac::WriteRemoteCharacteristic(
               forCharacteristic:cb_characteristic_
                            type:cb_write_type];
   if (cb_write_type == CBCharacteristicWriteWithoutResponse) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&BluetoothRemoteGattCharacteristicMac::DidWriteValue,
                        weak_ptr_factory_.GetWeakPtr(), nil));
@@ -200,7 +200,7 @@ void BluetoothRemoteGattCharacteristicMac::DeprecatedWriteRemoteCharacteristic(
     ErrorCallback error_callback) {
   if (!IsWritable()) {
     DVLOG(1) << *this << ": Characteristic not writable.";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(error_callback),
                        BluetoothGattService::GattErrorCode::kNotPermitted));
@@ -208,7 +208,7 @@ void BluetoothRemoteGattCharacteristicMac::DeprecatedWriteRemoteCharacteristic(
   }
   if (destructor_called_ || HasPendingRead() || HasPendingWrite()) {
     DVLOG(1) << *this << ": Characteristic write already in progress.";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(error_callback),
                        BluetoothGattService::GattErrorCode::kInProgress));
@@ -224,7 +224,7 @@ void BluetoothRemoteGattCharacteristicMac::DeprecatedWriteRemoteCharacteristic(
               forCharacteristic:cb_characteristic_
                            type:write_type];
   if (write_type == CBCharacteristicWriteWithoutResponse) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&BluetoothRemoteGattCharacteristicMac::DidWriteValue,
                        weak_ptr_factory_.GetWeakPtr(), nil));

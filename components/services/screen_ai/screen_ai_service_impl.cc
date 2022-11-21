@@ -17,8 +17,8 @@
 #include "base/notreached.h"
 #include "base/process/process.h"
 #include "base/scoped_native_library.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/services/screen_ai/proto/main_content_extractor_proto_convertor.h"
 #include "components/services/screen_ai/proto/visual_annotator_proto_convertor.h"
@@ -137,7 +137,7 @@ std::unique_ptr<LibraryFunctions> LoadAndInitializeLibrary(
 ScreenAIService::ScreenAIService(
     mojo::PendingReceiver<mojom::ScreenAIService> receiver)
     : task_runner_(new base::DeferredSequencedTaskRunner(
-          base::ThreadTaskRunnerHandle::Get())),
+          base::SingleThreadTaskRunner::GetCurrentDefault())),
       receiver_(this, std::move(receiver)) {}
 
 ScreenAIService::~ScreenAIService() = default;

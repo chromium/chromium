@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "remoting/base/compound_buffer.h"
 #include "remoting/protocol/fake_message_pipe_wrapper.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,7 +37,7 @@ void FakeMessagePipe::Start(EventHandler* event_handler) {
 void FakeMessagePipe::Send(google::protobuf::MessageLite* message,
                            base::OnceClosure done) {
   if (asynchronous_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             [](FakeMessagePipe* me, google::protobuf::MessageLite* message,
@@ -53,7 +53,7 @@ void FakeMessagePipe::Send(google::protobuf::MessageLite* message,
 
 void FakeMessagePipe::Receive(std::unique_ptr<CompoundBuffer> message) {
   if (asynchronous_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             [](FakeMessagePipe* me, std::unique_ptr<CompoundBuffer> message) {
@@ -76,7 +76,7 @@ void FakeMessagePipe::ReceiveProtobufMessage(
 
 void FakeMessagePipe::OpenPipe() {
   if (asynchronous_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce([](FakeMessagePipe* me) { me->OpenPipeImpl(); },
                        base::Unretained(this)));
@@ -88,7 +88,7 @@ void FakeMessagePipe::OpenPipe() {
 
 void FakeMessagePipe::ClosePipe() {
   if (asynchronous_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce([](FakeMessagePipe* me) { me->ClosePipeImpl(); },
                        base::Unretained(this)));

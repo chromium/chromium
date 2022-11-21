@@ -8,7 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_info.h"
@@ -74,8 +74,8 @@ QuicChromiumConnectionHelper* QuicSimpleClient::CreateQuicConnectionHelper() {
 }
 
 QuicChromiumAlarmFactory* QuicSimpleClient::CreateQuicAlarmFactory() {
-  return new QuicChromiumAlarmFactory(base::ThreadTaskRunnerHandle::Get().get(),
-                                      &clock_);
+  return new QuicChromiumAlarmFactory(
+      base::SingleThreadTaskRunner::GetCurrentDefault().get(), &clock_);
 }
 
 }  // namespace net

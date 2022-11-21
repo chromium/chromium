@@ -8,7 +8,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/notreached.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 
@@ -26,7 +26,7 @@ StubAuthenticator::StubAuthenticator(AuthStatusConsumer* consumer,
                                      const UserContext& expected_user_context)
     : Authenticator(consumer),
       expected_user_context_(expected_user_context),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 void StubAuthenticator::CompleteLogin(
     std::unique_ptr<UserContext> user_context) {

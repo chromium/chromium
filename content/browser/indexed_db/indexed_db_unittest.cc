@@ -102,7 +102,7 @@ class IndexedDBTest : public testing::Test,
         quota_manager_(base::MakeRefCounted<storage::MockQuotaManager>(
             /*is_incognito=*/false,
             CreateAndReturnTempDir(&temp_dir_),
-            base::ThreadTaskRunnerHandle::Get(),
+            base::SingleThreadTaskRunner::GetCurrentDefault(),
             special_storage_policy_)),
         quota_manager_proxy_(
             base::MakeRefCounted<storage::MockQuotaManagerProxy>(

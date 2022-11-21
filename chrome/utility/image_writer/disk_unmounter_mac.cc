@@ -11,7 +11,6 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/utility/image_writer/error_message_strings.h"
 #include "chrome/utility/image_writer/image_writer.h"
 
@@ -40,7 +39,7 @@ void DiskUnmounterMac::Unmount(const std::string& device_path,
   DCHECK(success_continuation);
   DCHECK(failure_continuation);
 
-  original_thread_ = base::ThreadTaskRunnerHandle::Get();
+  original_thread_ = base::SingleThreadTaskRunner::GetCurrentDefault();
   success_continuation_ = std::move(success_continuation);
   failure_continuation_ = std::move(failure_continuation);
 

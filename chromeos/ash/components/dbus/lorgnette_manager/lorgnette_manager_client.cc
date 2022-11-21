@@ -17,8 +17,8 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/sequence_checker.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "chromeos/ash/components/dbus/lorgnette_manager/fake_lorgnette_manager_client.h"
 #include "chromeos/dbus/common/pipe_reader.h"
@@ -85,7 +85,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     dbus::MessageWriter writer(&method_call);
     if (!writer.AppendProtoAsArrayOfBytes(request)) {
       LOG(ERROR) << "Failed to encode StartScanRequest protobuf";
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(completion_callback),
                                     lorgnette::SCAN_FAILURE_MODE_UNKNOWN));
       return;
@@ -105,7 +105,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   void CancelScan(chromeos::VoidDBusMethodCallback cancel_callback) override {
     // Post the task to the proper sequence (since it requires access to
     // scan_job_state_).
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&LorgnetteManagerClientImpl::DoScanCancel,
                                   weak_ptr_factory_.GetWeakPtr(),
                                   std::move(cancel_callback)));
@@ -219,7 +219,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     dbus::MessageWriter writer(&method_call);
     if (!writer.AppendProtoAsArrayOfBytes(request)) {
       LOG(ERROR) << "Failed to encode GetNextImageRequest protobuf";
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(state.completion_callback),
                                     lorgnette::SCAN_FAILURE_MODE_UNKNOWN));
       scan_job_state_.erase(uuid);
@@ -245,7 +245,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (scan_job_state_.size() == 0) {
       LOG(ERROR) << "No active scan job to cancel.";
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(cancel_callback), false));
       return;
     }
@@ -254,7 +254,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     // of StartScan() so they could request cancellation of a particular scan.
     if (scan_job_state_.size() > 1) {
       LOG(ERROR) << "Multiple scan jobs running; not clear which to cancel.";
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(cancel_callback), false));
       return;
     }
@@ -269,7 +269,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     dbus::MessageWriter writer(&method_call);
     if (!writer.AppendProtoAsArrayOfBytes(request)) {
       LOG(ERROR) << "Failed to encode CancelScanRequest protobuf";
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(cancel_callback), false));
       return;
     }

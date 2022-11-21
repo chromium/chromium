@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 
 namespace media {
 
@@ -19,7 +18,7 @@ SilentSinkSuspender::SilentSinkSuspender(
     : callback_(callback),
       params_(params),
       sink_(std::move(sink)),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       silence_timeout_(silence_timeout),
       fake_sink_(std::move(worker), params_),
       sink_transition_callback_(

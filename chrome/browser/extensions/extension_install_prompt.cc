@@ -13,7 +13,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -701,7 +700,7 @@ bool ExtensionInstallPrompt::AutoConfirmPromptIfEnabled() {
               ? ExtensionInstallPrompt::Result::
                     ACCEPTED_WITH_WITHHELD_PERMISSIONS
               : ExtensionInstallPrompt::Result::ACCEPTED;
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(done_callback_),
                          DoneCallbackPayload(
@@ -710,7 +709,7 @@ bool ExtensionInstallPrompt::AutoConfirmPromptIfEnabled() {
       return true;
     }
     case extensions::ScopedTestDialogAutoConfirm::CANCEL: {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(done_callback_),
                          DoneCallbackPayload(

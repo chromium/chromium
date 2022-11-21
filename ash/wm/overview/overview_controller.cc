@@ -31,7 +31,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
@@ -191,7 +191,7 @@ void OverviewController::PauseOcclusionTracker() {
 void OverviewController::UnpauseOcclusionTracker(base::TimeDelta delay) {
   reset_pauser_task_.Reset(base::BindOnce(&OverviewController::ResetPauser,
                                           weak_ptr_factory_.GetWeakPtr()));
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, reset_pauser_task_.callback(), delay);
 }
 
@@ -204,7 +204,7 @@ void OverviewController::RemoveObserver(OverviewObserver* observer) {
 }
 
 void OverviewController::DelayedUpdateRoundedCornersAndShadow() {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&OverviewController::UpdateRoundedCornersAndShadow,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -362,7 +362,7 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     }
 
     // Don't delete |overview_session_| yet since the stack is still using it.
-    base::ThreadTaskRunnerHandle::Get()->DeleteSoon(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, overview_session_.release());
     last_overview_session_time_ = base::Time::Now();
     for (auto& observer : observers_)

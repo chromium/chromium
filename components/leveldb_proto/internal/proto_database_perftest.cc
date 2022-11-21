@@ -18,10 +18,10 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/perf_time_logger.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "components/leveldb_proto/internal/leveldb_database.h"
@@ -138,7 +138,9 @@ class TestDatabase {
 
 class ProtoDBPerfTest : public testing::Test {
  public:
-  void SetUp() override { task_runner_ = base::ThreadTaskRunnerHandle::Get(); }
+  void SetUp() override {
+    task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
+  }
 
   void TearDown() override {
     ShutdownDBs();

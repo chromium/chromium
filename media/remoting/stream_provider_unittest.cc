@@ -41,7 +41,7 @@ class StreamProviderTest : public testing::Test {
         mock_controller_->mock_remotee()->BindNewPipeAndPassRemote());
     mock_remotee_ = mock_controller_->mock_remotee();
     stream_provider_ = std::make_unique<StreamProvider>(
-        mock_controller_, base::ThreadTaskRunnerHandle::Get());
+        mock_controller_, base::SingleThreadTaskRunner::GetCurrentDefault());
 
     rpc_messenger_ = mock_controller_->rpc_messenger();
     sender_audio_demuxer_stream_handle_ = rpc_messenger_->GetUniqueHandle();

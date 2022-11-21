@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest, UserGestureConsumed) {
 
     // Wait a short amount of time to ensure the page does not scroll.
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
     run_loop.Run();
     EXPECT_DID_SCROLL(false);
@@ -309,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
 
   // Wait a short amount of time to ensure the page does not scroll.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
   run_loop.Run();
 
@@ -487,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
     observer.Wait();
     EXPECT_EQ(new_url, main_contents->GetLastCommittedURL());
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
     run_loop.Run();
     EXPECT_DID_SCROLL(false);
@@ -716,7 +716,7 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
   WaitForPageLoad(main_contents);
   // Wait a short amount of time to ensure the page does not scroll.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
   run_loop.Run();
   EXPECT_DID_SCROLL(false);
@@ -837,7 +837,7 @@ IN_PROC_BROWSER_TEST_F(ForceLoadAtTopBrowserTest, ScrollRestorationDisabled) {
 
   // Wait a short amount of time to ensure the page does not scroll.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
   run_loop.Run();
   RunUntilInputProcessed(GetWidgetHost());
@@ -851,7 +851,7 @@ IN_PROC_BROWSER_TEST_F(ForceLoadAtTopBrowserTest, FragmentAnchorDisabled) {
 
   // Wait a short amount of time to ensure the page does not scroll.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
   run_loop.Run();
   RunUntilInputProcessed(GetWidgetHost());
@@ -882,7 +882,7 @@ IN_PROC_BROWSER_TEST_F(ForceLoadAtTopBrowserTest, TextFragmentAnchorDisabled) {
 
   // Wait a short amount of time to ensure the page does not scroll.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
   run_loop.Run();
   RunUntilInputProcessed(GetWidgetHost());

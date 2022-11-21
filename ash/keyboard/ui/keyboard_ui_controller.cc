@@ -24,7 +24,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/aura/client/aura_constants.h"
@@ -628,7 +628,7 @@ void KeyboardUIController::HideKeyboardImplicitlyBySystem() {
 
   ChangeState(KeyboardUIState::kWillHide);
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&KeyboardUIController::HideKeyboard,
                      weak_factory_will_hide_.GetWeakPtr(),
@@ -955,7 +955,7 @@ void KeyboardUIController::ChangeState(KeyboardUIState state) {
   switch (model_.state()) {
     case KeyboardUIState::kLoading:
     case KeyboardUIState::kWillHide:
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&KeyboardUIController::ReportLingeringState,
                          weak_factory_report_lingering_state_.GetWeakPtr()),

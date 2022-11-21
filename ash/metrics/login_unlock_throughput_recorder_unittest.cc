@@ -199,7 +199,7 @@ void GiveItSomeTime(base::TimeDelta delta) {
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   auto* compositor = Shell::GetPrimaryRootWindow()->GetHost()->compositor();
   compositor->ScheduleFullRedraw();
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), delta);
   run_loop.Run();
 }

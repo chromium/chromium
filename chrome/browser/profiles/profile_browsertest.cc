@@ -592,7 +592,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
       : public base::SupportsWeakPtr<FailsIfCalledWhileOnStack> {
     void Fail() { ADD_FAILURE(); }
   } fails_if_called_while_on_stack;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&FailsIfCalledWhileOnStack::Fail,
                                 fails_if_called_while_on_stack.AsWeakPtr()));
 

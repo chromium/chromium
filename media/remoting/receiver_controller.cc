@@ -6,7 +6,6 @@
 
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 
 namespace media {
 namespace remoting {
@@ -21,7 +20,7 @@ ReceiverController::ReceiverController()
     : rpc_messenger_([this](std::vector<uint8_t> message) {
         OnSendRpc(std::move(message));
       }),
-      main_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+      main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 ReceiverController::~ReceiverController() = default;
 

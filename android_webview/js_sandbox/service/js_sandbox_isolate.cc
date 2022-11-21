@@ -20,10 +20,10 @@
 #include "base/strings/string_piece.h"
 #include "base/system/sys_info.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "gin/arguments.h"
 #include "gin/array_buffer.h"
 #include "gin/function_template.h"
@@ -330,7 +330,7 @@ void JsSandboxIsolate::InitializeIsolateOnThread() {
         0, AdjustToValidHeapSize(isolate_max_heap_size_bytes_));
   }
   isolate_holder_ = std::make_unique<gin::IsolateHolder>(
-      base::ThreadTaskRunnerHandle::Get(),
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
       gin::IsolateHolder::AccessMode::kSingleThread,
       gin::IsolateHolder::IsolateType::kUtility, std::move(params));
   v8::Isolate* isolate = isolate_holder_->isolate();

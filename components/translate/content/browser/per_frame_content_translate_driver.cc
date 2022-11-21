@@ -17,7 +17,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/google/core/common/google_util.h"
 #include "components/language/core/browser/url_language_histogram.h"
 #include "components/services/language_detection/public/mojom/language_detection.mojom.h"
@@ -261,7 +260,7 @@ void PerFrameContentTranslateDriver::InitiateTranslationIfReload(
   // by WebContentsObservers is undefined and might result in the current
   // infobars being removed. Since the translation initiation process might add
   // an infobar, it must be done after that.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PerFrameContentTranslateDriver::InitiateTranslation,
                      weak_pointer_factory_.GetWeakPtr(),
@@ -484,7 +483,7 @@ void PerFrameContentTranslateDriver::OnFrameTranslated(
   if (--stats_.pending_request_count == 0) {
     // Post the callback on the thread's task runner in case the
     // info bar is in the process of going away.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&ContentTranslateDriver::OnPageTranslated,
                                   weak_pointer_factory_.GetWeakPtr(), cancelled,
                                   source_lang, translated_lang,

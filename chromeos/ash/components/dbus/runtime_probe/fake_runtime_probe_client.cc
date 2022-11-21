@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace ash {
 
@@ -64,7 +64,7 @@ void FakeRuntimeProbeClient::ProbeCategories(
   // Change offset, but keep it in reasonably small range.
   live_offset_ = (live_offset_ + 1) % kLiveValuesLimit;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 

@@ -16,9 +16,9 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/image_fetcher/core/mock_image_fetcher.h"
 #include "components/image_fetcher/core/request_metadata.h"
@@ -184,7 +184,7 @@ class MockOfflinePageModel : public StubOfflinePageModel {
       availability.has_favicon = !visuals.favicon.empty();
     }
 
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), availability));
   }
 
@@ -270,7 +270,7 @@ class FakePrefetchNetworkRequestFactory
     for (const std::string& url : prefetch_urls) {
       pages.push_back(RenderInfo(url));
     }
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), PrefetchRequestStatus::kSuccess,
                        kOperationName, pages));
@@ -317,7 +317,8 @@ class PrefetchDispatcherTest : public PrefetchRequestTestBase {
     offline_model_ = model.get();
     taco_->SetOfflinePageModel(std::move(model));
     taco_->SetPrefetchImporter(std::make_unique<PrefetchImporterImpl>(
-        dispatcher_, offline_model_, base::ThreadTaskRunnerHandle::Get()));
+        dispatcher_, offline_model_,
+        base::SingleThreadTaskRunner::GetCurrentDefault()));
 
     taco_->CreatePrefetchService();
 
@@ -583,7 +584,7 @@ TEST_F(PrefetchDispatcherTest, DispatcherReleasesBackgroundTask) {
   // running a RunLoop when the call happens thus turning the
   // RespondWithNetError RunLoop into a nested one.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         // When the network request finishes, the dispatcher should still hold
         // the ScopedBackgroundTask because it needs to process the results of
@@ -694,7 +695,7 @@ TEST_F(PrefetchDispatcherTest, SuspendAfterFailedNetworkRequest) {
   // posting a task that makes the RespondWithNetError call we will already be
   // running a RunLoop when the call happens thus turning the
   // RespondWithNetError RunLoop into a nested one.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([this]() {
         // This should trigger suspend.
         RespondWithNetError(net::ERR_BLOCKED_BY_ADMINISTRATOR);
@@ -846,7 +847,7 @@ TEST_F(PrefetchDispatcherTest, FeedPrefetchItemFlow) {
   // Mock AddPage so that importing succeeds.
   EXPECT_CALL(*offline_model_, AddPage(_, _))
       .WillOnce([&](const OfflinePageItem& page, AddPageCallback callback) {
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback),
                                       AddPageResult::SUCCESS, page.offline_id));
       });

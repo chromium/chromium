@@ -149,9 +149,11 @@ class FileSystemAccessManagerImplTest : public testing::Test {
 
     quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
         /*is_incognito=*/false, dir_.GetPath(),
-        base::ThreadTaskRunnerHandle::Get(), special_storage_policy_);
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        special_storage_policy_);
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
-        quota_manager_.get(), base::ThreadTaskRunnerHandle::Get().get());
+        quota_manager_.get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault().get());
 
     file_system_context_ = storage::CreateFileSystemContextForTesting(
         quota_manager_proxy_.get(), dir_.GetPath());

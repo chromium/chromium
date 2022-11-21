@@ -73,7 +73,7 @@ std::vector<blink::MessagePortDescriptor> AppWebMessagePort::Release(
 }
 
 AppWebMessagePort::AppWebMessagePort(blink::MessagePortDescriptor&& descriptor)
-    : runner_(base::ThreadTaskRunnerHandle::Get()),
+    : runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       descriptor_(std::move(descriptor)) {
   // AppWebMessagePort can only be created on main thread.
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

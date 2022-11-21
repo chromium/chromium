@@ -23,7 +23,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/timestamp_constants.h"
@@ -599,7 +598,7 @@ static ScopedIOUSBInterfaceInterface OpenPanTiltZoomControlInterface(
 VideoCaptureDeviceMac::VideoCaptureDeviceMac(
     const VideoCaptureDeviceDescriptor& device_descriptor)
     : device_descriptor_(device_descriptor),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       state_(kNotInitialized),
       capture_device_(nil),
       weak_factory_(this) {}

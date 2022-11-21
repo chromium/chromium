@@ -14,7 +14,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
@@ -391,7 +390,7 @@ void ProfileDestroyer::RenderProcessHostDestroyed(
   //
   // Delay the retry one step further in case other observers need to look at
   // the profile attached to the host.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ProfileDestroyer::Retry, weak_ptr_factory_.GetWeakPtr()));
 }

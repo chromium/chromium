@@ -21,7 +21,7 @@
 #include "base/process/process_metrics.h"
 #include "base/rand_util.h"
 #include "base/synchronization/lock.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/pseudonymization_salt.h"
@@ -124,8 +124,9 @@ ChildProcessHostImpl::ChildProcessHostImpl(ChildProcessHostDelegate* delegate,
     channel_ = IPC::ChannelMojo::Create(
         mojo_invitation_->AttachMessagePipe(
             kChildProcessReceiverAttachmentName),
-        IPC::Channel::MODE_SERVER, this, base::ThreadTaskRunnerHandle::Get(),
-        base::ThreadTaskRunnerHandle::Get(),
+        IPC::Channel::MODE_SERVER, this,
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
         mojo::internal::MessageQuotaChecker::MaybeCreate());
   } else if (ipc_mode_ == IpcMode::kNormal) {
     child_process_.Bind(mojo::PendingRemote<mojom::ChildProcess>(
@@ -221,8 +222,8 @@ void ChildProcessHostImpl::CreateChannelMojo() {
         mojo_invitation_->AttachMessagePipe(kLegacyIpcBootstrapAttachmentName);
     channel_ = IPC::ChannelMojo::Create(
         std::move(bootstrap), IPC::Channel::MODE_SERVER, this,
-        base::ThreadTaskRunnerHandle::Get(),
-        base::ThreadTaskRunnerHandle::Get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
         mojo::internal::MessageQuotaChecker::MaybeCreate());
   }
   DCHECK(channel_);

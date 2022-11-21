@@ -17,7 +17,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner_util.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/offline_pages/core/background/save_page_request.h"
 #include "components/offline_pages/core/offline_page_item_utils.h"
 #include "sql/database.h"
@@ -603,7 +602,7 @@ void RequestQueueStore::GetRequests(GetRequestsCallback callback) {
   DCHECK(db_);
   if (!CheckDb()) {
     std::vector<std::unique_ptr<SavePageRequest>> requests;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), false, std::move(requests)));
     return;
@@ -618,7 +617,7 @@ void RequestQueueStore::GetRequestsByIds(
     const std::vector<int64_t>& request_ids,
     UpdateCallback callback) {
   if (!CheckDb()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        StoreUpdateResultForIds(StoreState::LOADED, request_ids,
@@ -636,7 +635,7 @@ void RequestQueueStore::AddRequest(const SavePageRequest& request,
                                    AddOptions options,
                                    AddCallback callback) {
   if (!CheckDb()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), AddRequestResult::STORE_FAILURE));
     return;
@@ -652,7 +651,7 @@ void RequestQueueStore::UpdateRequests(
     const std::vector<SavePageRequest>& requests,
     UpdateCallback callback) {
   if (!CheckDb()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   StoreErrorForAllRequests(requests)));
     return;
@@ -667,7 +666,7 @@ void RequestQueueStore::UpdateRequests(
 void RequestQueueStore::RemoveRequests(const std::vector<int64_t>& request_ids,
                                        UpdateCallback callback) {
   if (!CheckDb()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        StoreUpdateResultForIds(StoreState::LOADED, request_ids,
@@ -730,7 +729,7 @@ void RequestQueueStore::OnOpenConnectionDone(InitializeCallback callback,
 void RequestQueueStore::OnResetDone(ResetCallback callback, bool success) {
   state_ = success ? StoreState::NOT_LOADED : StoreState::FAILED_RESET;
   db_.reset();
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), success));
 }
 

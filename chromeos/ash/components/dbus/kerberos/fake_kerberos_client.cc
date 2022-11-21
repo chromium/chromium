@@ -12,7 +12,7 @@
 #include "base/location.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/cros_system_api/dbus/kerberos/dbus-constants.h"
 
@@ -84,7 +84,7 @@ template <class TProto>
 void PostProtoResponse(base::OnceCallback<void(const TProto&)> callback,
                        const TProto& response,
                        base::TimeDelta delay) {
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(std::move(callback), response), delay);
 }
 

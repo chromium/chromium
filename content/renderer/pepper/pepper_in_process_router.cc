@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/renderer/pepper/renderer_ppapi_host_impl.h"
@@ -110,7 +109,7 @@ bool PepperInProcessRouter::SendToHost(IPC::Message* msg) {
     // This won't cause message reordering problems because the resource
     // destroyed message is always the last one sent for a resource.
     if (message->type() == PpapiHostMsg_ResourceDestroyed::ID) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&PepperInProcessRouter::DispatchHostMsg,
                                     weak_factory_.GetWeakPtr(),
                                     base::Owned(message.release())));
@@ -144,7 +143,7 @@ bool PepperInProcessRouter::SendToPlugin(IPC::Message* msg) {
   } else {
     CHECK(!pending_message_id_);
     // Dispatch plugin messages from the message loop.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&PepperInProcessRouter::DispatchPluginMsg,
                                   weak_factory_.GetWeakPtr(),
                                   base::Owned(message.release())));

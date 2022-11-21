@@ -14,7 +14,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
 #include "net/base/net_errors.h"
@@ -657,7 +657,7 @@ void HttpCache::Writers::CompleteWaitingForReadTransactions(int result) {
     }
 
     // Post task to notify transaction.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(it->second.callback), callback_result));
 

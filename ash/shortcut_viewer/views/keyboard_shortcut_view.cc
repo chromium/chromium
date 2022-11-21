@@ -358,7 +358,7 @@ void KeyboardShortcutView::OnPaint(gfx::Canvas* canvas) {
   // compositor. We can wait for the second OnPaint, which means previous
   // drawing commands have been sent to compositor for the next frame and new
   // coming commands will be sent for the next-next frame.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&KeyboardShortcutView::InitCategoriesTabbedPane,
                                 weak_factory_.GetWeakPtr(), kAllCategories));
 }

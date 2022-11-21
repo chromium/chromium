@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/cma/test/frame_generator_for_test.h"
@@ -46,13 +45,13 @@ void MockFrameProvider::Read(ReadCB read_cb) {
   pattern_idx_ = (pattern_idx_ + 1) % delayed_task_pattern_.size();
 
   if (delayed) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&MockFrameProvider::DoRead, base::Unretained(this),
                        std::move(read_cb)),
         base::Milliseconds(1));
   } else {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&MockFrameProvider::DoRead,
                                   base::Unretained(this), std::move(read_cb)));
   }
@@ -60,7 +59,7 @@ void MockFrameProvider::Read(ReadCB read_cb) {
 
 void MockFrameProvider::Flush(base::OnceClosure flush_cb) {
   if (delay_flush_) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, std::move(flush_cb), base::Milliseconds(10));
   } else {
     std::move(flush_cb).Run();

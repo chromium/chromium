@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/test_extension_prefs.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -21,7 +21,7 @@ namespace extensions {
 class IdentityAPITest : public testing::Test {
  public:
   IdentityAPITest()
-      : prefs_(base::ThreadTaskRunnerHandle::Get()),
+      : prefs_(base::SingleThreadTaskRunner::GetCurrentDefault()),
         event_router_(prefs_.profile(), prefs_.prefs()),
         api_(CreateIdentityAPI()) {
     // IdentityAPITest requires the extended account info callbacks to be fired

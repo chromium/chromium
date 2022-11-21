@@ -11,8 +11,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "components/policy/core/common/async_policy_loader.h"
 #include "components/policy/core/common/external_data_fetcher.h"
@@ -95,7 +95,8 @@ AsyncPolicyProviderTest::~AsyncPolicyProviderTest() {}
 
 void AsyncPolicyProviderTest::SetUp() {
   SetPolicy(&initial_bundle_, "policy", "initial");
-  loader_ = new MockPolicyLoader(base::ThreadTaskRunnerHandle::Get());
+  loader_ =
+      new MockPolicyLoader(base::SingleThreadTaskRunner::GetCurrentDefault());
   EXPECT_CALL(*loader_, LastModificationTime())
       .WillRepeatedly(Return(base::Time()));
   EXPECT_CALL(*loader_, InitOnBackgroundThread()).Times(1);

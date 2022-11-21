@@ -15,7 +15,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -58,7 +58,7 @@ struct MockExtensionRegistryObserver : public ExtensionRegistryObserver {
       // timing-out.
       // TODO(jcivelli): make LoadErrorReporter::Observer report installation
       // failures for packaged extensions so we don't have to poll.
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
       quit_closure = run_loop.QuitClosure();
       run_loop.Run();
@@ -141,7 +141,7 @@ class ZipFileInstallerTest : public testing::Test {
         GetExtensionFileTaskRunner(),
         MakeRegisterInExtensionServiceCallback(extension_service_));
 
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&ZipFileInstaller::LoadFromZipFile,
                                   zipfile_installer_, original_path));
     observer_.WaitForInstall(expect_error);

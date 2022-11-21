@@ -5,8 +5,8 @@
 #include "components/sqlite_proto/key_value_data.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/sqlite_proto/table_manager.h"
 #include "components/sqlite_proto/test_proto.pb.h"
 #include "sql/database.h"
@@ -42,7 +42,8 @@ class FakeKeyValueTable : public KeyValueTable<T> {
 
 class FakeTableManager : public TableManager {
  public:
-  FakeTableManager() : TableManager(base::ThreadTaskRunnerHandle::Get()) {}
+  FakeTableManager()
+      : TableManager(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
   void ScheduleDBTask(const base::Location& from_here,
                       base::OnceCallback<void(sql::Database*)> task) override {
     GetTaskRunner()->PostTask(

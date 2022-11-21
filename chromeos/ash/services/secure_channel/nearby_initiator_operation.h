@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/services/secure_channel/connect_to_device_operation.h"
 #include "chromeos/ash/services/secure_channel/connect_to_device_operation_base.h"
 #include "chromeos/ash/services/secure_channel/nearby_initiator_failure_type.h"
@@ -35,7 +35,7 @@ class NearbyInitiatorOperation
            const DeviceIdPair& device_id_pair,
            ConnectionPriority connection_priority,
            scoped_refptr<base::TaskRunner> task_runner =
-               base::ThreadTaskRunnerHandle::Get());
+               base::SingleThreadTaskRunner::GetCurrentDefault());
     static void SetFactoryForTesting(Factory* test_factory);
 
    protected:

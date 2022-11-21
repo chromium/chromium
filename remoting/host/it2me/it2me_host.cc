@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "components/policy/policy_constants.h"
@@ -717,7 +717,7 @@ void It2MeHost::ValidateConnectionDetails(
         base::BindOnce(&It2MeHost::OnConfirmationResult, base::Unretained(this),
                        std::move(result_callback)));
   } else {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(result_callback), ValidationResult::SUCCESS));
   }

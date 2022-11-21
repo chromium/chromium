@@ -19,7 +19,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "net/base/io_buffer.h"
 #include "net/base/request_priority.h"
 #include "net/http/http_response_headers.h"
@@ -104,7 +103,8 @@ class FileWriterDelegateTest : public PlatformTest {
 
   int64_t GetFileSizeOnDisk(const char* test_file_path) {
     // There might be in-flight flush/write.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, base::DoNothing());
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::DoNothing());
     base::RunLoop().RunUntilIdle();
 
     FileSystemURL url = GetFileSystemURL(test_file_path);

@@ -20,7 +20,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_device_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_ipconfig_client.h"
@@ -274,13 +273,13 @@ void FakeShillManagerClient::GetProperties(
     chromeos::DBusMethodCallback<base::Value> callback) {
   VLOG(1) << "Manager.GetProperties";
   if (return_null_properties_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&FakeShillManagerClient::PassNullopt,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     return;
   }
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeShillManagerClient::PassStubProperties,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -288,7 +287,7 @@ void FakeShillManagerClient::GetProperties(
 
 void FakeShillManagerClient::GetNetworksForGeolocation(
     chromeos::DBusMethodCallback<base::Value> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeShillManagerClient::PassStubGeoNetworks,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -301,7 +300,8 @@ void FakeShillManagerClient::SetProperty(const std::string& name,
   VLOG(2) << "SetProperty: " << name;
   stub_properties_.SetKey(name, value.Clone());
   CallNotifyObserversPropertyChanged(name);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(callback));
 }
 
 void FakeShillManagerClient::RequestScan(const std::string& type,
@@ -321,8 +321,9 @@ void FakeShillManagerClient::RequestScan(const std::string& type,
       device_client->AddCellularFoundNetwork(device_path);
   }
   // Trigger |callback| immediately to indicate that the scan started.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(callback));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&FakeShillManagerClient::ScanCompleted,
                      weak_ptr_factory_.GetWeakPtr(), device_path),
@@ -335,14 +336,14 @@ void FakeShillManagerClient::EnableTechnology(const std::string& type,
   base::Value* enabled_list =
       stub_properties_.FindListKey(shill::kAvailableTechnologiesProperty);
   if (!enabled_list) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(callback));
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(error_callback), "StubError",
                                   "Property not found"));
     return;
   }
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&FakeShillManagerClient::SetTechnologyEnabled,
                      weak_ptr_factory_.GetWeakPtr(), type, std::move(callback),
@@ -356,12 +357,12 @@ void FakeShillManagerClient::DisableTechnology(const std::string& type,
   base::Value* enabled_list =
       stub_properties_.FindListKey(shill::kAvailableTechnologiesProperty);
   if (!enabled_list) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(error_callback), "StubError",
                                   "Property not found"));
     return;
   }
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&FakeShillManagerClient::SetTechnologyEnabled,
                      weak_ptr_factory_.GetWeakPtr(), type, std::move(callback),
@@ -377,7 +378,7 @@ void FakeShillManagerClient::ConfigureService(
     case FakeShillSimulatedResult::kSuccess:
       break;
     case FakeShillSimulatedResult::kFailure:
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(error_callback), "Error",
                                     "Simulated failure"));
       return;
@@ -398,7 +399,7 @@ void FakeShillManagerClient::ConfigureService(
     LOG(ERROR) << "ConfigureService requires GUID and Type to be defined";
     // If the properties aren't filled out completely, then just return an empty
     // object path.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), dbus::ObjectPath()));
     return;
   }
@@ -452,7 +453,7 @@ void FakeShillManagerClient::ConfigureService(
       profile_client->AddService(*profile_path, service_path);
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), dbus::ObjectPath(service_path)));
 }
@@ -472,7 +473,7 @@ void FakeShillManagerClient::ConfigureServiceForProfile(
 void FakeShillManagerClient::GetService(const base::Value& properties,
                                         chromeos::ObjectPathCallback callback,
                                         ErrorCallback error_callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), dbus::ObjectPath()));
 }
 
@@ -506,11 +507,11 @@ void FakeShillManagerClient::SetTetheringEnabled(bool enabled,
                                                  ErrorCallback error_callback) {
   switch (simulate_tethering_enable_result_) {
     case FakeShillSimulatedResult::kSuccess:
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                    std::move(callback));
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(callback));
       return;
     case FakeShillSimulatedResult::kFailure:
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(error_callback),
                                     simulate_enable_tethering_error_,
                                     "Simulated failure"));
@@ -526,12 +527,12 @@ void FakeShillManagerClient::CheckTetheringReadiness(
     ErrorCallback error_callback) {
   switch (simulate_check_tethering_readiness_result_) {
     case FakeShillSimulatedResult::kSuccess:
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback),
                                     simulate_tethering_readiness_status_));
       return;
     case FakeShillSimulatedResult::kFailure:
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(error_callback), "Error",
                                     "Simulated failure"));
       return;
@@ -652,7 +653,8 @@ void FakeShillManagerClient::SetTechnologyEnabled(const std::string& type,
   else
     enabled_list.EraseValue(base::Value(type));
   CallNotifyObserversPropertyChanged(shill::kEnabledTechnologiesProperty);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(callback));
   // May affect available services.
   SortManagerServices(/*notify=*/true);
 }
@@ -821,7 +823,8 @@ void FakeShillManagerClient::SetNetworkThrottlingStatus(
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   network_throttling_status_ = status;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(callback));
 }
 
 bool FakeShillManagerClient::GetFastTransitionStatus() {
@@ -857,7 +860,7 @@ void FakeShillManagerClient::SetSimulateCheckTetheringReadinessResult(
 void FakeShillManagerClient::SetupDefaultEnvironment() {
   // Bail out from setup if there is no message loop. This will be the common
   // case for tests that are not testing Shill.
-  if (!base::ThreadTaskRunnerHandle::IsSet())
+  if (!base::SingleThreadTaskRunner::HasCurrentDefault())
     return;
 
   ShillServiceClient::TestInterface* services =
@@ -1182,7 +1185,7 @@ void FakeShillManagerClient::CallNotifyObserversPropertyChanged(
   // initial setup).
   if (observer_list_.empty())
     return;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeShillManagerClient::NotifyObserversPropertyChanged,
                      weak_ptr_factory_.GetWeakPtr(), property));

@@ -24,13 +24,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "net/base/features.h"
@@ -255,8 +255,8 @@ class ObfuscatedFileUtilTest : public testing::Test,
     // We need to pass in the context to skip all that.
     file_system_context_ =
         is_incognito() ? CreateIncognitoFileSystemContextForTesting(
-                             base::ThreadTaskRunnerHandle::Get(),
-                             base::ThreadTaskRunnerHandle::Get(),
+                             base::SingleThreadTaskRunner::GetCurrentDefault(),
+                             base::SingleThreadTaskRunner::GetCurrentDefault(),
                              quota_manager_->proxy(), data_dir_.GetPath())
                        : CreateFileSystemContextForTesting(
                              quota_manager_->proxy(), data_dir_.GetPath());

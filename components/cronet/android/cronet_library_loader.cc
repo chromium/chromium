@@ -169,7 +169,8 @@ void EnsureInitialized() {
 std::unique_ptr<net::ProxyConfigService> CreateProxyConfigService(
     const scoped_refptr<base::SequencedTaskRunner>& io_task_runner) {
   // Note: CreateSystemProxyConfigService internally assumes that
-  // base::ThreadTaskRunnerHandle::Get() == JNI communication thread.
+  // base::SingleThreadTaskRunner::GetCurrentDefault() == JNI communication
+  // thread.
   std::unique_ptr<net::ProxyConfigService> service =
       net::ProxyConfigService::CreateSystemProxyConfigService(io_task_runner);
   // If a PAC URL is present, ignore it and use the address and port of

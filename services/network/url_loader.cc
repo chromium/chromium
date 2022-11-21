@@ -27,9 +27,9 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
@@ -242,7 +242,7 @@ class SSLPrivateKeyInternal : public net::SSLPrivateKey {
             net::SSLPrivateKey::SignCallback callback) override {
     std::vector<uint8_t> input_vector(input.begin(), input.end());
     if (!ssl_private_key_ || !ssl_private_key_.is_connected()) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(callback),
                          net::ERR_SSL_CLIENT_AUTH_CERT_NO_PRIVATE_KEY,
@@ -1771,7 +1771,7 @@ void URLLoader::DidRead(int num_bytes, bool completed_synchronously) {
     CompletePendingWrite(true /* success */);
   }
   if (completed_synchronously) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&URLLoader::ReadMore, weak_ptr_factory_.GetWeakPtr()));
   } else {
@@ -2410,7 +2410,7 @@ URLLoader::BlockResponseForCorbResult URLLoader::BlockResponseForCorb() {
   // DeleteSelf is posted asynchronously, to make sure that the callers (e.g.
   // URLLoader::OnResponseStarted and/or URLLoader::DidRead instance methods)
   // can still safely dereference |this|.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&URLLoader::DeleteSelf, weak_ptr_factory_.GetWeakPtr()));
   return kWillCancelRequest;

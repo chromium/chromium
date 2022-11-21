@@ -58,7 +58,7 @@ const struct zwp_idle_inhibitor_v1_interface
 class IdleInhibitManager {
  public:
   IdleInhibitManager()
-      : ui_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      : ui_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
         blocking_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {}
 

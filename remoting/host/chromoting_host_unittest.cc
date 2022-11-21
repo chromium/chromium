@@ -12,9 +12,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/named_mojo_ipc_server/fake_ipc_server.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -75,12 +75,12 @@ class ChromotingHostTest : public testing::Test {
   void SetUp() override {
     network_change_notifier_ = net::NetworkChangeNotifier::CreateIfNeeded();
 
-    task_runner_ = new AutoThreadTaskRunner(base::ThreadTaskRunnerHandle::Get(),
-                                            base::DoNothing());
+    task_runner_ = new AutoThreadTaskRunner(
+        base::SingleThreadTaskRunner::GetCurrentDefault(), base::DoNothing());
 
     desktop_environment_factory_ =
         std::make_unique<FakeDesktopEnvironmentFactory>(
-            base::ThreadTaskRunnerHandle::Get());
+            base::SingleThreadTaskRunner::GetCurrentDefault());
     session_manager_ = new protocol::MockSessionManager();
 
     host_ = std::make_unique<ChromotingHost>(

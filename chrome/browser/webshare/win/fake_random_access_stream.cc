@@ -10,9 +10,9 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/fake_iasync_operation_win.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/webshare/win/fake_iasync_operation_with_progress.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -110,7 +110,7 @@ class StreamData final : public base::RefCountedThreadSafe<StreamData> {
       return hr;
     }
 
-    bool success = base::ThreadTaskRunnerHandle::Get()->PostTask(
+    bool success = base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&StreamData::OnReadAsync, weak_factory_.GetWeakPtr(),
                        position, fake_iasync_operation, captured_buffer,
@@ -154,7 +154,7 @@ class StreamData final : public base::RefCountedThreadSafe<StreamData> {
       return hr;
     }
 
-    bool success = base::ThreadTaskRunnerHandle::Get()->PostTask(
+    bool success = base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&StreamData::OnWriteAsync, weak_factory_.GetWeakPtr(),
                        position, fake_iasync_operation, captured_buffer));
@@ -193,7 +193,7 @@ class StreamData final : public base::RefCountedThreadSafe<StreamData> {
       return hr;
     }
 
-    bool success = base::ThreadTaskRunnerHandle::Get()->PostTask(
+    bool success = base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&StreamData::OnFlushAsync, weak_factory_.GetWeakPtr(),
                        fake_iasync_operation));

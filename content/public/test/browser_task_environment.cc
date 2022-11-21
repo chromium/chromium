@@ -14,7 +14,6 @@
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/browser/after_startup_task_utils.h"
 #include "content/browser/browser_process_io_thread.h"
@@ -198,13 +197,13 @@ void BrowserTaskEnvironment::Init() {
 
   // Set the current thread as the UI thread.
   ui_thread_ = std::make_unique<TestBrowserThread>(
-      BrowserThread::UI, base::ThreadTaskRunnerHandle::Get());
+      BrowserThread::UI, base::SingleThreadTaskRunner::GetCurrentDefault());
 
   if (real_io_thread_) {
     io_thread_ = TestBrowserThread::StartIOThread();
   } else {
     io_thread_ = std::make_unique<TestBrowserThread>(
-        BrowserThread::IO, base::ThreadTaskRunnerHandle::Get());
+        BrowserThread::IO, base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   // Consider startup complete such that after-startup-tasks always run in

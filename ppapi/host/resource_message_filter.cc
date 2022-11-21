@@ -8,7 +8,6 @@
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "ipc/ipc_message.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/host/ppapi_host.h"
@@ -34,13 +33,14 @@ void ResourceMessageFilterDeleteTraits::Destruct(
 }  // namespace internal
 
 ResourceMessageFilter::ResourceMessageFilter()
-    : deletion_task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      reply_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+    : deletion_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
+      reply_thread_task_runner_(
+          base::SingleThreadTaskRunner::GetCurrentDefault()),
       resource_host_(nullptr) {}
 
 ResourceMessageFilter::ResourceMessageFilter(
     scoped_refptr<base::SingleThreadTaskRunner> reply_thread_task_runner)
-    : deletion_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+    : deletion_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       reply_thread_task_runner_(reply_thread_task_runner),
       resource_host_(nullptr) {}
 

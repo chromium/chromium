@@ -407,7 +407,7 @@ void TestControllerAsh::WaiterFinished(OverviewWaiter* waiter) {
 
       // Delete asynchronously to avoid re-entrancy. This is safe because the
       // class will never use |test_controller_| after this callback.
-      base::ThreadTaskRunnerHandle::Get()->DeleteSoon(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
           FROM_HERE, std::move(overview_waiter));
       break;
     }

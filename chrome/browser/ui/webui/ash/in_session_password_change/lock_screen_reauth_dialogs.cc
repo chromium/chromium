@@ -416,7 +416,7 @@ void LockScreenStartReauthDialog::Observe(
       break;
     }
     case chrome::NOTIFICATION_AUTH_SUPPLIED: {
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&LockScreenStartReauthDialog::ReenableNetworkUpdates,
                          weak_factory_.GetWeakPtr()),

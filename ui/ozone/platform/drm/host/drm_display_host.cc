@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
@@ -47,7 +47,7 @@ void DrmDisplayHost::OnHDCPStateReceived(
     display::HDCPState state,
     display::ContentProtectionMethod protection_method) {
   if (!get_hdcp_callback_.is_null()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(get_hdcp_callback_), status, state,
                                   protection_method));
   } else {
@@ -70,7 +70,7 @@ void DrmDisplayHost::SetHDCPState(
 
 void DrmDisplayHost::OnHDCPStateUpdated(bool status) {
   if (!set_hdcp_callback_.is_null()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(set_hdcp_callback_), status));
   } else {
     LOG(ERROR) << "Got unexpected event for display "

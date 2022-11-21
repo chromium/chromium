@@ -5,7 +5,7 @@
 #include "chromeos/ash/services/secure_channel/nearby_connection_metrics_recorder.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 
 namespace ash::secure_channel {
@@ -50,7 +50,7 @@ void NearbyConnectionMetricsRecorder::HandleConnectionFailure(
 
   // Start a timeout period; if no successful attempts occur before this period,
   // we'll log a failure.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&NearbyConnectionMetricsRecorder::OnTimeout,
                      weak_ptr_factory_.GetWeakPtr(), device_id_pair),

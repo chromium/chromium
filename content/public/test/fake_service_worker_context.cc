@@ -113,7 +113,7 @@ FakeServiceWorkerContext::GetRemoteInterfaces(
     int64_t service_worker_version_id) {
   NOTREACHED();
   static service_manager::InterfaceProvider interface_provider(
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   return interface_provider;
 }
 

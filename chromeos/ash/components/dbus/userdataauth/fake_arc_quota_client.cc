@@ -6,7 +6,7 @@
 
 #include "base/location.h"
 #include "base/notreached.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace ash {
 
@@ -55,7 +55,7 @@ void FakeArcQuotaClient::GetCurrentSpaceForArcProjectId(
 void FakeArcQuotaClient::WaitForServiceToBeAvailable(
     chromeos::WaitForServiceToBeAvailableCallback callback) {
   if (service_is_available_ || service_reported_not_available_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), service_is_available_));
   } else {
     pending_wait_for_service_to_be_available_callbacks_.push_back(

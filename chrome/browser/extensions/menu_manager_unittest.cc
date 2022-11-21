@@ -13,7 +13,7 @@
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
@@ -58,7 +58,7 @@ class MenuManagerTest : public testing::Test {
       : profile_(new TestingProfile()),
         manager_(profile_.get(),
                  ExtensionSystem::Get(profile_.get())->state_store()),
-        prefs_(base::ThreadTaskRunnerHandle::Get()),
+        prefs_(base::SingleThreadTaskRunner::GetCurrentDefault()),
         next_id_(1) {}
 
   MenuManagerTest(const MenuManagerTest&) = delete;

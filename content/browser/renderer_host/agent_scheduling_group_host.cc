@@ -11,7 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/state_transitions.h"
 #include "base/supports_user_data.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host_factory.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -431,12 +431,14 @@ void AgentSchedulingGroupHost::SetUpIPC() {
 
     auto channel_factory = ChannelMojo::CreateServerFactory(
         bootstrap.PassPipe(), /*ipc_task_runner=*/io_task_runner,
-        /*proxy_task_runner=*/base::ThreadTaskRunnerHandle::Get());
+        /*proxy_task_runner=*/
+        base::SingleThreadTaskRunner::GetCurrentDefault());
 
-    channel_ = ChannelProxy::Create(
-        std::move(channel_factory), /*listener=*/this,
-        /*ipc_task_runner=*/io_task_runner,
-        /*listener_task_runner=*/base::ThreadTaskRunnerHandle::Get());
+    channel_ =
+        ChannelProxy::Create(std::move(channel_factory), /*listener=*/this,
+                             /*ipc_task_runner=*/io_task_runner,
+                             /*listener_task_runner=*/
+                             base::SingleThreadTaskRunner::GetCurrentDefault());
 
     // TODO(crbug.com/1111231): Add necessary filters.
     // Most of the filters currently installed on the process-wide channel are:

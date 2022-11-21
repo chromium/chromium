@@ -15,8 +15,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/mock_timer.h"
 #include "base/values.h"
 #include "net/base/io_buffer.h"
@@ -120,7 +120,7 @@ void TestClientStub::SetKeyboardLayout(const protocol::KeyboardLayout& layout) {
 }
 
 void TestClientStub::WaitForDeliverHostMessage(base::TimeDelta max_timeout) {
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop_->QuitClosure(), max_timeout);
   run_loop_->Run();
   run_loop_ = std::make_unique<base::RunLoop>();

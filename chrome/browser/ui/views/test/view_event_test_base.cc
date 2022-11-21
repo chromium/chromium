@@ -7,7 +7,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/test/base/chrome_unit_test_suite.h"
@@ -163,7 +163,7 @@ void ViewEventTestBase::StartMessageLoopAndRunTest() {
 
   // Schedule a task that starts the test. Need to do this as we're going to
   // run the message loop.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&ViewEventTestBase::DoTestOnMessageLoop,
                                 base::Unretained(this)));
 
@@ -186,7 +186,7 @@ ViewEventTestBase::GetDragTaskRunner() {
   // platforms cannot be posted from background threads.  The nested drag
   // message loop on non-Windows does not filter out non-input events, so these
   // tasks will run.
-  return base::ThreadTaskRunnerHandle::Get();
+  return base::SingleThreadTaskRunner::GetCurrentDefault();
 #endif
 }
 

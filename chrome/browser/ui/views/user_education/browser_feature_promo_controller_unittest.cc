@@ -8,10 +8,10 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -326,7 +326,7 @@ TEST_F(BrowserFeaturePromoControllerTest, ShowStartupBlockedWithAsyncCallback) {
   auto quit_closure = run_loop.QuitClosure();
   EXPECT_CALL(*mock_tracker_, AddOnInitializedCallback)
       .WillOnce([&](feature_engagement::Tracker::OnInitializedCallback cb) {
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(
                 [](feature_engagement::Tracker::OnInitializedCallback cb,
@@ -355,7 +355,7 @@ TEST_F(BrowserFeaturePromoControllerTest, ShowStartupBubbleWithAsyncCallback) {
   auto quit_closure = run_loop.QuitClosure();
   EXPECT_CALL(*mock_tracker_, AddOnInitializedCallback)
       .WillOnce([&](feature_engagement::Tracker::OnInitializedCallback cb) {
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(
                 [](feature_engagement::Tracker::OnInitializedCallback cb,

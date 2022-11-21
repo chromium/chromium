@@ -10,7 +10,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/branding_buildflags.h"
 #include "chrome/install_static/install_details.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
@@ -53,8 +52,8 @@ GoogleUpdateMetricsProviderWin::~GoogleUpdateMetricsProviderWin() {
 void GoogleUpdateMetricsProviderWin::AsyncInit(
     base::OnceClosure done_callback) {
   if (!IsGoogleChromeBuild()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(done_callback));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(done_callback));
     return;
   }
 

@@ -755,7 +755,7 @@ TEST_F(WebOTPServiceTest, SecondRequestWhilePrompt) {
 
   callback_loop1.Run();
 
-  base::ThreadTaskRunnerHandle::Get()->PostTaskAndReply(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTaskAndReply(
       FROM_HERE, BindLambdaForTesting([&]() {
         service.MakeRequest(BindLambdaForTesting(
             [&callback_loop2](SmsStatus status, const optional<string>& otp) {

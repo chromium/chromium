@@ -10,9 +10,9 @@
 #include <string>
 #include <vector>
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "content/common/aggregatable_report.mojom-shared.h"
 #include "content/common/aggregatable_report.mojom.h"
 #include "content/common/private_aggregation_features.h"
@@ -46,7 +46,8 @@ class ContextRecyclerTest : public testing::Test {
  public:
   ContextRecyclerTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        helper_(AuctionV8Helper::Create(base::ThreadTaskRunnerHandle::Get())) {
+        helper_(AuctionV8Helper::Create(
+            base::SingleThreadTaskRunner::GetCurrentDefault())) {
     // Here since we're using the same thread for everything, we need to spin
     // the event loop to let AuctionV8Helper finish initializing "off-thread";
     // normally PostTask semantics will ensure that anything that uses it on its

@@ -12,8 +12,8 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_backend_client.h"
@@ -282,7 +282,7 @@ class TestHistoryBackendForSync : public HistoryBackend {
       std::unique_ptr<HistoryBackendClient> backend_client)
       : HistoryBackend(std::make_unique<TestHistoryBackendDelegate>(),
                        std::move(backend_client),
-                       base::ThreadTaskRunnerHandle::Get()) {}
+                       base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
   bool IsExpiredVisitTime(const Time& time) const override {
     return time.ToDeltaSinceWindowsEpoch().InMicroseconds() == kExpiredVisit;

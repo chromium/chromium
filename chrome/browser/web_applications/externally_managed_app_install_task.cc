@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -160,7 +160,7 @@ void ExternallyManagedAppInstallTask::OnUrlLoaded(
       break;
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(retry_on_failure),
                      ExternallyManagedAppManager::InstallResult(code)));
@@ -255,7 +255,7 @@ void ExternallyManagedAppInstallTask::InstallPlaceholder(
 
   if (app_id.has_value() && !install_options_.force_reinstall) {
     // No need to install a placeholder app again.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             std::move(callback),
@@ -308,7 +308,7 @@ void ExternallyManagedAppInstallTask::OnCustomIconFetched(
     return;
   }
   // Retry download.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ExternallyManagedAppInstallTask::FetchCustomIcon,
                      weak_ptr_factory_.GetWeakPtr(), image_url, web_contents,

@@ -13,7 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -146,7 +146,7 @@ void ExternallyManagedAppManager::SynchronizeInstalledApps(
 
   // Run callback immediately if there's no work to be done.
   if (urls_to_remove.empty() && desired_apps_install_options.empty()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), std::map<GURL, InstallResult>(),
                        std::map<GURL, bool>()));
@@ -252,7 +252,7 @@ void ExternallyManagedAppManager::ContinueOrCompleteSynchronization(
   if (request.remaining_install_requests > 0)
     return;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(request.callback),
                                 std::move(request.install_results),
                                 std::move(request.uninstall_results)));

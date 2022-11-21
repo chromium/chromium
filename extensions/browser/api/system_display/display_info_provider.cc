@@ -6,8 +6,8 @@
 
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/api/system_display.h"
@@ -145,7 +145,7 @@ void DisplayInfoProvider::GetAllDisplaysInfo(
 void DisplayInfoProvider::GetDisplayLayout(
     base::OnceCallback<void(DisplayLayoutList result)> callback) {
   NOTREACHED();  // Implemented on Chrome OS only in override.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), DisplayLayoutList()));
 }
 
@@ -201,7 +201,7 @@ void DisplayInfoProvider::SetMirrorMode(
     const api::system_display::MirrorModeInfo& info,
     ErrorCallback callback) {
   NOTREACHED();  // Implemented on Chrome OS only in override.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), "Not supported"));
 }
 

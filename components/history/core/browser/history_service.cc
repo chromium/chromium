@@ -29,9 +29,9 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -342,14 +342,14 @@ base::CancelableTaskTracker::TaskId HistoryService::ScheduleDBTask(
   base::CancelableTaskTracker::IsCanceledCallback is_canceled;
   base::CancelableTaskTracker::TaskId task_id =
       tracker->NewTrackedTaskId(&is_canceled);
-  // Use base::ThreadTaskRunnerHandle::Get() to get a task runner for
-  // the current message loop so that we can forward the call to the method
+  // Use base::SingleThreadTaskRunner::GetCurrentDefault() to get a task runner
+  // for the current message loop so that we can forward the call to the method
   // HistoryDBTask::DoneRunOnMainThread() in the correct thread.
   backend_task_runner_->PostTask(
       from_here,
-      base::BindOnce(&HistoryBackend::ProcessDBTask, history_backend_,
-                     std::move(task), base::ThreadTaskRunnerHandle::Get(),
-                     is_canceled));
+      base::BindOnce(
+          &HistoryBackend::ProcessDBTask, history_backend_, std::move(task),
+          base::SingleThreadTaskRunner::GetCurrentDefault(), is_canceled));
   return task_id;
 }
 
@@ -365,7 +365,8 @@ void HistoryService::SetOnBackendDestroyTask(base::OnceClosure task) {
   ScheduleTask(
       PRIORITY_NORMAL,
       base::BindOnce(&HistoryBackend::SetOnBackendDestroyTask, history_backend_,
-                     base::ThreadTaskRunnerHandle::Get(), std::move(task)));
+                     base::SingleThreadTaskRunner::GetCurrentDefault(),
+                     std::move(task)));
 }
 
 void HistoryService::GetCountsAndLastVisitForOriginsForTesting(
@@ -1161,8 +1162,9 @@ bool HistoryService::Init(
 
   // Create the history backend.
   scoped_refptr<HistoryBackend> backend(base::MakeRefCounted<HistoryBackend>(
-      std::make_unique<BackendDelegate>(weak_ptr_factory_.GetWeakPtr(),
-                                        base::ThreadTaskRunnerHandle::Get()),
+      std::make_unique<BackendDelegate>(
+          weak_ptr_factory_.GetWeakPtr(),
+          base::SingleThreadTaskRunner::GetCurrentDefault()),
       history_client_ ? history_client_->CreateBackendClient() : nullptr,
       backend_task_runner_));
   history_backend_.swap(backend);

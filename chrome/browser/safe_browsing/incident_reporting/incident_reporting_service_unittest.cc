@@ -16,11 +16,11 @@
 #include "base/lazy_instance.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/threading/thread_local.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -223,7 +223,7 @@ class IncidentReportingServiceTest : public testing::Test {
         safe_browsing::kIncidentReportingEnableUpload);
 
     instance_ = std::make_unique<TestIncidentReportingService>(
-        base::ThreadTaskRunnerHandle::Get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::BindRepeating(&IncidentReportingServiceTest::PreProfileAdd,
                             base::Unretained(this)),
         base::BindRepeating(
@@ -373,7 +373,7 @@ class IncidentReportingServiceTest : public testing::Test {
           on_deleted_(std::move(on_deleted)),
           result_(result) {
       // Post a task that will provide the response.
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&FakeUploader::FinishUpload, base::Unretained(this)));
     }
@@ -406,7 +406,7 @@ class IncidentReportingServiceTest : public testing::Test {
             non_binary_download,
         safe_browsing::LastDownloadFinder::LastDownloadCallback callback) {
       // Post a task to run the callback.
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(callback), std::move(binary_download),
                          std::move(non_binary_download)));
@@ -478,7 +478,7 @@ class IncidentReportingServiceTest : public testing::Test {
 
   // Posts a task to delete the profile.
   void DelayedDeleteProfile(Profile* profile) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&TestingProfileManager::DeleteTestingProfile,
                                   base::Unretained(&profile_manager_),
                                   profile->GetProfileUserName()));

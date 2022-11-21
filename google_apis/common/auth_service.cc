@@ -14,7 +14,6 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -167,7 +166,7 @@ void AuthService::StartAuthentication(AuthStatusCallback callback) {
 
   if (HasAccessToken()) {
     // We already have access token. Give it back to the caller asynchronously.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), HTTP_SUCCESS, access_token_));
   } else if (HasRefreshToken()) {
@@ -178,7 +177,7 @@ void AuthService::StartAuthentication(AuthStatusCallback callback) {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
         scopes_);
   } else {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), NOT_READY, std::string()));
   }

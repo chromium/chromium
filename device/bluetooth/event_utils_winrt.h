@@ -14,7 +14,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
@@ -45,18 +45,21 @@ absl::optional<EventRegistrationToken> AddTypedEventHandler(
     base::RepeatingCallback<void(SenderAbi*, ArgsAbi*)> callback) {
   EventRegistrationToken token;
   HRESULT hr = ((*i).*function)(
-      Microsoft::WRL::Callback<ABI::Windows::Foundation::ITypedEventHandler<
-          Sender*, Args*>>([task_runner(base::ThreadTaskRunnerHandle::Get()),
-                            callback(std::move(callback))](SenderAbi* sender,
-                                                           ArgsAbi* args) {
-        // Make sure we are still on the same thread.
-        DCHECK_EQ(base::ThreadTaskRunnerHandle::Get(), task_runner);
-        task_runner->PostTask(
-            FROM_HERE,
-            base::BindOnce(callback, Microsoft::WRL::ComPtr<SenderAbi>(sender),
-                           Microsoft::WRL::ComPtr<ArgsAbi>(args)));
-        return S_OK;
-      }).Get(),
+      Microsoft::WRL::Callback<
+          ABI::Windows::Foundation::ITypedEventHandler<Sender*, Args*>>(
+          [task_runner(base::SingleThreadTaskRunner::GetCurrentDefault()),
+           callback(std::move(callback))](SenderAbi* sender, ArgsAbi* args) {
+            // Make sure we are still on the same thread.
+            DCHECK_EQ(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                      task_runner);
+            task_runner->PostTask(
+                FROM_HERE,
+                base::BindOnce(callback,
+                               Microsoft::WRL::ComPtr<SenderAbi>(sender),
+                               Microsoft::WRL::ComPtr<ArgsAbi>(args)));
+            return S_OK;
+          })
+          .Get(),
       &token);
 
   if (FAILED(hr)) {

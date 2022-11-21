@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "remoting/signaling/signal_strategy.h"
 #include "remoting/signaling/signaling_id_util.h"
@@ -143,7 +142,7 @@ IqRequest::~IqRequest() {
 }
 
 void IqRequest::SetTimeout(base::TimeDelta timeout) {
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&IqRequest::OnTimeout, weak_factory_.GetWeakPtr()),
       timeout);
@@ -162,7 +161,7 @@ void IqRequest::OnResponse(const jingle_xmpp::XmlElement* stanza) {
   // It's unsafe to delete signal strategy here, and the callback may
   // want to do that, so we post task to invoke the callback later.
   std::unique_ptr<jingle_xmpp::XmlElement> stanza_copy(new jingle_xmpp::XmlElement(*stanza));
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&IqRequest::DeliverResponse, weak_factory_.GetWeakPtr(),
                      std::move(stanza_copy)));

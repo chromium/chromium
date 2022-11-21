@@ -101,7 +101,7 @@ void FtlServicesPlayground::StartLoop() {
 
   auto url_request_context_getter =
       base::MakeRefCounted<URLRequestContextGetter>(
-          base::ThreadTaskRunnerHandle::Get());
+          base::SingleThreadTaskRunner::GetCurrentDefault());
   url_loader_factory_owner_ =
       std::make_unique<network::TransitionalURLLoaderFactoryOwner>(
           url_request_context_getter);

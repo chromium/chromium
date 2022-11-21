@@ -10,7 +10,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
@@ -55,7 +54,8 @@ class MouseCursorMonitorProxy::Core
 
 MouseCursorMonitorProxy::Core::Core(
     base::WeakPtr<MouseCursorMonitorProxy> proxy)
-    : proxy_(proxy), caller_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+    : proxy_(proxy),
+      caller_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   thread_checker_.DetachFromThread();
 }
 

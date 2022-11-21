@@ -18,7 +18,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
@@ -100,7 +100,7 @@ void CopyLockResult(base::RunLoop* loop,
 void CertCallbackSuccess(
     ash::attestation::AttestationFlow::CertificateCallback callback,
     std::string certificate) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), ash::attestation::ATTESTATION_SUCCESS,
                      std::move(certificate)));
@@ -204,15 +204,15 @@ class DeviceCloudPolicyManagerAshTest
     ash::InstallAttributesClient::InitializeFake();
     install_attributes_ = std::make_unique<ash::InstallAttributes>(
         ash::FakeInstallAttributesClient::Get());
-    store_ = new DeviceCloudPolicyStoreAsh(device_settings_service_.get(),
-                                           install_attributes_.get(),
-                                           base::ThreadTaskRunnerHandle::Get());
+    store_ = new DeviceCloudPolicyStoreAsh(
+        device_settings_service_.get(), install_attributes_.get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     auto external_data_manager =
         std::make_unique<MockCloudExternalDataManager>();
     external_data_manager_ = external_data_manager.get();
     manager_ = std::make_unique<TestingDeviceCloudPolicyManagerAsh>(
         base::WrapUnique(store_), std::move(external_data_manager),
-        base::ThreadTaskRunnerHandle::Get(), &state_keys_broker_);
+        base::SingleThreadTaskRunner::GetCurrentDefault(), &state_keys_broker_);
 
     RegisterLocalState(local_state_.registry());
     manager_->Init(&schema_registry_);
@@ -712,7 +712,7 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
     enrollment_handler_ = std::make_unique<EnrollmentHandler>(
         store_, install_attributes_.get(), &state_keys_broker_,
         &mock_attestation_flow_, std::move(client),
-        base::ThreadTaskRunnerHandle::Get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
         /*ad_join_delegate=*/nullptr, enrollment_config,
         policy::LicenseType::kEnterprise, std::move(auth),
         install_attributes_->GetDeviceId(),

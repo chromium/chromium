@@ -8,7 +8,6 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 
@@ -34,7 +33,7 @@ void HoverTabSelector::StartTabTransition(int index) {
     // to that tab taking place.
     const base::TimeDelta kHoverTransitionDelay = base::Milliseconds(500);
     tab_transition_tab_index_ = index;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&HoverTabSelector::PerformTabTransition,
                        weak_factory_.GetWeakPtr()),
@@ -54,4 +53,3 @@ void HoverTabSelector::PerformTabTransition() {
       TabStripUserGestureDetails(
           TabStripUserGestureDetails::GestureType::kOther));
 }
-

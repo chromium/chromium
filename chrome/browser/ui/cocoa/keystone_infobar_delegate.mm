@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #import "chrome/browser/mac/keystone_glue.h"
@@ -55,7 +55,7 @@ KeystonePromotionInfoBarDelegate::KeystonePromotionInfoBarDelegate(
       can_expire_(false),
       weak_ptr_factory_(this) {
   const base::TimeDelta kCanExpireOnNavigationAfterDelay = base::Seconds(8);
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&KeystonePromotionInfoBarDelegate::SetCanExpire,
                      weak_ptr_factory_.GetWeakPtr()),

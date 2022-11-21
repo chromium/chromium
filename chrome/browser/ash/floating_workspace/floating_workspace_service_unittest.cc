@@ -169,7 +169,7 @@ TEST_F(FloatingWorkspaceServiceTest, RestoreRemoteSession) {
       .RestoreBrowserWindowsFromMostRecentlyUsedDevice();
   // Wait for 3 seconds which is kMaxTimeAvailableForRestoreAfterLogin
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), GetMaxRestoreTime());
   run_loop.Run();
   EXPECT_TRUE(test_floating_workspace_service.GetRestoredSession());
@@ -200,7 +200,7 @@ TEST_F(FloatingWorkspaceServiceTest, RestoreLocalSession) {
       .RestoreBrowserWindowsFromMostRecentlyUsedDevice();
   // Wait for 3 seconds which is kMaxTimeAvailableForRestoreAfterLogin
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), GetMaxRestoreTime());
   run_loop.Run();
   EXPECT_TRUE(test_floating_workspace_service.GetRestoredSession());
@@ -232,7 +232,7 @@ TEST_F(FloatingWorkspaceServiceTest, RestoreRemoteSessionAfterUpdated) {
   // Wait for 3 seconds which is kMaxTimeAvailableForRestoreAfterLogin
   base::RunLoop first_run_loop;
   base::TimeDelta first_run_loop_delay_time = base::Seconds(1);
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, first_run_loop.QuitClosure(), first_run_loop_delay_time);
   first_run_loop.Run();
   // Remote session got updated during the 3 second delay of dispatching task
@@ -243,7 +243,7 @@ TEST_F(FloatingWorkspaceServiceTest, RestoreRemoteSessionAfterUpdated) {
   // and should be restored.
   less_recent_remote_session->modified_time = remote_session_updated_time;
   base::RunLoop second_run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, second_run_loop.QuitClosure(),
       GetMaxRestoreTime() - first_run_loop_delay_time);
   second_run_loop.Run();
@@ -270,7 +270,7 @@ TEST_F(FloatingWorkspaceServiceTest, NoLocalSession) {
       .RestoreBrowserWindowsFromMostRecentlyUsedDevice();
   // Wait for 3 seconds which is kMaxTimeAvailableForRestoreAfterLogin
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), GetMaxRestoreTime());
   run_loop.Run();
   EXPECT_TRUE(test_floating_workspace_service.GetRestoredSession());
@@ -289,7 +289,7 @@ TEST_F(FloatingWorkspaceServiceTest, NoRemoteSession) {
       .RestoreBrowserWindowsFromMostRecentlyUsedDevice();
   // Wait for 3 seconds which is kMaxTimeAvailableForRestoreAfterLogin
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), GetMaxRestoreTime());
   run_loop.Run();
   EXPECT_TRUE(test_floating_workspace_service.GetRestoredSession());
@@ -304,7 +304,7 @@ TEST_F(FloatingWorkspaceServiceTest, NoSession) {
       .RestoreBrowserWindowsFromMostRecentlyUsedDevice();
   // Wait for 3 seconds which is kMaxTimeAvailableForRestoreAfterLogin.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), GetMaxRestoreTime());
   run_loop.Run();
   EXPECT_FALSE(test_floating_workspace_service.GetRestoredSession());

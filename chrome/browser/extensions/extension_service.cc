@@ -32,7 +32,6 @@
 #include "base/syslog_logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -1983,7 +1982,7 @@ void ExtensionService::OnExtensionHostRenderProcessGone(
   // at all, but never half-crashed.  We do it in a PostTask so
   // that other handlers of this notification will still have
   // access to the Extension and ExtensionHost.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&ExtensionService::TerminateExtension,
                                 AsWeakPtr(), extension_host->extension_id()));
 }
@@ -2031,7 +2030,7 @@ void ExtensionService::Observe(int type,
 
     for (auto& extension_id : extension_ids) {
       if (delayed_installs_.Contains(extension_id)) {
-        base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(
                 base::IgnoreResult(

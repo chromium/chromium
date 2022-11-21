@@ -10,7 +10,6 @@
 #include "base/location.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -121,7 +120,8 @@ ExclusiveAccessBubbleViews::~ExclusiveAccessBubbleViews() {
   // the popup to synchronously hide, and then asynchronously close and delete
   // itself.
   popup_->Close();
-  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, popup_.get());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                                popup_.get());
   CHECK(!views::WidgetObserver::IsInObserverList());
 }
 

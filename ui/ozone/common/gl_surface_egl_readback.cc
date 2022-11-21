@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/ozone/common/egl_util.h"
@@ -21,7 +21,7 @@ constexpr size_t kBytesPerPixelBGRA = 4;
 
 GLSurfaceEglReadback::GLSurfaceEglReadback(gl::GLDisplayEGL* display)
     : PbufferGLSurfaceEGL(display, gfx::Size(1, 1)),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 bool GLSurfaceEglReadback::Resize(const gfx::Size& size,
                                   float scale_factor,

@@ -18,7 +18,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 
@@ -238,7 +237,7 @@ void ServiceWatcherImplMac::Start() {
                  callback:base::BindRepeating(
                               &ServiceWatcherImplMac::OnServicesUpdate,
                               weak_factory_.GetWeakPtr())
-           callbackRunner:base::ThreadTaskRunnerHandle::Get()]);
+           callbackRunner:base::SingleThreadTaskRunner::GetCurrentDefault()]);
   started_ = true;
 }
 
@@ -291,7 +290,7 @@ void ServiceResolverImplMac::StartResolving() {
          resolvedCallback:base::BindOnce(
                               &ServiceResolverImplMac::OnResolveComplete,
                               weak_factory_.GetWeakPtr())
-           callbackRunner:base::ThreadTaskRunnerHandle::Get()]);
+           callbackRunner:base::SingleThreadTaskRunner::GetCurrentDefault()]);
   // Provide an additional reference on the resolver_, in case |this|
   // gets deleted and releases its reference.
   service_discovery_runner_->PostTask(

@@ -15,7 +15,6 @@
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "gin/array_buffer.h"
 #include "gin/modules/console.h"
 #include "gin/object_template_builder.h"
@@ -82,7 +81,7 @@ int main(int argc, char** argv) {
     gin::IsolateHolder::Initialize(gin::IsolateHolder::kStrictMode,
                                    gin::ArrayBufferAllocator::SharedInstance());
     gin::IsolateHolder instance(
-        base::ThreadTaskRunnerHandle::Get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
         gin::IsolateHolder::IsolateType::kBlinkMainThread);
 
     gin::GinShellRunnerDelegate delegate;
@@ -99,7 +98,7 @@ int main(int argc, char** argv) {
         base::CommandLine::ForCurrentProcess()->GetArgs();
     for (base::CommandLine::StringVector::const_iterator it = args.begin();
          it != args.end(); ++it) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(gin::Run, runner.GetWeakPtr(), base::FilePath(*it)));
     }

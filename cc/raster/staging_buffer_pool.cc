@@ -12,7 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "cc/base/container_util.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
@@ -135,7 +135,8 @@ StagingBufferPool::StagingBufferPool(
       reduce_memory_usage_pending_(false) {
   DCHECK(worker_context_provider_);
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-      this, "cc::StagingBufferPool", base::ThreadTaskRunnerHandle::Get());
+      this, "cc::StagingBufferPool",
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
       FROM_HERE, base::BindRepeating(&StagingBufferPool::OnMemoryPressure,

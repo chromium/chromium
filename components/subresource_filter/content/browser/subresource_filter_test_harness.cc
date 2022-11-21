@@ -7,7 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
@@ -64,15 +64,16 @@ void SubresourceFilterTestHarness::SetUp() {
   // for |ContentRulesetService| and |RulesetService| would be a good idea, but
   // external unit tests code implicitly uses knowledge that blocking and
   // background task runners are initiazlied from
-  // |base::ThreadTaskRunnerHandle::Get()|:
+  // |base::SingleThreadTaskRunner::GetCurrentDefault()|:
   // 1. |TestRulesetPublisher| uses this knowledge in |SetRuleset| method. It
   //    is waiting for the ruleset published callback.
   // 2. Navigation simulator uses this knowledge. It knows that
   //    |AsyncDocumentSubresourceFilter| posts core initialization tasks on
   //    blocking task runner and this it is the current thread task runner.
   ruleset_service_ = std::make_unique<RulesetService>(
-      &pref_service_, base::ThreadTaskRunnerHandle::Get(),
-      ruleset_service_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get());
+      &pref_service_, base::SingleThreadTaskRunner::GetCurrentDefault(),
+      ruleset_service_dir_.GetPath(),
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   // Publish the test ruleset.
   testing::TestRulesetCreator ruleset_creator;

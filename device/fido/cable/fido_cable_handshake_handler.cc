@@ -11,7 +11,7 @@
 #include "base/containers/span.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -103,7 +103,7 @@ void FidoCableV1HandshakeHandler::InitiateCableHandshake(
   auto handshake_message =
       ConstructHandshakeMessage(handshake_key_, client_session_random_);
   if (!handshake_message) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }

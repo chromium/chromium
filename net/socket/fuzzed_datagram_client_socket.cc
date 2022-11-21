@@ -13,7 +13,7 @@
 #include "base/location.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
@@ -68,7 +68,7 @@ int FuzzedDatagramClientSocket::ConnectAsync(const IPEndPoint& address,
   int rv = Connect(address);
   DCHECK_NE(rv, ERR_IO_PENDING);
   if (data_provider_->ConsumeBool()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), rv));
     return ERR_IO_PENDING;
   }
@@ -161,7 +161,7 @@ int FuzzedDatagramClientSocket::Read(IOBuffer* buf,
     return result;
 
   read_pending_ = true;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FuzzedDatagramClientSocket::OnReadComplete,
                      weak_factory_.GetWeakPtr(), std::move(callback), result));
@@ -195,7 +195,7 @@ int FuzzedDatagramClientSocket::Write(
     return result;
 
   write_pending_ = true;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FuzzedDatagramClientSocket::OnWriteComplete,
                      weak_factory_.GetWeakPtr(), std::move(callback), result));

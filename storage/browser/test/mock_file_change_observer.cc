@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 #include "storage/browser/test/mock_file_change_observer.h"
-
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace storage {
 
@@ -22,7 +21,8 @@ MockFileChangeObserver::~MockFileChangeObserver() = default;
 ChangeObserverList MockFileChangeObserver::CreateList(
     MockFileChangeObserver* observer) {
   ChangeObserverList list;
-  return list.AddObserver(observer, base::ThreadTaskRunnerHandle::Get().get());
+  return list.AddObserver(
+      observer, base::SingleThreadTaskRunner::GetCurrentDefault().get());
 }
 
 void MockFileChangeObserver::OnCreateFile(const FileSystemURL& url) {

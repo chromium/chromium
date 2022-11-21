@@ -12,7 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/sync_file_system/drive_backend/drive_backend_constants.h"
 #include "chrome/browser/sync_file_system/drive_backend/drive_backend_test_util.h"
 #include "chrome/browser/sync_file_system/drive_backend/fake_drive_service_helper.h"
@@ -74,15 +74,17 @@ class ConflictResolverTest : public testing::Test {
 
     context_ = std::make_unique<SyncEngineContext>(
         std::move(fake_drive_service), std::move(drive_uploader),
-        nullptr /* task_logger */, base::ThreadTaskRunnerHandle::Get(),
-        base::ThreadTaskRunnerHandle::Get());
+        nullptr /* task_logger */,
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     context_->SetRemoteChangeProcessor(remote_change_processor_.get());
 
     RegisterSyncableFileSystem();
 
     sync_task_manager_ = std::make_unique<SyncTaskManager>(
         base::WeakPtr<SyncTaskManager::Client>(),
-        10 /* maximum_background_task */, base::ThreadTaskRunnerHandle::Get());
+        10 /* maximum_background_task */,
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     sync_task_manager_->Initialize(SYNC_STATUS_OK);
   }
 

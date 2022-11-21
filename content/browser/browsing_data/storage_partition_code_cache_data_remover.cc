@@ -9,7 +9,6 @@
 #include "base/location.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "content/browser/browsing_data/conditional_cache_deletion_helper.h"
 #include "content/browser/code_cache/generated_code_cache.h"
@@ -64,7 +63,8 @@ void StoragePartitionCodeCacheDataRemover::Remove(
 void StoragePartitionCodeCacheDataRemover::ClearedCodeCache() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::move(done_callback_).Run();
-  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                                this);
 }
 
 void StoragePartitionCodeCacheDataRemover::ClearCache(

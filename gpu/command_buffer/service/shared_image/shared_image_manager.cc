@@ -12,7 +12,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
@@ -86,10 +86,11 @@ SharedImageManager::SharedImageManager(bool thread_safe,
   CALLED_ON_VALID_THREAD();
 
   // In tests there might not be a SingleThreadTaskRunner for this thread.
-  if (base::ThreadTaskRunnerHandle::IsSet()) {
+  if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
     is_registered_as_memory_dump_provider_ = true;
     base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-        this, "SharedImageManager", base::ThreadTaskRunnerHandle::Get());
+        this, "SharedImageManager",
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 }
 

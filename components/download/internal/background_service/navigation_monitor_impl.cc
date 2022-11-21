@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace download {
 
@@ -60,7 +60,7 @@ void NavigationMonitorImpl::NotifyNavigationFinished() {
   navigation_finished_callback_.Reset(
       base::BindOnce(&NavigationMonitorImpl::OnNavigationFinished,
                      weak_ptr_factory_.GetWeakPtr()));
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, navigation_finished_callback_.callback(),
       navigation_completion_delay_);
 }
@@ -76,7 +76,7 @@ void NavigationMonitorImpl::ScheduleBackupTask() {
   backup_navigation_finished_callback_.Reset(
       base::BindOnce(&NavigationMonitorImpl::OnNavigationFinished,
                      weak_ptr_factory_.GetWeakPtr()));
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, backup_navigation_finished_callback_.callback(),
       navigation_timeout_delay_);
 }

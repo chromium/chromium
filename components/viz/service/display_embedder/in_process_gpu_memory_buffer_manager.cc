@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
@@ -39,7 +39,7 @@ InProcessGpuMemoryBufferManager::InProcessGpuMemoryBufferManager(
       pool_(base::MakeRefCounted<base::UnsafeSharedMemoryPool>()),
       gpu_memory_buffer_factory_(gpu_memory_buffer_factory),
       sync_point_manager_(sync_point_manager),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "InProcessGpuMemoryBufferManager", task_runner_);
 

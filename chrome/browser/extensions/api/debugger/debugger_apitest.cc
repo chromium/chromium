@@ -455,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBarIsRemovedAfterFiveSeconds) {
   // immediately, and should remain visible for 5 seconds to ensure the user
   // has an opportunity to see it.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(),
       ExtensionDevToolsInfoBarDelegate::kAutoCloseDelay);
   EXPECT_EQ(1u, manager->infobar_count());  // Infobar is still shown.
@@ -641,7 +641,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
 
   // Verify that infobar is not closed after 5 seconds.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(),
       ExtensionDevToolsInfoBarDelegate::kAutoCloseDelay);
   AdvanceClock(ExtensionDevToolsInfoBarDelegate::kAutoCloseDelay);

@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
@@ -89,7 +90,6 @@
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/chromeos/devicetype_utils.h"
 #else
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/mock_user_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
@@ -411,7 +411,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     std::unique_ptr<policy::DeviceCloudPolicyStoreAsh> store =
         std::make_unique<policy::DeviceCloudPolicyStoreAsh>(
             device_settings_service_.get(), install_attributes_->Get(),
-            base::ThreadTaskRunnerHandle::Get());
+            base::SingleThreadTaskRunner::GetCurrentDefault());
     manager_ = std::make_unique<TestDeviceCloudPolicyManagerAsh>(
         std::move(store), &state_keys_broker_);
     TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
@@ -562,7 +562,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     return std::make_unique<policy::UserCloudPolicyManager>(
         std::move(store), base::FilePath(),
         /*cloud_external_data_manager=*/nullptr,
-        base::ThreadTaskRunnerHandle::Get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
         network::TestNetworkConnectionTracker::CreateGetter());
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

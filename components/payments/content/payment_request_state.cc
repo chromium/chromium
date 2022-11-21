@@ -15,7 +15,7 @@
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/autofill/core/browser/address_normalizer.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -50,7 +50,7 @@ void CallStatusCallback(PaymentRequestState::StatusCallback callback,
 // Posts the |callback| to be invoked with |status| asynchronously.
 void PostStatusCallback(PaymentRequestState::StatusCallback callback,
                         bool status) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&CallStatusCallback, std::move(callback), status));
 }
@@ -333,7 +333,7 @@ void PaymentRequestState::AreRequestedMethodsSupported(
     return;
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PaymentRequestState::CheckRequestedMethodsSupported,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

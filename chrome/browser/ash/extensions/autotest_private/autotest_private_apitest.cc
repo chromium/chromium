@@ -85,7 +85,7 @@ class TestSearchProvider : public app_list::SearchProvider {
 
   void Start(const std::u16string& query) override {
     DCHECK(!ash::IsZeroStateResultType(result_type_));
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&TestSearchProvider::SetResults,
                                   query_weak_factory_.GetWeakPtr()));
   }

@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/network_delegate_error_observer.h"
 #include "net/proxy_resolution/proxy_resolver_factory.h"
@@ -38,9 +38,9 @@ CreateConfiguredProxyResolutionServiceUsingMojoFactory(
           std::move(proxy_config_service),
           std::make_unique<ProxyResolverFactoryMojo>(
               std::move(mojo_proxy_factory), host_resolver,
-              base::BindRepeating(&net::NetworkDelegateErrorObserver::Create,
-                                  network_delegate,
-                                  base::ThreadTaskRunnerHandle::Get()),
+              base::BindRepeating(
+                  &net::NetworkDelegateErrorObserver::Create, network_delegate,
+                  base::SingleThreadTaskRunner::GetCurrentDefault()),
               net_log),
           net_log, pac_quick_check_enabled));
 

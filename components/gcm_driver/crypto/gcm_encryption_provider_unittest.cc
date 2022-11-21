@@ -20,9 +20,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/gcm_driver/common/gcm_message.h"
 #include "components/gcm_driver/crypto/gcm_decryption_result.h"
 #include "components/gcm_driver/crypto/gcm_encryption_result.h"
@@ -66,8 +66,9 @@ class GCMEncryptionProviderTest : public ::testing::Test {
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
 
     encryption_provider_ = std::make_unique<GCMEncryptionProvider>();
-    encryption_provider_->Init(scoped_temp_dir_.GetPath(),
-                               base::ThreadTaskRunnerHandle::Get());
+    encryption_provider_->Init(
+        scoped_temp_dir_.GetPath(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   void TearDown() override {

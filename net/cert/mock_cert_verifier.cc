@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/cert_verify_result.h"
@@ -53,7 +53,7 @@ class MockCertVerifier::MockRequest : public CertVerifier::Request {
   }
 
   void ReturnResultLater(int rv, const CertVerifyResult& result) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&MockRequest::ReturnResult,
                                   weak_factory_.GetWeakPtr(), rv, result));
   }

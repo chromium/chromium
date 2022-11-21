@@ -22,7 +22,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
 #include "chrome/browser/ash/notifications/adb_sideloading_policy_change_notification.h"
 #include "chrome/browser/ash/policy/active_directory/active_directory_migration_manager.h"
@@ -168,7 +167,8 @@ BrowserPolicyConnectorAsh::BrowserPolicyConnectorAsh()
 
       device_cloud_policy_manager_ = new DeviceCloudPolicyManagerAsh(
           std::move(device_cloud_policy_store),
-          std::move(external_data_manager), base::ThreadTaskRunnerHandle::Get(),
+          std::move(external_data_manager),
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
           state_keys_broker_.get());
       providers_for_init_.push_back(
           base::WrapUnique<ConfigurationPolicyProvider>(
@@ -515,7 +515,7 @@ void BrowserPolicyConnectorAsh::OnDeviceCloudPolicyManagerConnected() {
   // DeviceCloudPolicyInitializer might still be on the call stack, so we
   // should delete the initializer after this function returns.
   device_cloud_policy_initializer_->Shutdown();
-  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
       FROM_HERE, std::move(device_cloud_policy_initializer_));
 
   if (!device_cert_provisioning_scheduler_) {

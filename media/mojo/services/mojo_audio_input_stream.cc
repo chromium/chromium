@@ -11,7 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/sync_socket.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "third_party/abseil-cpp/absl/utility/utility.h"
 
@@ -40,7 +40,7 @@ MojoAudioInputStream::MojoAudioInputStream(
     // Failed to initialize the stream. We cannot call |deleter_callback_| yet,
     // since construction isn't done.
     receiver_.reset();
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&MojoAudioInputStream::OnStreamError,
                        weak_factory_.GetWeakPtr(), /* not used */ 0));

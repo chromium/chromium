@@ -22,7 +22,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
@@ -681,7 +680,7 @@ void AccountReconcilor::ScheduleStartReconcileIfChromeAccountsChanged() {
   if (chrome_accounts_changed_) {
     chrome_accounts_changed_ = false;
     SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_SCHEDULED);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&AccountReconcilor::StartReconcile,
                                   weak_factory_.GetWeakPtr(),
                                   Trigger::kTokenChangeDuringReconcile));
@@ -717,7 +716,7 @@ void AccountReconcilor::ForceReconcile() {
   // `kForcedReconcile` is handled differently by `StartReconcile` - it leads to
   // ListAccounts being ignored - something that doesn't happen in a regular
   // reconciliation cycle.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&AccountReconcilor::ForceReconcile,
                      weak_factory_.GetWeakPtr()),

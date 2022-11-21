@@ -10,9 +10,9 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_enums.h"
@@ -255,7 +255,7 @@ class PredictionServiceTest : public testing::Test {
                int err_code = net::OK) {
     if (delay_in_seconds > 0) {
       // Post a task to rerun this after |delay_in_seconds| seconds
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&PredictionServiceTest::Respond,
                          base::Unretained(this), url, 0, err_code),

@@ -534,7 +534,7 @@ void PinRequestView::OnInputChange(bool last_field_active, bool complete) {
 
     // Moving focus is delayed by using PostTask to allow for proper
     // a11y announcements.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&PinRequestView::FocusSubmitButton,
                                   weak_ptr_factory_.GetWeakPtr()));
   }

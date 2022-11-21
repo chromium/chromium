@@ -7,7 +7,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
@@ -42,7 +41,7 @@ void FakeBluetoothProfileManagerClient::RegisterProfile(
   DVLOG(1) << "RegisterProfile: " << profile_path.value() << ": " << uuid;
 
   if (uuid == kUnregisterableUuid) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(error_callback),
                        bluetooth_profile_manager::kErrorInvalidArguments,
@@ -65,8 +64,8 @@ void FakeBluetoothProfileManagerClient::RegisterProfile(
                "Profile already registered");
     } else {
       profile_map_[uuid] = profile_path;
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                    std::move(callback));
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(callback));
     }
   }
 }
@@ -91,8 +90,8 @@ void FakeBluetoothProfileManagerClient::UnregisterProfile(
       }
     }
 
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(callback));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
   }
 }
 

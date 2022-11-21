@@ -8,10 +8,10 @@
 #include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
 #include "base/logging.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
@@ -129,7 +129,7 @@ void VulkanSwapChain::PostSubBufferAsync(
   DCHECK(!has_pending_post_sub_buffer_);
 
   if (UNLIKELY(!PresentBuffer(rect))) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), gfx::SwapResult::SWAP_FAILED));
     return;
@@ -154,7 +154,8 @@ void VulkanSwapChain::PostSubBufferAsync(
             self->has_pending_post_sub_buffer_ = false;
             self->condition_variable_.Signal();
           },
-          base::Unretained(this), base::ThreadTaskRunnerHandle::Get(),
+          base::Unretained(this),
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
           std::move(callback)));
 }
 

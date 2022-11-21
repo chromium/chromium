@@ -27,7 +27,7 @@ class ContextMenuMatcherTest : public testing::Test {
   ContextMenuMatcherTest()
       : profile_(std::make_unique<TestingProfile>()),
         manager_(CreateMenuManager()),
-        prefs_(base::ThreadTaskRunnerHandle::Get()) {}
+        prefs_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
   ContextMenuMatcherTest(const ContextMenuMatcherTest&) = delete;
   ContextMenuMatcherTest& operator=(const ContextMenuMatcherTest&) = delete;

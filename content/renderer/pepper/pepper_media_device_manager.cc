@@ -11,7 +11,6 @@
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "content/public/common/content_features.h"
 #include "content/renderer/pepper/renderer_ppapi_host_impl.h"
 #include "content/renderer/render_frame_impl.h"
@@ -167,7 +166,7 @@ int PepperMediaDeviceManager::OpenDevice(PP_DeviceType_Dev type,
           blink::mojom::ConsoleMessageLevel::kWarning,
           kPepperInsecureOriginMessage);
     }
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&PepperMediaDeviceManager::OnDeviceOpened,
                                   AsWeakPtr(), request_id, false, std::string(),
                                   blink::MediaStreamDevice()));

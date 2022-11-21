@@ -13,13 +13,13 @@
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "net/base/features.h"
 #include "net/base/network_anonymization_key.h"
@@ -247,7 +247,7 @@ class SQLitePersistentReportingAndNelStoreTest
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<SQLitePersistentReportingAndNelStore> store_;
   const scoped_refptr<base::SequencedTaskRunner> client_task_runner_ =
-      base::ThreadTaskRunnerHandle::Get();
+      base::SingleThreadTaskRunner::GetCurrentDefault();
   const scoped_refptr<base::SequencedTaskRunner> background_task_runner_ =
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
 };

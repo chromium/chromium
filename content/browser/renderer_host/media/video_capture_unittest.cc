@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/media/fake_video_capture_provider.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
@@ -98,7 +97,7 @@ class VideoCaptureTest : public testing::Test,
             std::make_unique<media::TestAudioThread>())),
         audio_system_(
             std::make_unique<media::AudioSystemImpl>(audio_manager_.get())),
-        task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+        task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
   VideoCaptureTest(const VideoCaptureTest&) = delete;
   VideoCaptureTest& operator=(const VideoCaptureTest&) = delete;

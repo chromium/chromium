@@ -18,7 +18,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
@@ -779,7 +778,7 @@ ExtensionFunction::ResponseAction BrowserActionOpenPopupFunction::Run() {
   // Waiting is required so that the popup view can be retrieved by the custom
   // bindings for the response callback. It's also needed to keep this function
   // instance around until a notification is observed.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&BrowserActionOpenPopupFunction::OpenPopupTimedOut, this),
       base::Seconds(10));

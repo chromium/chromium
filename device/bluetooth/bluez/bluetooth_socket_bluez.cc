@@ -21,7 +21,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "dbus/bus.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -230,8 +229,8 @@ void BluetoothSocketBlueZ::RegisterProfile(
   if (!adapter->IsPresent()) {
     DVLOG(1) << uuid_.canonical_value() << " on " << device_path_.value()
              << ": Delaying profile registration.";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(success_callback));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(success_callback));
     return;
   }
 

@@ -13,7 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_gatt_connection.h"
@@ -178,7 +178,7 @@ void FidoBleConnection::Connect(ConnectionCallback callback) {
   auto* device = GetBleDevice();
   if (!device) {
     FIDO_LOG(ERROR) << "Failed to get Device.";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
@@ -195,14 +195,14 @@ void FidoBleConnection::ReadControlPointLength(
     ControlPointLengthCallback callback) {
   const auto* fido_service = GetFidoService();
   if (!fido_service) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }
 
   if (!control_point_length_id_) {
     FIDO_LOG(ERROR) << "Failed to get Control Point Length.";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }
@@ -211,7 +211,7 @@ void FidoBleConnection::ReadControlPointLength(
       fido_service->GetCharacteristic(*control_point_length_id_);
   if (!control_point_length) {
     FIDO_LOG(ERROR) << "No Control Point Length characteristic present.";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }
@@ -225,14 +225,14 @@ void FidoBleConnection::WriteControlPoint(const std::vector<uint8_t>& data,
                                           WriteCallback callback) {
   const auto* fido_service = GetFidoService();
   if (!fido_service) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
 
   if (!control_point_id_) {
     FIDO_LOG(ERROR) << "Failed to get Control Point.";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
@@ -241,7 +241,7 @@ void FidoBleConnection::WriteControlPoint(const std::vector<uint8_t>& data,
       fido_service->GetCharacteristic(*control_point_id_);
   if (!control_point) {
     FIDO_LOG(ERROR) << "Control Point characteristic not present.";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
@@ -273,7 +273,7 @@ void FidoBleConnection::OnCreateGattConnection(
   if (error_code.has_value()) {
     FIDO_LOG(ERROR) << "CreateGattConnection() failed: "
                     << ToString(error_code.value());
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(pending_connection_callback_), false));
     return;
@@ -283,7 +283,7 @@ void FidoBleConnection::OnCreateGattConnection(
   BluetoothDevice* device = adapter_->GetDevice(address_);
   if (!device) {
     FIDO_LOG(ERROR) << "Failed to get Device.";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(pending_connection_callback_), false));
     return;
@@ -304,7 +304,7 @@ void FidoBleConnection::ConnectToFidoService() {
   const auto* fido_service = GetFidoService();
   if (!fido_service) {
     FIDO_LOG(ERROR) << "Failed to get Fido Service.";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(pending_connection_callback_), false));
     return;
@@ -350,7 +350,7 @@ void FidoBleConnection::ConnectToFidoService() {
   if (!control_point_length_id_ || !control_point_id_ || !status_id_ ||
       (!service_revision_id_ && !service_revision_bitfield_id_)) {
     FIDO_LOG(ERROR) << "Fido Characteristics missing.";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(pending_connection_callback_), false));
     return;
@@ -400,7 +400,7 @@ void FidoBleConnection::WriteServiceRevision(ServiceRevision service_revision) {
 
   const auto* fido_service = GetFidoService();
   if (!fido_service) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
@@ -433,7 +433,7 @@ void FidoBleConnection::StartNotifySession() {
   DCHECK(pending_connection_callback_);
   const auto* fido_service = GetFidoService();
   if (!fido_service) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(pending_connection_callback_), false));
     return;

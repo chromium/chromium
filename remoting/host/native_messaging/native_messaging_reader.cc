@@ -18,7 +18,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
 
@@ -151,9 +150,9 @@ NativeMessagingReader::NativeMessagingReader(base::File file)
       base::Thread::Options(base::MessagePumpType::IO, /*size=*/0));
 
   read_task_runner_ = reader_thread_.task_runner();
-  core_ = std::make_unique<Core>(std::move(file),
-                                 base::ThreadTaskRunnerHandle::Get(),
-                                 read_task_runner_, weak_factory_.GetWeakPtr());
+  core_ = std::make_unique<Core>(
+      std::move(file), base::SingleThreadTaskRunner::GetCurrentDefault(),
+      read_task_runner_, weak_factory_.GetWeakPtr());
 }
 
 NativeMessagingReader::~NativeMessagingReader() {

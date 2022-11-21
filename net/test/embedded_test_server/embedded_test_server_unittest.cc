@@ -18,7 +18,6 @@
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "net/base/test_completion_callback.h"
 #include "net/http/http_response_headers.h"
@@ -49,7 +48,7 @@ class TestConnectionListener
     : public net::test_server::EmbeddedTestServerConnectionListener {
  public:
   TestConnectionListener()
-      : task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+      : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
   TestConnectionListener(const TestConnectionListener&) = delete;
   TestConnectionListener& operator=(const TestConnectionListener&) = delete;
@@ -459,7 +458,7 @@ class CancelRequestDelegate : public TestDelegate {
 
   void OnResponseStarted(URLRequest* request, int net_error) override {
     TestDelegate::OnResponseStarted(request, net_error);
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop_.QuitClosure(), base::Seconds(1));
   }
 
@@ -485,7 +484,7 @@ class InfiniteResponse : public BasicHttpResponse {
  private:
   void SendInfinite(base::WeakPtr<HttpResponseDelegate> delegate) {
     delegate->SendContents("echo", base::DoNothing());
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&InfiniteResponse::SendInfinite,
                                   weak_ptr_factory_.GetWeakPtr(), delegate));
   }

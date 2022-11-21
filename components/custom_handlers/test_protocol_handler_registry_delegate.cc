@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace custom_handlers {
 
@@ -41,7 +41,7 @@ void TestProtocolHandlerRegistryDelegate::RegisterWithOSAsDefaultClient(
     DefaultClientCallback callback) {
   // Do as-if the registration has to run on another sequence and post back
   // the result with a task to the current thread.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), !force_os_failure_));
 
   if (!force_os_failure_)
@@ -52,7 +52,7 @@ void TestProtocolHandlerRegistryDelegate::CheckDefaultClientWithOS(
     const std::string& protocol,
     DefaultClientCallback callback) {
   // Respond asynchronously to mimic the real behavior.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 

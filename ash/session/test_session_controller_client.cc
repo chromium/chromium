@@ -17,7 +17,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/session_manager_types.h"
@@ -221,7 +221,7 @@ void TestSessionControllerClient::RequestLockScreen() {
     Shell::Get()->login_screen_controller()->ShowLockScreen();
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&TestSessionControllerClient::SetSessionState,
                                 weak_ptr_factory_.GetWeakPtr(),
                                 session_manager::SessionState::LOCKED));

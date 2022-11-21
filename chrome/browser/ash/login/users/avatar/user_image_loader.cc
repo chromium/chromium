@@ -18,7 +18,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/image_downloader_impl.h"
@@ -240,7 +239,7 @@ void DecodeImage(
     const std::string* data,
     bool data_is_ready) {
   if (!data_is_ready) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(image_info.loaded_cb),
                        base::WrapUnique(new user_manager::UserImage)));
@@ -258,7 +257,7 @@ void OnAnimationDecoded(
     std::vector<data_decoder::mojom::AnimationFramePtr> mojo_frames) {
   auto frame_size = mojo_frames.size();
   if (!frame_size) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(loaded_cb),
                                   std::make_unique<user_manager::UserImage>()));
     return;
@@ -335,7 +334,7 @@ void OnAnimationDecoded(
 
 void DecodeAnimation(LoadedCallback loaded_cb, base::StringPiece data) {
   if (data.empty()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(loaded_cb),
                                   std::make_unique<user_manager::UserImage>()));
     return;
@@ -354,7 +353,7 @@ void OnImageDownloaded(std::unique_ptr<network::SimpleURLLoader> loader,
                        std::unique_ptr<std::string> body) {
   if (loader->NetError() != net::OK || !body) {
     base::UmaHistogramBoolean(kURLLoaderDownloadSuccessHistogramName, false);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(loaded_cb),
                                   std::make_unique<user_manager::UserImage>()));
     return;
@@ -398,7 +397,7 @@ void StartWithDataAnimated(base::StringPiece data, LoadedCallback loaded_cb) {
 
 void StartWithFilePathAnimated(const base::FilePath& file_path,
                                LoadedCallback loaded_cb) {
-  base::ThreadTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           [](const base::FilePath& file_path) {

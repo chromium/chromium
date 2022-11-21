@@ -17,7 +17,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "storage/browser/file_system/file_system_file_util.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
@@ -133,7 +132,7 @@ void ReportStatus(base::File::Error* out_error, base::File::Error error) {
 // after |counter| times message posting.
 void CallCancelLater(RecursiveOperationDelegate* operation, int counter) {
   if (counter > 0) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&CallCancelLater, base::Unretained(operation),
                                   counter - 1));
     return;
@@ -150,10 +149,12 @@ class RecursiveOperationDelegateTest : public testing::Test {
     EXPECT_TRUE(base_.CreateUniqueTempDir());
     base::FilePath base_dir = base_.GetPath().AppendASCII("filesystem");
     quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
-        /*is_incognito=*/false, base_dir, base::ThreadTaskRunnerHandle::Get(),
+        /*is_incognito=*/false, base_dir,
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::MakeRefCounted<storage::MockSpecialStoragePolicy>());
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
-        quota_manager_.get(), base::ThreadTaskRunnerHandle::Get());
+        quota_manager_.get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     sandbox_file_system_.SetUp(base_dir, quota_manager_proxy_);
   }
 

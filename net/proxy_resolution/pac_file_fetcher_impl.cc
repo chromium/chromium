@@ -14,7 +14,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "net/base/data_url.h"
 #include "net/base/io_buffer.h"
 #include "net/base/load_flags.h"
@@ -199,7 +198,7 @@ int PacFileFetcherImpl::Fetch(
   // Post a task to timeout this request if it takes too long.
   cur_request_id_ = ++next_id_;
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&PacFileFetcherImpl::OnTimeout, weak_factory_.GetWeakPtr(),
                      cur_request_id_),

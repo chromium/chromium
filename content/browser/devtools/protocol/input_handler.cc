@@ -13,7 +13,7 @@
 #include "base/callback.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/protocol/native_input_event_builder.h"
@@ -1707,7 +1707,7 @@ void InputHandler::OnScrollFinished(
   }
 
   if (repeat_count > 0) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&InputHandler::SynthesizeRepeatingScroll,
                        weak_factory_.GetWeakPtr(), gesture_params,

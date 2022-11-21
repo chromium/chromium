@@ -24,10 +24,10 @@
 #include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/time/time_to_iso8601.h"
 #include "base/values.h"
@@ -317,7 +317,7 @@ class AttributionEventHandler : public AttributionObserver {
     // TODO(apaseltiner): Consider surfacing `net::CookieAccessResult` in
     // output.
 
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             &network::mojom::CookieManager::SetCanonicalCookie,
@@ -341,7 +341,7 @@ class AttributionEventHandler : public AttributionObserver {
           });
     }
 
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&AttributionManagerImpl::ClearData,
                        base::Unretained(manager_), clear.delete_begin,
@@ -352,7 +352,7 @@ class AttributionEventHandler : public AttributionObserver {
 
  private:
   void FlushCookies() {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             &network::mojom::CookieManager::FlushCookieStore,
@@ -565,7 +565,7 @@ base::Value RunAttributionSimulation(
 
   for (auto& event : *events) {
     base::Time event_time = GetEventTime(event);
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&AttributionEventHandler::Handle,
                        base::Unretained(&handler), std::move(event)),

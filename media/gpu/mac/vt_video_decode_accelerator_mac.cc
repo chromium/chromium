@@ -32,9 +32,9 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/sys_byteorder.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -629,7 +629,7 @@ VTVideoDecodeAccelerator::VTVideoDecodeAccelerator(
       workarounds_(workarounds),
       // Non media/ use cases like PPAPI may not provide a MediaLog.
       media_log_(media_log ? media_log->Clone() : nullptr),
-      gpu_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      gpu_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       decoder_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::USER_VISIBLE})),
       decoder_weak_this_factory_(this),

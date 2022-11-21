@@ -8,10 +8,10 @@
 #include <string>
 
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_error_job.h"
@@ -107,7 +107,8 @@ class GstaticJsonFetcherTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
-  GstaticJsonFetcher fetcher_{base::ThreadTaskRunnerHandle::Get()};
+  GstaticJsonFetcher fetcher_{
+      base::SingleThreadTaskRunner::GetCurrentDefault()};
 };
 
 TEST_F(GstaticJsonFetcherTest, FetchJsonFileSuccess) {

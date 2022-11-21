@@ -10,7 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/video_tutorials/internal/config.h"
 #include "chrome/browser/video_tutorials/internal/proto_conversions.h"
 #include "chrome/browser/video_tutorials/prefs.h"
@@ -122,8 +122,8 @@ void TutorialServiceImpl::FlushCachedApiCalls() {
   while (!cached_api_calls_.empty()) {
     auto api_call = std::move(cached_api_calls_.front());
     cached_api_calls_.pop_front();
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(api_call));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(api_call));
   }
 }
 

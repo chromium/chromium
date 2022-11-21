@@ -22,11 +22,11 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "crypto/encryptor.h"
 #include "crypto/symmetric_key.h"
@@ -151,7 +151,7 @@ class SQLitePersistentCookieStoreTest : public TestWithTaskEnvironment {
 
     store_ = base::MakeRefCounted<SQLitePersistentCookieStore>(
         temp_dir_.GetPath().Append(kCookieFilename),
-        use_current_thread ? base::ThreadTaskRunnerHandle::Get()
+        use_current_thread ? base::SingleThreadTaskRunner::GetCurrentDefault()
                            : client_task_runner_,
         background_task_runner_, restore_old_session_cookies,
         cookie_crypto_delegate_.get());
@@ -385,8 +385,9 @@ TEST_F(SQLitePersistentCookieStoreTest, TestLoadCookiesForKey) {
   // |client_task_runner_| on the same thread. Therefore, when a
   // |background_task_runner_| task is blocked, |client_task_runner_| tasks
   // can't run. To allow precise control of |background_task_runner_| without
-  // preventing client tasks to run, use base::ThreadTaskRunnerHandle::Get()
-  // instead of |client_task_runner_| for this test.
+  // preventing client tasks to run, use
+  // base::SingleThreadTaskRunner::GetCurrentDefault() instead of
+  // |client_task_runner_| for this test.
   Create(false /* crypt_cookies */, false /* restore_old_session_cookies */,
          true /* use_current_thread */);
 

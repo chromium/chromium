@@ -25,7 +25,7 @@
 #include "base/numerics/safe_math.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "cc/base/devtools_instrumentation.h"
 #include "cc/base/features.h"
@@ -1029,9 +1029,10 @@ GpuImageDecodeCache::GpuImageDecodeCache(
 
   // In certain cases, ThreadTaskRunnerHandle isn't set (Android Webview).
   // Don't register a dump provider in these cases.
-  if (base::ThreadTaskRunnerHandle::IsSet()) {
+  if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
     base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-        this, "cc::GpuImageDecodeCache", base::ThreadTaskRunnerHandle::Get());
+        this, "cc::GpuImageDecodeCache",
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
   memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
       FROM_HERE, base::BindRepeating(&GpuImageDecodeCache::OnMemoryPressure,

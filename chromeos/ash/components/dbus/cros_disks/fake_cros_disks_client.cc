@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -155,7 +154,7 @@ void FakeCrosDisksClient::Unmount(const std::string& device_path,
             base::OnceCallback<void(bool)>(base::DoNothing())
                 .Then(base::BindOnce(std::move(callback), unmount_error_))));
   } else {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), unmount_error_));
   }
   if (!unmount_listener_.is_null())
@@ -179,7 +178,7 @@ void FakeCrosDisksClient::Format(const std::string& device_path,
   last_format_device_path_ = device_path;
   last_format_filesystem_ = filesystem;
   last_format_label_ = label;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), format_success_));
 }
 
@@ -189,7 +188,7 @@ void FakeCrosDisksClient::SinglePartitionFormat(const std::string& device_path,
 
   partition_call_count_++;
   last_partition_device_path_ = device_path;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), partition_error_));
 }
 
@@ -201,7 +200,7 @@ void FakeCrosDisksClient::Rename(const std::string& device_path,
   rename_call_count_++;
   last_rename_device_path_ = device_path;
   last_rename_volume_name_ = volume_name;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), rename_success_));
 }
 
@@ -212,13 +211,13 @@ void FakeCrosDisksClient::GetDeviceProperties(
   DCHECK(!callback.is_null());
   if (!next_get_device_properties_disk_info_ ||
       next_get_device_properties_disk_info_->device_path() != device_path) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(error_callback));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(error_callback));
     return;
   }
 
   get_device_properties_success_count_++;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),
                      std::cref(*next_get_device_properties_disk_info_)));

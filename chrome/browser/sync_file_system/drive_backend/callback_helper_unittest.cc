@@ -11,7 +11,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sync_file_system {
@@ -69,7 +68,7 @@ TEST(DriveBackendCallbackHelperTest, RunOnOtherThreadTest) {
   thread.Start();
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner =
-      base::ThreadTaskRunnerHandle::Get();
+      base::SingleThreadTaskRunner::GetCurrentDefault();
   scoped_refptr<base::SequencedTaskRunner> worker_task_runner =
       thread.task_runner();
 

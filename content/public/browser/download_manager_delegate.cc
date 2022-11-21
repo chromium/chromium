@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/web_contents_delegate.h"
 
@@ -72,7 +72,7 @@ void DownloadManagerDelegate::CheckDownloadAllowed(
     CheckDownloadAllowedCallback check_download_allowed_cb) {
   // TODO: Do this directly, if it doesn't crash.
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](const WebContents::Getter& web_contents_getter, const GURL& url,

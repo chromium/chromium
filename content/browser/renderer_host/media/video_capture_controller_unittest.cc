@@ -21,7 +21,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/media/media_stream_provider.h"
@@ -135,12 +134,12 @@ class MockVideoCaptureControllerEventHandler
     DoBufferReady(ControllerIDAndSize(id, buffer.frame_info->coded_size),
                   std::move(scaled_frames));
     if (enable_auto_return_buffer_on_buffer_ready_) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&VideoCaptureController::ReturnBuffer,
                                     base::Unretained(controller_), id, this,
                                     buffer.buffer_id, feedback_));
       for (const auto& scaled_buffer : scaled_buffers) {
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(&VideoCaptureController::ReturnBuffer,
                                       base::Unretained(controller_), id, this,
                                       scaled_buffer.buffer_id, feedback_));
@@ -150,7 +149,7 @@ class MockVideoCaptureControllerEventHandler
   void OnEnded(const VideoCaptureControllerID& id) override {
     DoEnded(id);
     // OnEnded() must respond by (eventually) unregistering the client.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(base::IgnoreResult(
                                       &VideoCaptureController::RemoveClient),
                                   base::Unretained(controller_), id, this));

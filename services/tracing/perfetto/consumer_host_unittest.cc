@@ -305,7 +305,7 @@ class TracingConsumerTest : public testing::Test,
   void SetUp() override {
     task_environment_ = std::make_unique<base::test::TaskEnvironment>();
     tracing_environment_ = std::make_unique<base::test::TracingEnvironment>(
-        *task_environment_, base::ThreadTaskRunnerHandle::Get(),
+        *task_environment_, base::SingleThreadTaskRunner::GetCurrentDefault(),
         PerfettoTracedProcess::Get()->perfetto_platform_for_testing());
     test_handle_ = tracing::PerfettoTracedProcess::SetupForTesting();
     PerfettoTracedProcess::Get()->ClearDataSourcesForTesting();

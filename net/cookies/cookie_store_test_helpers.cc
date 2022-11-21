@@ -11,7 +11,6 @@
 #include "base/location.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/cookie_store.h"
@@ -106,7 +105,7 @@ void DelayedCookieMonster::SetCanonicalCookieAsync(
                      base::Unretained(this)),
       std::move(cookie_access_result));
   DCHECK_EQ(did_run_, true);
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&DelayedCookieMonster::InvokeSetCookiesCallback,
                      base::Unretained(this), std::move(callback)),
@@ -125,7 +124,7 @@ void DelayedCookieMonster::GetCookieListWithOptionsAsync(
           &DelayedCookieMonster::GetCookieListWithOptionsInternalCallback,
           base::Unretained(this)));
   DCHECK_EQ(did_run_, true);
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&DelayedCookieMonster::InvokeGetCookieListCallback,
                      base::Unretained(this), std::move(callback)),
@@ -219,7 +218,7 @@ FlushablePersistentStore::FlushablePersistentStore() = default;
 void FlushablePersistentStore::Load(LoadedCallback loaded_callback,
                                     const NetLogWithSource& /* net_log */) {
   std::vector<std::unique_ptr<CanonicalCookie>> out_cookies;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(loaded_callback), std::move(out_cookies)));
 }

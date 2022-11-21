@@ -467,7 +467,7 @@ TEST_P(HotseatWidgetTest, InAppShelfShowingContextMenu) {
   const int long_press_delay_ms = gesture_config->long_press_time_in_ms() +
                                   gesture_config->show_press_delay_in_ms();
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(),
       base::Milliseconds(long_press_delay_ms));
   run_loop.Run();

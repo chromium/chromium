@@ -9,7 +9,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/services/secure_channel/remote_attribute.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -59,7 +59,7 @@ class BluetoothLowEnergyCharacteristicsFinder
       const multidevice::RemoteDeviceRef& remote_device,
       std::unique_ptr<BackgroundEidGenerator> background_eid_generator,
       scoped_refptr<base::TaskRunner> task_runner =
-          base::ThreadTaskRunnerHandle::Get());
+          base::SingleThreadTaskRunner::GetCurrentDefault());
 
   BluetoothLowEnergyCharacteristicsFinder(
       const BluetoothLowEnergyCharacteristicsFinder&) = delete;

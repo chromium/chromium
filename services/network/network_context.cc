@@ -27,9 +27,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
@@ -2562,7 +2562,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
                           reporting_and_nel_store_database_name) &&
       (reporting_enabled || nel_enabled)) {
     scoped_refptr<base::SequencedTaskRunner> client_task_runner =
-        base::ThreadTaskRunnerHandle::Get();
+        base::SingleThreadTaskRunner::GetCurrentDefault();
     scoped_refptr<base::SequencedTaskRunner> background_task_runner =
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(),
@@ -2751,7 +2751,7 @@ NetworkContext::MakeSessionCleanupCookieStore() const {
     return nullptr;
   }
   scoped_refptr<base::SequencedTaskRunner> client_task_runner =
-      base::ThreadTaskRunnerHandle::Get();
+      base::SingleThreadTaskRunner::GetCurrentDefault();
   scoped_refptr<base::SequencedTaskRunner> background_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), net::GetCookieStoreBackgroundSequencePriority(),

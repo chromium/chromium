@@ -9,7 +9,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/services/sharing/nearby/nearby_connections_conversions.h"
@@ -94,7 +94,7 @@ NearbyConnections::NearbyConnections(
     location::nearby::api::LogMessage::Severity min_log_severity,
     base::OnceClosure on_disconnect)
     : nearby_connections_(this, std::move(nearby_connections)),
-      thread_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+      thread_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   location::nearby::api::LogMessage::SetMinLogSeverity(min_log_severity);
 
   nearby_connections_.set_disconnect_handler(std::move(on_disconnect));

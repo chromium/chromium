@@ -11,7 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace ui {
 
@@ -29,7 +29,7 @@ template <typename... Args>
 base::RepeatingCallback<void(Args...)> CreateSafeRepeatingCallback(
     base::RepeatingCallback<void(Args...)> callback,
     const base::Location& location = FROM_HERE) {
-  return base::BindPostTask(base::ThreadTaskRunnerHandle::Get(),
+  return base::BindPostTask(base::SingleThreadTaskRunner::GetCurrentDefault(),
                             std::move(callback), location);
 }
 
@@ -40,7 +40,7 @@ template <typename... Args>
 base::OnceCallback<void(Args...)> CreateSafeOnceCallback(
     base::OnceCallback<void(Args...)> callback,
     const base::Location& location = FROM_HERE) {
-  return base::BindPostTask(base::ThreadTaskRunnerHandle::Get(),
+  return base::BindPostTask(base::SingleThreadTaskRunner::GetCurrentDefault(),
                             std::move(callback), location);
 }
 

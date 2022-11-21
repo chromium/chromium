@@ -17,12 +17,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/lib/multiplex_router.h"
@@ -101,7 +101,7 @@ class IntegerSenderConnectionImpl : public IntegerSenderConnection {
 class AssociatedInterfaceTest : public testing::Test {
  public:
   AssociatedInterfaceTest()
-      : main_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+      : main_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
   ~AssociatedInterfaceTest() override = default;
 
   template <typename T>

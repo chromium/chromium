@@ -61,8 +61,8 @@ class TabSearchButtonBrowserTest : public InProcessBrowserTest {
   void RunUntilBubbleWidgetDestroyed() {
     ASSERT_NE(nullptr, bubble_manager()->GetBubbleWidget());
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  run_loop.QuitClosure());
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
     ASSERT_EQ(nullptr, bubble_manager()->GetBubbleWidget());
   }

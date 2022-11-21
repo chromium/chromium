@@ -11,10 +11,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -117,7 +117,8 @@ class PlatformNotificationContextTest : public ::testing::Test {
   // Overrides the task runner in |context| with the current message loop
   // proxy, to reduce the number of threads involved in the tests.
   void OverrideTaskRunnerForTesting(PlatformNotificationContextImpl* context) {
-    context->SetTaskRunnerForTesting(base::ThreadTaskRunnerHandle::Get());
+    context->SetTaskRunnerForTesting(
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   // Gets the currently displayed notifications from |service| synchronously.

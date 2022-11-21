@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/aura/client/aura_constants.h"
@@ -357,7 +357,7 @@ void DesktopWindowTreeHostPlatform::Close() {
   // we don't destroy the window before the callback returned (as the caller
   // may delete ourselves on destroy and the ATL callback would still
   // dereference us when the callback returns).
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&DesktopWindowTreeHostPlatform::CloseNow,
                                 close_widget_factory_.GetWeakPtr()));
 }

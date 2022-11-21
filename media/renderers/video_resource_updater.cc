@@ -19,7 +19,7 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
@@ -583,7 +583,8 @@ VideoResourceUpdater::VideoResourceUpdater(
          shared_bitmap_reporter_);
 
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-      this, "media::VideoResourceUpdater", base::ThreadTaskRunnerHandle::Get());
+      this, "media::VideoResourceUpdater",
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 VideoResourceUpdater::~VideoResourceUpdater() {

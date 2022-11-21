@@ -128,7 +128,7 @@ void VideoDetector::EstablishConnectionToViz() {
 void VideoDetector::OnConnectionError() {
   if (video_is_playing_)
     OnVideoActivityEnded();
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&VideoDetector::EstablishConnectionToViz,
                      weak_factory_.GetWeakPtr()),

@@ -16,7 +16,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/update_client/component_unpacker.h"
 #include "components/update_client/patcher.h"
@@ -79,7 +78,7 @@ class ComponentUnpackerTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_ =
-      base::ThreadTaskRunnerHandle::Get();
+      base::SingleThreadTaskRunner::GetCurrentDefault();
   base::RunLoop runloop_;
   base::OnceClosure quit_closure_ = runloop_.QuitClosure();
 

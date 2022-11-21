@@ -12,8 +12,8 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/eme_constants.h"
 #include "media/base/media.h"
@@ -130,7 +130,7 @@ void OnEncryptedMediaInitData(media::PipelineIntegrationTestBase* test,
   // Note: Since the callback is on the media task runner but the test is on
   // the main task runner, this must be posted.
   // TODO(xhwang): Support encrypted media in this fuzzer test.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&PipelineIntegrationTestBase::FailTest,
                                 base::Unretained(test),
                                 media::PIPELINE_ERROR_INITIALIZATION_FAILED));
@@ -142,7 +142,7 @@ void OnAudioPlayDelay(media::PipelineIntegrationTestBase* test,
   if (play_delay > kMaxPlayDelay) {
     // Note: Since the callback is on the media task runner but the test is on
     // the main task runner, this must be posted.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&PipelineIntegrationTestBase::FailTest,
                                   base::Unretained(test),
                                   media::PIPELINE_ERROR_INITIALIZATION_FAILED));

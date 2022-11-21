@@ -880,8 +880,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     // intersection is sent to the to child renderer before the mouse click
     // below.
     base::RunLoop loop;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  loop.QuitClosure());
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, loop.QuitClosure());
     loop.Run();
   }
 

@@ -25,7 +25,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
@@ -1335,7 +1334,7 @@ int QuicStreamFactory::Create(const QuicSessionKey& session_key,
   // TODO(rtenneti): |task_runner_| is used by the Job. Initialize task_runner_
   // in the constructor after WebRequestActionWithThreadsTest.* tests are fixed.
   if (!task_runner_)
-    task_runner_ = base::ThreadTaskRunnerHandle::Get().get();
+    task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault().get();
 
   if (!tick_clock_)
     tick_clock_ = base::DefaultTickClock::GetInstance();
@@ -1849,7 +1848,7 @@ int QuicStreamFactory::CreateSession(const QuicSessionAliasKey& key,
 
   if (!alarm_factory_.get()) {
     alarm_factory_ = std::make_unique<QuicChromiumAlarmFactory>(
-        base::ThreadTaskRunnerHandle::Get().get(), clock_);
+        base::SingleThreadTaskRunner::GetCurrentDefault().get(), clock_);
   }
 
   quic::QuicConnectionId connection_id =

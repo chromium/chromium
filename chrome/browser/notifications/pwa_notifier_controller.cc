@@ -77,7 +77,7 @@ std::vector<ash::NotifierMetadata> PwaNotifierController::GetNotifierList(
         std::make_pair(app_data.publisher_id, app_data.app_id));
   }
   if (!package_to_app_ids_.empty()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&PwaNotifierController::CallLoadIcons,
                                   weak_ptr_factory_.GetWeakPtr()));
   }

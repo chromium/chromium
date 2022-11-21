@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace ash {
 
@@ -22,7 +22,7 @@ void FakeArcAppfuseProviderClient::Mount(
     uint32_t uid,
     int32_t mount_id,
     chromeos::DBusMethodCallback<base::ScopedFD> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), base::ScopedFD()));
 }
 
@@ -30,7 +30,7 @@ void FakeArcAppfuseProviderClient::Unmount(
     uint32_t uid,
     int32_t mount_id,
     chromeos::VoidDBusMethodCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), false));
 }
 
@@ -40,7 +40,7 @@ void FakeArcAppfuseProviderClient::OpenFile(
     int32_t file_id,
     int32_t flags,
     chromeos::DBusMethodCallback<base::ScopedFD> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), base::ScopedFD()));
 }
 

@@ -71,8 +71,8 @@ void ScheduleCompletionCallbacks(std::vector<base::OnceClosure>&& callbacks) {
     if (callback.is_null())
       continue;
 
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(callback));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
   }
 }
 
@@ -624,7 +624,8 @@ void LoginDisplayHostCommon::ShutdownDisplayHost() {
   shutting_down_ = true;
 
   Cleanup();
-  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                                this);
 }
 
 void LoginDisplayHostCommon::OnStartSignInScreenCommon() {

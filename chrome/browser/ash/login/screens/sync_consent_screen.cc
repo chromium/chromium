@@ -130,7 +130,7 @@ void SyncConsentScreen::MaybeLaunchSyncConsentSettings(Profile* profile) {
       // Settings. We delay showing chrome sync settings by
       // kSyncConsentSettingsShowDelay to make the settings tab shows on top of
       // the restored tabs and windows.
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(
               [](Profile* profile) {

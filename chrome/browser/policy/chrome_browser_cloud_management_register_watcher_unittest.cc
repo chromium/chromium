@@ -9,8 +9,8 @@
 
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/policy/chrome_browser_cloud_management_controller_desktop.h"
 #include "chrome/browser/ui/enterprise_startup_dialog.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
@@ -80,7 +80,7 @@ class MockEnterpriseStartupDialog : public EnterpriseStartupDialog {
   }
 
   void UserClickedTheButton(bool confirmed) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback_), confirmed,
                                   false /* can_show_browser_window */));
   }
@@ -156,7 +156,7 @@ TEST_F(ChromeBrowserCloudManagementRegisterWatcherTest, EnrollmentSucceed) {
 
   EXPECT_CALL(*dialog(), DisplayLaunchingInformationWithThrobber(_));
   EXPECT_CALL(*dialog(), IsShowing()).WillOnce(Return(true));
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &FakeChromeBrowserCloudManagementController::FireNotification,
@@ -182,7 +182,7 @@ TEST_F(ChromeBrowserCloudManagementRegisterWatcherTest,
   EXPECT_CALL(*dialog(), DisplayLaunchingInformationWithThrobber(_));
   EXPECT_CALL(*dialog(), IsShowing()).WillOnce(Return(true));
   storage()->SetEnrollmentErrorOption(false);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &FakeChromeBrowserCloudManagementController::FireNotification,
@@ -210,7 +210,7 @@ TEST_F(ChromeBrowserCloudManagementRegisterWatcherTest,
       .WillOnce(
           InvokeWithoutArgs([this] { dialog()->UserClickedTheButton(false); }));
   EXPECT_CALL(*dialog(), IsShowing()).WillOnce(Return(true));
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &FakeChromeBrowserCloudManagementController::FireNotification,
@@ -238,7 +238,7 @@ TEST_F(ChromeBrowserCloudManagementRegisterWatcherTest,
       .WillOnce(
           InvokeWithoutArgs([this] { dialog()->UserClickedTheButton(true); }));
   EXPECT_CALL(*dialog(), IsShowing()).WillOnce(Return(true));
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &FakeChromeBrowserCloudManagementController::FireNotification,
@@ -262,7 +262,7 @@ TEST_F(ChromeBrowserCloudManagementRegisterWatcherTest,
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(*dialog(), DisplayLaunchingInformationWithThrobber(_));
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&MockEnterpriseStartupDialog::UserClickedTheButton,
                      base::Unretained(dialog()), false));
@@ -287,7 +287,7 @@ TEST_F(ChromeBrowserCloudManagementRegisterWatcherTest,
   EXPECT_CALL(*dialog(), DisplayLaunchingInformationWithThrobber(_));
   storage()->SetEnrollmentErrorOption(false);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&MockEnterpriseStartupDialog::UserClickedTheButton,
                      base::Unretained(dialog()), false));
@@ -334,7 +334,7 @@ TEST_F(ChromeBrowserCloudManagementRegisterWatcherTest,
   EXPECT_CALL(*dialog(), DisplayLaunchingInformationWithThrobber(_));
   EXPECT_CALL(*dialog(), IsShowing()).WillOnce(Return(true));
   storage()->SetEnrollmentErrorOption(false);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &FakeChromeBrowserCloudManagementController::FireNotification,

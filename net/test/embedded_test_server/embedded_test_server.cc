@@ -25,10 +25,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "crypto/rsa_private_key.h"
 #include "net/base/hex_utils.h"
 #include "net/base/ip_endpoint.h"
@@ -969,10 +969,10 @@ void EmbeddedTestServer::RemoveConnection(
 
 bool EmbeddedTestServer::PostTaskToIOThreadAndWait(base::OnceClosure closure) {
   // Note that PostTaskAndReply below requires
-  // base::ThreadTaskRunnerHandle::Get() to return a task runner for posting
-  // the reply task. However, in order to make EmbeddedTestServer universally
-  // usable, it needs to cope with the situation where it's running on a
-  // thread on which a task executor is not (yet) available or has been
+  // base::SingleThreadTaskRunner::GetCurrentDefault() to return a task runner
+  // for posting the reply task. However, in order to make EmbeddedTestServer
+  // universally usable, it needs to cope with the situation where it's running
+  // on a thread on which a task executor is not (yet) available or has been
   // destroyed already.
   //
   // To handle this situation, create temporary task executor to support the
@@ -996,10 +996,10 @@ bool EmbeddedTestServer::PostTaskToIOThreadAndWait(base::OnceClosure closure) {
 bool EmbeddedTestServer::PostTaskToIOThreadAndWaitWithResult(
     base::OnceCallback<bool()> task) {
   // Note that PostTaskAndReply below requires
-  // base::ThreadTaskRunnerHandle::Get() to return a task runner for posting
-  // the reply task. However, in order to make EmbeddedTestServer universally
-  // usable, it needs to cope with the situation where it's running on a
-  // thread on which a task executor is not (yet) available or has been
+  // base::SingleThreadTaskRunner::GetCurrentDefault() to return a task runner
+  // for posting the reply task. However, in order to make EmbeddedTestServer
+  // universally usable, it needs to cope with the situation where it's running
+  // on a thread on which a task executor is not (yet) available or has been
   // destroyed already.
   //
   // To handle this situation, create temporary task executor to support the

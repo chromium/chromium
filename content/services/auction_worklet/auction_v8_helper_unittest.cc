@@ -14,9 +14,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/worklet_devtools_debug_test_util.h"
@@ -133,7 +133,8 @@ class AuctionV8HelperTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource time_mode =
           base::test::TaskEnvironment::TimeSource::SYSTEM_TIME)
       : task_environment_(time_mode) {
-    helper_ = AuctionV8Helper::Create(base::ThreadTaskRunnerHandle::Get());
+    helper_ = AuctionV8Helper::Create(
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     // Here since we're using the same thread for everything, we need to spin
     // the event loop to let AuctionV8Helper finish initializing "off-thread";
     // normally PostTask semantics will ensure that anything that uses it on its

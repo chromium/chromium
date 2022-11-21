@@ -6,8 +6,8 @@
 
 #include <memory>
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -32,7 +32,7 @@ class V8MemoryDumpProviderWorkerTest : public V8MemoryDumpProviderTest {
  protected:
   std::unique_ptr<IsolateHolder> CreateIsolateHolder() const override {
     return std::make_unique<gin::IsolateHolder>(
-        base::ThreadTaskRunnerHandle::Get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
         gin::IsolateHolder::IsolateType::kBlinkWorkerThread);
   }
 };

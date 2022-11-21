@@ -12,7 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
@@ -280,7 +280,7 @@ void AndroidSmsAppSetupControllerImpl::OnAppInstallResult(
         << "PWA for " << install_url << " failed to install."
         << "InstallResultCode: " << static_cast<int>(result.code)
         << " Retrying again in " << retry_delay;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&AndroidSmsAppSetupControllerImpl::TryInstallApp,
                        weak_ptr_factory_.GetWeakPtr(), install_url, app_url,

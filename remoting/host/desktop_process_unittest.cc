@@ -197,7 +197,7 @@ void DesktopProcessTest::CreateNetworkChannel(
     mojo::ScopedMessagePipeHandle desktop_pipe) {
   network_channel_ = IPC::ChannelProxy::Create(
       desktop_pipe.release(), IPC::Channel::MODE_CLIENT, &network_listener_,
-      io_task_runner_.get(), base::ThreadTaskRunnerHandle::Get());
+      io_task_runner_.get(), base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 void DesktopProcessTest::StoreDesktopHandle(
@@ -279,7 +279,7 @@ void DesktopProcessTest::RunDesktopProcess() {
   mojo::MessagePipe pipe;
   daemon_channel_ = IPC::ChannelProxy::Create(
       pipe.handle0.release(), IPC::Channel::MODE_SERVER, &daemon_listener_,
-      io_task_runner_.get(), base::ThreadTaskRunnerHandle::Get());
+      io_task_runner_.get(), base::SingleThreadTaskRunner::GetCurrentDefault());
 
   std::unique_ptr<MockDesktopEnvironmentFactory> desktop_environment_factory(
       new MockDesktopEnvironmentFactory());

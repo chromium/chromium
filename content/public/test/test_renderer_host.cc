@@ -8,8 +8,8 @@
 
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/browser/compositor/test/test_image_transport_factory.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
@@ -147,8 +147,9 @@ RenderViewHostTestEnabler::RenderViewHostTestEnabler(
   display::Screen::SetScreenInstance(screen_.get());
 #endif
 #if BUILDFLAG(IS_MAC)
-  if (base::ThreadTaskRunnerHandle::IsSet())
-    ui::WindowResizeHelperMac::Get()->Init(base::ThreadTaskRunnerHandle::Get());
+  if (base::SingleThreadTaskRunner::HasCurrentDefault())
+    ui::WindowResizeHelperMac::Get()->Init(
+        base::SingleThreadTaskRunner::GetCurrentDefault());
 #endif  // BUILDFLAG(IS_MAC)
 }
 

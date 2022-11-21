@@ -15,10 +15,10 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist_data.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist_item.h"
@@ -68,8 +68,8 @@ class OptOutStoreSQLTest : public testing::Test {
   // Creates a store that operates on one thread.
   void Create() {
     store_ = std::make_unique<OptOutStoreSQL>(
-        base::ThreadTaskRunnerHandle::Get(),
-        base::ThreadTaskRunnerHandle::Get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
         temp_dir_.GetPath().Append(kOptOutFilename));
   }
 

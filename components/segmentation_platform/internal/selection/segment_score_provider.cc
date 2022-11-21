@@ -7,7 +7,7 @@
 #include <map>
 
 #include "base/memory/raw_ptr.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
@@ -41,7 +41,7 @@ class SegmentScoreProviderImpl : public SegmentScoreProvider {
     if (iter != scores_last_session_.end())
       result.scores = iter->second;
 
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), result));
   }
 

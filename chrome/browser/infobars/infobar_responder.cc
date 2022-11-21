@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
@@ -31,7 +30,7 @@ void InfoBarResponder::OnInfoBarAdded(infobars::InfoBar* infobar) {
       infobar->delegate()->AsConfirmInfoBarDelegate();
   DCHECK(delegate);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&InfoBarResponder::Respond,
                                 base::Unretained(this), delegate));
 }

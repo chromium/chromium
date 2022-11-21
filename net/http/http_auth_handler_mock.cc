@@ -11,7 +11,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "net/base/net_errors.h"
 #include "net/dns/host_resolver.h"
 #include "net/http/http_auth_challenge_tokenizer.h"
@@ -87,7 +86,7 @@ int HttpAuthHandlerMock::GenerateAuthTokenImpl(
     EXPECT_TRUE(auth_token_ == nullptr);
     callback_ = std::move(callback);
     auth_token_ = auth_token;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&HttpAuthHandlerMock::OnGenerateAuthToken,
                                   weak_factory_.GetWeakPtr()));
     state_ = State::TOKEN_PENDING;

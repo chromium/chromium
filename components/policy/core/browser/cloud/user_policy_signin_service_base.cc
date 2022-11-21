@@ -10,7 +10,6 @@
 #include "base/dcheck_is_on.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
@@ -112,7 +111,7 @@ void UserPolicySigninServiceBase::OnClientError(CloudPolicyClient* client) {
 
       // Can't shutdown now because we're in the middle of a callback from
       // the CloudPolicyClient, so queue up a task to do the shutdown.
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(
               &UserPolicySigninServiceBase::ShutdownUserCloudPolicyManager,
@@ -352,7 +351,7 @@ void UserPolicySigninServiceBase::
     // immediately without queueing a task. This is the case for Desktop.
     RegisterCloudPolicyService();
   } else {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&UserPolicySigninServiceBase::RegisterCloudPolicyService,
                        weak_factory_for_registration_.GetWeakPtr()),

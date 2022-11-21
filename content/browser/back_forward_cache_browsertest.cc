@@ -16,11 +16,11 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/system/sys_info.h"
 #include "base/task/common/task_annotator.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
@@ -711,7 +711,7 @@ IN_PROC_BROWSER_TEST_F(HighCacheSizeBackForwardCacheBrowserTest,
   // the BFCache restore navigation to B from step 5, which is currently waiting
   // for a BeforeUnloadCompleted call.
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         root->navigator().BeforeUnloadCompleted(root, true /* proceed */,
                                                 base::TimeTicks::Now());

@@ -9,7 +9,6 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "cc/animation/animation_host.h"
 #include "cc/layers/layer.h"
 #include "cc/test/test_task_graph_runner.h"
@@ -24,10 +23,11 @@ FakeLayerTreeHost::FakeLayerTreeHost(FakeLayerTreeHostClient* client,
       client_(client),
       needs_commit_(false) {
   scoped_refptr<base::SingleThreadTaskRunner> impl_task_runner =
-      mode == CompositorMode::THREADED ? base::ThreadTaskRunnerHandle::Get()
-                                       : nullptr;
+      mode == CompositorMode::THREADED
+          ? base::SingleThreadTaskRunner::GetCurrentDefault()
+          : nullptr;
   SetTaskRunnerProviderForTesting(TaskRunnerProvider::Create(
-      base::ThreadTaskRunnerHandle::Get(), impl_task_runner));
+      base::SingleThreadTaskRunner::GetCurrentDefault(), impl_task_runner));
   client_->SetLayerTreeHost(this);
 }
 

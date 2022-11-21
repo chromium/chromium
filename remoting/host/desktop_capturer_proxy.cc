@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "remoting/proto/control.pb.h"
@@ -212,8 +211,9 @@ void DesktopCapturerProxy::Start(Callback* callback) {
   callback_ = callback;
 
   capture_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&Core::Start, base::Unretained(core_.get()),
-                                base::ThreadTaskRunnerHandle::Get()));
+      FROM_HERE,
+      base::BindOnce(&Core::Start, base::Unretained(core_.get()),
+                     base::SingleThreadTaskRunner::GetCurrentDefault()));
 }
 
 void DesktopCapturerProxy::SetSharedMemoryFactory(

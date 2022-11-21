@@ -19,7 +19,6 @@
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_internals.h"
@@ -159,7 +158,7 @@ base::UnguessableToken VideoCaptureManager::Open(
   // Notify our listener asynchronously; this ensures that we return
   // |capture_session_id| to the caller of this function before using that
   // same id in a listener event.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&VideoCaptureManager::OnOpened, this,
                                 device.type, capture_session_id));
   return capture_session_id;
@@ -195,7 +194,7 @@ void VideoCaptureManager::Close(
   }
 
   // Notify listeners asynchronously, and forget the session.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&VideoCaptureManager::OnClosed, this,
                                 session_it->second.type, capture_session_id));
 

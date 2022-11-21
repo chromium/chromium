@@ -22,8 +22,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -311,7 +311,7 @@ void OpenscreenSessionHost::AsyncInitialize(
     AsyncInitializedCallback initialized_cb) {
   initialized_cb_ = std::move(initialized_cb);
   if (!gpu_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&OpenscreenSessionHost::OnAsyncInitialized,
                        weak_factory_.GetWeakPtr(), SupportedProfiles{}));
@@ -375,7 +375,7 @@ void OpenscreenSessionHost::OnNegotiated(
 
   cast_environment_ = new media::cast::CastEnvironment(
       base::DefaultTickClock::GetInstance(),
-      base::ThreadTaskRunnerHandle::Get(), audio_encode_thread_,
+      base::SingleThreadTaskRunner::GetCurrentDefault(), audio_encode_thread_,
       video_encode_thread_);
 
   if (state_ == State::kRemoting) {
@@ -587,7 +587,7 @@ void OpenscreenSessionHost::CreateVideoEncodeAccelerator(
     mojo_vea = base::WrapUnique<media::VideoEncodeAccelerator>(
         new media::MojoVideoEncodeAccelerator(std::move(vea)));
   }
-  std::move(callback).Run(base::ThreadTaskRunnerHandle::Get(),
+  std::move(callback).Run(base::SingleThreadTaskRunner::GetCurrentDefault(),
                           std::move(mojo_vea));
 }
 

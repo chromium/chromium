@@ -470,7 +470,7 @@ void WorkerThreadDispatcher::AddWorkerData(
   int worker_thread_id = content::WorkerThread::GetCurrentId();
   {
     base::AutoLock lock(task_runner_map_lock_);
-    auto* task_runner = base::ThreadTaskRunnerHandle::Get().get();
+    auto* task_runner = base::SingleThreadTaskRunner::GetCurrentDefault().get();
     CHECK(task_runner);
     task_runner_map_[worker_thread_id] = task_runner;
   }

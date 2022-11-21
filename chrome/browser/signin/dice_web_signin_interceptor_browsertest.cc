@@ -11,9 +11,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -94,7 +94,7 @@ class FakeDiceWebSigninInterceptorDelegate
     weak_bubble_handle_ = bubble_handle->AsWeakPtr();
     // The callback must not be called synchronously (see the documentation for
     // ShowSigninInterceptionBubble).
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), expected_interception_result_));
     return bubble_handle;

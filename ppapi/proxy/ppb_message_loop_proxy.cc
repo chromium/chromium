@@ -13,7 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/ppb_message_loop.h"
 #include "ppapi/proxy/plugin_dispatcher.h"
@@ -59,7 +59,7 @@ MessageLoopResource::MessageLoopResource(ForMainThread for_main_thread)
 
   slot->Set(this);
 
-  task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
 
@@ -94,7 +94,7 @@ int32_t MessageLoopResource::AttachToCurrentThread() {
 
   single_thread_task_executor_ =
       std::make_unique<base::SingleThreadTaskExecutor>();
-  task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 
   // Post all pending work to the task executor.
   for (auto& info : pending_tasks_) {

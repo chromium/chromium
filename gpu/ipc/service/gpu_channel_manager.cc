@@ -25,7 +25,6 @@
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/traced_value.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -722,7 +721,7 @@ void GpuChannelManager::ScheduleWakeUpGpu() {
 
   DoWakeUpGpu();
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&GpuChannelManager::ScheduleWakeUpGpu,
                      weak_factory_.GetWeakPtr()),

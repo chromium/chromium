@@ -12,10 +12,10 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/sync_file_system/file_change.h"
 #include "chrome/browser/sync_file_system/local/canned_syncable_file_system.h"
@@ -99,7 +99,7 @@ void OnGetFileMetadata(const base::Location& where,
 struct PostStatusFunctor {
   explicit PostStatusFunctor(SyncStatusCode status) : status_(status) {}
   void operator()(SyncStatusCallback callback) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), status_));
   }
 
@@ -112,7 +112,7 @@ struct PostStatusAndRecordChangeFunctor {
                                    std::vector<FileChange>* changes)
       : status_(status), changes_(changes) {}
   void operator()(FileChange change, SyncStatusCallback callback) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), status_));
     changes_->push_back(change);
   }

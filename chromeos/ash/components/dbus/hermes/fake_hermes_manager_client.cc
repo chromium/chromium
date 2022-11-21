@@ -7,7 +7,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
@@ -45,7 +45,7 @@ void FakeHermesManagerClient::AddEuicc(const dbus::ObjectPath& path,
   properties->physical_slot().ReplaceValue(physical_slot);
   available_euiccs_.push_back(path);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeHermesManagerClient::NotifyAvailableEuiccListChanged,
                      weak_ptr_factory_.GetWeakPtr()));

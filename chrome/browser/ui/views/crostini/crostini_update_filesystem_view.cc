@@ -55,7 +55,7 @@ void PrepareShowCrostiniUpdateFilesystemView(
           ? base::Milliseconds(0)
           : kDelayBeforeUpgradeContainerDialog;
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ShowCrostiniUpdateFilesystemView, profile, ui_surface),
       delay);

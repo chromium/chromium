@@ -58,7 +58,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
@@ -1831,7 +1830,7 @@ void RenderProcessHostImpl::InitializeChannelProxy() {
   std::unique_ptr<IPC::ChannelFactory> channel_factory =
       IPC::ChannelMojo::CreateServerFactory(
           std::move(bootstrap), io_task_runner,
-          base::ThreadTaskRunnerHandle::Get());
+          base::SingleThreadTaskRunner::GetCurrentDefault());
 
   ResetChannelProxy();
 
@@ -1839,7 +1838,8 @@ void RenderProcessHostImpl::InitializeChannelProxy() {
   channel_ = IPC::ChannelProxy::Create(
       std::move(channel_factory), this,
       /*ipc_task_runner=*/io_task_runner.get(),
-      /*listener_task_runner=*/base::ThreadTaskRunnerHandle::Get());
+      /*listener_task_runner=*/
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   // Note that Channel send is effectively paused and unpaused at various points
   // during startup, and existing code relies on a fragile relative message
@@ -3985,7 +3985,8 @@ void RenderProcessHostImpl::Cleanup() {
 #ifndef NDEBUG
   is_self_deleted_ = true;
 #endif
-  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                                this);
   deleting_soon_ = true;
 
   // Destroy all mojo bindings and IPC channels that can cause calls to this

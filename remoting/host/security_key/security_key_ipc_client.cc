@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_listener.h"
@@ -162,7 +162,7 @@ void SecurityKeyIpcClient::ConnectToIpcChannel() {
 
   ipc_channel_ = IPC::Channel::CreateClient(
       mojo_connection_.Connect(std::move(channel_handle_)).release(), this,
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   if (!ipc_channel_->Connect()) {
     LOG(ERROR) << "Failed to connect IPC Channel.";

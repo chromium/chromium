@@ -414,7 +414,7 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest {
           break;
         case DeferralType::kDeferHeader:
           test_harness_->AddDelayedResponseTask(
-              base::ThreadTaskRunnerHandle::Get(),
+              base::SingleThreadTaskRunner::GetCurrentDefault(),
               base::BindOnce(&net::test_server::HttpResponseDelegate::
                                  SendHeadersContentAndFinish,
                              delegate, code(), net::GetHttpReasonPhrase(code()),
@@ -422,7 +422,7 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest {
           break;
         case DeferralType::kDeferBody:
           test_harness_->AddDelayedResponseTask(
-              base::ThreadTaskRunnerHandle::Get(),
+              base::SingleThreadTaskRunner::GetCurrentDefault(),
               base::BindOnce(&net::test_server::HttpResponseDelegate::
                                  SendContentsAndFinish,
                              delegate, body_));
@@ -431,12 +431,12 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest {
           break;
         case DeferralType::kDeferHeaderThenBody:
           test_harness_->AddDelayedResponseTask(
-              base::ThreadTaskRunnerHandle::Get(),
+              base::SingleThreadTaskRunner::GetCurrentDefault(),
               base::BindOnce(
                   &net::test_server::HttpResponseDelegate::SendResponseHeaders,
                   delegate, code(), "OK", headers_));
           test_harness_->AddDelayedResponseTask(
-              base::ThreadTaskRunnerHandle::Get(),
+              base::SingleThreadTaskRunner::GetCurrentDefault(),
               base::BindOnce(&net::test_server::HttpResponseDelegate::
                                  SendContentsAndFinish,
                              delegate, body_));

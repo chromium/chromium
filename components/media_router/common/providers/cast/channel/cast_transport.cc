@@ -16,7 +16,6 @@
 #include "base/location.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/media_router/common/providers/cast/channel/cast_framer.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_util.h"
 #include "components/media_router/common/providers/cast/channel/logger.h"
@@ -86,7 +85,7 @@ void CastTransportImpl::SetReadDelegate(std::unique_ptr<Delegate> delegate) {
 
 void CastTransportImpl::FlushWriteQueue() {
   for (; !write_queue_.empty(); write_queue_.pop()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(write_queue_.front().callback),
                                   net::ERR_FAILED));
   }
@@ -99,7 +98,7 @@ void CastTransportImpl::SendMessage(const CastMessage& message,
   DVLOG_IF(1, !IsPingPong(message)) << "Sending: " << message;
   std::string serialized_message;
   if (!MessageFramer::Serialize(message, &serialized_message)) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), net::ERR_FAILED));
     return;
   }
@@ -239,7 +238,7 @@ int CastTransportImpl::DoWriteCallback() {
   VLOG_WITH_CONNECTION(2) << "DoWriteCallback";
   DCHECK(!write_queue_.empty());
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(write_queue_.front().callback), net::OK));
   write_queue_.pop();

@@ -16,7 +16,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/feed/core/v2/enums.h"
@@ -778,7 +778,7 @@ void MetricsReporter::SurfaceOpened(const StreamType& stream_type,
   surfaces_waiting_for_content_.emplace(
       surface_id, SurfaceWaiting{stream_type, base::TimeTicks::Now()});
   ReportUserActionHistogram(FeedUserActionType::kOpenedFeedSurface);
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&MetricsReporter::ReportOpenFeedIfNeeded, GetWeakPtr(),
                      surface_id, false),
@@ -839,7 +839,7 @@ void MetricsReporter::ReportGetMoreIfNeeded(SurfaceId surface_id,
 void MetricsReporter::CardOpenBegin(const StreamType& stream_type) {
   ReportCardOpenEndIfNeeded(false);
   pending_open_ = {stream_type, base::TimeTicks::Now()};
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&MetricsReporter::CardOpenTimeout, GetWeakPtr(),
                      pending_open_.wait_start),
@@ -1035,7 +1035,7 @@ void MetricsReporter::OnLoadMoreBegin(const StreamType& stream_type,
   surfaces_waiting_for_more_content_.emplace(
       surface_id, SurfaceWaiting{stream_type, base::TimeTicks::Now()});
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&MetricsReporter::ReportGetMoreIfNeeded, GetWeakPtr(),
                      surface_id, false),

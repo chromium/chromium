@@ -6,8 +6,8 @@
 
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -66,7 +66,7 @@ class PortalRecentlyAudibleBrowserTest : public InProcessBrowserTest {
       if (ActiveTabHasAlertState(alert_state) == expected_present)
         return ::testing::AssertionSuccess();
       base::RunLoop run_loop;
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
       run_loop.Run();
     } while (timer.Elapsed() < TestTimeouts::action_timeout());

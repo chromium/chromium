@@ -157,8 +157,8 @@ class FakeImageDownloader {
     if (url == manual_callback_url_)
       manual_callbacks_.push_back(std::move(bound_callback));
     else
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                    std::move(bound_callback));
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(bound_callback));
     return download_id;
   }
 
@@ -242,8 +242,8 @@ class FakeManifestDownloader {
     if (url == manual_callback_url_)
       manual_callbacks_.push_back(std::move(bound_callback));
     else
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                    std::move(bound_callback));
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(bound_callback));
   }
 
   void Add(const GURL& manifest_url,
@@ -431,8 +431,9 @@ class FakeFaviconService {
     // should be executed sequentially.
     if (page_or_icon_url != manual_callback_url_ &&
         !HasPendingManualCallback()) {
-      return tracker->PostTask(base::ThreadTaskRunnerHandle::Get().get(),
-                               FROM_HERE, std::move(bound_callback));
+      return tracker->PostTask(
+          base::SingleThreadTaskRunner::GetCurrentDefault().get(), FROM_HERE,
+          std::move(bound_callback));
     }
 
     // We use PostTaskAndReply() to cause |callback| being run in the current

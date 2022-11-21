@@ -1202,7 +1202,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   // Clear out the device list and re-initialize it after a delay. Web app
   // installation should wait for this to be ready.
   ui::DeviceDataManager::GetInstance()->ResetDeviceListsForTest();
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindLambdaForTesting([]() {
         // Create a built-in touchscreen device with stylus support
         // and add it to the device.

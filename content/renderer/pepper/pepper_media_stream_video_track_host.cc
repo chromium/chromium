@@ -14,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/video_util.h"
 #include "ppapi/c/pp_errors.h"
@@ -422,7 +421,8 @@ class PepperMediaStreamVideoTrackHost::VideoSource final
     : public blink::MediaStreamVideoSource {
  public:
   explicit VideoSource(base::WeakPtr<PepperMediaStreamVideoTrackHost> host)
-      : blink::MediaStreamVideoSource(base::ThreadTaskRunnerHandle::Get()),
+      : blink::MediaStreamVideoSource(
+            base::SingleThreadTaskRunner::GetCurrentDefault()),
         host_(std::move(host)) {}
 
   VideoSource(const VideoSource&) = delete;

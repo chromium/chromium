@@ -13,10 +13,10 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
@@ -58,7 +58,7 @@ class MockQuotaManagerTest : public testing::Test {
     policy_ = base::MakeRefCounted<MockSpecialStoragePolicy>();
     manager_ = base::MakeRefCounted<MockQuotaManager>(
         false /* is_incognito */, data_dir_.GetPath(),
-        base::ThreadTaskRunnerHandle::Get().get(), policy_.get());
+        base::SingleThreadTaskRunner::GetCurrentDefault().get(), policy_.get());
   }
 
   void TearDown() override {

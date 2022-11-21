@@ -6,7 +6,7 @@
 
 #include "base/logging.h"
 #include "base/observer_list.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
 
 namespace floss {
@@ -123,21 +123,21 @@ void FakeFlossAdapterClient::RemoveBond(ResponseCallback<bool> callback,
 void FakeFlossAdapterClient::GetRemoteType(
     ResponseCallback<BluetoothDeviceType> callback,
     FlossDeviceId device) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), BluetoothDeviceType::kBle));
 }
 
 void FakeFlossAdapterClient::GetRemoteClass(ResponseCallback<uint32_t> callback,
                                             FlossDeviceId device) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), kHeadsetClassOfDevice));
 }
 
 void FakeFlossAdapterClient::GetRemoteAppearance(
     ResponseCallback<uint16_t> callback,
     FlossDeviceId device) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), 1));
 }
 
@@ -157,7 +157,7 @@ void FakeFlossAdapterClient::GetConnectionState(
     conn_state = FlossAdapterClient::ConnectionState::kPairedLEOnly;
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), static_cast<uint32_t>(conn_state)));
 }
@@ -175,7 +175,7 @@ void FakeFlossAdapterClient::GetBondState(ResponseCallback<uint32_t> callback,
       (device.address == kBondedAddress1 || device.address == kBondedAddress2)
           ? floss::FlossAdapterClient::BondState::kBonded
           : floss::FlossAdapterClient::BondState::kNotBonded;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), static_cast<uint32_t>(bond_state)));
 }
@@ -193,7 +193,7 @@ void FakeFlossAdapterClient::DisconnectAllEnabledProfiles(
 }
 
 void FakeFlossAdapterClient::PostDelayedTask(base::OnceClosure callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, std::move(callback), base::Milliseconds(kDelayedTaskMs));
 }
 

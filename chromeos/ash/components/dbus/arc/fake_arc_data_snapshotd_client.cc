@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace ash {
 
@@ -20,42 +20,42 @@ void FakeArcDataSnapshotdClient::Init(dbus::Bus* bus) {}
 
 void FakeArcDataSnapshotdClient::GenerateKeyPair(
     chromeos::VoidDBusMethodCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
 void FakeArcDataSnapshotdClient::ClearSnapshot(
     bool last,
     chromeos::VoidDBusMethodCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
 void FakeArcDataSnapshotdClient::TakeSnapshot(
     const std::string& account_id,
     chromeos::VoidDBusMethodCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
 void FakeArcDataSnapshotdClient::LoadSnapshot(
     const std::string& account_id,
     LoadSnapshotMethodCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true, true));
 }
 
 void FakeArcDataSnapshotdClient::Update(
     int percent,
     chromeos::VoidDBusMethodCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
 void FakeArcDataSnapshotdClient::ConnectToUiCancelledSignal(
     base::RepeatingClosure signal_callback,
     base::OnceCallback<void(bool)> on_connected_callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(on_connected_callback), is_available_));
   signal_callback_ = std::move(signal_callback);
@@ -63,7 +63,7 @@ void FakeArcDataSnapshotdClient::ConnectToUiCancelledSignal(
 
 void FakeArcDataSnapshotdClient::WaitForServiceToBeAvailable(
     dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), is_available_));
 }
 

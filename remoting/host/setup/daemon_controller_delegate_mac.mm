@@ -22,7 +22,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "remoting/base/string_resources.h"
 #include "remoting/host/host_config.h"
@@ -262,7 +262,7 @@ void DaemonControllerDelegateMac::CheckPermission(
   permission_wizard_ =
       std::make_unique<mac::PermissionWizard>(std::move(checker));
   permission_wizard_->SetCompletionCallback(std::move(callback));
-  permission_wizard_->Start(base::ThreadTaskRunnerHandle::Get());
+  permission_wizard_->Start(base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 void DaemonControllerDelegateMac::SetConfigAndStart(

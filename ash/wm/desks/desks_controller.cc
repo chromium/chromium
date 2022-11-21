@@ -1856,7 +1856,7 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
 
   // Schedules a delayed task to forcefully close all windows that have not
   // finish closing.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&DesksController::CleanUpClosedAppWindowsTask,
                      weak_ptr_factory_.GetWeakPtr(),

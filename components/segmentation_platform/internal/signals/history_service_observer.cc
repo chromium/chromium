@@ -101,7 +101,7 @@ void HistoryServiceObserver::DeleteResultsForHistoryBasedSegments() {
   }
   posted_model_refresh_task_ = std::make_unique<base::CancelableOnceClosure>(
       base::BindOnce(models_refresh_callback_));
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, posted_model_refresh_task_->callback(), base::Minutes(1));
 }
 

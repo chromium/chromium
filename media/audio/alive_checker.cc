@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace media {
 
@@ -47,7 +47,7 @@ AliveChecker::AliveChecker(
     PowerObserverHelperFactoryCallback power_observer_helper_factory_callback)
     : check_interval_(check_interval),
       timeout_(timeout),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       dead_callback_(std::move(dead_callback)),
       stop_at_first_alive_notification_(stop_at_first_alive_notification) {
   DCHECK(!dead_callback_.is_null());

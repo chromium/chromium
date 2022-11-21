@@ -24,7 +24,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/history/core/browser/features.h"
@@ -162,10 +161,10 @@ void TopSitesImpl::GetMostVisitedURLs(GetMostVisitedURLsCallback callback) {
     if (!loaded_) {
       // A request came in before we finished loading. Store the callback and
       // we'll run it on current thread when we finish loading.
-      pending_callbacks_.push_back(
-          base::BindOnce(&RunOrPostGetMostVisitedURLsCallback,
-                         base::RetainedRef(base::ThreadTaskRunnerHandle::Get()),
-                         std::move(callback)));
+      pending_callbacks_.push_back(base::BindOnce(
+          &RunOrPostGetMostVisitedURLsCallback,
+          base::RetainedRef(base::SingleThreadTaskRunner::GetCurrentDefault()),
+          std::move(callback)));
       return;
     }
     filtered_urls = thread_safe_cache_;

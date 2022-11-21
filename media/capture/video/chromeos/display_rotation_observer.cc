@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace media {
 
@@ -29,7 +29,8 @@ ScreenObserverDelegate::ScreenObserverDelegate(
     scoped_refptr<base::SingleThreadTaskRunner> display_task_runner)
     : observer_(observer),
       display_task_runner_(std::move(display_task_runner)),
-      delegate_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+      delegate_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
+}
 
 void ScreenObserverDelegate::RemoveObserver() {
   DCHECK(delegate_task_runner_->BelongsToCurrentThread());

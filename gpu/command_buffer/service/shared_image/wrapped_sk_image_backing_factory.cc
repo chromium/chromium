@@ -10,7 +10,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
@@ -87,8 +86,8 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
       // passes for display compositor) and DrDc is disabled on webview. Hence
       // using is_thread_safe() to grab task_runner is enough to ensure
       // correctness.
-      DCHECK(base::ThreadTaskRunnerHandle::IsSet());
-      task_runner_ = base::ThreadTaskRunnerHandle::Get();
+      DCHECK(base::SingleThreadTaskRunner::HasCurrentDefault());
+      task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
     }
   }
 

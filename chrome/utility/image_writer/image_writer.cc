@@ -9,7 +9,6 @@
 #include "base/location.h"
 #include "base/memory/aligned_memory.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/utility/image_writer/error_message_strings.h"
 #include "chrome/utility/image_writer/image_writer_handler.h"
@@ -75,7 +74,8 @@ const base::FilePath& ImageWriter::GetImagePath() { return image_path_; }
 const base::FilePath& ImageWriter::GetDevicePath() { return device_path_; }
 
 void ImageWriter::PostTask(base::OnceClosure task) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(task));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                              std::move(task));
 }
 
 void ImageWriter::PostProgress(int64_t progress) {

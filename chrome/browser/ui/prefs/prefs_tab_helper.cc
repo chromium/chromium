@@ -15,7 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -483,7 +483,7 @@ void PrefsTabHelper::OnWebPrefChanged(const std::string& pref_name) {
   // Use PostTask to dispatch the OnWebkitPreferencesChanged notification to
   // give other observers (particularly the FontFamilyCache) a chance to react
   // to the pref change.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&PrefsTabHelper::NotifyWebkitPreferencesChanged,
                                 weak_ptr_factory_.GetWeakPtr(), pref_name));
 }

@@ -10,7 +10,7 @@
 #include "base/cancelable_callback.h"
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -33,7 +33,7 @@ class ForcedProfileSwitchInterceptionHandle
       base::OnceCallback<void(SigninInterceptionResult)> callback) {
     DCHECK(callback);
     cancelable_callback_.Reset(std::move(callback));
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(cancelable_callback_.callback(),
                                   SigninInterceptionResult::kAccepted));
   }

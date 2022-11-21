@@ -96,7 +96,7 @@ bool FakeSecurityKeyIpcServer::CreateChannel(
   mojo_connection_ = std::make_unique<mojo::IsolatedConnection>();
   ipc_channel_ = IPC::Channel::CreateServer(
       mojo_connection_->Connect(channel.TakeServerEndpoint()).release(), this,
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   EXPECT_NE(nullptr, ipc_channel_);
 
   auto* associated_interface_support =

@@ -246,7 +246,7 @@ void ExploreSitesFetcher::RetryWithBackoff() {
     return;
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ExploreSitesFetcher::Start, weak_factory_.GetWeakPtr()),
       backoff_entry_->GetTimeUntilRelease());

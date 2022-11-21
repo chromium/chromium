@@ -17,7 +17,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "net/base/cache_type.h"
 #include "net/base/test_completion_callback.h"
@@ -157,7 +156,7 @@ class WrappedSimpleIndexFile : public SimpleIndexFile {
   using SimpleIndexFile::SerializeFinalData;
 
   explicit WrappedSimpleIndexFile(const base::FilePath& index_file_directory)
-      : SimpleIndexFile(base::ThreadTaskRunnerHandle::Get(),
+      : SimpleIndexFile(base::SingleThreadTaskRunner::GetCurrentDefault(),
                         base::MakeRefCounted<TrivialFileOperationsFactory>(),
                         net::DISK_CACHE,
                         index_file_directory) {}

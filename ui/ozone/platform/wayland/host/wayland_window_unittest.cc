@@ -4047,7 +4047,7 @@ class BlockableWaylandToplevelWindow : public WaylandToplevelWindow {
       base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
       blocked_ = true;
 
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(async_task_), run_loop.QuitClosure()));
       run_loop.Run();

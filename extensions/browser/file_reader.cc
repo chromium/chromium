@@ -8,7 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "extensions/browser/extension_file_task_runner.h"
 
 FileReader::FileReader(std::vector<extensions::ExtensionResource> resources,
@@ -17,7 +17,7 @@ FileReader::FileReader(std::vector<extensions::ExtensionResource> resources,
     : resources_(std::move(resources)),
       optional_file_sequence_task_(std::move(optional_file_sequence_task)),
       done_callback_(std::move(done_callback)),
-      origin_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+      origin_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 void FileReader::Start() {
   extensions::GetExtensionFileTaskRunner()->PostTask(

@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chromecast/media/cma/base/decoder_buffer_adapter.h"
 #include "media/base/decoder_buffer.h"
@@ -311,7 +311,7 @@ DemuxResult FFmpegDemuxForTest(const base::FilePath& filepath,
 
   ::media::NullMediaLog media_log;
   ::media::FFmpegDemuxer demuxer(
-      base::ThreadTaskRunnerHandle::Get(), &data_source,
+      base::SingleThreadTaskRunner::GetCurrentDefault(), &data_source,
       base::BindRepeating(&OnEncryptedMediaInitData),
       base::BindRepeating(&OnMediaTracksUpdated), &media_log, true);
   ::media::WaitableMessageLoopEvent init_event;

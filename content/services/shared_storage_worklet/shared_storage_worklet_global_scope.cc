@@ -8,7 +8,7 @@
 #include <string>
 #include <utility>
 
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/common/private_aggregation_host.mojom.h"
 #include "content/services/shared_storage_worklet/console.h"
 #include "content/services/shared_storage_worklet/module_script_downloader.h"
@@ -89,7 +89,8 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
   // isolates in one process (see CanHaveMultipleIsolates(isolate_type) in
   // gin/v8_isolate_memory_dump_provider.cc).
   isolate_holder_ = std::make_unique<gin::IsolateHolder>(
-      base::ThreadTaskRunnerHandle::Get(), gin::IsolateHolder::kSingleThread,
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      gin::IsolateHolder::kSingleThread,
       gin::IsolateHolder::IsolateType::kBlinkWorkerThread);
 
   WorkletV8Helper::HandleScope scope(Isolate());

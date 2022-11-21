@@ -18,7 +18,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/task_runner_util.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "components/ownership/owner_key_util.h"
 #include "crypto/scoped_nss_types.h"
@@ -118,7 +117,7 @@ bool OwnerSettingsService::IsOwner() {
 void OwnerSettingsService::IsOwnerAsync(IsOwnerCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (private_key_.get()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), IsOwner()));
   } else {
     pending_is_owner_callbacks_.push_back(std::move(callback));

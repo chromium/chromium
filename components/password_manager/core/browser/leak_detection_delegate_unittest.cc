@@ -168,7 +168,7 @@ class LeakDetectionDelegateTest : public testing::Test {
             results.push_back(std::make_unique<PasswordForm>(std::move(form)));
             results.back()->in_store = in_store;
           }
-          base::ThreadTaskRunnerHandle::Get()->PostTask(
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE,
               base::BindOnce(
                   &PasswordStoreConsumer::OnGetPasswordStoreResultsOrErrorFrom,

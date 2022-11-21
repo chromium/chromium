@@ -12,7 +12,7 @@
 #include "base/check_op.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/observer_list.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/metrics/custom_metrics_recorder.h"
@@ -134,7 +134,7 @@ void WindowEventDispatcher::RepostEvent(const ui::LocatedEvent* event) {
   }
 
   if (held_repostable_event_) {
-    base::ThreadTaskRunnerHandle::Get()->PostNonNestableTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostNonNestableTask(
         FROM_HERE,
         base::BindOnce(
             base::IgnoreResult(&WindowEventDispatcher::DispatchHeldEvents),
@@ -223,7 +223,7 @@ void WindowEventDispatcher::ReleasePointerMoves() {
       // dispatching another one may not be safe/expected.  Instead we post a
       // task, that we may cancel if HoldPointerMoves is called again before it
       // executes.
-      base::ThreadTaskRunnerHandle::Get()->PostNonNestableTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostNonNestableTask(
           FROM_HERE,
           base::BindOnce(
               base::IgnoreResult(&WindowEventDispatcher::DispatchHeldEvents),
@@ -868,7 +868,7 @@ void WindowEventDispatcher::PostSynthesizeMouseMove() {
   if (synthesize_mouse_move_ || in_shutdown_)
     return;
   synthesize_mouse_move_ = true;
-  base::ThreadTaskRunnerHandle::Get()->PostNonNestableTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostNonNestableTask(
       FROM_HERE,
       base::BindOnce(
           base::IgnoreResult(&WindowEventDispatcher::SynthesizeMouseMoveEvent),

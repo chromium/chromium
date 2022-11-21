@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/web_contents.h"
@@ -50,7 +50,7 @@ void CreateEmptyOriginId(MediaDrmStorageImpl::OriginIdObtainedCB callback) {
 }
 
 void CreateOriginIdAsync(MediaDrmStorageImpl::OriginIdObtainedCB callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&CreateOriginId, std::move(callback)));
 }
 

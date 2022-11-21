@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
@@ -74,13 +74,13 @@ void FakeHermesProfileClient::EnableCarrierProfile(
   // Update carrier profile states.
   HermesProfileClient::Properties* properties = GetProperties(object_path);
   if (!properties) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   HermesResponseStatus::kErrorUnknown));
     return;
   }
   if (properties->state().value() == hermes::profile::State::kActive) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   HermesResponseStatus::kErrorAlreadyEnabled));
     return;
@@ -99,7 +99,7 @@ void FakeHermesProfileClient::EnableCarrierProfile(
       enable_profile_behavior_ != EnableProfileBehavior::kNotConnectable;
   UpdateCellularServices(properties->iccid().value(), connectable);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), HermesResponseStatus::kSuccess));
 }
@@ -110,13 +110,13 @@ void FakeHermesProfileClient::DisableCarrierProfile(
   DVLOG(1) << "Disabling Carrier Profile path=" << object_path.value();
   HermesProfileClient::Properties* properties = GetProperties(object_path);
   if (!properties) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   HermesResponseStatus::kErrorUnknown));
     return;
   }
   if (properties->state().value() == hermes::profile::State::kInactive) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   HermesResponseStatus::kErrorAlreadyDisabled));
     return;
@@ -126,7 +126,7 @@ void FakeHermesProfileClient::DisableCarrierProfile(
   // The newly disabled profile should have connectable set to false.
   UpdateCellularServices(properties->iccid().value(), /*connectable=*/false);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), HermesResponseStatus::kSuccess));
 }
@@ -138,14 +138,14 @@ void FakeHermesProfileClient::RenameProfile(const dbus::ObjectPath& object_path,
            << " on path: " << object_path.value();
   HermesProfileClient::Properties* properties = GetProperties(object_path);
   if (!properties) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   HermesResponseStatus::kErrorUnknown));
     return;
   }
   properties->nick_name().ReplaceValue(new_name);
   NotifyPropertyChanged(object_path, hermes::profile::kNicknameProperty);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), HermesResponseStatus::kSuccess));
 }
@@ -230,7 +230,7 @@ void FakeHermesProfileClient::UpdateCellularServices(const std::string& iccid,
 void FakeHermesProfileClient::CallNotifyPropertyChanged(
     const dbus::ObjectPath& object_path,
     const std::string& property_name) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeHermesProfileClient::NotifyPropertyChanged,
                      base::Unretained(this), object_path, property_name));

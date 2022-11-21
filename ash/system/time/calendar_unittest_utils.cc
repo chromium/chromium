@@ -98,7 +98,7 @@ base::OnceClosure CalendarClientTestImpl::GetEventList(
   // little longer than the settle down duration, so in the test after the
   // animation settled down it can still be with `kFetching` status until
   // somemethod like `WaitUntilFetched` is called.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), error_, std::move(events_)),
       task_delay_);

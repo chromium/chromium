@@ -15,8 +15,8 @@
 #include "base/observer_list.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_helper.h"
@@ -127,7 +127,7 @@ ChromeBrowserCloudManagementController::CreatePolicyManager(
                base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
   return std::make_unique<MachineLevelUserCloudPolicyManager>(
       std::move(policy_store), nullptr, policy_dir,
-      base::ThreadTaskRunnerHandle::Get(),
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
       delegate_->CreateNetworkConnectionTrackerGetter());
 }
 

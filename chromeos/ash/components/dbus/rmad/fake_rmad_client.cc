@@ -6,7 +6,7 @@
 
 #include "base/callback_forward.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace ash {
 namespace {
@@ -120,12 +120,12 @@ void FakeRmadClient::GetCurrentState(
     chromeos::DBusMethodCallback<rmad::GetStateReply> callback) {
   if (NumStates() > 0) {
     CHECK(state_index_ < NumStates());
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), GetStateReply()));
   } else {
     rmad::GetStateReply reply;
     reply.set_error(rmad::RMAD_ERROR_RMA_NOT_REQUIRED);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(reply)));
   }
   TriggerHardwareVerificationResultObservation(true, "");
@@ -137,7 +137,7 @@ void FakeRmadClient::TransitionNextState(
   if (NumStates() == 0) {
     rmad::GetStateReply reply;
     reply.set_error(rmad::RMAD_ERROR_RMA_NOT_REQUIRED);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(reply)));
     return;
   }
@@ -146,7 +146,7 @@ void FakeRmadClient::TransitionNextState(
     rmad::GetStateReply reply;
     reply.set_error(rmad::RMAD_ERROR_REQUEST_INVALID);
     reply.set_allocated_state(new rmad::RmadState(GetState()));
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(reply)));
     return;
   }
@@ -154,7 +154,7 @@ void FakeRmadClient::TransitionNextState(
     rmad::GetStateReply reply;
     reply.set_error(rmad::RMAD_ERROR_TRANSITION_FAILED);
     reply.set_allocated_state(new rmad::RmadState(GetState()));
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(reply)));
     return;
   }
@@ -168,7 +168,7 @@ void FakeRmadClient::TransitionNextState(
 
   state_index_++;
   CHECK_LT(state_index_, NumStates());
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), GetStateReply()));
 }
 
@@ -177,7 +177,7 @@ void FakeRmadClient::TransitionPreviousState(
   if (NumStates() == 0) {
     rmad::GetStateReply reply;
     reply.set_error(rmad::RMAD_ERROR_RMA_NOT_REQUIRED);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(reply)));
     return;
   }
@@ -186,18 +186,18 @@ void FakeRmadClient::TransitionPreviousState(
     rmad::GetStateReply reply;
     reply.set_error(rmad::RMAD_ERROR_TRANSITION_FAILED);
     reply.set_allocated_state(new rmad::RmadState(GetState()));
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(reply)));
     return;
   }
   state_index_--;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), GetStateReply()));
 }
 
 void FakeRmadClient::AbortRma(
     chromeos::DBusMethodCallback<rmad::AbortRmaReply> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),
                      absl::optional<rmad::AbortRmaReply>(abort_rma_reply_)));
@@ -205,7 +205,7 @@ void FakeRmadClient::AbortRma(
 
 void FakeRmadClient::GetLog(
     chromeos::DBusMethodCallback<rmad::GetLogReply> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),
                      absl::optional<rmad::GetLogReply>(get_log_reply_)));
@@ -213,7 +213,7 @@ void FakeRmadClient::GetLog(
 
 void FakeRmadClient::SaveLog(
     chromeos::DBusMethodCallback<rmad::SaveLogReply> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),
                      absl::optional<rmad::SaveLogReply>(save_log_reply_)));
@@ -223,7 +223,7 @@ void FakeRmadClient::RecordBrowserActionMetric(
     const rmad::RecordBrowserActionMetricRequest request,
     chromeos::DBusMethodCallback<rmad::RecordBrowserActionMetricReply>
         callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),
                      absl::optional<rmad::RecordBrowserActionMetricReply>(

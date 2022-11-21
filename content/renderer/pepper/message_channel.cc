@@ -11,7 +11,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
 #include "content/renderer/pepper/pepper_try_catch.h"
 #include "content/renderer/pepper/plugin_module.h"
@@ -450,7 +449,7 @@ void MessageChannel::DrainJSMessageQueueSoon() {
   if (drain_js_message_queue_scheduled_)
     return;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&MessageChannel::DrainJSMessageQueue,
                                 weak_ptr_factory_.GetWeakPtr()));
   drain_js_message_queue_scheduled_ = true;

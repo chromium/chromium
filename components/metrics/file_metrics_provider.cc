@@ -22,11 +22,11 @@
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/metrics/ranges_manager.h"
 #include "base/strings/string_piece.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
@@ -196,7 +196,7 @@ FileMetricsProvider::Params::~Params() {}
 FileMetricsProvider::FileMetricsProvider(PrefService* local_state)
     : task_runner_(CreateBackgroundTaskRunner()),
       pref_service_(local_state),
-      main_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+      main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   DCHECK(main_task_runner_);
   base::StatisticsRecorder::RegisterHistogramProvider(
       weak_factory_.GetWeakPtr());

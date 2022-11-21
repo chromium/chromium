@@ -16,9 +16,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/animation/animation.h"
@@ -149,7 +149,8 @@ class LayerTreeHostImplTest : public testing::Test,
                               public LayerTreeHostImplClient {
  public:
   LayerTreeHostImplTest()
-      : task_runner_provider_(base::ThreadTaskRunnerHandle::Get()),
+      : task_runner_provider_(
+            base::SingleThreadTaskRunner::GetCurrentDefault()),
         always_main_thread_blocked_(&task_runner_provider_),
         on_can_draw_state_changed_called_(false),
         did_notify_ready_to_activate_(false),

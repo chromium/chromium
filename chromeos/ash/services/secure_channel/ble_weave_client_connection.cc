@@ -13,8 +13,8 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/services/secure_channel/background_eid_generator.h"
@@ -152,7 +152,7 @@ BluetoothLowEnergyWeaveClientConnection::
           {device::BluetoothUUID(kTXCharacteristicUUID), std::string()}),
       rx_characteristic_(
           {device::BluetoothUUID(kRXCharacteristicUUID), std::string()}),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       timer_(std::make_unique<base::OneShotTimer>()),
       sub_status_(SubStatus::DISCONNECTED) {
   DCHECK(!initial_device_address_.empty());

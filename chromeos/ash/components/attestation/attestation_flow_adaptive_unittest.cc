@@ -8,9 +8,9 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/attestation/mock_attestation_flow.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
@@ -90,7 +90,7 @@ class FakeAttestationFlowTypeDecider : public AttestationFlowTypeDecider {
     // TODO(b/158532239): Add test after determining the availability of
     // system proxy at runtime.
     reporter->OnIsSystemProxyAvailable(false);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), is_valid_));
   }
   bool is_valid_ = false;

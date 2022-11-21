@@ -182,7 +182,7 @@ TEST_F(SessionStorageImplTest, MigrationV0ToV1) {
       temp_path().AppendASCII(kSessionStorageDirectory);
   {
     auto db = base::MakeRefCounted<TestingLegacySessionStorageDatabase>(
-        old_db_path, base::ThreadTaskRunnerHandle::Get().get());
+        old_db_path, base::SingleThreadTaskRunner::GetCurrentDefault().get());
     LegacyDomStorageValuesMap data;
     data[key] = value;
     data[key2] = value;

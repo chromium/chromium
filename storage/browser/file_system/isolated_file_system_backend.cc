@@ -15,7 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "storage/browser/file_system/async_file_util_adapter.h"
 #include "storage/browser/file_system/copy_or_move_file_validator.h"
 #include "storage/browser/file_system/dragged_file_util.h"
@@ -68,7 +68,7 @@ void IsolatedFileSystemBackend::ResolveURL(const FileSystemURL& url,
                                            OpenFileSystemMode mode,
                                            ResolveURLCallback callback) {
   // We never allow opening a new isolated FileSystem via usual ResolveURL.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), GURL(), std::string(),
                                 base::File::FILE_ERROR_SECURITY));
 }

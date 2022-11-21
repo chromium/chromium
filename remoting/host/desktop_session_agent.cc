@@ -540,7 +540,7 @@ mojo::ScopedMessagePipeHandle DesktopSessionAgent::Initialize(
   mojo::MessagePipe pipe;
   network_channel_ = IPC::ChannelProxy::Create(
       pipe.handle0.release(), IPC::Channel::MODE_SERVER, this, io_task_runner_,
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   return std::move(pipe.handle1);
 }
 

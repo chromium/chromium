@@ -81,7 +81,7 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
 ZeroStateDriveProvider::~ZeroStateDriveProvider() = default;
 
 void ZeroStateDriveProvider::OnFileSystemMounted() {
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ZeroStateDriveProvider::MaybeUpdateCache,
                      update_cache_weak_factory_.GetWeakPtr()),

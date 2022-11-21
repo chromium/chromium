@@ -249,7 +249,7 @@ void DataDevice::PerformDropOrExitDrag(
   // callback to aura::client::DragDropDelegate.
   base::WeakPtr<DataDevice> alive(weak_factory_.GetWeakPtr());
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), kDataOfferDestructionTimeout);
   quit_closure_ = run_loop.QuitClosure();
   run_loop.Run();

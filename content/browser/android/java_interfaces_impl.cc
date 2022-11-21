@@ -54,7 +54,7 @@ class JavaInterfaceProviderHolder {
 
  private:
   service_manager::InterfaceProvider interface_provider_{
-      base::ThreadTaskRunnerHandle::Get()};
+      base::SingleThreadTaskRunner::GetCurrentDefault()};
 };
 
 }  // namespace

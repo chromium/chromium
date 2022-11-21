@@ -22,11 +22,11 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
@@ -152,8 +152,9 @@ class DelayedBlob : public storage::FakeBlob {
 class CallbackScheduler : public CacheStorageScheduler {
  public:
   explicit CallbackScheduler(base::OnceClosure callback)
-      : CacheStorageScheduler(CacheStorageSchedulerClient::kCache,
-                              base::ThreadTaskRunnerHandle::Get()),
+      : CacheStorageScheduler(
+            CacheStorageSchedulerClient::kCache,
+            base::SingleThreadTaskRunner::GetCurrentDefault()),
         callback_(std::move(callback)) {}
 
  protected:
@@ -365,7 +366,8 @@ class CacheStorageManagerTest : public testing::Test {
 
     quota_policy_ = base::MakeRefCounted<storage::MockSpecialStoragePolicy>();
     mock_quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
-        MemoryOnly(), temp_dir_path, base::ThreadTaskRunnerHandle::Get().get(),
+        MemoryOnly(), temp_dir_path,
+        base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         quota_policy_.get());
     mock_quota_manager_->SetQuota(storage_key1_, StorageType::kTemporary,
                                   1024 * 1024 * 100);
@@ -375,7 +377,7 @@ class CacheStorageManagerTest : public testing::Test {
     quota_manager_proxy_ =
         base::MakeRefCounted<MockCacheStorageQuotaManagerProxy>(
             mock_quota_manager_.get(),
-            base::ThreadTaskRunnerHandle::Get().get());
+            base::SingleThreadTaskRunner::GetCurrentDefault().get());
 
     // These must be instantiated after `quota_manager_proxy_` has been
     // initialized.
@@ -385,8 +387,8 @@ class CacheStorageManagerTest : public testing::Test {
         GetOrCreateBucket(storage_key2_, storage::kDefaultBucketName);
 
     cache_manager_ = CacheStorageManager::Create(
-        temp_dir_path, base::ThreadTaskRunnerHandle::Get(),
-        base::ThreadTaskRunnerHandle::Get(), quota_manager_proxy_,
+        temp_dir_path, base::SingleThreadTaskRunner::GetCurrentDefault(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(), quota_manager_proxy_,
         blob_storage_context_, nullptr);
   }
 
@@ -816,7 +818,7 @@ class CacheStorageManagerTest : public testing::Test {
     base::RunLoop loop;
     quota_manager_proxy_->GetUsageAndQuota(
         storage_key, StorageType::kTemporary,
-        base::ThreadTaskRunnerHandle::Get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::BindOnce(&CacheStorageManagerTest::DidGetQuotaOriginUsage,
                        base::Unretained(this), base::Unretained(&usage),
                        &loop));
@@ -841,7 +843,8 @@ class CacheStorageManagerTest : public testing::Test {
         name == storage::kDefaultBucketName
             ? storage::BucketInitParams::ForDefaultBucket(storage_key)
             : storage::BucketInitParams(storage_key, name),
-        base::ThreadTaskRunnerHandle::Get(), future.GetCallback());
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        future.GetCallback());
     auto bucket = future.Take();
     EXPECT_TRUE(bucket.ok());
     return bucket->ToBucketLocator();

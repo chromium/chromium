@@ -20,12 +20,12 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -903,7 +903,7 @@ TEST_F(AutofillDownloadManagerTest, BackoffLogic_Query) {
   EXPECT_LT(download_manager_.loader_backoff_.GetTimeUntilRelease(),
             base::Milliseconds(1100));
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(1100));
   run_loop.Run();
 
@@ -972,7 +972,7 @@ TEST_F(AutofillDownloadManagerTest, BackoffLogic_Upload) {
   EXPECT_LT(download_manager_.loader_backoff_.GetTimeUntilRelease(),
             base::Milliseconds(1100));
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(1100));
   run_loop.Run();
 
@@ -1075,7 +1075,7 @@ TEST_F(AutofillDownloadManagerTest, RetryLimit_Query) {
       break;
 
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(),
         download_manager_.loader_backoff_.GetTimeUntilRelease() +
             kTimeDeltaMargin);
@@ -1157,7 +1157,7 @@ TEST_F(AutofillDownloadManagerTest, RetryLimit_Upload) {
     // A retry should have been scheduled with wait time on the order of
     // |delay|.
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(),
         download_manager_.loader_backoff_.GetTimeUntilRelease() +
             kTimeDeltaMargin);
@@ -1806,7 +1806,7 @@ TEST_P(AutofillQueryTest, ExpiredCacheInResponse) {
   // ensures the cache expires and no request are served by cached content
   // (ie this should go to the embedded server).
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
   run_loop.Run();
 

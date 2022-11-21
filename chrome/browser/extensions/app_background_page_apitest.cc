@@ -12,7 +12,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
@@ -168,7 +167,7 @@ class AppBackgroundPageApiTest : public extensions::ExtensionApiTest {
   }
 
   void UnloadExtensionViaTask(const std::string& id) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&AppBackgroundPageApiTest::UnloadExtension,
                                   base::Unretained(this), id));
   }

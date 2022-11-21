@@ -14,7 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/system/sys_info.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/offline_pages/offline_page_mhtml_archiver.h"
 #include "chrome/browser/offline_pages/offliner_helper.h"
@@ -152,7 +152,7 @@ bool BackgroundLoaderOffliner::LoadAndSave(
   loader_.get()->LoadPage(request.url());
 
   snapshot_controller_ = std::make_unique<BackgroundSnapshotController>(
-      base::ThreadTaskRunnerHandle::Get(), this, false);
+      base::SingleThreadTaskRunner::GetCurrentDefault(), this, false);
 
   return true;
 }
@@ -174,7 +174,7 @@ bool BackgroundLoaderOffliner::Cancel(CancelCallback callback) {
   }
 
   // Post the cancel callback right after this call concludes.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), *pending_request_.get()));
   ResetState();
   return true;
@@ -230,7 +230,7 @@ void BackgroundLoaderOffliner::CanDownload(
   std::move(callback).Run(should_allow_downloads);
   SavePageRequest request(*pending_request_.get());
   std::move(completion_callback_).Run(request, final_status);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&BackgroundLoaderOffliner::ResetState,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
@@ -462,7 +462,7 @@ void BackgroundLoaderOffliner::ResetState() {
   // corrupt stack in some edge cases. Deleting it soon should be safe because
   // we check against pending_request_ with every action, and snapshot
   // controller is configured to only call StartSnapshot once for BGL.
-  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
       FROM_HERE, snapshot_controller_.release());
   page_load_state_ = SUCCESS;
   network_bytes_ = 0LL;

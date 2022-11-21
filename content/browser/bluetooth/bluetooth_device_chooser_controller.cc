@@ -15,7 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/browser/bluetooth/bluetooth_blocklist.h"
 #include "content/browser/bluetooth/bluetooth_metrics.h"
 #include "content/browser/bluetooth/bluetooth_util.h"
@@ -507,7 +507,7 @@ void BluetoothDeviceChooserController::PostSuccessCallback(
     const std::string& device_address) {
   DCHECK(callback_);
 
-  if (!base::ThreadTaskRunnerHandle::Get()->PostTask(
+  if (!base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(callback_), WebBluetoothResult::SUCCESS,
                          std::move(options_), device_address))) {
@@ -519,7 +519,7 @@ void BluetoothDeviceChooserController::PostErrorCallback(
     WebBluetoothResult error) {
   DCHECK(callback_);
 
-  if (!base::ThreadTaskRunnerHandle::Get()->PostTask(
+  if (!base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(callback_), error, /*options=*/nullptr,
                          /*device_id=*/std::string()))) {

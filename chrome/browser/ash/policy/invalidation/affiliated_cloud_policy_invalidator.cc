@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/policy/cloud/cloud_policy_invalidator.h"
@@ -57,7 +57,7 @@ void AffiliatedCloudPolicyInvalidator::CreateInvalidator(
     invalidation::InvalidationService* invalidation_service) {
   DCHECK(!invalidator_);
   invalidator_ = std::make_unique<CloudPolicyInvalidator>(
-      scope_, core_, base::ThreadTaskRunnerHandle::Get(),
+      scope_, core_, base::SingleThreadTaskRunner::GetCurrentDefault(),
       base::DefaultClock::GetInstance(), highest_handled_invalidation_version_,
       device_local_account_id_);
   invalidator_->Initialize(invalidation_service);

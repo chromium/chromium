@@ -430,7 +430,7 @@ void DesksClient::LaunchAppsFromTemplate(
   handler->LaunchTemplate(*desk_template);
 
   // Install a timer that will clear the launch handler after a given duration.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&DesksClient::OnLaunchComplete,
                      weak_ptr_factory_.GetWeakPtr(), launch_id),

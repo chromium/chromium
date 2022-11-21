@@ -158,7 +158,7 @@ TEST_F(FaviconHelperTest, GetComposedFaviconImageOrderMatchesInput) {
                    favicon_base::FaviconRawBitmapCallback callback,
                    base::CancelableTaskTracker* tracker) {
         tracker->PostTask(
-            base::ThreadTaskRunnerHandle::Get().get(), FROM_HERE,
+            base::SingleThreadTaskRunner::GetCurrentDefault().get(), FROM_HERE,
             base::BindOnce(
                 [](favicon_base::FaviconRawBitmapCallback callback, GURL url,
                    int size) {

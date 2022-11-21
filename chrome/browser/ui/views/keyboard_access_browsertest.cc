@@ -8,7 +8,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -73,7 +72,7 @@ class ViewFocusChangeWaiter : public views::FocusChangeListener {
   void OnDidChangeFocus(views::View* focused_before,
                         views::View* focused_now) override {
     if (focused_now && focused_now->GetID() != previous_view_id_) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
     }
   }
@@ -104,7 +103,7 @@ class SendKeysMenuListener : public AppMenuButtonObserver {
     menu_open_count_++;
     if (test_dismiss_menu_) {
       SendKeyPress(browser_, ui::VKEY_ESCAPE);
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated(),
           base::Milliseconds(200));
     } else {

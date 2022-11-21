@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "components/exo/layer_tree_frame_sink_holder.h"
 #include "components/exo/shell_surface_base.h"
@@ -245,7 +245,7 @@ void SurfaceTreeHost::OnDisplayMetricsChanged(const display::Display& display,
 void SurfaceTreeHost::OnContextLost() {
   // Handle context loss in a new stack frame to avoid bugs from re-entrant
   // code.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&SurfaceTreeHost::HandleContextLost,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

@@ -7,7 +7,7 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/sync_file_system/file_status_observer.h"
 #include "chrome/browser/sync_file_system/local_change_processor.h"
@@ -101,7 +101,7 @@ struct ReturnWithFakeFileAddedStatusFunctor {
     FileSystemURL mock_url = sync_file_system::CreateSyncableFileSystemURL(
         *origin_, base::FilePath(FILE_PATH_LITERAL("foo.txt")));
     mock_remote_service_->NotifyRemoteChangeQueueUpdated(0);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   sync_file_system::SYNC_STATUS_OK, mock_url));
     mock_remote_service_->NotifyFileStatusChanged(
@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, OnServiceStatusChanged) {
                        sync_file_system::SyncStatusCallback callback) {
         mock_remote_service()->NotifyRemoteServiceStateUpdated(
             sync_file_system::REMOTE_SERVICE_OK, "Test event description.");
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback),
                                       sync_file_system::SYNC_STATUS_OK));
       });

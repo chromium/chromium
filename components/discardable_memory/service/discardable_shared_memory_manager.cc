@@ -21,7 +21,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
 #include "base/task/current_thread.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -236,7 +236,8 @@ DiscardableSharedMemoryManager::DiscardableSharedMemoryManager()
           base::BindRepeating(&DiscardableSharedMemoryManager::OnMemoryPressure,
                               base::Unretained(this)))),
       // Current thread might not have a task runner in tests.
-      enforce_memory_policy_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      enforce_memory_policy_task_runner_(
+          base::SingleThreadTaskRunner::GetCurrentDefault()),
       enforce_memory_policy_pending_(false),
       mojo_thread_message_loop_(base::CurrentThread::GetNull()) {
   DCHECK(!g_instance)
@@ -248,7 +249,7 @@ DiscardableSharedMemoryManager::DiscardableSharedMemoryManager()
                           weak_ptr_factory_.GetWeakPtr());
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "DiscardableSharedMemoryManager",
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 DiscardableSharedMemoryManager::~DiscardableSharedMemoryManager() {
@@ -297,7 +298,8 @@ void DiscardableSharedMemoryManager::Bind(
     DCHECK(!mojo_thread_message_loop_);
     mojo_thread_message_loop_ = base::CurrentThread::Get();
     mojo_thread_message_loop_->AddDestructionObserver(this);
-    mojo_thread_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+    mojo_thread_task_runner_ =
+        base::SingleThreadTaskRunner::GetCurrentDefault();
   }
 
   mojo::MakeSelfOwnedReceiver(

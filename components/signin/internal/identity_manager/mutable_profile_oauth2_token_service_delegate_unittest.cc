@@ -14,9 +14,9 @@
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -90,14 +90,14 @@ class MutableProfileOAuth2TokenServiceDelegateTest
 
   void LoadTokenDatabase() {
     base::FilePath path(WebDatabase::kInMemoryPath);
-    scoped_refptr<WebDatabaseService> web_database =
-        new WebDatabaseService(path, base::ThreadTaskRunnerHandle::Get(),
-                               base::ThreadTaskRunnerHandle::Get());
+    scoped_refptr<WebDatabaseService> web_database = new WebDatabaseService(
+        path, base::SingleThreadTaskRunner::GetCurrentDefault(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     web_database->AddTable(std::make_unique<TokenServiceTable>());
     web_database->LoadDatabase();
-    token_web_data_ =
-        new TokenWebData(web_database, base::ThreadTaskRunnerHandle::Get(),
-                         base::ThreadTaskRunnerHandle::Get());
+    token_web_data_ = new TokenWebData(
+        web_database, base::SingleThreadTaskRunner::GetCurrentDefault(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     token_web_data_->Init(base::NullCallback());
   }
 

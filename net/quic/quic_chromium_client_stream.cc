@@ -13,7 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/abseil_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
@@ -152,7 +152,7 @@ void QuicChromiumClientStream::Handle::OnError(int error) {
   // Post a task to invoke the callbacks to ensure that there is no reentrancy.
   // A ScopedPacketFlusher might cause an error which closes the stream under
   // the call stack of the owner of the handle.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&QuicChromiumClientStream::Handle::InvokeCallbacksOnClose,
                      weak_factory_.GetWeakPtr(), error));
@@ -700,7 +700,7 @@ int QuicChromiumClientStream::Read(IOBuffer* buf, int buf_len) {
 
 void QuicChromiumClientStream::NotifyHandleOfInitialHeadersAvailableLater() {
   DCHECK(handle_);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &QuicChromiumClientStream::NotifyHandleOfInitialHeadersAvailable,
@@ -717,7 +717,7 @@ void QuicChromiumClientStream::NotifyHandleOfInitialHeadersAvailable() {
 
 void QuicChromiumClientStream::NotifyHandleOfTrailingHeadersAvailableLater() {
   DCHECK(handle_);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &QuicChromiumClientStream::NotifyHandleOfTrailingHeadersAvailable,
@@ -813,7 +813,7 @@ bool QuicChromiumClientStream::DeliverTrailingHeaders(
 
 void QuicChromiumClientStream::NotifyHandleOfDataAvailableLater() {
   DCHECK(handle_);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&QuicChromiumClientStream::NotifyHandleOfDataAvailable,
                      weak_factory_.GetWeakPtr()));

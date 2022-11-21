@@ -40,7 +40,7 @@ class TracingObserverProtoTest : public testing::Test {
     memory_instrumentation::TracingObserverProto::RegisterForTesting();
     tracing::PerfettoTracedProcess::SetSystemProducerEnabledForTesting(false);
     PerfettoTracedProcess::GetTaskRunner()->ResetTaskRunnerForTesting(
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   static base::trace_event::TraceConfig GetTraceConfig() {

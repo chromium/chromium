@@ -15,7 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/math_constants.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/win/scoped_propvariant.h"
 #include "services/device/generic_sensor/generic_sensor_consts.h"
@@ -406,7 +406,7 @@ PlatformSensorReaderWin32::PlatformSensorReaderWin32(
     Microsoft::WRL::ComPtr<ISensor> sensor,
     std::unique_ptr<ReaderInitParams> params)
     : init_params_(std::move(params)),
-      com_sta_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      com_sta_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       sensor_active_(false),
       client_(nullptr),
       sensor_(sensor),

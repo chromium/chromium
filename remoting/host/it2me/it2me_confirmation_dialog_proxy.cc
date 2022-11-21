@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace remoting {
 
@@ -81,9 +81,9 @@ void It2MeConfirmationDialogProxy::Core::ReportResult(
 It2MeConfirmationDialogProxy::It2MeConfirmationDialogProxy(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
     std::unique_ptr<It2MeConfirmationDialog> dialog) {
-  core_ = std::make_unique<Core>(ui_task_runner,
-                                 base::ThreadTaskRunnerHandle::Get(),
-                                 weak_factory_.GetWeakPtr(), std::move(dialog));
+  core_ = std::make_unique<Core>(
+      ui_task_runner, base::SingleThreadTaskRunner::GetCurrentDefault(),
+      weak_factory_.GetWeakPtr(), std::move(dialog));
 }
 
 It2MeConfirmationDialogProxy::~It2MeConfirmationDialogProxy() {

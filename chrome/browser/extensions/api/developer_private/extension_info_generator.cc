@@ -16,7 +16,6 @@
 #include "base/location.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/extensions/api/commands/command_service.h"
 #include "chrome/browser/extensions/api/developer_private/inspectable_views_finder.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
@@ -403,7 +402,7 @@ void ExtensionInfoGenerator::CreateExtensionInfo(
 
   if (pending_image_loads_ == 0) {
     // Don't call the callback re-entrantly.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(list_)));
     list_.clear();
   } else {
@@ -440,7 +439,7 @@ void ExtensionInfoGenerator::CreateExtensionsInfo(
 
   if (pending_image_loads_ == 0) {
     // Don't call the callback re-entrantly.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(list_)));
     list_.clear();
   } else {

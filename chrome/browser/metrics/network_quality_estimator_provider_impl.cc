@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "content/public/browser/browser_thread.h"
@@ -32,11 +32,12 @@ void NetworkQualityEstimatorProviderImpl::PostReplyOnNetworkQualityChanged(
   if (!content::BrowserThread::IsThreadInitialized(
           content::BrowserThread::IO)) {
     // IO thread is not yet initialized. Try again in the next message pump.
-    bool task_posted = base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&NetworkQualityEstimatorProviderImpl::
-                           PostReplyOnNetworkQualityChanged,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    bool task_posted =
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(&NetworkQualityEstimatorProviderImpl::
+                                          PostReplyOnNetworkQualityChanged,
+                                      weak_ptr_factory_.GetWeakPtr(),
+                                      std::move(callback)));
     DCHECK(task_posted);
     return;
   }
@@ -53,11 +54,12 @@ void NetworkQualityEstimatorProviderImpl::PostReplyOnNetworkQualityChanged(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   return;
 #else
-  bool task_posted = base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&NetworkQualityEstimatorProviderImpl::
-                         AddEffectiveConnectionTypeObserverNow,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  bool task_posted =
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&NetworkQualityEstimatorProviderImpl::
+                             AddEffectiveConnectionTypeObserverNow,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   DCHECK(task_posted);
 #endif
 }

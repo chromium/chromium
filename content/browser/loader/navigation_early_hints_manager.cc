@@ -8,7 +8,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/storage_partition.h"
@@ -570,7 +570,8 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
       shared_loader_factory_, std::move(throttles),
       content::GlobalRequestID::MakeBrowserInitiated().request_id,
       network::mojom::kURLLoadOptionNone, &request, loader_client.get(),
-      kEarlyHintsPreloadTrafficAnnotation, base::ThreadTaskRunnerHandle::Get());
+      kEarlyHintsPreloadTrafficAnnotation,
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   inflight_preloads_[request.url] = std::make_unique<InflightPreload>(
       std::move(loader), std::move(loader_client));

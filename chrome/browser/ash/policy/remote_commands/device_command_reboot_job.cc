@@ -12,7 +12,6 @@
 #include "base/syslog_logging.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -47,7 +46,7 @@ void DeviceCommandRebootJob::RunImpl(CallbackWithResult succeeded_callback,
   if (delta.is_positive()) {
     SYSLOG(WARNING) << "Ignoring reboot command issued " << delta
                     << " before current boot time";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(succeeded_callback), nullptr));
     return;
   }

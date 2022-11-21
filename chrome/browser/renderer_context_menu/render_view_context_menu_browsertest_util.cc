@@ -9,7 +9,6 @@
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "content/public/test/test_utils.h"
@@ -30,7 +29,7 @@ ContextMenuNotificationObserver::~ContextMenuNotificationObserver() {
 
 void ContextMenuNotificationObserver::MenuShown(
     RenderViewContextMenu* context_menu) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ContextMenuNotificationObserver::ExecuteCommand,
                      base::Unretained(this), context_menu));
@@ -58,7 +57,7 @@ ContextMenuWaiter::~ContextMenuWaiter() {
 }
 
 void ContextMenuWaiter::MenuShown(RenderViewContextMenu* context_menu) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&ContextMenuWaiter::Cancel,
                                 base::Unretained(this), context_menu));
 }

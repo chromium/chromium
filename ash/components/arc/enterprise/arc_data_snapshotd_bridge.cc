@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/arc/arc_data_snapshotd_client.h"
 
 namespace arc {
@@ -62,7 +62,7 @@ void ArcDataSnapshotdBridge::WaitForDBusService() {
 }
 
 void ArcDataSnapshotdBridge::ScheduleWaitingForDBusService() {
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ArcDataSnapshotdBridge::WaitForDBusService,
                      dbus_waiting_weak_ptr_factory_.GetWeakPtr()),

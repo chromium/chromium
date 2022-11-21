@@ -16,7 +16,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/system/sys_info.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -120,7 +120,7 @@ class EasyUnlockService::PowerMonitor
   }
 
   void SuspendDone(base::TimeDelta sleep_duration) override {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&PowerMonitor::ResetWakingUp,
                        weak_ptr_factory_.GetWeakPtr()),

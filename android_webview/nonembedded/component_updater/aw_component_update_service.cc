@@ -17,7 +17,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/no_destructor.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service.h"
@@ -115,7 +115,7 @@ void AwComponentUpdateService::CheckForUpdates(UpdateCallback on_finished,
   }
 
   if (unsecure_ids.empty() && secure_ids.empty()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(on_finished), 0));
     return;
   }
@@ -164,7 +164,7 @@ void AwComponentUpdateService::OnUpdateComplete(
   // CrxUpdateService once we support logging metrics from nonembedded WebView.
 
   if (!callback.is_null()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), error));
   }
 }

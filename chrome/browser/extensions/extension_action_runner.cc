@@ -16,7 +16,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/extensions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -521,7 +520,7 @@ void ExtensionActionRunner::ShowReloadPageBubble(
   // callback, or rejected by skipping the callback.
   if (accept_bubble_for_testing_.has_value()) {
     if (*accept_bubble_for_testing_) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback)));
     }
     return;

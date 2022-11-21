@@ -128,7 +128,7 @@ class WebRtcVideoCaptureSharedDeviceBrowserTest
 
   void Initialize() {
     DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-    main_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+    main_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
     mock_video_frame_handler_ =
         std::make_unique<video_capture::MockVideoFrameHandler>(
             subscriber_.InitWithNewPipeAndPassReceiver());

@@ -415,7 +415,7 @@ class ChunkedHttpTransaction {
  public:
   explicit ChunkedHttpTransaction(
       base::WeakPtr<net::test_server::HttpResponseDelegate> delegate)
-      : io_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      : io_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
         send_state_(SendState::IDLE),
         delegate_(delegate) {
     EXPECT_FALSE(current_instance_);
@@ -462,7 +462,7 @@ class ChunkedHttpTransaction {
             chunk,
             base::BindOnce(&ChunkedHttpTransaction::SendChunkCompleteOnIoThread,
                            base::Unretained(this),
-                           base::ThreadTaskRunnerHandle::Get())));
+                           base::SingleThreadTaskRunner::GetCurrentDefault())));
   }
 
  private:

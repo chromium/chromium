@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/reporting/install_event_log_util.h"
@@ -57,7 +57,7 @@ void ArcAppInstallEventLogUploader::OnUploadSuccess() {
 }
 
 void ArcAppInstallEventLogUploader::PostTaskForStartSerialization() {
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&InstallEventLogUploaderBase::StartSerialization,
                      weak_factory_.GetWeakPtr()),

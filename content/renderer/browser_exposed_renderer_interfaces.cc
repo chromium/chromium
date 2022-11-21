@@ -13,9 +13,9 @@
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/common/frame.mojom.h"
@@ -109,15 +109,16 @@ class ResourceUsageReporterImpl : public content::mojom::ResourceUsageReporter {
       usage_data_->v8_bytes_allocated = heap_stats.total_heap_size();
       usage_data_->v8_bytes_used = heap_stats.used_heap_size();
     }
-    base::RepeatingClosure collect = base::BindRepeating(
-        &ResourceUsageReporterImpl::CollectOnWorkerThread,
-        base::ThreadTaskRunnerHandle::Get(), weak_factory_.GetWeakPtr());
+    base::RepeatingClosure collect =
+        base::BindRepeating(&ResourceUsageReporterImpl::CollectOnWorkerThread,
+                            base::SingleThreadTaskRunner::GetCurrentDefault(),
+                            weak_factory_.GetWeakPtr());
     workers_to_go_ =
         RenderThread::Get()->PostTaskToAllWebWorkers(std::move(collect));
     if (workers_to_go_) {
       // The guard task to send out partial stats
       // in case some workers are not responsive.
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&ResourceUsageReporterImpl::SendResults,
                          weak_factory_.GetWeakPtr()),
@@ -165,15 +166,15 @@ void ExposeRendererInterfacesToBrowser(
 
   binders->Add<blink::mojom::SharedWorkerFactory>(
       base::BindRepeating(&SharedWorkerFactoryImpl::Create),
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   binders->Add<mojom::ResourceUsageReporter>(
       base::BindRepeating(&CreateResourceUsageReporter, render_thread),
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 #if BUILDFLAG(IS_ANDROID)
   binders->Add<auction_worklet::mojom::AuctionWorkletService>(
       base::BindRepeating(
           &auction_worklet::AuctionWorkletServiceImpl::CreateForRenderer),
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 #endif
 
   auto task_runner_for_service_worker_startup =
@@ -188,7 +189,7 @@ void ExposeRendererInterfacesToBrowser(
       base::BindRepeating(&CreateEmbeddedWorker,
                           task_runner_for_service_worker_startup,
                           render_thread),
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   GetContentClient()->renderer()->ExposeInterfacesToBrowser(binders);
 }

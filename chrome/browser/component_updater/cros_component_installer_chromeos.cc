@@ -15,8 +15,8 @@
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/browser_process.h"
@@ -327,7 +327,7 @@ void CrOSComponentInstaller::Load(const std::string& name,
     LoadInternal(name, std::move(load_callback));
   } else {
     // A compatible component is installed, do not load it.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(load_callback),
                                   ReportError(Error::NONE), base::FilePath()));
   }
@@ -422,7 +422,7 @@ void CrOSComponentInstaller::Install(const std::string& name,
                                      LoadCallback load_callback) {
   const ComponentConfig* config = FindConfig(name);
   if (!config) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(load_callback),
                                   ReportError(Error::UNKNOWN_COMPONENT),
                                   base::FilePath()));
@@ -448,7 +448,7 @@ void CrOSComponentInstaller::StartInstall(
   const bool is_compatible = IsCompatible(name);
   if (update_policy == UpdatePolicy::kSkip ||
       (is_compatible && update_policy != UpdatePolicy::kForce)) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(install_callback),
                                   update_client::Error::NONE));
     return;
@@ -471,11 +471,11 @@ void CrOSComponentInstaller::FinishInstall(const std::string& name,
     if (error == update_client::Error::UPDATE_IN_PROGRESS) {
       err = Error::UPDATE_IN_PROGRESS;
     }
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(load_callback), ReportError(err),
                                   base::FilePath()));
   } else if (!IsCompatible(name)) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(load_callback),
                        ReportError(update_policy == UpdatePolicy::kSkip
@@ -485,7 +485,7 @@ void CrOSComponentInstaller::FinishInstall(const std::string& name,
   } else if (mount_policy == MountPolicy::kMount) {
     LoadInternal(name, std::move(load_callback));
   } else {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(load_callback),
                                   ReportError(Error::NONE), base::FilePath()));
   }
@@ -564,7 +564,7 @@ void CrOSComponentInstaller::DispatchLoadCallback(LoadCallback callback,
                                                   base::FilePath path,
                                                   bool success) {
   Error error = success ? Error::NONE : Error::MOUNT_FAILURE;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), ReportError(error), std::move(path)));
 }

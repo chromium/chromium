@@ -9,7 +9,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "content/public/browser/browser_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -58,7 +57,7 @@ void NativeMessageEchoHost::OnMessage(const std::string& request_string) {
 
 scoped_refptr<base::SingleThreadTaskRunner> NativeMessageEchoHost::task_runner()
     const {
-  return base::ThreadTaskRunnerHandle::Get();
+  return base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
 void NativeMessageEchoHost::ProcessEcho(const base::DictionaryValue& request) {

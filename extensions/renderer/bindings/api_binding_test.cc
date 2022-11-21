@@ -5,7 +5,7 @@
 #include "extensions/renderer/bindings/api_binding_test.h"
 
 #include "base/ranges/algorithm.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "gin/array_buffer.h"
 #include "gin/public/context_holder.h"
 #include "gin/public/isolate_holder.h"
@@ -33,7 +33,7 @@ void APIBindingTest::SetUp() {
                                  gin::ArrayBufferAllocator::SharedInstance());
 
   isolate_holder_ = std::make_unique<gin::IsolateHolder>(
-      base::ThreadTaskRunnerHandle::Get(),
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
       gin::IsolateHolder::IsolateType::kTest);
   isolate()->Enter();
 

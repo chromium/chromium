@@ -8,7 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/observer_list.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/push_messaging/push_messaging_app_identifier.h"
 #include "chrome/browser/push_messaging/push_messaging_constants.h"
 #include "chrome/browser/push_messaging/push_messaging_service_impl.h"
@@ -50,7 +50,7 @@ void PushMessagingRefresher::OnSubscriptionUpdated(
     return;
 
   // Schedule a unsubscription event for the old subscription
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&PushMessagingRefresher::NotifyOnOldSubscriptionExpired,
                      weak_factory_.GetWeakPtr(),

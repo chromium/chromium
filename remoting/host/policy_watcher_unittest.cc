@@ -13,7 +13,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_log.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/fake_async_policy_loader.h"
@@ -78,8 +77,8 @@ class PolicyWatcherTest : public testing::Test {
     EXPECT_CALL(mock_policy_callback_, OnPolicyError()).Times(0);
 
     // Retaining a raw pointer to keep control over policy contents.
-    policy_loader_ =
-        new policy::FakeAsyncPolicyLoader(base::ThreadTaskRunnerHandle::Get());
+    policy_loader_ = new policy::FakeAsyncPolicyLoader(
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     policy_watcher_ = PolicyWatcher::CreateFromPolicyLoaderForTesting(
         base::WrapUnique(policy_loader_.get()));
 

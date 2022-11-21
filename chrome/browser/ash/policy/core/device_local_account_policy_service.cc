@@ -18,9 +18,9 @@
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_store.h"
 #include "chrome/browser/ash/policy/external_data/device_local_account_external_data_service.h"
@@ -295,8 +295,8 @@ void DeviceLocalAccountPolicyService::UpdateAccountList() {
           base::BindRepeating(
               &DeviceLocalAccountPolicyService::NotifyPolicyUpdated,
               base::Unretained(this), device_local_account.user_id),
-          base::ThreadTaskRunnerHandle::Get(), resource_cache_task_runner_,
-          invalidation_service_provider_);
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
+          resource_cache_task_runner_, invalidation_service_provider_);
     }
 
     // Fire up the cloud connection for fetching policy for the account from

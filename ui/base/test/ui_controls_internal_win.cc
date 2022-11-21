@@ -17,7 +17,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_checker.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/win/win_util.h"
 #include "ui/base/win/event_creation_utils.h"
 #include "ui/display/win/screen_win.h"
@@ -226,7 +225,7 @@ void InputDispatcher::InstallHook() {
     if (message_waiting_for_ == WM_MOUSEMOVE) {
       // Things don't go well with move events sometimes. Bail out if it takes
       // too long.
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&InputDispatcher::OnTimeout,
                          weak_factory_.GetWeakPtr()),
@@ -258,7 +257,7 @@ LRESULT CALLBACK InputDispatcher::KeyHook(int n_code,
                                           LPARAM l_param) {
   if ((n_code == HC_ACTION) && (HIWORD(l_param) & KF_UP)) {
     DCHECK(current_dispatcher_);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&InputDispatcher::MatchingMessageProcessed,
                        current_dispatcher_->weak_factory_.GetWeakPtr(), false));
@@ -287,7 +286,7 @@ void InputDispatcher::DispatchedMessage(
           << expected_mouse_location_.y()
           << "); check the math in SendMouseMoveImpl.";
     }
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&InputDispatcher::MatchingMessageProcessed,
                        weak_factory_.GetWeakPtr(), definitively_done));
@@ -301,7 +300,7 @@ void InputDispatcher::DispatchedMessage(
                  << "This may result in different event processing behavior. "
                  << "If you need a single click try moving the mouse between "
                  << "down events.";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&InputDispatcher::MatchingMessageProcessed,
                                   weak_factory_.GetWeakPtr(), false));
   }
@@ -329,7 +328,7 @@ void InputDispatcher::MatchingMessageProcessed(bool definitively_done) {
     // there).
     if (message_waiting_for_ == WM_KEYUP)
       ++num_keyups_awaited_;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&InputDispatcher::MatchingMessageProcessed,
                                   weak_factory_.GetWeakPtr(), false));
     return;
@@ -504,7 +503,8 @@ bool SendMouseMoveImpl(int screen_x, int screen_y, base::OnceClosure task) {
   ::GetCursorPos(&current_pos);
   if (screen_point.x() == current_pos.x && screen_point.y() == current_pos.y) {
     if (task)
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(task));
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(task));
     return true;
   }
 

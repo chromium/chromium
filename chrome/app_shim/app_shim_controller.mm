@@ -302,7 +302,7 @@ void AppShimController::PollForChromeReady(
   // Otherwise, try again after a brief delay.
   if (time_until_timeout < kPollPeriodMsec)
     LOG(FATAL) << "Timed out waiting for running chrome instance to be ready.";
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&AppShimController::PollForChromeReady,
                      base::Unretained(this),

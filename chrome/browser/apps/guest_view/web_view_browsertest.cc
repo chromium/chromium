@@ -25,7 +25,6 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -222,11 +221,11 @@ class ContextMenuShownObserver {
 
   void OnMenuShown(RenderViewContextMenu* context_menu) {
     shown_ = true;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&RenderViewContextMenuBase::Cancel,
                                   base::Unretained(context_menu)));
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  run_loop_.QuitClosure());
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop_.QuitClosure());
   }
 
   void Wait() { run_loop_.Run(); }
@@ -352,7 +351,7 @@ class LeftMouseClick {
     mouse_event_.click_count = 1;
     render_frame_host_->GetRenderWidgetHost()->ForwardMouseEvent(mouse_event_);
 
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&LeftMouseClick::SendMouseUp, base::Unretained(this)),
         base::Milliseconds(duration_ms));
@@ -2878,11 +2877,11 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, TestContextMenu) {
 
   auto close_menu_and_stop_run_loop = [](base::OnceClosure closure,
                                          RenderViewContextMenu* context_menu) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&RenderViewContextMenuBase::Cancel,
                                   base::Unretained(context_menu)));
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(closure));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(closure));
   };
 
   base::RunLoop run_loop;
@@ -3906,7 +3905,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, LoadDataAPINotRelativeToAnotherExtension) {
   // resort to a timeout here. If |fail_if_webview_navigates| doesn't see a
   // navigation in that time, we consider the test to have passed.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
   run_loop.Run();
   EXPECT_FALSE(fail_if_webview_navigates.navigation_started());
@@ -3957,8 +3956,8 @@ class ClientCertStoreStub : public net::ClientCertStore {
     if (quit_closure_) {
       // Call the quit closure asynchronously, so it's ordered after the cert
       // selector.
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                    std::move(quit_closure_));
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(quit_closure_));
     }
   }
 

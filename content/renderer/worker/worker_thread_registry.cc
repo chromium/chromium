@@ -16,7 +16,6 @@
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_local.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "content/public/renderer/worker_thread.h"
 
 namespace content {
@@ -120,7 +119,8 @@ void WorkerThreadRegistry::DidStartCurrentWorkerThread() {
   g_worker_data_tls.Pointer()->Set(worker_thread_data.release());
 
   base::AutoLock locker_(task_runner_map_lock_);
-  task_runner_map_[id] = base::ThreadTaskRunnerHandle::Get().get();
+  task_runner_map_[id] =
+      base::SingleThreadTaskRunner::GetCurrentDefault().get();
   CHECK(task_runner_map_[id]);
 }
 

@@ -16,7 +16,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/grit/components_resources.h"
 #include "third_party/dom_distiller_js/dom_distiller.pb.h"
@@ -148,7 +147,7 @@ void DistillerPage::OnDistillationDone(const GURL& page_url,
     }
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(distiller_page_callback_),
                                 std::move(distiller_result), found_content));
 }

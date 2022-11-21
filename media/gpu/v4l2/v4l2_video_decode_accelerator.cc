@@ -22,7 +22,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
@@ -150,7 +149,7 @@ V4L2VideoDecodeAccelerator::V4L2VideoDecodeAccelerator(
     const MakeGLContextCurrentCallback& make_context_current_cb,
     scoped_refptr<V4L2Device> device)
     : can_use_decoder_(num_instances_.Increment() < kMaxNumOfInstances),
-      child_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      child_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       decoder_thread_("V4L2DecoderThread"),
       decoder_state_(kUninitialized),
       output_mode_(Config::OutputMode::ALLOCATE),

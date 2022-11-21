@@ -11,7 +11,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/resources/resource_format_utils.h"
@@ -153,7 +153,7 @@ std::unique_ptr<OutputPresenterGL> OutputPresenterGL::Create(
   // TODO(https://crbug.com/1012401): don't depend on GL.
   auto gl_surface = base::MakeRefCounted<gl::GLSurfaceEGLSurfaceControl>(
       deps->GetSharedContextState()->display()->GetAs<gl::GLDisplayEGL>(),
-      window, base::ThreadTaskRunnerHandle::Get());
+      window, base::SingleThreadTaskRunner::GetCurrentDefault());
   if (!gl_surface->Initialize(gl::GLSurfaceFormat())) {
     LOG(ERROR) << "Failed to initialize GLSurfaceEGLSurfaceControl.";
     return nullptr;

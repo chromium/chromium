@@ -34,7 +34,6 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_local.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/test/chromedriver/constants/version.h"
@@ -107,10 +106,11 @@ void HandleRequestOnIOThread(
     const HttpResponseSenderFunc& send_response_func) {
   cmd_task_runner->PostTask(
       FROM_HERE,
-      base::BindOnce(handle_request_on_cmd_func, request,
-                     base::BindRepeating(&SendResponseOnCmdThread,
-                                         base::ThreadTaskRunnerHandle::Get(),
-                                         send_response_func)));
+      base::BindOnce(
+          handle_request_on_cmd_func, request,
+          base::BindRepeating(&SendResponseOnCmdThread,
+                              base::SingleThreadTaskRunner::GetCurrentDefault(),
+                              send_response_func)));
 }
 
 base::LazyInstance<base::ThreadLocalPointer<HttpServer>>::DestructorAtExit

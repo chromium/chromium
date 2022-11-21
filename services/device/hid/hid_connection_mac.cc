@@ -12,7 +12,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/hid/hid_connection_mac.h"
 #include "services/device/hid/hid_service.h"
@@ -33,7 +32,7 @@ HidConnectionMac::HidConnectionMac(base::ScopedCFTypeRef<IOHIDDeviceRef> device,
                                    bool allow_fido_reports)
     : HidConnection(device_info, allow_protected_reports, allow_fido_reports),
       device_(std::move(device)),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           HidService::kBlockingTaskTraits)) {
   IOHIDDeviceScheduleWithRunLoop(device_.get(), CFRunLoopGetMain(),

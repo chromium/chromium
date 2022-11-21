@@ -1164,7 +1164,7 @@ MediaStreamManager::MediaStreamManager(
 
 #if BUILDFLAG(IS_MAC)
     // On MacOS the main thread must be used to run VideoCaptureDevice.
-    device_task_runner = base::ThreadTaskRunnerHandle::Get();
+    device_task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
 #else  // !BUILDFLAG(IS_MAC)
     // For all platforms other than MacOS start a new thread.
     video_capture_thread_.emplace("VideoCaptureThread");

@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/viz/test/begin_frame_args_test.h"
 
@@ -113,7 +112,7 @@ void FakeExternalBeginFrameSource::PostTestOnBeginFrame() {
       base::BindOnce(&FakeExternalBeginFrameSource::TestOnBeginFrame,
                      weak_ptr_factory_.GetWeakPtr(),
                      CreateBeginFrameArgs(BEGINFRAME_FROM_HERE)));
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, begin_frame_task_.callback(),
       base::Milliseconds(milliseconds_per_frame_));
   next_begin_frame_number_++;

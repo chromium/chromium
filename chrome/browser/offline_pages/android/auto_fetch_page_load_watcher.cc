@@ -341,7 +341,7 @@ class AutoFetchPageLoadWatcher::TabWatcher : public TabModelListObserver,
   explicit TabWatcher(InternalImpl* impl) : impl_(impl) {
     // PostTask is used to avoid interfering with the tab model while a tab is
     // being created, as this has previously resulted in crashes.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&TabWatcher::RegisterTabObserver, GetWeakPtr()));
   }

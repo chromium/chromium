@@ -18,7 +18,7 @@ class DesktopCaptureDeviceMac : public IOSurfaceCaptureDeviceBase {
  public:
   DesktopCaptureDeviceMac(CGDirectDisplayID display_id)
       : display_id_(display_id),
-        device_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+        device_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
         weak_factory_(this) {}
 
   DesktopCaptureDeviceMac(const DesktopCaptureDeviceMac&) = delete;

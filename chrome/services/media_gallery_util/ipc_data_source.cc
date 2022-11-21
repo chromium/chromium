@@ -6,14 +6,14 @@
 
 #include "base/bind.h"
 #include "base/ranges/algorithm.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 IPCDataSource::IPCDataSource(
     mojo::PendingRemote<chrome::mojom::MediaDataSource> media_data_source,
     int64_t total_size)
     : media_data_source_(std::move(media_data_source)),
       total_size_(total_size),
-      utility_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+      utility_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   DETACH_FROM_THREAD(data_source_thread_checker_);
 }
 

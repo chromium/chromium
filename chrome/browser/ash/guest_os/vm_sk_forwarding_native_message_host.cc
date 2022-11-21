@@ -110,7 +110,7 @@ void VmSKForwardingNativeMessageHost::OnMessage(const std::string& message) {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 VmSKForwardingNativeMessageHost::task_runner() const {
-  return base::ThreadTaskRunnerHandle::Get();
+  return base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
 void VmSKForwardingNativeMessageHost::DeliverMessageToExtensionByID(

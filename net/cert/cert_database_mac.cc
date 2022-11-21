@@ -16,7 +16,6 @@
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "crypto/mac_security_services_lock.h"
 #include "net/base/net_errors.h"
 #include "net/cert/x509_certificate.h"
@@ -133,7 +132,8 @@ OSStatus CertDatabase::Notifier::KeychainCallback(
 
 void CertDatabase::StartListeningForKeychainEvents() {
   ReleaseNotifier();
-  notifier_ = new Notifier(this, base::ThreadTaskRunnerHandle::Get());
+  notifier_ =
+      new Notifier(this, base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 void CertDatabase::ReleaseNotifier() {

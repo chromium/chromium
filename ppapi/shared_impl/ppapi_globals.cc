@@ -8,7 +8,6 @@
 #include "base/lazy_instance.h"  // For testing purposes only.
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_local.h"  // For testing purposes only.
-#include "base/threading/thread_task_runner_handle.h"
 
 namespace ppapi {
 
@@ -24,12 +23,12 @@ PpapiGlobals* ppapi_globals = NULL;
 PpapiGlobals::PpapiGlobals() {
   DCHECK(!ppapi_globals);
   ppapi_globals = this;
-  main_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  main_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
 PpapiGlobals::PpapiGlobals(PerThreadForTest) {
   DCHECK(!ppapi_globals);
-  main_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  main_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
 PpapiGlobals::~PpapiGlobals() {
@@ -59,7 +58,7 @@ base::SingleThreadTaskRunner* PpapiGlobals::GetMainThreadMessageLoop() {
 }
 
 void PpapiGlobals::ResetMainThreadMessageLoopForTesting() {
-  main_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  main_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
 bool PpapiGlobals::IsHostGlobals() const { return false; }

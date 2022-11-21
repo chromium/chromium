@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/process/process.h"
 #include "base/task/current_thread.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/linux/drm_util_linux.h"
@@ -57,8 +57,8 @@ WaylandBufferManagerGpu::WaylandBufferManagerGpu(
   //
   // TODO(msisov): think about making unit tests initialize Ozone after task
   // runner is set that would allow to always set the task runner.
-  if (base::ThreadTaskRunnerHandle::IsSet()) {
-    gpu_thread_runner_ = base::ThreadTaskRunnerHandle::Get();
+  if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
+    gpu_thread_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
   } else {
     // In tests, the further calls might happen on a different sequence.
     // Otherwise, ThreadTaskRunnerHandle should have already been set.
@@ -80,7 +80,7 @@ void WaylandBufferManagerGpu::Initialize(
 
   // See the comment in the constructor.
   if (!gpu_thread_runner_)
-    gpu_thread_runner_ = base::ThreadTaskRunnerHandle::Get();
+    gpu_thread_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 
   supported_buffer_formats_with_modifiers_ = buffer_formats_with_modifiers;
   supports_viewporter_ = supports_viewporter;
@@ -146,7 +146,8 @@ void WaylandBufferManagerGpu::RegisterSurface(gfx::AcceleratedWidget widget,
       FROM_HERE,
       base::BindOnce(
           &WaylandBufferManagerGpu::SaveTaskRunnerForWidgetOnIOThread,
-          base::Unretained(this), widget, base::ThreadTaskRunnerHandle::Get()));
+          base::Unretained(this), widget,
+          base::SingleThreadTaskRunner::GetCurrentDefault()));
 
   base::AutoLock scoped_lock(lock_);
   widget_to_surface_map_.emplace(widget, surface);

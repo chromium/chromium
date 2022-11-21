@@ -4087,7 +4087,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPolicyBrowserTest,
 
   // Wait a short amount of time to ensure the page does not scroll.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
   run_loop.Run();
   RunUntilInputProcessed(RenderWidgetHostImpl::From(
@@ -4184,7 +4184,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPolicyBrowserTest,
   EXPECT_TRUE(WaitForRenderFrameReady(current_frame_host()));
   // Wait a short amount of time to ensure the page does not scroll.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
   run_loop.Run();
   RunUntilInputProcessed(RenderWidgetHostImpl::From(
@@ -4352,11 +4352,12 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
    public:
     explicit ShutdownThrottle(WebContents* web_contents,
                               NavigationHandle* handle)
-        : TaskRunnerDeferringThrottle(base::ThreadTaskRunnerHandle::Get(),
-                                      /*defer_start=*/false,
-                                      /*defer_redirect=*/false,
-                                      /*defer_response=*/true,
-                                      handle),
+        : TaskRunnerDeferringThrottle(
+              base::SingleThreadTaskRunner::GetCurrentDefault(),
+              /*defer_start=*/false,
+              /*defer_redirect=*/false,
+              /*defer_response=*/true,
+              handle),
           web_contents_(web_contents) {
       WebContentsObserver::Observe(web_contents_);
     }

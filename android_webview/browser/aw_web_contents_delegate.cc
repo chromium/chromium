@@ -26,7 +26,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/permission_controller_delegate.h"
@@ -186,8 +185,8 @@ void AwWebContentsDelegate::AddNewContents(
     // window, so we're done with the WebContents now. We use
     // DeleteSoon as WebContentsImpl may call methods on |new_contents|
     // after this method returns.
-    base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE,
-                                                    std::move(new_contents));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(new_contents));
   }
 
   if (was_blocked) {

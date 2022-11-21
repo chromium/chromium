@@ -22,7 +22,6 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -439,8 +438,8 @@ class NativeDesktopMediaListTest : public ChromeViewsTestBase {
         EXPECT_CALL(observer_, OnSourceThumbnailChanged(i));
       }
       EXPECT_CALL(observer_, OnSourceThumbnailChanged(window_count - 1))
-          .WillOnce(
-              QuitRunLoop(base::ThreadTaskRunnerHandle::Get(), &run_loop));
+          .WillOnce(QuitRunLoop(
+              base::SingleThreadTaskRunner::GetCurrentDefault(), &run_loop));
     }
     model_->StartUpdating(&observer_);
     run_loop.Run();
@@ -503,7 +502,8 @@ TEST_F(NativeDesktopMediaListTest, ScreenOnly) {
     EXPECT_CALL(observer_, OnSourceAdded(0))
         .WillOnce(CheckListSize(model_.get(), 1));
     EXPECT_CALL(observer_, OnSourceThumbnailChanged(0))
-        .WillOnce(QuitRunLoop(base::ThreadTaskRunnerHandle::Get(), &run_loop));
+        .WillOnce(QuitRunLoop(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                              &run_loop));
   }
   model_->StartUpdating(&observer_);
   run_loop.Run();
@@ -527,7 +527,8 @@ TEST_F(NativeDesktopMediaListTest, AddNativeWindow) {
   EXPECT_CALL(observer_, OnSourceAdded(index))
       .WillOnce(
           DoAll(CheckListSize(model_.get(), kDefaultWindowCount + 1),
-                QuitRunLoop(base::ThreadTaskRunnerHandle::Get(), &run_loop)));
+                QuitRunLoop(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                            &run_loop)));
 
   AddNativeWindow(WindowIndex(index));
   window_capturer_->SetWindowList(window_list_);
@@ -548,7 +549,8 @@ TEST_F(NativeDesktopMediaListTest, AddAuraWindow) {
   EXPECT_CALL(observer_, OnSourceAdded(index))
       .WillOnce(
           DoAll(CheckListSize(kDefaultWindowCount + 1),
-                QuitRunLoop(base::ThreadTaskRunnerHandle::Get(), &run_loop)));
+                QuitRunLoop(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                            &run_loop)));
 
   AddAuraWindow();
   window_capturer_->SetWindowList(window_list_);
@@ -571,7 +573,8 @@ TEST_F(NativeDesktopMediaListTest, RemoveNativeWindow) {
   EXPECT_CALL(observer_, OnSourceRemoved(0))
       .WillOnce(
           DoAll(CheckListSize(model_.get(), kDefaultWindowCount - 1),
-                QuitRunLoop(base::ThreadTaskRunnerHandle::Get(), &run_loop)));
+                QuitRunLoop(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                            &run_loop)));
 
   window_list_.erase(window_list_.begin());
   window_capturer_->SetWindowList(window_list_);
@@ -589,7 +592,8 @@ TEST_F(NativeDesktopMediaListTest, RemoveAuraWindow) {
   EXPECT_CALL(observer_, OnSourceRemoved(aura_window_start_index))
       .WillOnce(
           DoAll(CheckListSize(model_.get(), kDefaultWindowCount - 1),
-                QuitRunLoop(base::ThreadTaskRunnerHandle::Get(), &run_loop)));
+                QuitRunLoop(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                            &run_loop)));
 
   RemoveAuraWindow(0);
   window_capturer_->SetWindowList(window_list_);
@@ -611,7 +615,8 @@ TEST_F(NativeDesktopMediaListTest, RemoveAllWindows) {
   EXPECT_CALL(observer_, OnSourceRemoved(0))
       .WillOnce(
           DoAll(CheckListSize(model_.get(), 0),
-                QuitRunLoop(base::ThreadTaskRunnerHandle::Get(), &run_loop)));
+                QuitRunLoop(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                            &run_loop)));
 
   window_list_.clear();
   window_capturer_->SetWindowList(window_list_);
@@ -625,7 +630,8 @@ TEST_F(NativeDesktopMediaListTest, UpdateTitle) {
   base::RunLoop run_loop;
 
   EXPECT_CALL(observer_, OnSourceNameChanged(0))
-      .WillOnce(QuitRunLoop(base::ThreadTaskRunnerHandle::Get(), &run_loop));
+      .WillOnce(QuitRunLoop(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                            &run_loop));
 
   const std::string kTestTitle = "New Title";
   window_list_[0].title = kTestTitle;
@@ -649,7 +655,8 @@ TEST_F(NativeDesktopMediaListTest, UpdateThumbnail) {
   base::RunLoop run_loop;
 
   EXPECT_CALL(observer_, OnSourceThumbnailChanged(0))
-      .WillOnce(QuitRunLoop(base::ThreadTaskRunnerHandle::Get(), &run_loop));
+      .WillOnce(QuitRunLoop(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                            &run_loop));
 
   // Update frame for the window and verify that we get notification about it.
   window_capturer_->SetNextFrameValue(WindowIndex(0), 10);
@@ -665,7 +672,8 @@ TEST_F(NativeDesktopMediaListTest, MoveWindow) {
   EXPECT_CALL(observer_, OnSourceMoved(1, 0))
       .WillOnce(
           DoAll(CheckListSize(model_.get(), kDefaultWindowCount),
-                QuitRunLoop(base::ThreadTaskRunnerHandle::Get(), &run_loop)));
+                QuitRunLoop(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                            &run_loop)));
 
   std::swap(window_list_[0], window_list_[1]);
   window_capturer_->SetWindowList(window_list_);
@@ -687,7 +695,8 @@ TEST_F(NativeDesktopMediaListTest, EmptyThumbnail) {
   EXPECT_CALL(observer_, OnSourceAdded(0))
       .WillOnce(
           DoAll(CheckListSize(model_.get(), 1),
-                QuitRunLoop(base::ThreadTaskRunnerHandle::Get(), &run_loop)));
+                QuitRunLoop(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                            &run_loop)));
   // Called upon webrtc::DesktopCapturer::CaptureFrame() call.
   ON_CALL(observer_, OnSourceThumbnailChanged(_))
       .WillByDefault(testing::InvokeWithoutArgs([]() { NOTREACHED(); }));
@@ -867,7 +876,8 @@ class NativeDesktopMediaListDelegatedTest : public ChromeViewsTestBase {
   void TriggerAndWaitForSelection() {
     base::RunLoop run_loop;
     EXPECT_CALL(observer_, OnDelegatedSourceListSelection())
-        .WillOnce(QuitRunLoop(base::ThreadTaskRunnerHandle::Get(), &run_loop));
+        .WillOnce(QuitRunLoop(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                              &run_loop));
     capturer_->SimulateSourceListSelection();
     run_loop.Run();
   }
@@ -877,7 +887,8 @@ class NativeDesktopMediaListDelegatedTest : public ChromeViewsTestBase {
     // We don't differentiate to the observer *why* the list is dismissed, just
     // that it was.
     EXPECT_CALL(observer_, OnDelegatedSourceListDismissed())
-        .WillOnce(QuitRunLoop(base::ThreadTaskRunnerHandle::Get(), &run_loop));
+        .WillOnce(QuitRunLoop(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                              &run_loop));
     capturer_->SimulateSourceListError();
     run_loop.Run();
   }
@@ -887,7 +898,8 @@ class NativeDesktopMediaListDelegatedTest : public ChromeViewsTestBase {
     // We don't differentiate to the observer *why* the list is dismissed, just
     // that it was.
     EXPECT_CALL(observer_, OnDelegatedSourceListDismissed())
-        .WillOnce(QuitRunLoop(base::ThreadTaskRunnerHandle::Get(), &run_loop));
+        .WillOnce(QuitRunLoop(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                              &run_loop));
     capturer_->SimulateSourceListCancelled();
     run_loop.Run();
   }

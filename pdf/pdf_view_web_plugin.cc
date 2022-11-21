@@ -36,9 +36,9 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "cc/paint/paint_canvas.h"
@@ -900,7 +900,7 @@ void PdfViewWebPlugin::NotifyNumberOfFindResultsChanged(int total,
     return;
 
   recently_sent_find_update_ = true;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&PdfViewWebPlugin::ResetRecentlySentFindUpdate,
                      weak_factory_.GetWeakPtr()),
@@ -1002,7 +1002,7 @@ void PdfViewWebPlugin::Print() {
   if (!can_print)
     return;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&PdfViewWebPlugin::OnInvokePrintDialog,
                                 weak_factory_.GetWeakPtr()));
 }
@@ -1852,7 +1852,7 @@ void PdfViewWebPlugin::InvalidateAfterPaintDone() {
   if (deferred_invalidates_.empty())
     return;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&PdfViewWebPlugin::ClearDeferredInvalidates,
                                 weak_factory_.GetWeakPtr()));
 }
@@ -2356,7 +2356,7 @@ void PdfViewWebPlugin::PrepareAndSetAccessibilityPageInfo(int32_t page_index) {
       std::move(page_objects));
 
   // Schedule loading the next page.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&PdfViewWebPlugin::PrepareAndSetAccessibilityPageInfo,
                      weak_factory_.GetWeakPtr(), page_index + 1),
@@ -2399,7 +2399,7 @@ void PdfViewWebPlugin::LoadAccessibility() {
   PrepareAndSetAccessibilityViewportInfo();
 
   // Schedule loading the first page.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&PdfViewWebPlugin::PrepareAndSetAccessibilityPageInfo,
                      weak_factory_.GetWeakPtr(), /*page_index=*/0),

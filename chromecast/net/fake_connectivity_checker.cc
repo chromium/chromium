@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include "chromecast/net/fake_connectivity_checker.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace chromecast {
 
 FakeConnectivityChecker::FakeConnectivityChecker()
-    : ConnectivityChecker(base::ThreadTaskRunnerHandle::Get()),
+    : ConnectivityChecker(base::SingleThreadTaskRunner::GetCurrentDefault()),
       connected_(true) {}
 
 FakeConnectivityChecker::~FakeConnectivityChecker() {}

@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace ash {
 
@@ -58,7 +58,7 @@ void FakeSeneschalClient::NotifySeneschalStarted() {
 
 void FakeSeneschalClient::WaitForServiceToBeAvailable(
     dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
@@ -68,7 +68,7 @@ void FakeSeneschalClient::SharePath(
         callback) {
   share_path_called_ = true;
   last_share_path_request_ = request;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), share_path_response_));
 }
 
@@ -78,7 +78,7 @@ void FakeSeneschalClient::UnsharePath(
         callback) {
   unshare_path_called_ = true;
   last_unshare_path_request_ = request;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), unshare_path_response_));
 }
 

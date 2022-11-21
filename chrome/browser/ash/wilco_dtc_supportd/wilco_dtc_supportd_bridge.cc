@@ -13,7 +13,7 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_piece.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/mojo_utils.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_client.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_messaging.h"
@@ -176,7 +176,7 @@ void WilcoDtcSupportdBridge::ScheduleWaitingForDBusService() {
   // ScheduleWaitingForDBusService().
   dbus_waiting_weak_ptr_factory_.InvalidateWeakPtrs();
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&WilcoDtcSupportdBridge::WaitForDBusService,
                      dbus_waiting_weak_ptr_factory_.GetWeakPtr()),

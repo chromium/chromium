@@ -9,8 +9,8 @@
 #include "base/bind.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "content/child/child_process.h"
 #include "content/utility/utility_thread_impl.h"
 
@@ -33,7 +33,7 @@ InProcessUtilityThread::~InProcessUtilityThread() {
 void InProcessUtilityThread::Init() {
   // We need to return right away or else the main thread that started us will
   // hang.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&InProcessUtilityThread::InitInternal,
                                 base::Unretained(this)));
 }

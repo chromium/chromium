@@ -28,7 +28,6 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time_to_iso8601.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -790,7 +789,7 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
     // Ensure that the callback is called within a time limit.
     weak_ptr_factory_ = std::make_unique<
         base::WeakPtrFactory<ExtensionDownloadsEventRouterData>>(this);
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
             &ExtensionDownloadsEventRouterData::DetermineFilenameTimeout,
@@ -950,7 +949,7 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
     // doesn't keep hogging memory.
     weak_ptr_factory_ = std::make_unique<
         base::WeakPtrFactory<ExtensionDownloadsEventRouterData>>(this);
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
             &ExtensionDownloadsEventRouterData::ClearPendingDeterminers,
@@ -1390,7 +1389,7 @@ void DownloadsAcceptDangerFunction::PromptOrWait(int download_id, int retries) {
   bool visible = platform_util::IsVisible(web_contents->GetNativeView());
   if (!visible) {
     if (retries > 0) {
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&DownloadsAcceptDangerFunction::PromptOrWait, this,
                          download_id, retries - 1),

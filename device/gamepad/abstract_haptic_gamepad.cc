@@ -5,7 +5,7 @@
 #include "device/gamepad/abstract_haptic_gamepad.h"
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 
 namespace device {
@@ -125,7 +125,7 @@ void AbstractHapticGamepad::PlayVibrationEffect(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   double duration = params->duration;
   double start_delay = params->start_delay;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&AbstractHapticGamepad::StartVibration, GetWeakPtr(),
                      sequence_id, duration, std::move(params)),
@@ -146,13 +146,13 @@ void AbstractHapticGamepad::StartVibration(
     // The device does not support effects this long. Issue periodic vibration
     // commands until the effect is complete.
     double remaining_duration = duration - max_duration;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&AbstractHapticGamepad::StartVibration, GetWeakPtr(),
                        sequence_id, remaining_duration, params.Clone()),
         base::Milliseconds(max_duration));
   } else {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&AbstractHapticGamepad::FinishEffect, GetWeakPtr(),
                        sequence_id),

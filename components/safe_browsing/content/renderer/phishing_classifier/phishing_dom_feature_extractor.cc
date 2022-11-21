@@ -13,7 +13,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -131,7 +130,7 @@ void PhishingDOMFeatureExtractor::ExtractFeatures(blink::WebDocument document,
   page_feature_state_ = std::make_unique<PageFeatureState>(clock_->NowTicks());
   cur_document_ = document;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PhishingDOMFeatureExtractor::ExtractFeaturesWithTimeout,
                      weak_factory_.GetWeakPtr()));
@@ -209,7 +208,7 @@ void PhishingDOMFeatureExtractor::ExtractFeaturesWithTimeout() {
           // clock granularity.
           UMA_HISTOGRAM_TIMES("SBClientPhishing.DOMFeatureChunkTime",
                               chunk_elapsed);
-          base::ThreadTaskRunnerHandle::Get()->PostTask(
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE,
               base::BindOnce(
                   &PhishingDOMFeatureExtractor::ExtractFeaturesWithTimeout,

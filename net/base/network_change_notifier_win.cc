@@ -19,7 +19,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/win/windows_version.h"
 #include "net/base/winsock_init.h"
@@ -444,7 +443,7 @@ void NetworkChangeNotifierWin::WatchForAddressChange() {
   if (!WatchForAddressChangeInternal()) {
     ++sequential_failures_;
 
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&NetworkChangeNotifierWin::WatchForAddressChange,
                        weak_factory_.GetWeakPtr()),

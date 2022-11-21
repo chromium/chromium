@@ -12,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 
 namespace policy {
 
@@ -68,7 +67,7 @@ void EchoRemoteCommandJob::RunImpl(CallbackWithResult succeed_callback,
                                    CallbackWithResult failed_callback) {
   std::unique_ptr<ResultPayload> echo_payload(
       new EchoPayload(command_payload_));
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
           succeed_ ? std::move(succeed_callback) : std::move(failed_callback),

@@ -1210,7 +1210,7 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
 
 #if BUILDFLAG(IS_ANDROID)
     if (start_minimal_browser) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&MinimalBrowserStartupComplete));
     }
 #endif

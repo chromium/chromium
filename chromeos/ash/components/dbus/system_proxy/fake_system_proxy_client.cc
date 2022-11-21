@@ -5,7 +5,7 @@
 #include "chromeos/ash/components/dbus/system_proxy/fake_system_proxy_client.h"
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/system_proxy/system_proxy_service.pb.h"
 
 namespace ash {
@@ -20,7 +20,7 @@ void FakeSystemProxyClient::SetAuthenticationDetails(
   ++set_credentials_call_count_;
   last_set_auth_details_request_ = request;
   system_proxy::SetAuthenticationDetailsResponse response;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), response));
 }
 
@@ -29,7 +29,7 @@ void FakeSystemProxyClient::ClearUserCredentials(
     ClearUserCredentialsCallback callback) {
   ++clear_user_credentials_call_count_;
   system_proxy::ClearUserCredentialsResponse response;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), response));
 }
 
@@ -38,7 +38,7 @@ void FakeSystemProxyClient::ShutDownProcess(
     ShutDownProcessCallback callback) {
   ++shut_down_call_count_;
   system_proxy::ShutDownResponse response;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), response));
 }
 
@@ -81,14 +81,14 @@ void FakeSystemProxyClient::SendAuthenticationRequiredSignal(
   if (!connect_to_worker_signals_called_) {
     return;
   }
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(auth_required_callback_, details));
 }
 
 void FakeSystemProxyClient::SendWorkerActiveSignal(
     const system_proxy::WorkerActiveSignalDetails& details) {
   DCHECK(worker_active_callback_);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(worker_active_callback_, details));
 }
 

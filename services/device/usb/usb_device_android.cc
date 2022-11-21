@@ -12,7 +12,7 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "services/device/usb/jni_headers/ChromeUsbDevice_jni.h"
 #include "services/device/usb/usb_configuration_android.h"
 #include "services/device/usb/usb_descriptors.h"
@@ -77,7 +77,7 @@ void UsbDeviceAndroid::RequestPermission(ResultCallback callback) {
     request_permission_callbacks_.push_back(std::move(callback));
     service_->RequestDevicePermission(j_object_);
   } else {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), permission_granted_));
   }
 }
@@ -93,7 +93,7 @@ void UsbDeviceAndroid::Open(OpenCallback callback) {
       handles().push_back(device_handle.get());
     }
   }
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), device_handle));
 }
 

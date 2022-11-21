@@ -14,7 +14,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 
 namespace ash {
@@ -54,7 +54,7 @@ void FirewallHole::Open(PortType type,
   int lifeline[2] = {-1, -1};
   if (pipe2(lifeline, O_CLOEXEC) < 0) {
     PLOG(ERROR) << "Failed to create a lifeline pipe";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), nullptr));
     return;
   }

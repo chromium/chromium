@@ -21,7 +21,7 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -129,7 +129,8 @@ TabRestoreServiceHelper::TabRestoreServiceHelper(
       time_factory_(time_factory) {
   DCHECK(tab_restore_service_);
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-      this, "TabRestoreServiceHelper", base::ThreadTaskRunnerHandle::Get());
+      this, "TabRestoreServiceHelper",
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 void TabRestoreServiceHelper::SetHelperObserver(Observer* observer) {

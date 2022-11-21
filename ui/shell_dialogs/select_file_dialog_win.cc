@@ -16,7 +16,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/win/registry.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -262,7 +261,7 @@ void SelectFileDialogImpl::SelectFileImpl(
       base::BindOnce(&DoSelectFileOnDialogTaskRunner,
                      execute_select_file_callback_, type, title, default_path,
                      filter, file_type_index, default_extension, owner,
-                     base::ThreadTaskRunnerHandle::Get(),
+                     base::SingleThreadTaskRunner::GetCurrentDefault(),
                      base::BindOnce(&SelectFileDialogImpl::OnSelectFileExecuted,
                                     this, type, std::move(run_state), params)));
 }

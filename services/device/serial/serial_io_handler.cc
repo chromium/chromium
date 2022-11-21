@@ -12,9 +12,9 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/device_event_log/device_event_log.h"
 
@@ -57,7 +57,7 @@ void SerialIoHandler::Open(const mojom::SerialConnectionOptions& options,
   DCHECK(client) << "Could not get permission_broker client.";
   // PermissionBrokerClient should be called on the UI thread.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      base::ThreadTaskRunnerHandle::Get();
+      base::SingleThreadTaskRunner::GetCurrentDefault();
   ui_thread_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&chromeos::PermissionBrokerClient::OpenPath,
@@ -71,7 +71,7 @@ void SerialIoHandler::Open(const mojom::SerialConnectionOptions& options,
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&SerialIoHandler::StartOpen, this,
-                     base::ThreadTaskRunnerHandle::Get()));
+                     base::SingleThreadTaskRunner::GetCurrentDefault()));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

@@ -104,7 +104,7 @@ void ScenicSurfaceFactory::Initialize(
   base::AutoLock lock(surface_lock_);
   DCHECK(surface_map_.empty());
 
-  main_thread_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  main_thread_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
   DCHECK(main_thread_task_runner_);
 
   DCHECK(!gpu_host_);

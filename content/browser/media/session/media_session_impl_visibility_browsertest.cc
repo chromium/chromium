@@ -11,7 +11,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/media/session/media_session_impl.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -161,7 +160,7 @@ class MediaSessionImplVisibilityBrowserTest
   // MediaRouterIntegrationTests. Move it into a general place.
   void Wait(base::TimeDelta timeout) {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), timeout);
     run_loop.Run();
   }

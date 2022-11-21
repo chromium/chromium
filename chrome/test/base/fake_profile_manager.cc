@@ -34,7 +34,7 @@ std::unique_ptr<Profile> FakeProfileManager::CreateProfileAsyncHelper(
     const base::FilePath& path) {
   // ThreadTaskRunnerHandle::Get() is TestingProfile's "async" IOTaskRunner
   // (ref. TestingProfile::GetIOTaskRunner()).
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(base::IgnoreResult(&base::CreateDirectory), path));
 

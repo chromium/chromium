@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/limits.h"
@@ -65,7 +65,7 @@ void MojoVideoEncodeAcceleratorService::Initialize(
       << VideoPixelFormatToString(config.input_format);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      base::ThreadTaskRunnerHandle::Get();
+      base::SingleThreadTaskRunner::GetCurrentDefault();
 
   media_log_ =
       std::make_unique<MojoMediaLog>(std::move(media_log), task_runner);

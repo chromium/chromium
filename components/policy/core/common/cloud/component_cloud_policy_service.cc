@@ -18,7 +18,6 @@
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/component_cloud_policy_store.h"
@@ -287,7 +286,7 @@ ComponentCloudPolicyService::ComponentCloudPolicyService(
 
   backend_ = std::make_unique<Backend>(
       weak_ptr_factory_.GetWeakPtr(), backend_task_runner_,
-      base::ThreadTaskRunnerHandle::Get(), std::move(cache),
+      base::SingleThreadTaskRunner::GetCurrentDefault(), std::move(cache),
       std::make_unique<ExternalPolicyDataFetcher>(client->GetURLLoaderFactory(),
                                                   backend_task_runner_),
       policy_type);

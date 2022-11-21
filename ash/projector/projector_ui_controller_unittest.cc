@@ -253,7 +253,7 @@ TEST_F(ProjectorUiControllerTest, LongPressShowsBubble) {
 
   // Hold the press down for 2 ms, to trigger a long press.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(2));
   run_loop.Run();
 

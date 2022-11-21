@@ -66,7 +66,8 @@ XRCompositorCommon::OutstandingFrame::~OutstandingFrame() = default;
 
 XRCompositorCommon::XRCompositorCommon()
     : base::Thread("WindowsXRCompositor"),
-      main_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      main_thread_task_runner_(
+          base::SingleThreadTaskRunner::GetCurrentDefault()),
       webxr_js_time_(kSlidingAverageSize),
       webxr_gpu_time_(kSlidingAverageSize) {
   DCHECK(main_thread_task_runner_);

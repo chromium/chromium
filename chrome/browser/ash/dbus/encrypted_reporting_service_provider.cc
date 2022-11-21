@@ -59,7 +59,7 @@ EncryptedReportingServiceProvider::EncryptedReportingServiceProvider(
     std::unique_ptr<::reporting::EncryptedReportingUploadProvider>
         upload_provider)
     : origin_thread_id_(base::PlatformThread::CurrentId()),
-      origin_thread_runner_(base::ThreadTaskRunnerHandle::Get()),
+      origin_thread_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       memory_resource_(base::MakeRefCounted<::reporting::MemoryResourceImpl>(
           kDefaultMemoryAllocation)),
       upload_provider_(std::move(upload_provider)) {

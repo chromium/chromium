@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/download/internal/background_service/client_set.h"
 #include "components/download/internal/background_service/config.h"
 #include "components/download/internal/background_service/entry.h"
@@ -233,7 +233,7 @@ void BackgroundDownloadServiceImpl::InvokeStartCallback(
   log_sink_->OnServiceRequestMade(client, guid, result);
   stats::LogStartDownloadResult(client, result);
   if (callback) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), guid, result));
   }
 }

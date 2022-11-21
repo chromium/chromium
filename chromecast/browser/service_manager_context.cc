@@ -241,7 +241,8 @@ class ServiceManagerContext::InProcessServiceManagerContext
         FROM_HERE,
         base::BindOnce(
             &InProcessServiceManagerContext::StartOnServiceManagerThread, this,
-            std::move(manifests), base::ThreadTaskRunnerHandle::Get(),
+            std::move(manifests),
+            base::SingleThreadTaskRunner::GetCurrentDefault(),
             std::move(system_remote), std::move(request_handler)));
   }
 

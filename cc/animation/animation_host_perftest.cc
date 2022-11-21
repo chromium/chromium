@@ -5,7 +5,7 @@
 #include "base/memory/raw_ptr.h"
 #include "cc/animation/animation_host.h"
 
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/lap_timer.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_id_provider.h"
@@ -36,7 +36,8 @@ class AnimationHostPerfTest : public testing::Test {
     layer_tree_host_ = FakeLayerTreeHost::Create(
         &fake_client_, &task_graph_runner_, animation_host_.get(), settings);
     layer_tree_host_->InitializeSingleThreaded(
-        &single_thread_client_, base::ThreadTaskRunnerHandle::Get());
+        &single_thread_client_,
+        base::SingleThreadTaskRunner::GetCurrentDefault());
 
     root_layer_ = Layer::Create();
     layer_tree_host_->SetRootLayer(root_layer_);

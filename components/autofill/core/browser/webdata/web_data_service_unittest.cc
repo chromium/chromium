@@ -14,10 +14,10 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -113,13 +113,15 @@ class WebDataServiceTest : public testing::Test {
     // should each use their own sequences instead of sharing this one.
     auto db_task_runner =
         base::ThreadPool::CreateSingleThreadTaskRunner({base::MayBlock()});
-    wdbs_ = new WebDatabaseService(path, base::ThreadTaskRunnerHandle::Get(),
-                                   db_task_runner);
+    wdbs_ = new WebDatabaseService(
+        path, base::SingleThreadTaskRunner::GetCurrentDefault(),
+        db_task_runner);
     wdbs_->AddTable(std::make_unique<AutofillTable>());
     wdbs_->LoadDatabase();
 
     wds_ = new AutofillWebDataService(
-        wdbs_, base::ThreadTaskRunnerHandle::Get(), db_task_runner);
+        wdbs_, base::SingleThreadTaskRunner::GetCurrentDefault(),
+        db_task_runner);
     wds_->Init(base::NullCallback());
   }
 

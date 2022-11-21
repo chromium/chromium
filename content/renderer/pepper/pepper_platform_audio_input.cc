@@ -88,8 +88,8 @@ void PepperPlatformAudioInput::OnStreamCreated(
   DCHECK_GT(shared_memory_region.GetSize(), 0u);
 
   // If we're not on the main thread then bounce over to it. Don't use
-  // base::ThreadTaskRunnerHandle::Get() as |main_task_runner_| will never
-  // match that. See crbug.com/1150822.
+  // base::SingleThreadTaskRunner::GetCurrentDefault() as |main_task_runner_|
+  // will never match that. See crbug.com/1150822.
   if (!main_task_runner_->BelongsToCurrentThread()) {
     // If shutdown has occurred, |client_| will be NULL and the handles will be
     // cleaned up on the main thread.

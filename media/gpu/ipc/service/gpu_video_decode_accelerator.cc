@@ -15,7 +15,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/command_buffer.h"
 #include "gpu/config/gpu_preferences.h"
@@ -271,7 +270,7 @@ GpuVideoDecodeAccelerator::GpuVideoDecodeAccelerator(
       texture_target_(0),
       pixel_format_(PIXEL_FORMAT_UNKNOWN),
       textures_per_buffer_(0),
-      child_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      child_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       io_task_runner_(io_task_runner),
       overlay_factory_cb_(overlay_factory_cb) {
   DCHECK(stub_);

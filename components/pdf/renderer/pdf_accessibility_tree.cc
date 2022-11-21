@@ -18,7 +18,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversion_utils.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/pdf/renderer/pdf_ax_action_target.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/renderer/render_accessibility.h"
@@ -1393,7 +1393,7 @@ void PdfAccessibilityTree::SetAccessibilityViewportInfo(
     chrome_pdf::AccessibilityViewportInfo viewport_info) {
   // This call may trigger layout, and ultimately self-deletion; see
   // crbug.com/1274376 for details.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PdfAccessibilityTree::DoSetAccessibilityViewportInfo,
                      GetWeakPtr(), std::move(viewport_info)));
@@ -1429,7 +1429,7 @@ void PdfAccessibilityTree::SetAccessibilityDocInfo(
     chrome_pdf::AccessibilityDocInfo doc_info) {
   // This call may trigger layout, and ultimately self-deletion; see
   // crbug.com/1274376 for details.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PdfAccessibilityTree::DoSetAccessibilityDocInfo,
                      GetWeakPtr(), std::move(doc_info)));
@@ -1465,7 +1465,7 @@ void PdfAccessibilityTree::SetAccessibilityPageInfo(
     chrome_pdf::AccessibilityPageObjects page_objects) {
   // This call may trigger layout, and ultimately self-deletion; see
   // crbug.com/1274376 for details.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PdfAccessibilityTree::DoSetAccessibilityPageInfo,
                      GetWeakPtr(), std::move(page_info), std::move(text_runs),

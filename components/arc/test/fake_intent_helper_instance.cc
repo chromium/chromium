@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/ranges/algorithm.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace arc {
 
@@ -108,7 +108,7 @@ void FakeIntentHelperInstance::RequestIntentHandlerList(
     }
   }
   // Post the reply to run asynchronously to match the real implementation.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(handlers)));
 }
 
@@ -117,7 +117,7 @@ void FakeIntentHelperInstance::RequestUrlHandlerList(
     RequestUrlHandlerListCallback callback) {
   std::vector<mojom::IntentHandlerInfoPtr> handlers;
   // Post the reply to run asynchronously to match the real implementation.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(handlers)));
 }
 

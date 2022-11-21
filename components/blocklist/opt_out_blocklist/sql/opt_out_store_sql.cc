@@ -20,7 +20,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist_data.h"
 #include "sql/database.h"
 #include "sql/recovery.h"
@@ -405,7 +404,8 @@ void OptOutStoreSQL::LoadBlockList(
       FROM_HERE,
       base::BindOnce(&LoadBlockListSync, db_.get(), db_file_path_,
                      std::move(blocklist_data),
-                     base::ThreadTaskRunnerHandle::Get(), std::move(callback)));
+                     base::SingleThreadTaskRunner::GetCurrentDefault(),
+                     std::move(callback)));
 }
 
 }  // namespace blocklist

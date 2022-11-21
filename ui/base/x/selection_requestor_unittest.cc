@@ -12,7 +12,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_clipboard_helper.h"
@@ -110,15 +109,15 @@ TEST_F(SelectionRequestorTest, DISABLED_NestedRequests) {
   x11::Atom target1 = x11::GetAtom("TARGET1");
   x11::Atom target2 = x11::GetAtom("TARGET2");
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&PerformBlockingConvertSelection,
                                 base::Unretained(requestor_), selection,
                                 target2, "Data2"));
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&SelectionRequestorTest::SendSelectionNotify,
                      base::Unretained(this), selection, target1, "Data1"));
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&SelectionRequestorTest::SendSelectionNotify,
                      base::Unretained(this), selection, target2, "Data2"));

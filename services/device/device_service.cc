@@ -10,7 +10,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -120,11 +119,12 @@ DeviceService::DeviceService(
 
 #if defined(IS_SERIAL_ENABLED_PLATFORM)
   serial_port_manager_ = std::make_unique<SerialPortManagerImpl>(
-      io_task_runner_, base::ThreadTaskRunnerHandle::Get());
+      io_task_runner_, base::SingleThreadTaskRunner::GetCurrentDefault());
 #if BUILDFLAG(IS_MAC)
   // On macOS the SerialDeviceEnumerator needs to run on the UI thread so that
   // it has access to a CFRunLoop where it can register a notification source.
-  serial_port_manager_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  serial_port_manager_task_runner_ =
+      base::SingleThreadTaskRunner::GetCurrentDefault();
 #else
   // On other platforms it must be allowed to do blocking IO.
   serial_port_manager_task_runner_ =

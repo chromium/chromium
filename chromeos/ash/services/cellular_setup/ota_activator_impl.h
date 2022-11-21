@@ -10,7 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
@@ -53,7 +53,7 @@ class OtaActivatorImpl : public OtaActivator,
         NetworkConnectionHandler* network_connection_handler,
         NetworkActivationHandler* network_activation_handler,
         scoped_refptr<base::TaskRunner> task_runner =
-            base::ThreadTaskRunnerHandle::Get());
+            base::SingleThreadTaskRunner::GetCurrentDefault());
     static void SetFactoryForTesting(Factory* test_factory);
 
    protected:

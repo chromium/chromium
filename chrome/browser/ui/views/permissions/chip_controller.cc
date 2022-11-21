@@ -181,7 +181,7 @@ void ChipController::InitializePermissionPrompt(
     base::OnceCallback<void()> callback) {
   DCHECK(delegate);
   if (ShouldWaitForConfirmationToComplete()) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ChipController::InitializePermissionPrompt,
                        weak_factory_.GetWeakPtr(), web_contents,
@@ -216,7 +216,7 @@ void ChipController::ShowPermissionPrompt(
     permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(delegate);
   if (ShouldWaitForConfirmationToComplete()) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ChipController::ShowPermissionPrompt,
                        weak_factory_.GetWeakPtr(), web_contents, delegate),

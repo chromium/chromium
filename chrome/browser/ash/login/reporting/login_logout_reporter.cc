@@ -258,7 +258,7 @@ void LoginLogoutReporter::MaybeReportKioskLoginFailure() {
   // pref service.
   reporter_helper_->ReportEvent(
       std::move(record), ::reporting::Priority::SECURITY,
-      base::BindPostTask(base::ThreadTaskRunnerHandle::Get(),
+      base::BindPostTask(base::SingleThreadTaskRunner::GetCurrentDefault(),
                          std::move(enqueue_cb)));
 }
 

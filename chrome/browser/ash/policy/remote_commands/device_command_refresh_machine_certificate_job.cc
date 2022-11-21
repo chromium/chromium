@@ -12,7 +12,6 @@
 #include "base/syslog_logging.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/attestation/machine_certificate_uploader.h"
 
 namespace policy {
@@ -57,7 +56,7 @@ void DeviceCommandRefreshMachineCertificateJob::RunImpl(
   } else {
     SYSLOG(WARNING) << "Machine certificate uploader unavailable,"
                     << " certificate cannot be refreshed.";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(failed_callback), nullptr));
   }
 }
@@ -66,7 +65,7 @@ void DeviceCommandRefreshMachineCertificateJob::OnCertificateUploaded(
     CallbackWithResult succeeded_callback,
     CallbackWithResult failed_callback,
     bool success) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(success ? succeeded_callback : failed_callback),
                      nullptr));

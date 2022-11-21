@@ -15,7 +15,7 @@
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/win/win_util.h"
 #include "components/nacl/common/nacl_cmd_line.h"
 #include "components/nacl/common/nacl_debug_exception_handler_win.h"
@@ -47,10 +47,10 @@ NaClBrokerListener::NaClBrokerListener() = default;
 NaClBrokerListener::~NaClBrokerListener() = default;
 
 void NaClBrokerListener::Listen() {
-  NaClService service(base::ThreadTaskRunnerHandle::Get());
-  channel_ =
-      IPC::Channel::CreateClient(service.TakeChannelPipe().release(), this,
-                                 base::ThreadTaskRunnerHandle::Get());
+  NaClService service(base::SingleThreadTaskRunner::GetCurrentDefault());
+  channel_ = IPC::Channel::CreateClient(
+      service.TakeChannelPipe().release(), this,
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   CHECK(channel_->Connect());
   run_loop_.Run();
 }
@@ -149,7 +149,7 @@ void NaClBrokerListener::OnLaunchDebugExceptionHandler(
     const std::string& startup_info) {
   NaClStartDebugExceptionHandlerThread(
       base::Process(process_handle), startup_info,
-      base::ThreadTaskRunnerHandle::Get(),
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
       base::BindRepeating(SendReply, channel_.get(), pid));
 }
 

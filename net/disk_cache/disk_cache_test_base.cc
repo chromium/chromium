@@ -13,7 +13,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
@@ -373,7 +372,7 @@ void DiskCacheTestWithCache::InitDiskCache() {
 void DiskCacheTestWithCache::CreateBackend(uint32_t flags) {
   scoped_refptr<base::SingleThreadTaskRunner> runner;
   if (use_current_thread_)
-    runner = base::ThreadTaskRunnerHandle::Get();
+    runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   else
     runner = nullptr;  // let the backend sort it out.
 

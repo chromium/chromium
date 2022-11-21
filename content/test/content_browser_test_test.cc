@@ -21,7 +21,6 @@
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -374,7 +373,7 @@ void CallbackChecker(bool* non_nested_task_ran) {
 
 IN_PROC_BROWSER_TEST_F(ContentBrowserTest, NonNestableTask) {
   bool non_nested_task_ran = false;
-  base::ThreadTaskRunnerHandle::Get()->PostNonNestableTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostNonNestableTask(
       FROM_HERE, base::BindOnce(&CallbackChecker, &non_nested_task_ran));
   content::RunAllPendingInMessageLoop();
   ASSERT_TRUE(non_nested_task_ran);

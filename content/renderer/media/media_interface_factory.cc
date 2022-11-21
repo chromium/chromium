@@ -7,7 +7,7 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "media/mojo/mojom/content_decryption_module.mojom.h"
 #include "media/mojo/mojom/renderer.mojom.h"
@@ -19,7 +19,7 @@ namespace content {
 MediaInterfaceFactory::MediaInterfaceFactory(
     blink::BrowserInterfaceBrokerProxy* interface_broker)
     : interface_broker_(interface_broker) {
-  task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
   weak_this_ = weak_factory_.GetWeakPtr();
 }
 

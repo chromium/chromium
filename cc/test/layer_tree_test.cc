@@ -15,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/animation/animation.h"
@@ -907,7 +906,7 @@ void LayerTreeTest::DoBeginTest() {
   DCHECK(!impl_thread_ || impl_thread_->task_runner().get());
 
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner =
-      base::ThreadTaskRunnerHandle::Get();
+      base::SingleThreadTaskRunner::GetCurrentDefault();
   scoped_refptr<base::SingleThreadTaskRunner> impl_task_runner =
       impl_thread_ ? impl_thread_->task_runner() : nullptr;
   LayerTreeHostSchedulingClient* scheduling_client =
@@ -1145,7 +1144,7 @@ void LayerTreeTest::RunTest(CompositorMode mode) {
   }
   InitializeSettings(&settings_);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&LayerTreeTest::DoBeginTest, base::Unretained(this)));
 

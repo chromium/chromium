@@ -51,10 +51,12 @@ class SandboxFileStreamWriterTest : public FileStreamWriterTest {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
 
     quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
-        is_incognito(), dir_.GetPath(), base::ThreadTaskRunnerHandle::Get(),
+        is_incognito(), dir_.GetPath(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
         special_storage_policy_);
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
-        quota_manager_.get(), base::ThreadTaskRunnerHandle::Get());
+        quota_manager_.get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
 
     file_system_context_ =
         CreateFileSystemContext(quota_manager_proxy_.get(), dir_);
@@ -357,8 +359,8 @@ class SandboxFileStreamWriterIncognitoTest
       QuotaManagerProxy* quota_manager_proxy,
       const base::ScopedTempDir& dir) override {
     return CreateIncognitoFileSystemContextForTesting(
-        base::ThreadTaskRunnerHandle::Get(),
-        base::ThreadTaskRunnerHandle::Get(), quota_manager_proxy,
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(), quota_manager_proxy,
         dir.GetPath());
   }
 

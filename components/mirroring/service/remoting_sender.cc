@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -238,7 +238,7 @@ void RemotingSender::OnInputTaskComplete() {
     --input_queue_discards_remaining_;
 
   // Always force a post task to prevent the stack from growing too deep.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&RemotingSender::ProcessNextInputTask,
                                 weak_factory_.GetWeakPtr()));
 }

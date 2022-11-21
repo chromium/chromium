@@ -262,7 +262,7 @@ class ThumbnailLoaderNativeMessageHost : public extensions::NativeMessageHost {
   bool response_received_ = false;
 
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_ =
-      base::ThreadTaskRunnerHandle::Get();
+      base::SingleThreadTaskRunner::GetCurrentDefault();
 };
 
 }  // namespace

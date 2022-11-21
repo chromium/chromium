@@ -10,7 +10,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "net/http/bidirectional_stream_request_info.h"
 #include "net/http/http_util.h"
@@ -83,7 +83,7 @@ void BidirectionalStreamQuicImpl::Start(
     return;
 
   if (rv != OK) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             &BidirectionalStreamQuicImpl::NotifyError,
@@ -92,7 +92,7 @@ void BidirectionalStreamQuicImpl::Start(
     return;
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&BidirectionalStreamQuicImpl::OnStreamReady,
                                 weak_factory_.GetWeakPtr(), rv));
 }
@@ -101,7 +101,7 @@ void BidirectionalStreamQuicImpl::SendRequestHeaders() {
   ScopedBoolSaver saver(&may_invoke_callbacks_, false);
   int rv = WriteHeaders();
   if (rv < 0) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&BidirectionalStreamQuicImpl::NotifyError,
                                   weak_factory_.GetWeakPtr(), rv));
   }
@@ -162,7 +162,7 @@ void BidirectionalStreamQuicImpl::SendvData(
 
   if (!stream_->IsOpen()) {
     LOG(ERROR) << "Trying to send data after stream has been closed.";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&BidirectionalStreamQuicImpl::NotifyError,
                                   weak_factory_.GetWeakPtr(), ERR_UNEXPECTED));
     return;
@@ -174,7 +174,7 @@ void BidirectionalStreamQuicImpl::SendvData(
     DCHECK(!send_request_headers_automatically_);
     int rv = WriteHeaders();
     if (rv < 0) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&BidirectionalStreamQuicImpl::NotifyError,
                                     weak_factory_.GetWeakPtr(), rv));
       return;
@@ -187,7 +187,7 @@ void BidirectionalStreamQuicImpl::SendvData(
                      weak_factory_.GetWeakPtr()));
 
   if (rv != ERR_IO_PENDING) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&BidirectionalStreamQuicImpl::OnSendDataComplete,
                        weak_factory_.GetWeakPtr(), rv));
@@ -270,7 +270,7 @@ void BidirectionalStreamQuicImpl::OnStreamReady(int rv) {
     return;
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&BidirectionalStreamQuicImpl::ReadInitialHeaders,
                      weak_factory_.GetWeakPtr()));
@@ -301,7 +301,7 @@ void BidirectionalStreamQuicImpl::OnReadInitialHeadersComplete(int rv) {
   headers_bytes_received_ += rv;
   negotiated_protocol_ = kProtoQUIC;
   connect_timing_ = session_->GetConnectTiming();
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&BidirectionalStreamQuicImpl::ReadTrailingHeaders,
                      weak_factory_.GetWeakPtr()));
@@ -381,7 +381,7 @@ void BidirectionalStreamQuicImpl::NotifyErrorImpl(int error,
     // Cancel any pending callback.
     weak_factory_.InvalidateWeakPtrs();
     if (notify_delegate_later) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&BidirectionalStreamQuicImpl::NotifyFailure,
                          weak_factory_.GetWeakPtr(), delegate, error));
@@ -405,7 +405,7 @@ void BidirectionalStreamQuicImpl::NotifyStreamReady() {
   if (send_request_headers_automatically_) {
     int rv = WriteHeaders();
     if (rv < 0) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&BidirectionalStreamQuicImpl::NotifyError,
                                     weak_factory_.GetWeakPtr(), rv));
       return;

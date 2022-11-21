@@ -17,7 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/sessions/core/session_constants.h"
 #include "components/sessions/core/session_service_commands.h"
@@ -438,7 +438,7 @@ CommandStorageBackend::CommandStorageBackend(
       type_(type),
       supplied_path_(path),
       initial_decryption_key_(decryption_key),
-      callback_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+      callback_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   // This is invoked on the main thread, don't do file access here.
 }
 

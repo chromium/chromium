@@ -10,7 +10,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/canonical_cookie_test_helpers.h"
@@ -80,7 +80,8 @@ class WebSocketStreamClientUseCookieTest
                                       CookieAccessResult access_result) {
     *weak_is_called = true;
     *weak_result = access_result.status.IsInclude();
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, task);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                                task);
   }
 };
 
@@ -114,7 +115,8 @@ class WebSocketStreamServerSetCookieTest
       const CookieAccessResultList& excluded_cookies) {
     *weak_is_called = true;
     *weak_result = cookie_util::StripAccessResults(cookie_list);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(task));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(task));
   }
 };
 

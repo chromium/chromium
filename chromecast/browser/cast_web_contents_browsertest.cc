@@ -800,7 +800,7 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest, PostMessagePassMessagePort) {
 
   TestMessageReceiver message_receiver;
   platform_port.SetReceiver(&message_receiver,
-                            base::ThreadTaskRunnerHandle::Get());
+                            base::SingleThreadTaskRunner::GetCurrentDefault());
 
   // Make sure we could send a MessagePort (ScopedMessagePipeHandle) to the
   // page.
@@ -867,7 +867,7 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest,
   // Bind platform side port
   TestMessageReceiver message_receiver;
   platform_port.SetReceiver(&message_receiver,
-                            base::ThreadTaskRunnerHandle::Get());
+                            base::SingleThreadTaskRunner::GetCurrentDefault());
 
   // Make sure we could post a MessagePort (ScopedMessagePipeHandle) to
   // the page.

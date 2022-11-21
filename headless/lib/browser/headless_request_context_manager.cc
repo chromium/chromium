@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -224,7 +224,7 @@ HeadlessRequestContextManager::HeadlessRequestContextManager(
       proxy_config_ = std::make_unique<net::ProxyConfig>();
     } else {
       proxy_config_monitor_ = std::make_unique<HeadlessProxyConfigMonitor>(
-          base::ThreadTaskRunnerHandle::Get());
+          base::SingleThreadTaskRunner::GetCurrentDefault());
     }
   }
 

@@ -9,7 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/abseil_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/address_list.h"
 #include "net/base/port_util.h"
 #include "net/base/url_util.h"
@@ -271,7 +271,7 @@ DedicatedWebTransportHttp3Client::DedicatedWebTransportHttp3Client(
       quic_context_(context->quic_context()),
       net_log_(NetLogWithSource::Make(context->net_log(),
                                       NetLogSourceType::WEB_TRANSPORT_CLIENT)),
-      task_runner_(base::ThreadTaskRunnerHandle::Get().get()),
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault().get()),
       alarm_factory_(
           std::make_unique<QuicChromiumAlarmFactory>(task_runner_,
                                                      quic_context_->clock())),

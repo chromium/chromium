@@ -12,7 +12,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
 #include "components/policy/core/common/features.h"
@@ -77,7 +77,7 @@ void UserCloudSigninRestrictionPolicyFetcher::
   if (!base::FeatureList::IsEnabled(
           features::kEnableUserCloudSigninRestrictionPolicyFetcher)) {
     cancelable_callback_.Reset(std::move(callback));
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(cancelable_callback_.callback(), std::string()));
     return;

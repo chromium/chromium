@@ -20,7 +20,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/supports_user_data.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/trace_event/trace_event.h"
@@ -1265,7 +1265,7 @@ ResourceScheduler::ResourceScheduler(const base::TickClock* tick_clock)
                              : base::DefaultTickClock::GetInstance()),
       queued_requests_dispatch_periodicity_(
           GetQueuedRequestsDispatchPeriodicity()),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   DCHECK(tick_clock_);
 
   StartLongQueuedRequestsDispatchTimerIfNeeded();

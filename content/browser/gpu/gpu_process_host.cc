@@ -25,8 +25,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -915,8 +915,9 @@ bool GpuProcessHost::Init() {
     GpuDataManagerImpl::GetInstance()->UpdateGpuPreferences(
         &gpu_preferences, GPU_PROCESS_KIND_SANDBOXED);
     in_process_gpu_thread_.reset(GetGpuMainThreadFactory()(
-        InProcessChildThreadParams(base::ThreadTaskRunnerHandle::Get(),
-                                   process_->GetInProcessMojoInvitation()),
+        InProcessChildThreadParams(
+            base::SingleThreadTaskRunner::GetCurrentDefault(),
+            process_->GetInProcessMojoInvitation()),
         gpu_preferences));
     base::Thread::Options options;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

@@ -305,7 +305,7 @@ bool DesktopSessionProxy::AttachToDesktop(
   // Connect to the desktop process.
   desktop_channel_ = IPC::ChannelProxy::Create(
       desktop_pipe.release(), IPC::Channel::MODE_CLIENT, this,
-      io_task_runner_.get(), base::ThreadTaskRunnerHandle::Get());
+      io_task_runner_.get(), base::SingleThreadTaskRunner::GetCurrentDefault());
 
   // Reset the associated remote to allow us to connect to the new desktop
   // process. This is needed as the desktop may crash and the daemon process

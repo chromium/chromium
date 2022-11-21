@@ -15,7 +15,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/feedback/features.h"
 #include "components/feedback/proto/extension.pb.h"
 
@@ -126,8 +126,8 @@ void FeedbackReport::LoadReportsAndQueue(const base::FilePath& user_dir,
       bool has_email = parsed.common_data().has_user_email() &&
                        !parsed.common_data().user_email().empty();
       callback.Run(base::MakeRefCounted<FeedbackReport>(
-          std::move(name), std::move(data), base::ThreadTaskRunnerHandle::Get(),
-          has_email));
+          std::move(name), std::move(data),
+          base::SingleThreadTaskRunner::GetCurrentDefault(), has_email));
     }
   }
 }

@@ -612,7 +612,7 @@ void GCMClientImplTest::InitializeGCMClient() {
       chrome_build_info, gcm_store_path(),
       /*remove_account_mappings_with_email_key=*/true,
       task_environment_.GetMainThreadTaskRunner(),
-      base::ThreadTaskRunnerHandle::Get(), base::DoNothing(),
+      base::SingleThreadTaskRunner::GetCurrentDefault(), base::DoNothing(),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_),
       network::TestNetworkConnectionTracker::GetInstance(),

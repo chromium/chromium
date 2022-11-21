@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/offline_pages/request_coordinator_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -31,7 +31,7 @@ const char kLogTag[] = "EvaluationTestScheduler";
 void StartProcessing();
 
 void ProcessingDoneCallback(bool result) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&StartProcessing));
 }
 
@@ -50,7 +50,7 @@ void StartProcessing() {
   // If there's no network connection then try in 2 seconds.
   if (net::NetworkChangeNotifier::GetConnectionType() ==
       net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, base::BindOnce(&StartProcessing), base::Seconds(2));
     return;
   }
@@ -82,7 +82,7 @@ void EvaluationTestScheduler::Schedule(
   }
   coordinator_->GetLogger()->RecordActivity(std::string(kLogTag) +
                                             " Start schedule!");
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&StartProcessing));
 }
 
@@ -109,7 +109,7 @@ DeviceConditions& EvaluationTestScheduler::GetCurrentDeviceConditions() {
 }
 
 void EvaluationTestScheduler::ImmediateScheduleCallback(bool result) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&StartProcessing));
 }
 

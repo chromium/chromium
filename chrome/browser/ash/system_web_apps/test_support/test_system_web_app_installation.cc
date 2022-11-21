@@ -877,8 +877,8 @@ void TestSystemWebAppInstallation::WaitForAppInstall() {
       FROM_HERE, base::BindLambdaForTesting([&]() {
         // Wait one execution loop for on_apps_synchronized() to be
         // called on all listeners.
-        base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                      run_loop.QuitClosure());
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, run_loop.QuitClosure());
       }));
   run_loop.Run();
 }

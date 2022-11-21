@@ -13,7 +13,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/media/api/cma_backend.h"
@@ -236,7 +235,7 @@ void MediaPipelineImpl::StartPlayingFrom(base::TimeDelta time) {
   statistics_rolling_counter_ = 0;
   if (!pending_time_update_task_) {
     pending_time_update_task_ = true;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&MediaPipelineImpl::UpdateMediaTime, weak_this_));
   }
@@ -374,7 +373,7 @@ void MediaPipelineImpl::OnFlushDone(bool is_audio_stream) {
     metrics::CastMetricsHelper::GetInstance()->RecordApplicationEvent(
         "Cast.Platform.Ended");
 
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(pending_flush_task_->done_cb));
     pending_flush_task_.reset();
   }
@@ -518,7 +517,7 @@ void MediaPipelineImpl::UpdateMediaTime() {
       (last_media_time_ == ::media::kNoTimestamp ||
        !media_time_interpolator_.interpolating())) {
     pending_time_update_task_ = true;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&MediaPipelineImpl::UpdateMediaTime, weak_this_),
         kTimeUpdateInterval);
@@ -565,7 +564,7 @@ void MediaPipelineImpl::UpdateMediaTime() {
     client_.time_update_cb.Run(media_time, max_rendering_time, stc);
 
   pending_time_update_task_ = true;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&MediaPipelineImpl::UpdateMediaTime, weak_this_),
       kTimeUpdateInterval);

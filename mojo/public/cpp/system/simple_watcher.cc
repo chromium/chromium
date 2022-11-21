@@ -9,7 +9,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/common/task_annotator.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/heap_profiler.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
@@ -117,9 +117,9 @@ SimpleWatcher::SimpleWatcher(const base::Location& from_here,
                              const char* handler_tag)
     : arming_policy_(arming_policy),
       task_runner_(std::move(runner)),
-      is_default_task_runner_(base::ThreadTaskRunnerHandle::IsSet() &&
-                              task_runner_ ==
-                                  base::ThreadTaskRunnerHandle::Get()),
+      is_default_task_runner_(
+          base::SingleThreadTaskRunner::HasCurrentDefault() &&
+          task_runner_ == base::SingleThreadTaskRunner::GetCurrentDefault()),
       handler_tag_(handler_tag ? handler_tag : from_here.file_name()) {
   MojoResult rv = CreateTrap(&Context::CallNotify, &trap_handle_);
   DCHECK_EQ(MOJO_RESULT_OK, rv);

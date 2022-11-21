@@ -9,7 +9,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/arc/arc_support_host.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 
@@ -88,7 +87,7 @@ void ArcSupportMessageHost::OnMessage(const std::string& message_string) {
 
 scoped_refptr<base::SingleThreadTaskRunner> ArcSupportMessageHost::task_runner()
     const {
-  return base::ThreadTaskRunnerHandle::Get();
+  return base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
 }  // namespace arc

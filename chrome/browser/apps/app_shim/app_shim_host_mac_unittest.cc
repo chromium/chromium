@@ -118,7 +118,9 @@ class AppShimHostTest : public testing::Test,
                         public AppShimHostBootstrap::Client,
                         public AppShimHost::Client {
  public:
-  AppShimHostTest() { task_runner_ = base::ThreadTaskRunnerHandle::Get(); }
+  AppShimHostTest() {
+    task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
+  }
   AppShimHostTest(const AppShimHostTest&) = delete;
   AppShimHostTest& operator=(const AppShimHostTest&) = delete;
   ~AppShimHostTest() override {}

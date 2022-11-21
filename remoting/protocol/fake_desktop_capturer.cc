@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/notreached.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 
@@ -163,7 +163,7 @@ void FakeDesktopCapturer::CaptureFrame() {
   // directly also leads to issues when testing with shared memory regions and
   // IPC as the callback invocation will occur before the shared region can be
   // set up.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&webrtc::DesktopCapturer::Callback::OnCaptureResult,
                      base::Unretained(callback_), result, std::move(frame)));

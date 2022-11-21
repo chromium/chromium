@@ -36,8 +36,8 @@
 #include "base/synchronization/lock.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -904,7 +904,7 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
   // Replace the clipboard data. Some apps take a long time to receive the paste
   // event, and some apps will read from the clipboard multiple times per paste.
   // Wait a bit before writing `data_to_restore` back to the clipboard.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
           [](const base::WeakPtr<ClipboardHistoryControllerImpl>& weak_ptr,

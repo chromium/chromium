@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -127,7 +127,7 @@ void ArcAndroidManagementChecker::ScheduleRetry() {
   DCHECK(!callback_.is_null());
   VLOG(2) << "Schedule next android management check in " << retry_delay_;
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ArcAndroidManagementChecker::StartCheckInternal,
                      weak_ptr_factory_.GetWeakPtr()),

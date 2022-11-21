@@ -10,8 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_engine.h"
@@ -96,7 +96,7 @@ class SyncFileSystemTest : public extensions::PlatformAppBrowserTest,
     identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
 
     remote_service_ = new drive_backend::SyncEngine(
-        base::ThreadTaskRunnerHandle::Get(),  // ui_task_runner
+        base::SingleThreadTaskRunner::GetCurrentDefault(),  // ui_task_runner
         MakeSequencedTaskRunner(), MakeSequencedTaskRunner(),
         base_dir_.GetPath(),
         nullptr,  // task_logger

@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/ranges/algorithm.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "cc/benchmarks/invalidation_benchmark.h"
 #include "cc/benchmarks/rasterize_and_record_benchmark.h"
@@ -45,9 +45,10 @@ std::unique_ptr<MicroBenchmark> CreateBenchmark(
 
 MicroBenchmarkController::MicroBenchmarkController(LayerTreeHost* host)
     : host_(host),
-      main_controller_task_runner_(base::ThreadTaskRunnerHandle::IsSet()
-                                       ? base::ThreadTaskRunnerHandle::Get()
-                                       : nullptr) {
+      main_controller_task_runner_(
+          base::SingleThreadTaskRunner::HasCurrentDefault()
+              ? base::SingleThreadTaskRunner::GetCurrentDefault()
+              : nullptr) {
   DCHECK(host_);
 }
 

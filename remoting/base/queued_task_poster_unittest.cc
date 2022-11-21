@@ -13,7 +13,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
@@ -51,7 +50,7 @@ QueuedTaskPosterTest::QueuedTaskPosterTest()
 
 void QueuedTaskPosterTest::SetUp() {
   target_thread_.StartAndWaitForTesting();
-  main_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  main_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
   target_task_runner_ = target_thread_.task_runner();
   poster_ = std::make_unique<QueuedTaskPoster>(target_task_runner_);
 }

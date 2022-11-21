@@ -1288,7 +1288,7 @@ void OpenXrApiWrapper::EnsureEventPolling() {
 
     // Verify that OpenXR is still active after processing events.
     if (IsInitialized()) {
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&OpenXrApiWrapper::EnsureEventPolling,
                          weak_ptr_factory_.GetWeakPtr()),

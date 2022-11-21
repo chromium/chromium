@@ -12,7 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/no_destructor.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 
@@ -56,7 +56,7 @@ void BluetoothAdapterFactoryWrapper::AcquireAdapter(
 
   MaybeAddAdapterObserver(service);
   if (adapter_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), adapter_));
     return;
   }
@@ -64,7 +64,7 @@ void BluetoothAdapterFactoryWrapper::AcquireAdapter(
   // Simulate the normally asynchronous process of acquiring the adapter in
   // tests.
   if (test_adapter_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&BluetoothAdapterFactoryWrapper::OnGetAdapter,
                                   weak_ptr_factory_.GetWeakPtr(),
                                   std::move(callback), test_adapter_));

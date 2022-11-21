@@ -88,7 +88,7 @@ class SerialPortManagerImplTest : public DeviceServiceTestBase {
     enumerator_->AddDevicePath(kFakeDevicePath2);
 
     manager_ = std::make_unique<SerialPortManagerImpl>(
-        io_task_runner_, base::ThreadTaskRunnerHandle::Get());
+        io_task_runner_, base::SingleThreadTaskRunner::GetCurrentDefault());
     manager_->SetSerialEnumeratorForTesting(std::move(enumerator));
   }
 
@@ -175,7 +175,7 @@ class SerialPortManagerImplTest : public DeviceServiceTestBase {
 
  protected:
   scoped_refptr<base::SingleThreadTaskRunner> adapter_task_runner() {
-    return base::ThreadTaskRunnerHandle::Get();
+    return base::SingleThreadTaskRunner::GetCurrentDefault();
   }
 
   raw_ptr<FakeSerialEnumerator> enumerator_;

@@ -10,9 +10,9 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/sessions/core/command_storage_backend.h"
 #include "components/sessions/core/command_storage_manager_delegate.h"
 #include "crypto/random.h"
@@ -115,8 +115,8 @@ void CommandStorageManager::ClearPendingCommands() {
 void CommandStorageManager::StartSaveTimer() {
   // Don't start a timer when testing.
   if (delegate_->ShouldUseDelayedSave() &&
-      base::ThreadTaskRunnerHandle::IsSet() && !HasPendingSave()) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::HasCurrentDefault() && !HasPendingSave()) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&CommandStorageManager::Save,
                        weak_factory_for_timer_.GetWeakPtr()),

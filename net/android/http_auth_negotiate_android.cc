@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "net/base/auth.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_auth.h"
@@ -121,7 +120,7 @@ int HttpAuthNegotiateAndroid::GenerateAuthToken(
   auth_token_ = auth_token;
   completion_callback_ = std::move(callback);
   scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner =
-      base::ThreadTaskRunnerHandle::Get();
+      base::SingleThreadTaskRunner::GetCurrentDefault();
   base::OnceCallback<void(int, const std::string&)> thread_safe_callback =
       base::BindOnce(&HttpAuthNegotiateAndroid::SetResultInternal,
                      weak_factory_.GetWeakPtr());

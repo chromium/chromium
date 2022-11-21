@@ -21,8 +21,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/user_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -671,7 +671,7 @@ class CanSwitchUserTest : public AshTestBase {
   // The passed |action| type parameter defines the outcome (which will be
   // checked) and the action the user will choose.
   void SwitchUser(ActionType action) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&CloseMessageBox, action));
     Shell::Get()->session_controller()->CanSwitchActiveUser(base::BindOnce(
         &CanSwitchUserTest::SwitchCallback, base::Unretained(this)));

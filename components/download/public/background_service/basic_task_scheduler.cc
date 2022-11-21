@@ -6,8 +6,8 @@
 
 #include "base/bind.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/download/public/background_service/background_download_service.h"
 
@@ -29,7 +29,7 @@ void BasicTaskScheduler::ScheduleTask(download::DownloadTaskType task_type,
   scheduled_tasks_[task_type].Reset(
       base::BindOnce(&BasicTaskScheduler::RunScheduledTask,
                      weak_factory_.GetWeakPtr(), task_type));
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, scheduled_tasks_[task_type].callback(),
       base::Seconds(window_start_time_seconds));
 }

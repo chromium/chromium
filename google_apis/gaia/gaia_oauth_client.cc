@@ -17,7 +17,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -444,7 +444,7 @@ void GaiaOAuthClient::Core::MakeRequest(
 
 void GaiaOAuthClient::Core::SendRequest() {
   if (backoff_entry_.ShouldRejectRequest()) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&GaiaOAuthClient::Core::SendRequestImpl,
                        weak_ptr_factory_.GetWeakPtr()),

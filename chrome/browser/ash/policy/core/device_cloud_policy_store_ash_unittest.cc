@@ -13,7 +13,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -67,7 +67,7 @@ class DeviceCloudPolicyStoreAshTest : public ash::DeviceSettingsTestBase {
         ash::InstallAttributesClient::Get());
     store_ = std::make_unique<DeviceCloudPolicyStoreAsh>(
         device_settings_service_.get(), install_attributes_.get(),
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     store_->AddObserver(&observer_);
 
     base::RunLoop loop;
@@ -138,7 +138,7 @@ class DeviceCloudPolicyStoreAshTest : public ash::DeviceSettingsTestBase {
         ash::FakeInstallAttributesClient::Get());
     store_ = std::make_unique<DeviceCloudPolicyStoreAsh>(
         device_settings_service_.get(), install_attributes_.get(),
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     store_->AddObserver(&observer_);
   }
 

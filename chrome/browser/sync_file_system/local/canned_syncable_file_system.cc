@@ -19,7 +19,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/sync_file_system/file_change.h"
 #include "chrome/browser/sync_file_system/local/local_file_change_tracker.h"
 #include "chrome/browser/sync_file_system/local/local_file_sync_context.h"
@@ -77,7 +76,8 @@ R RunOnThread(base::SingleThreadTaskRunner* task_runner,
       base::BindOnce(std::move(task),
                      base::BindRepeating(
                          &AssignAndQuit<R>,
-                         base::RetainedRef(base::ThreadTaskRunnerHandle::Get()),
+                         base::RetainedRef(
+                             base::SingleThreadTaskRunner::GetCurrentDefault()),
                          run_loop.QuitClosure(), base::Unretained(&result))));
   run_loop.Run();
   return result;
@@ -91,7 +91,7 @@ void RunOnThread(base::SingleThreadTaskRunner* task_runner,
       location, std::move(task),
       base::BindOnce(
           base::IgnoreResult(&base::SingleThreadTaskRunner::PostTask),
-          base::ThreadTaskRunnerHandle::Get(), FROM_HERE,
+          base::SingleThreadTaskRunner::GetCurrentDefault(), FROM_HERE,
           run_loop.QuitClosure()));
   run_loop.Run();
 }
@@ -306,7 +306,8 @@ File::Error CannedSyncableFileSystem::OpenFileSystem() {
           &CannedSyncableFileSystem::DoOpenFileSystem, base::Unretained(this),
           base::BindOnce(&CannedSyncableFileSystem::DidOpenFileSystem,
                          base::Unretained(this),
-                         base::RetainedRef(base::ThreadTaskRunnerHandle::Get()),
+                         base::RetainedRef(
+                             base::SingleThreadTaskRunner::GetCurrentDefault()),
                          run_loop.QuitClosure())));
   run_loop.Run();
 

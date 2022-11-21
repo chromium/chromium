@@ -11,9 +11,9 @@
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "google_apis/gcm/base/mcs_util.h"
 #include "google_apis/gcm/engine/fake_connection_handler.h"
 #include "google_apis/gcm/monitoring/fake_gcm_stats_recorder.h"
@@ -164,7 +164,7 @@ TestConnectionFactoryImpl::TestConnectionFactoryImpl(
           BuildEndpoints(),
           net::BackoffEntry::Policy(),
           get_socket_factory_callback,
-          base::ThreadTaskRunnerHandle::Get(),
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
           &dummy_recorder_,
           network::TestNetworkConnectionTracker::GetInstance()),
       connect_result_(net::ERR_UNEXPECTED),
@@ -524,7 +524,7 @@ TEST_F(ConnectionFactoryImplTest, CanarySucceedsRetryDuringLogin) {
   EXPECT_FALSE(factory()->IsEndpointReachable());
 
   // Pump the loop, to ensure the pending backoff retry has no effect.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, GetRunLoop()->QuitWhenIdleClosure(), base::Milliseconds(1));
   WaitForConnections();
 }

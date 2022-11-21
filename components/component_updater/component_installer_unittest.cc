@@ -20,10 +20,10 @@
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/version.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_paths.h"
@@ -223,7 +223,7 @@ class ComponentInstallerTest : public testing::Test {
                 const UpdateScheduler::OnStopTaskCallback& on_stop);
 
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_ =
-      base::ThreadTaskRunnerHandle::Get();
+      base::SingleThreadTaskRunner::GetCurrentDefault();
   base::RunLoop runloop_;
 
   std::unique_ptr<TestingPrefServiceSimple> pref_ =

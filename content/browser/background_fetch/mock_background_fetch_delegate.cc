@@ -7,8 +7,8 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/background_fetch/mock_background_fetch_delegate.h"
 #include "content/public/browser/background_fetch_description.h"
 #include "content/public/browser/background_fetch_response.h"
@@ -204,7 +204,7 @@ void MockBackgroundFetchDelegate::RegisterResponse(
 void MockBackgroundFetchDelegate::PostAbortCheckingTask(
     const std::string& job_unique_id,
     base::OnceCallback<void()> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&MockBackgroundFetchDelegate::RunAbortCheckingTask,
                      base::Unretained(this), job_unique_id,

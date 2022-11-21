@@ -6,8 +6,8 @@
 
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(StatusBubbleViewsTest, WidgetLifetime) {
   EXPECT_FALSE(IsDestroyPopupTimerRunning());
   EXPECT_FALSE(GetWidget());
 #endif
-  SetTaskRunner(base::ThreadTaskRunnerHandle::Get().get());
+  SetTaskRunner(base::SingleThreadTaskRunner::GetCurrentDefault().get());
 }
 
 // Mac does not delete the widget after a delay, so this test only runs on
@@ -128,6 +128,6 @@ IN_PROC_BROWSER_TEST_F(StatusBubbleViewsTest, ShowHideDestroyShow) {
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
 
-  SetTaskRunner(base::ThreadTaskRunnerHandle::Get().get());
+  SetTaskRunner(base::SingleThreadTaskRunner::GetCurrentDefault().get());
 }
 #endif

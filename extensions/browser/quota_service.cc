@@ -4,7 +4,7 @@
 
 #include "extensions/browser/quota_service.h"
 
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/error_utils.h"
 
@@ -24,7 +24,8 @@ bool g_purge_disabled_for_testing = false;
 namespace extensions {
 
 QuotaService::QuotaService() {
-  if (!g_purge_disabled_for_testing && base::ThreadTaskRunnerHandle::IsSet()) {
+  if (!g_purge_disabled_for_testing &&
+      base::SingleThreadTaskRunner::HasCurrentDefault()) {
     purge_timer_.Start(FROM_HERE, base::Days(kPurgeIntervalInDays), this,
                        &QuotaService::Purge);
   }

@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/attestation/soft_bind_attestation_flow.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/ash/components/attestation/mock_attestation_flow.h"
@@ -98,7 +98,7 @@ class SoftBindAttestationFlowTest : public ::testing::Test {
     std::string cert = fake_cert_chain_read_index_ < fake_cert_chains_.size()
                            ? fake_cert_chains_[fake_cert_chain_read_index_]
                            : "";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), fake_certificate_status_, cert));
     fake_cert_chain_read_index_++;

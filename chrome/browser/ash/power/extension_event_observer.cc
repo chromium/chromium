@@ -10,7 +10,7 @@
 #include "base/check.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -225,7 +225,7 @@ void ExtensionEventObserver::OnSuspendImminent(bool dark_suspend) {
   // to report suspend readiness.  If there is a push message pending, we should
   // receive it within that time and increment |suspend_keepalive_count_| to
   // prevent this callback from reporting ready.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, suspend_readiness_callback_.callback(),
       dark_suspend ? base::Milliseconds(kDarkSuspendDelayMs)
                    : base::TimeDelta());

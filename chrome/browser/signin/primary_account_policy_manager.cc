@@ -58,7 +58,7 @@ class PrimaryAccountPolicyManager::DeleteProfileDialogManager
     profile_path_ = profile->GetPath();
 
     if (auto_confirm_profile_deletion_for_testing) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&DeleteProfileDialogManager::
                              HandleUserConfirmedProfileDeletionAndDie,
@@ -92,7 +92,7 @@ class PrimaryAccountPolicyManager::DeleteProfileDialogManager
     // synchronously, it will create a nested run loop that will not return
     // from OnBrowserSetLastActive() until the dialog is dismissed. But the user
     // cannot dismiss the dialog because the browser is not even shown!
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&DeleteProfileDialogManager::ShowDeleteProfileDialog,
                        weak_factory_.GetWeakPtr(), browser));
@@ -138,7 +138,7 @@ class PrimaryAccountPolicyManager::DeleteProfileDialogManager
         // the dialog by clicking on the close "X" button, then re-present the
         // dialog (the user should not be able to interact with the browser
         // window as the profile must be deleted).
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(&DeleteProfileDialogManager::ShowDeleteProfileDialog,
                            weak_factory_.GetWeakPtr(), browser));
@@ -250,7 +250,7 @@ void PrimaryAccountPolicyManager::EnsurePrimaryAccountAllowedForProfile(
       // This may be called while the profile is initializing, so it must be
       // scheduled for later to allow the profile initialization to complete.
       CHECK(profiles::IsMultipleProfilesEnabled());
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&PrimaryAccountPolicyManager::ShowDeleteProfileDialog,
                          weak_pointer_factory_.GetWeakPtr(), profile,

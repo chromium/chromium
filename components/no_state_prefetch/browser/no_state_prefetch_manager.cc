@@ -28,7 +28,6 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -87,7 +86,7 @@ class NoStatePrefetchManager::OnCloseWebContentsDeleter
                             std::unique_ptr<WebContents> tab)
       : manager_(manager), tab_(std::move(tab)) {
     tab_->SetDelegate(this);
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
             &OnCloseWebContentsDeleter::ScheduleWebContentsForDeletion,
@@ -712,7 +711,7 @@ void NoStatePrefetchManager::PeriodicCleanup() {
 
 void NoStatePrefetchManager::PostCleanupTask() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&NoStatePrefetchManager::PeriodicCleanup,
                                 weak_factory_.GetWeakPtr()));
 }

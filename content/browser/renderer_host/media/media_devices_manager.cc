@@ -22,7 +22,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/threading/thread_checker.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/media/media_devices_permission_checker.h"
@@ -929,7 +928,7 @@ void MediaDevicesManager::EnumerateAudioDevices(bool is_input) {
   MediaDeviceType type = is_input ? MediaDeviceType::MEDIA_AUDIO_INPUT
                                   : MediaDeviceType::MEDIA_AUDIO_OUTPUT;
   if (use_fake_devices_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&MediaDevicesManager::DevicesEnumerated,
                                   weak_factory_.GetWeakPtr(), type,
                                   GetFakeAudioDevices(is_input)));

@@ -9,10 +9,10 @@
 
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "media/capture/video/mac/video_capture_device_factory_mac.h"
 
 namespace media {
@@ -22,7 +22,7 @@ void RunTestCase(base::OnceClosure test_case) {
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(
                      [](base::RunLoop* run_loop, base::OnceClosure* test_case) {
                        std::move(*test_case).Run();

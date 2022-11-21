@@ -16,7 +16,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
@@ -841,7 +840,7 @@ void NetworkConnectionHandlerImpl::QueueConnectRequest(
   // Post a delayed task to check to see if certificates have loaded. If they
   // haven't, and queued_connect_ has not been cleared (e.g. by a successful
   // connect request), cancel the request and notify the user.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&NetworkConnectionHandlerImpl::CheckCertificatesLoaded,
                      AsWeakPtr()),

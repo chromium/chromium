@@ -6,6 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "net/base/mock_network_change_notifier.h"
@@ -45,7 +46,6 @@
 
 #if BUILDFLAG(ENABLE_REPORTING)
 #include "base/files/scoped_temp_dir.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "net/extras/sqlite/sqlite_persistent_reporting_and_nel_store.h"
 #include "net/reporting/reporting_context.h"
 #include "net/reporting/reporting_policy.h"
@@ -200,7 +200,7 @@ TEST_F(URLRequestContextBuilderTest, ShutDownNELAndReportingWithPendingUpload) {
       std::make_unique<SQLitePersistentReportingAndNelStore>(
           scoped_temp_dir.GetPath().Append(
               FILE_PATH_LITERAL("ReportingAndNelStore")),
-          base::ThreadTaskRunnerHandle::Get(),
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(),
                net::GetReportingAndNelStoreBackgroundSequencePriority(),

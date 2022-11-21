@@ -18,7 +18,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner_util.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/types/pass_key.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
@@ -510,8 +509,8 @@ void FileSystemContext::ResolveURL(const FileSystemURL& url,
   // If not on IO thread, forward before passing the task to the backend.
   if (!io_task_runner_->RunsTasksInCurrentSequence()) {
     ResolveURLCallback relay_callback = base::BindOnce(
-        &RelayResolveURLCallback, base::ThreadTaskRunnerHandle::Get(),
-        std::move(callback));
+        &RelayResolveURLCallback,
+        base::SingleThreadTaskRunner::GetCurrentDefault(), std::move(callback));
     io_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&FileSystemContext::ResolveURL, this, url,
                                   std::move(relay_callback)));

@@ -13,8 +13,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromecast/media/audio/mixer_service/loopback_connection.h"
@@ -386,7 +386,8 @@ class StreamMixerTest : public testing::Test {
     auto output = std::make_unique<NiceMock<MockMixerOutput>>();
     mock_output_ = output.get();
     mixer_ = std::make_unique<StreamMixer>(
-        std::move(output), base::ThreadTaskRunnerHandle::Get(), "{}");
+        std::move(output), base::SingleThreadTaskRunner::GetCurrentDefault(),
+        "{}");
     mixer_->SetVolume(AudioContentType::kMedia, 1.0f);
     mixer_->SetVolume(AudioContentType::kAlarm, 1.0f);
     std::string test_pipeline_json = base::StringPrintf(
@@ -403,8 +404,8 @@ class StreamMixerTest : public testing::Test {
 
   void WaitForMixer() {
     base::RunLoop run_loop1;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  run_loop1.QuitClosure());
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop1.QuitClosure());
     run_loop1.Run();
   }
 
@@ -416,8 +417,8 @@ class StreamMixerTest : public testing::Test {
                                      _))
         .Times(1);
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  run_loop.QuitClosure());
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
     testing::Mock::VerifyAndClearExpectations(mock_output_);
   }

@@ -13,7 +13,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "media/base/media_log.h"
 #include "media/base/video_frame.h"
@@ -55,7 +55,7 @@ TestVDAVideoDecoder::TestVDAVideoDecoder(
       decode_start_timestamps_(kTimestampCacheSize) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(vda_wrapper_sequence_checker_);
 
-  vda_wrapper_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  vda_wrapper_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 
   weak_this_ = weak_this_factory_.GetWeakPtr();
 }

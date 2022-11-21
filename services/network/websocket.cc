@@ -25,7 +25,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "net/base/auth.h"
 #include "net/base/io_buffer.h"
@@ -441,10 +440,10 @@ WebSocket::WebSocket(
       has_raw_headers_access_(has_raw_headers_access),
       writable_watcher_(FROM_HERE,
                         mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                        base::ThreadTaskRunnerHandle::Get()),
+                        base::SingleThreadTaskRunner::GetCurrentDefault()),
       readable_watcher_(FROM_HERE,
                         mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                        base::ThreadTaskRunnerHandle::Get()),
+                        base::SingleThreadTaskRunner::GetCurrentDefault()),
       reassemble_short_messages_(base::FeatureList::IsEnabled(
           network::features::kWebSocketReassembleShortMessages)),
       throttling_profile_id_(throttling_profile_id) {
@@ -466,7 +465,7 @@ WebSocket::WebSocket(
   handshake_client_.set_disconnect_handler(base::BindOnce(
       &WebSocket::OnConnectionError, base::Unretained(this), FROM_HERE));
   if (delay_.is_positive()) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&WebSocket::AddChannel, weak_ptr_factory_.GetWeakPtr(),
                        url, requested_protocols, site_for_cookies,

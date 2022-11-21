@@ -9,7 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/browsing_topics/util.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
@@ -212,7 +212,7 @@ BrowsingTopicsCalculator::BrowsingTopicsCalculator(
 
   // Continue asynchronously so that `calculate_completed_callback_` isn't
   // called synchronously while `this` is being constructed.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&BrowsingTopicsCalculator::CheckCanCalculate,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

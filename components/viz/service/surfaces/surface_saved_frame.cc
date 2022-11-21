@@ -10,7 +10,7 @@
 
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
@@ -118,7 +118,8 @@ std::unique_ptr<CopyOutputRequest> SurfaceSavedFrame::CreateCopyRequestIfNeeded(
       base::BindOnce(&SurfaceSavedFrame::NotifyCopyOfOutputComplete,
                      weak_factory_.GetMutableWeakPtr(), ResultType::kShared,
                      shared_pass_index, draw_data));
-  request->set_result_task_runner(base::ThreadTaskRunnerHandle::Get());
+  request->set_result_task_runner(
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   return request;
 }
 

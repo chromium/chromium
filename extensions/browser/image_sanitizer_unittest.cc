@@ -15,7 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_file_task_runner.h"
@@ -262,7 +262,7 @@ TEST_F(ImageSanitizerTest, NoCallbackAfterDelete) {
   ClearSanitizer();
   // Wait a bit and ensure no callback has been called.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(200));
   run_loop.Run();
   EXPECT_FALSE(client()->done_callback_called());

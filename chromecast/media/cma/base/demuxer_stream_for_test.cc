@@ -34,7 +34,7 @@ void DemuxerStreamForTest::Read(ReadCB read_cb) {
   }
 
   if ((frame_count_ % cycle_count_) < delayed_frame_count_) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&DemuxerStreamForTest::DoRead, base::Unretained(this),
                        std::move(read_cb)),

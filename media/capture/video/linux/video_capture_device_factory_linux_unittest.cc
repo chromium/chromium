@@ -27,7 +27,7 @@ class VideoCaptureDeviceFactoryLinuxTest
 
   void SetUp() override {
     factory_ = std::make_unique<VideoCaptureDeviceFactoryLinux>(
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     scoped_refptr<FakeV4L2Impl> fake_v4l2(new FakeV4L2Impl());
     fake_v4l2_ = fake_v4l2.get();
     auto fake_device_provider = std::make_unique<FakeDeviceProvider>();

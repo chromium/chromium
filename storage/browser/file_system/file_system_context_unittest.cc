@@ -10,10 +10,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
@@ -61,7 +61,8 @@ class FileSystemContextTest : public testing::Test {
 
     mock_quota_manager_ = base::MakeRefCounted<MockQuotaManager>(
         false /* is_incognito */, data_dir_.GetPath(),
-        base::ThreadTaskRunnerHandle::Get().get(), storage_policy_.get());
+        base::SingleThreadTaskRunner::GetCurrentDefault().get(),
+        storage_policy_.get());
   }
 
  protected:
@@ -70,12 +71,13 @@ class FileSystemContextTest : public testing::Test {
     std::vector<std::unique_ptr<storage::FileSystemBackend>>
         additional_providers;
     additional_providers.push_back(std::make_unique<TestFileSystemBackend>(
-        base::ThreadTaskRunnerHandle::Get().get(), data_dir_.GetPath()));
+        base::SingleThreadTaskRunner::GetCurrentDefault().get(),
+        data_dir_.GetPath()));
     return FileSystemContext::Create(
-        base::ThreadTaskRunnerHandle::Get(),
-        base::ThreadTaskRunnerHandle::Get(), std::move(external_mount_points),
-        storage_policy_, mock_quota_manager_->proxy(),
-        std::move(additional_providers),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        std::move(external_mount_points), storage_policy_,
+        mock_quota_manager_->proxy(), std::move(additional_providers),
         std::vector<URLRequestAutoMountHandler>(), data_dir_.GetPath(),
         CreateAllowFileAccessOptions());
   }

@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "ui/ozone/platform/drm/host/host_drm_device.h"
@@ -43,7 +43,7 @@ void DrmDeviceConnector::OnGpuServiceLaunched(
   // list yet from the GPU process.
   // TODO(rjkroege): simplify this code path once GpuProcessHost always lives
   // on the UI thread.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&HostDrmDevice::OnGpuServiceLaunched,
                                 host_drm_device_, std::move(drm_device)));
 }

@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/webrtc/net_address_utils.h"
 #include "net/base/net_errors.h"
 #include "remoting/protocol/channel_socket_adapter.h"
@@ -61,7 +60,7 @@ IceTransportChannel::~IceTransportChannel() {
 
   delegate_->OnChannelDeleted(this);
 
-  auto task_runner = base::ThreadTaskRunnerHandle::Get();
+  auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   if (channel_)
     task_runner->DeleteSoon(FROM_HERE, channel_.release());
   if (port_allocator_)
@@ -127,7 +126,7 @@ void IceTransportChannel::Connect(const std::string& name,
                          transport_context_->network_settings().ice_timeout,
                          this, &IceTransportChannel::TryReconnect);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&IceTransportChannel::NotifyConnected,
                                 weak_factory_.GetWeakPtr()));
 }

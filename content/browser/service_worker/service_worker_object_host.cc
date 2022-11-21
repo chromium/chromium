@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/browser/service_worker/service_worker_client_utils.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -300,7 +300,7 @@ void ServiceWorkerObjectHost::DispatchExtendableMessageEvent(
     base::TimeDelta timeout =
         container_host_->service_worker_host()->version()->remaining_timeout();
 
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&DispatchExtendableMessageEventFromServiceWorker,
                        version_, std::move(message), container_origin_,

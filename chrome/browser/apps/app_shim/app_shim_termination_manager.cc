@@ -10,7 +10,7 @@
 #include "base/location.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
@@ -50,7 +50,7 @@ class AppShimTerminationManagerImpl : public AppShimTerminationManager,
     if (!browser_session_running_) {
       // Post this to give AppWindows a chance to remove themselves from the
       // registry.
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&TerminateIfNoAppWindows));
     }
   }

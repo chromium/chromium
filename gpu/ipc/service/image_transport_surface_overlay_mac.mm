@@ -11,7 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
@@ -189,7 +189,7 @@ gfx::SwapResult ImageTransportSurfaceOverlayMacEGL::SwapBuffersInternal(
 
   // Send the swap parameters to the browser.
   if (completion_callback) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(completion_callback),
                        gfx::SwapCompletionResult(
@@ -200,7 +200,7 @@ gfx::SwapResult ImageTransportSurfaceOverlayMacEGL::SwapBuffersInternal(
                                      /*flags=*/0);
   feedback.ca_layer_error_code = ca_layer_error_code_;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ImageTransportSurfaceOverlayMacEGL::BufferPresented,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -368,7 +368,7 @@ void ImageTransportSurfaceOverlayMacEGL::OnGpuSwitched(
   // Delay releasing the reference to the new GL context. The reason for this
   // is to avoid creating-then-destroying the context for every image transport
   // surface that is observing the GPU switch.
-  base::ThreadTaskRunnerHandle::Get()->ReleaseSoon(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->ReleaseSoon(
       FROM_HERE, std::move(context_on_new_gpu));
 }
 

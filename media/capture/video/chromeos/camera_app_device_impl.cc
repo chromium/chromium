@@ -94,7 +94,7 @@ void CameraAppDeviceImpl::BindReceiver(
   receivers_.set_disconnect_handler(
       base::BindRepeating(&CameraAppDeviceImpl::OnMojoConnectionError,
                           weak_ptr_factory_for_mojo_.GetWeakPtr()));
-  mojo_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  mojo_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 
   document_scanner_service_ = ash::DocumentScannerServiceClient::Create();
 }

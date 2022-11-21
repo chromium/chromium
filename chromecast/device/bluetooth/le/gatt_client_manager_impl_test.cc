@@ -7,9 +7,9 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromecast/device/bluetooth/bluetooth_util.h"
 #include "chromecast/device/bluetooth/le/remote_characteristic_impl.h"
 #include "chromecast/device/bluetooth/le/remote_descriptor_impl.h"
@@ -171,7 +171,8 @@ class GattClientManagerTest : public ::testing::Test {
 
     // Normally bluetooth_manager does this.
     gatt_client_->SetDelegate(gatt_client_manager_.get());
-    gatt_client_manager_->Initialize(base::ThreadTaskRunnerHandle::Get());
+    gatt_client_manager_->Initialize(
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     gatt_client_manager_->AddObserver(observer_.get());
   }
 

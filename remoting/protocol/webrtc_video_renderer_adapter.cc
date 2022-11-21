@@ -15,7 +15,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "remoting/protocol/client_video_stats_dispatcher.h"
 #include "remoting/protocol/frame_consumer.h"
 #include "remoting/protocol/frame_stats.h"
@@ -61,7 +60,7 @@ WebrtcVideoRendererAdapter::WebrtcVideoRendererAdapter(
     VideoRenderer* video_renderer)
     : label_(label),
       video_renderer_(video_renderer),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 WebrtcVideoRendererAdapter::~WebrtcVideoRendererAdapter() {
   DCHECK(task_runner_->BelongsToCurrentThread());

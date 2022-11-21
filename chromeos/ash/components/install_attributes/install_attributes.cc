@@ -18,7 +18,6 @@
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
@@ -437,7 +436,7 @@ void InstallAttributes::OnTpmStatusComplete(
       dbus_retries_remaining) {
     LOG(WARNING) << "Failed to get tpm status reply; status: "
                  << reply.status();
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&InstallAttributes::TriggerConsistencyCheck,
                        weak_ptr_factory_.GetWeakPtr(),

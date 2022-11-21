@@ -15,7 +15,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
@@ -240,7 +240,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
         std::make_unique<QuicChromiumAlarmFactory>(runner_.get(), &clock_);
 
     QuicChromiumPacketWriter* writer = new QuicChromiumPacketWriter(
-        socket.get(), base::ThreadTaskRunnerHandle::Get().get());
+        socket.get(), base::SingleThreadTaskRunner::GetCurrentDefault().get());
     quic::QuicConnection* connection = new quic::QuicConnection(
         connection_id_, quic::QuicSocketAddress(),
         net::ToQuicSocketAddress(peer_addr_), helper_.get(),
@@ -291,7 +291,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
         "CONNECTION_UNKNOWN", dns_start, dns_end,
         std::make_unique<quic::QuicClientPushPromiseIndex>(), nullptr,
         base::DefaultTickClock::GetInstance(),
-        base::ThreadTaskRunnerHandle::Get().get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         /*socket_performance_watcher=*/nullptr, NetLog::Get());
 
     writer->set_delegate(session_.get());

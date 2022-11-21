@@ -18,7 +18,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -229,11 +229,12 @@ void PushMessagingServiceImpl::RemoveExpiredSubscriptions() {
 
   for (const auto& identifier : PushMessagingAppIdentifier::GetAll(profile_)) {
     if (!identifier.IsExpired()) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, barrier_closure);
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, barrier_closure);
       continue;
     }
     content::BrowserThread::PostBestEffortTask(
-        FROM_HERE, base::ThreadTaskRunnerHandle::Get(),
+        FROM_HERE, base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::BindOnce(
             &PushMessagingServiceImpl::UnexpectedChange,
             weak_factory_.GetWeakPtr(), identifier,
@@ -1337,7 +1338,7 @@ void PushMessagingServiceImpl::DidDeleteID(const std::string& app_id,
   // |app_id_when_instance_id|, since it calls
   // InstanceIDDriver::RemoveInstanceID which deletes the InstanceID itself.
   // Calling that immediately would cause a use-after-free in our caller.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PushMessagingServiceImpl::DidUnsubscribe,
                      weak_factory_.GetWeakPtr(), app_id, was_subscribed));

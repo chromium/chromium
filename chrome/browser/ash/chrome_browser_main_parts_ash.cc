@@ -319,7 +319,7 @@ chromeos::FakePowerManagerClient* FakePowerManagerClient() {
 
 void FakeShutdownSignal() {
   // Receiving SIGTERM would result in `ExitIgnoreUnloadHandlers`.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&chrome::ExitIgnoreUnloadHandlers));
 }
 

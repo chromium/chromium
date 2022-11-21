@@ -9,7 +9,6 @@
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "remoting/signaling/xmpp_constants.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
@@ -20,7 +19,7 @@ DelegatingSignalStrategy::DelegatingSignalStrategy(
     scoped_refptr<base::SingleThreadTaskRunner> client_task_runner,
     const IqCallback& send_iq_callback)
     : local_address_(local_address),
-      delegate_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      delegate_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       client_task_runner_(client_task_runner),
       send_iq_callback_(send_iq_callback) {
   incoming_iq_callback_ =

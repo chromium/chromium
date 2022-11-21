@@ -179,7 +179,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 - (instancetype)initWithFrameReceiver:
     (media::VideoCaptureDeviceAVFoundationFrameReceiver*)frameReceiver {
   if ((self = [super init])) {
-    _mainThreadTaskRunner = base::ThreadTaskRunnerHandle::Get();
+    _mainThreadTaskRunner = base::SingleThreadTaskRunner::GetCurrentDefault();
     _sampleQueue.reset(
         dispatch_queue_create("org.chromium.VideoCaptureDeviceAVFoundation."
                               "SampleDeliveryDispatchQueue",

@@ -6,7 +6,7 @@
 
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace media {
 
@@ -32,7 +32,7 @@ CodecBufferWaitCoordinator::CodecBufferWaitCoordinator(
     : RefCountedLockHelperDrDc(std::move(drdc_lock)),
       texture_owner_(std::move(texture_owner)),
       frame_available_event_(new FrameAvailableEvent()),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   DCHECK(texture_owner_);
   texture_owner_->SetFrameAvailableCallback(base::BindRepeating(
       &FrameAvailableEvent::Signal, frame_available_event_));

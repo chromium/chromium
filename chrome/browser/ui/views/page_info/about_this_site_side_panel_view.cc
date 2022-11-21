@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/page_info/about_this_site_side_panel_view.h"
 
 #include "base/strings/string_piece_forward.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/page_info/about_this_site_side_panel_throttle.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -115,7 +115,7 @@ void AboutThisSiteSidePanelView::DidOpenRequestedURL(
 
   // We can't open a new tab while the observer is running because it might
   // destroy this WebContents. Post as task instead.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&AboutThisSiteSidePanelView::OpenUrlInBrowser,
                                 AsWeakPtr(), std::move(params)));
 }

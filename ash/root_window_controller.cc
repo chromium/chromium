@@ -669,8 +669,8 @@ void RootWindowController::Shutdown() {
 
   // The targeter may still on the stack, so delete it later.
   if (targeter) {
-    base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE,
-                                                    std::move(targeter));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(targeter));
   }
 }
 

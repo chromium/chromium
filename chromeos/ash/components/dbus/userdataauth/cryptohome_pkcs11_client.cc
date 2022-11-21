@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_pkcs11_client.h"
 #include "chromeos/dbus/common/blocking_method_caller.h"
@@ -108,7 +108,7 @@ class CryptohomePkcs11ClientImpl : public CryptohomePkcs11Client {
       LOG(ERROR)
           << "Failed to append protobuf when calling CryptohomePkcs11 method "
           << method_name;
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
       return;
     }

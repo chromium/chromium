@@ -31,7 +31,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
@@ -1402,7 +1401,7 @@ void BrowserProcessImpl::Unpin() {
   CHECK(base::RunLoop::IsRunningOnCurrentThread());
 
 #if BUILDFLAG(IS_MAC)
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(ChromeBrowserMainPartsMac::DidEndMainMessageLoop));
 #endif

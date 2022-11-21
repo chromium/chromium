@@ -9,8 +9,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/client_session_control.h"
@@ -56,8 +56,9 @@ LocalInputMonitorTest::LocalInputMonitorTest()
 
 void LocalInputMonitorTest::SetUp() {
   // Run the task environment until no components depend on it.
-  task_runner_ = new AutoThreadTaskRunner(base::ThreadTaskRunnerHandle::Get(),
-                                          run_loop_.QuitClosure());
+  task_runner_ = new AutoThreadTaskRunner(
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      run_loop_.QuitClosure());
 }
 
 }  // namespace

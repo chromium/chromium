@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/browser_process.h"
@@ -238,7 +237,7 @@ void NetworkPortalDetectorImpl::ScheduleAttempt(const base::TimeDelta& delay) {
   }
   attempt_task_.Reset(base::BindOnce(&NetworkPortalDetectorImpl::StartAttempt,
                                      weak_factory_.GetWeakPtr()));
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, attempt_task_.callback(), next_attempt_delay_);
 }
 
@@ -267,7 +266,7 @@ void NetworkPortalDetectorImpl::StartAttempt() {
       base::BindOnce(&NetworkPortalDetectorImpl::OnAttemptTimeout,
                      weak_factory_.GetWeakPtr()));
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, attempt_timeout_task_.callback(), attempt_timeout_);
 }
 

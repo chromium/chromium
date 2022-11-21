@@ -19,7 +19,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -203,7 +202,7 @@ int MockHttpStream::ReadResponseBody(IOBuffer* buf,
     user_buf_ = buf;
     buf_len_ = buf_len;
     callback_ = std::move(callback);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&MockHttpStream::CompleteRead,
                                   weak_factory_.GetWeakPtr()));
     return ERR_IO_PENDING;

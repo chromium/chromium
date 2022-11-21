@@ -13,10 +13,10 @@
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/fuchsia_legacymetrics/legacymetrics_client.h"
 #include "components/fuchsia_legacymetrics/legacymetrics_histogram_flattener.h"
@@ -97,7 +97,8 @@ class LegacyMetricsClientTest : public testing::Test {
 
   void SetUp() override {
     service_binding_ = MakeServiceBinding();
-    base::SetRecordActionTaskRunner(base::ThreadTaskRunnerHandle::Get());
+    base::SetRecordActionTaskRunner(
+        base::SingleThreadTaskRunner::GetCurrentDefault());
 
     // Flush any dirty histograms from previous test runs in this process.
     GetLegacyMetricsDeltas();

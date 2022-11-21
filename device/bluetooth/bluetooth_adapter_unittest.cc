@@ -17,9 +17,9 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -271,7 +271,7 @@ class TestBluetoothAdapter final : public BluetoothAdapter {
   void StartScanWithFilter(
       std::unique_ptr<BluetoothDiscoveryFilter> discovery_filter,
       DiscoverySessionResultCallback callback) override {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&TestBluetoothAdapter::SetFilter,
                        weak_ptr_factory_.GetWeakPtr(),
@@ -280,7 +280,7 @@ class TestBluetoothAdapter final : public BluetoothAdapter {
 
   void UpdateFilter(std::unique_ptr<BluetoothDiscoveryFilter> discovery_filter,
                     DiscoverySessionResultCallback callback) override {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&TestBluetoothAdapter::SetFilter,
                        weak_ptr_factory_.GetWeakPtr(),
@@ -299,7 +299,7 @@ class TestBluetoothAdapter final : public BluetoothAdapter {
   }
 
   void StopScan(DiscoverySessionResultCallback callback) override {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&TestBluetoothAdapter::FakeOSStopScan,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -316,8 +316,8 @@ class TestBluetoothAdapter final : public BluetoothAdapter {
 
  private:
   void PostDelayedTask(base::OnceClosure callback) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(callback));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
   }
 
   UMABluetoothDiscoverySessionOutcome discovery_session_outcome_ =

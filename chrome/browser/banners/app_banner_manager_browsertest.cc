@@ -13,10 +13,10 @@
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/banners/app_banner_manager_browsertest_base.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
@@ -125,8 +125,8 @@ class AppBannerManagerTest : public AppBannerManager {
     install_source_ =
         std::make_unique<WebappInstallSource>(WebappInstallSource::COUNT);
     if (on_done_)
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                    std::move(on_done_));
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(on_done_));
   }
 
   void ShowBannerUi(WebappInstallSource install_source) override {
@@ -138,8 +138,8 @@ class AppBannerManagerTest : public AppBannerManager {
     ASSERT_FALSE(banner_shown_.get());
     banner_shown_ = std::make_unique<bool>(true);
     install_source_ = std::make_unique<WebappInstallSource>(install_source);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(on_done_));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(on_done_));
   }
 
   void UpdateState(AppBannerManager::State state) override {
@@ -148,8 +148,8 @@ class AppBannerManagerTest : public AppBannerManager {
         state == AppBannerManager::State::PENDING_PROMPT_CANCELED ||
         state == AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED) {
       if (on_done_)
-        base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                      std::move(on_done_));
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, std::move(on_done_));
     }
   }
 
@@ -171,7 +171,7 @@ class AppBannerManagerTest : public AppBannerManager {
       blink::mojom::AppBannerPromptReply reply) override {
     AppBannerManager::OnBannerPromptReply(std::move(controller), reply);
     if (on_banner_prompt_reply_) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, std::move(on_banner_prompt_reply_));
     }
   }
@@ -1216,8 +1216,8 @@ class PendingWorkerAppBannerManager : public AppBannerManagerTest {
     AppBannerManagerTest::UpdateState(state);
     if (state == AppBannerManager::State::PENDING_WORKER) {
       if (on_done_)
-        base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                      std::move(on_done_));
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, std::move(on_done_));
     }
   }
 };

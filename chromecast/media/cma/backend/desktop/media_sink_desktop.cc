@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromecast/public/media/cast_decoder_buffer.h"
 #include "media/base/timestamp_constants.h"
 
@@ -84,7 +84,7 @@ void MediaSinkDesktop::ScheduleEndOfStreamTask() {
       base::BindOnce(&MediaPipelineBackend::Decoder::Delegate::OnEndOfStream,
                      base::Unretained(delegate_)));
   base::TimeDelta delay = (last_frame_pts_ - GetCurrentPts()) / playback_rate_;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, eos_task_.callback(), delay);
 }
 

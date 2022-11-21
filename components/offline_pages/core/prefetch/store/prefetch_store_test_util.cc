@@ -11,9 +11,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "components/offline_pages/core/offline_store_utils.h"
 #include "components/offline_pages/core/prefetch/prefetch_item.h"
@@ -213,13 +213,14 @@ void PrefetchStoreTestUtil::BuildStore() {
     DVLOG(1) << "temp_directory_ not created";
 
   owned_store_ = std::make_unique<PrefetchStore>(
-      base::ThreadTaskRunnerHandle::Get(), temp_directory_.GetPath());
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      temp_directory_.GetPath());
   store_ = owned_store_.get();
 }
 
 void PrefetchStoreTestUtil::BuildStoreInMemory() {
-  owned_store_ =
-      std::make_unique<PrefetchStore>(base::ThreadTaskRunnerHandle::Get());
+  owned_store_ = std::make_unique<PrefetchStore>(
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   store_ = owned_store_.get();
 }
 

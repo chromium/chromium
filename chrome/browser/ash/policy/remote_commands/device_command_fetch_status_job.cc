@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/syslog_logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/uploading/status_uploader.h"
@@ -45,12 +45,12 @@ void DeviceCommandFetchStatusJob::RunImpl(CallbackWithResult succeeded_callback,
       manager->GetSystemLogUploader()) {
     manager->GetStatusUploader()->ScheduleNextStatusUploadImmediately();
     manager->GetSystemLogUploader()->ScheduleNextSystemLogUploadImmediately();
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(succeeded_callback), nullptr));
     return;
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(failed_callback), nullptr));
 }
 

@@ -14,7 +14,7 @@
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/syslog_logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
@@ -63,8 +63,8 @@ class LacrosLauncher : public crosapi::BrowserManagerObserver {
   void Start(base::OnceClosure callback) {
     if (browser_manager()->IsRunning()) {
       // Nothing to do if lacros is already running
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                    std::move(callback));
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(callback));
       return;
     }
 

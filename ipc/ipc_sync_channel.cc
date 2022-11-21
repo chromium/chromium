@@ -18,8 +18,8 @@
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_local.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel_factory.h"
@@ -219,7 +219,8 @@ class SyncChannel::ReceivedSyncMsgQueue :
       : message_queue_version_(0),
         dispatch_event_(base::WaitableEvent::ResetPolicy::MANUAL,
                         base::WaitableEvent::InitialState::NOT_SIGNALED),
-        listener_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+        listener_task_runner_(
+            base::SingleThreadTaskRunner::GetCurrentDefault()),
         sync_dispatch_watcher_(std::make_unique<mojo::SyncEventWatcher>(
             &dispatch_event_,
             base::BindRepeating(&ReceivedSyncMsgQueue::OnDispatchEventReady,
@@ -503,7 +504,8 @@ SyncChannel::SyncChannel(
       sync_handle_registry_(mojo::SyncHandleRegistry::current()) {
   // The current (listener) thread must be distinct from the IPC thread, or else
   // sending synchronous messages will deadlock.
-  DCHECK_NE(ipc_task_runner.get(), base::ThreadTaskRunnerHandle::Get().get());
+  DCHECK_NE(ipc_task_runner.get(),
+            base::SingleThreadTaskRunner::GetCurrentDefault().get());
   StartWatching();
 }
 

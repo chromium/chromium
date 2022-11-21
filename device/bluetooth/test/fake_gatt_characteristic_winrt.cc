@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/strings/string_piece.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/win/async_operation.h"
 #include "base/win/winrt_storage_util.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
@@ -183,7 +183,7 @@ HRESULT FakeGattCharacteristicWinrt::remove_ValueChanged(
 HRESULT FakeGattCharacteristicWinrt::GetDescriptorsAsync(
     IAsyncOperation<GattDescriptorsResult*>** operation) {
   auto async_op = Make<base::win::AsyncOperation<GattDescriptorsResult*>>();
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(async_op->callback(),
                      Make<FakeGattDescriptorsResultWinrt>(fake_descriptors_)));
@@ -230,7 +230,7 @@ HRESULT FakeGattCharacteristicWinrt::WriteValueWithResultAndOptionAsync(
   if (write_option == GattWriteOption_WriteWithResponse) {
     write_value_callback_ = async_op->callback();
   } else {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(async_op->callback(), Make<FakeGattWriteResultWinrt>()));
   }

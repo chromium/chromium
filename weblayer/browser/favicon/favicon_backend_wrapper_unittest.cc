@@ -9,8 +9,8 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/favicon/core/favicon_backend.h"
 #include "components/favicon/core/favicon_database.h"
@@ -54,7 +54,7 @@ class FaviconBackendWrapperTest : public testing::Test {
 
 TEST_F(FaviconBackendWrapperTest, BasicExpire) {
   wrapper_ = base::MakeRefCounted<FaviconBackendWrapper>(
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   wrapper_->Init(db_path_);
   ASSERT_TRUE(backend());
   auto* db = backend()->db();
@@ -86,7 +86,7 @@ TEST_F(FaviconBackendWrapperTest, BasicExpire) {
 
 TEST_F(FaviconBackendWrapperTest, ExpireWithOneRemaining) {
   wrapper_ = base::MakeRefCounted<FaviconBackendWrapper>(
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   wrapper_->Init(db_path_);
   ASSERT_TRUE(backend());
   auto* db = backend()->db();

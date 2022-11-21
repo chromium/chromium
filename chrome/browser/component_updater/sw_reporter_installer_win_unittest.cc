@@ -871,7 +871,7 @@ class SwReporterOnDemandFetcherTest : public ::testing::Test,
     // |OnDemandUpdate| is called immediately on |SwReporterOnDemandFetcher|
     // creation, before |fetcher_| has been assigned the newly created object.
     // Post a task to guarantee that |fetcher_| is initialized.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             component_can_be_updated_

@@ -13,7 +13,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -619,9 +619,10 @@ void WindowTreeHost::CreateCompositor(bool force_software_compositor,
   DCHECK(context_factory);
   compositor_ = std::make_unique<ui::Compositor>(
       context_factory->AllocateFrameSinkId(), context_factory,
-      base::ThreadTaskRunnerHandle::Get(), ui::IsPixelCanvasRecordingEnabled(),
-      use_external_begin_frame_control, force_software_compositor,
-      enable_compositing_based_throttling, memory_limit_when_visible_mb);
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      ui::IsPixelCanvasRecordingEnabled(), use_external_begin_frame_control,
+      force_software_compositor, enable_compositing_based_throttling,
+      memory_limit_when_visible_mb);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   compositor_->AddObserver(this);
 #endif

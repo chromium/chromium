@@ -79,10 +79,12 @@ class IndexedDBFactoryTest : public testing::Test {
     quota_policy_ = base::MakeRefCounted<storage::MockSpecialStoragePolicy>();
     quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
         /*is_incognito=*/false, temp_dir_.GetPath(),
-        base::ThreadTaskRunnerHandle::Get().get(), quota_policy_.get());
+        base::SingleThreadTaskRunner::GetCurrentDefault().get(),
+        quota_policy_.get());
 
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
-        quota_manager_.get(), base::ThreadTaskRunnerHandle::Get().get());
+        quota_manager_.get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault().get());
   }
 
   void TearDown() override {

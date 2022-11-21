@@ -97,7 +97,7 @@ class BackGestureContextualNudgeControllerTest : public NoSessionAshTestBase {
   void WaitNudgeAnimationDone() {
     while (nudge()) {
       base::RunLoop run_loop;
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
       run_loop.Run();
     }

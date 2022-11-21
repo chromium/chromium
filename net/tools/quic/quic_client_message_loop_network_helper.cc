@@ -9,7 +9,7 @@
 
 #include "base/logging.h"
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_info.h"
@@ -128,7 +128,7 @@ QuicClientMessageLooplNetworkHelper::CreateQuicPacketWriter() {
   packet_reader_started_ = false;
 
   return new QuicChromiumPacketWriter(
-      socket_.get(), base::ThreadTaskRunnerHandle::Get().get());
+      socket_.get(), base::SingleThreadTaskRunner::GetCurrentDefault().get());
 }
 
 bool QuicClientMessageLooplNetworkHelper::OnReadError(

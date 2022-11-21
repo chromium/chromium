@@ -223,7 +223,7 @@ void MCSClientTest::BuildMCSClient() {
       base::WrapUnique<Encryptor>(new FakeEncryptor));
   mcs_client_ = std::make_unique<TestMCSClient>(
       &clock_, &connection_factory_, gcm_store_.get(),
-      base::ThreadTaskRunnerHandle::Get(), &recorder_);
+      base::SingleThreadTaskRunner::GetCurrentDefault(), &recorder_);
 }
 
 void MCSClientTest::InitializeClient() {

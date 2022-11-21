@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_P(ScrollingIntegrationTest,
     // We wait a timeout but that's really a hack. Fixing is tracked in
     // https://crbug.com/897520
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(3000));
     run_loop.Run();
   }
@@ -271,7 +271,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
   while (blink::mojom::FrameVisibility::kRenderedOutOfViewport !=
          connector->visibility()) {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
     run_loop.Run();
   }
@@ -668,7 +668,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   update_rect = interceptor->last_rect();
   while (update_rect.y() > initial_y) {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
     run_loop.Run();
     update_rect = interceptor->last_rect();
@@ -751,7 +751,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // with scroll bubbling.
   while (update_rect.y() > initial_y) {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
     run_loop.Run();
     update_rect = interceptor->last_rect();
@@ -770,7 +770,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // so flakiness implies this test is failing.
   {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::action_timeout());
     run_loop.Run();
   }

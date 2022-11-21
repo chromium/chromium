@@ -14,8 +14,8 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner_util.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "sql/database.h"
 
@@ -130,7 +130,7 @@ class SqlStoreBase {
     DCHECK_NE(initialization_status_, InitializationStatus::kInProgress);
     sql::Database* db = ExecuteBegin();
     if (!db) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(result_callback), std::move(default_value)));
       return;

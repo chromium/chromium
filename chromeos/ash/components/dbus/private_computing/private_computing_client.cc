@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/private_computing/fake_private_computing_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -73,7 +73,7 @@ class PrivateComputingClientImpl : public PrivateComputingClient {
       response.set_error_message(
           base::StrCat({"Failure to call d-bus method: ",
                         private_computing::kSaveLastPingDatesStatus}));
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), response));
       return;
     }

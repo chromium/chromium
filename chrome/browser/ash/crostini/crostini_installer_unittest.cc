@@ -74,8 +74,8 @@ class CrostiniInstallerTest : public testing::Test {
             callback) override {
       ash::FakeConciergeClient::StartVm(request, std::move(callback));
       if (quit_closure_) {
-        base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                      std::move(quit_closure_));
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, std::move(quit_closure_));
       }
     }
 

@@ -6,7 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/gpu_surface_lookup.h"
@@ -44,7 +44,7 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
       can_be_used_with_surface_control) {
     surface = new gl::GLSurfaceEGLSurfaceControl(
         display->GetAs<gl::GLDisplayEGL>(), window,
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   } else {
     surface = new gl::NativeViewGLSurfaceEGL(display->GetAs<gl::GLDisplayEGL>(),
                                              window, nullptr);

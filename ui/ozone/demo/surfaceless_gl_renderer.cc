@@ -313,7 +313,7 @@ void SurfacelessGlRenderer::PostRenderFrameTask(
       }
       [[fallthrough]];  // We want to render a new frame anyways.
     case gfx::SwapResult::SWAP_ACK:
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&SurfacelessGlRenderer::RenderFrame,
                                     weak_ptr_factory_.GetWeakPtr()));
       break;

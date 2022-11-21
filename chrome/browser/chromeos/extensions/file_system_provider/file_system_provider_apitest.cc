@@ -7,7 +7,7 @@
 
 #include "base/bind.h"
 #include "base/files/file.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_system_provider/observer.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
@@ -61,7 +61,7 @@ class NotificationButtonClicker : public RequestManager::Observer {
                          base::File::Error error) override {}
   void OnRequestTimeouted(int request_id) override {
     // Call asynchronously so the notification is setup is completed.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&NotificationButtonClicker::ClickButton,
                                   base::Unretained(this)));
   }

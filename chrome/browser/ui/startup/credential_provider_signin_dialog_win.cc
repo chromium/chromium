@@ -87,7 +87,8 @@ void HandleAllGcpwInfoFetched(
   // Release the fetcher and mark it for eventual delete. It is not immediately
   // deleted here in case it still wants to do further processing after
   // returning from this callback
-  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, fetcher.release());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE, fetcher.release());
 
   // Release the keep_alive implicitly and allow the dialog to die.
 }
@@ -105,7 +106,7 @@ void HandleSigninCompleteForGcpwLogin(
   // make sure the keep alive is not destroyed on return of this function
   // or a reentrancy crash will occur in HWNDMessageHandler().
   if (exit_code != credential_provider::kUiecSuccess) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&WriteResultToHandleWithKeepAlive, std::move(keep_alive),
                        std::move(signin_result)));
@@ -367,7 +368,8 @@ class CredentialProviderWebDialogDelegate : public ui::WebDialogDelegate {
     // Class owns itself and thus needs to be deleted eventually after the
     // closed call back has been signalled since it will no longer be accessed
     // by the WebDialogView.
-    base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                                  this);
   }
 
   void OnCloseContents(content::WebContents* source,

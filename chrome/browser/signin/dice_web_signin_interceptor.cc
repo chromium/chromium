@@ -14,7 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -322,7 +322,7 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
     on_account_info_update_timeout_.Reset(base::BindOnce(
         &DiceWebSigninInterceptor::OnExtendedAccountInfoFetchTimeout,
         base::Unretained(this)));
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, on_account_info_update_timeout_.callback(),
         base::Seconds(5));
     account_info_update_observation_.Observe(identity_manager_.get());
@@ -876,7 +876,7 @@ void DiceWebSigninInterceptor::
       &DiceWebSigninInterceptor::
           OnAccountLevelManagedAccountsSigninRestrictionReceived,
       base::Unretained(this), /*timed_out=*/true, account_info, std::string()));
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, on_intercepted_account_level_policy_value_timeout_.callback(),
       base::Seconds(5));
 }

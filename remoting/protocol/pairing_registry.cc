@@ -16,7 +16,6 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "crypto/random.h"
 
@@ -102,7 +101,7 @@ bool PairingRegistry::Pairing::is_valid() const {
 PairingRegistry::PairingRegistry(
     scoped_refptr<base::SingleThreadTaskRunner> delegate_task_runner,
     std::unique_ptr<Delegate> delegate)
-    : caller_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+    : caller_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       delegate_task_runner_(delegate_task_runner),
       delegate_(std::move(delegate)) {
   DCHECK(delegate_);

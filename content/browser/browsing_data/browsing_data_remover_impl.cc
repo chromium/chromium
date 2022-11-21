@@ -20,7 +20,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/browsing_data/browsing_data_filter_builder_impl.h"
@@ -57,13 +57,13 @@ base::OnceClosure RunsOrPostOnCurrentTaskRunner(base::OnceClosure closure) {
   return base::BindOnce(
       [](base::OnceClosure closure,
          scoped_refptr<base::TaskRunner> task_runner) {
-        if (base::ThreadTaskRunnerHandle::Get() == task_runner) {
+        if (base::SingleThreadTaskRunner::GetCurrentDefault() == task_runner) {
           std::move(closure).Run();
           return;
         }
         task_runner->PostTask(FROM_HERE, std::move(closure));
       },
-      std::move(closure), base::ThreadTaskRunnerHandle::Get());
+      std::move(closure), base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 // Returns whether `storage_key` matches `origin_type_mask` given the special

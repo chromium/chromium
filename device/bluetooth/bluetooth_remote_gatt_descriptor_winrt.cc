@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/win/post_async_results.h"
 #include "base/win/winrt_storage_util.h"
 #include "components/device_event_log/device_event_log.h"
@@ -102,7 +102,7 @@ BluetoothRemoteGattDescriptorWinrt::GetCharacteristic() const {
 void BluetoothRemoteGattDescriptorWinrt::ReadRemoteDescriptor(
     ValueCallback callback) {
   if (pending_read_callback_ || pending_write_callbacks_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        BluetoothGattService::GattErrorCode::kInProgress,
@@ -117,7 +117,7 @@ void BluetoothRemoteGattDescriptorWinrt::ReadRemoteDescriptor(
     BLUETOOTH_LOG(ERROR)
         << "GattDescriptor::ReadValueWithCacheModeAsync failed: "
         << logging::SystemErrorCodeToString(hr);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   BluetoothGattService::GattErrorCode::kFailed,
                                   /*value=*/std::vector<uint8_t>()));
@@ -132,7 +132,7 @@ void BluetoothRemoteGattDescriptorWinrt::ReadRemoteDescriptor(
   if (FAILED(hr)) {
     BLUETOOTH_LOG(ERROR) << "PostAsyncResults failed: "
                          << logging::SystemErrorCodeToString(hr);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   BluetoothGattService::GattErrorCode::kFailed,
                                   /*value=*/std::vector<uint8_t>()));
@@ -147,7 +147,7 @@ void BluetoothRemoteGattDescriptorWinrt::WriteRemoteDescriptor(
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   if (pending_read_callback_ || pending_write_callbacks_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(error_callback),
                        BluetoothGattService::GattErrorCode::kInProgress));
@@ -159,7 +159,7 @@ void BluetoothRemoteGattDescriptorWinrt::WriteRemoteDescriptor(
   if (FAILED(hr)) {
     BLUETOOTH_LOG(ERROR) << "As IGattDescriptor2 failed: "
                          << logging::SystemErrorCodeToString(hr);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(error_callback),
                        BluetoothGattService::GattErrorCode::kFailed));
@@ -171,7 +171,7 @@ void BluetoothRemoteGattDescriptorWinrt::WriteRemoteDescriptor(
   if (FAILED(hr)) {
     BLUETOOTH_LOG(ERROR) << "base::win::CreateIBufferFromData failed: "
                          << logging::SystemErrorCodeToString(hr);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(error_callback),
                        BluetoothGattService::GattErrorCode::kFailed));
@@ -183,7 +183,7 @@ void BluetoothRemoteGattDescriptorWinrt::WriteRemoteDescriptor(
   if (FAILED(hr)) {
     BLUETOOTH_LOG(ERROR) << "GattDescriptor::WriteValueWithResultAsync failed: "
                          << logging::SystemErrorCodeToString(hr);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(error_callback),
                        BluetoothGattService::GattErrorCode::kFailed));
@@ -199,7 +199,7 @@ void BluetoothRemoteGattDescriptorWinrt::WriteRemoteDescriptor(
   if (FAILED(hr)) {
     BLUETOOTH_LOG(ERROR) << "PostAsyncResults failed: "
                          << logging::SystemErrorCodeToString(hr);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(error_callback),
                        BluetoothGattService::GattErrorCode::kFailed));

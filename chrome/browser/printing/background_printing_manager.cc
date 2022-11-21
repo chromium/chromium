@@ -8,7 +8,6 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
@@ -123,7 +122,7 @@ void BackgroundPrintingManager::DeletePreviewContents(
   // ... and mortally wound the contents. Deletion immediately is not a good
   // idea in case this was triggered by `preview_contents` far up the
   // callstack. (Trace where the NOTIFICATION_PRINT_JOB_RELEASED comes from.)
-  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
       FROM_HERE, std::move(contents_to_delete));
 }
 

@@ -5,7 +5,7 @@
 #include "ui/views/widget/desktop_aura/desktop_drag_drop_client_ozone_linux.h"
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -42,7 +42,7 @@ void DesktopDragDropClientOzoneLinux::OnDragLocationChanged(
     // Post a task to dispatch mouse movement event when control returns to the
     // message loop. This allows smoother dragging since the events are
     // dispatched without waiting for the drag widget updates.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             &DesktopDragDropClientOzoneLinux::UpdateDragWidgetLocation,

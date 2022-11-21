@@ -474,7 +474,7 @@ void EnrollmentScreen::AutomaticRetry() {
   retry_task_.Reset(base::BindOnce(&EnrollmentScreen::ProcessRetry,
                                    weak_ptr_factory_.GetWeakPtr()));
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, retry_task_.callback(), retry_backoff_->GetTimeUntilRelease());
 }
 

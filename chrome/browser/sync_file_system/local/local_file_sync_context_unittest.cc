@@ -18,7 +18,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_future.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/sync_file_system/local/canned_syncable_file_system.h"
 #include "chrome/browser/sync_file_system/local/local_file_change_tracker.h"
 #include "chrome/browser/sync_file_system/local/sync_file_system_backend.h"
@@ -74,7 +73,7 @@ class LocalFileSyncContextTest : public testing::Test {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
     in_memory_env_ = leveldb_chrome::NewMemEnv("LocalFileSyncContextTest");
 
-    ui_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+    ui_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
     io_task_runner_ = content::GetIOThreadTaskRunner({});
     file_task_runner_ = content::GetIOThreadTaskRunner({});
   }

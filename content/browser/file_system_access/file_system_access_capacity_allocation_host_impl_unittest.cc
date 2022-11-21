@@ -53,9 +53,10 @@ class FileSystemAccessCapacityAllocationHostImplTest : public testing::Test {
     ASSERT_TRUE(data_dir_.GetPath().IsAbsolute());
     quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
         /*is_incognito=*/false, data_dir_.GetPath(),
-        base::ThreadTaskRunnerHandle::Get(), special_storage_policy_);
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        special_storage_policy_);
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
-        quota_manager(), base::ThreadTaskRunnerHandle::Get());
+        quota_manager(), base::SingleThreadTaskRunner::GetCurrentDefault());
     file_system_context_ = storage::CreateFileSystemContextForTesting(
         quota_manager_proxy(), data_dir_.GetPath());
 

@@ -18,7 +18,7 @@
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/offline_pages/core/background/offliner.h"
 #include "components/offline_pages/core/background/offliner_client.h"
@@ -318,7 +318,7 @@ int64_t RequestCoordinator::SavePageLater(
   if (!OfflinePageModel::CanSaveURL(save_page_later_params.url)) {
     DVLOG(1) << "Not able to save page for requested url: "
              << save_page_later_params.url;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(save_page_later_callback),
                                   AddRequestResult::URL_ERROR));
     return 0L;

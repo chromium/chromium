@@ -8,9 +8,9 @@
 #include <string>
 #include <utility>
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/trust_tokens/in_memory_trust_token_persister.h"
 #include "services/network/trust_tokens/proto/public.pb.h"
@@ -52,7 +52,7 @@ class NoDatabaseSqliteTrustTokenPersisterFactory {
     // on database error works as intended.
     TrustTokenDatabaseOwner::Create(
         /*db_opener=*/base::BindOnce([](sql::Database*) { return false; }),
-        base::ThreadTaskRunnerHandle::Get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
         /*flush_delay_for_writes=*/base::TimeDelta(),
         base::BindLambdaForTesting(
             [&owner](std::unique_ptr<TrustTokenDatabaseOwner> created) {
@@ -72,7 +72,7 @@ class EndToEndSqliteTrustTokenPersisterFactory {
     TrustTokenDatabaseOwner::Create(
         /*db_opener=*/base::BindOnce(
             [](sql::Database* db) { return db->OpenInMemory(); }),
-        base::ThreadTaskRunnerHandle::Get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
         /*flush_delay_for_writes=*/base::TimeDelta(),
         base::BindLambdaForTesting(
             [&owner](std::unique_ptr<TrustTokenDatabaseOwner> created) {

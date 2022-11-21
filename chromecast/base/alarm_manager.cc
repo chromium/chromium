@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 
@@ -66,7 +65,7 @@ AlarmManager::AlarmManager(
 
 AlarmManager::AlarmManager()
     : AlarmManager(base::DefaultClock::GetInstance(),
-                   base::ThreadTaskRunnerHandle::Get()) {}
+                   base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 AlarmManager::~AlarmManager() {}
 
@@ -76,7 +75,7 @@ std::unique_ptr<AlarmHandle> AlarmManager::PostAlarmTask(base::OnceClosure task,
   std::unique_ptr<AlarmHandle> handle = std::make_unique<AlarmHandle>();
   AddAlarm(base::BindOnce(&VerifyHandleCallback, std::move(task),
                           handle->AsWeakPtr()),
-           time, base::ThreadTaskRunnerHandle::Get());
+           time, base::SingleThreadTaskRunner::GetCurrentDefault());
   return handle;
 }
 

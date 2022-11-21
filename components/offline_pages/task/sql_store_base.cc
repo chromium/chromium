@@ -11,8 +11,8 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner_util.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 
 namespace offline_pages {
@@ -175,13 +175,14 @@ void SqlStoreBase::CloseInternal() {
   background_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &CloseDatabaseSync, db_.get(), base::ThreadTaskRunnerHandle::Get(),
+          &CloseDatabaseSync, db_.get(),
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
           base::BindOnce(&SqlStoreBase::CloseInternalDone,
                          weak_ptr_factory_.GetWeakPtr(), std::move(db_))));
 }
 
 void SqlStoreBase::RescheduleClosingBefore() {
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&SqlStoreBase::CloseInternal,
                      closing_weak_ptr_factory_.GetWeakPtr()),

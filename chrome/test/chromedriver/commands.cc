@@ -21,7 +21,6 @@
 #include "base/system/sys_info.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/capabilities.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
@@ -136,7 +135,7 @@ void ExecuteGetSessions(const Command& session_capabilities_command,
         base::BindRepeating(&OnGetSession, weak_ptr_factory.GetWeakPtr(),
                             run_loop.QuitClosure(), session_list.get()));
   }
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Seconds(10));
   run_loop.Run();
 
@@ -182,7 +181,7 @@ void ExecuteQuitAll(const Command& quit_command,
         base::BindRepeating(&OnSessionQuit, weak_ptr_factory.GetWeakPtr(),
                             run_loop.QuitClosure()));
   }
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Seconds(10));
   // Uses a nested run loop to block this thread until all the quit
   // commands have executed, or the timeout expires.
@@ -345,7 +344,8 @@ void ExecuteSessionCommand(SessionThreadMap* session_thread_map,
         base::BindOnce(
             &ExecuteSessionCommandOnSessionThread, command_name, session_id,
             command, w3c_standard_command, return_ok_without_session,
-            params.Clone(), base::ThreadTaskRunnerHandle::Get(), callback,
+            params.Clone(), base::SingleThreadTaskRunner::GetCurrentDefault(),
+            callback,
             base::BindRepeating(&TerminateSessionThreadOnCommandThread,
                                 session_thread_map, session_id)));
   }

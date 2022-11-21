@@ -10,7 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/query_tiles/internal/image_loader.h"
 #include "components/query_tiles/internal/tile_group.h"
 #include "components/query_tiles/internal/tile_iterator.h"
@@ -45,8 +45,8 @@ class ImagePrefetcherImpl : public ImagePrefetcher {
                 base::OnceClosure done_callback) override {
     DCHECK(done_callback);
     if (mode_ == ImagePrefetchMode::kNone) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                    std::move(done_callback));
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(done_callback));
       return;
     }
 
@@ -76,8 +76,8 @@ class ImagePrefetcherImpl : public ImagePrefetcher {
     // All image urls are fetched.
     if (urls_to_fetch.empty()) {
       DCHECK(done_callback);
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                    std::move(done_callback));
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(done_callback));
       return;
     }
 
@@ -103,13 +103,15 @@ class ImagePrefetcherImpl : public ImagePrefetcher {
 
   void OnImageFetched(base::OnceClosure next, SkBitmap bitmap) {
     if (next) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(next));
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(next));
     }
   }
 
   void OnImageFetchedInReducedMode(base::OnceClosure next, bool success) {
     if (next) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(next));
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(next));
     }
   }
 

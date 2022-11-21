@@ -5,8 +5,8 @@
 #include "chrome/browser/extensions/api/image_writer_private/removable_storage_provider.h"
 #include "base/bind.h"
 #include "base/lazy_instance.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace extensions {
@@ -21,7 +21,7 @@ static base::LazyInstance<scoped_refptr<StorageDeviceList>>::DestructorAtExit
 void RemovableStorageProvider::GetAllDevices(DeviceListReadyCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (g_test_device_list.Get().get() != nullptr) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), g_test_device_list.Get()));
     return;

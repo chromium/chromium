@@ -22,7 +22,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/tick_clock.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/values.h"
@@ -681,7 +680,7 @@ void QuicChromiumClientSession::StreamRequest::OnRequestCompleteFailure(
   // This method is called even when the request completes synchronously.
   if (callback_) {
     // Avoid re-entrancy if the callback calls into the session.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&QuicChromiumClientSession::StreamRequest::DoCallback,
                        weak_factory_.GetWeakPtr(), rv));
@@ -1032,7 +1031,7 @@ QuicChromiumClientSession::~QuicChromiumClientSession() {
   // This is referenced by the parent class's destructor, so have to delete it
   // asynchronously, unfortunately. Don't use DeleteSoon, since that leaks if
   // the task is not run, which is often the case in tests.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce([](std::unique_ptr<quic::QuicClientPushPromiseIndex>
                             push_promise_index) {},

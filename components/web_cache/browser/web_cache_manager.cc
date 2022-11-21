@@ -16,7 +16,6 @@
 #include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -442,7 +441,7 @@ void WebCacheManager::ReviseAllocationStrategyLater() {
 
   // Ask to be called back in a few milliseconds to actually recompute our
   // allocation.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&WebCacheManager::ReviseAllocationStrategy,
                      weak_factory_.GetWeakPtr()),

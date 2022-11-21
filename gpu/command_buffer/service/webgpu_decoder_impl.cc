@@ -2018,7 +2018,7 @@ error::Error WebGPUDecoderImpl::HandleSetWebGPUExecutionContextToken(
   if (enable_unsafe_webgpu_) {
     isolation_key_provider_->GetIsolationKey(
         execution_context_token,
-        base::BindPostTask(base::ThreadTaskRunnerHandle::Get(),
+        base::BindPostTask(base::SingleThreadTaskRunner::GetCurrentDefault(),
                            base::BindOnce(&WebGPUDecoderImpl::OnGetIsolationKey,
                                           weak_ptr_factory_.GetWeakPtr())));
   }

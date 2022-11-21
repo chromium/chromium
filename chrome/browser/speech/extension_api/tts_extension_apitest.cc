@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/component_loader.h"
@@ -150,7 +149,7 @@ class MockTtsPlatformImpl : public content::TtsPlatform {
   void SetErrorToEpicFail() { SetError("epic fail"); }
 
   void SendEndEventOnSavedUtteranceId() {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&MockTtsPlatformImpl::SendEvent,
                        ptr_factory_.GetWeakPtr(), false, g_saved_utterance_id,
@@ -163,7 +162,7 @@ class MockTtsPlatformImpl : public content::TtsPlatform {
                     const std::string& lang,
                     const content::VoiceData& voice,
                     const content::UtteranceContinuousParameters& params) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&MockTtsPlatformImpl::SendEvent,
                        ptr_factory_.GetWeakPtr(), false, utterance_id,
@@ -178,7 +177,7 @@ class MockTtsPlatformImpl : public content::TtsPlatform {
       const std::string& lang,
       const content::VoiceData& voice,
       const content::UtteranceContinuousParameters& params) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&MockTtsPlatformImpl::SendEvent,
                        ptr_factory_.GetWeakPtr(), true, utterance_id,
@@ -194,7 +193,7 @@ class MockTtsPlatformImpl : public content::TtsPlatform {
                       const content::UtteranceContinuousParameters& params) {
     for (int i = 0; i < static_cast<int>(utterance.size()); i++) {
       if (i == 0 || utterance[i - 1] == ' ') {
-        base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(&MockTtsPlatformImpl::SendEvent,
                            ptr_factory_.GetWeakPtr(), false, utterance_id,
@@ -213,7 +212,7 @@ class MockTtsPlatformImpl : public content::TtsPlatform {
     content::TtsController* tts_controller =
         content::TtsController::GetInstance();
     if (wait_for_non_empty_queue && tts_controller->QueueSize() == 0) {
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&MockTtsPlatformImpl::SendEvent,
                          ptr_factory_.GetWeakPtr(), true, utterance_id,

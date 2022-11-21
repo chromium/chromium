@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "content/browser/find_in_page_client.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -362,7 +362,7 @@ void FindRequestManager::Find(int request_id,
     delayed_find_task_.Reset(base::BindOnce(
         &FindRequestManager::EmitFindRequest, weak_factory_.GetWeakPtr(),
         request_id, search_text, std::move(options)));
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, delayed_find_task_.callback(), base::Milliseconds(kDelayMs));
     return;
   }

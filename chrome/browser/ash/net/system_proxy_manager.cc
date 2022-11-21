@@ -69,7 +69,7 @@ class SystemProxyLoginHandler : public content::LoginDelegate {
       const std::string& username,
       const std::string& password,
       LoginAuthRequiredCallback auth_required_callback) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&SystemProxyLoginHandler::InvokeWithCredentials,
                        weak_factory_.GetWeakPtr(), username, password,

@@ -20,8 +20,8 @@
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/core/model_info.h"
@@ -832,7 +832,7 @@ void PredictionManager::StoreLoadedModelInfo(
   DCHECK(model_info);
 
   // Notify observers of new model file path.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&PredictionManager::NotifyObserversOfNewModel,
                                 ui_weak_ptr_factory_.GetWeakPtr(),
                                 optimization_target, *model_info));

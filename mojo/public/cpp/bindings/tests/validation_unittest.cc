@@ -14,8 +14,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/c/system/macros.h"
 #include "mojo/public/cpp/bindings/connector.h"
 #include "mojo/public/cpp/bindings/lib/validation_errors.h"
@@ -277,7 +277,7 @@ class ValidationIntegrationTest : public ValidationTest {
         : owner_(owner),
           connector_(std::move(handle),
                      mojo::Connector::SINGLE_THREADED_SEND,
-                     base::ThreadTaskRunnerHandle::Get()) {
+                     base::SingleThreadTaskRunner::GetCurrentDefault()) {
       connector_.set_enforce_errors_from_incoming_receiver(false);
     }
     ~TestMessageReceiver() override {}

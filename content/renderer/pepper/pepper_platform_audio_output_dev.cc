@@ -11,7 +11,6 @@
 #include "base/logging.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -194,7 +193,8 @@ void PepperPlatformAudioOutputDev::OnStreamCreated(
 #endif
   DCHECK_GT(shared_memory_region.GetSize(), 0u);
 
-  if (base::ThreadTaskRunnerHandle::Get().get() == main_task_runner_.get()) {
+  if (base::SingleThreadTaskRunner::GetCurrentDefault().get() ==
+      main_task_runner_.get()) {
     // Must dereference the client only on the main thread. Shutdown may have
     // occurred while the request was in-flight, so we need to NULL check.
     if (client_)
@@ -238,7 +238,7 @@ PepperPlatformAudioOutputDev::PepperPlatformAudioOutputDev(
     const std::string& device_id,
     base::TimeDelta authorization_timeout)
     : client_(nullptr),
-      main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       io_task_runner_(ChildProcess::current()->io_task_runner()),
       render_frame_id_(render_frame_id),
       state_(IDLE),

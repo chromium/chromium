@@ -36,7 +36,6 @@
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
@@ -274,8 +273,8 @@ ChromeUserManagerImpl::CreateChromeUserManager() {
 }
 
 ChromeUserManagerImpl::ChromeUserManagerImpl()
-    : ChromeUserManager(base::ThreadTaskRunnerHandle::IsSet()
-                            ? base::ThreadTaskRunnerHandle::Get()
+    : ChromeUserManager(base::SingleThreadTaskRunner::HasCurrentDefault()
+                            ? base::SingleThreadTaskRunner::GetCurrentDefault()
                             : nullptr),
       cros_settings_(CrosSettings::Get()),
       device_local_account_policy_service_(nullptr),
@@ -284,7 +283,7 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
 
   // UserManager instance should be used only on UI thread.
   // (or in unit tests)
-  if (base::ThreadTaskRunnerHandle::IsSet())
+  if (base::SingleThreadTaskRunner::HasCurrentDefault())
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   DeviceSettingsService::Get()->AddObserver(this);
@@ -297,8 +296,8 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
     session_observation_.Observe(session_manager);
 
   // Since we're in ctor postpone any actions till this is fully created.
-  if (base::ThreadTaskRunnerHandle::IsSet()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+  if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&ChromeUserManagerImpl::RetrieveTrustedDevicePolicies,
                        weak_factory_.GetWeakPtr()));

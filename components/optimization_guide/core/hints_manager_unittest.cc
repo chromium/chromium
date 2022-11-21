@@ -217,13 +217,13 @@ class TestHintsFetcher : public HintsFetcher {
         std::move(hints_fetched_callback).Run(absl::nullopt);
         return false;
       case HintsFetcherEndState::kFetchSuccessWithHostHints:
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(&RunHintsFetchedCallbackWithResponse,
                                       std::move(hints_fetched_callback),
                                       BuildHintsResponse({"host.com"}, {})));
         return true;
       case HintsFetcherEndState::kFetchSuccessWithURLHints:
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(&RunHintsFetchedCallbackWithResponse,
                            std::move(hints_fetched_callback),
@@ -231,7 +231,7 @@ class TestHintsFetcher : public HintsFetcher {
                                {}, {"https://somedomain.org/news/whatever"})));
         return true;
       case HintsFetcherEndState::kFetchSuccessWithNoHints:
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(&RunHintsFetchedCallbackWithResponse,
                                       std::move(hints_fetched_callback),
                                       BuildHintsResponse({}, {})));

@@ -14,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
@@ -481,7 +480,7 @@ void NativeDesktopMediaList::Worker::OnCaptureResult(
 
   // Protect against possible re-entrancy since OnCaptureResult can be invoked
   // from within the call to CaptureFrame.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&Worker::RefreshNextThumbnail,
                                 weak_factory_.GetWeakPtr()));
 }

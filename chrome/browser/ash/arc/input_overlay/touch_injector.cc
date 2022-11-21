@@ -667,7 +667,7 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
         // Some apps can't process correctly on the touch move event which
         // follows touch press event immediately, so send the touch move event
         // delayed here.
-        base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(&TouchInjector::SendExtraEvent,
                            weak_ptr_factory_.GetWeakPtr(), continuation,

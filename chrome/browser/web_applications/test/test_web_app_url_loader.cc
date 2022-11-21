@@ -6,7 +6,7 @@
 
 #include "base/callback.h"
 #include "base/containers/contains.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace web_app {
 
@@ -70,7 +70,7 @@ void TestWebAppUrlLoader::LoadUrl(const GURL& url,
   if (responses.results.empty())
     next_result_map_.erase(url);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 

@@ -24,7 +24,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/one_shot_event.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -681,7 +681,7 @@ void BackgroundModeManager::ReleaseStartupKeepAlive() {
     // keep-alive (which can shutdown Chrome) before the message loop has
     // started. This object reference is safe because it's going to be kept
     // alive by the browser process until after the callback is called.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&BackgroundModeManager::ReleaseStartupKeepAliveCallback,
                        base::Unretained(this)));
@@ -694,7 +694,7 @@ void BackgroundModeManager::ReleaseForceInstalledExtensionsKeepAlive() {
     // keep-alive (which can shutdown Chrome) before the message loop has
     // started. This object reference is safe because it's going to be kept
     // alive by the browser process until after the callback is called.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(
                        [](std::unique_ptr<ScopedKeepAlive> keep_alive) {
                          // Cleans up unique_ptr when it goes out of scope.

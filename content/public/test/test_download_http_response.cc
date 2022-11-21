@@ -17,7 +17,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/test_completion_callback.h"
@@ -563,7 +562,8 @@ void TestDownloadHttpResponse::PauseResponsesAndWaitForResumption() {
       FROM_HERE,
       base::BindOnce(
           std::move(pause_callback),
-          base::BindOnce(OnResume, base::ThreadTaskRunnerHandle::Get(),
+          base::BindOnce(OnResume,
+                         base::SingleThreadTaskRunner::GetCurrentDefault(),
                          std::move(continue_closure))));
 }
 
@@ -632,7 +632,7 @@ std::unique_ptr<net::test_server::HttpResponse>
 TestDownloadResponseHandler::HandleTestDownloadRequest(
     TestDownloadHttpResponse::OnResponseSentCallback callback,
     const net::test_server::HttpRequest& request) {
-  server_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  server_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 
   if (request.headers.find(net::HttpRequestHeaders::kHost) ==
       request.headers.end()) {

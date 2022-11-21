@@ -22,7 +22,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/win/scoped_handle.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_channel_proxy.h"
@@ -180,7 +179,7 @@ WtsSessionProcessDelegate::Core::Core(
     bool launch_elevated,
     const std::string& channel_security)
     : base::MessagePumpForIO::IOHandler(FROM_HERE),
-      caller_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      caller_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       io_task_runner_(std::move(io_task_runner)),
       channel_security_(channel_security),
       launch_elevated_(launch_elevated),
@@ -421,7 +420,7 @@ void WtsSessionProcessDelegate::Core::DoLaunchProcess() {
   std::unique_ptr<IPC::ChannelProxy> channel = IPC::ChannelProxy::Create(
       mojo_invitation_.AttachMessagePipe(mojo_pipe_token).release(),
       IPC::Channel::MODE_SERVER, this, io_task_runner_,
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   command_line.AppendSwitchASCII(kMojoPipeToken, mojo_pipe_token);
 
   std::unique_ptr<mojo::PlatformChannel> normal_mojo_channel;

@@ -10,7 +10,7 @@
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/task/bind_post_task.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
@@ -126,7 +126,7 @@ VideoImageReaderImageBacking::VideoImageReaderImageBacking(
                                !!drdc_lock),
       RefCountedLockHelperDrDc(std::move(drdc_lock)),
       stream_texture_sii_(std::move(stream_texture_sii)),
-      gpu_main_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+      gpu_main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   DCHECK(stream_texture_sii_);
 
   context_lost_helper_ = std::make_unique<ContextLostObserverHelper>(

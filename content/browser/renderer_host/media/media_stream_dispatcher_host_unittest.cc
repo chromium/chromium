@@ -26,7 +26,6 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/media/audio_input_device_manager.h"
@@ -128,7 +127,7 @@ class MockMediaStreamDispatcherHost
                                 int render_frame_id,
                                 MediaStreamManager* manager)
       : MediaStreamDispatcherHost(render_process_id, render_frame_id, manager),
-        task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+        task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
   ~MockMediaStreamDispatcherHost() override {}
 
   // A list of mock methods.

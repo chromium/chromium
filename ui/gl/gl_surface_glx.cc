@@ -18,7 +18,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -235,7 +234,7 @@ class SGIVideoSyncProviderThreadShim {
       : parent_window_(parent_window),
         vsync_thread_(vsync_thread),
         glx_window_(0),
-        task_runner_(base::ThreadTaskRunnerHandle::Get()),
+        task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
         cancel_vsync_flag_(),
         vsync_lock_() {
     // This ensures that creation of |parent_window_| has occured when this shim

@@ -5,7 +5,7 @@
 #include "components/policy/core/common/policy_scheduler.h"
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace policy {
 
@@ -33,8 +33,8 @@ void PolicyScheduler::ScheduleDelayedTask(base::TimeDelta delay) {
   }
   job_ = std::make_unique<base::CancelableOnceClosure>(base::BindOnce(
       &PolicyScheduler::RunScheduledTask, weak_ptr_factory_.GetWeakPtr()));
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(FROM_HERE,
-                                                       job_->callback(), delay);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, job_->callback(), delay);
 }
 
 void PolicyScheduler::ScheduleNextTask() {

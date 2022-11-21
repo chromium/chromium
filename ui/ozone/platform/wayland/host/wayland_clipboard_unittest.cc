@@ -17,10 +17,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_constants.h"
@@ -465,7 +465,7 @@ TEST_P(WaylandClipboardTest, OverlapReadingFromDifferentBuffers) {
                           : ClipboardBuffer::kSelection;
   base::MockCallback<PlatformClipboard::RequestDataClosure> callback;
   EXPECT_CALL(callback, Run(Eq(nullptr))).Times(1);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&PlatformClipboard::RequestClipboardData,
                                 base::Unretained(clipboard_), other_buffer,
                                 kMimeTypeTextUtf8, callback.Get()));
@@ -557,7 +557,7 @@ TEST_P(CopyPasteOnlyClipboardTest, DISABLED_OverlappingReadRequests) {
   EXPECT_CALL(got_html, Run(_)).WillOnce([&](PlatformClipboard::Data data) {
     html = std::string(data->front_as<const char>(), data->size());
   });
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PlatformClipboard::RequestClipboardData,
                      base::Unretained(clipboard_), ClipboardBuffer::kCopyPaste,

@@ -6,7 +6,6 @@
 
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
@@ -94,8 +93,8 @@ void BackgroundSyncNetworkObserver::NotifyManagerIfConnectionChanged(
 void BackgroundSyncNetworkObserver::NotifyConnectionChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                connection_changed_callback_);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, connection_changed_callback_);
 }
 
 }  // namespace content

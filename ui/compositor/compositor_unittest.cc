@@ -12,7 +12,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/metrics/frame_sequence_tracker.h"
@@ -105,7 +104,7 @@ class CompositorTestWithMessageLoop : public CompositorTest {
 
  protected:
   scoped_refptr<base::SingleThreadTaskRunner> CreateTaskRunner() override {
-    task_runner_ = base::ThreadTaskRunnerHandle::Get();
+    task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
     return task_runner_;
   }
 

@@ -206,7 +206,7 @@ DataSourceTester::DataSourceTester(
   features_.InitAndDisableFeature(features::kEnablePerfettoSystemTracing);
 #if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   auto perfetto_wrapper = std::make_unique<base::tracing::PerfettoTaskRunner>(
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   producer_ = std::make_unique<tracing::TestProducerClient>(
       std::move(perfetto_wrapper));

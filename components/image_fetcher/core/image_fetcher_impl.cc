@@ -7,7 +7,7 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/gfx/image/image.h"
@@ -65,7 +65,7 @@ void ImageFetcherImpl::FetchImageAndData(
     // later.
     if (image_data_callback) {
       if (!request->image_data.empty()) {
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(&ImageFetcherImpl::RunImageDataCallback,
                            weak_ptr_factory_.GetWeakPtr(),

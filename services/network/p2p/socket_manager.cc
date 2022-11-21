@@ -10,8 +10,8 @@
 
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "net/base/address_family.h"
 #include "net/base/address_list.h"
 #include "net/base/net_errors.h"
@@ -207,9 +207,10 @@ void P2PSocketManager::OnNetworkChanged(
 
   // Notify the renderer about changes to list of network interfaces.
   network_list_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&P2PSocketManager::DoGetNetworkList,
-                                weak_factory_.GetWeakPtr(),
-                                base::ThreadTaskRunnerHandle::Get()));
+      FROM_HERE,
+      base::BindOnce(&P2PSocketManager::DoGetNetworkList,
+                     weak_factory_.GetWeakPtr(),
+                     base::SingleThreadTaskRunner::GetCurrentDefault()));
 }
 
 void P2PSocketManager::PauseNetworkChangeNotifications() {
@@ -303,9 +304,10 @@ void P2PSocketManager::StartNetworkNotifications(
   net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
 
   network_list_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&P2PSocketManager::DoGetNetworkList,
-                                weak_factory_.GetWeakPtr(),
-                                base::ThreadTaskRunnerHandle::Get()));
+      FROM_HERE,
+      base::BindOnce(&P2PSocketManager::DoGetNetworkList,
+                     weak_factory_.GetWeakPtr(),
+                     base::SingleThreadTaskRunner::GetCurrentDefault()));
 }
 
 void P2PSocketManager::GetHostAddress(

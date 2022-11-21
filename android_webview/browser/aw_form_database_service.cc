@@ -8,9 +8,9 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/webdata/common/webdata_constants.h"
@@ -35,7 +35,7 @@ AwFormDatabaseService::AwFormDatabaseService(const base::FilePath path)
       has_form_data_completion_(
           base::WaitableEvent::ResetPolicy::AUTOMATIC,
           base::WaitableEvent::InitialState::NOT_SIGNALED) {
-  auto ui_task_runner = base::ThreadTaskRunnerHandle::Get();
+  auto ui_task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   // TODO(pkasting): http://crbug.com/740773 This should likely be sequenced,
   // not single-threaded; it's also possible these objects can each use their
   // own sequences instead of sharing this one.

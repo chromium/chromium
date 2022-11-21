@@ -29,11 +29,11 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -2194,7 +2194,7 @@ void FetchHistogramsFromChildProcesses() {
   base::RunLoop run_loop;
 
   FetchHistogramsAsynchronously(
-      base::ThreadTaskRunnerHandle::Get(), run_loop.QuitClosure(),
+      base::SingleThreadTaskRunner::GetCurrentDefault(), run_loop.QuitClosure(),
       // If this call times out, it means that a child process is not
       // responding, which is something we should not ignore.  The timeout is
       // set to be longer than the normal browser test timeout so that it will

@@ -143,7 +143,7 @@ void ThumbnailMediaParserImpl::OnMediaMetadataParsed(
                           base::CompareCase::INSENSITIVE_ASCII));
 
   // Start to retrieve video thumbnail.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ThumbnailMediaParserImpl::RetrieveEncodedVideoFrame,
                      weak_factory_.GetWeakPtr()));
@@ -219,8 +219,8 @@ void ThumbnailMediaParserImpl::DecodeVideoFrame() {
   // Build and config the decoder.
   DCHECK(gpu_factories_);
   auto mojo_decoder = std::make_unique<media::MojoVideoDecoder>(
-      base::ThreadTaskRunnerHandle::Get(), gpu_factories_.get(), this,
-      std::move(video_decoder_remote),
+      base::SingleThreadTaskRunner::GetCurrentDefault(), gpu_factories_.get(),
+      this, std::move(video_decoder_remote),
       base::BindRepeating(&OnRequestOverlayInfo), gfx::ColorSpace());
 
   decoder_ = std::make_unique<media::VideoThumbnailDecoder>(

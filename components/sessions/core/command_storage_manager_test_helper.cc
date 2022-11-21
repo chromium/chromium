@@ -6,8 +6,8 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/sessions/core/command_storage_backend.h"
 #include "components/sessions/core/command_storage_manager.h"
 
@@ -27,7 +27,7 @@ void CommandStorageManagerTestHelper::RunTaskOnBackendThread(
 }
 
 void CommandStorageManagerTestHelper::RunMessageLoopUntilBackendDone() {
-  auto current_task_runner = base::ThreadTaskRunnerHandle::Get();
+  auto current_task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   base::RunLoop run_loop;
   auto quit_closure = run_loop.QuitClosure();
   auto quit_from_backend =

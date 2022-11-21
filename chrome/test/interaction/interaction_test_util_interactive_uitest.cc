@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilInteractiveUitest,
         // Have to defer opening because this call is blocking on Mac;
         // subsequent steps will be called from within the run loop of the
         // context menu.
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, std::move(open_context_menu));
 #else
         // Conversely, on other platforms, this is already an async call and

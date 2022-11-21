@@ -28,8 +28,8 @@ void SnapshotCallback(base::RunLoop* run_loop,
                       gfx::Image* ret_image,
                       gfx::Image image) {
   *ret_image = image;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                run_loop->QuitClosure());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop->QuitClosure());
 }
 }  // namespace
 

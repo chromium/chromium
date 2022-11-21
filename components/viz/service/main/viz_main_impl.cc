@@ -14,7 +14,6 @@
 #include "base/power_monitor/power_monitor_source.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
 #include "components/viz/common/buildflags.h"
@@ -64,7 +63,8 @@ VizMainImpl::VizMainImpl(Delegate* delegate,
     : delegate_(delegate),
       dependencies_(std::move(dependencies)),
       gpu_init_(std::move(gpu_init)),
-      gpu_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+      gpu_thread_task_runner_(
+          base::SingleThreadTaskRunner::GetCurrentDefault()) {
   DCHECK(gpu_init_);
 
   // TODO(crbug.com/609317): Remove this when Mus Window Server and GPU are

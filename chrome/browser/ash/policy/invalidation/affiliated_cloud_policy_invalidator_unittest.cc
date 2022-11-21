@@ -11,7 +11,7 @@
 #include <utility>
 
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/policy/invalidation/fake_affiliated_invalidation_service_provider.h"
 #include "chrome/browser/policy/cloud/cloud_policy_invalidator.h"
@@ -67,7 +67,8 @@ TEST(AffiliatedCloudPolicyInvalidatorTest, CreateUseDestroy) {
       });
 
   CloudPolicyCore core(dm_protocol::kChromeDevicePolicyType, std::string(),
-                       &store, base::ThreadTaskRunnerHandle::Get(),
+                       &store,
+                       base::SingleThreadTaskRunner::GetCurrentDefault(),
                        network::TestNetworkConnectionTracker::CreateGetter());
 
   // Connect |core|. Expect it to send a registration request. Let the

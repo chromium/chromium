@@ -14,8 +14,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/segmentation_platform/internal/constants.h"
@@ -226,8 +226,8 @@ void SegmentationPlatformServiceImpl::OnDatabaseInitialized(bool success) {
   while (!pending_actions_.empty()) {
     auto callback = std::move(pending_actions_.front());
     pending_actions_.pop_front();
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(callback));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
   }
 
   // Run any daily maintenance tasks.
@@ -249,7 +249,7 @@ void SegmentationPlatformServiceImpl::OnSegmentationModelUpdated(
   execution_service_.OnNewModelInfoReady(segment_info);
 
   // Update the service status for proxy.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&SegmentationPlatformServiceImpl::OnServiceStatusChanged,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -268,7 +268,7 @@ void SegmentationPlatformServiceImpl::RunDailyTasks(bool is_startup) {
   execution_service_.RunDailyTasks(is_startup);
   storage_service_->ExecuteDatabaseMaintenanceTasks(is_startup);
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&SegmentationPlatformServiceImpl::RunDailyTasks,
                      weak_ptr_factory_.GetWeakPtr(), /*is_startup=*/false),

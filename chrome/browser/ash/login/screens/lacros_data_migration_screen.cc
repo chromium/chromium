@@ -11,7 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -56,7 +56,7 @@ void LacrosDataMigrationScreen::OnViewVisible() {
 
   // Post a delayed task to show the skip button after
   // `kShowSkipButtonDuration`.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&LacrosDataMigrationScreen::ShowSkipButton,
                      weak_factory_.GetWeakPtr()),

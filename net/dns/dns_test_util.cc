@@ -17,7 +17,6 @@
 #include "base/strings/strcat.h"
 #include "base/sys_byteorder.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
 #include "net/base/io_buffer.h"
@@ -501,7 +500,7 @@ class MockDnsTransactionFactory::MockTransaction
     if (delayed_)
       return;
     // Using WeakPtr to cleanly cancel when transaction is destroyed.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&MockTransaction::Finish, AsWeakPtr()));
   }
 

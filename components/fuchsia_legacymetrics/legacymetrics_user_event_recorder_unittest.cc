@@ -4,8 +4,8 @@
 
 #include "components/fuchsia_legacymetrics/legacymetrics_user_event_recorder.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace fuchsia_legacymetrics {
@@ -17,7 +17,8 @@ class LegacyMetricsUserActionRecorderTest : public testing::Test {
   ~LegacyMetricsUserActionRecorderTest() override = default;
 
   void SetUp() override {
-    base::SetRecordActionTaskRunner(base::ThreadTaskRunnerHandle::Get());
+    base::SetRecordActionTaskRunner(
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
  private:

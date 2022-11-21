@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/service/abstract_texture.h"
 #include "gpu/command_buffer/service/abstract_texture_impl.h"
 #include "gpu/command_buffer/service/decoder_context.h"
@@ -25,11 +25,11 @@ TextureOwner::TextureOwner(bool binds_texture_on_update,
                            std::unique_ptr<gles2::AbstractTexture> texture,
                            scoped_refptr<SharedContextState> context_state)
     : base::RefCountedDeleteOnSequence<TextureOwner>(
-          base::ThreadTaskRunnerHandle::Get()),
+          base::SingleThreadTaskRunner::GetCurrentDefault()),
       binds_texture_on_update_(binds_texture_on_update),
       context_state_(std::move(context_state)),
       texture_(std::move(texture)),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   DCHECK(context_state_);
   context_state_->AddContextLostObserver(this);
 }
@@ -37,10 +37,10 @@ TextureOwner::TextureOwner(bool binds_texture_on_update,
 TextureOwner::TextureOwner(bool binds_texture_on_update,
                            std::unique_ptr<gles2::AbstractTexture> texture)
     : base::RefCountedDeleteOnSequence<TextureOwner>(
-          base::ThreadTaskRunnerHandle::Get()),
+          base::SingleThreadTaskRunner::GetCurrentDefault()),
       binds_texture_on_update_(binds_texture_on_update),
       texture_(std::move(texture)),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 TextureOwner::~TextureOwner() {
   bool have_context = true;

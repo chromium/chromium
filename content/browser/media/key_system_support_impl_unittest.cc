@@ -41,7 +41,7 @@ const int kObserver2 = 2;
 ACTION_TEMPLATE(PostOnceCallback,
                 HAS_1_TEMPLATE_PARAMS(int, k),
                 AND_1_VALUE_PARAMS(p0)) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(std::get<k>(args)), p0));
 }
 

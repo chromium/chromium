@@ -11,7 +11,6 @@
 #include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 
 using base::TaskRunner;
 
@@ -29,7 +28,7 @@ void QuotaTask::Start() {
 
 QuotaTask::QuotaTask(QuotaTaskObserver* observer)
     : observer_(observer),
-      original_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      original_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       delete_scheduled_(false) {
   DCHECK(observer != nullptr);
 }
@@ -53,7 +52,8 @@ void QuotaTask::DeleteSoon() {
   if (delete_scheduled_)
     return;
   delete_scheduled_ = true;
-  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                                this);
 }
 
 // QuotaTaskObserver -------------------------------------------------------

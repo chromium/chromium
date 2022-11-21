@@ -591,7 +591,7 @@ TEST_P(FormFetcherImplTest, FetchStatistics) {
               GetSiteStats(stats.origin_domain, _))
       .WillOnce(testing::WithArg<1>(
           [db_stats](base::WeakPtr<PasswordStoreConsumer> consumer) {
-            base::ThreadTaskRunnerHandle::Get()->PostTask(
+            base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE, base::BindOnce(
                                [](base::WeakPtr<PasswordStoreConsumer> con,
                                   const std::vector<InteractionsStats>& stats) {

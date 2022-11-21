@@ -605,7 +605,7 @@ void NativeWidgetNSWindowBridge::CloseWindow() {
     // calling Widget::Close() doesn't expect things to be deleted upon return.
     // Ensure |window| is retained by a block. Note in some cases during
     // teardown, [window sheetParent] may be nil.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(base::RetainBlock(^{
           [NSApp endSheet:window];
         })));
@@ -642,7 +642,7 @@ void NativeWidgetNSWindowBridge::CloseWindow() {
   // Many tests assume that base::RunLoop().RunUntilIdle() is always sufficient
   // to execute a close. However, in rare cases, -performSelector:..afterDelay:0
   // does not do this. So post a regular task.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(base::RetainBlock(^{
         [window close];
       })));
@@ -1698,7 +1698,7 @@ void NativeWidgetNSWindowBridge::ShowAsModalSheet() {
     // sheet (which will be executed on a fresh stack, which will not block
     // the message).
     // https://crbug.com/1234509
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(begin_sheet_closure));
   } else {
     std::move(begin_sheet_closure).Run();

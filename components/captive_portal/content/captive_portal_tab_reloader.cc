@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/captive_portal/core/captive_portal_types.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -107,7 +106,7 @@ void CaptivePortalTabReloader::OnLoadCommitted(
   // If the tab needs to reload, do so asynchronously, to avoid reentrancy
   // issues.
   if (state_ == STATE_NEEDS_RELOAD) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&CaptivePortalTabReloader::ReloadTabIfNeeded,
                                   weak_factory_.GetWeakPtr()));
   }
@@ -198,7 +197,7 @@ void CaptivePortalTabReloader::OnSecureDnsNetworkError() {
   }
 
   if (state_ == STATE_NEEDS_RELOAD) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&CaptivePortalTabReloader::ReloadTabIfNeeded,
                                   weak_factory_.GetWeakPtr()));
   }

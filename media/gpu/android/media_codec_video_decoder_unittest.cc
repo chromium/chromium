@@ -9,10 +9,10 @@
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/service/mock_texture_owner.h"
 #include "gpu/command_buffer/service/ref_counted_lock_for_test.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -117,7 +117,7 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
     uint8_t data = 0;
     fake_decoder_buffer_ = DecoderBuffer::CopyFrom(&data, 1);
     codec_allocator_ = std::make_unique<FakeCodecAllocator>(
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     device_info_ = std::make_unique<NiceMock<MockDeviceInfo>>();
   }
 

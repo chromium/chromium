@@ -12,8 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/query_tiles/internal/stats.h"
 #include "components/query_tiles/internal/tile_config.h"
@@ -61,7 +61,7 @@ class TileManagerImpl : public TileManager {
 
   void GetTiles(bool shuffle_tiles, GetTilesCallback callback) override {
     if (!tile_group_) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), std::vector<Tile>()));
       return;
     }
@@ -77,7 +77,7 @@ class TileManagerImpl : public TileManager {
 
     if (shuffle_tiles)
       ShuffleTiles(&tiles, TileShuffler());
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(tiles)));
   }
 
@@ -117,7 +117,7 @@ class TileManagerImpl : public TileManager {
       }
     }
 
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(result_tile)));
   }
 
@@ -147,7 +147,7 @@ class TileManagerImpl : public TileManager {
       bool success,
       std::map<std::string, std::unique_ptr<TileGroup>> loaded_groups) {
     if (!success) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback),
                                     TileGroupStatus::kFailureDbOperation));
       return;
@@ -206,7 +206,7 @@ class TileManagerImpl : public TileManager {
     for (const auto& group_to_delete : loaded_groups)
       DeleteGroup(group_to_delete.first);
 
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), status));
   }
 

@@ -10,7 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/span.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
@@ -689,7 +689,7 @@ void StorageAreaImpl::StartCommitTimer() {
   if (commit_batches_in_flight_)
     return;
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&StorageAreaImpl::CommitChanges,
                      weak_ptr_factory_.GetWeakPtr(), base::OnceClosure()),

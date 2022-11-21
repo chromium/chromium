@@ -15,9 +15,9 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
@@ -85,7 +85,8 @@ class ServiceWorkerStorageTest : public testing::Test {
   void SetUp() override {
     storage_ = ServiceWorkerStorage::Create(
         user_data_directory_path_,
-        /*database_task_runner=*/base::ThreadTaskRunnerHandle::Get());
+        /*database_task_runner=*/base::SingleThreadTaskRunner::
+            GetCurrentDefault());
   }
 
   void TearDown() override {

@@ -19,7 +19,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/audio_buffer_converter.h"
@@ -121,7 +120,8 @@ class AudioRendererImplTest : public ::testing::Test,
                          ChannelLayoutConfig::FromLayout<kChannelLayout>(),
                          kOutputSamplesPerSecond,
                          512),
-        main_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+        main_thread_task_runner_(
+            base::SingleThreadTaskRunner::GetCurrentDefault()),
         sink_(new FakeAudioRendererSink(hardware_params_)),
         demuxer_stream_(DemuxerStream::AUDIO),
         expected_init_result_(true),

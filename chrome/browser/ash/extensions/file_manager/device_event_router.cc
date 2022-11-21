@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/extensions/file_manager/device_event_router.h"
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "content/public/browser/browser_thread.h"
@@ -36,7 +36,7 @@ DeviceEventRouter::~DeviceEventRouter() = default;
 
 void DeviceEventRouter::Startup() {
   is_starting_up_ = true;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&DeviceEventRouter::StartupDelayed,
                      weak_factory_.GetWeakPtr()),
@@ -176,7 +176,7 @@ void DeviceEventRouter::SuspendImminent(
 
 void DeviceEventRouter::SuspendDone(base::TimeDelta sleep_duration) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&DeviceEventRouter::SuspendDoneDelayed,
                      weak_factory_.GetWeakPtr()),

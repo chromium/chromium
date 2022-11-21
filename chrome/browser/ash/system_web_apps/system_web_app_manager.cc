@@ -33,7 +33,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_background_task.h"
@@ -661,7 +660,7 @@ void SystemWebAppManager::OnAppsSynchronized(
 
   // Start the tasks async to give any code running in an on_app_synchronized
   // context a chance to finish first.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&SystemWebAppManager::StartBackgroundTasks,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

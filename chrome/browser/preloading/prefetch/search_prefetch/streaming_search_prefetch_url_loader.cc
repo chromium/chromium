@@ -12,7 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/profiles/profile.h"
@@ -83,7 +83,7 @@ StreamingSearchPrefetchURLLoader::StreamingSearchPrefetchURLLoader(
           network::mojom::kURLLoadOptionSendSSLInfoForCertificateError,
       *resource_request,
       url_loader_receiver_.BindNewPipeAndPassRemote(
-          base::ThreadTaskRunnerHandle::Get()),
+          base::SingleThreadTaskRunner::GetCurrentDefault()),
       net::MutableNetworkTrafficAnnotationTag(network_traffic_annotation_));
   url_loader_receiver_.set_disconnect_handler(base::BindOnce(
       &StreamingSearchPrefetchURLLoader::OnURLLoaderMojoDisconnect,
@@ -546,7 +546,7 @@ void StreamingSearchPrefetchURLLoader::Fallback() {
           network::mojom::kURLLoadOptionSendSSLInfoForCertificateError,
       *resource_request_,
       url_loader_receiver_.BindNewPipeAndPassRemote(
-          base::ThreadTaskRunnerHandle::Get()),
+          base::SingleThreadTaskRunner::GetCurrentDefault()),
       net::MutableNetworkTrafficAnnotationTag(network_traffic_annotation_));
   url_loader_receiver_.set_disconnect_handler(base::BindOnce(
       &StreamingSearchPrefetchURLLoader::OnURLLoaderMojoDisconnectInFallback,

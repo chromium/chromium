@@ -13,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -182,7 +181,7 @@ void NetworkLocationProvider::StartProvider(bool high_accuracy) {
   wifi_data_provider_handle_ =
       WifiDataProviderHandle::CreateHandle(&wifi_data_update_callback_);
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&NetworkLocationProvider::RequestPosition,
                      weak_factory_.GetWeakPtr()),

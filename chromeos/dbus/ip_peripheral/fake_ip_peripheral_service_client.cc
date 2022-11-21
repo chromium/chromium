@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace chromeos {
 namespace {
@@ -42,7 +42,7 @@ FakeIpPeripheralServiceClient::~FakeIpPeripheralServiceClient() {
 void FakeIpPeripheralServiceClient::GetPan(const std::string& ip,
                                            GetCallback callback) {
   get_pan_call_count_++;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), true, pan_, kMinPan, kMaxPan));
 }
@@ -50,7 +50,7 @@ void FakeIpPeripheralServiceClient::GetPan(const std::string& ip,
 void FakeIpPeripheralServiceClient::GetTilt(const std::string& ip,
                                             GetCallback callback) {
   get_tilt_call_count_++;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), true, tilt_, kMinTilt, kMaxTilt));
 }
@@ -58,7 +58,7 @@ void FakeIpPeripheralServiceClient::GetTilt(const std::string& ip,
 void FakeIpPeripheralServiceClient::GetZoom(const std::string& ip,
                                             GetCallback callback) {
   get_zoom_call_count_++;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), true, zoom_, kMinZoom, kMaxZoom));
 }
@@ -68,7 +68,7 @@ void FakeIpPeripheralServiceClient::SetPan(const std::string& ip,
                                            SetCallback callback) {
   set_pan_call_count_++;
   pan_ = pan;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
@@ -77,7 +77,7 @@ void FakeIpPeripheralServiceClient::SetTilt(const std::string& ip,
                                             SetCallback callback) {
   set_tilt_call_count_++;
   tilt_ = tilt;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
@@ -86,7 +86,7 @@ void FakeIpPeripheralServiceClient::SetZoom(const std::string& ip,
                                             SetCallback callback) {
   set_zoom_call_count_++;
   zoom_ = zoom;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 

@@ -10,9 +10,9 @@
 
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/mock_callback.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -68,7 +68,8 @@ TEST(BrowserUIThreadSchedulerTest,
       std::make_unique<BrowserUIThreadScheduler>();
 
   StrictMockTask task;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, task.Get());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                              task.Get());
 
   EXPECT_CALL(task, Run);
   base::RunLoop().RunUntilIdle();

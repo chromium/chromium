@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/payments/autofill_progress_dialog_views.h"
 
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_controller.h"
 #include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
@@ -77,7 +77,7 @@ void AutofillProgressDialogViews::Dismiss(bool show_confirmation_before_closing,
     progress_throbber_->Stop();
     label_->SetText(controller_->GetConfirmationMessage());
     progress_throbber_->SetChecked(true);
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&AutofillProgressDialogViews::CloseWidget,
                        weak_ptr_factory_.GetWeakPtr(), is_canceled_by_user),

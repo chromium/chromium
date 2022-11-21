@@ -13,7 +13,6 @@
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -179,7 +178,7 @@ void MDnsConnection::PostOnError(SocketHandler* loop, int rv) {
   }
   VLOG(1) << "Socket error. id=" << id << ", error=" << rv;
   // Post to allow deletion of this object by delegate.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&MDnsConnection::OnError,
                                 weak_ptr_factory_.GetWeakPtr(), rv));
 }
@@ -382,7 +381,7 @@ void MDnsClientImpl::Core::RemoveListener(MDnsListenerImpl* listener) {
   if (observer_list_iterator->second->empty()) {
     // Schedule the actual removal for later in case the listener removal
     // happens while iterating over the observer list.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&MDnsClientImpl::Core::CleanupObserverList,
                                   AsWeakPtr(), key));
   }
@@ -605,10 +604,10 @@ void MDnsListenerImpl::ScheduleNextRefresh() {
       base::Milliseconds(static_cast<int>(base::Time::kMillisecondsPerSecond *
                                           kListenerRefreshRatio2 * ttl_));
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, next_refresh_.callback(), next_refresh1 - clock_->Now());
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, next_refresh_.callback(), next_refresh2 - clock_->Now());
 }
 
@@ -749,7 +748,7 @@ bool MDnsTransactionImpl::QueryAndListen() {
 
   timeout_.Reset(
       base::BindOnce(&MDnsTransactionImpl::SignalTransactionOver, AsWeakPtr()));
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, timeout_.callback(), kTransactionTimeout);
 
   return true;

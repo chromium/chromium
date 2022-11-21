@@ -15,7 +15,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/sync_file_system/drive_backend/drive_backend_constants.h"
 #include "chrome/browser/sync_file_system/drive_backend/drive_backend_test_util.h"
 #include "chrome/browser/sync_file_system/drive_backend/metadata_database.h"
@@ -67,12 +67,13 @@ class SyncEngineInitializerTest : public testing::Test {
     sync_context_ = std::make_unique<SyncEngineContext>(
         std::move(fake_drive_service),
         std::unique_ptr<drive::DriveUploaderInterface>(),
-        nullptr /* task_logger */, base::ThreadTaskRunnerHandle::Get(),
-        base::ThreadTaskRunnerHandle::Get());
+        nullptr /* task_logger */,
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
 
     sync_task_manager_ = std::make_unique<SyncTaskManager>(
         base::WeakPtr<SyncTaskManager::Client>(), 1 /* maximum_parallel_task */,
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     sync_task_manager_->Initialize(SYNC_STATUS_OK);
   }
 

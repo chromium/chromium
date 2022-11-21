@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace ash {
 
@@ -20,7 +20,7 @@ void FakeWilcoDtcSupportdClient::Init(dbus::Bus* bus) {}
 void FakeWilcoDtcSupportdClient::WaitForServiceToBeAvailable(
     chromeos::WaitForServiceToBeAvailableCallback callback) {
   if (wait_for_service_to_be_available_result_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   *wait_for_service_to_be_available_result_
                                   /* service_is_available */));
@@ -34,7 +34,7 @@ void FakeWilcoDtcSupportdClient::BootstrapMojoConnection(
     base::ScopedFD fd,
     chromeos::VoidDBusMethodCallback callback) {
   if (bootstrap_mojo_connection_result_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        *bootstrap_mojo_connection_result_ /* result */));

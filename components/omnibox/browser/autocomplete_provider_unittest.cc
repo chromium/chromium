@@ -24,7 +24,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -202,7 +201,7 @@ void TestProvider::StartPrefetch(const AutocompleteInput& input) {
   }
 
   if (!input.omit_asynchronous_matches()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&TestProvider::OnPrefetchRequestDone,
                                   base::Unretained(this)));
   } else {
@@ -240,7 +239,7 @@ void TestProvider::Start(const AutocompleteInput& input, bool minimal_changes) {
 
   if (!input.omit_asynchronous_matches()) {
     done_ = false;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&TestProvider::OnNonPrefetchRequestDone,
                                   base::Unretained(this)));
   }

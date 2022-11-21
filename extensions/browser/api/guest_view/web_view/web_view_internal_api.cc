@@ -15,8 +15,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "components/crash/core/common/crash_key.h"
 #include "content/public/browser/browser_context.h"
@@ -357,7 +357,8 @@ void WebViewInternalCaptureVisibleRegionFunction::OnCaptureSuccess(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&WebViewInternalCaptureVisibleRegionFunction::
                          EncodeBitmapOnWorkerThread,
-                     this, base::ThreadTaskRunnerHandle::Get(), bitmap));
+                     this, base::SingleThreadTaskRunner::GetCurrentDefault(),
+                     bitmap));
 }
 
 void WebViewInternalCaptureVisibleRegionFunction::EncodeBitmapOnWorkerThread(

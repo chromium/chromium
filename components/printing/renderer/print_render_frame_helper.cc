@@ -31,7 +31,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/grit/components_resources.h"
@@ -2401,7 +2400,8 @@ void PrintRenderFrameHelper::IPCProcessed() {
   --ipc_nesting_level_;
   if (ipc_nesting_level_ == 0 && render_frame_gone_ && !delete_pending_) {
     delete_pending_ = true;
-    base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                                  this);
   }
 }
 
@@ -2687,7 +2687,7 @@ void PrintRenderFrameHelper::WaitForLoad(PrintPreviewRequestType type) {
   on_stop_loading_closure_ =
       base::BindOnce(&PrintRenderFrameHelper::RequestPrintPreview,
                      weak_ptr_factory_.GetWeakPtr(), type, true);
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&PrintRenderFrameHelper::DidFinishLoadForPrinting,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -2737,7 +2737,7 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
         WaitForLoad(type);
         return;
       }
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&PrintRenderFrameHelper::ShowScriptedPrintPreview,
                          weak_ptr_factory_.GetWeakPtr()));

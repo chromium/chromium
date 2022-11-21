@@ -8,7 +8,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/base_event_utils.h"
@@ -80,7 +80,7 @@ void KeyEventResultReceiver::SetCallback(KeyEventDoneCallback callback,
   callback_ = std::move(callback);
   expected_key_event_ = *event;
   // Start expiring timer for the callback.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&KeyEventResultReceiver::ExpireCallback,
                      weak_ptr_factory_.GetWeakPtr()),

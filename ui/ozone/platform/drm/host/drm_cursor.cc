@@ -48,7 +48,7 @@ class NullProxy : public DrmCursorProxy {
 }  // namespace
 
 DrmCursor::DrmCursor(DrmWindowHostManager* window_manager)
-    : ui_thread_(base::ThreadTaskRunnerHandle::Get()),
+    : ui_thread_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       window_(gfx::kNullAcceleratedWidget),
       window_manager_(window_manager),
       proxy_(new NullProxy()) {

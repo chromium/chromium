@@ -12,7 +12,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ui/cryptuiapi_shim.h"
 #include "crypto/scoped_capi_types.h"
 #include "net/cert/x509_certificate.h"
@@ -39,7 +38,8 @@ class CertificateViewerDialogWin : public ui::BaseShellDialogImpl {
             net::X509Certificate* cert,
             base::RepeatingClosure callback) {
     if (IsRunningDialogForOwner(parent)) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, callback);
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                                  callback);
       return;
     }
 

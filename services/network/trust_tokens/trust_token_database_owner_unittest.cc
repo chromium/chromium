@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "services/network/trust_tokens/trust_token_database_owner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
@@ -18,7 +18,7 @@ TEST(TrustTokenDatabaseOwner, Initializes) {
         CHECK(db->OpenInMemory());
         return true;
       }),
-      base::ThreadTaskRunnerHandle::Get(),
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
       /*flush_delay_for_writes=*/base::TimeDelta(),
       /*on_done_initializing=*/
       base::BindLambdaForTesting(
@@ -46,7 +46,7 @@ TEST(TrustTokenDatabaseOwner, StillInitializesOnDbOpenFailure) {
   std::unique_ptr<TrustTokenDatabaseOwner> owner;
   TrustTokenDatabaseOwner::Create(
       /*db_opener=*/base::BindOnce([](sql::Database* unused) { return false; }),
-      base::ThreadTaskRunnerHandle::Get(),
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
       /*flush_delay_for_writes=*/base::TimeDelta(),
       /*on_done_initializing=*/
       base::BindLambdaForTesting(

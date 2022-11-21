@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/native_widget_factory.h"
 #include "ui/views/test/widget_test.h"
@@ -95,7 +95,7 @@ TEST_F(NamedWidgetShownWaiterTest, ShownAfterWait) {
                                        "TestWidget");
 
   WidgetAutoclosePtr w0(CreateNamedWidget("TestWidget"));
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce([](views::Widget* widget) { widget->Show(); },
                                 base::Unretained(w0.get())));
   EXPECT_EQ(waiter.WaitIfNeededAndGet(), w0.get());

@@ -46,7 +46,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -476,7 +475,8 @@ void SitePerProcessBrowserTestBase::ForceUpdateViewportIntersection(
 
 void SitePerProcessBrowserTestBase::RunPostedTasks() {
   base::RunLoop loop;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, loop.QuitClosure());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, loop.QuitClosure());
   loop.Run();
 }
 
@@ -9402,7 +9402,7 @@ class TouchSelectionControllerClientAndroidSiteIsolationTest
  protected:
   void DelayBy(base::TimeDelta delta) {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), delta);
     run_loop.Run();
   }
@@ -11073,7 +11073,7 @@ class SitePerProcessBrowserTouchActionTest : public SitePerProcessBrowserTest {
 
   void GiveItSomeTime(const base::TimeDelta& t) {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), t);
     run_loop.Run();
   }
@@ -12271,7 +12271,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // quite low, see https://crbug.com/1098715.
   auto allow_time_for_rafs = []() {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(1000));
     run_loop.Run();
   };
@@ -12378,7 +12378,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       shell(), "document.querySelector('object').style.display = 'none';"));
   while (!frame_connector->IsHidden()) {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
     run_loop.Run();
   }
@@ -12386,7 +12386,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       shell(), "document.querySelector('object').style.display = 'block';"));
   while (frame_connector->IsHidden()) {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
     run_loop.Run();
   }

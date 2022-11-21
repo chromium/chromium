@@ -13,7 +13,6 @@
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/unguessable_token.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_storage_adapter.h"
 #include "chromeos/components/cdm_factory_daemon/content_decryption_module_adapter.h"
@@ -251,7 +250,7 @@ void ChromeOsCdmFactory::OnVerifiedAccessEnabled(
   if (!enabled) {
     DVLOG(1)
         << "Not using Chrome OS CDM factory due to Verified Access disabled";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(cdm_created_cb), nullptr,
                                   "Verified Access is disabled."));
     return;
@@ -267,7 +266,8 @@ void ChromeOsCdmFactory::OnVerifiedAccessEnabled(
         base::BindOnce(
             &CreateFactoryOnTaskRunner, cdm_config.key_system,
             base::BindOnce(
-                &CreateFactoryCallback, base::ThreadTaskRunnerHandle::Get(),
+                &CreateFactoryCallback,
+                base::SingleThreadTaskRunner::GetCurrentDefault(),
                 base::BindOnce(
                     &ChromeOsCdmFactory::OnCreateFactory,
                     weak_factory_.GetWeakPtr(), cdm_config, session_message_cb,
@@ -295,7 +295,7 @@ void ChromeOsCdmFactory::OnCreateFactory(
   DVLOG(1) << __func__;
   if (!remote_factory) {
     LOG(ERROR) << "Failed creating the remote CDM factory";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(cdm_created_cb), nullptr,
                                   "Remote factory creation failed."));
     return;
@@ -360,7 +360,7 @@ void ChromeOsCdmFactory::CreateCdm(
                              base::UnguessableToken::Create().ToString(),
                              std::move(cros_cdm_pending_receiver));
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(cdm_created_cb), std::move(cdm), ""));
 }
 

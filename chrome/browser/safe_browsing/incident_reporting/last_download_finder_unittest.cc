@@ -22,7 +22,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_entropy_provider.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/chrome_history_client.h"
@@ -423,7 +422,7 @@ TEST_F(LastDownloadFinderTest, AddProfileAfterStarting) {
   base::RunLoop run_loop;
 
   // Post a task that will create a second profile once the main loop is run.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&LastDownloadFinderTest::CreateProfileWithDownload,
                      base::Unretained(this)));

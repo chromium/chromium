@@ -20,9 +20,9 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
@@ -47,7 +47,8 @@ BlobStorageContext::BlobStorageContext()
     : profile_directory_(base::FilePath()),
       memory_controller_(base::FilePath(), scoped_refptr<base::TaskRunner>()) {
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-      this, "BlobStorageContext", base::ThreadTaskRunnerHandle::Get());
+      this, "BlobStorageContext",
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 BlobStorageContext::BlobStorageContext(
@@ -57,7 +58,8 @@ BlobStorageContext::BlobStorageContext(
     : profile_directory_(profile_directory),
       memory_controller_(storage_directory, std::move(file_runner)) {
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-      this, "BlobStorageContext", base::ThreadTaskRunnerHandle::Get());
+      this, "BlobStorageContext",
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 BlobStorageContext::~BlobStorageContext() {
@@ -303,7 +305,7 @@ std::unique_ptr<BlobDataHandle> BlobStorageContext::BuildBlobInternal(
               previous_building_state->build_completion_callbacks);
     building_state->build_aborted_callback =
         std::move(previous_building_state->build_aborted_callback);
-    auto runner = base::ThreadTaskRunnerHandle::Get();
+    auto runner = base::SingleThreadTaskRunner::GetCurrentDefault();
     for (auto& callback : previous_building_state->build_started_callbacks)
       runner->PostTask(FROM_HERE,
                        base::BindOnce(std::move(callback), entry->status()));
@@ -458,7 +460,7 @@ std::unique_ptr<BlobDataHandle> BlobStorageContext::CreateHandle(
     BlobEntry* entry) {
   return base::WrapUnique(new BlobDataHandle(
       uuid, entry->content_type_, entry->content_disposition_, entry->size_,
-      this, base::ThreadTaskRunnerHandle::Get().get()));
+      this, base::SingleThreadTaskRunner::GetCurrentDefault().get()));
 }
 
 void BlobStorageContext::NotifyTransportCompleteInternal(BlobEntry* entry) {
@@ -485,7 +487,7 @@ void BlobStorageContext::CancelBuildingBlobInternal(BlobEntry* entry,
   }
   if (entry->building_state_ &&
       entry->status() == BlobStatus::PENDING_CONSTRUCTION) {
-    auto runner = base::ThreadTaskRunnerHandle::Get();
+    auto runner = base::SingleThreadTaskRunner::GetCurrentDefault();
     for (auto& callback : entry->building_state_->build_started_callbacks)
       runner->PostTask(FROM_HERE, base::BindOnce(std::move(callback), reason));
   }
@@ -553,7 +555,7 @@ void BlobStorageContext::FinishBuilding(BlobEntry* entry) {
 
   memory_controller_.NotifyMemoryItemsUsed(entry->items());
 
-  auto runner = base::ThreadTaskRunnerHandle::Get();
+  auto runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   for (auto& callback : callbacks)
     runner->PostTask(FROM_HERE,
                      base::BindOnce(std::move(callback), entry->status()));

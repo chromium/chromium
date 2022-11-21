@@ -5,7 +5,7 @@
 #include "chrome/test/ppapi/ppapi_test_select_file_dialog_factory.h"
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/gurl.h"
@@ -57,7 +57,7 @@ class PPAPITestSelectFileDialog : public ui::SelectFileDialog {
         ADD_FAILURE() << "Unexpected SelectFileImpl invocation.";
     }
 
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             &PPAPITestSelectFileDialog::RespondToFileSelectionRequest, this,

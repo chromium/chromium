@@ -15,7 +15,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/url_util.h"
 #include "url/url_util.h"
 
@@ -183,7 +183,7 @@ AwSafeBrowsingAllowlistManager::AwSafeBrowsingAllowlistManager(
     const scoped_refptr<base::SequencedTaskRunner>& io_task_runner)
     : background_task_runner_(background_task_runner),
       io_task_runner_(io_task_runner),
-      ui_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      ui_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       allowlist_(std::make_unique<TrieNode>()) {}
 
 AwSafeBrowsingAllowlistManager::~AwSafeBrowsingAllowlistManager() {}

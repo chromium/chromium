@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/startup/browser_params_proxy.h"
@@ -20,7 +20,7 @@ DeviceSettingsLacros::DeviceSettingsLacros() {
 
   // DeviceSettingsService is not available yet at the time when this is
   // constructed. So, we post it as a task to be executed later.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&DeviceSettingsLacros::Init,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

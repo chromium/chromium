@@ -17,7 +17,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/android/chrome_jni_headers/WebApkUpdateManager_jni.h"
 #include "chrome/browser/android/webapk/webapk_features.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
@@ -241,7 +241,7 @@ static void JNI_WebApkUpdateManager_UpdateWebApkFromFile(
 
   Profile* profile = ProfileManager::GetLastUsedProfile();
   if (profile == nullptr) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&OnUpdated, callback_ref,
                        webapps::WebApkInstallResult::FAILURE,

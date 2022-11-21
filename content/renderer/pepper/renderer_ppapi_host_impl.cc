@@ -12,7 +12,6 @@
 #include "base/location.h"
 #include "base/process/process_handle.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "content/renderer/pepper/host_globals.h"
 #include "content/renderer/pepper/pepper_browser_connection.h"
 #include "content/renderer/pepper/pepper_graphics_2d_host.h"
@@ -249,7 +248,7 @@ void RendererPpapiHostImpl::CreateBrowserResourceHosts(
   PepperBrowserConnection* browser_connection =
       PepperBrowserConnection::Get(render_frame);
   if (!browser_connection) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   std::vector<int>(nested_msgs.size(), 0)));
   } else {

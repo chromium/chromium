@@ -31,7 +31,6 @@
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "cc/animation/animation_host.h"
 #include "cc/base/switches.h"
 #include "cc/input/input_handler.h"
@@ -363,7 +362,7 @@ CompositorImpl::CompositorImpl(CompositorClient* client,
       needs_animate_(false),
       pending_frames_(0U),
       layer_tree_frame_sink_request_pending_(false),
-      lock_manager_(base::ThreadTaskRunnerHandle::Get()) {
+      lock_manager_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   DCHECK(client);
 
   SetRootWindow(root_window);
@@ -643,7 +642,7 @@ void CompositorImpl::DidInitializeLayerTreeFrameSink() {
 
 void CompositorImpl::DidFailToInitializeLayerTreeFrameSink() {
   layer_tree_frame_sink_request_pending_ = false;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&CompositorImpl::RequestNewLayerTreeFrameSink,
                                 weak_factory_.GetWeakPtr()));
 }

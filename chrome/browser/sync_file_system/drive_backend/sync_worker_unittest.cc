@@ -13,7 +13,6 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/extensions/test_extension_service.h"
 #include "chrome/browser/sync_file_system/drive_backend/metadata_database.h"
 #include "chrome/browser/sync_file_system/drive_backend/metadata_database.pb.h"
@@ -40,7 +39,7 @@ namespace {
 const char kAppID[] = "app_id";
 
 void EmptyTask(SyncStatusCode status, SyncStatusCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), status));
 }
 
@@ -121,8 +120,10 @@ class SyncWorkerTest : public testing::Test,
         new SyncEngineContext(
             std::move(fake_drive_service), nullptr /* drive_uploader */,
             nullptr /* task_logger */,
-            base::ThreadTaskRunnerHandle::Get() /* ui_task_runner */,
-            base::ThreadTaskRunnerHandle::Get() /* worker_task_runner */));
+            base::SingleThreadTaskRunner::
+                GetCurrentDefault() /* ui_task_runner */,
+            base::SingleThreadTaskRunner::
+                GetCurrentDefault() /* worker_task_runner */));
 
     sync_worker_ = std::make_unique<SyncWorker>(
         profile_dir_.GetPath(), extension_service_->AsWeakPtr(),

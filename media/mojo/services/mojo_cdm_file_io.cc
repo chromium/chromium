@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
@@ -249,7 +249,7 @@ void MojoCdmFileIO::Close() {
 void MojoCdmFileIO::OnError(ErrorType error) {
   DVLOG(3) << __func__ << " file: " << file_name_ << ", error: " << (int)error;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&MojoCdmFileIO::NotifyClientOfError,
                                 weak_factory_.GetWeakPtr(), error));
 }

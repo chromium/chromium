@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -76,7 +76,7 @@ SubresourceFilterSafeBrowsingActivationThrottle::
                            std::move(database_manager),
                            AsWeakPtr(),
                            io_task_runner_,
-                           base::ThreadTaskRunnerHandle::Get()),
+                           base::SingleThreadTaskRunner::GetCurrentDefault()),
                        base::OnTaskRunnerDeleter(io_task_runner_)),
       delegate_(delegate) {
   DCHECK(IsInSubresourceFilterRoot(handle));

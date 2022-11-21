@@ -5,8 +5,8 @@
 #include "remoting/protocol/webrtc_video_encoder_factory.h"
 
 #include "base/check.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "remoting/protocol/video_channel_state_observer.h"
 #include "remoting/protocol/webrtc_video_encoder_wrapper.h"
 #include "third_party/webrtc/api/video_codecs/av1_profile.h"
@@ -21,7 +21,7 @@
 namespace remoting::protocol {
 
 WebrtcVideoEncoderFactory::WebrtcVideoEncoderFactory()
-    : main_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+    : main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   formats_.emplace_back("VP8");
   formats_.emplace_back("VP9");
   formats_.emplace_back(webrtc::SdpVideoFormat(

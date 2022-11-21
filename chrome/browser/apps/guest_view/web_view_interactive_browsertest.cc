@@ -15,7 +15,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -417,7 +416,7 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
 
    private:
     void ScheduleWait(int wait_retry_left) {
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&PopupCreatedObserver::Wait, base::Unretained(this),
                          wait_retry_left),
@@ -1199,7 +1198,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_LongPressSelection) {
 
   // Wait for guest to load (without this the events never reach the guest).
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop->QuitClosure(), base::Milliseconds(200));
   run_loop->Run();
 
@@ -1219,7 +1218,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_LongPressSelection) {
 
   // Give enough time for the quick menu to fire.
   run_loop = std::make_unique<base::RunLoop>();
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop->QuitClosure(), base::Milliseconds(200));
   run_loop->Run();
 
@@ -1625,7 +1624,7 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest,
              .OffsetFromOrigin()
              .Length() < distance_from_root_view_origin) {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
     run_loop.Run();
   }
@@ -1706,7 +1705,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewInteractiveTest,
   // flakiness on some platforms.
   while (!content::EvalJs(guest_rfh, "document.hasFocus()").ExtractBool()) {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
     run_loop.Run();
   }

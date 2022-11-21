@@ -8,7 +8,6 @@
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 
@@ -130,7 +129,8 @@ void MidiManager::StartSession(MidiManagerClient* client) {
       // Set fields protected by |lock_| here and call StartInitialization()
       // later.
       needs_initialization = true;
-      session_thread_runner_ = base::ThreadTaskRunnerHandle::Get();
+      session_thread_runner_ =
+          base::SingleThreadTaskRunner::GetCurrentDefault();
       initialization_state_ = InitializationState::STARTED;
     }
 

@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "remoting/base/constants.h"
@@ -113,7 +112,8 @@ WebrtcVideoStream::Core::Core(std::unique_ptr<DesktopCapturer> capturer,
                               base::WeakPtr<WebrtcVideoStream> video_stream)
     : capturer_(std::move(capturer)),
       video_stream_(std::move(video_stream)),
-      video_stream_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+      video_stream_task_runner_(
+          base::SingleThreadTaskRunner::GetCurrentDefault()) {
   DETACH_FROM_THREAD(thread_checker_);
 }
 
@@ -224,7 +224,7 @@ WebrtcVideoStream::WebrtcVideoStream(const std::string& stream_name,
       {base::TaskPriority::HIGHEST},
       base::SingleThreadTaskRunnerThreadMode::DEDICATED);
 #else
-  core_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  core_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 #endif
 }
 

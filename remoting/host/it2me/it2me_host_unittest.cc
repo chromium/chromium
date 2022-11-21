@@ -15,8 +15,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/policy/policy_constants.h"
@@ -124,7 +124,7 @@ void FakeIt2MeConfirmationDialog::Show(const std::string& remote_user_email,
                                        ResultCallback callback) {
   EXPECT_STREQ(remote_user_email_.c_str(), remote_user_email.c_str());
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), dialog_result_));
 }
 
@@ -267,7 +267,8 @@ void It2MeHostTest::SetUp() {
   network_change_notifier_ = net::NetworkChangeNotifier::CreateIfNeeded();
 
   host_context_ = ChromotingHostContext::Create(new AutoThreadTaskRunner(
-      base::ThreadTaskRunnerHandle::Get(), run_loop_->QuitClosure()));
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      run_loop_->QuitClosure()));
   network_task_runner_ = host_context_->network_task_runner();
   ui_task_runner_ = host_context_->ui_task_runner();
   fake_bot_signal_strategy_ =
@@ -428,7 +429,7 @@ void It2MeHostTest::OnStateChanged(It2MeHostState state, ErrorCode error_code) {
   last_error_code_ = error_code;
 
   if (state_change_callback_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(state_change_callback_));
   }
 }

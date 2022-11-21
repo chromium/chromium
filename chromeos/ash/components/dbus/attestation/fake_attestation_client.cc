@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/cros_system_api/dbus/attestation/dbus-constants.h"
 
@@ -33,7 +33,7 @@ constexpr char kFakeCertificate[] = "fake certificate";
 template <class ReplyType>
 void PostProtoResponse(base::OnceCallback<void(const ReplyType&)> callback,
                        const ReplyType& reply) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), reply));
 }
 
@@ -44,7 +44,7 @@ void PostProtoResponseWithDelay(
     base::OnceCallback<void(const ReplyType&)> callback,
     const ReplyType& reply,
     const base::TimeDelta& delay) {
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(std::move(callback), reply), delay);
 }
 

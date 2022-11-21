@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "components/account_id/account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -36,7 +36,7 @@ void FakeAttestationFlow::GetCertificate(
     const absl::optional<
         AttestationFlow::CertProfileSpecificData>& /*profile_specific_data*/,
     CertificateCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),
                      AttestationStatus::ATTESTATION_SUCCESS, certificate_));

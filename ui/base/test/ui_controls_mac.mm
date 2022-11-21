@@ -13,7 +13,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/mac/scoped_objc_class_swizzler.h"
 #include "base/task/current_thread.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ui/base/cocoa/cocoa_base_utils.h"
 #include "ui/events/keycodes/keyboard_code_conversion_mac.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
@@ -141,10 +141,11 @@ void EventQueueWatcher(base::OnceClosure task) {
                                         dequeue:NO];
   // If there is still event in the queue, then we need to check again.
   if (event) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&EventQueueWatcher, std::move(task)));
   } else {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(task));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(task));
   }
 }
 
@@ -283,7 +284,7 @@ bool SendKeyPressNotifyWhenDone(gfx::NativeWindow window,
     [[NSApplication sharedApplication] sendEvent:*iter];
 
   if (!task.is_null()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&EventQueueWatcher, std::move(task)));
   }
 
@@ -332,7 +333,7 @@ bool SendMouseMoveNotifyWhenDone(int x, int y, base::OnceClosure task) {
   [[NSApplication sharedApplication] postEvent:event atStart:NO];
 
   if (!task.is_null()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&EventQueueWatcher, std::move(task)));
   }
 
@@ -413,7 +414,7 @@ bool SendMouseEventsNotifyWhenDone(MouseButton type,
   [[NSApplication sharedApplication] postEvent:event atStart:NO];
 
   if (!task.is_null()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&EventQueueWatcher, std::move(task)));
   }
 

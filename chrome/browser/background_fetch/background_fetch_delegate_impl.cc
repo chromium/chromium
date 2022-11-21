@@ -12,7 +12,7 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"
@@ -155,7 +155,7 @@ void BackgroundFetchDelegateImpl::GetItemById(
   absl::optional<offline_items_collection::OfflineItem> offline_item;
   if (iter != ui_state_map_.end())
     offline_item = iter->second.offline_item;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), offline_item));
 }
 
@@ -163,7 +163,7 @@ void BackgroundFetchDelegateImpl::GetAllItems(MultipleItemCallback callback) {
   OfflineItemList item_list;
   for (auto& entry : ui_state_map_)
     item_list.push_back(entry.second.offline_item);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), item_list));
 }
 
@@ -172,7 +172,7 @@ void BackgroundFetchDelegateImpl::GetVisualsForItem(
     GetVisualsOptions options,
     VisualsCallback callback) {
   if (!options.get_icon) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), id, nullptr));
     return;
   }
@@ -192,7 +192,7 @@ void BackgroundFetchDelegateImpl::GetVisualsForItem(
     }
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), id, std::move(visuals)));
 }
 
@@ -200,7 +200,7 @@ void BackgroundFetchDelegateImpl::GetShareInfoForItem(
     const offline_items_collection::ContentId& id,
     ShareCallback callback) {
   // TODO(xingliu): Provide OfflineItemShareInfo to |callback|.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), id,
                                 nullptr /* OfflineItemShareInfo */));
 }

@@ -231,7 +231,7 @@ void MailboxToSurfaceBridgeImpl::CreateSurface(
 
 void MailboxToSurfaceBridgeImpl::CreateAndBindContextProvider(
     base::OnceClosure on_bound_callback) {
-  gl_thread_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  gl_thread_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
   on_context_bound_ = std::move(on_bound_callback);
 
   // The callback to run in this thread. It is necessary to keep |surface| alive

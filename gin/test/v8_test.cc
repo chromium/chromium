@@ -4,7 +4,7 @@
 
 #include "gin/test/v8_test.h"
 
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "gin/array_buffer.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/v8_initializer.h"
@@ -53,7 +53,7 @@ void V8Test::TearDown() {
 
 std::unique_ptr<gin::IsolateHolder> V8Test::CreateIsolateHolder() const {
   return std::make_unique<gin::IsolateHolder>(
-      base::ThreadTaskRunnerHandle::Get(),
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
       gin::IsolateHolder::IsolateType::kBlinkMainThread);
 }
 

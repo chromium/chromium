@@ -61,7 +61,8 @@ class ExtensionFunctionMemoryDumpProvider
  public:
   ExtensionFunctionMemoryDumpProvider() {
     base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-        this, "ExtensionFunctions", base::ThreadTaskRunnerHandle::Get());
+        this, "ExtensionFunctions",
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   ExtensionFunctionMemoryDumpProvider(

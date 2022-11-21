@@ -19,7 +19,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "components/chromeos_camera/common/dmabuf.mojom.h"
 #include "components/chromeos_camera/dmabuf_utils.h"
@@ -100,7 +100,7 @@ void MojoJpegEncodeAcceleratorService::InitializeInternal(
     return;
   }
   accelerator_ = std::move(remaining_accelerator_factory_functions.front())
-                     .Run(base::ThreadTaskRunnerHandle::Get());
+                     .Run(base::SingleThreadTaskRunner::GetCurrentDefault());
   remaining_accelerator_factory_functions.erase(
       remaining_accelerator_factory_functions.begin());
   if (!accelerator_) {
@@ -144,7 +144,7 @@ void MojoJpegEncodeAcceleratorService::OnInitialize(
   // InitializeInternal() may destroy |accelerator_| which could cause a
   // use-after-free if |accelerator_| needs to do more stuff after calling
   // OnInitialize().
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&MojoJpegEncodeAcceleratorService::InitializeInternal,
                      weak_this_factory_.GetWeakPtr(),

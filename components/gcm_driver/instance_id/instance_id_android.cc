@@ -13,7 +13,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/gcm_driver/instance_id/android/jni_headers/InstanceIDBridge_jni.h"
 
@@ -119,7 +119,7 @@ void InstanceIDAndroid::ValidateToken(const std::string& authorized_entity,
                                       const std::string& token,
                                       ValidateTokenCallback callback) {
   // gcm_driver doesn't store tokens on Android, so assume it's valid.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true /* is_valid */));
 }
 

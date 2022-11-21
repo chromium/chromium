@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/chromecast_buildflags.h"
@@ -245,7 +244,7 @@ void ConnectivityCheckerImpl::CheckInternal() {
   const base::TimeDelta timeout =
       kRequestTimeout *
       std::pow(2, std::min(check_errors_, static_cast<unsigned int>(2)));
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, timeout_.callback(), timeout);
 }
 
@@ -263,7 +262,7 @@ void ConnectivityCheckerImpl::OnConnectionChanged(
   if (network_changed_pending_)
     return;
   network_changed_pending_ = true;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ConnectivityCheckerImpl::OnConnectionChangedInternal,
                      weak_this_),

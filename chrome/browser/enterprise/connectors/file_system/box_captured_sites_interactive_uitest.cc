@@ -173,7 +173,7 @@ class WebPageReplayUtil {
     web_page_replay_server_ = base::LaunchProcess(command, options);
 
     base::RunLoop wpr_launch_waiter;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, wpr_launch_waiter.QuitClosure(), base::Seconds(5));
     wpr_launch_waiter.Run();
 
@@ -252,7 +252,7 @@ class WebPageReplayUtil {
         base::LaunchProcess(launch_console_command, options);
 
     base::RunLoop wpr_launch_waiter;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, wpr_launch_waiter.QuitClosure(), base::Seconds(5));
     wpr_launch_waiter.Run();
 

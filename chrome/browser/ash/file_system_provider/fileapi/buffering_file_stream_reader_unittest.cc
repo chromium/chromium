@@ -14,7 +14,7 @@
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/io_buffer.h"
@@ -59,7 +59,7 @@ class FakeFileStreamReader : public storage::FileStreamReader {
     log_->push_back(buf_len);
 
     if (return_error_ != net::OK) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), return_error_));
       return net::ERR_IO_PENDING;
     }
@@ -67,14 +67,14 @@ class FakeFileStreamReader : public storage::FileStreamReader {
     const std::string fake_data(buf_len, 'X');
     memcpy(buf->data(), fake_data.c_str(), buf_len);
 
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), buf_len));
     return net::ERR_IO_PENDING;
   }
 
   int64_t GetLength(net::Int64CompletionOnceCallback callback) override {
     DCHECK_EQ(net::OK, return_error_);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), kFileSize));
     return net::ERR_IO_PENDING;
   }

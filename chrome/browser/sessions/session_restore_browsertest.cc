@@ -3068,7 +3068,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
                                        base::OnceClosure finish_response) {
           // Never starts the response, but informs the test the request has
           // been received.
-          base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
               FROM_HERE,
               base::BindOnce([](base::RunLoop* loop) { loop->Quit(); }, &loop),
               base::Seconds(1));

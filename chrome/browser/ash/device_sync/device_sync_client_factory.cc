@@ -56,7 +56,8 @@ class DeviceSyncClientHolder : public KeyedService {
     device_sync_->BindReceiver(device_sync_client_->GetDeviceSyncRemote()
                                    ->BindNewPipeAndPassReceiver());
     // Finish client initialization.
-    device_sync_client_->Initialize(base::ThreadTaskRunnerHandle::Get());
+    device_sync_client_->Initialize(
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   DeviceSyncClientHolder(const DeviceSyncClientHolder&) = delete;

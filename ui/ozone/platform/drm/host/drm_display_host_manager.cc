@@ -17,9 +17,9 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/events/ozone/device/device_event.h"
 #include "ui/events/ozone/device/device_manager.h"
@@ -354,28 +354,30 @@ void DrmDisplayHostManager::ProcessEvent() {
                base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
               base::BindOnce(
                   &OpenDeviceAsync, event.path,
-                  base::ThreadTaskRunnerHandle::Get(),
+                  base::SingleThreadTaskRunner::GetCurrentDefault(),
                   base::BindOnce(&DrmDisplayHostManager::OnAddGraphicsDevice,
                                  weak_ptr_factory_.GetWeakPtr())));
           task_pending_ = true;
         }
         break;
       case DeviceEvent::CHANGE:
-        task_pending_ = base::ThreadTaskRunnerHandle::Get()->PostTask(
-            FROM_HERE,
-            base::BindOnce(&DrmDisplayHostManager::OnUpdateGraphicsDevice,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           event.display_event_props));
+        task_pending_ =
+            base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE,
+                base::BindOnce(&DrmDisplayHostManager::OnUpdateGraphicsDevice,
+                               weak_ptr_factory_.GetWeakPtr(),
+                               event.display_event_props));
         break;
       case DeviceEvent::REMOVE:
         DCHECK(event.path != primary_graphics_card_path_)
             << "Removing primary graphics card";
         auto it = drm_devices_.find(event.path);
         if (it != drm_devices_.end()) {
-          task_pending_ = base::ThreadTaskRunnerHandle::Get()->PostTask(
-              FROM_HERE,
-              base::BindOnce(&DrmDisplayHostManager::OnRemoveGraphicsDevice,
-                             weak_ptr_factory_.GetWeakPtr(), it->second));
+          task_pending_ =
+              base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(&DrmDisplayHostManager::OnRemoveGraphicsDevice,
+                                 weak_ptr_factory_.GetWeakPtr(), it->second));
           drm_devices_.erase(it);
         }
         break;
@@ -441,7 +443,7 @@ void DrmDisplayHostManager::OnGpuThreadReady() {
   // delegate know that the display configuration changed and it needs to
   // update it again.
   if (!get_displays_callback_.is_null()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&DrmDisplayHostManager::RunUpdateDisplaysCallback,
                        weak_ptr_factory_.GetWeakPtr(),
@@ -486,7 +488,7 @@ void DrmDisplayHostManager::GpuHasUpdatedNativeDisplays(
   }
 
   if (!get_displays_callback_.is_null()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&DrmDisplayHostManager::RunUpdateDisplaysCallback,
                        weak_ptr_factory_.GetWeakPtr(),
@@ -530,7 +532,7 @@ void DrmDisplayHostManager::GpuTookDisplayControl(bool status) {
     display_externally_controlled_ = false;
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(take_display_control_callback_), status));
   take_display_control_callback_.Reset();
@@ -551,7 +553,7 @@ void DrmDisplayHostManager::GpuRelinquishedDisplayControl(bool status) {
     display_externally_controlled_ = true;
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(relinquish_display_control_callback_), status));
   relinquish_display_control_callback_.Reset();

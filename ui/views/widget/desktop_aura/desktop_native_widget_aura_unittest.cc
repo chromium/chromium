@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/aura/client/aura_constants.h"
@@ -363,7 +362,7 @@ TEST_F(DesktopNativeWidgetAuraTest, WidgetCanBeDestroyedFromNestedLoop) {
   // task will be executed from the nested loop initiated with the call to
   // |RunWithDispatcher()| below.
   base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&QuitNestedLoopAndCloseWidget,
                                 std::move(widget), run_loop.QuitClosure()));
   run_loop.Run();

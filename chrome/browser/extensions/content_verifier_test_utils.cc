@@ -57,7 +57,7 @@ void DownloaderTestDelegate::StartUpdateCheck(
       // immeditately, because the calling code isn't expecting a synchronous
       // response (in non-test situations there are at least 2 network
       // requests needed before a file could be returned).
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(
               &ExtensionDownloaderDelegate::OnExtensionDownloadFinished,

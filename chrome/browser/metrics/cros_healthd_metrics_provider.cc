@@ -11,7 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
@@ -42,7 +42,7 @@ void CrosHealthdMetricsProvider::AsyncInit(base::OnceClosure done_callback) {
   init_callback_ = std::move(done_callback);
   initialized_ = false;
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&CrosHealthdMetricsProvider::OnProbeTimeout,
                      weak_ptr_factory_.GetWeakPtr()),

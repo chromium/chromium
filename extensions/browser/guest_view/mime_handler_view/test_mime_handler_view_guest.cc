@@ -85,7 +85,7 @@ void TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(
   while (!guest_contents->IsLoading() &&
          !guest_view->GetController().GetLastCommittedEntry()) {
     base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
     run_loop.Run();
   }

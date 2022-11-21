@@ -241,9 +241,9 @@ class GCMClient {
   //     during the migration of account identifier from email to Gaia ID.
   // |blocking_task_runner|: for running blocking file tasks.
   // |io_task_runner|: for running IO tasks. When provided, it could be a
-  //     wrapper on top of base::ThreadTaskRunnerHandle::Get() to provide power
-  //     management featueres so that a delayed task posted to it can wake the
-  //     system up from sleep to perform the task.
+  //     wrapper on top of base::SingleThreadTaskRunner::GetCurrentDefault() to
+  //     provide power management featueres so that a delayed task posted to it
+  //     can wake the system up from sleep to perform the task.
   // |get_socket_factory_callback|: a callback that can accept a receiver for a
   //     network::mojom::ProxyResolvingSocketFactory. It needs to be safe to
   //     run on any thread.

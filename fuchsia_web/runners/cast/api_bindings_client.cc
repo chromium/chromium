@@ -10,7 +10,6 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
 
 namespace {
@@ -55,7 +54,7 @@ void ApiBindingsClient::AttachToFrame(
   DCHECK(connector);
 
   if (!bindings_service_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&ApiBindingsClient::CallOnErrorCallback,
                                   weak_ptr_factory_.GetWeakPtr(),
                                   std::move(on_error_callback)));

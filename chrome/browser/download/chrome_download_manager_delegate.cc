@@ -22,9 +22,9 @@
 #include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -1158,7 +1158,7 @@ void ChromeDownloadManagerDelegate::OnConfirmationCallbackComplete(
     const base::FilePath& virtual_path) {
   std::move(callback).Run(result, virtual_path);
   if (!file_picker_callbacks_.empty()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(file_picker_callbacks_.front()));
     file_picker_callbacks_.pop_front();
   } else {
@@ -1692,7 +1692,7 @@ void ChromeDownloadManagerDelegate::CheckDownloadAllowed(
     base::FilePath::StringType extension = path.Extension();
     if (!extension.empty() && base::FilePath::CompareEqualIgnoreCase(
                                   extension, FILE_PATH_LITERAL(".pdf"))) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(check_download_allowed_cb), false));
       return;

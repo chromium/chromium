@@ -22,7 +22,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -233,7 +232,7 @@ void BluetoothAdapterBlueZ::Initialize(base::OnceClosure callback) {
 
   // Can't initialize the adapter until DBus clients are ready.
   if (bluez::BluezDBusManager::Get()->IsObjectManagerSupportKnown()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&BluetoothAdapterBlueZ::Init,
                                   weak_ptr_factory_.GetWeakPtr()));
     return;
@@ -323,7 +322,7 @@ void BluetoothAdapterBlueZ::Shutdown() {
 
 BluetoothAdapterBlueZ::BluetoothAdapterBlueZ()
     : initialized_(false), dbus_is_shutdown_(false) {
-  ui_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  ui_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
   socket_thread_ = device::BluetoothSocketThread::Get();
 }
 

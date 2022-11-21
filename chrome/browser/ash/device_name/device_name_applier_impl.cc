@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace ash {
 
@@ -67,7 +67,7 @@ void DeviceNameApplierImpl::OnBluetoothAdapterSetNameError() {
   LOG(WARNING) << "Scheduling setting Bluetooth adapter name to retry in: "
                << retry_backoff_.GetTimeUntilRelease() << " seconds.";
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&DeviceNameApplierImpl::SetBluetoothAdapterName,
                      bluetooth_set_name_weak_factory_.GetWeakPtr()),

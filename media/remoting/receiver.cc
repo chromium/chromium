@@ -11,7 +11,6 @@
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/cast_streaming/public/remoting_message_factories.h"
 #include "components/cast_streaming/public/remoting_proto_enum_utils.h"
 #include "components/cast_streaming/public/remoting_proto_utils.h"
@@ -43,7 +42,7 @@ Receiver::Receiver(
       remote_handle_(remote_handle),
       receiver_controller_(receiver_controller),
       rpc_messenger_(receiver_controller_->rpc_messenger()),
-      main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       media_task_runner_(media_task_runner),
       renderer_(std::move(renderer)),
       acquire_renderer_done_cb_(std::move(acquire_renderer_done_cb)) {

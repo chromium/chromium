@@ -5,7 +5,7 @@
 #include "android_webview/renderer/browser_exposed_renderer_interfaces.h"
 
 #include "android_webview/renderer/aw_content_renderer_client.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/visitedlink/renderer/visitedlink_reader.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 
@@ -15,7 +15,7 @@ void ExposeRendererInterfacesToBrowser(AwContentRendererClient* client,
                                        mojo::BinderMap* binders) {
   binders->Add<visitedlink::mojom::VisitedLinkNotificationSink>(
       client->visited_link_reader()->GetBindCallback(),
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 }  // namespace android_webview

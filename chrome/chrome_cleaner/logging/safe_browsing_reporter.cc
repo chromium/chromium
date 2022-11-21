@@ -19,10 +19,10 @@
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "chrome/chrome_cleaner/constants/chrome_cleaner_switches.h"
@@ -253,7 +253,7 @@ void SafeBrowsingReporter::UploadReport(
   // ownership of the object, which will get destructed on task completion.
   new SafeBrowsingReporter(done_callback, GetSafeBrowsingReportUrl(default_url),
                            report, traffic_annotation,
-                           base::ThreadTaskRunnerHandle::Get());
+                           base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 // static

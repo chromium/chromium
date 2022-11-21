@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -14,7 +15,6 @@
 #include "ui/gfx/geometry/rect.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/threading/thread_task_runner_handle.h"
 #endif
 
 namespace ui {
@@ -48,7 +48,7 @@ void AnimationThroughputReporterTestBase::TearDown() {
 void AnimationThroughputReporterTestBase::Advance(
     const base::TimeDelta& delta) {
   run_loop_ = std::make_unique<base::RunLoop>();
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop_->QuitClosure(), delta);
   run_loop_->Run();
 }

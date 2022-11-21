@@ -16,12 +16,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
@@ -74,7 +74,8 @@ class IndexedDBQuotaClientTest : public testing::Test,
     CreateTempDir();
     quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
         /*in_memory=*/false, temp_dir_.GetPath(),
-        base::ThreadTaskRunnerHandle::Get(), special_storage_policy_);
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        special_storage_policy_);
 
     idb_context_ = base::MakeRefCounted<IndexedDBContextImpl>(
         temp_dir_.GetPath(), quota_manager_->proxy(),
@@ -439,7 +440,8 @@ TEST_P(IndexedDBQuotaClientTest,
 
 TEST_P(IndexedDBQuotaClientTest, IncognitoQuotaFirstParty) {
   auto quota_manager = base::MakeRefCounted<storage::MockQuotaManager>(
-      /*in_memory=*/true, base::FilePath(), base::ThreadTaskRunnerHandle::Get(),
+      /*in_memory=*/true, base::FilePath(),
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
       special_storage_policy_);
   auto incognito_idb_context = base::MakeRefCounted<IndexedDBContextImpl>(
       base::FilePath(), quota_manager->proxy(),
@@ -467,7 +469,8 @@ TEST_P(IndexedDBQuotaClientTest, IncognitoQuotaFirstParty) {
 
 TEST_P(IndexedDBQuotaClientTest, IncognitoQuotaThirdParty) {
   auto quota_manager = base::MakeRefCounted<storage::MockQuotaManager>(
-      /*in_memory=*/true, base::FilePath(), base::ThreadTaskRunnerHandle::Get(),
+      /*in_memory=*/true, base::FilePath(),
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
       special_storage_policy_);
   auto incognito_idb_context = base::MakeRefCounted<IndexedDBContextImpl>(
       base::FilePath(), quota_manager->proxy(),

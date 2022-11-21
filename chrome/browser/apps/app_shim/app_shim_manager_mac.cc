@@ -1084,7 +1084,7 @@ void AppShimManager::OnProfileMarkedForPermanentDeletion(Profile* profile) {
         ++iter_app;
     }
   };
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(close_shims_lambda, weak_factory_.GetWeakPtr()));
 }

@@ -6,8 +6,8 @@
 
 #include <memory>
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "components/prefs/pref_service.h"
@@ -70,8 +70,9 @@ TEST_F(ProxyConfigServiceImplTest, IgnoresNestedProxyConfigServiceByDefault) {
       std::make_unique<TestProxyConfigService>(
           fixed_config, net::ProxyConfigService::CONFIG_VALID);
 
-  ProxyConfigServiceImpl proxy_tracker(&profile_prefs, &local_state_prefs,
-                                       base::ThreadTaskRunnerHandle::Get());
+  ProxyConfigServiceImpl proxy_tracker(
+      &profile_prefs, &local_state_prefs,
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   std::unique_ptr<net::ProxyConfigService> proxy_resolution_service =
       proxy_tracker.CreateTrackingProxyConfigService(std::move(nested_service));
@@ -104,8 +105,9 @@ TEST_F(ProxyConfigServiceImplTest, UsesNestedProxyConfigService) {
       std::make_unique<TestProxyConfigService>(
           fixed_config, net::ProxyConfigService::CONFIG_VALID);
 
-  ProxyConfigServiceImpl proxy_tracker(&profile_prefs, &local_state_prefs,
-                                       base::ThreadTaskRunnerHandle::Get());
+  ProxyConfigServiceImpl proxy_tracker(
+      &profile_prefs, &local_state_prefs,
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   std::unique_ptr<net::ProxyConfigService> proxy_resolution_service =
       proxy_tracker.CreateTrackingProxyConfigService(std::move(nested_service));

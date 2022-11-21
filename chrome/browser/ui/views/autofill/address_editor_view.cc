@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/address_editor_view.h"
 
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/autofill/address_editor_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -210,7 +210,7 @@ void AddressEditorView::OnPerformAction(views::Combobox* combobox) {
 void AddressEditorView::OnDataChanged() {
   SaveFieldsToProfile();
   controller_->UpdateEditorFields();
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&AddressEditorView::UpdateEditorView,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

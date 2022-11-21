@@ -12,7 +12,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
@@ -368,7 +368,7 @@ void DeviceCommandStartCrdSessionJob::FinishWithSuccess(
 
   SendResultCodeToUma(ResultCode::SUCCESS);
   SendSessionTypeToUma(GetUmaSessionType());
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(succeeded_callback_),
                      ResultPayload::CreateSuccessPayload(access_code)));
@@ -384,7 +384,7 @@ void DeviceCommandStartCrdSessionJob::FinishWithError(
     return;  // Task was terminated.
 
   SendResultCodeToUma(result_code);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(failed_callback_),
                      ResultPayload::CreateErrorPayload(result_code, message)));
@@ -396,7 +396,7 @@ void DeviceCommandStartCrdSessionJob::FinishWithNotIdleError() {
     return;  // Task was terminated.
 
   SendResultCodeToUma(ResultCode::FAILURE_NOT_IDLE);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(failed_callback_),
                                 ResultPayload::CreateNonIdlePayload(
                                     GetDeviceIdlenessPeriod())));

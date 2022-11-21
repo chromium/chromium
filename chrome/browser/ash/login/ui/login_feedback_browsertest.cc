@@ -38,7 +38,7 @@ void EnsureFeedbackAppUIShown(FeedbackDialog* feedback_dialog,
   if (widget->IsActive()) {
     std::move(callback).Run();
   } else {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&EnsureFeedbackAppUIShown, feedback_dialog,
                        std::move(callback)),

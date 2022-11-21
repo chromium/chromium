@@ -11,7 +11,7 @@
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/io_buffer.h"
 #include "net/log/net_log_source_type.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -90,7 +90,7 @@ int FuzzedSocket::Read(IOBuffer* buf,
   }
 
   read_pending_ = true;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FuzzedSocket::OnReadComplete, weak_factory_.GetWeakPtr(),
                      std::move(callback), result));
@@ -138,7 +138,7 @@ int FuzzedSocket::Write(
   }
 
   write_pending_ = true;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FuzzedSocket::OnWriteComplete, weak_factory_.GetWeakPtr(),
                      std::move(callback), result));
@@ -186,7 +186,7 @@ int FuzzedSocket::Connect(CompletionOnceCallback callback) {
   connect_pending_ = true;
   if (result != OK)
     error_pending_ = true;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FuzzedSocket::OnConnectComplete,
                      weak_factory_.GetWeakPtr(), std::move(callback), result));

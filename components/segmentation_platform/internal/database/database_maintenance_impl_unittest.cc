@@ -10,10 +10,10 @@
 #include <vector>
 
 #include "base/metrics/metrics_hashes.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/internal/constants.h"
@@ -73,7 +73,7 @@ class TestDefaultModelManager : public DefaultModelManager {
   void GetAllSegmentInfoFromDefaultModel(
       const base::flat_set<SegmentId>& segment_ids,
       MultipleSegmentInfoCallback callback) override {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   DefaultModelManager::SegmentInfoList()));
   }

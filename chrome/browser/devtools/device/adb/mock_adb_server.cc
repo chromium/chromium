@@ -17,7 +17,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
@@ -355,7 +354,7 @@ void SimpleHttpServer::Connection::OnDataRead(int count) {
     }
   } while (bytes_processed);
   // Posting to avoid deep recursion in case of synchronous IO
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&Connection::ReadData, weak_factory_.GetWeakPtr()));
 }
@@ -389,7 +388,7 @@ void SimpleHttpServer::Connection::OnDataWritten(int count) {
 
   if (bytes_to_write_ != 0)
     // Posting to avoid deep recursion in case of synchronous IO
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&Connection::WriteData, weak_factory_.GetWeakPtr()));
   else if (read_closed_)
@@ -404,7 +403,7 @@ void SimpleHttpServer::OnConnect() {
       base::BindOnce(&SimpleHttpServer::OnAccepted, base::Unretained(this)));
 
   if (accept_result != net::ERR_IO_PENDING)
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&SimpleHttpServer::OnAccepted,
                                   weak_factory_.GetWeakPtr(), accept_result));
 }

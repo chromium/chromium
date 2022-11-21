@@ -53,8 +53,8 @@ class MemoryFileStreamWriterTest : public FileStreamWriterTest {
   std::unique_ptr<FileStreamWriter> CreateWriter(const std::string& name,
                                                  int64_t offset) override {
     return std::make_unique<MemoryFileStreamWriter>(
-        base::ThreadTaskRunnerHandle::Get(), file_util_->GetWeakPtr(),
-        Path(name), offset);
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        file_util_->GetWeakPtr(), Path(name), offset);
   }
 
   bool FilePathExists(const std::string& name) override {

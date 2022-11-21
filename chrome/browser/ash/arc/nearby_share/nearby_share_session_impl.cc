@@ -198,7 +198,7 @@ NearbyShareSessionImpl::NearbyShareSessionImpl(
   if (arc_window) {
     VLOG(1) << "ARC window found";
     UpdateNearbyShareWindowFound(true);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&NearbyShareSessionImpl::OnArcWindowFound,
                                   weak_ptr_factory_.GetWeakPtr(), arc_window));
   } else {
@@ -269,7 +269,7 @@ void NearbyShareSessionImpl::OnWindowVisibilityChanged(
     if (window_initialization_timer_.IsRunning()) {
       window_initialization_timer_.Stop();
     }
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&NearbyShareSessionImpl::OnArcWindowFound,
                                   weak_ptr_factory_.GetWeakPtr(), window));
   }

@@ -7,12 +7,12 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace device {
 
 WifiDataProvider::WifiDataProvider()
-    : client_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+    : client_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   DCHECK(client_task_runner_);
 }
 

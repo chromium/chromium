@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/load_error_reporter.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 
 #include "base/bind.h"
@@ -13,7 +14,6 @@
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/grit/generated_resources.h"
@@ -40,8 +40,8 @@ LoadErrorReporter* LoadErrorReporter::GetInstance() {
 
 LoadErrorReporter::LoadErrorReporter(bool enable_noisy_errors)
     : enable_noisy_errors_(enable_noisy_errors) {
-  if (base::ThreadTaskRunnerHandle::IsSet())
-    ui_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  if (base::SingleThreadTaskRunner::HasCurrentDefault())
+    ui_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
 LoadErrorReporter::~LoadErrorReporter() {}

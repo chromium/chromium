@@ -22,7 +22,7 @@
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/token.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
@@ -352,7 +352,7 @@ void BrowserChildProcessHostImpl::LaunchWithoutExtraCommandLineSwitches(
       std::move(*child_process_host_->GetMojoInvitation()),
       base::BindRepeating(&BrowserChildProcessHostImpl::OnMojoError,
                           weak_factory_.GetWeakPtr(),
-                          base::ThreadTaskRunnerHandle::Get()),
+                          base::SingleThreadTaskRunner::GetCurrentDefault()),
       std::move(file_data), terminate_on_shutdown);
   ShareMetricsAllocatorToProcess();
 

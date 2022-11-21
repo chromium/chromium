@@ -109,7 +109,7 @@ void ArcPingRoutine::FetchManagedProperties(
   guids_remaining_ = guids.size();
 
   // Post delayed task to handle timeout error on GetManagedProperties.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ArcPingRoutine::HandleTimeout,
                      weak_ptr_factory_.GetWeakPtr()),

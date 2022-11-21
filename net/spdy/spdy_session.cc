@@ -27,7 +27,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
@@ -1810,7 +1809,7 @@ void SpdySession::InitializeInternal(SpdySessionPool* pool) {
   pool_ = pool;
 
   // Bootstrap the read loop.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&SpdySession::PumpReadLoop, weak_factory_.GetWeakPtr(),
                      READ_STATE_DO_READ, OK));
@@ -1961,7 +1960,7 @@ void SpdySession::ProcessPendingStreamRequests() {
     // Note that this post can race with other stream creations, and it's
     // possible that the un-stalled stream will be stalled again if it loses.
     // TODO(jgraettinger): Provide stronger ordering guarantees.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&SpdySession::CompleteStreamRequest,
                                   weak_factory_.GetWeakPtr(), pending_request));
   }
@@ -2107,7 +2106,7 @@ void SpdySession::TryCreatePushStream(spdy::SpdyStreamId stream_id,
     return;
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&SpdySession::CancelPushedStreamIfUnclaimed, GetWeakPtr(),
                      stream_id),
@@ -2336,7 +2335,7 @@ int SpdySession::DoReadLoop(ReadState expected_read_state, int result) {
     if (read_state_ == READ_STATE_DO_READ &&
         (bytes_read_without_yielding > kYieldAfterBytesRead ||
          time_func_() > yield_after_time)) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&SpdySession::PumpReadLoop, weak_factory_.GetWeakPtr(),
                          READ_STATE_DO_READ, OK));
@@ -2438,7 +2437,7 @@ void SpdySession::MaybePostWriteLoop() {
   if (write_state_ == WRITE_STATE_IDLE) {
     CHECK(!in_flight_write_);
     write_state_ = WRITE_STATE_DO_WRITE;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&SpdySession::PumpWriteLoop, weak_factory_.GetWeakPtr(),
                        WRITE_STATE_DO_WRITE, OK));
@@ -2593,7 +2592,7 @@ int SpdySession::DoWriteComplete(int result) {
 
 void SpdySession::NotifyRequestsOfConfirmation(int rv) {
   for (auto& callback : waiting_for_confirmation_callbacks_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), rv));
   }
   waiting_for_confirmation_callbacks_.clear();
@@ -2843,7 +2842,7 @@ void SpdySession::PlanToCheckPingStatus() {
     return;
 
   check_ping_status_pending_ = true;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&SpdySession::CheckPingStatus, weak_factory_.GetWeakPtr(),
                      time_func_()),
@@ -2870,7 +2869,7 @@ void SpdySession::CheckPingStatus(base::TimeTicks last_check_time) {
 
   // Check the status of connection after a delay.
   const base::TimeDelta delay = last_read_time_ + hung_interval_ - now;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&SpdySession::CheckPingStatus, weak_factory_.GetWeakPtr(),
                      now),

@@ -12,7 +12,7 @@
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "device/fido/fido_device.h"
 #include "device/fido/fido_device_discovery.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -54,7 +54,7 @@ void VirtualFidoDiscovery::StartInternal() {
   }
   devices_pending_discovery_start_.clear();
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&VirtualFidoDiscovery::NotifyDiscoveryStarted,
                                 AsWeakPtr(), true /* success */));
 }

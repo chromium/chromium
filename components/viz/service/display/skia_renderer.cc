@@ -3598,7 +3598,7 @@ void SkiaRenderer::EndPaint(bool failed) {
     // finished.
     if (current_gpu_commands_completed_fence_->was_set()) {
       on_finished_callback = base::BindPostTask(
-          base::ThreadTaskRunnerHandle::Get(),
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
           base::BindOnce(&FrameResourceGpuCommandsCompletedFence::Signal,
                          std::move(current_gpu_commands_completed_fence_)));
       current_gpu_commands_completed_fence_ =
@@ -3612,7 +3612,7 @@ void SkiaRenderer::EndPaint(bool failed) {
     // when the root render pass is finished.
     if (current_release_fence_->was_set()) {
       on_return_release_fence_cb = base::BindPostTask(
-          base::ThreadTaskRunnerHandle::Get(),
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
           base::BindOnce(&FrameResourceReleaseFence::SetReleaseFenceCallback,
                          std::move(current_release_fence_)));
       current_release_fence_ =

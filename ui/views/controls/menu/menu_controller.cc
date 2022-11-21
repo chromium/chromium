@@ -16,7 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -3198,7 +3198,7 @@ void MenuController::ExitMenu() {
 MenuItemView* MenuController::ExitTopMostMenu() {
   // Release the lock which prevents Chrome from shutting down while the menu is
   // showing.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ViewsDelegate::ReleaseRef,
                      base::Unretained(ViewsDelegate::GetInstance())));

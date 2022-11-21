@@ -16,8 +16,8 @@
 #include "base/logging.h"
 #include "base/posix/unix_domain_socket.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
@@ -136,7 +136,7 @@ void FakePowerManagerClient::SetScreenBrightness(
   power_manager::BacklightBrightnessChange change;
   change.set_percent(request.percent());
   change.set_cause(RequestCauseToChangeCause(request.cause()));
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakePowerManagerClient::SendScreenBrightnessChanged,
                      weak_ptr_factory_.GetWeakPtr(), change));
@@ -144,7 +144,7 @@ void FakePowerManagerClient::SetScreenBrightness(
 
 void FakePowerManagerClient::GetScreenBrightnessPercent(
     DBusMethodCallback<double> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), screen_brightness_percent_));
 }
@@ -157,7 +157,7 @@ void FakePowerManagerClient::IncreaseKeyboardBrightness() {
 
 void FakePowerManagerClient::GetKeyboardBrightnessPercent(
     DBusMethodCallback<double> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), keyboard_brightness_percent_));
 }
@@ -173,7 +173,7 @@ void FakePowerManagerClient::RequestStatusUpdate() {
   // RequestStatusUpdate() calls and notifies the observers
   // asynchronously on a real device. On the fake implementation, we call
   // observers in a posted task to emulate the same behavior.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&FakePowerManagerClient::NotifyObservers,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
@@ -258,7 +258,7 @@ void FakePowerManagerClient::SetBacklightsForcedOff(bool forced_off) {
     pending_screen_brightness_changes_.push(change);
   } else {
     screen_brightness_percent_ = change.percent();
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&FakePowerManagerClient::SendScreenBrightnessChanged,
                        weak_ptr_factory_.GetWeakPtr(), change));
@@ -267,20 +267,20 @@ void FakePowerManagerClient::SetBacklightsForcedOff(bool forced_off) {
 
 void FakePowerManagerClient::GetBacklightsForcedOff(
     DBusMethodCallback<bool> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), backlights_forced_off_));
 }
 
 void FakePowerManagerClient::GetSwitchStates(
     DBusMethodCallback<SwitchStates> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
                                 SwitchStates{lid_state_, tablet_mode_}));
 }
 
 void FakePowerManagerClient::GetInactivityDelays(
     DBusMethodCallback<power_manager::PowerManagementPolicy::Delays> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), inactivity_delays_));
 }
 
@@ -302,7 +302,7 @@ void FakePowerManagerClient::CreateArcTimers(
     DBusMethodCallback<std::vector<TimerId>> callback) {
   // Return error if tag is empty.
   if (tag.empty()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::vector<TimerId>()));
     return;
   }
@@ -316,7 +316,7 @@ void FakePowerManagerClient::CreateArcTimers(
   std::set<clockid_t> seen_clock_ids;
   for (const auto& request : arc_timer_requests) {
     if (!seen_clock_ids.emplace(request.first).second) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(callback), std::vector<TimerId>()));
       return;
@@ -338,7 +338,7 @@ void FakePowerManagerClient::CreateArcTimers(
   // Associate timer ids with the client's tag. The insert is safe because
   // duplicate client tags are checked for earlier.
   client_timer_ids_[tag] = timer_ids;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(timer_ids)));
 }
 
@@ -347,20 +347,20 @@ void FakePowerManagerClient::StartArcTimer(
     base::TimeTicks absolute_expiration_time,
     VoidDBusMethodCallback callback) {
   if (simulate_start_arc_timer_failure_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
 
   auto it = arc_timers_.find(timer_id);
   if (it == arc_timers_.end()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
 
   // Post task to run |callback| and indicate success to the caller.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 
   // Post task to write to |clock_id|'s expiration fd. This will simulate the
@@ -379,7 +379,7 @@ void FakePowerManagerClient::StartArcTimer(
 void FakePowerManagerClient::DeleteArcTimers(const std::string& tag,
                                              VoidDBusMethodCallback callback) {
   DeleteArcTimersInternal(tag);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
@@ -409,7 +409,7 @@ void FakePowerManagerClient::SetExternalDisplayALSBrightness(bool enabled) {
 
 void FakePowerManagerClient::GetExternalDisplayALSBrightness(
     DBusMethodCallback<bool> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
                                 external_display_als_brightness_enabled_));
 }
@@ -420,7 +420,7 @@ void FakePowerManagerClient::ChargeNowForAdaptiveCharging() {}
 
 void FakePowerManagerClient::GetChargeHistoryForAdaptiveCharging(
     DBusMethodCallback<power_manager::ChargeHistoryState> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), charge_history_));
 }
 

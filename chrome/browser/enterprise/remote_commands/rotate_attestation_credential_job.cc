@@ -8,7 +8,7 @@
 #include "base/check.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command.h"
 
@@ -99,7 +99,7 @@ void RotateAttestationCredentialJob::OnKeyRotated(
   auto payload =
       std::make_unique<RotateAttestationCredentialJob::ResultPayload>(
           rotation_result);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(payload->IsSuccess() ? succeeded_callback
                                                     : failed_callback),

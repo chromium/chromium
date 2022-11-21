@@ -104,7 +104,7 @@ VideoCaptureDeviceChromeOSDelegate::VideoCaptureDeviceChromeOSDelegate(
     base::OnceClosure cleanup_callback)
     : device_descriptor_(device_descriptor),
       camera_hal_delegate_(camera_hal_delegate),
-      capture_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      capture_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       camera_device_ipc_thread_(std::string("CameraDeviceIpcThread") +
                                 device_descriptor.device_id),
       screen_observer_delegate_(

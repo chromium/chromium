@@ -18,11 +18,11 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/support_tool/data_collector.h"
 #include "components/feedback/pii_types.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -72,8 +72,9 @@ class TestDataCollector : public DataCollector {
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
       scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container,
       DataCollectorDoneCallback on_exported_callback) override {
-    on_exported_callback = base::BindPostTask(
-        base::ThreadTaskRunnerHandle::Get(), std::move(on_exported_callback));
+    on_exported_callback =
+        base::BindPostTask(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                           std::move(on_exported_callback));
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(&TestDataCollector::WriteFileForTesting,

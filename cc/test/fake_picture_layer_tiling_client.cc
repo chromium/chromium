@@ -9,7 +9,7 @@
 #include <limits>
 #include <memory>
 
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "cc/test/fake_raster_source.h"
 #include "cc/test/fake_tile_manager.h"
 
@@ -25,12 +25,12 @@ FakePictureLayerTilingClient::FakePictureLayerTilingClient()
 FakePictureLayerTilingClient::FakePictureLayerTilingClient(
     viz::ClientResourceProvider* resource_provider,
     viz::ContextProvider* context_provider)
-    : resource_pool_(
-          std::make_unique<ResourcePool>(resource_provider,
-                                         context_provider,
-                                         base::ThreadTaskRunnerHandle::Get(),
-                                         ResourcePool::kDefaultExpirationDelay,
-                                         false)),
+    : resource_pool_(std::make_unique<ResourcePool>(
+          resource_provider,
+          context_provider,
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
+          ResourcePool::kDefaultExpirationDelay,
+          false)),
       tile_manager_(
           new FakeTileManager(&tile_manager_client_, resource_pool_.get())),
       raster_source_(FakeRasterSource::CreateInfiniteFilled()),

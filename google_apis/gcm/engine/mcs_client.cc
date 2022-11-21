@@ -13,7 +13,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -176,8 +176,9 @@ MCSClient::MCSClient(const std::string& version_string,
       stream_id_in_(0),
       gcm_store_(gcm_store),
       io_task_runner_(io_task_runner),
-      heartbeat_manager_(std::move(base::ThreadTaskRunnerHandle::Get()),
-                         std::move(io_task_runner)),
+      heartbeat_manager_(
+          std::move(base::SingleThreadTaskRunner::GetCurrentDefault()),
+          std::move(io_task_runner)),
       recorder_(recorder) {
   DCHECK(io_task_runner_);
 }

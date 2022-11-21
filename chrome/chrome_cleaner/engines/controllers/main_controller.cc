@@ -19,8 +19,8 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/simple_thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/chrome_cleaner/components/component_manager.h"
 #include "chrome/chrome_cleaner/constants/chrome_cleaner_switches.h"
@@ -139,7 +139,8 @@ MainController::MainController(RebooterAPI* rebooter,
     // invalidated on object destruction, so it's not accessed once this
     // main controller object no longer exists.
     chrome_prompt_ipc->Initialize(new ChromePromptConnectionErrorHandler(
-        weak_factory_.GetWeakPtr(), base::ThreadTaskRunnerHandle::Get()));
+        weak_factory_.GetWeakPtr(),
+        base::SingleThreadTaskRunner::GetCurrentDefault()));
     main_dialog_ =
         std::make_unique<ChromeProxyMainDialog>(this, chrome_prompt_ipc);
   } else if (execution_mode == ExecutionMode::kCleanup) {

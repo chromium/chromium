@@ -82,7 +82,7 @@ void GpuArcVideoDecoder::Initialize(
   DCHECK(!error_state_);
   DCHECK(!client_ && !init_callback_ && !video_frame_pool_);
 
-  client_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  client_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
   client_.Bind(std::move(client));
   init_callback_ = std::move(callback);
   video_frame_pool_ = std::make_unique<GpuArcVideoFramePool>(

@@ -14,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/simple_test_clock.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/timer/mock_timer.h"
@@ -516,7 +515,7 @@ void MDnsTest::DeleteBothListeners() {
 void MDnsTest::RunFor(base::TimeDelta time_period) {
   base::CancelableOnceCallback<void()> callback(
       base::BindOnce(&MDnsTest::Stop, base::Unretained(this)));
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, callback.callback(), time_period);
 
   base::RunLoop().Run();

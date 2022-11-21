@@ -13,9 +13,9 @@
 #include "base/containers/circular_deque.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "net/base/io_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -109,8 +109,8 @@ ByteStreamTest::ByteStreamTest()
 TEST_F(ByteStreamTest, ByteStream_PushBack) {
   std::unique_ptr<ByteStreamWriter> byte_stream_input;
   std::unique_ptr<ByteStreamReader> byte_stream_output;
-  CreateByteStream(base::ThreadTaskRunnerHandle::Get(),
-                   base::ThreadTaskRunnerHandle::Get(), 3 * 1024,
+  CreateByteStream(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                   base::SingleThreadTaskRunner::GetCurrentDefault(), 3 * 1024,
                    &byte_stream_input, &byte_stream_output);
 
   // Push a series of IO buffers on; test pushback happening and
@@ -164,8 +164,8 @@ TEST_F(ByteStreamTest, ByteStream_PushBack) {
 TEST_F(ByteStreamTest, ByteStream_Flush) {
   std::unique_ptr<ByteStreamWriter> byte_stream_input;
   std::unique_ptr<ByteStreamReader> byte_stream_output;
-  CreateByteStream(base::ThreadTaskRunnerHandle::Get(),
-                   base::ThreadTaskRunnerHandle::Get(), 1024,
+  CreateByteStream(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                   base::SingleThreadTaskRunner::GetCurrentDefault(), 1024,
                    &byte_stream_input, &byte_stream_output);
 
   EXPECT_TRUE(Write(byte_stream_input.get(), 1));
@@ -204,8 +204,8 @@ TEST_F(ByteStreamTest, ByteStream_Flush) {
 TEST_F(ByteStreamTest, ByteStream_PushBackSplit) {
   std::unique_ptr<ByteStreamWriter> byte_stream_input;
   std::unique_ptr<ByteStreamReader> byte_stream_output;
-  CreateByteStream(base::ThreadTaskRunnerHandle::Get(),
-                   base::ThreadTaskRunnerHandle::Get(), 9 * 1024,
+  CreateByteStream(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                   base::SingleThreadTaskRunner::GetCurrentDefault(), 9 * 1024,
                    &byte_stream_input, &byte_stream_output);
 
   // Push a series of IO buffers on; test pushback happening and
@@ -259,8 +259,8 @@ TEST_F(ByteStreamTest, ByteStream_CompleteTransmits) {
   size_t output_length;
 
   // Empty stream, non-error case.
-  CreateByteStream(base::ThreadTaskRunnerHandle::Get(),
-                   base::ThreadTaskRunnerHandle::Get(), 3 * 1024,
+  CreateByteStream(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                   base::SingleThreadTaskRunner::GetCurrentDefault(), 3 * 1024,
                    &byte_stream_input, &byte_stream_output);
   EXPECT_EQ(ByteStreamReader::STREAM_EMPTY,
             byte_stream_output->Read(&output_io_buffer, &output_length));
@@ -271,8 +271,8 @@ TEST_F(ByteStreamTest, ByteStream_CompleteTransmits) {
   EXPECT_EQ(0, byte_stream_output->GetStatus());
 
   // Non-empty stream, non-error case.
-  CreateByteStream(base::ThreadTaskRunnerHandle::Get(),
-                   base::ThreadTaskRunnerHandle::Get(), 3 * 1024,
+  CreateByteStream(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                   base::SingleThreadTaskRunner::GetCurrentDefault(), 3 * 1024,
                    &byte_stream_input, &byte_stream_output);
   EXPECT_EQ(ByteStreamReader::STREAM_EMPTY,
             byte_stream_output->Read(&output_io_buffer, &output_length));
@@ -289,8 +289,8 @@ TEST_F(ByteStreamTest, ByteStream_CompleteTransmits) {
   const int kFakeErrorCode = 22;
 
   // Empty stream, error case.
-  CreateByteStream(base::ThreadTaskRunnerHandle::Get(),
-                   base::ThreadTaskRunnerHandle::Get(), 3 * 1024,
+  CreateByteStream(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                   base::SingleThreadTaskRunner::GetCurrentDefault(), 3 * 1024,
                    &byte_stream_input, &byte_stream_output);
   EXPECT_EQ(ByteStreamReader::STREAM_EMPTY,
             byte_stream_output->Read(&output_io_buffer, &output_length));
@@ -301,8 +301,8 @@ TEST_F(ByteStreamTest, ByteStream_CompleteTransmits) {
   EXPECT_EQ(kFakeErrorCode, byte_stream_output->GetStatus());
 
   // Non-empty stream, error case.
-  CreateByteStream(base::ThreadTaskRunnerHandle::Get(),
-                   base::ThreadTaskRunnerHandle::Get(), 3 * 1024,
+  CreateByteStream(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                   base::SingleThreadTaskRunner::GetCurrentDefault(), 3 * 1024,
                    &byte_stream_input, &byte_stream_output);
   EXPECT_EQ(ByteStreamReader::STREAM_EMPTY,
             byte_stream_output->Read(&output_io_buffer, &output_length));
@@ -324,8 +324,8 @@ TEST_F(ByteStreamTest, ByteStream_SinkCallback) {
 
   std::unique_ptr<ByteStreamWriter> byte_stream_input;
   std::unique_ptr<ByteStreamReader> byte_stream_output;
-  CreateByteStream(base::ThreadTaskRunnerHandle::Get(), task_runner, 10000,
-                   &byte_stream_input, &byte_stream_output);
+  CreateByteStream(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                   task_runner, 10000, &byte_stream_input, &byte_stream_output);
 
   scoped_refptr<net::IOBuffer> output_io_buffer;
   size_t output_length;
@@ -375,7 +375,8 @@ TEST_F(ByteStreamTest, ByteStream_SourceCallback) {
 
   std::unique_ptr<ByteStreamWriter> byte_stream_input;
   std::unique_ptr<ByteStreamReader> byte_stream_output;
-  CreateByteStream(task_runner, base::ThreadTaskRunnerHandle::Get(), 10000,
+  CreateByteStream(task_runner,
+                   base::SingleThreadTaskRunner::GetCurrentDefault(), 10000,
                    &byte_stream_input, &byte_stream_output);
 
   scoped_refptr<net::IOBuffer> output_io_buffer;
@@ -436,8 +437,8 @@ TEST_F(ByteStreamTest, ByteStream_SinkInterrupt) {
 
   std::unique_ptr<ByteStreamWriter> byte_stream_input;
   std::unique_ptr<ByteStreamReader> byte_stream_output;
-  CreateByteStream(base::ThreadTaskRunnerHandle::Get(), task_runner, 10000,
-                   &byte_stream_input, &byte_stream_output);
+  CreateByteStream(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                   task_runner, 10000, &byte_stream_input, &byte_stream_output);
 
   scoped_refptr<net::IOBuffer> output_io_buffer;
   size_t output_length;
@@ -481,7 +482,8 @@ TEST_F(ByteStreamTest, ByteStream_SourceInterrupt) {
 
   std::unique_ptr<ByteStreamWriter> byte_stream_input;
   std::unique_ptr<ByteStreamReader> byte_stream_output;
-  CreateByteStream(task_runner, base::ThreadTaskRunnerHandle::Get(), 10000,
+  CreateByteStream(task_runner,
+                   base::SingleThreadTaskRunner::GetCurrentDefault(), 10000,
                    &byte_stream_input, &byte_stream_output);
 
   scoped_refptr<net::IOBuffer> output_io_buffer;
@@ -531,8 +533,8 @@ TEST_F(ByteStreamTest, ByteStream_ZeroCallback) {
 
   std::unique_ptr<ByteStreamWriter> byte_stream_input;
   std::unique_ptr<ByteStreamReader> byte_stream_output;
-  CreateByteStream(base::ThreadTaskRunnerHandle::Get(), task_runner, 10000,
-                   &byte_stream_input, &byte_stream_output);
+  CreateByteStream(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                   task_runner, 10000, &byte_stream_input, &byte_stream_output);
 
   // Record initial state.
   int num_callbacks = 0;
@@ -548,8 +550,8 @@ TEST_F(ByteStreamTest, ByteStream_ZeroCallback) {
 TEST_F(ByteStreamTest, ByteStream_CloseWithoutAnyWrite) {
   std::unique_ptr<ByteStreamWriter> byte_stream_input;
   std::unique_ptr<ByteStreamReader> byte_stream_output;
-  CreateByteStream(base::ThreadTaskRunnerHandle::Get(),
-                   base::ThreadTaskRunnerHandle::Get(), 3 * 1024,
+  CreateByteStream(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                   base::SingleThreadTaskRunner::GetCurrentDefault(), 3 * 1024,
                    &byte_stream_input, &byte_stream_output);
 
   byte_stream_input->Close(0);
@@ -564,8 +566,8 @@ TEST_F(ByteStreamTest, ByteStream_CloseWithoutAnyWrite) {
 TEST_F(ByteStreamTest, ByteStream_FlushWithoutAnyWrite) {
   std::unique_ptr<ByteStreamWriter> byte_stream_input;
   std::unique_ptr<ByteStreamReader> byte_stream_output;
-  CreateByteStream(base::ThreadTaskRunnerHandle::Get(),
-                   base::ThreadTaskRunnerHandle::Get(), 3 * 1024,
+  CreateByteStream(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                   base::SingleThreadTaskRunner::GetCurrentDefault(), 3 * 1024,
                    &byte_stream_input, &byte_stream_output);
 
   byte_stream_input->Flush();
@@ -586,8 +588,8 @@ TEST_F(ByteStreamTest, ByteStream_FlushWithoutAnyWrite) {
 TEST_F(ByteStreamTest, ByteStream_WriteOverflow) {
   std::unique_ptr<ByteStreamWriter> byte_stream_input;
   std::unique_ptr<ByteStreamReader> byte_stream_output;
-  CreateByteStream(base::ThreadTaskRunnerHandle::Get(),
-                   base::ThreadTaskRunnerHandle::Get(),
+  CreateByteStream(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                   base::SingleThreadTaskRunner::GetCurrentDefault(),
                    std::numeric_limits<size_t>::max(), &byte_stream_input,
                    &byte_stream_output);
 

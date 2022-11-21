@@ -100,7 +100,7 @@ void GetTPMInfoForUserOnUIThread(const AccountId& account_id,
   std::unique_ptr<ash::TPMTokenInfoGetter> scoped_token_info_getter =
       ash::TPMTokenInfoGetter::CreateForUserToken(
           account_id, ash::CryptohomePkcs11Client::Get(),
-          base::ThreadTaskRunnerHandle::Get());
+          base::SingleThreadTaskRunner::GetCurrentDefault());
   ash::TPMTokenInfoGetter* token_info_getter = scoped_token_info_getter.get();
 
   // Bind |token_info_getter| to the callback to ensure it does not go away

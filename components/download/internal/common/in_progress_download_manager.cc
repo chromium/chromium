@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/download/database/download_db_entry.h"
 #include "components/download/database/download_db_impl.h"
@@ -108,7 +108,8 @@ void BeginResourceDownload(
           tab_referrer_url, is_new_download, false,
           std::move(wake_lock_provider), is_background_mode, main_task_runner)
           .release(),
-      base::OnTaskRunnerDeleter(base::ThreadTaskRunnerHandle::Get()));
+      base::OnTaskRunnerDeleter(
+          base::SingleThreadTaskRunner::GetCurrentDefault()));
 
   OnUrlDownloadHandlerCreated(std::move(downloader), download_manager,
                               main_task_runner);
@@ -329,7 +330,7 @@ void InProgressDownloadManager::BeginDownload(
           is_new_download, weak_factory_.GetWeakPtr(),
           serialized_embedder_download_data, tab_url, tab_referrer_url,
           std::move(wake_lock_provider), !delegate_ /* is_background_mode */,
-          base::ThreadTaskRunnerHandle::Get()));
+          base::SingleThreadTaskRunner::GetCurrentDefault()));
 }
 
 void InProgressDownloadManager::InterceptDownloadFromNavigation(
@@ -362,7 +363,8 @@ void InProgressDownloadManager::InterceptDownloadFromNavigation(
           std::move(response_head), std::move(response_body),
           std::move(url_loader_client_endpoints),
           std::move(pending_url_loader_factory), url_security_policy_,
-          std::move(wake_lock_provider), base::ThreadTaskRunnerHandle::Get()));
+          std::move(wake_lock_provider),
+          base::SingleThreadTaskRunner::GetCurrentDefault()));
 }
 
 void InProgressDownloadManager::Initialize(
@@ -596,7 +598,7 @@ void InProgressDownloadManager::OnDBInitialized(
         base::BindOnce(
             &DownloadCollectionBridge::GetDisplayNamesForDownloads,
             base::BindOnce(&OnDownloadDisplayNamesReturned, std::move(callback),
-                           base::ThreadTaskRunnerHandle::Get())));
+                           base::SingleThreadTaskRunner::GetCurrentDefault())));
     return;
   }
 #endif
@@ -675,7 +677,7 @@ void InProgressDownloadManager::SetDelegate(Delegate* delegate) {
 
 void InProgressDownloadManager::OnDownloadsInitialized() {
   if (delegate_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&InProgressDownloadManager::NotifyDownloadsInitialized,
                        weak_factory_.GetWeakPtr()));

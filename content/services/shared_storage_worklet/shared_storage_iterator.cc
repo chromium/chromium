@@ -6,7 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/services/shared_storage_worklet/worklet_v8_helper.h"
 #include "gin/arguments.h"
 #include "gin/dictionary.h"
@@ -27,11 +27,11 @@ SharedStorageIterator::SharedStorageIterator(
   switch (mode_) {
     case Mode::kKey:
       client->SharedStorageKeys(receiver_.BindNewPipeAndPassRemote(
-          base::ThreadTaskRunnerHandle::Get()));
+          base::SingleThreadTaskRunner::GetCurrentDefault()));
       break;
     case Mode::kKeyValue:
       client->SharedStorageEntries(receiver_.BindNewPipeAndPassRemote(
-          base::ThreadTaskRunnerHandle::Get()));
+          base::SingleThreadTaskRunner::GetCurrentDefault()));
       break;
   }
 }

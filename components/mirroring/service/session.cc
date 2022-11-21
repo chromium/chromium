@@ -24,8 +24,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -381,7 +381,7 @@ void Session::AsyncInitialize(AsyncInitializeDoneCB done_cb) {
     // Post OnAsyncInitializeDone() instead of calling it directly to make sure
     // that CreateAndSendOffer() is always called asynchronously. This kind of
     // consistency is good for testing and reliability.
-    auto runner = base::ThreadTaskRunnerHandle::Get();
+    auto runner = base::SingleThreadTaskRunner::GetCurrentDefault();
     SupportedProfiles empty_profiles;
     runner->PostTask(FROM_HERE, base::BindOnce(&Session::OnAsyncInitializeDone,
                                                weak_factory_.GetWeakPtr(),
@@ -527,7 +527,7 @@ void Session::CreateVideoEncodeAccelerator(
     mojo_vea = base::WrapUnique<media::VideoEncodeAccelerator>(
         new media::MojoVideoEncodeAccelerator(std::move(vea)));
   }
-  std::move(callback).Run(base::ThreadTaskRunnerHandle::Get(),
+  std::move(callback).Run(base::SingleThreadTaskRunner::GetCurrentDefault(),
                           std::move(mojo_vea));
 }
 
@@ -691,7 +691,7 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
   }
   cast_environment_ = new media::cast::CastEnvironment(
       base::DefaultTickClock::GetInstance(),
-      base::ThreadTaskRunnerHandle::Get(), audio_encode_thread_,
+      base::SingleThreadTaskRunner::GetCurrentDefault(), audio_encode_thread_,
       video_encode_thread_);
   auto udp_client = std::make_unique<UdpSocketClient>(
       net::IPEndPoint(session_params_.receiver_address, answer.udp_port),
@@ -701,7 +701,7 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
   cast_transport_ = media::cast::CastTransport::Create(
       cast_environment_->Clock(), kSendEventsInterval,
       std::make_unique<TransportClient>(this), std::move(udp_client),
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   if (state_ == REMOTING) {
     DCHECK(media_remoter_);

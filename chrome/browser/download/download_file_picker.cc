@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/platform_util.h"
@@ -43,7 +43,7 @@ DownloadFilePicker::DownloadFilePicker(download::DownloadItem* item,
   // Extension download may not have associated webcontents.
   if (item->GetDownloadSource() != download::DownloadSource::EXTENSION_API &&
       (!web_contents || !web_contents->GetNativeView())) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&DownloadFilePicker::FileSelectionCanceled,
                                   base::Unretained(this), nullptr));
     return;
@@ -54,7 +54,7 @@ DownloadFilePicker::DownloadFilePicker(download::DownloadItem* item,
   // |select_file_dialog_| could be null in Linux. See CreateSelectFileDialog()
   // in shell_dialog_linux.cc.
   if (!select_file_dialog_.get()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&DownloadFilePicker::FileSelectionCanceled,
                                   base::Unretained(this), nullptr));
     return;

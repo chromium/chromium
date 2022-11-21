@@ -7,7 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
@@ -154,7 +154,7 @@ void SegmentSelectorImpl::OnPlatformInitialized(
 
 void SegmentSelectorImpl::GetSelectedSegment(
     SegmentSelectionCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), selected_segment_last_session_));
 }
@@ -247,7 +247,7 @@ void SegmentSelectorImpl::GetRankForNextSegment(
     result.is_ready = true;
     result.segment = segment_id_and_rank.first;
     result.rank = segment_id_and_rank.second;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), result));
     stats::RecordSegmentSelectionComputed(*config_, segment_id_and_rank.first,
                                           absl::nullopt);
@@ -268,7 +268,7 @@ void SegmentSelectorImpl::OnGetResultForSegmentSelection(
     stats::RecordSegmentSelectionFailure(*config_,
                                          GetFailureReason(result->state));
     if (config_->on_demand_execution && !callback.is_null()) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(callback), SegmentSelectionResult()));
     }

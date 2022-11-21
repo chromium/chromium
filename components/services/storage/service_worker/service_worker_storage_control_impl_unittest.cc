@@ -11,9 +11,9 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/services/storage/service_worker/service_worker_storage_test_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -189,7 +189,8 @@ class ServiceWorkerStorageControlImplTest : public testing::Test {
   void SetUpStorage() {
     storage_impl_ = std::make_unique<ServiceWorkerStorageControlImpl>(
         user_data_directory_.GetPath(),
-        /*database_task_runner=*/base::ThreadTaskRunnerHandle::Get(),
+        /*database_task_runner=*/
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
         remote_.BindNewPipeAndPassReceiver());
   }
 

@@ -37,8 +37,8 @@ class CrostiniUninstallerViewBrowserTest : public CrostiniDialogBrowserTest {
             callback) override {
       ash::FakeConciergeClient::StopVm(request, std::move(callback));
       if (closure_) {
-        base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                      std::move(closure_));
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, std::move(closure_));
       }
     }
 

@@ -16,7 +16,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/null_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/cache_storage/scoped_writable_entry.h"
 #include "content/public/browser/browser_context.h"
@@ -141,10 +140,11 @@ class CacheStorageBlobToDiskCacheTest : public testing::Test {
     EXPECT_TRUE(base_.CreateUniqueTempDir());
     base::FilePath base_dir = base_.GetPath().AppendASCII("filesystem");
     quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
-        false /* is_incognito */, base_dir, base::ThreadTaskRunnerHandle::Get(),
+        false /* is_incognito */, base_dir,
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
         special_storage_policy_);
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
-        quota_manager(), base::ThreadTaskRunnerHandle::Get());
+        quota_manager(), base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   std::string ReadCacheContent() {

@@ -11,7 +11,6 @@
 #include "base/location.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "remoting/base/auto_thread.h"
@@ -23,7 +22,7 @@ namespace remoting {
 const char kDaemonControllerThreadName[] = "Daemon Controller thread";
 
 DaemonController::DaemonController(std::unique_ptr<Delegate> delegate)
-    : caller_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+    : caller_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       delegate_(std::move(delegate)) {
   // Launch the delegate thread.
   delegate_thread_ = std::make_unique<AutoThread>(kDaemonControllerThreadName);

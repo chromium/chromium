@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h"
 #include "components/cronet/android/cronet_url_request_adapter.h"
 #include "components/cronet/android/io_buffer_with_byte_buffer.h"
@@ -37,7 +36,7 @@ void CronetUploadDataStreamAdapter::InitializeOnNetworkThread(
   DCHECK(!network_task_runner_.get());
 
   upload_data_stream_ = upload_data_stream;
-  network_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  network_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
   DCHECK(network_task_runner_);
 }
 

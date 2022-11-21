@@ -21,10 +21,10 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/chromeos_camera/gpu_jpeg_encode_accelerator_factory.h"
@@ -382,7 +382,8 @@ void JpegClient::CreateJpegEncoder() {
   }
 
   for (const auto& create_jea_func : jea_factories) {
-    encoder_ = create_jea_func.Run(base::ThreadTaskRunnerHandle::Get());
+    encoder_ =
+        create_jea_func.Run(base::SingleThreadTaskRunner::GetCurrentDefault());
     if (encoder_)
       break;
   }

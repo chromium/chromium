@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_system.h"
@@ -137,7 +137,7 @@ void CorruptedExtensionReinstaller::ScheduleNextReinstallAttempt() {
   if (g_reinstall_action_for_test) {
     g_reinstall_action_for_test->Run(std::move(callback), reinstall_delay);
   } else {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, std::move(callback), reinstall_delay);
   }
 }

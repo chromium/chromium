@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
@@ -35,7 +35,7 @@ void MenuClosureAnimationMac::Start() {
     // accept callback will happen after a runloop cycle by skipping to the end
     // of the animation.
     step_ = AnimationStep::kFading;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&MenuClosureAnimationMac::AdvanceAnimation,
                                   AsWeakPtr()));
     return;

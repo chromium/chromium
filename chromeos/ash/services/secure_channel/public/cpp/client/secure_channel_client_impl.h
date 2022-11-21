@@ -31,7 +31,7 @@ class SecureChannelClientImpl : public SecureChannelClient {
     static std::unique_ptr<SecureChannelClient> Create(
         mojo::PendingRemote<mojom::SecureChannel> channel,
         scoped_refptr<base::TaskRunner> task_runner =
-            base::ThreadTaskRunnerHandle::Get());
+            base::SingleThreadTaskRunner::GetCurrentDefault());
     static void SetFactoryForTesting(Factory* test_factory);
 
    protected:

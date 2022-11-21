@@ -22,7 +22,6 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "media/base/data_buffer.h"
 #include "media/base/limits.h"
@@ -90,10 +89,11 @@ class VideoRendererImplTest : public testing::Test {
         false, base::Seconds(1.0 / 60),
         base::BindRepeating(&MockCB::FrameReceived,
                             base::Unretained(&mock_cb_)),
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
 
     renderer_ = std::make_unique<VideoRendererImpl>(
-        base::ThreadTaskRunnerHandle::Get(), null_video_sink_.get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        null_video_sink_.get(),
         base::BindRepeating(&VideoRendererImplTest::CreateVideoDecodersForTest,
                             base::Unretained(this)),
         true, &media_log_, nullptr, 0);
@@ -1181,7 +1181,8 @@ class VideoRendererImplAsyncAddFrameReadyTest : public VideoRendererImplTest {
  public:
   void InitializeWithMockGpuMemoryBufferVideoFramePool() {
     renderer_ = std::make_unique<VideoRendererImpl>(
-        base::ThreadTaskRunnerHandle::Get(), null_video_sink_.get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        null_video_sink_.get(),
         base::BindRepeating(&VideoRendererImplAsyncAddFrameReadyTest::
                                 CreateVideoDecodersForTest,
                             base::Unretained(this)),

@@ -16,7 +16,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "dbus/bus.h"
 #include "dbus/exported_object.h"
 #include "dbus/message.h"
@@ -69,7 +69,7 @@ FlossManagerClient::PoweredCallback::CreateWithTimeout(
 }
 
 void FlossManagerClient::PoweredCallback::PostDelayedError() {
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&PoweredCallback::RunError,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -385,7 +385,7 @@ void FlossManagerClient::HandleSetFlossEnabled(bool target,
   if (!response.has_value()) {
     LOG(ERROR) << response.error();
     if (retry > 0) {
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&FlossManagerClient::SetFlossEnabled,
                          weak_ptr_factory_.GetWeakPtr(), target, retry - 1,
@@ -409,7 +409,7 @@ void FlossManagerClient::HandleGetFlossEnabled(bool target,
   if (!response.has_value()) {
     LOG(ERROR) << response.error();
     if (retry > 0) {
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&FlossManagerClient::GetFlossEnabledWithTarget,
                          weak_ptr_factory_.GetWeakPtr(), target, retry - 1,
@@ -427,7 +427,7 @@ void FlossManagerClient::HandleGetFlossEnabled(bool target,
 
   // Target doesn't match reality. Retry |SetFlossEnabled|.
   if (floss_enabled != target && retry > 0) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&FlossManagerClient::SetFlossEnabled,
                        weak_ptr_factory_.GetWeakPtr(), target, retry - 1,

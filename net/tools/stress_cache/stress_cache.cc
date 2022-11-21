@@ -37,7 +37,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/base/io_buffer.h"
@@ -272,8 +271,8 @@ void EntryWrapper::DoIdle() {
   state_ = NONE;
   g_data->pendig_operations--;
   DCHECK(g_data->pendig_operations);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                base::BindOnce(&LoopTask));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&LoopTask));
 }
 
 // The task that keeps the main thread busy. Whenever an entry becomes idle this
@@ -293,8 +292,8 @@ void LoopTask() {
     g_data->entries[slot].DoOpen(key);
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                base::BindOnce(&LoopTask));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&LoopTask));
 }
 
 // This thread will loop forever, adding and removing entries from the cache.
@@ -336,8 +335,8 @@ void StressTheCache(int iteration) {
   for (auto& key : g_data->keys)
     key = GenerateStressKey();
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                base::BindOnce(&LoopTask));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&LoopTask));
   base::RunLoop().Run();
 }
 
@@ -350,7 +349,7 @@ void RunSoon(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
 void CrashCallback() {
   // Keep trying to run.
-  RunSoon(base::ThreadTaskRunnerHandle::Get());
+  RunSoon(base::SingleThreadTaskRunner::GetCurrentDefault());
 
   if (g_crashing)
     return;

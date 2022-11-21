@@ -13,7 +13,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/attestation/attestation_flow_utils.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
@@ -161,7 +161,7 @@ void AttestationFlowIntegrated::OnPreparedCheckComplete(
   }
 
   if (base::TimeTicks::Now() < end_time) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&AttestationFlowIntegrated::WaitForAttestationPrepared,
                        weak_factory_.GetWeakPtr(), end_time,

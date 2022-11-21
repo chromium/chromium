@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "remoting/protocol/session_plugin.h"
 #include "remoting/protocol/video_stream.h"
 #include "remoting/signaling/signaling_address.h"
@@ -87,7 +87,7 @@ bool MockPairingRegistryDelegate::Delete(const std::string& client_id) {
 
 SynchronousPairingRegistry::SynchronousPairingRegistry(
     std::unique_ptr<Delegate> delegate)
-    : PairingRegistry(base::ThreadTaskRunnerHandle::Get(),
+    : PairingRegistry(base::SingleThreadTaskRunner::GetCurrentDefault(),
                       std::move(delegate)) {}
 SynchronousPairingRegistry::~SynchronousPairingRegistry() = default;
 

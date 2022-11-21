@@ -1103,7 +1103,7 @@ void ArcAppListPrefs::OnArcPlayStoreEnabledChanged(bool enabled) {
     // arc::prefs::kArcEnabled pref change callbacks are called for all other
     // components before calling RemoveAllAppsAndPackages for other components
     // to prepare for ARC apps removal.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&ArcAppListPrefs::RemoveAllAppsAndPackages,
                                   weak_ptr_factory_.GetWeakPtr()));
   }

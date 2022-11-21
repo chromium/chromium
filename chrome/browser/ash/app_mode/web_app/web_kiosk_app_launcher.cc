@@ -200,7 +200,7 @@ void WebKioskAppLauncher::OnExoWindowCreated(aura::Window* window) {
   // when an exo window is launched in a fullscreen mode. This short delay is
   // just a temporary workaround, and should be removed after the issue is
   // solved.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&KioskAppLauncher::Delegate::OnAppWindowCreated,
                      base::Unretained(delegate_)),

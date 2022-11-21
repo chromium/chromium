@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
@@ -32,8 +31,9 @@ GpuChannelHost::GpuChannelHost(
     const gpu::GpuFeatureInfo& gpu_feature_info,
     mojo::ScopedMessagePipeHandle handle,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
-    : io_thread_(io_task_runner ? io_task_runner
-                                : base::ThreadTaskRunnerHandle::Get()),
+    : io_thread_(io_task_runner
+                     ? io_task_runner
+                     : base::SingleThreadTaskRunner::GetCurrentDefault()),
       channel_id_(channel_id),
       gpu_info_(gpu_info),
       gpu_feature_info_(gpu_feature_info),

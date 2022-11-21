@@ -110,14 +110,15 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
     std::vector<std::unique_ptr<storage::FileSystemBackend>>
         additional_providers;
     additional_providers.push_back(std::make_unique<TestFileSystemBackend>(
-        base::ThreadTaskRunnerHandle::Get().get(), dir_.GetPath()));
+        base::SingleThreadTaskRunner::GetCurrentDefault().get(),
+        dir_.GetPath()));
     test_file_system_backend_ =
         static_cast<TestFileSystemBackend*>(additional_providers[0].get());
 
     file_system_context_ =
         storage::CreateFileSystemContextWithAdditionalProvidersForTesting(
-            base::ThreadTaskRunnerHandle::Get(),
-            base::ThreadTaskRunnerHandle::Get(),
+            base::SingleThreadTaskRunner::GetCurrentDefault(),
+            base::SingleThreadTaskRunner::GetCurrentDefault(),
             /*quota_manager_proxy=*/nullptr, std::move(additional_providers),
             dir_.GetPath());
 

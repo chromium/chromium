@@ -15,7 +15,6 @@
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -112,7 +111,8 @@ class CloudPolicyValidatorTest : public testing::Test {
     EXPECT_FALSE(public_key.empty());
 
     auto validator = std::make_unique<UserCloudPolicyValidator>(
-        std::move(policy_response), base::ThreadTaskRunnerHandle::Get());
+        std::move(policy_response),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     validator->ValidateTimestamp(timestamp_, timestamp_option_);
     if (validate_by_gaia_id_) {
       validator->ValidateUsernameAndGaiaId(

@@ -19,7 +19,6 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/devtools/device/adb/mock_adb_server.h"
 #include "chrome/browser/devtools/device/devtools_android_bridge.h"
 #include "chrome/browser/devtools/device/usb/android_usb_device.h"
@@ -252,7 +251,7 @@ class FakeAndroidUsbDevice : public FakeUsbDevice {
       uint32_t magic = header[5];
       if ((current_message_->command ^ 0xffffffff) != magic) {
         DCHECK(false) << "Header checksum error";
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback),
                                       UsbTransferStatus::TRANSFER_ERROR));
         return;
@@ -271,7 +270,7 @@ class FakeAndroidUsbDevice : public FakeUsbDevice {
 
     UsbTransferStatus status = broken_ ? UsbTransferStatus::TRANSFER_ERROR
                                        : UsbTransferStatus::COMPLETED;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), status));
     ProcessQueries();
   }
@@ -379,7 +378,7 @@ class FakeAndroidUsbDevice : public FakeUsbDevice {
     if (broken_) {
       Query query = std::move(queries_.front());
       queries_.pop();
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(query.callback),
                                     UsbTransferStatus::TRANSFER_ERROR,
                                     std::vector<uint8_t>()));
@@ -397,7 +396,7 @@ class FakeAndroidUsbDevice : public FakeUsbDevice {
     output_buffer_.erase(output_buffer_.begin(),
                          output_buffer_.begin() + query.size);
 
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(query.callback), UsbTransferStatus::COMPLETED,
                        std::move(response_buffer)));
@@ -665,7 +664,7 @@ class MockCountListenerWithReAddWhileQueued : public MockCountListener {
     ++invoked_;
     if (!readded_) {
       readded_ = true;
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&MockCountListenerWithReAddWhileQueued::ReAdd,
                          base::Unretained(this)));

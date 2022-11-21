@@ -13,7 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/filename_util.h"
 #include "net/base/net_errors.h"
 #include "net/test/test_with_task_environment.h"
@@ -234,8 +234,9 @@ void URLRequestTestJobBackedByFileEventsTest::RunRequestWithPath(
       kUrl, DEFAULT_PRIORITY, &delegate_, TRAFFIC_ANNOTATION_FOR_TESTS));
   TestScopedURLInterceptor interceptor(
       kUrl, std::make_unique<TestURLRequestTestJobBackedByFile>(
-                request.get(), path, base::ThreadTaskRunnerHandle::Get(),
-                open_result, seek_position, done_reading, observed_content));
+                request.get(), path,
+                base::SingleThreadTaskRunner::GetCurrentDefault(), open_result,
+                seek_position, done_reading, observed_content));
   if (!range.empty()) {
     request->SetExtraRequestHeaderByName(HttpRequestHeaders::kRange, range,
                                          true /*overwrite*/);

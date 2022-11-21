@@ -309,7 +309,8 @@ constexpr float kDefaultFloorHeightEstimation = 1.2;
 namespace device {
 
 ArCoreImpl::ArCoreImpl()
-    : gl_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+    : gl_thread_task_runner_(
+          base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 ArCoreImpl::~ArCoreImpl() {
   for (auto& create_anchor : create_anchor_requests_) {

@@ -19,8 +19,8 @@
 #include "base/power_monitor/power_monitor_device_source.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/child/child_process.h"
@@ -177,7 +177,7 @@ void GpuChildThread::OnGpuServiceConnection(viz::GpuServiceImpl* gpu_service) {
 #if BUILDFLAG(IS_ANDROID)
   overlay_factory_cb =
       base::BindRepeating(&GpuChildThread::CreateAndroidOverlay,
-                          base::ThreadTaskRunnerHandle::Get());
+                          base::SingleThreadTaskRunner::GetCurrentDefault());
   gpu_service->media_gpu_channel_manager()->SetOverlayFactory(
       overlay_factory_cb);
 #endif
@@ -259,7 +259,7 @@ void GpuChildThread::QuitSafelyHelper(
 // before quitting the main message loop. Must be called on the main thread.
 base::RepeatingClosure GpuChildThread::MakeQuitSafelyClosure() {
   return base::BindRepeating(&GpuChildThread::QuitSafelyHelper,
-                             base::ThreadTaskRunnerHandle::Get());
+                             base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 #if BUILDFLAG(IS_ANDROID)

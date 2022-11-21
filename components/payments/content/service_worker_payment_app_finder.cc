@@ -18,7 +18,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/stl_util.h"
 #include "base/supports_user_data.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/payments/content/developer_console_logger.h"
 #include "components/payments/content/installable_payment_app_crawler.h"
 #include "components/payments/content/manifest_verifier.h"
@@ -328,7 +328,7 @@ class SelfDeletingServiceWorkerPaymentAppFinder
       parser_.reset();
       std::move(finished_using_resources_callback_).Run();
 
-      base::ThreadTaskRunnerHandle::Get()->PostNonNestableTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostNonNestableTask(
           FROM_HERE,
           base::BindOnce(&SelfDeletingServiceWorkerPaymentAppFinder::DeleteSelf,
                          weak_ptr_factory_.GetWeakPtr()));

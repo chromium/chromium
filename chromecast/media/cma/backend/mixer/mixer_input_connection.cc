@@ -17,7 +17,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chromecast/base/chromecast_switches.h"
 #include "chromecast/media/api/audio_provider.h"
@@ -374,7 +374,7 @@ MixerInputConnection::MixerInputConnection(
       enable_audio_clock_simulation_(pts_is_timestamp_ ||
                                      params.enable_audio_clock_simulation()),
       effective_playout_channel_(playout_channel_),
-      io_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      io_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       max_queued_frames_(std::max(GetQueueSize(params), algorithm_fill_size_)),
       start_threshold_frames_(GetStartThreshold(params)),
       never_timeout_connection_(params.never_timeout_connection()),

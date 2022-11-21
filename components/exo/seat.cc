@@ -293,7 +293,7 @@ void Seat::OnAllReadsFinished(
   // |auto_reset| is destroyed, so if there are outstanding references that
   // would prevent that, reschedule this task.
   if (!writer->HasOneRef()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&Seat::OnAllReadsFinished,
                        weak_ptr_factory_.GetWeakPtr(), std::move(writer)));

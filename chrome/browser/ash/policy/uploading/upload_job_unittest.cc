@@ -16,7 +16,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/uploading/upload_job_impl.h"
 #include "content/public/test/browser_task_environment.h"
@@ -135,7 +135,7 @@ void FakeOAuth2AccessTokenManagerWithCaching::FetchOAuth2Token(
     token_response.expiration_time = base::Time::Now();
     token_replies_.pop();
   }
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&OAuth2AccessTokenManager::RequestImpl::InformConsumer,
                      request->AsWeakPtr(), response_error, token_response));
@@ -242,7 +242,8 @@ class UploadJobTestBase : public testing::Test, public UploadJob::Delegate {
     std::unique_ptr<UploadJob> upload_job(new UploadJobImpl(
         GetServerURL(), CoreAccountId(kRobotAccountId), &access_token_manager_,
         url_loader_factory_, this, std::move(mime_boundary_generator),
-        TRAFFIC_ANNOTATION_FOR_TESTS, base::ThreadTaskRunnerHandle::Get()));
+        TRAFFIC_ANNOTATION_FOR_TESTS,
+        base::SingleThreadTaskRunner::GetCurrentDefault()));
 
     std::map<std::string, std::string> header_entries;
     header_entries.insert(std::make_pair(kCustomField1, "CUSTOM1"));

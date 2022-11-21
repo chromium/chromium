@@ -6,8 +6,8 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/paint_canvas.h"
 #include "ui/aura/window.h"
@@ -60,7 +60,7 @@ gfx::Vector2dF InterpolateBetween(const gfx::Vector2dF& start,
 CursorView::CursorView(const gfx::Point& initial_location,
                        bool is_motion_blur_enabled)
     : is_motion_blur_enabled_(is_motion_blur_enabled),
-      ui_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      ui_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       paint_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
           {base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),

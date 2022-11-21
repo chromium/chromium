@@ -28,7 +28,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "net/base/host_port_pair.h"
@@ -757,7 +757,7 @@ class ExabyteResponse : public BasicHttpResponse {
   }
 
   void PostSendExabyteTask(base::WeakPtr<HttpResponseDelegate> delegate) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&ExabyteResponse::SendExabyte,
                                   weak_factory_.GetWeakPtr(), delegate));
   }

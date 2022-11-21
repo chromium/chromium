@@ -7,8 +7,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner_util.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/renderer_host/pepper/pepper_file_io_host.h"
 #include "content/browser/renderer_host/pepper/quota_reservation.h"
 #include "content/common/pepper_file_util.h"
@@ -76,7 +76,7 @@ PepperFileSystemBrowserHost::IOThreadState::IOThreadState(
     PP_FileSystemType type,
     base::WeakPtr<PepperFileSystemBrowserHost> host)
     : type_(type),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       host_(host) {}
 
 PepperFileSystemBrowserHost::IOThreadState::~IOThreadState() {

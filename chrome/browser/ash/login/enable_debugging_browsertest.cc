@@ -12,7 +12,6 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -97,7 +96,7 @@ class TestDebugDaemonClient : public FakeDebugDaemonClient {
   void OnRemoveRootfsVerification(EnableDebuggingCallback original_callback,
                                   bool succeeded) {
     LOG(WARNING) << "OnRemoveRootfsVerification: succeeded = " << succeeded;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(original_callback), succeeded));
     if (runner_.get())
       runner_->Quit();
@@ -112,7 +111,7 @@ class TestDebugDaemonClient : public FakeDebugDaemonClient {
                                 int feature_mask) {
     LOG(WARNING) << "OnQueryDebuggingFeatures: succeeded = " << succeeded
                  << ", feature_mask = " << feature_mask;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(original_callback), succeeded, feature_mask));
     if (runner_.get())
@@ -127,7 +126,7 @@ class TestDebugDaemonClient : public FakeDebugDaemonClient {
                                  bool succeeded) {
     LOG(WARNING) << "OnEnableDebuggingFeatures: succeeded = " << succeeded
                  << ", feature_mask = ";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(original_callback), succeeded));
     if (runner_.get())
       runner_->Quit();

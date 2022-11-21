@@ -11,7 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -113,7 +113,7 @@ DiceSignedInProfileCreator::DiceSignedInProfileCreator(
     NOTREACHED();
 
     // Make sure the callback is not called synchronously.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&ProfileManager::CreateProfileAsync,
                        base::Unretained(g_browser_process->profile_manager()),
@@ -142,7 +142,7 @@ DiceSignedInProfileCreator::DiceSignedInProfileCreator(
       account_id_(account_id),
       callback_(std::move(callback)) {
   // Make sure the callback is not called synchronously.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           base::IgnoreResult(&ProfileManager::LoadProfileByPath),

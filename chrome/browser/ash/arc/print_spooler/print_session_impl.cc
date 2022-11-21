@@ -17,9 +17,9 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/print_spooler/arc_print_spooler_util.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
@@ -366,7 +366,7 @@ void PrintSessionImpl::StartPrintAfterPluginIsLoaded() {
   // have a way to notify the browser when it's ready (crbug.com/636642), so we
   // need to poll for the PDF frame to "look ready" before we start printing.
   if (!IsPdfPluginLoaded(web_contents_.get())) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&PrintSessionImpl::StartPrintAfterPluginIsLoaded,
                        weak_ptr_factory_.GetWeakPtr()),
@@ -378,7 +378,7 @@ void PrintSessionImpl::StartPrintAfterPluginIsLoaded() {
   // The inner doc has been marked done, but the PDF plugin might not be quite
   // done updating the DOM yet.  We don't have a way to check that, so launch
   // printing after one final delay to give that time to finish.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&PrintSessionImpl::StartPrintNow,
                      weak_ptr_factory_.GetWeakPtr()),

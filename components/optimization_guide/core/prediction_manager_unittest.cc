@@ -196,7 +196,7 @@ class TestPredictionModelFetcher : public PredictionModelFetcherImpl {
         get_models_response = std::make_unique<proto::GetModelsResponse>();
         break;
     }
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&RunGetModelsCallback,
                                   std::move(models_fetched_callback),
                                   std::move(get_models_response)));

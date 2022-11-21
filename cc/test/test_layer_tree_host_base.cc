@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
 #include "cc/test/fake_raster_source.h"
 #include "cc/test/layer_test_common.h"
@@ -16,7 +16,7 @@
 namespace cc {
 
 TestLayerTreeHostBase::TestLayerTreeHostBase()
-    : task_runner_provider_(base::ThreadTaskRunnerHandle::Get()),
+    : task_runner_provider_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       pending_layer_(nullptr),
       active_layer_(nullptr),
       old_pending_layer_(nullptr),

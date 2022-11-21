@@ -4,7 +4,7 @@
 
 #include "ui/events/test/x11_event_waiter.h"
 
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
@@ -42,8 +42,8 @@ XEventWaiter::~XEventWaiter() {
 void XEventWaiter::OnEvent(const x11::Event& xev) {
   auto* client = xev.As<x11::ClientMessageEvent>();
   if (client && client->type == MarkerEventAtom()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(success_callback_));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(success_callback_));
     delete this;
   }
 }

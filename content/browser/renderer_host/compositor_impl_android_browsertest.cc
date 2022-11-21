@@ -106,7 +106,7 @@ class ContextLostRunLoop : public viz::ContextLostObserver {
       return;
     }
     context_provider_->ContextGL()->Flush();
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ContextLostRunLoop::CheckForContextLoss,
                        base::Unretained(this)),

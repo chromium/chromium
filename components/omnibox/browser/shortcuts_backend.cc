@@ -20,8 +20,8 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -161,7 +161,7 @@ ShortcutsBackend::ShortcutsBackend(
     : template_url_service_(template_url_service),
       search_terms_data_(std::move(search_terms_data)),
       current_state_(NOT_INITIALIZED),
-      main_runner_(base::ThreadTaskRunnerHandle::Get()),
+      main_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       db_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),

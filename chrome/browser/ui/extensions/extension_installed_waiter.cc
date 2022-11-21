@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/extensions/extension_installed_waiter.h"
 
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -72,7 +72,7 @@ void ExtensionInstalledWaiter::OnExtensionLoaded(
 
   // Only call Wait() after all the other extension observers have had a chance
   // to run.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ExtensionInstalledWaiter::RunCallbackIfExtensionInstalled,
                      weak_factory_.GetWeakPtr()));

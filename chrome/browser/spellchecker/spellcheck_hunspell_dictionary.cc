@@ -20,7 +20,6 @@
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "chrome/common/chrome_paths.h"
@@ -503,7 +502,7 @@ void SpellcheckHunspellDictionary::SpellCheckPlatformSetLanguageComplete(
     return;
 
   use_browser_spellchecker_ = true;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &SpellcheckHunspellDictionary::InformListenersOfInitialization,

@@ -83,7 +83,8 @@ class MessagePortAdapter : public blink::WebMessagePort::MessageReceiver {
  protected:
   explicit MessagePortAdapter(blink::WebMessagePort blink_port)
       : blink_port_(std::move(blink_port)) {
-    blink_port_.SetReceiver(this, base::ThreadTaskRunnerHandle::Get());
+    blink_port_.SetReceiver(this,
+                            base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   ~MessagePortAdapter() override = default;

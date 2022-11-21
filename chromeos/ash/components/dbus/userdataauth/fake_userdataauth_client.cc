@@ -18,8 +18,8 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -370,7 +370,7 @@ class ReplyOnReturn {
   ReplyOnReturn(const ReplyOnReturn<ReplyType>&) = delete;
 
   ~ReplyOnReturn() {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback_), *reply_));
   }
 
@@ -1696,7 +1696,7 @@ void FakeUserDataAuthClient::TerminateAuthFactor(
 void FakeUserDataAuthClient::WaitForServiceToBeAvailable(
     chromeos::WaitForServiceToBeAvailableCallback callback) {
   if (service_is_available_ || service_reported_not_available_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), service_is_available_));
   } else {
     pending_wait_for_service_to_be_available_callbacks_.push_back(
@@ -1758,7 +1758,7 @@ template <typename ReplyType>
 void FakeUserDataAuthClient::ReturnProtobufMethodCallback(
     const ReplyType& reply,
     chromeos::DBusMethodCallback<ReplyType> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), reply));
 }
 

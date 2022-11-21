@@ -32,8 +32,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/values.h"
@@ -606,8 +606,8 @@ void JpegClient::CreateJpegDecoder() {
   }
 
   for (auto& create_jda_func : jda_factories) {
-    decoder_ =
-        std::move(create_jda_func).Run(base::ThreadTaskRunnerHandle::Get());
+    decoder_ = std::move(create_jda_func)
+                   .Run(base::SingleThreadTaskRunner::GetCurrentDefault());
     if (decoder_)
       break;
   }

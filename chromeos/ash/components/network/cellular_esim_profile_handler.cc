@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/network/cellular_esim_profile_handler.h"
 
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/network/cellular_esim_profile.h"
 #include "chromeos/ash/components/network/hermes_metrics_util.h"
 
@@ -159,7 +159,7 @@ void CellularESimProfileHandler::OnRequestInstalledProfilesResult(
 
   // TODO(crbug.com/1216693) Update with more robust way of waiting for eSIM
   // profile objects to be loaded.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(std::move(callback_), std::move(inhibit_lock_)),
       kProfileRefreshCallbackDelay);
 }

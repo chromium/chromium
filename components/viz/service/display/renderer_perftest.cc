@@ -20,7 +20,7 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/display/renderer_settings.h"
@@ -279,7 +279,8 @@ class RendererPerfTest : public VizPerfTest {
         &shared_bitmap_manager_, renderer_settings_, &debug_settings_,
         kArbitraryFrameSinkId, std::move(display_controller),
         std::move(output_surface), std::move(overlay_processor),
-        /*display_scheduler=*/nullptr, base::ThreadTaskRunnerHandle::Get());
+        /*display_scheduler=*/nullptr,
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     display_->SetVisible(true);
     display_->Initialize(&client_, manager_.surface_manager());
     display_->Resize(kSurfaceSize);

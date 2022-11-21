@@ -22,7 +22,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/browser/bluetooth/bluetooth_adapter_factory_wrapper.h"
 #include "content/browser/bluetooth/bluetooth_allowed_devices.h"
 #include "content/browser/bluetooth/bluetooth_allowed_devices_map.h"
@@ -852,7 +852,7 @@ void WebBluetoothServiceImpl::GattCharacteristicValueChanged(
   // On Chrome OS and Linux, GattCharacteristicValueChanged is called before the
   // success callback for ReadRemoteCharacteristic is called, which could result
   // in an event being fired before the readValue promise is resolved.
-  if (!base::ThreadTaskRunnerHandle::Get()->PostTask(
+  if (!base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(
               &WebBluetoothServiceImpl::NotifyCharacteristicValueChanged,

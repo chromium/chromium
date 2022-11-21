@@ -310,8 +310,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, DestroyTabInNavigation) {
         shell()->browser()->DestroyTab(new_tab);
         // Destroying the tab posts a task to delete the WebContents, which must
         // be run before the test shuts down lest it access deleted state.
-        base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                      run_loop.QuitClosure());
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, run_loop.QuitClosure());
       }));
   new_tab->GetNavigationController()->Navigate(
       embedded_test_server()->GetURL("/simple_pageX.html"));

@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/crostini/crostini_shelf_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -328,7 +328,7 @@ void ShelfSpinnerController::UpdateApps() {
 }
 
 void ShelfSpinnerController::RegisterNextUpdate() {
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ShelfSpinnerController::UpdateApps,
                      weak_ptr_factory_.GetWeakPtr()),

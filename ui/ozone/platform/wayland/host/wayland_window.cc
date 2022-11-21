@@ -16,7 +16,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/cursor/cursor.h"
@@ -75,7 +75,7 @@ WaylandWindow::WaylandWindow(PlatformWindowDelegate* delegate,
                                           IsWaylandOverlayDelegationEnabled()),
       accelerated_widget_(
           connection->wayland_window_manager()->AllocateAcceleratedWidget()),
-      ui_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+      ui_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   // Set a class property key, which allows |this| to be used for drag action.
   SetWmDragHandler(this, this);
 }

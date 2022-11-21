@@ -292,7 +292,8 @@ bool SysmemBufferCollection::Initialize(
   is_protected_ = false;
 
   if (register_with_image_pipe) {
-    overlay_view_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+    overlay_view_task_runner_ =
+        base::SingleThreadTaskRunner::GetCurrentDefault();
     scenic_overlay_view_ = std::make_unique<ScenicOverlayView>(
         scenic_surface_factory->CreateScenicSession());
   }

@@ -10,7 +10,6 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/win/windows_version.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_change_notifier_factory.h"
@@ -50,7 +49,7 @@ class TestNetworkChangeNotifierWin : public NetworkChangeNotifierWin {
   // From NetworkChangeNotifierWin.
   void RecomputeCurrentConnectionTypeOnBlockingSequence(
       base::OnceCallback<void(ConnectionType)> reply_callback) const override {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(reply_callback),
                                   NetworkChangeNotifier::CONNECTION_UNKNOWN));
   }

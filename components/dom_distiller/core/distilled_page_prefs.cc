@@ -9,7 +9,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/dom_distiller/core/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -49,7 +48,7 @@ void DistilledPagePrefs::RegisterProfilePrefs(
 void DistilledPagePrefs::SetFontFamily(mojom::FontFamily new_font_family) {
   pref_service_->SetInteger(prefs::kFont,
                             static_cast<int32_t>(new_font_family));
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&DistilledPagePrefs::NotifyOnChangeFontFamily,
                      weak_ptr_factory_.GetWeakPtr(), new_font_family));
@@ -69,7 +68,7 @@ mojom::FontFamily DistilledPagePrefs::GetFontFamily() {
 
 void DistilledPagePrefs::SetTheme(mojom::Theme new_theme) {
   pref_service_->SetInteger(prefs::kTheme, static_cast<int32_t>(new_theme));
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&DistilledPagePrefs::NotifyOnChangeTheme,
                                 weak_ptr_factory_.GetWeakPtr(), new_theme));
 }
@@ -88,7 +87,7 @@ mojom::Theme DistilledPagePrefs::GetTheme() {
 
 void DistilledPagePrefs::SetFontScaling(float scaling) {
   pref_service_->SetDouble(prefs::kFontScale, scaling);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&DistilledPagePrefs::NotifyOnChangeFontScaling,
                                 weak_ptr_factory_.GetWeakPtr(), scaling));
 }

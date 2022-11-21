@@ -16,9 +16,9 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_local.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -99,8 +99,8 @@ base::LazyInstance<base::ThreadLocalPointer<ThreadWrapper>>::DestructorAtExit
 // static
 void ThreadWrapper::EnsureForCurrentMessageLoop() {
   if (ThreadWrapper::current() == nullptr) {
-    std::unique_ptr<ThreadWrapper> wrapper =
-        ThreadWrapper::WrapTaskRunner(base::ThreadTaskRunnerHandle::Get());
+    std::unique_ptr<ThreadWrapper> wrapper = ThreadWrapper::WrapTaskRunner(
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     base::CurrentThread::Get()->AddDestructionObserver(wrapper.release());
   }
 

@@ -34,7 +34,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "media/cast/test/utility/udp_proxy.h"
@@ -89,8 +88,9 @@ class QueueManager {
     } else {
       packet_pipe_ = std::move(tmp);
     }
-    packet_pipe_->InitOnIOThread(base::ThreadTaskRunnerHandle::Get(),
-                                 base::DefaultTickClock::GetInstance());
+    packet_pipe_->InitOnIOThread(
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        base::DefaultTickClock::GetInstance());
   }
 
  private:
@@ -212,7 +212,7 @@ void CheckByteCounters() {
 
     last_printout = now;
   }
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&CheckByteCounters), base::Milliseconds(100));
 }
 

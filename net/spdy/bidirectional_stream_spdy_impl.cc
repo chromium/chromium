@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/http/bidirectional_stream_request_info.h"
@@ -53,7 +53,7 @@ void BidirectionalStreamSpdyImpl::Start(
   timer_ = std::move(timer);
 
   if (!spdy_session_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&BidirectionalStreamSpdyImpl::NotifyError,
                        weak_factory_.GetWeakPtr(), ERR_CONNECTION_CLOSED));
@@ -109,7 +109,7 @@ void BidirectionalStreamSpdyImpl::SendvData(
 
   if (written_end_of_stream_) {
     LOG(ERROR) << "Writing after end of stream is written.";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&BidirectionalStreamSpdyImpl::NotifyError,
                                   weak_factory_.GetWeakPtr(), ERR_UNEXPECTED));
     return;
@@ -394,13 +394,13 @@ bool BidirectionalStreamSpdyImpl::MaybeHandleStreamClosedInSendData() {
   // If |stream_| is closed without an error before client half closes,
   // blackhole any pending write data. crbug.com/650438.
   if (stream_closed_ && closed_stream_status_ == OK) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&BidirectionalStreamSpdyImpl::OnDataSent,
                                   weak_factory_.GetWeakPtr()));
     return true;
   }
   LOG(ERROR) << "Trying to send data after stream has been destroyed.";
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&BidirectionalStreamSpdyImpl::NotifyError,
                                 weak_factory_.GetWeakPtr(), ERR_UNEXPECTED));
   return true;

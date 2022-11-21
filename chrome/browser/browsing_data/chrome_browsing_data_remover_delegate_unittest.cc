@@ -748,8 +748,8 @@ class RemoveSecurePaymentConfirmationCredentialsTester {
     EXPECT_CALL(*service_.get(), ClearSecurePaymentConfirmationCredentials)
         .Times(times)
         .WillRepeatedly(testing::WithArg<2>([](base::OnceClosure completion) {
-          base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                        std::move(completion));
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE, std::move(completion));
         }));
   }
 
@@ -2328,14 +2328,14 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePasswordStatistics) {
       RemoveStatisticsByOriginAndTime(ProbablySameFilter(empty_filter),
                                       base::Time(), base::Time::Max(), _))
       .WillOnce(testing::WithArg<3>([](base::OnceClosure completion) {
-        base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                      std::move(completion));
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, std::move(completion));
       }));
   EXPECT_CALL(*tester.mock_field_info_store(),
               RemoveFieldInfoByTime(base::Time(), base::Time::Max(), _))
       .WillOnce(testing::WithArg<2>([](base::OnceClosure completion) {
-        base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                      std::move(completion));
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, std::move(completion));
       }));
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 constants::DATA_TYPE_HISTORY, false);
@@ -2360,8 +2360,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
       RemoveStatisticsByOriginAndTime(ProbablySameFilter(filter), base::Time(),
                                       base::Time::Max(), _))
       .WillOnce(testing::WithArg<3>([](base::OnceClosure completion) {
-        base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                      std::move(completion));
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, std::move(completion));
       }));
 
   BlockUntilOriginDataRemoved(base::Time(), base::Time::Max(),
@@ -2401,8 +2401,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, DisableAutoSignIn) {
   EXPECT_CALL(*tester.profile_store(),
               DisableAutoSignInForOrigins(ProbablySameFilter(empty_filter), _))
       .WillOnce(testing::WithArg<1>([](base::OnceClosure completion) {
-        base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                      std::move(completion));
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, std::move(completion));
       }));
 
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
@@ -2420,8 +2420,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   EXPECT_CALL(*tester.profile_store(),
               DisableAutoSignInForOrigins(ProbablySameFilter(empty_filter), _))
       .WillOnce(testing::WithArg<1>([](base::OnceClosure completion) {
-        base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                      std::move(completion));
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, std::move(completion));
       }));
   BlockUntilBrowsingDataRemoved(
       base::Time(), base::Time::Max(),

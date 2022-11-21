@@ -12,7 +12,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "google_apis/google_api_keys.h"
 #include "remoting/host/pin_hash.h"
@@ -36,7 +36,7 @@ HostStarter::HostStarter(
       consent_to_data_collection_(false),
       unregistering_host_(false) {
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
-  main_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  main_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
 HostStarter::~HostStarter() = default;

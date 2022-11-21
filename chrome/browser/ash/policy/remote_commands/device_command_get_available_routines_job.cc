@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/json/json_writer.h"
 #include "base/syslog_logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -92,12 +92,12 @@ void DeviceCommandGetAvailableRoutinesJob::OnCrosHealthdResponseReceived(
         available_routines) {
   if (available_routines.empty()) {
     SYSLOG(ERROR) << "No routines received from cros_healthd.";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(failed_callback), nullptr));
     return;
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(succeeded_callback),
                                 std::make_unique<Payload>(available_routines)));
 }

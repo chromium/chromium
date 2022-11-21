@@ -8,9 +8,9 @@
 #include "base/files/file_enumerator.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "media/capture/video/linux/v4l2_capture_delegate.h"
 #include "media/capture/video/mock_video_capture_device_client.h"
@@ -182,7 +182,7 @@ class V4L2CaptureDelegateTest : public ::testing::Test {
         delegate_(std::make_unique<V4L2CaptureDelegate>(
             v4l2_.get(),
             device_descriptor_,
-            base::ThreadTaskRunnerHandle::Get(),
+            base::SingleThreadTaskRunner::GetCurrentDefault(),
             50,
             0)) {}
   ~V4L2CaptureDelegateTest() override = default;

@@ -14,8 +14,8 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/file_manager/file_selector.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -109,7 +109,7 @@ class MockFileSelector : public file_manager::FileSelector {
 
     // Send response to the extension function.
     // The callback will take a reference to the function and keep it alive.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), success_, selected_path_));
     delete this;

@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "net/base/completion_once_callback.h"
 #include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -70,7 +69,7 @@ class ExampleEmployer::ExampleWorker
   CompletionOnceCallback callback_;
   // Used to post ourselves onto the origin thread.
   const scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner_ =
-      base::ThreadTaskRunnerHandle::Get();
+      base::SingleThreadTaskRunner::GetCurrentDefault();
 };
 
 void ExampleEmployer::ExampleWorker::DoWork() {
@@ -100,7 +99,7 @@ bool ExampleEmployer::DoSomething(CompletionOnceCallback callback) {
 
   request_ = base::MakeRefCounted<ExampleWorker>(this, std::move(callback));
 
-  if (!base::ThreadTaskRunnerHandle::Get()->PostTask(
+  if (!base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&ExampleWorker::DoWork, request_))) {
     NOTREACHED();
     request_ = nullptr;

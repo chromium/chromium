@@ -11,7 +11,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -256,7 +255,7 @@ bool PPB_Graphics3D_Impl::InitRaw(
 
   command_buffer_ = std::make_unique<gpu::CommandBufferProxyImpl>(
       std::move(channel), render_thread->GetGpuMemoryBufferManager(),
-      kGpuStreamIdDefault, base::ThreadTaskRunnerHandle::Get());
+      kGpuStreamIdDefault, base::SingleThreadTaskRunner::GetCurrentDefault());
   auto result = command_buffer_->Initialize(
       gpu::kNullSurfaceHandle, share_buffer, kGpuStreamPriorityDefault,
       attrib_helper, GURL::EmptyGURL());
@@ -307,7 +306,7 @@ void PPB_Graphics3D_Impl::OnGpuControlLostContext() {
 
   // Send context lost to plugin. This may have been caused by a PPAPI call, so
   // avoid re-entering.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&PPB_Graphics3D_Impl::SendContextLost,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

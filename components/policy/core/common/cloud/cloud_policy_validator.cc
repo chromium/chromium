@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -298,7 +297,8 @@ void CloudPolicyValidatorBase::PostValidationTask(
   task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&CloudPolicyValidatorBase::PerformValidation,
-                     std::move(validator), base::ThreadTaskRunnerHandle::Get(),
+                     std::move(validator),
+                     base::SingleThreadTaskRunner::GetCurrentDefault(),
                      std::move(completion_callback)));
 }
 

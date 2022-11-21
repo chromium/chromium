@@ -21,8 +21,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/cryptohome/account_identifier_operators.h"
 #include "chromeos/ash/components/dbus/login_manager/policy_descriptor.pb.h"
@@ -218,7 +218,7 @@ template <typename CallbackType, typename ResponseType>
 void PostReply(const base::Location& from_here,
                CallbackType callback,
                ResponseType response) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       from_here, base::BindOnce(std::move(callback), std::move(response)));
 }
 
@@ -273,7 +273,7 @@ bool FakeSessionManagerClient::HasObserver(const Observer* observer) const {
 
 void FakeSessionManagerClient::WaitForServiceToBeAvailable(
     chromeos::WaitForServiceToBeAvailableCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
@@ -300,7 +300,7 @@ void FakeSessionManagerClient::RestartJob(
   if (restart_job_callback_)
     std::move(restart_job_callback_).Run();
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
@@ -319,14 +319,14 @@ void FakeSessionManagerClient::LoginScreenStorageStore(
 void FakeSessionManagerClient::LoginScreenStorageRetrieve(
     const std::string& key,
     LoginScreenStorageRetrieveCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), "Test" /* data */,
                                 absl::nullopt /* error */));
 }
 
 void FakeSessionManagerClient::LoginScreenStorageListKeys(
     LoginScreenStorageListKeysCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), std::vector<std::string>() /* keys */,
                      absl::nullopt /* error */));
@@ -364,7 +364,7 @@ void FakeSessionManagerClient::LoadShillProfile(
     const cryptohome::AccountIdentifier& cryptohome_id) {
   if (on_load_shill_profile_callback_.is_null())
     return;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(on_load_shill_profile_callback_, cryptohome_id));
 }
@@ -372,7 +372,7 @@ void FakeSessionManagerClient::LoadShillProfile(
 void FakeSessionManagerClient::StartDeviceWipe() {
   start_device_wipe_call_count_++;
   if (!on_start_device_wipe_callback_.is_null()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(on_start_device_wipe_callback_));
   }
 }
@@ -381,7 +381,7 @@ void FakeSessionManagerClient::StartRemoteDeviceWipe(
     const enterprise_management::SignedData& signed_command) {
   start_device_wipe_call_count_++;
   if (!on_start_device_wipe_callback_.is_null()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(on_start_device_wipe_callback_));
   }
 }
@@ -507,7 +507,7 @@ void FakeSessionManagerClient::RetrievePolicy(
   // Simulate load error.
   if (force_retrieve_policy_load_error_) {
     enterprise_management::PolicyFetchResponse empty;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), RetrievePolicyResponseType::SUCCESS,
                        empty.SerializeAsString()));
@@ -526,7 +526,7 @@ void FakeSessionManagerClient::RetrievePolicy(
         base::BindOnce(std::move(callback),
                        RetrievePolicyResponseType::SUCCESS));
   } else {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), RetrievePolicyResponseType::SUCCESS,
                        policy_[GetMemoryStorageKey(descriptor)]));
@@ -719,7 +719,7 @@ void FakeSessionManagerClient::UpgradeArcContainer(
   PostReply(FROM_HERE, std::move(callback), !force_upgrade_failure_);
   if (force_upgrade_failure_) {
     // Emulate ArcInstanceStopped signal propagation.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&FakeSessionManagerClient::NotifyArcInstanceStopped,
                        weak_ptr_factory_.GetWeakPtr(),
@@ -738,7 +738,7 @@ void FakeSessionManagerClient::StopArcInstance(
 
   PostReply(FROM_HERE, std::move(callback), true /* result */);
   // Emulate ArcInstanceStopped signal propagation.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeSessionManagerClient::NotifyArcInstanceStopped,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -771,7 +771,7 @@ void FakeSessionManagerClient::EnableAdbSideload(
 
 void FakeSessionManagerClient::QueryAdbSideload(
     QueryAdbSideloadCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), adb_sideload_response_,
                                 adb_sideload_enabled_));
 }

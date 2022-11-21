@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "ipc/ipc.mojom.h"
 #include "ipc/ipc_test_base.h"
 #include "mojo/core/test/multiprocess_test_helper.h"
@@ -121,8 +121,9 @@ TEST_F(IPCMojoBootstrapTest, Connect) {
   Connection connection(
       IPC::MojoBootstrap::Create(
           helper_.StartChild("IPCMojoBootstrapTestClient"),
-          IPC::Channel::MODE_SERVER, base::ThreadTaskRunnerHandle::Get(),
-          base::ThreadTaskRunnerHandle::Get(), nullptr),
+          IPC::Channel::MODE_SERVER,
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
+          base::SingleThreadTaskRunner::GetCurrentDefault(), nullptr),
       kTestServerPid);
 
   mojo::PendingAssociatedReceiver<IPC::mojom::Channel> receiver;
@@ -146,8 +147,9 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
   Connection connection(
       IPC::MojoBootstrap::Create(
           std::move(mojo::core::test::MultiprocessTestHelper::primordial_pipe),
-          IPC::Channel::MODE_CLIENT, base::ThreadTaskRunnerHandle::Get(),
-          base::ThreadTaskRunnerHandle::Get(), nullptr),
+          IPC::Channel::MODE_CLIENT,
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
+          base::SingleThreadTaskRunner::GetCurrentDefault(), nullptr),
       kTestClientPid);
 
   mojo::PendingAssociatedReceiver<IPC::mojom::Channel> receiver;
@@ -167,8 +169,9 @@ TEST_F(IPCMojoBootstrapTest, ReceiveEmptyMessage) {
   Connection connection(
       IPC::MojoBootstrap::Create(
           helper_.StartChild("IPCMojoBootstrapTestEmptyMessage"),
-          IPC::Channel::MODE_SERVER, base::ThreadTaskRunnerHandle::Get(),
-          base::ThreadTaskRunnerHandle::Get(), nullptr),
+          IPC::Channel::MODE_SERVER,
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
+          base::SingleThreadTaskRunner::GetCurrentDefault(), nullptr),
       kTestServerPid);
 
   mojo::PendingAssociatedReceiver<IPC::mojom::Channel> receiver;
@@ -194,8 +197,9 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
   Connection connection(
       IPC::MojoBootstrap::Create(
           std::move(mojo::core::test::MultiprocessTestHelper::primordial_pipe),
-          IPC::Channel::MODE_CLIENT, base::ThreadTaskRunnerHandle::Get(),
-          base::ThreadTaskRunnerHandle::Get(), nullptr),
+          IPC::Channel::MODE_CLIENT,
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
+          base::SingleThreadTaskRunner::GetCurrentDefault(), nullptr),
       kTestClientPid);
 
   mojo::PendingAssociatedReceiver<IPC::mojom::Channel> receiver;

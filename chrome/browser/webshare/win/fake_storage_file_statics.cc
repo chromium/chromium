@@ -13,9 +13,9 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/fake_iasync_operation_win.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/win/scoped_hstring.h"
 #include "chrome/browser/webshare/win/fake_random_access_stream.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -98,7 +98,7 @@ class FakeStorageFile final
       return hr;
     }
 
-    bool success = base::ThreadTaskRunnerHandle::Get()->PostTask(
+    bool success = base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&FakeStorageFile::OnOpenAsync,
                        weak_factory_.GetWeakPtr(), fake_iasync_operation));
@@ -294,7 +294,7 @@ IFACEMETHODIMP FakeStorageFileStatics::CreateStreamedFileAsync(
 
   auto fake_storage_file = Make<FakeStorageFile>(display_name_with_extension,
                                                  data_requested, thumbnail);
-  bool success = base::ThreadTaskRunnerHandle::Get()->PostTask(
+  bool success = base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindLambdaForTesting([fake_iasync_operation, fake_storage_file]() {
         fake_iasync_operation->CompleteWithResults(fake_storage_file);

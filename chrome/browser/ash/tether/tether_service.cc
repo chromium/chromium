@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/tether/tether_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -438,7 +438,7 @@ void TetherService::GetBluetoothAdapter() {
   // problems with the Fake implementation since the class is not fully
   // constructed yet. Post the GetAdapter call to avoid this.
   auto* factory = device::BluetoothAdapterFactory::Get();
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&device::BluetoothAdapterFactory::GetAdapter,
                      base::Unretained(factory),
