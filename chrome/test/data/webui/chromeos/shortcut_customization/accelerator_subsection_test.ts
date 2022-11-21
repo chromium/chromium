@@ -9,7 +9,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
 import {AcceleratorSubsectionElement} from 'chrome://shortcut-customization/js/accelerator_subsection.js';
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
-import {AcceleratorSource, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {AcceleratorSource, LayoutInfo, LayoutStyle, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -50,16 +50,22 @@ suite('acceleratorSubsectionTest', function() {
         /*key=*/ 67,
         /*keyDisplay=*/ 'c');
 
-    const accelerators = [acceleratorInfo1, acceleratorInfo2];
+    const expectedAccelInfos = [acceleratorInfo1, acceleratorInfo2];
     const description = 'test shortcut';
     const title = 'test title';
+    const expectedLayoutInfo: LayoutInfo = {
+      action: 0,
+      category: 0,
+      description,
+      source: AcceleratorSource.kAsh,
+      style: LayoutStyle.kDefault,
+      subCategory: 0,
+    };
 
     sectionElement!.title = title;
-    sectionElement!.acceleratorContainer = [{
-      description: description,
-      acceleratorInfos: accelerators,
-      source: AcceleratorSource.kAsh,
-      action: 0,
+    sectionElement!.accelRowDataArray = [{
+      acceleratorInfos: expectedAccelInfos,
+      layoutInfo: expectedLayoutInfo,
     }];
 
     await flush();

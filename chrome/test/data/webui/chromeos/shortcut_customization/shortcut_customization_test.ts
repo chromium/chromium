@@ -112,7 +112,7 @@ suite('shortcutCustomizationAppTest', function() {
     // Asert 2 accelerators are loaded for Window Management.
     assertEquals(
         (expectedLayouts!.get(windowManagementValue) as LayoutInfo[]).length,
-        subSections[0]!.acceleratorContainer!.length);
+        subSections[0]!.accelRowDataArray!.length);
 
     // Assert subsection title (Virtual Desks) matches expected value from
     // fake lookup.
@@ -122,7 +122,7 @@ suite('shortcutCustomizationAppTest', function() {
     // Asert 2 accelerators are loaded for Virtual Desks.
     assertEquals(
         (expectedLayouts!.get(virtualDesksValue) as LayoutInfo[]).length,
-        subSections[1]!.acceleratorContainer!.length);
+        subSections[1]!.accelRowDataArray!.length);
   });
 
   test('LoadFakeBrowserPage', async () => {
@@ -154,7 +154,7 @@ suite('shortcutCustomizationAppTest', function() {
     // Assert only 1 accelerator is within Tabs.
     assertEquals(
         (expectedLayouts!.get(keyIterator.value) as LayoutInfo[]).length,
-        subSections[0]!.acceleratorContainer.length);
+        subSections[0]!.accelRowDataArray.length);
   });
 
   test('OpenDialogFromAccelerator', async () => {

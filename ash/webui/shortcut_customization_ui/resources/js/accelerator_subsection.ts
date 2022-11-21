@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,15 @@ import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {getTemplate} from './accelerator_subsection.html.js';
 import {fakeSubCategories} from './fake_data.js';
-import {AcceleratorCategory, AcceleratorInfo, AcceleratorState, AcceleratorSubcategory, AcceleratorType} from './shortcut_types.js';
+import {AcceleratorCategory, AcceleratorInfo, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutInfo} from './shortcut_types.js';
 
-export interface Accelerator {
-  description: string;
-  action: number;
-  source: number;
+/**
+ * This interface is used to hold all the data needed by an
+ * AcceleratorRowElement.
+ */
+interface AcceleratorRowData {
   acceleratorInfos: AcceleratorInfo[];
+  layoutInfo: LayoutInfo;
 }
 
 export interface AcceleratorSubsectionElement {
@@ -67,7 +69,7 @@ export class AcceleratorSubsectionElement extends PolymerElement {
   override title: string;
   category: AcceleratorCategory;
   subcategory: AcceleratorSubcategory;
-  acceleratorContainer: Accelerator[];
+  accelRowDataArray: AcceleratorRowData[];
   private lookupManager_: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();
 
@@ -98,26 +100,23 @@ export class AcceleratorSubsectionElement extends PolymerElement {
     // updates as one which results in strange behaviors with updating
     // individual subsections. An atomic replacement makes ensures each
     // subsection's accelerators are kept distinct from each other.
-    const tempAccelContainer: Accelerator[] = [];
-    layoutInfos!.forEach((value) => {
-      const acceleratorInfos =
-          this.lookupManager_.getAcceleratorInfos(value.source, value.action);
-      acceleratorInfos!.filter((accel) => {
+    const tempAccelRowData: AcceleratorRowData[] = [];
+    layoutInfos!.forEach((layoutInfo) => {
+      const acceleratorInfos = this.lookupManager_.getAcceleratorInfos(
+          layoutInfo.source, layoutInfo.action);
+      acceleratorInfos.filter((accel) => {
         // Hide accelerators that are default and disabled.
         return !(
             accel.type === AcceleratorType.kDefault &&
             accel.state === AcceleratorState.kDisabledByUser);
       });
-      const accel: Accelerator = {
-        description:
-            this.lookupManager_.getAcceleratorName(value.source, value.action),
-        action: value.action,
-        source: value.source,
-        acceleratorInfos: acceleratorInfos!,
+      const accelRowData: AcceleratorRowData = {
+        layoutInfo,
+        acceleratorInfos,
       };
-      tempAccelContainer.push(accel);
+      tempAccelRowData.push(accelRowData);
     });
-    this.acceleratorContainer = tempAccelContainer;
+    this.accelRowDataArray = tempAccelRowData;
   }
 
   static get template() {
