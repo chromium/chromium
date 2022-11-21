@@ -28,7 +28,6 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                                    CWVLeakCheckServiceObserver,
                                    CWVNavigationDelegate,
                                    CWVUIDelegate,
-                                   CWVScriptCommandHandler,
                                    CWVSyncControllerDelegate,
                                    UIScrollViewDelegate,
                                    UITextFieldDelegate>
@@ -1020,8 +1019,6 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                        NSKeyValueObservingOptionInitial
                context:nil];
 
-  [webView addScriptCommandHandler:self commandPrefix:@"test"];
-
   [webView
       addMessageHandler:^(NSDictionary* payload) {
         NSLog(@"message handler payload received =\n%@", payload);
@@ -1036,7 +1033,6 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
   [_webView removeObserver:self forKeyPath:@"canGoBack"];
   [_webView removeObserver:self forKeyPath:@"canGoForward"];
   [_webView removeObserver:self forKeyPath:@"loading"];
-  [_webView removeScriptCommandHandlerForCommandPrefix:@"test"];
   [_webView removeMessageHandlerForCommand:@"messageHandlerCommand"];
 
   _webView = nil;
@@ -1046,7 +1042,6 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
   [_webView removeObserver:self forKeyPath:@"canGoBack"];
   [_webView removeObserver:self forKeyPath:@"canGoForward"];
   [_webView removeObserver:self forKeyPath:@"loading"];
-  [_webView removeScriptCommandHandlerForCommandPrefix:@"test"];
   [_webView removeMessageHandlerForCommand:@"messageHandlerCommand"];
 }
 
@@ -1419,15 +1414,6 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
       stringByAppendingPathComponent:task.suggestedFileName];
   task.delegate = self;
   [task startDownloadToLocalFileAtPath:self.downloadFilePath];
-}
-
-#pragma mark CWVScriptCommandHandler
-
-- (BOOL)webView:(CWVWebView*)webView
-    handleScriptCommand:(nonnull CWVScriptCommand*)command
-          fromMainFrame:(BOOL)fromMainFrame {
-  NSLog(@"%@ command.content=%@", NSStringFromSelector(_cmd), command.content);
-  return YES;
 }
 
 #pragma mark CWVAutofillDataManagerObserver

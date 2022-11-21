@@ -52,7 +52,6 @@
 #import "ios/web_view/internal/cwv_favicon_internal.h"
 #import "ios/web_view/internal/cwv_html_element_internal.h"
 #import "ios/web_view/internal/cwv_navigation_action_internal.h"
-#import "ios/web_view/internal/cwv_script_command_internal.h"
 #import "ios/web_view/internal/cwv_ssl_status_internal.h"
 #import "ios/web_view/internal/cwv_web_view_configuration_internal.h"
 #import "ios/web_view/internal/language/web_view_url_language_histogram_factory.h"
@@ -123,16 +122,6 @@ id NSObjectFromValue(const base::Value* value) {
   return nil;
 }
 
-// Converts base::Value expected to be a dictionary to NSDictionary.
-NSDictionary* NSDictionaryFromDictionaryValue(const base::Value& value) {
-  DCHECK(value.is_dict()) << "Incorrect value type: " << value.type();
-
-  NSDictionary* ns_dictionary = base::mac::ObjCCastStrict<NSDictionary>(
-      NSObjectFromCollectionValue(&value));
-  DCHECK(ns_dictionary) << "Failed to convert JSON to NSDictionary";
-  return ns_dictionary;
-}
-
 // Converts base::Value::Dict to NSDictionary.
 NSDictionary* NSDictionaryFromDictValue(const base::Value::Dict& value) {
   std::string json;
@@ -176,11 +165,6 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
   // Handles presentation of JavaScript dialogs.
   std::unique_ptr<ios_web_view::WebViewJavaScriptDialogPresenter>
       _javaScriptDialogPresenter;
-  // Stores the script command callbacks with subscriptions.
-  std::unordered_map<std::string,
-                     std::pair<web::WebState::ScriptCommandCallback,
-                               base::CallbackListSubscription>>
-      _scriptCommandCallbacks;
   CRWSessionStorage* _cachedSessionStorage;
 }
 
@@ -388,12 +372,6 @@ BOOL gChromeContextMenuEnabled = NO;
   params.post_data = [request.HTTPBody copy];
   _webState->GetNavigationManager()->LoadURLWithParams(params);
   [self updateCurrentURLs];
-}
-
-- (void)evaluateJavaScript:(NSString*)javaScriptString
-         completionHandler:(void (^)(id, NSError*))completionHandler {
-  [_webState->GetJSInjectionReceiver() executeJavaScript:javaScriptString
-                                       completionHandler:completionHandler];
 }
 
 - (void)evaluateJavaScript:(NSString*)javaScriptString
@@ -647,34 +625,6 @@ BOOL gChromeContextMenuEnabled = NO;
   }
 }
 
-- (void)addScriptCommandHandler:(id<CWVScriptCommandHandler>)handler
-                  commandPrefix:(NSString*)commandPrefix {
-  CWVWebView* __weak weakSelf = self;
-  const web::WebState::ScriptCommandCallback callback = base::BindRepeating(
-      ^(const base::Value& content, const GURL& mainDocumentURL,
-        bool userInteracting, web::WebFrame* senderFrame) {
-        NSDictionary* nsContent = NSDictionaryFromDictionaryValue(content);
-        CWVScriptCommand* command = [[CWVScriptCommand alloc]
-            initWithContent:nsContent
-            mainDocumentURL:net::NSURLWithGURL(mainDocumentURL)
-            userInteracting:userInteracting];
-        [handler webView:weakSelf
-            handleScriptCommand:command
-                  fromMainFrame:senderFrame->IsMainFrame()];
-      });
-
-  std::string stdCommandPrefix = base::SysNSStringToUTF8(commandPrefix);
-  auto subscription =
-      _webState->AddScriptCommandCallback(callback, stdCommandPrefix);
-  _scriptCommandCallbacks[stdCommandPrefix] = {callback,
-                                               std::move(subscription)};
-}
-
-- (void)removeScriptCommandHandlerForCommandPrefix:(NSString*)commandPrefix {
-  std::string stdCommandPrefix = base::SysNSStringToUTF8(commandPrefix);
-  _scriptCommandCallbacks.erase(stdCommandPrefix);
-}
-
 - (void)addMessageHandler:(void (^)(NSDictionary* payload))handler
                forCommand:(NSString*)nsCommand {
   DCHECK(handler);
@@ -884,11 +834,6 @@ BOOL gChromeContextMenuEnabled = NO;
   _javaScriptDialogPresenter =
       std::make_unique<ios_web_view::WebViewJavaScriptDialogPresenter>(self,
                                                                        nullptr);
-
-  for (auto& pair : _scriptCommandCallbacks) {
-    pair.second.second =
-        _webState->AddScriptCommandCallback(pair.second.first, pair.first);
-  }
 
   _webState->GetWebViewProxy().allowsBackForwardNavigationGestures =
       allowsBackForwardNavigationGestures;

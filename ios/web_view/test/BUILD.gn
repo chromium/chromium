@@ -28,7 +28,6 @@ source_set("inttests") {
       "web_view_inttest_base.mm",
       "web_view_kvo_inttest.mm",
       "web_view_restorable_state_inttest.mm",
-      "web_view_script_command_inttest.mm",
       "web_view_script_message_handler_inttest.mm",
     ]
   }
