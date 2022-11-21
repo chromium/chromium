@@ -10,6 +10,7 @@
 #include "ash/webui/grit/ash_shortcut_customization_app_resources.h"
 #include "ash/webui/grit/ash_shortcut_customization_app_resources_map.h"
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_configuration_provider.h"
+#include "ash/webui/shortcut_customization_ui/backend/shortcut_customization_delegate.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -54,7 +55,10 @@ void AddFeatureFlags(content::WebUIDataSource* html_source) {
 
 }  // namespace
 
-ShortcutCustomizationAppUI::ShortcutCustomizationAppUI(content::WebUI* web_ui)
+ShortcutCustomizationAppUI::ShortcutCustomizationAppUI(
+    content::WebUI* web_ui,
+    std::unique_ptr<shortcut_ui::ShortcutCustomizationDelegate>
+        shortcut_customization_delegate)
     : ui::MojoWebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
@@ -75,7 +79,10 @@ ShortcutCustomizationAppUI::ShortcutCustomizationAppUI(content::WebUI* web_ui)
 
   AddFeatureFlags(source);
 
-  provider_ = std::make_unique<shortcut_ui::AcceleratorConfigurationProvider>();
+  // TODO(longbowei): Use GetPrefService() to get pref_service and
+  // add it as a param for AcceleratorConfigurationProvider.
+  provider_ = std::make_unique<shortcut_ui::AcceleratorConfigurationProvider>(
+      std::move(shortcut_customization_delegate));
 }
 
 ShortcutCustomizationAppUI::~ShortcutCustomizationAppUI() = default;

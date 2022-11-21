@@ -17,6 +17,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/webui/shortcut_customization_ui/backend/shortcut_customization_delegate.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "base/bind.h"
 #include "base/callback_forward.h"
@@ -164,6 +165,14 @@ void ValidateLayoutsHaveMatchingStrings(
 
 namespace shortcut_ui {
 
+class FakeShortcutCustomizationDelegate : public ShortcutCustomizationDelegate {
+ public:
+  FakeShortcutCustomizationDelegate() = default;
+  ~FakeShortcutCustomizationDelegate() override = default;
+
+  PrefService* GetPrefService() override { return nullptr; }
+};
+
 class AcceleratorConfigurationProviderTest : public AshTestBase {
  public:
   AcceleratorConfigurationProviderTest() = default;
@@ -203,7 +212,8 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
     AshTestSuite::LoadTestResources();
     AshTestBase::SetUp();
 
-    provider_ = std::make_unique<AcceleratorConfigurationProvider>();
+    provider_ = std::make_unique<AcceleratorConfigurationProvider>(
+        std::make_unique<FakeShortcutCustomizationDelegate>());
     base::RunLoop().RunUntilIdle();
   }
 

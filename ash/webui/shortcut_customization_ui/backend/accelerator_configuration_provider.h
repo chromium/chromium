@@ -5,6 +5,8 @@
 #ifndef ASH_WEBUI_SHORTCUT_CUSTOMIZATION_UI_BACKEND_ACCELERATOR_CONFIGURATION_PROVIDER_H_
 #define ASH_WEBUI_SHORTCUT_CUSTOMIZATION_UI_BACKEND_ACCELERATOR_CONFIGURATION_PROVIDER_H_
 
+#include <memory>
+
 #include "ash/public/cpp/accelerator_configuration.h"
 #include "ash/public/mojom/accelerator_keys.mojom.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
@@ -20,6 +22,8 @@
 namespace ash {
 namespace shortcut_ui {
 
+class ShortcutCustomizationDelegate;
+
 class AcceleratorConfigurationProvider
     : public shortcut_customization::mojom::AcceleratorConfigurationProvider,
       public ui::InputDeviceEventObserver,
@@ -33,7 +37,9 @@ class AcceleratorConfigurationProvider
       mojom::AcceleratorSource,
       std::map<AcceleratorActionId, std::vector<ui::Accelerator>>>;
 
-  AcceleratorConfigurationProvider();
+  explicit AcceleratorConfigurationProvider(
+      std::unique_ptr<ShortcutCustomizationDelegate>
+          shortcut_customization_delegate);
   AcceleratorConfigurationProvider(const AcceleratorConfigurationProvider&) =
       delete;
   AcceleratorConfigurationProvider& operator=(
@@ -116,6 +122,11 @@ class AcceleratorConfigurationProvider
 
   mojo::Remote<shortcut_customization::mojom::AcceleratorsUpdatedObserver>
       accelerators_updated_observers_;
+
+  // Provides browser functionality from //chrome to the Shortcut Customization
+  // UI.
+  std::unique_ptr<ShortcutCustomizationDelegate>
+      shortcut_customization_delegate_;
 
   base::WeakPtrFactory<AcceleratorConfigurationProvider> weak_ptr_factory_{
       this};
