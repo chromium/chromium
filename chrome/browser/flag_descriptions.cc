@@ -2428,11 +2428,6 @@ const char kBookmarksRefreshName[] = "Bookmarks refresh";
 const char kBookmarksRefreshDescription[] =
     "Enable various changes to bookmarks.";
 
-const char kPrerender2Name[] = "Prerender2";
-const char kPrerender2Description[] =
-    "Enables the new prerenderer implementation for "
-    "<script type=speculationrules> that specifies prerender candidates.";
-
 const char kOmniboxTriggerForPrerender2Name[] =
     "Omnibox trigger for Prerender2";
 const char kOmniboxTriggerForPrerender2Description[] =
@@ -2442,7 +2437,7 @@ const char kSupportSearchSuggestionForPrerender2Name[] =
     "Prerender search suggestions";
 const char kSupportSearchSuggestionForPrerender2Description[] =
     "Allows Prerender2 to prerender search suggestions provided by the default "
-    "search engine. Requires chrome://flags/#enable-prerender2 to be enabled";
+    "search engine.";
 
 const char kEnableOmniboxSearchPrefetchName[] = "Omnibox prefetch Search";
 const char kEnableOmniboxSearchPrefetchDescription[] =

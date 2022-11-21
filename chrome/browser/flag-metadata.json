@@ -2839,11 +2839,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "enable-prerender2",
-    "owners": [ "//content/browser/preloading/prerender/OWNERS" ],
-    "expiry_milestone": 112
-  },
-  {
     "name": "enable-privacy-indicators",
     "owners": [ "leandre" ],
     "expiry_milestone": 111

@@ -1361,9 +1361,6 @@ extern const char kPointerLockOptionsDescription[];
 extern const char kPowerBookmarksSidePanel[];
 extern const char kPowerBookmarksSidePanelDescription[];
 
-extern const char kPrerender2Name[];
-extern const char kPrerender2Description[];
-
 extern const char kOmniboxTriggerForPrerender2Name[];
 extern const char kOmniboxTriggerForPrerender2Description[];
 
