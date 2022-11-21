@@ -417,7 +417,7 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
 
     /**
      * Post a Runnable to attach |state|.  This is helpful, since one cannot directly interact with
-     * the View heirarchy during Surface callbacks.
+     * the View hierarchy during Surface callbacks.
      */
     private void attachSurfaceLater(final SurfaceState state) {
         // We shouldn't try to post construction if there's an in-flight destroy.
