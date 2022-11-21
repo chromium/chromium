@@ -112,4 +112,55 @@ Use a narrower test filter if you only want to run some of the tests. For
 example, most of the ChromeVox Next tests have "E2E" in them (for "end-to-end"),
 so to only run those:
 
-```out/Release/browser_tests --test-launcher-jobs=20 --gtest_filter="*E2E*"```
+```out/Release/browser_tests --test-launcher-jobs=20 --gtest_filter="*ChromeVox*E2E*"```
+
+## Code Structure
+
+The `chromevox/` extension directory is broken into subdirectories, based on what context
+the code runs in. The different contexts are as follows:
+
+* The background context (`chromevox/background/`) contains the bulk of the ChromeVox logic,
+and runs in the background page (soon to be a background service worker).
+
+* The content script context (`chromevox/injected/`) contains the code that is injected into
+web pages. At this point, this is only used to support the Google Docs workaround. When that
+is resolved, it is anticipated this directory will be removed.
+
+* The learn mode context (`chromevox/learn_mode/`) contains the code to render and run the
+ChromeVox learn mode (which is different from the tutorial).
+
+* The log context (`chromevox/log_page/`) contains the code specific to showing the ChromeVox
+log page.
+
+* The options context (`chromevox/options/`) contains the code for the ChromeVox settings page.
+There is an ongoing effort to migrate this page into the ChromeOS settings app, after which
+this directory will be unneeded.
+
+* The panel context (`chromevox/panel/`) contains the code that renders and performs the logic
+of the ChromeVox panel, shown at the top of the screen. When the onscreen command menus are
+shown, that is also rendered in this context.
+
+* The tutorial context (`chromevox/tutorial/`) contains resources used exclusively by the
+ChromeVox tutorial.
+
+Other subdirectories also have specific purposes:
+
+* The common directory (`chromevox/common/`) contains files that can safely be shared between
+multiple contexts. These files must have no global state, as each context has its own global
+namespace. To get information between the contexts, bridge objects are used to pass structured
+messages. Any data passed through these bridges loses any and all class information, as it is
+converted to JSON in the process of being sent.
+
+* The earcons directory (`chromevox/earcons/`) contains the audio files for any short indicator
+sounds (earcons) used by ChromeVox to express information without words.
+
+* The images directory (`chromevox/images/`) contains any images used in any context.
+
+* The testing directory (`chromevox/testing/`) contains files that are used exclusively in
+testing.
+
+* The third_party directory (`chromevox/third_party`) contains open source code from other
+developers that is used in the ChromeVox extension.
+
+* The tools directory (`chromevox/tools`) contains python scrips used for building ChromeVox.
+Eventually these should be moved into the common accessibility directory.
