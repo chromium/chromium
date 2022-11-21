@@ -61,6 +61,7 @@ class PrintJobWorkerOop : public PrintJobWorker {
 #endif
   virtual void OnDidRenderPrintedDocument(mojom::ResultCode result);
   virtual void OnDidDocumentDone(int job_id, mojom::ResultCode result);
+  virtual void OnDidCancel(scoped_refptr<PrintJob> job);
 
   // `PrintJobWorker` overrides.
 #if BUILDFLAG(IS_WIN)
@@ -113,6 +114,7 @@ class PrintJobWorkerOop : public PrintJobWorker {
       mojom::MetafileDataType data_type,
       base::ReadOnlySharedMemoryRegion serialized_data);
   void SendDocumentDone();
+  void SendCancel(scoped_refptr<PrintJob> job);
 
   // Used to test spooling memory error handling.
   bool simulate_spooling_memory_errors_ = false;
@@ -148,6 +150,10 @@ class PrintJobWorkerOop : public PrintJobWorker {
 
   // Tracks if a restart for printing has already been attempted.
   bool print_retried_ = false;
+
+  // Tracks if the service has already been requested to cancel printing the
+  // document
+  bool print_cancel_requested_ = false;
 
   // Weak pointers have flags that get bound to the thread where they are
   // checked, so it is necessary to use different factories when getting a

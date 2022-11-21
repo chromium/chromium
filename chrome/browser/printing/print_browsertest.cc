@@ -128,7 +128,8 @@ using OnDidRenderPrintedDocumentCallback =
     base::RepeatingCallback<void(mojom::ResultCode result)>;
 using OnDidDocumentDoneCallback =
     base::RepeatingCallback<void(mojom::ResultCode result)>;
-using OnDidShowErrorDialog = base::RepeatingCallback<void()>;
+using OnDidCancelCallback = base::RepeatingClosure;
+using OnDidShowErrorDialog = base::RepeatingClosure;
 
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
@@ -2298,6 +2299,7 @@ class TestPrintJobWorkerOop : public PrintJobWorkerOop {
 #endif
     OnDidRenderPrintedDocumentCallback did_render_printed_document_callback;
     OnDidDocumentDoneCallback did_document_done_callback;
+    OnDidCancelCallback did_cancel_callback;
   };
 
   TestPrintJobWorkerOop(content::GlobalRenderFrameHostId rfh_id,
@@ -2369,6 +2371,15 @@ class TestPrintJobWorkerOop : public PrintJobWorkerOop {
     callbacks_->did_document_done_callback.Run(result);
   }
 
+  void OnDidCancel(scoped_refptr<PrintJob> job) override {
+    DVLOG(1) << "Observed: cancel";
+    // Must not use `std::move(job)`, as that could potentially cause the `job`
+    // (and consequentially `this`) to be destroyed before
+    // `did_cancel_callback` is run.
+    PrintJobWorkerOop::OnDidCancel(job);
+    callbacks_->did_cancel_callback.Run();
+  }
+
   raw_ptr<PrintCallbacks> callbacks_;
 };
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -2429,6 +2440,10 @@ class SystemAccessProcessPrintBrowserTestBase
       test_print_job_worker_oop_callbacks_.did_document_done_callback =
           base::BindRepeating(
               &SystemAccessProcessPrintBrowserTestBase::OnDidDocumentDone,
+              base::Unretained(this));
+      test_print_job_worker_oop_callbacks_.did_cancel_callback =
+          base::BindRepeating(
+              &SystemAccessProcessPrintBrowserTestBase::OnDidCancel,
               base::Unretained(this));
     } else {
       test_print_job_worker_callbacks_.did_use_default_settings_callback =
@@ -2620,6 +2635,8 @@ class SystemAccessProcessPrintBrowserTestBase
     return document_done_result_;
   }
 
+  int cancel_count() const { return cancel_count_; }
+
   int print_job_construction_count() const {
     return print_job_construction_count_;
   }
@@ -2711,6 +2728,11 @@ class SystemAccessProcessPrintBrowserTestBase
     CheckForQuit();
   }
 
+  void OnDidCancel() {
+    ++cancel_count_;
+    CheckForQuit();
+  }
+
   void OnDidDestroyPrintJob() {
     ++print_job_destruction_count_;
     CheckForQuit();
@@ -2760,6 +2782,7 @@ class SystemAccessProcessPrintBrowserTestBase
   mojom::ResultCode render_printed_document_result_ =
       mojom::ResultCode::kFailed;
   mojom::ResultCode document_done_result_ = mojom::ResultCode::kFailed;
+  int cancel_count_ = 0;
   int print_job_construction_count_ = 0;
   int print_job_destruction_count_ = 0;
 };
@@ -2985,14 +3008,17 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   // sequence for this is:
   // 1.  A print job is started.
   // 2.  Spooling to send the render data will fail.  An error dialog is shown.
-  // 3.  Wait for the one print job to be destroyed, to ensure printing
+  // 3.  The print job is canceled.  The callback from the service could occur
+  //     after the print job has been destroyed.
+  // 4.  Wait for the one print job to be destroyed, to ensure printing
   //     finished cleanly before completing the test.
-  SetNumExpectedMessages(/*num=*/3);
+  SetNumExpectedMessages(/*num=*/4);
 
   PrintAfterPreviewIsReadyAndLoaded();
 
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
   EXPECT_EQ(error_dialog_shown_count(), 1u);
+  EXPECT_EQ(cancel_count(), 1);
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
 
@@ -3030,15 +3056,20 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
     // The expected events for this are:
     // 1.  A print job is started, but that fails.
     // 2.  An error dialog is shown.
-    // 3.  Wait for the one print job to be destroyed, to ensure printing
+    // 3.  The print job is canceled.  The callback from the service could occur
+    //     after the print job has been destroyed.
+    // 4.  Wait for the one print job to be destroyed, to ensure printing
     //     finished cleanly before completing the test.
-    SetNumExpectedMessages(/*num=*/3);
+    SetNumExpectedMessages(/*num=*/4);
   }
 
   PrintAfterPreviewIsReadyAndLoaded();
 
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kFailed);
   EXPECT_EQ(error_dialog_shown_count(), 1u);
+  // No tracking of cancel for in-browser tests, only for OOP.
+  if (GetParam() != PrintBackendFeatureVariation::kInBrowserProcess)
+    EXPECT_EQ(cancel_count(), 1);
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
 
@@ -3103,14 +3134,17 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   // 1.  A print job is started, but has an access-denied error.
   // 2.  A retry to start the print job with adjusted access will still fail.
   // 3.  An error dialog is shown.
-  // 4.  Wait for the one print job to be destroyed, to ensure printing
+  // 4.  The print job is canceled.  The callback from the service could occur
+  //     after the print job has been destroyed.
+  // 5.  Wait for the one print job to be destroyed, to ensure printing
   //     finished cleanly before completing the test.
-  SetNumExpectedMessages(/*num=*/4);
+  SetNumExpectedMessages(/*num=*/5);
 
   PrintAfterPreviewIsReadyAndLoaded();
 
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kAccessDenied);
   EXPECT_EQ(error_dialog_shown_count(), 1u);
+  EXPECT_EQ(cancel_count(), 1);
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
 
@@ -3135,9 +3169,11 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   // 1.  A print job is started.
   // 2.  Rendering for 1 page of document of content fails with access denied.
   // 3.  An error dialog is shown.
-  // 4.  Wait for the one print job to be destroyed, to ensure printing
+  // 4.  The print job is canceled.  The callback from the service could occur
+  //     after the print job has been destroyed.
+  // 5.  Wait for the one print job to be destroyed, to ensure printing
   //     finished cleanly before completing the test.
-  SetNumExpectedMessages(/*num=*/4);
+  SetNumExpectedMessages(/*num=*/5);
 
   PrintAfterPreviewIsReadyAndLoaded();
 
@@ -3145,13 +3181,12 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kAccessDenied);
   EXPECT_EQ(render_printed_page_count(), 0);
   EXPECT_EQ(error_dialog_shown_count(), 1u);
+  EXPECT_EQ(cancel_count(), 1);
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
 
-// TODO(crbug.com/1326580):  Enable test once use-after-free after a failed
-// call is avoided.
 IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
-                       DISABLED_StartPrintingMultipageMidJobError) {
+                       StartPrintingMultipageMidJobError) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
   // Delay rendering until all pages have been sent, to avoid any race
@@ -3170,17 +3205,31 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   ASSERT_TRUE(web_contents);
   SetUpPrintViewManager(web_contents);
 
-  // TODO(crbug.com/1326580):  Update behavior description after UAF during
-  // error processing in the PrintBackendService is resolved.  In meantime
-  // replicate the expected message count from StartPrintingMultipage test.
-  SetNumExpectedMessages(/*num=*/6);
+  // The expected events for this are:
+  // 1.  Start the print job.
+  // 2.  First page render callback shows success.
+  // 3.  Second page render callback shows failure.  Will start failure
+  //     processing to cancel the print job.
+  // 4.  A printing error dialog is displayed.
+  // 5.  Third page render callback will show it was canceled (due to prior
+  //     failure).  This is disregarded by the browser, since the job has
+  //     already been canceled.
+  // 6.  The print job is canceled.  The callback from the service could occur
+  //     after the print job has been destroyed.
+  // 7.  Wait for the one print job to be destroyed, to ensure printing
+  //     finished cleanly before completing the test.
+  SetNumExpectedMessages(/*num=*/7);
 
   PrintAfterPreviewIsReadyAndLoaded();
 
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
-  EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kFailed);
-  // TODO(crbug.com/1326580):  Update remaining behavior checks after UAF
-  // during error processing in the PrintBackendService is resolved.
+  // First failure page is `kFailed`, but is followed by another page with
+  // status `kCanceled`.
+  EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kCanceled);
+  EXPECT_EQ(render_printed_page_count(), 1);
+  EXPECT_EQ(error_dialog_shown_count(), 1u);
+  EXPECT_EQ(cancel_count(), 1);
+  EXPECT_EQ(print_job_destruction_count(), 1);
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -3206,15 +3255,18 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   // 1.  A print job is started.
   // 2.  Rendering for 1 page of document of content fails with access denied.
   // 3.  An error dialog is shown.
-  // 4.  Wait for the one print job to be destroyed, to ensure printing
+  // 4.  The print job is canceled.  The callback from the service could occur
+  //     after the print job has been destroyed.
+  // 5.  Wait for the one print job to be destroyed, to ensure printing
   //     finished cleanly before completing the test.
-  SetNumExpectedMessages(/*num=*/4);
+  SetNumExpectedMessages(/*num=*/5);
 
   PrintAfterPreviewIsReadyAndLoaded();
 
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
   EXPECT_EQ(render_printed_document_result(), mojom::ResultCode::kAccessDenied);
   EXPECT_EQ(error_dialog_shown_count(), 1u);
+  EXPECT_EQ(cancel_count(), 1);
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
 #endif  // !BUILDFLAG(IS_WIN)
@@ -3240,9 +3292,11 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   // 2.  Rendering for 1 page of document of content.
   // 3.  Document done results in an access-denied error.
   // 4.  An error dialog is shown.
-  // 5.  Wait for the one print job to be destroyed, to ensure printing
+  // 5.  The print job is canceled.  The callback from the service could occur
+  //     after the print job has been destroyed.
+  // 6.  Wait for the one print job to be destroyed, to ensure printing
   //     finished cleanly before completing the test.
-  SetNumExpectedMessages(/*num=*/5);
+  SetNumExpectedMessages(/*num=*/6);
 
   PrintAfterPreviewIsReadyAndLoaded();
 
@@ -3257,6 +3311,7 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
 #endif
   EXPECT_EQ(document_done_result(), mojom::ResultCode::kAccessDenied);
   EXPECT_EQ(error_dialog_shown_count(), 1u);
+  EXPECT_EQ(cancel_count(), 1);
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
 
@@ -3409,12 +3464,14 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
     // 2.  Asks user for settings.
     // 3.  A print job is started, which fails.
     // 4.  An error dialog is shown.
-    // 5.  Wait for the one print job to be destroyed, to ensure printing
+    // 5.  The print job is canceled.  The callback from the service could occur
+    //     after the print job has been destroyed.
+    // 6.  Wait for the one print job to be destroyed, to ensure printing
     //     finished cleanly before completing the test.
-    // 6.  The print compositor will have started to generate the document.
+    // 7.  The print compositor will have started to generate the document.
     //     Wait until that is known to have completed, to ensure printing
     //     finished cleanly before completing the test.
-    SetNumExpectedMessages(/*num=*/6);
+    SetNumExpectedMessages(/*num=*/7);
   }
 
   StartBasicPrint(web_contents);
@@ -3423,6 +3480,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
 
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kFailed);
   EXPECT_EQ(error_dialog_shown_count(), 1u);
+  EXPECT_EQ(cancel_count(), 1);
   EXPECT_EQ(did_composite_completion_count(), 1);
   EXPECT_EQ(print_job_destruction_count(), 1);
 }

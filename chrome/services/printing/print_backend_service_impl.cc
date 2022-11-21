@@ -241,6 +241,7 @@ mojom::ResultCode DocumentContainer::StartPrintingReadyDocument() {
   if (result != mojom::ResultCode::kSuccess) {
     DLOG(ERROR) << "Failure updating printer settings for document "
                 << document_->cookie() << ", error: " << result;
+    context_->Cancel();
     return result;
   }
 
@@ -248,6 +249,7 @@ mojom::ResultCode DocumentContainer::StartPrintingReadyDocument() {
   if (result != mojom::ResultCode::kSuccess) {
     DLOG(ERROR) << "Failure initializing new document " << document_->cookie()
                 << ", error: " << result;
+    context_->Cancel();
     return result;
   }
 
@@ -269,8 +271,12 @@ mojom::ResultCode DocumentContainer::DoRenderPrintedPage(
 
   absl::optional<RenderData> render_data =
       PrepareRenderData(document_->cookie(), page_data_type, serialized_page);
-  if (!render_data)
+  if (!render_data) {
+    DLOG(ERROR) << "Failure preparing render data for document "
+                << document_->cookie();
+    context_->Cancel();
     return mojom::ResultCode::kFailed;
+  }
 
   document_->SetPage(page_index, std::move(render_data->metafile),
                      shrink_factor, page_size, page_content_rect);
@@ -280,10 +286,9 @@ mojom::ResultCode DocumentContainer::DoRenderPrintedPage(
   if (result != mojom::ResultCode::kSuccess) {
     DLOG(ERROR) << "Failure rendering page " << page_index << " of document "
                 << document_->cookie() << ", error: " << result;
-    return result;
+    context_->Cancel();
   }
-
-  return mojom::ResultCode::kSuccess;
+  return result;
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -297,20 +302,36 @@ mojom::ResultCode DocumentContainer::DoRenderPrintedDocument(
 
   absl::optional<RenderData> render_data =
       PrepareRenderData(document_->cookie(), data_type, serialized_document);
-  if (!render_data)
+  if (!render_data) {
+    DLOG(ERROR) << "Failure preparing render data for document "
+                << document_->cookie();
+    context_->Cancel();
     return mojom::ResultCode::kFailed;
+  }
 
   document_->set_page_count(page_count);
   document_->SetDocument(std::move(render_data->metafile));
 
-  return document_->RenderPrintedDocument(context_.get());
+  mojom::ResultCode result = document_->RenderPrintedDocument(context_.get());
+  if (result != mojom::ResultCode::kSuccess) {
+    DLOG(ERROR) << "Failure rendering document " << document_->cookie()
+                << ", error: " << result;
+    context_->Cancel();
+  }
+  return result;
 }
 
 mojom::ResultCode DocumentContainer::DoDocumentDone() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DVLOG(1) << "Document done for document " << document_->cookie();
-  return context_->DocumentDone();
+  mojom::ResultCode result = context_->DocumentDone();
+  if (result != mojom::ResultCode::kSuccess) {
+    DLOG(ERROR) << "Failure completing document " << document_->cookie()
+                << ", error: " << result;
+    context_->Cancel();
+  }
+  return result;
 }
 
 void DocumentContainer::DoCancel() {
@@ -738,16 +759,11 @@ void PrintBackendServiceImpl::RenderPrintedPage(
   DocumentHelper* document_helper = GetDocumentHelper(document_cookie);
   DCHECK(document_helper);
 
-  // Safe to use `base::Unretained(this)` because `this` outlives the async
-  // call and callback.  The entire service process goes away when `this`
-  // lifetime expires.
   document_helper->document_container()
       .AsyncCall(&DocumentContainer::DoRenderPrintedPage)
       .WithArgs(page_index, page_data_type, std::move(serialized_page),
                 page_size, page_content_rect, shrink_factor)
-      .Then(base::BindOnce(&PrintBackendServiceImpl::OnDidRenderPrintedPage,
-                           base::Unretained(this), std::ref(*document_helper),
-                           std::move(callback)));
+      .Then(std::move(callback));
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -760,15 +776,10 @@ void PrintBackendServiceImpl::RenderPrintedDocument(
   DocumentHelper* document_helper = GetDocumentHelper(document_cookie);
   DCHECK(document_helper);
 
-  // Safe to use `base::Unretained(this)` because `this` outlives the async
-  // call and callback.  The entire service process goes away when `this`
-  // lifetime expires.
   document_helper->document_container()
       .AsyncCall(&DocumentContainer::DoRenderPrintedDocument)
       .WithArgs(page_count, data_type, std::move(serialized_document))
-      .Then(base::BindOnce(&PrintBackendServiceImpl::OnDidRenderPrintedDocument,
-                           base::Unretained(this), std::ref(*document_helper),
-                           std::move(callback)));
+      .Then(std::move(callback));
 }
 
 void PrintBackendServiceImpl::DocumentDone(
@@ -809,37 +820,6 @@ void PrintBackendServiceImpl::OnDidStartPrintingReadyDocument(
     mojom::ResultCode result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   document_helper.TakeStartPrintingCallback().Run(result);
-  if (result == mojom::ResultCode::kSuccess)
-    return;
-
-  // Remove this document due to the failure to do setup.
-  RemoveDocumentHelper(document_helper);
-}
-
-#if BUILDFLAG(IS_WIN)
-void PrintBackendServiceImpl::OnDidRenderPrintedPage(
-    DocumentHelper& document_helper,
-    mojom::PrintBackendService::RenderPrintedPageCallback callback,
-    mojom::ResultCode result) {
-  std::move(callback).Run(result);
-  if (result == mojom::ResultCode::kSuccess)
-    return;
-
-  // Remove this document due to the rendering failure.
-  RemoveDocumentHelper(document_helper);
-}
-#endif  // BUILDFLAG(IS_WIN)
-
-void PrintBackendServiceImpl::OnDidRenderPrintedDocument(
-    DocumentHelper& document_helper,
-    mojom::PrintBackendService::RenderPrintedDocumentCallback callback,
-    mojom::ResultCode result) {
-  std::move(callback).Run(result);
-  if (result == mojom::ResultCode::kSuccess)
-    return;
-
-  // Remove this document due to the rendering failure.
-  RemoveDocumentHelper(document_helper);
 }
 
 void PrintBackendServiceImpl::OnDidDocumentDone(
@@ -848,8 +828,12 @@ void PrintBackendServiceImpl::OnDidDocumentDone(
     mojom::ResultCode result) {
   std::move(callback).Run(result);
 
-  // All complete for this document.
-  RemoveDocumentHelper(document_helper);
+  // The service expects that the calling process will call `Cancel()` if there
+  // are any errors during printing.
+  if (result == mojom::ResultCode::kSuccess) {
+    // All complete for this document.
+    RemoveDocumentHelper(document_helper);
+  }
 }
 
 void PrintBackendServiceImpl::OnDidCancel(
