@@ -83,6 +83,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.pagecontroller.utils.UiAutomatorUtils;
+import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
@@ -124,9 +125,12 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
+import org.chromium.ui.test.util.RenderTestRule;
+import org.chromium.ui.test.util.RenderTestRule.Component;
 import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.url.GURL;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -141,7 +145,6 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1", "ignore-certificate-errors"})
 @Batch(SiteSettingsTest.SITE_SETTINGS_BATCH_NAME)
-@DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI)
 public class SiteSettingsTest {
     public static final String SITE_SETTINGS_BATCH_NAME = "site_settings";
 
@@ -151,6 +154,13 @@ public class SiteSettingsTest {
     @Rule
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(mPermissionRule, false);
+
+    @Rule
+    public RenderTestRule mRenderTestRule =
+            RenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(1)
+                    .setBugComponent(Component.UI_BROWSER_MOBILE_SETTINGS)
+                    .build();
 
     @Mock
     private SettingsLauncher mSettingsLauncher;
@@ -2237,6 +2247,79 @@ public class SiteSettingsTest {
                     prefService.getBoolean(DESKTOP_SITE_DISPLAY_SETTING_ENABLED));
         });
         settingsActivity.finish();
+    }
+
+    private void renderCategoryPage(@SiteSettingsCategory.Type int category, String name)
+            throws IOException {
+        var settingsActivity = SiteSettingsTestUtils.startSiteSettingsCategory(category);
+        View view = settingsActivity.findViewById(android.R.id.content).getRootView();
+        ChromeRenderTestRule.sanitize(view);
+        mRenderTestRule.render(view, name);
+        settingsActivity.finish();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    public void testRenderSiteDataPage() throws Exception {
+        renderCategoryPage(SiteSettingsCategory.Type.SITE_DATA, "site_settings_site_data_page");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI)
+    public void testRenderThirdPartyCookiesPage() throws Exception {
+        renderCategoryPage(SiteSettingsCategory.Type.THIRD_PARTY_COOKIES,
+                "site_settings_third_party_cookies_page");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4,
+            ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI})
+    public void
+    testRenderThirdPartyCookiesPageWithFPS() throws Exception {
+        renderCategoryPage(SiteSettingsCategory.Type.THIRD_PARTY_COOKIES,
+                "site_settings_third_party_cookies_page_fps");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4,
+            ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI})
+    public void
+    testRenderCookiesPage() throws Exception {
+        renderCategoryPage(SiteSettingsCategory.Type.COOKIES, "site_settings_cookies_page");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI)
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    public void testRenderCookiesPageWithFPS() throws Exception {
+        renderCategoryPage(SiteSettingsCategory.Type.COOKIES, "site_settings_cookies_page_fps");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    public void testRenderLocationPage() throws Exception {
+        renderCategoryPage(
+                SiteSettingsCategory.Type.DEVICE_LOCATION, "site_settings_location_page");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    public void testRenderProtectedMediaPage() throws Exception {
+        renderCategoryPage(
+                SiteSettingsCategory.Type.PROTECTED_MEDIA, "site_settings_protected_media_page");
     }
 
     /**
