@@ -19,6 +19,7 @@ import static org.chromium.components.browser_ui.widget.RecyclerViewTestUtils.ac
 
 import android.app.Activity;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -34,7 +35,6 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -48,6 +48,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.BookmarkTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
@@ -101,7 +102,6 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1383638")
     public void testSigninButtonDefaultAccount() {
         final HistogramDelta continuedHistogram = new HistogramDelta(CONTINUED_HISTOGRAM_NAME, 1);
         final CoreAccountInfo accountInfo =
@@ -156,6 +156,13 @@ public class BookmarkPersonalizedSigninPromoTest {
         final HistogramDelta shownHistogram = new HistogramDelta(SHOWN_HISTOGRAM_NAME, 1);
         mBookmarkTestRule.showBookmarkManager(sActivityTestRule.getActivity());
         Assert.assertEquals(1, shownHistogram.getDelta());
+
+        // TODO(https://cbug.com/1383638): If this stops the flakes, consider removing
+        // activeInRecyclerView.
+        RecyclerView recyclerView = mBookmarkTestRule.getBookmarkActivity().findViewById(
+                R.id.selectable_list_recycler_view);
+        Assert.assertNotNull(recyclerView);
+        RecyclerViewTestUtils.waitForStableRecyclerView(recyclerView);
 
         // Profile data updates cause the signin promo to be recreated at the given index. The
         // RecyclerView's ViewGroup children may be stale, use activeInRecyclerView to filter to
