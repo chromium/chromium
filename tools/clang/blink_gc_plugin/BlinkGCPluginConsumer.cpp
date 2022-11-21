@@ -11,6 +11,7 @@
 #include "CheckDispatchVisitor.h"
 #include "CheckFieldsVisitor.h"
 #include "CheckFinalizerVisitor.h"
+#include "CheckForbiddenFieldsVisitor.h"
 #include "CheckGCRootsVisitor.h"
 #include "CheckTraceVisitor.h"
 #include "CollectVisitor.h"
@@ -266,6 +267,14 @@ void BlinkGCPluginConsumer::CheckClass(RecordInfo* info) {
       CheckGCRootsVisitor visitor(options_);
       if (visitor.ContainsGCRoots(info))
         reporter_.ClassContainsGCRoots(info, visitor.gc_roots());
+    }
+
+    if (options_.enable_forbidden_fields_check) {
+      CheckForbiddenFieldsVisitor visitor(options_);
+      if (visitor.ContainsForbiddenFields(info)) {
+        reporter_.ClassContainsForbiddenFields(info,
+                                               visitor.forbidden_fields());
+      }
     }
 
     if (info->NeedsFinalization())

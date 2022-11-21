@@ -1,0 +1,20 @@
+In file included from forbidden_fields.cpp:5:
+./forbidden_fields.h:25:1: warning: [blink-gc] Class 'HeapObject' contains invalid fields.
+class HeapObject : public GarbageCollected<HeapObject> {
+^
+./forbidden_fields.h:27:3: note: [blink-gc] From part object field 'obj_' here:
+  FirstLevelPartObject obj_;
+  ^
+./forbidden_fields.h:22:3: note: [blink-gc] From part object field 'obj_' here:
+  SecondLevelPartObject obj_;
+  ^
+./forbidden_fields.h:17:3: note: [blink-gc] TaskRunnerTimer field 'timer_' used within a garbage collected context. Consider using HeapTaskRunnerTimer instead.
+  TaskRunnerTimer<SecondLevelPartObject> timer_;
+  ^
+./forbidden_fields.h:30:1: warning: [blink-gc] Class 'AnotherHeapObject' contains invalid fields.
+class AnotherHeapObject : public GarbageCollected<AnotherHeapObject> {
+^
+./forbidden_fields.h:32:3: note: [blink-gc] TaskRunnerTimer field 'timer_' used within a garbage collected context. Consider using HeapTaskRunnerTimer instead.
+  TaskRunnerTimer<AnotherHeapObject> timer_;
+  ^
+2 warnings generated.

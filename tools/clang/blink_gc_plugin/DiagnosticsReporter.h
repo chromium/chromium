@@ -7,6 +7,7 @@
 
 #include "CheckFieldsVisitor.h"
 #include "CheckFinalizerVisitor.h"
+#include "CheckForbiddenFieldsVisitor.h"
 #include "CheckGCRootsVisitor.h"
 #include "Config.h"
 #include "clang/AST/AST.h"
@@ -37,6 +38,9 @@ class DiagnosticsReporter {
       const CheckFieldsVisitor::Errors& errors);
   void ClassContainsGCRoots(RecordInfo* info,
                             const CheckGCRootsVisitor::Errors& errors);
+  void ClassContainsForbiddenFields(
+      RecordInfo* info,
+      const CheckForbiddenFieldsVisitor::Errors& errors);
   void FinalizerAccessesFinalizedFields(
       clang::CXXMethodDecl* dtor,
       const CheckFinalizerVisitor::Errors& errors);
@@ -147,6 +151,10 @@ class DiagnosticsReporter {
   unsigned diag_member_in_stack_allocated_class_;
   unsigned diag_member_on_stack_;
   unsigned diag_additional_padding_;
+  unsigned diag_task_runner_timer_in_gc_class_note;
+  unsigned diag_forbidden_field_part_object_class_note;
+  unsigned diag_mojo_remote_in_gc_class_note;
+  unsigned diag_mojo_receiver_in_gc_class_note;
 
   unsigned diag_unique_ptr_used_with_gc_;
   unsigned diag_optional_field_used_with_gc_;
