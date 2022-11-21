@@ -23,6 +23,10 @@ class QuotaDatabaseMigrations {
   static bool UpgradeSchema(QuotaDatabase& quota_database);
 
  private:
+  static void RecordMigrationHistogram(int old_version,
+                                       int new_version,
+                                       bool success);
+
   static bool MigrateFromVersion5ToVersion7(QuotaDatabase& quota_database);
   static bool MigrateFromVersion6ToVersion7(QuotaDatabase& quota_database);
   static bool MigrateFromVersion7ToVersion8(QuotaDatabase& quota_database);

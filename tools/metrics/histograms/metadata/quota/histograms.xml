@@ -62,6 +62,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Quota.DatabaseMigration{VersionUpgrades}"
+    enum="BooleanSuccess" expires_after="2023-06-24">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records whether the database migration was successful. Recorded after
+    attempting to migrate the database.
+  </summary>
+  <token key="VersionUpgrades">
+    <variant name="FromV5ToV7"/>
+    <variant name="FromV6ToV7"/>
+    <variant name="FromV7ToV8"/>
+    <variant name="FromV8ToV9"/>
+  </token>
+</histogram>
+
 <histogram name="Quota.DiskspaceShortage" units="MB" expires_after="2023-04-30">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>

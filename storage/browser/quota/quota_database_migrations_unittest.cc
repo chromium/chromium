@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -30,7 +33,10 @@ std::string RemoveQuotes(std::string input) {
 
 class QuotaDatabaseMigrationsTest : public testing::Test {
  public:
-  void SetUp() override { ASSERT_TRUE(temp_directory_.CreateUniqueTempDir()); }
+  void SetUp() override {
+    ASSERT_TRUE(temp_directory_.CreateUniqueTempDir());
+    histograms_ = std::make_unique<base::HistogramTester>();
+  }
 
   base::FilePath ProfilePath() { return temp_directory_.GetPath(); }
 
@@ -93,7 +99,13 @@ class QuotaDatabaseMigrationsTest : public testing::Test {
     return db.db_->GetSchema();
   }
 
+  size_t GetTotalHistogramCount() {
+    return histograms_->GetTotalCountsForPrefix("Quota.DatabaseMigration")
+        .size();
+  }
+
   base::ScopedTempDir temp_directory_;
+  std::unique_ptr<base::HistogramTester> histograms_;
 };
 
 // Verify that the schema created by a new `QuotaDatabase` instance matches the
@@ -172,6 +184,14 @@ TEST_F(QuotaDatabaseMigrationsTest, UpgradeSchemaFromV5) {
                   &db, "SELECT host FROM quota ORDER BY host ASC", "|", ","));
 
     EXPECT_EQ(GetCurrentSchema(), RemoveQuotes(db.GetSchema()));
+
+    EXPECT_EQ(GetTotalHistogramCount(), 3u);
+    histograms_->ExpectBucketCount("Quota.DatabaseMigrationFromV5ToV7",
+                                   /*sample=*/true, /*expected_count=*/1);
+    histograms_->ExpectBucketCount("Quota.DatabaseMigrationFromV7ToV8",
+                                   /*sample=*/true, /*expected_count=*/1);
+    histograms_->ExpectBucketCount("Quota.DatabaseMigrationFromV8ToV9",
+                                   /*sample=*/true, /*expected_count=*/1);
   }
 }
 
@@ -244,6 +264,14 @@ TEST_F(QuotaDatabaseMigrationsTest, UpgradeSchemaFromV6) {
                   &db, "SELECT host FROM quota ORDER BY host ASC", "|", ","));
 
     EXPECT_EQ(GetCurrentSchema(), RemoveQuotes(db.GetSchema()));
+
+    EXPECT_EQ(GetTotalHistogramCount(), 3u);
+    histograms_->ExpectBucketCount("Quota.DatabaseMigrationFromV6ToV7",
+                                   /*sample=*/true, /*expected_count=*/1);
+    histograms_->ExpectBucketCount("Quota.DatabaseMigrationFromV7ToV8",
+                                   /*sample=*/true, /*expected_count=*/1);
+    histograms_->ExpectBucketCount("Quota.DatabaseMigrationFromV8ToV9",
+                                   /*sample=*/true, /*expected_count=*/1);
   }
 }
 
@@ -315,6 +343,12 @@ TEST_F(QuotaDatabaseMigrationsTest, UpgradeSchemaFromV7) {
                   &db, "SELECT host FROM quota ORDER BY host ASC", "|", ","));
 
     EXPECT_EQ(GetCurrentSchema(), RemoveQuotes(db.GetSchema()));
+
+    EXPECT_EQ(GetTotalHistogramCount(), 2u);
+    histograms_->ExpectBucketCount("Quota.DatabaseMigrationFromV7ToV8",
+                                   /*sample=*/true, /*expected_count=*/1);
+    histograms_->ExpectBucketCount("Quota.DatabaseMigrationFromV8ToV9",
+                                   /*sample=*/true, /*expected_count=*/1);
   }
 }
 
@@ -392,6 +426,10 @@ TEST_F(QuotaDatabaseMigrationsTest, UpgradeSchemaFromV8) {
                   &db, "SELECT host FROM quota ORDER BY host ASC", "|", ","));
 
     EXPECT_EQ(GetCurrentSchema(), RemoveQuotes(db.GetSchema()));
+
+    EXPECT_EQ(GetTotalHistogramCount(), 1u);
+    histograms_->ExpectBucketCount("Quota.DatabaseMigrationFromV8ToV9",
+                                   /*sample=*/true, /*expected_count=*/1);
   }
 }
 

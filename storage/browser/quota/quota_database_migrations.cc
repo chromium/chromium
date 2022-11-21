@@ -6,7 +6,10 @@
 
 #include <string>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "sql/database.h"
@@ -78,26 +81,44 @@ bool QuotaDatabaseMigrations::UpgradeSchema(QuotaDatabase& quota_database) {
     return quota_database.ResetStorage();
 
   if (quota_database.meta_table_->GetVersionNumber() == 5) {
-    if (!MigrateFromVersion5ToVersion7(quota_database))
+    bool success = MigrateFromVersion5ToVersion7(quota_database);
+    RecordMigrationHistogram(/*old_version=*/5, /*new_version=*/7, success);
+    if (!success)
       return false;
   }
 
   if (quota_database.meta_table_->GetVersionNumber() == 6) {
-    if (!MigrateFromVersion6ToVersion7(quota_database))
+    bool success = MigrateFromVersion6ToVersion7(quota_database);
+    RecordMigrationHistogram(/*old_version=*/6, /*new_version=*/7, success);
+    if (!success)
       return false;
   }
 
   if (quota_database.meta_table_->GetVersionNumber() == 7) {
-    if (!MigrateFromVersion7ToVersion8(quota_database))
+    bool success = MigrateFromVersion7ToVersion8(quota_database);
+    RecordMigrationHistogram(/*old_version=*/7, /*new_version=*/8, success);
+    if (!success)
       return false;
   }
 
   if (quota_database.meta_table_->GetVersionNumber() == 8) {
-    if (!MigrateFromVersion8ToVersion9(quota_database))
+    bool success = MigrateFromVersion8ToVersion9(quota_database);
+    RecordMigrationHistogram(/*old_version=*/8, /*new_version=*/9, success);
+    if (!success)
       return false;
   }
 
   return quota_database.meta_table_->GetVersionNumber() == 9;
+}
+
+void QuotaDatabaseMigrations::RecordMigrationHistogram(int old_version,
+                                                       int new_version,
+                                                       bool success) {
+  base::UmaHistogramBoolean(
+      base::StrCat({"Quota.DatabaseMigrationFromV",
+                    base::NumberToString(old_version), "ToV",
+                    base::NumberToString(new_version)}),
+      success);
 }
 
 bool QuotaDatabaseMigrations::MigrateFromVersion5ToVersion7(
