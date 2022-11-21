@@ -106,6 +106,23 @@ Finally, run the following test.
 That test will ask you to update the flag expiry metadata in
 [flag-metadata.json](https://cs.chromium.org/chromium/src/chrome/browser/flag-metadata.json).
 
+## Removing the feature flag.
+
+When a feature flag is no longer used it should be removed. Once it has reached it's final state it
+can be removed in stages.
+
+First remove the flag from the UI:
+* [chrome/browser/about_flags.cc](https://cs.chromium.org/chromium/src/chrome/browser/about_flags.cc)
+* [chrome/browser/flag_descriptions.cc](https://cs.chromium.org/chromium/src/chrome/browser/flag_descriptions.cc)
+* [chrome/browser/flag_descriptions.h](https://cs.chromium.org/chromium/src/chrome/browser/flag_descriptions.h)
+* [chrome/browser/flag-metadata.json](https://cs.chromium.org/chromium/src/chrome/browser/flag-metadata.json)
+* Do not edit enums.xml. Keep the flag for archeological purposes.
+
+Once there is no way to change the flag value it's usage can be removed from the code.
+
+Finally, once the flag is no longer referenced, it can be removed from content/ and
+third_party/blink/
+
 ## Related Documents
 
 * [Chromium Feature API & Finch (Googler-only)](http://go/finch-feature-api)
