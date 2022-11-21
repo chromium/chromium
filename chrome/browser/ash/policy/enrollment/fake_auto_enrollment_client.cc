@@ -39,8 +39,6 @@ FakeAutoEnrollmentClient::FactoryImpl::CreateForInitialEnrollment(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& device_serial_number,
     const std::string& device_brand_code,
-    int power_initial,
-    int power_limit,
     std::unique_ptr<psm::RlweDmserverClient> psm_rlwe_dmserver_client) {
   std::unique_ptr<FakeAutoEnrollmentClient> fake_client =
       std::make_unique<FakeAutoEnrollmentClient>(progress_callback);

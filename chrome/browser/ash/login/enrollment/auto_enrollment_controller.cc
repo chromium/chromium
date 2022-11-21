@@ -54,10 +54,6 @@
 namespace ash {
 namespace {
 
-// Maximum number of bits of the identifier hash to send during initial
-// enrollment check.
-constexpr int kInitialEnrollmentModulusPowerLimit = 6;
-
 const int kMaxRequestStateKeysTries = 10;
 
 // Maximum time to wait for the auto-enrollment check to reach a decision.
@@ -402,12 +398,6 @@ void AutoEnrollmentController::StartClientForInitialEnrollment() {
   policy::DeviceManagementService* service =
       InitializeAndGetDeviceManagementService();
 
-  // Initial Enrollment does not transfer any data in the initial exchange, and
-  // supports uploading up to `kInitialEnrollmentModulusPowerLimit` bits of the
-  // identifier hash.
-  const int power_initial = 0;
-  const int power_limit = kInitialEnrollmentModulusPowerLimit;
-
   system::StatisticsProvider* provider =
       system::StatisticsProvider::GetInstance();
   const absl::optional<base::StringPiece> serial_number =
@@ -432,7 +422,6 @@ void AutoEnrollmentController::StartClientForInitialEnrollment() {
       g_browser_process->system_network_context_manager()
           ->GetSharedURLLoaderFactory(),
       std::string(serial_number.value()), std::string(rlz_brand_code.value()),
-      power_initial, power_limit,
       std::make_unique<policy::psm::RlweDmserverClientImpl>(
           service,
           g_browser_process->system_network_context_manager()

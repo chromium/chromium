@@ -77,9 +77,7 @@ class AutoEnrollmentClient {
 
     // |progress_callback| will be invoked whenever some significant event
     // happens as part of the protocol, after Start() is invoked. The result of
-    // the protocol will be cached in |local_state|. |power_initial| and
-    // |power_limit| are exponents of power-of-2 values which will be the
-    // initial modulus and the maximum modulus used by this client.
+    // the protocol will be cached in |local_state|.
     virtual std::unique_ptr<AutoEnrollmentClient> CreateForInitialEnrollment(
         const ProgressCallback& progress_callback,
         DeviceManagementService* device_management_service,
@@ -87,8 +85,6 @@ class AutoEnrollmentClient {
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
         const std::string& device_serial_number,
         const std::string& device_brand_code,
-        int power_initial,
-        int power_limit,
         std::unique_ptr<psm::RlweDmserverClient> psm_rlwe_dmserver_client) = 0;
   };
 

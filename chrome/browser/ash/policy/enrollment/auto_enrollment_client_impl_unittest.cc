@@ -132,7 +132,6 @@ class AutoEnrollmentClientImplBaseTest : public testing::Test {
           AutoEnrollmentClientImpl::FactoryImpl().CreateForInitialEnrollment(
               progress_callback, service_.get(), local_state_,
               shared_url_loader_factory_, kSerialNumber, kBrandCode,
-              power_initial, power_limit,
               std::move(fake_psm_rlwe_dmserver_client));
     }
   }
