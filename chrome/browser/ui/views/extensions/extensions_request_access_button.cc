@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button_hover_card.h"
-#include "chrome/browser/ui/views/extensions/extensions_request_access_dialog_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/grit/generated_resources.h"
@@ -50,9 +49,6 @@ void ExtensionsRequestAccessButton::UpdateExtensionsRequestingAccess(
 }
 
 void ExtensionsRequestAccessButton::MaybeShowHoverCard() {
-  // TODO(crbug.com/1319555): Don't show the hover card if the dialog opened by
-  // pressing the button is still open. This will be easier to add once we
-  // address the TODO below for blocked action dialog.
   if (ExtensionsRequestAccessButtonHoverCard::IsShowing() ||
       !GetWidget()->IsMouseEventsEnabled())
     return;
