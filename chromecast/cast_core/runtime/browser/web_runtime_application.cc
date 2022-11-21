@@ -44,11 +44,13 @@ void WebRuntimeApplication::Launch(StatusCallback callback) {
 
   // Register GrpcWebUI for handling Cast apps with URLs in the form
   // chrome*://* that use WebUIs.
-  const std::vector<std::string> hosts = {"home", "error", "cast_resources"};
-  content::WebUIControllerFactory::RegisterFactory(
-      embedder_application()
-          .CreateWebUIControllerFactory(std::move(hosts))
-          .release());
+  auto web_ui_controller_factory =
+      embedder_application().CreateWebUIControllerFactory(
+          {"home", "error", "cast_resources"});
+  if (web_ui_controller_factory) {
+    content::WebUIControllerFactory::RegisterFactory(
+        web_ui_controller_factory.release());
+  }
 
   embedder_application().GetAllBindings(base::BindPostTask(
       task_runner(),

@@ -46,10 +46,13 @@ if (enable_cast_receiver) {
       "//components/cast/message_port:message_port_cast",
       "//components/cast/named_message_port_connector",
       "//components/cast_receiver/common",
+      "//components/cast_streaming/browser",
       "//components/media_control/browser",
       "//components/on_load_script_injector/browser",
       "//components/url_rewrite/browser",
-      "//content",
+      "//content/public/browser",
+      "//content/public/common",
+      "//media",
       "//ui/base",
     ]
     sources = [

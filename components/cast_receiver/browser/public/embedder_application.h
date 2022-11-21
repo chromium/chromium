@@ -59,10 +59,6 @@ class EmbedderApplication {
   // application, if such an instance exists.
   virtual MessagePortService* GetMessagePortService() = 0;
 
-  // Creates a new platform-specific WebUIControllerFactory.
-  virtual std::unique_ptr<content::WebUIControllerFactory>
-  CreateWebUIControllerFactory(std::vector<std::string> hosts) = 0;
-
   // Returns the WebContents this application should use.
   //
   // TODO(crbug.com/1382907): Change to a callback-based API.
@@ -73,12 +69,24 @@ class EmbedderApplication {
   // TODO(crbug.com/1382907): Change to a callback-based API.
   virtual ContentWindowControls* GetContentWindowControls() = 0;
 
-  virtual StreamingConfigManager* GetStreamingConfigManager() = 0;
+  // Returns the StreamingConfigManager to use for configuring a Cast Streaming
+  // session. The default implementation returns a ReceiverConfig only
+  // detailing the codec support as defined by the build flags.
+  //
+  // TODO(crbug.com/1382907): Change to a callback-based API.
+  // TODO(crbug.com/1359568): Change default implementation to be based on
+  // Chromium state.
+  virtual StreamingConfigManager* GetStreamingConfigManager();
+
+  // Creates a new platform-specific WebUIControllerFactory, or nullptr if
+  // this feature is not to be supported. Returns nullptr by default.
+  // |hosts| is the set of hosts for which the custom WebUIController associated
+  // with the returned factory should be used.
+  virtual std::unique_ptr<content::WebUIControllerFactory>
+  CreateWebUIControllerFactory(std::vector<std::string> hosts);
 
   // Loads |url| in the associated WebContents.
-  //
-  // TODO(crbug.com/1383332): Remove this function.
-  virtual void LoadPage(const GURL& url) = 0;
+  virtual void LoadPage(const GURL& url);
 };
 
 std::ostream& operator<<(std::ostream& os,
