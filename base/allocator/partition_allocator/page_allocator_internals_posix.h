@@ -369,6 +369,7 @@ bool TryRecommitSystemPagesInternal(
 }
 
 void DiscardSystemPagesInternal(uintptr_t address, size_t length) {
+#if !BUILDFLAG(IS_NACL)
   void* ptr = reinterpret_cast<void*>(address);
 #if BUILDFLAG(IS_APPLE)
   int ret = madvise(ptr, length, MADV_FREE_REUSABLE);
@@ -386,6 +387,7 @@ void DiscardSystemPagesInternal(uintptr_t address, size_t length) {
   // Therefore, we just do the simple thing: MADV_DONTNEED.
   PA_PCHECK(0 == madvise(ptr, length, MADV_DONTNEED));
 #endif
+#endif  // !BUILDFLAG(IS_NACL)
 }
 
 }  // namespace partition_alloc::internal
