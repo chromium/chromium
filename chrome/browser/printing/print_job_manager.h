@@ -35,8 +35,9 @@ class PrintQueriesQueue : public base::RefCountedThreadSafe<PrintQueriesQueue> {
   // TODO(maruel):  Have them vanish after a timeout (~5 minutes?)
   void QueuePrinterQuery(std::unique_ptr<PrinterQuery> query);
 
-  // Pops a queued PrinterQuery object that was previously queued or creates
-  // a new one. Can be called from any thread.
+  // Pops a queued PrinterQuery object that was previously queued.  Returns
+  // nullptr if there is no query matching `document_cookie`.
+  // Can be called from any thread.
   std::unique_ptr<PrinterQuery> PopPrinterQuery(int document_cookie);
 
   // Creates new query. Virtual so that tests can override it.
