@@ -106,12 +106,10 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
     base::flat_map<GURL, web_package::mojom::BundleResponseLocationPtr>
         requests;
     requests.insert(
-        {kPrimaryUrl,
-         web_package::mojom::BundleResponseLocation::New(
-             response_->payload_offset, response_->payload_length)});
+        {kUrl, web_package::mojom::BundleResponseLocation::New(
+                   response_->payload_offset, response_->payload_length)});
 
     metadata_ = web_package::mojom::BundleMetadata::New();
-    metadata_->primary_url = kPrimaryUrl;
     metadata_->requests = std::move(requests);
 
     web_package::mojom::BundleIntegrityBlockSignatureStackEntryPtr
@@ -181,7 +179,7 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
   const web_package::SignedWebBundleId kWebBundleId =
       *web_package::SignedWebBundleId::Create(
           "aaaaaaacaibaaaaaaaaaaaaaaiaaeaaaaaaaaaaaaabaeaqaaaaaaaic");
-  const GURL kPrimaryUrl = GURL("isolated-app://" + kWebBundleId.id());
+  const GURL kUrl = GURL("isolated-app://" + kWebBundleId.id());
 
   constexpr static char kResponseBody[] = "test";
 
@@ -202,7 +200,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSingleRequest) {
   base::HistogramTester histogram_tester;
 
   network::ResourceRequest resource_request;
-  resource_request.url = kPrimaryUrl;
+  resource_request.url = kUrl;
 
   base::test::TestFuture<ReadResult> read_response_future;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
@@ -232,7 +230,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSingleRequest) {
 TEST_F(IsolatedWebAppReaderRegistryTest,
        TestSingleRequestWithQueryAndFragment) {
   network::ResourceRequest resource_request;
-  resource_request.url = GURL(kPrimaryUrl.spec() + "?bar=baz#foo");
+  resource_request.url = GURL(kUrl.spec() + "?bar=baz#foo");
 
   base::test::TestFuture<ReadResult> read_response_future;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
@@ -256,7 +254,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest,
 TEST_F(IsolatedWebAppReaderRegistryTest,
        TestReadingResponseAfterSignedWebBundleReaderIsDeleted) {
   network::ResourceRequest resource_request;
-  resource_request.url = kPrimaryUrl;
+  resource_request.url = kUrl;
 
   base::test::TestFuture<ReadResult> read_response_future;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
@@ -288,7 +286,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestRequestToNonExistingResponse) {
   base::HistogramTester histogram_tester;
 
   network::ResourceRequest resource_request;
-  resource_request.url = GURL(kPrimaryUrl.spec() + "foo");
+  resource_request.url = GURL(kUrl.spec() + "foo");
 
   base::test::TestFuture<ReadResult> read_response_future;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
@@ -317,7 +315,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestRequestToNonExistingResponse) {
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
   network::ResourceRequest resource_request;
-  resource_request.url = kPrimaryUrl;
+  resource_request.url = kUrl;
 
   size_t num_signature_verifications = 0;
   registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
@@ -445,7 +443,7 @@ TEST_P(IsolatedWebAppReaderRegistryIntegrityBlockParserErrorTest,
   base::HistogramTester histogram_tester;
 
   network::ResourceRequest resource_request;
-  resource_request.url = kPrimaryUrl;
+  resource_request.url = kUrl;
 
   base::test::TestFuture<ReadResult> read_response_future;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
@@ -489,7 +487,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidIntegrityBlockContents) {
   base::HistogramTester histogram_tester;
 
   network::ResourceRequest resource_request;
-  resource_request.url = kPrimaryUrl;
+  resource_request.url = kUrl;
 
   registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
       std::make_unique<FakeIsolatedWebAppValidator>("test error"),
@@ -529,7 +527,7 @@ TEST_P(IsolatedWebAppReaderRegistrySignatureVerificationErrorTest,
   base::HistogramTester histogram_tester;
 
   network::ResourceRequest resource_request;
-  resource_request.url = kPrimaryUrl;
+  resource_request.url = kUrl;
 
   registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
       std::make_unique<FakeIsolatedWebAppValidator>(absl::nullopt),
@@ -599,7 +597,7 @@ TEST_P(IsolatedWebAppReaderRegistryMetadataParserErrorTest,
   base::HistogramTester histogram_tester;
 
   network::ResourceRequest resource_request;
-  resource_request.url = kPrimaryUrl;
+  resource_request.url = kUrl;
 
   base::test::TestFuture<ReadResult> read_response_future;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
@@ -644,7 +642,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataPrimaryUrl) {
   base::HistogramTester histogram_tester;
 
   network::ResourceRequest resource_request;
-  resource_request.url = kPrimaryUrl;
+  resource_request.url = kUrl;
 
   base::test::TestFuture<ReadResult> read_response_future;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
@@ -652,7 +650,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataPrimaryUrl) {
 
   FulfillIntegrityBlock();
   auto metadata = metadata_->Clone();
-  metadata->primary_url = GURL(kInvalidIsolatedWebAppUrl);
+  metadata->primary_url = kUrl;
   parser_factory_->RunMetadataCallback(integrity_block_->size,
                                        std::move(metadata));
 
@@ -660,11 +658,10 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataPrimaryUrl) {
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error().type,
             IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError);
-  EXPECT_EQ(
-      result.error().message,
-      base::StringPrintf(
-          "Failed to validate metadata: Primary URL must be %s, but was %s",
-          kPrimaryUrl.spec().c_str(), kInvalidIsolatedWebAppUrl));
+  EXPECT_EQ(result.error().message,
+            base::StringPrintf("Failed to validate metadata: Primary URL must "
+                               "not be present, but was %s",
+                               kUrl.spec().c_str()));
 
   histogram_tester.ExpectBucketCount(
       "WebApp.Isolated.ReadIntegrityBlockAndMetadataStatus",
@@ -675,7 +672,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataPrimaryUrl) {
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataInvalidExchange) {
   network::ResourceRequest resource_request;
-  resource_request.url = kPrimaryUrl;
+  resource_request.url = kUrl;
 
   base::test::TestFuture<ReadResult> read_response_future;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
@@ -711,7 +708,7 @@ TEST_P(IsolatedWebAppReaderRegistryResponseHeadParserErrorTest,
   base::HistogramTester histogram_tester;
 
   network::ResourceRequest resource_request;
-  resource_request.url = kPrimaryUrl;
+  resource_request.url = kUrl;
 
   base::test::TestFuture<ReadResult> read_response_future;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
@@ -756,7 +753,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
   base::HistogramTester histogram_tester;
 
   network::ResourceRequest resource_request;
-  resource_request.url = kPrimaryUrl;
+  resource_request.url = kUrl;
 
   // Simulate two simultaneous requests for the same web bundle
   base::test::TestFuture<ReadResult> read_response_future_1;

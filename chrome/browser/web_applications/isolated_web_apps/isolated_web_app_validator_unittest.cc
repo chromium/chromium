@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "base/containers/span.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -27,9 +28,9 @@ const char kAnotherSignedWebBundleId[] =
     "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
 
 // NOLINTNEXTLINE(runtime/string)
-const std::string kPrimaryUrl = std::string(chrome::kIsolatedAppScheme) +
-                                url::kStandardSchemeSeparator +
-                                kSignedWebBundleId;
+const std::string kUrl =
+    base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
+                  kSignedWebBundleId});
 
 // NOLINTNEXTLINE(runtime/string)
 const std::string kUrlFromAnotherIsolatedWebApp =
@@ -138,36 +139,27 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     IsolatedWebAppValidatorMetadataTest,
     ::testing::Values(
-        std::make_tuple(kPrimaryUrl,
-                        std::vector<std::string>({kPrimaryUrl}),
-                        absl::nullopt),
-        std::make_tuple(kPrimaryUrl,
-                        std::vector<std::string>({kPrimaryUrl,
-                                                  kPrimaryUrl + "/foo#bar"}),
+        std::make_tuple("", std::vector<std::string>({kUrl}), absl::nullopt),
+        std::make_tuple("",
+                        std::vector<std::string>({kUrl, kUrl + "/foo#bar"}),
                         "The URL of an exchange is invalid: URLs must not have "
                         "a fragment part."),
-        std::make_tuple(kPrimaryUrl,
-                        std::vector<std::string>({kPrimaryUrl,
-                                                  kPrimaryUrl + "/foo?bar"}),
+        std::make_tuple("",
+                        std::vector<std::string>({kUrl, kUrl + "/foo?bar"}),
                         "The URL of an exchange is invalid: URLs must not have "
                         "a query part."),
         std::make_tuple(
-            kPrimaryUrl + "/foo",
-            std::vector<std::string>({kPrimaryUrl}),
-            "Primary URL must be "
-            "isolated-app://"
-            "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/, but "
-            "was "
-            "isolated-app://"
-            "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/foo"),
-        std::make_tuple(kPrimaryUrl,
-                        std::vector<std::string>({kPrimaryUrl, "https://foo/"}),
+            kUrl,
+            std::vector<std::string>({kUrl}),
+            "Primary URL must not be present, but was isolated-app://"
+            "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/"),
+        std::make_tuple("",
+                        std::vector<std::string>({kUrl, "https://foo/"}),
                         "The URL of an exchange is invalid: The URL scheme "
                         "must be isolated-app, but was https"),
         std::make_tuple(
-            kPrimaryUrl,
-            std::vector<std::string>({kPrimaryUrl,
-                                      kUrlFromAnotherIsolatedWebApp}),
+            "",
+            std::vector<std::string>({kUrl, kUrlFromAnotherIsolatedWebApp}),
             "The URL of an exchange contains the wrong Signed Web Bundle ID: "
             "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic")));
 

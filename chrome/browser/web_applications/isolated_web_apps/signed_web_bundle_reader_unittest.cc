@@ -69,14 +69,12 @@ class SignedWebBundleReaderTest : public testing::Test {
     response_->payload_offset = 0;
     response_->payload_length = sizeof(kResponseBody) - 1;
 
-    GURL primary_url("isolated-app://foo");
-
     base::flat_map<GURL, web_package::mojom::BundleResponseLocationPtr> items;
-    items.insert({primary_url,
-                  web_package::mojom::BundleResponseLocation::New(
-                      response_->payload_offset, response_->payload_length)});
+    items.insert(
+        {kUrl, web_package::mojom::BundleResponseLocation::New(
+                   response_->payload_offset, response_->payload_length)});
     metadata_ = web_package::mojom::BundleMetadata::New();
-    metadata_->primary_url = primary_url;
+    metadata_->primary_url = kUrl;
     metadata_->requests = std::move(items);
 
     web_package::mojom::BundleIntegrityBlockSignatureStackEntryPtr
@@ -182,6 +180,8 @@ class SignedWebBundleReaderTest : public testing::Test {
 
   std::unique_ptr<web_package::MockWebBundleParserFactory> parser_factory_;
   web_package::mojom::BundleIntegrityBlockPtr integrity_block_;
+
+  const GURL kUrl = GURL("https://example.com");
   web_package::mojom::BundleMetadataPtr metadata_;
 
   constexpr static char kResponseBody[] = "test";
@@ -203,12 +203,35 @@ TEST_F(SignedWebBundleReaderTest, ReadValidIntegrityBlockAndMetadata) {
   EXPECT_FALSE(parse_error.has_value());
   EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
 
-  EXPECT_EQ(reader->GetPrimaryURL(), metadata_->primary_url);
+  EXPECT_EQ(reader->GetPrimaryURL(), kUrl);
   EXPECT_EQ(reader->GetEntries().size(), 1ul);
-  EXPECT_EQ(reader->GetEntries()[0], metadata_->primary_url);
+  EXPECT_EQ(reader->GetEntries()[0], kUrl);
 
   histogram_tester.ExpectTotalCount(
       "WebApp.Isolated.SignatureVerificationDuration", 1);
+}
+
+TEST_F(SignedWebBundleReaderTest,
+       ReadValidIntegrityBlockAndMetadataWithoutPrimaryUrl) {
+  auto metadata = metadata_->Clone();
+  metadata->primary_url = GURL();
+
+  base::test::TestFuture<
+      absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>>
+      parse_error_future;
+  auto reader = CreateReaderAndInitialize(parse_error_future.GetCallback());
+
+  parser_factory_->RunIntegrityBlockCallback(integrity_block_->Clone());
+  parser_factory_->RunMetadataCallback(integrity_block_->size,
+                                       std::move(metadata));
+
+  auto parse_error = parse_error_future.Take();
+  EXPECT_FALSE(parse_error.has_value());
+  EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
+
+  EXPECT_TRUE(reader->GetPrimaryURL().is_empty());
+  EXPECT_EQ(reader->GetEntries().size(), 1ul);
+  EXPECT_EQ(reader->GetEntries()[0], kUrl);
 }
 
 TEST_F(SignedWebBundleReaderTest, ReadIntegrityBlockError) {
@@ -406,11 +429,11 @@ TEST_F(SignedWebBundleReaderTest, ReadResponse) {
   EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
 
   network::ResourceRequest resource_request;
-  resource_request.url = metadata_->primary_url;
+  resource_request.url = kUrl;
 
-  auto response = ReadAndFulfillResponse(
-      *reader.get(), resource_request,
-      metadata_->requests[metadata_->primary_url]->Clone(), response_->Clone());
+  auto response = ReadAndFulfillResponse(*reader.get(), resource_request,
+                                         metadata_->requests[kUrl]->Clone(),
+                                         response_->Clone());
   EXPECT_TRUE(response.has_value()) << response.error().message;
   EXPECT_EQ((*response)->response_code, 200);
   EXPECT_EQ((*response)->payload_offset, response_->payload_offset);
@@ -434,11 +457,11 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseWithFragment) {
   network::ResourceRequest resource_request;
   GURL::Replacements replacements;
   replacements.SetRefStr("baz");
-  resource_request.url = metadata_->primary_url.ReplaceComponents(replacements);
+  resource_request.url = kUrl.ReplaceComponents(replacements);
 
-  auto response = ReadAndFulfillResponse(
-      *reader.get(), resource_request,
-      metadata_->requests[metadata_->primary_url]->Clone(), response_->Clone());
+  auto response = ReadAndFulfillResponse(*reader.get(), resource_request,
+                                         metadata_->requests[kUrl]->Clone(),
+                                         response_->Clone());
   EXPECT_TRUE(response.has_value()) << response.error().message;
   EXPECT_EQ((*response)->response_code, 200);
   EXPECT_EQ((*response)->payload_offset, response_->payload_offset);
@@ -462,7 +485,7 @@ TEST_F(SignedWebBundleReaderTest, ReadNonExistingResponseWithPath) {
   network::ResourceRequest resource_request;
   GURL::Replacements replacements;
   replacements.SetPathStr("/foo");
-  resource_request.url = metadata_->primary_url.ReplaceComponents(replacements);
+  resource_request.url = kUrl.ReplaceComponents(replacements);
 
   base::test::TestFuture<
       base::expected<web_package::mojom::BundleResponsePtr,
@@ -476,7 +499,7 @@ TEST_F(SignedWebBundleReaderTest, ReadNonExistingResponseWithPath) {
             SignedWebBundleReader::ReadResponseError::Type::kResponseNotFound);
   EXPECT_EQ(response.error().message,
             "The Web Bundle does not contain a response for the provided URL: "
-            "isolated-app://foo/foo");
+            "https://example.com/foo");
 }
 
 TEST_F(SignedWebBundleReaderTest, ReadNonExistingResponseWithQuery) {
@@ -496,7 +519,7 @@ TEST_F(SignedWebBundleReaderTest, ReadNonExistingResponseWithQuery) {
   network::ResourceRequest resource_request;
   GURL::Replacements replacements;
   replacements.SetQueryStr("foo");
-  resource_request.url = metadata_->primary_url.ReplaceComponents(replacements);
+  resource_request.url = kUrl.ReplaceComponents(replacements);
 
   base::test::TestFuture<
       base::expected<web_package::mojom::BundleResponsePtr,
@@ -510,7 +533,7 @@ TEST_F(SignedWebBundleReaderTest, ReadNonExistingResponseWithQuery) {
             SignedWebBundleReader::ReadResponseError::Type::kResponseNotFound);
   EXPECT_EQ(response.error().message,
             "The Web Bundle does not contain a response for the provided URL: "
-            "isolated-app://foo/?foo");
+            "https://example.com/?foo");
 }
 
 TEST_F(SignedWebBundleReaderTest, ReadResponseError) {
@@ -528,11 +551,11 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseError) {
   EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
 
   network::ResourceRequest resource_request;
-  resource_request.url = metadata_->primary_url;
+  resource_request.url = kUrl;
 
   auto response = ReadAndFulfillResponse(
-      *reader.get(), resource_request,
-      metadata_->requests[metadata_->primary_url]->Clone(), nullptr,
+      *reader.get(), resource_request, metadata_->requests[kUrl]->Clone(),
+      nullptr,
       web_package::mojom::BundleResponseParseError::New(
           web_package::mojom::BundleParseErrorType::kFormatError, "test"));
   ASSERT_FALSE(response.has_value());
@@ -556,14 +579,13 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseWithParserDisconnect) {
   EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
 
   network::ResourceRequest resource_request;
-  resource_request.url = metadata_->primary_url;
+  resource_request.url = kUrl;
 
   SimulateAndWaitForParserDisconnect(*reader.get());
   {
-    auto response = ReadAndFulfillResponse(
-        *reader.get(), resource_request,
-        metadata_->requests[metadata_->primary_url]->Clone(),
-        response_->Clone());
+    auto response = ReadAndFulfillResponse(*reader.get(), resource_request,
+                                           metadata_->requests[kUrl]->Clone(),
+                                           response_->Clone());
     EXPECT_TRUE(response.has_value()) << response.error().message;
     EXPECT_EQ((*response)->response_code, 200);
     EXPECT_EQ((*response)->payload_offset, response_->payload_offset);
@@ -576,10 +598,9 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseWithParserDisconnect) {
   // multiple disconnects over the course of its lifetime.
   SimulateAndWaitForParserDisconnect(*reader.get());
   {
-    auto response = ReadAndFulfillResponse(
-        *reader.get(), resource_request,
-        metadata_->requests[metadata_->primary_url]->Clone(),
-        response_->Clone());
+    auto response = ReadAndFulfillResponse(*reader.get(), resource_request,
+                                           metadata_->requests[kUrl]->Clone(),
+                                           response_->Clone());
     EXPECT_TRUE(response.has_value()) << response.error().message;
     EXPECT_EQ((*response)->response_code, 200);
     EXPECT_EQ((*response)->payload_offset, response_->payload_offset);
@@ -609,7 +630,7 @@ TEST_F(SignedWebBundleReaderTest,
       base::File::Error::FILE_ERROR_ACCESS_DENIED);
 
   network::ResourceRequest resource_request;
-  resource_request.url = metadata_->primary_url;
+  resource_request.url = kUrl;
 
   base::test::TestFuture<
       base::expected<web_package::mojom::BundleResponsePtr,
@@ -642,7 +663,7 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseWithParserCrash) {
   EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
 
   network::ResourceRequest resource_request;
-  resource_request.url = metadata_->primary_url;
+  resource_request.url = kUrl;
 
   base::test::TestFuture<
       base::expected<web_package::mojom::BundleResponsePtr,
@@ -672,11 +693,11 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseBody) {
   EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
 
   network::ResourceRequest resource_request;
-  resource_request.url = metadata_->primary_url;
+  resource_request.url = kUrl;
 
-  auto response = ReadAndFulfillResponse(
-      *reader.get(), resource_request,
-      metadata_->requests[metadata_->primary_url]->Clone(), response_->Clone());
+  auto response = ReadAndFulfillResponse(*reader.get(), resource_request,
+                                         metadata_->requests[kUrl]->Clone(),
+                                         response_->Clone());
   EXPECT_TRUE(response.has_value()) << response.error().message;
 
   std::string response_body =

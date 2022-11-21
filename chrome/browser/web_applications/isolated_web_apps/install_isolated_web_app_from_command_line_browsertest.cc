@@ -141,7 +141,6 @@ class InstallIsolatedWebAppFromCommandLineFromFileBrowserTest
         base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
                       kTestEd25519WebBundleId});
 
-    builder.AddPrimaryURL(primary_url);
     builder.AddExchange(primary_url,
                         {{":status", "200"}, {"content-type", "text/plain"}},
                         "payload");

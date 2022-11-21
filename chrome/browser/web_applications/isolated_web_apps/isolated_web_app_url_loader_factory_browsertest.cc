@@ -201,7 +201,6 @@ class IsolatedWebAppURLLoaderFactoryBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest, LoadsBundle) {
   web_package::WebBundleBuilder builder;
-  builder.AddPrimaryURL(kPrimaryUrl);
   builder.AddExchange(kPrimaryUrl,
                       {{":status", "200"}, {"content-type", "text/html"}},
                       "<title>Hello Isolated Apps</title>");
@@ -218,7 +217,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest, LoadsBundle) {
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
                        LoadsSubResourcesFromBundle) {
   web_package::WebBundleBuilder builder;
-  builder.AddPrimaryURL(kPrimaryUrl);
   builder.AddExchange(kPrimaryUrl,
                       {{":status", "200"}, {"content-type", "text/html"}},
                       "<script src=\"script.js\"></script>");
@@ -239,7 +237,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
                        CanFetchSubresources) {
   web_package::WebBundleBuilder builder;
-  builder.AddPrimaryURL(kPrimaryUrl);
   builder.AddExchange(kPrimaryUrl,
                       {{":status", "200"}, {"content-type", "text/html"}},
                       R"(
@@ -270,7 +267,6 @@ fetch('title.txt')
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
                        DISABLED_InvalidStatusCode) {
   web_package::WebBundleBuilder builder;
-  builder.AddPrimaryURL(kPrimaryUrl);
   builder.AddExchange(kPrimaryUrl,
                       {{":status", "201"}, {"content-type", "text/html"}},
                       "<title>Hello Isolated Apps</title>");
@@ -291,7 +287,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
                        DISABLED_NonExistingResource) {
   web_package::WebBundleBuilder builder;
-  builder.AddPrimaryURL(kPrimaryUrl);
   builder.AddExchange(kPrimaryUrl,
                       {{":status", "200"}, {"content-type", "text/html"}},
                       "<title>Hello Isolated Apps</title>");

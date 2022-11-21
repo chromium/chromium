@@ -663,7 +663,6 @@ class IsolatedWebAppURLLoaderFactorySignedWebBundleTest
 
   base::FilePath CreateSignedBundleAndWriteToDisk() {
     web_package::WebBundleBuilder builder;
-    builder.AddPrimaryURL(kEd25519AppOriginUrl.spec());
     builder.AddExchange(kEd25519AppOriginUrl.spec(),
                         {{":status", "200"}, {"content-type", "text/html"}},
                         "Hello World");
