@@ -262,8 +262,17 @@ bool CalculationExpressionOperationNode::operator==(
   if (!other.IsOperation())
     return false;
   const auto& other_operation = To<CalculationExpressionOperationNode>(other);
-  return operator_ == other_operation.GetOperator() &&
-         children_ == other_operation.GetChildren();
+  if (operator_ != other_operation.GetOperator())
+    return false;
+  if (children_.size() != other_operation.GetChildren().size())
+    return false;
+  Children::const_iterator other_child = other_operation.GetChildren().begin();
+  for (const scoped_refptr<const CalculationExpressionNode>& self_child :
+       children_) {
+    if (*self_child != **other_child++)
+      return false;
+  }
+  return true;
 }
 
 scoped_refptr<const CalculationExpressionNode>
