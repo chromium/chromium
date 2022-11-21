@@ -178,6 +178,13 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // will only be created when use_custom_frame() is true.
   BubbleFrameView* GetBubbleFrameView() const;
 
+  // A helper for accessing the DialogClientView object contained by this
+  // delegate's Window. This function can return nullptr if the |client_view| is
+  // a DialogClientView subclass which also has metadata or overrides
+  // GetClassName().
+  const DialogClientView* GetDialogClientView() const;
+  DialogClientView* GetDialogClientView();
+
   // Helpers for accessing parts of the DialogClientView without needing to know
   // about DialogClientView. Do not call these before OnWidgetInitialized().
   views::LabelButton* GetOkButton() const;
@@ -316,11 +323,6 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   std::unique_ptr<View> DisownFootnoteView();
 
  private:
-  // A helper for accessing the DialogClientView object contained by this
-  // delegate's Window.
-  const DialogClientView* GetDialogClientView() const;
-  DialogClientView* GetDialogClientView();
-
   // Runs a close callback, ensuring that at most one close callback is ever
   // run.
   void RunCloseCallback(base::OnceClosure callback);

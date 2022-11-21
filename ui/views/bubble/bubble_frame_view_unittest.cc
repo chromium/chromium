@@ -32,10 +32,9 @@
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/views/window/dialog_client_view.h"
 
 namespace views {
-
-using BubbleFrameViewTest = ViewsTestBase;
 
 namespace {
 
@@ -141,6 +140,18 @@ class TestBubbleFrameView : public BubbleFrameView {
 };
 
 }  // namespace
+
+class BubbleFrameViewTest : public ViewsTestBase {
+ public:
+  BubbleFrameViewTest()
+      : views::ViewsTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  BubbleFrameViewTest(const BubbleFrameViewTest&) = delete;
+  BubbleFrameViewTest& operator=(const BubbleFrameViewTest&) = delete;
+
+  ~BubbleFrameViewTest() override = default;
+};
 
 TEST_F(BubbleFrameViewTest, GetBoundsForClientView) {
   TestBubbleFrameView frame(this);
@@ -1352,6 +1363,46 @@ TEST_F(BubbleFrameViewTest, IgnorePossiblyUnintendedClicksMinimize) {
           ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
           ui::EF_NONE, ui::EF_NONE));
   EXPECT_TRUE(bubble->IsMinimized());
+}
+
+// Ensures that clicks are ignored for short time after anchor view bounds
+// changed.
+TEST_F(BubbleFrameViewTest, IgnorePossiblyUnintendedClicksAnchorBoundsChanged) {
+  auto delegate_unique = std::make_unique<TestBubbleDialogDelegateView>();
+  TestBubbleDialogDelegateView* const delegate = delegate_unique.get();
+  TestAnchor anchor(CreateParams(Widget::InitParams::TYPE_WINDOW));
+  delegate->SetAnchorView(anchor.widget().GetContentsView());
+  delegate->SetCanMinimize(true);
+  Widget* bubble =
+      BubbleDialogDelegateView::CreateBubble(std::move(delegate_unique));
+  bubble->Show();
+  ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                             ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+  BubbleFrameView* frame = delegate->GetBubbleFrameView();
+  test::ButtonTestApi(frame->minimize_).NotifyClick(mouse_event);
+  auto* widget = delegate->GetWidget();
+  auto* dialog = delegate->GetDialogClientView();
+  auto* ok_button = dialog->ok_button();
+  test::ButtonTestApi(ok_button).NotifyClick(mouse_event);
+  EXPECT_FALSE(bubble->IsMinimized());
+  EXPECT_FALSE(widget->IsClosed());
+
+  task_environment()->FastForwardBy(
+      base::Milliseconds(GetDoubleClickInterval()));
+  anchor.widget().SetBounds(gfx::Rect(10, 10, 100, 100));
+
+  ui::MouseEvent mouse_event_1(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                               ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+  test::ButtonTestApi(ok_button).NotifyClick(mouse_event_1);
+  test::ButtonTestApi(frame->minimize_).NotifyClick(mouse_event_1);
+  EXPECT_FALSE(widget->IsClosed());
+  EXPECT_FALSE(bubble->IsMinimized());
+
+  test::ButtonTestApi(ok_button).NotifyClick(ui::MouseEvent(
+      ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+      ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
+      ui::EF_NONE, ui::EF_NONE));
+  EXPECT_TRUE(widget->IsClosed());
 }
 
 // Ensures that layout is correct when the progress indicator is visible.

@@ -63,6 +63,10 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
       const ViewHierarchyChangedDetails& details) override;
   void OnThemeChanged() override;
 
+  // Update the |view_shown_time_stamp_| of input protector. A short time
+  // from this point onward, input event will be ignored.
+  void UpdateInputProtectorTimeStamp();
+
   void set_minimum_size(const gfx::Size& size) { minimum_size_ = size; }
 
   // Resets the time when view has been shown. Tests may need to call this

@@ -30,6 +30,11 @@ class VIEWS_EXPORT InputEventActivationProtector {
   // method must be called when the visibility of the view is changed.
   void VisibilityChanged(bool is_visible);
 
+  // Updates the |view_shown_time_stamp_| if needed. This function will be
+  // called when we want to reset back the input protector to "initial shown"
+  // state, basically under some certain view's proprieties changed events.
+  void UpdateViewShownTimeStamp();
+
   // Returns true if the event is a mouse, touch, or pointer event that took
   // place within the double-click time interval after |view_shown_time_stamp_|.
   bool IsPossiblyUnintendedInteraction(const ui::Event& event);

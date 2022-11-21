@@ -768,6 +768,10 @@ gfx::Rect BubbleFrameView::GetUpdatedWindowBounds(
   return bubble_border_->GetBounds(anchor_rect, size);
 }
 
+void BubbleFrameView::UpdateInputProtectorTimeStamp() {
+  input_protector_.UpdateViewShownTimeStamp();
+}
+
 void BubbleFrameView::ResetViewShownTimeStampForTesting() {
   input_protector_.ResetForTesting();
 }
