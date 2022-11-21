@@ -126,7 +126,7 @@ message AppProvisioningResponse {
 
     // Width of the icon in pixels. While App icons are typically square
     // note there is no guarantee the image provided will be.
-    optional int32 width_in_pixels = 2;
+    optional uint32 width_in_pixels = 2;
 
     // Mime type of the icon.
     optional string mime_type = 3;
@@ -183,9 +183,9 @@ message AppProvisioningResponse {
     }
 
     // The shelf order for this app.
-    optional int32 shelf_order = 8;
+    optional uint32 shelf_order = 8;
 
     // The launcher order for this app.
-    optional int32 launcher_order = 9;
+    optional uint32 launcher_order = 9;
   }
 }
