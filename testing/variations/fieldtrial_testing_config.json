@@ -5670,37 +5670,6 @@
             ]
         }
     ],
-    "IOSNewOverflowMenu": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NewOverflowMenu"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IOSNewOverflowMenuExperiments": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "BothActions",
-                    "enable_features": [
-                        "NewOverflowMenuCBDAction",
-                        "NewOverflowMenuSettingsAction"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSNewOverflowMenuIPH": [
         {
             "platforms": [
