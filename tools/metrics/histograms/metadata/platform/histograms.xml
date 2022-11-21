@@ -1072,8 +1072,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.Missive.ResourceExhaustedCase" units="count"
-    expires_after="2023-11-17">
+<histogram name="Platform.Missive.ResourceExhaustedCase"
+    enum="ResourceExhaustedCase" expires_after="2023-11-17">
   <owner>xuhong@chromium.org</owner>
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>

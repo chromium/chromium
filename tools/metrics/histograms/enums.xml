@@ -88875,6 +88875,23 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Preconnect"/>
 </enum>
 
+<enum name="ResourceExhaustedCase">
+  <int value="0" label="No disk space left for data"/>
+  <int value="1" label="No disk space left for metadata"/>
+  <int value="2" label="Cannot write record header"/>
+  <int value="3" label="Cannot write record data"/>
+  <int value="4" label="Cannot pad record"/>
+  <int value="5" label="Cannot write generation"/>
+  <int value="6" label="Cannot write last record digest"/>
+  <int value="7" label="Reserved space not observed"/>
+  <int value="8" label="No memory left for write buffer"/>
+  <int value="9" label="No memory left for encrypted record"/>
+  <int value="10" label="No memory left for read buffer"/>
+  <int value="11" label="No memory for upload data"/>
+  <int value="12" label="Too much data to read"/>
+  <int value="13" label="Disk space exceeded adding file"/>
+</enum>
+
 <enum name="ResourceHasClient">
   <int value="0" label="No client"/>
   <int value="1" label="Has client"/>
