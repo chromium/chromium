@@ -411,11 +411,21 @@ bool Http2Connection::OnBeginDataForStream(StreamId stream_id,
 
 bool Http2Connection::OnDataForStream(StreamId stream_id,
                                       absl::string_view data) {
+  auto request = request_map_.find(stream_id);
+  if (request == request_map_.end()) {
+    // We should not receive data before receiving headers.
+    return false;
+  }
+
+  request->second->has_content = true;
+  request->second->content.append(data.data(), data.size());
+  adapter_->MarkDataConsumedForStream(stream_id, data.size());
   return true;
 }
 
 bool Http2Connection::OnDataPaddingLength(StreamId stream_id,
                                           size_t padding_length) {
+  adapter_->MarkDataConsumedForStream(stream_id, padding_length);
   return true;
 }
 
