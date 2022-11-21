@@ -42,10 +42,8 @@ void WaylandOutput::Instantiate(WaylandConnection* connection,
     return;
   }
 
-  auto output = wl::Bind<wl_output>(
-      registry, name,
-      wl::CalculateBindVersion(version, kMaxVersion,
-                               wl_output_interface.version));
+  auto output =
+      wl::Bind<wl_output>(registry, name, std::min(version, kMaxVersion));
   if (!output) {
     LOG(ERROR) << "Failed to bind to wl_output global";
     return;

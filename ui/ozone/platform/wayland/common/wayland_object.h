@@ -88,19 +88,6 @@ bool CanBind(const std::string& interface,
              uint32_t min_version,
              uint32_t max_version);
 
-// Calculates the version of an interface that we want to bind to, given:
-// - |impl_version|, the maximum version that we have implemented support for;
-// - |compositor_version|, the maximum version advertised by the compositor; and
-// - |libwayland_version|, the maximum version that libwayland-client can handle
-//   (can be accessed using INTERFACE_NAME_interface.version). Binding to a
-//   version higher than this would lead to an "interface X has no event Y"
-//   runtime error. This is particularly relevant when building with
-//   use_system_libwayland = true.
-// The result is the minimum of the three versions.
-uint32_t CalculateBindVersion(uint32_t impl_version,
-                              uint32_t compositor_version,
-                              int libwayland_version);
-
 }  // namespace wl
 
 // Puts the forward declaration for struct TYPE and declares the template

@@ -40,9 +40,7 @@ void WaylandZcrColorManager::Instantiate(WaylandConnection* connection,
     return;
 
   auto color_manager = wl::Bind<struct zcr_color_manager_v1>(
-      registry, name,
-      wl::CalculateBindVersion(kMinVersion, kMaxVersion,
-                               zcr_color_manager_v1_interface.version));
+      registry, name, std::min(kMinVersion, kMaxVersion));
   if (!color_manager) {
     LOG(ERROR) << "Failed to bind zcr_color_manager_v1";
     return;

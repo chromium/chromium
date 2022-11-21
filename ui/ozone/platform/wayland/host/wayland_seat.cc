@@ -38,10 +38,8 @@ void WaylandSeat::Instantiate(WaylandConnection* connection,
     return;
   }
 
-  auto seat = wl::Bind<struct wl_seat>(
-      registry, name,
-      wl::CalculateBindVersion(version, kMaxVersion,
-                               wl_seat_interface.version));
+  auto seat =
+      wl::Bind<struct wl_seat>(registry, name, std::min(version, kMaxVersion));
   if (!seat) {
     LOG(ERROR) << "Failed to bind to wl_seat global";
     return;

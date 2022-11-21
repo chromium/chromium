@@ -35,10 +35,8 @@ void SurfaceAugmenter::Instantiate(WaylandConnection* connection,
     return;
   }
 
-  auto augmenter = wl::Bind<surface_augmenter>(
-      registry, name,
-      wl::CalculateBindVersion(version, kMaxVersion,
-                               surface_augmenter_interface.version));
+  auto augmenter = wl::Bind<surface_augmenter>(registry, name,
+                                               std::min(version, kMaxVersion));
   if (!augmenter) {
     LOG(ERROR) << "Failed to bind surface_augmenter";
     return;

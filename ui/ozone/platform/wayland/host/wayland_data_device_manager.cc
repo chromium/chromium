@@ -37,9 +37,7 @@ void WaylandDataDeviceManager::Instantiate(WaylandConnection* connection,
   }
 
   auto data_device_manager = wl::Bind<wl_data_device_manager>(
-      registry, name,
-      wl::CalculateBindVersion(version, kMaxVersion,
-                               wl_data_device_manager_interface.version));
+      registry, name, std::min(version, kMaxVersion));
   if (!data_device_manager) {
     LOG(ERROR) << "Failed to bind to wl_data_device_manager global";
     return;
