@@ -2659,30 +2659,6 @@ chromium-metrics-reviews@google.com.
   <token key="EmeApi" variants="EmeApi"/>
 </histogram>
 
-<histogram name="Media.Engagement.PreloadedList.CheckResult"
-    enum="PreloadedListCheckResult" expires_after="M82">
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Recorded when the Media Engagement Preloaded List is checked whether a
-    string is present on that list. If the check was successful then the result
-    of the check is recorded in this histogram. If the check was not successful
-    then the reason for the check failing is recorded.
-  </summary>
-</histogram>
-
-<histogram name="Media.Engagement.PreloadedList.LoadResult"
-    enum="PreloadedListLoadResult" expires_after="M82">
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Recorded when data is loaded into the Media Engagement Preloaded List. If
-    the load is successful then &quot;loaded&quot; is recorded to this
-    histogram. If the load was not successful then the reason why is recorded to
-    this histogram.
-  </summary>
-</histogram>
-
 <histogram name="Media.Engagement.ScoreAtPlayback" units="%"
     expires_after="M82">
   <owner>beccahughes@chromium.org</owner>

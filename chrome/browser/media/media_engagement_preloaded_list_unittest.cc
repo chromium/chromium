@@ -8,7 +8,6 @@
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
@@ -75,84 +74,7 @@ class MediaEngagementPreloadedListTest : public ::testing::Test {
 
   bool IsEmpty() { return preloaded_list_->empty(); }
 
-  void ExpectCheckResultFoundHttpsOnlyCount(int count) {
-    ExpectCheckResultCount(
-        MediaEngagementPreloadedList::CheckResult::kFoundHttpsOnly, count);
-  }
-
-  void ExpectCheckResultFoundHttpsButWasHttpOnlyCount(int count) {
-    ExpectCheckResultCount(
-        MediaEngagementPreloadedList::CheckResult::kFoundHttpsOnlyButWasHttp,
-        count);
-  }
-
-  void ExpectCheckResultFoundHttpOrHttpsCount(int count) {
-    ExpectCheckResultCount(
-        MediaEngagementPreloadedList::CheckResult::kFoundHttpOrHttps, count);
-  }
-
-  void ExpectCheckResultNotFoundCount(int count) {
-    ExpectCheckResultCount(MediaEngagementPreloadedList::CheckResult::kNotFound,
-                           count);
-  }
-
-  void ExpectCheckResultNotLoadedCount(int count) {
-    ExpectCheckResultCount(
-        MediaEngagementPreloadedList::CheckResult::kListNotLoaded, count);
-  }
-
-  void ExpectCheckResultListEmptyCount(int count) {
-    ExpectCheckResultCount(
-        MediaEngagementPreloadedList::CheckResult::kListEmpty, count);
-  }
-
-  void ExpectCheckResultTotal(int total) {
-    histogram_tester_.ExpectTotalCount(
-        MediaEngagementPreloadedList::kHistogramCheckResultName, total);
-  }
-
-  void ExpectLoadResultLoaded() {
-    ExpectLoadResult(MediaEngagementPreloadedList::LoadResult::kLoaded);
-  }
-
-  void ExpectLoadResultFileNotFound() {
-    ExpectLoadResult(MediaEngagementPreloadedList::LoadResult::kFileNotFound);
-  }
-
-  void ExpectLoadResultFileReadFailed() {
-    ExpectLoadResult(MediaEngagementPreloadedList::LoadResult::kFileReadFailed);
-  }
-
-  void ExpectLoadResultParseProtoFailed() {
-    ExpectLoadResult(
-        MediaEngagementPreloadedList::LoadResult::kParseProtoFailed);
-  }
-
-  const base::HistogramTester& histogram_tester() const {
-    return histogram_tester_;
-  }
-
- protected:
-  void ExpectLoadResult(MediaEngagementPreloadedList::LoadResult result) {
-    histogram_tester_.ExpectBucketCount(
-        MediaEngagementPreloadedList::kHistogramLoadResultName,
-        static_cast<int>(result), 1);
-
-    // Ensure not other results were logged.
-    histogram_tester_.ExpectTotalCount(
-        MediaEngagementPreloadedList::kHistogramLoadResultName, 1);
-  }
-
-  void ExpectCheckResultCount(MediaEngagementPreloadedList::CheckResult result,
-                              int count) {
-    histogram_tester_.ExpectBucketCount(
-        MediaEngagementPreloadedList::kHistogramCheckResultName,
-        static_cast<int>(result), count);
-  }
-
   std::unique_ptr<MediaEngagementPreloadedList> preloaded_list_;
-
-  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(MediaEngagementPreloadedListTest, CheckOriginIsPresent) {
@@ -161,30 +83,16 @@ TEST_F(MediaEngagementPreloadedListTest, CheckOriginIsPresent) {
   EXPECT_TRUE(IsLoaded());
   EXPECT_FALSE(IsEmpty());
 
-  // Check the load result was recorded on the histogram.
-  ExpectLoadResultLoaded();
-
   // Check some origins that are not in the list.
-  ExpectCheckResultTotal(0);
   EXPECT_TRUE(CheckOriginIsPresent(GURL("https://example.com")));
   EXPECT_TRUE(CheckOriginIsPresent(GURL("https://example.org:1234")));
   EXPECT_TRUE(CheckOriginIsPresent(GURL("https://test--3ya.com")));
   EXPECT_TRUE(CheckOriginIsPresent(GURL("http://123.123.123.123")));
 
-  // Check they were recorded on the histogram.
-  ExpectCheckResultTotal(4);
-  ExpectCheckResultFoundHttpsOnlyCount(3);
-  ExpectCheckResultFoundHttpOrHttpsCount(1);
-
   // Check some origins that are not in the list.
   EXPECT_FALSE(CheckOriginIsPresent(GURL("https://example.org")));
   EXPECT_FALSE(CheckOriginIsPresent(GURL("http://example.com")));
   EXPECT_FALSE(CheckOriginIsPresent(GURL("http://123.123.123.124")));
-
-  // Check they were recorded on the histogram.
-  ExpectCheckResultTotal(7);
-  ExpectCheckResultNotFoundCount(2);
-  ExpectCheckResultFoundHttpsButWasHttpOnlyCount(1);
 
   // Make sure only the full origin matches.
   EXPECT_FALSE(CheckStringIsPresent("123"));
@@ -197,15 +105,6 @@ TEST_F(MediaEngagementPreloadedListTest, LoadMissingFile) {
       LoadFromFile(GetAbsolutePathToGeneratedTestFile(kMissingFilePath)));
   EXPECT_FALSE(IsLoaded());
   EXPECT_TRUE(IsEmpty());
-
-  // Check the load result was recorded on the histogram.
-  ExpectLoadResultFileNotFound();
-
-  // Test checking an origin and make sure the result is recorded to the
-  // histogram.
-  EXPECT_FALSE(CheckOriginIsPresent(GURL("https://example.com")));
-  ExpectCheckResultTotal(1);
-  ExpectCheckResultNotLoadedCount(1);
 }
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -219,14 +118,9 @@ TEST_F(MediaEngagementPreloadedListTest, MAYBE_LoadFileReadFailed) {
   EXPECT_FALSE(IsLoaded());
   EXPECT_TRUE(IsEmpty());
 
-  // Check the load result was recorded on the histogram.
-  ExpectLoadResultFileReadFailed();
-
   // Test checking an origin and make sure the result is recorded to the
   // histogram.
   EXPECT_FALSE(CheckOriginIsPresent(GURL("https://example.com")));
-  ExpectCheckResultTotal(1);
-  ExpectCheckResultNotLoadedCount(1);
 }
 
 TEST_F(MediaEngagementPreloadedListTest, LoadBadFormatFile) {
@@ -235,29 +129,15 @@ TEST_F(MediaEngagementPreloadedListTest, LoadBadFormatFile) {
   EXPECT_FALSE(IsLoaded());
   EXPECT_TRUE(IsEmpty());
 
-  // Check the load result was recorded on the histogram.
-  ExpectLoadResultParseProtoFailed();
-
   // Test checking an origin and make sure the result is recorded to the
   // histogram.
   EXPECT_FALSE(CheckOriginIsPresent(GURL("https://example.com")));
-  ExpectCheckResultTotal(1);
-  ExpectCheckResultNotLoadedCount(1);
 }
 
 TEST_F(MediaEngagementPreloadedListTest, LoadEmptyFile) {
   ASSERT_TRUE(LoadFromFile(GetAbsolutePathToGeneratedTestFile(kEmptyFilePath)));
   EXPECT_TRUE(IsLoaded());
   EXPECT_TRUE(IsEmpty());
-
-  // Check the load result was recorded on the histogram.
-  ExpectLoadResultLoaded();
-
-  // Test checking an origin and make sure the result is recorded to the
-  // histogram.
-  EXPECT_FALSE(CheckOriginIsPresent(GURL("https://example.com")));
-  ExpectCheckResultTotal(1);
-  ExpectCheckResultListEmptyCount(1);
 }
 
 TEST_F(MediaEngagementPreloadedListTest, CheckOriginIsPresent_UnsecureSchemes) {
@@ -266,25 +146,15 @@ TEST_F(MediaEngagementPreloadedListTest, CheckOriginIsPresent_UnsecureSchemes) {
   EXPECT_TRUE(IsLoaded());
   EXPECT_FALSE(IsEmpty());
 
-  // Check the load result was recorded on the histogram.
-  ExpectLoadResultLoaded();
-
   // An origin that has both HTTP and HTTPS entries should allow either.
   EXPECT_TRUE(CheckOriginIsPresent(GURL("https://google.com")));
   EXPECT_TRUE(CheckOriginIsPresent(GURL("http://google.com")));
-  ExpectCheckResultTotal(2);
-  ExpectCheckResultFoundHttpOrHttpsCount(2);
 
   // An origin that only has a HTTP origin should allow either.
   EXPECT_TRUE(CheckOriginIsPresent(GURL("https://123.123.123.123")));
   EXPECT_TRUE(CheckOriginIsPresent(GURL("http://123.123.123.123")));
-  ExpectCheckResultTotal(4);
-  ExpectCheckResultFoundHttpOrHttpsCount(4);
 
   // An origin that has only HTTPS should only allow HTTPS.
   EXPECT_TRUE(CheckOriginIsPresent(GURL("https://example.com")));
   EXPECT_FALSE(CheckOriginIsPresent(GURL("http://example.com")));
-  ExpectCheckResultTotal(6);
-  ExpectCheckResultFoundHttpsOnlyCount(1);
-  ExpectCheckResultFoundHttpsButWasHttpOnlyCount(1);
 }
