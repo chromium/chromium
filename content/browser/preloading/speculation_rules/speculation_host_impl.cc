@@ -60,17 +60,6 @@ void SpeculationHostImpl::Bind(
     RenderFrameHost* frame_host,
     mojo::PendingReceiver<blink::mojom::SpeculationHost> receiver) {
   CHECK(frame_host);
-  // TODO(crbug.com/1190338): Allow SpeculationHostDelegate to participate in
-  // this feature check.
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kSpeculationRulesPrefetchProxy) &&
-      !blink::features::IsPrerender2Enabled()) {
-    mojo::ReportBadMessage(
-        "Speculation rules must be enabled to bind to "
-        "blink.mojom.SpeculationHost in the browser.");
-    return;
-  }
-
   // DocumentService will destroy this on pipe closure or frame destruction.
   new SpeculationHostImpl(*frame_host, std::move(receiver));
 }
