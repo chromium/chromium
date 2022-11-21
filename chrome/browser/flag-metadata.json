@@ -1871,6 +1871,11 @@
     "expiry_milestone": 111
   },
   {
+    "name": "enable-cros-autocorrect-toggle",
+    "owners": [ "zacpartridge", "essential-inputs-team@google.com" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "enable-cros-avatars-cloud-migration",
     "owners": [ "updowndota", "angelaxiao", "assistive-eng@google.com" ],
     "expiry_milestone": 120

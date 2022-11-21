@@ -358,6 +358,9 @@ void AddInputMethodOptionsStrings(content::WebUIDataSource* html_source) {
       "allowDiacriticsOnPhysicalKeyboardLongpress",
       base::FeatureList::IsEnabled(
           ash::features::kDiacriticsOnPhysicalKeyboardLongpress));
+  html_source->AddBoolean(
+      "allowAutocorrectToggle",
+      base::FeatureList::IsEnabled(ash::features::kAutocorrectToggle));
 }
 
 void AddLanguagesPageStringsV2(content::WebUIDataSource* html_source) {

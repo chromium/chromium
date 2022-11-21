@@ -62305,6 +62305,7 @@ from previous Chrome versions.
   <int value="438307192" label="FirstPartySets:disabled"/>
   <int value="438398886"
       label="AutofillEnableStickyManualFallbackForCards:enabled"/>
+  <int value="438447086" label="AutocorrectToggle:disabled"/>
   <int value="439267320" label="ScreenTime:disabled"/>
   <int value="439525862" label="GlobalMediaControlsForCast:disabled"/>
   <int value="441096714" label="WebBluetoothConfirmPairingSupport:disabled"/>
@@ -63247,6 +63248,7 @@ from previous Chrome versions.
   <int value="1011491959" label="PageInfoCookiesSubpage:enabled"/>
   <int value="1011550878" label="MessagesForAndroidPermissionUpdate:disabled"/>
   <int value="1012643576" label="CommerceDeveloper:enabled"/>
+  <int value="1012916096" label="AutocorrectToggle:enabled"/>
   <int value="1012942422" label="HorizontalTabSwitcherAndroid:disabled"/>
   <int value="1013734783" label="WebViewXRequestedWithHeader:disabled"/>
   <int value="1015895665" label="drop-sync-credential:enabled"/>

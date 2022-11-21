@@ -257,6 +257,11 @@ BASE_FEATURE(kAutocorrectParamsTuning,
              "AutocorrectParamsTuning",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables using a toggle for enabling autocorrect on ChromeOS.
+BASE_FEATURE(kAutocorrectToggle,
+             "AutocorrectToggle",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the autozoom nudge shown prefs will be reset at the start of
 // each new user session.
 BASE_FEATURE(kAutozoomNudgeSessionReset,

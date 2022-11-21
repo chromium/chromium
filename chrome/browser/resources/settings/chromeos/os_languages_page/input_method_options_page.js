@@ -24,7 +24,7 @@ import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {getTemplate} from './input_method_options_page.html.js';
-import {generateOptions, getFirstPartyInputMethodEngineId, getOptionLabelName, getOptionMenuItems, getOptionSubtitleName, getOptionUiType, getOptionUrl, getSubmenuButtonType, getUntranslatedOptionLabelName, hasOptionsPageInSettings, isOptionLabelTranslated, OPTION_DEFAULT, OptionType, shouldStoreNumberAsString, SubmenuButton, UiType} from './input_method_util.js';
+import {generateOptions, getFirstPartyInputMethodEngineId, getOptionLabelName, getOptionMenuItems, getOptionSubtitleName, getOptionUiType, getOptionUrl, getSubmenuButtonType, getUntranslatedOptionLabelName, hasOptionsPageInSettings, isOptionLabelTranslated, OPTION_DEFAULT, OPTION_MAP, OptionType, shouldStoreAsNumber, SubmenuButton, UiType} from './input_method_util.js';
 import {LanguageHelper} from './languages_types.js';
 
 /**
@@ -172,6 +172,10 @@ class SettingsInputMethodOptionsPageElement extends
       const uiType = getOptionUiType(name);
       let value = name in currentSettings ? currentSettings[name] :
                                             OPTION_DEFAULT[name];
+      if (loadTimeData.getBoolean('allowAutocorrectToggle') &&
+          name in OPTION_MAP) {
+        value = OPTION_MAP[name].mapValueForDisplay(value);
+      }
       if (!this.isSettingValueValid_(name, value)) {
         value = OPTION_DEFAULT[name];
         this.updatePref_(name, value);
@@ -268,8 +272,12 @@ class SettingsInputMethodOptionsPageElement extends
     if (!(this.engineId_ in updatedSettings)) {
       updatedSettings[this.engineId_] = {};
     }
-    if (shouldStoreNumberAsString(optionName)) {
-      newValue = parseInt(newValue, 10);
+    if (shouldStoreAsNumber(optionName)) {
+      if (loadTimeData.getBoolean('allowAutocorrectToggle')) {
+        newValue = OPTION_MAP[optionName].mapValueForWrite(newValue);
+      } else {
+        newValue = parseInt(newValue, 10);
+      }
     }
     updatedSettings[this.engineId_][optionName] = newValue;
 

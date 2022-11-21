@@ -4,6 +4,7 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 
+import {loadTimeData} from '../../i18n_setup.js';
 import {Route} from '../../router.js';
 import {routes} from '../os_route.js';
 
@@ -184,6 +185,24 @@ export const OPTION_DEFAULT = {
   [OptionType.ZHUYIN_KEYBOARD_LAYOUT]: KeyboardLayout.STANDARD,
   [OptionType.ZHUYIN_PAGE_SIZE]: '10',
   [OptionType.ZHUYIN_SELECT_KEYS]: '1234567890',
+};
+
+/**
+ * Type conversions functions for reading and writing options.
+ *
+ * WARNING: Keep this in sync with shouldStoreAsNumber
+ *
+ * @const
+ */
+export const OPTION_MAP = {
+  [OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL]: {
+    mapValueForDisplay: (value) => value > 0 ? true : false,
+    mapValueForWrite: (value) => value ? 1 : 0,
+  },
+  [OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL]: {
+    mapValueForDisplay: (value) => value > 0 ? true : false,
+    mapValueForWrite: (value) => value ? 1 : 0,
+  },
 };
 
 /**
@@ -487,6 +506,9 @@ export function getOptionUiType(option) {
       return UiType.TOGGLE_BUTTON;
     case OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL:
     case OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL:
+      return loadTimeData.getBoolean('allowAutocorrectToggle') ?
+          UiType.TOGGLE_BUTTON :
+          UiType.DROPDOWN;
     case OptionType.XKB_LAYOUT:
     case OptionType.JAPANESE_INPUT_MODE:
     case OptionType.JAPANESE_PUNCTUATION_STYLE:
@@ -886,11 +908,14 @@ export function getOptionMenuItems(option) {
 
 
 /**
+ * WARNING: Keep this in sync with OPTION_MAP
+ *
  * @param {!OptionType} option The option type.
  * @return {boolean} true if the value for |option| is a number.
  */
-export function shouldStoreNumberAsString(option) {
-  return option === OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL;
+export function shouldStoreAsNumber(option) {
+  return option === OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL ||
+      option === OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL;
 }
 /**
  * @param {!OptionType} option The option type.
