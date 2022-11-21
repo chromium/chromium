@@ -40,17 +40,22 @@ NGConstraintSpace NGConstraintSpace::CreateFromLayoutObject(
     const LayoutBlock& block) {
   DCHECK(!block.IsTableCell());
 
-  const LayoutBlock* cb = block.ContainingBlock();
+  const ComputedStyle& style = block.StyleRef();
+  const auto writing_mode = style.GetWritingMode();
+  bool adjust_inline_size_if_needed = false;
+
   LogicalSize available_size;
   bool is_fixed_inline_size = false;
   bool is_fixed_block_size = false;
   if (block.IsSVGChild()) {
     // SVG <text> and <foreignObject> should not refer to its containing block.
-  } else if (cb) {
+  } else if (const LayoutBlock* cb = block.ContainingBlock()) {
     available_size.inline_size =
         LayoutBoxUtils::AvailableLogicalWidth(block, cb);
     available_size.block_size =
         LayoutBoxUtils::AvailableLogicalHeight(block, cb);
+    adjust_inline_size_if_needed =
+        !IsParallelWritingMode(cb->StyleRef().GetWritingMode(), writing_mode);
   } else {
     DCHECK(block.IsLayoutView());
     available_size = To<LayoutView>(block).InitialContainingBlockSize();
@@ -88,13 +93,8 @@ NGConstraintSpace NGConstraintSpace::CreateFromLayoutObject(
   // that we're actually going to lay out, it will always establish a new
   // formatting context, since it's out-of-flow.
   bool is_new_fc = block.CreatesNewFormattingContext();
-
-  const ComputedStyle& style = block.StyleRef();
-  const auto writing_mode = style.GetWritingMode();
-  bool parallel_containing_block = IsParallelWritingMode(
-      cb ? cb->StyleRef().GetWritingMode() : writing_mode, writing_mode);
   NGConstraintSpaceBuilder builder(writing_mode, style.GetWritingDirection(),
-                                   is_new_fc, !parallel_containing_block);
+                                   is_new_fc, adjust_inline_size_if_needed);
 
   if (!block.IsWritingModeRoot() || block.IsGridItem()) {
     // We don't know if the parent layout will require our baseline, so always
