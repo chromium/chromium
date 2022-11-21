@@ -97,6 +97,11 @@ media::AudioParameters GetOutputDeviceParameters(
       .output_params();
 }
 
+scoped_refptr<media::AudioRendererSink> GetNullAudioSink(
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner) {
+  return base::MakeRefCounted<media::NullAudioSink>(task_runner);
+}
+
 }  // namespace
 
 std::unique_ptr<RendererWebAudioDeviceImpl> RendererWebAudioDeviceImpl::Create(
@@ -109,7 +114,8 @@ std::unique_ptr<RendererWebAudioDeviceImpl> RendererWebAudioDeviceImpl::Create(
   return std::unique_ptr<RendererWebAudioDeviceImpl>(
       new RendererWebAudioDeviceImpl(
           sink_descriptor, layout, number_of_output_channels, latency_hint,
-          callback, session_id, base::BindOnce(&GetOutputDeviceParameters)));
+          callback, session_id, base::BindOnce(&GetOutputDeviceParameters),
+          base::BindRepeating(&GetNullAudioSink)));
 }
 
 RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
@@ -119,12 +125,14 @@ RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
     const blink::WebAudioLatencyHint& latency_hint,
     WebAudioDevice::RenderCallback* callback,
     const base::UnguessableToken& session_id,
-    OutputDeviceParamsCallback device_params_cb)
+    OutputDeviceParamsCallback device_params_cb,
+    CreateSilentSinkCallback create_silent_sink_cb)
     : sink_descriptor_(sink_descriptor),
       latency_hint_(latency_hint),
       client_callback_(callback),
       session_id_(session_id),
-      frame_token_(sink_descriptor.Token()) {
+      frame_token_(sink_descriptor.Token()),
+      create_silent_sink_cb_(std::move(create_silent_sink_cb)) {
   DCHECK(client_callback_);
   SendLogMessage(base::StringPrintf("%s", __func__));
 
@@ -201,8 +209,7 @@ void RendererWebAudioDeviceImpl::Start() {
       sink_->Initialize(sink_params_, silent_sink_suspender_.get());
       break;
     case blink::WebAudioSinkDescriptor::kSilent:
-      sink_ =
-          base::MakeRefCounted<media::NullAudioSink>(GetSilentSinkTaskRunner());
+      sink_ = create_silent_sink_cb_.Run(GetSilentSinkTaskRunner());
       sink_->Initialize(sink_params_, this);
       break;
   }

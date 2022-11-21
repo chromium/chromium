@@ -85,6 +85,10 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
       const base::UnguessableToken& session_id,
       const std::string& device_id)>;
 
+  using CreateSilentSinkCallback =
+      base::RepeatingCallback<scoped_refptr<media::AudioRendererSink>(
+          const scoped_refptr<base::SequencedTaskRunner>& task_runner)>;
+
   RendererWebAudioDeviceImpl(
       const blink::WebAudioSinkDescriptor& sink_descriptor,
       media::ChannelLayout layout,
@@ -92,7 +96,8 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
       const blink::WebAudioLatencyHint& latency_hint,
       blink::WebAudioDevice::RenderCallback* callback,
       const base::UnguessableToken& session_id,
-      OutputDeviceParamsCallback device_params_cb);
+      OutputDeviceParamsCallback device_params_cb,
+      CreateSilentSinkCallback create_silent_sink_cb);
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> GetSilentSinkTaskRunner();
@@ -135,6 +140,8 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
   // Used to trigger one single textlog indicating that rendering started as
   // intended. Set to true once in the first call to the Render callback.
   bool is_rendering_ = false;
+
+  CreateSilentSinkCallback create_silent_sink_cb_;
 };
 
 }  // namespace content
