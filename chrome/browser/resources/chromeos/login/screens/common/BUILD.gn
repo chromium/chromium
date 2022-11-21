@@ -18,7 +18,6 @@ group("polymer3_elements") {
     ":guest_tos_module",
     ":hw_data_collection_module",
     ":recommend_apps_module",
-    ":signin_fatal_error_module",
     ":smart_privacy_protection_module",
     ":sync_consent_module",
   ]
@@ -70,7 +69,7 @@ js_type_check("closure_compile_local") {
     ":pin_setup",
     ":recommend_apps.m",
     ":saml_confirm_password",
-    ":signin_fatal_error.m",
+    ":signin_fatal_error",
     ":smart_privacy_protection.m",
     ":sync_consent.m",
     ":theme_selection",
@@ -551,8 +550,8 @@ js_library("saml_confirm_password") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("signin_fatal_error.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/signin_fatal_error.m.js" ]
+js_library("signin_fatal_error") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/signin_fatal_error.js" ]
   deps = [
     "../../components:display_manager_types.m",
     "../../components:oobe_types.m",
@@ -563,7 +562,7 @@ js_library("signin_fatal_error.m") {
     "../../components/dialogs:oobe_adaptive_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":signin_fatal_error_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("smart_privacy_protection.m") {
@@ -711,15 +710,6 @@ polymer_modulizer("recommend_apps") {
   migrated_imports = oobe_migrated_imports
 }
 
-polymer_modulizer("signin_fatal_error") {
-  js_file = "signin_fatal_error.js"
-  html_file = "signin_fatal_error.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("smart_privacy_protection") {
   js_file = "smart_privacy_protection.js"
   html_file = "smart_privacy_protection.html"
@@ -764,6 +754,7 @@ html_to_js("web_components") {
     "parental_handoff.js",
     "pin_setup.js",
     "saml_confirm_password.js",
+    "signin_fatal_error.js",
     "theme_selection.js",
     "tpm_error.js",
     "user_creation.js",

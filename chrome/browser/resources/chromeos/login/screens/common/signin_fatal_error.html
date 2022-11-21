@@ -4,46 +4,25 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/html/action_link.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-
-<link rel="import" href="../../components/display_manager_types.html">
-<link rel="import" href="../../components/oobe_icons.html">
-<link rel="import" href="../../components/oobe_types.html">
-<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
-<link rel="import" href="../../components/behaviors/oobe_dialog_host_behavior.html">
-<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
-<link rel="import" href="../../components/buttons/oobe_text_button.html">
-<link rel="import" href="../../components/common_styles/common_styles.html">
-<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
-<link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
-
-<dom-module id="signin-fatal-error-element">
-  <template>
-    <style include="oobe-dialog-host-styles">
-    </style>
-    <oobe-adaptive-dialog id="signinFatalErrorDialog" role="dialog">
-      <iron-icon slot="icon" icon="oobe-32:alert"></iron-icon>
-      <h1 slot="title">
-        [[i18nDynamic(locale, 'errorGenericFatalErrorTitle')]]
-      </h1>
-      <p id="subtitle" slot="subtitle">
-        [[errorSubtitle_]]
-      </p>
-      <div slot="subtitle" hidden="[[!keyboardHint_]]">[[keyboardHint_]]</div>
-      <div slot="subtitle" hidden="[[!details_]]">[[details_]]</div>
-      <a slot="subtitle" on-click="onHelpLinkClicked_"
-          hidden="[[!helpLinkText_]]" class="oobe-local-link" is="action-link">
-        [[helpLinkText_]]
-      </a>
-      <div slot="bottom-buttons">
-        <oobe-text-button id="actionButton" inverse class="focus-on-show"
-            text-key="[[computeButtonKey_(errorState_)]]" on-tap="onClick_">
-        </oobe-text-button>
-      </div>
-    </oobe-adaptive-dialog>
-  </template>
-  <script src="signin_fatal_error.js"></script>
-</dom-module>
+<style include="oobe-dialog-host-styles">
+</style>
+<oobe-adaptive-dialog id="signinFatalErrorDialog" role="dialog">
+  <iron-icon slot="icon" icon="oobe-32:alert"></iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'errorGenericFatalErrorTitle')]]
+  </h1>
+  <p id="subtitle" slot="subtitle">
+    [[errorSubtitle_]]
+  </p>
+  <div slot="subtitle" hidden="[[!keyboardHint_]]">[[keyboardHint_]]</div>
+  <div slot="subtitle" hidden="[[!details_]]">[[details_]]</div>
+  <a slot="subtitle" on-click="onHelpLinkClicked_"
+      hidden="[[!helpLinkText_]]" class="oobe-local-link" is="action-link">
+    [[helpLinkText_]]
+  </a>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="actionButton" inverse class="focus-on-show"
+        text-key="[[computeButtonKey_(errorState_)]]" on-tap="onClick_">
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>

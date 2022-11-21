@@ -6,7 +6,22 @@
  * @fileoverview Polymer element for signin fatal error.
  */
 
-/* #js_imports_placeholder */
+import '//resources/js/action_link.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../components/oobe_icons.m.js';
+import '../../components/common_styles/common_styles.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/dialogs/oobe_adaptive_dialog.js';
+
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
+import {OOBE_UI_STATE, SCREEN_GAIA_SIGNIN} from '../../components/display_manager_types.m.js';
+import {OobeTypes} from '../../components/oobe_types.m.js';
+
 
 /**
  * @constructor
@@ -14,9 +29,9 @@
  * @implements {LoginScreenBehaviorInterface}
  * @implements {OobeI18nBehaviorInterface}
  */
-const SigninFatalErrorBase = Polymer.mixinBehaviors(
+const SigninFatalErrorBase = mixinBehaviors(
     [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
-    Polymer.Element);
+    PolymerElement);
 
 /**
  * @typedef {{
@@ -33,7 +48,10 @@ class SigninFatalScreen extends SigninFatalErrorBase {
     return 'signin-fatal-error-element';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
 
   static get properties() {
     return {
@@ -52,6 +70,7 @@ class SigninFatalScreen extends SigninFatalErrorBase {
        */
       errorState_: {
         type: Number,
+        value: 0,
       },
 
       /**
@@ -60,6 +79,7 @@ class SigninFatalScreen extends SigninFatalErrorBase {
        */
       params_: {
         type: Object,
+        value: {},
       },
 
       keyboardHint_: {
@@ -76,11 +96,6 @@ class SigninFatalScreen extends SigninFatalErrorBase {
     };
   }
 
-  constructor() {
-    super();
-    this.errorState_ = 0;
-    this.params_ = {};
-  }
 
   ready() {
     super.ready();
