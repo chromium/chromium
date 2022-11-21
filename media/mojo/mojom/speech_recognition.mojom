@@ -18,8 +18,8 @@ enum ConfidenceLevel {
 };
 
 // The main interface a renderer client uses to interact with a speech
-// recognition service process. In Live Caption, every renderer can own one or
-// more Remote<SpeechRecognitionContext>, with the receiver bound through the
+// recognition service process. In web Live Caption, every renderer can own one
+// or more Remote<SpeechRecognitionContext>, with the receiver bound through the
 // BrowserInterfaceBroker. This is a stable interface that is used across the
 // LaCrOS/Ash boundary.
 [Stable]
@@ -34,8 +34,10 @@ interface SpeechRecognitionContext {
 };
 
 // The interface used to pass raw audio from the renderer to the speech
-// recognition service. The remote lives in the renderer process and the
-// receiver lives in the speech recognition process.
+// recognition service. The remote lives either in the renderer process (for web
+// Live Caption) or the browser process (for CrOS features like system Live
+// Caption and dictation) and the receiver lives in the speech recognition
+// process.
 [Stable]
 interface SpeechRecognitionRecognizer {
   // Initialize the speech recognition instance. The speech recognition client
@@ -141,7 +143,8 @@ struct LanguageIdentificationEvent {
 
 // The interface used to notify the speech recognition client of events
 // triggered by the browser. The remote lives in the browser process and the
-// receiver lives in the renderer process.
+// receiver lives either in the renderer process (for web Live Caption) or
+// the browser process (for CrOS system Live Caption).
 [Stable]
 interface SpeechRecognitionBrowserObserver {
   // Notify the speech recognition client when speech recognition availability
@@ -155,7 +158,8 @@ interface SpeechRecognitionBrowserObserver {
 
 // This interface between the speech recognition client and the browser.
 // The remote lives in the renderer process and the receiver lives in the
-// browser process.
+// browser process. Not necessary for browser-side features (e.g. CrOS system
+// Live Caption), which can access browser functionality directly.
 [Stable]
 interface SpeechRecognitionClientBrowserInterface {
   // Bind the speech recognition availability observer.
