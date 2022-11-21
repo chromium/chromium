@@ -58,10 +58,12 @@ ActionInfo::ActionInfo(const ActionInfo& other) = default;
 ActionInfo::~ActionInfo() {}
 
 // static
-std::unique_ptr<ActionInfo> ActionInfo::Load(const Extension* extension,
-                                             Type type,
-                                             const base::DictionaryValue* dict,
-                                             std::u16string* error) {
+std::unique_ptr<ActionInfo> ActionInfo::Load(
+    const Extension* extension,
+    Type type,
+    const base::DictionaryValue* dict,
+    std::vector<InstallWarning>* install_warnings,
+    std::u16string* error) {
   auto result = std::make_unique<ActionInfo>(type);
 
   // Read the page action |default_icon| (optional).
@@ -113,16 +115,25 @@ std::unique_ptr<ActionInfo> ActionInfo::Load(const Extension* extension,
     }
 
     if (!url_str->empty()) {
-      // An empty string is treated as having no popup.
-      result->default_popup_url =
-          Extension::GetResourceURL(extension->url(), *url_str);
-      if (!result->default_popup_url.is_valid()) {
+      GURL popup_url = Extension::GetResourceURL(extension->url(), *url_str);
+
+      if (!popup_url.is_valid()) {
         *error = errors::kInvalidActionDefaultPopup;
         return nullptr;
       }
+
+      // Check popup is only for this extension.
+      if (extension->origin().IsSameOriginWith(popup_url)) {
+        result->default_popup_url = popup_url;
+      } else {
+        install_warnings->push_back(extensions::InstallWarning(
+            extensions::manifest_errors::kInvalidExtensionOriginPopup,
+            GetManifestKeyForActionType(type),
+            extensions::manifest_keys::kActionDefaultPopup));
+      }
     } else {
-      DCHECK(result->default_popup_url.is_empty())
-          << "Shouldn't be possible for the popup to be set.";
+      // An empty string is treated as having no popup.
+      DCHECK(result->default_popup_url.is_empty());
     }
   }
 

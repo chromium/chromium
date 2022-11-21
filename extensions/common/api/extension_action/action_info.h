@@ -37,11 +37,14 @@ struct ActionInfo {
   ActionInfo(const ActionInfo& other);
   ~ActionInfo();
 
-  // Loads an ActionInfo from the given DictionaryValue.
-  static std::unique_ptr<ActionInfo> Load(const Extension* extension,
-                                          Type type,
-                                          const base::DictionaryValue* dict,
-                                          std::u16string* error);
+  // Loads an ActionInfo from the given DictionaryValue. Populating
+  // `install_warnings` if issues are encountered when parsing the manifest.
+  static std::unique_ptr<ActionInfo> Load(
+      const Extension* extension,
+      Type type,
+      const base::DictionaryValue* dict,
+      std::vector<InstallWarning>* install_warnings,
+      std::u16string* error);
 
   // TODO(jlulejian): Rather than continue to grow this list of static helper
   // methods, move them to a action_helper.h class similar to

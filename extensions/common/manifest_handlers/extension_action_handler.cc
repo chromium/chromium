@@ -16,10 +16,9 @@
 #include "extensions/common/image_util.h"
 #include "extensions/common/manifest_constants.h"
 
-// Adds `extensions::InstallWarning`s to an `extensions::Extension` if the
-// `default_popup` value for the action is not same origin, or doesn't
-// exist in the filesystem.
-void SetWarningsForInvalidDefaultPopup(
+// Adds `extensions::InstallWarning`s to `warnings` if the`default_popup` value
+// for the action doesn't exist in the filesystem.
+void SetWarningsForNonExistentDefaultPopup(
     const extensions::ActionInfo* action,
     const char* manifest_key,
     const extensions::Extension* extension,
@@ -35,13 +34,7 @@ void SetWarningsForInvalidDefaultPopup(
   base::FilePath resource_path =
       extension->GetResource(relative_path).GetFilePath();
 
-  // Check popup is only for this extension.
-  if (!extension->origin().IsSameOriginWith(default_popup_url)) {
-    warnings->push_back(extensions::InstallWarning(
-        extensions::manifest_errors::kInvalidExtensionOriginPopup, manifest_key,
-        extensions::manifest_keys::kActionDefaultPopup));
-    // Check that the popup file actually exists on filesystem.
-  } else if (resource_path.empty() || !base::PathExists(resource_path)) {
+  if (resource_path.empty() || !base::PathExists(resource_path)) {
     warnings->push_back(extensions::InstallWarning(
         extensions::manifest_errors::kNonexistentDefaultPopup, manifest_key,
         extensions::manifest_keys::kActionDefaultPopup));
@@ -94,8 +87,10 @@ bool ExtensionActionHandler::Parse(Extension* extension,
       return false;
     }
 
+    std::vector<InstallWarning> install_warnings;
     std::unique_ptr<ActionInfo> action_info =
-        ActionInfo::Load(extension, type, dict, error);
+        ActionInfo::Load(extension, type, dict, &install_warnings, error);
+    extension->AddInstallWarnings(std::move(install_warnings));
     if (!action_info)
       return false;  // Failed to parse extension action definition.
 
@@ -137,7 +132,8 @@ bool ExtensionActionHandler::Validate(
       ActionInfo::GetManifestKeyForActionType(action->type);
   DCHECK(manifest_key);
 
-  SetWarningsForInvalidDefaultPopup(action, manifest_key, extension, warnings);
+  SetWarningsForNonExistentDefaultPopup(action, manifest_key, extension,
+                                        warnings);
 
   // Empty default icon is valid.
   if (action->default_icon.empty())
