@@ -103,7 +103,7 @@ def _GetPolicyChangeList(input_api):
   for affected_file in template_affected_files:
     path = affected_file.AbsoluteLocalPath()
     filename = os.path.basename(path)
-    filename_no_extension = os.path.splitext(filename)[0]
+    policy_name = os.path.splitext(filename)[0]
     if (filename == '.group.details.yaml' or
         filename == 'policy_atomic_groups.yaml'):
       continue
@@ -112,12 +112,14 @@ def _GetPolicyChangeList(input_api):
     if affected_file.Action() in ['M', 'D']:
       try:
         old_policy = pyyaml.safe_load('\n'.join(affected_file.OldContents()))
+        old_policy['name'] = policy_name
       except:
         old_policy = None
     if affected_file.Action() != 'D':
       new_policy = pyyaml.safe_load('\n'.join(affected_file.NewContents()))
+      new_policy['name'] = policy_name
     _CACHED_POLICY_CHANGE_LIST.append({
-      'policy': filename_no_extension,
+      'policy': policy_name,
       'old_policy': old_policy,
       'new_policy': new_policy})
   return _CACHED_POLICY_CHANGE_LIST
@@ -510,7 +512,6 @@ def CheckPoliciesYamlOrdering(input_api, output_api):
 
   previous_id = 0
   error_msg_template = ''
-  print(policies_yaml_lines[1])
   for line in policies_yaml_lines:
     if line.startswith('  '):
       if not error_msg_template:
