@@ -146,7 +146,6 @@ FirstPartySetsDatabase::~FirstPartySetsDatabase() {
 
 bool FirstPartySetsDatabase::PersistSets(
     const std::string& browser_context_id,
-    const base::Version& public_sets_version,
     const net::GlobalFirstPartySets& sets,
     const net::FirstPartySetsContextConfig& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -158,8 +157,8 @@ bool FirstPartySetsDatabase::PersistSets(
     return false;
 
   // Only persist public sets if the version is valid.
-  if (public_sets_version.IsValid() &&
-      !SetPublicSets(browser_context_id, public_sets_version, sets)) {
+  if (sets.public_sets_version().IsValid() &&
+      !SetPublicSets(browser_context_id, sets)) {
     return false;
   }
 
@@ -174,13 +173,12 @@ bool FirstPartySetsDatabase::PersistSets(
 
 bool FirstPartySetsDatabase::SetPublicSets(
     const std::string& browser_context_id,
-    const base::Version& sets_version,
     const net::GlobalFirstPartySets& sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(db_status_, InitStatus::kSuccess);
-  DCHECK(sets_version.IsValid());
+  DCHECK(sets.public_sets_version().IsValid());
 
-  const std::string& version = sets_version.GetString();
+  const std::string& version = sets.public_sets_version().GetString();
   // Checks if the version of the current public sets is referenced by *any*
   // browser context in the public_sets_version table. If so, that means the
   // sets already exist in public_sets table and we don't need to write them to
@@ -376,8 +374,9 @@ net::GlobalFirstPartySets FirstPartySetsDatabase::GetGlobalSets(
       db_->GetCachedStatement(SQL_FROM_HERE, kVersionSql));
   version_statement.BindString(0, browser_context_id);
 
+  std::string version;
   if (version_statement.Step()) {
-    const std::string version = version_statement.ColumnString(0);
+    version = version_statement.ColumnString(0);
 
     static constexpr char kSelectSql[] =
         "SELECT site,primary_site,site_type FROM public_sets WHERE version=?";
@@ -414,7 +413,8 @@ net::GlobalFirstPartySets FirstPartySetsDatabase::GetGlobalSets(
 
   // Aliases are merged with entries inside of the public sets table so it is
   // sufficient to declare the global sets object with only the entries field.
-  net::GlobalFirstPartySets global_sets(entries, /*aliases=*/{});
+  net::GlobalFirstPartySets global_sets(base::Version(version), entries,
+                                        /*aliases=*/{});
 
   // Query & apply manual set.
   global_sets.ApplyManuallySpecifiedSet(FetchManualSets(browser_context_id));

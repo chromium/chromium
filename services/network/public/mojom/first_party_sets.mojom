@@ -4,6 +4,7 @@
 
 module network.mojom;
 
+import "mojo/public/mojom/base/version.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
 
 // This struct should match net::FirstPartySetEntry::SiteIndex in
@@ -81,6 +82,9 @@ struct FirstPartySetsCacheFilter {
 // This struct must match the class fields defined in
 // //net/first_party_sets/global_first_party_sets.h.
 struct GlobalFirstPartySets {
+  // The version of the public sets component.
+  mojo_base.mojom.Version public_sets_version;
+
   // The mapping from site to FPS entry from public sets.
   map<SchemefulSite, FirstPartySetEntry> sets;
 

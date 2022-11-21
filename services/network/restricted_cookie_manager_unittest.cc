@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "base/version.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -466,6 +467,7 @@ class SamePartyEnabledRestrictedCookieManagerTest
             CreateFirstPartySetsAccessDelegateParams(),
             &first_party_sets_manager_) {
     first_party_sets_manager_.SetCompleteSets(net::GlobalFirstPartySets(
+        base::Version("1.2.3"),
         /*entries=*/
         {
             {net::SchemefulSite(GURL("https://example.com")),

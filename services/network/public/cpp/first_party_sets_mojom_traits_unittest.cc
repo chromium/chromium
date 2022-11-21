@@ -126,6 +126,7 @@ TEST(FirstPartySetsTraitsTest, RoundTrips_GlobalFirstPartySets) {
   net::SchemefulSite c(GURL("https://c.test"));
 
   net::GlobalFirstPartySets original(
+      base::Version("1.2.3"),
       /*entries=*/
       {
           {a,
@@ -147,6 +148,7 @@ TEST(FirstPartySetsTraitsTest, RoundTrips_GlobalFirstPartySets) {
           original, round_tripped));
 
   EXPECT_EQ(original, round_tripped);
+  EXPECT_FALSE(round_tripped.empty());
 }
 
 TEST(FirstPartySetsTraitsTest, RoundTrips_FirstPartySetsContextConfig) {

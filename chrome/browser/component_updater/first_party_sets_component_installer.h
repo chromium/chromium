@@ -53,7 +53,8 @@ class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
 
   // Seeds a component at `install_dir` with the given `contents`. Only to be
   // used in testing.
-  static void WriteComponentForTesting(const base::FilePath& install_dir,
+  static void WriteComponentForTesting(base::Version version,
+                                       const base::FilePath& install_dir,
                                        base::StringPiece contents);
 
  private:

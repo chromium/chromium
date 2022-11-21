@@ -33,7 +33,9 @@ namespace content {
 
 namespace {
 
-void SetComponentSets(FirstPartySetsLoader& loader, base::StringPiece content) {
+void SetComponentSets(FirstPartySetsLoader& loader,
+                      base::Version version,
+                      base::StringPiece content) {
   base::ScopedTempDir temp_dir;
   CHECK(temp_dir.CreateUniqueTempDir());
   base::FilePath path =
@@ -41,7 +43,7 @@ void SetComponentSets(FirstPartySetsLoader& loader, base::StringPiece content) {
   CHECK(base::WriteFile(path, content));
 
   loader.SetComponentSets(
-      base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ));
+      version, base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ));
 }
 
 }  // namespace
@@ -62,7 +64,22 @@ class FirstPartySetsLoaderTest : public ::testing::Test {
 
 TEST_F(FirstPartySetsLoaderTest, IgnoresInvalidFile) {
   loader().SetManuallySpecifiedSet(LocalSetDeclaration());
-  SetComponentSets(loader(), "certainly not valid JSON");
+  SetComponentSets(loader(), base::Version("1.2.3"),
+                   "certainly not valid JSON");
+  EXPECT_EQ(WaitAndGetResult().FindEntry(
+                net::SchemefulSite(GURL("https://example.test")),
+                net::FirstPartySetsContextConfig()),
+            absl::nullopt);
+}
+
+TEST_F(FirstPartySetsLoaderTest, IgnoresInvalidVersion) {
+  loader().SetManuallySpecifiedSet(LocalSetDeclaration());
+  SetComponentSets(
+      loader(), base::Version(),
+      "{\"primary\": \"https://example.test\",\"associatedSites\": "
+      "[\"https://associatedsite1.test\"]}\n"
+      "{\"primary\": \"https://foo.test\",\"associatedSites\": "
+      "[\"https://associatedsite2.test\"]}");
   EXPECT_EQ(WaitAndGetResult().FindEntry(
                 net::SchemefulSite(GURL("https://example.test")),
                 net::FirstPartySetsContextConfig()),
@@ -76,7 +93,7 @@ TEST_F(FirstPartySetsLoaderTest, AcceptsMultipleSets) {
   net::SchemefulSite associated2(GURL("https://associatedsite2.test"));
 
   SetComponentSets(
-      loader(),
+      loader(), base::Version("1.2.3"),
       "{\"primary\": \"https://example.test\",\"associatedSites\": "
       "[\"https://associatedsite1.test\"]}\n"
       "{\"primary\": \"https://foo.test\",\"associatedSites\": "
@@ -104,13 +121,13 @@ TEST_F(FirstPartySetsLoaderTest, SetComponentSets_Idempotent) {
   net::SchemefulSite foo(GURL("https://foo.test"));
   net::SchemefulSite foo2(GURL("https://foo2.test"));
 
-  SetComponentSets(loader(),
+  SetComponentSets(loader(), base::Version("1.2.3"),
                    R"({"primary": "https://example.test",)"
                    R"("associatedSites": ["https://associatedsite1.test"]})"
                    "\n"
                    R"({"primary": "https://foo.test",)"
                    R"("associatedSites": ["https://associatedsite2.test"]})");
-  SetComponentSets(loader(),
+  SetComponentSets(loader(), base::Version("1.2.3"),
                    R"({ "primary": "https://example2.test",)"
                    R"("associatedSites": ["https://associatedsite1.test"]})"
                    "\n"
@@ -131,7 +148,7 @@ TEST_F(FirstPartySetsLoaderTest, SetComponentSets_Idempotent) {
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified) {
-  SetComponentSets(loader(),
+  SetComponentSets(loader(), base::Version("1.2.3"),
                    R"({"primary": "https://example.test", "associatedSites": )"
                    R"(["https://associatedsite1.test"]})");
   loader().SetManuallySpecifiedSet(LocalSetDeclaration(

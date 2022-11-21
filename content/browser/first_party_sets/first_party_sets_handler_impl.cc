@@ -187,7 +187,7 @@ void FirstPartySetsHandlerImpl::Init(const base::FilePath& user_data_dir,
   if (IsEnabled()) {
     sets_loader_->SetManuallySpecifiedSet(local_set);
     if (!embedder_will_provide_public_sets_) {
-      sets_loader_->SetComponentSets(base::File());
+      sets_loader_->SetComponentSets(base::Version(), base::File());
     }
   } else {
     SetCompleteSets(net::GlobalFirstPartySets());
@@ -206,9 +206,8 @@ void FirstPartySetsHandlerImpl::SetPublicFirstPartySets(
   DCHECK(enabled_);
   DCHECK(embedder_will_provide_public_sets_);
 
-  // TODO(crbug.com/1219656): Use this value to compute sets diff.
-  version_ = version;
-  sets_loader_->SetComponentSets(std::move(sets_file));
+  // TODO(crbug.com/1219656): Use the version to compute sets diff.
+  sets_loader_->SetComponentSets(version, std::move(sets_file));
 }
 
 void FirstPartySetsHandlerImpl::GetPersistedGlobalSetsForTesting(
@@ -419,7 +418,7 @@ void FirstPartySetsHandlerImpl::DidClearSiteDataOnChangedSetsForContext(
   }
 
   db_helper_.AsyncCall(&FirstPartySetsHandlerDatabaseHelper::PersistSets)
-      .WithArgs(browser_context_id, version_, global_sets_->Clone(),
+      .WithArgs(browser_context_id, global_sets_->Clone(),
                 context_config.Clone());
   std::move(callback).Run(std::move(context_config), std::move(cache_filter));
 }

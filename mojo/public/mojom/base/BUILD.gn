@@ -35,6 +35,7 @@ mojom_component("base") {
     "token.mojom",
     "unguessable_token.mojom",
     "values.mojom",
+    "version.mojom",
   ]
 
   if (is_win) {
@@ -372,6 +373,19 @@ mojom_component("base") {
       traits_public_deps = [
         "//mojo/public/cpp/base:shared_typemap_traits",
         "//third_party/abseil-cpp:absl",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.Version"
+          cpp = "::base::Version"
+        },
+      ]
+      traits_headers = [ "//mojo/public/cpp/base/version_mojom_traits.h" ]
+      traits_public_deps = [
+        "//base",
+        "//mojo/public/cpp/base:shared_typemap_traits",
       ]
     },
   ]

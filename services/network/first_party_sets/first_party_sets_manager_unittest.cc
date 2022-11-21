@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/version.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/first_party_sets/first_party_set_entry.h"
@@ -42,7 +43,8 @@ class FirstPartySetsManagerTest : public ::testing::Test {
       const base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>&
           content,
       const base::flat_map<net::SchemefulSite, net::SchemefulSite>& aliases) {
-    manager_.SetCompleteSets(net::GlobalFirstPartySets(content, aliases));
+    manager_.SetCompleteSets(
+        net::GlobalFirstPartySets(base::Version("1.2.3"), content, aliases));
   }
 
   FirstPartySetsManager::EntriesResult FindEntriesAndWait(

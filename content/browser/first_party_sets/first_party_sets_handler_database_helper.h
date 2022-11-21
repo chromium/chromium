@@ -17,10 +17,6 @@
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace base {
-class Version;
-}  // namespace base
-
 namespace net {
 class FirstPartySetsCacheFilter;
 class FirstPartySetsContextConfig;
@@ -85,7 +81,6 @@ class CONTENT_EXPORT FirstPartySetsHandlerDatabaseHelper {
 
   // Wraps FirstPartySetsDatabase::PersistSets.
   void PersistSets(const std::string& browser_context_id,
-                   const base::Version& version,
                    const net::GlobalFirstPartySets& sets,
                    const net::FirstPartySetsContextConfig& config);
 

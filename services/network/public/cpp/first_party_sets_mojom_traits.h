@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_PUBLIC_CPP_FIRST_PARTY_SETS_MOJOM_TRAITS_H_
 
 #include "base/containers/flat_map.h"
+#include "base/version.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/base/schemeful_site.h"
@@ -110,6 +111,11 @@ template <>
 struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
     StructTraits<network::mojom::GlobalFirstPartySetsDataView,
                  net::GlobalFirstPartySets> {
+  static const base::Version& public_sets_version(
+      const net::GlobalFirstPartySets& sets) {
+    return sets.public_sets_version_;
+  }
+
   static const base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>&
   sets(const net::GlobalFirstPartySets& sets) {
     return sets.entries();

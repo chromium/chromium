@@ -238,12 +238,13 @@ void RegisterFirstPartySetsComponent(ComponentUpdateService* cus) {
 
 // static
 void FirstPartySetsComponentInstallerPolicy::WriteComponentForTesting(
+    base::Version version,
     const base::FilePath& install_dir,
     base::StringPiece contents) {
   CHECK(base::WriteFile(GetInstalledPath(install_dir), contents));
 
   GetConfigPathInstance() =
-      std::make_pair(GetInstalledPath(install_dir), base::Version());
+      std::make_pair(GetInstalledPath(install_dir), std::move(version));
 }
 
 }  // namespace component_updater

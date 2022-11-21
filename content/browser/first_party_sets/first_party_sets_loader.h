@@ -45,7 +45,7 @@ class CONTENT_EXPORT FirstPartySetsLoader {
   //
   // Only the first call to SetComponentSets can have any effect; subsequent
   // invocations are ignored.
-  void SetComponentSets(base::File sets_file);
+  void SetComponentSets(base::Version version, base::File sets_file);
 
   // Close the file on thread pool that allows blocking.
   void DisposeFile(base::File sets_file);
@@ -53,7 +53,7 @@ class CONTENT_EXPORT FirstPartySetsLoader {
  private:
   // Parses the contents of `raw_sets` as a collection of First-Party Set
   // declarations, and stores the result.
-  void OnReadSetsFile(const std::string& raw_sets);
+  void OnReadSetsFile(base::Version version, const std::string& raw_sets);
 
   // Checks the required inputs have been received, and if so, invokes the
   // callback `on_load_complete_`, after merging sets appropriately.

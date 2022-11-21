@@ -88,12 +88,11 @@ void FirstPartySetsHandlerDatabaseHelper::UpdateClearStatusForContext(
 
 void FirstPartySetsHandlerDatabaseHelper::PersistSets(
     const std::string& browser_context_id,
-    const base::Version& version,
     const net::GlobalFirstPartySets& sets,
     const net::FirstPartySetsContextConfig& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!browser_context_id.empty());
-  if (!db_->PersistSets(browser_context_id, version, sets, config))
+  if (!db_->PersistSets(browser_context_id, sets, config))
     DVLOG(1) << "Failed to write sets into the database.";
 }
 

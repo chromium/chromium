@@ -314,6 +314,7 @@ component("first_party_sets_mojom_support") {
   ]
   deps = [
     ":schemeful_site_mojom_support",
+    "//mojo/public/cpp/base:shared_typemap_traits",
     "//net",
     "//services/network/public/mojom:mojom_first_party_sets_shared",
   ]

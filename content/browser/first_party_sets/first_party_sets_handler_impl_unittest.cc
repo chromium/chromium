@@ -546,7 +546,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
       R"({"primary": "https://example.test", )"
       R"("associatedSites": ["https://associatedsite.test"]})";
   ASSERT_TRUE(base::JSONReader::Read(input));
-  handler().SetPublicFirstPartySets(base::Version(),
+  handler().SetPublicFirstPartySets(base::Version("1.2.3"),
                                     WritePublicSetsFile(input));
 
   handler().Init(scoped_dir_.GetPath(), LocalSetDeclaration());
@@ -582,7 +582,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
       R"({"primary": "https://example.test", )"
       R"("associatedSites": ["https://associatedsite.test"]})";
   ASSERT_TRUE(base::JSONReader::Read(input));
-  handler().SetPublicFirstPartySets(base::Version(),
+  handler().SetPublicFirstPartySets(base::Version("1.2.3"),
                                     WritePublicSetsFile(input));
 
   EXPECT_THAT(
@@ -612,7 +612,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   handler().Init(scoped_dir_.GetPath(), LocalSetDeclaration());
 
   handler().SetPublicFirstPartySets(
-      base::Version(),
+      base::Version("1.2.3"),
       WritePublicSetsFile(
           R"({"primary": "https://example.test", )"
           R"("associatedSites": ["https://associatedsite.test"]})"));
@@ -646,7 +646,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   handler().Init(scoped_dir_.GetPath(), LocalSetDeclaration());
 
   handler().SetPublicFirstPartySets(
-      base::Version(),
+      base::Version("1.2.3"),
       WritePublicSetsFile(
           R"({"primary": "https://example.test", )"
           R"("associatedSites": ["https://associatedsite.test"]})"));
@@ -682,7 +682,7 @@ class FirstPartySetsHandlerGetContextConfigForPolicyTest
         R"({"primary": "https://primary1.test", )"
         R"("associatedSites": ["https://associatedsite1.test", "https://associatedsite2.test"]})";
     ASSERT_TRUE(base::JSONReader::Read(input));
-    handler().SetPublicFirstPartySets(base::Version(),
+    handler().SetPublicFirstPartySets(base::Version("1.2.3"),
                                       WritePublicSetsFile(input));
 
     ASSERT_THAT(

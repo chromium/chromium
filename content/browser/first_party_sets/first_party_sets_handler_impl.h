@@ -230,13 +230,6 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   absl::optional<net::GlobalFirstPartySets> global_sets_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // The version of the public First-Party Sets. It is invalid until the
-  // `SetPublicFirstPartySets()` is called with a valid version.
-  //
-  // TODO(crbug.com/1384184): move `version_` into GlobalFirstPartySets class to
-  // guarantee that we don't use public sets content if version is invalid.
-  base::Version version_;
-
   bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_);
   bool embedder_will_provide_public_sets_ GUARDED_BY_CONTEXT(sequence_checker_);
 

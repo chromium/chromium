@@ -301,14 +301,14 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB) {
   const std::string site_member2 = "https://member2.test";
 
   net::GlobalFirstPartySets global_sets(
-      /*entries=*/{{net::SchemefulSite(GURL(site)),
-                    net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
-                                            net::SiteType::kAssociated,
-                                            absl::nullopt)},
-                   {net::SchemefulSite(GURL(primary)),
-                    net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
-                                            net::SiteType::kPrimary,
-                                            absl::nullopt)}},
+      version,
+      /*entries=*/
+      {{net::SchemefulSite(GURL(site)),
+        net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
+                                net::SiteType::kAssociated, absl::nullopt)},
+       {net::SchemefulSite(GURL(primary)),
+        net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
+                                net::SiteType::kPrimary, absl::nullopt)}},
       /*aliases=*/{});
   base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> manual_sets = {
       {net::SchemefulSite(GURL(manual_site)),
@@ -327,8 +327,7 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB) {
 
   OpenDatabase();
   // Trigger the lazy-initialization.
-  EXPECT_TRUE(
-      db()->PersistSets(browser_context_id, version, global_sets, config));
+  EXPECT_TRUE(db()->PersistSets(browser_context_id, global_sets, config));
   CloseDatabase();
 
   sql::Database db;
@@ -412,14 +411,14 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB_NoPublicSets) {
   const std::string site_member2 = "https://member2.test";
 
   net::GlobalFirstPartySets global_sets(
-      /*entries=*/{{net::SchemefulSite(GURL(site)),
-                    net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
-                                            net::SiteType::kAssociated,
-                                            absl::nullopt)},
-                   {net::SchemefulSite(GURL(primary)),
-                    net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
-                                            net::SiteType::kPrimary,
-                                            absl::nullopt)}},
+      base::Version(),
+      /*entries=*/
+      {{net::SchemefulSite(GURL(site)),
+        net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
+                                net::SiteType::kAssociated, absl::nullopt)},
+       {net::SchemefulSite(GURL(primary)),
+        net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
+                                net::SiteType::kPrimary, absl::nullopt)}},
       /*aliases=*/{});
 
   base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> manual_sets = {
@@ -439,8 +438,7 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB_NoPublicSets) {
 
   OpenDatabase();
   // Trigger the lazy-initialization.
-  EXPECT_TRUE(db()->PersistSets(browser_context_id, base::Version(),
-                                global_sets, config));
+  EXPECT_TRUE(db()->PersistSets(browser_context_id, global_sets, config));
   CloseDatabase();
 
   sql::Database db;
@@ -557,14 +555,14 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingDB) {
   const std::string site_member2 = "https://member4.test";
 
   net::GlobalFirstPartySets global_sets(
-      /*entries=*/{{net::SchemefulSite(GURL(site)),
-                    net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
-                                            net::SiteType::kAssociated,
-                                            absl::nullopt)},
-                   {net::SchemefulSite(GURL(primary)),
-                    net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
-                                            net::SiteType::kPrimary,
-                                            absl::nullopt)}},
+      version,
+      /*entries=*/
+      {{net::SchemefulSite(GURL(site)),
+        net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
+                                net::SiteType::kAssociated, absl::nullopt)},
+       {net::SchemefulSite(GURL(primary)),
+        net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
+                                net::SiteType::kPrimary, absl::nullopt)}},
       /*aliases=*/{});
 
   base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> manual_sets = {
@@ -584,8 +582,7 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingDB) {
 
   OpenDatabase();
   // Trigger the lazy-initialization.
-  EXPECT_TRUE(
-      db()->PersistSets(browser_context_id, version, global_sets, config));
+  EXPECT_TRUE(db()->PersistSets(browser_context_id, global_sets, config));
   CloseDatabase();
 
   // Verify data is inserted.
@@ -685,19 +682,19 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingVersion) {
   const std::string primary = "https://site2.test";
 
   net::GlobalFirstPartySets input(
-      /*entries=*/{{net::SchemefulSite(GURL(site)),
-                    net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
-                                            net::SiteType::kAssociated,
-                                            absl::nullopt)},
-                   {net::SchemefulSite(GURL(primary)),
-                    net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
-                                            net::SiteType::kPrimary,
-                                            absl::nullopt)}},
+      version,
+      /*entries=*/
+      {{net::SchemefulSite(GURL(site)),
+        net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
+                                net::SiteType::kAssociated, absl::nullopt)},
+       {net::SchemefulSite(GURL(primary)),
+        net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
+                                net::SiteType::kPrimary, absl::nullopt)}},
       /*aliases=*/{});
 
   OpenDatabase();
   // Trigger the lazy-initialization.
-  EXPECT_TRUE(db()->PersistSets(browser_context_id, version, input,
+  EXPECT_TRUE(db()->PersistSets(browser_context_id, input,
                                 net::FirstPartySetsContextConfig()));
   CloseDatabase();
 
@@ -977,12 +974,12 @@ TEST_F(FirstPartySetsDatabaseTest, GetGlobalSets_NoPublicSets) {
   const net::SchemefulSite manual_primary(GURL("https://bbb.test"));
 
   net::GlobalFirstPartySets global_sets(
-      /*entries=*/{{site,
-                    net::FirstPartySetEntry(primary, net::SiteType::kAssociated,
-                                            absl::nullopt)},
-                   {primary,
-                    net::FirstPartySetEntry(primary, net::SiteType::kPrimary,
-                                            absl::nullopt)}},
+      base::Version(),
+      /*entries=*/
+      {{site, net::FirstPartySetEntry(primary, net::SiteType::kAssociated,
+                                      absl::nullopt)},
+       {primary, net::FirstPartySetEntry(primary, net::SiteType::kPrimary,
+                                         absl::nullopt)}},
       /*aliases=*/{});
 
   base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> manual_sets = {
@@ -997,8 +994,7 @@ TEST_F(FirstPartySetsDatabaseTest, GetGlobalSets_NoPublicSets) {
   OpenDatabase();
   // Trigger the lazy-initialization and insert data with a invalid version, so
   // that public sets will not be persisted.
-  ASSERT_TRUE(db()->PersistSets(browser_context_id, base::Version(),
-                                global_sets,
+  ASSERT_TRUE(db()->PersistSets(browser_context_id, global_sets,
                                 net::FirstPartySetsContextConfig()));
   EXPECT_THAT(
       db()->GetGlobalSets(browser_context_id)
@@ -1080,15 +1076,15 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_FormatCheck) {
   const net::SchemefulSite config_site_member2(GURL("https://member2.test"));
 
   net::GlobalFirstPartySets global_sets(
-      /*entries=*/{{associated_site,
-                    net::FirstPartySetEntry(primary, net::SiteType::kAssociated,
-                                            absl::nullopt)},
-                   {service_site,
-                    net::FirstPartySetEntry(primary, net::SiteType::kService,
-                                            absl::nullopt)},
-                   {primary,
-                    net::FirstPartySetEntry(primary, net::SiteType::kPrimary,
-                                            absl::nullopt)}},
+      version,
+      /*entries=*/
+      {{associated_site,
+        net::FirstPartySetEntry(primary, net::SiteType::kAssociated,
+                                absl::nullopt)},
+       {service_site, net::FirstPartySetEntry(primary, net::SiteType::kService,
+                                              absl::nullopt)},
+       {primary, net::FirstPartySetEntry(primary, net::SiteType::kPrimary,
+                                         absl::nullopt)}},
       /*aliases=*/{});
   base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> manual_sets = {
       {manual_associated_site,
@@ -1110,8 +1106,7 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_FormatCheck) {
 
   OpenDatabase();
   // Trigger the lazy-initialization.
-  EXPECT_TRUE(
-      db()->PersistSets(browser_context_id, version, global_sets, config));
+  EXPECT_TRUE(db()->PersistSets(browser_context_id, global_sets, config));
 
   EXPECT_EQ(db()->GetGlobalSets(browser_context_id), global_sets);
   EXPECT_EQ(db()->FetchPolicyConfigurations(browser_context_id), config);

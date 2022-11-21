@@ -77,19 +77,28 @@ SamePartyContext::Type ContextTypeFromBool(bool is_same_party) {
 GlobalFirstPartySets::GlobalFirstPartySets() = default;
 
 GlobalFirstPartySets::GlobalFirstPartySets(
+    base::Version public_sets_version,
     base::flat_map<SchemefulSite, FirstPartySetEntry> entries,
     base::flat_map<SchemefulSite, SchemefulSite> aliases)
-    : GlobalFirstPartySets(std::move(entries),
-                           std::move(aliases),
-                           /*manual_sets=*/{},
-                           FirstPartySetsContextConfig()) {}
+    : GlobalFirstPartySets(
+          public_sets_version,
+          public_sets_version.IsValid()
+              ? std::move(entries)
+              : base::flat_map<SchemefulSite, FirstPartySetEntry>(),
+          public_sets_version.IsValid()
+              ? std::move(aliases)
+              : base::flat_map<SchemefulSite, SchemefulSite>(),
+          /*manual_sets=*/{},
+          FirstPartySetsContextConfig()) {}
 
 GlobalFirstPartySets::GlobalFirstPartySets(
+    base::Version public_sets_version,
     base::flat_map<SchemefulSite, FirstPartySetEntry> entries,
     base::flat_map<SchemefulSite, SchemefulSite> aliases,
     base::flat_map<SchemefulSite, FirstPartySetEntry> manual_sets,
     FirstPartySetsContextConfig manual_config)
-    : entries_(std::move(entries)),
+    : public_sets_version_(std::move(public_sets_version)),
+      entries_(std::move(entries)),
       aliases_(std::move(aliases)),
       manual_sets_(std::move(manual_sets)),
       manual_config_(std::move(manual_config)) {
@@ -107,9 +116,10 @@ GlobalFirstPartySets& GlobalFirstPartySets::operator=(GlobalFirstPartySets&&) =
 GlobalFirstPartySets::~GlobalFirstPartySets() = default;
 
 bool GlobalFirstPartySets::operator==(const GlobalFirstPartySets& other) const {
-  return std::tie(entries_, aliases_, manual_sets_, manual_config_) ==
-         std::tie(other.entries_, other.aliases_, other.manual_sets_,
-                  other.manual_config_);
+  return std::tie(public_sets_version_, entries_, aliases_, manual_sets_,
+                  manual_config_) ==
+         std::tie(other.public_sets_version_, other.entries_, other.aliases_,
+                  other.manual_sets_, other.manual_config_);
 }
 
 bool GlobalFirstPartySets::operator!=(const GlobalFirstPartySets& other) const {
@@ -117,8 +127,8 @@ bool GlobalFirstPartySets::operator!=(const GlobalFirstPartySets& other) const {
 }
 
 GlobalFirstPartySets GlobalFirstPartySets::Clone() const {
-  return GlobalFirstPartySets(entries_, aliases_, manual_sets_,
-                              manual_config_.Clone());
+  return GlobalFirstPartySets(public_sets_version_, entries_, aliases_,
+                              manual_sets_, manual_config_.Clone());
 }
 
 absl::optional<FirstPartySetEntry> GlobalFirstPartySets::FindEntry(

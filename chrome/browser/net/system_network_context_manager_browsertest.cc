@@ -237,7 +237,8 @@ class SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest
     base::ScopedAllowBlockingForTesting allow_blocking;
 
     component_updater::FirstPartySetsComponentInstallerPolicy::
-        WriteComponentForTesting(component_dir_.GetPath(),
+        WriteComponentForTesting(base::Version("1.2.3"),
+                                 component_dir_.GetPath(),
                                  GetComponentContents());
   }
 

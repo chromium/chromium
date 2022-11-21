@@ -113,6 +113,8 @@ component("shared_typemap_traits") {
     "unguessable_token_mojom_traits.h",
     "values_mojom_traits.cc",
     "values_mojom_traits.h",
+    "version_mojom_traits.cc",
+    "version_mojom_traits.h",
   ]
 
   defines = [ "IS_MOJO_BASE_SHARED_TRAITS_IMPL" ]
@@ -148,6 +150,7 @@ source_set("tests") {
     "token_unittest.cc",
     "unguessable_token_unittest.cc",
     "values_unittest.cc",
+    "version_unittest.cc",
   ]
 
   public_deps = [

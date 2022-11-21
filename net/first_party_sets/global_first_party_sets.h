@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/function_ref.h"
+#include "base/version.h"
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
@@ -37,6 +38,7 @@ class NET_EXPORT GlobalFirstPartySets {
  public:
   GlobalFirstPartySets();
   GlobalFirstPartySets(
+      base::Version public_sets_version,
       base::flat_map<SchemefulSite, FirstPartySetEntry> entries,
       base::flat_map<SchemefulSite, SchemefulSite> aliases);
 
@@ -112,6 +114,10 @@ class NET_EXPORT GlobalFirstPartySets {
   // Whether the global sets are empty.
   bool empty() const { return entries_.empty() && manual_config_.empty(); }
 
+  const base::Version& public_sets_version() const {
+    return public_sets_version_;
+  }
+
   const base::flat_map<SchemefulSite, FirstPartySetEntry>& manual_sets() const {
     return manual_sets_;
   }
@@ -125,6 +131,7 @@ class NET_EXPORT GlobalFirstPartySets {
                                              const GlobalFirstPartySets& sets);
 
   GlobalFirstPartySets(
+      base::Version public_sets_version,
       base::flat_map<SchemefulSite, FirstPartySetEntry> entries,
       base::flat_map<SchemefulSite, SchemefulSite> aliases,
       base::flat_map<SchemefulSite, FirstPartySetEntry> manual_sets,
@@ -175,6 +182,9 @@ class NET_EXPORT GlobalFirstPartySets {
   const FirstPartySetsContextConfig& manual_config() const {
     return manual_config_;
   }
+
+  // The version associated with the component_updater-provided public sets.
+  base::Version public_sets_version_;
 
   // Represents the mapping of site -> entry, where keys are sites within sets,
   // and values are entries of the sets.

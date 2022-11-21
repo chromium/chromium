@@ -20,10 +20,6 @@
 #include "content/common/content_export.h"
 #include "sql/meta_table.h"
 
-namespace base {
-class Version;
-}  // namespace base
-
 namespace net {
 class FirstPartySetEntry;
 class FirstPartySetsCacheFilter;
@@ -78,7 +74,6 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   // database in one transaction.
   [[nodiscard]] bool PersistSets(
       const std::string& browser_context_id,
-      const base::Version& public_sets_version,
       const net::GlobalFirstPartySets& sets,
       const net::FirstPartySetsContextConfig& config);
 
@@ -123,7 +118,6 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   // the sets version used by `browser_context_id`. `sets_version` must be
   // valid. Returns true on success.
   [[nodiscard]] bool SetPublicSets(const std::string& browser_context_id,
-                                   const base::Version& sets_version,
                                    const net::GlobalFirstPartySets& sets);
 
   // Stores the Manual Sets into manual_sets table, and returns true on success.

@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/version.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -83,6 +84,7 @@ class NoopFirstPartySetsAccessDelegateTest : public ::testing::Test {
             /*params=*/nullptr,
             &first_party_sets_manager_) {
     first_party_sets_manager_.SetCompleteSets(net::GlobalFirstPartySets(
+        base::Version("1.2.3"),
         /*entries=*/
         {
             {kSet1Member1, net::FirstPartySetEntry(
@@ -143,6 +145,7 @@ class FirstPartySetsAccessDelegateTest : public ::testing::Test {
                   CreateFirstPartySetsAccessDelegateParams(enabled),
                   &first_party_sets_manager_) {
     first_party_sets_manager_.SetCompleteSets(net::GlobalFirstPartySets(
+        base::Version("1.2.3"),
         /*entries=*/
         {
             {kSet1Member1, net::FirstPartySetEntry(
