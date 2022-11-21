@@ -231,6 +231,11 @@ export class Router {
       document.title = loadTimeData.getStringF(
           'settingsAltPageTitle', this.currentRoute.title);
     } else if (
+        this.currentRoute.isNavigableDialog && this.currentRoute.parent &&
+        this.currentRoute.parent.title) {
+      document.title = loadTimeData.getStringF(
+          'settingsAltPageTitle', this.currentRoute.parent.title);
+    } else if (
         !this.currentRoute.isSubpage() &&
         !this.routes_.ABOUT.contains(this.currentRoute)) {
       document.title = loadTimeData.getString('settings');

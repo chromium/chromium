@@ -290,4 +290,13 @@ suite('MainPageTests', function() {
         loadTimeData.getStringF(
             'settingsAltPageTitle', loadTimeData.getString('aboutPageTitle')));
   });
+
+  test('uses parent title for navigable dialog routes', function() {
+    Router.getInstance().navigateTo(routes.CLEAR_BROWSER_DATA);
+    assertEquals(
+        document.title,
+        loadTimeData.getStringF(
+            'settingsAltPageTitle',
+            loadTimeData.getString('privacyPageTitle')));
+  });
 });
