@@ -20,7 +20,7 @@
       "is_debug": false,
       "symbol_level": 0,
       "target_os": "fuchsia",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "ios-clang-tidy-rel": {

@@ -939,7 +939,7 @@
 
     'tryserver.chromium': {
       'android-official': 'android_official_optimize_reclient_trybot',
-      'fuchsia-official': 'fuchsia_official_optimize_goma_trybot',
+      'fuchsia-official': 'fuchsia_official_optimize_reclient_trybot',
       'linux-official': 'official_optimize_reclient_trybot',
       'mac-official': 'official_optimize_goma_trybot',
       'win-official': 'official_optimize_reclient_trybot',
@@ -1101,16 +1101,16 @@
     },
 
     'tryserver.chromium.fuchsia': {
-      'fuchsia-arm64-cast-receiver-rel': 'release_trybot_fuchsia_arm64_cast_receiver',
+      'fuchsia-arm64-cast-receiver-rel': 'release_trybot_fuchsia_arm64_cast_receiver_reclient',
       'fuchsia-arm64-chrome-rel': 'release_trybot_fuchsia_arm64',
       'fuchsia-arm64-rel': 'release_trybot_fuchsia_arm64',
       'fuchsia-arm64-rel-orchestrator': 'release_trybot_fuchsia_arm64',
-      'fuchsia-binary-size': 'release_fuchsia_arm64_binary_size',
-      'fuchsia-compile-x64-dbg': 'debug_bot_fuchsia_compile_only',
-      'fuchsia-deterministic-dbg': 'debug_bot_fuchsia',
-      'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64',
-      'fuchsia-fyi-x64-dbg': 'debug_bot_fuchsia',
-      'fuchsia-x64-cast-receiver-rel': 'release_trybot_fuchsia_cast_receiver',
+      'fuchsia-binary-size': 'release_fuchsia_arm64_binary_size_reclient',
+      'fuchsia-compile-x64-dbg': 'debug_bot_fuchsia_compile_only_reclient',
+      'fuchsia-deterministic-dbg': 'debug_bot_fuchsia_reclient',
+      'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64_reclient',
+      'fuchsia-fyi-x64-dbg': 'debug_bot_fuchsia_reclient',
+      'fuchsia-x64-cast-receiver-rel': 'release_trybot_fuchsia_cast_receiver_reclient',
       'fuchsia-x64-chrome-rel': 'release_trybot_fuchsia_chrome',
       'fuchsia-x64-rel': 'release_trybot_fuchsia',
       'fuchsia-x64-workstation': 'release_trybot_fuchsia_chrome',
@@ -1298,7 +1298,7 @@
 
     'tryserver.chromium.tricium': {
       'android-clang-tidy-rel': 'android_release_trybot_reclient',
-      'fuchsia-clang-tidy-rel': 'release_trybot_fuchsia',
+      'fuchsia-clang-tidy-rel': 'release_trybot_fuchsia_reclient',
       'ios-clang-tidy-rel': 'ios_device_release_compile_only',
       'linux-chromeos-clang-tidy-rel': 'chromeos_with_codecs_release_trybot',
       'linux-clang-tidy-dbg': 'debug_bot_reclient',
@@ -2491,20 +2491,8 @@
       'debug_bot_reclient', 'enable_blink_animation_use_time_delta',
     ],
 
-    'debug_bot_fuchsia': [
-      'debug_bot', 'fuchsia',
-    ],
-
-    'debug_bot_fuchsia_arm64': [
-      'debug_bot', 'fuchsia', 'arm64', 'arm64_host',
-    ],
-
     'debug_bot_fuchsia_arm64_reclient': [
       'debug_bot_reclient', 'fuchsia', 'arm64', 'arm64_host',
-    ],
-
-    'debug_bot_fuchsia_compile_only': [
-      'debug_bot', 'fuchsia', 'compile_only',
     ],
 
     'debug_bot_fuchsia_compile_only_reclient': [
@@ -2553,12 +2541,12 @@
       'fuchsia', 'release', 'clang_tot', 'static',
     ],
 
-    'fuchsia_official_optimize_goma_trybot': [
-      'official_optimize_goma_trybot', 'fuchsia',
-    ],
-
     'fuchsia_official_optimize_reclient': [
       'official_optimize_reclient', 'fuchsia',
+    ],
+
+    'fuchsia_official_optimize_reclient_trybot': [
+      'official_optimize_reclient_trybot', 'fuchsia',
     ],
 
     'gn_linux_upload': [
@@ -3568,8 +3556,8 @@
       'release_bot_reclient', 'x86', 'minimal_symbols',
     ],
 
-    'release_fuchsia_arm64_binary_size': [
-      'release', 'official_optimize_goma', 'fuchsia', 'arm64', 'cast_receiver_size_optimized',
+    'release_fuchsia_arm64_binary_size_reclient': [
+      'release', 'official_optimize_reclient', 'fuchsia', 'arm64', 'cast_receiver_size_optimized',
     ],
 
     'release_rust_android_arm_reclient': [
@@ -3632,16 +3620,20 @@
       'release_trybot', 'fuchsia', 'arm64', 'arm64_host',
     ],
 
-    'release_trybot_fuchsia_arm64_cast_receiver': [
-      'release_trybot', 'fuchsia', 'arm64', 'arm64_host', 'cast_receiver_size_optimized',
+    'release_trybot_fuchsia_arm64_cast_receiver_reclient': [
+      'release_trybot_reclient', 'fuchsia', 'arm64', 'arm64_host', 'cast_receiver_size_optimized',
     ],
 
-    'release_trybot_fuchsia_cast_receiver': [
-      'release_trybot', 'fuchsia', 'cast_receiver_size_optimized',
+    'release_trybot_fuchsia_cast_receiver_reclient': [
+      'release_trybot_reclient', 'fuchsia', 'cast_receiver_size_optimized',
     ],
 
     'release_trybot_fuchsia_chrome': [
       'release_trybot', 'fuchsia', 'fuchsia_chrome'
+    ],
+
+    'release_trybot_fuchsia_reclient': [
+      'release_trybot_reclient', 'fuchsia',
     ],
 
     'release_trybot_minimal_symbols_reclient': [

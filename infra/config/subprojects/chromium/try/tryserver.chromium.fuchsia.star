@@ -22,7 +22,7 @@ try_.defaults.set(
     os = os.LINUX_DEFAULT,
     pool = try_.DEFAULT_POOL,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     compilator_reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
 
@@ -49,6 +49,7 @@ try_.builder(
     mirrors = [
         "ci/fuchsia-arm64-cast-receiver-rel",
     ],
+    goma_backend = None,
 )
 
 try_.builder(
@@ -102,6 +103,7 @@ try_.builder(
         },
     },
     tryjob = try_.job(),
+    goma_backend = None,
 )
 
 try_.builder(
@@ -120,21 +122,25 @@ try_.builder(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
+    goma_backend = None,
 )
 
 try_.builder(
     name = "fuchsia-deterministic-dbg",
     executable = "recipe:swarming/deterministic_build",
+    goma_backend = None,
 )
 
 try_.builder(
     name = "fuchsia-fyi-arm64-dbg",
     mirrors = ["ci/fuchsia-fyi-arm64-dbg"],
+    goma_backend = None,
 )
 
 try_.builder(
     name = "fuchsia-fyi-x64-dbg",
     mirrors = ["ci/fuchsia-fyi-x64-dbg"],
+    goma_backend = None,
 )
 
 try_.orchestrator_builder(
@@ -159,6 +165,7 @@ try_.compilator_builder(
     cores = 16,
     ssd = True,
     main_list_view = "try",
+    goma_backend = None,
 )
 
 try_.builder(

@@ -61,6 +61,7 @@ try_.builder(
     name = "fuchsia-clang-tidy-rel",
     executable = "recipe:tricium_clang_tidy_wrapper",
     os = os.LINUX_DEFAULT,
+    goma_backend = None,
 )
 
 try_.builder(

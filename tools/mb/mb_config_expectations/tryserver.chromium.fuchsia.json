@@ -9,7 +9,7 @@
       "target_cpu": "arm64",
       "target_os": "fuchsia",
       "test_host_cpu": "arm64",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "fuchsia-arm64-chrome-rel": {
@@ -56,7 +56,7 @@
       "is_official_build": true,
       "target_cpu": "arm64",
       "target_os": "fuchsia",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "fuchsia-compile-x64-dbg": {
@@ -65,7 +65,7 @@
       "is_debug": true,
       "symbol_level": 0,
       "target_os": "fuchsia",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "fuchsia-deterministic-dbg": {
@@ -74,7 +74,7 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_os": "fuchsia",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "fuchsia-fyi-arm64-dbg": {
@@ -85,7 +85,7 @@
       "target_cpu": "arm64",
       "target_os": "fuchsia",
       "test_host_cpu": "arm64",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "fuchsia-fyi-x64-dbg": {
@@ -94,7 +94,7 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_os": "fuchsia",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "fuchsia-x64-cast-receiver-rel": {
@@ -105,7 +105,7 @@
       "is_debug": false,
       "symbol_level": 0,
       "target_os": "fuchsia",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "fuchsia-x64-chrome-rel": {
