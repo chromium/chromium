@@ -438,6 +438,10 @@ void EnrollmentScreen::AuthenticateUsingAttestation() {
   // in the logs.
   LOG(WARNING) << "Authenticating using attestation.";
   elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
+  if (features::IsAutoEnrollmentKioskInOobeEnabled()) {
+    license_type_to_use_ = config_.license_type;
+  }
+
   if (view_)
     view_->Show();
   CreateEnrollmentHelper();

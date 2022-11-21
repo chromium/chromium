@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -36,6 +37,24 @@ std::string ConvertRestoreMode(
       return kDeviceStateModeDisabled;
     case em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ZERO_TOUCH:
       return kDeviceStateRestoreModeReEnrollmentZeroTouch;
+  }
+}
+
+// Converts a enterprise_management::LicenseType_LicenseTypeEnum
+// for AutoEnrollment to it corresponding string.
+std::string ConvertAutoEnrollmentLicenseType(
+    ::enterprise_management::LicenseType_LicenseTypeEnum license_type) {
+  switch (license_type) {
+    case em::LicenseType::UNDEFINED:
+      return std::string();
+    case em::LicenseType::CDM_PERPETUAL:
+      return kDeviceStateLicenseTypeEnterprise;
+    case em::LicenseType::CDM_ANNUAL:
+      return kDeviceStateLicenseTypeEnterprise;
+    case em::LicenseType::KIOSK:
+      return kDeviceStateLicenseTypeTerminal;
+    case em::LicenseType::CDM_PACKAGED:
+      return kDeviceStateLicenseTypeEnterprise;
   }
 }
 
@@ -211,7 +230,14 @@ class FREStateMessageProcessor : public AutoEnrollmentStateMessageProcessor {
 
       // Package license is not available during the re-enrollment
       parsed_response.is_license_packaged_with_device.reset();
-      parsed_response.license_type.reset();
+
+      if (ash::features::IsAutoEnrollmentKioskInOobeEnabled() &&
+          state_response.has_license_type()) {
+        parsed_response.license_type = ConvertAutoEnrollmentLicenseType(
+            state_response.license_type().license_type());
+      } else {
+        parsed_response.license_type.reset();
+      }
 
       LOG(WARNING) << "Received restore_mode=" << restore_mode << " ("
                    << parsed_response.restore_mode << ").";

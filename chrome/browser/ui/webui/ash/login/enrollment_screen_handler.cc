@@ -203,6 +203,26 @@ std::string GetGaiaButtonsTypeString(
   }
 }
 
+bool ShouldSpecifyLicenseType(const policy::EnrollmentConfig& config) {
+  // Check that license_type is specified.
+  if (config.license_type == policy::LicenseType::kNone) {
+    return false;
+  }
+  // Retrieve if the device is Education for InitialEnrollment.
+  if (features::IsEducationEnrollmentOobeFlowEnabled()) {
+    return true;
+  }
+
+  // Retrieve the License already used for enrollment from DMServer
+  // for AutoEnrollment from message DeviceStateRetrievalResponse.
+  if (features::IsAutoEnrollmentKioskInOobeEnabled() &&
+      config.is_mode_attestation()) {
+    return true;
+  }
+
+  return false;
+}
+
 }  // namespace
 
 // EnrollmentScreenHandler, public ------------------------------
@@ -1175,8 +1195,7 @@ base::Value::Dict EnrollmentScreenHandler::ScreenDataCommon() {
   screen_data.Set("attestationBased", config_.is_mode_attestation());
   screen_data.Set("flow", GetFlowString(flow_type_));
 
-  if (features::IsEducationEnrollmentOobeFlowEnabled() &&
-      config_.license_type != policy::LicenseType::kNone) {
+  if (ShouldSpecifyLicenseType(config_)) {
     screen_data.Set("license", GetLicenseString(config_.license_type));
   }
 
