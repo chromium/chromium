@@ -1491,14 +1491,16 @@ void HTMLElement::HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
 
   GetPopoverData()->setInvoker(nullptr);
   GetPopoverData()->setNeedsRepositioningForSelectMenu(false);
-  // Stop matching `:open`:
-  GetPopoverData()->setVisibilityState(PopoverVisibilityState::kTransitioning);
-  PseudoStateChanged(CSSSelector::kPseudoOpen);
 
   // Fire the popoverhide event (bubbles, not cancelable).
   Event* event = Event::CreateBubble(event_type_names::kPopoverhide);
   event->SetTarget(this);
   if (force_hide) {
+    // Stop matching `:open` now:
+    GetPopoverData()->setVisibilityState(
+        PopoverVisibilityState::kTransitioning);
+    PseudoStateChanged(CSSSelector::kPseudoOpen);
+
     // We will be force-hidden when the popover element is being removed from
     // the document, during which event dispatch is prohibited.
     GetDocument().EnqueueAnimationFrameEvent(event);
@@ -1507,6 +1509,10 @@ void HTMLElement::HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
   }
   auto result = DispatchEvent(*event);
   DCHECK_EQ(result, DispatchEventResult::kNotCanceled);
+
+  // Stop matching `:open`:
+  GetPopoverData()->setVisibilityState(PopoverVisibilityState::kTransitioning);
+  PseudoStateChanged(CSSSelector::kPseudoOpen);
 
   // The 'popoverhide' event handler could have changed this popover, e.g. by
   // changing its type, removing it from the document, or calling showPopover().
