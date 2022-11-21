@@ -315,6 +315,11 @@ static SelectionInFlatTree ExtendSelectionAsDirectional(
             ? ComputeEndRespectingGranularity(
                   new_start, PositionInFlatTreeWithAffinity(start), granularity)
             : end;
+    if (new_start.IsNull() || new_end.IsNull()) {
+      // By some reasons, we fail to extend `selection`.
+      // TODO(crbug.com/1386012) We want to have a test case of this.
+      return selection;
+    }
     SelectionInFlatTree::Builder builder;
     builder.SetBaseAndExtent(new_end, new_start);
     if (new_start == new_end)
@@ -331,6 +336,11 @@ static SelectionInFlatTree ExtendSelectionAsDirectional(
           : ComputeStartFromEndForExtendForward(end, granularity);
   const PositionInFlatTree& new_end = ComputeEndRespectingGranularity(
       new_start, PositionInFlatTreeWithAffinity(position), granularity);
+  if (new_start.IsNull() || new_end.IsNull()) {
+    // By some reasons, we fail to extend `selection`.
+    // TODO(crbug.com/1386012) We want to have a test case of this.
+    return selection;
+  }
   SelectionInFlatTree::Builder builder;
   builder.SetBaseAndExtent(new_start, new_end);
   if (new_start == new_end)
