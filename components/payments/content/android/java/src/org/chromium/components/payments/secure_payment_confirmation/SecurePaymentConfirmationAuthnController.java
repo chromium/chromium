@@ -280,6 +280,12 @@ public class SecurePaymentConfirmationAuthnController {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public boolean cancelForTest() {
+        onCancel();
+        return true;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public boolean optOutForTest() {
         if (mOptOutCallback == null) return false;
         onOptOut();

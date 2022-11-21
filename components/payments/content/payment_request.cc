@@ -829,7 +829,7 @@ void PaymentRequest::OnUserOptedOut() {
   if (!client_.is_bound())
     return;
 
-  RecordFirstAbortReason(JourneyLogger::ABORT_REASON_ABORTED_BY_USER);
+  RecordFirstAbortReason(JourneyLogger::ABORT_REASON_USER_OPTED_OUT);
 
   // This sends an error to the renderer, which informs the API user.
   client_->OnError(mojom::PaymentErrorReason::USER_OPT_OUT,

@@ -150,6 +150,7 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   void OnDoneCreatingPaymentApps() override;
   void SetCanMakePaymentEvenWithoutApps() override;
   base::WeakPtr<CSPChecker> GetCSPChecker() override;
+  void SetOptOutOffered() override;
 
   // PaymentResponseHelper::Delegate
   void OnPaymentResponseReady(

@@ -66,6 +66,7 @@ class MockPaymentAppFactoryDelegate : public PaymentAppFactory::Delegate {
   MOCK_METHOD0(OnDoneCreatingPaymentApps, void());
   MOCK_METHOD0(SetCanMakePaymentEvenWithoutApps, void());
   MOCK_METHOD0(GetCSPChecker, base::WeakPtr<CSPChecker>());
+  MOCK_METHOD0(SetOptOutOffered, void());
 
   base::WeakPtr<PaymentAppFactory::Delegate> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

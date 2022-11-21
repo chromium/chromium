@@ -5,9 +5,13 @@
 #ifndef CHROME_BROWSER_PAYMENTS_SECURE_PAYMENT_CONFIRMATION_BROWSERTEST_H_
 #define CHROME_BROWSER_PAYMENTS_SECURE_PAYMENT_CONFIRMATION_BROWSERTEST_H_
 
+#include <set>
+
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
 #include "components/payments/core/features.h"
+#include "components/payments/core/journey_logger.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -42,12 +46,21 @@ class SecurePaymentConfirmationTest
       WebDataServiceBase::Handle h,
       std::unique_ptr<WDTypedResult> result) override;
 
+  // Verify that the PaymentRequest.Event2 histogram was logged exactly once by
+  // JourneyLogger, and that it contains exactly the set of `events`.
+  void ExpectEvent2Histogram(std::set<JourneyLogger::Event2> events);
+
+  // Returns the generic WebAuthn error message, to compare against SPC output.
+  static std::string GetWebAuthnErrorMessage();
+
   bool database_write_responded_ = false;
   bool confirm_payment_ = false;
   bool close_dialog_on_error_ = false;
 
  private:
   base::test::ScopedFeatureList feature_list_;
+
+  base::HistogramTester histogram_tester_;
 };
 
 }  // namespace payments

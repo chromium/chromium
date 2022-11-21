@@ -52,6 +52,12 @@ public interface PaymentAppFactoryDelegate {
      */
     default void setCanMakePaymentEvenWithoutApps() {}
 
+    /**
+     * Records that an Opt Out experience will be offered to the user in the
+     * current UI flow.
+     */
+    default void setOptOutOffered() {}
+
     /** @return The Content-Security-Policy (CSP) checker. */
     CSPChecker getCSPChecker();
 }

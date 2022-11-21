@@ -56,6 +56,12 @@ void JourneyLoggerAndroid::SetHasEnrolledInstrumentValue(
   journey_logger_.SetHasEnrolledInstrumentValue(jvalue);
 }
 
+void JourneyLoggerAndroid::SetOptOutOffered(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller) {
+  journey_logger_.SetOptOutOffered();
+}
+
 void JourneyLoggerAndroid::SetSkippedShow(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {

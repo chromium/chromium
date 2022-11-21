@@ -267,6 +267,14 @@ void SecurePaymentConfirmationAppFactory::Create(
         return;
       }
 
+      // Record if the user will be offered an opt-out experience. Technically
+      // SPC has not been 'selected' yet in the conceptual PaymentRequest flow,
+      // however we know that for SPC it must be the only payment method offered
+      // so we are safe to record this now.
+      if (method_data->secure_payment_confirmation->show_opt_out) {
+        delegate->SetOptOutOffered();
+      }
+
       // Observe the web contents to ensure the authenticator outlives it.
       Observe(delegate->GetWebContents());
 

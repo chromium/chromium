@@ -873,13 +873,13 @@ public class PaymentRequestService
             mNoMatchingController =
                     SecurePaymentConfirmationNoMatchingCredController.create(mWebContents);
             Runnable continueCallback = () -> {
-                mJourneyLogger.setAborted(AbortReason.NO_MATCHING_PAYMENT_METHOD);
+                mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
                 disconnectFromClientWithDebugMessage(
                         ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
                         PaymentErrorReason.NOT_ALLOWED_ERROR);
             };
             Runnable optOutCallback = () -> {
-                mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
+                mJourneyLogger.setAborted(AbortReason.USER_OPTED_OUT);
                 disconnectFromClientWithDebugMessage(
                         ErrorStrings.SPC_USER_OPTED_OUT, PaymentErrorReason.USER_OPT_OUT);
             };
@@ -947,7 +947,7 @@ public class PaymentRequestService
                 mSpcAuthnUiController = null;
             };
             Runnable optOutCallback = () -> {
-                mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
+                mJourneyLogger.setAborted(AbortReason.USER_OPTED_OUT);
                 disconnectFromClientWithDebugMessage(
                         ErrorStrings.SPC_USER_OPTED_OUT, PaymentErrorReason.USER_OPT_OUT);
                 mSpcAuthnUiController = null;
@@ -1166,6 +1166,12 @@ public class PaymentRequestService
             mRejectShowErrorMessage = errorMessage;
             mRejectShowErrorReason = errorReason;
         }
+    }
+
+    // Implements PaymentAppFactoryDelegate:
+    @Override
+    public void setOptOutOffered() {
+        mJourneyLogger.setOptOutOffered();
     }
 
     // Implements PaymentAppFactoryDelegate:

@@ -17,7 +17,6 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -64,18 +63,32 @@ void SecurePaymentConfirmationTest::OnWebDataServiceRequestDone(
   database_write_responded_ = true;
 }
 
+void SecurePaymentConfirmationTest::ExpectEvent2Histogram(
+    std::set<JourneyLogger::Event2> events) {
+  std::vector<base::Bucket> buckets =
+      histogram_tester_.GetAllSamples("PaymentRequest.Events2");
+  ASSERT_EQ(1U, buckets.size());
+
+  int64_t expected_events = 0;
+  for (const JourneyLogger::Event2& event : events) {
+    expected_events |= static_cast<int>(event);
+  }
+  EXPECT_EQ(buckets[0].min, expected_events);
+}
+
+// static
+std::string SecurePaymentConfirmationTest::GetWebAuthnErrorMessage() {
+  return "NotAllowedError: The operation either timed out or was not allowed. "
+         "See: https://www.w3.org/TR/webauthn-2/"
+         "#sctn-privacy-considerations-client.";
+}
+
 namespace {
 
 std::string GetIconDownloadErrorMessage() {
   return "NotSupportedError: The payment method "
          "\"secure-payment-confirmation\" is not supported. "
          "The \"instrument.icon\" either could not be downloaded or decoded.";
-}
-
-std::string GetWebAuthnErrorMessage() {
-  return "NotAllowedError: The operation either timed out or was not allowed. "
-         "See: https://www.w3.org/TR/webauthn-2/"
-         "#sctn-privacy-considerations-client.";
 }
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, NoAuthenticator) {

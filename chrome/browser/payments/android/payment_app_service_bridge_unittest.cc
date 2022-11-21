@@ -34,6 +34,7 @@ class MockCallback {
                void(const std::string& error, AppCreationFailureReason reason));
   MOCK_METHOD0(NotifyDoneCreatingPaymentApps, void(void));
   MOCK_METHOD0(SetCanMakePaymentEvenWithoutApps, void(void));
+  MOCK_METHOD0(SetOptOutOffered, void(void));
 };
 
 class MockApp : public PaymentApp {
@@ -118,6 +119,8 @@ TEST_P(PaymentAppServiceBridgeUnitTest, Smoke) {
           base::BindOnce(&MockCallback::NotifyDoneCreatingPaymentApps,
                          base::Unretained(&mock_callback)),
           base::BindRepeating(&MockCallback::SetCanMakePaymentEvenWithoutApps,
+                              base::Unretained(&mock_callback)),
+          base::BindRepeating(&MockCallback::SetOptOutOffered,
                               base::Unretained(&mock_callback)))
           ->GetWeakPtrForTest();
 
@@ -139,6 +142,9 @@ TEST_P(PaymentAppServiceBridgeUnitTest, Smoke) {
 
   EXPECT_CALL(mock_callback, SetCanMakePaymentEvenWithoutApps());
   bridge->SetCanMakePaymentEvenWithoutApps();
+
+  EXPECT_CALL(mock_callback, SetOptOutOffered());
+  bridge->SetOptOutOffered();
 
   EXPECT_CALL(mock_callback,
               NotifyPaymentAppCreationError("some error",

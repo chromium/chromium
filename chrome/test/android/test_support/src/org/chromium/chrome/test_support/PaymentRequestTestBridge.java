@@ -256,9 +256,17 @@ public class PaymentRequestTestBridge {
 
     @CalledByNative
     private static boolean closeDialogForTest() {
+        SecurePaymentConfirmationAuthnController authnUi =
+                PaymentRequestService.getSecurePaymentConfirmationAuthnUiForTesting();
+        if (authnUi != null) return authnUi.cancelForTest();
+
         SecurePaymentConfirmationNoMatchingCredController noMatchingUi =
                 PaymentRequestService.getSecurePaymentConfirmationNoMatchingCredUiForTesting();
-        if (noMatchingUi != null) noMatchingUi.close();
+        if (noMatchingUi != null) {
+            noMatchingUi.close();
+            return true;
+        }
+
         return sUiService == null || sUiService.closeDialogForTest();
     }
 

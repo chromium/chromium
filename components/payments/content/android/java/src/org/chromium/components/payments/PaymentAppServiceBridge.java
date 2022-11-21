@@ -113,6 +113,16 @@ public class PaymentAppServiceBridge implements PaymentAppFactoryInterface {
             ThreadUtils.assertOnUiThread();
             mDelegate.setCanMakePaymentEvenWithoutApps();
         }
+
+        /**
+         * Records that an Opt Out experience will be offered to the user in the
+         * current UI flow.
+         */
+        @CalledByNative("PaymentAppServiceCallback")
+        private void setOptOutOffered() {
+            ThreadUtils.assertOnUiThread();
+            mDelegate.setOptOutOffered();
+        }
     }
 
     @NativeMethods

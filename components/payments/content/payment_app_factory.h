@@ -130,6 +130,10 @@ class PaymentAppFactory {
     // Return a Content Security Policy checker that should be used before
     // downloading payment manifests and following their redirects.
     virtual base::WeakPtr<CSPChecker> GetCSPChecker() = 0;
+
+    // Records that an Opt Out experience will be offered to the user in the
+    // current UI flow.
+    virtual void SetOptOutOffered() = 0;
   };
 
   explicit PaymentAppFactory(PaymentApp::Type type);

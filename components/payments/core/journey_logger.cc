@@ -50,6 +50,9 @@ std::string GetHistogramNameSuffix(
     case JourneyLogger::COMPLETION_STATUS_OTHER_ABORTED:
       name_suffix += "OtherAborted";
       break;
+    case JourneyLogger::COMPLETION_STATUS_USER_OPTED_OUT:
+      name_suffix += "UserOptedOut";
+      break;
     default:
       break;
   }
@@ -137,6 +140,10 @@ void JourneyLogger::SetEventOccurred(Event event) {
 
 void JourneyLogger::SetEvent2Occurred(Event2 event) {
   events2_ |= static_cast<int>(event);
+}
+
+void JourneyLogger::SetOptOutOffered() {
+  SetEvent2Occurred(Event2::kOptOutOffered);
 }
 
 void JourneyLogger::SetSkippedShow() {
@@ -271,6 +278,8 @@ void JourneyLogger::SetAborted(AbortReason reason) {
   if (reason == ABORT_REASON_ABORTED_BY_USER ||
       reason == ABORT_REASON_USER_NAVIGATION)
     RecordJourneyStatsHistograms(COMPLETION_STATUS_USER_ABORTED);
+  else if (reason == ABORT_REASON_USER_OPTED_OUT)
+    RecordJourneyStatsHistograms(COMPLETION_STATUS_USER_OPTED_OUT);
   else
     RecordJourneyStatsHistograms(COMPLETION_STATUS_OTHER_ABORTED);
 }
@@ -305,6 +314,7 @@ void JourneyLogger::RecordJourneyStatsHistograms(
       break;
     case COMPLETION_STATUS_USER_ABORTED:
     case COMPLETION_STATUS_OTHER_ABORTED:
+    case COMPLETION_STATUS_USER_OPTED_OUT:
       RecordCheckoutStep(CheckoutFunnelStep::kPaymentRequestTriggered);
       break;
     case COMPLETION_STATUS_COULD_NOT_SHOW:
@@ -352,6 +362,9 @@ void JourneyLogger::RecordEventsMetric(CompletionStatus completion_status) {
     case COMPLETION_STATUS_COULD_NOT_SHOW:
       SetEventOccurred(EVENT_COULD_NOT_SHOW);
       SetEvent2Occurred(Event2::kCouldNotShow);
+      break;
+    case COMPLETION_STATUS_USER_OPTED_OUT:
+      SetEvent2Occurred(Event2::kUserOptedOut);
       break;
     default:
       NOTREACHED();
@@ -419,10 +432,11 @@ void JourneyLogger::ValidateEventBits() const {
   std::vector<bool> bit_vector;
 
   // Validate completion status.
-  bit_vector.push_back(events_ & EVENT_COMPLETED);
-  bit_vector.push_back(events_ & EVENT_OTHER_ABORTED);
-  bit_vector.push_back(events_ & EVENT_USER_ABORTED);
-  bit_vector.push_back(events_ & EVENT_COULD_NOT_SHOW);
+  bit_vector.push_back(WasOccurred(Event2::kCompleted));
+  bit_vector.push_back(WasOccurred(Event2::kOtherAborted));
+  bit_vector.push_back(WasOccurred(Event2::kUserAborted));
+  bit_vector.push_back(WasOccurred(Event2::kCouldNotShow));
+  bit_vector.push_back(WasOccurred(Event2::kUserOptedOut));
   DCHECK(ValidateExclusiveBitVector(bit_vector));
   bit_vector.clear();
   if (events_ & EVENT_COMPLETED)

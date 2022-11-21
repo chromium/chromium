@@ -55,7 +55,8 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
       PaymentAppCreatedCallback payment_app_created_callback,
       PaymentAppCreationErrorCallback payment_app_creation_error_callback,
       base::OnceClosure done_creating_payment_apps_callback,
-      base::RepeatingClosure set_can_make_payment_even_without_apps_callback);
+      base::RepeatingClosure set_can_make_payment_even_without_apps_callback,
+      base::RepeatingClosure set_opt_out_offered_callback);
 
   ~PaymentAppServiceBridge() override;
 
@@ -97,6 +98,7 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
   void OnDoneCreatingPaymentApps() override;
   void SetCanMakePaymentEvenWithoutApps() override;
   base::WeakPtr<CSPChecker> GetCSPChecker() override;
+  void SetOptOutOffered() override;
 
  private:
   // Prevents direct instantiation. Callers should use Create() instead.
@@ -113,7 +115,8 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
       PaymentAppCreatedCallback payment_app_created_callback,
       PaymentAppCreationErrorCallback payment_app_creation_error_callback,
       base::OnceClosure done_creating_payment_apps_callback,
-      base::RepeatingClosure set_can_make_payment_even_without_apps_callback);
+      base::RepeatingClosure set_can_make_payment_even_without_apps_callback,
+      base::RepeatingClosure set_opt_out_offered_callback);
 
   const std::unique_ptr<PaymentAppService> payment_app_service_;
   size_t number_of_pending_factories_;
@@ -134,6 +137,7 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
   PaymentAppCreationErrorCallback payment_app_creation_error_callback_;
   base::OnceClosure done_creating_payment_apps_callback_;
   base::RepeatingClosure set_can_make_payment_even_without_apps_callback_;
+  base::RepeatingClosure set_opt_out_offered_callback_;
 
   base::WeakPtrFactory<PaymentAppServiceBridge> weak_ptr_factory_{this};
 };

@@ -249,6 +249,11 @@ base::WeakPtr<CSPChecker> PaymentRequestState::GetCSPChecker() {
   return csp_checker_;
 }
 
+void PaymentRequestState::SetOptOutOffered() {
+  if (journey_logger_)
+    journey_logger_->SetOptOutOffered();
+}
+
 void PaymentRequestState::OnPaymentResponseReady(
     mojom::PaymentResponsePtr payment_response) {
   if (!delegate_)
