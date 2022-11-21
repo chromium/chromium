@@ -257,6 +257,8 @@ class Tab {
             mImpl.executeScript(script, useSeparateIsolate, ObjectWrapper.wrap(callback));
         } catch (RemoteException e) {
             throw new APICallException(e);
+        } catch (RuntimeException e) {
+            ExceptionHelper.reraise(e);
         }
     }
 
