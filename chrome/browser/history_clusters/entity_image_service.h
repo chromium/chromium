@@ -7,9 +7,11 @@
 
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 
@@ -31,6 +33,14 @@ class EntityImageService : public KeyedService {
 
   // Gets the fetcher associated with `profile`. Always succeeds.
   static EntityImageService* Get(Profile* profile);
+
+  // Populates entity images into the `image_url` of any eligible visits within
+  // every cluster in `clusters`. `clusters` should be moved into the parameter.
+  // `callback` is called when we're done, and it can be called synchronously
+  // if there's nothing to do.
+  void PopulateEntityImagesFor(
+      std::vector<history::Cluster> clusters,
+      base::OnceCallback<void(std::vector<history::Cluster>)> callback);
 
   // Fetches an image appropriate for `search_query` and `entity_id`, returning
   // the result asynchronously to `callback`. Returns false if we can't do it

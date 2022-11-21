@@ -99,15 +99,18 @@ class HistoryClustersHandler : public mojom::PageHandler,
   Profile* GetProfile() override;
 
  private:
-  // Called with the result of querying clusters. Subsequently, the result is
-  // is sent to the JS to update the UI.
+  // Called with the result of querying clusters. Does one more round of
+  // post-processing, then calls `SendClustersToPage()`.
   void OnGotClustersBatch(const std::string& query,
                           const std::vector<history::Cluster> clusters_batch,
                           bool can_load_more,
                           bool is_continuation);
 
-  // Callback for images fetched for clusters.
-  void OnImageFetchedForCluster(size_t cluster_index, const GURL& image_url);
+  // Callback to `OnGotClustersBatch()`.
+  void SendClustersToPage(const std::string& query,
+                          bool can_load_more,
+                          bool is_continuation,
+                          const std::vector<history::Cluster> clusters_batch);
 
   // Launches the Journeys survey, if user is eligible.
   void LaunchJourneysSurvey();
