@@ -46,3 +46,10 @@ enum PrivacyScreenState {
   ENABLED_LOCKED = 3,
   NOT_SUPPORTED = 4
 };
+
+// Corresponds to display::VariableRefreshRateState
+enum VariableRefreshRateState {
+  kVrrDisabled = 0,
+  kVrrEnabled = 1,
+  kVrrNotCapable = 2,
+};

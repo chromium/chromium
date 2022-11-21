@@ -468,26 +468,29 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
     if (edid[offset] == 0 && edid[offset + 1] == 0 && edid[offset + 2] == 0 &&
         edid[offset + 3] == kDisplayRangeLimitsDescriptor) {
       // byte 4: Offsets for display range limits
-      const uint8_t kRateOffset = edid[offset + 4];
+      const uint8_t rateOffset = edid[offset + 4];
       // bits 7-4: Reserved \0
-      if (kRateOffset & 0x10)
+      if (rateOffset & 0xf0)
         continue;
       // bit 3: Horizontal max rate offset (not used)
       // bit 2: Horizontal min rate offset (not used)
       // bit 1: Vertical max rate offset
-      const uint8_t verticalMaxRateOffset = kRateOffset & (1 << 1) ? 255 : 0;
+      const uint8_t verticalMaxRateOffset = rateOffset & (1 << 1) ? 255 : 0;
       // bit 0: Vertical min rate offset
-      const uint8_t verticalMinRateOffset = kRateOffset & (1 << 0) ? 255 : 0;
+      const uint8_t verticalMinRateOffset = rateOffset & (1 << 0) ? 255 : 0;
 
       // bytes 5-8: Rate limits
       // Each byte must be within [1, 255].
       if (edid[offset + 5] == 0 || edid[offset + 6] == 0 ||
           edid[offset + 7] == 0 || edid[offset + 8] == 0)
         continue;
+      vertical_display_range_limits_ = absl::make_optional<gfx::Range>();
       // byte 5: Min vertical rate in Hz
-      min_vfreq_ = edid[offset + 5] + verticalMinRateOffset;
+      vertical_display_range_limits_->set_start(edid[offset + 5] +
+                                                verticalMinRateOffset);
       // byte 6: Max vertical rate in Hz
-      max_vfreq_ = edid[offset + 6] + verticalMaxRateOffset;
+      vertical_display_range_limits_->set_end(edid[offset + 6] +
+                                              verticalMaxRateOffset);
       // byte 7: Min horizontal rate in kHz (not used)
       // byte 8: Max horizontal rate in kHz (not used)
 

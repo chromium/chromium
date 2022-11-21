@@ -10,6 +10,7 @@ import "ui/display/mojom/display_mode.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/color_space.mojom";
 import "ui/gfx/mojom/hdr_static_metadata.mojom";
+import "ui/gfx/range/mojom/range.mojom";
 
 // Corresponds to display::DisplaySnapshot.
 struct DisplaySnapshot {
@@ -43,4 +44,6 @@ struct DisplaySnapshot {
   int64 product_code;
   int32 year_of_manufacture;
   gfx.mojom.Size maximum_cursor_size;
+  VariableRefreshRateState variable_refresh_rate_state;
+  gfx.mojom.Range? vertical_display_range_limits;
 };

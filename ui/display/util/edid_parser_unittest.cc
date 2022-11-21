@@ -341,8 +341,7 @@ struct TestParams {
   base::flat_set<gfx::ColorSpace::PrimaryID> supported_color_primary_ids_;
   base::flat_set<gfx::ColorSpace::TransferID> supported_color_transfer_ids_;
   absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata_;
-  absl::optional<uint16_t> min_vfreq;
-  absl::optional<uint16_t> max_vfreq;
+  absl::optional<gfx::Range> vertical_display_range_limits_;
 
   const unsigned char* edid_blob;
   size_t edid_blob_length;
@@ -369,7 +368,6 @@ struct TestParams {
      {},
      absl::nullopt,
      absl::nullopt,
-     absl::nullopt,
      kBadDisplayName,
      kBadDisplayNameLength},
     {0x22f0u,
@@ -392,7 +390,6 @@ struct TestParams {
      "286C",
      {},
      {},
-     absl::nullopt,
      absl::nullopt,
      absl::nullopt,
      kNormalDisplay,
@@ -419,7 +416,6 @@ struct TestParams {
      {},
      absl::nullopt,
      absl::nullopt,
-     absl::nullopt,
      kNoMaxImageSizeDisplay,
      kNoMaxImageSizeDisplayLength},
     {0x22f0u,
@@ -442,7 +438,6 @@ struct TestParams {
      "286C",
      {},
      {},
-     absl::nullopt,
      absl::nullopt,
      absl::nullopt,
      kBlockZeroSerialNumberOnlyDisplay,
@@ -469,7 +464,6 @@ struct TestParams {
      {},
      absl::nullopt,
      absl::nullopt,
-     absl::nullopt,
      kNoSerialNumberDisplay,
      kNoSerialNumberDisplayLength},
     {0x22f0u,
@@ -492,7 +486,6 @@ struct TestParams {
      "286C",
      {},
      {},
-     absl::nullopt,
      absl::nullopt,
      absl::nullopt,
      kNoWeekOfManufactureDisplay,
@@ -519,7 +512,6 @@ struct TestParams {
      {},
      absl::nullopt,
      absl::nullopt,
-     absl::nullopt,
      kModelYearDisplay,
      kModelYearDisplayLength},
     {0x4ca3u,
@@ -542,7 +534,6 @@ struct TestParams {
      "3142",
      {},
      {},
-     absl::nullopt,
      absl::nullopt,
      absl::nullopt,
      kInternalDisplay,
@@ -568,8 +559,7 @@ struct TestParams {
      {},
      {},
      absl::nullopt,
-     24,
-     75,
+     gfx::Range(24, 75),
      kOverscanDisplay,
      kOverscanDisplayLength},
     {0x10ACu,
@@ -593,8 +583,7 @@ struct TestParams {
      {gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::PrimaryID::SMPTE170M},
      {},
      absl::nullopt,
-     49,
-     86,
+     gfx::Range(49, 86),
      kMisdetectedDisplay,
      kMisdetectedDisplayLength},
     {0x22f0u,
@@ -618,8 +607,7 @@ struct TestParams {
      {},
      {},
      absl::nullopt,
-     48,
-     85,
+     gfx::Range(48, 85),
      kLP2565A,
      kLP2565ALength},
     {0x22f0u,
@@ -643,8 +631,7 @@ struct TestParams {
      {},
      {},
      absl::nullopt,
-     48,
-     85,
+     gfx::Range(48, 85),
      kLP2565B,
      kLP2565BLength},
     {0x22f0u,
@@ -668,8 +655,7 @@ struct TestParams {
      {},
      {},
      absl::nullopt,
-     24,
-     60,
+     gfx::Range(24, 60),
      kHPz32x,
      kHPz32xLength},
     {0x30E4u,
@@ -694,7 +680,6 @@ struct TestParams {
      {},
      absl::nullopt,
      absl::nullopt,
-     absl::nullopt,
      kSamus,
      kSamusLength},
     {0x4D10u,
@@ -717,7 +702,6 @@ struct TestParams {
      "148A",
      {},
      {},
-     absl::nullopt,
      absl::nullopt,
      absl::nullopt,
      kEve,
@@ -745,8 +729,7 @@ struct TestParams {
      {gfx::ColorSpace::TransferID::BT709, gfx::ColorSpace::TransferID::PQ,
       gfx::ColorSpace::TransferID::HLG},
      absl::make_optional<gfx::HDRStaticMetadata>(603.666, 530.095, 0.00454),
-     24,
-     75,
+     gfx::Range(24, 75),
      kHDRMetadata,
      kHDRMetadataLength},
 
@@ -772,7 +755,6 @@ struct TestParams {
      "0000",
      {},
      {},
-     absl::nullopt,
      absl::nullopt,
      absl::nullopt,
      nullptr,
@@ -842,8 +824,17 @@ TEST_P(EDIDParserTest, ParseEdids) {
                 epsilon);
   }
 
-  EXPECT_EQ(parser_.min_vfreq(), GetParam().min_vfreq);
-  EXPECT_EQ(parser_.max_vfreq(), GetParam().max_vfreq);
+  const absl::optional<gfx::Range> vertical_display_range_limits =
+      parser_.vertical_display_range_limits();
+  EXPECT_EQ(GetParam().vertical_display_range_limits_.has_value(),
+            vertical_display_range_limits.has_value());
+  if (GetParam().vertical_display_range_limits_.has_value() &&
+      vertical_display_range_limits.has_value()) {
+    EXPECT_EQ(vertical_display_range_limits->start(),
+              GetParam().vertical_display_range_limits_->start());
+    EXPECT_EQ(vertical_display_range_limits->end(),
+              GetParam().vertical_display_range_limits_->end());
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All, EDIDParserTest, ValuesIn(kTestCases));

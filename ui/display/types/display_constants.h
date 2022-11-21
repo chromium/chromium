@@ -144,6 +144,13 @@ enum ModesetFlag {
   kSeamlessModeset = 1 << 2,
 };
 
+enum VariableRefreshRateState {
+  kVrrDisabled = 0,
+  kVrrEnabled = 1,
+  kVrrNotCapable = 2,
+  kVrrLast = kVrrNotCapable,
+};
+
 // Defines the float values closest to repeating decimal scale factors.
 constexpr float kDsf_1_777 = 1.77777779102325439453125f;
 constexpr float kDsf_2_252 = 2.2522523403167724609375f;

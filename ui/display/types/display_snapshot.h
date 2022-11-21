@@ -21,6 +21,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/hdr_static_metadata.h"
+#include "ui/gfx/range/range.h"
 
 namespace display {
 
@@ -58,7 +59,9 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
       const DisplayMode* native_mode,
       int64_t product_code,
       int32_t year_of_manufacture,
-      const gfx::Size& maximum_cursor_size);
+      const gfx::Size& maximum_cursor_size,
+      VariableRefreshRateState variable_refresh_rate_state,
+      const absl::optional<gfx::Range>& vertical_display_range_limits);
 
   DisplaySnapshot(const DisplaySnapshot&) = delete;
   DisplaySnapshot& operator=(const DisplaySnapshot&) = delete;
@@ -109,6 +112,12 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   int64_t product_code() const { return product_code_; }
   int32_t year_of_manufacture() const { return year_of_manufacture_; }
   const gfx::Size& maximum_cursor_size() const { return maximum_cursor_size_; }
+  VariableRefreshRateState variable_refresh_rate_state() const {
+    return variable_refresh_rate_state_;
+  }
+  const absl::optional<gfx::Range>& vertical_display_range_limits() const {
+    return vertical_display_range_limits_;
+  }
 
   void add_mode(const DisplayMode* mode) { modes_.push_back(mode->Clone()); }
 
@@ -236,6 +245,12 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
 
   // Maximum supported cursor size on this display.
   const gfx::Size maximum_cursor_size_;
+
+  // Whether VRR is enabled, disabled, or not capable on this display.
+  const VariableRefreshRateState variable_refresh_rate_state_;
+  // The supported vrefresh frequency range for this display. Omitted if this
+  // display is not VRR capable.
+  const absl::optional<gfx::Range> vertical_display_range_limits_;
 };
 
 }  // namespace display

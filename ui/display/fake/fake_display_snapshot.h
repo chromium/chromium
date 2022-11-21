@@ -83,6 +83,10 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
     Builder& SetBitsPerChannel(uint32_t bits_per_channel);
     Builder& SetHDRStaticMetadata(
         const gfx::HDRStaticMetadata& hdr_static_metadata);
+    Builder& SetVariableRefreshRateState(
+        VariableRefreshRateState variable_refresh_rate_state);
+    Builder& SetVerticalDisplayRangeLimits(
+        const absl::optional<gfx::Range>& vertical_display_range_limits);
 
    private:
     // Returns a display mode with |size|. If there is no existing mode, insert
@@ -115,31 +119,36 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
     gfx::ColorSpace color_space_;
     uint32_t bits_per_channel_ = 8u;
     gfx::HDRStaticMetadata hdr_static_metadata_;
+    VariableRefreshRateState variable_refresh_rate_state_ = kVrrNotCapable;
+    absl::optional<gfx::Range> vertical_display_range_limits_ = absl::nullopt;
   };
 
-  FakeDisplaySnapshot(int64_t display_id,
-                      int64_t port_display_id,
-                      int64_t edid_display_id,
-                      uint16_t connector_index,
-                      const gfx::Point& origin,
-                      const gfx::Size& physical_size,
-                      DisplayConnectionType type,
-                      uint64_t base_connector_id,
-                      const std::vector<uint64_t>& path_topology,
-                      bool is_aspect_preserving_scaling,
-                      bool has_overscan,
-                      PrivacyScreenState privacy_screen_state,
-                      bool has_color_correction_matrix,
-                      bool color_correction_in_linear_space,
-                      std::string display_name,
-                      DisplayModeList modes,
-                      const DisplayMode* current_mode,
-                      const DisplayMode* native_mode,
-                      int64_t product_code,
-                      const gfx::Size& maximum_cursor_size,
-                      const gfx::ColorSpace& color_space,
-                      uint32_t bits_per_channel,
-                      const gfx::HDRStaticMetadata& hdr_static_metadata);
+  FakeDisplaySnapshot(
+      int64_t display_id,
+      int64_t port_display_id,
+      int64_t edid_display_id,
+      uint16_t connector_index,
+      const gfx::Point& origin,
+      const gfx::Size& physical_size,
+      DisplayConnectionType type,
+      uint64_t base_connector_id,
+      const std::vector<uint64_t>& path_topology,
+      bool is_aspect_preserving_scaling,
+      bool has_overscan,
+      PrivacyScreenState privacy_screen_state,
+      bool has_color_correction_matrix,
+      bool color_correction_in_linear_space,
+      std::string display_name,
+      DisplayModeList modes,
+      const DisplayMode* current_mode,
+      const DisplayMode* native_mode,
+      int64_t product_code,
+      const gfx::Size& maximum_cursor_size,
+      const gfx::ColorSpace& color_space,
+      uint32_t bits_per_channel,
+      const gfx::HDRStaticMetadata& hdr_static_metadata,
+      VariableRefreshRateState variable_refresh_rate_state,
+      const absl::optional<gfx::Range>& vertical_display_range_limits);
 
   FakeDisplaySnapshot(const FakeDisplaySnapshot&) = delete;
   FakeDisplaySnapshot& operator=(const FakeDisplaySnapshot&) = delete;

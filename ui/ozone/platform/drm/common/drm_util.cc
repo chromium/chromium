@@ -344,10 +344,6 @@ gfx::Size GetMaximumCursorSize(int fd) {
 }
 
 bool IsVrrCapable(int fd, drmModeConnector* connector) {
-  if (!features::IsVariableRefreshRateEnabled()) {
-    return false;
-  }
-
   ScopedDrmPropertyPtr vrr_capable_property;
   const int vrr_capable_index = GetDrmProperty(
       fd, connector, kVrrCapablePropertyName, &vrr_capable_property);
@@ -355,16 +351,24 @@ bool IsVrrCapable(int fd, drmModeConnector* connector) {
 }
 
 bool IsVrrEnabled(int fd, drmModeCrtc* crtc) {
-  if (!features::IsVariableRefreshRateEnabled()) {
-    return false;
-  }
-
   ScopedDrmObjectPropertyPtr crtc_props(
       drmModeObjectGetProperties(fd, crtc->crtc_id, DRM_MODE_OBJECT_CRTC));
   ScopedDrmPropertyPtr vrr_enabled_property;
   const int vrr_enabled_index = GetDrmProperty(
       fd, crtc_props.get(), kVrrEnabledPropertyName, &vrr_enabled_property);
   return vrr_enabled_index >= 0 && crtc_props->prop_values[vrr_enabled_index];
+}
+
+display::VariableRefreshRateState GetVariableRefreshRateState(
+    int fd,
+    HardwareDisplayControllerInfo* info) {
+  if (!IsVrrCapable(fd, info->connector()))
+    return display::kVrrNotCapable;
+
+  if (IsVrrEnabled(fd, info->crtc()))
+    return display::kVrrEnabled;
+
+  return display::kVrrDisabled;
 }
 
 HardwareDisplayControllerInfo::HardwareDisplayControllerInfo(
@@ -562,6 +566,8 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
   const bool color_correction_in_linear_space =
       has_color_correction_matrix && GetDrmDriverNameFromFd(fd) == "rockchip";
   const gfx::Size maximum_cursor_size = GetMaximumCursorSize(fd);
+  const display::VariableRefreshRateState variable_refresh_rate_state =
+      GetVariableRefreshRateState(fd, info);
 
   std::string display_name;
   // Make sure the ID contains non index part.
@@ -575,6 +581,7 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
   absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata{};
   // Active pixels size from the first detailed timing descriptor in the EDID.
   gfx::Size active_pixel_size;
+  absl::optional<gfx::Range> vertical_display_range_limits;
 
   ScopedDrmPropertyBlobPtr edid_blob(
       GetDrmPropertyBlob(fd, info->connector(), "EDID"));
@@ -602,6 +609,10 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     base::UmaHistogramCounts100("DrmUtil.CreateDisplaySnapshot.BitsPerChannel",
                                 bits_per_channel);
     hdr_static_metadata = edid_parser.hdr_static_metadata();
+    vertical_display_range_limits =
+        variable_refresh_rate_state == display::kVrrNotCapable
+            ? absl::nullopt
+            : edid_parser.vertical_display_range_limits();
   } else {
     VLOG(1) << "Failed to get EDID blob for connector "
             << info->connector()->connector_id;
@@ -619,7 +630,8 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
       has_color_correction_matrix, color_correction_in_linear_space,
       display_color_space, bits_per_channel, hdr_static_metadata, display_name,
       sys_path, std::move(modes), panel_orientation, edid, current_mode,
-      native_mode, product_code, year_of_manufacture, maximum_cursor_size);
+      native_mode, product_code, year_of_manufacture, maximum_cursor_size,
+      variable_refresh_rate_state, vertical_display_range_limits);
 }
 
 int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format) {

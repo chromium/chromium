@@ -26,6 +26,7 @@ component("util") {
     "//ui/display/types",
     "//ui/gfx:color_space",
     "//ui/gfx/geometry",
+    "//ui/gfx/range",
   ]
 
   if (is_chromeos_ash) {

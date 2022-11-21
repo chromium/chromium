@@ -202,7 +202,8 @@ TEST_P(DisplayChangeObserverTest, GetEmptyExternalManagedDisplayModeList) {
       /*base_connector_id=*/1u, /*path_topology=*/{}, false, false,
       PrivacyScreenState::kNotSupported, false, false, std::string(), {},
       nullptr, nullptr, 0, gfx::Size(), gfx::ColorSpace(),
-      /*bits_per_channel=*/8u, /*hdr_static_metadata=*/{});
+      /*bits_per_channel=*/8u, /*hdr_static_metadata=*/{}, kVrrNotCapable,
+      absl::nullopt);
 
   ManagedDisplayInfo::ManagedDisplayModeList display_modes =
       DisplayChangeObserver::GetExternalManagedDisplayModeList(

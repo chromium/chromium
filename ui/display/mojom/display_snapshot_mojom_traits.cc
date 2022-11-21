@@ -147,6 +147,14 @@ bool StructTraits<display::mojom::DisplaySnapshotDataView,
   if (!data.ReadMaximumCursorSize(&maximum_cursor_size))
     return false;
 
+  display::VariableRefreshRateState variable_refresh_rate_state;
+  if (!data.ReadVariableRefreshRateState(&variable_refresh_rate_state))
+    return false;
+
+  absl::optional<gfx::Range> vertical_display_range_limits;
+  if (!data.ReadVerticalDisplayRangeLimits(&vertical_display_range_limits))
+    return false;
+
   *out = std::make_unique<display::DisplaySnapshot>(
       data.display_id(), data.port_display_id(), data.edid_display_id(),
       data.connector_index(), origin, physical_size, type,
@@ -157,7 +165,8 @@ bool StructTraits<display::mojom::DisplaySnapshotDataView,
       data.bits_per_channel(), hdr_static_metadata, display_name, file_path,
       std::move(modes), panel_orientation, std::move(edid), current_mode,
       native_mode, data.product_code(), data.year_of_manufacture(),
-      maximum_cursor_size);
+      maximum_cursor_size, variable_refresh_rate_state,
+      vertical_display_range_limits);
   return true;
 }
 

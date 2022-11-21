@@ -24,6 +24,7 @@ mojom("mojom") {
     "//mojo/public/mojom/base",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
+    "//ui/gfx/range/mojom",
   ]
 
   shared_cpp_typemaps = [
@@ -95,6 +96,10 @@ mojom("mojom") {
         {
           mojom = "display.mojom.PrivacyScreenState"
           cpp = "::display::PrivacyScreenState"
+        },
+        {
+          mojom = "display.mojom.VariableRefreshRateState"
+          cpp = "::display::VariableRefreshRateState"
         },
       ]
       traits_sources = [ "display_constants_mojom_traits.cc" ]

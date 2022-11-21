@@ -88,7 +88,9 @@ DisplaySnapshot::DisplaySnapshot(
     const DisplayMode* native_mode,
     int64_t product_code,
     int32_t year_of_manufacture,
-    const gfx::Size& maximum_cursor_size)
+    const gfx::Size& maximum_cursor_size,
+    VariableRefreshRateState variable_refresh_rate_state,
+    const absl::optional<gfx::Range>& vertical_display_range_limits)
     : display_id_(display_id),
       port_display_id_(port_display_id),
       edid_display_id_(edid_display_id),
@@ -115,11 +117,12 @@ DisplaySnapshot::DisplaySnapshot(
       native_mode_(native_mode),
       product_code_(product_code),
       year_of_manufacture_(year_of_manufacture),
-      maximum_cursor_size_(maximum_cursor_size) {
+      maximum_cursor_size_(maximum_cursor_size),
+      variable_refresh_rate_state_(variable_refresh_rate_state),
+      vertical_display_range_limits_(vertical_display_range_limits) {
   // We must explicitly clear out the bytes that represent the serial number.
-  const size_t end =
-      std::min(kSerialNumberBeginingByte + kSerialNumberLengthInBytes,
-               edid_.size());
+  const size_t end = std::min(
+      kSerialNumberBeginingByte + kSerialNumberLengthInBytes, edid_.size());
   for (size_t i = kSerialNumberBeginingByte; i < end; ++i)
     edid_[i] = 0;
 }
@@ -149,7 +152,8 @@ std::unique_ptr<DisplaySnapshot> DisplaySnapshot::Clone() {
       color_space_, bits_per_channel_, hdr_static_metadata_, display_name_,
       sys_path_, std::move(clone_modes), panel_orientation_, edid_,
       cloned_current_mode, cloned_native_mode, product_code_,
-      year_of_manufacture_, maximum_cursor_size_);
+      year_of_manufacture_, maximum_cursor_size_, variable_refresh_rate_state_,
+      vertical_display_range_limits_);
 }
 
 std::string DisplaySnapshot::ToString() const {

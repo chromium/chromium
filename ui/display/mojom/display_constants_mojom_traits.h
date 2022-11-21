@@ -52,6 +52,15 @@ struct EnumTraits<display::mojom::PrivacyScreenState,
                         display::PrivacyScreenState* out);
 };
 
+template <>
+struct EnumTraits<display::mojom::VariableRefreshRateState,
+                  display::VariableRefreshRateState> {
+  static display::mojom::VariableRefreshRateState ToMojom(
+      display::VariableRefreshRateState type);
+  static bool FromMojom(display::mojom::VariableRefreshRateState type,
+                        display::VariableRefreshRateState* out);
+};
+
 }  // namespace mojo
 
 #endif  // UI_DISPLAY_MOJOM_DISPLAY_CONSTANTS_MOJOM_TRAITS_H_

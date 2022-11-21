@@ -163,6 +163,10 @@ bool IsVrrCapable(int fd, drmModeConnector* connector);
 
 bool IsVrrEnabled(int fd, drmModeCrtc* crtc);
 
+display::VariableRefreshRateState GetVariableRefreshRateState(
+    int fd,
+    HardwareDisplayControllerInfo* info);
+
 uint64_t GetEnumValueForName(int fd, int property_id, const char* str);
 
 std::vector<uint64_t> ParsePathBlob(const drmModePropertyBlobRes& path_blob);

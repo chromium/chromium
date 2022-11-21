@@ -28,5 +28,6 @@ component("types") {
     "//ui/gfx:color_space",
     "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",
+    "//ui/gfx/range",
   ]
 }
