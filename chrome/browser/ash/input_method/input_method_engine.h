@@ -195,12 +195,6 @@ class InputMethodEngine : virtual public ui::TextInputMethod,
                            const gfx::Range& range,
                            std::string* error);
 
-  // Set the current selection range.
-  bool SetSelectionRange(int context_id,
-                         int start,
-                         int end,
-                         std::string* error);
-
   // Called when a key event is handled.
   void KeyEventHandled(const std::string& extension_id,
                        const std::string& request_id,

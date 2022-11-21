@@ -15,7 +15,6 @@ namespace ui {
 
 MockIMEInputContextHandler::MockIMEInputContextHandler()
     : commit_text_call_count_(0),
-      set_selection_range_call_count_(0),
       update_preedit_text_call_count_(0),
       delete_surrounding_text_call_count_(0) {}
 
@@ -107,13 +106,6 @@ bool MockIMEInputContextHandler::AddGrammarFragments(
   return true;
 }
 
-bool MockIMEInputContextHandler::SetSelectionRange(uint32_t start,
-                                                   uint32_t end) {
-  ++set_selection_range_call_count_;
-  last_update_composition_arg_.selection = gfx::Range(start, end);
-  return true;
-}
-
 void MockIMEInputContextHandler::DeleteSurroundingText(
     uint32_t num_char16s_before_cursor,
     uint32_t num_char16s_after_cursor) {
@@ -132,7 +124,6 @@ SurroundingTextInfo MockIMEInputContextHandler::GetSurroundingTextInfo() {
 
 void MockIMEInputContextHandler::Reset() {
   commit_text_call_count_ = 0;
-  set_selection_range_call_count_ = 0;
   update_preedit_text_call_count_ = 0;
   delete_surrounding_text_call_count_ = 0;
   autocorrect_enabled_ = true;

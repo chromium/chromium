@@ -519,14 +519,6 @@ bool InputMethodAsh::AddGrammarFragments(
   return GetTextInputClient()->AddGrammarFragments(fragments);
 }
 
-bool InputMethodAsh::SetSelectionRange(uint32_t start, uint32_t end) {
-  if (IsTextInputTypeNone())
-    return false;
-  typing_session_manager_.Heartbeat();
-  return GetTextInputClient()->SetEditableSelectionRange(
-      gfx::Range(start, end));
-}
-
 void InputMethodAsh::ConfirmComposition(bool reset_engine) {
   TextInputClient* client = GetTextInputClient();
   // TODO(b/223075193): Quick fix for the case where we have a pending commit.

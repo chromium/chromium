@@ -474,39 +474,6 @@ gfx::Rect InputMethodEngine::GetTextFieldBounds(int context_id,
   return input_context->GetTextFieldBounds();
 }
 
-bool InputMethodEngine::SetSelectionRange(int context_id,
-                                          int start,
-                                          int end,
-                                          std::string* error) {
-  if (!IsActive()) {
-    *error = kErrorNotActive;
-    return false;
-  }
-  if (context_id != context_id_ || context_id_ == -1) {
-    *error = base::StringPrintf(
-        "%s request context id = %d, current context id = %d",
-        kErrorWrongContext, context_id, context_id_);
-    return false;
-  }
-  if (!IsUint32Value(start)) {
-    *error = base::StringPrintf(kErrorInvalidValue, "start", start);
-    return false;
-  }
-  if (!IsUint32Value(end)) {
-    *error = base::StringPrintf(kErrorInvalidValue, "end", end);
-    return false;
-  }
-
-  ui::TextInputTarget* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
-  if (!input_context) {
-    return false;
-  }
-
-  return input_context->SetSelectionRange(static_cast<uint32_t>(start),
-                                          static_cast<uint32_t>(end));
-}
-
 void InputMethodEngine::KeyEventHandled(const std::string& extension_id,
                                         const std::string& request_id,
                                         bool handled) {
