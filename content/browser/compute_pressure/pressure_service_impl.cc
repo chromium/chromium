@@ -18,8 +18,6 @@
 
 namespace content {
 
-constexpr base::TimeDelta PressureServiceImpl::kDefaultVisibleObserverRateLimit;
-
 // static
 void PressureServiceImpl::Create(
     RenderFrameHost* render_frame_host,
@@ -30,19 +28,12 @@ void PressureServiceImpl::Create(
     return;
   }
 
-  if (!GetForCurrentDocument(render_frame_host)) {
-    CreateForCurrentDocument(render_frame_host,
-                             kDefaultVisibleObserverRateLimit);
-  }
-
-  GetForCurrentDocument(render_frame_host)->BindReceiver(std::move(receiver));
+  GetOrCreateForCurrentDocument(render_frame_host)
+      ->BindReceiver(std::move(receiver));
 }
 
-PressureServiceImpl::PressureServiceImpl(
-    RenderFrameHost* render_frame_host,
-    base::TimeDelta visible_observer_rate_limit)
-    : DocumentUserData<PressureServiceImpl>(render_frame_host),
-      visible_observer_rate_limit_(visible_observer_rate_limit) {
+PressureServiceImpl::PressureServiceImpl(RenderFrameHost* render_frame_host)
+    : DocumentUserData<PressureServiceImpl>(render_frame_host) {
   DCHECK(render_frame_host);
 }
 
@@ -110,19 +101,15 @@ void PressureServiceImpl::PressureStateChanged(
     device::mojom::PressureUpdatePtr update) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(jsbell): Rate-limit observers in non-visible frames instead of
-  //               cutting off their updates completely.
-  if (last_reported_update_ &&
-      update->timestamp - last_reported_update_->timestamp <
-          visible_observer_rate_limit_) {
-    return;
-  }
-
+  // TODO(crbug.com/1385588): Remove this when "passes privacy test" steps are
+  // implemented.
   if (!render_frame_host().IsActive()) {
     // TODO(jsbell): Is it safe to disconnect observers in this state?
     return;
   }
 
+  // TODO(crbug.com/1385588): Remove this when "passes privacy test" steps are
+  // implemented.
   if (render_frame_host().GetVisibilityState() !=
       blink::mojom::PageVisibilityState::kVisible) {
     // TODO(jsbell): Rate-limit observers in non-visible frames instead of
@@ -130,7 +117,6 @@ void PressureServiceImpl::PressureStateChanged(
     return;
   }
 
-  last_reported_update_ = update.Clone();
   observer_->OnUpdate(update.Clone());
 }
 
@@ -166,9 +152,6 @@ void PressureServiceImpl::ResetObserverState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   observer_.reset();
-
-  // Setting to an invalid value, so any state is considered an update.
-  last_reported_update_ = nullptr;
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(PressureServiceImpl);

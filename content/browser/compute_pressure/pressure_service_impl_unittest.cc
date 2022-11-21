@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/test/test_render_view_host.h"
@@ -34,8 +35,7 @@ using device::mojom::PressureUpdate;
 
 namespace {
 
-constexpr base::TimeDelta kRateLimit =
-    PressureServiceImpl::kDefaultVisibleObserverRateLimit;
+constexpr base::TimeDelta kSampleInterval = base::Seconds(1);
 
 // Synchronous proxy to a blink::mojom::PressureService.
 class PressureServiceImplSync {
@@ -190,7 +190,7 @@ TEST_F(PressureServiceImplTest, BindObserver) {
                 observer.BindNewPipeAndPassRemote()),
             blink::mojom::PressureStatus::kOk);
 
-  const base::Time time = base::Time::Now() + kRateLimit;
+  const base::Time time = base::Time::Now();
   PressureUpdate update(PressureState::kNominal, {PressureFactor::kThermal},
                         time);
   pressure_manager_overrider_->UpdateClients(update);
@@ -205,7 +205,7 @@ TEST_F(PressureServiceImplTest, UpdatePressureFactors) {
                 observer.BindNewPipeAndPassRemote()),
             blink::mojom::PressureStatus::kOk);
 
-  const base::Time time = base::Time::Now() + kRateLimit;
+  const base::Time time = base::Time::Now();
   PressureUpdate update1(PressureState::kNominal,
                          {PressureFactor::kPowerSupply}, time);
 
@@ -218,7 +218,7 @@ TEST_F(PressureServiceImplTest, UpdatePressureFactors) {
   PressureUpdate update2(
       PressureState::kCritical,
       {PressureFactor::kThermal, PressureFactor::kPowerSupply},
-      time + kRateLimit * 2.5);
+      time + kSampleInterval);
   pressure_manager_overrider_->UpdateClients(update2);
   observer.WaitForUpdate();
   ASSERT_EQ(observer.updates().size(), 1u);
@@ -226,7 +226,7 @@ TEST_F(PressureServiceImplTest, UpdatePressureFactors) {
   observer.updates().clear();
 
   PressureUpdate update3(PressureState::kCritical, {PressureFactor::kThermal},
-                         time + kRateLimit * 3.5);
+                         time + kSampleInterval * 2);
   pressure_manager_overrider_->UpdateClients(update3);
   observer.WaitForUpdate();
   ASSERT_EQ(observer.updates().size(), 1u);
@@ -234,32 +234,8 @@ TEST_F(PressureServiceImplTest, UpdatePressureFactors) {
   observer.updates().clear();
 }
 
-TEST_F(PressureServiceImplTest, UpdateRateLimiting) {
-  FakePressureObserver observer;
-  ASSERT_EQ(pressure_service_impl_sync_->BindObserver(
-                observer.BindNewPipeAndPassRemote()),
-            blink::mojom::PressureStatus::kOk);
-
-  const base::Time time = base::Time::Now();
-  PressureUpdate update1(PressureState::kNominal, {PressureFactor::kThermal},
-                         time + kRateLimit);
-  pressure_manager_overrider_->UpdateClients(update1);
-  observer.WaitForUpdate();
-  observer.updates().clear();
-
-  // The first update should be blocked due to rate-limiting.
-  PressureUpdate update2(PressureState::kCritical, {PressureFactor::kThermal},
-                         time + kRateLimit * 1.5);
-  pressure_manager_overrider_->UpdateClients(update2);
-  PressureUpdate update3(PressureState::kFair, {PressureFactor::kThermal},
-                         time + kRateLimit * 2);
-  pressure_manager_overrider_->UpdateClients(update3);
-  observer.WaitForUpdate();
-
-  ASSERT_EQ(observer.updates().size(), 1u);
-  EXPECT_EQ(observer.updates()[0], update3);
-}
-
+// TODO(crbug.com/1385588): Remove this when "passes privacy test" steps are
+// implemented.
 TEST_F(PressureServiceImplTest, NoVisibility) {
   FakePressureObserver observer;
   ASSERT_EQ(pressure_service_impl_sync_->BindObserver(
@@ -271,20 +247,18 @@ TEST_F(PressureServiceImplTest, NoVisibility) {
   test_rvh()->SimulateWasHidden();
 
   // The first two updates should be blocked due to invisibility.
-  PressureUpdate update1(PressureState::kNominal, {}, time + kRateLimit);
+  PressureUpdate update1(PressureState::kNominal, {}, time);
   pressure_manager_overrider_->UpdateClients(update1);
   PressureUpdate update2(PressureState::kCritical, {PressureFactor::kThermal},
-                         time + kRateLimit * 2);
+                         time + kSampleInterval);
   pressure_manager_overrider_->UpdateClients(update2);
   task_environment()->RunUntilIdle();
 
   test_rvh()->SimulateWasShown();
 
-  // The third update should be dispatched. It should not be rate-limited by the
-  // time proximity to the second update, because the second update is not
-  // dispatched.
+  // The third update should be dispatched.
   PressureUpdate update3(PressureState::kFair, {PressureFactor::kThermal},
-                         time + kRateLimit * 2.5);
+                         time + kSampleInterval * 2);
   pressure_manager_overrider_->UpdateClients(update3);
   observer.WaitForUpdate();
 

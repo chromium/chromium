@@ -30,9 +30,6 @@ class CONTENT_EXPORT PressureServiceImpl
       public device::mojom::PressureClient,
       public DocumentUserData<PressureServiceImpl> {
  public:
-  static constexpr base::TimeDelta kDefaultVisibleObserverRateLimit =
-      base::Seconds(1);
-
   static void Create(
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::PressureService> receiver);
@@ -54,8 +51,7 @@ class CONTENT_EXPORT PressureServiceImpl
   void PressureStateChanged(device::mojom::PressureUpdatePtr update) override;
 
  private:
-  PressureServiceImpl(RenderFrameHost* render_frame_host,
-                      base::TimeDelta visible_observer_rate_limit);
+  explicit PressureServiceImpl(RenderFrameHost* render_frame_host);
 
   void OnObserverRemoteDisconnected();
 
@@ -67,18 +63,6 @@ class CONTENT_EXPORT PressureServiceImpl
   void ResetObserverState();
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  // The minimum delay between two Update() calls for observers belonging to
-  // the frame.
-  const base::TimeDelta visible_observer_rate_limit_;
-
-  // The update that was last reported to this frame's observers.
-  //
-  // Stored to avoid sending updates when the underlying compute pressure state
-  // changes, but quantization produces the same values that were reported in
-  // the last update.
-  device::mojom::PressureUpdatePtr last_reported_update_
-      GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   // Callback from |receiver_| is passed to |remote_| and the Receiver
   // should be destroyed first so that the callback is invalidated before
