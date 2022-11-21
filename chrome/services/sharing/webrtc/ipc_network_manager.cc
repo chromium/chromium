@@ -106,8 +106,8 @@ void IpcNetworkManager::NetworkListChanged(
     if (adapter_type == rtc::ADAPTER_TYPE_UNKNOWN) {
       adapter_type = rtc::GetAdapterTypeFromName(it->name.c_str());
     }
-    auto network = std::make_unique<rtc::Network>(
-        it->name, it->name, prefix, it->prefix_length, adapter_type);
+    auto network = CreateNetwork(it->name, it->name, prefix, it->prefix_length,
+                                 adapter_type);
     network->set_default_local_address_provider(this);
     network->set_mdns_responder_provider(this);
 

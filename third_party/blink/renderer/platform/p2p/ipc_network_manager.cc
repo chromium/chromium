@@ -130,8 +130,8 @@ void IpcNetworkManager::OnNetworkListChanged(
       underlying_adapter_type = adapter_type;
       adapter_type = rtc::ADAPTER_TYPE_VPN;
     }
-    auto network = std::make_unique<rtc::Network>(
-        it->name, it->name, prefix, it->prefix_length, adapter_type);
+    auto network = CreateNetwork(it->name, it->name, prefix, it->prefix_length,
+                                 adapter_type);
     if (adapter_type == rtc::ADAPTER_TYPE_VPN) {
       network->set_underlying_type_for_vpn(underlying_adapter_type);
     }
@@ -176,8 +176,8 @@ void IpcNetworkManager::OnNetworkListChanged(
   if (Platform::Current()->AllowsLoopbackInPeerConnection()) {
     std::string name_v4("loopback_ipv4");
     rtc::IPAddress ip_address_v4(INADDR_LOOPBACK);
-    auto network_v4 = std::make_unique<rtc::Network>(
-        name_v4, name_v4, ip_address_v4, 32, rtc::ADAPTER_TYPE_UNKNOWN);
+    auto network_v4 = CreateNetwork(name_v4, name_v4, ip_address_v4, 32,
+                                    rtc::ADAPTER_TYPE_UNKNOWN);
     network_v4->set_default_local_address_provider(this);
     network_v4->set_mdns_responder_provider(this);
     network_v4->AddIP(ip_address_v4);
@@ -191,8 +191,8 @@ void IpcNetworkManager::OnNetworkListChanged(
       DCHECK(!ipv6_default_address.IsNil());
       std::string name_v6("loopback_ipv6");
       rtc::IPAddress ip_address_v6(in6addr_loopback);
-      auto network_v6 = std::make_unique<rtc::Network>(
-          name_v6, name_v6, ip_address_v6, 64, rtc::ADAPTER_TYPE_UNKNOWN);
+      auto network_v6 = CreateNetwork(name_v6, name_v6, ip_address_v6, 64,
+                                      rtc::ADAPTER_TYPE_UNKNOWN);
       network_v6->set_default_local_address_provider(this);
       network_v6->set_mdns_responder_provider(this);
       network_v6->AddIP(ip_address_v6);
