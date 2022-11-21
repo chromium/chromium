@@ -2632,7 +2632,10 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   }
 
   void CopyNonInheritedFromCached(const ComputedStyle& other) {
-    DCHECK(MatchedPropertiesCache::IsStyleCacheable(other));
+#if DCHECK_IS_ON()
+    ComputedStyleBuilder builder(other);
+    DCHECK(MatchedPropertiesCache::IsStyleCacheable(builder));
+#endif
     ComputedStyleBuilderBase::CopyNonInheritedFromCached(other);
   }
 

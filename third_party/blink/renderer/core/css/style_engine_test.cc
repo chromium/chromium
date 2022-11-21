@@ -1155,7 +1155,9 @@ TEST_F(StyleEngineTest, VisitedExplicitInheritanceMatchedPropertiesCache) {
   EXPECT_FALSE(style->ChildHasExplicitInheritance());
 
   style = span->firstChild()->GetComputedStyle();
-  EXPECT_TRUE(MatchedPropertiesCache::IsStyleCacheable(*style));
+
+  ComputedStyleBuilder builder(*style);
+  EXPECT_TRUE(MatchedPropertiesCache::IsStyleCacheable(builder));
 
   span->SetInlineStyleProperty(CSSPropertyID::kColor, "blue");
 

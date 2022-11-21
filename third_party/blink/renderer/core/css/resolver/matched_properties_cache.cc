@@ -204,23 +204,24 @@ void MatchedPropertiesCache::ClearViewportDependent() {
   cache_.RemoveAll(to_remove);
 }
 
-bool MatchedPropertiesCache::IsStyleCacheable(const ComputedStyle& style) {
+bool MatchedPropertiesCache::IsStyleCacheable(
+    const ComputedStyleBuilder& builder) {
   // Content property with attr() values depend on the attribute value of the
   // originating element, thus we cannot cache based on the matched properties
   // because the value of content is retrieved from the attribute at apply time.
-  if (style.HasAttrContent())
+  if (builder.HasAttrContent())
     return false;
-  if (style.Zoom() != ComputedStyleInitialValues::InitialZoom())
+  if (builder.Zoom() != ComputedStyleInitialValues::InitialZoom())
     return false;
-  if (style.TextAutosizingMultiplier() != 1)
+  if (builder.TextAutosizingMultiplier() != 1)
     return false;
-  if (style.HasContainerRelativeUnits())
+  if (builder.HasContainerRelativeUnits())
     return false;
   // Avoiding cache for ::highlight styles, and the originating styles they are
   // associated with, because the style depends on the highlight names involved
   // and they're not cached.
-  if (style.HasPseudoElementStyle(kPseudoIdHighlight) ||
-      style.StyleType() == kPseudoIdHighlight)
+  if (builder.InternalStyle()->HasPseudoElementStyle(kPseudoIdHighlight) ||
+      builder.StyleType() == kPseudoIdHighlight)
     return false;
   return true;
 }
@@ -228,7 +229,7 @@ bool MatchedPropertiesCache::IsStyleCacheable(const ComputedStyle& style) {
 bool MatchedPropertiesCache::IsCacheable(const StyleResolverState& state) {
   const ComputedStyle& parent_style = *state.ParentStyle();
 
-  if (!IsStyleCacheable(*state.Style()))
+  if (!IsStyleCacheable(state.StyleBuilder()))
     return false;
 
   // The cache assumes static knowledge about which properties are inherited.

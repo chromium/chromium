@@ -36,6 +36,7 @@
 namespace blink {
 
 class ComputedStyle;
+class ComputedStyleBuilder;
 class StyleResolverState;
 
 class CORE_EXPORT CachedMatchedProperties final
@@ -105,7 +106,7 @@ class CORE_EXPORT MatchedPropertiesCache {
   void ClearViewportDependent();
 
   static bool IsCacheable(const StyleResolverState&);
-  static bool IsStyleCacheable(const ComputedStyle&);
+  static bool IsStyleCacheable(const ComputedStyleBuilder&);
 
   void Trace(Visitor*) const;
 
