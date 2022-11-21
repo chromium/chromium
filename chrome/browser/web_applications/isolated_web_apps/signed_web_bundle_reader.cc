@@ -280,7 +280,7 @@ void SignedWebBundleReader::FulfillWithError(
   std::move(callback).Run(std::move(error));
 }
 
-GURL SignedWebBundleReader::GetPrimaryURL() const {
+const absl::optional<GURL>& SignedWebBundleReader::GetPrimaryURL() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitialized);
 

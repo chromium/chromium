@@ -215,7 +215,7 @@ std::vector<GURL> WebBundleReader::GetEntries() const {
   return entries;
 }
 
-const GURL& WebBundleReader::GetPrimaryURL() const {
+const absl::optional<GURL>& WebBundleReader::GetPrimaryURL() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(state_, State::kInitial);
 
@@ -280,6 +280,7 @@ void WebBundleReader::OnMetadataParsed(
 
   if (metadata) {
     primary_url_ = metadata->primary_url;
+    DCHECK(!primary_url_.has_value() || primary_url_->is_valid());
     entries_ = std::move(metadata->requests);
   }
   std::move(callback).Run(std::move(error));

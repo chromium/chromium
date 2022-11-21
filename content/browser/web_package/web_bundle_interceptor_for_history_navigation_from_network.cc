@@ -136,7 +136,14 @@ void WebBundleInterceptorForHistoryNavigationFromNetwork::OnMetadataReady(
         web_bundle_utils::GetMetadataParseErrorMessage(error));
     return;
   }
-  if (!web_bundle_utils::IsAllowedExchangeUrl(reader_->GetPrimaryURL())) {
+  const absl::optional<GURL>& primary_url = reader_->GetPrimaryURL();
+  if (!primary_url.has_value()) {
+    web_bundle_utils::CompleteWithInvalidWebBundleError(
+        std::move(forwarding_client_), frame_tree_node_id_,
+        web_bundle_utils::kNoPrimaryUrlErrorMessage);
+    return;
+  }
+  if (!web_bundle_utils::IsAllowedExchangeUrl(*primary_url)) {
     web_bundle_utils::CompleteWithInvalidWebBundleError(
         std::move(forwarding_client_), frame_tree_node_id_,
         web_bundle_utils::kInvalidPrimaryUrlErrorMessage);

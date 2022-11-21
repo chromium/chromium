@@ -79,7 +79,10 @@ void WebBundleInterceptorForHistoryNavigationFromFileOrFromTrustableFile::
     metadata_error_ =
         web_bundle_utils::GetMetadataParseErrorMessage(std::move(error));
   } else {
-    if (!web_bundle_utils::IsAllowedExchangeUrl(reader_->GetPrimaryURL())) {
+    const absl::optional<GURL>& primary_url = reader_->GetPrimaryURL();
+    if (!primary_url.has_value()) {
+      metadata_error_ = web_bundle_utils::kNoPrimaryUrlErrorMessage;
+    } else if (!web_bundle_utils::IsAllowedExchangeUrl(*primary_url)) {
       metadata_error_ = web_bundle_utils::kInvalidPrimaryUrlErrorMessage;
     } else if (!base::ranges::all_of(reader_->GetEntries(),
                                      &web_bundle_utils::IsAllowedExchangeUrl)) {

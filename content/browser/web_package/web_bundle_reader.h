@@ -85,7 +85,7 @@ class CONTENT_EXPORT WebBundleReader final
 
   // Returns the bundle's primary URL.
   // Should be called after ReadMetadata finishes.
-  const GURL& GetPrimaryURL() const;
+  const absl::optional<GURL>& GetPrimaryURL() const;
 
   // Returns the WebBundleSource.
   const WebBundleSource& source() const;
@@ -134,7 +134,7 @@ class CONTENT_EXPORT WebBundleReader final
   // Used when loading a web bundle from network.
   std::unique_ptr<WebBundleBlobDataSource> blob_data_source_;
 
-  GURL primary_url_;
+  absl::optional<GURL> primary_url_;
   base::flat_map<GURL, web_package::mojom::BundleResponseLocationPtr> entries_;
   // Accumulates ReadResponse() requests while the parser is disconnected.
   std::vector<std::pair<web_package::mojom::BundleResponseLocationPtr,

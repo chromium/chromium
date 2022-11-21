@@ -732,7 +732,7 @@ TEST_F(WebBundleParserTest, NoPrimaryUrlSingleEntry) {
   EXPECT_EQ(response->response_headers.size(), 1u);
   EXPECT_EQ(response->response_headers["content-type"], "text/plain");
   EXPECT_EQ(data_source.GetPayload(response), "payload");
-  EXPECT_TRUE(metadata->primary_url.is_empty());
+  EXPECT_FALSE(metadata->primary_url.has_value());
 }
 
 TEST_F(WebBundleParserTest, RelativeURL) {

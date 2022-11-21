@@ -162,7 +162,7 @@ class SignedWebBundleReader {
 
   // Returns the primary URL, as specified in the metadata of the Web Bundle.
   // Will CHECK if `GetState()` != `kInitialized`.
-  GURL GetPrimaryURL() const;
+  const absl::optional<GURL>& GetPrimaryURL() const;
 
   // Returns the URLs of all exchanges contained in the Web Bundle, as specified
   // in the metadata. Will CHECK if `GetState()` != `kInitialized`.
@@ -300,7 +300,7 @@ class SignedWebBundleReader {
   absl::optional<uint64_t> integrity_block_size_in_bytes_;
 
   // Metadata
-  GURL primary_url_;
+  absl::optional<GURL> primary_url_;
   base::flat_map<GURL, web_package::mojom::BundleResponseLocationPtr> entries_;
 
   // Accumulates `ReadResponse` requests while the parser is disconnected, and

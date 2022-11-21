@@ -37,7 +37,7 @@ class IsolatedWebAppValidator {
   // metadata is invalid.
   [[nodiscard]] virtual absl::optional<std::string> ValidateMetadata(
       const web_package::SignedWebBundleId& web_bundle_id,
-      const GURL& primary_url,
+      const absl::optional<GURL>& primary_url,
       const std::vector<GURL>& entries);
 };
 

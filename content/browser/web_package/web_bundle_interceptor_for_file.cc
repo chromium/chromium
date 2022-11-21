@@ -84,7 +84,7 @@ void WebBundleInterceptorForFile::OnMetadataReady(
     return;
   }
   DCHECK(reader_);
-  primary_url_ = reader_->GetPrimaryURL();
+  primary_url_ = reader_->GetPrimaryURL().value_or(GURL());
   if (primary_url_.is_empty()) {
     web_bundle_utils::CompleteWithInvalidWebBundleError(
         std::move(forwarding_client_), frame_tree_node_id_,

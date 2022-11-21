@@ -45,14 +45,14 @@ void IsolatedWebAppValidator::ValidateIntegrityBlock(
 
 absl::optional<std::string> IsolatedWebAppValidator::ValidateMetadata(
     const web_package::SignedWebBundleId& web_bundle_id,
-    const GURL& primary_url,
+    const absl::optional<GURL>& primary_url,
     const std::vector<GURL>& entries) {
   // Verify that the Signed Web Bundle does not have a primary URL set. Primary
   // URLs make no sense for Isolated Web Apps - the "primary URL" should be
   // retrieved from the web app manifest's `start_url` field.
-  if (!primary_url.is_empty()) {
+  if (primary_url.has_value()) {
     return base::StringPrintf("Primary URL must not be present, but was %s",
-                              primary_url.possibly_invalid_spec().c_str());
+                              primary_url->possibly_invalid_spec().c_str());
   }
 
   // Verify that the bundle only contains isolated-app:// URLs using the

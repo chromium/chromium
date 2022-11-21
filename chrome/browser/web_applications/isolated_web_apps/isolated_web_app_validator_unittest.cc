@@ -107,7 +107,7 @@ TEST_F(IsolatedWebAppValidatorIntegrityBlockTest, EmptyPublicKeyStack) {
 class IsolatedWebAppValidatorMetadataTest
     : public IsolatedWebAppValidatorTest,
       public ::testing::WithParamInterface<
-          std::tuple<std::string,
+          std::tuple<absl::optional<std::string>,
                      std::vector<std::string>,
                      absl::optional<std::string>>> {
  public:
@@ -120,7 +120,7 @@ class IsolatedWebAppValidatorMetadataTest
   }
 
  protected:
-  GURL primary_url_;
+  absl::optional<GURL> primary_url_;
   std::vector<GURL> entries_;
   absl::optional<std::string> error_message_;
 };
@@ -139,12 +139,14 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     IsolatedWebAppValidatorMetadataTest,
     ::testing::Values(
-        std::make_tuple("", std::vector<std::string>({kUrl}), absl::nullopt),
-        std::make_tuple("",
+        std::make_tuple(absl::nullopt,
+                        std::vector<std::string>({kUrl}),
+                        absl::nullopt),
+        std::make_tuple(absl::nullopt,
                         std::vector<std::string>({kUrl, kUrl + "/foo#bar"}),
                         "The URL of an exchange is invalid: URLs must not have "
                         "a fragment part."),
-        std::make_tuple("",
+        std::make_tuple(absl::nullopt,
                         std::vector<std::string>({kUrl, kUrl + "/foo?bar"}),
                         "The URL of an exchange is invalid: URLs must not have "
                         "a query part."),
@@ -153,12 +155,12 @@ INSTANTIATE_TEST_SUITE_P(
             std::vector<std::string>({kUrl}),
             "Primary URL must not be present, but was isolated-app://"
             "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/"),
-        std::make_tuple("",
+        std::make_tuple(absl::nullopt,
                         std::vector<std::string>({kUrl, "https://foo/"}),
                         "The URL of an exchange is invalid: The URL scheme "
                         "must be isolated-app, but was https"),
         std::make_tuple(
-            "",
+            absl::nullopt,
             std::vector<std::string>({kUrl, kUrlFromAnotherIsolatedWebApp}),
             "The URL of an exchange contains the wrong Signed Web Bundle ID: "
             "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic")));

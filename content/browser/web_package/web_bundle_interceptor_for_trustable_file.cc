@@ -95,7 +95,7 @@ void WebBundleInterceptorForTrustableFile::OnMetadataReady(
     metadata_error_ =
         web_bundle_utils::GetMetadataParseErrorMessage(std::move(error));
   } else {
-    primary_url_ = reader_->GetPrimaryURL();
+    primary_url_ = reader_->GetPrimaryURL().value_or(GURL());
 
     if (primary_url_.is_empty()) {
       metadata_error_ = web_bundle_utils::kNoPrimaryUrlErrorMessage;

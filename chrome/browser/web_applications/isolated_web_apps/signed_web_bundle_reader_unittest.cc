@@ -214,7 +214,7 @@ TEST_F(SignedWebBundleReaderTest, ReadValidIntegrityBlockAndMetadata) {
 TEST_F(SignedWebBundleReaderTest,
        ReadValidIntegrityBlockAndMetadataWithoutPrimaryUrl) {
   auto metadata = metadata_->Clone();
-  metadata->primary_url = GURL();
+  metadata->primary_url = absl::nullopt;
 
   base::test::TestFuture<
       absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>>
@@ -229,7 +229,7 @@ TEST_F(SignedWebBundleReaderTest,
   EXPECT_FALSE(parse_error.has_value());
   EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
 
-  EXPECT_TRUE(reader->GetPrimaryURL().is_empty());
+  EXPECT_FALSE(reader->GetPrimaryURL().has_value());
   EXPECT_EQ(reader->GetEntries().size(), 1ul);
   EXPECT_EQ(reader->GetEntries()[0], kUrl);
 }

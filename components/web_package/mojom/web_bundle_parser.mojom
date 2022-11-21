@@ -98,7 +98,7 @@ struct BundleIntegrityBlockSignatureStackEntry {
 // Bundle's metadata, i.e. information in sections other than "responses".
 struct BundleMetadata {
   BundleFormatVersion version;
-  url.mojom.Url primary_url;
+  url.mojom.Url? primary_url;
   map<url.mojom.Url, BundleResponseLocation> requests;
   array<AugmentedCertificate> authorities;
   array<VouchedSubset> vouched_subsets;
