@@ -67,6 +67,9 @@ public interface CredentialManagerLauncher {
      * @param failureCallback callback called if the retrieving failed with the encountered error.
      *      The error should be a value from {@link CredentialManagerError}.
      */
+    // TODO(crbug.com/1385430): Remove once the replacement method is implemented and this is no
+    // longer called.
+    @Deprecated
     void getCredentialManagerIntentForAccount(@ManagePasswordsReferrer int referrer,
             String accountName, Callback<PendingIntent> successCallback,
             Callback<Integer> failureCallback);
@@ -80,6 +83,33 @@ public interface CredentialManagerLauncher {
      * @param failureCallback callback called if the retrieving failed with the encountered error
      *      The error should be a value from {@link CredentialManagerError}.
      */
+    // TODO(crbug.com/1385430): Remove once the replacement method is implemented and this is no
+    // longer called.
+    @Deprecated
     void getCredentialManagerIntentForLocal(@ManagePasswordsReferrer int referrer,
             Callback<PendingIntent> successCallback, Callback<Integer> failureCallback);
+
+    /**
+     * Retrieves a pending intent that can be used to launch the credential manager. The intent
+     * is to either be used immediately or discarded.
+     *
+     * @param referrer the place that will launch the credential manager
+     * @param accountName the account name that is syncing passwords.
+     * @param successCallback callback called with the intent if the retrieving was successful.
+     * @param failureCallback callback called if the retrieving failed with the encountered error.
+     */
+    default void getAccountCredentialManagerIntent(@ManagePasswordsReferrer int referrer,
+            String accountName, Callback<PendingIntent> successCallback,
+            Callback<Exception> failureCallback) {}
+
+    /**
+     * Retrieves a pending intent that can be used to launch the credential manager. The intent
+     * is to either be used immediately or discarded.
+     *
+     * @param referrer the place that will launch the credential manager
+     * @param successCallback callback called with the intent if the retrieving was successful.
+     * @param failureCallback callback called if the retrieving failed with the encountered error.
+     */
+    default void getLocalCredentialManagerIntent(@ManagePasswordsReferrer int referrer,
+            Callback<PendingIntent> successCallback, Callback<Exception> failureCallback) {}
 }
