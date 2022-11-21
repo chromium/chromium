@@ -32,12 +32,6 @@ namespace {
 constexpr const char* kBatterySamplingDelayHistogramName =
     "Power.BatterySamplingDelay";
 
-bool IsWithinTolerance(base::TimeDelta value,
-                       base::TimeDelta expected,
-                       base::TimeDelta tolerance) {
-  return (value - expected).magnitude() < tolerance;
-}
-
 // Calculates the UKM bucket |value| falls in and returns it. This uses an
 // exponential bucketing approach with an exponent base of 1.3, resulting in
 // 17 buckets for an interval of 120 seconds.
@@ -348,22 +342,6 @@ void PowerMetricsReporter::ReportBatterySpecificMetrics(
   // Report UKMs.
   ReportBatteryUKMs(long_interval_data, aggregated_process_metrics,
                     interval_duration, battery_discharge);
-
-  // Ratio by which the time elapsed can deviate from
-  // |kLongPowerMetricsIntervalDuration| without invalidating this sample.
-  // TODO(pmonette): Change to DCHECK after ensuring this never triggers.
-  CHECK_GE(interval_duration, kLongPowerMetricsIntervalDuration);
-  constexpr double kTolerableTimeElapsedRatio = 0.10;
-  if (battery_discharge.mode == BatteryDischargeMode::kDischarging &&
-      !IsWithinTolerance(
-          interval_duration, kLongPowerMetricsIntervalDuration,
-          kLongPowerMetricsIntervalDuration * kTolerableTimeElapsedRatio)) {
-    battery_discharge.mode = BatteryDischargeMode::kInvalidInterval;
-  }
-
-  ReportBatteryHistograms(
-      interval_duration, battery_discharge,
-      {"", GetLongIntervalScenario(long_interval_data).histogram_suffix});
 }
 
 void PowerMetricsReporter::ReportBatteryUKMs(

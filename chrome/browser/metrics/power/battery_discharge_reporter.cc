@@ -82,8 +82,8 @@ void BatteryDischargeReporter::OnBatteryStateSampled(
   // suffix.
   const std::vector<const char*> long_interval_suffixes{
       "", long_interval_scenario_params.histogram_suffix};
-  ReportAlignedBatteryHistograms(sampling_event_delta, battery_discharge,
-                                 is_initial_interval_, long_interval_suffixes);
+  ReportBatteryHistograms(sampling_event_delta, battery_discharge,
+                          is_initial_interval_, long_interval_suffixes);
   is_initial_interval_ = false;
 }
 

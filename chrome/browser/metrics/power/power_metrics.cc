@@ -16,16 +16,11 @@
 
 namespace {
 
-constexpr const char* kBatteryDischargeRateHistogramName =
-    "Power.BatteryDischargeRate2";
-constexpr const char* kBatteryDischargeModeHistogramName =
-    "Power.BatteryDischargeMode2";
-
-constexpr const char* kAlignedBatteryDischargeRateMilliwattsHistogramName =
+constexpr const char* kBatteryDischargeRateMilliwattsHistogramName =
     "Power.BatteryDischargeRateMilliwatts5";
-constexpr const char* kAlignedBatteryDischargeRateRelativeHistogramName =
+constexpr const char* kBatteryDischargeRateRelativeHistogramName =
     "Power.BatteryDischargeRateRelative5";
-constexpr const char* kAlignedBatteryDischargeModeHistogramName =
+constexpr const char* kBatteryDischargeModeHistogramName =
     "Power.BatteryDischargeMode5";
 
 #if BUILDFLAG(IS_MAC)
@@ -177,31 +172,14 @@ BatteryDischarge GetBatteryDischargeDuringInterval(
   const auto discharge_rate_mw = CalculateDischargeRateMilliwatts(
       previous_battery_state, new_battery_state, interval_duration);
 
-  if (discharge_rate_relative < 0 || discharge_rate_mw < 0)
+  if (discharge_rate_relative < 0 || discharge_rate_mw < 0) {
     return {BatteryDischargeMode::kBatteryLevelIncreased, absl::nullopt};
+  }
   return {BatteryDischargeMode::kDischarging, discharge_rate_mw,
           discharge_rate_relative};
 }
 
 void ReportBatteryHistograms(
-    base::TimeDelta interval_duration,
-    BatteryDischarge battery_discharge,
-    const std::vector<const char*>& scenario_suffixes) {
-  for (const char* scenario_suffix : scenario_suffixes) {
-    base::UmaHistogramEnumeration(
-        base::StrCat({kBatteryDischargeModeHistogramName, scenario_suffix}),
-        battery_discharge.mode);
-
-    if (battery_discharge.mode == BatteryDischargeMode::kDischarging) {
-      DCHECK(battery_discharge.rate_relative.has_value());
-      base::UmaHistogramCounts1000(
-          base::StrCat({kBatteryDischargeRateHistogramName, scenario_suffix}),
-          *battery_discharge.rate_relative);
-    }
-  }
-}
-
-void ReportAlignedBatteryHistograms(
     base::TimeDelta interval_duration,
     BatteryDischarge battery_discharge,
     bool is_initial_interval,
@@ -212,19 +190,19 @@ void ReportAlignedBatteryHistograms(
   for (const char* scenario_suffix : scenario_suffixes) {
     for (const char* interval_type_suffix : interval_type_suffixes) {
       base::UmaHistogramEnumeration(
-          base::StrCat({kAlignedBatteryDischargeModeHistogramName,
-                        scenario_suffix, interval_type_suffix}),
+          base::StrCat({kBatteryDischargeModeHistogramName, scenario_suffix,
+                        interval_type_suffix}),
           battery_discharge.mode);
 
       if (battery_discharge.mode == BatteryDischargeMode::kDischarging) {
         DCHECK(battery_discharge.rate_milliwatts.has_value());
         base::UmaHistogramCounts100000(
-            base::StrCat({kAlignedBatteryDischargeRateMilliwattsHistogramName,
+            base::StrCat({kBatteryDischargeRateMilliwattsHistogramName,
                           scenario_suffix, interval_type_suffix}),
             *battery_discharge.rate_milliwatts);
         DCHECK(battery_discharge.rate_relative.has_value());
         base::UmaHistogramCounts1000(
-            base::StrCat({kAlignedBatteryDischargeRateRelativeHistogramName,
+            base::StrCat({kBatteryDischargeRateRelativeHistogramName,
                           scenario_suffix, interval_type_suffix}),
             *battery_discharge.rate_relative);
       }
