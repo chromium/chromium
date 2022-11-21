@@ -1437,7 +1437,7 @@ ecp_nistz256_ord_mul_mont:
 
 ////////////////////////////////////////////////////////////////////////
 // void ecp_nistz256_ord_sqr_mont(uint64_t res[4], uint64_t a[4],
-//                                int rep);
+//                                uint64_t rep);
 .globl	ecp_nistz256_ord_sqr_mont
 
 .def ecp_nistz256_ord_sqr_mont
