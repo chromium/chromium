@@ -1,0 +1,13 @@
+Tests that tracking and untracking CacheStorage for storage key works
+
+Open cache, add item
+cache storage list updated for storageKey: true
+cache item added successfully
+
+Delete item from cache
+cache storage content updated for: test-cache for storageKey: true
+cache item deleted successfully
+
+Add one more item
+one more cache item added successfully
+

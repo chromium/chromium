@@ -155,9 +155,7 @@ class StorageHandler::CacheStorageObserver
     auto found = storage_keys_.find(storage_key);
     if (found == storage_keys_.end())
       return;
-    // TODO(https://crbug.com/1199077): NotifyCacheStorageListChanged should be
-    // updated to accept `storage_key`'s serialization.
-    owner_->NotifyCacheStorageListChanged(storage_key.origin().Serialize());
+    owner_->NotifyCacheStorageListChanged(storage_key);
   }
 
   void OnCacheContentChanged(const blink::StorageKey& storage_key,
@@ -165,10 +163,7 @@ class StorageHandler::CacheStorageObserver
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (storage_keys_.find(storage_key) == storage_keys_.end())
       return;
-    // TODO(https://crbug.com/1199077): NotifyCacheStorageListChanged should be
-    // updated to accept `storage_key`'s serialization.
-    owner_->NotifyCacheStorageContentChanged(storage_key.origin().Serialize(),
-                                             cache_name);
+    owner_->NotifyCacheStorageContentChanged(storage_key, cache_name);
   }
 
  private:
@@ -564,6 +559,20 @@ Response StorageHandler::TrackCacheStorageForOrigin(
   return Response::Success();
 }
 
+Response StorageHandler::TrackCacheStorageForStorageKey(
+    const std::string& storage_key) {
+  if (!storage_partition_)
+    return Response::InternalError();
+
+  absl::optional<blink::StorageKey> key =
+      blink::StorageKey::Deserialize(storage_key);
+  if (!key)
+    return Response::InvalidParams("Unable to deserialize storage key");
+
+  GetCacheStorageObserver()->TrackStorageKey(*key);
+  return Response::Success();
+}
+
 // TODO(https://crbug.com/1199077): We should think about how this function
 // should be exposed when migrating to storage keys.
 Response StorageHandler::UntrackCacheStorageForOrigin(
@@ -577,6 +586,20 @@ Response StorageHandler::UntrackCacheStorageForOrigin(
     return Response::InvalidParams(origin_string + " is not a valid URL");
 
   GetCacheStorageObserver()->UntrackStorageKey(blink::StorageKey(origin));
+  return Response::Success();
+}
+
+Response StorageHandler::UntrackCacheStorageForStorageKey(
+    const std::string& storage_key) {
+  if (!storage_partition_)
+    return Response::InternalError();
+
+  absl::optional<blink::StorageKey> key =
+      blink::StorageKey::Deserialize(storage_key);
+  if (!key)
+    return Response::InvalidParams("Unable to deserialize storage key");
+
+  GetCacheStorageObserver()->UntrackStorageKey(*key);
   return Response::Success();
 }
 
@@ -682,15 +705,19 @@ StorageHandler::GetSharedStorageManager() {
   return Response::ServerError("Shared storage is disabled");
 }
 
-void StorageHandler::NotifyCacheStorageListChanged(const std::string& origin) {
+void StorageHandler::NotifyCacheStorageListChanged(
+    const blink::StorageKey& storage_key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  frontend_->CacheStorageListUpdated(origin);
+  frontend_->CacheStorageListUpdated(storage_key.origin().Serialize(),
+                                     storage_key.Serialize());
 }
 
-void StorageHandler::NotifyCacheStorageContentChanged(const std::string& origin,
-                                                      const std::string& name) {
+void StorageHandler::NotifyCacheStorageContentChanged(
+    const blink::StorageKey& storage_key,
+    const std::string& name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  frontend_->CacheStorageContentUpdated(origin, name);
+  frontend_->CacheStorageContentUpdated(storage_key.origin().Serialize(),
+                                        storage_key.Serialize(), name);
 }
 
 void StorageHandler::NotifyIndexedDBListChanged(

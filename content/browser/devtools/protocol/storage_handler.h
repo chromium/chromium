@@ -82,7 +82,11 @@ class StorageHandler : public DevToolsDomainHandler,
 
   // Ignores all double calls to track an origin.
   Response TrackCacheStorageForOrigin(const std::string& origin) override;
+  Response TrackCacheStorageForStorageKey(
+      const std::string& storage_key) override;
   Response UntrackCacheStorageForOrigin(const std::string& origin) override;
+  Response UntrackCacheStorageForStorageKey(
+      const std::string& storage_key) override;
   Response TrackIndexedDBForOrigin(const std::string& origin) override;
   Response TrackIndexedDBForStorageKey(const std::string& storage_key) override;
   Response UntrackIndexedDBForOrigin(const std::string& origin) override;
@@ -152,8 +156,8 @@ class StorageHandler : public DevToolsDomainHandler,
       const std::string& owner_origin,
       const SharedStorageEventParams& params);
 
-  void NotifyCacheStorageListChanged(const std::string& origin);
-  void NotifyCacheStorageContentChanged(const std::string& origin,
+  void NotifyCacheStorageListChanged(const blink::StorageKey& storage_key);
+  void NotifyCacheStorageContentChanged(const blink::StorageKey& storage_key,
                                         const std::string& name);
   void NotifyIndexedDBListChanged(const std::string& origin,
                                   const std::string& storage_key);
