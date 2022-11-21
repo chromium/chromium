@@ -193,6 +193,10 @@ class OptimizationGuideKeyedService
   std::unique_ptr<optimization_guide::OptimizationGuideStore>
       prediction_model_and_features_store_;
 
+  // The logger that plumbs the debug logs to the optimization guide
+  // internals page. Must outlive `prediction_manager_`.
+  std::unique_ptr<OptimizationGuideLogger> optimization_guide_logger_;
+
   // Manages the storing, loading, and evaluating of optimization target
   // prediction models.
   std::unique_ptr<optimization_guide::PredictionManager> prediction_manager_;
@@ -205,10 +209,6 @@ class OptimizationGuideKeyedService
   // The tab URL provider to use for fetching information for the user's active
   // tabs. Will be null if the user is off the record.
   std::unique_ptr<optimization_guide::TabUrlProvider> tab_url_provider_;
-
-  // The logger that plumbs the debug logs to the optimization guide
-  // internals page.
-  std::unique_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 };
 
 #endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_KEYED_SERVICE_H_
