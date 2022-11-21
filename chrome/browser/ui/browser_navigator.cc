@@ -314,6 +314,7 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
                   ->GetPictureInPictureInitialAspectRatio();
           browser_params.lock_aspect_ratio =
               params.contents_to_insert->GetPictureInPictureLockAspectRatio();
+          browser_params.omit_from_session_restore = true;
         }
 
         return {Browser::Create(browser_params), -1};
