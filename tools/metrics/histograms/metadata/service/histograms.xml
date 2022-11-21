@@ -22,12 +22,26 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="ServiceWorkerCacheClientType">
+  <variant name="BackgroundSyncManager"
+      summary="Collected from a BackgroundSyncManager instance"/>
+  <variant name="Cache" summary="Collected from a CacheStorageCache instance"/>
+  <variant name="CacheStorage"
+      summary="Collected from a CacheStorage instance"/>
+</variants>
+
 <variants name="ServiceWorkerCacheProcessType">
   <variant name="Browser"
       summary="Measurements taken in the browser process on the IO thread"/>
   <variant name="Renderer"
       summary="Measurements taken in the renderer process on the javascript
                thread"/>
+</variants>
+
+<variants name="ServiceWorkerCacheSchedulerOpClientType">
+  <variant name="Cache" summary="Collected from a CacheStorageCache instance"/>
+  <variant name="CacheStorage"
+      summary="Collected from a CacheStorage instance"/>
 </variants>
 
 <variants name="ServiceWorkerEventType">
@@ -56,6 +70,23 @@ chromium-metrics-reviews@google.com.
 <variants name="ServiceWorkerFetchEventResult">
   <variant name="GOT_RESPONSE"/>
   <variant name="SHOULD_FALLBACK"/>
+</variants>
+
+<variants name="ServiceWorkerSchedulerOp">
+  <variant name="Close"/>
+  <variant name="Delete"/>
+  <variant name="GetAllMatched"/>
+  <variant name="Has"/>
+  <variant name="Init"/>
+  <variant name="Keys"/>
+  <variant name="Match"/>
+  <variant name="MatchAll"/>
+  <variant name="Open"/>
+  <variant name="Put"/>
+  <variant name="Size"/>
+  <variant name="SizeThenClose"/>
+  <variant name="WriteIndex"/>
+  <variant name="WriteSideData"/>
 </variants>
 
 <histogram name="ServiceWorker.AbortPaymentEvent.Time" units="ms"
@@ -1419,8 +1450,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ServiceWorkerCache.Scheduler.OperationDuration2" units="ms"
-    expires_after="2023-05-26">
+<histogram
+    name="ServiceWorkerCache.{ServiceWorkerCacheClientType}.Scheduler.OperationDuration2"
+    units="ms" expires_after="2023-05-26">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -1428,27 +1460,77 @@ chromium-metrics-reviews@google.com.
     histogram differs from the old OperationDuration in that it uses a different
     bucket size to measure longer values.
   </summary>
+  <token key="ServiceWorkerCacheClientType"
+      variants="ServiceWorkerCacheClientType"/>
 </histogram>
 
-<histogram name="ServiceWorkerCache.Scheduler.QueueDuration2" units="ms"
-    expires_after="2023-05-26">
+<histogram
+    name="ServiceWorkerCache.{ServiceWorkerCacheClientType}.Scheduler.QueueDuration2"
+    units="ms" expires_after="2023-05-26">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
-    The time in ms from when an operation was queued until its task is posted.
-    This histogram differs from the old QueueDuration in that it uses a
-    different bucket size to measure longer values.
+    The time in ms from when an operation is started until it completes. This
+    histogram differs from the old OperationDuration in that it uses a different
+    bucket size to measure longer values.
   </summary>
+  <token key="ServiceWorkerCacheClientType"
+      variants="ServiceWorkerCacheClientType"/>
 </histogram>
 
-<histogram name="ServiceWorkerCache.Scheduler.QueueLength" units="operations"
-    expires_after="2023-05-26">
+<histogram
+    name="ServiceWorkerCache.{ServiceWorkerCacheClientType}.Scheduler.QueueLength"
+    units="operations" expires_after="2023-05-26">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     The number of operations in the scheduling queue just before enqueuing a new
     operation.
   </summary>
+  <token key="ServiceWorkerCacheClientType"
+      variants="ServiceWorkerCacheClientType"/>
+</histogram>
+
+<histogram
+    name="ServiceWorkerCache.{ServiceWorkerCacheSchedulerOpClientType}.Scheduler.OperationDuration2.{ServiceWorkerSchedulerOp}"
+    units="ms" expires_after="2023-05-26">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The time in ms from when an operation is started until it completes for the
+    {ServiceWorkerCacheSchedulerOpClientType} instance.
+  </summary>
+  <token key="ServiceWorkerCacheSchedulerOpClientType"
+      variants="ServiceWorkerCacheSchedulerOpClientType"/>
+  <token key="ServiceWorkerSchedulerOp" variants="ServiceWorkerSchedulerOp"/>
+</histogram>
+
+<histogram
+    name="ServiceWorkerCache.{ServiceWorkerCacheSchedulerOpClientType}.Scheduler.QueueDuration2.{ServiceWorkerSchedulerOp}"
+    units="ms" expires_after="2023-05-26">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The time in ms from when an operation is started until it completes for the
+    {ServiceWorkerCacheSchedulerOpClientType} instance.
+  </summary>
+  <token key="ServiceWorkerCacheSchedulerOpClientType"
+      variants="ServiceWorkerCacheSchedulerOpClientType"/>
+  <token key="ServiceWorkerSchedulerOp" variants="ServiceWorkerSchedulerOp"/>
+</histogram>
+
+<histogram
+    name="ServiceWorkerCache.{ServiceWorkerCacheSchedulerOpClientType}.Scheduler.QueueLength.{ServiceWorkerSchedulerOp}"
+    units="operations" expires_after="2023-05-26">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The number of operations in the scheduling queue just before enqueuing a new
+    operation for the {ServiceWorkerCacheSchedulerOpClientType} instance.
+  </summary>
+  <token key="ServiceWorkerCacheSchedulerOpClientType"
+      variants="ServiceWorkerCacheSchedulerOpClientType"/>
+  <token key="ServiceWorkerSchedulerOp" variants="ServiceWorkerSchedulerOp"/>
 </histogram>
 
 </histograms>
