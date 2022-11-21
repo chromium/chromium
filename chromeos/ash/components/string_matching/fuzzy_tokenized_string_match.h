@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_FUZZY_TOKENIZED_STRING_MATCH_H_
 #define CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_FUZZY_TOKENIZED_STRING_MATCH_H_
 
+#include <vector>
+
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "ui/gfx/range/range.h"
 
@@ -67,9 +69,8 @@ class FuzzyTokenizedStringMatch {
   static double WeightedRatio(const TokenizedString& query,
                               const TokenizedString& text);
 
-  // Since prefix match should always be favored over other matches, this
-  // function is dedicated to calculate a prefix match score in range of [0, 1]
-  // using PrefixMatcher class.
+  // This function is dedicated to calculate a prefix match score in range of
+  // [0, 1] using PrefixMatcher class.
   static double PrefixMatcher(const TokenizedString& query,
                               const TokenizedString& text);
 
@@ -89,6 +90,18 @@ class FuzzyTokenizedStringMatch {
   const Hits& hits() const { return hits_; }
 
  private:
+  // This function is dedicated to calculate a prefix match score in range of
+  // [0, 1] and its hits information using PrefixMatcher class.
+  static double PrefixMatcher(const TokenizedString& query,
+                              const TokenizedString& text,
+                              std::vector<Hits>& hits_vector);
+  // This function is dedicated to calculate a first character match (aka
+  // acronym match) score in range of [0, 1] and its hits information using
+  // AcronymMatcher class.
+  static double AcronymMatcher(const TokenizedString& query,
+                               const TokenizedString& text,
+                               std::vector<Hits>& hits_vector);
+
   Hits hits_;
 };
 

@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
 
+#include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -25,6 +26,7 @@ constexpr double kCompleteMismatchScore = 0.0;
 
 // Default parameters.
 constexpr bool kUseWeightedRatio = false;
+constexpr bool kStripDiacritics = false;
 
 void ExpectAllNearlyEqualTo(const std::vector<double>& scores,
                             double target_score,
@@ -101,6 +103,23 @@ std::string FormatRelevanceResult(const std::u16string& query,
                               base::UTF16ToUTF8(text).data(),
                               base::UTF16ToUTF8(query).data(), relevance);
   }
+}
+
+// Returns a string of |text| marked with the hits using block
+// bracket. e.g. text= "Text", hits = [{0,1}], returns "[T]ext".
+//
+// TODO(crbug.com/1336160): Consider defining it as a |test_util| function as it
+// has been used for several unit tests.
+std::u16string MatchHit(const std::u16string& text,
+                        const FuzzyTokenizedStringMatch::Hits& hits) {
+  std::u16string marked = text;
+
+  for (const gfx::Range& hit : base::Reversed(hits)) {
+    marked.insert(hit.end(), 1, u']');
+    marked.insert(hit.start(), 1, u'[');
+  }
+
+  return marked;
 }
 
 }  // namespace
@@ -831,25 +850,49 @@ TEST_F(FuzzyTokenizedStringMatchTest,
 }
 
 TEST_F(FuzzyTokenizedStringMatchTest,
-       BenchmarkPrefixVsSameLengthNonPrefixMultiToken) {
+       BenchmarkHitsMatchHighestMatchingAlgorithm) {
   FuzzyTokenizedStringMatch match;
-  std::u16string text = u"xyzabc abcdef";
-  std::u16string query = u"abc";
-  const double relevance = match.Relevance(
-      TokenizedString(query), TokenizedString(text), kUseWeightedRatio);
 
-  VLOG(1) << FormatRelevanceResult(query, text, relevance,
-                                   /*query_first*/ false);
+  struct {
+    const std::u16string text;
+    const std::u16string query;
+    const std::u16string expect;
+    const bool use_acronym_matcher;
+  } kTestCases[] = {
+      // Prefix Matcher is favored over Sequence Matcher.
+      {u"xyzabc abcdef", u"abc", u"xyzabc [abc]def",
+       /*use_acronym_matcher=*/true},
+      {u"xyzabc abcdef", u"abc", u"xyzabc [abc]def",
+       /*use_acronym_matcher=*/false},
+      // Acronym Matcher is favored over Sequence Matcher.
+      {u"dabc axyz bxyz cxzy", u"abc", u"dabc [a]xyz [b]xyz [c]xzy",
+       /*use_acronym_matcher=*/true},
+      {u"dabc axyz bxyz cxzy", u"abc", u"d[abc] axyz bxyz cxzy",
+       /*use_acronym_matcher=*/false},
+      // Prefix Matcher at first token is favored over Acronym Matcher.
+      {u"abcxyz bxyz cxzy", u"abc", u"[abc]xyz bxyz cxzy",
+       /*use_acronym_matcher=*/true},
+      {u"abcxyz bxyz cxzy", u"abc", u"[abc]xyz bxyz cxzy",
+       /*use_acronym_matcher=*/false},
+      // Acronym Matcher is favored over Prefix Matcher at non-first token.
+      {u"def abcxyz bxyz cxzy", u"abc", u"def [a]bcxyz [b]xyz [c]xzy",
+       /*use_acronym_matcher=*/true},
+      {u"def abcxyz bxyz cxzy", u"abc", u"def [abc]xyz bxyz cxzy",
+       /*use_acronym_matcher=*/false},
+  };
 
-  EXPECT_EQ(match.hits().size(), 1u);
+  for (auto& test_case : kTestCases) {
+    const TokenizedString query(test_case.query);
+    const TokenizedString text(test_case.text);
 
-  // TODO(crbug.com/1336160): Currently the "abc" of "abcdef" is matched, but
-  // the |hit_| marks the "abc" of "xyzabc" instead. Consider an implementation
-  // which |hit_| matches the highest matching algorithm, instead of the result
-  // of sequence match, i.e.:
-  //
-  //   EXPECT_EQ(match.hits()[0].start(), 7u);
-  //   EXPECT_EQ(match.hits()[0].end(), 10u);
+    double relevance =
+        match.Relevance(query, text, kUseWeightedRatio, kStripDiacritics,
+                        /*use_acronym_matcher=*/test_case.use_acronym_matcher);
+
+    VLOG(1) << FormatRelevanceResult(test_case.query, test_case.text, relevance,
+                                     /*query_first*/ false);
+    EXPECT_EQ(test_case.expect, MatchHit(test_case.text, match.hits()));
+  }
 }
 
 TEST_F(FuzzyTokenizedStringMatchTest,
@@ -1118,7 +1161,6 @@ TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkKeyboardShortcutsScreenshot) {
   }
 }
 
-// TODO(crbug.com/1323910): Improve word order flexibility.
 TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkKeyboardShortcutsDesk) {
   std::u16string text = u"Create a new desk";
   std::u16string text_lower = u"create a new desk";
@@ -1137,12 +1179,18 @@ TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkKeyboardShortcutsDesk) {
                                                        u"create a new des",
                                                        u"create a new desk"};
   std::vector<std::u16string> queries_missing_words = {
-      u"create a d",   u"create a de",   u"create a des",   u"create a desk",
-      u"create d",     u"create de",     u"create des",     u"create desk",
-      u"create n",     u"create ne",     u"create new",     u"create new ",
-      u"create new d", u"create new de", u"create new des", u"create new desk",
-      u"new ",         u"new d",         u"new de",         u"new des",
-      u"new desk",     u"desk"};
+      u"new ",           u"desk",
+      u"new d",          u"new de",
+      u"new des",        u"new desk",
+      u"create d",       u"create n",
+      u"create de",      u"create ne",
+      u"create a d",     u"create a de",
+      u"create new",     u"create des",
+      u"create new ",    u"create desk",
+      u"create a des",   u"create new d",
+      u"create a desk",  u"create new de",
+      u"create new des", u"create new desk",
+  };
 
   std::vector<double> scores;
   for (const auto& query : queries_strict_prefix) {
@@ -1154,11 +1202,19 @@ TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkKeyboardShortcutsDesk) {
   // Allow a flexible (rather than strict) increase in scores.
   ExpectMostlyIncreasing(scores, /*epsilon*/ 0.005);
 
+  scores.clear();
   for (const auto& query : queries_missing_words) {
     const double relevance = CalculateRelevance(query, text);
+    scores.push_back(relevance);
     VLOG(1) << FormatRelevanceResult(query, text, relevance,
                                      /*query_first*/ false);
   }
+
+  // With word order flexibility, the scores are expected to increase as the
+  // query length increases.
+  //
+  // Allow a flexible (rather than strict) increase in scores.
+  ExpectMostlyIncreasing(scores, /*epsilon*/ 0.005);
 }
 
 TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkKeyboardShortcutsEmojiPicker) {

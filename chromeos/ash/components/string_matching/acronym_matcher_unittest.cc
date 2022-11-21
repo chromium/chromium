@@ -20,6 +20,9 @@ constexpr double kAbsError = 1e-5;
 
 // Returns a string of |text| marked with the hits in |match| using block
 // bracket. e.g. text= "Text", match.hits = [{0,1}], returns "[T]ext".
+//
+// TODO(crbug.com/1336160): Consider defining it as a |test_util| function as it
+// has been used for several unit tests.
 std::u16string MatchHit(const std::u16string& text,
                         const AcronymMatcher& match) {
   std::u16string marked = text;
@@ -104,6 +107,7 @@ TEST_F(AcronymMatcherTest, MatchHit) {
       {u"Crash of Crowns", u"coc", u"[C]rash [o]f [C]rowns"},
       {u"Crash of Crowns", u"cra", u"Crash of Crowns"},
       {u"abcxxx bxxx cxxx", u"abc", u"[a]bcxxx [b]xxx [c]xxx"},
+      {u"xxx abcxxx bxxx cxxx", u"abc", u"xxx [a]bcxxx [b]xxx [c]xxx"},
   };
 
   for (auto& test_case : kTestCases) {

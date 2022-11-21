@@ -18,6 +18,9 @@ namespace {
 
 // Returns a string of |text| marked the hits in |match| using block bracket.
 // e.g. text= "Text", match.hits = [{0,1}], returns "[T]ext".
+//
+// TODO(crbug.com/1336160): Consider defining it as a |test_util| function as it
+// has been used for several unit tests.
 std::string MatchHit(const std::u16string& text,
                      const TokenizedStringMatch& match) {
   std::u16string marked = text;

@@ -64,7 +64,7 @@ double AcronymMatcher::CalculateRelevance() {
 
   // update the |hits_| if there is a match.
   for (size_t i = 0; i < query_.size(); i++) {
-    size_t start_pos = text_mapping_[i].start();
+    size_t start_pos = text_mapping_[found_index + i].start();
     hits_.emplace_back(start_pos, start_pos + 1);
   }
 
