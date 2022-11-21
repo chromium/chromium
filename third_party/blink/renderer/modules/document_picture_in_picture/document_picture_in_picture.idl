@@ -8,7 +8,8 @@
     SecureContext,
     RuntimeEnabled=DocumentPictureInPictureAPI
 ]
-interface DocumentPictureInPicture {
+interface DocumentPictureInPicture : EventTarget {
   [CallWith=ScriptState, RaisesException, NewObject] Promise<Window> requestWindow(optional DocumentPictureInPictureOptions options = {});
   [CallWith=ScriptState] readonly attribute Window window;
+  attribute EventHandler onenter;
 };

@@ -8,6 +8,8 @@ blink_modules_sources("document_picture_in_picture") {
   sources = [
     "document_picture_in_picture.cc",
     "document_picture_in_picture.h",
+    "document_picture_in_picture_event.cc",
+    "document_picture_in_picture_event.h",
     "picture_in_picture_controller_impl.cc",
     "picture_in_picture_controller_impl.h",
   ]

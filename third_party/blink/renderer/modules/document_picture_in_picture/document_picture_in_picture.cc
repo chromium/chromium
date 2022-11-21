@@ -35,6 +35,14 @@ DocumentPictureInPicture* DocumentPictureInPicture::documentPictureInPicture(
   return From(window);
 }
 
+const AtomicString& DocumentPictureInPicture::InterfaceName() const {
+  return event_target_names::kDocumentPictureInPicture;
+}
+
+ExecutionContext* DocumentPictureInPicture::GetExecutionContext() const {
+  return GetSupplementable();
+}
+
 ScriptPromise DocumentPictureInPicture::requestWindow(
     ScriptState* script_state,
     DocumentPictureInPictureOptions* options,
@@ -80,7 +88,7 @@ DOMWindow* DocumentPictureInPicture::window(ScriptState* script_state) const {
 }
 
 void DocumentPictureInPicture::Trace(Visitor* visitor) const {
-  ScriptWrappable::Trace(visitor);
+  EventTargetWithInlineData::Trace(visitor);
   Supplement<LocalDOMWindow>::Trace(visitor);
 }
 

@@ -34,6 +34,8 @@
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
+#include "third_party/blink/renderer/modules/document_picture_in_picture/document_picture_in_picture.h"
+#include "third_party/blink/renderer/modules/document_picture_in_picture/document_picture_in_picture_event.h"
 #include "third_party/blink/renderer/modules/picture_in_picture/picture_in_picture_event.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -634,6 +636,14 @@ bool PictureInPictureControllerImpl::EnsureService() {
 void PictureInPictureControllerImpl::ResolveOpenDocumentPictureInPicture() {
   CHECK(document_picture_in_picture_window_);
   CHECK(open_document_pip_resolver_);
+
+  if (DomWindow()) {
+    DocumentPictureInPicture::From(*DomWindow())
+        ->DispatchEvent(*DocumentPictureInPictureEvent::Create(
+            event_type_names::kEnter,
+            WrapPersistent(document_picture_in_picture_window_.Get())));
+  }
+
   open_document_pip_resolver_->Resolve(document_picture_in_picture_window_);
   open_document_pip_resolver_ = nullptr;
 }

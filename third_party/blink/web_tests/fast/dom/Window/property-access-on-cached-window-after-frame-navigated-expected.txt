@@ -8,6 +8,7 @@ PASS oldChildWindow.cookieStore.onchange is newChildWindow.cookieStore.onchange
 PASS oldChildWindow.crossOriginEmbedderPolicy is newChildWindow.crossOriginEmbedderPolicy
 PASS oldChildWindow.crossOriginIsolated is newChildWindow.crossOriginIsolated
 PASS oldChildWindow.devicePixelRatio is newChildWindow.devicePixelRatio
+PASS oldChildWindow.documentPictureInPicture.onenter is newChildWindow.documentPictureInPicture.onenter
 PASS oldChildWindow.documentPictureInPicture.window is newChildWindow.documentPictureInPicture.window
 PASS oldChildWindow.innerHeight is newChildWindow.innerHeight
 PASS oldChildWindow.innerWidth is newChildWindow.innerWidth

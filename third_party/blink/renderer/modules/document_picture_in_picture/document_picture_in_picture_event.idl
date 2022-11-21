@@ -1,0 +1,14 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://steimelchrome.github.io/draft_spec.html#documentpictureinpictureevent
+
+[
+    Exposed=Window,
+    RuntimeEnabled=DocumentPictureInPictureAPI
+]
+interface DocumentPictureInPictureEvent : Event {
+  constructor(DOMString type, DocumentPictureInPictureEventInit eventInitDict);
+  [SameObject] readonly attribute Window window;
+};
