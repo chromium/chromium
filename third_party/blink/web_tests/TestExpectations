@@ -6940,3 +6940,6 @@ crbug.com/1386241 wpt_internal/bluetooth/server/connect/garbage-collection-ran-d
 crbug.com/1386241 wpt_internal/bluetooth/service/getCharacteristic/gen-garbage-collection-ran-during-success.https.html [ Failure Pass ]
 crbug.com/1386241 wpt_internal/bluetooth/service/getCharacteristics/gen-garbage-collection-ran-during-success-with-uuid.https.html [ Failure Pass ]
 crbug.com/1386241 wpt_internal/bluetooth/service/getCharacteristics/gen-garbage-collection-ran-during-success.https.html [ Failure Pass ]
+
+# Sheriff 2022-11-21
+crbug.com/1380188 external/wpt/html/browsers/browsing-the-web/history-traversal/event-order/before-load-hash.html [ Failure Pass ]
