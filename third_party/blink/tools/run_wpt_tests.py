@@ -12,6 +12,7 @@ import os
 import shutil
 import sys
 
+from blinkpy.common import exit_codes
 from blinkpy.common import path_finder
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.web_tests.port.android import (
@@ -259,8 +260,10 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
             json.dump(run_info, file_handle)
 
     def do_post_test_run_tasks(self):
-        self.process_and_upload_results()
-        if self.options.show_results_in_browser:
+        process_return = self.process_and_upload_results()
+
+        if (process_return != exit_codes.INTERRUPTED_EXIT_STATUS
+                and self.options.show_results_in_browser):
             self.show_results_in_browser()
 
     def show_results_in_browser(self):
@@ -870,8 +873,12 @@ def main():
     # This environment fix is needed on windows as codec is trying
     # to encode in cp1252 rather than utf-8 and throwing errors.
     os.environ['PYTHONUTF8'] = '1'
-    adapter = WPTAdapter()
-    return adapter.run_test()
+
+    try:
+        adapter = WPTAdapter()
+        return adapter.run_test()
+    except KeyboardInterrupt:
+        return exit_codes.INTERRUPTED_EXIT_STATUS
 
 
 # This is not really a "script test" so does not need to manually add

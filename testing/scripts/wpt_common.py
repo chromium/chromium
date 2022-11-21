@@ -362,7 +362,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         if self.wptreport:
             command.extend(['--wpt-report',
                             self.wptreport])
-        common.run_command(command)
+        return common.run_command(command)
 
     def clean_up_after_test_run(self):
         if self._include_filename:
