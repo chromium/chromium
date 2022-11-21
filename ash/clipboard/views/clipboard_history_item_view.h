@@ -5,6 +5,7 @@
 #ifndef ASH_CLIPBOARD_VIEWS_CLIPBOARD_HISTORY_ITEM_VIEW_H_
 #define ASH_CLIPBOARD_VIEWS_CLIPBOARD_HISTORY_ITEM_VIEW_H_
 
+#include "ash/ash_export.h"
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ui/views/view.h"
 #include "ui/views/view_targeter_delegate.h"
@@ -20,7 +21,7 @@ class ClipboardHistoryMainButton;
 class ClipboardHistoryResourceManager;
 
 // The base class for menu items of the clipboard history menu.
-class ClipboardHistoryItemView : public views::View {
+class ASH_EXPORT ClipboardHistoryItemView : public views::View {
  public:
   static std::unique_ptr<ClipboardHistoryItemView>
   CreateFromClipboardHistoryItem(
@@ -50,8 +51,15 @@ class ClipboardHistoryItemView : public views::View {
   // Called when the selection state has changed.
   void OnSelectionChanged();
 
-  // Returns whether the highlight background should show.
-  bool ShouldHighlight() const;
+  // Returns whether the item's main button has pseudo focus, meaning the item's
+  // contents will be pasted if the user presses Enter. An item's background is
+  // highlighted when its main button has pseudo focus.
+  bool IsMainButtonPseudoFocused() const;
+
+  // Returns whether the item's delete button has pseudo focus, meaning the item
+  // will be removed from clipboard history if the user presses Enter. An item's
+  // background is not highlighted when its delete button has pseudo focus.
+  bool IsDeleteButtonPseudoFocused() const;
 
   // Called when the mouse click on descendants (such as the main button or
   // the delete button) gets canceled.
