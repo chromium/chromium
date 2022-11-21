@@ -13,6 +13,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.junit.Assert.assertTrue;
+
 import static org.chromium.base.test.util.Batch.PER_CLASS;
 
 import android.os.Build;
@@ -25,6 +27,7 @@ import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.LargeTest;
 
 import org.hamcrest.Matcher;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -37,6 +40,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -82,6 +86,7 @@ public class PrivacySettingsFragmentTest {
     public JniMocker mocker = new JniMocker();
 
     private FakePrivacySandboxBridge mFakePrivacySandboxBridge;
+    private UserActionTester mActionTester;
 
     private void waitForOptionsMenu() {
         CriteriaHelper.pollUiThread(() -> {
@@ -116,6 +121,11 @@ public class PrivacySettingsFragmentTest {
     public void setUp() {
         mFakePrivacySandboxBridge = new FakePrivacySandboxBridge();
         mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, mFakePrivacySandboxBridge);
+    }
+
+    @After
+    public void tearDown() {
+        if (mActionTester != null) mActionTester.tearDown();
     }
 
     @Test
@@ -240,5 +250,20 @@ public class PrivacySettingsFragmentTest {
 
         mRenderTestRule.render(getIncognitoReauthSettingView(fragment),
                 "incognito_reauth_setting_screen_lock_enabled");
+    }
+
+    @Test
+    @LargeTest
+    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
+    public void testPrivacyGuideLinkRowEntryPointUserAction() throws IOException {
+        mSettingsActivityTestRule.startSettingsActivity();
+        mActionTester = new UserActionTester();
+        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
+        // Scroll down and open Privacy Guide page.
+        scrollToSetting(withText(R.string.prefs_privacy_guide_title));
+        onView(withText(R.string.prefs_privacy_guide_title)).perform(click());
+        // Verify that the user action is emitted when privacy guide is clicked
+        assertTrue(
+                mActionTester.getActions().contains("Settings.PrivacyGuide.StartPrivacySettings"));
     }
 }
