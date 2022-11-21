@@ -41,7 +41,15 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
   // Consider the input element is |kElementBorderPadding| pixels larger at the
   // top and at the bottom in order to reposition the dropdown, so that it
   // doesn't look too close to the element.
-  static const int kElementBorderPadding = 1;
+  static constexpr int kElementBorderPadding = 1;
+
+  // The maximum number of pixels the suggestions dialog is shifted towards the
+  // center the focused field..
+  static constexpr int kMaximumPixelsToMoveSuggstionToCenter = 120;
+
+  // The maximum width percentage the suggestion dialog is shifted towards the
+  // center of the focused field.
+  static constexpr int kMaximumWidthPercentageToMoveTheSuggestionToCenter = 50;
 
   AutofillPopupBaseView(const AutofillPopupBaseView&) = delete;
   AutofillPopupBaseView& operator=(const AutofillPopupBaseView&) = delete;

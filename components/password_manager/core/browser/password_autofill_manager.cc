@@ -222,9 +222,7 @@ void MaybeAppendManagePasswordsEntry(
   // Add a separator before the manage option unless there are no suggestions
   // yet.
   // TODO(crbug.com/1274134): Clean up once improvements are launched.
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillVisualImprovementsForSuggestionUi) &&
-      !suggestions->empty()) {
+  if (!suggestions->empty()) {
     suggestions->push_back(
         autofill::Suggestion(autofill::POPUP_ITEM_ID_SEPARATOR));
   }
@@ -281,11 +279,7 @@ autofill::Suggestion CreateEntryToOptInToAccountStorageThenGenerate() {
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_GENERATE_PASSWORD));
   suggestion.frontend_id =
       autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE;
-  suggestion.icon =
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillVisualImprovementsForSuggestionUi)
-          ? "keyIcon"
-          : "google";
+  suggestion.icon = "keyIcon";
   return suggestion;
 }
 
@@ -767,13 +761,6 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::BuildSuggestions(
                               : CreateGenerationEntry());
   }
 
-  // TODO(crbug.com/1274134): Delete once improvements are launched.
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillVisualImprovementsForSuggestionUi)) {
-    // Add "Manage all passwords" link to settings.
-    MaybeAppendManagePasswordsEntry(&suggestions);
-  }
-
   // Add button to opt into using the account storage for passwords and then
   // suggest.
   if (show_account_storage_optin)
@@ -783,13 +770,9 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::BuildSuggestions(
   if (show_account_storage_resignin)
     suggestions.push_back(CreateEntryToReSignin());
 
-  // TODO(crbug.com/1274134): Remove feature flag once improvements are
-  // launched.
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillVisualImprovementsForSuggestionUi)) {
-    // Add "Manage all passwords" link to settings.
-    MaybeAppendManagePasswordsEntry(&suggestions);
-  }
+  // Add "Manage all passwords" link to settings.
+  MaybeAppendManagePasswordsEntry(&suggestions);
+
   return suggestions;
 }
 

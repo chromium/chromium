@@ -287,12 +287,6 @@ BASE_FEATURE(kAutofillExtractAllDatalists,
              "AutofillExtractAllDatalists",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls if type-specific popup widths are used.
-// TODO(crbug.com/1250729): Remove once launched.
-BASE_FEATURE(kAutofillTypeSpecificPopupWidth,
-             "AutofillTypeSpecificPopupWidth",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, HTML autocomplete values that do not map to any known type, but
 // look reasonable (e.g. contain "address") are simply ignored. Without the
 // feature, Autofill is disabled on such fields.
@@ -324,30 +318,6 @@ BASE_FEATURE(kAutofillKeyboardAccessory,
 BASE_FEATURE(kAutofillLabelAffixRemoval,
              "AutofillLabelAffixRemoval",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enabled a suggestion menu that is aligned to the center of the field.
-// TODO(crbug/1248339): Remove once experiment is finished.
-BASE_FEATURE(kAutofillCenterAlignedSuggestions,
-             "AutofillCenterAlignedSuggestions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Controls the maximum pixels the popup is shifted towards the center.
-// TODO(crbug/1248339): Remove once experiment is finished.
-extern const base::FeatureParam<int>
-    kAutofillMaximumPixelsToMoveSuggestionopupToCenter{
-        &kAutofillCenterAlignedSuggestions,
-        "maximum_pixels_to_move_the_suggestion_popup__towards_the_fields_"
-        "center",
-        120};
-
-// Controls the width percentage to move the popup towards the center.
-// TODO(crbug/1248339): Remove once experiment is finished.
-extern const base::FeatureParam<int>
-    kAutofillMaxiumWidthPercentageToMoveSuggestionPopupToCenter{
-        &kAutofillCenterAlignedSuggestions,
-        "width_percentage_to_shift_the_suggestion_popup_towards_the_center_of_"
-        "fields",
-        50};
 
 // When enabled, Autofill would not override the field values that were either
 // filled by Autofill or on page load.
@@ -558,12 +528,6 @@ const base::FeatureParam<bool> kAutofillSectioningModeExpand{
 BASE_FEATURE(kAutofillRefillByFormRendererId,
              "AutofillRefillByFormRendererId",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Introduces various visual improvements of the Autofill suggestion UI that is
-// also used for the password manager.
-BASE_FEATURE(kAutofillVisualImprovementsForSuggestionUi,
-             "AutofillVisualImprovementsForSuggestionUi",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls an ablation study in which autofill for addresses and payment data
 // can be suppressed.

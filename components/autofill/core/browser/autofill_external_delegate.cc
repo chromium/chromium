@@ -408,9 +408,7 @@ void AutofillExternalDelegate::ApplyAutofillOptions(
   // Add a separator before the Autofill options unless there are no suggestions
   // yet.
   // TODO(crbug.com/1274134): Clean up once improvements are launched.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillVisualImprovementsForSuggestionUi) &&
-      !suggestions->empty()) {
+  if (!suggestions->empty()) {
     suggestions->push_back(Suggestion(POPUP_ITEM_ID_SEPARATOR));
   }
 #endif
@@ -427,10 +425,7 @@ void AutofillExternalDelegate::ApplyAutofillOptions(
 
     suggestions->push_back(Suggestion(value));
     suggestions->back().frontend_id = POPUP_ITEM_ID_CLEAR_FORM;
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillVisualImprovementsForSuggestionUi)) {
-      suggestions->back().icon = "clearIcon";
-    }
+    suggestions->back().icon = "clearIcon";
   }
 
   // Append the 'Autofill settings' menu item, or the menu item specified in the

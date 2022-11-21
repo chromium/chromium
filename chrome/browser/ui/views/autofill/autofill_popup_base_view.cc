@@ -344,11 +344,9 @@ gfx::Rect AutofillPopupBaseView::GetOptionalPositionAndPlaceArrowOnPopup(
       /*right_to_left=*/delegate_->IsRTL(),
       /*scrollbar_width=*/gfx::scrollbar_size(),
       /*maximum_pixel_offset_to_center=*/
-      autofill::features::kAutofillMaximumPixelsToMoveSuggestionopupToCenter
-          .Get(),
+      kMaximumPixelsToMoveSuggstionToCenter,
       /*maximum_width_percentage_to_center=*/
-      autofill::features::
-          kAutofillMaxiumWidthPercentageToMoveSuggestionPopupToCenter.Get(),
+      kMaximumWidthPercentageToMoveTheSuggestionToCenter,
       /*popup_bounds=*/popup_bounds);
 
   // Those values are not supported for adding an arrow.
@@ -399,14 +397,8 @@ bool AutofillPopupBaseView::DoUpdateBoundsAndRedrawPopup() {
     return false;
   }
 
-  gfx::Rect popup_bounds =
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillCenterAlignedSuggestions)
-          ? GetOptionalPositionAndPlaceArrowOnPopup(
-                element_bounds, max_bounds_for_popup, preferred_size)
-          : CalculatePopupBounds(preferred_size, max_bounds_for_popup,
-                                 element_bounds, delegate_->IsRTL(),
-                                 /*horizontally_centered=*/false);
+  gfx::Rect popup_bounds = GetOptionalPositionAndPlaceArrowOnPopup(
+      element_bounds, max_bounds_for_popup, preferred_size);
 
   if (BoundsOverlapWithPictureInPictureWindow(popup_bounds)) {
     HideController(PopupHidingReason::kOverlappingWithPictureInPictureWindow);

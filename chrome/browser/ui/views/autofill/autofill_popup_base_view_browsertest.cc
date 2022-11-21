@@ -56,12 +56,7 @@ class MockAutofillPopupViewDelegate : public AutofillPopupViewDelegate {
 
 class AutofillPopupBaseViewTest : public InProcessBrowserTest {
  public:
-  AutofillPopupBaseViewTest() {
-    // The only test in this class is a regression test for the legacy
-    // implementation. Disable the new method for placing the bubble.
-    feature_list_.InitAndDisableFeature(
-        features::kAutofillCenterAlignedSuggestions);
-  }
+  AutofillPopupBaseViewTest() = default;
 
   AutofillPopupBaseViewTest(const AutofillPopupBaseViewTest&) = delete;
   AutofillPopupBaseViewTest& operator=(const AutofillPopupBaseViewTest&) =
@@ -105,7 +100,7 @@ class AutofillPopupBaseViewTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(AutofillPopupBaseViewTest, CorrectBoundsTest) {
-  gfx::RectF bounds(100, 150, 5, 5);
+  gfx::RectF bounds(100, 150, 10, 10);
   EXPECT_CALL(mock_delegate_, element_bounds())
       .WillRepeatedly(ReturnRef(bounds));
 
@@ -115,11 +110,10 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupBaseViewTest, CorrectBoundsTest) {
                                  ->GetWidget()
                                  ->GetClientAreaBoundsInScreen()
                                  .origin();
-  // The expected origin is shifted to accomodate the border of the bubble.
+  // The expected origin is shifted to accommodate the border of the bubble, the
+  // arrow, padding and the alignment to the center.
   gfx::Point expected_point = gfx::ToRoundedPoint(bounds.bottom_left());
-  expected_point.Offset(0, AutofillPopupBaseView::kElementBorderPadding);
-  gfx::Insets border = view_->GetWidget()->GetRootView()->GetInsets();
-  expected_point.Offset(-border.left(), -border.top());
+  expected_point.Offset(6, -13);
   EXPECT_EQ(expected_point, display_point);
 }
 
