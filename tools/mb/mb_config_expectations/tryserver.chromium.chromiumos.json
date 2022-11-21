@@ -19,7 +19,7 @@
       "is_chromeos_device": true,
       "is_debug": true,
       "ozone_platform_headless": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "chromeos-amd64-generic-rel": {
@@ -29,8 +29,8 @@
       "dcheck_always_on": true,
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
-      "use_goma": true,
-      "use_real_dbus_clients": false
+      "use_real_dbus_clients": false,
+      "use_remoteexec": true
     }
   },
   "chromeos-amd64-generic-rel-rts": {
@@ -61,7 +61,7 @@
       "dcheck_always_on": true,
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "chromeos-arm64-generic-rel": {
@@ -170,7 +170,7 @@
       "is_debug": false,
       "ozone_platform_headless": true,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "lacros-amd64-generic-rel-orchestrator": {
@@ -207,7 +207,7 @@
       "is_debug": false,
       "ozone_platform_headless": true,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "lacros-arm64-generic-rel": {
@@ -269,7 +269,7 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-chromeos-dbg": {
@@ -308,7 +308,7 @@
       "symbol_level": 0,
       "target_os": "chromeos",
       "use_clang_coverage": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-chromeos-rel-reclient": {
@@ -361,7 +361,7 @@
       "is_debug": false,
       "symbol_level": 0,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-lacros-rel-code-coverage": {

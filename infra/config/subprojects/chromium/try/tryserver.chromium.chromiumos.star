@@ -51,6 +51,7 @@ try_.builder(
             "media/.+",
         ],
     ),
+    goma_backend = None,
 )
 
 try_.orchestrator_builder(
@@ -70,6 +71,7 @@ try_.compilator_builder(
     branch_selector = branches.CROS_LTS_MILESTONE,
     main_list_view = "try",
     cores = 16,
+    goma_backend = None,
 )
 
 try_.builder(
@@ -86,6 +88,7 @@ try_.builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
+    goma_backend = None,
 )
 
 try_.builder(
@@ -103,6 +106,7 @@ try_.builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
+    goma_backend = None,
 )
 
 try_.orchestrator_builder(
@@ -170,6 +174,7 @@ try_.builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
+    goma_backend = None,
 )
 
 try_.builder(
@@ -195,6 +200,7 @@ try_.builder(
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(),
+    goma_backend = None,
 )
 
 try_.builder(
@@ -249,7 +255,7 @@ try_.compilator_builder(
     name = "linux-chromeos-rel-compilator",
     branch_selector = branches.CROS_LTS_MILESTONE,
     main_list_view = "try",
-    goma_jobs = goma.jobs.J300,
+    goma_backend = None,
 )
 
 try_.orchestrator_builder(
@@ -302,7 +308,7 @@ try_.compilator_builder(
     name = "linux-lacros-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
-    goma_jobs = goma.jobs.J300,
+    goma_backend = None,
 )
 
 try_.builder(
