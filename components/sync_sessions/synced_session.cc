@@ -10,6 +10,7 @@
 #include "components/sessions/core/serialized_navigation_driver.h"
 #include "components/sync/base/page_transition_conversion.h"
 #include "components/sync/base/time.h"
+#include "components/sync_device_info/device_info_proto_enum_util.h"
 #include "ui/base/page_transition_types.h"
 
 namespace sync_sessions {
@@ -249,6 +250,17 @@ SyncedSession::SyncedSession()
 
 SyncedSession::~SyncedSession() = default;
 
+void SyncedSession::SetDeviceTypeAndFormFactor(
+    const sync_pb::SyncEnums::DeviceType& local_device_type,
+    const syncer::DeviceInfo::FormFactor& local_device_form_factor) {
+  device_type = local_device_type;
+  device_form_factor = local_device_form_factor;
+}
+
+syncer::DeviceInfo::FormFactor SyncedSession::GetDeviceFormFactor() const {
+  return device_form_factor;
+}
+
 sync_pb::SessionHeader SyncedSession::ToSessionHeaderProto() const {
   sync_pb::SessionHeader header;
   for (const auto& [window_id, window] : windows) {
@@ -257,6 +269,7 @@ sync_pb::SessionHeader SyncedSession::ToSessionHeaderProto() const {
   }
   header.set_client_name(session_name);
   header.set_device_type(device_type);
+  header.set_device_form_factor(ToDeviceFormFactorProto(device_form_factor));
   return header;
 }
 

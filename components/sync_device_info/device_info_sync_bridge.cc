@@ -30,6 +30,7 @@
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info_prefs.h"
+#include "components/sync_device_info/device_info_proto_enum_util.h"
 #include "components/sync_device_info/device_info_util.h"
 #include "components/sync_device_info/local_device_info_util.h"
 
@@ -144,47 +145,6 @@ bool IsChromeClient(const DeviceInfoSpecifics& specifics) {
   return specifics.has_chrome_version_info() || specifics.has_chrome_version();
 }
 
-DeviceInfo::OsType DeriveOSfromDeviceType(
-    const sync_pb::SyncEnums_DeviceType& device_type,
-    const std::string& manufacturer_name) {
-  switch (device_type) {
-    case sync_pb::SyncEnums::DeviceType::SyncEnums_DeviceType_TYPE_CROS:
-      return DeviceInfo::OsType::kChromeOsAsh;
-    case sync_pb::SyncEnums::DeviceType::SyncEnums_DeviceType_TYPE_LINUX:
-      return DeviceInfo::OsType::kLinux;
-    case sync_pb::SyncEnums::DeviceType::SyncEnums_DeviceType_TYPE_MAC:
-      return DeviceInfo::OsType::kMac;
-    case sync_pb::SyncEnums::DeviceType::SyncEnums_DeviceType_TYPE_WIN:
-      return DeviceInfo::OsType::kWindows;
-    case sync_pb::SyncEnums_DeviceType_TYPE_PHONE:
-    case sync_pb::SyncEnums_DeviceType_TYPE_TABLET:
-      if (manufacturer_name == "Apple Inc.")
-        return DeviceInfo::OsType::kIOS;
-      return DeviceInfo::OsType::kAndroid;
-    case sync_pb::SyncEnums::DeviceType::SyncEnums_DeviceType_TYPE_UNSET:
-    case sync_pb::SyncEnums::DeviceType::SyncEnums_DeviceType_TYPE_OTHER:
-      return DeviceInfo::OsType::kUnknown;
-  }
-}
-
-DeviceInfo::FormFactor DeriveFormFactorfromDeviceType(
-    const sync_pb::SyncEnums_DeviceType& device_type) {
-  switch (device_type) {
-    case sync_pb::SyncEnums::DeviceType::SyncEnums_DeviceType_TYPE_CROS:
-    case sync_pb::SyncEnums::DeviceType::SyncEnums_DeviceType_TYPE_LINUX:
-    case sync_pb::SyncEnums::DeviceType::SyncEnums_DeviceType_TYPE_MAC:
-    case sync_pb::SyncEnums::DeviceType::SyncEnums_DeviceType_TYPE_WIN:
-      return DeviceInfo::FormFactor::kDesktop;
-    case sync_pb::SyncEnums_DeviceType_TYPE_PHONE:
-      return DeviceInfo::FormFactor::kPhone;
-    case sync_pb::SyncEnums_DeviceType_TYPE_TABLET:
-      return DeviceInfo::FormFactor::kTablet;
-    case sync_pb::SyncEnums::DeviceType::SyncEnums_DeviceType_TYPE_UNSET:
-    case sync_pb::SyncEnums::DeviceType::SyncEnums_DeviceType_TYPE_OTHER:
-      return DeviceInfo::FormFactor::kUnknown;
-  }
-}
-
 // Converts DeviceInfoSpecifics into a freshly allocated DeviceInfo.
 std::unique_ptr<DeviceInfo> SpecificsToModel(
     const DeviceInfoSpecifics& specifics) {
@@ -192,8 +152,8 @@ std::unique_ptr<DeviceInfo> SpecificsToModel(
       specifics.cache_guid(), specifics.client_name(),
       GetVersionNumberFromSpecifics(specifics), specifics.sync_user_agent(),
       specifics.device_type(),
-      DeriveOSfromDeviceType(specifics.device_type(), specifics.manufacturer()),
-      DeriveFormFactorfromDeviceType(specifics.device_type()),
+      DeriveOsFromDeviceType(specifics.device_type(), specifics.manufacturer()),
+      DeriveFormFactorFromDeviceType(specifics.device_type()),
       specifics.signin_scoped_device_id(), specifics.manufacturer(),
       specifics.model(), specifics.full_hardware_class(),
       ProtoTimeToTime(specifics.last_updated_timestamp()),

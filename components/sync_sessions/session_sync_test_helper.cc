@@ -27,6 +27,9 @@ void SessionSyncTestHelper::BuildSessionSpecifics(
   meta->set_session_tag(tag);
   sync_pb::SessionHeader* header = meta->mutable_header();
   header->set_device_type(sync_pb::SyncEnums_DeviceType_TYPE_LINUX);
+  header->set_device_form_factor(
+      sync_pb::SyncEnums::DeviceFormFactor::
+          SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP);
   header->set_client_name(kClientName);
 }
 
@@ -51,7 +54,8 @@ void SessionSyncTestHelper::VerifySyncedSession(
     const std::vector<std::vector<SessionID>>& windows,
     const SyncedSession& session) {
   ASSERT_EQ(tag, session.session_tag);
-  ASSERT_EQ(sync_pb::SyncEnums_DeviceType_TYPE_LINUX, session.device_type);
+  ASSERT_EQ(syncer::DeviceInfo::FormFactor::kDesktop,
+            session.GetDeviceFormFactor());
   ASSERT_EQ(kClientName, session.session_name);
   ASSERT_EQ(windows.size(), session.windows.size());
 

@@ -12,6 +12,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync_device_info/device_info_proto_enum_util.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 
 namespace sync_sessions {
@@ -127,7 +128,16 @@ void PopulateSyncedSessionFromSpecifics(
     synced_session->session_name = header_specifics.client_name();
   }
   if (header_specifics.has_device_type()) {
-    synced_session->device_type = header_specifics.device_type();
+    syncer::DeviceInfo::FormFactor device_form_factor;
+    if (header_specifics.has_device_form_factor()) {
+      device_form_factor =
+          syncer::ToDeviceInfoFormFactor(header_specifics.device_form_factor());
+    } else { /*Fallback to derive from old device type enum*/
+      device_form_factor = syncer::DeriveFormFactorFromDeviceType(
+          header_specifics.device_type());
+    }
+    synced_session->SetDeviceTypeAndFormFactor(header_specifics.device_type(),
+                                               device_form_factor);
   }
   synced_session->modified_time =
       std::max(mtime, synced_session->modified_time);
@@ -163,14 +173,16 @@ SyncedSessionTracker::~SyncedSessionTracker() = default;
 void SyncedSessionTracker::InitLocalSession(
     const std::string& local_session_tag,
     const std::string& local_session_name,
-    sync_pb::SyncEnums::DeviceType local_device_type) {
+    sync_pb::SyncEnums::DeviceType local_device_type,
+    syncer::DeviceInfo::FormFactor local_device_form_factor) {
   DCHECK(local_session_tag_.empty());
   DCHECK(!local_session_tag.empty());
   local_session_tag_ = local_session_tag;
 
   SyncedSession* local_session = GetSession(local_session_tag);
   local_session->session_name = local_session_name;
-  local_session->device_type = local_device_type;
+  local_session->SetDeviceTypeAndFormFactor(local_device_type,
+                                            local_device_form_factor);
   local_session->session_tag = local_session_tag;
 }
 

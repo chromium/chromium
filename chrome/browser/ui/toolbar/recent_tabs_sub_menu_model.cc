@@ -456,7 +456,7 @@ void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
     const int command_id = GetAndIncrementNextMenuID();
     AddItem(command_id, base::UTF8ToUTF16(session->session_name));
     device_name_items_.insert(command_id);
-    AddDeviceFavicon(GetItemCount() - 1, session->device_type);
+    AddDeviceFavicon(GetItemCount() - 1, session->GetDeviceFormFactor());
 
     // Build tab menu items from sorted session tabs.
     const size_t kMaxTabsPerSessionToShow = 4;
@@ -696,23 +696,18 @@ int RecentTabsSubMenuModel::GetParentCommandId(int command_id) const {
 
 void RecentTabsSubMenuModel::AddDeviceFavicon(
     size_t index_in_menu,
-    sync_pb::SyncEnums::DeviceType device_type) {
+    syncer::DeviceInfo::FormFactor device_form_factor) {
   const gfx::VectorIcon* favicon = nullptr;
-  switch (device_type) {
-    case sync_pb::SyncEnums::TYPE_PHONE:
+  switch (device_form_factor) {
+    case syncer::DeviceInfo::FormFactor::kPhone:
       favicon = &kSmartphoneIcon;
       break;
-
-    case sync_pb::SyncEnums::TYPE_TABLET:
+    case syncer::DeviceInfo::FormFactor::kTablet:
       favicon = &kTabletIcon;
       break;
-
-    case sync_pb::SyncEnums::TYPE_CROS:
-    case sync_pb::SyncEnums::TYPE_WIN:
-    case sync_pb::SyncEnums::TYPE_MAC:
-    case sync_pb::SyncEnums::TYPE_LINUX:
-    case sync_pb::SyncEnums::TYPE_OTHER:
-    case sync_pb::SyncEnums::TYPE_UNSET:
+    case syncer::DeviceInfo::FormFactor::kUnknown:
+      [[fallthrough]];  // Return the laptop icon as default.
+    case syncer::DeviceInfo::FormFactor::kDesktop:
       favicon = &kLaptopIcon;
       break;
   }

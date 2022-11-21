@@ -33,6 +33,8 @@ const char kValidUrl[] = "http://www.example.com";
 const char kSessionName[] = "sessionname";
 const sync_pb::SyncEnums::DeviceType kDeviceType =
     sync_pb::SyncEnums_DeviceType_TYPE_PHONE;
+const syncer::DeviceInfo::FormFactor kFormFactor =
+    syncer::DeviceInfo::FormFactor::kPhone;
 const char kTag[] = "tag";
 const char kTag2[] = "tag2";
 const char kTag3[] = "tag3";
@@ -186,7 +188,7 @@ TEST_F(SyncedSessionTrackerTest, LookupAllSessions) {
   EXPECT_THAT(tracker_.LookupAllSessions(SyncedSessionTracker::PRESENTABLE),
               IsEmpty());
 
-  tracker_.InitLocalSession(kTag, kSessionName, kDeviceType);
+  tracker_.InitLocalSession(kTag, kSessionName, kDeviceType, kFormFactor);
   tracker_.PutWindowInSession(kTag, kWindow1);
   tracker_.PutTabInWindow(kTag, kWindow1, kTab1);
 
@@ -309,7 +311,9 @@ TEST_F(SyncedSessionTrackerTest, Complex) {
   SyncedSession* session2 = tracker_.GetSession(kTag2);
   ASSERT_EQ(2U, tracker_.num_synced_sessions());
   SyncedSession* session3 = tracker_.GetSession(kTag3);
-  session3->device_type = sync_pb::SyncEnums_DeviceType_TYPE_LINUX;
+  session3->SetDeviceTypeAndFormFactor(
+      sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
+      syncer::DeviceInfo::FormFactor::kDesktop);
   ASSERT_EQ(3U, tracker_.num_synced_sessions());
 
   ASSERT_TRUE(session);
@@ -484,7 +488,7 @@ TEST_F(SyncedSessionTrackerTest, DeleteForeignTab) {
 }
 
 TEST_F(SyncedSessionTrackerTest, CleanupLocalTabs) {
-  tracker_.InitLocalSession(kTag, kSessionName, kDeviceType);
+  tracker_.InitLocalSession(kTag, kSessionName, kDeviceType, kFormFactor);
 
   // Start with four restored tab nodes, one of which is mapped (|kTab1|).
   tracker_.ReassociateLocalTab(kTabNode1, kTab1);
@@ -533,7 +537,7 @@ TEST_F(SyncedSessionTrackerTest, CleanupLocalTabs) {
 
 TEST_F(SyncedSessionTrackerTest, ReassociateTabMapped) {
   // First create the tab normally.
-  tracker_.InitLocalSession(kTag, kSessionName, kDeviceType);
+  tracker_.InitLocalSession(kTag, kSessionName, kDeviceType, kFormFactor);
   EXPECT_FALSE(IsLocalTabNodeAssociated(kTabNode1));
   tracker_.ReassociateLocalTab(kTabNode1, kTab1);
   ASSERT_TRUE(VerifyTabIntegrity(kTag));
@@ -581,7 +585,7 @@ TEST_F(SyncedSessionTrackerTest, ReassociateTabMapped) {
 
 TEST_F(SyncedSessionTrackerTest, ReassociateTabMappedTwice) {
   // First create the tab normally.
-  tracker_.InitLocalSession(kTag, kSessionName, kDeviceType);
+  tracker_.InitLocalSession(kTag, kSessionName, kDeviceType, kFormFactor);
   EXPECT_FALSE(IsLocalTabNodeAssociated(kTabNode1));
   tracker_.ReassociateLocalTab(kTabNode1, kTab1);
   ASSERT_TRUE(VerifyTabIntegrity(kTag));
@@ -641,7 +645,7 @@ TEST_F(SyncedSessionTrackerTest, ReassociateTabMappedTwice) {
 
 TEST_F(SyncedSessionTrackerTest, ReassociateTabUnmapped) {
   // First create the old tab in an unmapped state.
-  tracker_.InitLocalSession(kTag, kSessionName, kDeviceType);
+  tracker_.InitLocalSession(kTag, kSessionName, kDeviceType, kFormFactor);
   EXPECT_FALSE(IsLocalTabNodeAssociated(kTabNode1));
   tracker_.ReassociateLocalTab(kTabNode1, kTab1);
   ASSERT_TRUE(VerifyTabIntegrity(kTag));
@@ -674,7 +678,7 @@ TEST_F(SyncedSessionTrackerTest, ReassociateTabUnmapped) {
 
 TEST_F(SyncedSessionTrackerTest, ReassociateTabOldUnmappedNewMapped) {
   // First create the old tab in an unmapped state.
-  tracker_.InitLocalSession(kTag, kSessionName, kDeviceType);
+  tracker_.InitLocalSession(kTag, kSessionName, kDeviceType, kFormFactor);
   EXPECT_FALSE(IsLocalTabNodeAssociated(kTabNode1));
   tracker_.ReassociateLocalTab(kTabNode1, kTab1);
   ASSERT_TRUE(VerifyTabIntegrity(kTag));
@@ -708,7 +712,7 @@ TEST_F(SyncedSessionTrackerTest, ReassociateTabOldUnmappedNewMapped) {
 
 TEST_F(SyncedSessionTrackerTest, ReassociateTabSameTabId) {
   // First create the tab normally.
-  tracker_.InitLocalSession(kTag, kSessionName, kDeviceType);
+  tracker_.InitLocalSession(kTag, kSessionName, kDeviceType, kFormFactor);
   EXPECT_FALSE(IsLocalTabNodeAssociated(kTabNode1));
   tracker_.ReassociateLocalTab(kTabNode1, kTab1);
   ASSERT_TRUE(VerifyTabIntegrity(kTag));
@@ -756,7 +760,7 @@ TEST_F(SyncedSessionTrackerTest, ReassociateTabSameTabId) {
 
 TEST_F(SyncedSessionTrackerTest, ReassociateTabOldMappedNewUnmapped) {
   // First create an unmapped tab.
-  tracker_.InitLocalSession(kTag, kSessionName, kDeviceType);
+  tracker_.InitLocalSession(kTag, kSessionName, kDeviceType, kFormFactor);
   EXPECT_FALSE(IsLocalTabNodeAssociated(kTabNode1));
   tracker_.ReassociateLocalTab(kTabNode1, kTab1);
   ASSERT_TRUE(VerifyTabIntegrity(kTag));
@@ -986,7 +990,7 @@ TEST_F(SyncedSessionTrackerTest, UpdateTrackerWithTwoTabsSameId) {
 }
 
 TEST_F(SyncedSessionTrackerTest, SerializeTrackerToSpecifics) {
-  tracker_.InitLocalSession(kTag, kSessionName, kDeviceType);
+  tracker_.InitLocalSession(kTag, kSessionName, kDeviceType, kFormFactor);
   tracker_.PutWindowInSession(kTag, kWindow1);
   tracker_.GetSession(kTag)->windows[kWindow1]->window_type =
       sync_pb::SyncEnums_BrowserType_TYPE_TABBED;

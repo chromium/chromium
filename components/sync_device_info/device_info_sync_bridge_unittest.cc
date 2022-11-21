@@ -1742,7 +1742,7 @@ TEST_F(DeviceInfoSyncBridgeTest, ShouldUploadOutdatedLocalDeviceInfo) {
   WaitForReadyToSync();
 }
 
-TEST_F(DeviceInfoSyncBridgeTest, ShouldDeriveOSfromDeviceType) {
+TEST_F(DeviceInfoSyncBridgeTest, ShouldDeriveOsFromDeviceType) {
   const DeviceInfoSpecifics local_specifics = CreateLocalDeviceSpecifics();
   WriteToStoreWithMetadata({local_specifics}, StateWithEncryption("ekn"));
   InitializeAndPump();

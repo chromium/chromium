@@ -152,6 +152,8 @@ void SessionStore::Open(const std::string& cache_guid,
   builder->callback = std::move(callback);
 
   builder->local_session_info.device_type = syncer::GetLocalDeviceType();
+  builder->local_session_info.device_form_factor =
+      syncer::GetLocalDeviceFormFactor();
   builder->local_session_info.session_tag = GetSessionTagWithPrefs(
       cache_guid, sessions_client->GetSessionSyncPrefs());
 
@@ -410,9 +412,9 @@ SessionStore::SessionStore(
       store_(std::move(underlying_store)),
       sessions_client_(sessions_client),
       session_tracker_(sessions_client) {
-  session_tracker_.InitLocalSession(local_session_info_.session_tag,
-                                    local_session_info_.client_name,
-                                    local_session_info_.device_type);
+  session_tracker_.InitLocalSession(
+      local_session_info_.session_tag, local_session_info_.client_name,
+      local_session_info_.device_type, local_session_info_.device_form_factor);
 
   DCHECK(store_);
 
@@ -543,9 +545,9 @@ void SessionStore::DeleteAllDataAndMetadata() {
   sessions_client_->GetSessionSyncPrefs()->ClearLegacySyncSessionsGUID();
 
   // At all times, the local session must be tracked.
-  session_tracker_.InitLocalSession(local_session_info_.session_tag,
-                                    local_session_info_.client_name,
-                                    local_session_info_.device_type);
+  session_tracker_.InitLocalSession(
+      local_session_info_.session_tag, local_session_info_.client_name,
+      local_session_info_.device_type, local_session_info_.device_form_factor);
 }
 
 }  // namespace sync_sessions

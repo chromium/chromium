@@ -18,6 +18,7 @@
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store.h"
+#include "components/sync_device_info/device_info.h"
 #include "components/sync_sessions/synced_session_tracker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -34,6 +35,8 @@ class SessionStore {
     std::string session_tag;
     std::string client_name;
     sync_pb::SyncEnums::DeviceType device_type = sync_pb::SyncEnums::TYPE_UNSET;
+    syncer::DeviceInfo::FormFactor device_form_factor =
+        syncer::DeviceInfo::FormFactor::kUnknown;
   };
 
   using OpenCallback = base::OnceCallback<void(

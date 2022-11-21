@@ -19,6 +19,7 @@
 #include "components/sessions/core/session_types.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync_device_info/device_info.h"
 #include "components/sync_sessions/synced_session.h"
 #include "components/sync_sessions/tab_node_pool.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -169,9 +170,11 @@ class SyncedSessionTracker {
 
   // Set the local session information. Must be called before any other local
   // session methods are invoked.
-  void InitLocalSession(const std::string& local_session_tag,
-                        const std::string& local_session_name,
-                        sync_pb::SyncEnums::DeviceType local_device_type);
+  void InitLocalSession(
+      const std::string& local_session_tag,
+      const std::string& local_session_name,
+      sync_pb::SyncEnums::DeviceType local_device_type,
+      syncer::DeviceInfo::FormFactor local_device_form_factor);
 
   // Gets the session tag previously set with InitLocalSession().
   const std::string& GetLocalSessionTag() const;

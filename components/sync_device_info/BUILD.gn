@@ -17,6 +17,8 @@ static_library("sync_device_info") {
     "device_info.h",
     "device_info_prefs.cc",
     "device_info_prefs.h",
+    "device_info_proto_enum_util.cc",
+    "device_info_proto_enum_util.h",
     "device_info_sync_bridge.cc",
     "device_info_sync_bridge.h",
     "device_info_sync_client.cc",

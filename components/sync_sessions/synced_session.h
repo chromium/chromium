@@ -16,6 +16,7 @@
 #include "components/sessions/core/session_types.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync_device_info/device_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_sessions {
@@ -74,7 +75,9 @@ struct SyncedSessionWindow {
 // Defines a synced session for use by session sync. A synced session is a
 // list of windows along with a unique session identifer (tag) and meta-data
 // about the device being synced.
+// TODO(1386119): Change struct to class to follow style guides.
 struct SyncedSession {
+ public:
   SyncedSession();
 
   SyncedSession(const SyncedSession&) = delete;
@@ -87,9 +90,6 @@ struct SyncedSession {
   // User-visible name
   std::string session_name;
 
-  // Type of device this session is from.
-  sync_pb::SyncEnums::DeviceType device_type;
-
   // Last time this session was modified remotely. This is the max of the header
   // and all children tab mtimes.
   base::Time modified_time;
@@ -100,6 +100,22 @@ struct SyncedSession {
   // Convert this object to its protocol buffer equivalent. Shallow conversion,
   // does not create SessionTab protobufs.
   sync_pb::SessionHeader ToSessionHeaderProto() const;
+
+  void SetDeviceTypeAndFormFactor(
+      const sync_pb::SyncEnums::DeviceType& local_device_type,
+      const syncer::DeviceInfo::FormFactor& local_device_form_factor);
+
+  syncer::DeviceInfo::FormFactor GetDeviceFormFactor() const;
+
+ private:
+  // Type of device this session is from.
+  // It's used only to populate deprecated device_type by
+  // ToSessionHeaderProto().
+  sync_pb::SyncEnums::DeviceType device_type;
+
+  // Form Factor of device this session is from.
+  syncer::DeviceInfo::FormFactor device_form_factor =
+      syncer::DeviceInfo::FormFactor::kUnknown;
 };
 
 }  // namespace sync_sessions

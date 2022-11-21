@@ -113,9 +113,9 @@ bool HasRecommendableForeignTab(
     if (latest_timestamp > session->modified_time)
       continue;
 
-    auto device_type = session->device_type;
-    if (device_type != sync_pb::SyncEnums::TYPE_PHONE &&
-        device_type != sync_pb::SyncEnums::TYPE_TABLET) {
+    auto device_form_factor = session->GetDeviceFormFactor();
+    if (device_form_factor != syncer::DeviceInfo::FormFactor::kPhone &&
+        device_form_factor != syncer::DeviceInfo::FormFactor::kTablet) {
       continue;
     }
 
