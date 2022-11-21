@@ -100,6 +100,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::NotificationDataDataView,
     return data.show_trigger_timestamp;
   }
 
+  static blink::mojom::NotificationScenario scenario(
+      const blink::PlatformNotificationData& data) {
+    return data.scenario;
+  }
+
   static bool Read(blink::mojom::NotificationDataDataView notification_data,
                    blink::PlatformNotificationData* platform_notification_data);
 };

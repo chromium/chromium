@@ -1304,6 +1304,8 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_notification_direction.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_notification_permission.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_notification_permission.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_notification_scenario.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_notification_scenario.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_offscreen_rendering_context_type.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_offscreen_rendering_context_type.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_opus_bitstream_format.cc",

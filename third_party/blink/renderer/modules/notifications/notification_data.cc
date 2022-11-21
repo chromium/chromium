@@ -36,6 +36,15 @@ mojom::blink::NotificationDirection ToDirectionEnumValue(
   return mojom::blink::NotificationDirection::AUTO;
 }
 
+mojom::blink::NotificationScenario ToScenarioEnumValue(const String& scenario) {
+  if (scenario == "default")
+    return mojom::blink::NotificationScenario::DEFAULT;
+  if (scenario == "incoming-call")
+    return mojom::blink::NotificationScenario::INCOMING_CALL;
+  NOTREACHED() << "Unknown scenario: " << scenario;
+  return mojom::blink::NotificationScenario::DEFAULT;
+}
+
 KURL CompleteURL(ExecutionContext* context, const String& string_url) {
   KURL url = context->CompleteURL(string_url);
   if (url.IsValid())
@@ -182,6 +191,8 @@ mojom::blink::NotificationDataPtr CreateNotificationData(
 
     notification_data->show_trigger_timestamp = timestamp;
   }
+
+  notification_data->scenario = ToScenarioEnumValue(options->scenario());
 
   return notification_data;
 }

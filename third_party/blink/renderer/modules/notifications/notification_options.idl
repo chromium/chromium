@@ -10,6 +10,11 @@ enum NotificationDirection {
     "rtl"
 };
 
+enum NotificationScenario {
+    "default",
+    "incoming-call"
+};
+
 dictionary NotificationOptions {
     NotificationDirection dir = "auto";
     DOMString lang = "";
@@ -27,4 +32,5 @@ dictionary NotificationOptions {
     any data = null;
     sequence<NotificationAction> actions = [];
     [RuntimeEnabled=NotificationTriggers] TimestampTrigger showTrigger;
+    [RuntimeEnabled=IncomingCallNotifications] NotificationScenario scenario = "default";
 };

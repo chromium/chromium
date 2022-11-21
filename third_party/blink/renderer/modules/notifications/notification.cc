@@ -395,6 +395,18 @@ Vector<v8::Local<v8::Value>> Notification::actions(
   return result;
 }
 
+String Notification::scenario() const {
+  switch (data_->scenario) {
+    case mojom::blink::NotificationScenario::DEFAULT:
+      return "default";
+    case mojom::blink::NotificationScenario::INCOMING_CALL:
+      return "incoming-call";
+  }
+
+  NOTREACHED();
+  return String();
+}
+
 String Notification::PermissionString(
     mojom::blink::PermissionStatus permission) {
   switch (permission) {

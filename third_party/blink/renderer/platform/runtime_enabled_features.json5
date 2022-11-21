@@ -1477,6 +1477,10 @@
       status: {"Android": "stable"},
     },
     {
+      name: "IncomingCallNotifications",
+      base_feature: "IncomingCallNotifications",
+    },
+    {
       name: "InertAttribute",
       status: "stable",
     },

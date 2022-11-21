@@ -66,7 +66,8 @@ bool StructTraits<blink::mojom::NotificationDataDataView,
       !notification_data.ReadActions(&platform_notification_data->actions) ||
       !notification_data.ReadData(&data) ||
       !notification_data.ReadShowTriggerTimestamp(
-          &platform_notification_data->show_trigger_timestamp)) {
+          &platform_notification_data->show_trigger_timestamp) ||
+      !notification_data.ReadScenario(&platform_notification_data->scenario)) {
     return false;
   }
 

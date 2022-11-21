@@ -74,6 +74,7 @@ enum NotificationPermission {
     [CallWith=ScriptState, SameObject, SaveSameObject] readonly attribute any data;
     [CallWith=ScriptState, SameObject, SaveSameObject] readonly attribute FrozenArray<NotificationAction> actions;
     [RuntimeEnabled=NotificationTriggers, SameObject] readonly attribute TimestampTrigger showTrigger;
+    [RuntimeEnabled=IncomingCallNotifications] readonly attribute DOMString scenario;
 
     [MeasureAs=NotificationClosed] void close();
 };

@@ -55,6 +55,7 @@ TEST(NotificationStructTraitsTest, NotificationDataRoundtrip) {
   notification_data.silent = true;
   notification_data.require_interaction = true;
   notification_data.show_trigger_timestamp = base::Time::Now();
+  notification_data.scenario = mojom::NotificationScenario::INCOMING_CALL;
 
   const char data[] = "mock binary notification data";
   notification_data.data.assign(data, data + std::size(data));
@@ -115,6 +116,7 @@ TEST(NotificationStructTraitsTest, NotificationDataRoundtrip) {
   }
   EXPECT_EQ(roundtrip_notification_data.show_trigger_timestamp,
             notification_data.show_trigger_timestamp);
+  EXPECT_EQ(roundtrip_notification_data.scenario, notification_data.scenario);
 }
 
 // Check upper bound on vibration entries (99).

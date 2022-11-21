@@ -118,6 +118,7 @@ class MODULES_EXPORT Notification final
   ScriptValue data(ScriptState* script_state);
   Vector<v8::Local<v8::Value>> actions(ScriptState* script_state) const;
   TimestampTrigger* showTrigger() const { return show_trigger_; }
+  String scenario() const;
 
   static String PermissionString(mojom::blink::PermissionStatus permission);
   static String permission(ExecutionContext* context);

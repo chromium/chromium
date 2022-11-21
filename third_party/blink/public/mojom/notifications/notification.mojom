@@ -22,6 +22,12 @@ enum NotificationActionType {
   TEXT
 };
 
+// Scenarios that define the notification behavior.
+enum NotificationScenario {
+  DEFAULT,
+  INCOMING_CALL
+};
+
 // Structure representing an action button associated with a Notification.
 struct NotificationAction {
   // Type of action this structure represents.
@@ -107,6 +113,13 @@ struct NotificationData {
 
   // Time when to show this notification.
   mojo_base.mojom.Time? show_trigger_timestamp;
+
+  // The notification scenario can be either DEFAULT or INCOMING_CALL. If the
+  // latter was selected and the Notification was triggered by an installed web
+  // app, it should have a ringtone, customized action buttons, and increased
+  // priority. See the proposal's explainer at:
+  // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/Notifications/notifications_actions_customization.md
+  NotificationScenario scenario = DEFAULT;
 };
 
 // Structure representing the resources associated with a Web Notification.
