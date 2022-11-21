@@ -183,7 +183,10 @@ class TabSelectionEditorMediator
         if (mActionListModel == null) return;
 
         for (PropertyModel model : mActionListModel) {
+            // TODO(ckitagawa): update these tints with input from UX.
             model.set(TabSelectionEditorActionProperties.TEXT_TINT, toolbarTintColorList);
+            if (model.get(TabSelectionEditorActionProperties.SKIP_ICON_TINT)) continue;
+
             model.set(TabSelectionEditorActionProperties.ICON_TINT, toolbarTintColorList);
         }
     }

@@ -5,11 +5,15 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
+import android.graphics.drawable.LayerDrawable;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.tab.Tab;
@@ -23,10 +27,11 @@ import java.util.List;
  * Select all and deselect all toggle action for the {@link TabSelectionEditorMenu}.
  */
 public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction {
+    private static final int BACKGROUND = 0;
+    private static final int CHECKMARK = 1;
+
     private Context mContext;
     private @ActionState int mActionState;
-    private final Drawable mSelectAllIcon;
-    private final Drawable mDeselectAllIcon;
 
     @IntDef({ActionState.UNKNOWN, ActionState.SELECT_ALL, ActionState.DESELECT_ALL})
     @Retention(RetentionPolicy.SOURCE)
@@ -45,28 +50,42 @@ public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction 
      * @param isIncognito whether the current tab model is incognito this will update dynamically.
      */
     public static TabSelectionEditorAction createAction(Context context, @ShowMode int showMode,
-            @ButtonType int buttonType, @IconPosition int iconPosition) {
-        Drawable selectAllIcon =
-                AppCompatResources.getDrawable(context, R.drawable.ic_select_all_24dp);
-        Drawable deselectAllIcon =
-                AppCompatResources.getDrawable(context, R.drawable.ic_deselect_all_24dp);
+            @ButtonType int buttonType, @IconPosition int iconPosition, boolean isIncognito) {
         return new TabSelectionEditorSelectionAction(
-                context, showMode, buttonType, iconPosition, selectAllIcon, deselectAllIcon);
+                context, showMode, buttonType, iconPosition, isIncognito, buildDrawable(context));
     }
 
     @VisibleForTesting
     TabSelectionEditorSelectionAction(Context context, @ShowMode int showMode,
-            @ButtonType int buttonType, @IconPosition int iconPosition, Drawable selectAllIcon,
-            Drawable deselectAllIcon) {
+            @ButtonType int buttonType, @IconPosition int iconPosition, boolean isIncognito,
+            Drawable drawable) {
         super(R.id.tab_selection_editor_selection_menu_item, showMode, buttonType, iconPosition,
-                R.string.tab_selection_editor_select_all, null, selectAllIcon);
+                R.string.tab_selection_editor_select_all, null, drawable);
 
         mContext = context;
         mActionState = ActionState.UNKNOWN;
-        mSelectAllIcon = selectAllIcon;
-        mDeselectAllIcon = deselectAllIcon;
+        getPropertyModel().set(TabSelectionEditorActionProperties.ICON_TINT, null);
+        getPropertyModel().set(TabSelectionEditorActionProperties.SKIP_ICON_TINT, true);
         getPropertyModel().set(TabSelectionEditorActionProperties.SHOULD_DISMISS_MENU, false);
-        updateState(ActionState.SELECT_ALL);
+        updateState(ActionState.SELECT_ALL, isIncognito);
+        LayerDrawable layers =
+                (LayerDrawable) getPropertyModel().get(TabSelectionEditorActionProperties.ICON);
+        layers.setCallback(new Drawable.Callback() {
+            @Override
+            public void invalidateDrawable(Drawable who) {
+                // No-op.
+            }
+
+            @Override
+            public void scheduleDrawable(Drawable who, Runnable what, long when) {
+                who.invalidateSelf();
+            }
+
+            @Override
+            public void unscheduleDrawable(Drawable who, Runnable what) {
+                who.unscheduleSelf(what);
+            }
+        });
     }
 
     @Override
@@ -75,10 +94,16 @@ public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction 
     }
 
     @Override
+    public void onShownInMenu() {
+        updateDrawable();
+    }
+
+    @Override
     public void onSelectionStateChange(List<Integer> tabIds) {
         setEnabledAndItemCount(true, tabIds.size());
         updateState(getActionDelegate().areAllTabsSelected() ? ActionState.DESELECT_ALL
-                                                             : ActionState.SELECT_ALL);
+                                                             : ActionState.SELECT_ALL,
+                getTabModelSelector().getCurrentModel().isIncognito());
     }
 
     @Override
@@ -100,21 +125,64 @@ public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction 
         return false;
     }
 
-    private void updateState(@ActionState int selectionState) {
+    private void updateState(@ActionState int selectionState, boolean isIncognito) {
         if (mActionState == selectionState) return;
 
         mActionState = selectionState;
+        LayerDrawable layers =
+                (LayerDrawable) getPropertyModel().get(TabSelectionEditorActionProperties.ICON);
 
         if (mActionState == ActionState.SELECT_ALL) {
             getPropertyModel().set(TabSelectionEditorActionProperties.TITLE_RESOURCE_ID,
                     R.string.tab_selection_editor_select_all);
-            getPropertyModel().set(TabSelectionEditorActionProperties.ICON, mSelectAllIcon);
+            updateDrawable();
         } else if (mActionState == ActionState.DESELECT_ALL) {
             getPropertyModel().set(TabSelectionEditorActionProperties.TITLE_RESOURCE_ID,
                     R.string.tab_selection_editor_deselect_all);
-            getPropertyModel().set(TabSelectionEditorActionProperties.ICON, mDeselectAllIcon);
+            updateDrawable();
         } else {
             assert false : "Invalid selection state";
         }
+    }
+
+    private void updateDrawable() {
+        LayerDrawable layers =
+                (LayerDrawable) getPropertyModel().get(TabSelectionEditorActionProperties.ICON);
+        if (mActionState == ActionState.SELECT_ALL) {
+            layers.getDrawable(BACKGROUND)
+                    .setLevel(
+                            mContext.getResources().getInteger(R.integer.list_item_level_default));
+
+            layers.getDrawable(CHECKMARK).setAlpha(0);
+            layers.getDrawable(CHECKMARK).setTint(Color.TRANSPARENT);
+            layers.invalidateSelf();
+        } else if (mActionState == ActionState.DESELECT_ALL) {
+            layers.getDrawable(BACKGROUND)
+                    .setLevel(
+                            mContext.getResources().getInteger(R.integer.list_item_level_selected));
+
+            layers.getDrawable(CHECKMARK).setAlpha(255);
+            layers.getDrawable(CHECKMARK).setTint(
+                    TabUiThemeProvider.getSelectionActionIconCheckedDrawableColor(mContext));
+            layers.invalidateSelf();
+            ((AnimatedVectorDrawableCompat) layers.getDrawable(CHECKMARK)).start();
+        } else {
+            assert false : "Invalid selection state";
+        }
+    }
+
+    private static Drawable buildDrawable(Context context) {
+        Drawable[] drawables = new Drawable[2];
+
+        Drawable selectionListIcon = ResourcesCompat.getDrawable(context.getResources(),
+                R.drawable.tab_grid_selection_list_icon, context.getTheme());
+        drawables[BACKGROUND] = new InsetDrawable(selectionListIcon,
+                (int) context.getResources().getDimension(
+                        R.dimen.tab_selection_editor_selection_action_inset));
+        drawables[BACKGROUND].setTint(
+                TabUiThemeProvider.getSelectionActionIconBackgroundColor(context));
+        drawables[CHECKMARK] = AnimatedVectorDrawableCompat.create(
+                context, R.drawable.ic_check_googblue_20dp_animated);
+        return new LayerDrawable(drawables);
     }
 }

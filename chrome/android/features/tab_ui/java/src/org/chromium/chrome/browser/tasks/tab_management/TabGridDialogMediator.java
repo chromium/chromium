@@ -556,8 +556,9 @@ public class TabGridDialogMediator
 
         if (TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mContext)) {
             List<TabSelectionEditorAction> actions = new ArrayList<>();
-            actions.add(TabSelectionEditorSelectionAction.createAction(
-                    mContext, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.END));
+            actions.add(TabSelectionEditorSelectionAction.createAction(mContext, ShowMode.MENU_ONLY,
+                    ButtonType.ICON_AND_TEXT, IconPosition.END,
+                    mTabModelSelector.getCurrentModel().isIncognito()));
             actions.add(TabSelectionEditorCloseAction.createAction(
                     mContext, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
             actions.add(TabSelectionEditorUngroupAction.createAction(

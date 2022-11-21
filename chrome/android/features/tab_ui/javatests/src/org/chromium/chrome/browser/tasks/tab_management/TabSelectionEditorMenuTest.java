@@ -102,8 +102,8 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID)
-                    .setRevision(4)
-                    .setDescription("New selection icons")
+                    .setRevision(3)
+                    .setDescription("Pluralize strings")
                     .build();
 
     @Rule
@@ -321,8 +321,8 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             actions.add(new FakeTabSelectionEditorAction(getActivity(),
                     R.id.tab_selection_editor_close_menu_item, ShowMode.IF_ROOM, ButtonType.TEXT,
-                    IconPosition.END, R.string.tab_selection_editor_select_all,
-                    R.drawable.ic_select_all_24dp));
+                    IconPosition.END, R.plurals.tab_selection_editor_close_tabs,
+                    R.drawable.ic_close_tabs_24dp));
             configureMenuWithActions(actions);
         });
 
@@ -359,8 +359,8 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             actions.add(new FakeTabSelectionEditorAction(getActivity(),
                     R.id.tab_selection_editor_close_menu_item, ShowMode.MENU_ONLY, ButtonType.TEXT,
-                    IconPosition.START, R.string.tab_selection_editor_deselect_all,
-                    R.drawable.ic_deselect_all_24dp));
+                    IconPosition.START, R.plurals.tab_selection_editor_close_tabs,
+                    R.drawable.ic_close_tabs_24dp));
             configureMenuWithActions(actions);
         });
 
@@ -370,7 +370,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
 
         PopupListener listener = new PopupListener();
         openMenu(listener);
-        assertMenuItem("Deselect all", false);
+        assertMenuItem("Close tabs", false);
 
         forceFinishRollAnimation();
         mRenderTestRule.render(

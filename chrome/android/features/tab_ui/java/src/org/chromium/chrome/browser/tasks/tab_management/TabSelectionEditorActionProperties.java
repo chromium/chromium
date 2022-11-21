@@ -41,10 +41,17 @@ public class TabSelectionEditorActionProperties {
             new WritableObjectPropertyKey<>();
 
     /**
-     * Tint for the icon.
+     * Tint for the icon. This should be null if {@code SKIP_ICON_TINT} is true.
      */
     public static final WritableObjectPropertyKey<ColorStateList> ICON_TINT =
             new WritableObjectPropertyKey<>();
+
+    /**
+     * If true skip usage of the {@code ICON_TINT} property. Used if the icon tint is handled
+     * directly by the {@link TabSelectionEditorAction}.
+     */
+    public static final WritableBooleanPropertyKey SKIP_ICON_TINT =
+            new WritableBooleanPropertyKey();
 
     public static final WritableObjectPropertyKey<Runnable> ON_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
@@ -52,18 +59,20 @@ public class TabSelectionEditorActionProperties {
             new WritableBooleanPropertyKey();
     public static final WritableObjectPropertyKey<Callback<List<Integer>>>
             ON_SELECTION_STATE_CHANGE = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Runnable> ON_SHOWN_IN_MENU =
+            new WritableObjectPropertyKey<>();
 
     /**
      * Keys for the {@link TabSelectionEditorAction}.
      */
     public static final PropertyKey[] ACTION_KEYS = {MENU_ITEM_ID, SHOW_MODE, BUTTON_TYPE,
             ICON_POSITION, TITLE_RESOURCE_ID, TITLE_IS_PLURAL, CONTENT_DESCRIPTION_RESOURCE_ID,
-            ICON, ENABLED, ITEM_COUNT, TEXT_TINT, ICON_TINT, ON_CLICK_LISTENER, SHOULD_DISMISS_MENU,
-            ON_SELECTION_STATE_CHANGE};
+            ICON, ENABLED, ITEM_COUNT, TEXT_TINT, ICON_TINT, SKIP_ICON_TINT, ON_CLICK_LISTENER,
+            SHOULD_DISMISS_MENU, ON_SELECTION_STATE_CHANGE, ON_SHOWN_IN_MENU};
 
     /**
      * Keys for the {@link TabSelectionEditorMenuItem}.
      */
-    public static final PropertyKey[] MENU_ITEM_KEYS = {
-            MENU_ITEM_ID, TITLE, CONTENT_DESCRIPTION, ICON, ICON_TINT, ENABLED, ITEM_COUNT};
+    public static final PropertyKey[] MENU_ITEM_KEYS = {MENU_ITEM_ID, TITLE, CONTENT_DESCRIPTION,
+            ICON, ICON_TINT, ENABLED, ITEM_COUNT, ON_SHOWN_IN_MENU};
 }
