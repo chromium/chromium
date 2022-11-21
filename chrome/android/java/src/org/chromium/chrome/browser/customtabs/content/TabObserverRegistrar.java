@@ -35,6 +35,7 @@ import javax.inject.Inject;
 @ActivityScope
 public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
     private CustomTabActivityTabProvider mTabProvider;
+    private final CustomTabCountObserver mTabCountObserver;
     private final Set<PageLoadMetrics.Observer> mPageLoadMetricsObservers = new HashSet<>();
     private final Set<TabObserver> mTabObservers = new HashSet<>();
 
@@ -120,8 +121,9 @@ public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
 
     @Inject
     public TabObserverRegistrar(ActivityLifecycleDispatcher lifecycleDispatcher,
-            CustomTabActivityTabProvider tabProvider) {
+            CustomTabActivityTabProvider tabProvider, CustomTabCountObserver tabCountObserver) {
         mTabProvider = tabProvider;
+        mTabCountObserver = tabCountObserver;
         mTabProvider.addObserver(mActivityTabProviderObserver);
 
         lifecycleDispatcher.register(this);

@@ -518,6 +518,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.TabCounts.OnClosingAllTabs" units="count"
+    expires_after="2023-02-17">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Recorded only for Android. Records the number of tabs closed when closing
+    all the tabs (e.g. via hitting the close button). Only recorded when closing
+    is initiated by the user, so if custom tab is killed while in the background
+    this will not be recorded.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.TabCounts.UniqueTabsSeen" units="count"
+    expires_after="2023-02-17">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Recorded only for Android. Records the number of unique tabs open in the
+    current custom tab session, when a new tab is opened. The count of this
+    histogram includes the initial tab being opened, and can be recorded more
+    than once in the same session.
+
+    Do not record nor increase the count when switching into the previous tab
+    (e.g. create new tab, close, and land onto an existing tab).
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.Visible" enum="VisibleTab" expires_after="never">
 <!-- expires-never: Used to classify UMA reports by the dashboards. -->
 
