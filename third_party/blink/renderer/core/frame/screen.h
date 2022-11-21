@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace display {
 struct ScreenInfo;
@@ -50,11 +51,12 @@ class CORE_EXPORT Screen : public EventTargetWithInlineData,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit Screen(LocalDOMWindow*, int64_t display_id);
+  Screen(LocalDOMWindow*, int64_t display_id, bool use_size_override);
 
   static bool AreWebExposedScreenPropertiesEqual(
       const display::ScreenInfo& prev,
-      const display::ScreenInfo& current);
+      const display::ScreenInfo& current,
+      bool use_size_override);
 
   int height() const;
   int width() const;
@@ -84,8 +86,19 @@ class CORE_EXPORT Screen : public EventTargetWithInlineData,
   void UpdateDisplayId(int64_t display_id) { display_id_ = display_id; }
 
  protected:
+  // Helpers to access screen information.
+  gfx::Rect GetRect(bool available) const;
   const display::ScreenInfo& GetScreenInfo() const;
+
+  // The internal id of the underlying display, to support multi-screen devices.
   int64_t display_id_;
+
+  // A flag controlling whether to respect ScreenInfo's size override, which is
+  // set to viewport dimensions while the frame is fullscreen, as a speculative
+  // site compatibility measure, because web authors may assume that screen
+  // dimensions match window.innerWidth/innerHeight while a page is fullscreen,
+  // but that is not always true. crbug.com/1367416
+  const bool use_size_override_;
 };
 
 }  // namespace blink

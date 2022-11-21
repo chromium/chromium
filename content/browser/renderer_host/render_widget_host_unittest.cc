@@ -1070,10 +1070,8 @@ TEST_F(RenderWidgetHostTest, SynchronizeVisualProperties) {
 // after a ScreenInfo change.
 TEST_F(RenderWidgetHostTest, ResizeScreenInfo) {
   display::ScreenInfo screen_info;
-  screen_info.device_scale_factor = 1.f;
   screen_info.rect = gfx::Rect(0, 0, 800, 600);
   screen_info.available_rect = gfx::Rect(0, 0, 800, 600);
-  screen_info.orientation_angle = 0;
   screen_info.orientation_type =
       display::mojom::ScreenOrientation::kPortraitPrimary;
 
@@ -1122,17 +1120,38 @@ TEST_F(RenderWidgetHostTest, ResizeScreenInfo) {
   EXPECT_FALSE(host_->visual_properties_ack_pending_);
 }
 
-// Tests that a resize event is sent when entering fullscreen mode, and the
-// screen_info rects are overridden to match the view bounds.
-TEST_F(RenderWidgetHostTest, OverrideScreenInfoDuringFullscreenMode) {
+class RenderWidgetHostFullscreenScreenSizeTest
+    : public RenderWidgetHostTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  RenderWidgetHostFullscreenScreenSizeTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        blink::features::kFullscreenScreenSizeMatchesDisplay,
+        FullscreenScreenSizeMatchesDisplayEnabled());
+  }
+  bool FullscreenScreenSizeMatchesDisplayEnabled() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         RenderWidgetHostFullscreenScreenSizeTest,
+                         testing::Bool());
+
+// Test that VisualProperties conveys a ScreenInfo size override with the view's
+// size for the current screen, when the frame is fullscreen.
+// This lets `window.screen` provide viewport dimensions while the frame is
+// fullscreen as a speculative site compatibility measure, because web authors
+// may assume that screen dimensions match window.innerWidth/innerHeight while
+// a page is fullscreen, but that is not always true. crbug.com/1367416
+TEST_P(RenderWidgetHostFullscreenScreenSizeTest, ScreenSizeInFullscreen) {
   const gfx::Rect kScreenBounds(0, 0, 800, 600);
   const gfx::Rect kViewBounds(55, 66, 600, 500);
 
   display::ScreenInfo screen_info;
-  screen_info.device_scale_factor = 1.f;
   screen_info.rect = kScreenBounds;
   screen_info.available_rect = kScreenBounds;
-  screen_info.orientation_angle = 0;
   screen_info.orientation_type =
       display::mojom::ScreenOrientation::kPortraitPrimary;
   view_->SetScreenInfo(screen_info);
@@ -1147,8 +1166,10 @@ TEST_F(RenderWidgetHostTest, OverrideScreenInfoDuringFullscreenMode) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, widget_.ReceivedVisualProperties().size());
   blink::VisualProperties props = widget_.ReceivedVisualProperties().at(0);
+  EXPECT_EQ(absl::nullopt, props.screen_infos.current().size_override);
   EXPECT_EQ(kScreenBounds, props.screen_infos.current().rect);
   EXPECT_EQ(kScreenBounds, props.screen_infos.current().available_rect);
+  EXPECT_EQ(kViewBounds.size(), props.new_size);
 
   // Enter fullscreen and do another VisualProperties sync.
   delegate_->set_is_fullscreen(true);
@@ -1157,9 +1178,13 @@ TEST_F(RenderWidgetHostTest, OverrideScreenInfoDuringFullscreenMode) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2u, widget_.ReceivedVisualProperties().size());
   props = widget_.ReceivedVisualProperties().at(1);
-  EXPECT_EQ(kViewBounds.size(), props.screen_infos.current().rect.size());
-  EXPECT_EQ(kViewBounds.size(),
-            props.screen_infos.current().available_rect.size());
+  if (FullscreenScreenSizeMatchesDisplayEnabled())
+    EXPECT_EQ(absl::nullopt, props.screen_infos.current().size_override);
+  else
+    EXPECT_EQ(kViewBounds.size(), props.screen_infos.current().size_override);
+  EXPECT_EQ(kScreenBounds, props.screen_infos.current().rect);
+  EXPECT_EQ(kScreenBounds, props.screen_infos.current().available_rect);
+  EXPECT_EQ(kViewBounds.size(), props.new_size);
 
   // Exit fullscreen and do another VisualProperties sync.
   delegate_->set_is_fullscreen(false);
@@ -1168,17 +1193,17 @@ TEST_F(RenderWidgetHostTest, OverrideScreenInfoDuringFullscreenMode) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(3u, widget_.ReceivedVisualProperties().size());
   props = widget_.ReceivedVisualProperties().at(2);
+  EXPECT_EQ(absl::nullopt, props.screen_infos.current().size_override);
   EXPECT_EQ(kScreenBounds, props.screen_infos.current().rect);
   EXPECT_EQ(kScreenBounds, props.screen_infos.current().available_rect);
+  EXPECT_EQ(kViewBounds.size(), props.new_size);
 }
 
 TEST_F(RenderWidgetHostTest, RootWindowSegments) {
   gfx::Rect screen_rect(0, 0, 800, 600);
   display::ScreenInfo screen_info;
-  screen_info.device_scale_factor = 1.f;
   screen_info.rect = screen_rect;
   screen_info.available_rect = screen_rect;
-  screen_info.orientation_angle = 0;
   screen_info.orientation_type =
       display::mojom::ScreenOrientation::kPortraitPrimary;
   view_->SetScreenInfo(screen_info);

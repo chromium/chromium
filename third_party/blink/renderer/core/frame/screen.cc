@@ -44,28 +44,50 @@ namespace {
 
 }  // namespace
 
-Screen::Screen(LocalDOMWindow* window, int64_t display_id)
-    : ExecutionContextClient(window), display_id_(display_id) {}
+Screen::Screen(LocalDOMWindow* window,
+               int64_t display_id,
+               bool use_size_override)
+    : ExecutionContextClient(window),
+      display_id_(display_id),
+      use_size_override_(use_size_override) {}
 
 // static
 bool Screen::AreWebExposedScreenPropertiesEqual(
     const display::ScreenInfo& prev,
-    const display::ScreenInfo& current) {
-  // height() / width() use rect / device_scale_factor
-  if (prev.rect.size() != current.rect.size())
+    const display::ScreenInfo& current,
+    bool use_size_override) {
+  // height() and width() use rect.size() or size_override
+  gfx::Size prev_size = prev.rect.size();
+  if (prev.size_override && use_size_override)
+    prev_size = *prev.size_override;
+  gfx::Size current_size = current.rect.size();
+  if (current.size_override && use_size_override)
+    current_size = *current.size_override;
+  if (prev_size != current_size)
     return false;
 
+  // height() and width() use device_scale_factor
   // Note: comparing device_scale_factor is a bit of a lie as Screen only uses
   // this with the PhysicalPixelsQuirk (see width() / height() below).  However,
   // this value likely changes rarely and should not throw many false positives.
   if (prev.device_scale_factor != current.device_scale_factor)
     return false;
 
-  // availLeft() / availTop() / availHeight() / availWidth() use available_rect
-  if (prev.available_rect != current.available_rect)
+  // availLeft() and availTop() use available_rect.origin()
+  if (prev.available_rect.origin() != current.available_rect.origin())
     return false;
 
-  // colorDepth() / pixelDepth() use depth
+  // availHeight() and availWidth() use available_rect.size() or size_override
+  gfx::Size prev_avail_size = prev.available_rect.size();
+  if (prev.size_override && use_size_override)
+    prev_avail_size = *prev.size_override;
+  gfx::Size current_avail_size = current.available_rect.size();
+  if (current.size_override && use_size_override)
+    current_avail_size = *current.size_override;
+  if (prev_avail_size != current_avail_size)
+    return false;
+
+  // colorDepth() and pixelDepth() use depth
   if (prev.depth != current.depth)
     return false;
 
@@ -93,25 +115,13 @@ bool Screen::AreWebExposedScreenPropertiesEqual(
 int Screen::height() const {
   if (!DomWindow())
     return 0;
-  LocalFrame* frame = DomWindow()->GetFrame();
-  const display::ScreenInfo& screen_info = GetScreenInfo();
-  if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
-    return base::ClampRound(screen_info.rect.height() *
-                            screen_info.device_scale_factor);
-  }
-  return screen_info.rect.height();
+  return GetRect(/*available=*/false).height();
 }
 
 int Screen::width() const {
   if (!DomWindow())
     return 0;
-  LocalFrame* frame = DomWindow()->GetFrame();
-  const display::ScreenInfo& screen_info = GetScreenInfo();
-  if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
-    return base::ClampRound(screen_info.rect.width() *
-                            screen_info.device_scale_factor);
-  }
-  return screen_info.rect.width();
+  return GetRect(/*available=*/false).width();
 }
 
 unsigned Screen::colorDepth() const {
@@ -127,49 +137,25 @@ unsigned Screen::pixelDepth() const {
 int Screen::availLeft() const {
   if (!DomWindow())
     return 0;
-  LocalFrame* frame = DomWindow()->GetFrame();
-  const display::ScreenInfo& screen_info = GetScreenInfo();
-  if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
-    return base::ClampRound(screen_info.available_rect.x() *
-                            screen_info.device_scale_factor);
-  }
-  return screen_info.available_rect.x();
+  return GetRect(/*available=*/true).x();
 }
 
 int Screen::availTop() const {
   if (!DomWindow())
     return 0;
-  LocalFrame* frame = DomWindow()->GetFrame();
-  const display::ScreenInfo& screen_info = GetScreenInfo();
-  if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
-    return base::ClampRound(screen_info.available_rect.y() *
-                            screen_info.device_scale_factor);
-  }
-  return screen_info.available_rect.y();
+  return GetRect(/*available=*/true).y();
 }
 
 int Screen::availHeight() const {
   if (!DomWindow())
     return 0;
-  LocalFrame* frame = DomWindow()->GetFrame();
-  const display::ScreenInfo& screen_info = GetScreenInfo();
-  if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
-    return base::ClampRound(screen_info.available_rect.height() *
-                            screen_info.device_scale_factor);
-  }
-  return screen_info.available_rect.height();
+  return GetRect(/*available=*/true).height();
 }
 
 int Screen::availWidth() const {
   if (!DomWindow())
     return 0;
-  LocalFrame* frame = DomWindow()->GetFrame();
-  const display::ScreenInfo& screen_info = GetScreenInfo();
-  if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
-    return base::ClampRound(screen_info.available_rect.width() *
-                            screen_info.device_scale_factor);
-  }
-  return screen_info.available_rect.width();
+  return GetRect(/*available=*/true).width();
 }
 
 void Screen::Trace(Visitor* visitor) const {
@@ -196,6 +182,19 @@ bool Screen::isExtended() const {
   }
 
   return GetScreenInfo().is_extended;
+}
+
+gfx::Rect Screen::GetRect(bool available) const {
+  if (!DomWindow())
+    return gfx::Rect();
+  LocalFrame* frame = DomWindow()->GetFrame();
+  const display::ScreenInfo& screen_info = GetScreenInfo();
+  gfx::Rect rect = available ? screen_info.available_rect : screen_info.rect;
+  if (screen_info.size_override && use_size_override_)
+    rect.set_size(*screen_info.size_override);
+  if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk())
+    return gfx::ScaleToRoundedRect(rect, screen_info.device_scale_factor);
+  return rect;
 }
 
 const display::ScreenInfo& Screen::GetScreenInfo() const {

@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -36,6 +37,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -646,57 +648,68 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
 }
 #endif
 
-// Tests that the renderer receives the display::ScreenInfo size overrides
-// while the page is in fullscreen mode. This is a regression test for
-// https://crbug.com/1060795.
-IN_PROC_BROWSER_TEST_F(RenderWidgetHostBrowserTest,
-                       PropagatesFullscreenSizeOverrides) {
-  class FullscreenWaiter : public WebContentsObserver {
-   public:
-    explicit FullscreenWaiter(WebContents* wc) : WebContentsObserver(wc) {}
+class RenderWidgetHostFullscreenScreenSizeBrowserTest
+    : public RenderWidgetHostBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  RenderWidgetHostFullscreenScreenSizeBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        blink::features::kFullscreenScreenSizeMatchesDisplay,
+        FullscreenScreenSizeMatchesDisplayEnabled());
+  }
+  bool FullscreenScreenSizeMatchesDisplayEnabled() { return GetParam(); }
 
-    void Wait(bool enter) {
-      if (web_contents()->IsFullscreen() != enter) {
-        run_loop_.Run();
-      }
-      EXPECT_EQ(enter, web_contents()->IsFullscreen());
-    }
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
-   private:
-    void DidToggleFullscreenModeForTab(bool entered,
-                                       bool will_resize) override {
-      run_loop_.Quit();
-    }
+INSTANTIATE_TEST_SUITE_P(All,
+                         RenderWidgetHostFullscreenScreenSizeBrowserTest,
+                         testing::Bool());
 
-    base::RunLoop run_loop_;
-  };
-
-  // Sanity-check: Ensure the Shell and WebContents both agree the browser is
-  // not currently in fullscreen.
+// Tests `window.screen` dimensions in fullscreen. Note that Content Shell does
+// not resize the viewport to fill the screen in fullscreen on some platforms.
+// `window.screen` may provide viewport dimensions while the frame is fullscreen
+// as a speculative site compatibility measure, because web authors may assume
+// that screen dimensions match window.innerWidth/innerHeight while a page is
+// fullscreen, but that is not always true. crbug.com/1367416
+IN_PROC_BROWSER_TEST_P(RenderWidgetHostFullscreenScreenSizeBrowserTest,
+                       FullscreenSize) {
+  // Check initial dimensions before entering fullscreen.
   ASSERT_FALSE(shell()->IsFullscreenForTabOrPending(web_contents()));
   ASSERT_FALSE(web_contents()->IsFullscreen());
-
-  // While not fullscreened, expect the screen size to not be overridden.
-  display::ScreenInfo screen_info = host()->GetScreenInfo();
   WaitForVisualPropertiesAck();
-  EXPECT_EQ(screen_info.rect.size().ToString(),
+  EXPECT_EQ(host()->GetScreenInfo().rect.size().ToString(),
             EvalJs(web_contents(), "`${screen.width}x${screen.height}`"));
 
-  // Enter fullscreen mode. The Content Shell does not resize the view to fill
-  // the entire screen, and so the page will see the view's size as the screen
-  // size. This confirms the ScreenInfo override logic is working.
-  ASSERT_TRUE(ExecJs(web_contents(), "document.body.requestFullscreen();"));
-  FullscreenWaiter(web_contents()).Wait(true);
-  WaitForVisualPropertiesAck();
-  EXPECT_EQ(view()->GetRequestedRendererSize().ToString(),
-            EvalJs(web_contents(), "`${screen.width}x${screen.height}`"));
+  // Enter fullscreen; Content Shell does not resize the viewport to fill the
+  // screen in fullscreen on some platforms.
+  constexpr char kEnterFullscreenScript[] = R"JS(
+    document.documentElement.requestFullscreen().then(() => {
+        return !!document.fullscreenElement;
+    });
+  )JS";
+  ASSERT_TRUE(EvalJs(web_contents(), kEnterFullscreenScript).ExtractBool());
 
-  // Exit fullscreen mode, and then the page should see the screen size again.
-  ASSERT_TRUE(ExecJs(web_contents(), "document.exitFullscreen();"));
-  FullscreenWaiter(web_contents()).Wait(false);
-  screen_info = host()->GetScreenInfo();
-  WaitForVisualPropertiesAck();
-  EXPECT_EQ(screen_info.rect.size().ToString(),
+  if (FullscreenScreenSizeMatchesDisplayEnabled()) {
+    // `window.screen` dimensions match the display size.
+    EXPECT_EQ(host()->GetScreenInfo().rect.size().ToString(),
+              EvalJs(web_contents(), "`${screen.width}x${screen.height}`"));
+  } else {
+    // `window.screen` dimensions match the potentially smaller viewport size.
+    EXPECT_EQ(view()->GetRequestedRendererSize().ToString(),
+              EvalJs(web_contents(), "`${screen.width}x${screen.height}`"));
+  }
+
+  // Check dimensions again after exiting fullscreen.
+  constexpr char kExitFullscreenScript[] = R"JS(
+    document.exitFullscreen().then(() => {
+        return !document.fullscreenElement;
+    });
+  )JS";
+  ASSERT_TRUE(EvalJs(web_contents(), kExitFullscreenScript).ExtractBool());
+  ASSERT_FALSE(web_contents()->IsFullscreen());
+  EXPECT_EQ(host()->GetScreenInfo().rect.size().ToString(),
             EvalJs(web_contents(), "`${screen.width}x${screen.height}`"));
 }
 

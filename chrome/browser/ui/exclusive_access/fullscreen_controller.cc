@@ -367,8 +367,11 @@ void FullscreenController::FullscreenTransititionCompleted() {
   started_fullscreen_transition_ = false;
   if (IsTabFullscreen()) {
     DCHECK(exclusive_access_tab());
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+    // TODO(crbug.com/1385866): This is flaky on ChromeOS Lacros browser tests.
     DCHECK_EQ(tab_fullscreen_target_display_id_,
               GetDisplayId(*exclusive_access_tab()));
+#endif
   }
   tab_fullscreen_target_display_id_ = display::kInvalidDisplayId;
 }

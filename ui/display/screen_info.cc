@@ -19,6 +19,7 @@ bool ScreenInfo::operator==(const ScreenInfo& other) const {
          is_monochrome == other.is_monochrome &&
          display_frequency == other.display_frequency && rect == other.rect &&
          available_rect == other.available_rect &&
+         size_override == other.size_override &&
          orientation_type == other.orientation_type &&
          orientation_angle == other.orientation_angle &&
          is_extended == other.is_extended && is_primary == other.is_primary &&
