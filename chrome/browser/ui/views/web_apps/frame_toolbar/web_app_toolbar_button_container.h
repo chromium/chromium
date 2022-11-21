@@ -126,8 +126,6 @@ class WebAppToolbarButtonContainer : public views::View,
   content::WebContents* GetContentSettingWebContents() override;
   ContentSettingBubbleModelDelegate* GetContentSettingBubbleModelDelegate()
       override;
-  void OnContentSettingImageBubbleShown(
-      ContentSettingImageModel::ImageType type) const override;
 
   // ImmersiveModeController::Observer:
   void OnImmersiveRevealStarted() override;

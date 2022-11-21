@@ -9,7 +9,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "build/build_config.h"
@@ -1086,9 +1085,6 @@ ContentSettingImageModel::CreateBubbleModel(
     ContentSettingBubbleModel::Delegate* delegate,
     content::WebContents* web_contents) {
   DCHECK(web_contents);
-  UMA_HISTOGRAM_ENUMERATION(
-      "ContentSettings.ImagePressed", image_type(),
-      ContentSettingImageModel::ImageType::NUM_IMAGE_TYPES);
   return CreateBubbleModelImpl(delegate, web_contents);
 }
 

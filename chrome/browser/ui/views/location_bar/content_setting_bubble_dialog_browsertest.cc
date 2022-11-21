@@ -4,7 +4,6 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
@@ -196,15 +195,9 @@ void ContentSettingBubbleDialogTest::ShowDialogBubble(
     ContentSettingImageModel::ImageType image_type) {
   LocationBarTesting* location_bar_testing =
       browser()->window()->GetLocationBar()->GetLocationBarForTesting();
-
-  base::HistogramTester histograms;
-
   EXPECT_TRUE(location_bar_testing->TestContentSettingImagePressed(
       ContentSettingImageModel::GetContentSettingImageModelIndexForTesting(
           image_type)));
-
-  histograms.ExpectBucketCount("ContentSettings.ImagePressed",
-                               static_cast<int>(image_type), 1);
 }
 
 void ContentSettingBubbleDialogTest::ShowUi(const std::string& name) {

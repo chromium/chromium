@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 
-#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -319,13 +318,6 @@ WebAppToolbarButtonContainer::GetContentSettingWebContents() {
 ContentSettingBubbleModelDelegate*
 WebAppToolbarButtonContainer::GetContentSettingBubbleModelDelegate() {
   return browser_view_->browser()->content_setting_bubble_model_delegate();
-}
-
-void WebAppToolbarButtonContainer::OnContentSettingImageBubbleShown(
-    ContentSettingImageModel::ImageType type) const {
-  UMA_HISTOGRAM_ENUMERATION(
-      "HostedAppFrame.ContentSettings.ImagePressed", type,
-      ContentSettingImageModel::ImageType::NUM_IMAGE_TYPES);
 }
 
 // ImmersiveModeController::Observer:

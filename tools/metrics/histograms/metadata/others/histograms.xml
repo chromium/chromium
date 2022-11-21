@@ -7324,7 +7324,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="HostedAppFrame.ContentSettings.ImagePressed"
     enum="ContentSettingImageType" expires_after="2021-02-01">
-  <owner>calamity@chromium.org</owner>
+  <obsolete>
+    Removed in Nov 2022.
+  </obsolete>
+  <owner>alancutter@chromium.org</owner>
   <owner>src/chrome/browser/ui/page_action/OWNERS</owner>
   <summary>
     Counts which content setting buttons in the hosted app frame are pressed by
