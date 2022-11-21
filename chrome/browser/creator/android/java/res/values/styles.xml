@@ -29,7 +29,7 @@ found in the LICENSE file.
         <item name="android:textAppearance">@style/TextAppearance.Button.Text.Blue</item>
         <item name="buttonTextColor">@macro/default_text_color_secondary</item>
         <item name="buttonColor">@android:color/white</item>
-        <item name="rippleColor">@color/text_button_ripple_color</item>
+        <item name="rippleColor">@color/text_button_ripple_color_list</item>
         <item name="buttonRaised">true</item>
     </style>
 </resources>

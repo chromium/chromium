@@ -9,6 +9,7 @@ import android.animation.StateListAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.ContextThemeWrapper;
 
@@ -67,8 +68,18 @@ public class ButtonCompat extends AppCompatButton {
                 attrs, R.styleable.ButtonCompat, android.R.attr.buttonStyle, 0);
         int buttonColorId = a.getResourceId(
                 R.styleable.ButtonCompat_buttonColor, R.color.blue_when_enabled_list);
-        int rippleColorId = a.getResourceId(
-                R.styleable.ButtonCompat_rippleColor, R.color.filled_button_ripple_color);
+
+        int rippleColorId = a.getResourceId(R.styleable.ButtonCompat_rippleColor, -1);
+        if (rippleColorId == -1) {
+            // If we can't resolve rippleColor, e.g. we're provided an attr that's not available in
+            // the theme, we'll use a fallback color based on the button color. A transparent color
+            // means a text button, which should have a blue ripple while a filled button should
+            // have a white ripple.
+            boolean isBgTransparent = getContext().getColor(buttonColorId) == Color.TRANSPARENT;
+            rippleColorId = isBgTransparent ? R.color.text_button_ripple_color_list_baseline
+                                            : R.color.filled_button_ripple_color;
+        }
+
         int borderColorId =
                 a.getResourceId(R.styleable.ButtonCompat_borderColor, android.R.color.transparent);
         int borderWidthId = a.getResourceId(R.styleable.ButtonCompat_borderWidth,

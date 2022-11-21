@@ -52,7 +52,12 @@ found in the LICENSE file.
         <item name="android:textAppearance">@style/TextAppearance.Button.Text.Blue</item>
         <item name="buttonTextColor">?attr/globalTextButtonTextColor</item>
         <item name="buttonColor">@android:color/transparent</item>
-        <item name="rippleColor">@color/text_button_ripple_color</item>
+        <!--
+          If ?attr/globalTextButtonRippleColor isn't defined in the theme, ButtonCompat will fall
+          back to a blue ripple color for buttons with transparent background and a white one for
+          the buttons with a solid background.
+        -->
+        <item name="rippleColor">?attr/globalTextButtonRippleColor</item>
         <item name="buttonRaised">false</item>
     </style>
     <style name="OutlinedButton" parent="TextButton" tools:ignore="UnusedResources">

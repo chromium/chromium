@@ -52,6 +52,7 @@ found in the LICENSE file.
         <item name="globalFilledButtonBgColor">@color/filled_button_bg</item>
         <item name="globalFilledButtonTextColor">@color/default_text_color_on_accent1_baseline_list</item>
         <item name="globalTextButtonTextColor">@color/blue_when_enabled_list</item>
+        <item name="globalTextButtonRippleColor">@color/text_button_ripple_color_list_baseline</item>
         <item name="globalOutlinedButtonBorderColor">@color/divider_line_bg_color_baseline</item>
         <item name="globalLinkTextColor">@color/default_text_color_link_baseline</item>
         <item name="globalClickableSpanColor">@color/default_text_color_blue_baseline</item>
@@ -141,6 +142,7 @@ found in the LICENSE file.
         <item name="globalFilledButtonBgColor">@color/filled_button_bg</item>
         <item name="globalFilledButtonTextColor">@color/default_text_color_on_accent1_baseline_list</item>
         <item name="globalTextButtonTextColor">@color/blue_when_enabled_list</item>
+        <item name="globalTextButtonRippleColor">@color/text_button_ripple_color_list_baseline</item>
         <item name="globalOutlinedButtonBorderColor">@color/divider_line_bg_color_baseline</item>
         <item name="globalLinkTextColor">@color/default_text_color_link_baseline</item>
         <item name="globalClickableSpanColor">@color/default_text_color_blue_baseline</item>
