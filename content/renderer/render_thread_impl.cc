@@ -1649,7 +1649,8 @@ RenderThreadImpl::GetMediaSequencedTaskRunner() {
   if (base::FeatureList::IsEnabled(kUseThreadPoolForMediaTaskRunner)) {
     if (!media_task_runner_) {
       media_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-          base::TaskTraits{base::TaskPriority::USER_VISIBLE, base::MayBlock()});
+          base::TaskTraits{base::TaskPriority::USER_VISIBLE,
+                           base::WithBaseSyncPrimitives(), base::MayBlock()});
     }
     return media_task_runner_;
   }
