@@ -88,11 +88,6 @@ class SpeculativeReportQueueImpl : public ReportQueue {
   [[nodiscard]] base::OnceCallback<void(StatusOr<std::unique_ptr<ReportQueue>>)>
   PrepareToAttachActualQueue() const override;
 
-  // Substitutes actual queue to the speculative, when ready.
-  // Initiates processesing of all pending records.
-  void AttachActualQueue(
-      StatusOr<std::unique_ptr<ReportQueue>> status_or_actual_queue);
-
  private:
   // Moveable, non-copyable struct holding a pending record producer for the
   // |pending_record_producers_| queue below.
@@ -118,6 +113,11 @@ class SpeculativeReportQueueImpl : public ReportQueue {
   void AddProducedRecord(RecordProducer record_producer,
                          Priority priority,
                          EnqueueCallback callback) const override;
+
+  // Substitutes actual queue to the speculative, when ready.
+  // Initiates processesing of all pending records.
+  void AttachActualQueue(
+      StatusOr<std::unique_ptr<ReportQueue>> status_or_actual_queue);
 
   // Enqueues head of the |pending_record_producers_| and reapplies for the rest
   // of it.
