@@ -12,6 +12,7 @@ import {reportError} from '../../error.js';
 import * as expert from '../../expert.js';
 import * as h264 from '../../h264.js';
 import {I18nString} from '../../i18n_string.js';
+import {LowStorageActionType, sendLowStorageEvent} from '../../metrics.js';
 import {Filenamer} from '../../models/file_namer.js';
 import * as loadTimeData from '../../models/load_time_data.js';
 import {
@@ -319,6 +320,9 @@ export class Video extends ModeBase {
   }
 
   private toggleLowStorageWarning(show: boolean): void {
+    if (show) {
+      sendLowStorageEvent(LowStorageActionType.SHOW_WARNING_MSG);
+    }
     this.lowStorageWarningNudge.hidden = !show;
   }
 

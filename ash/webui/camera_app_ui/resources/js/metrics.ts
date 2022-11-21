@@ -580,3 +580,21 @@ export function sendDocScanEvent(action: DocScanActionType): void {
     eventAction: action,
   });
 }
+
+export enum LowStorageActionType {
+  MANAGE_STORAGE_AUTO_STOP = 'manage-storage-auto-stop',
+  MANAGE_STORAGE_CANNOT_START = 'manage-storage-cannot-start',
+  SHOW_AUTO_STOP_DIALOG = 'show-auto-stop-dialog',
+  SHOW_CANNOT_START_DIALOG = 'show-cannot-start-dialog',
+  SHOW_WARNING_MSG = 'show-warning-msg',
+}
+
+/**
+ * Sends low-storage handling event.
+ */
+export function sendLowStorageEvent(action: LowStorageActionType): void {
+  sendEvent({
+    eventCategory: 'low-storage',
+    eventAction: action,
+  });
+}

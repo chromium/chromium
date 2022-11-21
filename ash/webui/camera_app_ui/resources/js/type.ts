@@ -495,3 +495,11 @@ export enum LocalStorageKey {
   SHOW_METADATA = 'showMetadata',
   TOGGLE_MIC = 'toggleMic',
 }
+
+/**
+ * Type of low storage dialog.
+ */
+export enum LowStorageDialogType {
+  AUTO_STOP = 'auto-stop',
+  CANNOT_START = 'cannot-start',
+}
