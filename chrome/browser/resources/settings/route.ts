@@ -27,6 +27,10 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.COOKIES = r.PRIVACY.createChild('/cookies');
   r.SECURITY = r.PRIVACY.createChild('/security');
 
+  if (loadTimeData.getBoolean('isPrivacySandboxSettings4')) {
+    r.PRIVACY_SANDBOX = r.PRIVACY.createChild('/adPrivacy');
+  }
+
   // <if expr="use_nss_certs">
   r.CERTIFICATES = r.SECURITY.createChild('/certificates');
   // </if>

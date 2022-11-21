@@ -180,6 +180,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value: () => loadTimeData.getBoolean('isPrivacySandboxRestricted'),
       },
 
+      isPrivacySandboxSettings4_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('isPrivacySandboxSettings4'),
+      },
+
       /**
        * Whether the File System Access Persistent Permissions UI should be
        * displayed.
@@ -216,6 +221,10 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
 
           if (routes.PRIVACY_GUIDE) {
             map.set(routes.PRIVACY_GUIDE.path, '#privacyGuideLinkRow');
+          }
+
+          if (routes.PRIVACY_SANDBOX) {
+            map.set(routes.PRIVACY_SANDBOX.path, '#privacySandboxLinkRow');
           }
 
           return map;
@@ -282,6 +291,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private enablePrivacyGuidePage_: boolean;
   private showNotificationPermissionsReview_: boolean;
   private isPrivacySandboxRestricted_: boolean;
+  private isPrivacySandboxSettings4_: boolean;
   private safetyCheckNotificationPermissionsEnabled_: boolean;
   private focusConfig_: FocusConfig;
   private searchFilter_: string;
@@ -401,8 +411,15 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   }
 
   private onPrivacySandboxClick_() {
+    this.interactedWithPage_();
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacySandbox.OpenedFromSettingsParent');
+
+    if (this.isPrivacySandboxSettings4_) {
+      Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX);
+      return;
+    }
+
     // Create a MouseEvent directly to avoid Polymer failing to synthesise a
     // click event if this function was called in response to a touch event.
     // See crbug.com/1253883 for details.
@@ -473,6 +490,15 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     return this.safetyCheckNotificationPermissionsEnabled_ ?
         this.i18n('siteSettingsNotificationsDefaultBehaviorDescription') :
         this.i18n('siteSettingsDefaultBehaviorDescription');
+  }
+
+  private isPrivacySandboxSettings3Enabled_(): boolean {
+    return !this.isPrivacySandboxRestricted_ &&
+        !this.isPrivacySandboxSettings4_;
+  }
+
+  private isPrivacySandboxSettings4Enabled_(): boolean {
+    return !this.isPrivacySandboxRestricted_ && this.isPrivacySandboxSettings4_;
   }
 }
 

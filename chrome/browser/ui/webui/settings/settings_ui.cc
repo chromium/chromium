@@ -77,6 +77,7 @@
 #include "components/performance_manager/public/features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/sync/base/features.h"
@@ -429,9 +430,13 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   bool is_privacy_sandbox_restricted =
       PrivacySandboxServiceFactory::GetForProfile(profile)
           ->IsPrivacySandboxRestricted();
+  bool is_privacy_sandbox_settings_4 =
+      base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4);
   html_source->AddBoolean("isPrivacySandboxRestricted",
                           is_privacy_sandbox_restricted);
-  if (!is_privacy_sandbox_restricted) {
+  html_source->AddBoolean("isPrivacySandboxSettings4",
+                          is_privacy_sandbox_settings_4);
+  if (!is_privacy_sandbox_restricted && !is_privacy_sandbox_settings_4) {
     html_source->AddResourcePath(
         "privacySandbox", IDR_SETTINGS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_HTML);
   }

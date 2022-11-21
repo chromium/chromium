@@ -39,6 +39,7 @@ export interface SettingsRoutes {
   PERFORMANCE: Route;
   PRIVACY: Route;
   PRIVACY_GUIDE: Route;
+  PRIVACY_SANDBOX: Route;
   RESET: Route;
   RESET_DIALOG: Route;
   SAFETY_CHECK: Route;

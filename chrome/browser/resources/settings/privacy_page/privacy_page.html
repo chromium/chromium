@@ -59,6 +59,19 @@
             sub-label="[[cookieSettingDescription_]]"
             on-click="onCookiesClick_"
             role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+        <template is="dom-if" if=
+            "[[isPrivacySandboxSettings4Enabled_(isPrivacySandboxRestricted_, isPrivacySandboxSettings4_)]]">
+          <!-- TODO(crbug.com/1378703): Replace strings and icons. -->
+          <cr-link-row id="privacySandboxLinkRow"
+              start-icon="settings20:experiment"
+              class="hr"
+              label="$i18n{privacySandboxTitle}"
+              sub-label="[[computePrivacySandboxSublabel_(
+                  prefs.privacy_sandbox.*)]]"
+              on-click="onPrivacySandboxClick_"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
+        </template>
         <cr-link-row id="securityLinkRow" start-icon="cr:security"
             class="hr" label="$i18n{securityPageTitle}"
             sub-label="$i18n{securityPageDescription}"
@@ -69,7 +82,8 @@
             sub-label="$i18n{permissionsPageDescription}"
             on-click="onPermissionsPageClick_"
             role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
-        <template is="dom-if" if="[[!isPrivacySandboxRestricted_]]">
+        <template is="dom-if" if=
+            "[[isPrivacySandboxSettings3Enabled_(isPrivacySandboxRestricted_, isPrivacySandboxSettings4_)]]">
           <cr-link-row id="privacySandboxLinkRow"
               start-icon="settings20:experiment"
               class="hr"
@@ -132,6 +146,19 @@
               focus-config="[[focusConfig_]]">
           </settings-security-page>
         </settings-subpage>
+      </template>
+
+      <template is="dom-if" if=
+          "[[isPrivacySandboxSettings4Enabled_(isPrivacySandboxRestricted_, isPrivacySandboxSettings4_)]]">
+        <template is="dom-if" route-path="/adPrivacy">
+          <!-- TODO(b/254413940): Add learn-more-url. -->
+          <settings-subpage id="privacy-sandbox"
+              page-title="$i18n{privacySandboxTitle}"
+              associated-control="[[$$('#privacySandboxLinkRow')]]"
+              learn-more-url="">
+            <!-- TODO(b/254413449): Add privacy sandbox component. -->
+          </settings-subpage>
+        </template>
       </template>
 
       <template is="dom-if" route-path="/content/all" no-search>

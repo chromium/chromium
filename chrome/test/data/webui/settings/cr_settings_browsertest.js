@@ -579,6 +579,25 @@ TEST_F(
     });
 GEN('#endif');
 
+var CrSettingsPrivacyPageWithPrivacySandbox4Test =
+    class extends CrSettingsPrivacyPageTest {
+  /** @override */
+  get featureListInternal() {
+    return {
+      enabled: [
+        'features::kPrivacyGuide2',
+        'privacy_sandbox::kPrivacySandboxSettings4',
+      ],
+    };
+  }
+};
+
+TEST_F(
+    'CrSettingsPrivacyPageWithPrivacySandbox4Test', 'PrivacySandbox4Enabled',
+    function() {
+      runMochaSuite('PrivacySandbox4Enabled');
+    });
+
 var CrSettingsPrivacyGuidePageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
