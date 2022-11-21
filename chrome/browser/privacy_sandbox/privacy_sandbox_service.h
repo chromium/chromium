@@ -87,7 +87,11 @@ class PrivacySandboxService : public KeyedService {
     // settings.
     kNoticeLearnMore = 11,
 
-    kMaxValue = kNoticeLearnMore,
+    // Interactions with M1 Notice ROW prompt and M1 Notice EEA prompt.
+    kNoticeMoreInfoOpened = 12,
+    kNoticeMoreInfoClosed = 13,
+
+    kMaxValue = kNoticeMoreInfoClosed,
   };
 
   PrivacySandboxService(

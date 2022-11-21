@@ -23,8 +23,18 @@ export const PrivacySandboxDialogNoticeMixin = dedupingMixin(
           };
         }
 
-        private onLearnMoreExpandedChanged_() {
-          // TODO(crbug.com/1378703): Report learn more actions.
+        private onLearnMoreExpandedChanged_(
+            newValue: boolean, oldValue: boolean) {
+          // Check both old and new value to avoid reporting actions when the
+          // dialog just was created and oldValue is undefined.
+          if (newValue && !oldValue) {
+            this.promptActionOccurred(
+                PrivacySandboxPromptAction.NOTICE_MORE_INFO_OPENED);
+          }
+          if (!newValue && oldValue) {
+            this.promptActionOccurred(
+                PrivacySandboxPromptAction.NOTICE_MORE_INFO_CLOSED);
+          }
         }
 
         onNoticeOpenSettings() {

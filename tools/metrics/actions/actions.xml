@@ -28040,6 +28040,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.PrivacySandbox.Notice.LearnMoreExpanded">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <owner>tommasin@chromium.org</owner>
+  <description>
+    User expanded the Learn More in the Privacy Sandbox Notice.
+  </description>
+</action>
+
 <action name="Settings.PrivacySandbox.Notice.OpenedSettings">
   <owner>harrisonsean@chromium.org</owner>
   <owner>sauski@google.com</owner>

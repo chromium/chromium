@@ -328,6 +328,33 @@ suite('PrivacySandboxDialogCombined', function() {
     testClickButton('#settingsButton', noticeStep);
     await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_OPEN_SETTINGS);
   });
+
+  test('learnMoreClicked', async function() {
+    await verifyActionOccured(PrivacySandboxPromptAction.CONSENT_SHOWN);
+    const consentStep: HTMLElement|null = getActiveStep();
+    assertEquals(consentStep!.id, PrivacySandboxCombinedDialogStep.CONSENT);
+    // TODO(crbug.com/1378703): Test scrolling behaviour.
+    // The collapse section is closed.
+    const learnMoreElement = consentStep!.shadowRoot!.querySelector(
+        'privacy-sandbox-dialog-learn-more');
+    const collapseElement =
+        learnMoreElement!.shadowRoot!.querySelector('iron-collapse');
+    assertFalse(collapseElement!.opened);
+
+    // The collapse section is opened and the native UI is notified about the
+    // action.
+    testClickButton('cr-expand-button', learnMoreElement);
+    await verifyActionOccured(
+        PrivacySandboxPromptAction.CONSENT_MORE_INFO_OPENED);
+    assertTrue(collapseElement!.opened);
+
+    // After clicking on the collapse section again, the content area collapses
+    // and returns to the initial state.
+    testClickButton('cr-expand-button', learnMoreElement);
+    await verifyActionOccured(
+        PrivacySandboxPromptAction.CONSENT_MORE_INFO_CLOSED);
+    assertFalse(collapseElement!.opened);
+  });
 });
 
 suite('PrivacySandboxDialogNoticeEEA', function() {
@@ -386,15 +413,43 @@ suite('PrivacySandboxDialogNoticeEEA', function() {
     testClickButton('#settingsButton', noticeStep);
     await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_OPEN_SETTINGS);
   });
+
+  test('learnMoreClicked', async function() {
+    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
+    const noticeStep: HTMLElement|null = getActiveStep();
+    assertEquals(noticeStep!.id, PrivacySandboxCombinedDialogStep.NOTICE);
+    // TODO(crbug.com/1378703): Test scrolling behaviour.
+    // The collapse section is closed.
+    const learnMoreElement = noticeStep!.shadowRoot!.querySelector(
+        'privacy-sandbox-dialog-learn-more');
+    const collapseElement =
+        learnMoreElement!.shadowRoot!.querySelector('iron-collapse');
+    assertFalse(collapseElement!.opened);
+
+    // The collapse section is opened and the native UI is notified about the
+    // action.
+    testClickButton('cr-expand-button', learnMoreElement);
+    await verifyActionOccured(
+        PrivacySandboxPromptAction.NOTICE_MORE_INFO_OPENED);
+    assertTrue(collapseElement!.opened);
+
+    // After clicking on the collapse section again, the content area collapses
+    // and returns to the initial state.
+    testClickButton('cr-expand-button', learnMoreElement);
+    await verifyActionOccured(
+        PrivacySandboxPromptAction.NOTICE_MORE_INFO_CLOSED);
+    assertFalse(collapseElement!.opened);
+  });
 });
 
 suite('PrivacySandboxDialogNoticeROW', function() {
   let page: PrivacySandboxNoticeDialogAppElement;
   let browserProxy: TestPrivacySandboxDialogBrowserProxy;
 
-  function testClickButton(buttonSelector: string) {
+  function testClickButton(
+      buttonSelector: string, element: HTMLElement|null = page) {
     const actionButton =
-        page.shadowRoot!.querySelector(buttonSelector) as CrButtonElement;
+        element!.shadowRoot!.querySelector(buttonSelector) as CrButtonElement;
     actionButton.click();
   }
 
@@ -426,5 +481,30 @@ suite('PrivacySandboxDialogNoticeROW', function() {
     await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
     testClickButton('#settingsButton');
     await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_OPEN_SETTINGS);
+  });
+
+  test('learnMoreClicked', async function() {
+    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
+    // TODO(crbug.com/1378703): Test scrolling behaviour.
+    // The collapse section is closed.
+    const learnMoreElement =
+        page.shadowRoot!.querySelector('privacy-sandbox-dialog-learn-more');
+    const collapseElement =
+        learnMoreElement!.shadowRoot!.querySelector('iron-collapse');
+    assertFalse(collapseElement!.opened);
+
+    // The collapse section is opened and the native UI is notified about the
+    // action.
+    testClickButton('cr-expand-button', learnMoreElement);
+    await verifyActionOccured(
+        PrivacySandboxPromptAction.NOTICE_MORE_INFO_OPENED);
+    assertTrue(collapseElement!.opened);
+
+    // After clicking on the collapse section again, the content area collapses
+    // and returns to the initial state.
+    testClickButton('cr-expand-button', learnMoreElement);
+    await verifyActionOccured(
+        PrivacySandboxPromptAction.NOTICE_MORE_INFO_CLOSED);
+    assertFalse(collapseElement!.opened);
   });
 });

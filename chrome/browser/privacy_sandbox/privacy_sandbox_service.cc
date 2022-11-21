@@ -224,6 +224,13 @@ void PrivacySandboxService::PromptActionOccurred(
           base::UserMetricsAction("Settings.PrivacySandbox.Notice.LearnMore"));
       break;
     }
+    case (PromptAction::kNoticeMoreInfoOpened): {
+      base::RecordAction(base::UserMetricsAction(
+          "Settings.PrivacySandbox.Notice.LearnMoreExpanded"));
+      break;
+    }
+    // TODO(crbug.com/1378703): Clean up PromptAction and remove
+    // *LearnMoreClosed or add use actions metrics for those prompt actions.
     default:
       break;
   }
