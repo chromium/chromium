@@ -32,7 +32,7 @@ LayoutNGSVGText::LayoutNGSVGText(Element* element)
 void LayoutNGSVGText::StyleDidChange(StyleDifference diff,
                                      const ComputedStyle* old_style) {
   NOT_DESTROYED();
-  if (needs_text_metrics_update_ && diff.HasDifference())
+  if (needs_text_metrics_update_ && diff.HasDifference() && old_style)
     diff.SetNeedsFullLayout();
   LayoutNGBlockFlowMixin<LayoutSVGBlock>::StyleDidChange(diff, old_style);
   SVGResources::UpdatePaints(*this, old_style, StyleRef());
