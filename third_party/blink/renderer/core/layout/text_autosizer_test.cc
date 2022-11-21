@@ -1112,6 +1112,24 @@ TEST_F(TextAutosizerTest, AfterPrint) {
                   target->GetLayoutObject()->StyleRef().ComputedFontSize());
 }
 
+TEST_F(TextAutosizerTest, FingerprintWidth) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      html { font-size: 8px; }
+      #target { width: calc(1px); }
+    </style>
+    <body>
+      <div id='target'>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed
+        do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        Ut enim ad minim veniam, quis nostrud exercitation ullamco
+        laboris nisi ut aliquip ex ea commodo consequat.
+      </div>
+    </body>
+  )HTML");
+  // The test pass if it doesn't crash nor hit DCHECK.
+}
+
 class TextAutosizerSimTest : public SimTest {
  private:
   void SetUp() override {

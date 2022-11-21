@@ -868,12 +868,13 @@ TextAutosizer::Fingerprint TextAutosizer::ComputeFingerprint(
         (static_cast<unsigned>(style->UnresolvedFloating()) << 4);
     data.packed_style_properties_ |=
         (static_cast<unsigned>(style->Display()) << 7);
-    data.packed_style_properties_ |= (style->Width().GetType() << 12);
+    const Length& width = style->Width();
+    data.packed_style_properties_ |= (width.GetType() << 12);
     // packedStyleProperties effectively using 16 bits now.
 
+    // TODO(kojii): The width can be computed from style only when it's fixed.
     // consider for adding: writing mode, padding.
-
-    data.width_ = style->Width().GetFloatValue();
+    data.width_ = width.IsFixed() ? width.GetFloatValue() : .0f;
   }
 
   // Use nodeIndex as a rough approximation of column number
