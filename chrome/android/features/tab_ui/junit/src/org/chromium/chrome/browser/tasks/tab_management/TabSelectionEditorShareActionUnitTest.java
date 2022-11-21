@@ -15,6 +15,7 @@ import android.graphics.drawable.Drawable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -47,7 +48,6 @@ import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -74,15 +74,11 @@ public class TabSelectionEditorShareActionUnitTest {
     private MockTabModel mTabModel;
     private TabSelectionEditorShareAction mAction;
 
-    Map<Integer, GURL> mIdUrlMap = new HashMap<Integer, GURL>() {
-        {
-            put(1, JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1));
-            put(2, JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2));
-            put(3, JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_3));
-            put(4, JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL));
-            put(5, JUnitTestGURLs.getGURL(JUnitTestGURLs.ABOUT_BLANK));
-        }
-    };
+    Map<Integer, GURL> mIdUrlMap = Map.of(1, JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), 2,
+            JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2), 3,
+            JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_3), 4,
+            JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL), 5,
+            JUnitTestGURLs.getGURL(JUnitTestGURLs.ABOUT_BLANK));
 
     @Before
     public void setUp() {
@@ -103,6 +99,11 @@ public class TabSelectionEditorShareActionUnitTest {
                 .thenReturn(new TabModelFilterProvider());
         mJniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mDomDistillerUrlUtilsJni);
         mAction.configure(mTabModelSelector, mSelectionDelegate, mDelegate, false);
+    }
+
+    @After
+    public void tearDown() {
+        TabSelectionEditorShareAction.setIntentCallbackForTesting(null);
     }
 
     @Test
