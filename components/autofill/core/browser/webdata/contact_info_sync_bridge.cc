@@ -77,10 +77,6 @@ absl::optional<syncer::ModelError> ContactInfoSyncBridge::MergeSyncData(
                                     std::move(entity_data))) {
     return error;
   }
-  // TODO(crbug.com/1348294): The `PersonalDataManagerCleaner` reacts to the
-  // `SyncStarted()` event and loads the alternative state name map. This
-  // shouldn't happen the first time a model type is started, but once
-  // AUTOFILL_PROFILE and CONTACT_INFO types are loaded.
   web_data_backend_->NotifyThatSyncHasStarted(syncer::CONTACT_INFO);
   return absl::nullopt;
 }

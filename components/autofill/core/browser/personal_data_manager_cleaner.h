@@ -171,6 +171,17 @@ class PersonalDataManagerCleaner {
   const raw_ptr<AlternativeStateNameMapUpdater>
       alternative_state_name_map_updater_ = nullptr;
 
+  // Profiles are loaded through two sync bridges, the AUTOFILL_PROFILE and the
+  // CONTACT_INFO sync bridge. Both of them are behind the same settings toggle,
+  // so it is guaranteed that either both of them or none of them are activated
+  // together. In order to initialize the alternative state map only after
+  // profiles from both sources were loaded, we track whether each model type's
+  // `SyncStarted()` event has triggered yet.
+  // TODO(crbug.com/1348294): Remove once the AUTOFILL_PROFILE sync bridge is
+  // deprecated.
+  bool autofill_profile_sync_started = false;
+  bool contact_info_sync_started = false;
+
   // base::WeakPtr ensures that the callback bound to the object is canceled
   // when that object is destroyed.
   base::WeakPtrFactory<PersonalDataManagerCleaner> weak_ptr_factory_{this};
