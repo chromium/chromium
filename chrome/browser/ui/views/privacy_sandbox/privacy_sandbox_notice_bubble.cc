@@ -27,21 +27,24 @@ class PrivacySandboxNoticeBubbleModelDelegate : public ui::DialogModelDelegate {
  public:
   explicit PrivacySandboxNoticeBubbleModelDelegate(Browser* browser)
       : browser_(browser) {
-    if (auto* privacy_sandbox_serivce =
-            PrivacySandboxServiceFactory::GetForProfile(browser_->profile())) {
-      privacy_sandbox_serivce->PromptOpenedForBrowser(browser_);
-    }
+    // Saving a reference to the service as an attempt to fix crashes when
+    // getting a service later on (crbug.com/1379327, crbug.com/1380342,
+    // crbug.com/1370708). Crashes seem to be caused by browser_ reference not
+    // being valid.
+    privacy_sandbox_service_ =
+        PrivacySandboxServiceFactory::GetForProfile(browser_->profile());
+
+    if (privacy_sandbox_service_)
+      privacy_sandbox_service_->PromptOpenedForBrowser(browser_);
     NotifyServiceAboutPromptAction(PromptAction::kNoticeShown);
   }
 
   void OnDialogDestroying() {
-    if (!has_user_interacted_) {
+    if (!has_user_interacted_)
       NotifyServiceAboutPromptAction(PromptAction::kNoticeClosedNoInteraction);
-    }
-    if (auto* privacy_sandbox_serivce =
-            PrivacySandboxServiceFactory::GetForProfile(browser_->profile())) {
-      privacy_sandbox_serivce->PromptClosedForBrowser(browser_);
-    }
+
+    if (privacy_sandbox_service_)
+      privacy_sandbox_service_->PromptClosedForBrowser(browser_);
   }
 
   void OnOkButtonPressed() {
@@ -62,21 +65,19 @@ class PrivacySandboxNoticeBubbleModelDelegate : public ui::DialogModelDelegate {
   }
 
   void OnDialogExplicitlyClosed() {
-    if (!has_user_interacted_) {
+    if (!has_user_interacted_)
       NotifyServiceAboutPromptAction(PromptAction::kNoticeDismiss);
-    }
     has_user_interacted_ = true;
   }
 
   void NotifyServiceAboutPromptAction(PromptAction action) {
-    if (auto* service =
-            PrivacySandboxServiceFactory::GetForProfile(browser_->profile())) {
-      service->PromptActionOccurred(action);
-    }
+    if (privacy_sandbox_service_)
+      privacy_sandbox_service_->PromptActionOccurred(action);
   }
 
  private:
   raw_ptr<Browser> browser_;
+  raw_ptr<PrivacySandboxService> privacy_sandbox_service_;
   bool has_user_interacted_ = false;
 };
 
