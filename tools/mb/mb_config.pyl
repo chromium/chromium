@@ -1094,7 +1094,7 @@
       'dawn-try-win10-x86-rel': 'dawn_tests_release_trybot_x86',
       'dawn-win10-x64-deps-rel': 'dawn_tests_release_trybot',
       'dawn-win10-x86-deps-rel': 'dawn_tests_release_trybot_x86_reclient',
-      'linux-dawn-rel': 'dawn_tests_with_desktop_gl_release_trybot',
+      'linux-dawn-rel': 'dawn_tests_with_desktop_gl_release_trybot_reclient',
       'mac-dawn-rel': 'dawn_tests_release_trybot_alloc_none',
       'win-dawn-rel': 'dawn_tests_release_trybot_reclient',
     },
@@ -2468,10 +2468,6 @@
 
     'dawn_tests_release_trybot_x86_reclient': [
       'dawn_tests', 'release_trybot_reclient', 'x86',
-    ],
-
-    'dawn_tests_with_desktop_gl_release_trybot': [
-      'dawn_tests', 'dawn_enable_desktop_gl', 'release_trybot_minimal_symbols',
     ],
 
     'dawn_tests_with_desktop_gl_release_trybot_reclient': [
