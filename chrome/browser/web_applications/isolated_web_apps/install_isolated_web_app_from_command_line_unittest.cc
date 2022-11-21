@@ -4,23 +4,33 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_from_command_line.h"
 
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "base/values.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolation_data.h"
 #include "chrome/common/chrome_features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/web_package/signed_web_bundles/ed25519_public_key.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
+#include "components/web_package/web_bundle_builder.h"
 #include "content/public/common/content_features.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -369,34 +379,132 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
 class InstallIsolatedWebAppFromCommandLineIsolationInfoTest
     : public ::testing::Test {
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  web_package::SignedWebBundleId CreateSignedWebBundle(base::FilePath path) {
+    std::pair<std::vector<uint8_t>, web_package::SignedWebBundleId>
+        bundle_data = BuildBundle();
+    DCHECK(base::WriteFile(path, bundle_data.first));
+    return bundle_data.second;
+  }
+
+  std::pair<std::vector<uint8_t>, web_package::SignedWebBundleId>
+  BuildBundle() {
+    web_package::WebBundleSigner::KeyPair key_pair =
+        web_package::WebBundleSigner::KeyPair::CreateRandom();
+    web_package::SignedWebBundleId bundle_id =
+        web_package::SignedWebBundleId::CreateForEd25519PublicKey(
+            key_pair.public_key);
+    web_package::WebBundleBuilder builder;
+
+    builder.AddPrimaryURL("isolated-app://" + bundle_id.id());
+    builder.AddExchange("isolated-app://" + bundle_id.id(),
+                        {{":status", "200"}, {"content-type", "text/plain"}},
+                        "payload");
+
+    auto unsigned_bundle = builder.CreateBundle();
+    return {
+        web_package::WebBundleSigner::SignBundle(unsigned_bundle, {key_pair}),
+        bundle_id};
+  }
+
+  void TearDown() override {
+    task_environment_
+        .RunUntilIdle();  // because SequencedTaskRunner::DeleteSoon() is used
+                          // in SignedWebBundleReader
+    ::testing::Test::TearDown();
+  }
+
+  base::test::TaskEnvironment task_environment_;
+
+ private:
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 TEST_F(InstallIsolatedWebAppFromCommandLineIsolationInfoTest,
-       GetIsolationInfoSucceedsWhenInstalledBundle) {
+       GetIsolationInfoWhenInstalledBundleSucceeds) {
   IsolationData isolation_data =
       IsolationData{IsolationData::InstalledBundle{}};
-  base::expected<IsolatedWebAppUrlInfo, std::string> isolation_info =
-      GetIsolationInfo(isolation_data);
-  ASSERT_THAT(isolation_info.has_value(), false);
-  EXPECT_THAT(isolation_info.error(), HasSubstr("is not implemented"));
+  base::test::TestFuture<base::expected<IsolatedWebAppUrlInfo, std::string>>
+      test_future;
+
+  GetIsolationInfo(isolation_data, test_future.GetCallback());
+  base::expected<IsolatedWebAppUrlInfo, std::string> result = test_future.Get();
+
+  ASSERT_THAT(result.has_value(), false);
+  EXPECT_THAT(result.error(), HasSubstr("is not implemented"));
 }
 
 TEST_F(InstallIsolatedWebAppFromCommandLineIsolationInfoTest,
-       GetIsolationInfoSucceedsWhenDevModeBundle) {
-  IsolationData isolation_data = IsolationData{IsolationData::DevModeBundle{}};
-  base::expected<IsolatedWebAppUrlInfo, std::string> isolation_info =
-      GetIsolationInfo(isolation_data);
-  ASSERT_THAT(isolation_info.has_value(), false);
-  EXPECT_THAT(isolation_info.error(), HasSubstr("is not implemented"));
+       GetIsolationInfoWhenDevModeBundleSucceeds) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath path =
+      temp_dir.GetPath().Append(base::FilePath::FromASCII("test-0.webn"));
+  web_package::SignedWebBundleId input_bundle_id = CreateSignedWebBundle(path);
+  IsolationData isolation_data =
+      IsolationData{IsolationData::DevModeBundle{.path = path}};
+  base::test::TestFuture<base::expected<IsolatedWebAppUrlInfo, std::string>>
+      test_future;
+
+  GetIsolationInfo(isolation_data, test_future.GetCallback());
+  base::expected<IsolatedWebAppUrlInfo, std::string> result = test_future.Get();
+
+  ASSERT_THAT(result.has_value(), true);
+  EXPECT_EQ(result.value().web_bundle_id(), input_bundle_id);
+}
+
+TEST_F(InstallIsolatedWebAppFromCommandLineIsolationInfoTest,
+       GetIsolationInfoWhenDevModeBundleFailsWhenFileNotExist) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath path = temp_dir.GetPath().Append(
+      base::FilePath::FromASCII("file_not_exist.webn"));
+  IsolationData isolation_data =
+      IsolationData{IsolationData::DevModeBundle{.path = path}};
+  base::test::TestFuture<base::expected<IsolatedWebAppUrlInfo, std::string>>
+      test_future;
+
+  GetIsolationInfo(isolation_data, test_future.GetCallback());
+  base::expected<IsolatedWebAppUrlInfo, std::string> result = test_future.Get();
+
+  ASSERT_THAT(result.has_value(), false);
+  EXPECT_THAT(result.error(),
+              HasSubstr("Failed to read the integrity block of the signed web "
+                        "bundle: FILE_ERROR_NOT_FOUND"));
+}
+
+TEST_F(InstallIsolatedWebAppFromCommandLineIsolationInfoTest,
+       GetIsolationInfoWhenDevModeBundleFailsWhenInvalidFile) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath path =
+      temp_dir.GetPath().Append(base::FilePath::FromASCII("invalid_file.webn"));
+  DCHECK(
+      base::WriteFile(path, "clearly, this is not a valid signed web bundle"));
+  ASSERT_TRUE(base::PathExists(path));
+  IsolationData isolation_data =
+      IsolationData{IsolationData::DevModeBundle{.path = path}};
+  base::test::TestFuture<base::expected<IsolatedWebAppUrlInfo, std::string>>
+      test_future;
+
+  GetIsolationInfo(isolation_data, test_future.GetCallback());
+  base::expected<IsolatedWebAppUrlInfo, std::string> result = test_future.Get();
+
+  ASSERT_THAT(result.has_value(), false);
+  EXPECT_THAT(result.error(),
+              HasSubstr("Failed to read the integrity block of the signed web "
+                        "bundle: Wrong array size or magic bytes."));
 }
 
 TEST_F(InstallIsolatedWebAppFromCommandLineIsolationInfoTest,
        GetIsolationInfoSucceedsWhenDevModeProxy) {
   IsolationData isolation_data = IsolationData{IsolationData::DevModeProxy{}};
-  base::expected<IsolatedWebAppUrlInfo, std::string> isolation_info =
-      GetIsolationInfo(isolation_data);
-  EXPECT_THAT(isolation_info.has_value(), true);
+  base::test::TestFuture<base::expected<IsolatedWebAppUrlInfo, std::string>>
+      test_future;
+
+  GetIsolationInfo(isolation_data, test_future.GetCallback());
+  base::expected<IsolatedWebAppUrlInfo, std::string> result = test_future.Get();
+
+  EXPECT_THAT(result.has_value(), true);
 }
 
 }  // namespace
