@@ -442,12 +442,13 @@ class ColorPicker extends HTMLElement {
         this.systemColorPicker_, this.colorValueAXAnnouncer_);
 
     this.visualColorPicker_.addEventListener(
-        'visual-color-picker-initialized', this.initializeListeners_);
+        'visual-color-picker-initialized',
+        this.onVisualColorPickerInitialized_);
 
     window.addEventListener('resize', this.onWindowResize_, {once: true});
   }
 
-  initializeListeners_ = () => {
+  onVisualColorPickerInitialized_ = () => {
     this.manualColorPicker_
         .addEventListener('manual-color-change', this.onManualColorChange_);
 
@@ -460,7 +461,11 @@ class ColorPicker extends HTMLElement {
     window.addEventListener('message', this.onMessageReceived_);
 
     document.documentElement.addEventListener('keydown', this.onKeyDown_);
-  }
+
+    // Announce color now as any fired visual-color-change event would not have
+    // been caught by the listener as it was just added in this method.
+    this.colorValueAXAnnouncer_.announceColor(this.selectedColor);
+  };
 
   get selectedColor() {
     return this.selectedColor_;
