@@ -129,6 +129,9 @@ public class OmniboxPedalsTest {
 
     @After
     public void tearDown() throws Exception {
+        if (mOmniboxUtils.getFocus()) {
+            mOmniboxUtils.clearFocus();
+        }
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { IncognitoTabHostUtils.closeAllIncognitoTabs(); });
         if (mTargetActivity != null) {
@@ -144,6 +147,7 @@ public class OmniboxPedalsTest {
      */
     private void typeInOmnibox(String text) throws InterruptedException {
         mOmniboxUtils.requestFocus();
+        mOmniboxUtils.setText("");
         mOmniboxUtils.typeText(text, false);
         mOmniboxUtils.waitForAutocomplete();
         mOmniboxUtils.checkSuggestionsShown();
