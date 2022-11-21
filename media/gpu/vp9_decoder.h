@@ -119,7 +119,8 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
   explicit VP9Decoder(
       std::unique_ptr<VP9Accelerator> accelerator,
       VideoCodecProfile profile,
-      const VideoColorSpace& container_color_space = VideoColorSpace());
+      const VideoColorSpace& container_color_space = VideoColorSpace(),
+      bool ignore_resolution_changes_to_smaller = false);
 
   VP9Decoder(const VP9Decoder&) = delete;
   VP9Decoder& operator=(const VP9Decoder&) = delete;
@@ -176,6 +177,11 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
 
   // Color space provided by the container.
   const VideoColorSpace container_color_space_;
+
+  // Many implementors (e.g. Intel and AMD via VA-API) will support changes of
+  // resolution to smaller without reconfiguring the driver (e.g. keeping the
+  // reference frames etc), but others won't.
+  const bool ignore_resolution_changes_to_smaller_ = false;
 
   // Reference frames currently in use.
   Vp9ReferenceFrameVector ref_frames_;
