@@ -257,7 +257,7 @@ ContentAnalysisDialog::ContentAnalysisDialog(
   top_level_contents_->ClearFocusedElement();
   top_level_contents_->SetIgnoreInputEvents(true);
 
-  if (ShowDialogDelay().is_zero()) {
+  if (ShowDialogDelay().is_zero() || !is_pending()) {
     ShowDialogNow();
   } else {
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
