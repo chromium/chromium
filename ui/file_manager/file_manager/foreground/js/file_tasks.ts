@@ -15,7 +15,7 @@ import {AsyncQueue} from '../../common/js/async_util.js';
 import {FileType} from '../../common/js/file_type.js';
 import {metrics} from '../../common/js/metrics.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
-import {LEGACY_FILES_EXTENSION_ID, SWA_APP_ID, SWA_FILES_APP_URL} from '../../common/js/url_constants.js';
+import {LEGACY_FILES_EXTENSION_ID, SWA_APP_ID, SWA_FILES_APP_URL, toFilesAppURL} from '../../common/js/url_constants.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
@@ -353,6 +353,8 @@ export class FileTasks {
           task.iconType = 'gslides';
           task.title = loadTimeData.getString('TASK_OPEN_GSLIDES');
         } else if (parsedActionId === 'open-in-office') {
+          task.iconUrl =
+              toFilesAppURL('foreground/images/files/ui/ms365.svg').toString();
           task.title = loadTimeData.getString('TASK_OPEN_OFFICE');
         } else if (parsedActionId === 'install-linux-package') {
           task.iconType = 'crostini';
