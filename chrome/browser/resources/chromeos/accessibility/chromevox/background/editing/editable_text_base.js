@@ -13,10 +13,9 @@
  * extended to override methods that extract lines for multiline fields
  * or to provide other customizations.
  */
-import {AbstractTts} from '../../common/abstract_tts.js';
 import {Msgs} from '../../common/msgs.js';
 import {TtsInterface} from '../../common/tts_interface.js';
-import {QueueMode, TtsCategory, TtsSpeechProperties} from '../../common/tts_types.js';
+import {Personality, QueueMode, TtsCategory, TtsSpeechProperties} from '../../common/tts_types.js';
 import {ChromeVoxState} from '../chromevox_state.js';
 
 /**
@@ -407,7 +406,7 @@ export class ChromeVoxEditableTextBase {
   describeTextChanged(prev, evt) {
     let personality = new TtsSpeechProperties();
     if (evt.value.length < (prev.value.length - 1)) {
-      personality = AbstractTts.PERSONALITY_DELETED;
+      personality = Personality.DELETED;
     }
     if (this.isPassword) {
       this.speak(
@@ -604,8 +603,8 @@ export class ChromeVoxEditableTextBase {
       utterance = deleted + ', deleted';
     } else if (deletedLen === 1) {
       utterance = deleted;
-      // Single-deleted characters should also use PERSONALITY_DELETED.
-      opt_personality = AbstractTts.PERSONALITY_DELETED;
+      // Single-deleted characters should also use Personality.DELETED.
+      opt_personality = Personality.DELETED;
     }
 
     if (autocompleteSuffix && utterance) {

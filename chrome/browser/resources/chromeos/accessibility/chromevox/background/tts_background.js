@@ -8,7 +8,6 @@
  */
 
 import {constants} from '../../common/constants.js';
-import {AbstractTts} from '../common/abstract_tts.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
 import {CompositeTts} from '../common/composite_tts.js';
@@ -16,7 +15,7 @@ import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {ChromeTtsBase} from '../common/tts_base.js';
 import {TtsCapturingEventListener, TtsInterface} from '../common/tts_interface.js';
-import {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
+import * as ttsTypes from '../common/tts_types.js';
 
 import {ChromeVox} from './chromevox.js';
 import {ConsoleTts} from './console_tts.js';
@@ -117,7 +116,7 @@ export class PrimaryTts extends ChromeTtsBase {
 
     /** @private {number} */
     this.currentPunctuationEcho_ =
-        parseInt(localStorage[AbstractTts.PUNCTUATION_ECHO] || 1, 10);
+        parseInt(localStorage[ttsTypes.TtsSettings.PUNCTUATION_ECHO] || 1, 10);
 
     /**
      * A list of punctuation characters that should always be spliced into
@@ -218,9 +217,9 @@ export class PrimaryTts extends ChromeTtsBase {
 
   /**
    * @param {string} textString The string of text to be spoken.
-   * @param {QueueMode} queueMode The queue mode to use for speaking.
-   * @param {TtsSpeechProperties=} properties Speech properties to use for
-   *     this utterance.
+   * @param {ttsTypes.QueueMode} queueMode The queue mode to use for speaking.
+   * @param {ttsTypes.TtsSpeechProperties=} properties Speech properties to use
+   *     for this utterance.
    * @return {TtsInterface} A tts object useful for chaining speak calls.
    * @override
    */
@@ -231,12 +230,12 @@ export class PrimaryTts extends ChromeTtsBase {
     // original value for functions that may need it.
     const originalTextString = textString;
 
-    if (this.ttsProperties[AbstractTts.VOLUME] === 0) {
+    if (this.ttsProperties[ttsTypes.TtsSettings.VOLUME] === 0) {
       return this;
     }
 
     if (!properties) {
-      properties = new TtsSpeechProperties();
+      properties = new ttsTypes.TtsSpeechProperties();
     }
 
     if (textString.length > constants.OBJECT_MAX_CHARCOUNT) {
@@ -270,7 +269,7 @@ export class PrimaryTts extends ChromeTtsBase {
         } catch (e) {
         }
       }
-      if (queueMode === QueueMode.FLUSH) {
+      if (queueMode === ttsTypes.QueueMode.FLUSH) {
         this.stop();
       }
       return this;
@@ -299,16 +298,16 @@ export class PrimaryTts extends ChromeTtsBase {
    * Split the given textString into smaller chunks and call this.speak() for
    * each chunks.
    * @param {string} textString The string of text to be spoken.
-   * @param {QueueMode} queueMode The queue mode to use for speaking.
-   * @param {TtsSpeechProperties=} properties Speech properties to use for
-   *     this utterance.
+   * @param {ttsTypes.QueueMode} queueMode The queue mode to use for speaking.
+   * @param {ttsTypes.TtsSpeechProperties=} properties Speech properties to use
+   *     for this utterance.
    * @private
    */
   speakSplittingText_(textString, queueMode, properties) {
     const chunks = PrimaryTts.splitUntilSmall(textString, '\n\r ');
     for (const chunk of chunks) {
       this.speak(chunk, queueMode, properties);
-      queueMode = QueueMode.QUEUE;
+      queueMode = ttsTypes.QueueMode.QUEUE;
     }
   }
 
@@ -362,9 +361,9 @@ export class PrimaryTts extends ChromeTtsBase {
     // First, take care of removing the current utterance and flushing
     // anything from the queue we need to. If we remove the current utterance,
     // make a note that we're going to stop speech.
-    if (queueMode === QueueMode.FLUSH ||
-        queueMode === QueueMode.CATEGORY_FLUSH ||
-        queueMode === QueueMode.INTERJECT) {
+    if (queueMode === ttsTypes.QueueMode.FLUSH ||
+        queueMode === ttsTypes.QueueMode.CATEGORY_FLUSH ||
+        queueMode === ttsTypes.QueueMode.INTERJECT) {
       (new PanelCommand(PanelCommandType.CLEAR_SPEECH)).send();
 
       if (this.shouldCancel_(this.currentUtterance_, utterance)) {
@@ -385,7 +384,7 @@ export class PrimaryTts extends ChromeTtsBase {
     }
 
     // Now, some special handling for interjections.
-    if (queueMode === QueueMode.INTERJECT) {
+    if (queueMode === ttsTypes.QueueMode.INTERJECT) {
       // Move all utterances to a secondary queue to be restored later.
       this.utteranceQueueInterruptedByInterjection_ = this.utteranceQueue_;
 
@@ -405,7 +404,7 @@ export class PrimaryTts extends ChromeTtsBase {
       setTimeout(() => {
         // Utterances on the current queue are now also interjections.
         for (let i = 0; i < this.utteranceQueue_.length; i++) {
-          this.utteranceQueue_[i].queueMode = QueueMode.INTERJECT;
+          this.utteranceQueue_[i].queueMode = ttsTypes.QueueMode.INTERJECT;
         }
         this.utteranceQueue_ = this.utteranceQueue_.concat(
             this.utteranceQueueInterruptedByInterjection_);
@@ -567,13 +566,13 @@ export class PrimaryTts extends ChromeTtsBase {
       return false;
     }
     switch (newUtterance.queueMode) {
-      case QueueMode.QUEUE:
+      case ttsTypes.QueueMode.QUEUE:
         return false;
-      case QueueMode.INTERJECT:
-        return utteranceToCancel.queueMode === QueueMode.INTERJECT;
-      case QueueMode.FLUSH:
+      case ttsTypes.QueueMode.INTERJECT:
+        return utteranceToCancel.queueMode === ttsTypes.QueueMode.INTERJECT;
+      case ttsTypes.QueueMode.FLUSH:
         return true;
-      case QueueMode.CATEGORY_FLUSH:
+      case ttsTypes.QueueMode.CATEGORY_FLUSH:
         return (
             utteranceToCancel.properties['category'] ===
             newUtterance.properties['category']);
@@ -602,13 +601,13 @@ export class PrimaryTts extends ChromeTtsBase {
 
     let pref;
     switch (propertyName) {
-      case AbstractTts.RATE:
+      case ttsTypes.TtsSettings.RATE:
         pref = 'settings.tts.speech_rate';
         break;
-      case AbstractTts.PITCH:
+      case ttsTypes.TtsSettings.PITCH:
         pref = 'settings.tts.speech_pitch';
         break;
-      case AbstractTts.VOLUME:
+      case ttsTypes.TtsSettings.VOLUME:
         pref = 'settings.tts.speech_volume';
         break;
       default:
@@ -685,14 +684,15 @@ export class PrimaryTts extends ChromeTtsBase {
 
     // Perform any remaining processing such as punctuation expansion.
     let punctEcho = null;
-    if (properties[AbstractTts.PUNCTUATION_ECHO]) {
-      for (let i = 0; punctEcho = AbstractTts.PUNCTUATION_ECHOES[i]; i++) {
-        if (properties[AbstractTts.PUNCTUATION_ECHO] === punctEcho.name) {
+    if (properties[ttsTypes.TtsSettings.PUNCTUATION_ECHO]) {
+      for (let i = 0; punctEcho = ttsTypes.PunctuationEchoes[i]; i++) {
+        if (properties[ttsTypes.TtsSettings.PUNCTUATION_ECHO] ===
+            punctEcho.name) {
           break;
         }
       }
     } else {
-      punctEcho = AbstractTts.PUNCTUATION_ECHOES[this.currentPunctuationEcho_];
+      punctEcho = ttsTypes.PunctuationEchoes[this.currentPunctuationEcho_];
     }
     text = text.replace(
         punctEcho.regexp, this.createPunctuationReplace_(punctEcho.clear));
@@ -718,12 +718,12 @@ export class PrimaryTts extends ChromeTtsBase {
 
   /** @override */
   toggleSpeechOnOrOff() {
-    const previousValue = this.ttsProperties[AbstractTts.VOLUME];
+    const previousValue = this.ttsProperties[ttsTypes.TtsSettings.VOLUME];
     const toggle = () => {
       if (previousValue === 0) {
-        this.ttsProperties[AbstractTts.VOLUME] = 1;
+        this.ttsProperties[ttsTypes.TtsSettings.VOLUME] = 1;
       } else {
-        this.ttsProperties[AbstractTts.VOLUME] = 0;
+        this.ttsProperties[ttsTypes.TtsSettings.VOLUME] = 0;
         this.stop();
       }
     };
@@ -743,11 +743,11 @@ export class PrimaryTts extends ChromeTtsBase {
    * Method that updates the punctuation echo level, and also persists setting
    * to local storage.
    * @param {number} punctuationEcho The index of the desired punctuation echo
-   * level in AbstractTts.PUNCTUATION_ECHOES.
+   * level in ttsTypes.PunctuationEchoes.
    */
   updatePunctuationEcho(punctuationEcho) {
     this.currentPunctuationEcho_ = punctuationEcho;
-    localStorage[AbstractTts.PUNCTUATION_ECHO] = punctuationEcho;
+    localStorage[ttsTypes.TtsSettings.PUNCTUATION_ECHO] = punctuationEcho;
   }
 
   /**
@@ -756,9 +756,8 @@ export class PrimaryTts extends ChromeTtsBase {
    */
   cyclePunctuationEcho() {
     this.updatePunctuationEcho(
-        (this.currentPunctuationEcho_ + 1) %
-        AbstractTts.PUNCTUATION_ECHOES.length);
-    return AbstractTts.PUNCTUATION_ECHOES[this.currentPunctuationEcho_].msg;
+        (this.currentPunctuationEcho_ + 1) % ttsTypes.PunctuationEchoes.length);
+    return ttsTypes.PunctuationEchoes[this.currentPunctuationEcho_].msg;
   }
 
   /**
@@ -791,7 +790,7 @@ export class PrimaryTts extends ChromeTtsBase {
       return clear ? retain :
                      ' ' +
               (new goog.i18n.MessageFormat(
-                   Msgs.getMsg(AbstractTts.CHARACTER_DICTIONARY[match])))
+                   Msgs.getMsg(ttsTypes.CharacterDictionary[match])))
                   .format({'COUNT': 1}) +
               retain + ' ';
     };
@@ -800,8 +799,8 @@ export class PrimaryTts extends ChromeTtsBase {
   /**
    * Queues phonetic disambiguation for characters if disambiguation is found.
    * @param {string} text The text for which we want to get phonetic data.
-   * @param {!TtsSpeechProperties} properties Speech properties to use for
-   *     this utterance.
+   * @param {!ttsTypes.TtsSpeechProperties} properties Speech properties to use
+   *     for this utterance.
    * @private
    */
   pronouncePhonetically_(text, properties) {
@@ -827,7 +826,7 @@ export class PrimaryTts extends ChromeTtsBase {
     const phoneticText = PhoneticData.forCharacter(text, properties.lang);
     if (phoneticText) {
       properties.delay = true;
-      this.speak(phoneticText, QueueMode.QUEUE, properties);
+      this.speak(phoneticText, ttsTypes.QueueMode.QUEUE, properties);
     }
   }
 
@@ -880,16 +879,16 @@ export class PrimaryTts extends ChromeTtsBase {
       let propertyName;
       switch (pref.key) {
         case 'settings.tts.speech_rate':
-          propertyName = AbstractTts.RATE;
+          propertyName = ttsTypes.TtsSettings.RATE;
           msg = 'announce_rate';
           this.setHintDelayMS(/** @type {number} */ (pref.value));
           break;
         case 'settings.tts.speech_pitch':
-          propertyName = AbstractTts.PITCH;
+          propertyName = ttsTypes.TtsSettings.PITCH;
           msg = 'announce_pitch';
           break;
         case 'settings.tts.speech_volume':
-          propertyName = AbstractTts.VOLUME;
+          propertyName = ttsTypes.TtsSettings.VOLUME;
           msg = 'announce_volume';
           break;
         default:
@@ -906,7 +905,8 @@ export class PrimaryTts extends ChromeTtsBase {
           Math.round(this.propertyToPercentage(propertyName) * 100);
       const announcement = Msgs.getMsg(msg, [valueAsPercent]);
       ChromeVox.tts.speak(
-          announcement, QueueMode.FLUSH, AbstractTts.PERSONALITY_ANNOTATION);
+          announcement, ttsTypes.QueueMode.FLUSH,
+          ttsTypes.Personality.ANNOTATION);
     });
   }
 
@@ -924,18 +924,19 @@ export class PrimaryTts extends ChromeTtsBase {
     this.updateVoice_('', () => {
       // Ensure this announcement doesn't get cut off by speech triggered by
       // updateFromPrefs_().
-      // Copy properties from AbstractTts.PERSONALITY_ANNOTATION and add the
+      // Copy properties from ttsTypes.Personality.ANNOTATION and add the
       // doNotInterrupt property.
       const speechProperties = {};
-      const sourceProperties = AbstractTts.PERSONALITY_ANNOTATION || {};
+      const sourceProperties = ttsTypes.Personality.ANNOTATION || {};
       for (const [key, value] of Object.entries(sourceProperties)) {
         speechProperties[key] = value;
       }
       speechProperties['doNotInterrupt'] = true;
 
       ChromeVox.tts.speak(
-          Msgs.getMsg('announce_tts_default_settings'), QueueMode.FLUSH,
-          new TtsSpeechProperties(speechProperties));
+          Msgs.getMsg('announce_tts_default_settings'),
+          ttsTypes.QueueMode.FLUSH,
+          new ttsTypes.TtsSpeechProperties(speechProperties));
     });
   }
 

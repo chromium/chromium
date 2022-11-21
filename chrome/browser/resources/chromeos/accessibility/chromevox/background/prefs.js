@@ -6,10 +6,10 @@
  * @fileoverview Common page for reading and writing preferences from
  * the background context (background page or options page).
  */
-import {AbstractTts} from '../common/abstract_tts.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
 import {Msgs} from '../common/msgs.js';
+import {Personality} from '../common/tts_types.js';
 
 import {ChromeVox} from './chromevox.js';
 import {ConsoleTts} from './console_tts.js';
@@ -129,7 +129,7 @@ export class ChromeVoxPrefs {
   setAndAnnounceStickyPref(value) {
     chrome.accessibilityPrivate.setKeyboardListener(true, value);
     new Output()
-        .withInitialSpeechProperties(AbstractTts.PERSONALITY_ANNOTATION)
+        .withInitialSpeechProperties(Personality.ANNOTATION)
         .withString(
             value ? Msgs.getMsg('sticky_mode_enabled') :
                     Msgs.getMsg('sticky_mode_disabled'))

@@ -34,7 +34,7 @@ ChromeVoxSettingsPagesTest = class extends ChromeVoxNextE2ETest {
     await super.setUpDeferred();
 
     // Alphabetical based on file path.
-    await importModule('AbstractTts', '/chromevox/common/abstract_tts.js');
+    await importModule('TtsSettings', '/chromevox/common/tts_types.js');
   }
 };
 
@@ -45,9 +45,9 @@ AX_TEST_F(
       const mockFeedback = this.createMockFeedback();
       await this.runWithLoadedTree(`unused`);
       const increaseRate = realTts.increaseOrDecreaseProperty.bind(
-          realTts, AbstractTts.RATE, true);
+          realTts, TtsSettings.RATE, true);
       const decreaseRate = realTts.increaseOrDecreaseProperty.bind(
-          realTts, AbstractTts.RATE, false);
+          realTts, TtsSettings.RATE, false);
 
       mockFeedback.call(doCmd('showTtsSettings'))
           .expectSpeech(

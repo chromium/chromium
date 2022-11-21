@@ -24,7 +24,7 @@ ChromeVoxOptionsTest = class extends ChromeVoxNextE2ETest {
     await importModule(
         'CommandHandlerInterface',
         '/chromevox/background/command_handler_interface.js');
-    await importModule('AbstractTts', '/chromevox/common/abstract_tts.js');
+    await importModule('TtsSettings', '/chromevox/common/tts_types.js');
     await importModule('EventGenerator', '/common/event_generator.js');
     await importModule('KeyCode', '/common/key_code.js');
   }
@@ -108,7 +108,7 @@ AX_TEST_F(
           .call(() => {
             assertEquals(
                 PUNCTUATION_ECHO_NONE,
-                localStorage[AbstractTts.PUNCTUATION_ECHO]);
+                localStorage[TtsSettings.PUNCTUATION_ECHO]);
           })
 
           .call(press(KeyCode.DOWN))
@@ -118,7 +118,7 @@ AX_TEST_F(
           .call(() => {
             assertEquals(
                 PUNCTUATION_ECHO_SOME,
-                localStorage[AbstractTts.PUNCTUATION_ECHO]);
+                localStorage[TtsSettings.PUNCTUATION_ECHO]);
           })
 
           .call(press(KeyCode.DOWN))
@@ -126,7 +126,7 @@ AX_TEST_F(
           .call(() => {
             assertEquals(
                 PUNCTUATION_ECHO_ALL,
-                localStorage[AbstractTts.PUNCTUATION_ECHO]);
+                localStorage[TtsSettings.PUNCTUATION_ECHO]);
           });
 
       await mockFeedback.replay();

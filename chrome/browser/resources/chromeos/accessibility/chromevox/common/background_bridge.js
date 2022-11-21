@@ -351,7 +351,7 @@ BackgroundBridge.TtsBackground = {
    * Method that updates the punctuation echo level, and also persists setting
    * to local storage.
    * @param {number} punctuationEcho The index of the desired punctuation echo
-   *     level in AbstractTts.PUNCTUATION_ECHOES.
+   *     level in PunctuationEchoes.
    * @return {!Promise}
    */
   async updatePunctuationEcho(punctuationEcho) {

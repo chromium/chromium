@@ -14,7 +14,6 @@ import {EventGenerator} from '../../common/event_generator.js';
 import {KeyCode} from '../../common/key_code.js';
 import {RectUtil} from '../../common/rect_util.js';
 import {Earcon} from '../common/abstract_earcons.js';
-import {AbstractTts} from '../common/abstract_tts.js';
 import {NavBraille} from '../common/braille/nav_braille.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
@@ -27,7 +26,7 @@ import {LogType} from '../common/log_types.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {TreeDumper} from '../common/tree_dumper.js';
-import {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
+import {Personality, QueueMode, TtsSettings, TtsSpeechProperties} from '../common/tts_types.js';
 
 import {AutoScrollHandler} from './auto_scroll_handler.js';
 import {BrailleBackground} from './braille/braille_background.js';
@@ -153,22 +152,22 @@ export class CommandHandler extends CommandHandlerInterface {
             root => LogStore.instance.writeTreeLog(new TreeDumper(root)));
         break;
       case Command.DECREASE_TTS_RATE:
-        this.increaseOrDecreaseSpeechProperty_(AbstractTts.RATE, false);
+        this.increaseOrDecreaseSpeechProperty_(TtsSettings.RATE, false);
         return false;
       case Command.INCREASE_TTS_RATE:
-        this.increaseOrDecreaseSpeechProperty_(AbstractTts.RATE, true);
+        this.increaseOrDecreaseSpeechProperty_(TtsSettings.RATE, true);
         return false;
       case Command.DECREASE_TTS_PITCH:
-        this.increaseOrDecreaseSpeechProperty_(AbstractTts.PITCH, false);
+        this.increaseOrDecreaseSpeechProperty_(TtsSettings.PITCH, false);
         return false;
       case Command.INCREASE_TTS_PITCH:
-        this.increaseOrDecreaseSpeechProperty_(AbstractTts.PITCH, true);
+        this.increaseOrDecreaseSpeechProperty_(TtsSettings.PITCH, true);
         return false;
       case Command.DECREASE_TTS_VOLUME:
-        this.increaseOrDecreaseSpeechProperty_(AbstractTts.VOLUME, false);
+        this.increaseOrDecreaseSpeechProperty_(TtsSettings.VOLUME, false);
         return false;
       case Command.INCREASE_TTS_VOLUME:
-        this.increaseOrDecreaseSpeechProperty_(AbstractTts.VOLUME, true);
+        this.increaseOrDecreaseSpeechProperty_(TtsSettings.VOLUME, true);
         return false;
       case Command.STOP_SPEECH:
         ChromeVox.tts.stop();
@@ -1133,8 +1132,7 @@ export class CommandHandler extends CommandHandlerInterface {
         announce = Msgs.getMsg('none_echo');
         break;
     }
-    ChromeVox.tts.speak(
-        announce, QueueMode.FLUSH, AbstractTts.PERSONALITY_ANNOTATION);
+    ChromeVox.tts.speak(announce, QueueMode.FLUSH, Personality.ANNOTATION);
   }
 
   /** @private */
@@ -1781,8 +1779,7 @@ export class CommandHandler extends CommandHandlerInterface {
     ChromeVox.earcons.enabled = !ChromeVox.earcons.enabled;
     const announce = ChromeVox.earcons.enabled ? Msgs.getMsg('earcons_on') :
                                                  Msgs.getMsg('earcons_off');
-    ChromeVox.tts.speak(
-        announce, QueueMode.FLUSH, AbstractTts.PERSONALITY_ANNOTATION);
+    ChromeVox.tts.speak(announce, QueueMode.FLUSH, Personality.ANNOTATION);
   }
 
   /** @private */

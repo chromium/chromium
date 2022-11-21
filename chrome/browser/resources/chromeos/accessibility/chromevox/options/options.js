@@ -6,12 +6,12 @@
  * @fileoverview ChromeVox options page.
  */
 import {constants} from '../../common/constants.js';
-import {AbstractTts} from '../common/abstract_tts.js';
 import {BackgroundBridge} from '../common/background_bridge.js';
 import {BrailleTable} from '../common/braille/braille_table.js';
 import {ExtensionBridge} from '../common/extension_bridge.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
+import {PunctuationEchoes, TtsSettings} from '../common/tts_types.js';
 
 import {BluetoothBrailleDisplayUI} from './bluetooth_braille_display_ui.js';
 
@@ -96,10 +96,9 @@ export class OptionsPage {
       }
     }
 
-    if (localStorage[AbstractTts.PUNCTUATION_ECHO]) {
+    if (localStorage[TtsSettings.PUNCTUATION_ECHO]) {
       const currentPunctuationEcho =
-          AbstractTts
-              .PUNCTUATION_ECHOES[localStorage[AbstractTts.PUNCTUATION_ECHO]];
+          PunctuationEchoes[localStorage[TtsSettings.PUNCTUATION_ECHO]];
       for (let i = 0, opt; opt = $('punctuationEcho').options[i]; ++i) {
         if (opt.id === currentPunctuationEcho.name) {
           opt.setAttribute('selected', '');
@@ -468,7 +467,7 @@ export class OptionsPage {
         OptionsPage.setEventStreamFilter(target.name, target.checked);
       } else if (target.id === 'punctuationEcho') {
         const selectedPunctuationEcho = target.options[target.selectedIndex].id;
-        const punctuationEcho = AbstractTts.PUNCTUATION_ECHOES.findIndex(
+        const punctuationEcho = PunctuationEchoes.findIndex(
             echo => echo.name === selectedPunctuationEcho);
         BackgroundBridge.TtsBackground.updatePunctuationEcho(punctuationEcho);
       } else if (target.classList.contains('pref')) {

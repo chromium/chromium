@@ -9,7 +9,7 @@
 
 import {Msgs} from './msgs.js';
 import {TtsInterface} from './tts_interface.js';
-import {QueueMode, TtsSpeechProperties} from './tts_types.js';
+import * as ttsTypes from './tts_types.js';
 
 /**
  * Creates a new instance.
@@ -61,7 +61,7 @@ export class AbstractTts {
       // Create an expression that matches all words in the substitution
       // dictionary.
       const symbols = [];
-      for (const symbol in AbstractTts.SUBSTITUTION_DICTIONARY) {
+      for (const symbol in ttsTypes.SubstitutionDictionary) {
         symbols.push(symbol);
       }
       const expr = '(' + symbols.join('|') + ')';
@@ -71,8 +71,8 @@ export class AbstractTts {
 
   /**
    * @param {string} textString
-   * @param {QueueMode} queueMode
-   * @param {TtsSpeechProperties=} properties
+   * @param {ttsTypes.QueueMode} queueMode
+   * @param {ttsTypes.TtsSpeechProperties=} properties
    * @override
    */
   speak(textString, queueMode, properties) {
@@ -130,7 +130,7 @@ export class AbstractTts {
       }
     }
     if (properties) {
-      const tts = AbstractTts;
+      const tts = ttsTypes.TtsSettings;
       if (typeof (properties[tts.VOLUME]) === 'number') {
         mergedProperties[tts.VOLUME] = properties[tts.VOLUME];
       }
@@ -195,10 +195,10 @@ export class AbstractTts {
       if (localStorage['capitalStrategy'] === 'increasePitch') {
         // Closure doesn't allow the use of for..in or [] with structs, so
         // convert to a pure JSON object.
-        const PERSONALITY_CAPITAL = AbstractTts.PERSONALITY_CAPITAL.toJSON();
-        for (const prop in PERSONALITY_CAPITAL) {
+        const CAPITAL = ttsTypes.Personality.CAPITAL.toJSON();
+        for (const prop in CAPITAL) {
           if (properties[prop] === undefined) {
-            properties[prop] = PERSONALITY_CAPITAL[prop];
+            properties[prop] = CAPITAL[prop];
           }
         }
       } else if (localStorage['capitalStrategy'] === 'announceCapitals') {
@@ -226,14 +226,14 @@ export class AbstractTts {
     // simultaneously.
     text = text.replace(
         AbstractTts.substitutionDictionaryRegexp_, function(symbol) {
-          return ' ' + AbstractTts.SUBSTITUTION_DICTIONARY[symbol] + ' ';
+          return ' ' + ttsTypes.SubstitutionDictionary[symbol] + ' ';
         });
 
     // Handle single characters that we want to make sure we pronounce.
     if (text.length === 1) {
-      return AbstractTts.CHARACTER_DICTIONARY[text] ?
+      return ttsTypes.CharacterDictionary[text] ?
           (new goog.i18n.MessageFormat(
-               Msgs.getMsg(AbstractTts.CHARACTER_DICTIONARY[text])))
+               Msgs.getMsg(ttsTypes.CharacterDictionary[text])))
               .format({'COUNT': 1}) :
           text.toUpperCase();
     }
@@ -256,7 +256,7 @@ export class AbstractTts {
     const count = match.length;
     return ' ' +
         (new goog.i18n.MessageFormat(
-             Msgs.getMsg(AbstractTts.CHARACTER_DICTIONARY[match[0]])))
+             Msgs.getMsg(ttsTypes.CharacterDictionary[match[0]])))
             .format({'COUNT': count}) +
         ' ';
   }
@@ -281,7 +281,6 @@ export class AbstractTts {
   }
 }
 
-
 /**
  * Default TTS properties for this TTS engine.
  * @type {Object}
@@ -289,267 +288,11 @@ export class AbstractTts {
  */
 AbstractTts.prototype.ttsProperties;
 
-
-/** TTS rate property. @type {string} */
-AbstractTts.RATE = 'rate';
-/** TTS pitch property. @type {string} */
-AbstractTts.PITCH = 'pitch';
-/** TTS volume property. @type {string} */
-AbstractTts.VOLUME = 'volume';
-/** TTS language property. @type {string} */
-AbstractTts.LANG = 'lang';
-
-/** TTS relative rate property. @type {string} */
-AbstractTts.RELATIVE_RATE = 'relativeRate';
-/** TTS relative pitch property. @type {string} */
-AbstractTts.RELATIVE_PITCH = 'relativePitch';
-/** TTS relative volume property. @type {string} */
-AbstractTts.RELATIVE_VOLUME = 'relativeVolume';
-
-/** TTS color property (for the lens display). @type {string} */
-AbstractTts.COLOR = 'color';
-/** TTS CSS font-weight property (for the lens display). @type {string} */
-AbstractTts.FONT_WEIGHT = 'fontWeight';
-
-/** TTS punctuation-echo property. @type {string} */
-AbstractTts.PUNCTUATION_ECHO = 'punctuationEcho';
-
-/**
- * List of punctuation echoes that the user can cycle through.
- * @type {!Array<{name:(string),
- * msg:(string),
- * regexp:(RegExp),
- * clear:(boolean)}>}
- */
-AbstractTts.PUNCTUATION_ECHOES = [
-  // Punctuation echoed for the 'none' option.
-  {
-    name: 'none',
-    msg: 'no_punctuation',
-    regexp: /[-$#"()*;:<>\n\\\/+='~`@_]/g,
-    clear: true,
-  },
-
-  // Punctuation echoed for the 'some' option.
-  {
-    name: 'some',
-    msg: 'some_punctuation',
-    regexp: /[$#"*<>\\\/\{\}+=~`%\u2022\u25e6\u25a0]/g,
-    clear: false,
-  },
-
-  // Punctuation echoed for the 'all' option.
-  {
-    name: 'all',
-    msg: 'all_punctuation',
-    regexp: /[-$#"()*;:<>\n\\\/\{\}\[\]+='~`!@_.,?%\u2022\u25e6\u25a0]/g,
-    clear: false,
-  },
-];
-
-/** TTS pause property. @type {string} */
-AbstractTts.PAUSE = 'pause';
-
-/**
- * TTS personality for annotations - text spoken by ChromeVox that
- * elaborates on a user interface element but isn't displayed on-screen.
- * @type {!TtsSpeechProperties}
- */
-AbstractTts.PERSONALITY_ANNOTATION = new TtsSpeechProperties({
-  'relativePitch': -0.25,
-  // TODO:(rshearer) Added this color change for I/O presentation.
-  'color': 'yellow',
-  'punctuationEcho': 'none',
-});
-
-
-/**
- * TTS personality for announcements - text spoken by ChromeVox that
- * isn't tied to any user interface elements.
- * @type {!TtsSpeechProperties}
- */
-AbstractTts.PERSONALITY_ANNOUNCEMENT = new TtsSpeechProperties({
-  'punctuationEcho': 'none',
-});
-
-/**
- * TTS personality for alerts from the system, such as battery level
- * warnings.
- * @type {!TtsSpeechProperties}
- */
-AbstractTts.PERSONALITY_SYSTEM_ALERT = new TtsSpeechProperties({
-  'punctuationEcho': 'none',
-  'doNotInterrupt': true,
-});
-
-/**
- * TTS personality for an aside - text in parentheses.
- * @type {!TtsSpeechProperties}
- */
-AbstractTts.PERSONALITY_ASIDE = new TtsSpeechProperties({
-  'relativePitch': -0.1,
-  'color': '#669',
-});
-
-/**
- * TTS personality for capital letters.
- * @type {!TtsSpeechProperties}
- */
-AbstractTts.PERSONALITY_CAPITAL = new TtsSpeechProperties({
-  'relativePitch': 0.2,
-});
-
-/**
- * TTS personality for deleted text.
- * @type {!TtsSpeechProperties}
- */
-AbstractTts.PERSONALITY_DELETED = new TtsSpeechProperties({
-  'punctuationEcho': 'none',
-  'relativePitch': -0.6,
-});
-
-/**
- * TTS personality for quoted text.
- * @type {!TtsSpeechProperties}
- */
-AbstractTts.PERSONALITY_QUOTE = new TtsSpeechProperties({
-  'relativePitch': 0.1,
-  'color': '#b6b',
-  'fontWeight': 'bold',
-});
-
-/**
- * TTS personality for strong or bold text.
- * @type {!TtsSpeechProperties}
- */
-AbstractTts.PERSONALITY_STRONG = new TtsSpeechProperties({
-  'relativePitch': 0.1,
-  'color': '#b66',
-  'fontWeight': 'bold',
-});
-
-/**
- * TTS personality for emphasis or italicized text.
- * @type {!TtsSpeechProperties}
- */
-AbstractTts.PERSONALITY_EMPHASIS = new TtsSpeechProperties({
-  'relativeVolume': 0.1,
-  'relativeRate': -0.1,
-  'color': '#6bb',
-  'fontWeight': 'bold',
-});
-
-/**
- * Flag indicating if the TTS is being debugged.
- * @type {boolean}
- */
-AbstractTts.DEBUG = true;
-
-/**
- * Character dictionary. These symbols are replaced with their human readable
- * equivalents. This replacement only occurs for single character utterances.
- * @type {Object<string>}
- */
-AbstractTts.CHARACTER_DICTIONARY = {
-  ' ': 'space',
-  '\u00a0': 'space',
-  '`': 'backtick',
-  '~': 'tilde',
-  '!': 'exclamation',
-  '@': 'at',
-  '#': 'pound',
-  '$': 'dollar',
-  '%': 'percent',
-  '^': 'caret',
-  '&': 'ampersand',
-  '*': 'asterisk',
-  '(': 'open_paren',
-  ')': 'close_paren',
-  '-': 'dash',
-  '_': 'underscore',
-  '=': 'equals',
-  '+': 'plus',
-  '[': 'left_bracket',
-  ']': 'right_bracket',
-  '{': 'left_brace',
-  '}': 'right_brace',
-  '|': 'pipe',
-  ';': 'semicolon',
-  ':': 'colon',
-  ',': 'comma',
-  '.': 'dot',
-  '<': 'less_than',
-  '>': 'greater_than',
-  '/': 'slash',
-  '?': 'question_mark',
-  '"': 'quote',
-  '\'': 'apostrophe',
-  '\t': 'tab',
-  '\r': 'return',
-  '\n': 'new_line',
-  '\\': 'backslash',
-  '\u2022': 'bullet',
-  '\u25e6': 'white_bullet',
-  '\u25a0': 'square_bullet',
-};
-
 /**
  * Pronunciation dictionary regexp.
  * @private {RegExp}
  */
 AbstractTts.pronunciationDictionaryRegexp_;
-
-/**
- * Substitution dictionary. These symbols or patterns are ALWAYS substituted
- * whenever they occur, so this should be reserved only for unicode characters
- * and characters that never have any different meaning in context.
- *
- * For example, do not include '$' here because $2 should be read as
- * "two dollars".
- * @type {Object<string>}
- */
-AbstractTts.SUBSTITUTION_DICTIONARY = {
-  '://': 'colon slash slash',
-  '\u00bc': 'one fourth',
-  '\u00bd': 'one half',
-  '\u2190': 'left arrow',
-  '\u2191': 'up arrow',
-  '\u2192': 'right arrow',
-  '\u2193': 'down arrow',
-  '\u21d0': 'left double arrow',
-  '\u21d1': 'up double arrow',
-  '\u21d2': 'right double  arrow',
-  '\u21d3': 'down double arrow',
-  '\u21e6': 'left arrow',
-  '\u21e7': 'up arrow',
-  '\u21e8': 'right arrow',
-  '\u21e9': 'down arrow',
-  '\u2303': 'control',
-  '\u2318': 'command',
-  '\u2325': 'option',
-  '\u25b2': 'up triangle',
-  '\u25b3': 'up triangle',
-  '\u25b4': 'up triangle',
-  '\u25b5': 'up triangle',
-  '\u25b6': 'right triangle',
-  '\u25b7': 'right triangle',
-  '\u25b8': 'right triangle',
-  '\u25b9': 'right triangle',
-  '\u25ba': 'right pointer',
-  '\u25bb': 'right pointer',
-  '\u25bc': 'down triangle',
-  '\u25bd': 'down triangle',
-  '\u25be': 'down triangle',
-  '\u25bf': 'down triangle',
-  '\u25c0': 'left triangle',
-  '\u25c1': 'left triangle',
-  '\u25c2': 'left triangle',
-  '\u25c3': 'left triangle',
-  '\u25c4': 'left pointer',
-  '\u25c5': 'left pointer',
-  '\uf8ff': 'apple',
-  '£': 'pound sterling',
-};
 
 /**
  * Substitution dictionary regexp.
@@ -563,9 +306,6 @@ AbstractTts.substitutionDictionaryRegexp_;
  */
 AbstractTts.repetitionRegexp_ =
     /([-\/\\|!@#$%^&*\(\)=_+\[\]\{\}.?;'":<>\u2022\u25e6\u25a0])\1{2,}/g;
-
-/** TTS phonetic-characters property. @type {string} */
-AbstractTts.PHONETIC_CHARACTERS = 'phoneticCharacters';
 
 /**
  * Regexp filter for negative dollar and pound amounts.

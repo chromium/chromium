@@ -95,7 +95,6 @@ ChromeVoxEditableTextUnitTest = class extends AccessibilityTestBase {
     await importModule(
         ['ChromeVoxEditableTextBase', 'TextChangedEvent', 'TypingEcho'],
         '/chromevox/background/editing/editable_text_base.js');
-    await importModule('AbstractTts', '/chromevox/common/abstract_tts.js');
 
     ChromeVoxState.instance.typingEcho = TypingEcho.CHARACTER_AND_WORD;
     ChromeVoxEditableTextBase.eventTypingEcho = false;
