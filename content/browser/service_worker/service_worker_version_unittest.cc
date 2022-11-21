@@ -1490,8 +1490,32 @@ TEST_F(ServiceWorkerVersionTest,
       helper_->mock_render_process_host()->foreground_service_worker_count());
 }
 
+// An instance client whose fetch handler type is kNoHandler.
+class NoFetchHandlerClient : public FakeEmbeddedWorkerInstanceClient {
+ public:
+  explicit NoFetchHandlerClient(EmbeddedWorkerTestHelper* helper)
+      : FakeEmbeddedWorkerInstanceClient(helper) {}
+
+  NoFetchHandlerClient(const NoFetchHandlerClient&) = delete;
+  NoFetchHandlerClient& operator=(const NoFetchHandlerClient&) = delete;
+
+  void EvaluateScript() override {
+    host()->OnScriptEvaluationStart();
+    host()->OnStarted(blink::mojom::ServiceWorkerStartStatus::kNormalCompletion,
+                      blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler,
+                      helper()->GetNextThreadId(),
+                      blink::mojom::EmbeddedWorkerStartTiming::New());
+  }
+};
+
 class ServiceWorkerVersionNoFetchHandlerTest : public ServiceWorkerVersionTest {
  protected:
+  void SetUp() override {
+    ServiceWorkerVersionTest::SetUp();
+    // Make the service worker says no handler.
+    helper_->AddPendingInstanceClient(
+        std::make_unique<NoFetchHandlerClient>(helper_.get()));
+  }
   absl::optional<ServiceWorkerVersion::FetchHandlerType> GetFetchHandlerType()
       const override {
     return ServiceWorkerVersion::FetchHandlerType::kNoHandler;

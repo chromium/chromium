@@ -1272,11 +1272,14 @@ void ServiceWorkerVersion::OnStarted(
           fetch_handler_type);
     }
     if (!fetch_handler_type_) {
+      // When the new service worker starts, the fetch handler type is unknown
+      // until this point.
       set_fetch_handler_type(fetch_handler_type);
-    } else if (
-        // Avoid to change live fetch_handler_existence() result.
-        fetch_handler_type != FetchHandlerType::kNoHandler &&
-        fetch_handler_type_ != FetchHandlerType::kNoHandler) {
+    } else {
+      // Starting the installed service worker should not change the existence
+      // of the fetch handler.
+      DCHECK_EQ(*fetch_handler_type_ != FetchHandlerType::kNoHandler,
+                fetch_handler_type != FetchHandlerType::kNoHandler);
       fetch_handler_type_ = fetch_handler_type;
     }
   }
