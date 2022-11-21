@@ -632,15 +632,12 @@ void ContentAutofillRouter::FillFormForAssistant(
     const AutofillableData& fill_data,
     const FormData& form,
     const FormFieldData& field,
-    const autofill_assistant::AutofillAssistantIntent intent,
-    void (*callback)(
-        ContentAutofillDriver* target,
-        const AutofillableData& fill_data,
-        const FormData& form,
-        const FormFieldData& fiel,
-        const autofill_assistant::AutofillAssistantIntent intent)) {
+    void (*callback)(ContentAutofillDriver* target,
+                     const AutofillableData& fill_data,
+                     const FormData& form,
+                     const FormFieldData& fiel)) {
   if (!base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
-    callback(source, fill_data, form, field, intent);
+    callback(source, fill_data, form, field);
     return;
   }
 
@@ -656,7 +653,7 @@ void ContentAutofillRouter::FillFormForAssistant(
   AFCHECK(target, return );
   SetLastQueriedSource(source);
   SetLastQueriedTarget(target);
-  callback(target, fill_data, form, field, intent);
+  callback(target, fill_data, form, field);
 }
 
 void ContentAutofillRouter::OnContextMenuShownInField(

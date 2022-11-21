@@ -2054,8 +2054,7 @@ void AutofillMetrics::LogAutofillFormSubmittedState(
     const base::TimeTicks& form_parsed_timestamp,
     FormSignature form_signature,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-    const FormInteractionCounts& form_interaction_counts,
-    const autofill_assistant::AutofillAssistantIntent intent) {
+    const FormInteractionCounts& form_interaction_counts) {
   UMA_HISTOGRAM_ENUMERATION("Autofill.FormSubmittedState", state,
                             AUTOFILL_FORM_SUBMITTED_STATE_ENUM_SIZE);
 
@@ -2091,7 +2090,7 @@ void AutofillMetrics::LogAutofillFormSubmittedState(
   }
   form_interactions_ukm_logger->LogFormSubmitted(
       is_for_credit_card, has_upi_vpa_field, form_types, state,
-      form_parsed_timestamp, form_signature, form_interaction_counts, intent);
+      form_parsed_timestamp, form_signature, form_interaction_counts);
 }
 
 // static
@@ -2767,8 +2766,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogFormSubmitted(
     AutofillFormSubmittedState state,
     const base::TimeTicks& form_parsed_timestamp,
     FormSignature form_signature,
-    const FormInteractionCounts& form_interaction_counts,
-    autofill_assistant::AutofillAssistantIntent intent) {
+    const FormInteractionCounts& form_interaction_counts) {
   if (!CanLog())
     return;
 
@@ -2791,9 +2789,6 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogFormSubmitted(
     builder.SetMillisecondsSinceFormParsed(
         MillisecondsSinceFormParsed(form_parsed_timestamp));
 
-  if (intent != autofill_assistant::AutofillAssistantIntent::UNDEFINED_INTENT)
-    builder.SetAutofillAssistantIntent(static_cast<int64_t>(intent));
-
   builder.Record(ukm_recorder_);
 }
 
@@ -2803,7 +2798,6 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogKeyMetrics(
     bool suggestions_shown,
     bool edited_autofilled_field,
     bool suggestion_filled,
-    autofill_assistant::AutofillAssistantIntent intent,
     const FormInteractionCounts& form_interaction_counts,
     const FormInteractionsFlowId& flow_id) {
   if (!CanLog())
@@ -2817,9 +2811,6 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogKeyMetrics(
       .SetFormElementUserModifications(
           form_interaction_counts.form_element_user_modifications)
       .SetFlowId(flow_id.value());
-
-  if (intent != autofill_assistant::AutofillAssistantIntent::UNDEFINED_INTENT)
-    builder.SetAutofillAssistantIntent(static_cast<int64_t>(intent));
 
   if (suggestions_shown)
     builder.SetFillingAcceptance(suggestion_filled);

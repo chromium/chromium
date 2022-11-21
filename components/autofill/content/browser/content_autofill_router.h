@@ -16,7 +16,6 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/autofill_assistant/core/public/autofill_assistant_intent.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -280,18 +279,14 @@ class ContentAutofillRouter {
                        const std::u16string& old_value));
 
   // Event called by Autofill Assistant as if it was called by the renderer.
-  void FillFormForAssistant(
-      ContentAutofillDriver* source,
-      const AutofillableData& fill_data,
-      const FormData& form,
-      const FormFieldData& field,
-      const autofill_assistant::AutofillAssistantIntent intent,
-      void (*callback)(
-          ContentAutofillDriver* target,
-          const AutofillableData& fill_data,
-          const FormData& form,
-          const FormFieldData& fiel,
-          const autofill_assistant::AutofillAssistantIntent intent));
+  void FillFormForAssistant(ContentAutofillDriver* source,
+                            const AutofillableData& fill_data,
+                            const FormData& form,
+                            const FormFieldData& field,
+                            void (*callback)(ContentAutofillDriver* target,
+                                             const AutofillableData& fill_data,
+                                             const FormData& form,
+                                             const FormFieldData& fiel));
 
   // Event called when the context menu is opened on a field.
   void OnContextMenuShownInField(

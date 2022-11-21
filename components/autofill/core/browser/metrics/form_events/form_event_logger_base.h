@@ -17,7 +17,6 @@
 #include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
-#include "components/autofill_assistant/core/public/autofill_assistant_intent.h"
 
 namespace autofill {
 
@@ -68,9 +67,6 @@ class FormEventLoggerBase {
   void OnTypedIntoNonFilledField();
   void OnEditedAutofilledField();
 
-  void SetAutofillAssistantIntentForFilling(
-      const autofill_assistant::AutofillAssistantIntent intent);
-
   // See BrowserAutofillManager::SuggestionContext for the definitions of the
   // AblationGroup parameters.
   void SetAblationStatus(AblationGroup ablation_group,
@@ -82,8 +78,6 @@ class FormEventLoggerBase {
       const FormStructure& form);
 
   void Log(FormEvent event, const FormStructure& form) const;
-
-  autofill_assistant::AutofillAssistantIntent autofill_assistant_intent() const;
 
   void OnTextFieldDidChange(const FieldGlobalId& field_global_id);
 
@@ -168,10 +162,6 @@ class FormEventLoggerBase {
 
   // The last field that was polled for suggestions.
   FormFieldData last_polled_field_;
-
-  // The Autofill Assistant intent triggering Autofill, if existing
-  autofill_assistant::AutofillAssistantIntent intent_ =
-      autofill_assistant::AutofillAssistantIntent::UNDEFINED_INTENT;
 
   // Used to count consecutive modifications on the same field as one change.
   FieldGlobalId last_field_global_id_modified_by_user_;

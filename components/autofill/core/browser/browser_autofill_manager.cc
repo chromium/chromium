@@ -1312,16 +1312,6 @@ void BrowserAutofillManager::FillProfileFormImpl(
                            /*query_id=*/kNoQueryId, form, field, profile);
 }
 
-void BrowserAutofillManager::SetProfileFillViaAutofillAssistantIntent(
-    const autofill_assistant::AutofillAssistantIntent intent) {
-  address_form_event_logger_->SetAutofillAssistantIntentForFilling(intent);
-}
-
-void BrowserAutofillManager::SetCreditCardFillViaAutofillAssistantIntent(
-    const autofill_assistant::AutofillAssistantIntent intent) {
-  credit_card_form_event_logger_->SetAutofillAssistantIntentForFilling(intent);
-}
-
 void BrowserAutofillManager::FillOrPreviewVirtualCardInformation(
     mojom::RendererFormDataAction action,
     const std::string& guid,
@@ -1867,14 +1857,11 @@ void BrowserAutofillManager::UploadFormDataAsyncCallback(
   if (submitted_form->ShouldRunHeuristics() ||
       submitted_form->ShouldRunHeuristicsForSingleFieldForms() ||
       submitted_form->ShouldBeQueried()) {
-    autofill_assistant::AutofillAssistantIntent intent =
-        autofill_assistant::AutofillAssistantIntent::UNDEFINED_INTENT;
     FormInteractionCounts form_interaction_counts = {};
     if (submitted_form->field_count() > 0) {
       const AutofillField* autofill_field = submitted_form->field(0);
       auto* logger = GetEventFormLogger(autofill_field->Type().group());
       if (logger) {
-        intent = logger->autofill_assistant_intent();
         form_interaction_counts = logger->form_interaction_counts();
       }
     }
@@ -1882,7 +1869,7 @@ void BrowserAutofillManager::UploadFormDataAsyncCallback(
     submitted_form->LogQualityMetrics(
         submitted_form->form_parsed_timestamp(), interaction_time,
         submission_time, form_interactions_ukm_logger(), did_show_suggestions_,
-        observed_submission, form_interaction_counts, intent);
+        observed_submission, form_interaction_counts);
   }
   if (submitted_form->ShouldBeUploaded())
     UploadFormData(*submitted_form, observed_submission);

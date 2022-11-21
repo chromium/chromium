@@ -28,7 +28,6 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/autofill_assistant/core/public/autofill_assistant_intent.h"
 #include "components/translate/core/browser/translate_driver.h"
 #include "components/version_info/channel.h"
 
@@ -208,16 +207,6 @@ class AutofillManager
   // Virtual for testing.
   virtual void OnDidFillAutofillFormData(const FormData& form,
                                          const base::TimeTicks timestamp);
-
-  // Profile Autofill was triggered by assistant's |intent|. This only affects
-  // metrics logging.
-  virtual void SetProfileFillViaAutofillAssistantIntent(
-      const autofill_assistant::AutofillAssistantIntent intent) = 0;
-
-  // Credit Card Autofill was triggered by assistant's |intent|. This only
-  // affects metrics logging.
-  virtual void SetCreditCardFillViaAutofillAssistantIntent(
-      const autofill_assistant::AutofillAssistantIntent intent) = 0;
 
   // Invoked when changes of the forms have been detected: the forms in
   // |updated_forms| are either new or have changed, and the forms in

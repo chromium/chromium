@@ -1109,7 +1109,7 @@ void WebController::OnGetFormAndFieldDataForFilling(
     std::move(callback).Run(form_status);
     return;
   }
-  driver->FillFormForAssistant(data_to_autofill, form_data, form_field, intent);
+  driver->FillFormForAssistant(data_to_autofill, form_data, form_field);
   std::move(callback).Run(OkClientStatus());
 }
 

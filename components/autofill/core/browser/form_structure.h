@@ -261,8 +261,7 @@ class FormStructure {
       AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
       bool did_show_suggestions,
       bool observed_submission,
-      const FormInteractionCounts& form_interaction_counts,
-      const autofill_assistant::AutofillAssistantIntent intent) const;
+      const FormInteractionCounts& form_interaction_counts) const;
 
   // Log the quality of the heuristics and server predictions for this form
   // structure, if autocomplete attributes are present on the fields (they are

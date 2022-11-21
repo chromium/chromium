@@ -535,25 +535,19 @@ void ContentAutofillDriver::JavaScriptChangedAutofilledValue(
 void ContentAutofillDriver::FillFormForAssistant(
     const AutofillableData& fill_data,
     const FormData& raw_form,
-    const FormFieldData& raw_field,
-    const autofill_assistant::AutofillAssistantIntent intent) {
+    const FormFieldData& raw_field) {
   FormData form = raw_form;
   FormFieldData field = raw_field;
   SetFrameAndFormMetaData(form, &field);
   autofill_router().FillFormForAssistant(
-      this, fill_data, form, field, intent,
+      this, fill_data, form, field,
       [](ContentAutofillDriver* target, const AutofillableData& fill_data,
-         const FormData& form, const FormFieldData& field,
-         const autofill_assistant::AutofillAssistantIntent intent) {
+         const FormData& form, const FormFieldData& field) {
         DCHECK(target->autofill_manager_);
         if (fill_data.is_profile()) {
-          target->autofill_manager_->SetProfileFillViaAutofillAssistantIntent(
-              intent);
           target->autofill_manager_->FillProfileForm(fill_data.profile(), form,
                                                      field);
         } else if (fill_data.is_credit_card()) {
-          target->autofill_manager_
-              ->SetCreditCardFillViaAutofillAssistantIntent(intent);
           target->autofill_manager_->FillCreditCardForm(
               /*query_id=*/kNoQueryId, form, field, fill_data.credit_card(),
               fill_data.cvc());

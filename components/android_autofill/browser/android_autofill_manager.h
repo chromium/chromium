@@ -83,12 +83,6 @@ class AndroidAutofillManager : public AutofillManager {
                          const FormData& form,
                          const url::Origin& triggered_origin);
 
-  void SetProfileFillViaAutofillAssistantIntent(
-      const autofill_assistant::AutofillAssistantIntent intent) override;
-
-  void SetCreditCardFillViaAutofillAssistantIntent(
-      const autofill_assistant::AutofillAssistantIntent intent) override;
-
  protected:
   friend void AndroidDriverInitHook(
       AutofillClient* client,

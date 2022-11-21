@@ -355,8 +355,7 @@ void FormEventLoggerBase::RecordFunnelAndKeyMetrics() {
       form_interactions_ukm_logger_->LogKeyMetrics(
           submitted_form_types_, has_logged_data_to_fill_available_,
           has_logged_suggestions_shown_, has_logged_edited_autofilled_field_,
-          has_logged_suggestion_filled_, intent_, form_interaction_counts_,
-          flow_id_);
+          has_logged_suggestion_filled_, form_interaction_counts_, flow_id_);
     }
   }
   if (has_logged_typed_into_non_filled_field_ ||
@@ -430,11 +429,6 @@ void FormEventLoggerBase::RecordAblationMetrics() {
   }
 }
 
-void FormEventLoggerBase::SetAutofillAssistantIntentForFilling(
-    const autofill_assistant::AutofillAssistantIntent intent) {
-  intent_ = intent;
-}
-
 // TODO(crbug.com/1352826): Remove this after investigating the impact.
 void FormEventLoggerBase::LogImpactOfHeuristicsThreshold(
     const FormStructure& form) {
@@ -478,11 +472,6 @@ void FormEventLoggerBase::LogImpactOfHeuristicsThreshold(
       "Autofill.FormAffectedByLaxLocalHeuristicRule.FillingCorrectness." +
           form_type_name_,
       !has_logged_edited_autofilled_field_);
-}
-
-autofill_assistant::AutofillAssistantIntent
-FormEventLoggerBase::autofill_assistant_intent() const {
-  return intent_;
 }
 
 void FormEventLoggerBase::OnTextFieldDidChange(
