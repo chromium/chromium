@@ -247,16 +247,16 @@ class AppInstallEventLoggerTest : public testing::Test {
     PolicyMap policy_map;
 
     base::DictionaryValue arc_policy;
-    auto list = std::make_unique<base::ListValue>();
+    base::Value::List list;
 
     for (std::string package_name : package_names) {
       base::Value::Dict package;
       package.Set("installType", "FORCE_INSTALLED");
       package.Set("packageName", package_name);
-      list->Append(base::Value(std::move(package)));
+      list.Append(std::move(package));
     }
 
-    arc_policy.SetList("applications", std::move(list));
+    arc_policy.GetDict().Set("applications", std::move(list));
     std::string arc_policy_string;
     base::JSONWriter::Write(arc_policy, &arc_policy_string);
     SetPolicy(&policy_map, key::kArcEnabled, base::Value(true));
@@ -267,17 +267,17 @@ class AppInstallEventLoggerTest : public testing::Test {
 
   base::DictionaryValue CreateComplianceReport(
       std::set<std::string> noncompliant_packages) {
-    auto details = std::make_unique<base::ListValue>();
+    base::Value::List details;
 
     for (std::string package_name : noncompliant_packages) {
       base::Value::Dict package;
       package.Set("nonComplianceReason", 5);
       package.Set("packageName", package_name);
-      details->Append(base::Value(std::move(package)));
+      details.Append(std::move(package));
     }
 
     base::DictionaryValue compliance_report;
-    compliance_report.SetList("nonComplianceDetails", std::move(details));
+    compliance_report.GetDict().Set("nonComplianceDetails", std::move(details));
     return compliance_report;
   }
 
@@ -299,10 +299,12 @@ class AppInstallEventLoggerTest : public testing::Test {
 // pending. Clear all data related to app-install event log collection. Verify
 // that the lists are cleared.
 TEST_F(AppInstallEventLoggerTest, Clear) {
-  base::ListValue list;
+  base::Value::List list;
   list.Append("test");
-  profile_.GetPrefs()->Set(arc::prefs::kArcPushInstallAppsRequested, list);
-  profile_.GetPrefs()->Set(arc::prefs::kArcPushInstallAppsPending, list);
+  profile_.GetPrefs()->SetList(arc::prefs::kArcPushInstallAppsRequested,
+                               list.Clone());
+  profile_.GetPrefs()->SetList(arc::prefs::kArcPushInstallAppsPending,
+                               list.Clone());
   ArcAppInstallEventLogger::Clear(&profile_);
   EXPECT_TRUE(profile_.GetPrefs()
                   ->FindPreference(arc::prefs::kArcPushInstallAppsRequested)
@@ -463,31 +465,31 @@ TEST_F(AppInstallEventLoggerTest, UpdatePolicy) {
   PolicyMap new_policy_map;
 
   base::DictionaryValue arc_policy;
-  auto list = std::make_unique<base::ListValue>();
+  base::Value::List list;
 
   // Test that REQUIRED, PREINSTALLED and FORCE_INSTALLED are markers to include
   // app to the tracking. BLOCKED and AVAILABLE are excluded.
   base::Value::Dict package1;
   package1.Set("installType", "REQUIRED");
   package1.Set("packageName", kPackageName);
-  list->Append(base::Value(std::move(package1)));
+  list.Append(std::move(package1));
   base::Value::Dict package2;
   package2.Set("installType", "PREINSTALLED");
   package2.Set("packageName", kPackageName2);
-  list->Append(base::Value(std::move(package2)));
+  list.Append(std::move(package2));
   base::Value::Dict package3;
   package3.Set("installType", "FORCE_INSTALLED");
   package3.Set("packageName", kPackageName3);
-  list->Append(base::Value(std::move(package3)));
+  list.Append(std::move(package3));
   base::Value::Dict package4;
   package4.Set("installType", "BLOCKED");
   package4.Set("packageName", kPackageName4);
-  list->Append(base::Value(std::move(package4)));
+  list.Append(std::move(package4));
   base::Value::Dict package5;
   package5.Set("installType", "AVAILABLE");
   package5.Set("packageName", kPackageName5);
-  list->Append(base::Value(std::move(package5)));
-  arc_policy.SetList("applications", std::move(list));
+  list.Append(std::move(package5));
+  arc_policy.GetDict().Set("applications", std::move(list));
 
   std::string arc_policy_string;
   base::JSONWriter::Write(arc_policy, &arc_policy_string);

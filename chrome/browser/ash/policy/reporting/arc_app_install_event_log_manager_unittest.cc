@@ -730,10 +730,12 @@ TEST_F(ArcAppInstallEventLogManagerTest, Clear) {
   log.Add(kPackageNames[0], event_);
   log.Store();
 
-  base::ListValue list;
+  base::Value::List list;
   list.Append("test");
-  profile_.GetPrefs()->Set(arc::prefs::kArcPushInstallAppsRequested, list);
-  profile_.GetPrefs()->Set(arc::prefs::kArcPushInstallAppsPending, list);
+  profile_.GetPrefs()->SetList(arc::prefs::kArcPushInstallAppsRequested,
+                               list.Clone());
+  profile_.GetPrefs()->SetList(arc::prefs::kArcPushInstallAppsPending,
+                               list.Clone());
 
   ArcAppInstallEventLogManager::Clear(&log_task_runner_wrapper_, &profile_);
   EXPECT_TRUE(profile_.GetPrefs()
@@ -764,10 +766,12 @@ TEST_F(ArcAppInstallEventLogManagerTest, RunClearRun) {
   FlushNonDelayedTasks();
   VerifyLogFile();
 
-  base::ListValue list;
+  base::Value::List list;
   list.Append("test");
-  profile_.GetPrefs()->Set(arc::prefs::kArcPushInstallAppsRequested, list);
-  profile_.GetPrefs()->Set(arc::prefs::kArcPushInstallAppsPending, list);
+  profile_.GetPrefs()->SetList(arc::prefs::kArcPushInstallAppsRequested,
+                               list.Clone());
+  profile_.GetPrefs()->SetList(arc::prefs::kArcPushInstallAppsPending,
+                               list.Clone());
 
   ArcAppInstallEventLogManager::Clear(&log_task_runner_wrapper_, &profile_);
   EXPECT_TRUE(profile_.GetPrefs()
