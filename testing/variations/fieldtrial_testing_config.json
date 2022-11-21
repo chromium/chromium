@@ -6471,6 +6471,44 @@
             ]
         }
     ],
+    "LocalWebApprovals": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "PreferLocal_481152618",
+                    "params": {
+                        "preferred_button": "local"
+                    },
+                    "enable_features": [
+                        "LocalWebApprovals",
+                        "WebFilterInterstitialRefresh"
+                    ]
+                },
+                {
+                    "name": "PreferRemote_481152618",
+                    "params": {
+                        "preferred_button": "remote"
+                    },
+                    "enable_features": [
+                        "LocalWebApprovals",
+                        "WebFilterInterstitialRefresh"
+                    ]
+                },
+                {
+                    "name": "RemoteOnly_481152618",
+                    "enable_features": [
+                        "WebFilterInterstitialRefresh"
+                    ],
+                    "disable_features": [
+                        "LocalWebApprovals"
+                    ]
+                }
+            ]
+        }
+    ],
     "LowerMemoryLimitForNonMainRenderers": [
         {
             "platforms": [
