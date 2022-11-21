@@ -4,6 +4,7 @@
 
 #include "net/cert/pki/path_builder.h"
 
+#include <algorithm>
 #include "base/base_paths.h"
 #include "base/callback_forward.h"
 #include "base/containers/span.h"
@@ -957,10 +958,9 @@ TEST_F(PathBuilderMultiRootTest, TrustStoreWinOnlyFindTrustedTLSPath) {
   EXPECT_TRUE(AreCertsEq(e_by_e_, path.certs[2]));
 
   // Should only be one valid path, the one above.
-  int valid_paths = 0;
-  for (const auto& candidate_path : result.paths) {
-    valid_paths += candidate_path->IsValid() ? 1 : 0;
-  }
+  const int valid_paths = std::count_if(
+      result.paths.begin(), result.paths.end(),
+      [](const auto& candidate_path) { return candidate_path->IsValid(); });
   ASSERT_EQ(1, valid_paths);
 }
 
