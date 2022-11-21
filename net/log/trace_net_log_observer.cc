@@ -64,10 +64,9 @@ void TraceNetLogObserver::OnAddEntry(const NetLogEntry& entry) {
           std::make_unique<TracedValue>(std::move(params)));
       break;
     case NetLogEventPhase::END:
-      TRACE_EVENT_NESTABLE_ASYNC_END2(
+      TRACE_EVENT_NESTABLE_ASYNC_END1(
           kNetLogTracingCategory, NetLogEventTypeToString(entry.type),
-          entry.source.id, "source_type",
-          NetLog::SourceTypeToString(entry.source.type), "params",
+          entry.source.id, "params",
           std::make_unique<TracedValue>(std::move(params)));
       break;
     case NetLogEventPhase::NONE:
