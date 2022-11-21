@@ -693,7 +693,7 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
  public:
   MOCK_METHOD(bool,
               IsSecurityLevelAcceptableForWebAuthn,
-              (RenderFrameHost*),
+              (RenderFrameHost*, const url::Origin& origin),
               ());
 };
 
@@ -738,8 +738,9 @@ class RenderFrameHostImplWebAuthnTest : public RenderFrameHostImplTest {
 TEST_F(RenderFrameHostImplWebAuthnTest,
        PerformGetAssertionWebAuthSecurityChecks_TLSError) {
   GURL url("https://doofenshmirtz.evil");
+  const auto origin = url::Origin::Create(url);
   EXPECT_CALL(*webauthn_delegate_,
-              IsSecurityLevelAcceptableForWebAuthn(main_test_rfh()))
+              IsSecurityLevelAcceptableForWebAuthn(main_test_rfh(), origin))
       .WillOnce(testing::Return(false));
   std::pair<blink::mojom::AuthenticatorStatus, bool> result =
       main_test_rfh()->PerformGetAssertionWebAuthSecurityChecks(
@@ -753,8 +754,9 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
 TEST_F(RenderFrameHostImplWebAuthnTest,
        PerformMakeCredentialWebAuthSecurityChecks_TLSError) {
   GURL url("https://doofenshmirtz.evil");
+  const auto origin = url::Origin::Create(url);
   EXPECT_CALL(*webauthn_delegate_,
-              IsSecurityLevelAcceptableForWebAuthn(main_test_rfh()))
+              IsSecurityLevelAcceptableForWebAuthn(main_test_rfh(), origin))
       .WillOnce(testing::Return(false));
   blink::mojom::AuthenticatorStatus result =
       main_test_rfh()->PerformMakeCredentialWebAuthSecurityChecks(
@@ -767,8 +769,9 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
 TEST_F(RenderFrameHostImplWebAuthnTest,
        PerformGetAssertionWebAuthSecurityChecks_Success) {
   GURL url("https://owca.org");
+  const auto origin = url::Origin::Create(url);
   EXPECT_CALL(*webauthn_delegate_,
-              IsSecurityLevelAcceptableForWebAuthn(main_test_rfh()))
+              IsSecurityLevelAcceptableForWebAuthn(main_test_rfh(), origin))
       .WillOnce(testing::Return(true));
   std::pair<blink::mojom::AuthenticatorStatus, bool> result =
       main_test_rfh()->PerformGetAssertionWebAuthSecurityChecks(
@@ -782,8 +785,9 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
 TEST_F(RenderFrameHostImplWebAuthnTest,
        PerformMakeCredentialWebAuthSecurityChecks_Success) {
   GURL url("https://owca.org");
+  const auto origin = url::Origin::Create(url);
   EXPECT_CALL(*webauthn_delegate_,
-              IsSecurityLevelAcceptableForWebAuthn(main_test_rfh()))
+              IsSecurityLevelAcceptableForWebAuthn(main_test_rfh(), origin))
       .WillOnce(testing::Return(true));
   blink::mojom::AuthenticatorStatus result =
       main_test_rfh()->PerformMakeCredentialWebAuthSecurityChecks(

@@ -1696,7 +1696,8 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
   }
 
   bool IsSecurityLevelAcceptableForWebAuthn(
-      content::RenderFrameHost* rfh) override {
+      content::RenderFrameHost* rfh,
+      const url::Origin& origin) override {
     return is_webauthn_security_level_acceptable;
   }
 

@@ -81,7 +81,8 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   // Returns true if the tab security level is acceptable to allow WebAuthn
   // requests, false otherwise.
   virtual bool IsSecurityLevelAcceptableForWebAuthn(
-      content::RenderFrameHost* rfh);
+      content::RenderFrameHost* rfh,
+      const url::Origin& caller_origin);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Permits the embedder to override the Relying Party ID for a WebAuthn call,

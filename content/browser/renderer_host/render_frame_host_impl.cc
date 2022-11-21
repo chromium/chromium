@@ -13464,7 +13464,7 @@ RenderFrameHostImpl::PerformGetAssertionWebAuthSecurityChecks(
   if (!GetContentClient()
            ->browser()
            ->GetWebAuthenticationDelegate()
-           ->IsSecurityLevelAcceptableForWebAuthn(this)) {
+           ->IsSecurityLevelAcceptableForWebAuthn(this, effective_origin)) {
     return std::make_pair(blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR,
                           is_cross_origin);
   }
@@ -13498,7 +13498,7 @@ RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
   if (!GetContentClient()
            ->browser()
            ->GetWebAuthenticationDelegate()
-           ->IsSecurityLevelAcceptableForWebAuthn(this)) {
+           ->IsSecurityLevelAcceptableForWebAuthn(this, effective_origin)) {
     return blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR;
   }
 

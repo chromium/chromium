@@ -524,7 +524,7 @@ void AuthenticatorCommonImpl::MakeCredential(
   make_credential_response_callback_ = std::move(callback);
 
   if (!GetWebAuthenticationDelegate()->IsSecurityLevelAcceptableForWebAuthn(
-          GetRenderFrameHost())) {
+          GetRenderFrameHost(), caller_origin)) {
     CompleteMakeCredentialRequest(
         blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR);
     return;
@@ -842,7 +842,7 @@ void AuthenticatorCommonImpl::GetAssertion(
   get_assertion_response_callback_ = std::move(callback);
 
   if (!GetWebAuthenticationDelegate()->IsSecurityLevelAcceptableForWebAuthn(
-          GetRenderFrameHost())) {
+          GetRenderFrameHost(), caller_origin)) {
     CompleteGetAssertionRequest(
         blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR);
     return;

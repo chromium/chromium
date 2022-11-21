@@ -79,11 +79,7 @@ class WebAuthnBrowserTest : public CertVerifierBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
 
     // Allowlist all certs for the HTTPS server.
-    auto cert = https_server_.GetCertificate();
-    net::CertVerifyResult verify_result;
-    verify_result.cert_status = 0;
-    verify_result.verified_cert = cert;
-    mock_cert_verifier()->AddResultForCert(cert.get(), verify_result, net::OK);
+    mock_cert_verifier()->set_default_result(net::OK);
   }
 
  protected:

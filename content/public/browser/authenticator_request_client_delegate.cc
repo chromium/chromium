@@ -42,7 +42,8 @@ bool WebAuthenticationDelegate::OriginMayUseRemoteDesktopClientOverride(
 }
 
 bool WebAuthenticationDelegate::IsSecurityLevelAcceptableForWebAuthn(
-    content::RenderFrameHost* rfh) {
+    content::RenderFrameHost* rfh,
+    const url::Origin& caller_origin) {
   return true;
 }
 
