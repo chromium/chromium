@@ -42,13 +42,7 @@ WaylandTouch::WaylandTouch(wl_touch* touch,
                            Delegate* delegate)
     : obj_(touch), connection_(connection), delegate_(delegate) {
   static constexpr wl_touch_listener listener = {
-      &Down,        &Up, &Motion, &Frame, &Cancel,
-#ifdef WL_TOUCH_SHAPE_SINCE_VERSION
-      &Shape,
-#endif
-#ifdef WL_TOUCH_ORIENTATION_SINCE_VERSION
-      &Orientation,
-#endif
+      &Down, &Up, &Motion, &Frame, &Cancel, &Shape, &Orientation,
   };
 
   wl_touch_add_listener(obj_.get(), &listener, this);
@@ -122,7 +116,6 @@ void WaylandTouch::Motion(void* data,
                                        EventDispatchPolicyForPlatform());
 }
 
-#ifdef WL_TOUCH_SHAPE_SINCE_VERSION
 // static
 void WaylandTouch::Shape(void* data,
                          wl_touch* obj,
@@ -131,9 +124,7 @@ void WaylandTouch::Shape(void* data,
                          wl_fixed_t minor) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
-#endif
 
-#ifdef WL_TOUCH_ORIENTATION_SINCE_VERSION
 // static
 void WaylandTouch::Orientation(void* data,
                                wl_touch* obj,
@@ -141,7 +132,6 @@ void WaylandTouch::Orientation(void* data,
                                wl_fixed_t orientation) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
-#endif
 
 // static
 void WaylandTouch::Cancel(void* data, wl_touch* obj) {

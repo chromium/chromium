@@ -82,12 +82,10 @@ class WaylandPointer {
                            wl_pointer* obj,
                            uint32_t axis,
                            int32_t discrete);
-#ifdef WL_POINTER_AXIS_VALUE120_SINCE_VERSION
   static void AxisValue120(void* data,
                            wl_pointer* obj,
                            uint32_t axis,
                            int32_t value120);
-#endif
 
   void SetupStylus();
 

@@ -37,11 +37,8 @@ WaylandPointer::WaylandPointer(wl_pointer* pointer,
                                Delegate* delegate)
     : obj_(pointer), connection_(connection), delegate_(delegate) {
   static constexpr wl_pointer_listener listener = {
-      &Enter,        &Leave,      &Motion,   &Button,       &Axis,
-      &Frame,        &AxisSource, &AxisStop, &AxisDiscrete,
-#ifdef WL_POINTER_AXIS_VALUE120_SINCE_VERSION
-      &AxisValue120,
-#endif
+      &Enter, &Leave,      &Motion,   &Button,       &Axis,
+      &Frame, &AxisSource, &AxisStop, &AxisDiscrete, &AxisValue120,
   };
 
   wl_pointer_add_listener(obj_.get(), &listener, this);
@@ -225,7 +222,6 @@ void WaylandPointer::AxisDiscrete(void* data,
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-#ifdef WL_POINTER_AXIS_VALUE120_SINCE_VERSION
 // --- Version 8 ---
 
 // static
@@ -237,7 +233,6 @@ void WaylandPointer::AxisValue120(void* data,
   // events.
   NOTIMPLEMENTED_LOG_ONCE();
 }
-#endif
 
 void WaylandPointer::SetupStylus() {
   auto* stylus_v2 = connection_->stylus_v2();

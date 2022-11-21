@@ -118,14 +118,8 @@ void WaylandOutput::Initialize(Delegate* delegate) {
   DCHECK(!delegate_);
   delegate_ = delegate;
   static constexpr wl_output_listener output_listener = {
-      &OutputHandleGeometry,    &OutputHandleMode,
-      &OutputHandleDone,        &OutputHandleScale,
-#ifdef WL_OUTPUT_NAME_SINCE_VERSION
-      &OutputHandleName,
-#endif
-#ifdef WL_OUTPUT_DESCRIPTION_SINCE_VERSION
-      &OutputHandleDescription,
-#endif
+      &OutputHandleGeometry, &OutputHandleMode, &OutputHandleDone,
+      &OutputHandleScale,    &OutputHandleName, &OutputHandleDescription,
 
   };
   wl_output_add_listener(output_.get(), &output_listener, this);
@@ -266,7 +260,6 @@ void WaylandOutput::OutputHandleScale(void* data,
     wayland_output->scale_factor_ = factor;
 }
 
-#ifdef WL_OUTPUT_NAME_SINCE_VERSION
 // static
 void WaylandOutput::OutputHandleName(void* data,
                                      struct wl_output* wl_output,
@@ -274,9 +267,7 @@ void WaylandOutput::OutputHandleName(void* data,
   if (WaylandOutput* wayland_output = static_cast<WaylandOutput*>(data))
     wayland_output->name_ = name ? std::string(name) : std::string{};
 }
-#endif
 
-#ifdef WL_OUTPUT_DESCRIPTION_SINCE_VERSION
 // static
 void WaylandOutput::OutputHandleDescription(void* data,
                                             struct wl_output* wl_output,
@@ -286,6 +277,5 @@ void WaylandOutput::OutputHandleDescription(void* data,
         description ? std::string(description) : std::string{};
   }
 }
-#endif
 
 }  // namespace ui
