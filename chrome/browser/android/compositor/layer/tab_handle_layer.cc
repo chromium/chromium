@@ -52,10 +52,22 @@ void TabHandleLayer::SetProperties(
     brightness_ = brightness;
     foreground_ = foreground;
     opacity_ = opacity;
-    cc::FilterOperations filters;
-    if (brightness_ != 1.0f && !foreground_)
-      filters.Append(cc::FilterOperation::CreateBrightnessFilter(brightness_));
-    layer_->SetFilters(filters);
+
+    // With the Tab Strip Redesign (TSR), inactive tabs no longer have a visible
+    // container. To achieve the same dimming effect, we need to set the opacity
+    // rather than adding a brightness filter. We can't swap to simply setting
+    // the opacity when TSR is disabled, because then, the tab containers can
+    // be seen overlapping. (See https://crbug.com/1373632).
+    if (base::FeatureList::IsEnabled(chrome::android::kTabStripRedesign)) {
+      tab_->SetOpacity(brightness_);
+    } else {
+      cc::FilterOperations filters;
+      if (brightness_ != 1.0f) {
+        filters.Append(
+            cc::FilterOperation::CreateBrightnessFilter(brightness_));
+      }
+      layer_->SetFilters(filters);
+    }
   }
 
   float original_x = x;
@@ -95,14 +107,14 @@ void TabHandleLayer::SetProperties(
 
   if (title_layer) {
     title_layer->setOpacity(1.0f);
-    unsigned expected_children = 5;
+    unsigned expected_children = 4;
     title_layer_ = title_layer->layer();
-    if (layer_->children().size() < expected_children) {
-      layer_->AddChild(title_layer_);
-    } else if (layer_->children()[expected_children - 1]->id() !=
+    if (tab_->children().size() < expected_children) {
+      tab_->AddChild(title_layer_);
+    } else if (tab_->children()[expected_children - 1]->id() !=
                title_layer_->id()) {
-      layer_->ReplaceChild((layer_->children()[expected_children - 1]).get(),
-                           title_layer_);
+      tab_->ReplaceChild((tab_->children()[expected_children - 1]).get(),
+                         title_layer_);
     }
     title_layer->SetUIResourceIds();
   } else if (title_layer_.get()) {
@@ -209,6 +221,7 @@ scoped_refptr<cc::Layer> TabHandleLayer::layer() {
 TabHandleLayer::TabHandleLayer(LayerTitleCache* layer_title_cache)
     : layer_title_cache_(layer_title_cache),
       layer_(cc::Layer::Create()),
+      tab_(cc::Layer::Create()),
       close_button_(cc::UIResourceLayer::Create()),
       divider_(cc::UIResourceLayer::Create()),
       decoration_tab_(cc::NinePatchLayer::Create()),
@@ -220,9 +233,14 @@ TabHandleLayer::TabHandleLayer(LayerTitleCache* layer_title_cache)
   if (!base::FeatureList::IsEnabled(chrome::android::kTabStripRedesign)) {
     tab_outline_->SetIsDrawable(true);
   }
-  layer_->AddChild(decoration_tab_);
-  layer_->AddChild(tab_outline_);
-  layer_->AddChild(close_button_);
+
+  tab_->AddChild(decoration_tab_);
+  tab_->AddChild(tab_outline_);
+  tab_->AddChild(close_button_);
+
+  // The divider is added as a separate child so its opacity can be controlled
+  // separately from the other tab items.
+  layer_->AddChild(tab_);
   layer_->AddChild(divider_);
 }
 

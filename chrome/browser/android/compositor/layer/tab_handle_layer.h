@@ -64,6 +64,7 @@ class TabHandleLayer : public Layer {
   raw_ptr<LayerTitleCache> layer_title_cache_;
 
   scoped_refptr<cc::Layer> layer_;
+  scoped_refptr<cc::Layer> tab_;
   scoped_refptr<cc::UIResourceLayer> close_button_;
   scoped_refptr<cc::UIResourceLayer> divider_;
   scoped_refptr<cc::NinePatchLayer> decoration_tab_;

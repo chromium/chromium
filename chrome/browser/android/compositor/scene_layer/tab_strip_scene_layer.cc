@@ -343,7 +343,7 @@ void TabStripSceneLayer::PutStripTabLayer(
       resource_manager->GetStaticResourceWithTint(close_resource_id,
                                                   close_tint);
   ui::Resource* divider_resource = resource_manager->GetStaticResourceWithTint(
-      divider_resource_id, divider_tint);
+      divider_resource_id, divider_tint, true);
   layer->SetProperties(id, close_button_resource, divider_resource,
                        tab_handle_resource, tab_handle_outline_resource,
                        foreground, close_pressed, toolbar_width, x, y, width,

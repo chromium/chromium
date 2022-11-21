@@ -136,6 +136,13 @@ void ResourceManagerImpl::OnFrameUpdatesFinished() {
 
 Resource* ResourceManagerImpl::GetStaticResourceWithTint(int res_id,
                                                          SkColor tint_color) {
+  return GetStaticResourceWithTint(res_id, tint_color, false);
+}
+
+Resource* ResourceManagerImpl::GetStaticResourceWithTint(
+    int res_id,
+    SkColor tint_color,
+    bool preserve_color_alpha) {
   if (tinted_resources_.find(tint_color) == tinted_resources_.end()) {
     tinted_resources_[tint_color] = std::make_unique<ResourceMap>();
   }
@@ -162,13 +169,16 @@ Resource* ResourceManagerImpl::GetStaticResourceWithTint(int res_id,
   SkCanvas canvas(tinted_bitmap);
   canvas.clear(SK_ColorTRANSPARENT);
 
-  // Build a color filter to use on the base resource. This filter multiplies
-  // the RGB components by the components of the new color but retains the
-  // alpha of the original image.
+  // Build a color filter to use on the base resource. This filter ignores
+  // the original image's RGB components, instead using the components of the
+  // new color. The alpha of the original image will be conditionally preserved
+  // based on preserve_color_alpha.
+  float alpha_multiplier =
+      preserve_color_alpha ? SkColorGetA(tint_color) * (1.0f / 255) : 1;
   float color_matrix[20] = {0, 0, 0, 0, SkColorGetR(tint_color) * (1.0f / 255),
                             0, 0, 0, 0, SkColorGetG(tint_color) * (1.0f / 255),
                             0, 0, 0, 0, SkColorGetB(tint_color) * (1.0f / 255),
-                            0, 0, 0, 1, 0};
+                            0, 0, 0, alpha_multiplier, 0};
   SkPaint color_filter;
   color_filter.setColorFilter(SkColorFilters::Matrix(color_matrix));
 

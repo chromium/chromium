@@ -41,9 +41,15 @@ class UI_ANDROID_EXPORT ResourceManager {
   virtual Resource* GetResource(AndroidResourceType res_type, int res_id) = 0;
 
   // Return a handle to a static resource specified by |res_id| that has a tint
-  // of |tint_color| applied to it.
+  // of |tint_color| applied to it. Does not retain the alpha of the tint color.
   virtual Resource* GetStaticResourceWithTint(int res_id,
                                               SkColor tint_color) = 0;
+
+  // Return a handle to a static resource specified by |res_id| that has a tint
+  // of |tint_color| applied to it.
+  virtual Resource* GetStaticResourceWithTint(int res_id,
+                                              SkColor tint_color,
+                                              bool preserve_color_alpha) = 0;
 
   // Trigger asynchronous loading of the resource specified by |res_type| and
   // |res_id|, if it has not yet been loaded.

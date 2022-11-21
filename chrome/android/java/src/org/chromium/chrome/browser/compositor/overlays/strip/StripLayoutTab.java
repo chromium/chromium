@@ -175,6 +175,8 @@ public class StripLayoutTab implements VirtualView {
     // Divider Constants
     // TODO(crbug.com/1373632): Temp value until the 9-patches are updated.
     private static final int DIVIDER_OFFSET_X = 9;
+    @VisibleForTesting
+    static final float DIVIDER_FOLIO_LIGHT_OPACITY = 0.2f;
 
     private int mId = Tab.INVALID_TAB_ID;
 
@@ -419,7 +421,28 @@ public class StripLayoutTab implements VirtualView {
      * @return The tint color resource for the tab divider.
      */
     public @ColorInt int getDividerTint() {
-        return SemanticColorUtils.getDefaultIconColorAccent1(mContext);
+        if (!ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+            // Dividers are only present in TSR. Return arbitrary color to avoid calculation.
+            return Color.TRANSPARENT;
+        }
+
+        if (mIncognito) {
+            return mContext.getColor(R.color.divider_line_bg_color_light);
+        }
+
+        if (TabUiFeatureUtilities.isTabStripFolioEnabled() && !ColorUtils.inNightMode(mContext)
+                && !mIncognito) {
+            // This color will not be used at full opacity. We can't set this using the alpha
+            // component of the {@code @ColorInt}, since it is ignored when loading resources
+            // with a specified tint in the CC layer (instead retaining the alpha of the original
+            // image). Instead, this is reflected by setting the opacity of the divider itself.
+            // See https://crbug.com/1373634.
+            return androidx.core.graphics.ColorUtils.setAlphaComponent(
+                    SemanticColorUtils.getDefaultIconColorAccent1(mContext),
+                    (int) (DIVIDER_FOLIO_LIGHT_OPACITY * 255));
+        }
+
+        return SemanticColorUtils.getDividerLineBgColor(mContext);
     }
 
     /**

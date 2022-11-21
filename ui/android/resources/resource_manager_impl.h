@@ -45,6 +45,9 @@ class UI_ANDROID_EXPORT ResourceManagerImpl
   Resource* GetResource(AndroidResourceType res_type, int res_id) override;
   Resource* GetStaticResourceWithTint(
       int res_id, SkColor tint_color) override;
+  Resource* GetStaticResourceWithTint(int res_id,
+                                      SkColor tint_color,
+                                      bool preserve_color_alpha) override;
   void PreloadResource(AndroidResourceType res_type, int res_id) override;
   void OnFrameUpdatesFinished() override;
 

@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.util.ColorUtils;
 
 /** Tests for {@link StripLayoutTab}. */
@@ -213,6 +214,58 @@ public class StripLayoutTabTest {
                 mIncognitoTab.getOutlineTint(true));
         assertEquals("TSR Detached containers should not have an outline.", expectedColor,
                 mIncognitoTab.getOutlineTint(false));
+    }
+
+    @Test
+    @Feature("Tab Strip Redesign")
+    public void testGetDividerTint() {
+        int expectedColor = Color.TRANSPARENT;
+
+        // Normal.
+        assertEquals("Non-TSR tabs should not have a divider.", expectedColor,
+                mNormalTab.getDividerTint());
+
+        // Incognito.
+        assertEquals("Non-TSR tabs should not have a divider.", expectedColor,
+                mNormalTab.getDividerTint());
+    }
+
+    @Test
+    @Feature("Tab Strip Redesign")
+    @Features.EnableFeatures({ChromeFeatureList.TAB_STRIP_REDESIGN})
+    public void testGetDividerTint_TabStripRedesignFolio() {
+        TabUiFeatureUtilities.setTabStripRedesignEnableFolioForTesting(true);
+        int expectedColor;
+
+        // Normal.
+        expectedColor = androidx.core.graphics.ColorUtils.setAlphaComponent(
+                SemanticColorUtils.getDefaultIconColorAccent1(mContext),
+                (int) (StripLayoutTab.DIVIDER_FOLIO_LIGHT_OPACITY * 255));
+        assertEquals("TSR Folio light mode divider uses 20% icon color", expectedColor,
+                mNormalTab.getDividerTint());
+
+        // Incognito.
+        expectedColor = mContext.getColor(R.color.divider_line_bg_color_light);
+        assertEquals("TSR incognito dividers use the baseline color.", expectedColor,
+                mIncognitoTab.getDividerTint());
+    }
+
+    @Test
+    @Feature("Tab Strip Redesign")
+    @Features.EnableFeatures({ChromeFeatureList.TAB_STRIP_REDESIGN})
+    public void testGetDividerTint_TabStripRedesignDetached() {
+        TabUiFeatureUtilities.setTabStripRedesignEnableDetachedForTesting(true);
+        int expectedColor;
+
+        // Normal.
+        expectedColor = MaterialColors.getColor(mContext, R.attr.colorSurfaceVariant, TAG);
+        assertEquals("TSR detached divider uses surface variant.", expectedColor,
+                mNormalTab.getDividerTint());
+
+        // Incognito.
+        expectedColor = mContext.getColor(R.color.divider_line_bg_color_light);
+        assertEquals("TSR incognito dividers use the baseline color.", expectedColor,
+                mIncognitoTab.getDividerTint());
     }
 
     private StripLayoutTab createStripLayoutTab(boolean incognito) {
