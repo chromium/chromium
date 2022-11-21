@@ -193,7 +193,11 @@ export class FileSelectionHandler extends EventTarget {
      */
     this.allowedPaths_ = allowedPaths;
 
-    // Register evnets to update file selections.
+    // Listens to changes in the selection model to propagate to other parts.
+    directoryModel.getFileListSelection().addEventListener(
+        'change', this.onFileSelectionChanged.bind(this));
+
+    // Register events to update file selections.
     directoryModel.addEventListener(
         'directory-changed', this.onFileSelectionChanged.bind(this));
   }

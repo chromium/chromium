@@ -1102,11 +1102,6 @@ export class FileManager extends EventTarget {
         assert(this.ui_.listContainer), assert(this.metadataModel_),
         assert(this.volumeManager_), this.launchParams_.allowedPaths);
 
-    this.directoryModel_.getFileListSelection().addEventListener(
-        'change',
-        this.selectionHandler_.onFileSelectionChanged.bind(
-            this.selectionHandler_));
-
     // TODO(mtomasz, yoshiki): Create navigation list earlier, and here just
     // attach the directory model.
     const directoryTreePromise = this.initDirectoryTree_();
