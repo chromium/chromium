@@ -60,7 +60,7 @@ import './screens/oobe/enable_debugging.js';
 import './screens/oobe/enterprise_enrollment.m.js';
 import './screens/oobe/hid_detection.js';
 import './screens/oobe/oobe_network.js';
-import './screens/oobe/packaged_license.m.js';
+import './screens/oobe/packaged_license.js';
 import './screens/oobe/quick_start.m.js';
 import './screens/oobe/update.js';
 import './screens/oobe/welcome.js';
@@ -146,15 +146,15 @@ export const loginScreensList = [
  * List of screens that are used during the `oobe` flow only.
  */
 export const oobeScreensList = [
-    {tag: 'auto-enrollment-check-element', id: 'auto-enrollment-check'},
-    {tag: 'demo-preferences-element', id: 'demo-preferences'},
-    {tag: 'demo-setup-element', id: 'demo-setup'},
-    {tag: 'enable-debugging-element', id: 'debugging'},
-    {tag: 'enterprise-enrollment-element', id: 'enterprise-enrollment'},
-    {tag: 'hid-detection-element', id: 'hid-detection'},
-    {tag: 'oobe-network-element', id: 'network-selection'},
-    {tag: 'packaged-license-element', id: 'packaged-license'},
-    {tag: 'quick-start-element', id: 'quick-start'},
-    {tag: 'update-element', id: 'oobe-update'},
-    {tag: 'oobe-welcome-element', id: 'connect'},
+  {tag: 'auto-enrollment-check-element', id: 'auto-enrollment-check'},
+  {tag: 'demo-preferences-element', id: 'demo-preferences'},
+  {tag: 'demo-setup-element', id: 'demo-setup'},
+  {tag: 'enable-debugging-element', id: 'debugging'},
+  {tag: 'enterprise-enrollment-element', id: 'enterprise-enrollment'},
+  {tag: 'hid-detection-element', id: 'hid-detection'},
+  {tag: 'oobe-network-element', id: 'network-selection'},
+  {tag: 'packaged-license-element', id: 'packaged-license'},
+  {tag: 'quick-start-element', id: 'quick-start'},
+  {tag: 'update-element', id: 'oobe-update'},
+  {tag: 'oobe-welcome-element', id: 'connect'},
 ];
