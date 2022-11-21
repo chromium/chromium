@@ -511,6 +511,18 @@ class BlinkPerfServiceWorker(_BlinkPerfBenchmark):
     return story_set
 
 
+@benchmark.Info(emails=['csharrison@chromium.org'],
+                component='Blink>Internals>WTF',
+                documentation_url='https://bit.ly/blink-perf-benchmarks')
+class BlinkPerfBase64(_BlinkPerfBenchmark):
+  SUBDIR = 'base64'
+  TAGS = _BlinkPerfBenchmark.TAGS + ['all']
+
+  @classmethod
+  def Name(cls):
+    return 'UNSCHEDULED_blink_perf.base64'
+
+
 @benchmark.Info(emails=['futhark@chromium.org', 'andruud@chromium.org'],
                 documentation_url='https://bit.ly/blink-perf-benchmarks',
                 component='Blink>CSS')
