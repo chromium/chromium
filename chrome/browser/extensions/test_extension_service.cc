@@ -9,7 +9,9 @@
 
 using extensions::Extension;
 
-TestExtensionService::~TestExtensionService() {}
+TestExtensionService::TestExtensionService() = default;
+
+TestExtensionService::~TestExtensionService() = default;
 
 extensions::PendingExtensionManager*
 TestExtensionService::pending_extension_manager() {
@@ -84,4 +86,9 @@ bool TestExtensionService::UserCanDisableInstalledExtension(
 
 void TestExtensionService::ReinstallProviderExtensions() {
   ADD_FAILURE();
+}
+
+base::WeakPtr<extensions::ExtensionServiceInterface>
+TestExtensionService::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }

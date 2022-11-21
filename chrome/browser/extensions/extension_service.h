@@ -86,8 +86,7 @@ enum class UnloadedExtensionReason;
 
 // This is an interface class to encapsulate the dependencies that
 // various classes have on ExtensionService. This allows easy mocking.
-class ExtensionServiceInterface
-    : public base::SupportsWeakPtr<ExtensionServiceInterface> {
+class ExtensionServiceInterface {
  public:
   virtual ~ExtensionServiceInterface() {}
 
@@ -162,6 +161,8 @@ class ExtensionServiceInterface
   // This will trigger an update/reinstall of the extensions saved in the
   // provider's prefs.
   virtual void ReinstallProviderExtensions() = 0;
+
+  virtual base::WeakPtr<ExtensionServiceInterface> AsWeakPtr() = 0;
 };
 
 // Manages installed and running Chromium extensions. An instance is shared
@@ -212,6 +213,7 @@ class ExtensionService : public ExtensionServiceInterface,
   void CheckManagementPolicy() override;
   void CheckForUpdatesSoon() override;
   void ReinstallProviderExtensions() override;
+  base::WeakPtr<ExtensionServiceInterface> AsWeakPtr() override;
 
   // ExternalProvider::VisitorInterface implementation.
   // Exposed for testing.
@@ -411,7 +413,9 @@ class ExtensionService : public ExtensionServiceInterface,
   // Simple Accessors
 
   // Returns a WeakPtr to the ExtensionService.
-  base::WeakPtr<ExtensionService> AsWeakPtr() { return base::AsWeakPtr(this); }
+  base::WeakPtr<ExtensionService> AsExtensionServiceWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
   // Returns profile_ as a BrowserContext.
   content::BrowserContext* GetBrowserContext() const;
@@ -759,6 +763,8 @@ class ExtensionService : public ExtensionServiceInterface,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   AshExtensionKeeplistManager ash_keeplist_manager_;
 #endif
+
+  base::WeakPtrFactory<ExtensionService> weak_ptr_factory_{this};
 
   FRIEND_TEST_ALL_PREFIXES(ExtensionServiceTest,
                            DestroyingProfileClearsExtensions);

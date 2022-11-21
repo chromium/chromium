@@ -235,7 +235,8 @@ void ExtensionDisabledGlobalError::BubbleViewAcceptButtonPressed(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ExtensionService::GrantPermissionsAndEnableExtension,
-                     service_->AsWeakPtr(), base::RetainedRef(extension_)));
+                     service_->AsExtensionServiceWeakPtr(),
+                     base::RetainedRef(extension_)));
 }
 
 void ExtensionDisabledGlobalError::BubbleViewCancelButtonPressed(

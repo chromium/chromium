@@ -139,9 +139,10 @@ void DataDeleter::StartDeleting(Profile* profile,
   if (has_isolated_storage) {
     profile->AsyncObliterateStoragePartition(
         util::GetPartitionDomainForExtension(extension),
-        base::BindOnce(
-            &OnNeedsToGarbageCollectIsolatedStorage,
-            ExtensionSystem::Get(profile)->extension_service()->AsWeakPtr()),
+        base::BindOnce(&OnNeedsToGarbageCollectIsolatedStorage,
+                       ExtensionSystem::Get(profile)
+                           ->extension_service()
+                           ->AsExtensionServiceWeakPtr()),
         subtask_done_callback);
   }
   if (delete_extension_origin) {

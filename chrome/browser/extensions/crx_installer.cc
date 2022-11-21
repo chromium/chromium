@@ -84,7 +84,7 @@ namespace extensions {
 // static
 scoped_refptr<CrxInstaller> CrxInstaller::CreateSilent(
     ExtensionService* frontend) {
-  return new CrxInstaller(frontend->AsWeakPtr(),
+  return new CrxInstaller(frontend->AsExtensionServiceWeakPtr(),
                           std::unique_ptr<ExtensionInstallPrompt>(), nullptr);
 }
 
@@ -92,7 +92,8 @@ scoped_refptr<CrxInstaller> CrxInstaller::CreateSilent(
 scoped_refptr<CrxInstaller> CrxInstaller::Create(
     ExtensionService* frontend,
     std::unique_ptr<ExtensionInstallPrompt> client) {
-  return new CrxInstaller(frontend->AsWeakPtr(), std::move(client), nullptr);
+  return new CrxInstaller(frontend->AsExtensionServiceWeakPtr(),
+                          std::move(client), nullptr);
 }
 
 // static
@@ -100,7 +101,8 @@ scoped_refptr<CrxInstaller> CrxInstaller::Create(
     ExtensionService* service,
     std::unique_ptr<ExtensionInstallPrompt> client,
     const WebstoreInstaller::Approval* approval) {
-  return new CrxInstaller(service->AsWeakPtr(), std::move(client), approval);
+  return new CrxInstaller(service->AsExtensionServiceWeakPtr(),
+                          std::move(client), approval);
 }
 
 CrxInstaller::CrxInstaller(base::WeakPtr<ExtensionService> service_weak,

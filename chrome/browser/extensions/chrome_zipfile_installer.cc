@@ -35,7 +35,7 @@ ZipFileInstaller::DoneCallback MakeRegisterInExtensionServiceCallback(
             zip_file, error, extension_service_weak->profile(),
             /*noisy_on_failure=*/true);
       },
-      service->AsWeakPtr());
+      service->AsExtensionServiceWeakPtr());
 }
 
 }  // namespace extensions

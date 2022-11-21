@@ -100,9 +100,9 @@ void ExtensionStatusesHandler::GetExtensionStatusesAsDictionary(
     return;
   }
 
-  sync_service->GetExtensionStatusMap(
-      base::BindOnce(&ConvertExtensionStatusToDictionary,
-                     extension_service->AsWeakPtr(), std::move(callback)));
+  sync_service->GetExtensionStatusMap(base::BindOnce(
+      &ConvertExtensionStatusToDictionary,
+      extension_service->AsExtensionServiceWeakPtr(), std::move(callback)));
 }
 
 void ExtensionStatusesHandler::HandleGetExtensionStatuses(

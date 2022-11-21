@@ -447,6 +447,10 @@ ExtensionService::corrupted_extension_reinstaller() {
   return &corrupted_extension_reinstaller_;
 }
 
+base::WeakPtr<ExtensionServiceInterface> ExtensionService::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 ExtensionService::~ExtensionService() {
   UpgradeDetector::GetInstance()->RemoveObserver(this);
   // No need to unload extensions here because they are profile-scoped, and the
@@ -727,8 +731,9 @@ void ExtensionService::LoadExtensionForReload(
         UnpackedInstaller::Create(this);
     unpacked_installer->set_be_noisy_on_failure(load_error_behavior ==
                                                 LoadErrorBehavior::kNoisy);
-    unpacked_installer->set_completion_callback(base::BindOnce(
-        &ExtensionService::OnUnpackedReloadFailure, AsWeakPtr()));
+    unpacked_installer->set_completion_callback(
+        base::BindOnce(&ExtensionService::OnUnpackedReloadFailure,
+                       AsExtensionServiceWeakPtr()));
     unpacked_installer->Load(path);
   }
 }
@@ -1927,7 +1932,7 @@ bool ExtensionService::OnExternalExtensionFileFound(
   scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(this));
   installer->AddInstallerCallback(
       base::BindOnce(&ExtensionService::InstallationFromExternalFileFinished,
-                     AsWeakPtr(), info.extension_id));
+                     AsExtensionServiceWeakPtr(), info.extension_id));
   installer->set_install_source(info.crx_location);
   installer->set_expected_id(info.extension_id);
   installer->set_expected_version(info.version,
@@ -1984,7 +1989,8 @@ void ExtensionService::OnExtensionHostRenderProcessGone(
   // access to the Extension and ExtensionHost.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&ExtensionService::TerminateExtension,
-                                AsWeakPtr(), extension_host->extension_id()));
+                                AsExtensionServiceWeakPtr(),
+                                extension_host->extension_id()));
 }
 
 void ExtensionService::OnAppTerminating() {
@@ -2035,7 +2041,8 @@ void ExtensionService::Observe(int type,
             base::BindOnce(
                 base::IgnoreResult(
                     &ExtensionService::FinishDelayedInstallationIfReady),
-                AsWeakPtr(), extension_id, false /*install_immediately*/),
+                AsExtensionServiceWeakPtr(), extension_id,
+                false /*install_immediately*/),
             kUpdateIdleDelay);
       }
     }
@@ -2136,7 +2143,8 @@ void ExtensionService::MaybeFinishDelayedInstallations() {
 void ExtensionService::OnBlocklistUpdated() {
   blocklist_->GetBlocklistedIDs(
       registry_->GenerateInstalledExtensionsSet()->GetIDs(),
-      base::BindOnce(&ExtensionService::ManageBlocklist, AsWeakPtr()));
+      base::BindOnce(&ExtensionService::ManageBlocklist,
+                     AsExtensionServiceWeakPtr()));
 }
 
 void ExtensionService::OnUpgradeRecommended() {
@@ -2281,8 +2289,8 @@ void ExtensionService::OnInstalledExtensionsLoaded() {
 
   blocklist_->IsDatabaseReady(base::BindOnce(
       [](base::WeakPtr<ExtensionService> service, bool is_ready) {
-      DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-      if (!service || !is_ready) {
+        DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+        if (!service || !is_ready) {
           // Either the service was torn down or the database isn't
           // ready yet (and is effectively empty). Either way, no need
           // to update the blocklisted extensions.
@@ -2290,7 +2298,7 @@ void ExtensionService::OnInstalledExtensionsLoaded() {
         }
         service->OnBlocklistUpdated();
       },
-      AsWeakPtr()));
+      AsExtensionServiceWeakPtr()));
 }
 
 void ExtensionService::UninstallMigratedExtensions() {

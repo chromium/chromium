@@ -83,7 +83,7 @@ scoped_refptr<UnpackedInstaller> UnpackedInstaller::Create(
 }
 
 UnpackedInstaller::UnpackedInstaller(ExtensionService* extension_service)
-    : service_weak_(extension_service->AsWeakPtr()),
+    : service_weak_(extension_service->AsExtensionServiceWeakPtr()),
       profile_(extension_service->profile()),
       require_modern_manifest_version_(true),
       be_noisy_on_failure_(true) {

@@ -204,7 +204,7 @@ void ChromeRuntimeAPIDelegate::ReloadExtension(
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&extensions::ExtensionService::TerminateExtension,
-                       service->AsWeakPtr(), extension_id));
+                       service->AsExtensionServiceWeakPtr(), extension_id));
     extensions::WarningSet warnings;
     warnings.insert(
         extensions::Warning::CreateReloadTooFrequentWarning(
@@ -220,7 +220,7 @@ void ChromeRuntimeAPIDelegate::ReloadExtension(
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&extensions::ExtensionService::ReloadExtension,
-                       service->AsWeakPtr(), extension_id));
+                       service->AsExtensionServiceWeakPtr(), extension_id));
   }
 }
 
