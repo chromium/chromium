@@ -433,7 +433,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 // LifecycleRegistry normally enforces it is called on the main thread, but this
                 // class will be preloaded in a background thread. The only method that gets called
                 // in the activity constructor is addObserver(), so just override that.
-                mLifecycleRegistry = new LifecycleRegistry(null) {
+                mLifecycleRegistry = new LifecycleRegistry(this) {
                     @Override
                     public void addObserver(LifecycleObserver observer) {}
                 };
