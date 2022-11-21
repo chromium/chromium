@@ -86,7 +86,7 @@ void ReportUploader::OnRequestFinished(bool status) {
     return;
   }
 
-  switch (client_->status()) {
+  switch (client_->last_dm_status()) {
     case policy::DM_STATUS_REQUEST_FAILED:  // network error
       RecordReportResponseMetrics(ReportResponseMetricsStatus::kNetworkError);
       Retry();

@@ -602,9 +602,9 @@ class POLICY_EXPORT CloudPolicyClient {
   // policies haven't gone through verification, so their contents cannot be
   // trusted. Use CloudPolicyStore::policy() and CloudPolicyStore::policy_map()
   // instead for making policy decisions.
-  const ResponseMap& responses() const {
+  const ResponseMap& last_policy_fetch_responses() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return responses_;
+    return last_policy_fetch_responses_;
   }
 
   // Returns the policy response for the (|policy_type|, |settings_entity_id|)
@@ -613,9 +613,9 @@ class POLICY_EXPORT CloudPolicyClient {
       const std::string& policy_type,
       const std::string& settings_entity_id) const;
 
-  DeviceManagementStatus status() const {
+  DeviceManagementStatus last_dm_status() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return status_;
+    return last_dm_status_;
   }
 
   // Returns the invalidation version that was used for the last FetchPolicy.
@@ -795,9 +795,10 @@ class POLICY_EXPORT CloudPolicyClient {
   raw_ptr<DeviceManagementService::Job> extension_install_report_request_job_ =
       nullptr;
 
-  // The policy responses returned by the last policy fetch operation.
-  ResponseMap responses_;
-  DeviceManagementStatus status_ = DM_STATUS_SUCCESS;
+  // The policy responses returned by the last policy fetch operation. See
+  // `ResponseMap` for information on the format.
+  ResponseMap last_policy_fetch_responses_;
+  DeviceManagementStatus last_dm_status_ = DM_STATUS_SUCCESS;
 
   DeviceDMTokenCallback device_dm_token_callback_;
 

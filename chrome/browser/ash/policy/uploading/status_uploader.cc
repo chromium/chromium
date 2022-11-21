@@ -230,7 +230,7 @@ void StatusUploader::OnUploadCompleted(bool success) {
   if (success) {
     SYSLOG(INFO) << "Status upload successful";
   } else {
-    SYSLOG(ERROR) << "Error uploading status: " << client_->status();
+    SYSLOG(ERROR) << "Error uploading status: " << client_->last_dm_status();
   }
   last_upload_ = base::Time::NowFromSystemTime();
   status_upload_in_progress_ = false;

@@ -422,13 +422,14 @@ void RealtimeReportingClient::OnClientError(policy::CloudPolicyClient* client) {
   base::Value::Dict error_value;
   error_value.Set("error",
                   "An event got an error status and hasn't been reported");
-  error_value.Set("status", client->status());
+  error_value.Set("status", client->last_dm_status());
   safe_browsing::WebUIInfoSingleton::GetInstance()->AddToReportingEvents(
       error_value);
 
   // This is the status set when the server returned 403, which is what the
   // reporting server returns when the customer is not allowed to report events.
-  if (client->status() == policy::DM_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED) {
+  if (client->last_dm_status() ==
+      policy::DM_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED) {
     // This could happen if a second event was fired before the first one
     // returned an error.
     if (!rejected_dm_token_timers_.contains(client->dm_token())) {

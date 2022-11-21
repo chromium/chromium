@@ -631,7 +631,7 @@ TEST_F(CloudPolicyClientTest, SetupRegistrationAndPolicyFetch) {
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             GetPolicyRequest().SerializePartialAsString());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
   CheckPolicyResponse(policy_response);
 }
 
@@ -658,7 +658,7 @@ TEST_F(CloudPolicyClientTest, SetupRegistrationAndPolicyFetchWithOAuthToken) {
   VerifyQueryParameter();
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             GetPolicyRequest().SerializePartialAsString());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
   CheckPolicyResponse(policy_response);
 }
 
@@ -683,7 +683,7 @@ TEST_F(CloudPolicyClientTest, RegistrationWithTokenAndPolicyFetch) {
             GetEnrollmentRequest().SerializePartialAsString());
   EXPECT_TRUE(client_->is_registered());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
   EXPECT_EQ(base::Seconds(0), timeout_);
 
   ExpectAndCaptureJob(policy_response);
@@ -695,7 +695,7 @@ TEST_F(CloudPolicyClientTest, RegistrationWithTokenAndPolicyFetch) {
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             GetPolicyRequest().SerializePartialAsString());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
   CheckPolicyResponse(policy_response);
 }
 
@@ -738,7 +738,7 @@ TEST_F(CloudPolicyClientTest, RegistrationAndPolicyFetch) {
   EXPECT_TRUE(client_->is_registered());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
   EXPECT_EQ(base::Seconds(0), timeout_);
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 
   ExpectAndCaptureJob(policy_response);
   EXPECT_CALL(observer_, OnPolicyFetched);
@@ -749,7 +749,7 @@ TEST_F(CloudPolicyClientTest, RegistrationAndPolicyFetch) {
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             GetPolicyRequest().SerializePartialAsString());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
   CheckPolicyResponse(policy_response);
 }
 
@@ -777,7 +777,7 @@ TEST_F(CloudPolicyClientTest, RegistrationAndPolicyFetchWithOAuthToken) {
   VerifyQueryParameter();
   EXPECT_TRUE(client_->is_registered());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 
   ExpectAndCaptureJob(policy_response);
   EXPECT_CALL(observer_, OnPolicyFetched);
@@ -789,7 +789,7 @@ TEST_F(CloudPolicyClientTest, RegistrationAndPolicyFetchWithOAuthToken) {
   VerifyQueryParameter();
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             GetPolicyRequest().SerializePartialAsString());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
   CheckPolicyResponse(policy_response);
 }
 
@@ -824,7 +824,7 @@ TEST_F(CloudPolicyClientTest, RegistrationWithCertificateAndPolicyFetch) {
             expected_job_request_string);
   EXPECT_TRUE(client_->is_registered());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 
   ExpectAndCaptureJob(policy_response);
   EXPECT_CALL(observer_, OnPolicyFetched);
@@ -835,7 +835,7 @@ TEST_F(CloudPolicyClientTest, RegistrationWithCertificateAndPolicyFetch) {
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             GetPolicyRequest().SerializePartialAsString());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
   CheckPolicyResponse(policy_response);
 }
 
@@ -850,7 +850,7 @@ TEST_F(CloudPolicyClientTest, RegistrationWithCertificateFailToSignRequest) {
       device_attestation, std::string() /* client_id */, kEnrollmentCertificate,
       std::string() /* sub_organization */, std::move(fake_signing_service));
   EXPECT_FALSE(client_->is_registered());
-  EXPECT_EQ(DM_STATUS_CANNOT_SIGN_REQUEST, client_->status());
+  EXPECT_EQ(DM_STATUS_CANNOT_SIGN_REQUEST, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, RegistrationParametersPassedThrough) {
@@ -908,7 +908,7 @@ TEST_F(CloudPolicyClientTest, RegistrationNoToken) {
   VerifyQueryParameter();
   EXPECT_FALSE(client_->is_registered());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
-  EXPECT_EQ(DM_STATUS_RESPONSE_DECODING_ERROR, client_->status());
+  EXPECT_EQ(DM_STATUS_RESPONSE_DECODING_ERROR, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, RegistrationFailure) {
@@ -929,7 +929,7 @@ TEST_F(CloudPolicyClientTest, RegistrationFailure) {
             job_type);
   EXPECT_FALSE(client_->is_registered());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
-  EXPECT_EQ(DM_STATUS_REQUEST_FAILED, client_->status());
+  EXPECT_EQ(DM_STATUS_REQUEST_FAILED, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, RetryRegistration) {
@@ -1004,7 +1004,7 @@ TEST_F(CloudPolicyClientTest, PolicyUpdate) {
     EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
     EXPECT_EQ(job_request_.SerializePartialAsString(),
               policy_request.SerializePartialAsString());
-    EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+    EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
     CheckPolicyResponse(policy_response);
   }
 }
@@ -1200,7 +1200,7 @@ TEST_F(CloudPolicyClientTest, BadPolicyResponse) {
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             policy_request.SerializePartialAsString());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
-  EXPECT_EQ(DM_STATUS_RESPONSE_DECODING_ERROR, client_->status());
+  EXPECT_EQ(DM_STATUS_RESPONSE_DECODING_ERROR, client_->last_dm_status());
 
   policy_response.mutable_policy_response()->add_responses()->set_policy_data(
       CreatePolicyData("fake-policy-data"));
@@ -1215,7 +1215,7 @@ TEST_F(CloudPolicyClientTest, BadPolicyResponse) {
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             policy_request.SerializePartialAsString());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
   CheckPolicyResponse(policy_response);
 }
 
@@ -1233,7 +1233,7 @@ TEST_F(CloudPolicyClientTest, PolicyRequestFailure) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type);
-  EXPECT_EQ(DM_STATUS_REQUEST_FAILED, client_->status());
+  EXPECT_EQ(DM_STATUS_REQUEST_FAILED, client_->last_dm_status());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
 }
 
@@ -1250,7 +1250,7 @@ TEST_F(CloudPolicyClientTest, Unregister) {
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             GetUnregistrationRequest().SerializePartialAsString());
   EXPECT_FALSE(client_->is_registered());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, UnregisterEmpty) {
@@ -1269,7 +1269,7 @@ TEST_F(CloudPolicyClientTest, UnregisterEmpty) {
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_UNREGISTRATION,
             job_type);
   EXPECT_FALSE(client_->is_registered());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, UnregisterFailure) {
@@ -1287,7 +1287,7 @@ TEST_F(CloudPolicyClientTest, UnregisterFailure) {
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_UNREGISTRATION,
             job_type);
   EXPECT_TRUE(client_->is_registered());
-  EXPECT_EQ(DM_STATUS_REQUEST_FAILED, client_->status());
+  EXPECT_EQ(DM_STATUS_REQUEST_FAILED, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, PolicyFetchWithExtensionPolicy) {
@@ -1376,7 +1376,7 @@ TEST_F(CloudPolicyClientTest, UploadEnterpriseMachineCertificate) {
             job_type_);
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             GetUploadMachineCertificateRequest().SerializePartialAsString());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, UploadEnterpriseEnrollmentCertificate) {
@@ -1394,7 +1394,7 @@ TEST_F(CloudPolicyClientTest, UploadEnterpriseEnrollmentCertificate) {
             job_type_);
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             GetUploadEnrollmentCertificateRequest().SerializePartialAsString());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, UploadEnterpriseMachineCertificateEmpty) {
@@ -1415,7 +1415,7 @@ TEST_F(CloudPolicyClientTest, UploadEnterpriseMachineCertificateEmpty) {
             job_type_);
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             GetUploadMachineCertificateRequest().SerializePartialAsString());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, UploadEnterpriseEnrollmentCertificateEmpty) {
@@ -1436,7 +1436,7 @@ TEST_F(CloudPolicyClientTest, UploadEnterpriseEnrollmentCertificateEmpty) {
             job_type_);
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             GetUploadEnrollmentCertificateRequest().SerializePartialAsString());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, UploadCertificateFailure) {
@@ -1458,7 +1458,7 @@ TEST_F(CloudPolicyClientTest, UploadCertificateFailure) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_UPLOAD_CERTIFICATE,
             job_type);
-  EXPECT_EQ(DM_STATUS_REQUEST_FAILED, client_->status());
+  EXPECT_EQ(DM_STATUS_REQUEST_FAILED, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, UploadEnterpriseEnrollmentId) {
@@ -1479,7 +1479,7 @@ TEST_F(CloudPolicyClientTest, UploadEnterpriseEnrollmentId) {
             job_type_);
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             upload_enrollment_id_request.SerializePartialAsString());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, UploadStatus) {
@@ -1501,7 +1501,7 @@ TEST_F(CloudPolicyClientTest, UploadStatus) {
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             GetUploadStatusRequest().SerializePartialAsString());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, UploadStatusWithOAuthToken) {
@@ -1527,7 +1527,7 @@ TEST_F(CloudPolicyClientTest, UploadStatusWithOAuthToken) {
   VerifyQueryParameter();
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             GetUploadStatusRequest().SerializePartialAsString());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 
   // Tests that previous OAuth token is no longer sent in status upload after
   // its value was cleared.
@@ -1549,7 +1549,7 @@ TEST_F(CloudPolicyClientTest, UploadStatusWithOAuthToken) {
 #endif
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             GetUploadStatusRequest().SerializePartialAsString());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, UploadStatusWhilePolicyFetchActive) {
@@ -1586,7 +1586,7 @@ TEST_F(CloudPolicyClientTest, UploadStatusWhilePolicyFetchActive) {
             GetPolicyRequest().SerializePartialAsString());
   CheckPolicyResponse(policy_response);
 
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, UploadPolicyValidationReport) {
@@ -1625,7 +1625,7 @@ TEST_F(CloudPolicyClientTest, UploadPolicyValidationReport) {
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             upload_policy_validation_report_request.SerializePartialAsString());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, UploadChromeDesktopReport) {
@@ -1650,7 +1650,7 @@ TEST_F(CloudPolicyClientTest, UploadChromeDesktopReport) {
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             chrome_desktop_report_request.SerializePartialAsString());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, UploadChromeOsUserReport) {
@@ -1675,7 +1675,7 @@ TEST_F(CloudPolicyClientTest, UploadChromeOsUserReport) {
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             chrome_os_user_report_request.SerializePartialAsString());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, UploadChromeProfileReport) {
@@ -1703,7 +1703,7 @@ TEST_F(CloudPolicyClientTest, UploadChromeProfileReport) {
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             device_managment_request.SerializePartialAsString());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 }
 
 // A helper class to test all em::DeviceRegisterRequest::PsmExecutionResult enum
@@ -1752,7 +1752,7 @@ TEST_P(CloudPolicyClientRegisterWithPsmParamsTest,
             expected_job_request_string);
   EXPECT_TRUE(client_->is_registered());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1795,7 +1795,7 @@ TEST_P(CloudPolicyClientUploadSecurityEventTest, Test) {
       DeviceManagementService::JobConfiguration::TYPE_UPLOAD_REAL_TIME_REPORT,
       job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 
   absl::optional<base::Value> payload = base::JSONReader::Read(job_payload_);
   ASSERT_TRUE(payload);
@@ -1951,7 +1951,7 @@ TEST_F(CloudPolicyClientTest, UploadEncryptedReport) {
       job_type_,
       DeviceManagementService::JobConfiguration::TYPE_UPLOAD_ENCRYPTED_REPORT);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
-  EXPECT_EQ(client_->status(), DM_STATUS_SUCCESS);
+  EXPECT_EQ(client_->last_dm_status(), DM_STATUS_SUCCESS);
 }
 
 TEST_F(CloudPolicyClientTest, UploadAppInstallReport) {
@@ -1970,7 +1970,7 @@ TEST_F(CloudPolicyClientTest, UploadAppInstallReport) {
       DeviceManagementService::JobConfiguration::TYPE_UPLOAD_REAL_TIME_REPORT,
       job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, CancelUploadAppInstallReport) {
@@ -2032,7 +2032,7 @@ TEST_F(CloudPolicyClientTest, UploadAppInstallReportSupersedesPending) {
       DeviceManagementService::JobConfiguration::TYPE_UPLOAD_REAL_TIME_REPORT,
       job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
   EXPECT_EQ(0, client_->GetActiveRequestCountForTest());
 }
 
@@ -2052,7 +2052,7 @@ TEST_F(CloudPolicyClientTest, UploadExtensionInstallReport) {
       DeviceManagementService::JobConfiguration::TYPE_UPLOAD_REAL_TIME_REPORT,
       job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, CancelUploadExtensionInstallReport) {
@@ -2114,7 +2114,7 @@ TEST_F(CloudPolicyClientTest, UploadExtensionInstallReportSupersedesPending) {
       DeviceManagementService::JobConfiguration::TYPE_UPLOAD_REAL_TIME_REPORT,
       job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
   EXPECT_EQ(0, client_->GetActiveRequestCountForTest());
 }
 
@@ -2159,7 +2159,7 @@ TEST_F(CloudPolicyClientTest, MultipleActiveRequests) {
             upload_type);
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_UPLOAD_CERTIFICATE,
             cert_type);
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 
   EXPECT_EQ(0, client_->GetActiveRequestCountForTest());
 }
@@ -2187,7 +2187,7 @@ TEST_F(CloudPolicyClientTest, UploadStatusFailure) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_UPLOAD_STATUS,
             job_type);
-  EXPECT_EQ(DM_STATUS_REQUEST_FAILED, client_->status());
+  EXPECT_EQ(DM_STATUS_REQUEST_FAILED, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, RequestCancelOnUnregister) {
@@ -2354,7 +2354,7 @@ TEST_F(CloudPolicyClientTest, FetchSecureRemoteCommands) {
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             remote_command_request.SerializePartialAsString());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, RequestDeviceAttributeUpdatePermissionWithOAuthToken) {
@@ -2386,7 +2386,7 @@ TEST_F(CloudPolicyClientTest, RequestDeviceAttributeUpdatePermissionWithOAuthTok
   VerifyQueryParameter();
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             attribute_update_permission_request.SerializePartialAsString());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, RequestDeviceAttributeUpdatePermissionWithDMToken) {
@@ -2417,7 +2417,7 @@ TEST_F(CloudPolicyClientTest, RequestDeviceAttributeUpdatePermissionWithDMToken)
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             attribute_update_permission_request.SerializePartialAsString());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, RequestDeviceAttributeUpdatePermissionMissingResponse) {
@@ -2445,7 +2445,7 @@ TEST_F(CloudPolicyClientTest, RequestDeviceAttributeUpdatePermissionMissingRespo
   VerifyQueryParameter();
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             attribute_update_permission_request.SerializePartialAsString());
-  EXPECT_EQ(DM_STATUS_RESPONSE_DECODING_ERROR, client_->status());
+  EXPECT_EQ(DM_STATUS_RESPONSE_DECODING_ERROR, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, RequestDeviceAttributeUpdate) {
@@ -2477,7 +2477,7 @@ TEST_F(CloudPolicyClientTest, RequestDeviceAttributeUpdate) {
   EXPECT_EQ(auth_data_, DMAuth::NoAuth());
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             attribute_update_request.SerializePartialAsString());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, RequestGcmIdUpdate) {
@@ -2516,7 +2516,7 @@ TEST_F(CloudPolicyClientTest, PolicyReregistration) {
   EXPECT_CALL(observer_, OnClientError);
   client_->FetchPolicy();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(DM_STATUS_SERVICE_DEVICE_NOT_FOUND, client_->status());
+  EXPECT_EQ(DM_STATUS_SERVICE_DEVICE_NOT_FOUND, client_->last_dm_status());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
   EXPECT_FALSE(client_->is_registered());
   EXPECT_TRUE(client_->requires_reregistration());
@@ -2544,7 +2544,7 @@ TEST_F(CloudPolicyClientTest, PolicyReregistration) {
   EXPECT_TRUE(client_->is_registered());
   EXPECT_FALSE(client_->requires_reregistration());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, PolicyReregistrationFailsWithNonMatchingDMToken) {
@@ -2562,7 +2562,7 @@ TEST_F(CloudPolicyClientTest, PolicyReregistrationFailsWithNonMatchingDMToken) {
   EXPECT_CALL(observer_, OnClientError);
   client_->FetchPolicy();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(DM_STATUS_SERVICE_DEVICE_NOT_FOUND, client_->status());
+  EXPECT_EQ(DM_STATUS_SERVICE_DEVICE_NOT_FOUND, client_->last_dm_status());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
   EXPECT_FALSE(client_->is_registered());
   EXPECT_TRUE(client_->requires_reregistration());
@@ -2587,7 +2587,8 @@ TEST_F(CloudPolicyClientTest, PolicyReregistrationFailsWithNonMatchingDMToken) {
   EXPECT_FALSE(client_->is_registered());
   EXPECT_TRUE(client_->requires_reregistration());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
-  EXPECT_EQ(DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID, client_->status());
+  EXPECT_EQ(DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID,
+            client_->last_dm_status());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -2609,7 +2610,7 @@ TEST_F(CloudPolicyClientTest, PolicyReregistrationAfterDMTokenDeletion) {
   EXPECT_CALL(observer_, OnClientError);
   client_->FetchPolicy();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(DM_STATUS_SERVICE_DEVICE_NEEDS_RESET, client_->status());
+  EXPECT_EQ(DM_STATUS_SERVICE_DEVICE_NEEDS_RESET, client_->last_dm_status());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
   EXPECT_FALSE(client_->is_registered());
   EXPECT_TRUE(client_->requires_reregistration());
@@ -2637,7 +2638,7 @@ TEST_F(CloudPolicyClientTest, PolicyReregistrationAfterDMTokenDeletion) {
   EXPECT_TRUE(client_->is_registered());
   EXPECT_FALSE(client_->requires_reregistration());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, PolicyFetchDMTokenDeletion_Disabled) {
@@ -2665,7 +2666,7 @@ TEST_F(CloudPolicyClientTest, PolicyFetchDMTokenDeletion_Disabled) {
 
   // Because the feature is disabled by default, the presence of the token
   // deletion error detail still results in the "not found" DM status.
-  EXPECT_EQ(DM_STATUS_SERVICE_DEVICE_NOT_FOUND, client_->status());
+  EXPECT_EQ(DM_STATUS_SERVICE_DEVICE_NOT_FOUND, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest, PolicyFetchDMTokenDeletion_Forced) {
@@ -2691,7 +2692,7 @@ TEST_F(CloudPolicyClientTest, PolicyFetchDMTokenDeletion_Forced) {
 
   // The final DM status signals for DMToken deletion even though the
   // corresponding error detail was never added to the response.
-  EXPECT_EQ(DM_STATUS_SERVICE_DEVICE_NEEDS_RESET, client_->status());
+  EXPECT_EQ(DM_STATUS_SERVICE_DEVICE_NEEDS_RESET, client_->last_dm_status());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -2721,7 +2722,7 @@ TEST_F(CloudPolicyClientTest, RequestFetchRobotAuthCodes) {
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(robot_auth_code_fetch_request.SerializePartialAsString(),
             job_request_.SerializePartialAsString());
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 }
 
 TEST_F(CloudPolicyClientTest,

@@ -457,7 +457,7 @@ void ComponentCloudPolicyService::UpdateFromSuperiorStore() {
 void ComponentCloudPolicyService::UpdateFromClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (core_->client()->responses().empty()) {
+  if (core_->client()->last_policy_fetch_responses().empty()) {
     // The client's responses will be empty if it hasn't fetched policy from the
     // DMServer yet. Make sure we don't purge the caches in this case.
     return;
@@ -467,7 +467,7 @@ void ComponentCloudPolicyService::UpdateFromClient() {
 
   std::unique_ptr<ScopedResponseMap> valid_responses =
       std::make_unique<ScopedResponseMap>();
-  for (const auto& response : core_->client()->responses()) {
+  for (const auto& response : core_->client()->last_policy_fetch_responses()) {
     PolicyNamespace ns;
     if (!ToPolicyNamespace(response.first, &ns)) {
       DVLOG(1) << "Ignored policy with type = " << response.first.first;

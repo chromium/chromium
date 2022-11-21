@@ -236,7 +236,7 @@ class PolicyFetchCoreObserver : public CloudPolicyCore::Observer {
     // `DM_STATUS_SERVICE_DEVICE_NEEDS_RESET` for this to happen.
     EXPECT_THAT((std::array{DM_STATUS_SERVICE_DEVICE_NOT_FOUND,
                             DM_STATUS_SERVICE_DEVICE_NEEDS_RESET}),
-                testing::Contains(core->client()->status()));
+                testing::Contains(core->client()->last_dm_status()));
     std::move(quit_closure_).Run();
   }
 

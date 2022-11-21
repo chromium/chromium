@@ -152,7 +152,7 @@ void DeviceAccountInitializer::OnClientError(CloudPolicyClient* client) {
     return;
   DCHECK_EQ(client_, client);
   handling_request_ = false;
-  delegate_->OnDeviceAccountClientError(client->status());
+  delegate_->OnDeviceAccountClientError(client->last_dm_status());
 }
 
 }  // namespace policy

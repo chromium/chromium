@@ -114,7 +114,7 @@ base::Value::Dict PolicyStatusProvider::GetStatusFromCore(
       refresh_scheduler && refresh_scheduler->invalidations_available();
 
   bool no_error = store->status() == CloudPolicyStore::STATUS_OK && client &&
-                  client->status() == DM_STATUS_SUCCESS;
+                  client->last_dm_status() == DM_STATUS_SUCCESS;
   dict.Set("error", !no_error);
   dict.Set("policiesPushAvailable", is_push_available);
   dict.Set("status", status);
@@ -181,8 +181,8 @@ std::u16string PolicyStatusProvider::GetPolicyStatusFromStore(
     const CloudPolicyStore* store,
     const CloudPolicyClient* client) {
   if (store->status() == CloudPolicyStore::STATUS_OK) {
-    if (client && client->status() != DM_STATUS_SUCCESS)
-      return FormatDeviceManagementStatus(client->status());
+    if (client && client->last_dm_status() != DM_STATUS_SUCCESS)
+      return FormatDeviceManagementStatus(client->last_dm_status());
     else if (!store->is_managed())
       return FormatAssociationState(store->policy());
   }

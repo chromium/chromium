@@ -103,7 +103,8 @@ void UserPolicySigninServiceBase::OnClientError(CloudPolicyClient* client) {
   if (client->is_registered()) {
     // If the client is already registered, it means this error must have
     // come from a policy fetch.
-    if (client->status() == DM_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED) {
+    if (client->last_dm_status() ==
+        DM_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED) {
       // OK, policy fetch failed with MANAGEMENT_NOT_SUPPORTED - this is our
       // trigger to revert to "unmanaged" mode (we will check for management
       // being re-enabled on the next restart and/or login).
@@ -117,7 +118,7 @@ void UserPolicySigninServiceBase::OnClientError(CloudPolicyClient* client) {
               &UserPolicySigninServiceBase::ShutdownUserCloudPolicyManager,
               weak_factory_.GetWeakPtr()));
     } else {
-      DVLOG(1) << "Error fetching policy: " << client->status();
+      DVLOG(1) << "Error fetching policy: " << client->last_dm_status();
     }
   }
 }

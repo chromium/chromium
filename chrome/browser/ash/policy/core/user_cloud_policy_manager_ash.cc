@@ -460,9 +460,9 @@ void UserCloudPolicyManagerAsh::OnClientError(
   DCHECK_EQ(client(), cloud_policy_client);
   if (waiting_for_policy_fetch_) {
     base::UmaHistogramSparse(kUMAInitialFetchClientError,
-                             cloud_policy_client->status());
+                             cloud_policy_client->last_dm_status());
   }
-  switch (client()->status()) {
+  switch (client()->last_dm_status()) {
     case DM_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED:
       // If management is not supported for this user, then a registration
       // error is to be expected - treat as a policy fetch success. Also
@@ -475,9 +475,9 @@ void UserCloudPolicyManagerAsh::OnClientError(
       break;
     default:
       // Unexpected error fetching policy.
-      CancelWaitForPolicyFetch(false,
-                               "cloud policy client status: " +
-                                   base::NumberToString(client()->status()));
+      CancelWaitForPolicyFetch(
+          false, "cloud policy client status: " +
+                     base::NumberToString(client()->last_dm_status()));
       break;
   }
   // If we are in re-registration state and re-registration fails, we mark the
@@ -681,7 +681,7 @@ void UserCloudPolicyManagerAsh::OnInitialPolicyFetchComplete(bool success) {
       success,
       "policy fetch complete"
       ", policy client status: " +
-          base::NumberToString(client()->status()) +
+          base::NumberToString(client()->last_dm_status()) +
           ", store status: " + base::NumberToString(store()->status()));
 }
 

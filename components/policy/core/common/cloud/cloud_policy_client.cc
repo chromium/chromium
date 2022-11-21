@@ -245,7 +245,7 @@ void CloudPolicyClient::SetupRegistration(
   app_install_report_request_job_ = nullptr;
   extension_install_report_request_job_ = nullptr;
   unique_request_job_.reset();
-  responses_.clear();
+  last_policy_fetch_responses_.clear();
   if (device_dm_token_callback_) {
     device_dm_token_ = device_dm_token_callback_.Run(user_affiliation_ids);
   }
@@ -932,8 +932,8 @@ void CloudPolicyClient::UploadEuiccInfo(
 
 void CloudPolicyClient::OnEuiccInfoUploaded(StatusCallback callback,
                                             DMServerJobResult result) {
-  status_ = result.dm_status;
-  if (status_ != DM_STATUS_SUCCESS)
+  last_dm_status_ = result.dm_status;
+  if (last_dm_status_ != DM_STATUS_SUCCESS)
     NotifyClientError();
 
   std::move(callback).Run(result.dm_status == DM_STATUS_SUCCESS);
@@ -1098,8 +1098,9 @@ const em::PolicyFetchResponse* CloudPolicyClient::GetPolicyFor(
     const std::string& settings_entity_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto it = responses_.find(std::make_pair(policy_type, settings_entity_id));
-  return it == responses_.end() ? nullptr : &it->second;
+  auto it = last_policy_fetch_responses_.find(
+      std::make_pair(policy_type, settings_entity_id));
+  return it == last_policy_fetch_responses_.end() ? nullptr : &it->second;
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
@@ -1177,7 +1178,7 @@ void CloudPolicyClient::OnRegisterCompleted(DMServerJobResult result) {
     }
   }
 
-  status_ = result.dm_status;
+  last_dm_status_ = result.dm_status;
   if (result.dm_status == DM_STATUS_SUCCESS) {
     dm_token_ = result.response.register_response().device_management_token();
     reregistration_dm_token_.clear();
@@ -1227,7 +1228,7 @@ void CloudPolicyClient::OnFetchRobotAuthCodesCompleted(
     LOG(WARNING) << "Invalid service api access response.";
     result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
   }
-  status_ = result.dm_status;
+  last_dm_status_ = result.dm_status;
   if (result.dm_status == DM_STATUS_SUCCESS) {
     DVLOG(1) << "Device robot account auth code fetch complete - code = "
              << result.response.service_api_access_response().auth_code();
@@ -1249,17 +1250,17 @@ void CloudPolicyClient::OnPolicyFetchCompleted(DMServerJobResult result) {
     }
   }
 
-  status_ = result.dm_status;
+  last_dm_status_ = result.dm_status;
   if (result.dm_status == DM_STATUS_SUCCESS) {
     const em::DevicePolicyResponse& policy_response =
         result.response.policy_response();
     // Log histogram on first device policy fetch response to check the state
     // keys.
-    if (responses_.empty()) {
+    if (last_policy_fetch_responses_.empty()) {
       base::UmaHistogramBoolean("Ash.StateKeysPresent",
                                 !state_keys_to_upload_.empty());
     }
-    responses_.clear();
+    last_policy_fetch_responses_.clear();
     for (int i = 0; i < policy_response.responses_size(); ++i) {
       const em::PolicyFetchResponse& fetch_response =
           policy_response.responses(i);
@@ -1274,12 +1275,12 @@ void CloudPolicyClient::OnPolicyFetchCompleted(DMServerJobResult result) {
       if (policy_data.has_settings_entity_id())
         entity_id = policy_data.settings_entity_id();
       std::pair<std::string, std::string> key(type, entity_id);
-      if (base::Contains(responses_, key)) {
+      if (base::Contains(last_policy_fetch_responses_, key)) {
         LOG(WARNING) << "Duplicate PolicyFetchResponse for type: " << type
                      << ", entity: " << entity_id << ", ignoring";
         continue;
       }
-      responses_[key] = fetch_response;
+      last_policy_fetch_responses_[key] = fetch_response;
     }
     state_keys_to_upload_.clear();
     NotifyPolicyFetched();
@@ -1288,7 +1289,7 @@ void CloudPolicyClient::OnPolicyFetchCompleted(DMServerJobResult result) {
   } else {
     NotifyClientError();
 
-    VLOG(2) << "Policy fetch error: " << status_;
+    VLOG(2) << "Policy fetch error: " << last_dm_status_;
 
     if (result.dm_status == DM_STATUS_SERVICE_DEVICE_NOT_FOUND ||
         result.dm_status == DM_STATUS_SERVICE_DEVICE_NEEDS_RESET) {
@@ -1307,7 +1308,7 @@ void CloudPolicyClient::OnUnregisterCompleted(DMServerJobResult result) {
     LOG(WARNING) << "Empty unregistration response.";
   }
 
-  status_ = result.dm_status;
+  last_dm_status_ = result.dm_status;
   if (result.dm_status == DM_STATUS_SUCCESS) {
     dm_token_.clear();
     // Cancel all outstanding jobs.
@@ -1325,7 +1326,7 @@ void CloudPolicyClient::OnCertificateUploadCompleted(
     CloudPolicyClient::StatusCallback callback,
     DMServerJobResult result) {
   bool success = true;
-  status_ = result.dm_status;
+  last_dm_status_ = result.dm_status;
   if (result.dm_status != DM_STATUS_SUCCESS) {
     success = false;
     NotifyClientError();
@@ -1348,7 +1349,7 @@ void CloudPolicyClient::OnDeviceAttributeUpdatePermissionCompleted(
     result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
   }
 
-  status_ = result.dm_status;
+  last_dm_status_ = result.dm_status;
   if (result.dm_status == DM_STATUS_SUCCESS &&
       result.response.device_attribute_update_permission_response()
           .has_result() &&
@@ -1372,7 +1373,7 @@ void CloudPolicyClient::OnDeviceAttributeUpdated(
     result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
   }
 
-  status_ = result.dm_status;
+  last_dm_status_ = result.dm_status;
   if (result.dm_status == DM_STATUS_SUCCESS &&
       result.response.device_attribute_update_response().has_result() &&
       result.response.device_attribute_update_response().result() ==
@@ -1403,7 +1404,7 @@ void CloudPolicyClient::RemoveJob(const DeviceManagementService::Job* job) {
 
 void CloudPolicyClient::OnReportUploadCompleted(StatusCallback callback,
                                                 DMServerJobResult result) {
-  status_ = result.dm_status;
+  last_dm_status_ = result.dm_status;
   if (result.dm_status != DM_STATUS_SUCCESS)
     NotifyClientError();
 
@@ -1417,7 +1418,7 @@ void CloudPolicyClient::OnRealtimeReportUploadCompleted(
     DeviceManagementStatus status,
     int reponse_code,
     absl::optional<base::Value::Dict> response) {
-  status_ = status;
+  last_dm_status_ = status;
   if (status != DM_STATUS_SUCCESS)
     NotifyClientError();
 
@@ -1439,7 +1440,7 @@ void CloudPolicyClient::OnEncryptedReportUploadCompleted(
     std::move(callback).Run(absl::nullopt);
     return;
   }
-  status_ = status;
+  last_dm_status_ = status;
   if (status != DM_STATUS_SUCCESS) {
     NotifyClientError();
   }
@@ -1458,8 +1459,8 @@ void CloudPolicyClient::OnRemoteCommandsFetched(RemoteCommandCallback callback,
 
 void CloudPolicyClient::OnGcmIdUpdated(StatusCallback callback,
                                        DMServerJobResult result) {
-  status_ = result.dm_status;
-  if (status_ != DM_STATUS_SUCCESS)
+  last_dm_status_ = result.dm_status;
+  if (last_dm_status_ != DM_STATUS_SUCCESS)
     NotifyClientError();
 
   std::move(callback).Run(result.dm_status == DM_STATUS_SUCCESS);
@@ -1510,7 +1511,7 @@ void CloudPolicyClient::OnClientCertProvisioningStartCsrResponse(
   base::ScopedClosureRunner job_cleaner(base::BindOnce(
       &CloudPolicyClient::RemoveJob, base::Unretained(this), result.job));
 
-  status_ = result.dm_status;
+  last_dm_status_ = result.dm_status;
   absl::optional<CertProvisioningResponseErrorType> response_error;
   absl::optional<int64_t> try_later;
 
@@ -1579,7 +1580,7 @@ void CloudPolicyClient::OnClientCertProvisioningFinishCsrResponse(
   base::ScopedClosureRunner job_cleaner(base::BindOnce(
       &CloudPolicyClient::RemoveJob, base::Unretained(this), result.job));
 
-  status_ = result.dm_status;
+  last_dm_status_ = result.dm_status;
   absl::optional<CertProvisioningResponseErrorType> response_error;
   absl::optional<int64_t> try_later;
 
@@ -1609,7 +1610,7 @@ void CloudPolicyClient::OnClientCertProvisioningDownloadCertResponse(
   base::ScopedClosureRunner job_cleaner(base::BindOnce(
       &CloudPolicyClient::RemoveJob, base::Unretained(this), result.job));
 
-  status_ = result.dm_status;
+  last_dm_status_ = result.dm_status;
   absl::optional<CertProvisioningResponseErrorType> response_error;
   absl::optional<int64_t> try_later;
 

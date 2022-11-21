@@ -309,9 +309,9 @@ void ActiveDirectoryDeviceStateUploader::OnPolicyFetched(
     CloudPolicyClient* client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  VLOG(1) << "Cloud policy fetched. Status = " << client->status();
+  VLOG(1) << "Cloud policy fetched. Status = " << client->last_dm_status();
 
-  bool success = (client->status() == DM_STATUS_SUCCESS);
+  bool success = (client->last_dm_status() == DM_STATUS_SUCCESS);
   if (!success) {
     LOG(ERROR) << "Failed to fetch policy to upload state keys";
   }
@@ -323,7 +323,8 @@ void ActiveDirectoryDeviceStateUploader::OnClientError(
     CloudPolicyClient* client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  LOG(ERROR) << "Failed to upload state keys. Status = " << client->status();
+  LOG(ERROR) << "Failed to upload state keys. Status = "
+             << client->last_dm_status();
 
   MaybeRunStatusCallback(std::move(state_keys_callback_for_testing_),
                          /*success=*/false);

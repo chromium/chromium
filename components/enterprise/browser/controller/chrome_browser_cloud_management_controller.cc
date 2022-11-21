@@ -335,9 +335,9 @@ void ChromeBrowserCloudManagementController::OnClientError(
   // to re-enroll automatically. DM_STATUS_SERVICE_DEVICE_NEEDS_RESET signals
   // that the browser has been unenrolled via DMToken deletion, and that it will
   // automatically re-enroll if a valid enrollment token has been set.
-  if (client->status() == DM_STATUS_SERVICE_DEVICE_NOT_FOUND ||
-      client->status() == DM_STATUS_SERVICE_DEVICE_NEEDS_RESET) {
-    UnenrollBrowser(/*delete_dm_token=*/client->status() ==
+  if (client->last_dm_status() == DM_STATUS_SERVICE_DEVICE_NOT_FOUND ||
+      client->last_dm_status() == DM_STATUS_SERVICE_DEVICE_NEEDS_RESET) {
+    UnenrollBrowser(/*delete_dm_token=*/client->last_dm_status() ==
                     DM_STATUS_SERVICE_DEVICE_NEEDS_RESET);
   }
 }

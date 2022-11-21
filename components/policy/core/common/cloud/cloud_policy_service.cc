@@ -81,7 +81,7 @@ void CloudPolicyService::Unregister(UnregisterCallback callback) {
 void CloudPolicyService::OnPolicyFetched(CloudPolicyClient* client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (client_->status() != DM_STATUS_SUCCESS) {
+  if (client_->last_dm_status() != DM_STATUS_SUCCESS) {
     RefreshCompleted(false);
     return;
   }
