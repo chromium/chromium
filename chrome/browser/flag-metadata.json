@@ -2348,7 +2348,7 @@
       "jeffcchen",
       "chromeos-gfx-video@google.com"
     ],
-    "expiry_milestone": 110
+    "expiry_milestone": 130
   },
   {
     "name": "enable-gpu-rasterization",
