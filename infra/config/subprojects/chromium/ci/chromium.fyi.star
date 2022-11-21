@@ -334,36 +334,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "linux-lacros-tester-rel-reviver",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium_no_telemetry_dependencies",
-            apply_configs = [
-                "chromeos",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_arch = builder_config.target_arch.INTEL,
-            target_bits = 64,
-        ),
-        build_gs_bucket = "chromium-chromiumos-archive",
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "default",
-        short_name = "rev",
-    ),
-    os = os.LINUX_DEFAULT,
-    # To avoid peak hours, we run it from 8PM TO 4AM PST. It is
-    # 3 AM to 11 AM UTC.
-    schedule = "0 3,5,7,9 * * *",
-)
-
-ci.builder(
     name = "linux-lacros-version-skew-fyi",
     console_view_entry = consoles.console_view_entry(
         category = "default",

@@ -4140,14 +4140,6 @@
       },
     },
 
-    'linux_lacros_reviver_tests': {
-      'browser_tests': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
-    },
-
     'linux_lacros_specific_gtests': {
       'lacros_chrome_unittests': {},
       'ozone_unittests': {},

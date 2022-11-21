@@ -91871,37 +91871,6 @@
       }
     ]
   },
-  "linux-lacros-tester-rel-reviver": {
-    "additional_compile_targets": [
-      "chrome",
-      "chrome_sandbox",
-      "symupload"
-    ],
-    "gtest_tests": [
-      {
-        "args": [
-          "--gtest_also_run_disabled_tests"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
-        },
-        "test": "browser_tests",
-        "test_id_prefix": "ninja://chrome/test:browser_tests/"
-      }
-    ]
-  },
   "linux-lacros-version-skew-fyi": {
     "additional_compile_targets": [
       "chrome"

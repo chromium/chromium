@@ -434,7 +434,6 @@
       'linux-lacros-dbg-fyi': 'lacros_on_linux_debug_bot_reclient',
       'linux-lacros-dbg-tests-fyi': 'lacros_on_linux_debug_bot',
       'linux-lacros-tester-fyi-rel': 'lacros_on_linux_release_bot',
-      'linux-lacros-tester-rel-reviver': 'lacros_on_linux_release_bot_reclient',
       'linux-lacros-version-skew-fyi': 'lacros_on_linux_release_not_build_ash_bot_reclient',
       'linux-perfetto-rel': 'perfetto_release_bot_reclient',
       'linux-rel-no-external-ip': 'gpu_tests_release_bot_do_typecheck_reclient',
@@ -1070,7 +1069,6 @@
       'linux-lacros-dbg': 'lacros_on_linux_debug_bot',
       'linux-lacros-rel': 'lacros_on_linux_release_trybot_reclient',
       'linux-lacros-rel-code-coverage': 'lacros_on_linux_release_trybot_coverage',
-      'linux-lacros-tester-rel-reviver': 'lacros_on_linux_release_trybot',
     },
 
     'tryserver.chromium.codesearch': {
