@@ -191,7 +191,7 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
         config_->GetLang(), metadata_->GetInstallDate(app_id), install_source,
         crx_component->install_location, crx_component->fingerprint,
         crx_component->installer_attributes, metadata_->GetCohort(app_id),
-        metadata_->GetCohortName(app_id), metadata_->GetCohortHint(app_id),
+        metadata_->GetCohortHint(app_id), metadata_->GetCohortName(app_id),
         crx_component->channel, crx_component->disabled_reasons,
         MakeProtocolUpdateCheck(!crx_component->updates_enabled,
                                 crx_component->target_version_prefix,

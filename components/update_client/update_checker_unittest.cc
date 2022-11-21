@@ -242,6 +242,10 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
                                   {"updatepolicy", "1"}};
   }));
 
+  metadata_->SetCohort(kUpdateItemId, "id3");
+  metadata_->SetCohortHint(kUpdateItemId, "hint2");
+  metadata_->SetCohortName(kUpdateItemId, "name1");
+
   update_checker_ = UpdateChecker::Create(config_, metadata_.get());
 
   update_context_->components[kUpdateItemId] =
@@ -320,6 +324,9 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   EXPECT_EQ("TEST", *app->FindString("brand"));
   ASSERT_TRUE(app->FindString("lang"));
   EXPECT_EQ("fake_lang", *app->FindString("lang"));
+  EXPECT_EQ("name1", *app->FindString("cohortname"));
+  EXPECT_EQ("hint2", *app->FindString("cohorthint"));
+  EXPECT_EQ("id3", *app->FindString("cohort"));
 
   ASSERT_TRUE(app->FindList("data"));
   ASSERT_FALSE(app->FindList("data")->empty());
