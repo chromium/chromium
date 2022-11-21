@@ -371,8 +371,7 @@ static void AdjustStyleForMarker(ComputedStyle& style,
   }
 }
 
-static void AdjustStyleForHTMLElement(ComputedStyle& style,
-                                      ComputedStyleBuilder& builder,
+static void AdjustStyleForHTMLElement(ComputedStyleBuilder& builder,
                                       HTMLElement& element) {
   // <div> and <span> are the most common elements on the web, we skip all the
   // work for them.
@@ -380,7 +379,7 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
     return;
 
   if (auto* image = DynamicTo<HTMLImageElement>(element)) {
-    if (image->IsCollapsed() || style.Display() == EDisplay::kContents)
+    if (image->IsCollapsed() || builder.Display() == EDisplay::kContents)
       builder.SetDisplay(EDisplay::kNone);
     return;
   }
@@ -388,9 +387,9 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
   if (IsA<HTMLTableElement>(element)) {
     // Tables never support the -webkit-* values for text-align and will reset
     // back to the default.
-    if (style.GetTextAlign() == ETextAlign::kWebkitLeft ||
-        style.GetTextAlign() == ETextAlign::kWebkitCenter ||
-        style.GetTextAlign() == ETextAlign::kWebkitRight)
+    if (builder.GetTextAlign() == ETextAlign::kWebkitLeft ||
+        builder.GetTextAlign() == ETextAlign::kWebkitCenter ||
+        builder.GetTextAlign() == ETextAlign::kWebkitRight)
       builder.SetTextAlign(ETextAlign::kStart);
     return;
   }
@@ -406,7 +405,7 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
   }
 
   if (IsA<HTMLFrameElementBase>(element)) {
-    if (style.Display() == EDisplay::kContents) {
+    if (builder.Display() == EDisplay::kContents) {
       builder.SetDisplay(EDisplay::kNone);
       return;
     }
@@ -431,7 +430,7 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
   }
 
   if (IsA<HTMLLegendElement>(element) &&
-      style.Display() != EDisplay::kContents) {
+      builder.Display() != EDisplay::kContents) {
     // Allow any blockified display value for legends. Note that according to
     // the spec, this shouldn't affect computed style (like we do here).
     // Instead, the display override should be determined during box creation,
@@ -439,7 +438,7 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
     // fieldset. However, Blink determines the rendered legend during layout
     // instead of during layout object creation, and also generally makes
     // assumptions that the computed display value is the one to use.
-    builder.SetDisplay(EquivalentBlockDisplay(style.Display()));
+    builder.SetDisplay(EquivalentBlockDisplay(builder.Display()));
     return;
   }
 
@@ -452,13 +451,13 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
 
   if (IsA<HTMLTextAreaElement>(element)) {
     // Textarea considers overflow visible as auto.
-    builder.SetOverflowX(style.OverflowX() == EOverflow::kVisible
+    builder.SetOverflowX(builder.OverflowX() == EOverflow::kVisible
                              ? EOverflow::kAuto
-                             : style.OverflowX());
-    builder.SetOverflowY(style.OverflowY() == EOverflow::kVisible
+                             : builder.OverflowX());
+    builder.SetOverflowY(builder.OverflowY() == EOverflow::kVisible
                              ? EOverflow::kAuto
-                             : style.OverflowY());
-    if (style.Display() == EDisplay::kContents)
+                             : builder.OverflowY());
+    if (builder.Display() == EDisplay::kContents)
       builder.SetDisplay(EDisplay::kNone);
     return;
   }
@@ -466,7 +465,7 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
   if (auto* html_plugin_element = DynamicTo<HTMLPlugInElement>(element)) {
     builder.SetRequiresAcceleratedCompositingForExternalReasons(
         html_plugin_element->ShouldAccelerate());
-    if (style.Display() == EDisplay::kContents)
+    if (builder.Display() == EDisplay::kContents)
       builder.SetDisplay(EDisplay::kNone);
     return;
   }
@@ -476,7 +475,7 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
     return;
   }
 
-  if (style.Display() == EDisplay::kContents) {
+  if (builder.Display() == EDisplay::kContents) {
     // See https://drafts.csswg.org/css-display/#unbox-html
     // Some of these elements are handled with other adjustments above.
     if (IsA<HTMLBRElement>(element) || IsA<HTMLWBRElement>(element) ||
@@ -788,7 +787,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   auto* html_element = DynamicTo<HTMLElement>(element);
   if (html_element && (style.Display() != EDisplay::kNone ||
                        element->LayoutObjectIsNeeded(style))) {
-    AdjustStyleForHTMLElement(style, builder, *html_element);
+    AdjustStyleForHTMLElement(builder, *html_element);
   }
 
   auto* svg_element = DynamicTo<SVGElement>(element);
