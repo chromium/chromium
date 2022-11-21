@@ -6130,7 +6130,6 @@ crbug.com/1344771 virtual/force-defer-script/external/wpt/html/semantics/scripti
 # Sheriff 2022-07-18
 crbug.com/1345192 accessibility/aria-combo-box-with-delay-add.html [ Crash Failure Pass Timeout ]
 crbug.com/1345235 external/wpt/content-security-policy/style-src/stylehash-basic-blocked.sub.html [ Crash Failure Pass Timeout ]
-crbug.com/1334674 [ Mac ] http/tests/devtools/oopif/oopif-presentation-console-messages.js [ Failure Pass ]
 
 # Sheriff 2022-07-26
 crbug.com/1347459 [ Fuchsia ] fast/css3-text/css3-text-decoration/text-decoration-style-inherit-links.html [ Crash Failure Pass Timeout ]
@@ -6945,3 +6944,6 @@ crbug.com/1385548 [ Win ] external/wpt/close-watcher/user-activation.html [ Pass
 crbug.com/1385548 [ Mac ] external/wpt/close-watcher/user-activation.html [ Pass Timeout ]
 crbug.com/1385548 [ Win ] virtual/close-watcher/external/wpt/close-watcher/user-activation.html [ Pass Timeout ]
 crbug.com/1385548 [ Mac ] virtual/close-watcher/external/wpt/close-watcher/user-activation.html [ Pass Timeout ]
+
+# Changing expectation for devtools-frontend change.
+crbug.com/1325457 http/tests/devtools/oopif/oopif-presentation-console-messages.js [ Failure Pass ]

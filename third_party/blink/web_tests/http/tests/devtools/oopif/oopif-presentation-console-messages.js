@@ -10,6 +10,7 @@
   await TestRunner.showPanel('console');
 
   function dumpMessage(prefix, message, url) {
+    url = url.replace(/VM[0-9]+/, 'VM#');
     TestRunner.addResult(`Line Message was ${prefix}: ${url} ${
         message.level()} '${message.text()}':${message.lineNumber()}:${
         message.columnNumber()}`);
