@@ -36,8 +36,10 @@ TEST_P(WaylandZAuraShellTest, BugFix) {
   ASSERT_FALSE(connection_->zaura_shell()->HasBugFix(2));
 }
 
-INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
-                         WaylandZAuraShellTest,
-                         Values(wl::ServerConfig{}));
+INSTANTIATE_TEST_SUITE_P(
+    XdgVersionStableTest,
+    WaylandZAuraShellTest,
+    Values(wl::ServerConfig{
+        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
 
 }  // namespace ui

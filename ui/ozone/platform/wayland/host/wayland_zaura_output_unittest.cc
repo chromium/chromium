@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/wayland/wayland_display_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
@@ -105,7 +106,9 @@ TEST_P(WaylandZAuraOutputTest, DisplayIdConversions) {
       static_cast<int64_t>(std::numeric_limits<int32_t>::min()) - 1,
       std::numeric_limits<int32_t>::min(),
       std::numeric_limits<int32_t>::min() + 1,
+      -1,
       0,
+      1,
       std::numeric_limits<int32_t>::max() - 1,
       std::numeric_limits<int32_t>::max(),
       static_cast<int64_t>(std::numeric_limits<int32_t>::max()) + 1,
@@ -113,17 +116,18 @@ TEST_P(WaylandZAuraOutputTest, DisplayIdConversions) {
       std::numeric_limits<int64_t>::max()};
 
   for (int64_t id : kTestIds) {
-    uint32_t display_id_hi = static_cast<uint32_t>(id >> 32);
-    uint32_t display_id_lo = static_cast<uint32_t>(id);
+    auto display_id = ui::wayland::ToWaylandDisplayIdPair(id);
     WaylandZAuraOutput aura_output;
-    WaylandZAuraOutput::OnDisplayId(&aura_output, nullptr, display_id_hi,
-                                    display_id_lo);
+    WaylandZAuraOutput::OnDisplayId(&aura_output, nullptr, display_id.high,
+                                    display_id.low);
     EXPECT_EQ(id, aura_output.display_id().value());
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
-                         WaylandZAuraOutputTest,
-                         Values(wl::ServerConfig{}));
+INSTANTIATE_TEST_SUITE_P(
+    XdgVersionStableTest,
+    WaylandZAuraOutputTest,
+    Values(wl::ServerConfig{
+        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
 
 }  // namespace ui

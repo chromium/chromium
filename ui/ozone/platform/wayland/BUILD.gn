@@ -521,6 +521,7 @@ source_set("test_support") {
   deps = [
     ":wayland",
     "//base:base",
+    "//ui/base/wayland:wayland_display_util",
     "//ui/ozone:platform",
     "//ui/ozone:test_support",
   ]
@@ -603,6 +604,7 @@ source_set("wayland_unittests") {
     "//ui/base/dragdrop:types",
     "//ui/base/dragdrop/mojom",
     "//ui/base/ime/linux",
+    "//ui/base/wayland:wayland_display_util",
     "//ui/events/ozone/layout",
     "//ui/gfx/linux:test_support",
     "//ui/ozone:platform",

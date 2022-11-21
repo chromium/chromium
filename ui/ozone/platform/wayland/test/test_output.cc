@@ -6,7 +6,9 @@
 
 #include <wayland-server-protocol.h>
 
+#include "base/check_op.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/display/types/display_constants.h"
 
 namespace wl {
 
@@ -39,9 +41,10 @@ void TestOutput::SetTransform(wl_output_transform transform) {
 void TestOutput::Flush() {
   constexpr char kUnknownMake[] = "unknown_make";
   constexpr char kUnknownModel[] = "unknown_model";
-
-  if (!pending_rect_ && !pending_scale_)
+  if ((!pending_rect_ && !pending_scale_) ||
+      (aura_shell_enabled_ && !aura_output_)) {
     return;
+  }
 
   if (pending_rect_ || pending_transform_) {
     if (pending_rect_)
@@ -82,6 +85,9 @@ void TestOutput::OnBind() {
 
 void TestOutput::SetAuraOutput(TestZAuraOutput* aura_output) {
   aura_output_ = aura_output;
+  // Make sure to send the necessary information for a client that
+  // relies on the aura output information.
+  Flush();
 }
 
 TestZAuraOutput* TestOutput::GetAuraOutput() {

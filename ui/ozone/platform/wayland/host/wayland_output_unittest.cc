@@ -59,4 +59,10 @@ INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandOutputTest,
                          Values(wl::ServerConfig{}));
 
+INSTANTIATE_TEST_SUITE_P(
+    XdgVersionStableTestWithAuraShell,
+    WaylandOutputTest,
+    Values(wl::ServerConfig{
+        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
+
 }  // namespace ui

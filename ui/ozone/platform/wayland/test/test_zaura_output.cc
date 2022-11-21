@@ -6,12 +6,27 @@
 
 #include <aura-shell-server-protocol.h>
 
+#include "ui/base/wayland/wayland_display_util.h"
+
 namespace wl {
+namespace {
+int64_t display_id_counter = 10;
+}
 
 TestZAuraOutput::TestZAuraOutput(wl_resource* resource)
-    : ServerObject(resource) {}
+    : ServerObject(resource), display_id_(display_id_counter++) {
+  if (wl_resource_get_version(resource) >=
+      ZAURA_OUTPUT_DISPLAY_ID_SINCE_VERSION) {
+    auto display_id = ui::wayland::ToWaylandDisplayIdPair(display_id_);
+    zaura_output_send_display_id(resource, display_id.high, display_id.low);
+  }
+}
 
 TestZAuraOutput::~TestZAuraOutput() = default;
+
+void TestZAuraOutput::SendActivated() {
+  zaura_output_send_activated(resource());
+}
 
 void TestZAuraOutput::Flush() {
   if (pending_insets_) {
