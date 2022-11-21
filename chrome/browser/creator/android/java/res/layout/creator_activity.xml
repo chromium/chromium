@@ -15,8 +15,7 @@
       android:id="@+id/action_bar"
       android:layout_width="match_parent"
       android:layout_height="?attr/actionBarSize"
-      style="@style/CreatorActivityNoActionBar"
-      app:title="@string/cormorant_creator_activity" />
+      style="@style/CreatorActivityNoActionBar" />
   <include
       layout="@layout/creator_profile"
       android:id="@+id/creator_profile"

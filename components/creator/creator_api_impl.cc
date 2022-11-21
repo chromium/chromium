@@ -12,6 +12,6 @@
 namespace creator {
 Creator CreatorApiImpl::GetCreator(std::string channel_id) {
   // TODO(crbug.com/1365645) query actual data for given channel id.
-  return Creator{/*url=*/GURL("example.com"), /*title=*/u"Example Domain"};
+  return Creator{u"alexainsley.com", /*title=*/u"Alex Ainsley"};
 }
 }  // namespace creator

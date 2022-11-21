@@ -12,6 +12,8 @@ import org.chromium.chrome.browser.creator.CreatorApiBridge.Creator;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * Sets up the Mediator for Cormorant Creator surface.  It is based on the doc at
  * https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/mvc_simple_list_tutorial.md
@@ -19,6 +21,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class CreatorMediator {
     private Context mContext;
     private Creator mCreator;
+    private byte[] mWebFeedId;
     private String mTitle;
     private String mUrl;
     private PropertyModel mCreatorProfileModel;
@@ -27,6 +30,8 @@ public class CreatorMediator {
     CreatorMediator(Context context, PropertyModel creatorProfileModel) {
         mContext = context;
         mCreatorProfileModel = creatorProfileModel;
+        mWebFeedId = mCreatorProfileModel.get(CreatorProfileProperties.WEB_FEED_ID_KEY);
+        getCreator();
 
         // Set Follow OnClick Action
         mCreatorProfileModel.set(
@@ -38,8 +43,7 @@ public class CreatorMediator {
     }
 
     private void followClickHandler() {
-        WebFeedBridge.followFromId(
-                mCreatorProfileModel.get(CreatorProfileProperties.WEB_FEED_ID_KEY),
+        WebFeedBridge.followFromId(mWebFeedId,
                 /*isDurable=*/false, WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU, (result) -> {
                     if (result.requestStatus == SUCCESS) {
                         mCreatorProfileModel.set(CreatorProfileProperties.IS_FOLLOWED_KEY, true);
@@ -48,7 +52,7 @@ public class CreatorMediator {
     }
 
     private void followingClickHandler() {
-        WebFeedBridge.unfollow(mCreatorProfileModel.get(CreatorProfileProperties.WEB_FEED_ID_KEY),
+        WebFeedBridge.unfollow(mWebFeedId,
                 /*isDurable=*/false, WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU, (result) -> {
                     if (result.requestStatus == SUCCESS) {
                         mCreatorProfileModel.set(CreatorProfileProperties.IS_FOLLOWED_KEY, false);
@@ -57,10 +61,13 @@ public class CreatorMediator {
     }
 
     private void getCreator() {
-        CreatorApiBridge.getCreator("test", this::onGetCreator);
+        CreatorApiBridge.getCreator(
+                new String(mWebFeedId, StandardCharsets.UTF_8), this::onGetCreator);
     }
 
     private void onGetCreator(Creator creator) {
         mCreator = creator;
+        mCreatorProfileModel.set(CreatorProfileProperties.TITLE_KEY, mCreator.title);
+        mCreatorProfileModel.set(CreatorProfileProperties.URL_KEY, mCreator.url);
     }
 }

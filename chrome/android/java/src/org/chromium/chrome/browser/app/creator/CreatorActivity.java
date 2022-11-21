@@ -38,6 +38,7 @@ public class CreatorActivity extends SnackbarActivity {
         Toolbar actionBar = findViewById(R.id.action_bar);
         setSupportActionBar(actionBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
 
     @Override

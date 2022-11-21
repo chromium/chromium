@@ -7,12 +7,10 @@
 
 #include <string>
 
-#include "url/gurl.h"
-
 namespace creator {
 
 struct Creator {
-  GURL url;
+  std::u16string url;
   std::u16string title;
 };
 

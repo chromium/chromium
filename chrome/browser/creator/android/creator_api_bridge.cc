@@ -24,14 +24,14 @@ namespace {
 base::android::ScopedJavaLocalRef<jobject> ToJava(JNIEnv* env,
                                                   const Creator& creator) {
   return Java_Creator_Constructor(
-      env, url::GURLAndroid::FromNativeGURL(env, creator.url),
+      env, base::android::ConvertUTF16ToJavaString(env, creator.url),
       base::android::ConvertUTF16ToJavaString(env, creator.title));
 }
 
 // TODO(crbug/1374058): Replace this with actual access to creator api stub.
 void DoGetCreator(std::string web_channel_id,
                   base::OnceCallback<void(Creator)> callback) {
-  std::move(callback).Run(Creator{GURL("example.com"), u"Example Domain"});
+  std::move(callback).Run(Creator{u"alexainsley.com", u"Alex Ainsley"});
 }
 
 }  // namespace

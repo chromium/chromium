@@ -8,19 +8,18 @@ import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.url.GURL;
 
 /**
- * A Java API for connecting to creator component.
+ * A Java API for connecting to creator component
  */
 @JNINamespace("creator")
 public class CreatorApiBridge {
     public static class Creator {
-        public final GURL url;
+        public final String url;
         public final String title;
 
         @CalledByNative("Creator")
-        public Creator(GURL url, String title) {
+        public Creator(String url, String title) {
             this.url = url;
             this.title = title;
         }
