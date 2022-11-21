@@ -53,8 +53,20 @@ polymorphic.launcher(
     ],
     os = os.LINUX_DEFAULT,
     pool = ci.DEFAULT_POOL,
-    # To avoid peak hours, we run it at 1 AM, 4 AM, 7 AM, 10AM, 1 PM UTC.
-    schedule = "0 1,4,7,10,13 * * *",
+    # To avoid peak hours, we run it at 2 AM, 5 AM, 8 AM, 11AM, 2 PM UTC.
+    schedule = "0 2,5,8,11,14 * * *",
+)
+
+polymorphic.launcher(
+    name = "android-device-launcher",
+    runner = "reviver/runner",
+    target_builders = [
+        "ci/android-pie-arm64-rel",
+    ],
+    os = os.LINUX_DEFAULT,
+    pool = ci.DEFAULT_POOL,
+    # To avoid peak hours, we run it at 5 AM, 8 AM, 11AM UTC.
+    schedule = "0 5,8,11 * * *",
 )
 
 # A coordinator of slightly aggressive scheduling with effectively unlimited
@@ -70,7 +82,7 @@ polymorphic.launcher(
     os = os.LINUX_DEFAULT,
     pool = ci.DEFAULT_POOL,
     # Avoid peak hours.
-    schedule = "0 1,3,5,7,9,11,13 * * *",
+    schedule = "0 2,4,6,8,10,12,14 * * *",
 )
 
 # A coordinator for lacros.
