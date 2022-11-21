@@ -11,7 +11,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 // </if>
 
 import './strings.m.js';
-import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.js';
+import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
 import {$} from 'chrome://resources/js/util.js';
 
 /**
@@ -119,16 +119,16 @@ function copyOSContentToClipboard() {
 /* All the work we do onload. */
 function onLoadWork() {
   // <if expr="chromeos_ash or is_win">
-  addWebUIListener('return-os-version', returnOsVersion);
+  addWebUiListener('return-os-version', returnOsVersion);
   // </if>
   // <if expr="chromeos_ash">
-  addWebUIListener('return-os-firmware-version', returnOsFirmwareVersion);
-  addWebUIListener(
+  addWebUiListener('return-os-firmware-version', returnOsFirmwareVersion);
+  addWebUiListener(
       'return-arc-and-arc-android-sdk-versions',
       returnArcAndArcAndroidSdkVersions);
   // </if>
   // <if expr="is_chromeos">
-  addWebUIListener('return-lacros-primary', returnLacrosPrimary);
+  addWebUiListener('return-lacros-primary', returnLacrosPrimary);
   // </if>
 
   chrome.send('requestVersionInfo');
