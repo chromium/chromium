@@ -4,8 +4,8 @@
 
 import {EventGenerator} from '../../../common/event_generator.js';
 import {KeyCode} from '../../../common/key_code.js';
+import {InputController} from '../input_controller.js';
 import {LocaleInfo} from '../locale_info.js';
-
 import {Macro, MacroError} from './macro.js';
 import {MacroName} from './macro_names.js';
 
@@ -197,14 +197,38 @@ export class SelectAllTextMacro extends RepeatableKeyPressMacro {
 
 /** Macro to unselect text. */
 export class UnselectTextMacro extends RepeatableKeyPressMacro {
-  constructor() {
+  /** @param {!InputController} inputController */
+  constructor(inputController) {
     super(MacroName.UNSELECT_TEXT, /*repeat=*/ 1);
+    /** @private {!InputController} */
+    this.inputController_ = inputController;
   }
 
   /** @override */
   doKeyPress() {
     EventGenerator.sendKeyPress(
         LocaleInfo.isRTLLocale() ? KeyCode.LEFT : KeyCode.RIGHT);
+  }
+
+  /** @override */
+  checkContext() {
+    const checkContextResult = super.checkContext();
+    if (!checkContextResult.canTryAction) {
+      return checkContextResult;
+    }
+
+    if (!this.inputController_.isActive()) {
+      return this.createFailureCheckContextResult_(MacroError.BAD_CONTEXT);
+    }
+
+    const data = this.inputController_.getEditableNodeData();
+    if (!data || !data.value ||
+        data.node.textSelStart === data.node.textSelEnd) {
+      return this.createFailureCheckContextResult_(MacroError.BAD_CONTEXT);
+    }
+
+    return this.createSuccessCheckContextResult_(
+        /*willImmediatelyDisambiguate=*/ false);
   }
 }
 

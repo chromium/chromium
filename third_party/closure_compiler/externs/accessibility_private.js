@@ -268,6 +268,7 @@ chrome.accessibilityPrivate.AccessibilityFeature = {
   SELECT_TO_SPEAK_VOICE_SWITCHING: 'selectToSpeakVoiceSwitching',
   DICTATION_MORE_COMMANDS: 'dictationMoreCommands',
   SELECT_TO_SPEAK_CONTEXT_MENU_OPTION: 'selectToSpeakContextMenuOption',
+  DICTATION_CONTEXT_CHECKING: 'dictationContextChecking',
 };
 
 /**

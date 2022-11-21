@@ -16,10 +16,10 @@ export const MacroError = {
   // User intent was poorly formed. For example, a numerical field was set
   // to a string value.
   INVALID_USER_INTENT: 1,
-  // Returned when the user tries to interact with something not present,
+  // Returned when the context is invalid for a macro execution,
   // for example selecting the word "cat" when there is no word "cat" in
   // the text area.
-  NO_MATCH: 2,
+  BAD_CONTEXT: 2,
   // Actuation would fail to be successful. For example, the text area might
   // no longer be active, or the action cannot be taken in the given context.
   FAILED_ACTUATION: 3,

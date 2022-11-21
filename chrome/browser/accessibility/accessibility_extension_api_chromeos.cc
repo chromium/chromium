@@ -271,6 +271,11 @@ AccessibilityPrivateIsFeatureEnabledFunction::Run() {
       enabled =
           ::features::IsExperimentalAccessibilityDictationMoreCommandsEnabled();
       break;
+    case accessibility_private::AccessibilityFeature::
+        ACCESSIBILITY_FEATURE_DICTATIONCONTEXTCHECKING:
+      enabled = ::features::
+          IsExperimentalAccessibilityDictationContextCheckingEnabled();
+      break;
     case accessibility_private::
         ACCESSIBILITY_FEATURE_SELECTTOSPEAKCONTEXTMENUOPTION:
       enabled =

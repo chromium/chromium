@@ -1067,7 +1067,7 @@ IN_PROC_BROWSER_TEST_P(DictationJaTest, SmartSelectBetweenAndDelete) {
 
 class DictationCommandsTest : public DictationTest {
  protected:
-  DictationCommandsTest() {}
+  DictationCommandsTest() = default;
   ~DictationCommandsTest() override = default;
   DictationCommandsTest(const DictationCommandsTest&) = delete;
   DictationCommandsTest& operator=(const DictationCommandsTest&) = delete;
@@ -2126,6 +2126,86 @@ IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, Metrics) {
   histogram_tester_.ExpectUniqueSample(/*name=*/kPumpkinMetric,
                                        /*sample=*/true,
                                        /*expected_bucket_count=*/1);
+}
+
+class DictationContextCheckingTest : public DictationTest {
+ public:
+  DictationContextCheckingTest() = default;
+  ~DictationContextCheckingTest() override = default;
+  DictationContextCheckingTest(const DictationContextCheckingTest&) = delete;
+  DictationContextCheckingTest& operator=(const DictationContextCheckingTest&) =
+      delete;
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    DictationTest::SetUpCommandLine(command_line);
+
+    std::vector<base::test::FeatureRef> enabled_features;
+    enabled_features.emplace_back(base::test::FeatureRef(
+        ::features::kExperimentalAccessibilityDictationMoreCommands));
+    enabled_features.emplace_back(base::test::FeatureRef(
+        ::features::kExperimentalAccessibilityDictationContextChecking));
+    scoped_feature_list_.InitWithFeatures(
+        enabled_features, std::vector<base::test::FeatureRef>());
+  }
+
+  void SetUpOnMainThread() override {
+    DictationTest::SetUpOnMainThread();
+    ToggleDictationWithKeystroke();
+    WaitForRecognitionStarted();
+    dictation_bubble_test_helper_ =
+        std::make_unique<DictationBubbleTestHelper>();
+  }
+
+  void TearDownOnMainThread() override {
+    ToggleDictationWithKeystroke();
+    WaitForRecognitionStopped();
+    DictationTest::TearDownOnMainThread();
+  }
+
+  void WaitForVisibleIcon(DictationBubbleIconType icon) {
+    std::string error_message = "Still waiting for UI icon: " + ToString(icon);
+    SuccessWaiter(base::BindLambdaForTesting([&]() {
+                    return dictation_bubble_test_helper_->GetVisibleIcon() ==
+                           icon;
+                  }),
+                  error_message)
+        .Wait();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<DictationBubbleTestHelper> dictation_bubble_test_helper_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    NetworkTextArea,
+    DictationContextCheckingTest,
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kTextArea)));
+
+INSTANTIATE_TEST_SUITE_P(
+    NetworkInput,
+    DictationContextCheckingTest,
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kInput)));
+
+INSTANTIATE_TEST_SUITE_P(
+    NetworkContentEditable,
+    DictationContextCheckingTest,
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kContentEditable)));
+
+IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, UnselectEmptyEditable) {
+  SendFinalResultAndWait("unselect");
+  WaitForVisibleIcon(DictationBubbleIconType::kMacroFail);
+}
+
+IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, UnselectNoSelection) {
+  std::string text = "Hello world";
+  SendFinalResultAndWaitForEditableValue(text, text);
+  SendFinalResultAndWait("unselect");
+  WaitForVisibleIcon(DictationBubbleIconType::kMacroFail);
 }
 
 }  // namespace ash

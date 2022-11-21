@@ -212,7 +212,8 @@ export class PumpkinParseStrategy extends ParseStrategy {
       case MacroName.SELECT_ALL_TEXT:
         return new RepeatableKeyPressMacro.SelectAllTextMacro();
       case MacroName.UNSELECT_TEXT:
-        return new RepeatableKeyPressMacro.UnselectTextMacro();
+        return new RepeatableKeyPressMacro.UnselectTextMacro(
+            this.getInputController());
       case MacroName.LIST_COMMANDS:
         return new ListCommandsMacro();
       default:

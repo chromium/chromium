@@ -85,6 +85,9 @@ export class Dictation {
     /** @private {?function(boolean):void} */
     this.onToggleDictationListener_ = null;
 
+    /** @private {boolean} */
+    this.isContextCheckingFeatureEnabled_ = false;
+
     this.initialize_();
   }
 
@@ -132,6 +135,14 @@ export class Dictation {
     // Browser process.
     chrome.accessibilityPrivate.onToggleDictation.addListener(
         this.onToggleDictationListener_);
+
+    const contextCheckingFeature =
+        chrome.accessibilityPrivate.AccessibilityFeature
+            .DICTATION_CONTEXT_CHECKING;
+    chrome.accessibilityPrivate.isFeatureEnabled(
+        contextCheckingFeature, enabled => {
+          this.isContextCheckingFeatureEnabled_ = enabled;
+        });
   }
 
   /**
@@ -301,7 +312,8 @@ export class Dictation {
     // Check if the macro can execute.
     // TODO(crbug.com/1264544): Deal with ambiguous results here.
     const checkContextResult = macro.checkContext();
-    if (!checkContextResult.canTryAction) {
+    if (!checkContextResult.canTryAction &&
+        this.isContextCheckingFeatureEnabled_) {
       this.showMacroExecutionFailed_(macro, transcript);
       return;
     }

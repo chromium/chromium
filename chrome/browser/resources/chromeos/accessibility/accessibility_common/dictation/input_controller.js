@@ -143,7 +143,7 @@ export class InputController {
       return;
     }
 
-    const data = this.getEditableNodeData_();
+    const data = this.getEditableNodeData();
     if (LocaleInfo.allowSmartCapAndSpacing() && data) {
       const {value, caretIndex} = data;
       text = EditingUtil.smartCapitalization(value, caretIndex, text);
@@ -205,7 +205,7 @@ export class InputController {
    * intersects.
    */
   deletePrevSentence() {
-    const data = this.getEditableNodeData_();
+    const data = this.getEditableNodeData();
     if (!data) {
       return;
     }
@@ -248,7 +248,7 @@ export class InputController {
    * @param {string} insertPhrase The phrase to be inserted.
    */
   replacePhrase(deletePhrase, insertPhrase) {
-    let data = this.getEditableNodeData_();
+    let data = this.getEditableNodeData();
     if (!data) {
       return;
     }
@@ -270,7 +270,7 @@ export class InputController {
    * @param {string} beforePhrase
    */
   insertBefore(insertPhrase, beforePhrase) {
-    let data = this.getEditableNodeData_();
+    let data = this.getEditableNodeData();
     if (!data) {
       return;
     }
@@ -292,7 +292,7 @@ export class InputController {
    * @param {string} endPhrase
    */
   selectBetween(startPhrase, endPhrase) {
-    const data = this.getEditableNodeData_();
+    const data = this.getEditableNodeData();
     if (!data) {
       return;
     }
@@ -309,7 +309,7 @@ export class InputController {
 
   /** Moves the text caret to the next sentence. */
   navNextSent() {
-    const data = this.getEditableNodeData_();
+    const data = this.getEditableNodeData();
     if (!data) {
       return;
     }
@@ -321,7 +321,7 @@ export class InputController {
 
   /** Moves the text caret to the previous sentence. */
   navPrevSent() {
-    const data = this.getEditableNodeData_();
+    const data = this.getEditableNodeData();
     if (!data) {
       return;
     }
@@ -364,9 +364,8 @@ export class InputController {
    * TODO(crbug.com/1344888): Add support for when there is a selection.
    * TODO(crbug.com/1353871): Only return text that is visible on-screen.
    * @return {!{node: !AutomationNode, value: string, caretIndex: number}|null}
-   * @private
    */
-  getEditableNodeData_() {
+  getEditableNodeData() {
     const node = this.focusHandler_.getEditableNode();
     if (!node) {
       return null;

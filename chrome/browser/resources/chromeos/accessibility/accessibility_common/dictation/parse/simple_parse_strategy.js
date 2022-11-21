@@ -108,6 +108,7 @@ class SimpleMacroFactory {
       case MacroName.DELETE_PREV_SENT:
       case MacroName.NAV_NEXT_SENT:
       case MacroName.NAV_PREV_SENT:
+      case MacroName.UNSELECT_TEXT:
       case MacroName.SMART_DELETE_PHRASE:
       case MacroName.SMART_REPLACE_PHRASE:
       case MacroName.SMART_INSERT_BEFORE:
