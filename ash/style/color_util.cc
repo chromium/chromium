@@ -24,7 +24,7 @@ constexpr int kDarkBackgroundBlendAlpha = 127;   // 50%
 constexpr int kLightBackgroundBlendAlpha = 127;  // 50%
 
 // Alternate alpha values used when `kDarkLightModeKMeansColor` is active.
-constexpr int kDarkBackgroundBlendKMeansAlpha = 179;   // 70%
+constexpr int kDarkBackgroundBlendKMeansAlpha = 165;   // 65%
 constexpr int kLightBackgroundBlendKMeansAlpha = 230;  // 90%
 
 // Clamp the lightness of input user colors so that there is sufficient contrast
