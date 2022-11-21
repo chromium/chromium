@@ -405,6 +405,12 @@
   <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_SITE_DATA_BLOCK" desc="The description for the block site data for website dialog." translateable="false">
     Block site data for a specific site.
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_THIRD_PARTY_COOKIES_ALLOW" desc="The description for the allow third-party cookies for website dialog." translateable="false">
+    Allow third-party cookies for a specific site.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_THIRD_PARTY_COOKIES_BLOCK" desc="The description for the block third-party cookies for website dialog." translateable="false">
+    Block third-party cookies for a specific site.
+  </message>
   <message name="IDS_WEBSITE_SETTINGS_COOKIE_INFO" desc="Text describing cookie and third-party cookie settings.">
     A site you visit can embed content from other sites, for example images, ads, and text. Any of these sites can save cookies and other data to personalize your experience.
   </message>

@@ -75,13 +75,15 @@ public class SiteSettings
             boolean requiresTriStateSetting =
                     WebsitePreferenceBridge.requiresTriStateContentSetting(contentType);
 
-            boolean checked = false;
+            boolean checked = false; // Used for binary settings
             @ContentSettingValues
-            int setting = ContentSettingValues.DEFAULT;
+            int setting = ContentSettingValues.DEFAULT; // Used for tri-state settings.
 
             if (prefCategory == Type.DEVICE_LOCATION) {
                 checked =
                         WebsitePreferenceBridge.areAllLocationSettingsEnabled(browserContextHandle);
+            } else if (prefCategory == Type.THIRD_PARTY_COOKIES) {
+                checked = cookieControlsMode != CookieControlsMode.BLOCK_THIRD_PARTY;
             } else if (requiresTriStateSetting) {
                 setting = WebsitePreferenceBridge.getDefaultContentSetting(
                         browserContextHandle, contentType);
@@ -90,7 +92,10 @@ public class SiteSettings
                         browserContextHandle, contentType);
             }
 
-            p.setTitle(ContentSettingsResources.getTitle(contentType, getSiteSettingsDelegate()));
+            if (prefCategory != Type.THIRD_PARTY_COOKIES) {
+                p.setTitle(
+                        ContentSettingsResources.getTitle(contentType, getSiteSettingsDelegate()));
+            }
             p.setOnPreferenceClickListener(this);
 
             if ((Type.CAMERA == prefCategory || Type.MICROPHONE == prefCategory
@@ -124,8 +129,10 @@ public class SiteSettings
                 p.setSummary(ContentSettingsResources.getCategorySummary(contentType, checked));
             }
 
-            p.setIcon(SettingsUtils.getTintedIcon(getContext(),
-                    ContentSettingsResources.getIcon(contentType, getSiteSettingsDelegate())));
+            if (prefCategory != Type.THIRD_PARTY_COOKIES) {
+                p.setIcon(SettingsUtils.getTintedIcon(getContext(),
+                        ContentSettingsResources.getIcon(contentType, getSiteSettingsDelegate())));
+            }
         }
 
         Preference p = findPreference(Type.ALL_SITES);
@@ -133,16 +140,6 @@ public class SiteSettings
         // TODO(finnur): Re-move this for Storage once it can be moved to the 'Usage' menu.
         p = findPreference(Type.USE_STORAGE);
         if (p != null) p.setOnPreferenceClickListener(this);
-
-        p = findPreference(Type.THIRD_PARTY_COOKIES);
-        if (p != null) {
-            p.setOnPreferenceClickListener(this);
-            // TODO(b/254416343): Handle block 3p cookies in incognito state?
-            p.setSummary(ContentSettingsResources.getCategorySummary(
-                    (cookieControlsMode == CookieControlsMode.BLOCK_THIRD_PARTY)
-                            ? ContentSettingValues.BLOCK
-                            : ContentSettingValues.ALLOW));
-        }
     }
 
     @Override

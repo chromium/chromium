@@ -46,7 +46,7 @@ public class FourStateCookieSettingsPreference extends Preference
         /**
          * Notify that Cookie details are requested.
          */
-        void onCookiesDetailsRequested(CookieSettingsState cookieSettingsState);
+        void onCookiesDetailsRequested(@CookieControlsMode int cookieSettingsState);
     }
 
     /**
@@ -239,9 +239,9 @@ public class FourStateCookieSettingsPreference extends Preference
     @Override
     public void onAuxButtonClicked(int clickedButtonId) {
         if (clickedButtonId == mBlockThirdPartyIncognitoButton.getId()) {
-            mListener.onCookiesDetailsRequested(CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO);
+            mListener.onCookiesDetailsRequested(CookieControlsMode.INCOGNITO_ONLY);
         } else if (clickedButtonId == mBlockThirdPartyButton.getId()) {
-            mListener.onCookiesDetailsRequested(CookieSettingsState.BLOCK_THIRD_PARTY);
+            mListener.onCookiesDetailsRequested(CookieControlsMode.BLOCK_THIRD_PARTY);
         } else {
             assert false : "Should not be reached.";
         }

@@ -249,16 +249,6 @@ public class WebsitePreferenceBridge {
     }
 
     /**
-     * Whether the setting type requires four-state
-     * (Allow/BlockThirdPartyIncognito/BlockThirdParty/Block) setting.
-     */
-    public static boolean requiresFourStateContentSetting(
-            @ContentSettingsType int contentSettingsType, SiteSettingsDelegate delegate) {
-        if (delegate.isPrivacySandboxSettings4Enabled()) return false;
-        return contentSettingsType == ContentSettingsType.COOKIES;
-    }
-
-    /**
      * Sets the preferences on whether to enable/disable given setting.
      */
     public static void setCategoryEnabled(BrowserContextHandle browserContextHandle,

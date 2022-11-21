@@ -14,7 +14,6 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
-import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference.CookieSettingsState;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.prefs.PrefService;
@@ -43,24 +42,24 @@ public class FPSCookieSettings
         mSubtitle = (TextMessagePreference) findPreference(SUBTITLE);
         mAllowFPSPreference = (ChromeSwitchPreference) findPreference(ALLOW_FPS_COOKIE_PREFERENCE);
 
-        CookieSettingsState pageState = (CookieSettingsState) getArguments().getSerializable(
-                FPSCookieSettings.EXTRA_COOKIE_PAGE_STATE);
+        @CookieControlsMode
+        int pageState = getArguments().getInt(FPSCookieSettings.EXTRA_COOKIE_PAGE_STATE);
 
-        if (pageState == CookieSettingsState.BLOCK_THIRD_PARTY) {
+        if (pageState == CookieControlsMode.BLOCK_THIRD_PARTY) {
             setupAllowFPSPreference();
             mSubtitle.setTitle(
                     R.string.website_settings_category_cookie_block_third_party_subtitle);
             mAllowFPSPreference.setVisible(true);
-        } else if (pageState == CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO) {
+        } else if (pageState == CookieControlsMode.INCOGNITO_ONLY) {
             mSubtitle.setTitle(
                     R.string.website_settings_category_cookie_block_third_party_incognito_subtitle);
             mAllowFPSPreference.setVisible(false);
         } else {
             assert false : "Unexpected cookies subpage state: " + pageState + "."
                            + "Cookies subpage state must be either "
-                           + CookieSettingsState.BLOCK_THIRD_PARTY
+                           + CookieControlsMode.BLOCK_THIRD_PARTY
                            + " or "
-                           + CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO;
+                           + CookieControlsMode.INCOGNITO_ONLY;
         }
     }
 
@@ -79,11 +78,16 @@ public class FPSCookieSettings
 
     private boolean isBlockThirdPartyCookieSelected() {
         BrowserContextHandle context = getSiteSettingsDelegate().getBrowserContextHandle();
-        boolean areCookiesAllowed =
-                WebsitePreferenceBridge.isCategoryEnabled(context, ContentSettingsType.COOKIES);
         PrefService prefService = UserPrefs.get(context);
-        var cookiesControlMode = prefService.getInteger(COOKIE_CONTROLS_MODE);
-        return areCookiesAllowed && cookiesControlMode == CookieControlsMode.BLOCK_THIRD_PARTY;
+        if (getSiteSettingsDelegate().isPrivacySandboxSettings4Enabled()) {
+            return prefService.getInteger(COOKIE_CONTROLS_MODE)
+                    == CookieControlsMode.BLOCK_THIRD_PARTY;
+        } else {
+            boolean areCookiesAllowed =
+                    WebsitePreferenceBridge.isCategoryEnabled(context, ContentSettingsType.COOKIES);
+            var cookiesControlMode = prefService.getInteger(COOKIE_CONTROLS_MODE);
+            return areCookiesAllowed && cookiesControlMode == CookieControlsMode.BLOCK_THIRD_PARTY;
+        }
     }
 
     @Override
