@@ -45,7 +45,6 @@ class FakeEventDetector : public PeriodicEventCollector::EventDetector {
       absl::optional<MetricData> previous_metric_data,
       const MetricData& current_metric_data) override {
     previous_metric_data_ = previous_metric_data;
-    run_loop_ptr_->Quit();
     return event_type_;
   }
 
@@ -57,14 +56,10 @@ class FakeEventDetector : public PeriodicEventCollector::EventDetector {
     return previous_metric_data_;
   }
 
-  void SetRunLoop(base::RunLoop* run_loop_ptr) { run_loop_ptr_ = run_loop_ptr; }
-
  private:
   absl::optional<MetricData> previous_metric_data_;
 
   absl::optional<MetricEventType> event_type_;
-
-  raw_ptr<base::RunLoop> run_loop_ptr_;
 };
 
 class PeriodicEventCollectorTest : public ::testing::Test {
@@ -94,7 +89,7 @@ TEST_F(PeriodicEventCollectorTest, Default) {
 
   settings_->SetInteger(kRateSettingPath, interval);
   MetricData sampler_data;
-  sampler_data.mutable_telemetry_data()->mutable_audio_telemetry();
+  sampler_data.mutable_telemetry_data()->mutable_networks_telemetry();
 
   PeriodicEventCollector periodic_event_collector(
       sampler_.get(), std::move(event_detector_), settings_.get(),
@@ -108,6 +103,20 @@ TEST_F(PeriodicEventCollectorTest, Default) {
   sampler_->SetMetricData(sampler_data);
 
   {
+    // task_environment_.FastForwardBy(base::Milliseconds(interval));
+    base::RunLoop().RunUntilIdle();
+
+    // Reporting enabled not set, sampler data is not collected and no events
+    // are observed.
+    EXPECT_THAT(sampler_->GetNumCollectCalls(),
+                testing::Eq(expected_collections));
+    EXPECT_FALSE(event_observed_called);
+  }
+
+  {
+    // Setting reporting enabled to initially to false should not cause
+    // event collection.
+    periodic_event_collector.SetReportingEnabled(false);
     task_environment_.FastForwardBy(base::Milliseconds(interval));
     base::RunLoop().RunUntilIdle();
 
@@ -119,7 +128,26 @@ TEST_F(PeriodicEventCollectorTest, Default) {
   }
 
   {
+    // Reporting enabled, one initial collection should take place.
     periodic_event_collector.SetReportingEnabled(true);
+    ++expected_collections;
+    base::RunLoop().RunUntilIdle();
+
+    EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(expected_collections));
+    EXPECT_FALSE(event_detector_ptr_->GetPreviousMetricData().has_value());
+    EXPECT_TRUE(event_observed_called);
+    EXPECT_THAT(event_metric_data.event_data().type(), Eq(event_type));
+    EXPECT_TRUE(event_metric_data.has_timestamp_ms());
+    EXPECT_TRUE(event_metric_data.has_telemetry_data());
+    EXPECT_TRUE(event_metric_data.telemetry_data().has_networks_telemetry());
+  }
+
+  {
+    event_observed_called = false;
+    sampler_data.Clear();
+    sampler_data.mutable_telemetry_data()->mutable_audio_telemetry();
+    sampler_->SetMetricData(sampler_data);
+
     // Only forward time by half of the collection interval.
     task_environment_.FastForwardBy(base::Milliseconds(interval / 2));
     base::RunLoop().RunUntilIdle();
@@ -130,14 +158,19 @@ TEST_F(PeriodicEventCollectorTest, Default) {
     EXPECT_FALSE(event_observed_called);
 
     // Forward time by the remaining half of the collection interval.
-    base::RunLoop run_loop;
-    event_detector_ptr_->SetRunLoop(&run_loop);
     task_environment_.FastForwardBy(base::Milliseconds(interval / 2));
-    run_loop.Run();
+    base::RunLoop().RunUntilIdle();
 
     ++expected_collections;
     EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(expected_collections));
-    EXPECT_FALSE(event_detector_ptr_->GetPreviousMetricData().has_value());
+    // Assert previously collected data.
+    ASSERT_TRUE(event_detector_ptr_->GetPreviousMetricData().has_value());
+    MetricData previous_metric_data =
+        event_detector_ptr_->GetPreviousMetricData().value();
+    EXPECT_THAT(previous_metric_data.event_data().type(), Eq(event_type));
+    EXPECT_TRUE(previous_metric_data.has_telemetry_data());
+    EXPECT_TRUE(previous_metric_data.telemetry_data().has_networks_telemetry());
+    // Assert current collected data.
     EXPECT_TRUE(event_observed_called);
     EXPECT_THAT(event_metric_data.event_data().type(), Eq(event_type));
     EXPECT_TRUE(event_metric_data.has_timestamp_ms());
@@ -153,10 +186,8 @@ TEST_F(PeriodicEventCollectorTest, Default) {
     sampler_->SetMetricData(sampler_data);
 
     // Forward time by the the collection interval.
-    base::RunLoop run_loop;
-    event_detector_ptr_->SetRunLoop(&run_loop);
     task_environment_.FastForwardBy(base::Milliseconds(interval));
-    run_loop.Run();
+    base::RunLoop().RunUntilIdle();
 
     ++expected_collections;
     EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(expected_collections));

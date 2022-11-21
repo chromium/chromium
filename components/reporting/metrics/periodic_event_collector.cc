@@ -45,6 +45,8 @@ void PeriodicEventCollector::SetOnEventObservedCallback(
 
 void PeriodicEventCollector::SetReportingEnabled(bool is_enabled) {
   if (is_enabled) {
+    // Do initial collection at startup.
+    Collect();
     rate_controller_->Start();
     return;
   }
