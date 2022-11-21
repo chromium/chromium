@@ -149,8 +149,6 @@ BASE_FEATURE(kShareCrowButton,
              "ShareCrowButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIsAblated, "FeedAblation", base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kFeedCloseRefresh,
              "FeedCloseRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);

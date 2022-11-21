@@ -124,9 +124,6 @@ BASE_DECLARE_FEATURE(kInfoCardAcknowledgementTracking);
 // component, since it is being used in the feed component.
 BASE_DECLARE_FEATURE(kShareCrowButton);
 
-// Feature that when enabled completely removes all Feeds from chrome.
-BASE_DECLARE_FEATURE(kIsAblated);
-
 // When enabled, schedule a background refresh for a feed sometime after the
 // last user engagement with that feed.
 BASE_DECLARE_FEATURE(kFeedCloseRefresh);

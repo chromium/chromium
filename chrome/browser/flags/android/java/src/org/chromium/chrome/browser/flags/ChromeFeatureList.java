@@ -600,7 +600,6 @@ public abstract class ChromeFeatureList {
     public static final String WEB_APK_UNIQUE_ID = "WebApkUniqueId";
     public static final String XSURFACE_METRICS_REPORTING = "XsurfaceMetricsReporting";
     public static final String WEB_OTP_CROSS_DEVICE_SIMPLE_STRING = "WebOtpCrossDeviceSimpleString";
-    public static final String FEED_ABLATION = "FeedAblation";
     public static final String FEED_NO_VIEW_CACHE = "FeedNoViewCache";
     public static final String FEED_REPLACE_ALL = "FeedReplaceAll";
     public static final String FEED_SHOW_SIGN_IN_COMMAND = "FeedShowSignInCommand";

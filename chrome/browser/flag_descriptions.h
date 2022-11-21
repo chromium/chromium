@@ -2075,9 +2075,6 @@ extern const char kFeedLoadingPlaceholderDescription[];
 extern const char kFeedStampName[];
 extern const char kFeedStampDescription[];
 
-extern const char kFeedIsAblatedName[];
-extern const char kFeedIsAblatedDescription[];
-
 extern const char kFeedCloseRefreshName[];
 extern const char kFeedCloseRefreshDescription[];
 
