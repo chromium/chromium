@@ -375,4 +375,15 @@ void FeedbackPrivateSendFeedbackFunction::OnCompleted(
   }
 }
 
+ExtensionFunction::ResponseAction FeedbackPrivateOpenFeedbackFunction::Run() {
+  std::unique_ptr<feedback_private::OpenFeedback::Params> params(
+      feedback_private::OpenFeedback::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  ExtensionsAPIClient::Get()->GetFeedbackPrivateDelegate()->OpenFeedback(
+      browser_context(), params->source);
+
+  return RespondNow(NoArguments());
+}
+
 }  // namespace extensions

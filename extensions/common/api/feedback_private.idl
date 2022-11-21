@@ -160,6 +160,9 @@ namespace feedbackPrivate {
     uptime
   };
 
+  // Source of the feedback.
+  enum FeedbackSource {quickoffice};
+
   // Input parameters for a readLogSource() call.
   dictionary ReadLogSourceParams {
     // The log source from which to read.
@@ -207,6 +210,9 @@ namespace feedbackPrivate {
 
     // Returns the system information dictionary.
     static void getSystemInformation(GetSystemInformationCallback callback);
+
+    // Opens the feedback report window.
+    static void openFeedback(FeedbackSource source);
 
     // Sends a feedback report.
     // |loadSystemInfo|: Optional flag when present and is true, the backend

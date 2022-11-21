@@ -36682,6 +36682,7 @@ Called by update_extension_histograms.py.-->
   <int value="1734" label="OS_DIAGNOSTICS_RUNNVMESELFTESTROUTINE"/>
   <int value="1735" label="AUTOTESTPRIVATE_STARTFRAMECOUNTING"/>
   <int value="1736" label="AUTOTESTPRIVATE_STOPFRAMECOUNTING"/>
+  <int value="1737" label="FEEDBACKPRIVATE_OPENFEEDBACK"/>
 </enum>
 
 <enum name="ExtensionIconState">

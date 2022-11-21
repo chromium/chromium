@@ -42,6 +42,9 @@ class ChromeFeedbackPrivateDelegate : public FeedbackPrivateDelegate {
   void NotifyFeedbackDelayed() const override;
   feedback::FeedbackUploader* GetFeedbackUploaderForContext(
       content::BrowserContext* context) const override;
+  void OpenFeedback(
+      content::BrowserContext* context,
+      api::feedback_private::FeedbackSource source) const override;
 };
 
 }  // namespace extensions

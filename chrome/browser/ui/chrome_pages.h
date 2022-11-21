@@ -94,6 +94,7 @@ enum FeedbackSource {
   kFeedbackSourceChannelIndicator,
   kFeedbackSourceLauncher,
   kFeedbackSourceSettingsPerformancePage,
+  kFeedbackSourceQuickOffice,
 
   // Must be last.
   kFeedbackSourceCount,

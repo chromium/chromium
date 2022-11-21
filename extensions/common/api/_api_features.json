@@ -202,6 +202,17 @@
       ]
     }
   ],
+  "feedbackPrivate.openFeedback": {
+    "dependencies": [],
+    "channel": "stable",
+    "contexts": ["blessed_extension"],
+    "extension_types": ["extension"],
+    "allowlist": [
+      "2FC374607C2DF285634B67C64A2E356C607091C3",  // http://crbug.com/1352358
+      "3727DD3E564B6055387425027AD74C58784ACC15",  // http://crbug.com/1352358
+      "12E618C3C6E97495AAECF2AC12DEB082353241C6"   // http://crbug.com/1352358
+    ]
+  },
   "feedbackPrivate.readLogSource": [
     {
       "platforms": ["chromeos"],

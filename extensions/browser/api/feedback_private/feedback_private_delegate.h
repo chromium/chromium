@@ -85,6 +85,11 @@ class FeedbackPrivateDelegate {
   // feedback reports to the feedback server.
   virtual feedback::FeedbackUploader* GetFeedbackUploaderForContext(
       content::BrowserContext* context) const = 0;
+
+  // Opens the feedback report window.
+  virtual void OpenFeedback(
+      content::BrowserContext* context,
+      api::feedback_private::FeedbackSource source) const = 0;
 };
 
 }  // namespace extensions

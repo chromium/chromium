@@ -77,4 +77,10 @@ ShellFeedbackPrivateDelegate::GetFeedbackUploaderForContext(
   return feedback::FeedbackUploaderFactory::GetForBrowserContext(context);
 }
 
+void ShellFeedbackPrivateDelegate::OpenFeedback(
+    content::BrowserContext* context,
+    api::feedback_private::FeedbackSource source) const {
+  NOTIMPLEMENTED();
+}
+
 }  // namespace extensions

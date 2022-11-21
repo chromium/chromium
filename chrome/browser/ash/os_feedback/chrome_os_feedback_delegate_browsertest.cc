@@ -117,6 +117,9 @@ class FakeFeedbackPrivateDelegate : public FeedbackPrivateDelegate {
   void NotifyFeedbackDelayed() const override;
   feedback::FeedbackUploader* GetFeedbackUploaderForContext(
       content::BrowserContext* context) const override;
+  void OpenFeedback(
+      content::BrowserContext* context,
+      extensions::api::feedback_private::FeedbackSource source) const override;
 
  private:
   base::RepeatingCallback<void(bool)> on_fetch_completed_;
@@ -173,6 +176,10 @@ std::string FakeFeedbackPrivateDelegate::GetSignedInUserEmail(
 }
 
 void FakeFeedbackPrivateDelegate::NotifyFeedbackDelayed() const {}
+
+void FakeFeedbackPrivateDelegate::OpenFeedback(
+    content::BrowserContext* context,
+    extensions::api::feedback_private::FeedbackSource source) const {}
 
 feedback::FeedbackUploader*
 FakeFeedbackPrivateDelegate::GetFeedbackUploaderForContext(

@@ -130,6 +130,16 @@ class FeedbackPrivateSendFeedbackFunction : public ExtensionFunction {
   void OnCompleted(api::feedback_private::LandingPageType type, bool success);
 };
 
+class FeedbackPrivateOpenFeedbackFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("feedbackPrivate.openFeedback",
+                             FEEDBACKPRIVATE_OPENFEEDBACK)
+
+ protected:
+  ~FeedbackPrivateOpenFeedbackFunction() override = default;
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_FEEDBACK_PRIVATE_FEEDBACK_PRIVATE_API_H_

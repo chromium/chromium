@@ -16,6 +16,7 @@
 #include "chrome/browser/feedback/system_logs/chrome_system_logs_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"
@@ -267,6 +268,23 @@ feedback::FeedbackUploader*
 ChromeFeedbackPrivateDelegate::GetFeedbackUploaderForContext(
     content::BrowserContext* context) const {
   return feedback::FeedbackUploaderFactoryChrome::GetForBrowserContext(context);
+}
+
+void ChromeFeedbackPrivateDelegate::OpenFeedback(
+    content::BrowserContext* context,
+    api::feedback_private::FeedbackSource source) const {
+  GURL url;
+
+  DCHECK(source ==
+         api::feedback_private::FeedbackSource::FEEDBACK_SOURCE_QUICKOFFICE);
+
+  Profile* profile = Profile::FromBrowserContext(context);
+  chrome::ShowFeedbackPage(url, profile,
+                           /*source=*/chrome::kFeedbackSourceQuickOffice,
+                           /*description_template=*/std::string(),
+                           /*description_placeholder_text=*/std::string(),
+                           /*category_tag=*/std::string(),
+                           /*extra_diagnostics=*/std::string());
 }
 
 }  // namespace extensions
