@@ -114,11 +114,22 @@ interface AdAuctionService {
 
   // Gets the true URL from a URN returned from RunAdAuction. This function
   // will be removed once all FLEDGE auctions switch to using fenced frames.
-  // The uuid_url should have the format format
+  //
+  // Arguments:
+  //
+  // `uuid_url` the URN in the format
   // "urn:uuid:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" as per RFC-4122.
+  //
+  // `send_reports` if true, FLEDGE reports are sent as if the URN was loaded
+  // in an iframe. As with actually loading the URN in a frame, reports are
+  // only sent if they have not been sent for the URN already, either due
+  // to an earlier DeprecatedGetURLFromURN() call, or due to navigating a
+  // frame to the URN.
+  //
   // TODO(crbug.com/1253118): Remove this function when we remove support for
   // showing FLEDGE ads in iframes.
-  DeprecatedGetURLFromURN(url.mojom.Url uuid_url) => (url.mojom.Url? decoded_url);
+  DeprecatedGetURLFromURN(url.mojom.Url uuid_url, bool send_reports)
+      => (url.mojom.Url? decoded_url);
 
   // Modifies the true URL from a URN returned from RunAdAuction by replacing
   // substrings specified as pairs the replacements list. The true URLs for any

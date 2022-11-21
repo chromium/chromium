@@ -63,6 +63,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       RunAdAuctionCallback callback) override;
   void DeprecatedGetURLFromURN(
       const GURL& urn_url,
+      bool send_reports,
       DeprecatedGetURLFromURNCallback callback) override;
   void DeprecatedReplaceInURN(
       const GURL& urn_url,

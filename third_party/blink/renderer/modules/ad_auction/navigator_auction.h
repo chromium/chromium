@@ -96,11 +96,13 @@ class MODULES_EXPORT NavigatorAuction final
 
   ScriptPromise deprecatedURNToURL(ScriptState* script_state,
                                    const String& uuid_url_string,
+                                   bool send_reports,
                                    ExceptionState& exception_state);
 
   static ScriptPromise deprecatedURNToURL(ScriptState* script_state,
                                           Navigator& navigator,
                                           const String& uuid_url_string,
+                                          bool send_reports,
                                           ExceptionState& exception_state);
 
   ScriptPromise deprecatedReplaceInURN(

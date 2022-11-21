@@ -335,45 +335,65 @@ void AdAuctionServiceImpl::RunAdAuction(
 }
 
 namespace {
+
+// Helper class to retrieve the URL that a given URN is mapped to.
 class FencedFrameURLMappingObserver
     : public FencedFrameURLMapping::MappingResultObserver {
  public:
-  FencedFrameURLMappingObserver() = default;
+  // Retrieves the URL that `urn_url` is mapped to, if any. If `send_reports` is
+  // true, sends the reports associated with `urn_url`, if there are any.
+  static absl::optional<GURL> GetURL(RenderFrameHostImpl& render_frame_host,
+                                     const GURL& urn_url,
+                                     bool send_reports) {
+    absl::optional<GURL> mapped_url;
+    FencedFrameURLMappingObserver obs(&mapped_url, send_reports);
+    content::FencedFrameURLMapping& mapping =
+        render_frame_host.GetPage().fenced_frame_urls_map();
+    // FLEDGE URN URLs should already be mapped, so the observer will be called
+    // synchronously.
+    mapping.ConvertFencedFrameURNToURL(urn_url, &obs);
+    if (!obs.called_)
+      mapping.RemoveObserverForURN(urn_url, &obs);
+    return mapped_url;
+  }
+
+ private:
+  FencedFrameURLMappingObserver(absl::optional<GURL>* mapped_url,
+                                bool send_reports)
+      : mapped_url_(mapped_url), send_reports_(send_reports) {}
+
   ~FencedFrameURLMappingObserver() override = default;
 
   void OnFencedFrameURLMappingComplete(
       const absl::optional<FencedFrameURLMapping::FencedFrameProperties>&
           properties) override {
     if (properties) {
-      mapped_url_ = properties->mapped_url;
+      *mapped_url_ = properties->mapped_url;
+      if (send_reports_ && properties->on_navigate_callback)
+        properties->on_navigate_callback.Run();
     }
     called_ = true;
   }
 
-  bool called_;
-  absl::optional<GURL> mapped_url_;
+  bool called_ = false;
+  absl::optional<GURL>* mapped_url_;
+  bool send_reports_;
 };
 
 }  // namespace
 
 void AdAuctionServiceImpl::DeprecatedGetURLFromURN(
     const GURL& urn_url,
+    bool send_reports,
     DeprecatedGetURLFromURNCallback callback) {
   if (!blink::IsValidUrnUuidURL(urn_url)) {
     ReportBadMessageAndDeleteThis("Unexpected request: invalid URN");
     return;
   }
-  FencedFrameURLMappingObserver obs;
-  content::FencedFrameURLMapping& mapping =
-      static_cast<RenderFrameHostImpl&>(render_frame_host())
-          .GetPage()
-          .fenced_frame_urls_map();
-  // FLEDGE URN URLs should already be mapped, so the observer will be called
-  // synchronously.
-  mapping.ConvertFencedFrameURNToURL(urn_url, &obs);
-  if (!obs.called_)
-    mapping.RemoveObserverForURN(urn_url, &obs);
-  std::move(callback).Run(std::move(obs.mapped_url_));
+
+  std::move(callback).Run(FencedFrameURLMappingObserver::GetURL(
+      static_cast<RenderFrameHostImpl&>(render_frame_host()), urn_url,
+      send_reports));
 }
 
 void AdAuctionServiceImpl::DeprecatedReplaceInURN(
