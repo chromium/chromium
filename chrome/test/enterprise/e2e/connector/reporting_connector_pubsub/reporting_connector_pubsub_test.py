@@ -54,13 +54,13 @@ class ReportingConnectorwithPubsubTest(ChromeEnterpriseTestCase):
                                                             '').rstrip("\\rn'")
 
     # wait until events are logged in the connector
-    max_wait_time_secs = 60
+    max_wait_time_secs = 300
     delta_secs = 10
     total_wait_time_secs = 0
     pubsubCrendential = self.getPubsubCredentials()
+    pubsubService = PubsubApiService(pubsubCrendential)
 
     while total_wait_time_secs < max_wait_time_secs:
-      pubsubService = PubsubApiService(pubsubCrendential)
       pubsubService.loadEvents()
       eventFound = pubsubService.doesEventExist(
           eventName='badNavigationEvent', deviceId=clientId)

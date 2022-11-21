@@ -56,7 +56,8 @@ class PubsubApiService(object):
       self.messages = [
           msg.message.data.decode() for msg in response.received_messages
       ]
-      subscriber.acknowledge(request={
-          "subscription": subscription_path,
-          "ack_ids": ack_ids,
-      })
+      if ack_ids:
+        subscriber.acknowledge(request={
+            "subscription": subscription_path,
+            "ack_ids": ack_ids,
+        })
