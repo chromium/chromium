@@ -303,7 +303,6 @@ export class ToolbarController {
 
   /** @private */
   updateRefreshCommand_() {
-    const volumeInfo = this.directoryModel_.getCurrentVolumeInfo();
     this.refreshCommand_.canExecuteChange(this.listContainer_.currentList);
   }
 
