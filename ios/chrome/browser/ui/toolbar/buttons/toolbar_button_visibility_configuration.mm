@@ -109,7 +109,7 @@
   }
 }
 
-- (ToolbarComponentVisibility)searchButtonVisibility {
+- (ToolbarComponentVisibility)newTabButtonVisibility {
   switch (self.type) {
     case PRIMARY:
       return ToolbarComponentVisibilityNone;

@@ -19,8 +19,10 @@
 
 namespace {
 
-// The size of the symbol image.
-const CGFloat kSymbolNewTabPointSize = 24;
+// The size of the small symbol image.
+const CGFloat kSmallSymbolSize = 24;
+// The size of the large symbol image.
+const CGFloat kLargeSymbolSize = 37;
 
 }  // namespace
 
@@ -30,25 +32,21 @@ const CGFloat kSymbolNewTabPointSize = 24;
 @property(nonatomic, strong) UIImage* regularImage;
 @property(nonatomic, strong) UIImage* incognitoImage;
 
-// Image for the open new tab button.
-@property(nonatomic, strong) UIImage* tabGridNewTabImage;
-
-// View used as a background for the open new tab button.
-@property(nonatomic, strong) UIView* circleBackgroundView;
+@property(nonatomic, strong) UIImage* symbol;
 
 @end
 
 @implementation TabGridNewTabButton
 
-- (instancetype)init {
+- (instancetype)initWithLargeSize:(BOOL)largeSize {
   self = [super initWithFrame:CGRectZero];
   if (self) {
     DCHECK(UseSymbols());
-    _tabGridNewTabImage = CustomSymbolWithPointSize(kPlusCircleFillSymbol,
-                                                    kSymbolNewTabPointSize);
+    CGFloat symbolSize = largeSize ? kLargeSymbolSize : kSmallSymbolSize;
+    _symbol = CustomSymbolWithPointSize(kPlusCircleFillSymbol, symbolSize);
+    [self setImage:_symbol forState:UIControlStateNormal];
     self.pointerInteractionEnabled = YES;
     self.pointerStyleProvider = CreateLiftEffectCirclePointerStyleProvider();
-    [self configureCircleBackgroundView];
   }
   return self;
 }
@@ -57,7 +55,6 @@ const CGFloat kSymbolNewTabPointSize = 24;
                       incognitoImage:(UIImage*)incognitoImage {
   self = [super initWithFrame:CGRectZero];
   if (self) {
-    DCHECK(!UseSymbols());
     _regularImage = regularImage;
     _incognitoImage = incognitoImage;
 
@@ -70,31 +67,18 @@ const CGFloat kSymbolNewTabPointSize = 24;
 #pragma mark - Public
 
 - (void)setPage:(TabGridPage)page {
-  UseSymbols() ? [self setSymbolPage:page] : [self setIconPage:page];
+  if (@available(iOS 15, *)) {
+    if (UseSymbols()) {
+      [self setSymbolPage:page];
+    } else {
+      [self setIconPage:page];
+    }
+  } else {
+    [self setIconPage:page];
+  }
 }
 
 #pragma mark - Private
-
-// Adds a circle background view below the image.
-- (void)configureCircleBackgroundView {
-  UIView* circleBackgroundView = [[UIView alloc] init];
-  circleBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-  circleBackgroundView.userInteractionEnabled = NO;
-  circleBackgroundView.layer.cornerRadius =
-      self.tabGridNewTabImage.size.width / 2;
-
-  // Make sure that the circleBackgroundView is below the image.
-  [self insertSubview:circleBackgroundView belowSubview:self.imageView];
-  AddSameCenterConstraints(self.imageView, circleBackgroundView);
-  [NSLayoutConstraint activateConstraints:@[
-    [circleBackgroundView.widthAnchor
-        constraintEqualToAnchor:self.imageView.widthAnchor],
-    [circleBackgroundView.heightAnchor
-        constraintEqualToAnchor:self.imageView.heightAnchor],
-  ]];
-
-  self.circleBackgroundView = circleBackgroundView;
-}
 
 // Sets page using icon images.
 - (void)setIconPage:(TabGridPage)page {
@@ -123,25 +107,30 @@ const CGFloat kSymbolNewTabPointSize = 24;
 }
 
 // Sets page using a symbol image.
-- (void)setSymbolPage:(TabGridPage)page {
+- (void)setSymbolPage:(TabGridPage)page API_AVAILABLE(ios(15)) {
   switch (page) {
     case TabGridPageIncognitoTabs:
       self.accessibilityLabel =
           l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_INCOGNITO_TAB);
-      self.tintColor = UIColor.whiteColor;
-      self.circleBackgroundView.backgroundColor = UIColor.clearColor;
+      [self
+          setImage:SymbolWithPalette(
+                       self.symbol, @[ UIColor.blackColor, UIColor.whiteColor ])
+          forState:UIControlStateNormal];
       break;
     case TabGridPageRegularTabs:
       self.accessibilityLabel =
           l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_TAB);
-      self.tintColor = [UIColor colorNamed:kBlueColor];
-      self.circleBackgroundView.backgroundColor = UIColor.whiteColor;
+      [self setImage:SymbolWithPalette(self.symbol,
+                                       @[
+                                         UIColor.blackColor,
+                                         [UIColor colorNamed:kBlue400Color]
+                                       ])
+            forState:UIControlStateNormal];
       break;
     case TabGridPageRemoteTabs:
       break;
   }
   _page = page;
-  [self setImage:self.tabGridNewTabImage forState:UIControlStateNormal];
 }
 
 @end

@@ -181,12 +181,25 @@ const CGFloat kSymbolToolbarPointSize = 24;
 }
 
 - (ToolbarButton*)openNewTabButton {
-  UIImage* newTabImage =
-      UseSymbols()
-          ? DefaultSymbolWithPointSize(kPlusSymbol, kSymbolToolbarPointSize)
-          : [UIImage imageNamed:@"toolbar_new_tab_page"];
-  ToolbarNewTabButton* newTabButton =
-      [ToolbarNewTabButton toolbarButtonWithImage:newTabImage];
+  ToolbarButton* newTabButton;
+  if (UseSymbols()) {
+    if (@available(iOS 15, *)) {
+      UIImage* image = SymbolWithPalette(
+          CustomSymbolWithPointSize(kNewTabSymbol, kSymbolToolbarPointSize), @[
+            [UIColor colorNamed:kGrey600Color],
+            [UIColor colorNamed:kGrey200Color]
+          ]);
+      newTabButton = [ToolbarButton toolbarButtonWithImage:image];
+    } else {
+      newTabButton = [ToolbarButton
+          toolbarButtonWithImage:
+              [[UIImage imageNamed:@"plus_circle_fill_ios14"]
+                  imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
+    }
+  } else {
+    newTabButton = [ToolbarNewTabButton
+        toolbarButtonWithImage:[UIImage imageNamed:@"toolbar_new_tab_page"]];
+  }
 
   [newTabButton addTarget:self.actionHandler
                    action:@selector(newTabAction:)
@@ -202,7 +215,7 @@ const CGFloat kSymbolToolbarPointSize = 24;
   newTabButton.accessibilityIdentifier = kToolbarNewTabButtonIdentifier;
 
   newTabButton.visibilityMask =
-      self.visibilityConfiguration.searchButtonVisibility;
+      self.visibilityConfiguration.newTabButtonVisibility;
   return newTabButton;
 }
 

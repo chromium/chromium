@@ -84,3 +84,6 @@ const CGFloat kThumbStripSlideInHeight = 40.0f;
 // The distance travelled by the thumb strip's plus sign button during the
 // slide-out animation of the transition from Peeked to Revealed state.
 const CGFloat kThumbStripPlusSignButtonSlideOutDistance = 400.0f;
+
+// Alpha of the background color of the toolbar.
+const CGFloat kToolbarBackgroundAlpha = 0.75;

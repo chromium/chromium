@@ -76,4 +76,7 @@ extern const CGFloat kThumbStripSlideInHeight;
 // slide-out animation of the transition from Peeked to Revealed state.
 extern const CGFloat kThumbStripPlusSignButtonSlideOutDistance;
 
+// Alpha of the background color of the toolbar.
+extern const CGFloat kToolbarBackgroundAlpha;
+
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GRID_CONSTANTS_H_

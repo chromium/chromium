@@ -13,11 +13,19 @@
 
 @property(nonatomic, assign) TabGridPage page;
 
+// Init with a large/small symbol.
+- (instancetype)initWithLargeSize:(BOOL)largeSize
+    API_AVAILABLE(ios(15))NS_DESIGNATED_INITIALIZER;
 // Init with image for regular/incognito page.
 - (instancetype)initWithRegularImage:(UIImage*)regularImage
-                      incognitoImage:(UIImage*)incognitoImage;
+                      incognitoImage:(UIImage*)incognitoImage
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+- (instancetype)initWithFrame:(CGRect)frame
+                primaryAction:(UIAction*)primaryAction NS_UNAVAILABLE;
 
 @end
 

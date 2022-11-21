@@ -42,8 +42,10 @@ extern NSString* const kGoogleShieldSymbol;
 extern NSString* const kShieldSymbol;
 extern NSString* const kIncognitoSymbol;
 
-// Custom symbol names which can be configured with a color palette.
+// Custom symbol names which can be configured with a color palette. iOS 15+
+// only.
 extern NSString* const kIncognitoCircleFillSymbol;
+extern NSString* const kNewTabSymbol;
 
 // Custom symbol to replace "palette" symbols on iOS 14. Cannot be used with a
 // palette.
