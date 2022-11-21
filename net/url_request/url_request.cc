@@ -17,6 +17,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "net/base/auth.h"
+#include "net/base/io_buffer.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
@@ -776,6 +777,9 @@ int URLRequest::Read(IOBuffer* dest, int dest_size) {
     // Caller is not too bright.  I guess we've done what they asked.
     return OK;
   }
+
+  // Caller should provide a buffer.
+  DCHECK(dest && dest->data());
 
   int rv = job_->Read(dest, dest_size);
   if (rv == ERR_IO_PENDING) {
