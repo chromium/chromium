@@ -142,6 +142,25 @@ CrasDevice::CrasDevice(struct libcras_node_info* node, DeviceType type)
   dev_name = device_name;
 }
 
+CrasDevice::CrasDevice(DeviceType type,
+                       uint64_t id,
+                       uint32_t dev_idx,
+                       uint32_t max_supported_channels,
+                       bool plugged,
+                       bool active,
+                       std::string node_type,
+                       std::string name,
+                       std::string dev_name)
+    : type(type),
+      id(id),
+      dev_idx(dev_idx),
+      max_supported_channels(max_supported_channels),
+      plugged(plugged),
+      active(active),
+      node_type(node_type),
+      name(name),
+      dev_name(dev_name) {}
+
 void mergeDevices(CrasDevice& old_dev, CrasDevice& new_dev) {
   if (old_dev.node_type == kLineout || new_dev.node_type == kLineout) {
     old_dev.name = kHeadphoneLineOutVirtualDevice;
