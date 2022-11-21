@@ -226,7 +226,7 @@ class SyncServiceImpl : public SyncService,
                                   create_http_post_provider_factory_cb);
 
   ModelTypeSet GetRegisteredDataTypesForTest() const;
-  bool HasAnyDatatypeErrorForTest() const;
+  bool HasAnyDatatypeErrorForTest(ModelTypeSet types) const;
 
   void GetThrottledDataTypesForTest(
       base::OnceCallback<void(ModelTypeSet)> cb) const;

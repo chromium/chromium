@@ -1332,11 +1332,22 @@ bool SyncTest::WaitForAsyncChangesToBeCommitted(size_t profile_index) const {
 
 void SyncTest::CheckForDataTypeFailures(size_t client_index) const {
   DCHECK(GetClient(client_index));
-  if (GetClient(client_index)->service()->HasAnyDatatypeErrorForTest()) {
+
+  auto* service = GetClient(client_index)->service();
+  syncer::ModelTypeSet types_to_check =
+      service->GetRegisteredDataTypesForTest();
+  types_to_check.RemoveAll(excluded_types_from_check_for_data_type_failures_);
+
+  if (service->HasAnyDatatypeErrorForTest(types_to_check)) {
     ADD_FAILURE() << "Data types failed during tests: "
                   << GetClient(client_index)
                          ->service()
                          ->GetTypeStatusMapForDebugging()
                          .DebugString();
   }
+}
+
+void SyncTest::ExcludeDataTypesFromCheckForDataTypeFailures(
+    syncer::ModelTypeSet types) {
+  excluded_types_from_check_for_data_type_failures_ = types;
 }

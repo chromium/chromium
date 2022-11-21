@@ -323,6 +323,10 @@ class SyncTest : public PlatformBrowserTest {
   // GAIA servers.
   void SetupMockGaiaResponsesForProfile(Profile* profile);
 
+  // Exclude data types from end of test checks in CheckForDataTypeFailures().
+  // Note that this replaces the list of excluded types (if set earlier).
+  void ExcludeDataTypesFromCheckForDataTypeFailures(syncer::ModelTypeSet types);
+
   // The FakeServer used in tests with server type IN_PROCESS_FAKE_SERVER.
   std::unique_ptr<fake_server::FakeServer> fake_server_;
 
@@ -483,6 +487,8 @@ class SyncTest : public PlatformBrowserTest {
   // Indicates whether to use a new user data dir.
   // Only used for external server tests with two clients.
   bool use_new_user_data_dir_ = false;
+
+  syncer::ModelTypeSet excluded_types_from_check_for_data_type_failures_;
 
   // The feature list to override features for all sync tests.
   base::test::ScopedFeatureList feature_list_;

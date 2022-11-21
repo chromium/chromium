@@ -276,11 +276,12 @@ ModelTypeSet SyncServiceImpl::GetRegisteredDataTypesForTest() const {
   return GetRegisteredDataTypes();
 }
 
-bool SyncServiceImpl::HasAnyDatatypeErrorForTest() const {
+bool SyncServiceImpl::HasAnyDatatypeErrorForTest(ModelTypeSet types) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (const auto& data_type_with_error : data_type_error_map_) {
-    if (data_type_with_error.second.error_type() ==
-        syncer::SyncError::DATATYPE_ERROR) {
+  for (auto type : types) {
+    auto it = data_type_error_map_.find(type);
+    if (it != data_type_error_map_.end() &&
+        it->second.error_type() == syncer::SyncError::DATATYPE_ERROR) {
       return true;
     }
   }
