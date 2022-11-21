@@ -8,7 +8,10 @@ import("//build/config/android/rules.gni")
 
 android_library("webengine_java_tests") {
   testonly = true
-  sources = [ "src/org/chromium/webengine/test/WebFragmentTest.java" ]
+  sources = [
+    "src/org/chromium/webengine/test/ExecuteScriptTest.java",
+    "src/org/chromium/webengine/test/WebFragmentTest.java",
+  ]
   deps = [
     ":webengine_java_test_support",
     "//base:base_java",
@@ -17,6 +20,7 @@ android_library("webengine_java_tests") {
     "//components/safe_browsing/android:safe_browsing_java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
+    "//net/android:net_java_test_support",
     "//third_party/android_deps:com_google_guava_listenablefuture_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/android_support_test_runner:rules_java",
@@ -26,6 +30,7 @@ android_library("webengine_java_tests") {
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/blink/public/common:common_java",
     "//third_party/junit:junit",
@@ -47,8 +52,10 @@ android_library("webengine_java_test_support") {
     "//base:base_java_test_support",
     "//content/public/test/android:content_java_test_support",
     "//net/android:net_java_test_support",
+    "//third_party/android_deps:com_google_guava_listenablefuture_java",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/junit:junit",
     "//ui/android:ui_java_test_support",

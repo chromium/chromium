@@ -7,9 +7,11 @@ package org.chromium.webengine.shell;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
+import org.chromium.webengine.WebFragment;
 import org.chromium.webengine.WebSandbox;
 
 /**
@@ -28,5 +30,18 @@ public class InstrumentationActivity extends AppCompatActivity {
 
     public ListenableFuture<WebSandbox> getWebSandboxFuture() {
         return mWebSandboxFuture;
+    }
+
+    public void attachFragment(WebFragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .setReorderingAllowed(true)
+                .add(R.id.fragment_container_view, fragment)
+                .commitNow();
+    }
+
+    public void detachFragment(WebFragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().setReorderingAllowed(true).remove(fragment).commitNow();
     }
 }

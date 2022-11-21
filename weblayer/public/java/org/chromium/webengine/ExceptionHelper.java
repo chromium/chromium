@@ -5,7 +5,6 @@
 package org.chromium.webengine;
 
 import org.chromium.webengine.interfaces.ExceptionType;
-import org.chromium.webengine.interfaces.RestrictedAPIException;
 
 class ExceptionHelper {
     static Exception createException(@ExceptionType int type, String msg) {

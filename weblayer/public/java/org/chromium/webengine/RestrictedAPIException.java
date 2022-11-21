@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.webengine.interfaces;
+package org.chromium.webengine;
 
 /**
  * Error thrown for API access violations.
