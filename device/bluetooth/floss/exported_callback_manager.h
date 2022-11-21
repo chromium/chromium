@@ -9,6 +9,8 @@
 #include <unordered_map>
 #include <utility>
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "dbus/bus.h"
@@ -20,10 +22,9 @@ namespace {
 
 template <typename T>
 using MethodDelegate =
-    std::function<void(dbus::MethodCall*,
-                       base::WeakPtr<T>,
-                       dbus::ExportedObject::ResponseSender)>;
-
+    base::RepeatingCallback<void(dbus::MethodCall*,
+                                 base::WeakPtr<T>,
+                                 dbus::ExportedObject::ResponseSender)>;
 }
 
 // Private class helper.
@@ -110,17 +111,20 @@ class CallbackForwarder {
   }
 
  public:
-  // Returns a lambda with captured |func| that parses D-Bus parameters and
-  // forwards it to |func|.
+  // Returns a RepeatingCallback with captured |func| that parses D-Bus
+  // parameters and forwards it to |func|.
   //
-  // Being a lambda has the benefit that the lambda invoker does not need to
+  // Being a RepeatingCallback has the benefit that the invoker does not need to
   // know the signature of |func| at compile time.
   static MethodDelegate<T> CreateForwarder(void (T::*func)(Args...)) {
-    return [func](dbus::MethodCall* method_call, base::WeakPtr<T> callback,
-                  dbus::ExportedObject::ResponseSender response_sender) {
-      Forward(method_call, base::BindOnce(func, callback),
-              std::move(response_sender));
-    };
+    return base::BindRepeating(
+        [](void (T::*func)(Args...), dbus::MethodCall* method_call,
+           base::WeakPtr<T> target,
+           dbus::ExportedObject::ResponseSender response_sender) {
+          Forward(method_call, base::BindOnce(func, target),
+                  std::move(response_sender));
+        },
+        func);
   }
 };
 
@@ -242,7 +246,7 @@ class ExportedCallbackManager {
     DCHECK(method_name == method_call->GetMember())
         << "Method name from D-Bus does not match with the registered name";
 
-    delegate(method_call, exported_callback, std::move(response_sender));
+    delegate.Run(method_call, exported_callback, std::move(response_sender));
   }
 
   scoped_refptr<dbus::Bus> bus_;
