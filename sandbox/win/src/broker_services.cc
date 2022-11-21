@@ -604,13 +604,6 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
     JobTracker* tracker =
         new JobTracker(std::move(policy_base), process_info.process_id());
 
-    // Verify that the process is actually in the specified job. This should
-    // only fail if something has gone wrong during process creation.
-    BOOL in_job;
-    CHECK(
-        job_handle &&
-        ::IsProcessInJob(process_info.process_handle(), job_handle, &in_job) &&
-        in_job);
     // Post the tracker to the tracking thread, then associate the job with
     // the tracker. The worker thread takes ownership of these objects.
     CHECK(::PostQueuedCompletionStatus(

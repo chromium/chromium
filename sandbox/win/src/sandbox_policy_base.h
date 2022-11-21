@@ -175,8 +175,8 @@ class PolicyBase final : public TargetPolicy {
   // SetJobLevel().
   ResultCode InitJob();
 
-  // Returns the handle for this policy's job, or INVALID_HANDLE_VALUE if the
-  // job is not initialized.
+  // Returns the handle for this policy's job, or nullptr if the job is
+  // not initialized.
   HANDLE GetJobHandle();
 
   // Returns true if a job is associated with this policy.
