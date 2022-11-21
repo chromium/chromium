@@ -20,6 +20,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/reporting_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
@@ -194,7 +195,6 @@ void ReportingServerConnector::OnCoreDestruction(CloudPolicyCore* core) {
 // static
 void ReportingServerConnector::UploadEncryptedReport(
     base::Value::Dict merging_payload,
-    absl::optional<base::Value::Dict> context,
     ResponseCallback callback) {
   // This function should be called on the UI task runner, and if it isn't, it
   // reschedules itself to do so.
@@ -202,11 +202,25 @@ void ReportingServerConnector::UploadEncryptedReport(
     ::content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&ReportingServerConnector::UploadEncryptedReport,
-                       std::move(merging_payload), std::move(context),
-                       std::move(callback)));
+                       std::move(merging_payload), std::move(callback)));
     return;
   }
   // Now we are on UI task runner.
+
+  // Acquire context for the upload.
+  Profile* profile = nullptr;
+#if BUILDFLAG(IS_CHROMEOS)
+  profile = ProfileManager::GetPrimaryUserProfile();
+#else
+  if (g_browser_process) {
+    auto* const profile_manager = g_browser_process->profile_manager();
+    if (profile_manager) {
+      profile = profile_manager->GetLastUsedProfileIfLoaded();
+    }
+  }
+#endif
+  auto context = GetContext(profile);
+
   // The `policy::CloudPolicyClient` object is retrieved in two different ways
   // for ChromeOS and non-ChromeOS browsers.
   ReportingServerConnector* const connector = GetInstance();

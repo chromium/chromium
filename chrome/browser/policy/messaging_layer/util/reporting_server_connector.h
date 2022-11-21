@@ -14,7 +14,6 @@
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -47,7 +46,6 @@ class ReportingServerConnector : public ::policy::CloudPolicyCore::Observer {
   // the upload fails). The `callback` will be called when the operation
   // completes or fails.
   static void UploadEncryptedReport(base::Value::Dict merging_payload,
-                                    absl::optional<base::Value::Dict> context,
                                     ResponseCallback callback);
 
  private:

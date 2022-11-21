@@ -77,7 +77,7 @@ TEST_F(ReportingServerConnectorTest,
       FROM_HERE,
       base::BindOnce(&ReportingServerConnector::UploadEncryptedReport,
                      /*merging_payload=*/base::Value::Dict(),
-                     /*context=*/absl::nullopt, response_event.cb()));
+                     response_event.cb()));
   EXPECT_OK(response_event.result());
 }
 
@@ -90,7 +90,7 @@ TEST_F(ReportingServerConnectorTest,
       FROM_HERE,
       base::BindOnce(&ReportingServerConnector::UploadEncryptedReport,
                      /*merging_payload=*/base::Value::Dict(),
-                     /*context=*/absl::nullopt, response_event.cb()));
+                     response_event.cb()));
   EXPECT_OK(response_event.result());
 }
 }  // namespace reporting

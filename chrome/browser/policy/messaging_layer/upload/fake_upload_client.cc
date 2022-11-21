@@ -113,8 +113,7 @@ Status FakeUploadClient::EnqueueUpload(
       std::move(encryption_key_attached_cb));
 
   ReportingServerConnector::UploadEncryptedReport(
-      std::move(request_result.value()), base::Value::Dict(),
-      std::move(response_cb));
+      std::move(request_result.value()), std::move(response_cb));
   return Status::StatusOK();
 }
 
