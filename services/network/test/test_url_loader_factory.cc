@@ -17,6 +17,38 @@
 
 namespace network {
 
+TestURLLoaderFactory::TestURLLoader::FollowRedirectParams::
+    FollowRedirectParams() = default;
+TestURLLoaderFactory::TestURLLoader::FollowRedirectParams::
+    ~FollowRedirectParams() = default;
+
+TestURLLoaderFactory::TestURLLoader::FollowRedirectParams::FollowRedirectParams(
+    FollowRedirectParams&& other) = default;
+
+TestURLLoaderFactory::TestURLLoader::FollowRedirectParams&
+TestURLLoaderFactory::TestURLLoader::FollowRedirectParams::operator=(
+    FollowRedirectParams&& other) = default;
+
+TestURLLoaderFactory::TestURLLoader::TestURLLoader(
+    mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver)
+    : receiver_(this, std::move(url_loader_receiver)) {}
+
+TestURLLoaderFactory::TestURLLoader::~TestURLLoader() = default;
+
+void TestURLLoaderFactory::TestURLLoader::FollowRedirect(
+    const std::vector<std::string>& removed_headers,
+    const net::HttpRequestHeaders& modified_headers,
+    const net::HttpRequestHeaders& modified_cors_exempt_headers,
+    const absl::optional<GURL>& new_url) {
+  FollowRedirectParams params;
+  params.removed_headers = removed_headers;
+  params.modified_headers = modified_headers;
+  params.modified_cors_exempt_headers = modified_cors_exempt_headers;
+  params.new_url = new_url;
+
+  follow_redirect_params_.emplace_back(std::move(params));
+}
+
 TestURLLoaderFactory::PendingRequest::PendingRequest() = default;
 TestURLLoaderFactory::PendingRequest::~PendingRequest() = default;
 
@@ -31,10 +63,11 @@ TestURLLoaderFactory::Response::Response(Response&&) = default;
 TestURLLoaderFactory::Response& TestURLLoaderFactory::Response::operator=(
     Response&&) = default;
 
-TestURLLoaderFactory::TestURLLoaderFactory()
+TestURLLoaderFactory::TestURLLoaderFactory(bool observe_loader_requests)
     : weak_wrapper_(
           base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-              this)) {}
+              this)),
+      observe_loader_requests_(observe_loader_requests) {}
 
 TestURLLoaderFactory::~TestURLLoaderFactory() {
   weak_wrapper_->Detach();
@@ -132,6 +165,12 @@ void TestURLLoaderFactory::CreateLoaderAndStart(
     return;
 
   PendingRequest pending_request;
+
+  if (observe_loader_requests_) {
+    pending_request.test_url_loader =
+        std::make_unique<TestURLLoader>(std::move(receiver));
+  }
+
   pending_request.client = std::move(client_remote);
   pending_request.request_id = request_id;
   pending_request.options = options;

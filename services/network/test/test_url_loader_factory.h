@@ -28,12 +28,55 @@ class WeakWrapperSharedURLLoaderFactory;
 // would prime it with response data for arbitrary URLs.
 class TestURLLoaderFactory : public mojom::URLLoaderFactory {
  public:
+  // A helper class to bind a URLLoader observe method invocations on it.
+  class TestURLLoader final : public network::mojom::URLLoader {
+   public:
+    struct FollowRedirectParams {
+      FollowRedirectParams();
+      ~FollowRedirectParams();
+      FollowRedirectParams(FollowRedirectParams&& other);
+      FollowRedirectParams& operator=(FollowRedirectParams&& other);
+
+      std::vector<std::string> removed_headers;
+      net::HttpRequestHeaders modified_headers;
+      net::HttpRequestHeaders modified_cors_exempt_headers;
+      absl::optional<GURL> new_url;
+    };
+
+    explicit TestURLLoader(
+        mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver);
+    ~TestURLLoader() override;
+
+    TestURLLoader(const TestURLLoader&) = delete;
+    TestURLLoader& operator=(const TestURLLoader&) = delete;
+
+    // network::mojom::URLLoader overrides.
+    void FollowRedirect(
+        const std::vector<std::string>& removed_headers,
+        const net::HttpRequestHeaders& modified_headers,
+        const net::HttpRequestHeaders& modified_cors_exempt_headers,
+        const absl::optional<GURL>& new_url) override;
+    void SetPriority(net::RequestPriority priority,
+                     int32_t intra_priority_value) override {}
+    void PauseReadingBodyFromNet() override {}
+    void ResumeReadingBodyFromNet() override {}
+
+    const std::vector<FollowRedirectParams>& follow_redirect_params() const {
+      return follow_redirect_params_;
+    }
+
+   private:
+    std::vector<FollowRedirectParams> follow_redirect_params_;
+    mojo::Receiver<network::mojom::URLLoader> receiver_;
+  };
+
   struct PendingRequest {
     PendingRequest();
     ~PendingRequest();
     PendingRequest(PendingRequest&& other);
     PendingRequest& operator=(PendingRequest&& other);
 
+    std::unique_ptr<TestURLLoader> test_url_loader;
     mojo::Remote<mojom::URLLoaderClient> client;
     int32_t request_id;
     uint32_t options;
@@ -58,7 +101,7 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
     kSendHeadersOnNetworkError = 0x2,
   };
 
-  TestURLLoaderFactory();
+  explicit TestURLLoaderFactory(bool observe_loader_requests = false);
 
   TestURLLoaderFactory(const TestURLLoaderFactory&) = delete;
   TestURLLoaderFactory& operator=(const TestURLLoaderFactory&) = delete;
@@ -207,6 +250,10 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
   Interceptor interceptor_;
   mojo::ReceiverSet<network::mojom::URLLoaderFactory> receivers_;
   size_t total_requests_ = 0;
+
+  // Whether the pending URLLoader in `CreateLoaderAndStart()` should be bound
+  // to observe the method invocations to it (e.g. FollowRedirect).
+  const bool observe_loader_requests_;
 };
 
 }  // namespace network
