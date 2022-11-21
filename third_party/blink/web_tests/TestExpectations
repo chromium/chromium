@@ -3229,7 +3229,6 @@ crbug.com/626703 external/wpt/focus/focus-already-focused-iframe-different-site.
 crbug.com/626703 external/wpt/focus/focus-already-focused-iframe-same-site.html [ Timeout ]
 crbug.com/626703 external/wpt/focus/focus-already-focused-iframe-deep-different-site.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/websockets/stream/tentative/backpressure-receive.any.html?wpt_flags=h2 [ Failure Pass ]
-crbug.com/626703 [ Win ] external/wpt/websockets/stream/tentative/constructor.any.html?wpt_flags=h2 [ Failure Timeout ]
 crbug.com/626703 external/wpt/websockets/stream/tentative/close.any.worker.html?wpt_flags=h2 [ Failure Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/websockets/stream/tentative/abort.any.serviceworker.html?wpt_flags=h2 [ Crash Failure Pass ]
 crbug.com/626703 [ Mac12 ] external/wpt/websockets/stream/tentative/abort.any.serviceworker.html?wpt_flags=h2 [ Crash Failure Pass ]
@@ -4639,8 +4638,6 @@ crbug.com/1107572 [ Mac ] http/tests/devtools/tracing/timeline-style/timeline-st
 crbug.com/1107572 [ Mac ] http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidator-invalidations.js [ Failure Pass ]
 
 # Sheriff 2020-07-22
-crbug.com/1107722 [ Mac ] virtual/threaded/http/tests/devtools/tracing/timeline-misc/timeline-event-causes.js [ Failure Pass ]
-crbug.com/1107722 [ Mac ] http/tests/devtools/tracing/timeline-js/timeline-script-id.js [ Failure Pass ]
 
 # Failing on Webkit Linux Leak
 crbug.com/1046784 [ Linux ] http/tests/devtools/tracing/timeline-paint/timeline-paint.js [ Failure Pass ]
