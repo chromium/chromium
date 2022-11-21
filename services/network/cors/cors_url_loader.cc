@@ -402,11 +402,6 @@ void CorsURLLoader::FollowRedirect(
     }
   }
 
-  network::URLLoader::LogConcerningRequestHeaders(
-      modified_headers, /*added_during_redirect=*/true);
-  network::URLLoader::LogConcerningRequestHeaders(
-      modified_cors_exempt_headers, /*added_during_redirect=*/true);
-
   for (const auto& name : removed_headers) {
     request_.headers.RemoveHeader(name);
     request_.cors_exempt_headers.RemoveHeader(name);

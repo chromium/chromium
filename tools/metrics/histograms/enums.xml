@@ -18146,11 +18146,6 @@ Called by update_net_error_codes.py.-->
   <int value="5" label="Try to override the status when its valus is error."/>
 </enum>
 
-<enum name="ConcerningHeaderPresent">
-  <int value="0" label="Header not present"/>
-  <int value="1" label="Header present"/>
-</enum>
-
 <enum name="ConditionalFocusDecision">
   <int value="0" label="kExplicitFocusCapturedSurface"/>
   <int value="1" label="kExplicitNoFocusChange"/>
@@ -72849,20 +72844,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Not bound"/>
   <int value="3" label="Encountered Error"/>
   <int value="4" label="Not responding"/>
-</enum>
-
-<enum name="NetworkServiceConcerningRequestHeaders">
-  <int value="0" label="kConnection"/>
-  <int value="1" label="kCookie"/>
-  <int value="2" label="kCookie2"/>
-  <int value="3" label="kContentTransferEncoding"/>
-  <int value="4" label="kDate"/>
-  <int value="5" label="kExpect"/>
-  <int value="6" label="kKeepAlive"/>
-  <int value="7" label="kReferer"/>
-  <int value="8" label="kTe"/>
-  <int value="9" label="kTransferEncoding"/>
-  <int value="10" label="kVia"/>
 </enum>
 
 <enum name="NetworkServiceCorpResult">

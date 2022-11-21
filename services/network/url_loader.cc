@@ -106,8 +106,6 @@ namespace network {
 
 namespace {
 
-using ConcerningHeaderId = URLLoader::ConcerningHeaderId;
-
 // Cannot use 0, because this means "default" in
 // mojo::core::Core::CreateDataPipe
 constexpr size_t kBlockedBodyAllocationSize = 1;
@@ -286,22 +284,6 @@ bool ShouldNotifyAboutCookie(net::CookieInclusionStatus status) {
          status.HasExclusionReason(
              net::CookieInclusionStatus::EXCLUDE_DOMAIN_NON_ASCII);
 }
-
-// Concerning headers that consumers probably shouldn't be allowed to set.
-// Gathering numbers on these before adding them to kUnsafeHeaders.
-const struct {
-  const char* name;
-  ConcerningHeaderId histogram_id;
-} kConcerningHeaders[] = {
-    {net::HttpRequestHeaders::kConnection, ConcerningHeaderId::kConnection},
-    {net::HttpRequestHeaders::kCookie, ConcerningHeaderId::kCookie},
-    {"Date", ConcerningHeaderId::kDate},
-    {"Expect", ConcerningHeaderId::kExpect},
-    // The referer is passed in from the caller on a per-request basis, but
-    // there's a separate field for it that should be used instead.
-    {net::HttpRequestHeaders::kReferer, ConcerningHeaderId::kReferer},
-    {"Via", ConcerningHeaderId::kVia},
-};
 
 // Parses AcceptCHFrame and removes client hints already in the headers.
 std::vector<mojom::WebClientHintsType> ComputeAcceptCHFrameHints(
@@ -982,7 +964,6 @@ void URLLoader::ScheduleStart() {
 URLLoader::~URLLoader() {
   TRACE_EVENT("loading", "URLLoader::~URLLoader",
               perfetto::TerminatingFlow::FromPointer(this));
-  RecordBodyReadFromNetBeforePausedIfNeeded();
   if (keepalive_ && keepalive_statistics_recorder_) {
     keepalive_statistics_recorder_->OnLoadFinished(
         *factory_params_->top_frame_id, keepalive_request_size_);
@@ -1021,10 +1002,6 @@ void URLLoader::FollowRedirect(
     return;
   }
 
-  if (!modified_headers.IsEmpty())
-    LogConcerningRequestHeaders(modified_headers,
-                                true /* added_during_redirect */);
-
   deferred_redirect_url_.reset();
   new_redirect_url_ = new_url;
 
@@ -1053,17 +1030,7 @@ void URLLoader::PauseReadingBodyFromNet() {
   // request indicates that the response was cached, there could still be
   // network activity involved. For example, the response was only partially
   // cached.
-  //
-  // On the other hand, we only report BodyReadFromNetBeforePaused histogram
-  // when we are sure that the response body hasn't been read from cache. This
-  // avoids polluting the histogram data with data points from cached responses.
   should_pause_reading_body_ = true;
-
-  if (read_in_progress_) {
-    update_body_read_before_paused_ = true;
-  } else {
-    body_read_before_paused_ = url_request_->GetRawBodyBytes();
-  }
 }
 
 void URLLoader::ResumeReadingBodyFromNet() {
@@ -1687,10 +1654,6 @@ void URLLoader::DidRead(int num_bytes, bool completed_synchronously) {
       reported_total_encoded_bytes_ = total_encoded_bytes;
     }
   }
-  if (update_body_read_before_paused_) {
-    update_body_read_before_paused_ = false;
-    body_read_before_paused_ = url_request_->GetRawBodyBytes();
-  }
 
   bool complete_read = true;
   if (consumer_handle_.is_valid()) {
@@ -1873,42 +1836,6 @@ URLLoader* URLLoader::ForRequest(const net::URLRequest& request) {
   if (!pointer)
     return nullptr;
   return pointer->get();
-}
-
-// static
-void URLLoader::LogConcerningRequestHeaders(
-    const net::HttpRequestHeaders& request_headers,
-    bool added_during_redirect) {
-  net::HttpRequestHeaders::Iterator it(request_headers);
-
-  bool concerning_header_found = false;
-
-  while (it.GetNext()) {
-    for (const auto& header : kConcerningHeaders) {
-      if (base::EqualsCaseInsensitiveASCII(header.name, it.name())) {
-        concerning_header_found = true;
-        if (added_during_redirect) {
-          UMA_HISTOGRAM_ENUMERATION(
-              "NetworkService.ConcerningRequestHeader.HeaderAddedOnRedirect",
-              header.histogram_id);
-        } else {
-          UMA_HISTOGRAM_ENUMERATION(
-              "NetworkService.ConcerningRequestHeader.HeaderPresentOnStart",
-              header.histogram_id);
-        }
-      }
-    }
-  }
-
-  if (added_during_redirect) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "NetworkService.ConcerningRequestHeader.AddedOnRedirect",
-        concerning_header_found);
-  } else {
-    UMA_HISTOGRAM_BOOLEAN(
-        "NetworkService.ConcerningRequestHeader.PresentOnStart",
-        concerning_header_found);
-  }
 }
 
 void URLLoader::OnAuthCredentials(
@@ -2242,22 +2169,6 @@ void URLLoader::OnSSLCertificateErrorResponse(const net::SSLInfo& ssl_info,
 
 bool URLLoader::HasDataPipe() const {
   return pending_write_ || response_body_stream_.is_valid();
-}
-
-void URLLoader::RecordBodyReadFromNetBeforePausedIfNeeded() {
-  if (update_body_read_before_paused_)
-    body_read_before_paused_ = url_request_->GetRawBodyBytes();
-  if (body_read_before_paused_ != -1) {
-    if (!url_request_->was_cached()) {
-      UMA_HISTOGRAM_COUNTS_1M("Network.URLLoader.BodyReadFromNetBeforePaused",
-                              body_read_before_paused_);
-    } else {
-      DVLOG(1) << "The request has been paused, but "
-               << "Network.URLLoader.BodyReadFromNetBeforePaused is not "
-               << "reported because the response body may be from cache. "
-               << "body_read_before_paused_: " << body_read_before_paused_;
-    }
-  }
 }
 
 void URLLoader::ResumeStart() {

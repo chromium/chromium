@@ -534,9 +534,6 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
     return false;
   }
 
-  URLLoader::LogConcerningRequestHeaders(request.headers,
-                                         false /* added_during_redirect */);
-
   // Specifying CredentialsMode::kSameOrigin without an initiator origin doesn't
   // make sense.
   if (request.credentials_mode == mojom::CredentialsMode::kSameOrigin &&

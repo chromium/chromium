@@ -3239,23 +3239,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.URLLoader.BodyReadFromNetBeforePaused" units="bytes"
-    expires_after="M77">
-  <owner>yzshen@chromium.org</owner>
-  <summary>
-    How much, in bytes, of the response body has been read from network by a
-    URLLoader before it pauses reading, when it receives a
-    PauseReadingBodyFromNet() call. If there are multiple calls to
-    PauseReadingBodyFromNet(), only a single value is recorded for the last
-    call. This histogram is recorded by URLLoader implementations that fetch
-    from network. When SafeBrowsing indicates that a resource may be unsafe and
-    therefore a more time-consuming check is required to classify it, reading
-    response body from network is paused in order to reduce the chance of
-    writing unsafe contents into cache. This histogram is useful to evaluate how
-    much data is cached during this window.
-  </summary>
-</histogram>
-
 <histogram name="Network.Wifi.Channel" enum="NetworkChannelType"
     expires_after="M85">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
@@ -3399,55 +3382,6 @@ chromium-metrics-reviews@google.com.
     The result of an attempt to delete stale network context data directory
     (e.g. cookies). Recorded during construction of network context for Chrome
     and Safebrowsing. Android only.
-  </summary>
-</histogram>
-
-<histogram name="NetworkService.ConcerningRequestHeader.AddedOnRedirect"
-    enum="ConcerningHeaderPresent" expires_after="2019-11-01">
-  <owner>mmenke@chromium.org</owner>
-  <summary>
-    Whether a request going through the network service has one of a number of
-    concerning headers added by the caller when the request is redirected.
-    Entries are only recorded when headers are actually added during a redirect.
-    We want to figure out if we can ban any of these headers from being set
-    outside the network service. For comparison with
-    NetworkService.ConcerningRequestHeader.HeaderAddedOnRedirect.
-  </summary>
-</histogram>
-
-<histogram name="NetworkService.ConcerningRequestHeader.HeaderAddedOnRedirect"
-    enum="NetworkServiceConcerningRequestHeaders" expires_after="2019-11-01">
-  <owner>mmenke@chromium.org</owner>
-  <summary>
-    Tracks how often each of a number of concerning headers are added by the
-    caller when a network service request is redirected. We want to figure out
-    if we can ban any of these headers from being set outside the network
-    service. To get meaningful percentages of requests, need to compare with
-    NetworkService.ConcerningRequestHeader.AddedOnRedirect.
-  </summary>
-</histogram>
-
-<histogram name="NetworkService.ConcerningRequestHeader.HeaderPresentOnStart"
-    enum="NetworkServiceConcerningRequestHeaders" expires_after="2019-11-01">
-  <owner>mmenke@chromium.org</owner>
-  <summary>
-    Tracks how often each of a number of concerning headers are set by the
-    caller when a network service request is started. We want to figure out if
-    we can ban any of these headers from being set outside the network service.
-    To get meaningful percentages of requests, need to compare with
-    NetworkService.ConcerningRequestHeader.PresentOnStart.
-  </summary>
-</histogram>
-
-<histogram name="NetworkService.ConcerningRequestHeader.PresentOnStart"
-    enum="ConcerningHeaderPresent" expires_after="2019-11-01">
-  <owner>mmenke@chromium.org</owner>
-  <summary>
-    Whether a request going through the network service has one of a number of
-    concerning headers set by the caller when the request starts. We want to
-    figure out if we can ban any of these headers from being set outside the
-    network service. For comparison with
-    NetworkService.ConcerningRequestHeader.HeadersPresentOnStart.
   </summary>
 </histogram>
 

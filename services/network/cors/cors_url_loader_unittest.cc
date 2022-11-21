@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "net/base/load_flags.h"
@@ -1712,75 +1711,6 @@ TEST_F(CorsURLLoaderTest, RequestWithProxyAuthorizationHeaderFails) {
   EXPECT_FALSE(client().has_received_response());
   EXPECT_TRUE(client().has_received_completion());
   EXPECT_EQ(net::ERR_INVALID_ARGUMENT, client().completion_status().error_code);
-}
-
-TEST_F(CorsURLLoaderTest, NoConcerningRequestHeadersLoggedCorrectly) {
-  base::HistogramTester histograms;
-
-  ResourceRequest request;
-  request.mode = mojom::RequestMode::kNoCors;
-  request.credentials_mode = mojom::CredentialsMode::kInclude;
-  request.url = GURL("https://example.com/");
-  request.request_initiator = url::Origin::Create(GURL("https://example.com"));
-  request.headers.SetHeader("Not", "Concerning");
-  request.headers.SetHeader("Totally", "Fine");
-
-  CreateLoaderAndStart(request);
-  RunUntilCreateLoaderAndStartCalled();
-  NotifyLoaderClientOnReceiveResponse();
-  NotifyLoaderClientOnComplete(net::OK);
-  RunUntilComplete();
-
-  EXPECT_TRUE(IsNetworkLoaderStarted());
-  EXPECT_FALSE(client().has_received_redirect());
-  EXPECT_TRUE(client().has_received_response());
-  EXPECT_TRUE(client().has_received_completion());
-  EXPECT_EQ(net::OK, client().completion_status().error_code);
-
-  histograms.ExpectBucketCount(
-      "NetworkService.ConcerningRequestHeader.PresentOnStart", true, 0);
-  histograms.ExpectBucketCount(
-      "NetworkService.ConcerningRequestHeader.PresentOnStart", false, 1);
-}
-
-TEST_F(CorsURLLoaderTest, ConcerningRequestHeadersLoggedCorrectly) {
-  using ConcerningHeaderId = URLLoader::ConcerningHeaderId;
-  base::HistogramTester histograms;
-
-  ResourceRequest request;
-  request.mode = mojom::RequestMode::kNoCors;
-  request.credentials_mode = mojom::CredentialsMode::kInclude;
-  request.url = GURL("https://example.com/");
-  request.request_initiator = url::Origin::Create(GURL("https://example.com"));
-  request.headers.SetHeader(net::HttpRequestHeaders::kConnection, "Close");
-  request.headers.SetHeader(net::HttpRequestHeaders::kCookie, "BadIdea=true");
-
-  CreateLoaderAndStart(request);
-  RunUntilCreateLoaderAndStartCalled();
-  NotifyLoaderClientOnReceiveResponse();
-  NotifyLoaderClientOnComplete(net::OK);
-  RunUntilComplete();
-
-  EXPECT_TRUE(IsNetworkLoaderStarted());
-  EXPECT_FALSE(client().has_received_redirect());
-  EXPECT_TRUE(client().has_received_response());
-  EXPECT_TRUE(client().has_received_completion());
-  EXPECT_EQ(net::OK, client().completion_status().error_code);
-
-  histograms.ExpectBucketCount(
-      "NetworkService.ConcerningRequestHeader.PresentOnStart", true, 1);
-  histograms.ExpectBucketCount(
-      "NetworkService.ConcerningRequestHeader.PresentOnStart", false, 0);
-  for (int i = 0; i < static_cast<int>(ConcerningHeaderId::kMaxValue); ++i) {
-    if (i == static_cast<int>(ConcerningHeaderId::kConnection) ||
-        i == static_cast<int>(ConcerningHeaderId::kCookie)) {
-      histograms.ExpectBucketCount(
-          "NetworkService.ConcerningRequestHeader.HeaderPresentOnStart", i, 1);
-    } else {
-      histograms.ExpectBucketCount(
-          "NetworkService.ConcerningRequestHeader.HeaderPresentOnStart", i, 0);
-    }
-  }
 }
 
 TEST_F(CorsURLLoaderTest, SetHostHeaderOnRedirectFails) {
