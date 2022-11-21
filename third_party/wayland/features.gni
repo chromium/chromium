@@ -31,7 +31,6 @@ declare_args() {
   }
 }
 
-if (use_system_libwayland) {
-  # ChromeOS should always be built with the bundled libwayland.
-  assert(!is_chromeos)
-}
+assert(
+    !use_system_libwayland && !use_system_wayland_scanner,
+    "Usage of system libwayland is deprecated. See https://crbug.com/1385736")
