@@ -175,8 +175,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
   const GURL page_url1("https://google.com/");
   const GURL page_url2("https://example.com/");
 
-  SetEncryptionPassphraseForClient(/*index=*/0, "hunter2");
-  ASSERT_TRUE(SetupSync(WAIT_FOR_SYNC_SETUP_TO_COMPLETE));
+  ASSERT_TRUE(SetupSync());
+  GetSyncService()->GetUserSettings()->SetEncryptionPassphrase("hunter2");
 
   ASSERT_TRUE(AddURL(/*profile=*/0, title1, page_url1));
   ASSERT_TRUE(AddURL(/*profile=*/0, title2, page_url2));
@@ -301,23 +301,22 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
                        DoesNotLeakUnencryptedData) {
   const std::string title = "Should be encrypted";
   const GURL page_url("https://google.com/encrypted");
-  SetEncryptionPassphraseForClient(/*index=*/0, "hunter2");
   ASSERT_TRUE(SetupClients());
 
-  // Create local bookmarks before sync is enabled.
+  // Create local bookmarks before setting up sync.
+  CommittedBookmarkEntityNameObserver observer(GetFakeServer());
   ASSERT_TRUE(AddURL(/*profile=*/0, title, page_url));
 
-  CommittedBookmarkEntityNameObserver observer(GetFakeServer());
-  ASSERT_TRUE(SetupSync(WAIT_FOR_SYNC_SETUP_TO_COMPLETE));
+  // Mimic custom passphrase being set during initial sync setup.
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
+  GetSyncService()->GetUserSettings()->SetSyncRequested(true);
+  GetSyncService()->GetUserSettings()->SetEncryptionPassphrase("hunter2");
+  GetClient(0)->FinishSyncSetup();
 
   ASSERT_TRUE(WaitForNigori(PassphraseType::kCustomPassphrase));
-  // If WaitForEncryptedServerBookmarks() succeeds, that means that a
-  // cryptographer initialized with only the key params was able to decrypt the
-  // data, so the data must be encrypted using a passphrase-derived key (and not
-  // e.g. a keystore key), because that cryptographer has never seen the
-  // server-side Nigori. Furthermore, if a bookmark commit has happened only
-  // once, we are certain that no bookmarks other than those we've verified to
-  // be encrypted have been committed.
+  // Ensure that only encrypted bookmarks were committed and that they are
+  // encrypted using custom passprhase.
   EXPECT_TRUE(WaitForEncryptedServerBookmarks({{title, page_url}},
                                               /*passphrase=*/"hunter2"));
   EXPECT_THAT(observer.GetCommittedEntityNames(), ElementsAre("encrypted"));

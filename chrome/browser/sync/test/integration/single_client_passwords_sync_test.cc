@@ -207,8 +207,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithVerifier,
 // data even further.
 IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithVerifier,
                        CommitWithCustomPassphrase) {
-  SetEncryptionPassphraseForClient(/*index=*/0, "hunter2");
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  GetSyncService(0)->GetUserSettings()->SetEncryptionPassphrase("hunter2");
 
   PasswordForm form = CreateTestPasswordForm(0);
   GetVerifierProfilePasswordStoreInterface()->AddLogin(form);
