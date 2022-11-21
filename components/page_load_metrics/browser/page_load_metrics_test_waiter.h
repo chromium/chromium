@@ -132,6 +132,7 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
 
  protected:
   virtual bool ExpectationsSatisfied() const;
+  void AssertExpectationsSatisfied() const;
 
   // Intended to be overridden in tests to allow tests to wait on other resource
   // conditions.

@@ -198,7 +198,7 @@ void PageLoadMetricsTestWaiter::Wait() {
     run_loop_->Run();
     run_loop_ = nullptr;
   }
-  EXPECT_TRUE(ExpectationsSatisfied());
+  AssertExpectationsSatisfied();
   ResetExpectations();
 }
 
@@ -547,6 +547,23 @@ bool PageLoadMetricsTestWaiter::ExpectationsSatisfied() const {
          MainFrameViewportRectExpectationsSatisfied() &&
          MemoryUpdateExpectationsSatisfied() &&
          TotalInputDelayExpectationsSatisfied();
+}
+
+void PageLoadMetricsTestWaiter::AssertExpectationsSatisfied() const {
+  EXPECT_TRUE(expected_.page_fields_.AreAllSetIn(observed_.page_fields_));
+  EXPECT_TRUE(
+      expected_.subframe_fields_.AreAllSetIn(observed_.subframe_fields_));
+  EXPECT_TRUE(ResourceUseExpectationsSatisfied());
+  EXPECT_TRUE(UseCounterExpectationsSatisfied());
+  EXPECT_TRUE(SubframeNavigationExpectationsSatisfied());
+  EXPECT_TRUE(SubframeDataExpectationsSatisfied());
+  EXPECT_TRUE(IsSubset(expected_.frame_sizes_, observed_.frame_sizes_));
+  EXPECT_TRUE(LoadingBehaviorExpectationsSatisfied());
+  EXPECT_TRUE(CpuTimeExpectationsSatisfied());
+  EXPECT_TRUE(MainFrameIntersectionExpectationsSatisfied());
+  EXPECT_TRUE(MainFrameViewportRectExpectationsSatisfied());
+  EXPECT_TRUE(MemoryUpdateExpectationsSatisfied());
+  EXPECT_TRUE(TotalInputDelayExpectationsSatisfied());
 }
 
 void PageLoadMetricsTestWaiter::ResetExpectations() {
