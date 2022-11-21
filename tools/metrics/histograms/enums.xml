@@ -26626,6 +26626,36 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="4" label="Icons section selected"/>
 </enum>
 
+<enum name="DevToolsMediaType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="text/javascript"/>
+  <int value="2" label="text/css"/>
+  <int value="3" label="text/html"/>
+  <int value="4" label="application/xml"/>
+  <int value="5" label="application/wasm"/>
+  <int value="6" label="application/manifest+json"/>
+  <int value="7" label="application/x-aspx"/>
+  <int value="8" label="application/jsp"/>
+  <int value="9" label="text/x-c++src"/>
+  <int value="10" label="text/x-coffeescript"/>
+  <int value="11" label="application/vnd.dart"/>
+  <int value="12" label="text/typescript"/>
+  <int value="13" label="text/typescript-jsx"/>
+  <int value="14" label="application/json"/>
+  <int value="15" label="text/x-csharp"/>
+  <int value="16" label="text/x-java"/>
+  <int value="17" label="text/x-less"/>
+  <int value="18" label="application/x-httpd-php"/>
+  <int value="19" label="text/x-python"/>
+  <int value="20" label="text/x-sh"/>
+  <int value="21" label="text/x-gss"/>
+  <int value="22" label="text/x-sass"/>
+  <int value="23" label="text/x-scss"/>
+  <int value="24" label="text/markdown"/>
+  <int value="25" label="text/x-clojure"/>
+  <int value="26" label="text/jsx"/>
+</enum>
+
 <enum name="DevToolsMutatingHttpActionVerb">
   <int value="0" label="GET"/>
   <int value="1" label="POST"/>

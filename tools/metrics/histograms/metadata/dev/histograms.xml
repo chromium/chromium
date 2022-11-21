@@ -388,6 +388,15 @@ chromium-metrics-reviews@google.com.
   <summary>Specified DevTools sidebar pane was shown.</summary>
 </histogram>
 
+<histogram name="DevTools.SourcesPanelFileOpened" enum="DevToolsMediaType"
+    expires_after="2023-12-31">
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <summary>
+    Records the media types of files opened in the DevTools Sources panel.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.StyleTextCopied" enum="DevToolsStyleTextCopied"
     expires_after="2023-04-16">
   <owner>changhaohan@chromium.org</owner>
