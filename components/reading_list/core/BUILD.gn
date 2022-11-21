@@ -15,7 +15,6 @@ source_set("core") {
     "reading_list_model_impl.cc",
     "reading_list_model_impl.h",
     "reading_list_model_observer.h",
-    "reading_list_model_storage.cc",
     "reading_list_model_storage.h",
     "reading_list_pref_names.cc",
     "reading_list_pref_names.h",

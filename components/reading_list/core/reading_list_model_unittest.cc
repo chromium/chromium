@@ -10,9 +10,6 @@
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/reading_list/core/reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_store_delegate.h"
-#include "components/sync/model/metadata_change_list.h"
-#include "components/sync/model/model_error.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -32,10 +29,7 @@ class TestReadingListStorage : public ReadingListModelStorage {
  public:
   TestReadingListStorage(TestReadingListStorageObserver* observer,
                          base::SimpleTestClock* clock)
-      : ReadingListModelStorage(
-            std::make_unique<
-                testing::NiceMock<syncer::MockModelTypeChangeProcessor>>()),
-        entries_(new ReadingListStoreDelegate::ReadingListEntries()),
+      : entries_(new ReadingListStoreDelegate::ReadingListEntries()),
         observer_(observer),
         clock_(clock) {}
 
@@ -103,45 +97,10 @@ class TestReadingListStorage : public ReadingListModelStorage {
     return nullptr;
   }
 
-  // Syncing is not used in this test class.
-  std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
-      override {
+  syncer::ModelTypeSyncBridge* GetModelTypeSyncBridge() override {
+    // Syncing is not used in this test class.
     NOTREACHED();
     return nullptr;
-  }
-
-  absl::optional<syncer::ModelError> MergeSyncData(
-      std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
-      syncer::EntityChangeList entity_data) override {
-    NOTREACHED();
-    return {};
-  }
-
-  absl::optional<syncer::ModelError> ApplySyncChanges(
-      std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
-      syncer::EntityChangeList entity_changes) override {
-    NOTREACHED();
-    return {};
-  }
-
-  void GetData(StorageKeyList storage_keys, DataCallback callback) override {
-    NOTREACHED();
-    return;
-  }
-
-  void GetAllDataForDebugging(DataCallback callback) override {
-    NOTREACHED();
-    return;
-  }
-
-  std::string GetClientTag(const syncer::EntityData& entity_data) override {
-    NOTREACHED();
-    return "";
-  }
-
-  std::string GetStorageKey(const syncer::EntityData& entity_data) override {
-    NOTREACHED();
-    return "";
   }
 
  private:

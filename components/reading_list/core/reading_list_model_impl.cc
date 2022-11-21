@@ -595,7 +595,7 @@ bool ReadingListModelImpl::GetPersistentHasUnseen() {
 syncer::ModelTypeSyncBridge* ReadingListModelImpl::GetModelTypeSyncBridge() {
   if (!storage_layer_)
     return nullptr;
-  return storage_layer_.get();
+  return storage_layer_->GetModelTypeSyncBridge();
 }
 
 ReadingListModelStorage* ReadingListModelImpl::StorageLayer() {

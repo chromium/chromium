@@ -22,7 +22,7 @@
 ReadingListStore::ReadingListStore(
     syncer::OnceModelTypeStoreFactory create_store_callback,
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
-    : ReadingListModelStorage(std::move(change_processor)),
+    : ModelTypeSyncBridge(std::move(change_processor)),
       create_store_callback_(std::move(create_store_callback)),
       pending_transaction_count_(0) {}
 
@@ -110,6 +110,10 @@ void ReadingListStore::RemoveEntry(const ReadingListEntry& entry) {
   }
   change_processor()->Delete(entry.URL().spec(),
                              batch_->GetMetadataChangeList());
+}
+
+syncer::ModelTypeSyncBridge* ReadingListStore::GetModelTypeSyncBridge() {
+  return this;
 }
 
 void ReadingListStore::OnDatabaseLoad(

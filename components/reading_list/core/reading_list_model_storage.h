@@ -8,8 +8,6 @@
 #include <memory>
 
 #include "components/reading_list/core/reading_list_entry.h"
-#include "components/sync/base/model_type.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 
 class ReadingListModel;
 class ReadingListStoreDelegate;
@@ -19,22 +17,21 @@ class Clock;
 }
 
 namespace syncer {
-class ModelTypeChangeProcessor;
+class ModelTypeSyncBridge;
 }
 
 // Interface for a persistence layer for reading list.
 // All interface methods have to be called on main thread.
-class ReadingListModelStorage : public syncer::ModelTypeSyncBridge {
+class ReadingListModelStorage {
  public:
   class ScopedBatchUpdate;
 
-  ReadingListModelStorage(
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+  ReadingListModelStorage() = default;
 
   ReadingListModelStorage(const ReadingListModelStorage&) = delete;
   ReadingListModelStorage& operator=(const ReadingListModelStorage&) = delete;
 
-  ~ReadingListModelStorage() override;
+  virtual ~ReadingListModelStorage() = default;
 
   // Sets the model the Storage is backing.
   // This will trigger store initalization and load persistent entries.
@@ -59,6 +56,10 @@ class ReadingListModelStorage : public syncer::ModelTypeSyncBridge {
 
   // Removed an entry from the storage.
   virtual void RemoveEntry(const ReadingListEntry& entry) = 0;
+
+  // Returns the ModelTypeSyncBridge responsible for handling sync message.
+  // TODO(crbug.com/1386158): This shouldn't belong in this interface.
+  virtual syncer::ModelTypeSyncBridge* GetModelTypeSyncBridge() = 0;
 
   class ScopedBatchUpdate {
    public:

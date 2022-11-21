@@ -15,15 +15,18 @@
 #include "components/reading_list/core/reading_list_store_delegate.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store.h"
+#include "components/sync/model/model_type_sync_bridge.h"
 
 namespace syncer {
+class ModelTypeChangeProcessor;
 class MutableDataBatch;
-}
+}  // namespace syncer
 
 class ReadingListModel;
 
 // A ReadingListModelStorage storing and syncing data in protobufs.
-class ReadingListStore : public ReadingListModelStorage {
+class ReadingListStore : public ReadingListModelStorage,
+                         public syncer::ModelTypeSyncBridge {
  public:
   ReadingListStore(
       syncer::OnceModelTypeStoreFactory create_store_callback,
@@ -43,6 +46,7 @@ class ReadingListStore : public ReadingListModelStorage {
 
   void SaveEntry(const ReadingListEntry& entry) override;
   void RemoveEntry(const ReadingListEntry& entry) override;
+  syncer::ModelTypeSyncBridge* GetModelTypeSyncBridge() override;
 
   // Creates an object used to communicate changes in the sync metadata to the
   // model type store.
