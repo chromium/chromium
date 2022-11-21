@@ -19,6 +19,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/base_tracing.h"
@@ -92,6 +93,13 @@ bool IsDataOrAbout(const GURL& url) {
   return url.IsAboutSrcdoc() || url.IsAboutBlank() ||
          url.scheme() == url::kDataScheme;
 }
+
+// When enabled, we cache the result of IsNavigationSameSite() to avoid
+// redundant work during a given navigation event. See
+// RenderFrameHostManager::IsSameSiteGetter for more details.
+BASE_FEATURE(kCacheIsNavigationSameSite,
+             "CacheIsNavigationSameSite",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Helper function to determine whether a navigation from `current_rfh` to
 // `destination_effective_url_info` should swap BrowsingInstances to ensure that
@@ -324,6 +332,33 @@ void ReuseDefaultProcessFromDifferentBrowsingInstanceIfPossible(
 }
 
 }  // namespace
+
+RenderFrameHostManager::IsSameSiteGetter::IsSameSiteGetter()
+    : is_same_site_(absl::nullopt),
+      should_use_cached_value_(
+          base::FeatureList::IsEnabled(kCacheIsNavigationSameSite)) {}
+
+RenderFrameHostManager::IsSameSiteGetter::IsSameSiteGetter(bool is_same_site)
+    : is_same_site_(is_same_site),
+      should_use_cached_value_(
+          base::FeatureList::IsEnabled(kCacheIsNavigationSameSite)) {}
+
+bool RenderFrameHostManager::IsSameSiteGetter::Get(
+    const RenderFrameHostImpl& render_frame_host,
+    const UrlInfo& url_info) {
+  if (!should_use_cached_value_) {
+    return render_frame_host.IsNavigationSameSite(url_info);
+  }
+
+  if (!is_same_site_.has_value()) {
+    is_same_site_ = render_frame_host.IsNavigationSameSite(url_info);
+  } else {
+    DCHECK_EQ(is_same_site_.value(),
+              render_frame_host.IsNavigationSameSite(url_info));
+  }
+
+  return is_same_site_.value();
+}
 
 RenderFrameHostManager::RenderFrameHostManager(FrameTreeNode* frame_tree_node,
                                                Delegate* delegate)
@@ -1079,6 +1114,11 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
   TRACE_EVENT("navigation", "RenderFrameHostManager::GetFrameHostForNavigation",
               ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_);
 
+  // TODO(peilinwang): remove when we've finished investigating BeginNavigation
+  // jank (https://crbug.com/1380942).
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "RenderFrameHostManager.GetFrameHostForNavigation");
+
   DCHECK(!request->common_params().url.SchemeIs(url::kJavaScriptScheme))
       << "Don't call this method for JavaScript URLs as those create a "
          "temporary  NavigationRequest and we don't want to reset an ongoing "
@@ -1123,8 +1163,12 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
   // First compute the SiteInstance to use for the navigation.
   SiteInstance* current_site_instance = render_frame_host_->GetSiteInstance();
   BrowserContext* browser_context = current_site_instance->GetBrowserContext();
+  bool is_same_site =
+      render_frame_host_->IsNavigationSameSite(request->GetUrlInfo());
+
+  IsSameSiteGetter is_same_site_getter(is_same_site);
   scoped_refptr<SiteInstance> dest_site_instance =
-      GetSiteInstanceForNavigationRequest(request, reason);
+      GetSiteInstanceForNavigationRequest(request, is_same_site_getter, reason);
 
   // A subframe should always be in the same BrowsingInstance as the parent
   // (see also https://crbug.com/1107269).
@@ -1135,8 +1179,6 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
   // The SiteInstance determines whether to switch RenderFrameHost or not.
   bool use_current_rfh = current_site_instance == dest_site_instance;
 
-  bool is_same_site =
-      render_frame_host_->IsNavigationSameSite(request->GetUrlInfo());
   if (frame_tree_node_->IsOutermostMainFrame()) {
     // Same-site navigations could swap BrowsingInstance as well. But we only
     // want to clear window.name on cross-site cross-BrowsingInstance main frame
@@ -1642,6 +1684,7 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
     bool is_failure,
     bool is_reload,
     bool is_same_document,
+    IsSameSiteGetter& is_same_site,
     bool cross_origin_opener_policy_mismatch,
     bool was_server_redirect,
     bool should_replace_current_entry) {
@@ -1805,7 +1848,7 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
       is_failure && frame_tree_node_->IsErrorPageIsolationEnabled();
 
   if (current_instance->HasSite() &&
-      !render_frame_host_->IsNavigationSameSite(destination_url_info) &&
+      !is_same_site.Get(*render_frame_host_, destination_url_info) &&
       !CanUseSourceSiteInstance(destination_url_info, source_instance,
                                 was_server_redirect, is_failure) &&
       !is_for_isolated_error_page &&
@@ -1818,6 +1861,7 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
   // Experimental mode to swap BrowsingInstances on most navigations when there
   // are no other windows in the BrowsingInstance.
   return ShouldProactivelySwapBrowsingInstance(destination_url_info, is_reload,
+                                               is_same_site,
                                                should_replace_current_entry);
 }
 
@@ -1825,6 +1869,7 @@ ShouldSwapBrowsingInstance
 RenderFrameHostManager::ShouldProactivelySwapBrowsingInstance(
     const UrlInfo& destination_url_info,
     bool is_reload,
+    IsSameSiteGetter& is_same_site,
     bool should_replace_current_entry) {
   // If we've disabled proactive BrowsingInstance swap for this RenderFrameHost,
   // we should not try to do a proactive swap.
@@ -1894,9 +1939,8 @@ RenderFrameHostManager::ShouldProactivelySwapBrowsingInstance(
   if (is_reload)
     return ShouldSwapBrowsingInstance::kNo_Reload;
 
-  bool is_same_site =
-      render_frame_host_->IsNavigationSameSite(destination_url_info);
-  if (is_same_site) {
+  bool same_site = is_same_site.Get(*render_frame_host_, destination_url_info);
+  if (same_site) {
     // If it's a same-site navigation, we should only swap if same-site
     // ProactivelySwapBrowsingInstance is enabled, or if BackForwardCache
     // is enabled and the current RFH is eligible for back/forward cache
@@ -1921,7 +1965,7 @@ RenderFrameHostManager::ShouldProactivelySwapBrowsingInstance(
                                  .GetFutureBackForwardCacheEligibilityPotential(
                                      render_frame_host_.get());
   if (bfcache_eligibility.CanStore()) {
-    if (is_same_site) {
+    if (same_site) {
       return ShouldSwapBrowsingInstance::kYes_SameSiteProactiveSwap;
     } else {
       return ShouldSwapBrowsingInstance::kYes_CrossSiteProactiveSwap;
@@ -1950,6 +1994,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
     bool is_failure,
     bool is_reload,
     bool is_same_document,
+    IsSameSiteGetter& is_same_site,
     bool dest_is_restore,
     bool dest_is_view_source_mode,
     bool was_server_redirect,
@@ -2017,7 +2062,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
                 current_effective_url, current_is_view_source_mode,
                 source_instance, current_instance_impl, dest_instance,
                 dest_url_info, dest_is_view_source_mode, transition, is_failure,
-                is_reload, is_same_document,
+                is_reload, is_same_document, is_same_site,
                 cross_origin_opener_policy_mismatch, was_server_redirect,
                 should_replace_current_entry);
 
@@ -2042,8 +2087,8 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
 
   SiteInstanceDescriptor new_instance_descriptor = DetermineSiteInstanceForURL(
       dest_url_info, source_instance, current_instance, dest_instance,
-      transition, is_failure, dest_is_restore, dest_is_view_source_mode,
-      should_swap, was_server_redirect, reason);
+      transition, is_failure, is_same_site, dest_is_restore,
+      dest_is_view_source_mode, should_swap, was_server_redirect, reason);
 
   scoped_refptr<SiteInstance> new_instance =
       ConvertToSiteInstance(new_instance_descriptor, candidate_instance);
@@ -2143,7 +2188,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
       IsBackForwardCacheEnabled();
   if (is_same_site_proactive_swap_enabled && is_history_navigation &&
       swapped_browsing_instance &&
-      render_frame_host_->IsNavigationSameSite(dest_url_info)) {
+      is_same_site.Get(*render_frame_host_, dest_url_info)) {
     reuse_current_process_if_possible = true;
   }
 
@@ -2237,6 +2282,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     SiteInstance* dest_instance,
     ui::PageTransition transition,
     bool is_failure,
+    IsSameSiteGetter& is_same_site,
     bool dest_is_restore,
     bool dest_is_view_source_mode,
     bool force_browsing_instance_swap,
@@ -2443,7 +2489,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   }
 
   // Use the current SiteInstance for same site navigations.
-  if (render_frame_host_->IsNavigationSameSite(dest_url_info)) {
+  if (is_same_site.Get(*render_frame_host_, dest_url_info)) {
     AppendReason(reason, "DetermineSiteInstanceForURL / same-site-navigation");
     return SiteInstanceDescriptor(render_frame_host_->GetSiteInstance());
   }
@@ -3270,6 +3316,15 @@ scoped_refptr<SiteInstance>
 RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
     NavigationRequest* request,
     std::string* reason) {
+  IsSameSiteGetter is_same_site = IsSameSiteGetter();
+  return GetSiteInstanceForNavigationRequest(request, is_same_site, reason);
+}
+
+scoped_refptr<SiteInstance>
+RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
+    NavigationRequest* request,
+    IsSameSiteGetter& is_same_site,
+    std::string* reason) {
   SiteInstance* current_site_instance = render_frame_host_->GetSiteInstance();
 
   // All children of MHTML documents must be MHTML documents. They all live in
@@ -3335,7 +3390,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
       request->dest_site_instance(), candidate_site_instance,
       ui::PageTransitionFromInt(request->common_params().transition),
       request->state() >= NavigationRequest::CANCELING, is_reload,
-      request->IsSameDocument(),
+      request->IsSameDocument(), is_same_site,
       request->GetRestoreType() == RestoreType::kRestored,
       request->commit_params().is_view_source, request->WasServerRedirect(),
       request->coop_status().require_browsing_instance_swap(),
