@@ -2126,7 +2126,6 @@
       # Can't run on MSAN because gl_tests uses the hardware driver,
       # which isn't instrumented.
       'Linux MSan Tests',
-      'Linux MSan Focal',
     ],
     'modifications': {
       # TODO(kbr): figure out a better way to specify blocks of
@@ -2252,7 +2251,6 @@
       # Can't run on MSAN because gl_unittests uses the hardware driver,
       # which isn't instrumented.
       'Linux MSan Tests',
-      'Linux MSan Focal',
     ],
     'modifications': {
       'Win10 FYI x64 Exp Release (Intel HD 630)': {
@@ -3192,7 +3190,6 @@
       'Linux ChromiumOS MSan Tests',  # https://crbug.com/831676
       'Linux ChromiumOS MSan Focal',
       'Linux MSan Tests',  # https://crbug.com/831676
-      'Linux MSan Focal',  # https://crbug.com/831676
     ],
     'replacements': {
       # TODO(crbug.com/1078982): Remove once the test is fixed on 10.15.4.

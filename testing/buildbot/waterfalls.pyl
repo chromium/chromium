@@ -2724,22 +2724,6 @@
           '--test-launcher-print-test-stdio=always',
         ],
       },
-      'Linux MSan Focal': {
-        'mixins': [
-          'linux-focal',
-          'x86-64',
-        ],
-        'swarming': {
-          'expiration': 10800,
-          'hard_timeout': 7200,
-        },
-        'test_suites': {
-          'gtest_tests': 'chromium_linux_and_gl_gtests',
-        },
-        'args': [
-          '--test-launcher-print-test-stdio=always',
-        ],
-      },
       'Linux Viz': {
         'mixins': [
           'linux-bionic',
@@ -5040,7 +5024,7 @@
       },
       'Linux MSan Tests': {
         'mixins': [
-          'linux-xenial',
+          'linux-focal',
           'x86-64',
         ],
         'test_suites': {
