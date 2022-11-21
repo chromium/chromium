@@ -37,10 +37,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
-#include "base/trace_event/event_name_filter.h"
 #include "base/trace_event/trace_buffer.h"
-#include "base/trace_event/trace_event_filter.h"
-#include "base/trace_event/trace_event_filter_test_utils.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -153,8 +150,7 @@ class TraceEventTestFixture : public testing::Test {
   }
 
   void EndTraceAndFlushAsync(WaitableEvent* flush_complete_event) {
-    TraceLog::GetInstance()->SetDisabled(TraceLog::RECORDING_MODE |
-                                         TraceLog::FILTERING_MODE);
+    TraceLog::GetInstance()->SetDisabled(TraceLog::RECORDING_MODE);
     TraceLog::GetInstance()->Flush(base::BindRepeating(
         &TraceEventTestFixture::OnTraceDataCollected,
         base::Unretained(static_cast<TraceEventTestFixture*>(this)),
@@ -2465,186 +2461,6 @@ TEST_F(TraceEventTestFixture, TimeOffset) {
     EXPECT_LE(timestamp.value(), end_time);
     last_timestamp = timestamp.value();
   }
-}
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-
-// Runtime filtering isn't supported with Perfetto.
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-TEST_F(TraceEventTestFixture, TraceFilteringMode) {
-  const char config_json[] =
-      "{"
-      "  \"event_filters\": ["
-      "     {"
-      "       \"filter_predicate\": \"testing_predicate\", "
-      "       \"included_categories\": [\"*\"]"
-      "     }"
-      "  ]"
-      "}";
-
-  // Run RECORDING_MODE within FILTERING_MODE:
-  TestEventFilter::HitsCounter filter_hits_counter;
-  TestEventFilter::set_filter_return_value(true);
-  TraceLog::GetInstance()->SetFilterFactoryForTesting(TestEventFilter::Factory);
-
-  // Only filtering mode is enabled with test filters.
-  TraceLog::GetInstance()->SetEnabled(TraceConfig(config_json),
-                                      TraceLog::FILTERING_MODE);
-  EXPECT_EQ(TraceLog::FILTERING_MODE, TraceLog::GetInstance()->enabled_modes());
-  {
-    void* ptr = this;
-    TRACE_EVENT0("test_c0", "name0");
-    TRACE_EVENT_ASYNC_BEGIN0("test_c1", "name1", ptr);
-    TRACE_EVENT_INSTANT0("test_c0", "name0", TRACE_EVENT_SCOPE_THREAD);
-    TRACE_EVENT_ASYNC_END0("test_c1", "name1", ptr);
-  }
-
-  // Recording mode is enabled when filtering mode is turned on.
-  TraceLog::GetInstance()->SetEnabled(TraceConfig("", ""),
-                                      TraceLog::RECORDING_MODE);
-  EXPECT_EQ(TraceLog::RECORDING_MODE | TraceLog::FILTERING_MODE,
-            TraceLog::GetInstance()->enabled_modes());
-  { TRACE_EVENT0("test_c2", "name2"); }
-  // Only recording mode is disabled and filtering mode will continue to run.
-  TraceLog::GetInstance()->SetDisabled(TraceLog::RECORDING_MODE);
-  EXPECT_EQ(TraceLog::FILTERING_MODE, TraceLog::GetInstance()->enabled_modes());
-
-  { TRACE_EVENT0("test_c0", "name0"); }
-  // Filtering mode is disabled and no tracing mode should be enabled.
-  TraceLog::GetInstance()->SetDisabled(TraceLog::FILTERING_MODE);
-  EXPECT_EQ(0, TraceLog::GetInstance()->enabled_modes());
-
-  EndTraceAndFlush();
-  EXPECT_FALSE(FindMatchingValue("cat", "test_c0"));
-  EXPECT_FALSE(FindMatchingValue("cat", "test_c1"));
-  EXPECT_FALSE(FindMatchingValue("name", "name0"));
-  EXPECT_FALSE(FindMatchingValue("name", "name1"));
-  EXPECT_TRUE(FindMatchingValue("cat", "test_c2"));
-  EXPECT_TRUE(FindMatchingValue("name", "name2"));
-  EXPECT_EQ(6u, filter_hits_counter.filter_trace_event_hit_count);
-  EXPECT_EQ(3u, filter_hits_counter.end_event_hit_count);
-  Clear();
-  filter_hits_counter.Reset();
-
-  // Run FILTERING_MODE within RECORDING_MODE:
-  // Only recording mode is enabled and all events must be recorded.
-  TraceLog::GetInstance()->SetEnabled(TraceConfig("", ""),
-                                      TraceLog::RECORDING_MODE);
-  EXPECT_EQ(TraceLog::RECORDING_MODE, TraceLog::GetInstance()->enabled_modes());
-  { TRACE_EVENT0("test_c0", "name0"); }
-
-  // Filtering mode is also enabled and all events must be filtered-out.
-  TestEventFilter::set_filter_return_value(false);
-  TraceLog::GetInstance()->SetEnabled(TraceConfig(config_json),
-                                      TraceLog::FILTERING_MODE);
-  EXPECT_EQ(TraceLog::RECORDING_MODE | TraceLog::FILTERING_MODE,
-            TraceLog::GetInstance()->enabled_modes());
-  { TRACE_EVENT0("test_c1", "name1"); }
-  // Only filtering mode is disabled and recording mode should continue to run
-  // with all events being recorded.
-  TraceLog::GetInstance()->SetDisabled(TraceLog::FILTERING_MODE);
-  EXPECT_EQ(TraceLog::RECORDING_MODE, TraceLog::GetInstance()->enabled_modes());
-
-  { TRACE_EVENT0("test_c2", "name2"); }
-  // Recording mode is disabled and no tracing mode should be enabled.
-  TraceLog::GetInstance()->SetDisabled(TraceLog::RECORDING_MODE);
-  EXPECT_EQ(0, TraceLog::GetInstance()->enabled_modes());
-
-  EndTraceAndFlush();
-  EXPECT_TRUE(FindMatchingValue("cat", "test_c0"));
-  EXPECT_TRUE(FindMatchingValue("cat", "test_c2"));
-  EXPECT_TRUE(FindMatchingValue("name", "name0"));
-  EXPECT_TRUE(FindMatchingValue("name", "name2"));
-  EXPECT_FALSE(FindMatchingValue("cat", "test_c1"));
-  EXPECT_FALSE(FindMatchingValue("name", "name1"));
-  EXPECT_EQ(1u, filter_hits_counter.filter_trace_event_hit_count);
-  EXPECT_EQ(1u, filter_hits_counter.end_event_hit_count);
-  Clear();
-}
-
-TEST_F(TraceEventTestFixture, EventFiltering) {
-  const char config_json[] =
-      "{"
-      "  \"included_categories\": ["
-      "    \"test_filtered_cat\","
-      "    \"test_unfiltered_cat\","
-      "    \"" TRACE_DISABLED_BY_DEFAULT("test_filtered_cat") "\","
-      "    \"" TRACE_DISABLED_BY_DEFAULT("test_unfiltered_cat") "\"],"
-      "  \"event_filters\": ["
-      "     {"
-      "       \"filter_predicate\": \"testing_predicate\", "
-      "       \"included_categories\": ["
-      "         \"test_filtered_cat\","
-      "         \"" TRACE_DISABLED_BY_DEFAULT("test_filtered_cat") "\"]"
-      "     }"
-      "    "
-      "  ]"
-      "}";
-
-  TestEventFilter::HitsCounter filter_hits_counter;
-  TestEventFilter::set_filter_return_value(true);
-  TraceLog::GetInstance()->SetFilterFactoryForTesting(TestEventFilter::Factory);
-
-  TraceConfig trace_config(config_json);
-  TraceLog::GetInstance()->SetEnabled(
-      trace_config, TraceLog::RECORDING_MODE | TraceLog::FILTERING_MODE);
-  ASSERT_TRUE(TraceLog::GetInstance()->IsEnabled());
-
-  TRACE_EVENT0("test_filtered_cat", "a snake");
-  TRACE_EVENT0("test_filtered_cat", "a mushroom");
-  TRACE_EVENT0("test_unfiltered_cat", "a horse");
-
-  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("test_filtered_cat"), "a dog");
-  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("test_unfiltered_cat"), "a pony");
-
-  // This is scoped so we can test the end event being filtered.
-  { TRACE_EVENT0("test_filtered_cat", "another cat whoa"); }
-
-  EndTraceAndFlush();
-
-  EXPECT_EQ(4u, filter_hits_counter.filter_trace_event_hit_count);
-  EXPECT_EQ(1u, filter_hits_counter.end_event_hit_count);
-}
-
-TEST_F(TraceEventTestFixture, EventAllowlistFiltering) {
-  std::string config_json = StringPrintf(
-      "{"
-      "  \"included_categories\": ["
-      "    \"test_filtered_cat\","
-      "    \"test_unfiltered_cat\","
-      "    \"" TRACE_DISABLED_BY_DEFAULT("test_filtered_cat") "\"],"
-      "  \"event_filters\": ["
-      "     {"
-      "       \"filter_predicate\": \"%s\", "
-      "       \"included_categories\": ["
-      "         \"test_filtered_cat\","
-      "         \"" TRACE_DISABLED_BY_DEFAULT("*") "\"], "
-      "       \"filter_args\": {"
-      "           \"event_name_allowlist\": [\"a snake\", \"a dog\"]"
-      "         }"
-      "     }"
-      "    "
-      "  ]"
-      "}",
-      EventNameFilter::kName);
-
-  TraceConfig trace_config(config_json);
-  TraceLog::GetInstance()->SetEnabled(
-      trace_config, TraceLog::RECORDING_MODE | TraceLog::FILTERING_MODE);
-  EXPECT_TRUE(TraceLog::GetInstance()->IsEnabled());
-
-  TRACE_EVENT0("test_filtered_cat", "a snake");
-  TRACE_EVENT0("test_filtered_cat", "a mushroom");
-  TRACE_EVENT0("test_unfiltered_cat", "a cat");
-  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("test_filtered_cat"), "a dog");
-  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("test_filtered_cat"), "a pony");
-
-  EndTraceAndFlush();
-
-  EXPECT_TRUE(FindMatchingValue("name", "a snake"));
-  EXPECT_FALSE(FindMatchingValue("name", "a mushroom"));
-  EXPECT_TRUE(FindMatchingValue("name", "a cat"));
-  EXPECT_TRUE(FindMatchingValue("name", "a dog"));
-  EXPECT_FALSE(FindMatchingValue("name", "a pony"));
 }
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 

@@ -39,7 +39,6 @@
 #include "base/threading/thread_id_name_manager.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "base/trace_event/event_name_filter.h"
 #include "base/trace_event/heap_profiler.h"
 #include "base/trace_event/heap_profiler_allocation_context_tracker.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -108,14 +107,6 @@ static bool g_perfetto_initialized_by_tracelog;
 
 TraceLog* g_trace_log_for_testing = nullptr;
 
-#define MAX_TRACE_EVENT_FILTERS 32
-
-// List of TraceEventFilter objects from the most recent tracing session.
-std::vector<std::unique_ptr<TraceEventFilter>>& GetCategoryGroupFilters() {
-  static auto* filters = new std::vector<std::unique_ptr<TraceEventFilter>>();
-  return *filters;
-}
-
 ThreadTicks ThreadNow() {
   return ThreadTicks::IsSupported()
              ? base::subtle::ThreadTicksNowIgnoringOverride()
@@ -172,18 +163,6 @@ void MakeHandle(uint32_t chunk_seq,
   handle->chunk_seq = chunk_seq;
   handle->chunk_index = static_cast<uint16_t>(chunk_index);
   handle->event_index = static_cast<uint16_t>(event_index);
-}
-
-template <typename Function>
-void ForEachCategoryFilter(const unsigned char* category_group_enabled,
-                           Function filter_fn) {
-  const TraceCategory* category =
-      CategoryRegistry::GetCategoryByStatePtr(category_group_enabled);
-  uint32_t filter_bitmap = category->enabled_filters();
-  for (size_t index = 0; filter_bitmap != 0; filter_bitmap >>= 1, ++index) {
-    if (filter_bitmap & 1 && GetCategoryGroupFilters()[index])
-      filter_fn(GetCategoryGroupFilters()[index].get());
-  }
 }
 
 // The fallback arguments filtering function will filter away every argument.
@@ -669,9 +648,7 @@ void TraceLog::ResetForTesting() {
 }
 
 TraceLog::TraceLog(int generation)
-    : enabled_modes_(0),
-      num_traces_recorded_(0),
-      process_sort_index_(0),
+    : process_sort_index_(0),
       process_id_hash_(0),
       process_id_(base::kNullProcessId),
       trace_options_(kInternalRecordUntilFull),
@@ -793,16 +770,14 @@ void TraceLog::UpdateCategoryState(TraceCategory* category) {
   lock_.AssertAcquired();
   DCHECK(category->is_valid());
   unsigned char state_flags = 0;
-  if (enabled_modes_ & RECORDING_MODE &&
-      trace_config_.IsCategoryGroupEnabled(category->name())) {
+  if (enabled_ && trace_config_.IsCategoryGroupEnabled(category->name())) {
     state_flags |= TraceCategory::ENABLED_FOR_RECORDING;
   }
 
   // TODO(primiano): this is a temporary workaround for catapult:#2341,
   // to guarantee that metadata events are always added even if the category
   // filter is "-*". See crbug.com/618054 for more details and long-term fix.
-  if (enabled_modes_ & RECORDING_MODE &&
-      category == CategoryRegistry::kCategoryMetadata) {
+  if (enabled_ && category == CategoryRegistry::kCategoryMetadata) {
     state_flags |= TraceCategory::ENABLED_FOR_RECORDING;
   }
 
@@ -813,64 +788,20 @@ void TraceLog::UpdateCategoryState(TraceCategory* category) {
   }
 #endif
 
-  uint32_t enabled_filters_bitmap = 0;
-  size_t index = 0;
-  for (const auto& event_filter : enabled_event_filters_) {
-    if (event_filter.IsCategoryGroupEnabled(category->name())) {
-      state_flags |= TraceCategory::ENABLED_FOR_FILTERING;
-      DCHECK(GetCategoryGroupFilters()[index]);
-      enabled_filters_bitmap |= 1 << index;
-    }
-    if (index++ >= MAX_TRACE_EVENT_FILTERS) {
-      NOTREACHED();
-      break;
-    }
-  }
-  category->set_enabled_filters(enabled_filters_bitmap);
   category->set_state(state_flags);
 }
 
 void TraceLog::UpdateCategoryRegistry() {
   lock_.AssertAcquired();
-  CreateFiltersForTraceConfig();
   for (TraceCategory& category : CategoryRegistry::GetAllCategories()) {
     UpdateCategoryState(&category);
   }
 }
 
-void TraceLog::CreateFiltersForTraceConfig() {
-  if (!(enabled_modes_ & FILTERING_MODE))
-    return;
-
-  // Filters were already added and tracing could be enabled. Filters list
-  // cannot be changed when trace events are using them.
-  if (GetCategoryGroupFilters().size())
-    return;
-
-  for (auto& filter_config : enabled_event_filters_) {
-    if (GetCategoryGroupFilters().size() >= MAX_TRACE_EVENT_FILTERS) {
-      NOTREACHED()
-          << "Too many trace event filters installed in the current session";
-      break;
-    }
-
-    std::unique_ptr<TraceEventFilter> new_filter;
-    const std::string& predicate_name = filter_config.predicate_name();
-    if (predicate_name == EventNameFilter::kName) {
-      auto allowlist = std::make_unique<std::unordered_set<std::string>>();
-      CHECK(filter_config.GetArgAsSet("event_name_allowlist", &*allowlist));
-      new_filter = std::make_unique<EventNameFilter>(std::move(allowlist));
-    } else {
-      if (filter_factory_for_testing_)
-        new_filter = filter_factory_for_testing_(predicate_name);
-      CHECK(new_filter) << "Unknown trace filter " << predicate_name;
-    }
-    GetCategoryGroupFilters().push_back(std::move(new_filter));
-  }
-}
-
 void TraceLog::SetEnabled(const TraceConfig& trace_config,
                           uint8_t modes_to_enable) {
+  // FILTERING_MODE is no longer supported.
+  DCHECK(modes_to_enable == RECORDING_MODE);
   DCHECK(trace_config.process_filter_config().IsEnabled(process_id_));
 
   AutoLock lock(lock_);
@@ -897,7 +828,6 @@ void TraceLog::SetEnabled(const TraceConfig& trace_config,
   }
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  DCHECK(modes_to_enable == RECORDING_MODE);
   DCHECK(!trace_config.IsArgumentFilterEnabled());
 
   perfetto::TraceConfig perfetto_config;
@@ -959,38 +889,20 @@ void TraceLog::SetEnabled(const TraceConfig& trace_config,
     return;
   }
 
-  // Clear all filters from previous tracing session. These filters are not
-  // cleared at the end of tracing because some threads which hit trace event
-  // when disabling, could try to use the filters.
-  if (!enabled_modes_)
-    GetCategoryGroupFilters().clear();
-
   // Update trace config for recording.
-  const bool already_recording = enabled_modes_ & RECORDING_MODE;
-  if (modes_to_enable & RECORDING_MODE) {
-    if (already_recording) {
-      trace_config_.Merge(trace_config);
-    } else {
-      trace_config_ = trace_config;
-    }
+  const bool already_recording = enabled_;
+  if (already_recording) {
+    trace_config_.Merge(trace_config);
+  } else {
+    trace_config_ = trace_config;
   }
 
-  // Update event filters only if filtering was not enabled.
-  if (modes_to_enable & FILTERING_MODE && enabled_event_filters_.empty()) {
-    DCHECK(!trace_config.event_filters().empty());
-    enabled_event_filters_ = trace_config.event_filters();
-  }
-  // Keep the |trace_config_| updated with only enabled filters in case anyone
-  // tries to read it using |GetCurrentTraceConfig| (even if filters are
-  // empty).
-  trace_config_.SetEventFilters(enabled_event_filters_);
-
-  enabled_modes_ |= modes_to_enable;
+  enabled_ = true;
   UpdateCategoryRegistry();
 
   // Do not notify observers or create trace buffer if only enabled for
   // filtering or if recording was already enabled.
-  if (!(modes_to_enable & RECORDING_MODE) || already_recording)
+  if (already_recording)
     return;
 
   // Discard events if new trace options are different. Reducing trace buffer
@@ -1146,6 +1058,7 @@ void TraceLog::SetDisabled(uint8_t modes_to_disable) {
 }
 
 void TraceLog::SetDisabledWhileLocked(uint8_t modes_to_disable) {
+  DCHECK(modes_to_disable == RECORDING_MODE);
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   if (!tracing_session_)
     return;
@@ -1170,8 +1083,6 @@ void TraceLog::SetDisabledWhileLocked(uint8_t modes_to_disable) {
     tracing_session_->StopBlocking();
   }
 #else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  if (!(enabled_modes_ & modes_to_disable))
-    return;
 
   if (dispatching_to_observers_) {
     // TODO(ssid): Change to NOTREACHED after fixing crbug.com/625170.
@@ -1180,22 +1091,9 @@ void TraceLog::SetDisabledWhileLocked(uint8_t modes_to_disable) {
     return;
   }
 
-  bool is_recording_mode_disabled =
-      (enabled_modes_ & RECORDING_MODE) && (modes_to_disable & RECORDING_MODE);
-  enabled_modes_ &= ~modes_to_disable;
-
-  if (modes_to_disable & FILTERING_MODE)
-    enabled_event_filters_.clear();
-
-  if (modes_to_disable & RECORDING_MODE)
-    trace_config_.Clear();
-
+  enabled_ = false;
+  trace_config_.Clear();
   UpdateCategoryRegistry();
-
-  // Add metadata events and notify observers only if recording mode was
-  // disabled now.
-  if (!is_recording_mode_disabled)
-    return;
 
   AddMetadataEventsWhileLocked();
 
@@ -1221,7 +1119,7 @@ void TraceLog::SetDisabledWhileLocked(uint8_t modes_to_disable) {
 
 int TraceLog::GetNumTracesRecorded() {
   AutoLock lock(lock_);
-  return (enabled_modes_ & RECORDING_MODE) ? num_traces_recorded_ : -1;
+  return enabled_ ? num_traces_recorded_ : -1;
 }
 
 void TraceLog::AddEnabledStateObserver(EnabledStateObserver* listener) {
@@ -1846,28 +1744,10 @@ TraceEventHandle TraceLog::AddTraceEventWithThreadIdAndTimestamps(
   }
 
   std::string console_message;
-  std::unique_ptr<TraceEvent> filtered_trace_event;
-  bool disabled_by_filters = false;
-  if (*category_group_enabled & TraceCategory::ENABLED_FOR_FILTERING) {
-    auto new_trace_event = std::make_unique<TraceEvent>(
-        thread_id, offset_event_timestamp, thread_timestamp, phase,
-        category_group_enabled, name, scope, id, bind_id, args, flags);
-
-    disabled_by_filters = true;
-    ForEachCategoryFilter(
-        category_group_enabled, [&new_trace_event, &disabled_by_filters](
-                                    TraceEventFilter* trace_event_filter) {
-          if (trace_event_filter->FilterTraceEvent(*new_trace_event))
-            disabled_by_filters = false;
-        });
-    if (!disabled_by_filters)
-      filtered_trace_event = std::move(new_trace_event);
-  }
 
   // If enabled for recording, the event should be added only if one of the
   // filters indicates or category is not enabled for filtering.
-  if ((*category_group_enabled & TraceCategory::ENABLED_FOR_RECORDING) &&
-      !disabled_by_filters) {
+  if ((*category_group_enabled & TraceCategory::ENABLED_FOR_RECORDING)) {
     OptionalAutoLock lock(&lock_);
 
     TraceEvent* trace_event = nullptr;
@@ -1880,24 +1760,21 @@ TraceEventHandle TraceLog::AddTraceEventWithThreadIdAndTimestamps(
 
     // NO_THREAD_SAFETY_ANALYSIS: Conditional locking above.
     if (trace_event) {
-      if (filtered_trace_event) {
-        *trace_event = std::move(*filtered_trace_event);
-      } else {
-        trace_event->Reset(thread_id, offset_event_timestamp, thread_timestamp,
-                           phase, category_group_enabled, name, scope, id,
-                           bind_id, args, flags);
-      }
+      trace_event->Reset(thread_id, offset_event_timestamp, thread_timestamp,
+                         phase, category_group_enabled, name, scope, id,
+                         bind_id, args, flags);
+    }
 
 #if BUILDFLAG(IS_ANDROID)
       trace_event->SendToATrace();
 #endif
-    }
 
-    if (trace_options() & kInternalEchoToConsole) {
-      console_message = EventToConsoleMessage(
-          phase == TRACE_EVENT_PHASE_COMPLETE ? TRACE_EVENT_PHASE_BEGIN : phase,
-          timestamp, trace_event);
-    }
+      if (trace_options() & kInternalEchoToConsole) {
+        console_message = EventToConsoleMessage(
+            phase == TRACE_EVENT_PHASE_COMPLETE ? TRACE_EVENT_PHASE_BEGIN
+                                                : phase,
+            timestamp, trace_event);
+      }
   }
 
   if (!console_message.empty())
@@ -1976,17 +1853,6 @@ std::string TraceLog::EventToConsoleMessage(char phase,
   return log.str();
 }
 
-void TraceLog::EndFilteredEvent(const unsigned char* category_group_enabled,
-                                const char* name,
-                                TraceEventHandle handle) {
-  const char* category_name = GetCategoryGroupName(category_group_enabled);
-  ForEachCategoryFilter(
-      category_group_enabled,
-      [name, category_name](TraceEventFilter* trace_event_filter) {
-        trace_event_filter->EndEvent(category_name, name);
-      });
-}
-
 void TraceLog::UpdateTraceEventDuration(
     const unsigned char* category_group_enabled,
     const char* name,
@@ -2055,9 +1921,6 @@ void TraceLog::UpdateTraceEventDurationExplicit(
 
   if (!console_message.empty())
     LOG(ERROR) << console_message;
-
-  if (*category_group_enabled & TraceCategory::ENABLED_FOR_FILTERING)
-    EndFilteredEvent(category_group_enabled, name, handle);
 }
 
 uint64_t TraceLog::MangleEventId(uint64_t id) {

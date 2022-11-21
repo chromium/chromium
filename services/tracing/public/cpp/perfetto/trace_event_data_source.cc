@@ -776,11 +776,8 @@ void TraceEventDataSource::SetupStartupTracing(
       trace_config, privacy_filtering_enabled);
 
 #if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  uint8_t modes = base::trace_event::TraceLog::RECORDING_MODE;
-  if (!trace_config.event_filters().empty()) {
-    modes |= base::trace_event::TraceLog::FILTERING_MODE;
-  }
-  base::trace_event::TraceLog::GetInstance()->SetEnabled(trace_config, modes);
+  base::trace_event::TraceLog::GetInstance()->SetEnabled(
+      trace_config, base::trace_event::TraceLog::RECORDING_MODE);
 #endif
 }
 

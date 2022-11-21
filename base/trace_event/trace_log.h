@@ -50,7 +50,6 @@ struct TraceCategory;
 class TraceBuffer;
 class TraceBufferChunk;
 class TraceEvent;
-class TraceEventFilter;
 class TraceEventMemoryOverhead;
 class JsonStringOutputWriter;
 
@@ -70,11 +69,10 @@ class BASE_EXPORT TraceLog :
   // Argument passed to TraceLog::SetEnabled.
   enum Mode : uint8_t {
     // Enables normal tracing (recording trace events in the trace buffer).
+    // This is the only tracing mode supported now.
+    // TODO(khokhlov): Clean up all uses of tracing mode and remove this enum
+    // completely.
     RECORDING_MODE = 1 << 0,
-
-    // Trace events are enabled just for filtering but not for recording. Only
-    // event filters config of |trace_config| argument is used.
-    FILTERING_MODE = 1 << 1
   };
 
   static TraceLog* GetInstance();
@@ -90,13 +88,7 @@ class BASE_EXPORT TraceLog :
   void InitializeThreadLocalEventBufferIfSupported();
 
   // See TraceConfig comments for details on how to control which categories
-  // will be traced. SetDisabled must be called distinctly for each mode that is
-  // enabled. If tracing has already been enabled for recording, category filter
-  // (enabled and disabled categories) will be merged into the current category
-  // filter. Enabling RECORDING_MODE does not enable filters. Trace event
-  // filters will be used only if FILTERING_MODE is set on |modes_to_enable|.
-  // Conversely to RECORDING_MODE, FILTERING_MODE doesn't support upgrading,
-  // i.e. filters can only be enabled if not previously enabled.
+  // will be traced. Only RECORDING_MODE is supported.
   void SetEnabled(const TraceConfig& trace_config, uint8_t modes_to_enable);
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
@@ -107,11 +99,7 @@ class BASE_EXPORT TraceLog :
                   const perfetto::TraceConfig& perfetto_config);
 #endif
 
-  // TODO(ssid): Remove the default SetEnabled and IsEnabled. They should take
-  // Mode as argument.
-
-  // Disables tracing for all categories for the specified |modes_to_disable|
-  // only. Only RECORDING_MODE is taken as default |modes_to_disable|.
+  // Disables tracing for all categories. Only RECORDING_MODE is supported.
   void SetDisabled();
   void SetDisabled(uint8_t modes_to_disable);
 
@@ -129,12 +117,9 @@ class BASE_EXPORT TraceLog :
     return track_event_enabled_;
 #else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     AutoLock lock(lock_);
-    return enabled_modes_ & RECORDING_MODE;
+    return enabled_;
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   }
-
-  // Returns a bitmap of enabled modes from TraceLog::Mode.
-  uint8_t enabled_modes() { return enabled_modes_; }
 
   // The number of times we have begun recording traces. If tracing is off,
   // returns -1. If tracing is on, then it returns the number of times we have
@@ -379,10 +364,6 @@ class BASE_EXPORT TraceLog :
       const TimeTicks& now,
       const ThreadTicks& thread_now);
 
-  void EndFilteredEvent(const unsigned char* category_group_enabled,
-                        const char* name,
-                        TraceEventHandle handle);
-
   ProcessId process_id() const { return process_id_; }
 
   std::unordered_map<int, std::string> process_labels() const {
@@ -393,14 +374,6 @@ class BASE_EXPORT TraceLog :
   uint64_t MangleEventId(uint64_t id);
 
   // Exposed for unittesting:
-
-  // Testing factory for TraceEventFilter.
-  typedef std::unique_ptr<TraceEventFilter> (*FilterFactoryForTesting)(
-      const std::string& /* predicate_name */);
-  void SetFilterFactoryForTesting(FilterFactoryForTesting factory) {
-    filter_factory_for_testing_ = factory;
-  }
-
   // Allows clearing up our singleton instance.
   static void ResetForTesting();
 
@@ -490,12 +463,9 @@ class BASE_EXPORT TraceLog :
   // Enable/disable each category group based on the current mode_,
   // category_filter_ and event_filters_enabled_.
   // Enable the category group in the recording mode if category_filter_ matches
-  // the category group, is not null. Enable category for filtering if any
-  // filter in event_filters_enabled_ enables it.
+  // the category group, is not null.
   void UpdateCategoryRegistry();
   void UpdateCategoryState(TraceCategory* category);
-
-  void CreateFiltersForTraceConfig();
 
   InternalTraceOptions GetInternalOptionsFromTraceConfig(
       const TraceConfig& config);
@@ -583,8 +553,8 @@ class BASE_EXPORT TraceLog :
   // by thread_info_lock_) from arbitrary threads.
   mutable Lock lock_;
   Lock thread_info_lock_;
-  uint8_t enabled_modes_;  // See TraceLog::Mode.
-  int num_traces_recorded_;
+  bool enabled_{false};
+  int num_traces_recorded_{0};
   std::unique_ptr<TraceBuffer> logged_events_;
   std::vector<std::unique_ptr<TraceEvent>> metadata_events_;
 
@@ -626,7 +596,6 @@ class BASE_EXPORT TraceLog :
   std::atomic<InternalTraceOptions> trace_options_;
 
   TraceConfig trace_config_;
-  TraceConfig::EventFilters enabled_event_filters_;
 
   ThreadLocalPointer<ThreadLocalEventBuffer> thread_local_event_buffer_;
   ThreadLocalBoolean thread_blocks_message_loop_;
@@ -668,8 +637,6 @@ class BASE_EXPORT TraceLog :
   OutputCallback proto_output_callback_;
 #endif  // !BUILDFLAG(IS_NACL)
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-
-  FilterFactoryForTesting filter_factory_for_testing_ = nullptr;
 
 #if BUILDFLAG(IS_ANDROID)
   absl::optional<TraceConfig> atrace_startup_config_;
