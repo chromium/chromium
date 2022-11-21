@@ -64723,6 +64723,7 @@ from previous Chrome versions.
       label="ExperimentalAccessibilityDictationMoreCommands:disabled"/>
   <int value="1874050287" label="UploadOfficeToCloud:enabled"/>
   <int value="1874195462" label="ChromeHomeMenuItemsExpandSheet:disabled"/>
+  <int value="1874203133" label="SystemSounds:enabled"/>
   <int value="1874604540" label="UseSuggestionsEvenIfFew:disabled"/>
   <int value="1875156497" label="CaptureMode:enabled"/>
   <int value="1877769074" label="PhoneHubFeatureSetupErrorHandling:enabled"/>
@@ -65099,6 +65100,7 @@ from previous Chrome versions.
   <int value="2095740699" label="OmniboxPedalsBatch3:disabled"/>
   <int value="2096736155" label="BrowsingDataLifetimeManager:enabled"/>
   <int value="2097048479" label="disable-auto-hiding-toolbar-threshold"/>
+  <int value="2097313481" label="SystemSounds:disabled"/>
   <int value="2097465503" label="RequestDesktopSiteZoom:disabled"/>
   <int value="2097585272" label="ProductivityLauncherImageSearch:enabled"/>
   <int value="2098059607" label="WifiSyncAllowDeletes:disabled"/>

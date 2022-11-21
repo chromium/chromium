@@ -2824,6 +2824,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "enable-power-sounds",
+    "owners": [ "afakhry", "bicioglu", "hongyulong", "nupurjain" ],
+    "expiry_milestone": 123
+  },
+  {
     "name": "enable-preinstalled-web-app-duplication-fixer",
     "owners": [ "alancutter" ],
     "expiry_milestone": 110
