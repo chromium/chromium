@@ -153,10 +153,13 @@ copy("copy_checked_in_dts_files") {
 # Files for which .d.ts files will be auto-generated with ts_definitions().
 generate_definitions_js_files = [
   "js/assert.js",
-  "js/cr/event_target.js",
   "js/load_time_data.m.js",
   "js/util.js",
 ]
+
+if (is_chromeos_ash) {
+  generate_definitions_js_files += [ "js/cr/event_target.js" ]
+}
 
 if (is_ios) {
   generate_definitions_js_files += [ "js/ios/web_ui.js" ]
