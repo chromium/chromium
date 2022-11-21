@@ -12,6 +12,7 @@
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_conversion_helper.h"
 #include "base/trace_event/typed_macros.h"
+#include "build/buildflag.h"
 #include "content/browser/client_hints/client_hints.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
@@ -62,6 +63,17 @@ bool AreHttpRequestHeadersCompatible(
   potential_activation_headers.RemoveHeader("Purpose");
   prerender_headers.RemoveHeader("Sec-Purpose");
   potential_activation_headers.RemoveHeader("Sec-Purpose");
+
+  // TODO(https://crbug.com/1378921): Instead of handling headers added by
+  // embedders specifically, prerender should expose an interface to embedders
+  // to set url parameters.
+#if BUILDFLAG(IS_ANDROID)
+  // Used by Android devices only.
+  if (trigger_type == PrerenderTriggerType::kEmbedder) {
+    prerender_headers.RemoveHeader("X-Geo");
+    potential_activation_headers.RemoveHeader("X-Geo");
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Compare headers in serialized strings. The spec doesn't require serialized
   // string matches, but practically Chrome generates headers in a decisive way,
