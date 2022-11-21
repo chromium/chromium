@@ -166,8 +166,24 @@ chromium-metrics-reviews@google.com.
   <owner>cros-reporting-team@google.com</owner>
   <summary>
     The size of ERP's {Param} payload as a JSON string when upload is
-    successful. Updated every time when an upload succeeds and at least one hour
-    has passed since the last update.
+    successful. Updated every time when an upload succeeds AND at least one hour
+    has passed since the last update AND 9 more uploads have succeeded since the
+    last update.
+  </summary>
+  <token key="Param">
+    <variant name="Request" summary="request"/>
+    <variant name="Response" summary="response"/>
+  </token>
+</histogram>
+
+<histogram name="Browser.ERP.{Param}PayloadSizePerHour" units="KiB"
+    expires_after="2023-11-17">
+  <owner>xuhong@chromium.org</owner>
+  <owner>lbaraz@chromium.org</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    The accumulated size per hour of ERP's {Param} payload as JSON strings when
+    upload is successful. Updated every hour.
   </summary>
   <token key="Param">
     <variant name="Request" summary="request"/>

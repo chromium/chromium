@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -32,7 +33,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "reporting_server_connector.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -49,7 +49,53 @@ using ::policy::CloudPolicyCore;
 
 namespace reporting {
 
-// Manages reporting payload size via UMA.
+// Gets the size of payload as a JSON string.
+static int GetPayloadSize(const base::Value::Dict& payload) {
+  std::string payload_json;
+  base::JSONWriter::Write(payload, &payload_json);
+  return static_cast<int>(payload_json.size());
+}
+
+// Limits the rate at which payload sizes are computed for UMA reporting
+// purposes. Since computing payload size is expensive, this is for limiting how
+// frequently they are computed.
+
+// (TODO: b/259747862) This class should be removed in the long run.
+class PayloadSizeComputationRateLimiterForUma {
+ public:
+  // We compute once for every |kScaleFactor| times that upload succeeds.
+  static constexpr uint64_t kScaleFactor = 10u;
+
+  PayloadSizeComputationRateLimiterForUma() = default;
+  PayloadSizeComputationRateLimiterForUma(
+      const PayloadSizeComputationRateLimiterForUma&) = delete;
+  PayloadSizeComputationRateLimiterForUma& operator=(
+      const PayloadSizeComputationRateLimiterForUma&) = delete;
+
+  // Gets the static instance of `PayloadSizeComputationRateLimiterForUma`.
+  static PayloadSizeComputationRateLimiterForUma& Get() {
+    // OK to run the destructor (No need for `NoDestructor`) -- it's trivially
+    // destructible.
+    static PayloadSizeComputationRateLimiterForUma rate_limiter;
+    return rate_limiter;
+  }
+
+  // Should payload size be computed and recorded?
+  [[nodiscard]] bool ShouldDo() const {
+    return successful_upload_counter_ % kScaleFactor == 0u;
+  }
+
+  // Bumps the upload counter. Must call this once after having called
+  // |ShouldDo| every time an upload succeeds.
+  void Next() { ++successful_upload_counter_; }
+
+ private:
+  // A counter increases by 1 each time an upload succeeds. Starting from a
+  // random number between 0 and kScaleFactor - 1, not zero.
+  uint64_t successful_upload_counter_ = base::RandGenerator(kScaleFactor);
+};
+
+// Manages reporting payload sizes of single uploads via UMA.
 class PayloadSizeUmaReporter {
  public:
   PayloadSizeUmaReporter() = default;
@@ -59,11 +105,11 @@ class PayloadSizeUmaReporter {
   PayloadSizeUmaReporter& operator=(PayloadSizeUmaReporter&&) = default;
 
   // Whether payload size should be reported now.
-  bool ShouldReport() const {
-    return base::Time::Now() >= last_reported_time_ + min_report_timedelta_;
+  static bool ShouldReport() {
+    return base::Time::Now() >= last_reported_time_ + kMinReportTimeDelta;
   }
 
-  // Report to UMA.
+  // Reports to UMA.
   void Report() {
     DCHECK_GE(request_payload_size_, 0);
     DCHECK_GE(response_payload_size_, 0);
@@ -75,26 +121,19 @@ class PayloadSizeUmaReporter {
                                response_payload_size_);
   }
 
-  // Update request payload size.
-  void UpdateRequestPayloadSize(const base::Value::Dict& request_payload) {
-    request_payload_size_ = GetPayloadSize(request_payload);
+  // Updates request payload size.
+  void UpdateRequestPayloadSize(int request_payload_size) {
+    request_payload_size_ = request_payload_size;
   }
 
-  // Update response payload size.
-  void UpdateResponsePayloadSize(const base::Value::Dict& response_payload) {
-    response_payload_size_ = GetPayloadSize(response_payload);
+  // Updates response payload size.
+  void UpdateResponsePayloadSize(int response_payload_size) {
+    response_payload_size_ = response_payload_size;
   }
 
  private:
-  // Gets the size of payload as a JSON string.
-  static int GetPayloadSize(const base::Value::Dict& payload) {
-    std::string payload_json;
-    base::JSONWriter::Write(payload, &payload_json);
-    return static_cast<int>(payload_json.size());
-  }
-
   // Minimum amount of time between two reports.
-  static constexpr base::TimeDelta min_report_timedelta_ = base::Hours(1);
+  static constexpr base::TimeDelta kMinReportTimeDelta = base::Hours(1);
 
   // Last time UMA report was done. This is accessed from |Report| and
   // |ShouldReport|, both of which of all instances of this class should only be
@@ -177,16 +216,16 @@ void ReportingServerConnector::UploadEncryptedReport(
     return;
   }
 
-  // UMA for payload size
-  PayloadSizeUmaReporter payload_size_uma_reporter;
-  payload_size_uma_reporter.UpdateRequestPayloadSize(merging_payload);
-
   // Forward the `UploadEncryptedReport` to the cloud policy client.
+  absl::optional<int> request_payload_size;
+  if (PayloadSizeComputationRateLimiterForUma::Get().ShouldDo()) {
+    request_payload_size = GetPayloadSize(merging_payload);
+  }
   connector->client_->UploadEncryptedReport(
       std::move(merging_payload), std::move(context),
       base::BindOnce(
           [](ResponseCallback callback,
-             PayloadSizeUmaReporter payload_size_uma_reporter,
+             absl::optional<int> request_payload_size,
              absl::optional<base::Value::Dict> result) {
             if (!result.has_value()) {
               std::move(callback).Run(
@@ -194,18 +233,39 @@ void ReportingServerConnector::UploadEncryptedReport(
               return;
             }
 
-            // Let UMA report the request and response payload sizes.
-            if (payload_size_uma_reporter.ShouldReport()) {
+            PayloadSizeComputationRateLimiterForUma::Get().Next();
+
+            // If request_payload_size has value, it means the rate limiter
+            // wants payload size to be computed here.
+            if (request_payload_size.has_value()) {
               // Request payload has already been computed at the time of
               // request.
-              payload_size_uma_reporter.UpdateResponsePayloadSize(
-                  result.value());
-              payload_size_uma_reporter.Report();
+              const int response_payload_size = GetPayloadSize(result.value());
+
+              // Let UMA report the request and response payload sizes.
+              if (PayloadSizeUmaReporter::ShouldReport()) {
+                PayloadSizeUmaReporter payload_size_uma_reporter;
+                payload_size_uma_reporter.UpdateRequestPayloadSize(
+                    request_payload_size.value());
+                payload_size_uma_reporter.UpdateResponsePayloadSize(
+                    response_payload_size);
+                payload_size_uma_reporter.Report();
+              }
+
+              auto payload_size_per_hour_uma_reporter =
+                  ReportingServerConnector::GetInstance()
+                      ->GetPayloadSizePerHourUmaReporter();
+              if (payload_size_per_hour_uma_reporter) {
+                payload_size_per_hour_uma_reporter->RecordRequestPayloadSize(
+                    request_payload_size.value());
+                payload_size_per_hour_uma_reporter->RecordResponsePayloadSize(
+                    response_payload_size);
+              }
             }
 
             std::move(callback).Run(std::move(result.value()));
           },
-          std::move(callback), std::move(payload_size_uma_reporter)));
+          std::move(callback), std::move(request_payload_size)));
 }
 
 Status ReportingServerConnector::EnsureUsableCore() {
@@ -279,5 +339,63 @@ Status ReportingServerConnector::EnsureUsableClient() {
 
   // Client is usable.
   return Status::StatusOK();
+}
+
+base::WeakPtr<ReportingServerConnector::PayloadSizePerHourUmaReporter>
+ReportingServerConnector::GetPayloadSizePerHourUmaReporter() {
+  return payload_size_per_hour_uma_reporter_.GetWeakPtr();
+}
+
+// ======== PayloadSizePerHourUmaReporter ==========
+
+// static
+int ReportingServerConnector::PayloadSizePerHourUmaReporter::ConvertBytesToKiB(
+    int bytes) {
+  return bytes / 1024;
+}
+
+ReportingServerConnector::PayloadSizePerHourUmaReporter::
+    PayloadSizePerHourUmaReporter() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  timer_.Start(FROM_HERE, kReportingInterval, this,
+               &PayloadSizePerHourUmaReporter::Report);
+}
+
+ReportingServerConnector::PayloadSizePerHourUmaReporter::
+    ~PayloadSizePerHourUmaReporter() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void ReportingServerConnector::PayloadSizePerHourUmaReporter::
+    RecordRequestPayloadSize(int payload_size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  request_payload_size_ += payload_size;
+}
+
+void ReportingServerConnector::PayloadSizePerHourUmaReporter::
+    RecordResponsePayloadSize(int payload_size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  response_payload_size_ += payload_size;
+}
+
+base::WeakPtr<ReportingServerConnector::PayloadSizePerHourUmaReporter>
+ReportingServerConnector::PayloadSizePerHourUmaReporter::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
+void ReportingServerConnector::PayloadSizePerHourUmaReporter::Report() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::UmaHistogramCounts1M(
+      "Browser.ERP.RequestPayloadSizePerHour",
+      ConvertBytesToKiB(request_payload_size_) *
+          PayloadSizeComputationRateLimiterForUma::kScaleFactor);
+  base::UmaHistogramCounts1M(
+      "Browser.ERP.ResponsePayloadSizePerHour",
+      ConvertBytesToKiB(response_payload_size_) *
+          PayloadSizeComputationRateLimiterForUma::kScaleFactor);
+  request_payload_size_ = 0;
+  response_payload_size_ = 0;
 }
 }  // namespace reporting
