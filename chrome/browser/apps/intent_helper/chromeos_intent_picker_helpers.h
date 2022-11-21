@@ -12,13 +12,19 @@
 #include "url/gurl.h"
 
 namespace content {
-class NavigationHandle;
 class WebContents;
 }  // namespace content
 
 namespace apps {
 
-void MaybeShowIntentPickerBubble(content::NavigationHandle* navigation_handle,
+struct NavigationInfo {
+  content::WebContents* web_contents;
+  GURL url;
+  GURL starting_url;
+  bool is_navigate_from_link;
+};
+
+void MaybeShowIntentPickerBubble(NavigationInfo navigation_info,
                                  std::vector<IntentPickerAppInfo> apps);
 
 // These enums are used to define the intent picker show state, whether the

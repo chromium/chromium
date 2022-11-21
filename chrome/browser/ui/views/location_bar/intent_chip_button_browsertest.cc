@@ -100,12 +100,23 @@ class IntentChipButtonBrowserTest
     web_app::WebAppNavigationBrowserTest::TearDownOnMainThread();
   }
 
-  void OpenNewTab(const GURL& url) {
-    chrome::NewTab(browser());
+  template <typename Action>
+  void DoAndWaitForIntentPickerIconUpdate(Action action) {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    NavigateToLaunchingPage(browser());
-    ClickLinkAndWait(web_contents, url, LinkTarget::SELF, "");
+    base::RunLoop run_loop;
+    auto* tab_helper = IntentPickerTabHelper::FromWebContents(web_contents);
+    tab_helper->SetIconUpdateCallbackForTesting(run_loop.QuitClosure());
+    action();
+    run_loop.Run();
+  }
+
+  void OpenNewTab(const GURL& url) {
+    chrome::NewTab(browser());
+    DoAndWaitForIntentPickerIconUpdate(
+        [this] { NavigateToLaunchingPage(browser()); });
+    ClickLinkAndWaitForIconUpdate(
+        browser()->tab_strip_model()->GetActiveWebContents(), url);
   }
 
   IntentChipButton* GetIntentChip() {
@@ -119,6 +130,16 @@ class IntentChipButtonBrowserTest
     ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                      ui::EventTimeForNow(), 0, 0);
     test_api.NotifyClick(e);
+  }
+
+  void ClickLinkAndWaitForIconUpdate(content::WebContents* web_contents,
+                                     const GURL& link_url) {
+    auto* tab_helper = IntentPickerTabHelper::FromWebContents(web_contents);
+
+    base::RunLoop run_loop;
+    tab_helper->SetIconUpdateCallbackForTesting(run_loop.QuitClosure());
+    ClickLinkAndWait(web_contents, link_url, LinkTarget::SELF, "");
+    run_loop.Run();
   }
 
   // Installs a web app on the same host as InstallTestWebApp(), but with "/" as
@@ -184,7 +205,6 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
 
   chrome::SelectPreviousTab(browser());
   EXPECT_TRUE(intent_chip_button->GetVisible());
-
   chrome::SelectNextTab(browser());
   EXPECT_FALSE(intent_chip_button->GetVisible());
 }
@@ -199,9 +219,11 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest, OpensAppForPreferredApp) {
       https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
 
+  ui_test_utils::BrowserChangeObserver new_browser(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   ClickIntentChip();
+  Browser* app_browser = new_browser.Wait();
 
-  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
   EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser,
                                                          test_web_app_id()));
 }
@@ -247,9 +269,11 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonSkipIntentPickerBrowserTest,
       https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
 
+  ui_test_utils::BrowserChangeObserver new_browser(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   ClickIntentChip();
+  Browser* app_browser = new_browser.Wait();
 
-  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
   EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser,
                                                          test_web_app_id()));
 }
@@ -298,31 +322,31 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonSkipIntentPickerBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // 1st appearance: Expanded.
-  ClickLinkAndWait(web_contents, in_scope_url, LinkTarget::SELF, "");
+  ClickLinkAndWaitForIconUpdate(web_contents, in_scope_url);
   EXPECT_TRUE(GetIntentChip()->GetVisible());
   EXPECT_FALSE(GetIntentChip()->is_fully_collapsed());
 
-  ClickLinkAndWait(web_contents, separate_host_url, LinkTarget::SELF, "");
+  ClickLinkAndWaitForIconUpdate(web_contents, separate_host_url);
   EXPECT_FALSE(GetIntentChip()->GetVisible());
 
   // 2nd appearance: Expanded.
-  ClickLinkAndWait(web_contents, in_scope_url, LinkTarget::SELF, "");
+  ClickLinkAndWaitForIconUpdate(web_contents, in_scope_url);
   EXPECT_TRUE(GetIntentChip()->GetVisible());
   EXPECT_FALSE(GetIntentChip()->is_fully_collapsed());
 
-  ClickLinkAndWait(web_contents, out_of_scope_url, LinkTarget::SELF, "");
+  ClickLinkAndWaitForIconUpdate(web_contents, out_of_scope_url);
   EXPECT_FALSE(GetIntentChip()->GetVisible());
 
   // 3rd appearance: Expanded.
-  ClickLinkAndWait(web_contents, in_scope_url, LinkTarget::SELF, "");
+  ClickLinkAndWaitForIconUpdate(web_contents, in_scope_url);
   EXPECT_TRUE(GetIntentChip()->GetVisible());
   EXPECT_FALSE(GetIntentChip()->is_fully_collapsed());
 
-  ClickLinkAndWait(web_contents, out_of_scope_url, LinkTarget::SELF, "");
+  ClickLinkAndWaitForIconUpdate(web_contents, out_of_scope_url);
   EXPECT_FALSE(GetIntentChip()->GetVisible());
 
   // 4th appearance: Collapsed.
-  ClickLinkAndWait(web_contents, in_scope_url, LinkTarget::SELF, "");
+  ClickLinkAndWaitForIconUpdate(web_contents, in_scope_url);
   EXPECT_TRUE(GetIntentChip()->GetVisible());
   EXPECT_TRUE(GetIntentChip()->is_fully_collapsed());
 
@@ -330,11 +354,12 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonSkipIntentPickerBrowserTest,
   ClickIntentChip();
 
   // Open another browser- we should be able to see the expanded chip again.
-  NavigateToLaunchingPage(browser());
-  web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  DoAndWaitForIntentPickerIconUpdate(
+      [this] { NavigateToLaunchingPage(browser()); });
 
   // 1st appearance since intent chip counter reset: Expanded.
-  ClickLinkAndWait(web_contents, in_scope_url, LinkTarget::SELF, "");
+  web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  ClickLinkAndWaitForIconUpdate(web_contents, in_scope_url);
   EXPECT_TRUE(GetIntentChip()->GetVisible());
   EXPECT_FALSE(GetIntentChip()->is_fully_collapsed());
 }
@@ -380,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonIPHBubbleBrowserTest, ShowAndCloseIPH) {
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Navigate to an in-scope page to see the intent chip and the IPH.
-  ClickLinkAndWait(web_contents, in_scope_url, LinkTarget::SELF, "");
+  ClickLinkAndWaitForIconUpdate(web_contents, in_scope_url);
   EXPECT_TRUE(GetIntentChip()->GetVisible());
 
   // Wait for the chip to actually be laid out. This will result in the IPH
@@ -405,18 +430,6 @@ class IntentChipButtonAppIconBrowserTest : public IntentChipButtonBrowserTest {
  public:
   IntentChipButtonAppIconBrowserTest() {
     feature_list_.InitAndEnableFeature(apps::features::kIntentChipAppIcon);
-  }
-
-  void ClickLinkAndWaitForIconUpdate(content::WebContents* web_contents,
-                                     const GURL& link_url) {
-    auto* tab_helper = IntentPickerTabHelper::FromWebContents(web_contents);
-    base::RunLoop run_loop;
-    tab_helper->SetIconUpdateCallbackForTesting(
-        base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
-
-    ClickLinkAndWait(web_contents, link_url, LinkTarget::SELF, "");
-
-    run_loop.Run();
   }
 
  private:
@@ -481,11 +494,16 @@ IN_PROC_BROWSER_TEST_F(IntentChipWithInfoBarBrowserTest,
                        ShowsInfoBarOnAppOpen) {
   const GURL in_scope_url =
       https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
 
+  DoAndWaitForIntentPickerIconUpdate([this, in_scope_url] {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
+  });
   EXPECT_TRUE(GetIntentChip()->GetVisible());
 
+  ui_test_utils::BrowserChangeObserver browser_opened(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   ClickIntentChip();
+  browser_opened.Wait();
 
   Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
   EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser,

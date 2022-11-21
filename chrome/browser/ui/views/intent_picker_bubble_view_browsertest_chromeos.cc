@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/intent_picker_view.h"
@@ -347,6 +348,19 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest,
     return embedded_test_server()->GetURL("/web_apps/minimal_ui/basic.html");
   }
 
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  template <typename Action>
+  void DoAndWaitForIntentPickerIconUpdate(Action action) {
+    base::RunLoop run_loop;
+    auto* tab_helper = IntentPickerTabHelper::FromWebContents(GetWebContents());
+    tab_helper->SetIconUpdateCallbackForTesting(run_loop.QuitClosure());
+    action();
+    run_loop.Run();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   apps::AppServiceProxy* app_service_proxy_ = nullptr;
@@ -404,14 +418,10 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   // Launch the default selected app.
   EXPECT_EQ(0U, launched_arc_apps().size());
 
-  content::TestNavigationObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
-
-  intent_picker_bubble()->AcceptDialog();
-  ASSERT_NO_FATAL_FAILURE(VerifyArcAppLaunched(app_name, test_url));
-
-  // The page should go back to blank state after launching the app.
-  observer.WaitForNavigationFinished();
+  DoAndWaitForIntentPickerIconUpdate([this, app_name, test_url] {
+    intent_picker_bubble()->AcceptDialog();
+    ASSERT_NO_FATAL_FAILURE(VerifyArcAppLaunched(app_name, test_url));
+  });
 
   // Make sure that the intent picker icon is no longer visible.
   ASSERT_TRUE(intent_picker_view);
@@ -744,12 +754,12 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   NavigateParams params(browser(), test_url,
                         ui::PageTransition::PAGE_TRANSITION_LINK);
 
+  // Navigates and waits for loading to finish.
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        IntentPickerBubbleView::kViewClassName);
-  // Navigates and waits for loading to finish.
   ui_test_utils::NavigateToURL(&params);
-
   waiter.WaitIfNeededAndGet();
+
   EXPECT_TRUE(intent_picker_view->GetVisible());
   ASSERT_TRUE(intent_picker_bubble());
   EXPECT_TRUE(intent_picker_bubble()->GetVisible());
@@ -762,11 +772,12 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  content::TestNavigationObserver observer(web_contents);
-  ASSERT_TRUE(content::ExecuteScript(
-      web_contents,
-      "document.getElementById('push_to_new_url_button').click();"));
-  observer.WaitForNavigationFinished();
+  DoAndWaitForIntentPickerIconUpdate([web_contents] {
+    ASSERT_TRUE(content::ExecuteScript(
+        web_contents,
+        "document.getElementById('push_to_new_url_button').click();"));
+  });
+
   EXPECT_FALSE(intent_picker_view->GetVisible());
 }
 
@@ -794,11 +805,9 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   auto app_id = AddArcAppWithIntentFilter(app_name, test_url);
 
   // Reload the page and the intent picker should show up.
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  content::TestNavigationObserver observer(web_contents);
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
-  observer.WaitForNavigationFinished();
+  DoAndWaitForIntentPickerIconUpdate([this] {
+    chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  });
 
   EXPECT_TRUE(intent_picker_view->GetVisible());
 

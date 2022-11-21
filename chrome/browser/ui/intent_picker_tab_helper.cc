@@ -311,7 +311,10 @@ void IntentPickerTabHelper::DidFinishNavigation(
   if (!web_contents()) {
     return;
   }
+
   if (IsNavigatingToNewSite(navigation_handle)) {
+    ++commit_count_;
+
     bool is_valid_page = navigation_handle->GetURL().SchemeIsHTTPOrHTTPS() &&
                          !navigation_handle->IsErrorPage();
     if (is_valid_page) {
