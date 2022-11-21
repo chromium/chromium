@@ -9,6 +9,7 @@
 #import "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
@@ -47,6 +48,8 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+extern const char kUmaDragDropTabs[] = "IOS.TabSwitcher.DragDropTabs";
 
 namespace {
 
@@ -156,6 +159,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 // YES while the grid has the suggested actions section.
 @property(nonatomic) BOOL showingSuggestedActions;
+
+// YES if the dragged tab moved to a new index.
+@property(nonatomic, assign) BOOL dragEndAtNewIndex;
 
 @end
 
@@ -714,11 +720,19 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)collectionView:(UICollectionView*)collectionView
     dragSessionWillBegin:(id<UIDragSession>)session {
+  self.dragEndAtNewIndex = NO;
+  base::UmaHistogramEnumeration(kUmaDragDropTabs, DragDropTabs::kDragBegin);
+
   [self.delegate gridViewControllerDragSessionWillBegin:self];
 }
 
 - (void)collectionView:(UICollectionView*)collectionView
      dragSessionDidEnd:(id<UIDragSession>)session {
+  DragDropTabs dragEvent = self.dragEndAtNewIndex
+                               ? DragDropTabs::kDragEndAtNewIndex
+                               : DragDropTabs::kDragEndAtSameIndex;
+  base::UmaHistogramEnumeration(kUmaDragDropTabs, dragEvent);
+
   [self.delegate gridViewControllerDragSessionDidEnd:self];
 }
 
@@ -816,7 +830,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     performDropWithCoordinator:
         (id<UICollectionViewDropCoordinator>)coordinator {
   NSArray<id<UICollectionViewDropItem>>* items = coordinator.items;
-
   for (id<UICollectionViewDropItem> item in items) {
     // Append to the end of the collection, unless drop index is specified.
     // The sourceIndexPath is nil if the drop item is not from the same
@@ -828,6 +841,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       destinationIndex =
           base::checked_cast<NSUInteger>(coordinator.destinationIndexPath.item);
     }
+    self.dragEndAtNewIndex = YES;
+
     if (self.thumbStripEnabled) {
       // The sourceIndexPath is nil if the drop item is not from the same
       // collection view.

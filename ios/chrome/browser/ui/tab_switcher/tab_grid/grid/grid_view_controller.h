@@ -26,6 +26,22 @@
 @protocol ThumbStripCommands;
 @protocol SuggestedActionsDelegate;
 
+// Key of the UMA IOS.TabSwitcher.DragDropTabs histogram.
+extern const char kUmaDragDropTabs[];
+
+// Values of the UMA IOS.TabSwitcher.DragDropTabs histogram. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+enum class DragDropTabs {
+  // A tab is dragged.
+  kDragBegin = 0,
+  // A tab is dropped at the same index position.
+  kDragEndAtSameIndex = 1,
+  // A tab is dropped at a new index position
+  kDragEndAtNewIndex = 2,
+  kMaxValue = kDragEndAtNewIndex
+};
+
 // Protocol used to relay relevant user interactions from a grid UI.
 @protocol GridViewControllerDelegate
 // Tells the delegate that the item with `itemID` was selected in

@@ -1863,6 +1863,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.TabSwitcher.DragDropTabs"
+    enum="IOSTabSwitcherDragDropTabs" expires_after="2023-11-16">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Records tab drag and drop interactions on the tab switcher. An intercation
+    is recorded twice (one drag and one drop).
+  </summary>
+</histogram>
+
 <histogram name="IOS.TabSwitcher.PageChangeInteraction"
     enum="IOSTabSwitcherPageChangeInteraction" expires_after="2023-02-26">
   <owner>marq@chromium.org</owner>
