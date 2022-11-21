@@ -122,6 +122,11 @@ class Mediator final
   void CancelPairing();
 
   bool has_at_least_one_discovery_session_ = false;
+
+  // |device_currently_showing_notification_| can be null if there is no
+  // notification currently displayed to user.
+  scoped_refptr<Device> device_currently_showing_notification_;
+
   std::unique_ptr<FeatureStatusTracker> feature_status_tracker_;
   std::unique_ptr<ScannerBroker> scanner_broker_;
   std::unique_ptr<MessageStreamLookup> message_stream_lookup_;

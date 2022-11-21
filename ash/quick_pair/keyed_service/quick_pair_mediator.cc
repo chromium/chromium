@@ -162,6 +162,13 @@ void Mediator::OnFastPairEnabledChanged(bool is_enabled) {
 
 void Mediator::OnDeviceFound(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": " << device;
+
+  if (device_currently_showing_notification_) {
+    QP_LOG(INFO) << __func__ << ": already showing notification for "
+                 << device_currently_showing_notification_;
+    return;
+  }
+
   // Get the device name and add it to the device object, the device will only
   // have a name in the cache if this is a subsequent pairing scenario.
   if (device->protocol == Protocol::kFastPairSubsequent &&
@@ -174,6 +181,7 @@ void Mediator::OnDeviceFound(scoped_refptr<Device> device) {
   // On discovery, download and decode device images. TODO (b/244472452):
   // remove logic that is executed for every advertisement even if no
   // notification is shown.
+  device_currently_showing_notification_ = device;
   ui_broker_->ShowDiscovery(device);
   fast_pair_repository_->FetchDeviceImages(device);
 }
@@ -192,12 +200,20 @@ void Mediator::OnDeviceLost(scoped_refptr<Device> device) {
 
 void Mediator::OnRetroactivePairFound(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": " << device;
+
+  if (device_currently_showing_notification_) {
+    QP_LOG(INFO) << __func__ << ": already showing notification for "
+                 << device_currently_showing_notification_;
+    return;
+  }
+
   // SFUL metrics will cause a crash if Fast Pair is disabled when we
   // retroactive pair, so prevent a notification from popping up.
   // TODO(b/247148054): Look into moving this elsewhere.
   if (!feature_status_tracker_->IsFastPairEnabled())
     return;
-  ui_broker_->ShowAssociateAccount(std::move(device));
+  device_currently_showing_notification_ = device;
+  ui_broker_->ShowAssociateAccount(device);
 }
 
 void Mediator::SetFastPairState(bool is_enabled) {
@@ -231,6 +247,7 @@ void Mediator::OnDevicePaired(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": Device=" << device;
   ui_broker_->RemoveNotifications(
       /*clear_already_shown_discovery_notification_cache=*/false);
+  device_currently_showing_notification_ = nullptr;
   scanner_broker_->OnDevicePaired(device);
   fast_pair_repository_->PersistDeviceImages(device);
 
@@ -278,8 +295,20 @@ void Mediator::OnDiscoveryAction(scoped_refptr<Device> device,
     } break;
     case DiscoveryAction::kAlreadyDisplayed:
     case DiscoveryAction::kDismissedByOs:
+      break;
     case DiscoveryAction::kDismissedByTimeout:
     case DiscoveryAction::kDismissedByUser:
+      // When the notification is dismissed by timeout or dismissed by user,
+      // there will be no more notifications for |device|. We reset
+      // |device_currently_showing_notification_| to enforce the first come,
+      // first serve notification strategy to allow other notifications to be
+      // shown. We do not do this for `kDismissedByOs` because this is triggered
+      // when a discovery notification is removed to be replaced by the
+      // connection notification to signify pairing is progress, and thus not
+      // in a terminal state, and we do not want to permit other notifications
+      // during this time.
+      device_currently_showing_notification_ = nullptr;
+      break;
     case DiscoveryAction::kLearnMore:
       break;
   }
@@ -288,6 +317,7 @@ void Mediator::OnDiscoveryAction(scoped_refptr<Device> device,
 void Mediator::OnPairingFailureAction(scoped_refptr<Device> device,
                                       PairingFailedAction action) {
   QP_LOG(INFO) << __func__ << ": Device=" << device << ", Action=" << action;
+  device_currently_showing_notification_ = nullptr;
 }
 
 void Mediator::OnCompanionAppAction(scoped_refptr<Device> device,
@@ -304,10 +334,17 @@ void Mediator::OnAssociateAccountAction(scoped_refptr<Device> device,
       pairer_broker_->PairDevice(device);
       ui_broker_->RemoveNotifications(
           /*clear_already_shown_discovery_notification_cache=*/false);
+      device_currently_showing_notification_ = nullptr;
       break;
     case AssociateAccountAction::kDismissedByOs:
+      break;
     case AssociateAccountAction::kDismissedByTimeout:
     case AssociateAccountAction::kDismissedByUser:
+      // Retroactive pairing only has the associate account notification. If the
+      // user elects to save the device or dismisses it, the lifetime of the
+      // notification is over and a new one can appear.
+      device_currently_showing_notification_ = nullptr;
+      break;
     case AssociateAccountAction::kLearnMore:
       break;
   }
