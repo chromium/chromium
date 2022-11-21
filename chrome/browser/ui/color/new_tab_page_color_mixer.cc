@@ -312,7 +312,7 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
         /* 10% opacity */ 0.1 * SK_AlphaOPAQUE);
     mixer[kColorRealboxResultsDimSelected] = {
         kColorOmniboxResultsBackgroundSelected};
-    mixer[kColorRealboxResultsForeground] = {ui::kColorTextfieldForeground};
+    mixer[kColorRealboxResultsForeground] = {kColorOmniboxText};
     mixer[kColorRealboxResultsForegroundDimmed] = {
         kColorOmniboxResultsTextDimmed};
     mixer[kColorRealboxResultsIcon] = {kColorOmniboxResultsIcon};
