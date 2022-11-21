@@ -6,6 +6,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -681,6 +682,19 @@ CookieOptions::SameSiteCookieContext ComputeSameSiteContextForRequest(
       schemeful_result.context_type = ContextType::SAME_SITE_LAX_METHOD_UNSAFE;
   }
 
+  ContextMetadata::HttpMethod http_method_enum =
+      HttpMethodStringToEnum(http_method);
+
+  if (result.metadata.cross_site_redirect_downgrade !=
+      ContextMetadata::ContextDowngradeType::kNoDowngrade) {
+    result.metadata.http_method_bug_1221316 = http_method_enum;
+  }
+
+  if (schemeful_result.metadata.cross_site_redirect_downgrade !=
+      ContextMetadata::ContextDowngradeType::kNoDowngrade) {
+    schemeful_result.metadata.http_method_bug_1221316 = http_method_enum;
+  }
+
   return MakeSameSiteCookieContext(result, schemeful_result);
 }
 
@@ -823,6 +837,32 @@ absl::optional<FirstPartySetMetadata> ComputeFirstPartySetMetadataMaybeAsync(
   }
 
   return FirstPartySetMetadata();
+}
+
+CookieOptions::SameSiteCookieContext::ContextMetadata::HttpMethod
+HttpMethodStringToEnum(const std::string& in) {
+  using HttpMethod =
+      CookieOptions::SameSiteCookieContext::ContextMetadata::HttpMethod;
+  if (in == "GET")
+    return HttpMethod::kGet;
+  if (in == "HEAD")
+    return HttpMethod::kHead;
+  if (in == "POST")
+    return HttpMethod::kPost;
+  if (in == "PUT")
+    return HttpMethod::KPut;
+  if (in == "DELETE")
+    return HttpMethod::kDelete;
+  if (in == "CONNECT")
+    return HttpMethod::kConnect;
+  if (in == "OPTIONS")
+    return HttpMethod::kOptions;
+  if (in == "TRACE")
+    return HttpMethod::kTrace;
+  if (in == "PATCH")
+    return HttpMethod::kPatch;
+
+  return HttpMethod::kUnknown;
 }
 
 CookieSamePartyStatus GetSamePartyStatus(

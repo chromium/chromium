@@ -113,10 +113,25 @@ enum ContextRedirectTypeBug1221316 {
   kAllSameSiteRedirect,
 };
 
+enum HttpMethod {
+  kUnset,
+  kUnknown,
+  kGet,
+  kHead,
+  kPost,
+  KPut,
+  kDelete,
+  kConnect,
+  kOptions,
+  kTrace,
+  kPatch,
+};
+
 // Keep defaults here in sync with net/cookies/cookie_options.h.
 struct CookieSameSiteContextMetadata {
   CookieSameSiteContextMetadataDowngradeType cross_site_redirect_downgrade = kNoDowngrade;
   ContextRedirectTypeBug1221316 redirect_type_bug_1221316 = kUnset;
+  HttpMethod http_method_bug_1221316 = kUnset;
 };
 
 // Keep defaults here in sync with net/cookies/cookie_options.h.

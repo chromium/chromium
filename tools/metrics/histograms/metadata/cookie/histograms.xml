@@ -194,7 +194,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Cookie.CrossSiteRedirectDowngradeChangesInclusion2.{AccessType}"
-    enum="CookieSameSite2" expires_after="2023-01-15">
+    enum="CookieSameSite2" expires_after="2023-05-15">
   <owner>bingler@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
@@ -214,8 +214,39 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Cookie.CrossSiteRedirectDowngradeChangesInclusionAge"
+    units="minutes" expires_after="2023-05-15">
+  <owner>bingler@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <summary>
+    The age of the cookie within [0,30) minutes, rounded down to the nearest
+    minute, whose inclusion is changed by considering redirects as part of the
+    same-site context calculation. (See
+    Cookie.CrossSiteRedirectDowngradeChangesInclusion2's summary for more info.)
+
+    This is only recorded for cookies accessed via an HTTP request and is logged
+    for each cookie whose inclusion was changed regardless of whether the cookie
+    was ultimately included or not.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.CrossSiteRedirectDowngradeChangesInclusionHttpMethod"
+    enum="HttpMethods" expires_after="2023-05-15">
+  <owner>bingler@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <summary>
+    The HTTP method of the request for the cookie whose inclusion is changed by
+    considering redirects as part of the same-site context calculation. (See
+    Cookie.CrossSiteRedirectDowngradeChangesInclusion2's summary for more info.)
+
+    This is only recorded for cookies accessed over HTTP and is logged for each
+    cookie whose inclusion was changed regardless of whether the cookie was
+    ultimately included or not.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.CrossSiteRedirectType.{AccessType}"
-    enum="ContextRedirectTypeBug1221316" expires_after="2023-01-15">
+    enum="ContextRedirectTypeBug1221316" expires_after="2023-05-15">
   <owner>bingler@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>

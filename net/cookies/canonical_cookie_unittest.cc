@@ -2185,6 +2185,13 @@ TEST(CanonicalCookieTest, IncludeForRequestURL_RedirectDowngradeWarning) {
   strict_cross_downgrade_metadata.cross_site_redirect_downgrade =
       Context::ContextMetadata::ContextDowngradeType::kStrictToCross;
 
+  // Because there are downgrades we need to set the HTTP method as well, since
+  // some metrics code expects that. The actual method doesn't matter here.
+  strict_lax_downgrade_metadata.http_method_bug_1221316 =
+      Context::ContextMetadata::HttpMethod::kGet;
+  strict_cross_downgrade_metadata.http_method_bug_1221316 =
+      Context::ContextMetadata::HttpMethod::kGet;
+
   GURL url("https://www.example.test/test");
   GURL insecure_url("http://www.example.test/test");
 
