@@ -112,6 +112,8 @@ def _ParseArgs(args):
       '--library-always-compress',
       action='append',
       help='The list of library files that we always compress.')
+  # TODO(crbug.com/1337134): Remove all references to --library-renames.
+  # Setting it should be a no-op.
   parser.add_argument(
       '--library-renames',
       action='append',
@@ -250,7 +252,7 @@ def _AddFiles(apk, details):
 
 
 def _GetNativeLibrariesToAdd(native_libs, android_abi, uncompress, fast_align,
-                             lib_always_compress, lib_renames):
+                             lib_always_compress):
   """Returns the list of file_detail tuples for native libraries in the apk.
 
   Returns: A list of (src_path, apk_path, compress, alignment) tuple
@@ -263,10 +265,6 @@ def _GetNativeLibrariesToAdd(native_libs, android_abi, uncompress, fast_align,
     basename = os.path.basename(path)
     compress = not uncompress or any(lib_name in basename
                                      for lib_name in lib_always_compress)
-    rename = any(lib_name in basename for lib_name in lib_renames)
-    if rename:
-      basename = 'crazy.' + basename
-
     lib_android_abi = android_abi
     if path.startswith('android_clang_arm64_hwasan/'):
       lib_android_abi = 'arm64-v8a-hwasan'
@@ -371,15 +369,16 @@ def main(args):
                         allow_reads=allow_reads))
     return ret
 
-  libs_to_add = _GetNativeLibrariesToAdd(
-      native_libs, options.android_abi, options.uncompress_shared_libraries,
-      fast_align, options.library_always_compress, options.library_renames)
+  libs_to_add = _GetNativeLibrariesToAdd(native_libs, options.android_abi,
+                                         options.uncompress_shared_libraries,
+                                         fast_align,
+                                         options.library_always_compress)
   if options.secondary_android_abi:
     libs_to_add.extend(
-        _GetNativeLibrariesToAdd(
-            secondary_native_libs, options.secondary_android_abi,
-            options.uncompress_shared_libraries, fast_align,
-            options.library_always_compress, options.library_renames))
+        _GetNativeLibrariesToAdd(secondary_native_libs,
+                                 options.secondary_android_abi,
+                                 options.uncompress_shared_libraries,
+                                 fast_align, options.library_always_compress))
 
   if options.expected_file:
     # We compute expectations without reading the files. This allows us to check

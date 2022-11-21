@@ -38,7 +38,7 @@ by a child template that "extends" this file.
                  android:name="{{ application_name|default('org.chromium.android_webview.nonembedded.WebViewApkApplication') }}"
                  android:multiArch="true"
                  {{ use32bitAbi|default('android:use32bitAbi="true"') }}
-                 android:extractNativeLibs="{{ trichrome_library is not defined }}">
+                 android:extractNativeLibs="false">
         {# This part is shared between stand-alone WebView and Monochrome #}
         {% macro common(manifest_package, webview_lib) %}
             <meta-data android:name="com.android.webview.WebViewLibrary"

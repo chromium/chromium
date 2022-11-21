@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.system.Os;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BaseSwitches;
@@ -29,7 +28,6 @@ import org.chromium.base.TimeUtils.UptimeMillisTimer;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.build.BuildConfig;
@@ -38,7 +36,6 @@ import org.chromium.build.annotations.MainDex;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Locale;
 
 import javax.annotation.concurrent.GuardedBy;
 
@@ -417,16 +414,6 @@ public class LibraryLoader {
         return mMediator;
     }
 
-    /**
-     * Call this method to determine if the chromium project must load the library
-     * directly from a zip file.
-     */
-    private static boolean isInZipFile() {
-        // The auto-generated NativeLibraries.sUseLibraryInZipFile variable will be true
-        // iff the library remains embedded in the APK zip file on the target.
-        return NativeLibraries.sUseLibraryInZipFile;
-    }
-
     public static LibraryLoader getInstance() {
         return sInstance;
     }
@@ -507,26 +494,13 @@ public class LibraryLoader {
                 useChromiumLinker(), mUseModernLinker);
     }
 
-    // LegacyLinker is buggy on Android 10, causing crashes (see crbug.com/980304).
-    //
-    // Rather than preventing people from running chrome_public_apk on Android 10, fallback to the
-    // system linker on this platform. We lose relocation sharing as a side-effect, but this
-    // configuration does not ship to users (since we only use LegacyLinker for APKs targeted at
-    // pre-N users).
-    //
-    // Note: This cannot be done in the build configuration, as otherwise chrome_public_apk cannot
-    // both be used as the basis to ship on L, and the default APK used by developers on 10+.
-    private boolean forceSystemLinker() {
-        return mUseChromiumLinker && !mUseModernLinker
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
-    }
-
     // Whether a Linker subclass is used for loading. Even if returns |true|, the Linker can
     // fall back to using the system dynamic linker on failure. Also it is common for App Zygote to
     // choose loading with the system linker when sharing RELRO with the browser process is not
     // supported.
+    // TODO(crbug.com/1383210): Remove the LegacyLinker and fold the ModernLinker into Linker.
     private boolean useChromiumLinker() {
-        return mUseChromiumLinker && !forceSystemLinker();
+        return mUseChromiumLinker && mUseModernLinker;
     }
 
     /**
@@ -803,50 +777,20 @@ public class LibraryLoader {
 
     private void loadWithChromiumLinker(ApplicationInfo appInfo, String library) {
         Linker linker = getLinker();
-
-        if (isInZipFile()) {
-            String sourceDir = appInfo.sourceDir;
-            linker.setApkFilePath(sourceDir);
-            Log.i(TAG, "Loading %s from within %s", library, sourceDir);
-        } else {
-            Log.i(TAG, "Loading %s", library);
-        }
-
+        String sourceDir = appInfo.sourceDir;
+        linker.setApkFilePath(sourceDir);
+        Log.i(TAG, "Loading %s from within %s", library, sourceDir);
         linker.loadLibrary(library); // May throw UnsatisfiedLinkError.
         getMediator().recordLinkerHistogramsAfterLibraryLoad();
     }
 
     @GuardedBy("mLock")
-    @SuppressLint({"UnsafeDynamicallyLoadedCode", "ObsoleteSdkInt"})
+    @SuppressLint({"UnsafeDynamicallyLoadedCode"})
     private void loadWithSystemLinkerAlreadyLocked(ApplicationInfo appInfo, boolean inZygote) {
         setEnvForNative();
         preloadAlreadyLocked(appInfo.packageName, inZygote);
-
-        // If the libraries are located in the zip file, assert that the device API level is M or
-        // higher. On devices <=M, the libraries should always be loaded by LegacyLinker.
-        assert !isInZipFile() || Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
-
-        // Load libraries using the system linker.
         for (String library : NativeLibraries.LIBRARIES) {
-            // TODO(crbug.com/1337134): Always use System.loadLibrary().
-            boolean isTrichrome = !forceSystemLinker() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
-            if (!isInZipFile() || isTrichrome) {
-                System.loadLibrary(library);
-            } else {
-                // Load directly from the APK.
-                boolean is64Bit = ApiHelperForM.isProcess64Bit();
-                String zipFilePath = appInfo.sourceDir;
-                boolean crazyPrefix = forceSystemLinker(); // See comment in this function.
-                String fullPath = zipFilePath + "!/"
-                        + makeLibraryPathInZipFile(library, crazyPrefix, is64Bit);
-                Log.i(TAG, "libraryName: %s", fullPath);
-                if (crazyPrefix) {
-                    Log.w(TAG,
-                            "Forcing system linker, relocations will not be shared. "
-                                    + "This negatively impacts memory usage.");
-                }
-                System.load(fullPath);
-            }
+            System.loadLibrary(library);
         }
     }
 
@@ -917,46 +861,6 @@ public class LibraryLoader {
                 }
             }
         }
-    }
-
-    /**
-     * @param library The library name that is looking for.
-     * @param crazyPrefix true iff adding crazy linker prefix to the file name.
-     * @param is64Bit true if the caller think it's run on a 64 bit device.
-     * @return the library path name in the zip file.
-     */
-    @NonNull
-    public static String makeLibraryPathInZipFile(
-            String library, boolean crazyPrefix, boolean is64Bit) {
-        // Determine the ABI string that Android uses to find native libraries. Values are described
-        // in: https://developer.android.com/ndk/guides/abis.html
-        // The 'armeabi' is omitted here because it is not supported in Chrome/WebView, while Cronet
-        // and Cast load the native library via other paths.
-        String cpuAbi;
-        switch (NativeLibraries.sCpuFamily) {
-            case NativeLibraries.CPU_FAMILY_ARM:
-                cpuAbi = is64Bit ? "arm64-v8a" : "armeabi-v7a";
-                break;
-            case NativeLibraries.CPU_FAMILY_X86:
-                cpuAbi = is64Bit ? "x86_64" : "x86";
-                break;
-            case NativeLibraries.CPU_FAMILY_MIPS:
-                cpuAbi = is64Bit ? "mips64" : "mips";
-                break;
-            default:
-                throw new RuntimeException("Unknown CPU ABI for native libraries");
-        }
-
-        // When both the Chromium linker and zip-uncompressed native libraries are used,
-        // the build system renames the native shared libraries with a 'crazy.' prefix
-        // (e.g. "/lib/armeabi-v7a/libfoo.so" -> "/lib/armeabi-v7a/crazy.libfoo.so").
-        //
-        // This prevents the package manager from extracting them at installation/update time
-        // to the /data directory. The libraries can still be accessed directly by the Chromium
-        // linker from the APK.
-        String crazyPart = crazyPrefix ? "crazy." : "";
-        return String.format(
-                Locale.US, "lib/%s/%s%s", cpuAbi, crazyPart, System.mapLibraryName(library));
     }
 
     // The WebView requires the Command Line to be switched over before

@@ -14,7 +14,7 @@
   <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="33"/>
   <application
       android:name="org.chromium.android_webview.nonembedded.WebViewApkApplication"
-      android:extractNativeLibs="False"
+      android:extractNativeLibs="false"
       android:icon="@$PACKAGE:drawable/icon_webview"
       android:label="Android System WebView"
       android:multiArch="true"
