@@ -3,6 +3,7 @@
 <div fill-content>
   <div class="content-area custom-scrollbar">
     <div class="header">
+      <img class="logo">
       <h2>$i18n{m1NoticeRowTitle}</h2>
     </div>
     <div class="section cr-secondary-text">
@@ -11,35 +12,45 @@
     <div class="section cr-secondary-text">
       $i18n{m1NoticeRowDescription2}
     </div>
+    <div class="banner">
+      <img>
+    </div>
     <div class="section cr-secondary-text">
       $i18n{m1NoticeRowDescription3}
     </div>
-    <privacy-sandbox-dialog-learn-more expanded="{{expanded_}}"
-      title="$i18n{m1NoticeRowLearnMoreExpandLabel}">
-      <div><b>$i18n{m1NoticeRowLearnMoreHeading1}</b></div>
-      <div class="cr-secondary-text">
-        $i18n{m1NoticeRowLearnMoreDescription1}
+    <privacy-sandbox-dialog-learn-more class="learn-more-section"
+        expanded="{{expanded_}}"
+        title="$i18n{m1NoticeRowLearnMoreExpandLabel}">
+      <div class="paragraph">
+        <div><b>$i18n{m1NoticeRowLearnMoreHeading1}</b></div>
+          <div class="cr-secondary-text">
+          $i18n{m1NoticeRowLearnMoreDescription1}
+        </div>
       </div>
-      <div><b>$i18n{m1NoticeRowLearnMoreHeading2}</b></div>
-      <div class="cr-secondary-text">
-        $i18n{m1NoticeRowLearnMoreDescription2}
+      <div class="paragraph">
+        <div><b>$i18n{m1NoticeRowLearnMoreHeading2}</b></div>
+        <div class="cr-secondary-text">
+          $i18n{m1NoticeRowLearnMoreDescription2}
+        </div>
+        <ul class="cr-secondary-text">
+          <li>$i18n{m1NoticeRowLearnMoreBullet1}</li>
+          <li>$i18n{m1NoticeRowLearnMoreBullet2}</li>
+        </ul>
       </div>
-      <ul class="cr-secondary-text">
-        <li>$i18n{m1NoticeRowLearnMoreBullet1}</li>
-        <li>$i18n{m1NoticeRowLearnMoreBullet2}</li>
-      </ul>
-      <div class="cr-secondary-text">
+      <div class="paragraph cr-secondary-text">
         $i18n{m1NoticeRowLearnMoreDescription3}
       </div>
-      <div class="cr-secondary-text">
+      <div class="paragraph cr-secondary-text">
         $i18n{m1NoticeRowLearnMoreDescription4}
       </div>
-      <div><b>$i18n{m1NoticeRowLearnMoreHeading3}</b></div>
-      <div class="cr-secondary-text">
-        $i18n{m1NoticeRowLearnMoreDescription5}
-      </div>
-      <div class="cr-secondary-text">
-        $i18n{m1NoticeRowLearnMoreDescription6}
+      <div class="paragraph">
+        <div><b>$i18n{m1NoticeRowLearnMoreHeading3}</b></div>
+        <div class="cr-secondary-text">
+          $i18n{m1NoticeRowLearnMoreDescription5}
+        </div>
+        <div class="cr-secondary-text">
+          $i18n{m1NoticeRowLearnMoreDescription6}
+        </div>
       </div>
     </privacy-sandbox-dialog-learn-more>
     <div class="section cr-secondary-text">

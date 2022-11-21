@@ -1,31 +1,47 @@
-<style include="cr-shared-style shared-style"></style>
+<style include="cr-shared-style shared-style">
+  .header img {
+    content: url(images/privacy_sandbox_notice_image.svg);
+  }
+
+  /* Center the content */
+  .content-area {
+    display: flex;
+  }
+  .content-wrapper {
+    margin: auto;
+  }
+</style>
 
 <div class="content-area custom-scrollbar">
-  <div class="header">
-    <h2>$i18n{m1NoticeEeaTitle}</h2>
-  </div>
-  <div class="section cr-secondary-text">
-    $i18n{m1NoticeEeaDescription1}
-  </div>
-  <ul class="cr-secondary-text">
-    <li>$i18n{m1NoticeEeaBullet1}</li>
-    <li>$i18n{m1NoticeEeaBullet2}</li>
-  </ul>
-  <privacy-sandbox-dialog-learn-more expanded="{{expanded_}}"
-    title="$i18n{m1NoticeEeaLearnMoreExpandLabel}">
-    <div><b>$i18n{m1NoticeEeaLearnMoreHeading1}</b></div>
-    <div class="cr-secondary-text">
-      $i18n{m1NoticeEeaLearnMoreDescription}
+  <div class="content-wrapper">
+    <div class="header">
+      <img>
+      <h2>$i18n{m1NoticeEeaTitle}</h2>
     </div>
-    <div><b>$i18n{m1NoticeEeaLearnMoreHeading2}</b></div>
-    <ul class="cr-secondary-text">
-      <li>$i18n{m1NoticeEeaLearnMoreBullet1}</li>
-      <li>$i18n{m1NoticeEeaLearnMoreBullet2}</li>
-      <li>$i18n{m1NoticeEeaLearnMoreBullet3}</li>
+    <div class="section cr-secondary-text">
+      $i18n{m1NoticeEeaDescription1}
+    </div>
+    <ul class="section cr-secondary-text">
+      <li>$i18n{m1NoticeEeaBullet1}</li>
+      <li>$i18n{m1NoticeEeaBullet2}</li>
     </ul>
-  </privacy-sandbox-dialog-learn-more>
-  <div class="section cr-secondary-text">
-    $i18n{m1NoticeEeaDescription2}
+    <privacy-sandbox-dialog-learn-more class="learn-more-section"
+        expanded="{{expanded_}}"
+        title="$i18n{m1NoticeEeaLearnMoreExpandLabel}">
+      <div><b>$i18n{m1NoticeEeaLearnMoreHeading1}</b></div>
+      <div class="cr-secondary-text">
+        $i18n{m1NoticeEeaLearnMoreDescription}
+      </div>
+      <div><b>$i18n{m1NoticeEeaLearnMoreHeading2}</b></div>
+      <ul class="cr-secondary-text">
+        <li>$i18n{m1NoticeEeaLearnMoreBullet1}</li>
+        <li>$i18n{m1NoticeEeaLearnMoreBullet2}</li>
+        <li>$i18n{m1NoticeEeaLearnMoreBullet3}</li>
+      </ul>
+    </privacy-sandbox-dialog-learn-more>
+    <div class="section cr-secondary-text">
+      $i18n{m1NoticeEeaDescription2}
+    </div>
   </div>
 </div>
 <div class="buttons-container">

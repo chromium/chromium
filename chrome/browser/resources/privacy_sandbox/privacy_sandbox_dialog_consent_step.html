@@ -2,6 +2,7 @@
 
 <div class="content-area custom-scrollbar">
   <div class="header">
+    <img class="logo">
     <h2>$i18n{m1ConsentTitle}</h2>
   </div>
   <div class="section cr-secondary-text">
@@ -10,11 +11,15 @@
   <div class="section cr-secondary-text">
     $i18n{m1ConsentDescription2}
   </div>
+  <div class="banner">
+    <img>
+  </div>
   <div class="section cr-secondary-text">
     $i18n{m1ConsentDescription3}
   </div>
-  <privacy-sandbox-dialog-learn-more expanded="{{expanded_}}"
-    title="$i18n{m1ConsentLearnMoreExpandLabel}">
+  <privacy-sandbox-dialog-learn-more class="learn-more-section"
+      expanded="{{expanded_}}"
+      title="$i18n{m1ConsentLearnMoreExpandLabel}">
     <div><b>$i18n{m1ConsentLearnMoreHeading}</b></div>
       <ul class="cr-secondary-text">
         <li>$i18n{m1ConsentLearnMoreBullet1}</li>

@@ -11,6 +11,7 @@
  html {
   --scrollbar-width: 7px;
   --scrollbar-background: var(--google-grey-200);
+  --privacy-sandbox-dialog-buttons-row-height: 64px;
 }
 
 @media (prefers-color-scheme: dark) {

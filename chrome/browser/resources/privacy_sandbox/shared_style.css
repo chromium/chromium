@@ -33,6 +33,7 @@
 }
 
 .header {
+  margin-top: 48px;
   padding-bottom: 10px;
   text-align: center;
 }
@@ -44,18 +45,19 @@
 }
 
 .section {
-  line-height: 20px;
+  margin: 0 90px;
   padding: 8px 0;
 }
 
-.section-header {
-  margin-bottom: 4px;
+privacy-sandbox-dialog-learn-more {
+  display: block;
+  margin: 0 90px;
 }
 
 .buttons-container {
   align-items: center;
   display: flex;
-  height: 64px;
+  height: var(--privacy-sandbox-dialog-buttons-row-height);
   justify-content: end;
   padding-inline-end:
       var(--cr-dialog-button-container-padding-horizontal, 16px);
@@ -66,12 +68,14 @@
   margin-inline-start: 8px;
 }
 
+/* TODO(crbug.com/1378703): If content area isn't scrollable, center the
+ * content */
 .content-area {
   border-color: transparent;
   border-style: solid;
   border-width: 1px 0;
-  overflow-y: scroll;
-  padding: 0 var(--cr-section-padding);
+  line-height: 20px;
+  overflow-y: overlay;
 }
 
 :host(.fill-content),
@@ -81,7 +85,7 @@
 
 :host(.fill-content) .content-area,
 .fill-content .content-area  {
-  bottom: 64px;
+  bottom: var(--privacy-sandbox-dialog-buttons-row-height);
   position: absolute;
   top: 0;
 }
@@ -96,4 +100,40 @@
 
 .content-area.can-scroll {
   border-bottom-color: var(--scrollable-border-color);
+}
+
+ul,
+ul.section {
+  padding-inline-start: 16px;
+}
+
+li:not(:last-child) {
+  padding-bottom: 8px;
+}
+
+.learn-more-section b {
+  color: initial;
+  font-weight: 400;
+}
+
+.learn-more-section .paragraph {
+  padding: 8px 0;
+}
+
+/* Privacy sandbox banner */
+/* TODO(crbug.com/1378703): Add dark theme styles or use a proper constant */
+.banner {
+  background-color: var(--google-grey-50);
+  margin: 16px 0;
+  text-align: center;
+}
+
+.banner img {
+  content: url(images/privacy_sandbox_new_banner.svg);
+}
+
+/* Chrome logo image */
+img.logo {
+  content: url(images/chrome_logo.svg);
+  margin-bottom: 10px;
 }
