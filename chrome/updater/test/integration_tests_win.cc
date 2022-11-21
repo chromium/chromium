@@ -25,6 +25,7 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
+#include "base/process/process_iterator.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -540,6 +541,19 @@ base::win::ScopedVariant GetDispatchProperty(
   return result;
 }
 
+void PrintProcesses() {
+  const std::string demarcation(72, '=');
+  VLOG(0) << "Found processes:";
+  VLOG(0) << demarcation;
+  base::ProcessIterator process_iterator(nullptr);
+  const base::ProcessIterator::ProcessEntries& process_entries =
+      process_iterator.Snapshot();
+  for (const base::ProcessEntry& entry : process_entries) {
+    VLOG(0) << entry.exe_file();
+  }
+  VLOG(0) << demarcation;
+}
+
 }  // namespace
 
 base::FilePath GetSetupExecutablePath() {
@@ -570,6 +584,8 @@ absl::optional<base::FilePath> GetDataDirPath(UpdaterScope scope) {
 }
 
 void Clean(UpdaterScope scope) {
+  VLOG(0) << __func__;
+
   CleanProcesses();
 
   const HKEY root = UpdaterScopeToHKeyRoot(scope);
@@ -620,12 +636,12 @@ void Clean(UpdaterScope scope) {
 
   absl::optional<base::FilePath> path = GetProductPath(scope);
   EXPECT_TRUE(path);
-  if (path)
-    EXPECT_TRUE(base::DeletePathRecursively(*path));
-  path = GetDataDirPath(scope);
-  EXPECT_TRUE(path);
-  if (path)
-    EXPECT_TRUE(base::DeletePathRecursively(*path));
+  if (path) {
+    EXPECT_TRUE(base::DeletePathRecursively(*path)) << [&path]() {
+      PrintProcesses();
+      return path->value();
+    }();
+  }
 
   const absl::optional<base::FilePath> target_path =
       GetGoogleUpdateExePath(scope);
