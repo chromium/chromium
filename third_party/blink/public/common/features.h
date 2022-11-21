@@ -939,6 +939,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kTextCodecCJKEnabled);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kStartMediaStreamCaptureIndicatorInBrowser);
 
+// Causes MediaStreamVideoSource video frames to be transported on a
+// SequencedTaskRunner backed by the threadpool instead of the normal IO thread.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kUseThreadPoolForMediaStreamVideoTaskRunner);
+
 }  // namespace features
 }  // namespace blink
 

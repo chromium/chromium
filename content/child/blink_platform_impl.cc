@@ -26,6 +26,7 @@
 #include "base/synchronization/lock.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
@@ -41,6 +42,7 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/user_metrics_action.h"
 #include "third_party/blink/public/platform/web_data.h"
@@ -60,7 +62,6 @@ using blink::WebURL;
 using blink::WebURLError;
 
 namespace content {
-
 namespace {
 
 // This must match third_party/WebKit/public/blink_resources.grd.
@@ -141,6 +142,11 @@ BlinkPlatformImpl::BlinkPlatformImpl() : BlinkPlatformImpl(nullptr) {}
 BlinkPlatformImpl::BlinkPlatformImpl(
     scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner)
     : io_thread_task_runner_(std::move(io_thread_task_runner)),
+      media_stream_video_source_video_task_runner_(
+          base::FeatureList::IsEnabled(
+              blink::features::kUseThreadPoolForMediaStreamVideoTaskRunner)
+              ? base::ThreadPool::CreateSequencedTaskRunner(base::TaskTraits{})
+              : io_thread_task_runner_),
       browser_interface_broker_proxy_(
           base::MakeRefCounted<ThreadSafeBrowserInterfaceBrokerProxyImpl>()) {}
 
@@ -259,6 +265,11 @@ bool BlinkPlatformImpl::IsLowEndDevice() {
 scoped_refptr<base::SingleThreadTaskRunner> BlinkPlatformImpl::GetIOTaskRunner()
     const {
   return io_thread_task_runner_;
+}
+
+scoped_refptr<base::SequencedTaskRunner>
+BlinkPlatformImpl::GetMediaStreamVideoSourceVideoTaskRunner() const {
+  return media_stream_video_source_video_task_runner_;
 }
 
 std::unique_ptr<blink::Platform::NestedMessageLoopRunner>

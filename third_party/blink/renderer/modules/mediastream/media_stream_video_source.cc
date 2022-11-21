@@ -17,6 +17,9 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/token.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
@@ -77,18 +80,37 @@ void MediaStreamVideoSource::AddTrack(
   switch (state_) {
     case NEW: {
       state_ = STARTING;
-      StartSourceImpl(
+      auto deliver_frame_on_video_callback =
           ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
               &VideoTrackAdapter::DeliverFrameOnVideoTaskRunner,
-              GetTrackAdapter())),
+              GetTrackAdapter()));
+      auto deliver_encoded_frame_on_video_callback =
           ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
               &VideoTrackAdapter::DeliverEncodedVideoFrameOnVideoTaskRunner,
-              GetTrackAdapter())),
+              GetTrackAdapter()));
+      auto new_crop_version_on_video_callback =
           ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
               &VideoTrackAdapter::NewCropVersionOnVideoTaskRunner,
-              GetTrackAdapter()))
-
-      );
+              GetTrackAdapter()));
+      // Callbacks are invoked from the IO thread. With
+      // UseThreadPoolForMediaStreamVideoTaskRunner disabled, the video task
+      // runner is the same as the IO thread and there is no need to post frames
+      // to the video task runner.
+      if (base::FeatureList::IsEnabled(
+              features::kUseThreadPoolForMediaStreamVideoTaskRunner)) {
+        StartSourceImpl(
+            base::BindPostTask(video_task_runner(),
+                               std::move(deliver_frame_on_video_callback)),
+            base::BindPostTask(
+                video_task_runner(),
+                std::move(deliver_encoded_frame_on_video_callback)),
+            base::BindPostTask(video_task_runner(),
+                               std::move(new_crop_version_on_video_callback)));
+      } else {
+        StartSourceImpl(std::move(deliver_frame_on_video_callback),
+                        std::move(deliver_encoded_frame_on_video_callback),
+                        std::move(new_crop_version_on_video_callback));
+      }
       break;
     }
     case STARTING:
@@ -360,7 +382,7 @@ void MediaStreamVideoSource::SetDeviceRotationDetection(bool enabled) {
 
 base::SequencedTaskRunner* MediaStreamVideoSource::video_task_runner() const {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  return Platform::Current()->GetIOTaskRunner().get();
+  return Platform::Current()->GetMediaStreamVideoSourceVideoTaskRunner().get();
 }
 
 absl::optional<media::VideoCaptureFormat>

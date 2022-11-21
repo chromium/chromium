@@ -50,11 +50,15 @@ class CONTENT_EXPORT BlinkPlatformImpl : public blink::Platform {
   blink::ThreadSafeBrowserInterfaceBrokerProxy* GetBrowserInterfaceBroker()
       override;
   scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() const override;
+  scoped_refptr<base::SequencedTaskRunner>
+  GetMediaStreamVideoSourceVideoTaskRunner() const override;
   std::unique_ptr<NestedMessageLoopRunner> CreateNestedMessageLoopRunner()
       const override;
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner>
+      media_stream_video_source_video_task_runner_;
   const scoped_refptr<blink::ThreadSafeBrowserInterfaceBrokerProxy>
       browser_interface_broker_proxy_;
   webcrypto::WebCryptoImpl web_crypto_;

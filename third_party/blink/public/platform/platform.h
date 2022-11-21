@@ -405,6 +405,14 @@ class BLINK_PLATFORM_EXPORT Platform {
     return base::kInvalidThreadId;
   }
 
+  // Returns the sequenced task runner used to funnel video frames from
+  // MediaStreamVideoSource. It may conditionally be the same as the result
+  // from GetIOTaskRunner().
+  virtual scoped_refptr<base::SequencedTaskRunner>
+  GetMediaStreamVideoSourceVideoTaskRunner() const {
+    return GetIOTaskRunner();
+  }
+
   // Returns an interface to run nested message loop. Used for debugging.
   class NestedMessageLoopRunner {
    public:
