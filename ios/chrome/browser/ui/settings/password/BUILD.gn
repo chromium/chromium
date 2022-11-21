@@ -250,6 +250,7 @@ source_set("eg_app_support+eg2") {
     "//components/strings",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/sync",
     "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/test/app:test_support",
     "//ios/testing/earl_grey:eg_app_support+eg2",

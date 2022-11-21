@@ -60,6 +60,9 @@
 // Returns YES if credential service is enabled.
 + (BOOL)isCredentialsServiceEnabled;
 
+// See password_manager::features_util::IsOptedInForAccountStorage().
++ (BOOL)isOptedInForAccountStorage;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SETTINGS_APP_INTERFACE_H_
