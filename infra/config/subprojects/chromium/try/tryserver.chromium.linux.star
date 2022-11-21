@@ -522,6 +522,17 @@ try_.builder(
 )
 
 try_.builder(
+    name = "linux_chromium_msan_focal",
+    mirrors = [
+        "ci/Linux MSan Focal",
+    ],
+    execution_timeout = 16 * time.hour,
+    goma_backend = None,
+    os = os.LINUX_FOCAL,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "linux_chromium_msan_rel_ng",
     mirrors = [
         "ci/Linux MSan Builder",
@@ -529,7 +540,6 @@ try_.builder(
     ],
     execution_timeout = 6 * time.hour,
     goma_backend = None,
-    os = os.LINUX_FOCAL,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 

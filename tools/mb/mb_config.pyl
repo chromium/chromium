@@ -363,6 +363,7 @@
       'Linux Builder (reclient compare)': 'gpu_tests_release_bot_reclient',
       'Linux CFI (reclient shadow)': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient',
       'Linux ChromiumOS MSan Focal': 'chromeos_msan_focal_release_bot_reclient',
+      'Linux MSan Focal': 'msan_focal_release_bot_reclient',
       'Linux Viz': 'release_trybot_minimal_symbols_reclient',
       # TODO(crbug.com/1260232): remove this after the migration.
       'Mac Builder (reclient compare)': 'gpu_tests_release_bot_minimal_symbols_reclient',
@@ -619,7 +620,7 @@
       'Linux CFI': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient',
       'Linux Chromium OS ASan LSan Builder': 'asan_lsan_chromeos_release_bot_dcheck_always_on_reclient',
       'Linux ChromiumOS MSan Builder': 'chromeos_msan_release_bot_reclient',
-      'Linux MSan Builder': 'msan_focal_release_bot_reclient',
+      'Linux MSan Builder': 'msan_release_bot_reclient',
       'Linux TSan Builder': 'tsan_disable_nacl_release_bot_reclient',
       'Mac ASan 64 Builder': 'asan_minimal_symbols_disable_nacl_release_bot_dcheck_always_on_reclient',
       'WebKit Linux ASAN': 'asan_lsan_release_bot_blink_reclient',
@@ -1180,7 +1181,8 @@
       # This is intentionally a release_bot and not a release_trybot;
       # enabling DCHECKs seems to cause flaky failures that don't show up
       # on the continuous builder.
-      'linux_chromium_msan_rel_ng': 'msan_focal_release_bot_reclient',
+      'linux_chromium_msan_focal': 'msan_focal_release_bot_reclient',
+      'linux_chromium_msan_rel_ng': 'msan_release_bot_reclient',
 
       'linux_chromium_tsan_rel_ng': 'tsan_disable_nacl_release_trybot_reclient',
 
