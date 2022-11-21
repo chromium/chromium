@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
@@ -626,6 +627,15 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
                                                   &result));
   }
 
+  std::vector<uint8_t> GenerateWebAppNonEffectCompressedIcon(
+      const std::string& app_id,
+      const SquareSizePx icon_size_in_px) {
+    base::test::TestFuture<std::vector<uint8_t>> result;
+    icon_manager().ReadSmallestCompressedIconAny(app_id, icon_size_in_px,
+                                                 result.GetCallback());
+    return result.Get();
+  }
+
   void LoadIconFromWebApp(const std::string& app_id,
                           apps::IconEffects icon_effects,
                           gfx::ImageSkia& output_image_skia) {
@@ -707,6 +717,55 @@ TEST_F(WebAppIconFactoryTest, LoadNonMaskableIcon) {
   LoadIconFromWebApp(app_id, icon_effect, dst_image_skia);
 
   VerifyIcon(src_image_skia, dst_image_skia);
+}
+
+TEST_F(WebAppIconFactoryTest, LoadNonMaskableNonEffectCompressedIcon) {
+  auto web_app = web_app::test::CreateWebApp();
+  const std::string app_id = web_app->app_id();
+
+  const int kIconSize1 = kSizeInDip;
+  const int kIconSize2 = 128;
+  const std::vector<int> sizes_px{kIconSize1, kIconSize2};
+  const std::vector<SkColor> colors{SK_ColorGREEN, SK_ColorYELLOW};
+  WriteIcons(app_id, {IconPurpose::ANY}, sizes_px, colors);
+
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
+  RegisterApp(std::move(web_app));
+
+  ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, sizes_px));
+
+  std::vector<uint8_t> src_data;
+  src_data = GenerateWebAppNonEffectCompressedIcon(app_id, kSizeInDip);
+
+  auto icon =
+      LoadCompressedIconBlockingFromWebApp(app_id, apps::IconEffects::kNone);
+
+  VerifyCompressedIcon(src_data, *icon);
+}
+
+TEST_F(WebAppIconFactoryTest,
+       LoadNonMaskableNonEffectCompressedIconWithDifferentSizeIcon) {
+  auto web_app = web_app::test::CreateWebApp();
+  const std::string app_id = web_app->app_id();
+
+  const int kIconSize1 = 96;
+  const int kIconSize2 = 256;
+  const std::vector<int> sizes_px{kIconSize1, kIconSize2};
+  const std::vector<SkColor> colors{SK_ColorGREEN, SK_ColorYELLOW};
+  WriteIcons(app_id, {IconPurpose::ANY}, sizes_px, colors);
+
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
+  RegisterApp(std::move(web_app));
+
+  ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, sizes_px));
+
+  std::vector<uint8_t> src_data;
+  src_data = GenerateWebAppNonEffectCompressedIcon(app_id, kSizeInDip);
+
+  auto icon =
+      LoadCompressedIconBlockingFromWebApp(app_id, apps::IconEffects::kNone);
+
+  VerifyCompressedIcon(src_data, *icon);
 }
 
 TEST_F(WebAppIconFactoryTest, LoadNonMaskableCompressedIcon) {
