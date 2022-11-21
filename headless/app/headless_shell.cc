@@ -58,9 +58,15 @@ namespace headless {
 
 namespace {
 
-// Default file name for screenshot. Can be overriden by "--screenshot" switch.
+#if BUILDFLAG(IS_WIN)
+const wchar_t kAboutBlank[] = L"about:blank";
+#else
+const char kAboutBlank[] = "about:blank";
+#endif
+
+// Default file name for screenshot. Can be overridden by "--screenshot" switch.
 const char kDefaultScreenshotFileName[] = "screenshot.png";
-// Default file name for pdf. Can be overriden by "--print-to-pdf" switch.
+// Default file name for pdf. Can be overridden by "--print-to-pdf" switch.
 const char kDefaultPDFFileName[] = "output.pdf";
 
 GURL ConvertArgumentToURL(const base::CommandLine::StringType& arg) {
@@ -136,15 +142,9 @@ void HeadlessShell::OnBrowserStart(HeadlessBrowser* browser) {
       base::CommandLine::ForCurrentProcess()->GetArgs();
 
   // If no explicit URL is present, navigate to about:blank, unless we're being
-  // driven by debugger.
-  if (args.empty() && !base::CommandLine::ForCurrentProcess()->HasSwitch(
-                          switches::kRemoteDebuggingPipe)) {
-#if BUILDFLAG(IS_WIN)
-    args.push_back(L"about:blank");
-#else
-    args.push_back("about:blank");
-#endif
-  }
+  // driven by a debugger.
+  if (args.empty() && !IsRemoteDebuggingEnabled())
+    args.push_back(kAboutBlank);
 
   if (!args.empty()) {
     file_task_runner_->PostTaskAndReplyWithResult(
