@@ -45,16 +45,6 @@
 
 namespace blink {
 
-namespace {
-
-inline void ClearNeedsLayoutIfNeeded(LayoutObject* layout_object) {
-  DCHECK(layout_object);
-  if (layout_object->NeedsLayout())
-    layout_object->ClearNeedsLayout();
-}
-
-}  // namespace
-
 NGInlineLayoutAlgorithm::NGInlineLayoutAlgorithm(
     NGInlineNode inline_node,
     const NGConstraintSpace& space,
@@ -585,7 +575,8 @@ void NGInlineLayoutAlgorithm::PlaceControlItem(const NGInlineItem& item,
 
   DCHECK(item.GetLayoutObject());
   DCHECK(item.GetLayoutObject()->IsText());
-  ClearNeedsLayoutIfNeeded(item.GetLayoutObject());
+  if (!NGDisableSideEffectsScope::IsDisabled())
+    item.GetLayoutObject()->ClearNeedsLayoutWithFullPaintInvalidation();
 
   if (UNLIKELY(quirks_mode_ && !box->HasMetrics()))
     box->EnsureTextMetrics(*item.Style(), *box->font, baseline_type_);
