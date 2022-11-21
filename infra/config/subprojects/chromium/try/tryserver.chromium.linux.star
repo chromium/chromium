@@ -681,16 +681,19 @@ try_.builder(
 try_.builder(
     name = "tricium-metrics-analysis",
     executable = "recipe:tricium_metrics",
+    goma_backend = None,
 )
 
 try_.builder(
     name = "tricium-oilpan-analysis",
     executable = "recipe:tricium_oilpan",
+    goma_backend = None,
 )
 
 try_.builder(
     name = "tricium-simple",
     executable = "recipe:tricium_simple",
+    goma_backend = None,
 )
 
 try_.gpu.optional_tests_builder(
