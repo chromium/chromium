@@ -19,9 +19,9 @@ build_webui("build") {
   ]
 
   mojo_files_deps = [
-    "//chrome/browser/ui/webui/usb_internals:mojo_bindings_webui_js",
-    "//services/device/public/mojom:usb_test_js",
-    "//services/device/public/mojom:usb_webui_js",
+    "//chrome/browser/ui/webui/usb_internals:mojo_bindings_js__generator",
+    "//services/device/public/mojom:usb_js__generator",
+    "//services/device/public/mojom:usb_test_js__generator",
   ]
   mojo_files = [
     "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/usb_internals/usb_internals.mojom-webui.js",

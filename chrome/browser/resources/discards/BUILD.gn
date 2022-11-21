@@ -80,8 +80,8 @@ action("generate_graph_tab") {
 
 copy("copy_mojo") {
   deps = [
-    "//chrome/browser/resource_coordinator:mojo_bindings_webui_js",
-    "//chrome/browser/ui/webui/discards:mojo_bindings_webui_js",
+    "//chrome/browser/resource_coordinator:mojo_bindings_js__generator",
+    "//chrome/browser/ui/webui/discards:mojo_bindings_js__generator",
   ]
   sources = [
     "$root_gen_dir/mojom-webui/chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-webui.js",

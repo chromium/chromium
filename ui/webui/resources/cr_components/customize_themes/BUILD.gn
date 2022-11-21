@@ -44,7 +44,7 @@ html_to_wrapper("html_wrapper_files") {
 }
 
 copy("copy_mojom") {
-  deps = [ ":mojom_webui_js" ]
+  deps = [ ":mojom_js__generator" ]
   sources = [ "$root_gen_dir/mojom-webui/ui/webui/resources/cr_components/customize_themes/customize_themes.mojom-webui.js" ]
   outputs = [ "$preprocess_folder_tmp/{{source_file_part}}" ]
 }

@@ -39,7 +39,8 @@ preprocess_if_expr("preprocess_untrusted") {
 }
 
 copy("copy_mojo") {
-  deps = [ "//chrome/browser/ui/webui/image_editor:mojo_bindings_webui_js" ]
+  deps =
+      [ "//chrome/browser/ui/webui/image_editor:mojo_bindings_js__generator" ]
   sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/image_editor/image_editor.mojom-webui.js" ]
   outputs = [ "$preprocess_folder/{{source_file_part}}" ]
 }

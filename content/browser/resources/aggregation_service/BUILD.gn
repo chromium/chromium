@@ -13,7 +13,7 @@ html_to_wrapper("html_wrapper_files") {
 # Copy (via creating sym links) all the other files into the same folder for
 # ts_library.
 copy("copy_files") {
-  deps = [ "//content/browser/aggregation_service:mojo_bindings_webui_js" ]
+  deps = [ "//content/browser/aggregation_service:mojo_bindings_js__generator" ]
   sources = [
     "$root_gen_dir/mojom-webui/content/browser/aggregation_service/aggregation_service_internals.mojom-webui.js",
     "aggregation_service_internals.ts",

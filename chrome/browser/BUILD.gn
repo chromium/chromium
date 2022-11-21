@@ -7989,9 +7989,6 @@ proto_library("permissions_proto") {
 grit("resources") {
   source = "browser_resources.grd"
 
-  # Required due to flattenhtml = "true" on a generated file.
-  enable_input_discovery_for_gn_analyze = false
-
   use_brotli = true
 
   defines = chrome_grit_defines
@@ -8013,11 +8010,11 @@ grit("resources") {
 
   deps = [
     ":chrome_internal_resources_gen",
-    "//chrome/browser/ui/webui/usb_internals:mojo_bindings_webui_js",
+    "//chrome/browser/ui/webui/usb_internals:mojo_bindings_js__generator",
     "//device/bluetooth/public/mojom:deprecated_experimental_interfaces_js",
     "//device/bluetooth/public/mojom:mojom_js",
-    "//services/device/public/mojom:usb_test_webui_js",
-    "//services/device/public/mojom:usb_webui_js",
+    "//services/device/public/mojom:usb_js__generator",
+    "//services/device/public/mojom:usb_test_js__generator",
     "//url/mojom:url_mojom_gurl_js",
     "//url/mojom:url_mojom_origin_js",
   ]
@@ -8046,6 +8043,7 @@ grit("resources") {
   }
   if (is_chromeos_ash) {
     deps += [
+      "//chrome/browser/ash/guest_os:guest_os_diagnostics_mojom_js__generator",
       "//chrome/browser/resources/chromeos/account_manager:css_wrapper_files",
       "//chrome/browser/resources/chromeos/account_manager:html_wrapper_files",
       "//chrome/browser/resources/chromeos/account_manager/components:html_wrapper_files",
@@ -8068,7 +8066,7 @@ grit("resources") {
       "//chrome/browser/ui/webui/ash/crostini_installer:mojo_bindings_js",
       "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings_js",
       "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings_js",
-      "//chrome/browser/ui/webui/ash/vm:mojo_bindings_webui_js",
+      "//chrome/browser/ui/webui/ash/vm:mojo_bindings_js__generator",
       "//chrome/browser/ui/webui/settings/ash:mojom_js",
       "//chrome/browser/ui/webui/settings/ash/os_apps_page/mojom:mojom_js",
       "//ui/webui/resources/cr_components/app_management:mojo_bindings_js",
@@ -8117,7 +8115,7 @@ grit("dev_ui_browser_resources") {
     "//chrome/browser/resources/memory_internals:build_ts",
     "//chrome/browser/resources/predictors:build_ts",
     "//chrome/browser/ui/webui/internals/user_education:mojo_bindings_js",
-    "//components/site_engagement/core/mojom:mojo_bindings_webui_js",
+    "//components/site_engagement/core/mojom:mojo_bindings_js__generator",
   ]
 
   if (is_android || is_linux || is_chromeos || is_win) {

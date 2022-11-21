@@ -2034,7 +2034,7 @@ grit("web_ui_mojo_test_resources") {
     "grit/web_ui_mojo_test_resources_map.h",
     "web_ui_mojo_test_resources.pak",
   ]
-  deps = [ ":web_ui_test_mojo_bindings_webui_js" ]
+  deps = [ ":web_ui_test_mojo_bindings_js__generator" ]
 }
 
 static_library("run_all_unittests") {

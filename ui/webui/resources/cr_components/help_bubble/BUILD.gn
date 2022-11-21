@@ -63,7 +63,7 @@ preprocess_if_expr("preprocess_generated") {
 }
 
 copy("copy_mojom") {
-  deps = [ ":mojo_bindings_webui_js" ]
+  deps = [ ":mojo_bindings_js__generator" ]
   sources = [ "$root_gen_dir/mojom-webui/ui/webui/resources/cr_components/help_bubble/help_bubble.mojom-webui.js" ]
   outputs = [ "$preprocess_folder_tmp/{{source_file_part}}" ]
 }
