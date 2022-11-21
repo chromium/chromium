@@ -553,7 +553,6 @@ suite('AboutPageTest', function() {
       aboutPageEndOfLifeMessage: 'message',
     });
     await initNewPage();
-    page.scroller = page.offsetParent;
     assertTrue(!!page.$['detailed-build-info-trigger']);
     page.$['detailed-build-info-trigger'].click();
     const buildInfoPage =
@@ -581,7 +580,6 @@ suite('AboutPageTest', function() {
       aboutPageEndOfLifeMessage: '',
     });
     await initNewPage();
-    page.scroller = page.offsetParent;
     assertTrue(!!page.$['detailed-build-info-trigger']);
     page.$['detailed-build-info-trigger'].click();
     const buildInfoPage =
@@ -595,14 +593,12 @@ suite('AboutPageTest', function() {
       aboutPageEndOfLifeMessage: 'message',
     });
     await initNewPage();
-    page.scroller = page.offsetParent;
     assertTrue(!!page.$['detailed-build-info-trigger']);
     page.$['detailed-build-info-trigger'].click();
     checkEndOfLifeSection();
   });
 
   function getBuildInfoPage() {
-    page.scroller = page.offsetParent;
     assertTrue(!!page.$['detailed-build-info-trigger']);
     page.$['detailed-build-info-trigger'].click();
     const buildInfoPage =

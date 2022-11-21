@@ -456,7 +456,7 @@ class OsSettingsUiElement extends OsSettingsUiElementBase {
    */
   private onMenuClose_() {
     if (!this.getDrawer_().wasCanceled()) {
-      // If a navigation happened, MainPageBehavior#currentRouteChanged
+      // If a navigation happened, MainPageMixin#currentRouteChanged
       // handles focusing the corresponding section when we call
       // settings.NavigateTo().
       this.navigateToActiveRoute_();
