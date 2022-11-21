@@ -1900,6 +1900,12 @@ BASE_FEATURE(kSystemJapanesePhysicalTyping,
              "SystemJapanesePhysicalTyping",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables live captions for sounds produced outside of the browser (e.g. by
+// Android or linux apps).
+BASE_FEATURE(kSystemLiveCaption,
+             "SystemLiveCaption",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the ability to play sounds for system services.
 BASE_FEATURE(kSystemSounds, "SystemSounds", base::FEATURE_DISABLED_BY_DEFAULT);
 
