@@ -155,6 +155,9 @@ public class BaseCarouselSuggestionView extends LinearLayout {
      * @param recycledViewPool the recycled view pool to assign to the recycler view.
      */
     void setCarouselRecycledViewPool(RecycledViewPool recycledViewPool) {
-        mRecyclerView.setRecycledViewPool(recycledViewPool);
+        // TODO(rongtan): Investigate why null assignment causes crashes in Recycler View.
+        if (recycledViewPool != null) {
+            mRecyclerView.setRecycledViewPool(recycledViewPool);
+        }
     }
 }
