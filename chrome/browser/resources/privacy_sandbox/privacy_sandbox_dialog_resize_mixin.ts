@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {afterNextRender, dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrivacySandboxDialogBrowserProxy} from './privacy_sandbox_dialog_browser_proxy.js';
 // clang-format on
@@ -22,35 +22,32 @@ export const PrivacySandboxDialogResizeMixin = dedupingMixin(
          * finished rendering.
          */
         resizeAndShowNativeDialog(): Promise<void> {
-          return new Promise(
-              resolve => afterNextRender(this, async () => {
-                const proxy = PrivacySandboxDialogBrowserProxy.getInstance();
-                // Prefer using |document.body.offsetHeight| instead of
-                // |document.body.scrollHeight| as it returns the correct height
-                // of the page even when the page zoom in Chrome is different
-                // than 100%.
-                await proxy.resizeDialog(document.body.offsetHeight);
+          return new Promise(async resolve => {
+            const proxy = PrivacySandboxDialogBrowserProxy.getInstance();
+            // Prefer using |document.body.offsetHeight| instead of
+            // |document.body.scrollHeight| as it returns the correct height
+            // of the page even when the page zoom in Chrome is different
+            // than 100%.
+            await proxy.resizeDialog(document.body.offsetHeight);
 
-                // After the content was rendered at size it requires, toggle a
-                // class to fit the content into native dialog bounds...
-                const elements = this.shadowRoot!.querySelectorAll<HTMLElement>(
-                    '[fill-content]');
-                for (const element of elements) {
-                  element.classList.toggle('fill-content', true);
-                }
+            // After the content was rendered at size it requires, toggle a
+            // class to fit the content into native dialog bounds...
+            const elements = this.shadowRoot!.querySelectorAll<HTMLElement>(
+                '[fill-content]');
+            for (const element of elements) {
+              element.classList.toggle('fill-content', true);
+            }
 
-                // ...and hide any overflow on the body. 'fill-content' element
-                // fills the dialog and any scrolling will be happening inside
-                // it.
-                document.body.style.overflow = 'hidden';
+            // ...and hide any overflow on the body. 'fill-content' element
+            // fills the dialog and any scrolling will be happening inside
+            // it.
+            document.body.style.overflow = 'hidden';
 
-                // After the layout is adjusted to fit into the dialog...
-                afterNextRender(this, () => {
-                  // ...show the native dialog.
-                  proxy.showDialog();
-                  resolve();
-                });
-              }));
+            // After the layout is adjusted to fit into the dialog, show
+            // the native dialog.
+            proxy.showDialog();
+            resolve();
+          });
         }
       }
 

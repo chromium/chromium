@@ -69,15 +69,13 @@ export class PrivacySandboxDialogAppElement extends PolymerElement {
       // to fit the content into dialog bounds.
       this.fitIntoDialogClass_ = 'fit-into-size';
 
-      // After the layout is adjusted to fit into the dialog...
-      afterNextRender(this, () => {
-        // ...save if the dialog is scrollable and add a divider if needed.
-        this.didStartWithScrollbar_ =
-            this.$.contentArea.offsetHeight < this.$.contentArea.scrollHeight;
-        this.canScrollClass_ = this.didStartWithScrollbar_ ? 'can-scroll' : '';
+      // After the layout is adjusted to fit into the dialog, save if the
+      // dialog is scrollable and add a divider if needed.
+      this.didStartWithScrollbar_ =
+          this.$.contentArea.offsetHeight < this.$.contentArea.scrollHeight;
+      this.canScrollClass_ = this.didStartWithScrollbar_ ? 'can-scroll' : '';
 
-        proxy.showDialog();
-      });
+      proxy.showDialog();
     });
 
     window.addEventListener('keydown', event => {
