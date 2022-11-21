@@ -1625,12 +1625,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.TPM1.CommandAndResponse.{Client}"
+    enum="TPM1CommandAndResponse" expires_after="2023-04-20">
+  <owner>chingkang@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    The TPM1 command and response code send from {Client} to trousers. The value
+    is the encoding of 2 bytes command code and 2 bytes response code.
+  </summary>
+  <token key="Client">
+    <variant name="Attestation"/>
+    <variant name="Chaps"/>
+    <variant name="Cryptohome"/>
+    <variant name="TpmManager"/>
+    <variant name="TrunksSend"/>
+    <variant name="U2f"/>
+    <variant name="Vtpm"/>
+  </token>
+</histogram>
+
 <histogram name="Platform.TPM2.CommandAndResponse.{Client}"
     enum="TPM2CommandAndResponse" expires_after="2023-04-20">
   <owner>chingkang@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
-    The TPM2 command and response code send from |Client| to trunks. The value
+    The TPM2 command and response code send from {Client} to trunks. The value
     is the encoding of 2 bytes command code and 2 bytes response code.
   </summary>
   <token key="Client">
