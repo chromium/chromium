@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -190,16 +191,16 @@ void CloudPolicyClient::RegistrationParameters::SetLicenseType(
   license_type_ = license_type;
 }
 
-CloudPolicyClient::Observer::~Observer() {}
+CloudPolicyClient::Observer::~Observer() = default;
 
 CloudPolicyClient::CloudPolicyClient(
-    const std::string& machine_id,
-    const std::string& machine_model,
-    const std::string& brand_code,
-    const std::string& attested_device_id,
+    base::StringPiece machine_id,
+    base::StringPiece machine_model,
+    base::StringPiece brand_code,
+    base::StringPiece attested_device_id,
     absl::optional<MacAddress> ethernet_mac_address,
     absl::optional<MacAddress> dock_mac_address,
-    const std::string& manufacture_date,
+    base::StringPiece manufacture_date,
     DeviceManagementService* service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     DeviceDMTokenCallback device_dm_token_callback)

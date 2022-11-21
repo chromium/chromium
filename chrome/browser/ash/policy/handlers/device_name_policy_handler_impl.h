@@ -68,7 +68,8 @@ class DeviceNamePolicyHandlerImpl : public DeviceNamePolicyHandler,
 
   // Sets new device name and policy if different from the current device name
   // and/or policy.
-  void SetDeviceNamePolicy(DeviceNamePolicy policy, std::string& new_hostname);
+  void SetDeviceNamePolicy(DeviceNamePolicy policy,
+                           const std::string& new_hostname);
 
   ash::CrosSettings* cros_settings_;
   chromeos::system::StatisticsProvider* statistics_provider_;

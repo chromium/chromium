@@ -51,52 +51,8 @@ absl::optional<policy::CloudPolicyClient::MacAddress> ParseMacAddress(
   return parsed_mac_address;
 }
 
-std::string GetMachineModel(
-    chromeos::system::StatisticsProvider* statistics_provider) {
-  std::string machine_model;
-  statistics_provider->GetMachineStatistic(chromeos::system::kHardwareClassKey,
-                                           &machine_model);
-  return machine_model;
-}
-
-std::string GetBrandCode(
-    chromeos::system::StatisticsProvider* statistics_provider) {
-  std::string brand_code;
-  statistics_provider->GetMachineStatistic(chromeos::system::kRlzBrandCodeKey,
-                                           &brand_code);
-  return brand_code;
-}
-
-std::string GetAttestedDeviceId(
-    chromeos::system::StatisticsProvider* statistics_provider) {
-  std::string attested_device_id;
-  statistics_provider->GetMachineStatistic(
-      chromeos::system::kAttestedDeviceIdKey, &attested_device_id);
-  return attested_device_id;
-}
-
-absl::optional<policy::CloudPolicyClient::MacAddress> GetEthernetMacAddress(
-    chromeos::system::StatisticsProvider* statistics_provider) {
-  std::string ethernet_mac_address;
-  statistics_provider->GetMachineStatistic(
-      chromeos::system::kEthernetMacAddressKey, &ethernet_mac_address);
-  return ParseMacAddress(ethernet_mac_address);
-}
-
-absl::optional<policy::CloudPolicyClient::MacAddress> GetDockMacAddress(
-    chromeos::system::StatisticsProvider* statistics_provider) {
-  std::string dock_mac_address;
-  statistics_provider->GetMachineStatistic(chromeos::system::kDockMacAddressKey,
-                                           &dock_mac_address);
-  return ParseMacAddress(dock_mac_address);
-}
-
-std::string GetManufactureDate(
-    chromeos::system::StatisticsProvider* statistics_provider) {
-  std::string manufacture_date;
-  statistics_provider->GetMachineStatistic(
-      chromeos::system::kManufactureDateKey, &manufacture_date);
-  return manufacture_date;
+base::StringPiece EmptyIfAbsent(absl::optional<base::StringPiece> opt) {
+  return opt.value_or(base::StringPiece());
 }
 
 }  // namespace
@@ -110,13 +66,20 @@ std::unique_ptr<CloudPolicyClient> CreateDeviceCloudPolicyClientAsh(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     CloudPolicyClient::DeviceDMTokenCallback device_dm_token_callback) {
   return std::make_unique<CloudPolicyClient>(
-      statistics_provider->GetEnterpriseMachineID(),
-      GetMachineModel(statistics_provider), GetBrandCode(statistics_provider),
-      GetAttestedDeviceId(statistics_provider),
-      GetEthernetMacAddress(statistics_provider),
-      GetDockMacAddress(statistics_provider),
-      GetManufactureDate(statistics_provider), service, url_loader_factory,
-      std::move(device_dm_token_callback));
+      EmptyIfAbsent(statistics_provider->GetMachineID()),
+      EmptyIfAbsent(statistics_provider->GetMachineStatistic(
+          chromeos::system::kHardwareClassKey)),
+      EmptyIfAbsent(statistics_provider->GetMachineStatistic(
+          chromeos::system::kRlzBrandCodeKey)),
+      EmptyIfAbsent(statistics_provider->GetMachineStatistic(
+          chromeos::system::kAttestedDeviceIdKey)),
+      ParseMacAddress(EmptyIfAbsent(statistics_provider->GetMachineStatistic(
+          chromeos::system::kEthernetMacAddressKey))),
+      ParseMacAddress(EmptyIfAbsent(statistics_provider->GetMachineStatistic(
+          chromeos::system::kDockMacAddressKey))),
+      EmptyIfAbsent(statistics_provider->GetMachineStatistic(
+          chromeos::system::kManufactureDateKey)),
+      service, url_loader_factory, std::move(device_dm_token_callback));
 }
 
 }  // namespace policy

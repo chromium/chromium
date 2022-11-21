@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler_name_generator.h"
 
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 
 namespace policy {
@@ -23,7 +24,7 @@ bool inline IsValidHostnameCharacter(char c) {
   return base::IsAsciiAlpha(c) || base::IsAsciiDigit(c) || c == '_' || c == '-';
 }
 
-bool IsValidHostname(const std::string& hostname) {
+bool IsValidHostname(base::StringPiece hostname) {
   if ((hostname.size() > kMaxHostnameLength) || (hostname.size() == 0))
     return false;
   if (hostname[0] == '-')
@@ -37,13 +38,13 @@ bool IsValidHostname(const std::string& hostname) {
 
 }  // namespace
 
-std::string FormatHostname(const std::string& name_template,
-                           const std::string& asset_id,
-                           const std::string& serial,
-                           const std::string& mac,
-                           const std::string& machine_name,
-                           const std::string& location) {
-  std::string result = name_template;
+std::string FormatHostname(base::StringPiece name_template,
+                           base::StringPiece asset_id,
+                           base::StringPiece serial,
+                           base::StringPiece mac,
+                           base::StringPiece machine_name,
+                           base::StringPiece location) {
+  std::string result = std::string(name_template);
   base::ReplaceSubstringsAfterOffset(&result, 0, kAssetIDPlaceholder, asset_id);
   base::ReplaceSubstringsAfterOffset(&result, 0, kSerialNumPlaceholder, serial);
   base::ReplaceSubstringsAfterOffset(&result, 0, kMACAddressPlaceholder, mac);

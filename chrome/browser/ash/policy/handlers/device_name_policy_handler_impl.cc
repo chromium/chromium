@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
+#include "base/strings/string_piece.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler_name_generator.h"
 #include "chrome/browser/browser_process.h"
@@ -152,8 +153,8 @@ DeviceNamePolicyHandlerImpl::ComputePolicy(std::string* hostname_template_out) {
 
 std::string DeviceNamePolicyHandlerImpl::GenerateHostname(
     const std::string& hostname_template) const {
-  const std::string serial = chromeos::system::StatisticsProvider::GetInstance()
-                                 ->GetEnterpriseMachineID();
+  const base::StringPiece serial =
+      statistics_provider_->GetMachineID().value_or(base::StringPiece());
 
   const std::string asset_id = g_browser_process->platform_part()
                                    ->browser_policy_connector_ash()
@@ -183,7 +184,7 @@ std::string DeviceNamePolicyHandlerImpl::GenerateHostname(
 
 void DeviceNamePolicyHandlerImpl::SetDeviceNamePolicy(
     DeviceNamePolicy policy,
-    std::string& new_hostname) {
+    const std::string& new_hostname) {
   if (device_name_policy_ == policy && hostname_ == new_hostname)
     return;
 
