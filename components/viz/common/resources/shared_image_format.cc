@@ -152,6 +152,20 @@ gfx::Size SharedImageFormat::GetPlaneSize(int plane_index,
   }
 }
 
+int SharedImageFormat::NumChannelsInPlane(int plane_index) const {
+  DCHECK(IsValidPlaneIndex(plane_index));
+  switch (plane_config()) {
+    case PlaneConfig::kY_V_U:
+      return 1;
+    case PlaneConfig::kY_UV:
+      return plane_index == 1 ? 2 : 1;
+    case PlaneConfig::kY_UV_A:
+      return plane_index == 1 ? 2 : 1;
+  }
+  NOTREACHED();
+  return 0;
+}
+
 std::string SharedImageFormat::ToString() const {
   switch (plane_type_) {
     case PlaneType::kUnknown:

@@ -113,6 +113,9 @@ class SharedImageFormat {
   // Returns the size for a plane given `plane_index`.
   gfx::Size GetPlaneSize(int plane_index, const gfx::Size& size) const;
 
+  // Returns number of channels for a plane for multiplanar formats.
+  int NumChannelsInPlane(int plane_index) const;
+
   std::string ToString() const;
 
   // Returns true if the format contains alpha.

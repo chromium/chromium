@@ -8,6 +8,7 @@
 #include <GLES2/gl2ext.h>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "components/viz/common/resources/resource_format.h"
@@ -76,14 +77,9 @@ GLenum GLDataFormat(viz::SharedImageFormat format, int plane_index) {
   // For multiplanar formats without external sampler, GL formats are per plane.
   // For single channel planes Y, U, V, A return GL_RED_EXT.
   // For 2 channel plane UV return GL_RG_EXT.
-  switch (format.plane_config()) {
-    case viz::SharedImageFormat::PlaneConfig::kY_V_U:
-      return GL_RED_EXT;
-    case viz::SharedImageFormat::PlaneConfig::kY_UV:
-      return plane_index == 1 ? GL_RG_EXT : GL_RED_EXT;
-    case viz::SharedImageFormat::PlaneConfig::kY_UV_A:
-      return plane_index == 1 ? GL_RG_EXT : GL_RED_EXT;
-  }
+  int num_channels = format.NumChannelsInPlane(plane_index);
+  DCHECK_GT(num_channels, 0);
+  return num_channels == 2 ? GL_RG_EXT : GL_RED_EXT;
 }
 GLenum GLInternalFormat(viz::SharedImageFormat format, int plane_index) {
   DCHECK(format.IsValidPlaneIndex(plane_index));
@@ -94,29 +90,17 @@ GLenum GLInternalFormat(viz::SharedImageFormat format, int plane_index) {
   // For single channel 10-bit planes Y return GL_R16_EXT.
   // For 2 channel plane 8-bit UV return GL_RG_EXT.
   // For 2 channel plane 16-bit UV return GL_RG16_EXT.
-  // TODO(hitawala): Add support for YVU/YUVA for 16 bit channels.
+  int num_channels = format.NumChannelsInPlane(plane_index);
+  DCHECK_GT(num_channels, 0);
   switch (format.channel_format()) {
     case viz::SharedImageFormat::ChannelFormat::k8:
-      switch (format.plane_config()) {
-        case viz::SharedImageFormat::PlaneConfig::kY_V_U:
-          return GL_RED_EXT;
-        case viz::SharedImageFormat::PlaneConfig::kY_UV:
-          return plane_index == 1 ? GL_RG_EXT : GL_RED_EXT;
-        case viz::SharedImageFormat::PlaneConfig::kY_UV_A:
-          return plane_index == 1 ? GL_RG_EXT : GL_RED_EXT;
-      }
+      return num_channels == 2 ? GL_RG_EXT : GL_RED_EXT;
     case viz::SharedImageFormat::ChannelFormat::k10:
-      DCHECK(format.plane_config() ==
-             viz::SharedImageFormat::PlaneConfig::kY_UV);
-      return plane_index == 1 ? GL_RG16_EXT : GL_R16_EXT;
+      return num_channels == 2 ? GL_RG16_EXT : GL_R16_EXT;
     case viz::SharedImageFormat::ChannelFormat::k16:
-      DCHECK(format.plane_config() ==
-             viz::SharedImageFormat::PlaneConfig::kY_UV);
-      return plane_index == 1 ? GL_RG16_EXT : GL_R16_EXT;
+      return num_channels == 2 ? GL_RG16_EXT : GL_R16_EXT;
     case viz::SharedImageFormat::ChannelFormat::k16F:
-      DCHECK(format.plane_config() ==
-             viz::SharedImageFormat::PlaneConfig::kY_UV);
-      return plane_index == 1 ? GL_RG16F_EXT : GL_R16F_EXT;
+      return num_channels == 2 ? GL_RG16F_EXT : GL_R16F_EXT;
   }
 }
 GLenum TextureStorageFormat(viz::SharedImageFormat format,
@@ -131,29 +115,17 @@ GLenum TextureStorageFormat(viz::SharedImageFormat format,
   // For single channel 10-bit planes Y return GL_R16_EXT.
   // For 2 channel plane 8-bit UV return GL_RG8_EXT.
   // For 2 channel plane 16-bit UV return GL_RG16_EXT.
-  // TODO(hitawala): Add support for YVU/YUVA for 16 bit channels.
+  int num_channels = format.NumChannelsInPlane(plane_index);
+  DCHECK_GT(num_channels, 0);
   switch (format.channel_format()) {
     case viz::SharedImageFormat::ChannelFormat::k8:
-      switch (format.plane_config()) {
-        case viz::SharedImageFormat::PlaneConfig::kY_V_U:
-          return GL_R8_EXT;
-        case viz::SharedImageFormat::PlaneConfig::kY_UV:
-          return plane_index == 1 ? GL_RG8_EXT : GL_R8_EXT;
-        case viz::SharedImageFormat::PlaneConfig::kY_UV_A:
-          return plane_index == 1 ? GL_RG8_EXT : GL_R8_EXT;
-      }
+      return num_channels == 2 ? GL_RG8_EXT : GL_R8_EXT;
     case viz::SharedImageFormat::ChannelFormat::k10:
-      DCHECK(format.plane_config() ==
-             viz::SharedImageFormat::PlaneConfig::kY_UV);
-      return plane_index == 1 ? GL_RG16_EXT : GL_R16_EXT;
+      return num_channels == 2 ? GL_RG16_EXT : GL_R16_EXT;
     case viz::SharedImageFormat::ChannelFormat::k16:
-      DCHECK(format.plane_config() ==
-             viz::SharedImageFormat::PlaneConfig::kY_UV);
-      return plane_index == 1 ? GL_RG16_EXT : GL_R16_EXT;
+      return num_channels == 2 ? GL_RG16_EXT : GL_R16_EXT;
     case viz::SharedImageFormat::ChannelFormat::k16F:
-      DCHECK(format.plane_config() ==
-             viz::SharedImageFormat::PlaneConfig::kY_UV);
-      return plane_index == 1 ? GL_RG16F_EXT : GL_R16F_EXT;
+      return num_channels == 2 ? GL_RG16F_EXT : GL_R16F_EXT;
   }
 }
 
