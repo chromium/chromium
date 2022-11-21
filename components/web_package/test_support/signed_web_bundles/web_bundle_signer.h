@@ -37,7 +37,12 @@ class WebBundleSigner {
         base::span<const uint8_t, Ed25519PublicKey::kLength> public_key_bytes,
         base::span<const uint8_t, 64> private_key_bytes,
         bool produce_invalid_signature = false);
-    KeyPair(const KeyPair& other);
+    KeyPair(const KeyPair&);
+    KeyPair& operator=(const KeyPair&);
+
+    KeyPair(KeyPair&&) noexcept;
+    KeyPair& operator=(KeyPair&&) noexcept;
+
     ~KeyPair();
 
     Ed25519PublicKey public_key;

@@ -35,6 +35,10 @@ class Ed25519PublicKey {
   static Ed25519PublicKey Create(base::span<const uint8_t, kLength> key);
 
   Ed25519PublicKey(const Ed25519PublicKey&);
+  Ed25519PublicKey& operator=(const Ed25519PublicKey&);
+
+  Ed25519PublicKey(Ed25519PublicKey&&) noexcept;
+  Ed25519PublicKey& operator=(Ed25519PublicKey&&) noexcept;
 
   ~Ed25519PublicKey();
 
@@ -46,7 +50,7 @@ class Ed25519PublicKey {
  private:
   explicit Ed25519PublicKey(std::array<uint8_t, kLength> bytes);
 
-  const std::array<uint8_t, kLength> bytes_;
+  std::array<uint8_t, kLength> bytes_;
 };
 
 }  // namespace web_package

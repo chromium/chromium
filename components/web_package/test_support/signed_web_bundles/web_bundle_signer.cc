@@ -161,8 +161,13 @@ WebBundleSigner::KeyPair::KeyPair(
   private_key = std::move(private_key_array);
 }
 
-WebBundleSigner::KeyPair::KeyPair(const WebBundleSigner::KeyPair& other) =
+WebBundleSigner::KeyPair::KeyPair(const WebBundleSigner::KeyPair&) = default;
+WebBundleSigner::KeyPair& WebBundleSigner::KeyPair::operator=(const KeyPair&) =
     default;
+
+WebBundleSigner::KeyPair::KeyPair(KeyPair&&) noexcept = default;
+WebBundleSigner::KeyPair& WebBundleSigner::KeyPair::operator=(
+    WebBundleSigner::KeyPair&&) noexcept = default;
 
 WebBundleSigner::KeyPair::~KeyPair() = default;
 
