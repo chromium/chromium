@@ -54252,6 +54252,13 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="9" label="Error: Metadata validation error"/>
 </enum>
 
+<enum name="IsolatedWebAppReadResponseHeadStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Error: Response head parsing: Internal error"/>
+  <int value="2" label="Error: Response head parsing: Format error"/>
+  <int value="3" label="Error: Response not found"/>
+</enum>
+
 <enum name="IsolatedWebAppResponseReaderCacheState">
   <int value="0" label="Not cached"/>
   <int value="1" label="Cached and ready"/>

@@ -285,6 +285,8 @@ TEST_F(IsolatedWebAppReaderRegistryTest,
 }
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestRequestToNonExistingResponse) {
+  base::HistogramTester histogram_tester;
+
   network::ResourceRequest resource_request;
   resource_request.url = GURL(kPrimaryUrl.spec() + "foo");
 
@@ -305,6 +307,12 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestRequestToNonExistingResponse) {
             "response for the provided URL: "
             "isolated-app://"
             "aaaaaaacaibaaaaaaaaaaaaaaiaaeaaaaaaaaaaaaabaeaqaaaaaaaic/foo");
+
+  histogram_tester.ExpectBucketCount(
+      "WebApp.Isolated.ReadResponseHeadStatus",
+      IsolatedWebAppReaderRegistry::ReadResponseHeadStatus::
+          kResponseNotFoundError,
+      1);
 }
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
@@ -692,7 +700,16 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataInvalidExchange) {
             "characters long, but was 3 characters long.");
 }
 
-TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidResponse) {
+class IsolatedWebAppReaderRegistryResponseHeadParserErrorTest
+    : public IsolatedWebAppReaderRegistryTest,
+      public ::testing::WithParamInterface<
+          std::pair<web_package::mojom::BundleParseErrorType,
+                    IsolatedWebAppReaderRegistry::ReadResponseHeadStatus>> {};
+
+TEST_P(IsolatedWebAppReaderRegistryResponseHeadParserErrorTest,
+       TestResponseHeadParserError) {
+  base::HistogramTester histogram_tester;
+
   network::ResourceRequest resource_request;
   resource_request.url = kPrimaryUrl;
 
@@ -705,6 +722,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidResponse) {
 
   auto error = web_package::mojom::BundleResponseParseError::New();
   error->message = "test error";
+  error->type = GetParam().first;
   parser_factory_->RunResponseCallback(
       web_package::mojom::BundleResponseLocation::New(
           response_->payload_offset, response_->payload_length),
@@ -716,7 +734,22 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidResponse) {
             IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError);
   EXPECT_EQ(result.error().message,
             "Failed to parse response head: test error");
+
+  histogram_tester.ExpectBucketCount("WebApp.Isolated.ReadResponseHeadStatus",
+                                     GetParam().second, 1);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    IsolatedWebAppReaderRegistryResponseHeadParserErrorTest,
+    ::testing::Values(
+        std::make_pair(
+            web_package::mojom::BundleParseErrorType::kParserInternalError,
+            IsolatedWebAppReaderRegistry::ReadResponseHeadStatus::
+                kResponseHeadParserInternalError),
+        std::make_pair(web_package::mojom::BundleParseErrorType::kFormatError,
+                       IsolatedWebAppReaderRegistry::ReadResponseHeadStatus::
+                           kResponseHeadParserFormatError)));
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
   using ReaderCacheState = IsolatedWebAppReaderRegistry::ReaderCacheState;

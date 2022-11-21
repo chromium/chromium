@@ -20,6 +20,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace web_app {
@@ -261,6 +262,11 @@ void IsolatedWebAppReaderRegistry::OnResponseRead(
     ReadResponseCallback callback,
     base::expected<web_package::mojom::BundleResponsePtr,
                    SignedWebBundleReader::ReadResponseError> response_head) {
+  base::UmaHistogramEnumeration(
+      "WebApp.Isolated.ReadResponseHeadStatus",
+      response_head.has_value() ? ReadResponseHeadStatus::kSuccess
+                                : GetStatusFromError(response_head.error()));
+
   if (!response_head.has_value()) {
     std::move(callback).Run(
         base::unexpected(ReadResponseError::ForError(response_head.error())));
@@ -316,6 +322,19 @@ IsolatedWebAppReaderRegistry::GetStatusFromError(
             }
           }},
       error);
+}
+
+IsolatedWebAppReaderRegistry::ReadResponseHeadStatus
+IsolatedWebAppReaderRegistry::GetStatusFromError(
+    const SignedWebBundleReader::ReadResponseError& error) {
+  switch (error.type) {
+    case SignedWebBundleReader::ReadResponseError::Type::kParserInternalError:
+      return ReadResponseHeadStatus::kResponseHeadParserInternalError;
+    case SignedWebBundleReader::ReadResponseError::Type::kFormatError:
+      return ReadResponseHeadStatus::kResponseHeadParserFormatError;
+    case SignedWebBundleReader::ReadResponseError::Type::kResponseNotFound:
+      return ReadResponseHeadStatus::kResponseNotFoundError;
+  }
 }
 
 IsolatedWebAppReaderRegistry::Response::Response(

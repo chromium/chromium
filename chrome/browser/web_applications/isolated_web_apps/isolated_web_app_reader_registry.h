@@ -152,6 +152,19 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
     kMaxValue = kMetadataValidationError
   };
 
+  // This enum represents every error type that can occur during response head
+  // parsing, after integrity block and metadata have been read successfully.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ReadResponseHeadStatus {
+    kSuccess = 0,
+    kResponseHeadParserInternalError = 1,
+    kResponseHeadParserFormatError = 2,
+    kResponseNotFoundError = 3,
+    kMaxValue = kResponseNotFoundError
+  };
+
  private:
   FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppReaderRegistryTest,
                            TestConcurrentRequests);
@@ -189,6 +202,9 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
 
   ReadIntegrityBlockAndMetadataStatus GetStatusFromError(
       const SignedWebBundleReader::ReadIntegrityBlockAndMetadataError& error);
+
+  ReadResponseHeadStatus GetStatusFromError(
+      const SignedWebBundleReader::ReadResponseError& error);
 
   enum class ReaderCacheState;
 

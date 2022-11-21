@@ -772,6 +772,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Isolated.ReadResponseHeadStatus"
+    enum="IsolatedWebAppReadResponseHeadStatus" expires_after="2023-11-08">
+  <owner>cmfcmf@chromium.org</owner>
+  <owner>peletskyi@chromium.org</owner>
+  <summary>
+    Records whether reading the response head for a request to an Isolated Web
+    App via the isolated-app: scheme was successful or resulted in an error. As
+    a prerequisite for this metric to be logged, the Isolated Web App's
+    integrity block and metadata must have passed validation and its signatures
+    must have been verified successfully. This metric is then logged for any
+    resources loading for the Isolated Web App, so any usage could trigger this
+    metric.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Isolated.ResponseReaderCacheState"
     enum="IsolatedWebAppResponseReaderCacheState" expires_after="2023-11-08">
   <owner>cmfcmf@chromium.org</owner>
