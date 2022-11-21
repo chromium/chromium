@@ -347,6 +347,12 @@ void FakeSessionManagerClient::StartSession(
   user_sessions_[cryptohome_id.account_id()] = user_id_hash;
 }
 
+void FakeSessionManagerClient::StartSessionEx(
+    const cryptohome::AccountIdentifier& cryptohome_id,
+    bool /*chrome_side_key_generation*/) {
+  StartSession(cryptohome_id);
+}
+
 void FakeSessionManagerClient::StopSession(
     login_manager::SessionStopReason reason) {
   session_stopped_ = true;

@@ -223,6 +223,11 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // Starts the session for the user.
   virtual void StartSession(
       const cryptohome::AccountIdentifier& cryptohome_id) = 0;
+  // Same as |StartSession|, but also tells session_manager whether Chrome will
+  // handle owner key generation or not (based on |chrome_side_key_generation|).
+  virtual void StartSessionEx(
+      const cryptohome::AccountIdentifier& cryptohome_id,
+      bool chrome_side_key_generation) = 0;
 
   // Stops the current session. Don't call directly unless there's no user on
   // the device. Use SessionTerminationManager::StopSession instead.

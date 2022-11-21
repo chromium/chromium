@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -21,12 +22,20 @@
 namespace base {
 class TaskRunner;
 class Value;
-}
+}  // namespace base
 
 namespace ownership {
 class OwnerKeyUtil;
 class PrivateKey;
 class PublicKey;
+
+// Feature flag to toggle Chrome-side owner key generation (see
+// go/generate-owner-key-in-chrome). If enabled, Chrome will take the
+// responsibility of generating the owner key from session_manager. If disabled,
+// Chrome will still load/generate the owner key using the new code in parallel,
+// but the result will be discarded (see OwnerKeyDarkLaunchTracker).
+OWNERSHIP_EXPORT
+BASE_DECLARE_FEATURE(kChromeSideOwnerKeyGeneration);
 
 // This class is a common interface for platform-specific classes
 // which deal with ownership, keypairs and owner-related settings.
@@ -51,8 +60,8 @@ class OWNERSHIP_EXPORT OwnerSettingsService : public KeyedService {
   };
 
   typedef base::OnceCallback<void(
-      std::unique_ptr<enterprise_management::PolicyFetchResponse>
-          policy_response)>
+      scoped_refptr<ownership::PublicKey>,
+      std::unique_ptr<enterprise_management::PolicyFetchResponse>)>
       AssembleAndSignPolicyAsyncCallback;
 
   using IsOwnerCallback = base::OnceCallback<void(bool is_owner)>;

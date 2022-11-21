@@ -1213,9 +1213,10 @@ void UserSessionManager::StartCrosSession() {
   TRACE_EVENT0(kEventCategoryChromeOS, kEventStartCrosSession);
   BootTimesRecorder* btl = BootTimesRecorder::Get();
   btl->AddLoginTimeMarker("StartSession-Start", false);
-  SessionManagerClient::Get()->StartSession(
+  SessionManagerClient::Get()->StartSessionEx(
       cryptohome::CreateAccountIdentifierFromAccountId(
-          user_context_.GetAccountId()));
+          user_context_.GetAccountId()),
+      base::FeatureList::IsEnabled(ownership::kChromeSideOwnerKeyGeneration));
   btl->AddLoginTimeMarker("StartSession-End", false);
 }
 

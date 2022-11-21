@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
@@ -32,14 +33,25 @@ using ScopedSGNContext = std::unique_ptr<
     SGNContext,
     crypto::NSSDestroyer1<SGNContext, SGN_DestroyContext, PR_TRUE>>;
 
+// |public_key| is included in the |policy|
+// if the ChromeSideOwnerKeyGeneration Feature is enabled. |private_key|
+// actually signs the |policy| (must belong to the same key pair as
+// |public_key|).
 std::unique_ptr<em::PolicyFetchResponse> AssembleAndSignPolicy(
     std::unique_ptr<em::PolicyData> policy,
+    scoped_refptr<ownership::PublicKey> public_key,
     scoped_refptr<ownership::PrivateKey> private_key) {
   DCHECK(private_key->key());
 
   // Assemble the policy.
   std::unique_ptr<em::PolicyFetchResponse> policy_response(
       new em::PolicyFetchResponse());
+
+  if (base::FeatureList::IsEnabled(ownership::kChromeSideOwnerKeyGeneration)) {
+    policy_response->set_new_public_key(public_key->data().data(),
+                                        public_key->data().size());
+  }
+
   if (!policy->SerializeToString(policy_response->mutable_policy_data())) {
     LOG(ERROR) << "Failed to encode policy payload.";
     return nullptr;
@@ -71,6 +83,10 @@ std::unique_ptr<em::PolicyFetchResponse> AssembleAndSignPolicy(
 }
 
 }  // namespace
+
+BASE_FEATURE(kChromeSideOwnerKeyGeneration,
+             "ChromeSideOwnerKeyGeneration",
+             base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
 
 OwnerSettingsService::OwnerSettingsService(
     const scoped_refptr<ownership::OwnerKeyUtil>& owner_key_util)
@@ -116,10 +132,16 @@ bool OwnerSettingsService::AssembleAndSignPolicyAsync(
   DCHECK(thread_checker_.CalledOnValidThread());
   if (!task_runner || !IsOwner())
     return false;
+  // |public_key_| is explicitly forwarded down to
+  // |OwnerSettingsServiceAsh::OnSignedPolicyStored()| to make sure that only
+  // the key that was actually included in a policy gets marked as persisted
+  // (theoretically a different key can be re-assigned to |public_key_| in
+  // between the async calls).
   return base::PostTaskAndReplyWithResult(
       task_runner, FROM_HERE,
-      base::BindOnce(&AssembleAndSignPolicy, std::move(policy), private_key_),
-      std::move(callback));
+      base::BindOnce(&AssembleAndSignPolicy, std::move(policy), public_key_,
+                     private_key_),
+      base::BindOnce(std::move(callback), public_key_));
 }
 
 bool OwnerSettingsService::SetBoolean(const std::string& setting, bool value) {

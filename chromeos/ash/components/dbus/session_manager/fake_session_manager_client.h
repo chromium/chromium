@@ -92,6 +92,8 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
 
   void StartSession(
       const cryptohome::AccountIdentifier& cryptohome_id) override;
+  void StartSessionEx(const cryptohome::AccountIdentifier& cryptohome_id,
+                      bool chrome_side_key_generation) override;
   void StopSession(login_manager::SessionStopReason reason) override;
   void LoadShillProfile(
       const cryptohome::AccountIdentifier& cryptohome_id) override;

@@ -25,13 +25,16 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
+#include "chrome/browser/ash/ownership/owner_key_loader.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/ownership/ownership_histograms.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/about_flags.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
@@ -376,6 +379,14 @@ void OwnerSettingsServiceAsh::OnProfileManagerDestroying() {
 
 void OwnerSettingsServiceAsh::OwnerKeySet(bool success) {
   DCHECK(thread_checker_.CalledOnValidThread());
+
+  if (base::FeatureList::IsEnabled(ownership::kChromeSideOwnerKeyGeneration)) {
+    // OwnerKeySet notification is used to reload the owner key in Chrome when
+    // session manager generates it. If Chrome is responsible for generating the
+    // owner key, the notification is not useful.
+    return;
+  }
+
   if (success)
     ReloadKeypair();
 }
@@ -720,8 +731,8 @@ void OwnerSettingsServiceAsh::OnPostKeypairLoadedActions() {
 }
 
 void OwnerSettingsServiceAsh::ReloadKeypairImpl(
-    base::OnceCallback<void(scoped_refptr<PublicKey> public_key,
-                            scoped_refptr<PrivateKey> private_key)> callback) {
+    base::OnceCallback<void(scoped_refptr<PublicKey>,
+                            scoped_refptr<PrivateKey>)> callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   // The profile may not be fully created yet: abort, and wait till it is. The
@@ -735,11 +746,33 @@ void OwnerSettingsServiceAsh::ReloadKeypairImpl(
   if (waiting_for_tpm_token_ || waiting_for_easy_unlock_operation_finshed_)
     return;
 
+  if (base::FeatureList::IsEnabled(ownership::kChromeSideOwnerKeyGeneration)) {
+    const bool is_enterprise_managed = g_browser_process->platform_part()
+                                           ->browser_policy_connector_ash()
+                                           ->IsDeviceEnterpriseManaged();
+
+    auto cb = base::BindOnce(&OwnerSettingsServiceAsh::OnReloadedKeypairImpl,
+                             weak_factory_.GetWeakPtr(), std::move(callback));
+    owner_key_loader_ = std::make_unique<OwnerKeyLoader>(
+        profile_, device_settings_service_, owner_key_util_,
+        is_enterprise_managed, std::move(cb));
+    return owner_key_loader_->Run();
+  }
+
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&LoadPrivateKeyOnIOThread, owner_key_util_,
                      ProfileHelper::GetUserIdHashFromProfile(profile_),
                      std::move(callback)));
+}
+
+void OwnerSettingsServiceAsh::OnReloadedKeypairImpl(
+    base::OnceCallback<void(scoped_refptr<PublicKey>,
+                            scoped_refptr<PrivateKey>)> callback,
+    scoped_refptr<PublicKey> public_key,
+    scoped_refptr<PrivateKey> private_key) {
+  std::move(callback).Run(std::move(public_key), std::move(private_key));
+  owner_key_loader_.reset();
 }
 
 void OwnerSettingsServiceAsh::StorePendingChanges() {
@@ -757,6 +790,11 @@ void OwnerSettingsServiceAsh::StorePendingChanges() {
              device_settings_service_->device_settings()) {
     settings = *device_settings_service_->device_settings();
     MigrateFeatureFlags(&settings);
+  } else if (base::FeatureList::IsEnabled(
+                 ownership::kChromeSideOwnerKeyGeneration) &&
+             public_key_ && !public_key_->is_persisted()) {
+    // A new owner key was generated and is not stored yet. Proceed to send it
+    // to session manager.
   } else {
     return;
   }
@@ -781,6 +819,7 @@ void OwnerSettingsServiceAsh::StorePendingChanges() {
 }
 
 void OwnerSettingsServiceAsh::OnPolicyAssembledAndSigned(
+    scoped_refptr<ownership::PublicKey> public_key,
     std::unique_ptr<em::PolicyFetchResponse> policy_response) {
   RecordOwnerKeyEvent(OwnerKeyEvent::kSignedPolicy,
                       /*success=*/policy_response.get());
@@ -792,11 +831,17 @@ void OwnerSettingsServiceAsh::OnPolicyAssembledAndSigned(
   device_settings_service_->Store(
       std::move(policy_response),
       base::BindOnce(&OwnerSettingsServiceAsh::OnSignedPolicyStored,
-                     store_settings_factory_.GetWeakPtr(), true /* success */));
+                     store_settings_factory_.GetWeakPtr(),
+                     std::move(public_key), /*success=*/true));
 }
 
-void OwnerSettingsServiceAsh::OnSignedPolicyStored(bool success) {
+void OwnerSettingsServiceAsh::OnSignedPolicyStored(
+    scoped_refptr<ownership::PublicKey> public_key,
+    bool success) {
   RecordOwnerKeyEvent(OwnerKeyEvent::kStoredPolicy, success);
+  if (success) {
+    public_key->mark_persisted();
+  }
 
   CHECK(device_settings_service_);
   ReportStatusAndContinueStoring(success &&

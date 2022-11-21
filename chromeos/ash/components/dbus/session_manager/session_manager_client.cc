@@ -327,6 +327,19 @@ class SessionManagerClientImpl : public SessionManagerClient {
                                        base::DoNothing());
   }
 
+  void StartSessionEx(const cryptohome::AccountIdentifier& cryptohome_id,
+                      bool chrome_side_key_generation) override {
+    dbus::MethodCall method_call(login_manager::kSessionManagerInterface,
+                                 login_manager::kSessionManagerStartSessionEx);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(cryptohome_id.account_id());
+    writer.AppendString("");  // Unique ID is deprecated
+    writer.AppendBool(chrome_side_key_generation);
+    session_manager_proxy_->CallMethod(&method_call,
+                                       dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                                       base::DoNothing());
+  }
+
   void StopSession(login_manager::SessionStopReason reason) override {
     dbus::MethodCall method_call(
         login_manager::kSessionManagerInterface,
