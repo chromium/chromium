@@ -281,13 +281,12 @@ void StyleAdjuster::AdjustStyleForEditing(ComputedStyleBuilder& builder) {
 }
 
 void StyleAdjuster::AdjustStyleForTextCombine(ComputedStyleBuilder& builder) {
-  ComputedStyle& style = *builder.MutableInternalStyle();
-  DCHECK_EQ(style.Display(), EDisplay::kInlineBlock);
+  DCHECK_EQ(builder.Display(), EDisplay::kInlineBlock);
   // Set box sizes
-  const Font& font = style.GetFont();
+  const Font& font = builder.GetFont();
   DCHECK(font.GetFontDescription().IsVerticalBaseline());
-  const auto one_em = style.ComputedFontSizeAsFixed();
-  const auto line_height = style.GetFontHeight().LineHeight();
+  const auto one_em = ComputedStyle::ComputedFontSizeAsFixed(builder.GetFont());
+  const auto line_height = builder.FontHeight();
   const auto size =
       LengthSize(Length::Fixed(line_height), Length::Fixed(one_em));
   builder.SetContainIntrinsicWidth(StyleIntrinsicLength(false, size.Width()));
@@ -313,15 +312,16 @@ void StyleAdjuster::AdjustStyleForCombinedText(ComputedStyleBuilder& builder) {
   builder.SetWordSpacing(0.0f);
   builder.SetWritingMode(WritingMode::kHorizontalTb);
 
-  ComputedStyle& style = *builder.MutableInternalStyle();
-  style.ClearAppliedTextDecorations();
+  builder.MutableInternalStyle()->ClearAppliedTextDecorations();
   builder.ResetTextIndent();
   builder.UpdateFontOrientation();
 
-  DCHECK_EQ(style.GetFont().GetFontDescription().Orientation(),
+#if DCHECK_IS_ON()
+  DCHECK_EQ(builder.GetFont().GetFontDescription().Orientation(),
             FontOrientation::kHorizontal);
-
-  LayoutNGTextCombine::AssertStyleIsValid(style);
+  scoped_refptr<const ComputedStyle> cloned_style = builder.CloneStyle();
+  LayoutNGTextCombine::AssertStyleIsValid(*cloned_style);
+#endif
 }
 
 static void AdjustStyleForFirstLetter(ComputedStyleBuilder& builder) {
@@ -780,8 +780,8 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
                                         Element* element) {
   DCHECK(state.LayoutParentStyle());
   DCHECK(state.ParentStyle());
-  ComputedStyle& style = *state.Style();
   ComputedStyleBuilder& builder = state.StyleBuilder();
+  ComputedStyle& style = *builder.MutableInternalStyle();
   const ComputedStyle& parent_style = *state.ParentStyle();
   const ComputedStyle& layout_parent_style = *state.LayoutParentStyle();
 

@@ -2806,6 +2806,12 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   const FontDescription& GetFontDescription() const {
     return GetFont().GetFontDescription();
   }
+  int FontSize() const { return GetFontDescription().ComputedPixelSize(); }
+  LayoutUnit FontHeight() const {
+    if (const SimpleFontData* font_data = GetFont().PrimaryFont())
+      return LayoutUnit(font_data->GetFontMetrics().Height());
+    return LayoutUnit();
+  }
   FontOrientation ComputeFontOrientation() const;
   void UpdateFontOrientation();
 
@@ -2814,6 +2820,12 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     FontDescription description(GetFontDescription());
     description.SetLetterSpacing(letter_spacing);
     SetFontDescription(description);
+  }
+
+  // line-height
+  bool HasInitialLineHeight() const {
+    return LineHeightInternal() ==
+           ComputedStyleInitialValues::InitialLineHeight();
   }
 
   // margin-*

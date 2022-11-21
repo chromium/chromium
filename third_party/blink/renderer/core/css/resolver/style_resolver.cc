@@ -2611,12 +2611,10 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForInitialLetterText(
   DCHECK(paragraph_style.InitialLetter().IsNormal());
   DCHECK(!initial_letter_box_style.InitialLetter().IsNormal());
   ComputedStyleBuilder builder = CreateComputedStyleBuilder();
-  ComputedStyle* initial_letter_text_style = builder.MutableInternalStyle();
   builder.InheritFrom(initial_letter_box_style);
   builder.SetFont(
       ComputeInitialLetterFont(initial_letter_box_style, paragraph_style));
-  builder.SetLineHeight(
-      Length::Fixed(initial_letter_text_style->GetFontHeight().LineHeight()));
+  builder.SetLineHeight(Length::Fixed(builder.FontHeight()));
   builder.SetVerticalAlign(EVerticalAlign::kBaseline);
   return builder.TakeStyle();
 }

@@ -23,7 +23,6 @@ scoped_refptr<ComputedStyle> MenuListInnerElement::CustomStyleForLayoutObject(
   ComputedStyleBuilder style_builder =
       GetDocument().GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
           parent_style, EDisplay::kBlock);
-  ComputedStyle* style = style_builder.MutableInternalStyle();
 
   style_builder.SetFlexGrow(1);
   style_builder.SetFlexShrink(1);
@@ -36,15 +35,15 @@ scoped_refptr<ComputedStyle> MenuListInnerElement::CustomStyleForLayoutObject(
   style_builder.SetTextOverflow(parent_style.TextOverflow());
   style_builder.SetUserModify(EUserModify::kReadOnly);
 
-  if (style->LineHeight() == ComputedStyleInitialValues::InitialLineHeight()) {
+  if (style_builder.HasInitialLineHeight()) {
     // line-height should be consistent with MenuListIntrinsicBlockSize()
     // in layout_box.cc.
-    const SimpleFontData* font_data = style->GetFont().PrimaryFont();
+    const SimpleFontData* font_data = style_builder.GetFont().PrimaryFont();
     if (font_data) {
       style_builder.SetLineHeight(
           Length::Fixed(font_data->GetFontMetrics().Height()));
     } else {
-      style_builder.SetLineHeight(Length::Fixed(style->FontSize()));
+      style_builder.SetLineHeight(Length::Fixed(style_builder.FontSize()));
     }
   }
 

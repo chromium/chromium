@@ -134,38 +134,34 @@ TextControlInnerEditorElement::CustomStyleForLayoutObject(
   Element* host = OwnerShadowHost();
   DCHECK(host);
   const ComputedStyle& start_style = host->ComputedStyleRef();
-  ComputedStyleBuilder text_block_style_builder =
+  ComputedStyleBuilder style_builder =
       GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
-  ComputedStyle* text_block_style =
-      text_block_style_builder.MutableInternalStyle();
-  text_block_style_builder.InheritFrom(start_style);
+  style_builder.InheritFrom(start_style);
   // The inner block, if present, always has its direction set to LTR,
   // so we need to inherit the direction and unicode-bidi style from the
   // element.
   // TODO(https://crbug.com/1101564): The custom inheritance done here means we
   // need to mark for style recalc inside style recalc. See the workaround in
   // LayoutTextControl::StyleDidChange.
-  text_block_style_builder.SetDirection(start_style.Direction());
-  text_block_style_builder.SetUnicodeBidi(start_style.GetUnicodeBidi());
-  text_block_style_builder.SetUserSelect(EUserSelect::kText);
-  text_block_style_builder.SetUserModify(
+  style_builder.SetDirection(start_style.Direction());
+  style_builder.SetUnicodeBidi(start_style.GetUnicodeBidi());
+  style_builder.SetUserSelect(EUserSelect::kText);
+  style_builder.SetUserModify(
       To<HTMLFormControlElement>(host)->IsDisabledOrReadOnly()
           ? EUserModify::kReadOnly
           : EUserModify::kReadWritePlaintextOnly);
-  text_block_style_builder.SetDisplay(EDisplay::kBlock);
-  text_block_style_builder.SetHasLineIfEmpty(true);
-  text_block_style_builder
-      .SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
+  style_builder.SetDisplay(EDisplay::kBlock);
+  style_builder.SetHasLineIfEmpty(true);
+  style_builder.SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
 
   if (!IsA<HTMLTextAreaElement>(host)) {
-    text_block_style_builder.SetWhiteSpace(EWhiteSpace::kPre);
-    text_block_style_builder.SetOverflowWrap(EOverflowWrap::kNormal);
-    text_block_style_builder.SetTextOverflow(
-        ToTextControl(host)->ValueForTextOverflow());
+    style_builder.SetWhiteSpace(EWhiteSpace::kPre);
+    style_builder.SetOverflowWrap(EOverflowWrap::kNormal);
+    style_builder.SetTextOverflow(ToTextControl(host)->ValueForTextOverflow());
     int computed_line_height = start_style.ComputedLineHeight();
     // Do not allow line-height to be smaller than our default.
-    if (text_block_style->FontSize() >= computed_line_height) {
-      text_block_style_builder.SetLineHeight(
+    if (style_builder.FontSize() >= computed_line_height) {
+      style_builder.SetLineHeight(
           ComputedStyleInitialValues::InitialLineHeight());
     }
 
@@ -181,38 +177,38 @@ TextControlInnerEditorElement::CustomStyleForLayoutObject(
     if (logical_height.IsPercentOrCalc() ||
         (logical_height.IsFixed() &&
          logical_height.GetFloatValue() > computed_line_height)) {
-      text_block_style_builder.SetLineHeight(
+      style_builder.SetLineHeight(
           ComputedStyleInitialValues::InitialLineHeight());
     }
 
     if (To<HTMLInputElement>(host)->ShouldRevealPassword())
-      text_block_style_builder.SetTextSecurity(ETextSecurity::kNone);
+      style_builder.SetTextSecurity(ETextSecurity::kNone);
 
-    text_block_style_builder.SetOverflowX(EOverflow::kScroll);
+    style_builder.SetOverflowX(EOverflow::kScroll);
     // overflow-y:visible doesn't work because overflow-x:scroll makes a layer.
-    text_block_style_builder.SetOverflowY(EOverflow::kScroll);
+    style_builder.SetOverflowY(EOverflow::kScroll);
     ComputedStyleBuilder no_scrollbar_style_builder =
         GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
     no_scrollbar_style_builder.SetStyleType(kPseudoIdScrollbar);
     no_scrollbar_style_builder.SetDisplay(EDisplay::kNone);
-    text_block_style->AddCachedPseudoElementStyle(
+    style_builder.MutableInternalStyle()->AddCachedPseudoElementStyle(
         no_scrollbar_style_builder.TakeStyle(), kPseudoIdScrollbar,
         g_null_atom);
-    text_block_style_builder.SetPseudoElementStyles(
+    style_builder.SetPseudoElementStyles(
         1 << (kPseudoIdScrollbar - kFirstPublicPseudoId));
 
-    text_block_style_builder.SetDisplay(EDisplay::kFlowRoot);
+    style_builder.SetDisplay(EDisplay::kFlowRoot);
     if (parentNode()->IsShadowRoot())
-      text_block_style_builder.SetAlignSelfBlockCenter(true);
+      style_builder.SetAlignSelfBlockCenter(true);
   }
 
   // Using StyleAdjuster::adjustComputedStyle updates unwanted style. We'd like
   // to apply only editing-related and alignment-related.
-  StyleAdjuster::AdjustStyleForEditing(text_block_style_builder);
+  StyleAdjuster::AdjustStyleForEditing(style_builder);
   if (!is_visible_)
-    text_block_style_builder.SetOpacity(0);
+    style_builder.SetOpacity(0);
 
-  return text_block_style_builder.TakeStyle();
+  return style_builder.TakeStyle();
 }
 
 // ----------------------------

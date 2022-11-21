@@ -1439,21 +1439,22 @@ Length StyleBuilderConverter::ConvertLineHeight(StyleResolverState& state,
       return primitive_value->ComputeLength<Length>(
           LineHeightToLengthConversionData(state));
     }
-    if (primitive_value->IsPercentage()) {
-      return Length::Fixed(
-          (state.Style()->ComputedFontSize() * primitive_value->GetIntValue()) /
-          100.0);
-    }
     if (primitive_value->IsNumber()) {
       return Length::Percent(
           ClampTo<float>(primitive_value->GetDoubleValue() * 100.0));
+    }
+    float computed_font_size =
+        state.StyleBuilder().GetFontDescription().ComputedSize();
+    if (primitive_value->IsPercentage()) {
+      return Length::Fixed(
+          (computed_font_size * primitive_value->GetIntValue()) / 100.0);
     }
     if (primitive_value->IsCalculated()) {
       Length zoomed_length =
           Length(To<CSSMathFunctionValue>(primitive_value)
                      ->ToCalcValue(LineHeightToLengthConversionData(state)));
-      return Length::Fixed(ValueForLength(
-          zoomed_length, LayoutUnit(state.Style()->ComputedFontSize())));
+      return Length::Fixed(
+          ValueForLength(zoomed_length, LayoutUnit(computed_font_size)));
     }
   }
 
