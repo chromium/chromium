@@ -97,9 +97,6 @@ ChromeVoxEditableTextUnitTest = class extends AccessibilityTestBase {
         '/chromevox/background/editing/editable_text_base.js');
     await importModule('AbstractTts', '/chromevox/common/abstract_tts.js');
 
-    // TODO: These tests are all assuming we used the IBeam cursor.
-    // We need to add coverage for block cursor.
-    ChromeVoxEditableTextBase.useIBeamCursor = true;
     ChromeVoxState.instance.typingEcho = TypingEcho.CHARACTER_AND_WORD;
     ChromeVoxEditableTextBase.eventTypingEcho = false;
     ChromeVoxEditableTextBase.shouldSpeakInsertions = true;
@@ -184,7 +181,6 @@ TEST_F('ChromeVoxEditableTextUnitTest', 'TypingWords', function() {
   assertEqualStringArrays(['.', 'd', 'l'], tts.get());
 
   // Forward-delete
-  ChromeVoxEditableTextBase.useIBeamCursor = true;
   obj.changed(new TextChangeEvent('Hello, Wor', 9, 9));
   obj.changed(new TextChangeEvent('Hello, Wor', 8, 8));
   obj.changed(new TextChangeEvent('Hello, Wor', 7, 7));
@@ -194,7 +190,6 @@ TEST_F('ChromeVoxEditableTextUnitTest', 'TypingWords', function() {
   assertEqualStringArrays(['r', 'o', 'W', 'W', 'o', 'r'], tts.get());
 
   obj.changed(new TextChangeEvent('Hello, Wor', 10, 10));
-  ChromeVoxEditableTextBase.useIBeamCursor = false;
   obj.changed(new TextChangeEvent('Hello, Wor', 9, 9));
   obj.changed(new TextChangeEvent('Hello, Wor', 8, 8));
   obj.changed(new TextChangeEvent('Hello, Wor', 7, 7));
