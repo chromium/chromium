@@ -616,8 +616,8 @@ void DisplayOverlayController::OnCustomizeRestore() {
   touch_injector_->OnBindingRestore();
 }
 
-const std::string* DisplayOverlayController::GetPackageName() const {
-  return touch_injector_->GetPackageName();
+const std::string& DisplayOverlayController::GetPackageName() const {
+  return touch_injector_->package_name();
 }
 
 void DisplayOverlayController::OnApplyMenuState() {

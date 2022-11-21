@@ -70,7 +70,7 @@ class DisplayOverlayController : public ui::EventHandler,
   // Restore back to original default binding when users press the restore
   // button after editing.
   void OnCustomizeRestore();
-  const std::string* GetPackageName() const;
+  const std::string& GetPackageName() const;
   // Once the menu state is loaded from protobuf data, it should be applied on
   // the view. For example, |InputMappingView| may not be visible if it is
   // hidden or input overlay is disabled.

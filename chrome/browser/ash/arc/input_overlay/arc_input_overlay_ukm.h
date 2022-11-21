@@ -13,15 +13,13 @@ namespace arc::input_overlay {
 // AppSourceUrlRecorder.
 class InputOverlayUkm {
  public:
-  static void RecordInputOverlayFeatureStateUkm(const std::string& package_name,
+  static void RecordInputOverlayFeatureStateUkm(std::string package_name,
                                                 bool enable);
 
-  static void RecordInputOverlayMappingHintStateUkm(
-      const std::string& package_name,
-      bool enable);
+  static void RecordInputOverlayMappingHintStateUkm(std::string package_name,
+                                                    bool enable);
 
-  static void RecordInputOverlayCustomizedUsageUkm(
-      const std::string& package_name);
+  static void RecordInputOverlayCustomizedUsageUkm(std::string package_name);
 };
 
 }  // namespace arc::input_overlay

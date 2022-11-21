@@ -326,8 +326,9 @@ class TouchInjectorTest : public views::ViewsTestBase {
                            .y();
     injector_ = std::make_unique<TouchInjector>(
         widget_->GetNativeWindow(),
+        *widget_->GetNativeWindow()->GetProperty(ash::kArcPackageNameKey),
         base::BindLambdaForTesting(
-            [&](std::unique_ptr<AppDataProto>, const std::string&) {}));
+            [&](std::unique_ptr<AppDataProto>, std::string) {}));
     injector_->set_beta(true);
   }
 
@@ -907,8 +908,9 @@ TEST_F(TouchInjectorTest, TestProtoConversion) {
   // Check whether AppDataProto is deserialized correctly.
   auto injector = std::make_unique<TouchInjector>(
       widget_->GetNativeWindow(),
+      *widget_->GetNativeWindow()->GetProperty(ash::kArcPackageNameKey),
       base::BindLambdaForTesting(
-          [&](std::unique_ptr<AppDataProto>, const std::string&) {}));
+          [&](std::unique_ptr<AppDataProto>, std::string) {}));
   injector->set_beta(true);
   injector->ParseActions(*json_value);
   injector->OnProtoDataAvailable(*proto);

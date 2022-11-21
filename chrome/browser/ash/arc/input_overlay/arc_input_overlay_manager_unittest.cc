@@ -36,8 +36,7 @@ constexpr char kRandomGamePackageName[] =
     "org.chromium.arc.testapp.inputoverlay_game";
 constexpr const float kTolerance = 0.999f;
 
-class MockDisplayOverlayController
-    : public input_overlay::DisplayOverlayController {
+class MockDisplayOverlayController : public DisplayOverlayController {
  public:
   explicit MockDisplayOverlayController(TouchInjector* touch_injector)
       : DisplayOverlayController(touch_injector, false) {}

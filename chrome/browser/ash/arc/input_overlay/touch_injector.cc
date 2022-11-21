@@ -157,8 +157,10 @@ class TouchInjector::KeyCommand {
 };
 
 TouchInjector::TouchInjector(aura::Window* top_level_window,
+                             const std::string& package_name,
                              OnSaveProtoFileCallback save_file_callback)
     : window_(top_level_window),
+      package_name_(package_name),
       content_bounds_(CalculateWindowContentBounds(window_)),
       save_file_callback_(save_file_callback) {}
 
@@ -316,10 +318,6 @@ void TouchInjector::OnBindingRestore() {
     action->RestoreToDefault();
 }
 
-const std::string* TouchInjector::GetPackageName() const {
-  return window_->GetProperty(ash::kArcPackageNameKey);
-}
-
 void TouchInjector::OnProtoDataAvailable(AppDataProto& proto) {
   LoadMenuEntryFromProto(proto);
   LoadMenuStateFromProto(proto);
@@ -347,21 +345,20 @@ void TouchInjector::OnProtoDataAvailable(AppDataProto& proto) {
 
 void TouchInjector::OnInputMenuViewRemoved() {
   OnSaveProtoFile();
-  const auto* package_name = GetPackageName();
   // Record UMA stats upon |InputMenuView| close because it needs to ignore the
   // unfinalized menu state change.
   if (touch_injector_enable_ != touch_injector_enable_uma_) {
     touch_injector_enable_uma_ = touch_injector_enable_;
     RecordInputOverlayFeatureState(touch_injector_enable_uma_);
     InputOverlayUkm::RecordInputOverlayFeatureStateUkm(
-        *package_name, touch_injector_enable_uma_);
+        package_name_, touch_injector_enable_uma_);
   }
 
   if (input_mapping_visible_ != input_mapping_visible_uma_) {
     input_mapping_visible_uma_ = input_mapping_visible_;
     RecordInputOverlayMappingHintState(input_mapping_visible_uma_);
     InputOverlayUkm::RecordInputOverlayMappingHintStateUkm(
-        *package_name, input_mapping_visible_uma_);
+        package_name_, input_mapping_visible_uma_);
   }
 }
 
@@ -771,8 +768,7 @@ std::unique_ptr<AppDataProto> TouchInjector::ConvertToProto() {
 
 void TouchInjector::OnSaveProtoFile() {
   auto app_data_proto = ConvertToProto();
-  std::string package_name(*GetPackageName());
-  save_file_callback_.Run(std::move(app_data_proto), package_name);
+  save_file_callback_.Run(std::move(app_data_proto), package_name_);
 }
 
 void TouchInjector::AddMenuStateToProto(AppDataProto& proto) {
@@ -941,13 +937,12 @@ void TouchInjector::RemoveActionView(Action* action) {
 void TouchInjector::RecordMenuStateOnLaunch() {
   touch_injector_enable_uma_ = touch_injector_enable_;
   input_mapping_visible_uma_ = input_mapping_visible_;
-  const auto* package_name = GetPackageName();
   RecordInputOverlayFeatureState(touch_injector_enable_uma_);
   InputOverlayUkm::RecordInputOverlayFeatureStateUkm(
-      *package_name, touch_injector_enable_uma_);
+      package_name_, touch_injector_enable_uma_);
   RecordInputOverlayMappingHintState(input_mapping_visible_uma_);
   InputOverlayUkm::RecordInputOverlayMappingHintStateUkm(
-      *package_name, input_mapping_visible_uma_);
+      package_name_, input_mapping_visible_uma_);
 }
 
 int TouchInjector::GetRewrittenTouchIdForTesting(ui::PointerId original_id) {

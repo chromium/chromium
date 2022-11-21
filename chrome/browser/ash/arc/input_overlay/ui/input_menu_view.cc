@@ -89,10 +89,11 @@ constexpr char kGamePackageName[] = "entry.435412983";
 constexpr char kBoardName[] = "entry.1492517074";
 constexpr char kOsVersion[] = "entry.1961594320";
 
-GURL GetAssembleUrl(DisplayOverlayController& controller) {
+// Pass |package_name| by value because the focus will be changed to the
+// browser.
+GURL GetAssembleUrl(std::string package_name) {
   GURL url(kFeedbackUrl);
-  const auto* package_name = controller.GetPackageName();
-  url = net::AppendQueryParameter(url, kGamePackageName, *package_name);
+  url = net::AppendQueryParameter(url, kGamePackageName, package_name);
   url = net::AppendQueryParameter(url, kBoardName,
                                   base::SysInfo::HardwareModelName());
   url = net::AppendQueryParameter(url, kOsVersion,
@@ -405,7 +406,7 @@ void InputMenuView::OnEditButtonPressed() {
   }
   RecordInputOverlayCustomizedUsage();
   InputOverlayUkm::RecordInputOverlayCustomizedUsageUkm(
-      *(display_overlay_controller_->GetPackageName()));
+      display_overlay_controller_->GetPackageName());
   // Change display mode, load edit UI per action and overall edit buttons; make
   // sure the following line is at the bottom because edit mode will kill this
   // view.
@@ -417,7 +418,7 @@ void InputMenuView::OnButtonSendFeedbackPressed() {
   if (!display_overlay_controller_)
     return;
 
-  GURL url = GetAssembleUrl(*display_overlay_controller_);
+  GURL url = GetAssembleUrl(display_overlay_controller_->GetPackageName());
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
       url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);

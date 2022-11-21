@@ -92,16 +92,11 @@ class ArcInputOverlayManager : public KeyedService,
 
   class InputMethodObserver;
 
-  // Read all the data including both default data and customized data.
-  void ReadData(const std::string& package_name,
-                aura::Window* top_level_window);
   // Read default data.
   std::unique_ptr<TouchInjector> ReadDefaultData(
-      const std::string& package_name,
       std::unique_ptr<TouchInjector> touch_injector);
   // Called when finishing reading default data.
-  void OnFinishReadDefaultData(const std::string& package_name,
-                               std::unique_ptr<TouchInjector> touch_injector);
+  void OnFinishReadDefaultData(std::unique_ptr<TouchInjector> touch_injector);
   // Called when receiving app category from ARC.
   void OnReceiveAppCategory(std::unique_ptr<TouchInjector> touch_injector,
                             arc::mojom::AppCategory category);
@@ -110,15 +105,15 @@ class ArcInputOverlayManager : public KeyedService,
   void ReadCustomizedData(const std::string& package_name,
                           std::unique_ptr<TouchInjector> touch_injector);
   // Get the Proto object from customized data.
-  std::unique_ptr<AppDataProto> GetProto(const std::string& package_name);
+  std::unique_ptr<AppDataProto> GetProto(std::string package_name);
   // Apply the customized proto data.
   void OnProtoDataAvailable(std::unique_ptr<TouchInjector> touch_injector,
                             std::unique_ptr<AppDataProto> proto);
   // Callback function triggered by Save button.
   void OnSaveProtoFile(std::unique_ptr<AppDataProto> proto,
-                       const std::string& package_name);
-  void SaveFile(std::unique_ptr<AppDataProto> proto,
-                const std::string& package_name);
+                       std::string package_name);
+  // Pass |package_name| by value because it runs on task runner.
+  void SaveFile(std::unique_ptr<AppDataProto> proto, std::string package_name);
   void NotifyTextInputState();
   void AddObserverToInputMethod();
   void RemoveObserverFromInputMethod();

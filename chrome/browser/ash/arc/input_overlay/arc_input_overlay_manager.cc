@@ -133,27 +133,11 @@ ArcInputOverlayManager::ArcInputOverlayManager(
 
 ArcInputOverlayManager::~ArcInputOverlayManager() = default;
 
-void ArcInputOverlayManager::ReadData(const std::string& package_name,
-                                      aura::Window* top_level_window) {
-  auto touch_injector = std::make_unique<TouchInjector>(
-      top_level_window,
-      base::BindRepeating(&ArcInputOverlayManager::OnSaveProtoFile,
-                          weak_ptr_factory_.GetWeakPtr()));
-  loading_data_windows_.insert(top_level_window);
-
-  task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&ArcInputOverlayManager::ReadDefaultData, Unretained(this),
-                     package_name, std::move(touch_injector)),
-      base::BindOnce(&ArcInputOverlayManager::OnFinishReadDefaultData,
-                     Unretained(this), package_name));
-}
-
 std::unique_ptr<TouchInjector> ArcInputOverlayManager::ReadDefaultData(
-    const std::string& package_name,
     std::unique_ptr<TouchInjector> touch_injector) {
   DCHECK(touch_injector);
 
+  const std::string& package_name = touch_injector->package_name();
   auto resource_id = GetInputOverlayResourceId(package_name);
   if (!resource_id)
     return touch_injector;
@@ -175,9 +159,12 @@ std::unique_ptr<TouchInjector> ArcInputOverlayManager::ReadDefaultData(
 }
 
 void ArcInputOverlayManager::OnFinishReadDefaultData(
-    const std::string& package_name,
     std::unique_ptr<TouchInjector> touch_injector) {
   DCHECK(touch_injector);
+
+  // Save |touch_injector->package_name()| first because
+  // |std::move(touch_injector)| is also called in the task runner.
+  std::string package_name = touch_injector->package_name();
 
   if (touch_injector->actions().empty()) {
     if (!beta_) {
@@ -200,6 +187,7 @@ void ArcInputOverlayManager::OnFinishReadDefaultData(
       LOG(ERROR) << "GetTaskInfo method for ARC is not available";
       return;
     }
+
     VLOG(2) << "Fetch app category of package: " << package_name;
     app_instance->GetAppCategory(
         package_name,
@@ -236,7 +224,7 @@ void ArcInputOverlayManager::OnReceiveAppCategory(
 }
 
 std::unique_ptr<AppDataProto> ArcInputOverlayManager::GetProto(
-    const std::string& package_name) {
+    std::string package_name) {
   // |data_controller_| is null for test.
   return data_controller_ ? data_controller_->ReadProtoFromFile(package_name)
                           : nullptr;
@@ -271,7 +259,7 @@ void ArcInputOverlayManager::OnProtoDataAvailable(
 
 void ArcInputOverlayManager::OnSaveProtoFile(
     std::unique_ptr<AppDataProto> proto,
-    const std::string& package_name) {
+    std::string package_name) {
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&ArcInputOverlayManager::SaveFile, base::Unretained(this),
@@ -279,7 +267,7 @@ void ArcInputOverlayManager::OnSaveProtoFile(
 }
 
 void ArcInputOverlayManager::SaveFile(std::unique_ptr<AppDataProto> proto,
-                                      const std::string& package_name) {
+                                      std::string package_name) {
   if (data_controller_)
     data_controller_->WriteProtoToFile(std::move(proto), package_name);
 }
@@ -412,7 +400,20 @@ void ArcInputOverlayManager::OnWindowPropertyChanged(aura::Window* window,
       top_level_window->GetProperty(ash::kArcPackageNameKey);
   if (!package_name || package_name->empty())
     return;
-  ReadData(*package_name, top_level_window);
+
+  // Start to read data.
+  auto touch_injector = std::make_unique<TouchInjector>(
+      top_level_window, *package_name,
+      base::BindRepeating(&ArcInputOverlayManager::OnSaveProtoFile,
+                          weak_ptr_factory_.GetWeakPtr()));
+  loading_data_windows_.insert(top_level_window);
+
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&ArcInputOverlayManager::ReadDefaultData, Unretained(this),
+                     std::move(touch_injector)),
+      base::BindOnce(&ArcInputOverlayManager::OnFinishReadDefaultData,
+                     Unretained(this)));
 }
 
 void ArcInputOverlayManager::OnWindowDestroying(aura::Window* window) {

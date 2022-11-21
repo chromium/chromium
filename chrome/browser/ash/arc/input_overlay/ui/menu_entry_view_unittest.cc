@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
@@ -132,8 +133,9 @@ class MenuEntryViewTest : public exo::test::ExoTestBase {
         "org.chromium.arc.testapp.inputoverlay");
     touch_injector_ = std::make_unique<TouchInjector>(
         arc_test_window_->GetWindow(),
+        *arc_test_window_->GetWindow()->GetProperty(ash::kArcPackageNameKey),
         base::BindLambdaForTesting(
-            [&](std::unique_ptr<AppDataProto>, const std::string&) {}));
+            [&](std::unique_ptr<AppDataProto>, std::string) {}));
     touch_injector_->set_beta(true);
     display_overlay_controller_ = std::make_unique<DisplayOverlayController>(
         touch_injector_.get(), /*first_launch=*/false);

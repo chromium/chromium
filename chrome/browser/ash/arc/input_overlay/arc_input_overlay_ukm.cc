@@ -13,7 +13,7 @@ namespace arc::input_overlay {
 constexpr bool kCustomizationUsed = true;
 
 void InputOverlayUkm::RecordInputOverlayFeatureStateUkm(
-    const std::string& package_name,
+    std::string package_name,
     bool enable) {
   ukm::builders::GamingInputOverlay_Feature(
       ukm::AppSourceUrlRecorder::GetSourceIdForArcPackageName(package_name))
@@ -22,7 +22,7 @@ void InputOverlayUkm::RecordInputOverlayFeatureStateUkm(
 }
 
 void InputOverlayUkm::RecordInputOverlayMappingHintStateUkm(
-    const std::string& package_name,
+    std::string package_name,
     bool enable) {
   ukm::builders::GamingInputOverlay_MappingHint(
       ukm::AppSourceUrlRecorder::GetSourceIdForArcPackageName(package_name))
@@ -31,7 +31,7 @@ void InputOverlayUkm::RecordInputOverlayMappingHintStateUkm(
 }
 
 void InputOverlayUkm::RecordInputOverlayCustomizedUsageUkm(
-    const std::string& package_name) {
+    std::string package_name) {
   ukm::builders::GamingInputOverlay_Customization(
       ukm::AppSourceUrlRecorder::GetSourceIdForArcPackageName(package_name))
       .SetCustomizationUsed(kCustomizationUsed)
