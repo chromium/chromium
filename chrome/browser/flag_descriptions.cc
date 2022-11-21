@@ -2507,12 +2507,6 @@ const char kPwaUpdateDialogForAppTitleDescription[] =
 const char kQuicName[] = "Experimental QUIC protocol";
 const char kQuicDescription[] = "Enable experimental QUIC protocol support.";
 
-const char kQuickDimName[] = "Enable lock on leave";
-const char kQuickDimDescription[] =
-    "Enables lock on leave feature to better dim or lock the device. Can be "
-    "enabled and disabled from the Smart privacy section of your device "
-    "settings.";
-
 const char kQuickIntensiveWakeUpThrottlingAfterLoadingName[] =
     "Quick intensive throttling after loading";
 const char kQuickIntensiveWakeUpThrottlingAfterLoadingDescription[] =
@@ -5926,12 +5920,6 @@ const char kSmartLockUIRevampName[] = "Enable Smart Lock UI Revamp";
 const char kSmartLockUIRevampDescription[] =
     "Replaces the existing Smart Lock UI on the lock screen with a new design "
     "and adds Smart Lock to the 'Lock screen and sign-in' section of settings.";
-
-const char kSnoopingProtectionName[] = "Enable snooping detection";
-const char kSnoopingProtectionDescription[] =
-    "Enables snooping protection to notify you whenever there is a 'snooper' "
-    "looking over your shoulder. Can be enabled and disabled from the Smart "
-    "privacy section of your device settings.";
 
 const char kSpectreVariant2MitigationName[] = "Spectre variant 2 mitigation";
 const char kSpectreVariant2MitigationDescription[] =

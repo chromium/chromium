@@ -5734,11 +5734,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "quick-dim",
-    "owners": [ "charleszhao", "martis", "napper" ],
-    "expiry_milestone": 109
-  },
-  {
     "name": "quick-gesture-show-launcher",
     "owners": [ "anasalazar", "//ash/shelf/OWNERS" ],
     "expiry_milestone": 110
@@ -6332,11 +6327,6 @@
     // This flag is needed for debugging scrolling issues. However, it can be
     // removed if and when we add it as a UI setting (crbug.com/817814).
     "expiry_milestone": -1
-  },
-  {
-    "name": "snooping-protection",
-    "owners": [ "martis", "charleszhao", "napper" ],
-    "expiry_milestone": 109
   },
   {
     "name": "spectre-v2-mitigation",
