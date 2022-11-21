@@ -268,8 +268,10 @@ void LaunchTerminalWithIntent(
       // would bring up the installer, so keep that behaviour. Only applies to
       // the default Crostini VM, anything else is only accessible if the target
       // VM is installed.
-      crostini::CrostiniInstaller::GetForProfile(profile)->ShowDialog(
-          crostini::CrostiniUISurface::kAppList);
+      auto* installer = crostini::CrostiniInstaller::GetForProfile(profile);
+      if (installer) {
+        installer->ShowDialog(crostini::CrostiniUISurface::kAppList);
+      }
       return std::move(callback).Run(false, "Crostini not installed");
     } else {
       // Could happen if, e.g. a guest got disabled between listing and
