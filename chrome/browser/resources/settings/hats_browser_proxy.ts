@@ -15,6 +15,7 @@ export enum TrustSafetyInteraction {
   OPENED_PRIVACY_SANDBOX = 2,
   OPENED_PASSWORD_MANAGER = 3,
   COMPLETED_PRIVACY_GUIDE = 4,
+  RAN_PASSWORD_CHECK = 5,
 }
 
 export interface HatsBrowserProxy {

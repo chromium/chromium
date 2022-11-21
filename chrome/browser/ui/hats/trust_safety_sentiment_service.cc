@@ -465,6 +465,10 @@ void TrustSafetySentimentService::SavedCard() {
   TriggerOccurred(FeatureArea::kTransactions, {{"Saved password", false}});
 }
 
+void TrustSafetySentimentService::RanPasswordCheck() {
+  // TODO(crbug.com/1382134): Add FeatureArea and survey trigger
+}
+
 void TrustSafetySentimentService::InteractedWithPrivacySandbox3(
     FeatureArea feature_area) {
   std::map<std::string, bool> product_specific_data;

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
+
 /**
  * @fileoverview PasswordManagerProxy is an abstraction over
  * chrome.passwordsPrivate which facilitates testing.
@@ -502,6 +504,12 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 
   startBulkPasswordCheck() {
+    // Note: PasswordCheck can be run automatically, such as when the row or
+    // button is clicked from the passwords_section page. In this case, we also
+    // want to count it as if the user ran password check, because it is still
+    // an explicit action.
+    HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
+        TrustSafetyInteraction.RAN_PASSWORD_CHECK);
     return chrome.passwordsPrivate.startPasswordCheck();
   }
 

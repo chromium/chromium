@@ -67,6 +67,10 @@ class TrustSafetySentimentService : public KeyedService,
   // the user uses a card on a website.
   virtual void SavedCard();
 
+  // Called when the user runs password check. Virtual to allow mocking in
+  // tests.
+  virtual void RanPasswordCheck();
+
   // Profile Observer:
   void OnOffTheRecordProfileCreated(Profile* off_the_record) override;
   void OnProfileWillBeDestroyed(Profile* profile) override;

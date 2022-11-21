@@ -13,9 +13,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PasswordCheckListItemElement, SettingsPasswordCheckElement, SettingsPasswordRemoveConfirmationDialogElement} from 'chrome://settings/lazy_load.js';
-import {OpenWindowProxyImpl, PasswordCheckInteraction, PasswordManagerImpl, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {HatsBrowserProxyImpl, OpenWindowProxyImpl, PasswordCheckInteraction, PasswordManagerImpl, Router, routes, StatusAction, SyncBrowserProxyImpl, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-
 // <if expr="chromeos_ash">
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // </if>
@@ -24,6 +23,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {makeInsecureCredential, makePasswordCheckStatus} from './passwords_and_autofill_fake_data.js';
 import {getSyncAllPrefs, simulateSyncStatus} from './sync_test_util.js';
+import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 import {TestOpenWindowProxy} from './test_open_window_proxy.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
@@ -236,6 +236,8 @@ suite('PasswordsCheckSection', function() {
 
   let syncBrowserProxy: TestSyncBrowserProxy;
 
+  let testHatsBrowserProxy: TestHatsBrowserProxy;
+
   setup(function() {
     // Override the PasswordManagerImpl for testing.
     passwordManager = new TestPasswordManagerProxy();
@@ -249,6 +251,9 @@ suite('PasswordsCheckSection', function() {
       signedInUsername: '',
       statusAction: StatusAction.NO_ACTION,
     };
+
+    testHatsBrowserProxy = new TestHatsBrowserProxy();
+    HatsBrowserProxyImpl.setInstance(testHatsBrowserProxy);
   });
 
   // Test verifies that clicking 'Check again' make proper function call to
@@ -2020,5 +2025,44 @@ suite('PasswordsCheckSection', function() {
         routes.CHECK_PASSWORDS, new URLSearchParams('start=true'));
     assertTrue(section.startCheckAutomaticallySucceeded);
     Router.getInstance().resetRouteForTesting();
+  });
+
+  test('hatsInformedOnStartCheckAutomatically', async function() {
+    // HaTS gets triggered if password check is run automatically.
+    Router.getInstance().navigateTo(
+        routes.CHECK_PASSWORDS, new URLSearchParams('start=true'));
+    createCheckPasswordSection();
+    const passwordCheckInteraction =
+        await passwordManager.whenCalled('recordPasswordCheckInteraction');
+    const trustSafetyInteraction =
+        await testHatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
+    assertEquals(
+        PasswordCheckInteraction.START_CHECK_AUTOMATICALLY,
+        passwordCheckInteraction);
+    assertEquals(
+        TrustSafetyInteraction.RAN_PASSWORD_CHECK, trustSafetyInteraction);
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  test('hatsInformedOnStartCheckManually', async function() {
+    // HaTS gets triggered if password check is run manually.
+    assertEquals(
+        PasswordCheckState.IDLE, passwordManager.data.checkStatus.state);
+    const section = createCheckPasswordSection();
+    await passwordManager.whenCalled('getPasswordCheckStatus');
+    assertTrue(isElementVisible(section.$.controlPasswordCheckButton));
+    assertEquals(
+        section.i18n('checkPasswords'),
+        section.$.controlPasswordCheckButton.innerText);
+    section.$.controlPasswordCheckButton.click();
+    const passwordCheckInteraction =
+        await passwordManager.whenCalled('recordPasswordCheckInteraction');
+    const trustSafetyInteraction =
+        await testHatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
+    assertEquals(
+        PasswordCheckInteraction.START_CHECK_MANUALLY,
+        passwordCheckInteraction);
+    assertEquals(
+        TrustSafetyInteraction.RAN_PASSWORD_CHECK, trustSafetyInteraction);
   });
 });
