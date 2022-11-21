@@ -618,7 +618,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         return results
 
     def _worker_factory(self, worker_connection):
-        return Worker(worker_connection, self._tool.git().checkout_root)
+        return Worker(self._tool.git().checkout_root)
 
     def rebaseline(self, options, test_baseline_set):
         """Fetches new baselines and removes related test expectation lines.
@@ -827,28 +827,27 @@ class Rebaseline(AbstractParallelRebaselineCommand):
         self.rebaseline(options, test_baseline_set)
 
 
-class Worker(object):
-    def __init__(self, caller, cwd):
+class Worker:
+    """A worker delegate for running Blink tool commands.
 
-        # Add the header here to avoid the circle import
-        from blinkpy.tool.blink_tool import BlinkTool
+    The purpose of this worker is to persist HTTP(S) connections to ResultDB
+    across command invocations.
 
-        self._caller = caller
-        self._tool = BlinkTool(cwd)
+    See Also:
+        crbug.com/1213998#c50
+    """
 
-    def __del__(self):
-        self.stop()
+    def __init__(self, cwd: str):
+        self._cwd = cwd
 
     def start(self):
-        """This method is called when the object is starting to be used and it is safe
-        for the object to create state that does not need to be pickled (usually this means
-        it is called in a child process).
-        """
-        pass
+        # Dynamically import `BlinkTool` to avoid a circular import.
+        from blinkpy.tool.blink_tool import BlinkTool
+        # `BlinkTool` cannot be serialized, so construct one here in the worker
+        # process instead of in the constructor, which runs in the managing
+        # process. See crbug.com/1386267.
+        self._tool = BlinkTool(self._cwd)
 
     def handle(self, name, source, command):
         assert name == 'rebaseline'
         self._tool.main(command[1:])
-
-    def stop(self):
-        _log.debug('%s cleaning up', self._caller.name)
