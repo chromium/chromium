@@ -6358,6 +6358,7 @@ crbug.com/1380575 [ Linux ] virtual/scalefactor200/fast/forms/file/file-appearan
 crbug.com/1378078 [ Debug Linux ] media/controls/slow-doubletap.html [ Failure ]
 crbug.com/1385491 [ Win ] external/wpt/selection/user-select-on-input-and-contenteditable.html [ Skip Timeout ]
 crbug.com/1385538 [ Win ] http/tests/serviceworker/postmessage-cross-process.html [ Failure ]
+crbug.com/1385538 [ Linux ] http/tests/serviceworker/postmessage-cross-process.html [ Failure ]
 crbug.com/1377056 [ Debug Linux ] payments/payment-request-interface.html [ Failure ]
 crbug.com/1377056 [ Mac ] payments/payment-request-interface.html [ Failure ]
 crbug.com/1385919 [ Win ] external/wpt/css/selectors/focus-visible-018-2.html [ Skip Timeout ]
@@ -6370,6 +6371,10 @@ crbug.com/1385858 [ Win ] virtual/web-bluetooth-new-permissions-backend/wpt_inte
 crbug.com/1385929 [ Win ] editing/selection/mouse/mouse-selection-vertical-lr.html [ Timeout ]
 crbug.com/1385929 [ Win ] editing/selection/mouse/mouse-selection-horizontal.html [ Timeout ]
 crbug.com/1392480 [ Win ] wpt_internal/hid/hidDevice_reports.https.window.html [ Timeout ]
+crbug.com/1386214 [ Win ] external/wpt/html/semantics/forms/the-input-element/selection-pointer.html [ Skip Timeout ]
+crbug.com/1386214 [ Win ] external/wpt/html/semantics/forms/the-input-element/show-picker-user-gesture.html [ Skip Timeout ]
+crbug.com/1392516 [ Win ] pointer-lock/wheel-event-cancelable.html [ Timeout ]
+crbug.com/1392517 [ Debug Linux ] http/tests/serviceworker/postmessage-after-terminate.html [ Failure ]
 
 # Sheriff 2022-10-07
 crbug.com/1372556 [ Linux ] external/wpt/css/css-text/text-transform/text-transform-capitalize-* [ Failure Pass ]
