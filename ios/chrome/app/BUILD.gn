@@ -602,15 +602,29 @@ source_set("main") {
     deps += [ "//ios/chrome/app/startup:sandbox_dump" ]
   }
 
+  assert_no_deps = []
+
   if (ios_chrome_links_with_material_components_framework) {
     deps += [
       "//ios/third_party/material_components_ios:material_components_ios+bundle",
       "//ios/third_party/material_components_ios:material_components_ios+link",
     ]
   } else {
-    assert_no_deps = [
+    assert_no_deps += [
       "//ios/third_party/material_components_ios:material_components_ios+bundle",
       "//ios/third_party/material_components_ios:material_components_ios+link",
+    ]
+  }
+
+  if (ios_chrome_links_with_lottie_framework) {
+    deps += [
+      "//ios/third_party/lottie:lottie+bundle",
+      "//ios/third_party/lottie:lottie+link",
+    ]
+  } else {
+    assert_no_deps += [
+      "//ios/third_party/lottie:lottie+bundle",
+      "//ios/third_party/lottie:lottie+link",
     ]
   }
 }

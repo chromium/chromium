@@ -8,6 +8,11 @@ declare_args() {
   # MaterialComponents is not build as a framework.
   ios_chrome_links_with_material_components_framework = true
 
+  # Controls whether Chrome links with Lottie.framework or gets the
+  # implementation from its downstream provider. Ignored if Lottie is
+  # not build as a framework.
+  ios_chrome_links_with_lottie_framework = false
+
   # Enable MetricKit in Chrome to collect runtime data.
   ios_enable_metrickit = false
 

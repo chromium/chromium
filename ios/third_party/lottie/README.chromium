@@ -1,0 +1,13 @@
+Name: lottie_ios
+URL: https://github.com/airbnb/lottie-ios.git
+Version: 2.5.2
+License: Apache 2.0
+License File: LICENSE
+Security critical: yes
+
+Description:
+Lottie is a cross-platform library for iOS, macOS, tvOS, Android, and Web that
+natively renders vector-based animations and art in realtime with minimal code.
+Lottie loads and renders animations and vectors exported in the bodymovin JSON
+format. Bodymovin JSON can be created and exported from After Effects with
+bodymovin, Sketch with Lottie Sketch Export, and from Haiku.

@@ -243,6 +243,7 @@ vs-chromium-project.txt
 /ios/third_party/earl_grey2/src
 /ios/third_party/edo/src
 /ios/third_party/gtx/src
+/ios/third_party/lottie/src
 /ios/third_party/material_components_ios/src
 /ios/third_party/material_font_disk_loader_ios/src
 /ios/third_party/material_internationalization_ios/src
