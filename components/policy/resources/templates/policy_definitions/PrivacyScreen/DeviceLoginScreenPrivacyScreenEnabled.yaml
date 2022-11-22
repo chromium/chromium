@@ -25,8 +25,8 @@ items:
 - caption: Allow the user to decide
   value: null
 owners:
-- lamzin@google.com
 - gildekel@chromium.org
+- chromeos-gfx-display@chromium.org
 schema:
   type: boolean
 supported_on:
