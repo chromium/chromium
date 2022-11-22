@@ -1,1 +1,23 @@
-Under construction.
+<style include="settings-shared"></style>
+
+<!-- TODO(b/254413936): Add image header. -->
+
+<!-- TODO(b/254414194): Add icons. -->
+<!-- TODO(crbug.com/1378703): Use string identifiers. -->
+<cr-link-row
+    id="privacySandboxTopicsLinkRow"
+    label="Mauris interdum lectus vitae lacinia"
+    sub-label="[[computePrivacySandboxTopicsSublabel_()]]"
+    on-click="onPrivacySandboxTopicsClick_"></cr-link-row>
+<cr-link-row
+    id="privacySandboxFledgeLinkRow"
+    class="hr"
+    label="Aenean erat leo"
+    sub-label="[[computePrivacySandboxFledgeSublabel_()]]"
+    on-click="onPrivacySandboxFledgeClick_"></cr-link-row>
+<cr-link-row
+    id="privacySandboxMeasurementLinkRow"
+    class="hr"
+    label="Vestibulum augue erat"
+    sub-label="[[computePrivacySandboxMeasurementSublabel_()]]"
+    on-click="onPrivacySandboxMeasurementClick_"></cr-link-row>
