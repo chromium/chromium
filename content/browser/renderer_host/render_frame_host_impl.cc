@@ -3707,7 +3707,7 @@ void RenderFrameHostImpl::DidNavigate(
   if (!navigation_request->IsSameDocument() &&
       (!navigation_request->is_synchronous_renderer_commit() ||
        !navigation_request->GetURL().IsAboutBlank())) {
-    navigation_request->frame_tree_node()->SetNotOnInitialEmptyDocument();
+    SetNotInitialEmptyDocument();
   }
 
   // For uuid-in-package: resources served from WebBundles, use the Bundle's
@@ -4531,7 +4531,7 @@ void RenderFrameHostImpl::DidOpenDocumentInputStream(const GURL& url) {
   GURL filtered_url(url);
   GetProcess()->FilterURL(/*empty_allowed=*/false, &filtered_url);
   renderer_url_info_.last_document_url = filtered_url;
-  frame_tree_node_->DidOpenDocumentInputStream();
+  DidOpenDocumentInputStream();
 }
 
 RenderWidgetHostImpl* RenderFrameHostImpl::GetRenderWidgetHost() {
@@ -10729,9 +10729,9 @@ void RenderFrameHostImpl::GetVirtualAuthenticatorManager(
 }
 
 bool IsInitialSynchronousAboutBlankCommit(const GURL& url,
-                                          bool is_on_initial_empty_document) {
+                                          bool is_initial_empty_document) {
   return url.SchemeIs(url::kAboutScheme) && url != GURL(url::kAboutSrcdocURL) &&
-         is_on_initial_empty_document;
+         is_initial_empty_document;
 }
 
 std::unique_ptr<NavigationRequest>

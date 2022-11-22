@@ -2684,6 +2684,20 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // document.
   void SendAllPendingBeaconsOnNavigation();
 
+  // Sets `is_initial_empty_document_` to false.
+  void SetNotInitialEmptyDocument() { is_initial_empty_document_ = false; }
+
+  // Returns false if this document not the initial empty document, or if the
+  // current document's input stream has been opened with document.open(),
+  // causing the document to lose its "initial empty document" status. For more
+  // details, see the definition of `is_initial_empty_document_`.
+  bool is_initial_empty_document() const { return is_initial_empty_document_; }
+
+  // Sets `is_initial_empty_document_` to
+  // false. Must only be called after the current document's input stream has
+  // been opened with document.open().
+  void DidOpenDocumentInputStream() { is_initial_empty_document_ = false; }
+
   enum class FencedFrameStatus {
     kNotNestedInFencedFrame,
     kFencedFrameRoot,
@@ -4532,6 +4546,24 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // associated with a fenced frame root, or `this` is associated with an iframe
   // nested within a fenced frame.
   const FencedFrameStatus fenced_frame_status_;
+
+  // Whether this document is the initial about:blank document or the
+  // synchronously committed about:blank document committed at frame creation,
+  // and its "initial empty document"-ness is still true.
+  // This will be false if either of these has happened:
+  // - The RenderFrameHost had committed a cross-document navigation that is
+  //   not the synchronously committed about:blank document per:
+  //   https://html.spec.whatwg.org/multipage/browsers.html#creating-browsing-contexts:is-initial-about:blank
+  // - The document's input stream has been opened with document.open(), per
+  //   https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#opening-the-input-stream:is-initial-about:blank
+  // NOTE: we treat both the "initial about:blank document" and the
+  // "synchronously committed about:blank document" as the initial empty
+  // document. In the future, we plan to remove the synchronous about:blank
+  // commit so that this state will only be true if the frame is on the
+  // "initial about:blank document". See also:
+  // - https://github.com/whatwg/html/issues/6863
+  // - https://crbug.com/1215096
+  bool is_initial_empty_document_ = true;
 
   // Testing callback run in DidStopLoading() regardless of loading state. This
   // is useful for tests that need to detect when newly created frames finish

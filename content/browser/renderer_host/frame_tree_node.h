@@ -191,22 +191,15 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
     return current_frame_host()->GetLastCommittedURL();
   }
 
-  // Sets `is_on_initial_empty_document_` to false.
-  void SetNotOnInitialEmptyDocument() { is_on_initial_empty_document_ = false; }
-
-  // Returns false if the frame has committed a document that is not the initial
-  // empty document, or if the current document's input stream has been opened
-  // with document.open(), causing the document to lose its "initial empty
-  // document" status. For more details, see the definition of
-  // `is_on_initial_empty_document_`.
+  // Note that the current RenderFrameHost might not exist yet when calling this
+  // during FrameTreeNode initialization. In this case the FrameTreeNode must be
+  // on the initial empty document. Refer RFHI::is_initial_empty_document for a
+  // more details.
   bool is_on_initial_empty_document() const {
-    return is_on_initial_empty_document_;
+    return current_frame_host()
+               ? current_frame_host()->is_initial_empty_document()
+               : true;
   }
-
-  // Sets `is_on_initial_empty_document_` to
-  // false. Must only be called after the current document's input stream has
-  // been opened with document.open().
-  void DidOpenDocumentInputStream() { is_on_initial_empty_document_ = false; }
 
   // Returns whether the frame's owner element in the parent document is
   // collapsed, that is, removed from the layout as if it did not exist, as per
@@ -698,24 +691,6 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // If the url from the the last BeginNavigation is about:srcdoc, this value
   // stores the srcdoc_attribute's value for re-use in history navigations.
   std::string srcdoc_value_;
-
-  // Whether this frame is still on the initial about:blank document or the
-  // synchronously committed about:blank document committed at frame creation,
-  // and its "initial empty document"-ness is still true.
-  // This will be false if either of these has happened:
-  // - The current RenderFrameHost commits a cross-document navigation that is
-  //   not the synchronously committed about:blank document per:
-  //   https://html.spec.whatwg.org/multipage/browsers.html#creating-browsing-contexts:is-initial-about:blank
-  // - The document's input stream has been opened with document.open(), per
-  //   https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#opening-the-input-stream:is-initial-about:blank
-  // NOTE: we treat both the "initial about:blank document" and the
-  // "synchronously committed about:blank document" as the initial empty
-  // document. In the future, we plan to remove the synchronous about:blank
-  // commit so that this state will only be true if the frame is on the
-  // "initial about:blank document". See also:
-  // - https://github.com/whatwg/html/issues/6863
-  // - https://crbug.com/1215096
-  bool is_on_initial_empty_document_ = true;
 
   // Whether the frame's owner element in the parent document is collapsed.
   bool is_collapsed_ = false;
