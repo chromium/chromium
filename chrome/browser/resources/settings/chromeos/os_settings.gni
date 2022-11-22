@@ -285,7 +285,7 @@ non_web_component_files = [
   "chromeos/os_settings_routes.js",
   "chromeos/parental_controls_page/parental_controls_browser_proxy.ts",
   "chromeos/personalization_page/personalization_hub_browser_proxy.ts",
-  "chromeos/pref_to_setting_metric_converter.js",
+  "chromeos/pref_to_setting_metric_converter.ts",
   "chromeos/prefs_behavior.js",
   "chromeos/route_observer_behavior.js",
   "chromeos/route_origin_behavior.js",

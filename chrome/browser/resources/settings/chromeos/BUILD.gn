@@ -337,7 +337,6 @@ js_type_check("closure_compile_local_module") {
     ":os_route",
     ":os_settings",
     ":os_settings_routes",
-    ":pref_to_setting_metric_converter",
     ":prefs_behavior",
     ":route_observer_behavior",
     ":route_origin_behavior",
@@ -407,13 +406,6 @@ js_library("os_settings_routes") {
 js_library("prefs_behavior") {
   deps = [ "//ui/webui/resources/js:assert" ]
   externs_list = [ "$externs_path/settings_private.js" ]
-}
-
-js_library("pref_to_setting_metric_converter") {
-  deps = [
-    "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings_webui_js",
-    "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_webui_js",
-  ]
 }
 
 js_library("route_observer_behavior") {
