@@ -961,7 +961,7 @@
   {
     "name": "clear-cross-site-cross-browsing-context-group-window-name",
     "owners": [ "shuuran", "kaustubhag" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 115
   },
   {
     "name": "clear-identity-in-can-make-payment",
