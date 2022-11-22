@@ -282,28 +282,21 @@ void PerformanceManagerTabHelper::RenderFrameHostChanged(
       FROM_HERE, base::BindOnce(
                      [](FrameNodeImpl* old_frame, FrameNodeImpl* new_frame) {
                        if (old_frame) {
-                         // Prerendering is a special case where,
-                         // old_frame->is_current() would be set to false.
-                         // Ignore this check when Prerender2 is enabled.
-                         // TODO(https://crbug.com/1177859): Remove this check
-                         // once PerformanceManagerTabHelper is supported with
-                         // Prerender2.
-                         DCHECK(blink::features::IsPrerender2Enabled() ||
-                                old_frame->is_current());
+                         // Prerendering is a special case where
+                         // old_frame->is_current() may be false.
+                         // TODO(https://crbug.com/1211368): assert that
+                         // old_frame->is_current() or its PageState is
+                         // kPrerendering.
                          old_frame->SetIsCurrent(false);
                        }
+
                        if (new_frame) {
-                         if (!new_frame->is_current()) {
-                           new_frame->SetIsCurrent(true);
-                         } else {
-                           // The very first frame to be created is already
-                           // current by default. In which case the swap must be
-                           // from no frame to a frame.
-                           // TODO(https://crbug.com/1179682): Make this
-                           // compatible with MPArch.
-                           DCHECK(!old_frame ||
-                                  blink::features::IsPrerender2Enabled());
-                         }
+                         // The very first frame to be created is already
+                         // current by default except in the special case of
+                         // prerendering.
+                         // TODO(https://crbug.com/1211368): assert that
+                         // old_frame is null or its PageState is kPrerendering.
+                         new_frame->SetIsCurrent(true);
                        }
                      },
                      old_frame, new_frame));
