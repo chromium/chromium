@@ -151,7 +151,7 @@ void PhoneHubUiController::SetPhoneHubManager(
   if (phone_hub_manager_) {
     phone_hub_manager_->GetFeatureStatusProvider()->AddObserver(this);
     phone_hub_manager_->GetOnboardingUiTracker()->AddObserver(this);
-    if (features::IsEcheSWAEnabled())
+    if (features::IsEcheLauncherEnabled())
       phone_hub_manager_->GetAppStreamLauncherDataModel()->AddObserver(this);
     phone_hub_manager_->GetPhoneModel()->AddObserver(this);
   }
@@ -303,7 +303,7 @@ void PhoneHubUiController::OnShouldShowOnboardingUiChanged() {
 }
 
 void PhoneHubUiController::OnShouldShowMiniLauncherChanged() {
-  if (!features::IsEcheSWAEnabled())
+  if (!features::IsEcheLauncherEnabled())
     return;
   UpdateUiState(GetUiStateFromPhoneHubManager());
 }
@@ -334,7 +334,7 @@ PhoneHubUiController::UiState
 PhoneHubUiController::GetUiStateFromPhoneHubManager() {
   PhoneHubUiController::UiState ui_state =
       GetUiStateFromPhoneHubManagerInternal();
-  if (features::IsEcheSWAEnabled() &&
+  if (features::IsEcheLauncherEnabled() &&
       (ui_state != PhoneHubUiController::UiState::kMiniLauncher) &&
       phone_hub_manager_ &&
       phone_hub_manager_->GetAppStreamLauncherDataModel()) {

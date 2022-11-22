@@ -4,6 +4,8 @@
 
 #include "ash/system/phonehub/phone_hub_recent_apps_view.h"
 
+#include "ash/components/phonehub/app_stream_launcher_data_model.h"
+#include "ash/components/phonehub/fake_phone_hub_manager.h"
 #include "ash/components/phonehub/fake_recent_apps_interaction_handler.h"
 #include "ash/components/phonehub/notification.h"
 #include "ash/constants/ash_features.h"
@@ -38,11 +40,12 @@ class RecentAppButtonsViewTest : public AshTestBase {
     AshTestBase::SetUp();
 
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kEcheLauncher},
+        /*enabled_features=*/{chromeos::features::kEcheLauncher,
+                              chromeos::features::kEcheSWA},
         /*disabled_features=*/{});
 
     phone_hub_recent_apps_view_ = std::make_unique<PhoneHubRecentAppsView>(
-        &fake_recent_apps_interaction_handler_);
+        &fake_recent_apps_interaction_handler_, &fake_phone_hub_manager_);
   }
 
   void TearDown() override {
@@ -73,10 +76,16 @@ class RecentAppButtonsViewTest : public AshTestBase {
     fake_recent_apps_interaction_handler_.OnFeatureStateChanged(feature_state);
   }
 
+  bool AppStreamLauncherShowState() {
+    return fake_phone_hub_manager_.fake_app_stream_launcher_data_model()
+        ->GetShouldShowMiniLauncher();
+  }
+
  private:
   std::unique_ptr<PhoneHubRecentAppsView> phone_hub_recent_apps_view_;
   phonehub::FakeRecentAppsInteractionHandler
       fake_recent_apps_interaction_handler_;
+  phonehub::FakePhoneHubManager fake_phone_hub_manager_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -169,6 +178,7 @@ TEST_F(RecentAppButtonsViewTest,
   size_t expected_number_of_button_be_clicked = 5;
   EXPECT_EQ(expected_number_of_button_be_clicked,
             PackageNameToClickCount(kPackageName));
+  EXPECT_TRUE(AppStreamLauncherShowState());
 }
 
 }  // namespace ash

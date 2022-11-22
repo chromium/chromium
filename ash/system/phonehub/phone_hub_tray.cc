@@ -373,7 +373,7 @@ void PhoneHubTray::UpdateVisibility() {
 }
 
 void PhoneHubTray::UpdateHeaderVisibility() {
-  if (!features::IsEcheSWAEnabled())
+  if (!features::IsEcheLauncherEnabled())
     return;
   if (!phone_status_view_)
     return;

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/components/phonehub/notification.h"
+#include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -108,8 +109,10 @@ class PhoneHubRecentAppsView::PlaceholderView : public views::Label {
 };
 
 PhoneHubRecentAppsView::PhoneHubRecentAppsView(
-    phonehub::RecentAppsInteractionHandler* recent_apps_interaction_handler)
-    : recent_apps_interaction_handler_(recent_apps_interaction_handler) {
+    phonehub::RecentAppsInteractionHandler* recent_apps_interaction_handler,
+    phonehub::PhoneHubManager* phone_hub_manager)
+    : recent_apps_interaction_handler_(recent_apps_interaction_handler),
+      phone_hub_manager_(phone_hub_manager) {
   SetID(PhoneHubViewID::kPhoneHubRecentAppsView);
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -247,8 +250,13 @@ void PhoneHubRecentAppsView::Update() {
   PreferredSizeChanged();
 }
 
-// TODO(b/259160267): Add function when full apps list view is ready.
-void PhoneHubRecentAppsView::SwitchToFullAppsList() {}
+void PhoneHubRecentAppsView::SwitchToFullAppsList() {
+  if (!features::IsEcheLauncherEnabled()) {
+    return;
+  }
+  phone_hub_manager_->GetAppStreamLauncherDataModel()
+      ->SetShouldShowMiniLauncher(true);
+}
 
 std::unique_ptr<views::ImageButton>
 PhoneHubRecentAppsView::GenerateMoreAppsButton() {

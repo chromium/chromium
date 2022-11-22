@@ -7,6 +7,7 @@
 
 #include <memory>
 #include "ash/ash_export.h"
+#include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/components/phonehub/recent_apps_interaction_handler.h"
 #include "base/gtest_prod_util.h"
 #include "ui/views/controls/button/image_button.h"
@@ -22,7 +23,8 @@ class ASH_EXPORT PhoneHubRecentAppsView
       public phonehub::RecentAppsInteractionHandler::Observer {
  public:
   explicit PhoneHubRecentAppsView(
-      phonehub::RecentAppsInteractionHandler* recent_apps_interaction_handler);
+      phonehub::RecentAppsInteractionHandler* recent_apps_interaction_handler,
+      phonehub::PhoneHubManager* phone_hub_manager);
   ~PhoneHubRecentAppsView() override;
   PhoneHubRecentAppsView(PhoneHubRecentAppsView&) = delete;
   PhoneHubRecentAppsView operator=(PhoneHubRecentAppsView&) = delete;
@@ -74,6 +76,7 @@ class ASH_EXPORT PhoneHubRecentAppsView
   std::vector<views::View*> recent_app_button_list_;
   phonehub::RecentAppsInteractionHandler* recent_apps_interaction_handler_ =
       nullptr;
+  phonehub::PhoneHubManager* phone_hub_manager_ = nullptr;
   PlaceholderView* placeholder_view_ = nullptr;
 };
 

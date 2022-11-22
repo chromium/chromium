@@ -2734,7 +2734,8 @@ bool IsMinimumChromeVersionEnabled() {
 }
 
 bool IsEcheLauncherEnabled() {
-  return base::FeatureList::IsEnabled(kEcheLauncher);
+  return base::FeatureList::IsEnabled(kEcheLauncher) &&
+         base::FeatureList::IsEnabled(kEcheSWA);
 }
 
 bool IsNearbyKeepAliveFixEnabled() {
