@@ -7,17 +7,22 @@
 #include <vector>
 
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/common/dxgi_helpers.h"
 #include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/buffer_types.h"
+#include "ui/gfx/buffer_usage_util.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_image_dxgi.h"
 
 namespace gpu {
 
-GpuMemoryBufferFactoryDXGI::GpuMemoryBufferFactoryDXGI() {
+GpuMemoryBufferFactoryDXGI::GpuMemoryBufferFactoryDXGI(
+    scoped_refptr<base::SingleThreadTaskRunner> io_runner)
+    : io_runner_(std::move(io_runner)) {
   DETACH_FROM_THREAD(thread_checker_);
 }
 GpuMemoryBufferFactoryDXGI::~GpuMemoryBufferFactoryDXGI() = default;
@@ -26,7 +31,9 @@ GpuMemoryBufferFactoryDXGI::~GpuMemoryBufferFactoryDXGI() = default;
 // sharing keyed mutex state between DXGI GMBs and D3D shared image backings.
 Microsoft::WRL::ComPtr<ID3D11Device>
 GpuMemoryBufferFactoryDXGI::GetOrCreateD3D11Device() {
+  DCHECK(!io_runner_ || io_runner_->BelongsToCurrentThread());
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
   if (!d3d11_device_ || FAILED(d3d11_device_->GetDeviceRemovedReason())) {
     // Reset device if it was removed.
     d3d11_device_ = nullptr;
@@ -84,6 +91,43 @@ GpuMemoryBufferFactoryDXGI::GetOrCreateD3D11Device() {
   return d3d11_device_;
 }
 
+gfx::GpuMemoryBufferHandle
+GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBufferOnIO(
+    gfx::GpuMemoryBufferId id,
+    const gfx::Size& size,
+    const gfx::Size& framebuffer_size,
+    gfx::BufferFormat format,
+    gfx::BufferUsage usage,
+    int client_id,
+    SurfaceHandle surface_handle) {
+  DCHECK(io_runner_);
+
+  gfx::GpuMemoryBufferHandle result;
+  base::WaitableEvent event;
+
+  io_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](gfx::GpuMemoryBufferHandle* out_gmb_handle,
+             base::WaitableEvent* waitable_event,
+             GpuMemoryBufferFactoryDXGI* factory, gfx::GpuMemoryBufferId id,
+             const gfx::Size& size, const gfx::Size& framebuffer_size,
+             gfx::BufferFormat format, gfx::BufferUsage usage, int client_id,
+             SurfaceHandle surface_handle) {
+            *out_gmb_handle = factory->CreateGpuMemoryBuffer(
+                id, size, framebuffer_size, format, usage, client_id,
+                surface_handle);
+
+            waitable_event->Signal();
+          },
+          &result, &event, this, id, size, framebuffer_size, format, usage,
+          client_id, surface_handle));
+
+  event.Wait();
+
+  return result;
+}
+
 gfx::GpuMemoryBufferHandle GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBuffer(
     gfx::GpuMemoryBufferId id,
     const gfx::Size& size,
@@ -92,6 +136,12 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBuffer(
     gfx::BufferUsage usage,
     int client_id,
     SurfaceHandle surface_handle) {
+  if (io_runner_ && !io_runner_->BelongsToCurrentThread()) {
+    // Thread-hop is required!
+    return CreateGpuMemoryBufferOnIO(id, size, framebuffer_size, format, usage,
+                                     client_id, surface_handle);
+  }
+
   TRACE_EVENT0("gpu", "GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBuffer");
   DCHECK_EQ(framebuffer_size, size);
 
@@ -107,8 +157,12 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBuffer(
     case gfx::BufferFormat::RGBX_8888:
       dxgi_format = DXGI_FORMAT_R8G8B8A8_UNORM;
       break;
+    case gfx::BufferFormat::YUV_420_BIPLANAR:
+      dxgi_format = DXGI_FORMAT_NV12;
+      break;
     default:
-      NOTREACHED();
+      NOTREACHED() << "invalid buffer format, format="
+                   << gfx::BufferFormatToString(format);
       return handle;
   }
 
@@ -119,7 +173,9 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBuffer(
   // We are binding as a shader resource and render target regardless of usage,
   // so make sure that the usage is one that we support.
   DCHECK(usage == gfx::BufferUsage::GPU_READ ||
-         usage == gfx::BufferUsage::SCANOUT);
+         usage == gfx::BufferUsage::SCANOUT ||
+         usage == gfx::BufferUsage::SCANOUT_CPU_READ_WRITE)
+      << "Incorrect usage, usage=" << gfx::BufferUsageToString(usage);
 
   D3D11_TEXTURE2D_DESC desc = {
       static_cast<UINT>(size.width()),

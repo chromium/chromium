@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/task/single_thread_task_runner.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
 #include "ui/gfx/geometry/size.h"
@@ -32,7 +33,8 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactory {
   // Creates a new factory instance for native GPU memory buffers. Returns null
   // if native buffers are not supported.
   static std::unique_ptr<GpuMemoryBufferFactory> CreateNativeType(
-      viz::VulkanContextProvider* vulkan_context_provider);
+      viz::VulkanContextProvider* vulkan_context_provider,
+      scoped_refptr<base::SingleThreadTaskRunner> io_runner = nullptr);
 
   // Creates a new GPU memory buffer instance. A valid handle is returned on
   // success. This method is thread-safe but it should not be called on the IO

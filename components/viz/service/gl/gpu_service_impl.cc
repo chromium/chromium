@@ -422,8 +422,8 @@ GpuServiceImpl::GpuServiceImpl(
   gl::DirectCompositionOverlayCapsMonitor::GetInstance()->AddObserver(this);
 #endif
 
-  gpu_memory_buffer_factory_ =
-      gpu::GpuMemoryBufferFactory::CreateNativeType(vulkan_context_provider());
+  gpu_memory_buffer_factory_ = gpu::GpuMemoryBufferFactory::CreateNativeType(
+      vulkan_context_provider(), io_runner_);
 
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
 }
