@@ -843,6 +843,9 @@ extern const char kForceUiDirectionDescription[];
 extern const char kFullUserAgentName[];
 extern const char kFullUserAgentDescription[];
 
+extern const char kGalleryAppPdfEditNotificationName[];
+extern const char kGalleryAppPdfEditNotificationDescription[];
+
 extern const char kGlobalMediaControlsForCastName[];
 extern const char kGlobalMediaControlsForCastDescription[];
 

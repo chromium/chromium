@@ -1499,6 +1499,12 @@ const char kFullUserAgentDescription[] =
     "If set, use the full (non-reduced) user agent string for the User-Agent "
     "request header and the JS APIs.";
 
+const char kGalleryAppPdfEditNotificationName[] =
+    "Gallery App Pdf Edit Notification";
+const char kGalleryAppPdfEditNotificationDescription[] =
+    "Shows a notification to provide an option to open Gallery app for a "
+    "downloaded pdf file";
+
 const char kGlobalMediaControlsForCastName[] = "Global Media Controls for Cast";
 const char kGlobalMediaControlsForCastDescription[] =
     "Shows Cast sessions in the Global Media Controls UI.";
