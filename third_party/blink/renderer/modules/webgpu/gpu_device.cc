@@ -400,8 +400,9 @@ void GPUDevice::destroy(ScriptState* script_state) {
   FlushNow();
 }
 
-GPUBuffer* GPUDevice::createBuffer(const GPUBufferDescriptor* descriptor) {
-  return GPUBuffer::Create(this, descriptor);
+GPUBuffer* GPUDevice::createBuffer(const GPUBufferDescriptor* descriptor,
+                                   ExceptionState& exception_state) {
+  return GPUBuffer::Create(this, descriptor, exception_state);
 }
 
 GPUTexture* GPUDevice::createTexture(const GPUTextureDescriptor* descriptor,

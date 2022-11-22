@@ -26,7 +26,8 @@ class GPUBuffer : public DawnObject<WGPUBuffer> {
 
  public:
   static GPUBuffer* Create(GPUDevice* device,
-                           const GPUBufferDescriptor* webgpu_desc);
+                           const GPUBufferDescriptor* webgpu_desc,
+                           ExceptionState& exception_state);
   GPUBuffer(GPUDevice* device, uint64_t size, WGPUBuffer buffer);
   ~GPUBuffer() override;
 

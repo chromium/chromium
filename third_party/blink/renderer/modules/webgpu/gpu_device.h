@@ -85,7 +85,8 @@ class GPUDevice final : public EventTargetWithInlineData,
 
   void destroy(ScriptState* script_state);
 
-  GPUBuffer* createBuffer(const GPUBufferDescriptor* descriptor);
+  GPUBuffer* createBuffer(const GPUBufferDescriptor* descriptor,
+                          ExceptionState& exception_state);
   GPUTexture* createTexture(const GPUTextureDescriptor* descriptor,
                             ExceptionState& exception_state);
   GPUTexture* experimentalImportTexture(HTMLCanvasElement* canvas,
