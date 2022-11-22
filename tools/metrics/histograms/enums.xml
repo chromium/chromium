@@ -28498,6 +28498,15 @@ Called by update_document_policy_enum.py.-->
   <int value="0" label="UNDETERMINED"/>
 </enum>
 
+<enum name="DownloadAddWarningActionEventOutcome">
+  <int value="0" label="NOT_ADDED_MISSING_DOWNLOAD"/>
+  <int value="1" label="NOT_ADDED_WARNING_SHOWN_ALREADY_LOGGED"/>
+  <int value="2" label="NOT_ADDED_MISSING_FIRST_WARNING"/>
+  <int value="3" label="NOT_ADDED_EXCEED_MAX_LENGTH"/>
+  <int value="4" label="ADDED_WARNING_FIRST_SHOWN"/>
+  <int value="5" label="ADDED_WARNING_ACTION"/>
+</enum>
+
 <enum name="DownloadARModelState">
   <int value="0" label="Created">
     AR model download was created but not yet started.

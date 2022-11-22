@@ -344,6 +344,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.ClientSafeBrowsingReport.DownloadWarningActionSize"
+    units="units" expires_after="2023-05-22">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Counts the length of the download_warning_actions field in a client Safe
+    Browsing report. Logged each time the field is populated before a report is
+    sent.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsForTab"
     enum="BooleanAvailable" expires_after="2023-04-23">
   <owner>xinghuilu@chromium.org</owner>

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/download/download_item_warning_data.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "components/download/public/common/download_item.h"
 
 using download::DownloadItem;
@@ -15,7 +16,32 @@ using ClientSafeBrowsingReportRequest =
 
 namespace {
 constexpr int kWarningActionEventMaxLength = 20;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AddWarningActionEventOutcome {
+  // `download` was nullptr. This should never happen.
+  NOT_ADDED_MISSING_DOWNLOAD = 0,
+  // The first warning shown event is already logged so it is not logged this
+  // time.
+  NOT_ADDED_WARNING_SHOWN_ALREADY_LOGGED = 1,
+  // The warning action event is not added because the first warning shown event
+  // was not logged before.
+  NOT_ADDED_MISSING_FIRST_WARNING = 2,
+  // The warning action event is not added because it exceeds the max length.
+  NOT_ADDED_EXCEED_MAX_LENGTH = 3,
+  // The first warning shown event is successfully added.
+  ADDED_WARNING_FIRST_SHOWN = 4,
+  // The warning action event is successfully added.
+  ADDED_WARNING_ACTION = 5,
+  kMaxValue = ADDED_WARNING_ACTION
+};
+
+void RecordAddWarningActionEventOutcome(AddWarningActionEventOutcome outcome) {
+  base::UmaHistogramEnumeration(
+      "Download.WarningData.AddWarningActionEventOutcome", outcome);
 }
+}  // namespace
 
 // static
 const char DownloadItemWarningData::kKey[] = "DownloadItemWarningData key";
@@ -35,8 +61,9 @@ std::vector<WarningActionEvent> DownloadItemWarningData::GetWarningActionEvents(
 void DownloadItemWarningData::AddWarningActionEvent(DownloadItem* download,
                                                     WarningSurface surface,
                                                     WarningAction action) {
-  // TODO(crbug.com/1363368): Add a histogram to log the result before return.
   if (!download) {
+    RecordAddWarningActionEventOutcome(
+        AddWarningActionEventOutcome::NOT_ADDED_MISSING_DOWNLOAD);
     return;
   }
   DownloadItemWarningData* data =
@@ -47,14 +74,23 @@ void DownloadItemWarningData::AddWarningActionEvent(DownloadItem* download,
   }
   if (action == WarningAction::SHOWN) {
     if (data->warning_first_shown_time_.is_null()) {
+      RecordAddWarningActionEventOutcome(
+          AddWarningActionEventOutcome::ADDED_WARNING_FIRST_SHOWN);
       data->warning_first_shown_time_ = base::Time::Now();
+    } else {
+      RecordAddWarningActionEventOutcome(
+          AddWarningActionEventOutcome::NOT_ADDED_WARNING_SHOWN_ALREADY_LOGGED);
     }
     return;
   }
   if (data->warning_first_shown_time_.is_null()) {
+    RecordAddWarningActionEventOutcome(
+        AddWarningActionEventOutcome::NOT_ADDED_MISSING_FIRST_WARNING);
     return;
   }
   if (data->action_events_.size() >= kWarningActionEventMaxLength) {
+    RecordAddWarningActionEventOutcome(
+        AddWarningActionEventOutcome::NOT_ADDED_EXCEED_MAX_LENGTH);
     return;
   }
   int64_t action_latency =
@@ -64,6 +100,8 @@ void DownloadItemWarningData::AddWarningActionEvent(DownloadItem* download,
   DCHECK_NE(WarningAction::SHOWN, action);
   data->action_events_.emplace_back(surface, action, action_latency,
                                     is_terminal_action);
+  RecordAddWarningActionEventOutcome(
+      AddWarningActionEventOutcome::ADDED_WARNING_ACTION);
 }
 
 // static

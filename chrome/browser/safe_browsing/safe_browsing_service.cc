@@ -118,6 +118,9 @@ void PopulateDownloadWarningActions(download::DownloadItem* download,
     report->mutable_download_warning_actions()->Add(
         DownloadItemWarningData::ConstructCsbrrDownloadWarningAction(event));
   }
+  base::UmaHistogramCounts100(
+      "SafeBrowsing.ClientSafeBrowsingReport.DownloadWarningActionSize",
+      report->download_warning_actions_size());
 }
 #endif
 
