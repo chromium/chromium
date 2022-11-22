@@ -368,10 +368,6 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
   // The time power manager will wait before resuspending from a dark resume.
   virtual base::TimeDelta GetDarkSuspendDelayTimeout() = 0;
 
-  // Refreshes the battery signal of the specified Bluetooth device.
-  // TODO(b/166543531): Remove after migrating to BlueZ Battery Provider API.
-  virtual void RefreshBluetoothBattery(const std::string& address) = 0;
-
   // On devices that support external displays with ambient light sensors, this
   // enables/disables the ALS-based brightness adjustment on those displays.
   virtual void SetExternalDisplayALSBrightness(bool enabled) = 0;

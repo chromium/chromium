@@ -85,10 +85,6 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   void set_user_activity_callback(base::RepeatingClosure callback) {
     user_activity_callback_ = std::move(callback);
   }
-  void set_peripheral_battery_refresh_level(const std::string& address,
-                                            int level) {
-    peripheral_battery_refresh_levels_[address] = level;
-  }
   void set_restart_callback(base::OnceClosure callback) {
     restart_callback_ = std::move(callback);
   }
@@ -144,7 +140,6 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   void DeleteArcTimers(const std::string& tag,
                        VoidDBusMethodCallback callback) override;
   base::TimeDelta GetDarkSuspendDelayTimeout() override;
-  void RefreshBluetoothBattery(const std::string& address) override;
   void SetExternalDisplayALSBrightness(bool enabled) override;
   void GetExternalDisplayALSBrightness(
       DBusMethodCallback<bool> callback) override;
@@ -329,9 +324,6 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
 
   // If set then |StartArcTimer| returns failure.
   bool simulate_start_arc_timer_failure_ = false;
-
-  // Used in RefreshBluetoothBattery.
-  base::flat_map<std::string, int> peripheral_battery_refresh_levels_;
 
   bool external_display_als_brightness_enabled_ = false;
 

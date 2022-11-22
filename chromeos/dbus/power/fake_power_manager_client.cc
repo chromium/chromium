@@ -72,11 +72,6 @@ base::TimeDelta ClockNow(clockid_t clk_id) {
   return base::TimeDelta::FromTimeSpec(ts);
 }
 
-std::string SysnameFromBluetoothAddress(const std::string& address) {
-  return "/sys/class/power_supply/hid-" + base::ToLowerASCII(address) +
-         "-battery";
-}
-
 }  // namespace
 
 // static
@@ -385,22 +380,6 @@ void FakePowerManagerClient::DeleteArcTimers(const std::string& tag,
 
 base::TimeDelta FakePowerManagerClient::GetDarkSuspendDelayTimeout() {
   return kDarkSuspendDelayTimeout;
-}
-
-void FakePowerManagerClient::RefreshBluetoothBattery(
-    const std::string& address) {
-  if (!base::Contains(peripheral_battery_refresh_levels_, address))
-    return;
-
-  for (auto& observer : observers_) {
-    observer.PeripheralBatteryStatusReceived(
-        SysnameFromBluetoothAddress(address), "somename",
-        peripheral_battery_refresh_levels_[address],
-        power_manager::
-            PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_UNKNOWN,
-        /*serial_number=*/"",
-        /*active_update=*/true);
-  }
 }
 
 void FakePowerManagerClient::SetExternalDisplayALSBrightness(bool enabled) {
