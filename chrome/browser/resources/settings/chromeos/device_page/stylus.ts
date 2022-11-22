@@ -20,12 +20,11 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route} from '../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface} from '../../router.js';
 import {assertExists} from '../assert_extras.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, NoteAppInfo, NoteAppLockScreenSupport} from './device_page_browser_proxy.js';
 import {getTemplate} from './stylus.html.js';
@@ -40,10 +39,10 @@ const FIND_MORE_APPS_URL = 'https://play.google.com/store/apps/' +
     'collection/promotion_30023cb_stylus_apps';
 
 const SettingsStylusElementBase =
-    mixinBehaviors(
-        [DeepLinkingBehavior, RouteObserverBehavior], PolymerElement) as {
+    mixinBehaviors([DeepLinkingBehavior], RouteObserverMixin(PolymerElement)) as
+    {
       new (): PolymerElement & DeepLinkingBehaviorInterface &
-          RouteObserverBehaviorInterface,
+          RouteObserverMixinInterface,
     };
 
 class SettingsStylusElement extends SettingsStylusElementBase {

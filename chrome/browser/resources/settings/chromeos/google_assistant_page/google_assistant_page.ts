@@ -23,12 +23,11 @@ import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
-import {Route} from '../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface} from '../../router.js';
 import {cast, castExists} from '../assert_extras.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {GoogleAssistantBrowserProxy, GoogleAssistantBrowserProxyImpl} from './google_assistant_browser_proxy.js';
 import {getTemplate} from './google_assistant_page.html.js';
@@ -67,12 +66,12 @@ const SettingsGoogleAssistantPageElementBase =
     mixinBehaviors(
         [
           DeepLinkingBehavior,
-          RouteObserverBehavior,
         ],
-        PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))) as {
+        RouteObserverMixin(
+            PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement))))) as {
       new (): PolymerElement & I18nMixinInterface &
           WebUiListenerMixinInterface & PrefsMixinInterface &
-          DeepLinkingBehaviorInterface & RouteObserverBehaviorInterface,
+          RouteObserverMixinInterface & DeepLinkingBehaviorInterface,
     };
 
 class SettingsGoogleAssistantPageElement extends

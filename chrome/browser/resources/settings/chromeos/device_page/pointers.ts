@@ -20,19 +20,18 @@ import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
-import {Route} from '../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {getTemplate} from './pointers.html.js';
 
 const SettingsPointersElementBase =
     mixinBehaviors(
-        [DeepLinkingBehavior, RouteObserverBehavior],
-        PrefsMixin(PolymerElement)) as {
+        [DeepLinkingBehavior],
+        RouteObserverMixin(PrefsMixin(PolymerElement))) as {
       new (): PolymerElement & PrefsMixinInterface &
-          DeepLinkingBehaviorInterface & RouteObserverBehaviorInterface,
+          RouteObserverMixinInterface & DeepLinkingBehaviorInterface,
     };
 
 class SettingsPointersElement extends SettingsPointersElementBase {

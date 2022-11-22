@@ -26,11 +26,10 @@ import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 import {loadTimeData} from '../../i18n_setup.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
-import {Route} from '../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface} from '../../router.js';
 import {castExists} from '../assert_extras.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, browserChannelToI18nId, ChannelInfo, VersionInfo} from './about_page_browser_proxy.js';
 import {getTemplate} from './detailed_build_info.html.js';
@@ -47,12 +46,12 @@ const SettingsDetailedBuildInfoBase =
     mixinBehaviors(
         [
           DeepLinkingBehavior,
-          RouteObserverBehavior,
         ],
-        PrefsMixin(I18nMixin(WebUiListenerMixin(PolymerElement)))) as {
+        RouteObserverMixin(
+            PrefsMixin(I18nMixin(WebUiListenerMixin(PolymerElement))))) as {
       new (): PolymerElement & WebUiListenerMixinInterface &
           I18nMixinInterface & PrefsMixinInterface &
-          DeepLinkingBehaviorInterface & RouteObserverBehaviorInterface,
+          RouteObserverMixinInterface & DeepLinkingBehaviorInterface,
     };
 
 class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
