@@ -6,7 +6,6 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/version.h"
 #include "content/browser/first_party_sets/database/first_party_sets_database.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
@@ -64,9 +63,10 @@ FirstPartySetsHandlerDatabaseHelper::UpdateAndGetSitesToClearForContext(
     const net::FirstPartySetsContextConfig& current_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!browser_context_id.empty());
+  std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>
+      old_sets_with_config = db_->GetGlobalSetsAndConfig(browser_context_id);
   base::flat_set<net::SchemefulSite> diff =
-      ComputeSetsDiff(db_->GetGlobalSets(browser_context_id),
-                      db_->FetchPolicyConfigurations(browser_context_id),
+      ComputeSetsDiff(old_sets_with_config.first, old_sets_with_config.second,
                       current_sets, current_config);
 
   if (!db_->InsertSitesToClear(browser_context_id, diff)) {
@@ -96,12 +96,12 @@ void FirstPartySetsHandlerDatabaseHelper::PersistSets(
     DVLOG(1) << "Failed to write sets into the database.";
 }
 
-net::GlobalFirstPartySets
-FirstPartySetsHandlerDatabaseHelper::GetPersistedGlobalSets(
+std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>
+FirstPartySetsHandlerDatabaseHelper::GetGlobalSetsAndConfigForTesting(
     const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!browser_context_id.empty());
-  return db_->GetGlobalSets(browser_context_id);
+  return db_->GetGlobalSetsAndConfig(browser_context_id);
 }
 
 // Wraps FirstPartySetsDatabase::HasEntryInBrowserContextsClearedForTesting.

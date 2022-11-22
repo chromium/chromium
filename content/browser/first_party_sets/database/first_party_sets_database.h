@@ -14,7 +14,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
-#include "base/gtest_prod_util.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "content/common/content_export.h"
@@ -90,9 +89,11 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   // TODO(crbug.com/1219656): Consider returning absl::nullopt for all the
   // fetching methods when having query errors
 
-  // Gets the global First-Party Sets used by `browser_context_id`.
-  [[nodiscard]] net::GlobalFirstPartySets GetGlobalSets(
-      const std::string& browser_context_id);
+  // Gets the global First-Party Sets and the config used by
+  // `browser_context_id`.
+  [[nodiscard]] std::pair<net::GlobalFirstPartySets,
+                          net::FirstPartySetsContextConfig>
+  GetGlobalSetsAndConfig(const std::string& browser_context_id);
 
   // Gets the sites to clear filters. The first filter holds the list of sites
   // that haven't had their cookies/storage cleared, the second filter is the
@@ -102,11 +103,6 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   [[nodiscard]] std::pair<std::vector<net::SchemefulSite>,
                           net::FirstPartySetsCacheFilter>
   GetSitesToClearFilters(const std::string& browser_context_id);
-
-  // Gets the previously-stored policy configurations for the
-  // `browser_context_id`.
-  [[nodiscard]] net::FirstPartySetsContextConfig FetchPolicyConfigurations(
-      const std::string& browser_context_id);
 
   // Check whether the `browser_context_id`  has performed clearing.
   [[nodiscard]] bool HasEntryInBrowserContextsClearedForTesting(
@@ -133,9 +129,18 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
       const std::string& browser_context_id,
       const net::FirstPartySetsContextConfig& policy_config);
 
+  // Gets the global First-Party Sets used by `browser_context_id`.
+  [[nodiscard]] net::GlobalFirstPartySets GetGlobalSets(
+      const std::string& browser_context_id);
+
   // Gets the previously-stored manual configuration for the
   // `browser_context_id`.
   [[nodiscard]] net::FirstPartySetsContextConfig FetchManualConfiguration(
+      const std::string& browser_context_id);
+
+  // Gets the previously-stored policy configuration for the
+  // `browser_context_id`.
+  [[nodiscard]] net::FirstPartySetsContextConfig FetchPolicyConfigurations(
       const std::string& browser_context_id);
 
   // Gets the list of sites to clear for the `browser_context_id`.

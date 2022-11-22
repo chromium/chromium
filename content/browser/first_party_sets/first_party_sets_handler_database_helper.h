@@ -10,12 +10,10 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class FirstPartySetsCacheFilter;
@@ -84,9 +82,8 @@ class CONTENT_EXPORT FirstPartySetsHandlerDatabaseHelper {
                    const net::GlobalFirstPartySets& sets,
                    const net::FirstPartySetsContextConfig& config);
 
-  // Wraps FirstPartySetsDatabase::GetGlobalSets.
-  net::GlobalFirstPartySets GetPersistedGlobalSets(
-      const std::string& browser_context_id);
+  std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>
+  GetGlobalSetsAndConfigForTesting(const std::string& browser_context_id);
 
   // Wraps FirstPartySetsDatabase::HasEntryInBrowserContextClearedForTesting.
   bool HasEntryInBrowserContextsClearedForTesting(

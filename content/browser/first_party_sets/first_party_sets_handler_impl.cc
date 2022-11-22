@@ -210,9 +210,11 @@ void FirstPartySetsHandlerImpl::SetPublicFirstPartySets(
   sets_loader_->SetComponentSets(version, std::move(sets_file));
 }
 
-void FirstPartySetsHandlerImpl::GetPersistedGlobalSetsForTesting(
+void FirstPartySetsHandlerImpl::GetPersistedSetsForTesting(
     const std::string& browser_context_id,
-    base::OnceCallback<void(absl::optional<net::GlobalFirstPartySets>)>
+    base::OnceCallback<
+        void(absl::optional<std::pair<net::GlobalFirstPartySets,
+                                      net::FirstPartySetsContextConfig>>)>
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!browser_context_id.empty());
@@ -221,7 +223,8 @@ void FirstPartySetsHandlerImpl::GetPersistedGlobalSetsForTesting(
     return;
   }
   db_helper_
-      .AsyncCall(&FirstPartySetsHandlerDatabaseHelper::GetPersistedGlobalSets)
+      .AsyncCall(&FirstPartySetsHandlerDatabaseHelper::
+                     GetGlobalSetsAndConfigForTesting)  // IN-TEST
       .WithArgs(browser_context_id)
       .Then(std::move(callback));
 }

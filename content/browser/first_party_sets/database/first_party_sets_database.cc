@@ -366,12 +366,35 @@ bool FirstPartySetsDatabase::InsertManualConfiguration(
   return true;
 }
 
+std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>
+FirstPartySetsDatabase::GetGlobalSetsAndConfig(
+    const std::string& browser_context_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!browser_context_id.empty());
+  if (!LazyInit())
+    return {};
+
+  sql::Transaction transaction(db_.get());
+  if (!transaction.Begin())
+    return {};
+
+  net::GlobalFirstPartySets global_sets = GetGlobalSets(browser_context_id);
+
+  net::FirstPartySetsContextConfig config =
+      FetchPolicyConfigurations(browser_context_id);
+
+  if (!transaction.Commit())
+    return {};
+
+  return std::make_pair(std::move(global_sets), std::move(config));
+}
+
 net::GlobalFirstPartySets FirstPartySetsDatabase::GetGlobalSets(
     const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!LazyInit())
-    return {};
+  DCHECK(db_->HasActiveTransactions());
+  DCHECK_EQ(db_status_, InitStatus::kSuccess);
+  DCHECK(!browser_context_id.empty());
 
   // Query public sets entries.
   std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> entries;
@@ -543,9 +566,9 @@ net::FirstPartySetsContextConfig
 FirstPartySetsDatabase::FetchPolicyConfigurations(
     const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!LazyInit())
-    return {};
+  DCHECK(db_->HasActiveTransactions());
+  DCHECK_EQ(db_status_, InitStatus::kSuccess);
+  DCHECK(!browser_context_id.empty());
 
   std::vector<
       std::pair<net::SchemefulSite, absl::optional<net::FirstPartySetEntry>>>
@@ -616,9 +639,9 @@ net::FirstPartySetsContextConfig
 FirstPartySetsDatabase::FetchManualConfiguration(
     const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!LazyInit())
-    return {};
+  DCHECK(db_->HasActiveTransactions());
+  DCHECK_EQ(db_status_, InitStatus::kSuccess);
+  DCHECK(!browser_context_id.empty());
 
   std::vector<
       std::pair<net::SchemefulSite, absl::optional<net::FirstPartySetEntry>>>

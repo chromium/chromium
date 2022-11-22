@@ -932,42 +932,15 @@ TEST_F(FirstPartySetsDatabaseTest, GetSitesToClearFilters) {
   EXPECT_EQ(res.second, cache_filter);
 }
 
-TEST_F(FirstPartySetsDatabaseTest, FetchPolicyConfigurations_NoPreExistingDB) {
+TEST_F(FirstPartySetsDatabaseTest, GetSets_NoPreExistingDB) {
   OpenDatabase();
-  EXPECT_TRUE(db()->FetchPolicyConfigurations("b").empty());
+  std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig> res =
+      db()->GetGlobalSetsAndConfig("b");
+  EXPECT_TRUE(res.first.empty());
+  EXPECT_TRUE(res.second.empty());
 }
 
-TEST_F(FirstPartySetsDatabaseTest, FetchPolicyConfigurations) {
-  ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(),
-                                               GetCurrentVersionSqlFilePath()));
-
-  // Verify data in the pre-existing DB.
-  {
-    sql::Database db;
-    EXPECT_TRUE(db.Open(db_path()));
-    EXPECT_EQ(kTableCount, sql::test::CountSQLTables(&db));
-    EXPECT_EQ(2u, CountPolicyConfigurationsEntries(&db));
-  }
-  net::FirstPartySetsContextConfig res({
-      {net::SchemefulSite(GURL("https://member1.test")),
-       net::FirstPartySetEntry(
-           {net::SchemefulSite(GURL("https://example.test"))},
-           net::SiteType::kAssociated, absl::nullopt)},
-      {net::SchemefulSite(GURL("https://member2.test")), absl::nullopt},
-  });
-  OpenDatabase();
-  EXPECT_EQ(db()->FetchPolicyConfigurations("b2"), res);
-}
-
-TEST_F(FirstPartySetsDatabaseTest, GetGlobalSets_NoPreExistingDB) {
-  OpenDatabase();
-  EXPECT_THAT(db()->GetGlobalSets("b").FindEntries(
-                  {net::SchemefulSite(GURL("https://example.test"))},
-                  net::FirstPartySetsContextConfig()),
-              IsEmpty());
-}
-
-TEST_F(FirstPartySetsDatabaseTest, GetGlobalSets_NoPublicSets) {
+TEST_F(FirstPartySetsDatabaseTest, GetSets_NoPublicSets) {
   const std::string browser_context_id = "b";
   const net::SchemefulSite site(GURL("https://site.test"));
   const net::SchemefulSite primary(GURL("https://primary.test"));
@@ -997,10 +970,13 @@ TEST_F(FirstPartySetsDatabaseTest, GetGlobalSets_NoPublicSets) {
   // that public sets will not be persisted.
   ASSERT_TRUE(db()->PersistSets(browser_context_id, global_sets,
                                 net::FirstPartySetsContextConfig()));
+
+  std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig> res =
+      db()->GetGlobalSetsAndConfig(browser_context_id);
+
   EXPECT_THAT(
-      db()->GetGlobalSets(browser_context_id)
-          .FindEntries({manual_site, manual_primary},
-                       net::FirstPartySetsContextConfig()),
+      res.first.FindEntries({manual_site, manual_primary},
+                            net::FirstPartySetsContextConfig()),
       UnorderedElementsAre(
           Pair(manual_site,
                net::FirstPartySetEntry(
@@ -1008,9 +984,10 @@ TEST_F(FirstPartySetsDatabaseTest, GetGlobalSets_NoPublicSets) {
           Pair(manual_primary,
                net::FirstPartySetEntry(manual_primary, net::SiteType::kPrimary,
                                        absl::nullopt))));
+  EXPECT_TRUE(res.second.empty());
 }
 
-TEST_F(FirstPartySetsDatabaseTest, GetGlobalSets) {
+TEST_F(FirstPartySetsDatabaseTest, GetSets) {
   ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(),
                                                GetCurrentVersionSqlFilePath()));
 
@@ -1020,15 +997,19 @@ TEST_F(FirstPartySetsDatabaseTest, GetGlobalSets) {
     EXPECT_TRUE(db.Open(db_path()));
     EXPECT_EQ(2u, CountPublicSetsEntries(&db));
     EXPECT_EQ(3u, CountBrowserContextSetsVersionEntries(&db));
+    EXPECT_EQ(2u, CountPolicyConfigurationsEntries(&db));
   }
   const net::SchemefulSite aaa(GURL("https://aaa.test"));
   const net::SchemefulSite bbb(GURL("https://bbb.test"));
   const net::SchemefulSite ccc(GURL("https://ccc.test"));
   const net::SchemefulSite ddd(GURL("https://ddd.test"));
   OpenDatabase();
+
+  std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig> res =
+      db()->GetGlobalSetsAndConfig("b0");
   EXPECT_THAT(
-      db()->GetGlobalSets("b0").FindEntries({aaa, bbb, ccc, ddd},
-                                            net::FirstPartySetsContextConfig()),
+      res.first.FindEntries({aaa, bbb, ccc, ddd},
+                            net::FirstPartySetsContextConfig()),
       UnorderedElementsAre(
           Pair(aaa, net::FirstPartySetEntry(bbb, net::SiteType::kAssociated,
                                             absl::nullopt)),
@@ -1038,6 +1019,7 @@ TEST_F(FirstPartySetsDatabaseTest, GetGlobalSets) {
                                             absl::nullopt)),
           Pair(ddd, net::FirstPartySetEntry(ddd, net::SiteType::kPrimary,
                                             absl::nullopt))));
+  EXPECT_EQ(res.second, net::FirstPartySetsContextConfig());
 }
 
 TEST_F(FirstPartySetsDatabaseTest,
@@ -1109,8 +1091,10 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_FormatCheck) {
   // Trigger the lazy-initialization.
   EXPECT_TRUE(db()->PersistSets(browser_context_id, global_sets, config));
 
-  EXPECT_EQ(db()->GetGlobalSets(browser_context_id), global_sets);
-  EXPECT_EQ(db()->FetchPolicyConfigurations(browser_context_id), config);
+  std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig> res =
+      db()->GetGlobalSetsAndConfig(browser_context_id);
+  EXPECT_EQ(res.first, global_sets);
+  EXPECT_EQ(res.second, config);
 }
 
 class FirstPartySetsDatabaseMigrationsTest : public FirstPartySetsDatabaseTest {
@@ -1120,7 +1104,7 @@ class FirstPartySetsDatabaseMigrationsTest : public FirstPartySetsDatabaseTest {
   void MigrateDatabase() {
     FirstPartySetsDatabase db(db_path());
     // Trigger the lazy-initialization.
-    std::ignore = db.FetchPolicyConfigurations("b");
+    std::ignore = db.GetGlobalSetsAndConfig("b");
   }
 
   static int VersionFromDatabase(sql::Database* db) {
@@ -1137,7 +1121,7 @@ TEST_F(FirstPartySetsDatabaseMigrationsTest, MigrateEmptyToCurrent) {
   {
     FirstPartySetsDatabase db(db_path());
     // Trigger the lazy-initialization.
-    std::ignore = db.FetchPolicyConfigurations("b");
+    std::ignore = db.GetGlobalSetsAndConfig("b");
   }
 
   // Verify schema is current.
