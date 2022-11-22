@@ -146,6 +146,7 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   void PreLockAnimation(SessionStateAnimator::AnimationSpeed speed,
                         bool request_lock_on_completion);
   void StartPostLockAnimation();
+  void OnPostLockFailTimeout();
   // This method calls |callback| when animation completes.
   void StartUnlockAnimationBeforeLockUIDestroyed(base::OnceClosure callback);
   void StartUnlockAnimationAfterLockUIDestroyed();
@@ -220,6 +221,10 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   // Started when we request that the screen be locked.  When it fires, we
   // assume that our request got dropped.
   base::OneShotTimer lock_fail_timer_;
+
+  // Started when we call StartPostLockAnimation. When it fires, we assume
+  // that our request got dropped.
+  base::OneShotTimer post_lock_fail_timer_;
 
   // Started when we begin displaying the pre-shutdown animation.  When it
   // fires, we start the shutdown animation and get ready to request shutdown.

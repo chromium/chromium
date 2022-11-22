@@ -76,6 +76,10 @@ constexpr int kMaxShutdownSoundDurationMs = 1500;
 constexpr base::TimeDelta kLockFailTimeout =
     base::Seconds(8 * kTimeoutMultiplier);
 
+// Amount of time to wait for our post lock animation before giving up.
+constexpr base::TimeDelta kPostLockFailTimeout =
+    base::Seconds(2 * kTimeoutMultiplier);
+
 // Additional time to wait after starting the fast-close shutdown animation
 // before actually requesting shutdown, to give the animation time to finish.
 constexpr base::TimeDelta kShutdownRequestDelay = base::Milliseconds(50);
@@ -474,6 +478,8 @@ void LockStateController::StartPostLockAnimation() {
           ? SessionStateAnimator::ANIMATION_SPEED_IMMEDIATE
           : SessionStateAnimator::ANIMATION_SPEED_MOVE_WINDOWS);
   animation_sequence->EndSequence();
+  post_lock_fail_timer_.Start(FROM_HERE, kPostLockFailTimeout, this,
+                              &LockStateController::OnPostLockFailTimeout);
 }
 
 void LockStateController::StartUnlockAnimationBeforeLockUIDestroyed(
@@ -548,9 +554,17 @@ void LockStateController::PreLockAnimationFinished(bool request_lock,
   lock_duration_timer_ = std::make_unique<base::ElapsedTimer>();
 }
 
+void LockStateController::OnPostLockFailTimeout() {
+  VLOG(1) << "OnPostLockFailTimeout";
+  PostLockAnimationFinished(true);
+}
+
 void LockStateController::PostLockAnimationFinished(bool aborted) {
   VLOG(1) << "PostLockAnimationFinished: aborted=" << aborted;
+  if (!animating_lock_)
+    return;
   animating_lock_ = false;
+  post_lock_fail_timer_.Stop();
   OnLockStateEvent(LockStateObserver::EVENT_LOCK_ANIMATION_FINISHED);
   if (!lock_screen_displayed_callback_.is_null())
     std::move(lock_screen_displayed_callback_).Run();
