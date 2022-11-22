@@ -73,7 +73,7 @@ class AccessibilityTreeLinkageWinBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(AccessibilityTreeLinkageWinBrowserTest, Linkage) {
-  testing::ScopedContentAXModeSetter ax_mode_setter(ui::kAXModeBasic.mode());
+  testing::ScopedContentAXModeSetter ax_mode_setter(ui::kAXModeBasic.flags());
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 

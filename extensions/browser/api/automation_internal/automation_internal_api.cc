@@ -446,7 +446,7 @@ class AutomationWebContentsObserver
       return;
 
     ui::AXMode new_mode = web_contents()->GetAccessibilityMode();
-    uint8_t flags = ui::kAXModeWebContentsOnly.mode();
+    uint8_t flags = ui::kAXModeWebContentsOnly.flags();
     new_mode.set_mode(flags, false);
     web_contents()->SetAccessibilityMode(std::move(new_mode));
   }

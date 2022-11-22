@@ -6022,7 +6022,7 @@ int RenderFrameImpl::GetEnabledBindings() {
 }
 
 void RenderFrameImpl::SetAccessibilityModeForTest(ui::AXMode new_mode) {
-  render_accessibility_manager_->SetMode(new_mode.mode());
+  render_accessibility_manager_->SetMode(new_mode);
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

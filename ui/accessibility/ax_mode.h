@@ -87,7 +87,7 @@ class AX_BASE_EXPORT AXMode {
     flags_ = value ? (flags_ | flag) : (flags_ & ~flag);
   }
 
-  uint32_t mode() const { return flags_; }
+  uint32_t flags() const { return flags_; }
 
   bool operator==(AXMode rhs) const { return flags_ == rhs.flags_; }
 
@@ -101,6 +101,8 @@ class AX_BASE_EXPORT AXMode {
   }
 
   std::string ToString() const;
+
+  uint32_t flags_ = 0U;
 
   // IMPORTANT!
   // These values are written to logs.  Do not renumber or delete
@@ -119,9 +121,6 @@ class AX_BASE_EXPORT AXMode {
     // increase, but none of the other enum values may change.
     UMA_AX_MODE_MAX
   };
-
- private:
-  uint32_t flags_;
 };
 
 // Used when an AT that only require basic accessibility information, such as

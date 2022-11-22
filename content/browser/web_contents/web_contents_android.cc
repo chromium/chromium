@@ -690,7 +690,7 @@ void WebContentsAndroid::RequestAccessibilitySnapshot(
               &WebContentsAndroid::AXTreeSnapshotCallback,
               weak_factory_.GetWeakPtr(), std::move(j_view_structure_root),
               std::move(j_view_structure_builder), std::move(j_callback)),
-          ui::AXMode(ui::kAXModeComplete.mode() | ui::AXMode::kHTMLMetadata),
+          ui::AXMode(ui::kAXModeComplete.flags() | ui::AXMode::kHTMLMetadata),
           /* exclude_offscreen= */ false,
           /* max_nodes= */ 5000,
           /* timeout= */ base::Seconds(2));

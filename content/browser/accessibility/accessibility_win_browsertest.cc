@@ -926,7 +926,7 @@ class WebContentsUIAParentNavigationInDestroyedWatcher
 
 IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
                        TestAlwaysFireFocusEventAfterNavigationComplete) {
-  testing::ScopedContentAXModeSetter ax_mode_setter(ui::kAXModeBasic.mode());
+  testing::ScopedContentAXModeSetter ax_mode_setter(ui::kAXModeBasic.flags());
 
   ASSERT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
@@ -962,7 +962,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
                        TestLoadingAccessibilityTree) {
-  testing::ScopedContentAXModeSetter ax_mode_setter(ui::kAXModeBasic.mode());
+  testing::ScopedContentAXModeSetter ax_mode_setter(ui::kAXModeBasic.flags());
 
   ASSERT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
@@ -5341,7 +5341,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIASelectivelyEnabledBrowserTest,
   // (kAXModeBasic includes both kNativeAPIs and kWebContents). Importantly,
   // this combination of AXModes allows RenderFrameHostImpl to create
   // BrowserAccessibilityManagers.
-  ui::AXMode expected_mode = ui::kAXModeBasic.mode();
+  ui::AXMode expected_mode = ui::kAXModeBasic.flags();
   EXPECT_EQ(expected_mode, content::BrowserAccessibilityStateImpl::GetInstance()
                                ->GetAccessibilityMode());
 

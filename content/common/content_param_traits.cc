@@ -137,7 +137,7 @@ void ParamTraits<blink::PolicyValue>::Log(const param_type& p, std::string* l) {
 }
 
 void ParamTraits<ui::AXMode>::Write(base::Pickle* m, const param_type& p) {
-  WriteParam(m, p.mode());
+  WriteParam(m, p.flags());
 }
 
 bool ParamTraits<ui::AXMode>::Read(const base::Pickle* m,

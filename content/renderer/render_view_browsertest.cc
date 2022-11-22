@@ -2622,15 +2622,15 @@ TEST_F(RenderViewImplTest, SetAccessibilityMode) {
   ASSERT_TRUE(GetRenderAccessibilityManager());
   ASSERT_FALSE(GetRenderAccessibilityManager()->GetRenderAccessibilityImpl());
 
-  GetRenderAccessibilityManager()->SetMode(ui::kAXModeWebContentsOnly.mode());
+  GetRenderAccessibilityManager()->SetMode(ui::kAXModeWebContentsOnly);
   ASSERT_TRUE(GetAccessibilityMode() == ui::kAXModeWebContentsOnly);
   ASSERT_TRUE(GetRenderAccessibilityManager()->GetRenderAccessibilityImpl());
 
-  GetRenderAccessibilityManager()->SetMode(0);
+  GetRenderAccessibilityManager()->SetMode(ui::AXMode::kNone);
   ASSERT_TRUE(GetAccessibilityMode().is_mode_off());
   ASSERT_FALSE(GetRenderAccessibilityManager()->GetRenderAccessibilityImpl());
 
-  GetRenderAccessibilityManager()->SetMode(ui::kAXModeComplete.mode());
+  GetRenderAccessibilityManager()->SetMode(ui::kAXModeComplete);
   ASSERT_TRUE(GetAccessibilityMode() == ui::kAXModeComplete);
   ASSERT_TRUE(GetRenderAccessibilityManager()->GetRenderAccessibilityImpl());
 }
@@ -2642,7 +2642,7 @@ TEST_F(RenderViewImplTest, AccessibilityModeOnClosingConnection) {
   GetRenderAccessibilityManager()->BindReceiver(
       remote.BindNewEndpointAndPassReceiver());
 
-  GetRenderAccessibilityManager()->SetMode(ui::kAXModeWebContentsOnly.mode());
+  GetRenderAccessibilityManager()->SetMode(ui::kAXModeWebContentsOnly);
   ASSERT_TRUE(GetAccessibilityMode() == ui::kAXModeWebContentsOnly);
   ASSERT_TRUE(GetRenderAccessibilityManager()->GetRenderAccessibilityImpl());
 

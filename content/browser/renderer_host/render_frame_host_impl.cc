@@ -9405,14 +9405,14 @@ void RenderFrameHostImpl::UpdateAccessibilityMode() {
       GetRemoteAssociatedInterfaces()->GetInterface(&render_accessibility_);
       DCHECK(render_accessibility_);
     }
-    render_accessibility_->SetMode(ax_mode.mode());
+    render_accessibility_->SetMode(ax_mode.flags());
   } else {
     // Resetting the Remote signals the renderer to shutdown accessibility
     // in the renderer.
     render_accessibility_.reset();
   }
 
-  if (!ax_mode.has_mode(ui::kAXModeBasic.mode()) &&
+  if (!ax_mode.has_mode(ui::kAXModeBasic.flags()) &&
       browser_accessibility_manager_) {
     // Missing either kWebContents and kNativeAPIs, so
     // BrowserAccessibilityManager is no longer necessary.
@@ -9428,7 +9428,7 @@ void RenderFrameHostImpl::RequestAXTreeSnapshot(
     size_t max_nodes,
     const base::TimeDelta& timeout) {
   auto params = mojom::SnapshotAccessibilityTreeParams::New();
-  params->ax_mode = ax_mode.mode();
+  params->ax_mode = ax_mode.flags();
   params->exclude_offscreen = exclude_offscreen;
   params->max_nodes = max_nodes;
   params->timeout = timeout;

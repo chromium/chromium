@@ -64,7 +64,7 @@ class CONTENT_EXPORT RenderAccessibilityManager
   ui::AXMode GetAccessibilityMode() const;
 
   // mojom::RenderAccessibility implementation.
-  void SetMode(uint32_t ax_mode) override;
+  void SetMode(const ui::AXMode& ax_mode) override;
   void FatalError() override;
   void HitTest(
       const gfx::Point& point,

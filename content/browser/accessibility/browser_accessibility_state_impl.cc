@@ -398,7 +398,7 @@ void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
   ui::AXPlatformNode::NotifyAddAXModeFlags(accessibility_mode_);
 
   // Retrieve only newly added modes for the purposes of logging.
-  int new_mode_flags = mode.mode() & (~previous_mode.mode());
+  int new_mode_flags = mode.flags() & (~previous_mode.flags());
   if (new_mode_flags & ui::AXMode::kNativeAPIs)
     RecordNewAccessibilityModeFlags(
         ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_NATIVE_APIS);
@@ -445,8 +445,8 @@ void BrowserAccessibilityStateImpl::RemoveAccessibilityModeFlags(
   if (force_renderer_accessibility_ && mode == ui::kAXModeComplete)
     return;
 
-  int raw_flags =
-      accessibility_mode_.mode() ^ (mode.mode() & accessibility_mode_.mode());
+  int raw_flags = accessibility_mode_.flags() ^
+                  (mode.flags() & accessibility_mode_.flags());
   accessibility_mode_ = raw_flags;
 
   // Proxy the new AXMode to AXPlatformNode.

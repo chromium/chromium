@@ -317,8 +317,8 @@ void WebContentsAccessibilityAndroid::SetAXMode(
       // Remove the mode flags present in kAXModeComplete but not in
       // kAXModeBasic, thereby reverting the mode to kAXModeBasic while
       // not touching any other flags.
-      ui::AXMode remove_mode_flags(ui::kAXModeComplete.mode() &
-                                   ~ui::kAXModeBasic.mode());
+      ui::AXMode remove_mode_flags(ui::kAXModeComplete.flags() &
+                                   ~ui::kAXModeBasic.flags());
       accessibility_state->RemoveAccessibilityModeFlags(remove_mode_flags);
     }
   }

@@ -1700,7 +1700,7 @@ void WebContentsImpl::RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
   // them into a single tree and call |callback| with that result, then
   // delete |combiner|.
   auto params = mojom::SnapshotAccessibilityTreeParams::New();
-  params->ax_mode = ax_mode.mode();
+  params->ax_mode = ax_mode.flags();
   params->exclude_offscreen = exclude_offscreen;
   params->max_nodes = max_nodes;
   params->timeout = timeout;
@@ -4521,7 +4521,7 @@ void WebContentsImpl::RecordAccessibilityEvents(
   DCHECK_EQ(start_recording, callback.has_value());
   if (start_recording) {
     BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
-        ui::kAXModeBasic.mode());
+        ui::kAXModeBasic.flags());
     auto* ax_mgr = GetOrCreateRootBrowserAccessibilityManager();
     CHECK(ax_mgr);
     base::ProcessId pid = base::Process::Current().Pid();

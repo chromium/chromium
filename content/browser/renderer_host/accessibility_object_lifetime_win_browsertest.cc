@@ -59,7 +59,7 @@ class AccessibilityObjectLifetimeWinBrowserTest
 
 IN_PROC_BROWSER_TEST_F(AccessibilityObjectLifetimeWinBrowserTest,
                        RootDoesNotLeak) {
-  testing::ScopedContentAXModeSetter ax_mode_setter(ui::kAXModeBasic.mode());
+  testing::ScopedContentAXModeSetter ax_mode_setter(ui::kAXModeBasic.flags());
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
@@ -173,7 +173,7 @@ class AccessibilityObjectLifetimeUiaWinBrowserTest
 
 IN_PROC_BROWSER_TEST_F(AccessibilityObjectLifetimeUiaWinBrowserTest,
                        RootDoesNotLeak) {
-  testing::ScopedContentAXModeSetter ax_mode_setter(ui::kAXModeBasic.mode());
+  testing::ScopedContentAXModeSetter ax_mode_setter(ui::kAXModeBasic.flags());
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 

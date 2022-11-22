@@ -310,7 +310,7 @@ class RenderAccessibilityImplTest : public RenderViewTest {
     // Ensure that a valid RenderAccessibilityImpl object is created and
     // associated to the RenderFrame, so that calls from tests to methods of
     // RenderAccessibilityImpl will work.
-    frame()->SetAccessibilityModeForTest(ui::kAXModeWebContentsOnly.mode());
+    frame()->SetAccessibilityModeForTest(ui::kAXModeWebContentsOnly.flags());
   }
 
   void TearDown() override {
@@ -324,7 +324,7 @@ class RenderAccessibilityImplTest : public RenderViewTest {
   }
 
   void SetMode(ui::AXMode mode) {
-    frame()->GetRenderAccessibilityManager()->SetMode(mode.mode());
+    frame()->GetRenderAccessibilityManager()->SetMode(mode);
   }
 
   ui::AXTreeUpdate GetLastAccUpdate() {

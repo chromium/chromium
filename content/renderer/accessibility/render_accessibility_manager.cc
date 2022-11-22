@@ -31,7 +31,7 @@ void RenderAccessibilityManager::BindReceiver(
   receiver_.set_disconnect_handler(base::BindOnce(
       [](RenderAccessibilityManager* impl) {
         impl->receiver_.reset();
-        impl->SetMode(0);
+        impl->SetMode(ui::AXMode::kNone);
       },
       base::Unretained(this)));
 }
@@ -47,9 +47,9 @@ ui::AXMode RenderAccessibilityManager::GetAccessibilityMode() const {
   return render_accessibility_->GetAccessibilityMode();
 }
 
-void RenderAccessibilityManager::SetMode(uint32_t ax_mode) {
+void RenderAccessibilityManager::SetMode(const ui::AXMode& new_mode) {
   ui::AXMode old_mode = GetAccessibilityMode();
-  ui::AXMode new_mode(ax_mode);
+
   if (old_mode == new_mode)
     return;
 
