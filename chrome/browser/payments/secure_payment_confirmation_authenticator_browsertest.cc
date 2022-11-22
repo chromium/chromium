@@ -26,6 +26,8 @@
 namespace payments {
 namespace {
 
+using Event2 = payments::JourneyLogger::Event2;
+
 struct PaymentCredentialInfo {
   std::string webidl_type;
   std::string type;
@@ -128,15 +130,9 @@ class SecurePaymentConfirmationAuthenticatorTestBase
         result, count);
   }
 
-  void ExpectNoFunnelCount() {
-    histogram_tester_.ExpectTotalCount(
-        "PaymentRequest.SecurePaymentConfirmation.Funnel."
-        "SystemPromptResult",
-        0);
-  }
-
-  void ExpectFunnelCount(SecurePaymentConfirmationSystemPromptResult result,
-                         int count) {
+  void ExpectAuthSystemPromptResult(
+      SecurePaymentConfirmationSystemPromptResult result,
+      int count) {
     histogram_tester_.ExpectTotalCount(
         "PaymentRequest.SecurePaymentConfirmation.Funnel."
         "SystemPromptResult",
@@ -145,16 +141,6 @@ class SecurePaymentConfirmationAuthenticatorTestBase
         "PaymentRequest.SecurePaymentConfirmation.Funnel."
         "SystemPromptResult",
         result, count);
-  }
-
-  void ExpectJourneyLoggerEvent(bool spc_confirm_logged) {
-    std::vector<base::Bucket> buckets =
-        histogram_tester_.GetAllSamples("PaymentRequest.Events");
-    EXPECT_EQ(
-        spc_confirm_logged,
-        buckets.size() == 1 &&
-            buckets[0].min &
-                JourneyLogger::EVENT_SELECTED_SECURE_PAYMENT_CONFIRMATION);
   }
 
   void ObserveEvent(Event event) {
@@ -172,7 +158,6 @@ class SecurePaymentConfirmationAuthenticatorTestBase
     event_waiter_->OnEvent(WEB_CONTENTS_DESTROYED);
   }
 
-  base::HistogramTester histogram_tester_;
   std::unique_ptr<autofill::EventWaiter<Event>> event_waiter_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -198,8 +183,6 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorCreateTest,
       "PaymentRequest.SecurePaymentConfirmationCredentialIdSizeInBytes", 1U);
   ExpectEnrollSystemPromptResult(
       SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
-  ExpectNoFunnelCount();
-  ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/false);
 
   // Check that we can create a second credential, and that the tracked metrics
   // update.
@@ -238,9 +221,6 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorCreateTest,
   ObserveWebContentsDestroyed();
   GetActiveWebContents()->Close();
   event_waiter_->Wait();
-
-  ExpectNoFunnelCount();
-  ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/false);
 }
 
 class SecurePaymentConfirmationAuthenticatorCreateDisableDebugTest
@@ -337,8 +317,12 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
 
   ExpectEnrollSystemPromptResult(
       SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
-  ExpectFunnelCount(SecurePaymentConfirmationSystemPromptResult::kAccepted, 1);
-  ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/true);
+  ExpectAuthSystemPromptResult(
+      SecurePaymentConfirmationSystemPromptResult::kAccepted, 1);
+  ExpectEvent2Histogram({Event2::kInitiated, Event2::kShown, Event2::kCompleted,
+                         Event2::kPayClicked, Event2::kHadInitialFormOfPayment,
+                         Event2::kRequestMethodSecurePaymentConfirmation,
+                         Event2::kSelectedSecurePaymentConfirmation});
 }
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
@@ -383,8 +367,12 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
 
   ExpectEnrollSystemPromptResult(
       SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
-  ExpectFunnelCount(SecurePaymentConfirmationSystemPromptResult::kAccepted, 1);
-  ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/true);
+  ExpectAuthSystemPromptResult(
+      SecurePaymentConfirmationSystemPromptResult::kAccepted, 1);
+  ExpectEvent2Histogram({Event2::kInitiated, Event2::kShown, Event2::kCompleted,
+                         Event2::kPayClicked, Event2::kHadInitialFormOfPayment,
+                         Event2::kRequestMethodSecurePaymentConfirmation,
+                         Event2::kSelectedSecurePaymentConfirmation});
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -431,8 +419,12 @@ IN_PROC_BROWSER_TEST_F(
 
   ExpectEnrollSystemPromptResult(
       SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
-  ExpectFunnelCount(SecurePaymentConfirmationSystemPromptResult::kAccepted, 1);
-  ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/true);
+  ExpectAuthSystemPromptResult(
+      SecurePaymentConfirmationSystemPromptResult::kAccepted, 1);
+  ExpectEvent2Histogram({Event2::kInitiated, Event2::kShown, Event2::kCompleted,
+                         Event2::kPayClicked, Event2::kHadInitialFormOfPayment,
+                         Event2::kRequestMethodSecurePaymentConfirmation,
+                         Event2::kSelectedSecurePaymentConfirmation});
 }
 
 // Test allowing a failed icon download with iconMustBeShown option
@@ -533,8 +525,16 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
 
   ExpectEnrollSystemPromptResult(
       SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
-  ExpectFunnelCount(SecurePaymentConfirmationSystemPromptResult::kCanceled, 1);
-  ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/true);
+  ExpectAuthSystemPromptResult(
+      SecurePaymentConfirmationSystemPromptResult::kCanceled, 1);
+  // WebAuthn dialog failure is recorded as kOtherAborted. Since we made it
+  // past the Transaction UX to the WebAuthn dialog, we should still log
+  // kPayClicked and kSelectedSecurePaymentConfirmation.
+  ExpectEvent2Histogram({Event2::kInitiated, Event2::kShown,
+                         Event2::kOtherAborted, Event2::kPayClicked,
+                         Event2::kHadInitialFormOfPayment,
+                         Event2::kRequestMethodSecurePaymentConfirmation,
+                         Event2::kSelectedSecurePaymentConfirmation});
 }
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
@@ -585,8 +585,8 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
 
   ExpectEnrollSystemPromptResult(
       SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
-  ExpectFunnelCount(SecurePaymentConfirmationSystemPromptResult::kAccepted, 4);
-  ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/true);
+  ExpectAuthSystemPromptResult(
+      SecurePaymentConfirmationSystemPromptResult::kAccepted, 4);
 }
 
 }  // namespace

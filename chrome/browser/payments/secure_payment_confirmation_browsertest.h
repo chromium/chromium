@@ -46,9 +46,10 @@ class SecurePaymentConfirmationTest
       WebDataServiceBase::Handle h,
       std::unique_ptr<WDTypedResult> result) override;
 
-  // Verify that the PaymentRequest.Event2 histogram was logged exactly once by
-  // JourneyLogger, and that it contains exactly the set of `events`.
-  void ExpectEvent2Histogram(std::set<JourneyLogger::Event2> events);
+  // Verify that the given set of JourneyLogger::Event2 `events` were logged by
+  // JourneyLogger `count` times.
+  void ExpectEvent2Histogram(std::set<JourneyLogger::Event2> events,
+                             int count = 1);
 
   // Returns the generic WebAuthn error message, to compare against SPC output.
   static std::string GetWebAuthnErrorMessage();
@@ -57,10 +58,11 @@ class SecurePaymentConfirmationTest
   bool confirm_payment_ = false;
   bool close_dialog_on_error_ = false;
 
+ protected:
+  base::HistogramTester histogram_tester_;
+
  private:
   base::test::ScopedFeatureList feature_list_;
-
-  base::HistogramTester histogram_tester_;
 };
 
 }  // namespace payments

@@ -64,7 +64,8 @@ void SecurePaymentConfirmationTest::OnWebDataServiceRequestDone(
 }
 
 void SecurePaymentConfirmationTest::ExpectEvent2Histogram(
-    std::set<JourneyLogger::Event2> events) {
+    std::set<JourneyLogger::Event2> events,
+    int count) {
   std::vector<base::Bucket> buckets =
       histogram_tester_.GetAllSamples("PaymentRequest.Events2");
   ASSERT_EQ(1U, buckets.size());
@@ -74,6 +75,7 @@ void SecurePaymentConfirmationTest::ExpectEvent2Histogram(
     expected_events |= static_cast<int>(event);
   }
   EXPECT_EQ(buckets[0].min, expected_events);
+  EXPECT_EQ(count, buckets[0].count);
 }
 
 // static
@@ -85,50 +87,90 @@ std::string SecurePaymentConfirmationTest::GetWebAuthnErrorMessage() {
 
 namespace {
 
+using Event2 = payments::JourneyLogger::Event2;
+
 std::string GetIconDownloadErrorMessage() {
   return "NotSupportedError: The payment method "
          "\"secure-payment-confirmation\" is not supported. "
          "The \"instrument.icon\" either could not be downloaded or decoded.";
 }
 
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, NoAuthenticator) {
-  test_controller()->SetHasAuthenticator(false);
-  NavigateTo("a.com", "/secure_payment_confirmation.html");
-  close_dialog_on_error_ = true;
-
-  // EvalJs waits for JavaScript promise to resolve.
-  EXPECT_EQ(GetWebAuthnErrorMessage(),
-            content::EvalJs(GetActiveWebContents(),
-                            "getSecurePaymentConfirmationStatus()"));
-}
-
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, NoInstrumentInStorage) {
+// Tests that show() will display the Transaction UX, if there is a matching
+// credential.
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, Show_TransactionUX) {
   test_controller()->SetHasAuthenticator(true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
-  close_dialog_on_error_ = true;
+  std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
+  std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
+  webdata_services::WebDataServiceWrapperFactory::
+      GetPaymentManifestWebDataServiceForBrowserContext(
+          GetActiveWebContents()->GetBrowserContext(),
+          ServiceAccessType::EXPLICIT_ACCESS)
+          ->AddSecurePaymentConfirmationCredential(
+              std::make_unique<SecurePaymentConfirmationCredential>(
+                  std::move(credential_id), "a.com", std::move(user_id)),
+              /*consumer=*/this);
 
-  // EvalJs waits for JavaScript promise to resolve.
-  EXPECT_EQ(GetWebAuthnErrorMessage(),
-            content::EvalJs(GetActiveWebContents(),
-                            "getSecurePaymentConfirmationStatus()"));
-}
+  ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
+  ExecuteScriptAsync(GetActiveWebContents(),
+                     "getSecurePaymentConfirmationStatus()");
+  WaitForObservedEvent();
 
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
-                       CheckInstrumentInStorageAfterCanMakePayment) {
-  test_controller()->SetHasAuthenticator(true);
-  NavigateTo("a.com", "/secure_payment_confirmation.html");
-  close_dialog_on_error_ = true;
+  EXPECT_TRUE(database_write_responded_);
+  ASSERT_FALSE(test_controller()->app_descriptions().empty());
+  EXPECT_EQ(1u, test_controller()->app_descriptions().size());
+  EXPECT_EQ("display_name_for_instrument",
+            test_controller()->app_descriptions().front().label);
 
-  // EvalJs waits for JavaScript promise to resolve.
+  // As these tests mock out the authenticator, we cannot continue on the
+  // Transaction UX and instead must cancel out. For tests that test the
+  // continue flow, see secure_payment_confirmation_authenticator_browsertest.cc
+  test_controller()->CloseDialog();
   EXPECT_EQ(
       GetWebAuthnErrorMessage(),
-      content::EvalJs(
-          GetActiveWebContents(),
-          base::StringPrintf(
-              "getSecurePaymentConfirmationStatusAfterCanMakePayment()")));
+      content::EvalJs(GetActiveWebContents(), "getOutstandingStatusPromise()"));
+  ExpectEvent2Histogram({Event2::kInitiated, Event2::kShown,
+                         Event2::kUserAborted, Event2::kHadInitialFormOfPayment,
+                         Event2::kRequestMethodSecurePaymentConfirmation});
 }
 
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, WrongCredentialRpId) {
+// Tests that calling show() on a platform without an authenticator will trigger
+// the No Matching Credentials UX.
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, Show_NoAuthenticator) {
+  test_controller()->SetHasAuthenticator(false);
+  NavigateTo("a.com", "/secure_payment_confirmation.html");
+
+  close_dialog_on_error_ = true;
+  EXPECT_EQ(GetWebAuthnErrorMessage(),
+            content::EvalJs(GetActiveWebContents(),
+                            "getSecurePaymentConfirmationStatus()"));
+
+  // TODO(crbug.com/1385128): Record No Matching Credential UX in JourneyLogger.
+  ExpectEvent2Histogram({Event2::kInitiated, Event2::kUserAborted,
+                         Event2::kRequestMethodSecurePaymentConfirmation});
+}
+
+// Tests that calling show() with no matching credentials will trigger the No
+// Matching Credentials UX.
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
+                       Show_NoMatchingCredential) {
+  test_controller()->SetHasAuthenticator(true);
+  NavigateTo("a.com", "/secure_payment_confirmation.html");
+
+  close_dialog_on_error_ = true;
+  EXPECT_EQ(GetWebAuthnErrorMessage(),
+            content::EvalJs(GetActiveWebContents(),
+                            "getSecurePaymentConfirmationStatus()"));
+
+  // TODO(crbug.com/1385128): Record No Matching Credential UX in JourneyLogger.
+  ExpectEvent2Histogram({Event2::kInitiated, Event2::kUserAborted,
+                         Event2::kRequestMethodSecurePaymentConfirmation});
+}
+
+// Tests that a credential with the correct credential ID but wrong RP ID will
+// not match.
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
+                       Show_WrongCredentialRpId) {
   test_controller()->SetHasAuthenticator(true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
@@ -145,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, WrongCredentialRpId) {
 
   // getSecurePaymentConfirmationStatus creates a SPC credential with RP ID
   // a.com, which doesn't match the stored credential's relying-party.example,
-  // so an error dialog will be displayed.
+  // so the No Matching Credentials dialog will be displayed.
   ResetEventWaiterForSingleEvent(TestEvent::kErrorDisplayed);
   ExecuteScriptAsync(GetActiveWebContents(),
                      "getSecurePaymentConfirmationStatus()");
@@ -153,31 +195,12 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, WrongCredentialRpId) {
   WaitForObservedEvent();
   EXPECT_TRUE(database_write_responded_);
   EXPECT_TRUE(test_controller()->app_descriptions().empty());
-}
 
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, PaymentSheetShowsApp) {
-  test_controller()->SetHasAuthenticator(true);
-  NavigateTo("a.com", "/secure_payment_confirmation.html");
-  std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
-  std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
-  webdata_services::WebDataServiceWrapperFactory::
-      GetPaymentManifestWebDataServiceForBrowserContext(
-          GetActiveWebContents()->GetBrowserContext(),
-          ServiceAccessType::EXPLICIT_ACCESS)
-          ->AddSecurePaymentConfirmationCredential(
-              std::make_unique<SecurePaymentConfirmationCredential>(
-                  std::move(credential_id), "a.com", std::move(user_id)),
-              /*consumer=*/this);
-  ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
-  ExecuteScriptAsync(GetActiveWebContents(),
-                     "getSecurePaymentConfirmationStatus()");
+  test_controller()->CloseDialog();
 
-  WaitForObservedEvent();
-  EXPECT_TRUE(database_write_responded_);
-  ASSERT_FALSE(test_controller()->app_descriptions().empty());
-  EXPECT_EQ(1u, test_controller()->app_descriptions().size());
-  EXPECT_EQ("display_name_for_instrument",
-            test_controller()->app_descriptions().front().label);
+  // TODO(crbug.com/1385128): Record No Matching Credential UX in JourneyLogger.
+  ExpectEvent2Histogram({Event2::kInitiated, Event2::kUserAborted,
+                         Event2::kRequestMethodSecurePaymentConfirmation});
 }
 
 // Tests that a failed icon download immediately rejects the show() promise,
@@ -225,6 +248,11 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, IconDownloadFailure) {
                           "getSecurePaymentConfirmationStatus($1, "
                           "window.location.origin + '/non-existant-icon.png')",
                           invalidCred)));
+
+  // Both scenarios should log the same histogram.
+  ExpectEvent2Histogram({Event2::kInitiated, Event2::kCouldNotShow,
+                         Event2::kRequestMethodSecurePaymentConfirmation},
+                        /*count=*/2);
 }
 
 class SecurePaymentConfirmationDisableDebugTest
