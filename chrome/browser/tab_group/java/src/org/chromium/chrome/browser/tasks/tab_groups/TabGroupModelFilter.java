@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -615,12 +616,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         return Collections.unmodifiableList(tabs);
     }
 
-    @Override
-    protected void addTab(Tab tab) {
-        if (tab.isIncognito() != isIncognito()) {
-            throw new IllegalStateException("Attempting to open tab in the wrong model");
-        }
-
+    private int getParentId(Tab tab) {
         if (isTabModelRestored() && !mIsResetting
                 && (mGroupAutoCreation
                         || (tab.getLaunchType() == TabLaunchType.FROM_TAB_GROUP_UI
@@ -632,8 +628,21 @@ public class TabGroupModelFilter extends TabModelFilter {
             Tab parentTab = TabModelUtils.getTabById(
                     getTabModel(), CriticalPersistedTabData.from(tab).getParentId());
             if (parentTab != null) {
-                setRootId(tab, getRootId(parentTab));
+                return getRootId(parentTab);
             }
+        }
+        return Tab.INVALID_TAB_ID;
+    }
+
+    @Override
+    protected void addTab(Tab tab) {
+        if (tab.isIncognito() != isIncognito()) {
+            throw new IllegalStateException("Attempting to open tab in the wrong model");
+        }
+
+        int parentId = getParentId(tab);
+        if (parentId != Tab.INVALID_TAB_ID) {
+            setRootId(tab, parentId);
         }
 
         int groupId = getRootId(tab);
@@ -801,6 +810,114 @@ public class TabGroupModelFilter extends TabModelFilter {
     @Override
     protected boolean shouldNotifyObserversOnSetIndex() {
         return mAbsentSelectedTab == null;
+    }
+
+    @Override
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public void markTabStateInitialized() {
+        super.markTabStateInitialized();
+        boolean correctOrder = isOrderValid();
+        RecordHistogram.recordBooleanHistogram("Tabs.Tasks.OrderValidOnStartup", correctOrder);
+    }
+
+    /**
+     * Checks whether the order of the tabs in the {@link TabModel} respects the invariant of
+     * {@link TabGroupModelFilter} that tabs within a group must be contiguous.
+     *
+     * Valid order:
+     * Tab 1, Group A
+     * Tab 2, Group A
+     * Tab 3, Group B
+     *
+     * Invalid order:
+     * Tab 1, Group A
+     * Tab 2, Group B
+     * Tab 3, Group A
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public boolean isOrderValid() {
+        HashSet<Integer> processedRootIds = new HashSet<>();
+        int lastRootId = Tab.INVALID_TAB_ID;
+        // Iterate over tab model and check that all tabs with the same rootId are next to one
+        // another. If at any time a rootId is repeated without the prior tab having the same rootId
+        // then the invariant is violated.
+        for (int i = 0; i < getTabModel().getCount(); i++) {
+            int rootId = getRootId(getTabModel().getTabAt(i));
+            if (rootId == lastRootId) continue;
+
+            if (processedRootIds.contains(rootId)) return false;
+
+            processedRootIds.add(lastRootId);
+            lastRootId = rootId;
+        }
+        return true;
+    }
+
+    @Override
+    public int getValidPosition(Tab tab, int proposedPosition) {
+        final int parentId = getParentId(tab);
+        final int rootId = parentId == Tab.INVALID_TAB_ID ? getRootId(tab) : parentId;
+        int newPosition = proposedPosition;
+        // If the tab is not in the model and won't be part of a group ensure it is positioned
+        // outside any other groups.
+        if (rootId == Tab.INVALID_TAB_ID || !mGroupIdToGroupMap.containsKey(rootId)) {
+            newPosition = getValidPositionOfUngroupedTab(proposedPosition);
+        } else {
+            // The tab is or will be part of a group. Ensure it will be positioned with other
+            // members of its group.
+            TabGroup group = mGroupIdToGroupMap.get(rootId);
+            newPosition = getValidPositionOfGroupedTab(group, proposedPosition);
+        }
+        RecordHistogram.recordBooleanHistogram(
+                "Tabs.Tasks.TabAddedWithValidProposedPosition", newPosition == proposedPosition);
+        return newPosition;
+    }
+
+    /**
+     * Gets a valid position of a tab that will be part of a group. If proposedPosition is within
+     * the range of the group's location it is used. Otherwise the tab is placed at the end of the
+     * group.
+     * @param group The group the tab belongs with.
+     * @param proposedPosition The requested position of the tab.
+     */
+    private int getValidPositionOfGroupedTab(TabGroup group, int proposedPosition) {
+        List<Integer> ids = new ArrayList<>();
+        ids.addAll(group.getTabIdList());
+        assert ids.size() >= 1;
+
+        int firstGroupIndex = TabModelUtils.getTabIndexById(getTabModel(), ids.get(0));
+        int defaultDestinationIndex = firstGroupIndex + ids.size();
+        if (proposedPosition < firstGroupIndex) {
+            return firstGroupIndex;
+        }
+        if (proposedPosition < defaultDestinationIndex) {
+            return proposedPosition;
+        }
+        return defaultDestinationIndex;
+    }
+
+    /**
+     * Gets a valid position of a tab that is not part of a group. If proposedPosition is not inside
+     * any existing group it is used. Otherwise the tab is placed after the group it would have been
+     * placed inside of.
+     * @param proposedPosition The requested position of the tab.
+     */
+    private int getValidPositionOfUngroupedTab(int proposedPosition) {
+        final int tabCount = getTabModel().getCount();
+        if (proposedPosition <= 0 || proposedPosition >= tabCount) {
+            // Downstream should clamp this value appropriately. Adding at the ends will never be a
+            // problem.
+            return proposedPosition;
+        }
+
+        int moveToIndex = proposedPosition;
+        // Find a spot where the tabs on either side of the new tab are not part of the same group.
+        while (moveToIndex != tabCount
+                && getRootId(getTabModel().getTabAt(moveToIndex - 1))
+                        == getRootId(getTabModel().getTabAt(moveToIndex))) {
+            moveToIndex++;
+        }
+        return moveToIndex;
     }
 
     @Override

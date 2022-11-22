@@ -68,6 +68,11 @@ public class TabModelImplUnitTest {
     @Mock
     private TabModelSelector mTabModelSelector;
 
+    @Mock
+    private TabModelFilterProvider mTabModelFilterProvider;
+    @Mock
+    private TabModelFilter mTabModelFilter;
+
     private int mNextTabId;
 
     @Before
@@ -81,6 +86,12 @@ public class TabModelImplUnitTest {
         when(mTabModelJniBridge.init(any(), any(), anyInt())).thenReturn(FAKE_NATIVE_ADDRESS);
 
         when(mTabModelDelegate.isReparentingInProgress()).thenReturn(false);
+
+        when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
+        when(mTabModelFilterProvider.getTabModelFilter(false)).thenReturn(mTabModelFilter);
+        when(mTabModelFilterProvider.getTabModelFilter(true)).thenReturn(mTabModelFilter);
+        when(mTabModelFilter.getValidPosition(any(), anyInt()))
+                .thenAnswer(i -> i.getArguments()[1]);
 
         mNextTabId = 0;
     }

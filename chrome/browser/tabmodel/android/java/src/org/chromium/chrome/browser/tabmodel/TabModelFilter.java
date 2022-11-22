@@ -153,6 +153,15 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
     }
 
     /**
+     * Returns a valid position to add or move a tab to this model in the context of any related
+     * tabs.
+     * @param tab The tab to be added/moved.
+     * @param proposedPosition The current or proposed position of the tab in the model.
+     * @return a valid position close to proposedPosition that respects related tab ordering rules.
+     */
+    public abstract int getValidPosition(Tab tab, int proposedPosition);
+
+    /**
      * Concrete class requires to define what's the behavior when {@link TabModel} added a
      * {@link Tab}.
      * @param tab {@link Tab} had added to {@link TabModel}.

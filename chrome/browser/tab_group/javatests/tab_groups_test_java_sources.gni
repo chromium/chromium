@@ -1,0 +1,5 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+tab_groups_test_java_sources = [ "//chrome/browser/tab_group/javatests/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupsTest.java" ]
