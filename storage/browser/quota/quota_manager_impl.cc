@@ -2610,8 +2610,10 @@ void QuotaManagerImpl::ContinueIncognitoGetStorageCapacity(
     const QuotaSettings& settings) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  int64_t temporary_usage =
-      GetUsageTracker(StorageType::kTemporary)->GetCachedUsage();
+  auto* temporary_usage_tracker = GetUsageTracker(StorageType::kTemporary);
+  int64_t temporary_usage = temporary_usage_tracker == nullptr
+                                ? 0
+                                : temporary_usage_tracker->GetCachedUsage();
   DCHECK_GE(temporary_usage, -1);
 
   int64_t available_space =
