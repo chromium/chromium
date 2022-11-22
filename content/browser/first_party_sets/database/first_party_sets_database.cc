@@ -176,6 +176,7 @@ bool FirstPartySetsDatabase::SetPublicSets(
     const net::GlobalFirstPartySets& sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(db_status_, InitStatus::kSuccess);
+  DCHECK(db_->HasActiveTransactions());
   DCHECK(sets.public_sets_version().IsValid());
 
   const std::string& version = sets.public_sets_version().GetString();
@@ -293,6 +294,7 @@ bool FirstPartySetsDatabase::InsertPolicyConfigurations(
     const net::FirstPartySetsContextConfig& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(db_status_, InitStatus::kSuccess);
+  DCHECK(db_->HasActiveTransactions());
 
   static constexpr char kDeleteSql[] =
       "DELETE FROM policy_configurations WHERE browser_context_id=?";
@@ -330,6 +332,7 @@ bool FirstPartySetsDatabase::InsertManualSets(
         manual_sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(db_status_, InitStatus::kSuccess);
+  DCHECK(db_->HasActiveTransactions());
 
   static constexpr char kDeleteSql[] =
       "DELETE FROM manual_sets WHERE browser_context_id=?";
@@ -459,6 +462,7 @@ std::vector<net::SchemefulSite> FirstPartySetsDatabase::FetchSitesToClear(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!browser_context_id.empty());
   DCHECK_EQ(db_status_, InitStatus::kSuccess);
+  DCHECK(db_->HasActiveTransactions());
 
   // Gets the sites that were marked to clear but haven't been cleared yet for
   // the given `browser_context_id`. Use 0 as the default
@@ -498,6 +502,7 @@ FirstPartySetsDatabase::FetchAllSitesToClearFilter(
     const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(db_status_, InitStatus::kSuccess);
+  DCHECK(db_->HasActiveTransactions());
 
   std::vector<std::pair<net::SchemefulSite, int64_t>> results;
   static constexpr char kSelectSql[] =
