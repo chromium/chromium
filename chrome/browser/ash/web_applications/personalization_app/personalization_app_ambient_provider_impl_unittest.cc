@@ -6,14 +6,12 @@
 
 #include <memory>
 #include <vector>
-#include "ash/ambient/ambient_controller.h"
+
 #include "ash/ambient/test/ambient_ash_test_helper.h"
 #include "ash/constants/ambient_animation_theme.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
-#include "ash/shell.h"
-#include "ash/test/ash_test_base.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/callback_helpers.h"
 #include "base/ranges/algorithm.h"
@@ -70,8 +68,6 @@ class TestAmbientObserver
     previews_ = std::move(previews);
   }
 
-  void OnScreenSaverClosed() override { screen_saver_closed_ = true; }
-
   mojo::PendingRemote<ash::personalization_app::mojom::AmbientObserver>
   pending_remote() {
     if (ambient_observer_receiver_.is_bound()) {
@@ -116,8 +112,6 @@ class TestAmbientObserver
       ambient_observer_receiver_{this};
 
   bool ambient_mode_enabled_ = false;
-  bool screen_saver_closed_ = false;
-
   ash::AmbientAnimationTheme animation_theme_ =
       ash::AmbientAnimationTheme::kSlideshow;
   ash::AmbientModeTopicSource topic_source_ =
@@ -130,13 +124,10 @@ class TestAmbientObserver
 
 }  // namespace
 
-class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
+class PersonalizationAppAmbientProviderImplTest : public testing::Test {
  public:
   PersonalizationAppAmbientProviderImplTest()
-      : ash::AshTestBase(std::unique_ptr<base::test::TaskEnvironment>(
-            std::make_unique<content::BrowserTaskEnvironment>(
-                base::test::TaskEnvironment::TimeSource::MOCK_TIME))),
-        profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
   PersonalizationAppAmbientProviderImplTest(
       const PersonalizationAppAmbientProviderImplTest&) = delete;
   PersonalizationAppAmbientProviderImplTest& operator=(
@@ -146,8 +137,6 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
  protected:
   // testing::Test:
   void SetUp() override {
-    ash::AshTestBase::SetUp();
-
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile(kFakeTestEmail);
 
@@ -162,16 +151,11 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
         ambient_provider_remote_.BindNewPipeAndPassReceiver());
 
     SetEnabledPref(true);
-    GetAmbientAshTestHelper()->ambient_client().SetAutomaticalyIssueToken(true);
-
-    Shell::Get()->ambient_controller()->set_backend_controller_for_testing(
-        nullptr);
-
     fake_backend_controller_ =
         std::make_unique<ash::FakeAmbientBackendControllerImpl>();
+    ambient_ash_test_helper_ = std::make_unique<ash::AmbientAshTestHelper>();
+    ambient_ash_test_helper_->ambient_client().SetAutomaticalyIssueToken(true);
   }
-
-  void TearDown() override { ash::AshTestBase::TearDown(); }
 
   TestingProfile* profile() { return profile_; }
 
@@ -304,7 +288,7 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
   }
 
   void FastForwardBy(base::TimeDelta time) {
-    task_environment()->FastForwardBy(time);
+    task_environment_.FastForwardBy(time);
   }
 
   bool IsFetchSettingsPendingAtBackend() const {
@@ -327,6 +311,8 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
   }
 
  private:
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfileManager profile_manager_;
   content::TestWebUI web_ui_;
   std::unique_ptr<content::WebContents> web_contents_;
