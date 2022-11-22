@@ -413,14 +413,15 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
               ? Mode::kSupportsTabTarget
               : handler->session_mode_;
 
-      DevToolsSession* devtools_session =
-          handler->root_session_->AttachChildSession(id, agent_host_impl,
-                                                     session, mode);
-      if (waiting_for_debugger && devtools_session) {
-        devtools_session->SetRuntimeResumeCallback(base::BindOnce(
-            &Session::ResumeIfThrottled, base::Unretained(session)));
-        session->devtools_session_ = devtools_session;
+      base::OnceClosure resume_callback;
+      if (waiting_for_debugger) {
+        resume_callback = base::BindOnce(&Session::ResumeIfThrottled,
+                                         base::Unretained(session));
       }
+      DevToolsSession* devtools_session =
+          handler->root_session_->AttachChildSession(
+              id, agent_host_impl, session, mode, std::move(resume_callback));
+      session->devtools_session_ = devtools_session;
     } else {
       agent_host_impl->AttachClient(session);
     }

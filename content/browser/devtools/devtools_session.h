@@ -111,7 +111,8 @@ class DevToolsSession : public protocol::FrontendChannel,
   DevToolsSession* AttachChildSession(const std::string& session_id,
                                       DevToolsAgentHostImpl* agent_host,
                                       DevToolsAgentHostClient* client,
-                                      Mode mode);
+                                      Mode mode,
+                                      base::OnceClosure resume_callback);
   void DetachChildSession(const std::string& session_id);
   bool HasChildSession(const std::string& session_id);
   Mode session_mode() const { return mode_; }

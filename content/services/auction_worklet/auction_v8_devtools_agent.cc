@@ -68,7 +68,8 @@ void AuctionV8DevToolsAgent::AttachDevToolsSession(
     blink::mojom::DevToolsSessionStatePtr reattach_session_state,
     bool client_expects_binary_responses,
     bool client_is_trusted,
-    const std::string& session_id) {
+    const std::string& session_id,
+    bool session_waits_for_debugger) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   int context_group_id = receivers_.current_context();
   ContextGroupInfo& context_group_info = context_groups_[context_group_id];
@@ -81,9 +82,9 @@ void AuctionV8DevToolsAgent::AttachDevToolsSession(
           base::Unretained(this));
   auto session_impl = std::make_unique<AuctionV8DevToolsSession>(
       v8_helper_, debug_command_queue_, context_group_id, session_id,
-      client_expects_binary_responses, std::move(host),
-      io_session_receiver_sequence_, std::move(io_session_receiver),
-      std::move(session_destroyed));
+      client_expects_binary_responses, session_waits_for_debugger,
+      std::move(host), io_session_receiver_sequence_,
+      std::move(io_session_receiver), std::move(session_destroyed));
   context_group_info.sessions.insert(session_impl.get());
   sessions_.Add(std::move(session_impl), std::move(session_receiver));
 }

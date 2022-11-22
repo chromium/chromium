@@ -64,6 +64,7 @@ class CORE_EXPORT DevToolsSession : public GarbageCollected<DevToolsSession>,
       bool client_expects_binary_responses,
       bool client_is_trusted,
       const String& session_id,
+      bool session_waits_for_debugger,
       scoped_refptr<base::SequencedTaskRunner> mojo_task_runner);
   DevToolsSession(const DevToolsSession&) = delete;
   DevToolsSession& operator=(const DevToolsSession&) = delete;
@@ -171,6 +172,9 @@ class CORE_EXPORT DevToolsSession : public GarbageCollected<DevToolsSession>,
   InspectorAgentState v8_session_state_;
   InspectorAgentState::Bytes v8_session_state_cbor_;
   const String session_id_;
+  // This is only relevant until the initial attach to v8 and is never reset
+  // once the session stops waiting.
+  const bool session_waits_for_debugger_;
 };
 
 }  // namespace blink

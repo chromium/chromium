@@ -122,6 +122,7 @@ DevToolsSession::DevToolsSession(
     bool client_expects_binary_responses,
     bool client_is_trusted,
     const String& session_id,
+    bool session_waits_for_debugger,
     scoped_refptr<base::SequencedTaskRunner> mojo_task_runner)
     : agent_(agent),
       inspector_backend_dispatcher_(new protocol::UberDispatcher(this)),
@@ -130,7 +131,8 @@ DevToolsSession::DevToolsSession(
       client_is_trusted_(client_is_trusted),
       v8_session_state_(kV8StateKey),
       v8_session_state_cbor_(&v8_session_state_, /*default_value=*/{}),
-      session_id_(session_id) {
+      session_id_(session_id),
+      session_waits_for_debugger_(session_waits_for_debugger) {
   receiver_.Bind(std::move(main_receiver), mojo_task_runner);
 
   io_session_ = new IOSession(
@@ -162,7 +164,10 @@ void DevToolsSession::ConnectToV8(v8_inspector::V8Inspector* inspector,
       context_group_id, this,
       v8_inspector::StringView(cbor.data(), cbor.size()),
       client_is_trusted_ ? v8_inspector::V8Inspector::kFullyTrusted
-                         : v8_inspector::V8Inspector::kUntrusted);
+                         : v8_inspector::V8Inspector::kUntrusted,
+      session_waits_for_debugger_
+          ? v8_inspector::V8Inspector::kWaitingForDebugger
+          : v8_inspector::V8Inspector::kNotWaitingForDebugger);
 }
 
 bool DevToolsSession::IsDetached() {

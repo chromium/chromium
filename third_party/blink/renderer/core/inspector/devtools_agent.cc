@@ -109,14 +109,15 @@ class DevToolsAgent::IOAgent : public mojom::blink::DevToolsAgent {
       mojom::blink::DevToolsSessionStatePtr reattach_session_state,
       bool client_expects_binary_responses,
       bool client_is_trusted,
-      const WTF::String& session_id) override {
+      const WTF::String& session_id,
+      bool session_waits_for_debugger) override {
     DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
     DCHECK(receiver_.is_bound());
     inspector_task_runner_->AppendTask(CrossThreadBindOnce(
         &::blink::DevToolsAgent::AttachDevToolsSessionImpl, agent_,
         std::move(host), std::move(main_session), std::move(io_session),
         std::move(reattach_session_state), client_expects_binary_responses,
-        client_is_trusted, session_id));
+        client_is_trusted, session_id, session_waits_for_debugger));
   }
 
   void InspectElement(const gfx::Point& point) override {
@@ -224,13 +225,15 @@ void DevToolsAgent::AttachDevToolsSessionImpl(
     mojom::blink::DevToolsSessionStatePtr reattach_session_state,
     bool client_expects_binary_responses,
     bool client_is_trusted,
-    const WTF::String& session_id) {
+    const WTF::String& session_id,
+    bool session_waits_for_debugger) {
   TRACE_EVENT0("devtools", "Agent::AttachDevToolsSessionImpl");
   client_->DebuggerTaskStarted();
   DevToolsSession* session = MakeGarbageCollected<DevToolsSession>(
       this, std::move(host), std::move(session_receiver),
       std::move(io_session_receiver), std::move(reattach_session_state),
       client_expects_binary_responses, client_is_trusted, session_id,
+      session_waits_for_debugger,
       inspector_task_runner_->isolate_task_runner());
   sessions_.insert(session);
   client_->DebuggerTaskFinished();
@@ -244,18 +247,23 @@ void DevToolsAgent::AttachDevToolsSession(
     mojom::blink::DevToolsSessionStatePtr reattach_session_state,
     bool client_expects_binary_responses,
     bool client_is_trusted,
-    const WTF::String& session_id) {
+    const WTF::String& session_id,
+    bool session_waits_for_debugger) {
   TRACE_EVENT0("devtools", "Agent::AttachDevToolsSession");
   if (associated_receiver_.is_bound()) {
+    // Discard `session_waits_for_debugger` for regular pages, this is rather
+    // handled by the navigation throttles machinery on the browser side.
     AttachDevToolsSessionImpl(
         std::move(host), std::move(session_receiver),
         std::move(io_session_receiver), std::move(reattach_session_state),
-        client_expects_binary_responses, client_is_trusted, session_id);
+        client_expects_binary_responses, client_is_trusted, session_id,
+        /* session_waits_for_debugger */ false);
   } else {
     io_agent_->AttachDevToolsSession(
         std::move(host), std::move(session_receiver),
         std::move(io_session_receiver), std::move(reattach_session_state),
-        client_expects_binary_responses, client_is_trusted, session_id);
+        client_expects_binary_responses, client_is_trusted, session_id,
+        session_waits_for_debugger);
   }
 }
 
