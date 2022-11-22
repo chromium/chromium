@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/first_party_sets_mojom_traits.h"
 
 #include "base/containers/flat_map.h"
+#include "base/ranges/algorithm.h"
 #include "base/types/optional_util.h"
 #include "base/version.h"
 #include "mojo/public/cpp/base/version_mojom_traits.h"
@@ -155,12 +156,18 @@ bool StructTraits<network::mojom::GlobalFirstPartySetsDataView,
     return false;
 
   base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> entries;
-  if (!sets.ReadSets(&entries))
+  if (public_sets_version.IsValid() && !sets.ReadSets(&entries))
     return false;
 
   base::flat_map<net::SchemefulSite, net::SchemefulSite> aliases;
-  if (!sets.ReadAliases(&aliases))
+  if (public_sets_version.IsValid() && !sets.ReadAliases(&aliases))
     return false;
+
+  if (!base::ranges::all_of(aliases, [&](const auto& pair) {
+        return entries.contains(pair.second);
+      })) {
+    return false;
+  }
 
   net::FirstPartySetsContextConfig manual_config;
   if (!sets.ReadManualConfig(&manual_config))

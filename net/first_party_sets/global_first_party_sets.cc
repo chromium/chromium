@@ -99,9 +99,14 @@ GlobalFirstPartySets::GlobalFirstPartySets(
       entries_(std::move(entries)),
       aliases_(std::move(aliases)),
       manual_config_(std::move(manual_config)) {
-  // `aliases_` can only be nonempty if `entries_` is also nonempty.
-  if (!aliases_.empty())
-    DCHECK(!entries_.empty());
+  if (public_sets_version_.IsValid()) {
+    DCHECK(base::ranges::all_of(aliases_, [&](const auto& pair) {
+      return entries_.contains(pair.second);
+    }));
+  } else {
+    DCHECK(entries_.empty());
+    DCHECK(aliases_.empty());
+  }
 }
 
 GlobalFirstPartySets::GlobalFirstPartySets(GlobalFirstPartySets&&) = default;

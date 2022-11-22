@@ -199,6 +199,9 @@ class NET_EXPORT GlobalFirstPartySets {
   }
 
   // The version associated with the component_updater-provided public sets.
+  // This may be invalid if the "First-Party Sets" component has not been
+  // installed yet, or has been corrupted. Entries and aliases from invalid
+  // components are ignored.
   base::Version public_sets_version_;
 
   // Represents the mapping of site -> entry, where keys are sites within sets,

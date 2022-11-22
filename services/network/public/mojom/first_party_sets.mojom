@@ -82,7 +82,9 @@ struct FirstPartySetsCacheFilter {
 // This struct must match the class fields defined in
 // //net/first_party_sets/global_first_party_sets.h.
 struct GlobalFirstPartySets {
-  // The version of the public sets component.
+  // The version of the public sets component. This may be invalid if the
+  // "First-Party Sets" component has not been installed yet, or has been
+  // corrupted. Entries and aliases from invalid components are ignored.
   mojo_base.mojom.Version public_sets_version;
 
   // The mapping from site to FPS entry from public sets.
