@@ -167,6 +167,10 @@ class CORE_EXPORT SVGSMILElement : public SVGElement, public SVGTests {
 
  private:
   bool IsPresentationAttribute(const QualifiedName&) const override;
+  void CollectStyleForPresentationAttribute(
+      const QualifiedName&,
+      const AtomicString&,
+      MutableCSSPropertyValueSet*) override;
 
   void AddedEventListener(const AtomicString& event_type,
                           RegisteredEventListener&) final;
