@@ -5,8 +5,13 @@
 #ifndef ASH_SYSTEM_PHONEHUB_APP_STREAM_LAUNCHER_VIEW_H_
 #define ASH_SYSTEM_PHONEHUB_APP_STREAM_LAUNCHER_VIEW_H_
 
+#include <cstdint>
 #include <memory>
 #include "ash/ash_export.h"
+#include "ash/components/phonehub/app_stream_launcher_data_model.h"
+#include "ash/components/phonehub/notification.h"
+#include "ash/components/phonehub/recent_app_click_observer.h"
+#include "ash/components/phonehub/recent_apps_interaction_handler.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/button/button.h"
@@ -23,7 +28,9 @@ class PhoneHubManager;
 
 // A view of the Phone Hub panel, displaying the apps that user can launch for
 // app streaming.
-class ASH_EXPORT AppStreamLauncherView : public PhoneHubContentView {
+class ASH_EXPORT AppStreamLauncherView
+    : public PhoneHubContentView,
+      public phonehub::AppStreamLauncherDataModel::Observer {
  public:
   explicit AppStreamLauncherView(phonehub::PhoneHubManager* phone_hub_manager);
   ~AppStreamLauncherView() override;
@@ -36,18 +43,26 @@ class ASH_EXPORT AppStreamLauncherView : public PhoneHubContentView {
   // PhoneHubContentView:
   phone_hub_metrics::Screen GetScreenForMetrics() const override;
 
+  // phonehub::AppStreamLauncherDataModel::Observer:
+  void OnAppListChanged() override;
+
  private:
   friend class AppStreamLauncherViewTest;
   FRIEND_TEST_ALL_PREFIXES(AppStreamLauncherViewTest, OpenView);
 
   std::unique_ptr<views::View> CreateAppListView();
+  std::unique_ptr<views::View> CreateItemView(
+      const phonehub::Notification::AppMetadata& app);
   std::unique_ptr<views::View> CreateHeaderView();
   std::unique_ptr<views::Button> CreateButton(
       views::Button::PressedCallback callback,
       const gfx::VectorIcon& icon,
       int message_id);
-  std::unique_ptr<views::View> CreateViewForItemAtIndex(size_t index);
-  void AppIconActivated();
+  void AppIconActivated(phonehub::Notification::AppMetadata app,
+                        const ui::Event& event);
+
+  // Update the UI based on the information in the data model.
+  void UpdateFromDataModel();
 
   // Handles the click on the "back" arrow in the header.
   void OnArrowBackActivated();

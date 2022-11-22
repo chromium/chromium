@@ -19,7 +19,8 @@ class AppStreamLauncherDataModel {
    public:
     ~Observer() override = default;
 
-    virtual void OnShouldShowMiniLauncherChanged() = 0;
+    virtual void OnShouldShowMiniLauncherChanged();
+    virtual void OnAppListChanged();
   };
 
   AppStreamLauncherDataModel();

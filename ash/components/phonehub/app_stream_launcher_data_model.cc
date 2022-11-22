@@ -4,12 +4,16 @@
 
 #include "ash/components/phonehub/app_stream_launcher_data_model.h"
 
-namespace ash {
-namespace phonehub {
+#include "ash/components/phonehub/notification.h"
+
+namespace ash::phonehub {
 
 AppStreamLauncherDataModel::AppStreamLauncherDataModel() = default;
 
 AppStreamLauncherDataModel::~AppStreamLauncherDataModel() = default;
+
+void AppStreamLauncherDataModel::Observer::OnShouldShowMiniLauncherChanged() {}
+void AppStreamLauncherDataModel::Observer::OnAppListChanged() {}
 
 void AppStreamLauncherDataModel::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
@@ -46,6 +50,8 @@ void AppStreamLauncherDataModel::SetAppList(
                const Notification::AppMetadata& b) {
               return a.visible_app_name < b.visible_app_name;
             });
+  for (auto& observer : observer_list_)
+    observer.OnAppListChanged();
 }
 
 const std::vector<Notification::AppMetadata>*
@@ -58,5 +64,4 @@ AppStreamLauncherDataModel::GetAppsListSortedByName() {
   return &apps_list_sorted_by_name_;
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

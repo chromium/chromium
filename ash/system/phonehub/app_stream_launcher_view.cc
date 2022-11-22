@@ -3,24 +3,21 @@
 // found in the LICENSE file.
 
 #include "ash/system/phonehub/app_stream_launcher_view.h"
-#include "ash/controls/rounded_scroll_bar.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 
 #include <cmath>
 #include <memory>
+#include <string>
 
-#include "ash/components/phonehub/multidevice_feature_access_manager.h"
+#include "ash/components/phonehub/notification.h"
 #include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/components/phonehub/user_action_recorder.h"
 #include "ash/constants/ash_features.h"
+#include "ash/controls/rounded_scroll_bar.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/system/phonehub/camera_roll_view.h"
-#include "ash/system/phonehub/multidevice_feature_opt_in_view.h"
-#include "ash/system/phonehub/phone_hub_recent_apps_view.h"
+#include "ash/system/phonehub/app_stream_launcher_item.h"
+#include "ash/system/phonehub/app_stream_launcher_view.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
-#include "ash/system/phonehub/phone_status_view.h"
-#include "ash/system/phonehub/quick_actions_view.h"
-#include "ash/system/phonehub/task_continuation_view.h"
 #include "ash/system/phonehub/ui_constants.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -63,9 +60,9 @@ constexpr auto kHeaderDefaultSpacing = gfx::Insets::VH(0, 6);
 constexpr int kHorizontalInteriorMargin = 16;
 
 // Number of columns of apps in the grid
-constexpr int kColumns = 5;
+constexpr int kColumns = 4;
 
-constexpr int kRowHeight = 60;
+constexpr int kRowHeight = 80;
 
 // The padding between different sections within the apps page. Also used for
 // interior apps page container margin.
@@ -99,9 +96,16 @@ AppStreamLauncherView::AppStreamLauncherView(
           .WithWeight(1));
 
   phone_hub_manager->GetUserActionRecorder()->RecordUiOpened();
+
+  UpdateFromDataModel();
+  if (phone_hub_manager->GetAppStreamLauncherDataModel())
+    phone_hub_manager->GetAppStreamLauncherDataModel()->AddObserver(this);
 }
 
-AppStreamLauncherView::~AppStreamLauncherView() = default;
+AppStreamLauncherView::~AppStreamLauncherView() {
+  if (phone_hub_manager_->GetAppStreamLauncherDataModel())
+    phone_hub_manager_->GetAppStreamLauncherDataModel()->RemoveObserver(this);
+}
 
 // The behavior is inspired from ash/app_list/views/app_list_bubble_apps_page.cc
 std::unique_ptr<views::View> AppStreamLauncherView::CreateAppListView() {
@@ -159,29 +163,42 @@ std::unique_ptr<views::View> AppStreamLauncherView::CreateAppListView() {
   table_layout->AddRows(ceil((double)n_apps / kColumns),
                         views::TableLayout::kFixedSize, kRowHeight);
 
-  for (int i = 0; i < n_apps; i++) {
-    std::unique_ptr<View> view = CreateViewForItemAtIndex(i);
-    view->SetPreferredSize(gfx::Size(50, 50));
-    items_container_->AddChildView(std::move(view));
-  }
   scroll_view->SetContents(std::move(scroll_contents));
 
   return scroll_view;
 }
 
-std::unique_ptr<views::View> AppStreamLauncherView::CreateViewForItemAtIndex(
-    size_t index) {
-  // TODO(nayebi): Replace this plceholder with the real implementation of the
-  //  icon+text.
-  auto view = std::make_unique<views::LabelButton>(
-      base::BindRepeating(&AppStreamLauncherView::AppIconActivated,
-                          base::Unretained(this)),
-      u"ICON");
-  view->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
-  return view;
+void AppStreamLauncherView::AppIconActivated(
+    phonehub::Notification::AppMetadata app,
+    const ui::Event& event) {
+  auto* interaction_handler_ =
+      phone_hub_manager_->GetRecentAppsInteractionHandler();
+  if (!interaction_handler_)
+    return;
+  interaction_handler_->NotifyRecentAppClicked(app);
 }
 
-void AppStreamLauncherView::AppIconActivated() {}
+void AppStreamLauncherView::UpdateFromDataModel() {
+  if (!items_container_)
+    return;
+  items_container_->RemoveAllChildViews();
+  if (!phone_hub_manager_->GetAppStreamLauncherDataModel())
+    return;
+  const std::vector<phonehub::Notification::AppMetadata>* apps_list =
+      phone_hub_manager_->GetAppStreamLauncherDataModel()
+          ->GetAppsListSortedByName();
+  for (auto& app : *apps_list) {
+    items_container_->AddChildView(CreateItemView(app));
+  }
+}
+
+std::unique_ptr<views::View> AppStreamLauncherView::CreateItemView(
+    const phonehub::Notification::AppMetadata& app) {
+  return std::make_unique<AppStreamLauncherItem>(
+      base::BindRepeating(&AppStreamLauncherView::AppIconActivated,
+                          base::Unretained(this), app),
+      app);
+}
 
 std::unique_ptr<views::View> AppStreamLauncherView::CreateHeaderView() {
   auto header = std::make_unique<views::View>();
@@ -258,6 +275,12 @@ const char* AppStreamLauncherView::GetClassName() const {
 
 phone_hub_metrics::Screen AppStreamLauncherView::GetScreenForMetrics() const {
   return phone_hub_metrics::Screen::kMiniLauncher;
+}
+
+void AppStreamLauncherView::OnAppListChanged() {
+  if (!features::IsEcheSWAEnabled() || !features::IsEcheLauncherEnabled())
+    return;
+  UpdateFromDataModel();
 }
 
 }  // namespace ash
