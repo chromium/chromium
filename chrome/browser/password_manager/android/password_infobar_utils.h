@@ -11,9 +11,6 @@ class Profile;
 
 namespace password_manager {
 
-AccountInfo GetAccountInfoForPasswordInfobars(Profile* profile,
-                                              bool is_syncing);
-
 AccountInfo GetAccountInfoForPasswordMessages(Profile* profile);
 
 }  // namespace password_manager

@@ -13,18 +13,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace password_manager {
-AccountInfo GetAccountInfoForPasswordInfobars(Profile* profile,
-                                              bool is_syncing) {
-  DCHECK(profile);
-  if (!is_syncing) {
-    return AccountInfo();
-  }
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  CoreAccountId account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync);
-  return identity_manager->FindExtendedAccountInfoByAccountId(account_id);
-}
 
 AccountInfo GetAccountInfoForPasswordMessages(Profile* profile) {
   DCHECK(profile);

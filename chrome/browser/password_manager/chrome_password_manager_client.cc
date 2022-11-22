@@ -140,16 +140,11 @@
 #include "chrome/browser/password_manager/android/auto_signin_first_run_dialog_android.h"
 #include "chrome/browser/password_manager/android/auto_signin_prompt_controller.h"
 #include "chrome/browser/password_manager/android/credential_leak_controller_android.h"
-#include "chrome/browser/password_manager/android/generated_password_saved_infobar_delegate_android.h"
 #include "chrome/browser/password_manager/android/password_accessory_controller.h"
 #include "chrome/browser/password_manager/android/password_accessory_controller_impl.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
 #include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
-#include "chrome/browser/password_manager/android/save_password_infobar_delegate_android.h"
-#include "chrome/browser/password_manager/android/update_password_infobar_delegate_android.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller.h"
-#include "components/infobars/content/content_infobar_manager.h"
-#include "components/infobars/core/infobar.h"
 #include "components/messages/android/messages_feature.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "ui/base/ui_base_features.h"
@@ -226,21 +221,6 @@ void AddToWidgetInputEventObservers(
   widget_host->RemoveInputEventObserver(observer);
   widget_host->AddInputEventObserver(observer);
 }
-
-#if BUILDFLAG(IS_ANDROID)
-void HideSavePasswordInfobar(content::WebContents* web_contents) {
-  infobars::ContentInfoBarManager* infobar_manager =
-      infobars::ContentInfoBarManager::FromWebContents(web_contents);
-  for (size_t i = 0; i < infobar_manager->infobar_count(); ++i) {
-    infobars::InfoBar* infobar = infobar_manager->infobar_at(i);
-    if (infobar->delegate()->GetIdentifier() ==
-        SavePasswordInfoBarDelegate::SAVE_PASSWORD_INFOBAR_DELEGATE_MOBILE) {
-      infobar_manager->RemoveInfoBar(infobar);
-      break;
-    }
-  }
-}
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
 // Retrieves and formats the saved passwords domains from signon_realms.
@@ -350,23 +330,8 @@ bool ChromePasswordManagerClient::PromptUserToSaveOrUpdatePassword(
   if (form_to_save->IsBlocklisted())
     return false;
 
-  if (update_password) {
-    if (messages::IsUpdatePasswordMessagesUiEnabled()) {
-      save_update_password_message_delegate_.DisplaySaveUpdatePasswordPrompt(
-          web_contents(), std::move(form_to_save), /*update_password=*/true);
-    } else {
-      UpdatePasswordInfoBarDelegate::Create(web_contents(),
-                                            std::move(form_to_save));
-    }
-  } else {
-    if (messages::IsPasswordMessagesUiEnabled()) {
-      save_update_password_message_delegate_.DisplaySaveUpdatePasswordPrompt(
-          web_contents(), std::move(form_to_save), /*update_password=*/false);
-    } else {
-      SavePasswordInfoBarDelegate::Create(web_contents(),
-                                          std::move(form_to_save));
-    }
-  }
+  save_update_password_message_delegate_.DisplaySaveUpdatePasswordPrompt(
+      web_contents(), std::move(form_to_save), update_password);
 #else
   PasswordsClientUIDelegate* manage_passwords_ui_controller =
       PasswordsClientUIDelegateFromWebContents(web_contents());
@@ -664,12 +629,8 @@ void ChromePasswordManagerClient::UpdateCredentialCache(
 void ChromePasswordManagerClient::AutomaticPasswordSave(
     std::unique_ptr<password_manager::PasswordFormManagerForUI> saved_form) {
 #if BUILDFLAG(IS_ANDROID)
-  if (messages::IsPasswordMessagesUiEnabled()) {
-    generated_password_saved_message_delegate_.ShowPrompt(
-        web_contents(), std::move(saved_form));
-  } else {
-    GeneratedPasswordSavedInfoBarDelegateAndroid::Create(web_contents());
-  }
+  generated_password_saved_message_delegate_.ShowPrompt(web_contents(),
+                                                        std::move(saved_form));
 #else
   PasswordsClientUIDelegate* manage_passwords_ui_controller =
       PasswordsClientUIDelegateFromWebContents(web_contents());
@@ -722,10 +683,6 @@ void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  if (!messages::IsPasswordMessagesUiEnabled()) {
-    HideSavePasswordInfobar(web_contents());
-  }
-
   auto metrics_recorder = std::make_unique<
       password_manager::metrics_util::LeakDialogMetricsRecorder>(
       web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
