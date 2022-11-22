@@ -555,11 +555,11 @@ struct NetworkConditions {
   // response received.
   mojo_base.mojom.TimeDelta latency;
 
-  // Maximal aggregated download throughput (bytes/sec). 0 disables download
+  // Maximal aggregated download throughput (bytes/sec). <=0 disables download
   // throttling.
   double download_throughput;
 
-  // Maximal aggregated upload throughput (bytes/sec). 0 disables upload
+  // Maximal aggregated upload throughput (bytes/sec). <=0 disables upload
   // throttling.
   double upload_throughput;
 };
