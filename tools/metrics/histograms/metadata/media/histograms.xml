@@ -2553,6 +2553,16 @@ chromium-metrics-reviews@google.com.
   <token key="VideoCodec" variants="VideoCodec"/>
 </histogram>
 
+<histogram name="Media.EME.Widevine.SoftwareSecure.SystemCode"
+    enum="CdmSystemCode" expires_after="2023-05-07">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    System code in promise rejection when using Widevine key system in software
+    secure mode.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.Widevine.VideoCapability.HasEmptyRobustness"
     enum="BooleanEmpty" expires_after="2023-03-19">
   <owner>xhwang@chromium.org</owner>
@@ -2621,14 +2631,6 @@ chromium-metrics-reviews@google.com.
     component updated.
   </summary>
   <token key="KeySystem" variants="KeySystem"/>
-</histogram>
-
-<histogram name="Media.EME.{KeySystem}.SystemCode" enum="CdmSystemCode"
-    expires_after="2023-05-07">
-  <owner>xhwang@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>System code in promise rejection.</summary>
-  <token key="KeySystem" variants="KeySystemWithRobustness"/>
 </histogram>
 
 <histogram name="Media.EME.{KeySystem}.TimeTo{ResolveOrReject}.{EmeApi}"
