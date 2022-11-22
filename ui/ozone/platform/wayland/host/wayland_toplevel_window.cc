@@ -396,9 +396,7 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
   // Store the old state to propagte state changes if Wayland decides to change
   // the state to something else.
   PlatformWindowState old_state = state_;
-  if ((!IsSupportedOnAuraSurface(
-           ZAURA_TOPLEVEL_STATE_MINIMIZED_SINCE_VERSION) &&
-       state_ == PlatformWindowState::kMinimized &&
+  if ((state_ == PlatformWindowState::kMinimized &&
        !window_states.is_activated) ||
       window_states.is_minimized) {
     state_ = PlatformWindowState::kMinimized;
