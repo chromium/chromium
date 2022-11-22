@@ -41,6 +41,7 @@
 #include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/keyboard_brightness_control_delegate.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/palette/palette_tray.h"
 #include "ash/system/power/power_button_controller.h"
 #include "ash/system/status_area_widget.h"
@@ -114,6 +115,9 @@ constexpr double kStepPercentage = 4.0;
 constexpr char kVirtualDesksToastId[] = "virtual_desks_toast";
 // Toast id for Assistant shortcuts.
 constexpr char kAssistantErrorToastId[] = "assistant_error";
+// Toast ID for the notification center tray "No notifications" toast.
+constexpr char kNotificationCenterTrayNoNotificationsToastId[] =
+    "notification_center_tray_toast_ids.no_notifications";
 
 // These values are written to logs.  New enum values can be added, but existing
 // enums must never be renumbered or deleted and reused.
@@ -1337,7 +1341,29 @@ void ToggleResizeLockMenu() {
 }
 
 void ToggleMessageCenterBubble() {
-  HandleToggleSystemTrayBubbleInternal(true /*focus_message_center*/);
+  if (!features::IsQsRevampEnabled()) {
+    HandleToggleSystemTrayBubbleInternal(/*focus_message_center=*/true);
+    return;
+  }
+  aura::Window* target_root = Shell::GetRootWindowForNewWindows();
+  NotificationCenterTray* tray = RootWindowController::ForWindow(target_root)
+                                     ->GetStatusAreaWidget()
+                                     ->notification_center_tray();
+
+  // Show a toast if there are no notifications.
+  if (!tray->GetVisible()) {
+    ShowToast(kNotificationCenterTrayNoNotificationsToastId,
+              ash::ToastCatalogName::kNotificationCenterTrayNoNotifications,
+              l10n_util::GetStringUTF16(
+                  IDS_ASH_MESSAGE_CENTER_ACCELERATOR_NO_NOTIFICATIONS));
+    return;
+  }
+
+  if (tray->GetBubbleWidget()) {
+    tray->CloseBubble();
+  } else {
+    tray->ShowBubble();
+  }
 }
 
 void ToggleMirrorMode() {

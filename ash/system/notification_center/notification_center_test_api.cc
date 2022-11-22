@@ -55,6 +55,10 @@ void NotificationCenterTestApi::RemoveNotification(const std::string& id) {
                                                            /*by_user=*/true);
 }
 
+size_t NotificationCenterTestApi::GetNotificationCount() const {
+  return message_center::MessageCenter::Get()->NotificationCount();
+}
+
 bool NotificationCenterTestApi::IsBubbleShown() {
   return notification_center_tray_->is_active() && GetWidget()->IsVisible();
 }

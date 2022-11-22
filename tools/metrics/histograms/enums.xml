@@ -98435,6 +98435,7 @@ would be helpful to identify which type is being sent.
   <int value="36" label="Deprecate Assistant Stylus"/>
   <int value="37" label="Eche Tray Copy Paste Not Implemented"/>
   <int value="38" label="Eche Tray Tablet Mode Not Supported"/>
+  <int value="39" label="Notification Center Tray No Notifications"/>
 </enum>
 
 <enum name="TokenBinding.KeyMatch">

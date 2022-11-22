@@ -5,14 +5,20 @@
 #include "ash/system/notification_center/notification_center_tray.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/system/toast_manager.h"
+#include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/base/accelerators/accelerator.h"
 
 namespace ash {
+
+constexpr char kNotificationCenterTrayNoNotificationsToastId[] =
+    "notification_center_tray_toast_ids.no_notifications";
 
 class NotificationCenterTrayTest : public AshTestBase {
  public:
@@ -136,12 +142,38 @@ TEST_F(NotificationCenterTrayTest, NotificationPopupsShownAfterBubbleClose) {
   EXPECT_TRUE(test_api()->IsPopupShown(id));
 }
 
+// Keyboard accelerator shows/hides the bubble.
+TEST_F(NotificationCenterTrayTest, AcceleratorTogglesBubble) {
+  test_api()->AddNotification();
+  EXPECT_FALSE(test_api()->IsBubbleShown());
+  // Pressing the accelerator should show the bubble.
+  ShellTestApi().PressAccelerator(
+      ui::Accelerator(ui::VKEY_N, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN));
+  EXPECT_TRUE(test_api()->IsBubbleShown());
+  // Pressing the acccelerator again should hide the bubble.
+  ShellTestApi().PressAccelerator(
+      ui::Accelerator(ui::VKEY_N, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN));
+  EXPECT_FALSE(test_api()->IsBubbleShown());
+}
+
+// Keyboard accelerator shows a toast when there are no notifications.
+TEST_F(NotificationCenterTrayTest, AcceleratorShowsToastWhenNoNotifications) {
+  ASSERT_EQ(test_api()->GetNotificationCount(), 0u);
+  EXPECT_FALSE(ToastManager::Get()->IsRunning(
+      kNotificationCenterTrayNoNotificationsToastId));
+  // Pressing the accelerator should show the toast and not the bubble.
+  ShellTestApi().PressAccelerator(
+      ui::Accelerator(ui::VKEY_N, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN));
+  EXPECT_TRUE(ToastManager::Get()->IsRunning(
+      kNotificationCenterTrayNoNotificationsToastId));
+  EXPECT_FALSE(test_api()->IsBubbleShown());
+}
+
 // TODO(b/252875025):
 // Add following test cases as we add relevant functionality:
 // - Focus Change dismissing bubble
 // - Popup notifications are dismissed when the bubble appears.
 // - Display removed while the bubble is shown.
 // - Tablet mode transition with the bubble open.
-// - Open/Close bubble by keyboard shortcut.
 
 }  // namespace ash

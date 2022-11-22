@@ -50,6 +50,9 @@ class NotificationCenterTestApi {
   // Removes the notification associated with the provided id.
   void RemoveNotification(const std::string& id);
 
+  // Returns the number of notifications in the current notification list.
+  size_t GetNotificationCount() const;
+
   // Returns true if `NotificationCenterBubble` is shown, false otherwise.
   bool IsBubbleShown();
 

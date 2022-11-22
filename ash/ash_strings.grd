@@ -1534,7 +1534,7 @@ Style notes:
       </message>
       <message name="IDS_ASH_PHONE_HUB_FULL_APPS_LIST_BUTTON_TITLE" desc="Text indicates that the button is to display full apps list.">
         More apps
-      </message> 
+      </message>
       <message name="IDS_ASH_PHONE_HUB_RECENT_APPS_PLACEHOLDER" desc="The placeholder of the recently used apps section (where users relaunch it directly after an app is launched from a notification) in phone hub bubble.">
         When you stream your phone’s apps, they will appear here
       </message>
@@ -3957,6 +3957,7 @@ Connect your device to power.
         Sign out
       </message>
 
+      <!-- TODO(b/259709518): Update naming from "Message center" to "Notification center" -->
       <!-- Message center -->
       <message name="IDS_ASH_MESSAGE_CENTER_ACCESSIBLE_NAME" desc="The spoken feedback name for when accessible focus moves to the message center">
         Notification Center
@@ -4029,6 +4030,9 @@ Connect your device to power.
           ChromiumOS
         </message>
       </if>
+      <message name="IDS_ASH_MESSAGE_CENTER_ACCELERATOR_NO_NOTIFICATIONS" desc="The toast message displayed when Alt+Shift+N is pressed but there are no notifications.">
+        No notifications
+      </message>
 
       <!-- Notification -->
       <message name="IDS_ASH_NOTIFICATION_EXPAND_TOOLTIP" desc="The tooltip for the expand button, indicating action to expand the notification.">
