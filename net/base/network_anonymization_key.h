@@ -101,8 +101,8 @@ class NET_EXPORT NetworkAnonymizationKey {
                     other.is_cross_site_, other.nonce_);
   }
 
-  // Creates a NetworkAnonymizationKey from a NetworkAnonymizationKey. This is
-  // possible because a NetworkAnonymizationKey must always be more granular
+  // Creates a NetworkAnonymizationKey from a NetworkIsolationKey. This is
+  // possible because a NetworkIsolationKey must always be more granular
   // than a NetworkAnonymizationKey.
   static NetworkAnonymizationKey CreateFromNetworkIsolationKey(
       const net::NetworkIsolationKey& network_isolation_key);
