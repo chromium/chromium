@@ -333,10 +333,10 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_SafeUrl) {
                                          /*delayed_callback=*/false);
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
-  EXPECT_CALL(
-      callback,
-      Run(nullptr, /*proceed=*/true, /*showed_interstitial=*/false,
-          /*did_perform_real_time_check=*/false, /*did_check_allowlist=*/_));
+  EXPECT_CALL(callback,
+              Run(nullptr, /*proceed=*/true, /*showed_interstitial=*/false,
+                  /*did_perform_real_time_check=*/false,
+                  /*did_check_allowlist=*/false));
   EXPECT_CALL(*url_checker_delegate_,
               StartDisplayingBlockingPageHelper(_, _, _, _, _))
       .Times(0);
@@ -357,7 +357,7 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_DangerousUrl) {
       callback;
   EXPECT_CALL(callback, Run(_, /*proceed=*/false, /*showed_interstitial=*/false,
                             /*did_perform_real_time_check=*/false,
-                            /*did_check_allowlist=*/_));
+                            /*did_check_allowlist=*/false));
   EXPECT_CALL(*url_checker_delegate_,
               StartDisplayingBlockingPageHelper(
                   IsSameThreatSource(ThreatSource::UNKNOWN), _, _, _, _))
@@ -376,10 +376,10 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_RedirectUrlsSafe) {
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       origin_callback;
-  EXPECT_CALL(
-      origin_callback,
-      Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
-          /*did_perform_real_time_check=*/false, /*did_check_allowlist=*/_));
+  EXPECT_CALL(origin_callback,
+              Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
+                  /*did_perform_real_time_check=*/false,
+                  /*did_check_allowlist=*/false));
   EXPECT_CALL(*url_checker_delegate_,
               StartDisplayingBlockingPageHelper(_, _, _, _, _))
       .Times(0);
@@ -391,10 +391,10 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_RedirectUrlsSafe) {
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       redirect_callback;
-  EXPECT_CALL(
-      redirect_callback,
-      Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
-          /*did_perform_real_time_check=*/false, /*did_check_allowlist=*/_));
+  EXPECT_CALL(redirect_callback,
+              Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
+                  /*did_perform_real_time_check=*/false,
+                  /*did_check_allowlist=*/false));
   safe_browsing_url_checker->CheckUrl(redirect_url, "GET",
                                       redirect_callback.Get());
 
@@ -412,10 +412,10 @@ TEST_F(SafeBrowsingUrlCheckerTest,
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       origin_callback;
-  EXPECT_CALL(
-      origin_callback,
-      Run(_, /*proceed=*/false, /*showed_interstitial=*/false,
-          /*did_perform_real_time_check=*/false, /*did_check_allowlist=*/_));
+  EXPECT_CALL(origin_callback,
+              Run(_, /*proceed=*/false, /*showed_interstitial=*/false,
+                  /*did_perform_real_time_check=*/false,
+                  /*did_check_allowlist=*/false));
   // Not displayed yet, because the callback is not returned.
   EXPECT_CALL(*url_checker_delegate_,
               StartDisplayingBlockingPageHelper(_, _, _, _, _))
@@ -478,7 +478,7 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_RealTimeEnabledSafeUrl) {
       callback;
   EXPECT_CALL(callback, Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
                             /*did_perform_real_time_check=*/true,
-                            /*did_check_allowlist=*/_));
+                            /*did_check_allowlist=*/true));
   EXPECT_CALL(*url_checker_delegate_,
               StartDisplayingBlockingPageHelper(_, _, _, _, _))
       .Times(0);
@@ -508,7 +508,7 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_RealTimeEnabledSafeUrlFromCache) {
       callback;
   EXPECT_CALL(callback, Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
                             /*did_perform_real_time_check=*/true,
-                            /*did_check_allowlist=*/_));
+                            /*did_check_allowlist=*/true));
   EXPECT_CALL(*url_checker_delegate_,
               StartDisplayingBlockingPageHelper(_, _, _, _, _))
       .Times(0);
@@ -550,7 +550,7 @@ TEST_F(SafeBrowsingUrlCheckerTest,
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
-       CheckUrl_RealTimeEnabledSafeBrowsingDisabled) {
+       CheckUrl_RealTimeEnabledSafeBrowsingDisabled_Dangerous) {
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*real_time_lookup_enabled=*/true, /*can_check_safe_browsing_db=*/false);
 
@@ -565,6 +565,28 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       StartDisplayingBlockingPageHelper(
           IsSameThreatSource(ThreatSource::REAL_TIME_CHECK), _, _, _, _))
       .Times(1);
+  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(SafeBrowsingUrlCheckerTest,
+       CheckUrl_RealTimeEnabledSafeBrowsingDisabled_Safe) {
+  base::HistogramTester histograms;
+  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
+      /*real_time_lookup_enabled=*/true, /*can_check_safe_browsing_db=*/false);
+
+  GURL url("https://example.test/");
+  url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE);
+
+  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
+      callback;
+  EXPECT_CALL(callback, Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
+                            /*did_perform_real_time_check=*/true,
+                            /*did_check_allowlist=*/false));
+  EXPECT_CALL(*url_checker_delegate_,
+              StartDisplayingBlockingPageHelper(_, _, _, _, _))
+      .Times(0);
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
 
   task_environment_.RunUntilIdle();
@@ -600,7 +622,7 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnDestruct) {
     base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback> cb;
     EXPECT_CALL(cb, Run(_, /*proceed=*/false, /*showed_interstitial=*/false,
                         /*did_perform_real_time_check=*/false,
-                        /*did_check_allowlist=*/_));
+                        /*did_check_allowlist=*/false));
     safe_browsing_url_checker->CheckUrl(url, "GET", cb.Get());
     safe_browsing_url_checker.reset();
     EXPECT_TRUE(database_manager_->HasCalledCancelCheck());
