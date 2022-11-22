@@ -38,6 +38,8 @@ defaults.set(
     bucket = "reviver",
     list_view = "reviver",
     service_account = "reviver-builder@chops-service-accounts.iam.gserviceaccount.com",
+    os = os.LINUX_DEFAULT,
+    pool = ci.DEFAULT_POOL,
 
     # TODO(crbug.com/1362440): remove this.
     omit_python2 = False,
@@ -53,6 +55,7 @@ polymorphic.launcher(
     ],
     os = os.LINUX_DEFAULT,
     pool = ci.DEFAULT_POOL,
+    cores = 8,
     # To avoid peak hours, we run it at 2 AM, 5 AM, 8 AM, 11AM, 2 PM UTC.
     schedule = "0 2,5,8,11,14 * * *",
 )
@@ -67,6 +70,36 @@ polymorphic.launcher(
     pool = ci.DEFAULT_POOL,
     # To avoid peak hours, we run it at 5 AM, 8 AM, 11AM UTC.
     schedule = "0 5,8,11 * * *",
+)
+
+polymorphic.launcher(
+    name = "linux-launcher",
+    runner = "reviver/runner",
+    target_builders = [
+        "ci/Linux Tests",
+    ],
+    # To avoid peak hours, we run it at 5~11 UTC, 21~27 PST.
+    schedule = "0 5-11/3 * * *",
+)
+
+polymorphic.launcher(
+    name = "win-launcher",
+    runner = "reviver/runner",
+    target_builders = [
+        "ci/Win10 Tests x64",
+    ],
+    # To avoid peak hours, we run it at 5~11 UTC, 21~27 PST.
+    schedule = "0 5-11/3 * * *",
+)
+
+polymorphic.launcher(
+    name = "mac-launcher",
+    runner = "reviver/runner",
+    target_builders = [
+        "ci/Mac12 Tests",
+    ],
+    # To avoid peak hours, we run it at 5~11 UTC, 21~27 PST.
+    schedule = "0 5-11/3 * * *",
 )
 
 # A coordinator of slightly aggressive scheduling with effectively unlimited
