@@ -263,7 +263,7 @@ struct MediaSerializer<VideoTransformation> {
 template <>
 struct MediaSerializer<VideoColorSpace> {
   static inline base::Value Serialize(const VideoColorSpace& value) {
-    base::Value result(base::Value::Type::DICTIONARY);
+    base::Value result(base::Value::Type::DICT);
     FIELD_SERIALIZE("primaries", value.primaries);
     FIELD_SERIALIZE("transfer", value.transfer);
     FIELD_SERIALIZE("matrix", value.matrix);
@@ -277,7 +277,7 @@ template <>
 struct MediaSerializer<gfx::HDRMetadata> {
   static base::Value Serialize(const gfx::HDRMetadata& value) {
     // TODO(tmathmeyer) serialize more fields here potentially.
-    base::Value result(base::Value::Type::DICTIONARY);
+    base::Value result(base::Value::Type::DICT);
     FIELD_SERIALIZE(
         "luminance range",
         base::StringPrintf("%.2f => %.2f",
@@ -298,7 +298,7 @@ struct MediaSerializer<gfx::HDRMetadata> {
 template <>
 struct MediaSerializer<AudioDecoderConfig> {
   static base::Value Serialize(const AudioDecoderConfig& value) {
-    base::Value result(base::Value::Type::DICTIONARY);
+    base::Value result(base::Value::Type::DICT);
     FIELD_SERIALIZE("codec", value.codec());
     FIELD_SERIALIZE("profile", value.profile());
     FIELD_SERIALIZE("bytes per channel", value.bytes_per_channel());
@@ -338,7 +338,7 @@ struct MediaSerializer<VideoDecoderConfig::AlphaMode> {
 template <>
 struct MediaSerializer<VideoDecoderConfig> {
   static base::Value Serialize(const VideoDecoderConfig& value) {
-    base::Value result(base::Value::Type::DICTIONARY);
+    base::Value result(base::Value::Type::DICT);
     FIELD_SERIALIZE("codec", value.codec());
     FIELD_SERIALIZE("profile", value.profile());
     FIELD_SERIALIZE("alpha mode", value.alpha_mode());
@@ -358,7 +358,7 @@ struct MediaSerializer<VideoDecoderConfig> {
 template <>
 struct MediaSerializer<TextTrackConfig> {
   static base::Value Serialize(const TextTrackConfig& value) {
-    base::Value result(base::Value::Type::DICTIONARY);
+    base::Value result(base::Value::Type::DICT);
     FIELD_SERIALIZE("kind", value.kind());
     FIELD_SERIALIZE("language", value.language());
     if (value.label().length()) {
@@ -420,7 +420,7 @@ struct MediaSerializer<BufferingStateChangeReason> {
 template <SerializableBufferingStateType T>
 struct MediaSerializer<SerializableBufferingState<T>> {
   static base::Value Serialize(const SerializableBufferingState<T>& value) {
-    base::Value result(base::Value::Type::DICTIONARY);
+    base::Value result(base::Value::Type::DICT);
     FIELD_SERIALIZE("state", value.state);
 
     switch (value.reason) {
@@ -458,7 +458,7 @@ struct MediaSerializer<TypedStatus<T>> {
 template <>
 struct MediaSerializer<StatusData> {
   static base::Value Serialize(const StatusData& status) {
-    base::Value result(base::Value::Type::DICTIONARY);
+    base::Value result(base::Value::Type::DICT);
     // TODO: replace code with a stringified version, since
     // this representation will only go to medialog anyway.
     FIELD_SERIALIZE(StatusConstants::kCodeKey, status.code);
@@ -476,7 +476,7 @@ struct MediaSerializer<StatusData> {
 template <>
 struct MediaSerializer<base::Location> {
   static base::Value Serialize(const base::Location& value) {
-    base::Value result(base::Value::Type::DICTIONARY);
+    base::Value result(base::Value::Type::DICT);
     FIELD_SERIALIZE(StatusConstants::kFileKey,
                     value.file_name() ? value.file_name() : "unknown");
     FIELD_SERIALIZE(StatusConstants::kLineKey, value.line_number());

@@ -25,7 +25,7 @@ StatusData::StatusData(StatusGroupType group,
     : group(group),
       code(code),
       message(std::move(message)),
-      data(base::Value(base::Value::Type::DICTIONARY)),
+      data(base::Value(base::Value::Type::DICT)),
       packed_root_cause(root_cause) {}
 
 std::unique_ptr<StatusData> StatusData::copy() const {

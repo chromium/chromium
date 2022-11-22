@@ -150,11 +150,11 @@ std::string GetVendor(udev_device* dev) {
   return vendor;
 }
 
-void SetStringIfNonEmpty(base::DictionaryValue* value,
+void SetStringIfNonEmpty(base::Value::Dict* value,
                          const std::string& path,
                          const std::string& in_value) {
   if (!in_value.empty())
-    value->SetString(path, in_value);
+    value->Set(path, in_value);
 }
 
 }  // namespace
@@ -309,8 +309,7 @@ MidiManagerAlsa::MidiPort::Id::Id(const std::string& bus,
       vendor_id_(vendor_id),
       model_id_(model_id),
       usb_interface_num_(usb_interface_num),
-      serial_(serial) {
-}
+      serial_(serial) {}
 
 MidiManagerAlsa::MidiPort::Id::Id(const Id&) = default;
 
@@ -347,14 +346,13 @@ MidiManagerAlsa::MidiPort::MidiPort(const std::string& path,
       client_name_(client_name),
       port_name_(port_name),
       manufacturer_(manufacturer),
-      version_(version) {
-}
+      version_(version) {}
 
 MidiManagerAlsa::MidiPort::~MidiPort() = default;
 
 // Note: keep synchronized with the MidiPort::Match* methods.
-std::unique_ptr<base::Value> MidiManagerAlsa::MidiPort::Value() const {
-  std::unique_ptr<base::DictionaryValue> value(new base::DictionaryValue);
+std::unique_ptr<base::Value::Dict> MidiManagerAlsa::MidiPort::Value() const {
+  std::unique_ptr<base::Value::Dict> value(new base::Value::Dict);
 
   std::string type;
   switch (type_) {
@@ -365,13 +363,13 @@ std::unique_ptr<base::Value> MidiManagerAlsa::MidiPort::Value() const {
       type = "output";
       break;
   }
-  value->SetString("type", type);
+  value->Set("type", type);
   SetStringIfNonEmpty(value.get(), "path", path_);
   SetStringIfNonEmpty(value.get(), "clientName", client_name_);
   SetStringIfNonEmpty(value.get(), "portName", port_name_);
-  value->SetInteger("clientId", client_id_);
-  value->SetInteger("portId", port_id_);
-  value->SetInteger("midiDevice", midi_device_);
+  value->Set("clientId", client_id_);
+  value->Set("portId", port_id_);
+  value->Set("midiDevice", midi_device_);
 
   // Flatten id fields.
   SetStringIfNonEmpty(value.get(), "bus", id_.bus());
@@ -380,7 +378,7 @@ std::unique_ptr<base::Value> MidiManagerAlsa::MidiPort::Value() const {
   SetStringIfNonEmpty(value.get(), "usbInterfaceNum", id_.usb_interface_num());
   SetStringIfNonEmpty(value.get(), "serial", id_.serial());
 
-  return std::move(value);
+  return value;
 }
 
 std::string MidiManagerAlsa::MidiPort::JSONValue() const {
@@ -707,15 +705,13 @@ MidiManagerAlsa::AlsaSeqState::Port::Port(
     const std::string& name,
     MidiManagerAlsa::AlsaSeqState::PortDirection direction,
     bool midi)
-    : name_(name), direction_(direction), midi_(midi) {
-}
+    : name_(name), direction_(direction), midi_(midi) {}
 
 MidiManagerAlsa::AlsaSeqState::Port::~Port() = default;
 
 MidiManagerAlsa::AlsaSeqState::Client::Client(const std::string& name,
                                               snd_seq_client_type_t type)
-    : name_(name), type_(type) {
-}
+    : name_(name), type_(type) {}
 
 MidiManagerAlsa::AlsaSeqState::Client::~Client() = default;
 
@@ -764,8 +760,7 @@ MidiManagerAlsa::AlsaCard::AlsaCard(udev_device* dev,
           vendor_id_,
           device::UdevDeviceGetPropertyValue(dev, kUdevIdVendorFromDatabase),
           name,
-          longname)) {
-}
+          longname)) {}
 
 MidiManagerAlsa::AlsaCard::~AlsaCard() = default;
 

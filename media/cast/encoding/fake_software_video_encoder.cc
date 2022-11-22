@@ -59,7 +59,7 @@ void FakeSoftwareVideoEncoder::Encode(
       ToRtpTimeTicks(video_frame->timestamp(), kVideoFrequency);
   encoded_frame->reference_time = reference_time;
 
-  base::Value values(base::Value::Type::DICTIONARY);
+  base::Value values(base::Value::Type::DICT);
   values.SetBoolKey("key", encoded_frame->dependency == Dependency::kKeyFrame);
   values.SetIntKey("ref", encoded_frame->referenced_frame_id.lower_32_bits());
   values.SetIntKey("id", encoded_frame->frame_id.lower_32_bits());

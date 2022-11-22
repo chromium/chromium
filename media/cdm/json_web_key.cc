@@ -114,29 +114,30 @@ std::string GenerateJWKSet(const KeyIdAndKeyPairs& keys,
 
 // Processes a JSON Web Key to extract the key id and key value. Sets |jwk_key|
 // to the id/value pair and returns true on success.
-static bool ConvertJwkToKeyPair(const base::DictionaryValue& jwk,
+static bool ConvertJwkToKeyPair(const base::Value::Dict& jwk,
                                 KeyIdAndKeyPair* jwk_key) {
-  std::string type;
-  if (!jwk.GetString(kKeyTypeTag, &type) || type != kKeyTypeOct) {
-    DVLOG(1) << "Missing or invalid '" << kKeyTypeTag << "': " << type;
+  const base::Value* type = jwk.Find(kKeyTypeTag);
+  if (!type || *type != kKeyTypeOct) {
+    DVLOG(1) << "Missing or invalid '" << kKeyTypeTag
+             << "': " << (type ? type->DebugString() : "");
     return false;
   }
 
   // Get the key id and actual key parameters.
-  std::string encoded_key_id;
-  std::string encoded_key;
-  if (!jwk.GetString(kKeyIdTag, &encoded_key_id)) {
+  const base::Value* encoded_key_id = jwk.Find(kKeyIdTag);
+  const base::Value* encoded_key = jwk.Find(kKeyTag);
+  if (!encoded_key_id) {
     DVLOG(1) << "Missing '" << kKeyIdTag << "' parameter";
     return false;
   }
-  if (!jwk.GetString(kKeyTag, &encoded_key)) {
+  if (!encoded_key) {
     DVLOG(1) << "Missing '" << kKeyTag << "' parameter";
     return false;
   }
 
   // Key ID and key are base64url-encoded strings, so decode them.
   std::string raw_key_id;
-  if (!base::Base64UrlDecode(encoded_key_id,
+  if (!base::Base64UrlDecode(encoded_key_id->GetString(),
                              base::Base64UrlDecodePolicy::DISALLOW_PADDING,
                              &raw_key_id) ||
       raw_key_id.empty()) {
@@ -145,7 +146,7 @@ static bool ConvertJwkToKeyPair(const base::DictionaryValue& jwk,
   }
 
   std::string raw_key;
-  if (!base::Base64UrlDecode(encoded_key,
+  if (!base::Base64UrlDecode(encoded_key->GetString(),
                              base::Base64UrlDecodePolicy::DISALLOW_PADDING,
                              &raw_key) ||
       raw_key.empty()) {
@@ -167,16 +168,15 @@ bool ExtractKeysFromJWKSet(const std::string& jwk_set,
   }
 
   absl::optional<base::Value> root = base::JSONReader::Read(jwk_set);
-  if (!root || root->type() != base::Value::Type::DICTIONARY) {
+  if (!root || root->type() != base::Value::Type::DICT) {
     DVLOG(1) << "Not valid JSON: " << jwk_set;
     return false;
   }
 
   // Locate the set from the dictionary.
-  base::DictionaryValue* dictionary =
-      static_cast<base::DictionaryValue*>(&root.value());
-  base::ListValue* list_val = NULL;
-  if (!dictionary->GetList(kKeysTag, &list_val)) {
+  base::Value::Dict* dictionary = root.value().GetIfDict();
+  base::Value::List* list_val = dictionary->FindList(kKeysTag);
+  if (!list_val) {
     DVLOG(1) << "Missing '" << kKeysTag
              << "' parameter or not a list in JWK Set";
     return false;
@@ -185,15 +185,15 @@ bool ExtractKeysFromJWKSet(const std::string& jwk_set,
   // Create a local list of keys, so that |jwk_keys| only gets updated on
   // success.
   KeyIdAndKeyPairs local_keys;
-  for (size_t i = 0; i < list_val->GetListDeprecated().size(); ++i) {
-    base::Value& jwk = list_val->GetListDeprecated()[i];
+  for (size_t i = 0; i < list_val->size(); ++i) {
+    base::Value& jwk = (*list_val)[i];
     if (!jwk.is_dict()) {
       DVLOG(1) << "Unable to access '" << kKeysTag << "'[" << i
                << "] in JWK Set";
       return false;
     }
     KeyIdAndKeyPair key_pair;
-    if (!ConvertJwkToKeyPair(base::Value::AsDictionaryValue(jwk), &key_pair)) {
+    if (!ConvertJwkToKeyPair(jwk.GetDict(), &key_pair)) {
       DVLOG(1) << "Error from '" << kKeysTag << "'[" << i << "]";
       return false;
     }
@@ -202,8 +202,8 @@ bool ExtractKeysFromJWKSet(const std::string& jwk_set,
 
   // Successfully processed all JWKs in the set. Now check if "type" is
   // specified.
-  base::Value* value = NULL;
-  if (!dictionary->Get(kTypeTag, &value)) {
+  base::Value* value = dictionary->Find(kTypeTag);
+  if (!value) {
     // Not specified, so use the default type.
     *session_type = CdmSessionType::kTemporary;
   } else {
@@ -237,7 +237,7 @@ bool ExtractKeyIdsFromKeyIdsInitData(const std::string& input,
   }
 
   absl::optional<base::Value> root = base::JSONReader::Read(input);
-  if (!root || root->type() != base::Value::Type::DICTIONARY) {
+  if (!root || root->type() != base::Value::Type::DICT) {
     error_message->assign("Not valid JSON: ");
     error_message->append(ShortenTo64Characters(input));
     return false;
@@ -297,7 +297,7 @@ void CreateLicenseRequest(const KeyIdList& key_ids,
                           CdmSessionType session_type,
                           std::vector<uint8_t>* license) {
   // Create the license request.
-  base::Value request(base::Value::Type::DICTIONARY);
+  base::Value request(base::Value::Type::DICT);
   base::Value list(base::Value::Type::LIST);
   for (const auto& key_id : key_ids) {
     std::string key_id_string;
@@ -330,7 +330,7 @@ void CreateLicenseRequest(const KeyIdList& key_ids,
 }
 
 base::Value MakeKeyIdsDictionary(const KeyIdList& key_ids) {
-  base::Value dictionary(base::Value::Type::DICTIONARY);
+  base::Value dictionary(base::Value::Type::DICT);
   base::Value list(base::Value::Type::LIST);
   for (const auto& key_id : key_ids) {
     std::string key_id_string;
@@ -387,7 +387,7 @@ bool ExtractFirstKeyIdFromLicenseRequest(const std::vector<uint8_t>& license,
   }
 
   absl::optional<base::Value> root = base::JSONReader::Read(license_as_str);
-  if (!root || root->type() != base::Value::Type::DICTIONARY) {
+  if (!root || root->type() != base::Value::Type::DICT) {
     DVLOG(1) << "Not valid JSON: " << license_as_str;
     return false;
   }

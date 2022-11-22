@@ -258,7 +258,7 @@ void PerformanceEvaluator::WriteMetricsToFile() const {
   output_folder_path = base::MakeAbsoluteFilePath(output_folder_path);
 
   // Write performance metrics to json.
-  base::Value metrics(base::Value::Type::DICTIONARY);
+  base::Value metrics(base::Value::Type::DICT);
   metrics.SetKey(
       "FramesDecoded",
       base::Value(base::checked_cast<int>(perf_metrics_.frames_decoded_)));

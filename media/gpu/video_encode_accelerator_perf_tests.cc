@@ -264,7 +264,7 @@ void PerformanceMetrics::WriteToFile() const {
   output_folder_path = base::MakeAbsoluteFilePath(output_folder_path);
 
   // Write performance metrics to json.
-  base::Value metrics(base::Value::Type::DICTIONARY);
+  base::Value metrics(base::Value::Type::DICT);
   metrics.SetKey("BitstreamsEncoded",
                  base::Value(base::checked_cast<int>(bitstreams_encoded_)));
   metrics.SetKey("TotalDurationMs",
@@ -457,7 +457,7 @@ void BitstreamQualityMetrics::WriteToFile(
     base::CreateDirectory(output_folder_path);
   output_folder_path = base::MakeAbsoluteFilePath(output_folder_path);
   // Write quality metrics to json.
-  base::Value metrics(base::Value::Type::DICTIONARY);
+  base::Value metrics(base::Value::Type::DICT);
   if (!svc_text.empty())
     metrics.SetKey("SVC", base::Value(svc_text));
   metrics.SetKey("Bitrate",
