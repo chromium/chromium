@@ -9,7 +9,6 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "net/base/net_errors.h"
 
 namespace cast_receiver {
 
@@ -74,7 +73,8 @@ class PageStateObserver::WebContentsObserverWrapper
       return;
     }
 
-    wrapped_->OnPageStopped(StopReason::kHttpError, error_code);
+    wrapped_->OnPageStopped(StopReason::kHttpError,
+                            static_cast<net::Error>(error_code));
   }
 
   void WebContentsDestroyed() override {

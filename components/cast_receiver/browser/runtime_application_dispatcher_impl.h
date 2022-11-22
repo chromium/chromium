@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_DISPATCHER_IMPL_H_
-#define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_DISPATCHER_IMPL_H_
+#ifndef COMPONENTS_CAST_RECEIVER_BROWSER_RUNTIME_APPLICATION_DISPATCHER_IMPL_H_
+#define COMPONENTS_CAST_RECEIVER_BROWSER_RUNTIME_APPLICATION_DISPATCHER_IMPL_H_
 
 #include <memory>
 
@@ -12,42 +12,46 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
-#include "chromecast/cast_core/runtime/browser/runtime_application_base.h"
-#include "chromecast/cast_core/runtime/browser/streaming_runtime_application.h"
-#include "chromecast/cast_core/runtime/browser/web_runtime_application.h"
 #include "components/cast_receiver/browser/public/application_client.h"
 #include "components/cast_receiver/browser/public/application_config.h"
 #include "components/cast_receiver/browser/public/runtime_application_dispatcher.h"
+#include "components/cast_receiver/browser/runtime_application_base.h"
+#include "components/cast_receiver/browser/streaming_runtime_application.h"
+#include "components/cast_receiver/browser/web_runtime_application.h"
 #include "components/cast_streaming/public/app_ids.h"
 
-namespace chromecast {
+namespace cast_receiver {
 
 template <typename TEmbedderApplication>
 class RuntimeApplicationDispatcherImpl
-    : public cast_receiver::RuntimeApplicationDispatcher<TEmbedderApplication> {
+    : public RuntimeApplicationDispatcher<TEmbedderApplication> {
  public:
   // |application_client| is expected to persist for the lifetime of this
   // instance.
   explicit RuntimeApplicationDispatcherImpl(
-      cast_receiver::ApplicationClient& application_client);
+      ApplicationClient& application_client);
   ~RuntimeApplicationDispatcherImpl() override = default;
 
+  RuntimeApplicationDispatcherImpl(RuntimeApplicationDispatcherImpl& other) =
+      delete;
+  RuntimeApplicationDispatcherImpl& operator=(
+      RuntimeApplicationDispatcherImpl& other) = delete;
+
  private:
-  using EmbedderApplicationFactory =
-      cast_receiver::RuntimeApplicationDispatcher<
-          TEmbedderApplication>::EmbedderApplicationFactory;
+  using EmbedderApplicationFactory = RuntimeApplicationDispatcher<
+      TEmbedderApplication>::EmbedderApplicationFactory;
 
   // RuntimeApplicationDispatcher implementation.
   TEmbedderApplication* CreateApplication(
       std::string session_id,
-      cast_receiver::ApplicationConfig app_config,
+      ApplicationConfig app_config,
       EmbedderApplicationFactory factory) override;
   TEmbedderApplication* GetApplication(const std::string& session_id) override;
   std::unique_ptr<TEmbedderApplication> DestroyApplication(
       const std::string& session_id) override;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  base::raw_ref<cast_receiver::ApplicationClient> const application_client_;
+  base::raw_ref<ApplicationClient> const application_client_;
 
   base::flat_map<std::string, std::unique_ptr<TEmbedderApplication>>
       loaded_apps_;
@@ -55,15 +59,14 @@ class RuntimeApplicationDispatcherImpl
 
 template <typename TEmbedderApplication>
 RuntimeApplicationDispatcherImpl<TEmbedderApplication>::
-    RuntimeApplicationDispatcherImpl(
-        cast_receiver::ApplicationClient& application_client)
+    RuntimeApplicationDispatcherImpl(ApplicationClient& application_client)
     : application_client_(application_client) {}
 
 template <typename TEmbedderApplication>
 TEmbedderApplication*
 RuntimeApplicationDispatcherImpl<TEmbedderApplication>::CreateApplication(
     std::string session_id,
-    cast_receiver::ApplicationConfig app_config,
+    ApplicationConfig app_config,
     EmbedderApplicationFactory factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -119,6 +122,6 @@ RuntimeApplicationDispatcherImpl<TEmbedderApplication>::DestroyApplication(
   return app;
 }
 
-}  // namespace chromecast
+}  // namespace cast_receiver
 
-#endif  // CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_DISPATCHER_IMPL_H_
+#endif  // COMPONENTS_CAST_RECEIVER_BROWSER_RUNTIME_APPLICATION_DISPATCHER_IMPL_H_

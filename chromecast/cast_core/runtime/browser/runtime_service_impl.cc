@@ -13,12 +13,11 @@
 #include "chromecast/browser/cast_web_service.h"
 #include "chromecast/cast_core/cast_core_switches.h"
 #include "chromecast/cast_core/runtime/browser/core_conversions.h"
-#include "chromecast/cast_core/runtime/browser/runtime_application_base.h"
-#include "chromecast/cast_core/runtime/browser/runtime_application_dispatcher_impl.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_service_impl.h"
 #include "chromecast/metrics/cast_event_builder_simple.h"
 #include "components/cast_receiver/browser/public/application_client.h"
 #include "components/cast_receiver/browser/public/embedder_application.h"
+#include "components/cast_receiver/browser/runtime_application_dispatcher_impl.h"
 #include "third_party/cast_core/public/src/proto/common/application_config.pb.h"
 
 namespace chromecast {
@@ -38,9 +37,8 @@ RuntimeServiceImpl::RuntimeServiceImpl(
       // TODO(crbug.com/1359579): Move RuntimeApplicationDispatcher creation to
       // cast_receiver::ApplicationClient.
       application_dispatcher_(
-          std::make_unique<
-              RuntimeApplicationDispatcherImpl<RuntimeApplicationServiceImpl>>(
-              application_client)),
+          std::make_unique<cast_receiver::RuntimeApplicationDispatcherImpl<
+              RuntimeApplicationServiceImpl>>(application_client)),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       web_service_(web_service),
       metrics_recorder_(this) {

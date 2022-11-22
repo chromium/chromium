@@ -2,25 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/cast_core/runtime/browser/runtime_application_base.h"
+#include "components/cast_receiver/browser/runtime_application_base.h"
 
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chromecast/browser/cast_content_window.h"
-#include "chromecast/browser/cast_web_contents.h"
-#include "chromecast/common/feature_constants.h"
 #include "components/cast_receiver/browser/permissions_manager_impl.h"
 #include "components/media_control/browser/media_blocker.h"
 #include "components/url_rewrite/browser/url_request_rewrite_rules_manager.h"
 #include "content/public/browser/web_contents.h"
 
-namespace chromecast {
+namespace cast_receiver {
 
 RuntimeApplicationBase::RuntimeApplicationBase(
     std::string cast_session_id,
-    cast_receiver::ApplicationConfig app_config,
-    cast_receiver::ApplicationClient& application_client)
+    ApplicationConfig app_config,
+    ApplicationClient& application_client)
     : cast_session_id_(std::move(cast_session_id)),
       app_config_(std::move(app_config)),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
@@ -34,7 +31,7 @@ RuntimeApplicationBase::~RuntimeApplicationBase() {
 }
 
 void RuntimeApplicationBase::SetEmbedderApplication(
-    cast_receiver::EmbedderApplication& embedder_application) {
+    EmbedderApplication& embedder_application) {
   DCHECK(!embedder_application_);
   embedder_application_ = &embedder_application;
 }
@@ -61,19 +58,18 @@ void RuntimeApplicationBase::Load(StatusCallback callback) {
     SetUrlRewriteRules(std::move(cached_mojom_rules_));
   }
 
-  LOG(INFO) << "Loaded application: " << *this;
-  std::move(callback).Run(cast_receiver::OkStatus());
+  DVLOG(1) << "Loaded application: " << *this;
+  std::move(callback).Run(OkStatus());
 }
 
 void RuntimeApplicationBase::Stop(StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  StopApplication(
-      cast_receiver::EmbedderApplication::ApplicationStopReason::kUserRequest,
-      /*net_error_code=*/0);
-  std::move(callback).Run(cast_receiver::OkStatus());
+  StopApplication(EmbedderApplication::ApplicationStopReason::kUserRequest,
+                  net::ERR_ABORTED);
+  std::move(callback).Run(OkStatus());
 }
 
-cast_receiver::ApplicationClient::ApplicationControls&
+ApplicationClient::ApplicationControls&
 RuntimeApplicationBase::GetApplicationControls() {
   DCHECK(embedder_application().GetWebContents());
 
@@ -91,9 +87,8 @@ void RuntimeApplicationBase::LoadPage(const GURL& url) {
 
 void RuntimeApplicationBase::SetContentPermissions(
     content::WebContents& web_contents) {
-  cast_receiver::PermissionsManagerImpl* permissions_manager =
-      cast_receiver::PermissionsManagerImpl::CreateInstance(web_contents,
-                                                            GetAppId());
+  PermissionsManagerImpl* permissions_manager =
+      PermissionsManagerImpl::CreateInstance(web_contents, GetAppId());
   if (config().url.has_value()) {
     auto app_url_origin = url::Origin::Create(config().url.value());
     if (!app_url_origin.opaque()) {
@@ -111,7 +106,7 @@ void RuntimeApplicationBase::SetContentPermissions(
 
 void RuntimeApplicationBase::OnPageLoaded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DLOG(INFO) << "Page loaded: " << *this;
+  DVLOG(1) << "Page loaded: " << *this;
 
   auto* window_controls = embedder_application().GetContentWindowControls();
   DCHECK(window_controls);
@@ -124,10 +119,10 @@ void RuntimeApplicationBase::OnPageLoaded() {
 
   // Create the window and show the web view.
   if (is_visible_) {
-    LOG(INFO) << "Loading page in full screen: " << *this;
+    DVLOG(1) << "Loading page in full screen: " << *this;
     window_controls->ShowWindow();
   } else {
-    LOG(INFO) << "Loading page in background: " << *this;
+    DVLOG(1) << "Loading page in background: " << *this;
     window_controls->HideWindow();
   }
 
@@ -153,8 +148,8 @@ void RuntimeApplicationBase::SetMediaBlocking(bool load_blocked,
 
   is_media_load_blocked_ = load_blocked;
   is_media_start_blocked_ = start_blocked;
-  LOG(INFO) << "Media state updated: is_load_blocked=" << load_blocked
-            << ", is_start_blocked=" << start_blocked << ", " << *this;
+  DVLOG(1) << "Media state updated: is_load_blocked=" << load_blocked
+           << ", is_start_blocked=" << start_blocked << ", " << *this;
 
   if (!embedder_application().GetWebContents()) {
     return;
@@ -172,8 +167,8 @@ void RuntimeApplicationBase::SetVisibility(bool is_visible) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   is_visible_ = is_visible;
-  LOG(INFO) << "Visibility updated: is_visible_=" << is_visible_ << ", "
-            << *this;
+  DVLOG(1) << "Visibility updated: is_visible_=" << is_visible_ << ", "
+           << *this;
 
   auto* window_controls = embedder_application().GetContentWindowControls();
   if (!window_controls) {
@@ -191,8 +186,8 @@ void RuntimeApplicationBase::SetTouchInputEnabled(bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   is_touch_input_enabled_ = enabled;
-  LOG(INFO) << "Touch input updated: is_touch_input_enabled_= "
-            << is_touch_input_enabled_ << ", " << *this;
+  DVLOG(1) << "Touch input updated: is_touch_input_enabled_= "
+           << is_touch_input_enabled_ << ", " << *this;
 
   auto* window_controls = embedder_application().GetContentWindowControls();
   if (!window_controls) {
@@ -211,8 +206,8 @@ bool RuntimeApplicationBase::IsApplicationRunning() const {
 }
 
 void RuntimeApplicationBase::StopApplication(
-    cast_receiver::EmbedderApplication::ApplicationStopReason stop_reason,
-    int32_t net_error_code) {
+    EmbedderApplication::ApplicationStopReason stop_reason,
+    net::Error net_error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!is_application_running_) {
@@ -234,8 +229,8 @@ void RuntimeApplicationBase::StopApplication(
 
   embedder_application().NotifyApplicationStopped(stop_reason, net_error_code);
 
-  LOG(INFO) << "Application is stopped: stop_reason=" << stop_reason << ", "
-            << *this;
+  DVLOG(1) << "Application is stopped: stop_reason=" << stop_reason << ", "
+           << *this;
 }
 
 void RuntimeApplicationBase::SetWebVisibilityAndPaint(bool is_visible) {
@@ -265,4 +260,4 @@ void RuntimeApplicationBase::OnWindowHidden() {
   SetWebVisibilityAndPaint(false);
 }
 
-}  // namespace chromecast
+}  // namespace cast_receiver

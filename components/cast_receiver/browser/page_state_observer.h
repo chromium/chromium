@@ -6,6 +6,7 @@
 #define COMPONENTS_CAST_RECEIVER_BROWSER_PAGE_STATE_OBSERVER_H_
 
 #include "content/public/browser/web_contents_observer.h"
+#include "net/base/net_errors.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -32,7 +33,7 @@ class PageStateObserver {
   // Called when the observed |web_contents| stops trying to load the page for
   // reasons outside of the user's control - such as the page closing or an
   // HTTP error.
-  virtual void OnPageStopped(StopReason reason, int32_t error_code) {}
+  virtual void OnPageStopped(StopReason reason, net::Error error_code) {}
 
  protected:
   PageStateObserver();

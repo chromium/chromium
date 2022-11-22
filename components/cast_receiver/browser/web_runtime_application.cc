@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/cast_core/runtime/browser/web_runtime_application.h"
+#include "components/cast_receiver/browser/web_runtime_application.h"
 
 #include "base/task/bind_post_task.h"
-#include "chromecast/browser/cast_web_service.h"
-#include "chromecast/common/feature_constants.h"
 #include "components/cast_receiver/browser/public/embedder_application.h"
 #include "components/cast_receiver/browser/public/message_port_service.h"
 #include "components/url_rewrite/browser/url_request_rewrite_rules_manager.h"
@@ -14,14 +12,15 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller_factory.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "net/base/net_errors.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
-namespace chromecast {
+namespace cast_receiver {
 
 WebRuntimeApplication::WebRuntimeApplication(
     std::string cast_session_id,
-    cast_receiver::ApplicationConfig config,
-    cast_receiver::ApplicationClient& application_client)
+    ApplicationConfig config,
+    ApplicationClient& application_client)
     : RuntimeApplicationBase(std::move(cast_session_id),
                              std::move(config),
                              application_client) {
@@ -30,15 +29,14 @@ WebRuntimeApplication::WebRuntimeApplication(
 
 WebRuntimeApplication::~WebRuntimeApplication() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  StopApplication(
-      cast_receiver::EmbedderApplication::ApplicationStopReason::kUserRequest,
-      net::OK);
+  StopApplication(EmbedderApplication::ApplicationStopReason::kUserRequest,
+                  net::ERR_ABORTED);
 }
 
 void WebRuntimeApplication::Launch(StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  LOG(INFO) << "Launching application: " << *this;
+  DVLOG(1) << "Launching application: " << *this;
 
   SetContentPermissions(*embedder_application().GetWebContents());
 
@@ -58,7 +56,7 @@ void WebRuntimeApplication::Launch(StatusCallback callback) {
                      weak_factory_.GetWeakPtr())));
 
   // Signal that application is launching.
-  std::move(callback).Run(cast_receiver::OkStatus());
+  std::move(callback).Run(OkStatus());
 }
 
 bool WebRuntimeApplication::IsStreamingApplication() const {
@@ -71,7 +69,7 @@ void WebRuntimeApplication::InnerWebContentsCreated(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(inner_web_contents);
 
-  DLOG(INFO) << "Inner web contents created";
+  DVLOG(1) << "Inner web contents created";
 
   auto* outer_web_contents = embedder_application().GetWebContents();
   if (outer_web_contents) {
@@ -99,25 +97,23 @@ void WebRuntimeApplication::MediaStoppedPlaying(
 }
 
 void WebRuntimeApplication::OnAllBindingsReceived(
-    cast_receiver::Status status,
+    Status status,
     std::vector<std::string> bindings) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!status.ok()) {
     LOG(ERROR) << "Failed to get all bindings: " << status;
-    StopApplication(cast_receiver::EmbedderApplication::ApplicationStopReason::
-                        kRuntimeError,
+    StopApplication(EmbedderApplication::ApplicationStopReason::kRuntimeError,
                     net::ERR_FAILED);
     return;
   }
 
   content::WebContentsObserver::Observe(
       embedder_application().GetWebContents());
-  cast_receiver::PageStateObserver::Observe(
-      embedder_application().GetWebContents());
+  PageStateObserver::Observe(embedder_application().GetWebContents());
   auto* message_port_sevice = embedder_application().GetMessagePortService();
   DCHECK(message_port_sevice);
-  bindings_manager_ = std::make_unique<cast_receiver::BindingsManager>(
-      *this, *message_port_sevice);
+  bindings_manager_ =
+      std::make_unique<BindingsManager>(*this, *message_port_sevice);
   for (auto& binding : bindings) {
     bindings_manager_->AddBinding(std::move(binding));
   }
@@ -135,31 +131,28 @@ void WebRuntimeApplication::OnPageLoadComplete() {
 
 void WebRuntimeApplication::OnError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  StopApplication(
-      cast_receiver::EmbedderApplication::ApplicationStopReason::kRuntimeError,
-      0);
+  StopApplication(EmbedderApplication::ApplicationStopReason::kRuntimeError,
+                  net::ERR_UNEXPECTED);
 }
 
 void WebRuntimeApplication::OnPageStopped(StopReason reason,
-                                          int32_t error_code) {
+                                          net::Error error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (reason) {
-    case cast_receiver::PageStateObserver::StopReason::kUnknown:
-      StopApplication(cast_receiver::EmbedderApplication::
-                          ApplicationStopReason::kRuntimeError,
+    case PageStateObserver::StopReason::kUnknown:
+      StopApplication(EmbedderApplication::ApplicationStopReason::kRuntimeError,
                       error_code);
       break;
-    case cast_receiver::PageStateObserver::StopReason::kApplicationRequest:
-      StopApplication(cast_receiver::EmbedderApplication::
-                          ApplicationStopReason::kApplicationRequest,
-                      error_code);
-      break;
-    case cast_receiver::PageStateObserver::StopReason::kHttpError:
+    case PageStateObserver::StopReason::kApplicationRequest:
       StopApplication(
-          cast_receiver::EmbedderApplication::ApplicationStopReason::kHttpError,
+          EmbedderApplication::ApplicationStopReason::kApplicationRequest,
           error_code);
+      break;
+    case PageStateObserver::StopReason::kHttpError:
+      StopApplication(EmbedderApplication::ApplicationStopReason::kHttpError,
+                      error_code);
       break;
   }
 }
 
-}  // namespace chromecast
+}  // namespace cast_receiver

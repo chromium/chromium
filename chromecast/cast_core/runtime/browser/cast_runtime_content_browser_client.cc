@@ -11,7 +11,6 @@
 #include "chromecast/browser/service/cast_service_simple.h"
 #include "chromecast/browser/webui/constants.h"
 #include "chromecast/cast_core/cast_core_switches.h"
-#include "chromecast/cast_core/runtime/browser/runtime_application_base.h"
 #include "chromecast/cast_core/runtime/browser/runtime_service_impl.h"
 #include "chromecast/common/cors_exempt_headers.h"
 #include "chromecast/media/base/video_plane_controller.h"

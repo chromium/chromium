@@ -59,46 +59,6 @@ cast_source_set("grpc_webui") {
   ]
 }
 
-cast_source_set("runtime_application_dispatcher") {
-  sources = [
-    "runtime_application_base.cc",
-    "runtime_application_base.h",
-    "runtime_application_dispatcher_impl.h",
-    "streaming_runtime_application.cc",
-    "streaming_runtime_application.h",
-    "web_runtime_application.cc",
-    "web_runtime_application.h",
-  ]
-
-  public_deps = [
-    "//base",
-    "//chromecast/browser",
-    "//chromecast/common:feature_constants",
-    "//components/cast_receiver/browser",
-    "//components/cast_receiver/browser:streaming_receiver_session_client",
-    "//components/cast_receiver/common",
-    "//components/cast_streaming/public/mojom",
-    "//components/url_rewrite/browser",
-    "//third_party/abseil-cpp:absl",
-  ]
-
-  deps = [
-    "//chromecast/cast_core/runtime/browser/url_rewrite",
-    "//components/cast/message_port",
-    "//components/cast_receiver/browser:page_state_observer",
-    "//components/cast_receiver/browser:permissions_manager",
-    "//components/cast_receiver/browser:runtime",
-    "//components/cast_streaming/browser",
-    "//components/cast_streaming/public",
-    "//components/media_control/browser",
-    "//components/url_rewrite/browser",
-    "//content/public/browser",
-    "//mojo/public/cpp/bindings",
-    "//third_party/blink/public/common:headers",
-    "//url",
-  ]
-}
-
 cast_source_set("runtime_service_impl") {
   sources = [
     "core_conversions.cc",
@@ -123,7 +83,6 @@ cast_source_set("runtime_service_impl") {
   deps = [
     ":grpc_webui",
     ":metrics_recorder",
-    ":runtime_application_dispatcher",
     "//base",
     "//chromecast/browser",
     "//chromecast/cast_core:cast_core_switches",
@@ -134,7 +93,7 @@ cast_source_set("runtime_service_impl") {
     "//components/cast/message_port",
     "//components/cast_receiver/browser",
     "//components/cast_receiver/browser:page_state_observer",
-    "//components/cast_receiver/browser:streaming_receiver_session_client",
+    "//components/cast_receiver/browser:runtime",
     "//components/cast_receiver/common",
     "//components/cast_streaming/browser",
     "//components/cast_streaming/public",
@@ -182,7 +141,6 @@ cast_source_set("browser") {
   ]
 
   public_deps = [
-    ":runtime_application_dispatcher",
     "//chromecast/browser",
     "//components/cast_receiver/browser",
   ]

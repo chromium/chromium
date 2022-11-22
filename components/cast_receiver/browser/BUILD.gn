@@ -40,6 +40,8 @@ if (enable_cast_receiver) {
     deps = [
       ":browser",
       ":page_state_observer",
+      ":permissions_manager",
+      ":streaming_receiver_session_client",
       "//base",
       "//components/cast/api_bindings:manager",
       "//components/cast/message_port",
@@ -48,13 +50,16 @@ if (enable_cast_receiver) {
       "//components/cast/named_message_port_connector",
       "//components/cast_receiver/common",
       "//components/cast_streaming/browser",
+      "//components/cast_streaming/public",
       "//components/media_control/browser",
       "//components/on_load_script_injector/browser",
       "//components/url_rewrite/browser",
       "//content/public/browser",
       "//content/public/common",
       "//media",
+      "//third_party/abseil-cpp:absl",
       "//ui/base",
+      "//url",
     ]
     sources = [
       "bindings_manager.cc",
@@ -65,6 +70,13 @@ if (enable_cast_receiver) {
       "public/embedder_application.h",
       "public/message_port_service.h",
       "public/runtime_application_dispatcher.h",
+      "runtime_application_base.cc",
+      "runtime_application_base.h",
+      "runtime_application_dispatcher_impl.h",
+      "streaming_runtime_application.cc",
+      "streaming_runtime_application.h",
+      "web_runtime_application.cc",
+      "web_runtime_application.h",
     ]
   }
 
