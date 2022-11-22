@@ -630,9 +630,15 @@ class ExtensionPrefs : public KeyedService {
   // Returns true if the extension was installed as an oem app.
   bool WasInstalledByOem(const std::string& extension_id) const;
 
-  // Helper method to acquire the installation time of an extension.
+  // Helper method to acquire the original installation time of an extension.
   // Returns base::Time() if the installation time could not be parsed or
   // found.
+  base::Time GetFirstInstallTime(const std::string& extension_id) const;
+
+  // Helper method to acquire the installation/last update time of an extension.
+  // Returns base::Time() if the installation time could not be parsed or
+  // found.
+  // TODO(anunoy): Rename to GetLastUpdatedTime.
   base::Time GetInstallTime(const std::string& extension_id) const;
 
   // Returns true if the extension should not be synced.
@@ -741,6 +747,11 @@ class ExtensionPrefs : public KeyedService {
   void SetDNRKeepExcessAllocation(const ExtensionId& extension_id,
                                   bool keep_excess_allocation);
 
+  // Backfills the first_install_time pref for currently installed extensions
+  // that did not have the pref recorded when they were installed.
+  // TODO(anunoy): Remove this in M113.
+  void BackfillAndMigrateInstallTimePrefs();
+
   // Migrates the disable reasons extension pref for extensions that were
   // disabled due to a deprecated reason.
   // TODO(archanasimha): Remove this around M89.
@@ -792,6 +803,7 @@ class ExtensionPrefs : public KeyedService {
   friend class ExtensionPrefsBlocklistedExtensions;  // Unit test.
   friend class ExtensionPrefsComponentExtension;     // Unit test.
   friend class ExtensionPrefsUninstallExtension;     // Unit test.
+  friend class ExtensionPrefsMigratesToLastUpdateTime;  // Unit test.
   friend class
       ExtensionPrefsBitMapPrefValueClearedIfEqualsDefaultValue;  // Unit test.
 
@@ -932,6 +944,11 @@ class ExtensionPrefs : public KeyedService {
 
   // Clears the bit indicating that an external extension was uninstalled.
   void ClearExternalUninstallBit(const ExtensionId& extension_id);
+
+  // Helper function to retrieve various time prefs like first install time,
+  // last updated time, last launch time for a given extension.
+  base::Time GetTimePrefHelper(const std::string& extension_id,
+                               const char* pref_key) const;
 
   raw_ptr<content::BrowserContext> browser_context_;
 

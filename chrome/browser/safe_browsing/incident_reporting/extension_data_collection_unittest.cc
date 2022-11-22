@@ -101,7 +101,7 @@ void ExtensionTestingProfile::AddExtension(std::string extension_id,
   extension_service_->AddExtension(extension.get());
 
   extension_prefs_->UpdateExtensionPref(
-      extension_id, "install_time",
+      extension_id, "last_update_time",
       std::make_unique<base::Value>(
           base::NumberToString(install_time.ToInternalValue())));
   extension_prefs_->UpdateExtensionPref(

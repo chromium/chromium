@@ -996,7 +996,7 @@ void SetInstallTime(const std::string& extension_id,
                     const base::Time& time,
                     ExtensionPrefs* prefs) {
   std::string time_str = base::NumberToString(time.ToInternalValue());
-  prefs->UpdateExtensionPref(extension_id, "install_time",
+  prefs->UpdateExtensionPref(extension_id, "last_update_time",
                              std::make_unique<base::Value>(time_str));
 }
 
