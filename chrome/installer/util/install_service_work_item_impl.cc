@@ -14,7 +14,6 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -62,38 +61,6 @@ enum class ServiceRollbackResult {
   kSucceededRollbackOriginalServiceConfig = 3,
   kMaxValue = kSucceededRollbackOriginalServiceConfig,
 };
-
-// One value for each possible call to RecordWin32ApiErrorCode. When new values
-// are added here, histogram_suffixes "SetupInstallWin32Apis" needs to be
-// updated in histograms.xml.
-constexpr char kChangeServiceConfig[] = "ChangeServiceConfig";
-constexpr char kCreateService[] = "CreateService";
-constexpr char kDeleteService[] = "DeleteService";
-constexpr char kOpenSCManager[] = "OpenSCManager";
-
-void RecordServiceInstallResult(ServiceInstallResult value) {
-  // Use the histogram function rather than the macro since only one value will
-  // be recorded per run.
-  base::UmaHistogramEnumeration("Setup.Install.ServiceInstallResult", value);
-}
-
-void RecordServiceRollbackResult(ServiceRollbackResult value) {
-  // Uses the histogram function rather than the macro since only one value will
-  // be recorded per run.
-  base::UmaHistogramEnumeration("Setup.Install.ServiceRollbackResult", value);
-}
-
-// Records the last Win32 error in a histogram named
-// "Setup.Install.Win32ApiError.|function|". |function| is one of the values in
-// the list of histogram suffixes "SetupInstallWin32Apis" above.
-void RecordWin32ApiErrorCode(const char* function) {
-  auto error_code = ::GetLastError();
-
-  // Uses the histogram function rather than the macro since the name of the
-  // histogram is computed at runtime.
-  base::UmaHistogramSparse(
-      base::StrCat({"Setup.Install.Win32ApiError.", function}), error_code);
-}
 
 std::wstring GetComRegistryPath(base::WStringPiece hive, const GUID& guid) {
   return base::StrCat(
@@ -184,23 +151,16 @@ bool InstallServiceWorkItemImpl::DoInstallService() {
                            SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE));
   if (!scm_.IsValid()) {
     PLOG(ERROR) << "::OpenSCManager Failed";
-    RecordServiceInstallResult(ServiceInstallResult::kFailedOpenSCManager);
-    RecordWin32ApiErrorCode(kOpenSCManager);
     return false;
   }
 
   if (!OpenService()) {
     VPLOG(1) << "Attempting to install new service following failure to open";
-    const bool succeeded = InstallNewService();
-    if (succeeded) {
-      RecordServiceInstallResult(ServiceInstallResult::kSucceededFreshInstall);
-      return succeeded;
-    }
+    if (InstallNewService())
+      return true;
 
     PLOG(ERROR) << "Failed to install service "
                 << GetCurrentServiceName().c_str();
-    RecordServiceInstallResult(ServiceInstallResult::kFailedFreshInstall);
-    RecordWin32ApiErrorCode(kCreateService);
     // Fall through to try installing the service by generating a new name.
   } else if (UpgradeService()) {
     // It is preferable to do a lightweight upgrade of the existing service,
@@ -222,25 +182,14 @@ bool InstallServiceWorkItemImpl::DoInstallService() {
   ScopedScHandle original_service = std::move(service_);
   if (InstallNewService()) {
     // Delete the previous version of the service.
-    if (DeleteService(std::move(original_service))) {
-      RecordServiceInstallResult(
-          ServiceInstallResult::kSucceededInstallNewAndDeleteOriginal);
-    } else {
+    if (!DeleteService(std::move(original_service)))
       original_service_still_exists_ = true;
-
-      RecordServiceInstallResult(
-          ServiceInstallResult::kSucceededInstallNewAndFailedDeleteOriginal);
-      RecordWin32ApiErrorCode(kDeleteService);
-    }
 
     return true;
   }
 
   PLOG(ERROR) << "Failed to install service with new name "
               << GetCurrentServiceName().c_str();
-  RecordServiceInstallResult(
-      ServiceInstallResult::kFailedInstallNewAfterFailedUpgrade);
-  RecordWin32ApiErrorCode(kCreateService);
   return false;
 }
 
@@ -338,14 +287,7 @@ void InstallServiceWorkItemImpl::RollbackImpl() {
   if (rollback_existing_service_) {
     DCHECK(service_.IsValid());
     DCHECK(original_service_config_.is_valid);
-    if (RestoreOriginalServiceConfig()) {
-      RecordServiceRollbackResult(
-          ServiceRollbackResult::kSucceededRollbackOriginalServiceConfig);
-    } else {
-      RecordServiceRollbackResult(
-          ServiceRollbackResult::kFailedRollbackOriginalServiceConfig);
-      RecordWin32ApiErrorCode(kChangeServiceConfig);
-    }
+    RestoreOriginalServiceConfig();
     return;
   }
 
@@ -353,14 +295,7 @@ void InstallServiceWorkItemImpl::RollbackImpl() {
   DCHECK(service_.IsValid());
 
   // Delete the newly created service.
-  if (DeleteCurrentService()) {
-    RecordServiceRollbackResult(
-        ServiceRollbackResult::kSucceededDeleteCurrentService);
-  } else {
-    RecordServiceRollbackResult(
-        ServiceRollbackResult::kFailedDeleteCurrentService);
-    RecordWin32ApiErrorCode(kDeleteService);
-  }
+  DeleteCurrentService();
 
   if (original_service_name_.empty())
     return;
@@ -378,8 +313,7 @@ void InstallServiceWorkItemImpl::RollbackImpl() {
   // issues with reusing the old name.
   if (!CreateAndSetServiceName())
     PLOG(ERROR) << "Failed to create and set unique service name";
-  if (!ReinstallOriginalService())
-    RecordWin32ApiErrorCode(kCreateService);
+  ReinstallOriginalService();
 }
 
 bool InstallServiceWorkItemImpl::DeleteServiceImpl() {
@@ -631,17 +565,8 @@ bool InstallServiceWorkItemImpl::UpgradeService() {
 
   // If the service is deleted, `ChangeServiceConfig()` will return false.
   bool success = ChangeServiceConfig(new_config);
-  if (success) {
-    if (upgrade_needed)
-      rollback_existing_service_ = true;
-
-    RecordServiceInstallResult(
-        upgrade_needed
-            ? ServiceInstallResult::kSucceededChangeServiceConfig
-            : ServiceInstallResult::kSucceededServiceCorrectlyConfigured);
-  } else {
-    RecordWin32ApiErrorCode(kChangeServiceConfig);
-  }
+  if (success && upgrade_needed)
+    rollback_existing_service_ = true;
 
   return success;
 }
