@@ -435,6 +435,7 @@ class StackTrace;
 }
 
 namespace win {
+class OSInfo;
 class ScopedAllowBlockingForUserAccountControl;
 }
 
@@ -552,6 +553,7 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class content::
       ScopedAllowBlockingForViewAura;  // http://crbug.com/332579
 #if BUILDFLAG(IS_WIN)
+  friend class base::win::OSInfo;
   friend class content::WebContentsImpl;  // http://crbug.com/1262162
 #endif
   friend class content::WebContentsViewMac;
