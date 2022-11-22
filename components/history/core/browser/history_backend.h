@@ -614,6 +614,10 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                                     VisitID referrer_id,
                                     VisitID opener_id) override;
 
+  // Deletes all foreign visits, i.e. those with a non-empty
+  // `originator_cache_guid`. (This is called when History Sync is disabled.)
+  bool DeleteAllForeignVisits() override;
+
   bool RemoveVisits(const VisitVector& visits);
 
   // Returns the `VisitSource` associated with each one of the passed visits.

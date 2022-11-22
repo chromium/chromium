@@ -124,6 +124,11 @@ class VisitDatabase {
                                      ui::PageTransition transition,
                                      VisitVector* visits);
 
+  // Fills all foreign visits (i.e. those with a non-empty
+  // `originator_cache_guid`) into `visits`. Returns true on success and false
+  // otherwise.
+  bool GetAllForeignVisits(VisitVector* visits);
+
   // Looks up URLIDs for all visits with specified transition. Returns true on
   // success and false otherwise.
   bool GetAllURLIDsForTransition(ui::PageTransition transition,

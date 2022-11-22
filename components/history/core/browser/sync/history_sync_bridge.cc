@@ -552,6 +552,20 @@ absl::optional<syncer::ModelError> HistorySyncBridge::ApplySyncChanges(
   return metadata_error;
 }
 
+void HistorySyncBridge::ApplyStopSyncChanges(
+    std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
+  if (delete_metadata_change_list) {
+    // A non-null `delete_metadata_change_list` indicates that Sync is being
+    // turned off only permanently. Delete all foreign visits from the DB.
+    // TODO(crbug.com/1383912): The signal to delete metadata currently doesn't
+    // reliably arrive here.
+    history_backend_->DeleteAllForeignVisits();
+  }
+
+  ModelTypeSyncBridge::ApplyStopSyncChanges(
+      std::move(delete_metadata_change_list));
+}
+
 void HistorySyncBridge::GetData(StorageKeyList storage_keys,
                                 DataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

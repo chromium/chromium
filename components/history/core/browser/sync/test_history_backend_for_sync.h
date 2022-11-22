@@ -64,11 +64,16 @@ class TestHistoryBackendForSync : public HistoryBackendForSync {
                                     VisitID referrer_id,
                                     VisitID opener_id) override;
   std::vector<GURL> GetFaviconURLsForURL(const GURL& page_url) override;
+  bool DeleteAllForeignVisits() override;
   void AddObserver(HistoryBackendObserver* observer) override;
   void RemoveObserver(HistoryBackendObserver* observer) override;
 
   int get_foreign_visit_call_count() const {
     return get_foreign_visit_call_count_;
+  }
+
+  int delete_all_foreign_visits_call_count() const {
+    return delete_all_foreign_visits_call_count_;
   }
 
  private:
@@ -87,6 +92,7 @@ class TestHistoryBackendForSync : public HistoryBackendForSync {
   std::map<VisitID, VisitContentAnnotations> content_annotations_;
 
   int get_foreign_visit_call_count_ = 0;
+  int delete_all_foreign_visits_call_count_ = 0;
 
   base::ObserverList<HistoryBackendObserver, true>::Unchecked observers_;
 };

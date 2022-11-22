@@ -1537,6 +1537,20 @@ bool HistoryBackend::UpdateVisitReferrerOpenerIDs(VisitID visit_id,
   return db_->UpdateVisitRow(row);
 }
 
+bool HistoryBackend::DeleteAllForeignVisits() {
+  if (!db_)
+    return false;
+
+  // TODO(crbug.com/1347733): There may be lots (1000s) of foreign visits, so
+  // querying and removing them all at once may be very expensive. We need to do
+  // this in multiple passes instead.
+  VisitVector visits;
+  if (!db_->GetAllForeignVisits(&visits))
+    return false;
+
+  return RemoveVisits(visits);
+}
+
 bool HistoryBackend::RemoveVisits(const VisitVector& visits) {
   if (!db_)
     return false;

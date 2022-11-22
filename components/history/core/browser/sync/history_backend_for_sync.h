@@ -53,6 +53,8 @@ class HistoryBackendForSync {
 
   virtual std::vector<GURL> GetFaviconURLsForURL(const GURL& page_url) = 0;
 
+  virtual bool DeleteAllForeignVisits() = 0;
+
   virtual void AddObserver(HistoryBackendObserver* observer) = 0;
   virtual void RemoveObserver(HistoryBackendObserver* observer) = 0;
 };

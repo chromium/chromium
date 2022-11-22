@@ -250,6 +250,28 @@ std::vector<GURL> TestHistoryBackendForSync::GetFaviconURLsForURL(
   return {};
 }
 
+bool TestHistoryBackendForSync::DeleteAllForeignVisits() {
+  ++delete_all_foreign_visits_call_count_;
+
+  for (auto it = visits_.begin(); it != visits_.end();) {
+    const VisitRow& visit = *it;
+    if (visit.originator_cache_guid.empty()) {
+      // Local visit, leave it.
+      ++it;
+      continue;
+    } else {
+      // Foreign visit, erase it along with any annotations.
+      context_annotations_.erase(visit.visit_id);
+      content_annotations_.erase(visit.visit_id);
+      it = visits_.erase(it);
+      // Note: The real backend would also erase the corresponding URL, if this
+      // was the last remaining visit to it. That could be implemented here too,
+      // but currently isn't necessary for the unit tests that use this class.
+    }
+  }
+  return true;
+}
+
 void TestHistoryBackendForSync::AddObserver(HistoryBackendObserver* observer) {
   observers_.AddObserver(observer);
 }

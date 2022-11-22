@@ -566,6 +566,22 @@ bool VisitDatabase::GetVisitsInRangeForTransition(base::Time begin_time,
   return FillVisitVector(statement, visits);
 }
 
+bool VisitDatabase::GetAllForeignVisits(VisitVector* visits) {
+  DCHECK(visits);
+  visits->clear();
+
+  // Exactly all foreign visits (i.e. coming from a different device) have an
+  // `originator_cache_guid` set. (This does *not* include legacy TypedURL
+  // visits though - those have SOURCE_SYNCED but are otherwise not considered
+  // "foreign".)
+  sql::Statement statement(GetDB().GetCachedStatement(
+      SQL_FROM_HERE, "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits "
+                     "WHERE originator_cache_guid IS NOT NULL AND "
+                     "originator_cache_guid != ''"));
+
+  return FillVisitVector(statement, visits);
+}
+
 bool VisitDatabase::GetAllURLIDsForTransition(ui::PageTransition transition,
                                               std::vector<URLID>* urls) {
   DCHECK(urls);
