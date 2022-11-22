@@ -60,6 +60,7 @@ import org.chromium.components.browser_ui.site_settings.SingleCategorySettingsCo
 import org.chromium.components.browser_ui.site_settings.SiteSettingsFeatureList;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
+import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -136,14 +137,24 @@ public class RequestDesktopUtilsUnitTest {
     @Implements(SysUtils.class)
     static class ShadowSysUtils {
         private static boolean sLowEndDevice;
+        private static int sMemoryInMB;
 
         public static void setLowEndDevice(boolean lowEndDevice) {
             sLowEndDevice = lowEndDevice;
         }
 
+        public static void setMemoryInMB(int memoryInMB) {
+            sMemoryInMB = memoryInMB;
+        }
+
         @Implementation
         public static boolean isLowEndDevice() {
             return sLowEndDevice;
+        }
+
+        @Implementation
+        public static int amountOfPhysicalMemoryKB() {
+            return sMemoryInMB * ConversionUtils.KILOBYTES_PER_MEGABYTE;
         }
     }
 
@@ -227,6 +238,8 @@ public class RequestDesktopUtilsUnitTest {
 
         TrackerFactory.setTrackerForTests(mTracker);
         disableGlobalDefaultsExperimentFeatures();
+
+        ShadowSysUtils.setMemoryInMB(2048);
     }
 
     @After
@@ -377,6 +390,19 @@ public class RequestDesktopUtilsUnitTest {
                         .DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES);
         Assert.assertFalse(
                 "Desktop site global setting should not be default-enabled on low memory devices.",
+                shouldDefaultEnable);
+    }
+
+    @Test
+    public void testShouldDefaultEnableGlobalSetting_MemoryThreshold() {
+        Map<String, String> params = new HashMap<>();
+        params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_DEFAULT_ON_MEMORY_LIMIT, "4000");
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
+        boolean shouldDefaultEnable = RequestDesktopUtils.shouldDefaultEnableGlobalSetting(
+                RequestDesktopUtils
+                        .DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES);
+        Assert.assertFalse(
+                "Desktop site global setting should not be default-enabled on devices below the memory threshold.",
                 shouldDefaultEnable);
     }
 
@@ -753,6 +779,21 @@ public class RequestDesktopUtilsUnitTest {
                 mProfile, mMessageDispatcher, mActivity, mCurrentTabSupplier);
         Assert.assertFalse(
                 "Desktop site global setting opt-in message should not be shown when the setting is already enabled.",
+                shown);
+    }
+
+    @Test
+    public void testMaybeShowGlobalSettingOptInMessage_MemoryThreshold() {
+        Map<String, String> params = new HashMap<>();
+        params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_OPT_IN_ENABLED, "true");
+        params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_OPT_IN_MEMORY_LIMIT, "4000");
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
+
+        boolean shown = RequestDesktopUtils.maybeShowGlobalSettingOptInMessage(
+                RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MIN_THRESHOLD_INCHES,
+                mProfile, mMessageDispatcher, mActivity, mCurrentTabSupplier);
+        Assert.assertFalse(
+                "Desktop site global setting opt-in message should not be shown on devices below the memory threshold.",
                 shown);
     }
 

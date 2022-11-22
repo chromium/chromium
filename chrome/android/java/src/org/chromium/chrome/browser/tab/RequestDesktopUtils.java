@@ -32,6 +32,7 @@ import org.chromium.components.browser_ui.site_settings.SingleCategorySettingsCo
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsFeatureList;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
+import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -67,6 +68,8 @@ public class RequestDesktopUtils {
     static final double DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES = 12.0;
     static final String PARAM_GLOBAL_SETTING_DEFAULT_ON_ON_LOW_END_DEVICES =
             "default_on_on_low_end_devices";
+    static final String PARAM_GLOBAL_SETTING_DEFAULT_ON_MEMORY_LIMIT = "default_on_memory_limit";
+    static final int DEFAULT_GLOBAL_SETTING_DEFAULT_ON_MEMORY_LIMIT_THRESHOLD_MB = 0;
     static final String PARAM_SHOW_MESSAGE_ON_GLOBAL_SETTING_DEFAULT_ON =
             "show_message_on_default_on";
 
@@ -78,6 +81,8 @@ public class RequestDesktopUtils {
             "opt_in_display_size_max_threshold_inches";
     static final double DEFAULT_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MAX_THRESHOLD_INCHES =
             Double.MAX_VALUE;
+    static final String PARAM_GLOBAL_SETTING_OPT_IN_MEMORY_LIMIT = "opt_in_memory_limit";
+    static final int DEFAULT_GLOBAL_SETTING_OPT_IN_MEMORY_LIMIT_THRESHOLD_MB = 0;
 
     // Global defaults experiment constants.
     static final String ENABLED_GROUP_SUFFIX = "_Enabled";
@@ -334,6 +339,16 @@ public class RequestDesktopUtils {
             return false;
         }
 
+        // If the device does not meet the memory threshold, avoid default-enabling the setting.
+        int memoryLimitMB = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(feature,
+                PARAM_GLOBAL_SETTING_DEFAULT_ON_MEMORY_LIMIT,
+                DEFAULT_GLOBAL_SETTING_DEFAULT_ON_MEMORY_LIMIT_THRESHOLD_MB);
+        if (memoryLimitMB != 0
+                && SysUtils.amountOfPhysicalMemoryKB()
+                        < memoryLimitMB * ConversionUtils.KILOBYTES_PER_MEGABYTE) {
+            return false;
+        }
+
         SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
 
         boolean previouslyDefaultEnabled = sharedPreferencesManager.readBoolean(
@@ -522,6 +537,16 @@ public class RequestDesktopUtils {
         // Present the message only if opt-in is enabled.
         if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                     feature, PARAM_GLOBAL_SETTING_OPT_IN_ENABLED, false)) {
+            return false;
+        }
+
+        // Present the message only if the device meets the memory threshold.
+        int memoryLimitMB = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(feature,
+                PARAM_GLOBAL_SETTING_OPT_IN_MEMORY_LIMIT,
+                DEFAULT_GLOBAL_SETTING_OPT_IN_MEMORY_LIMIT_THRESHOLD_MB);
+        if (memoryLimitMB != 0
+                && SysUtils.amountOfPhysicalMemoryKB()
+                        < memoryLimitMB * ConversionUtils.KILOBYTES_PER_MEGABYTE) {
             return false;
         }
 
