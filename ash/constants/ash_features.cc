@@ -1183,12 +1183,6 @@ BASE_FEATURE(kImeTrayHideVoiceButton,
              "ImeTrayHideVoiceButton",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables improved keyboard shortcuts for activating desks at specified indices
-// and toggling whether a window is assigned to all desks.
-BASE_FEATURE(kImprovedDesksKeyboardShortcuts,
-             "ImprovedDesksKeyboardShortcuts",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether to show new improved UI for cryptohome errors that happened
 // during login. UI contains links to help center and might provide actions
 // that can be taken to resolve the problem.
@@ -2606,10 +2600,6 @@ bool IsStartAssistantAudioDecoderOnDemandEnabled() {
 
 bool IsImeTrayHideVoiceButtonEnabled() {
   return base::FeatureList::IsEnabled(kImeTrayHideVoiceButton);
-}
-
-bool IsImprovedDesksKeyboardShortcutsEnabled() {
-  return base::FeatureList::IsEnabled(kImprovedDesksKeyboardShortcuts);
 }
 
 bool IsInputInDiagnosticsAppEnabled() {

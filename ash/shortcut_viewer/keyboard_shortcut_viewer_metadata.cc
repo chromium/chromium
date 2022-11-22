@@ -1385,10 +1385,7 @@ const std::vector<ash::KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
   if (!is_initialized) {
     is_initialized = true;
 
-    // The improved desks keyboard shortcuts should only be enabled if the
-    // improved keyboard shortcuts flag is also enabled.
-    if (::features::IsImprovedKeyboardShortcutsEnabled() &&
-        ash::features::IsImprovedDesksKeyboardShortcutsEnabled()) {
+    if (::features::IsImprovedKeyboardShortcutsEnabled()) {
       const ash::KeyboardShortcutItem indexed_activation_shortcut = {
           // |categories|
           {ShortcutCategory::kTabAndWindow},

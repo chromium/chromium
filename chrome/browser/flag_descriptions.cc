@@ -1654,13 +1654,6 @@ const char kIgnoreSyncEncryptionKeysLongMissingDescription[] =
     "resets the counter. The threshold is configurable via the "
     "MinGuResponsesToIgnoreKey feature parameter.";
 
-const char kImprovedDesksKeyboardShortcutsName[] =
-    "Enable improved desks keyboard shortcuts";
-const char kImprovedDesksKeyboardShortcutsDescription[] =
-    "Enable keyboard shortcuts for activating desks at specific indices and "
-    "toggling whether a window is assigned to all desks. Must be used with "
-    "the #improved-keyboard-shortcuts flag.";
-
 const char kImprovedKeyboardShortcutsName[] =
     "Enable improved keyboard shortcuts";
 const char kImprovedKeyboardShortcutsDescription[] =

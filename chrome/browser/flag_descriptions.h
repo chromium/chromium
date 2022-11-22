@@ -927,9 +927,6 @@ extern const char kIgnoreGpuBlocklistDescription[];
 extern const char kIgnoreSyncEncryptionKeysLongMissingName[];
 extern const char kIgnoreSyncEncryptionKeysLongMissingDescription[];
 
-extern const char kImprovedDesksKeyboardShortcutsName[];
-extern const char kImprovedDesksKeyboardShortcutsDescription[];
-
 extern const char kImprovedKeyboardShortcutsName[];
 extern const char kImprovedKeyboardShortcutsDescription[];
 

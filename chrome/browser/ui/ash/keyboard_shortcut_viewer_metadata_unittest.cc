@@ -44,11 +44,6 @@ const char* BooleanToString(bool value) {
   return value ? "true" : "false";
 }
 
-bool ShouldDesksKeyboardShortcutsBeEnabled() {
-  return ::features::IsImprovedKeyboardShortcutsEnabled() &&
-         ash::features::IsImprovedDesksKeyboardShortcutsEnabled();
-}
-
 std::string ModifiersToString(int modifiers) {
   return base::StringPrintf("shift=%s control=%s alt=%s search=%s",
                             BooleanToString(modifiers & ui::EF_SHIFT_DOWN),
@@ -142,7 +137,7 @@ class KeyboardShortcutViewerMetadataTest : public testing::Test {
       ash_accelerator_ids_.insert({accel_data.keycode, accel_data.modifiers});
     }
 
-    if (ShouldDesksKeyboardShortcutsBeEnabled()) {
+    if (::features::IsImprovedKeyboardShortcutsEnabled()) {
       for (size_t i = 0;
            i <
            ash::kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorDataLength;
@@ -258,7 +253,7 @@ TEST_F(KeyboardShortcutViewerMetadataTest,
   for (const auto& accel_mapping : GetAcceleratorList())
     chrome_accelerators.emplace_back(accel_mapping);
 
-  if (ShouldDesksKeyboardShortcutsBeEnabled()) {
+  if (::features::IsImprovedKeyboardShortcutsEnabled()) {
     for (size_t i = 0;
          i <
          ash::kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorDataLength;
