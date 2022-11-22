@@ -222,7 +222,13 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, DISABLED_ActiveTabPermission) {
 // events to the onStatusChange listener.  The test loads a page that toggles
 // fullscreen mode, using the Fullscreen Javascript API, in response to mouse
 // clicks.
-IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, FullscreenEvents) {
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1392776): Flaky on Mac.
+#define MAYBE_FullscreenEvents DISABLED_FullscreenEvents
+#else
+#define MAYBE_FullscreenEvents FullscreenEvents
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MAYBE_FullscreenEvents) {
   AddExtensionToCommandLineAllowlist();
 
   ExtensionTestMessageListener capture_started("tab_capture_started");
