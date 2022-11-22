@@ -122,16 +122,6 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
       content::SessionStorageNamespace* session_storage_namespace,
       const gfx::Size& size);
 
-  // Starts a prefetch for the prefetch url from NavigationPredictor on page
-  // load, if NoStatePrefetch and prefetch_after_preconnect are true. Uses the
-  // NavigationPredictor's browser context and the default
-  // SessionStorageNamespace. Returns a NoStatePrefetchHandle or NULL.
-  std::unique_ptr<NoStatePrefetchHandle>
-  StartPrefetchingFromNavigationPredictor(
-      const GURL& url,
-      content::SessionStorageNamespace* session_storage_namespace,
-      const gfx::Size& size);
-
   // Adds a prerender for the prefetch url from IsolatedPrerender on
   // page load, if NoStatePrefetch and prefetch_after_preconnect are true.
   // Uses the NavigationPredictor's browser context and the default

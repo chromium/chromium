@@ -366,18 +366,6 @@ TEST_F(PrerendererNavigationPredictorPrefetchHoldbackTest,
   EXPECT_TRUE(AddSimpleLinkTrigger(url));
 }
 
-TEST_F(PrerendererNavigationPredictorPrefetchHoldbackTest,
-       PredictorPrefetchHoldbackPredictorReferrer) {
-  GURL url("http://www.notgoogle.com/");
-  no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-      url, absl::nullopt, ORIGIN_NAVIGATION_PREDICTOR,
-      FINAL_STATUS_PROFILE_DESTROYED);
-  EXPECT_EQ(
-      nullptr,
-      no_state_prefetch_manager()->StartPrefetchingFromNavigationPredictor(
-          url, nullptr, gfx::Size()));
-}
-
 // Verify that link-rel:next URLs are not prefetched.
 TEST_F(NoStatePrefetchTest, LinkRelNextWithNSPDisabled) {
   GURL url("http://www.notgoogle.com/");
@@ -408,19 +396,6 @@ TEST_F(PrerendererNavigationPredictorPrefetchHoldbackDisabledTest,
       ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN, FINAL_STATUS_PROFILE_DESTROYED);
 
   EXPECT_TRUE(AddSimpleLinkTrigger(url));
-}
-
-TEST_F(PrerendererNavigationPredictorPrefetchHoldbackDisabledTest,
-       PredictorPrefetchHoldbackOffPredictorReferrer) {
-  GURL url("http://www.notgoogle.com/");
-  no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-      url, absl::nullopt, ORIGIN_NAVIGATION_PREDICTOR,
-      FINAL_STATUS_PROFILE_DESTROYED);
-
-  EXPECT_NE(
-      nullptr,
-      no_state_prefetch_manager()->StartPrefetchingFromNavigationPredictor(
-          url, nullptr, gfx::Size()));
 }
 
 // Flaky on Android and Mac, crbug.com/1087876.

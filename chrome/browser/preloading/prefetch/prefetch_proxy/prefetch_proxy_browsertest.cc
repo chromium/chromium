@@ -139,8 +139,6 @@
 
 namespace {
 
-constexpr gfx::Size kSize(640, 480);
-
 const char kAllowedUAClientHint[] = "sec-ch-ua";
 const char kAllowedUAMobileClientHint[] = "sec-ch-ua-mobile";
 const char kAllowedUAPlatformClientHint[] = "sec-ch-ua-platform";
@@ -628,18 +626,6 @@ class PrefetchProxyBrowserTest
       document.head.appendChild(script);)");
 
     EXPECT_TRUE(ExecuteScript(GetWebContents(), speculation_script));
-  }
-
-  std::unique_ptr<prerender::NoStatePrefetchHandle> StartPrerender(
-      const GURL& url) {
-    prerender::NoStatePrefetchManager* no_state_prefetch_manager =
-        prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
-            browser()->profile());
-
-    return no_state_prefetch_manager->StartPrefetchingFromNavigationPredictor(
-        url,
-        GetWebContents()->GetController().GetDefaultSessionStorageNamespace(),
-        kSize);
   }
 
   network::mojom::CustomProxyConfigPtr WaitForUpdatedCustomProxyConfig() {

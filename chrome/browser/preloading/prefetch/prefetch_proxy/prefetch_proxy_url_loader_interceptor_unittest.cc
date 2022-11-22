@@ -19,12 +19,6 @@
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "url/gurl.h"
 
-namespace {
-
-const gfx::Size kSize(640, 480);
-
-}  // namespace
-
 // These tests leak mojo objects (like the PrefetchProxyURLLoader) because
 // they do not have valid mojo channels, which would normally delete the bound
 // objects on destruction. This is expected and cannot be easily fixed without
@@ -84,18 +78,6 @@ class PrefetchProxyURLLoaderInterceptorTest
     no_state_prefetch_manager->CancelAllPrerenders();
 
     ChromeRenderViewHostTestHarness::TearDown();
-  }
-
-  std::unique_ptr<prerender::NoStatePrefetchHandle> StartPrerender(
-      const GURL& url) {
-    prerender::NoStatePrefetchManager* no_state_prefetch_manager =
-        prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
-            profile());
-
-    return no_state_prefetch_manager->StartPrefetchingFromNavigationPredictor(
-        url,
-        web_contents()->GetController().GetDefaultSessionStorageNamespace(),
-        kSize);
   }
 
   void WaitForCallback() {

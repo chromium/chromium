@@ -663,46 +663,6 @@ class TestPrerenderStopObserver
 };
 }  // namespace
 
-// Tests that the LoadingPredictor doesn't preconnect during a prerender.
-IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
-                       PrepareForPageLoadDuringPrerender) {
-  GURL url("http://test.com");
-  base::RunLoop prerender_run_loop;
-  TestPrerenderStopObserver prerender_observer(
-      prerender_run_loop.QuitClosure());
-
-  prerender::NoStatePrefetchManager* no_state_prefetch_manager =
-      prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
-          browser()->profile());
-
-  std::unique_ptr<prerender::NoStatePrefetchHandle> handle =
-      no_state_prefetch_manager->StartPrefetchingFromNavigationPredictor(
-          url,
-          browser()
-              ->tab_strip_model()
-              ->GetActiveWebContents()
-              ->GetController()
-              .GetDefaultSessionStorageNamespace(),
-          gfx::Size(640, 480));
-  ASSERT_TRUE(handle);
-  handle->SetObserver(&prerender_observer);
-  prerender_run_loop.Run();
-
-  net::SchemefulSite site = net::SchemefulSite(url);
-  net::NetworkAnonymizationKey network_anonymization_key(site, site);
-  // Ensure that the prerender does not make a host lookup or attempt to
-  // preconnect.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(preconnect_manager_observer()->HasHostBeenLookedUp(
-      url.host(), network_anonymization_key));
-  EXPECT_FALSE(preconnect_manager_observer()->HasHostBeenLookedUp(
-      "", network_anonymization_key));
-  EXPECT_FALSE(preconnect_manager_observer()->HasOriginAttemptedToPreconnect(
-      url.DeprecatedGetOriginAsURL()));
-  EXPECT_FALSE(
-      preconnect_manager_observer()->HasOriginAttemptedToPreconnect(GURL()));
-}
-
 // Tests that the LoadingPredictor preconnects to the main frame origin even if
 // it doesn't have any prediction for this origin.
 IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,

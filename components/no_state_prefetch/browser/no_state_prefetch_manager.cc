@@ -216,16 +216,6 @@ NoStatePrefetchManager::StartPrefetchingFromOmnibox(
 }
 
 std::unique_ptr<NoStatePrefetchHandle>
-NoStatePrefetchManager::StartPrefetchingFromNavigationPredictor(
-    const GURL& url,
-    SessionStorageNamespace* session_storage_namespace,
-    const gfx::Size& size) {
-  return StartPrefetchingWithPreconnectFallback(
-      ORIGIN_NAVIGATION_PREDICTOR, url, content::Referrer(), absl::nullopt,
-      gfx::Rect(size), session_storage_namespace);
-}
-
-std::unique_ptr<NoStatePrefetchHandle>
 NoStatePrefetchManager::AddIsolatedPrerender(
     const GURL& url,
     SessionStorageNamespace* session_storage_namespace,
