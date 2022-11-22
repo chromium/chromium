@@ -15,11 +15,3 @@ void AddNamedGuidesToView(NSArray<GuideName*>* names, UIView* view) {
     [view addLayoutGuide:[[NamedGuide alloc] initWithName:name]];
   }
 }
-
-void SetNamedGuideConstrainedViews(
-    NSDictionary<GuideName*, UIView*>* views_for_names) {
-  for (GuideName* name in [views_for_names allKeys]) {
-    UIView* view = views_for_names[name];
-    [NamedGuide guideWithName:name view:view].constrainedView = view;
-  }
-}
