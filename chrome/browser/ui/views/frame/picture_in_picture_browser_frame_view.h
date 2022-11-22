@@ -70,6 +70,7 @@ class PictureInPictureBrowserFrameView
   void OnThemeChanged() override;
   void Layout() override;
   void AddedToWidget() override;
+  void RemovedFromWidget() override;
 #if BUILDFLAG(IS_LINUX)
   gfx::Insets MirroredFrameBorderInsets() const override;
   gfx::Insets GetInputInsets() const override;

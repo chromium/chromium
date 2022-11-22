@@ -319,6 +319,19 @@ void PictureInPictureBrowserFrameView::AddedToWidget() {
   BrowserNonClientFrameView::AddedToWidget();
 }
 
+void PictureInPictureBrowserFrameView::RemovedFromWidget() {
+  if (GetWidget()->IsClosed())
+    return;
+
+  widget_observation_.Reset();
+
+#if !BUILDFLAG(IS_MAC)
+  GetWidget()->GetNativeWindow()->RemovePreTargetHandler(this);
+#endif
+
+  BrowserNonClientFrameView::RemovedFromWidget();
+}
+
 #if BUILDFLAG(IS_LINUX)
 gfx::Insets PictureInPictureBrowserFrameView::MirroredFrameBorderInsets()
     const {
