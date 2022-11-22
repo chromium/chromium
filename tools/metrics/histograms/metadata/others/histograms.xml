@@ -9501,7 +9501,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OAuth2Login.SessionRestoreTimeToSuccess" units="ms"
-    expires_after="2022-12-04">
+    expires_after="2023-06-04">
   <owner>anastasiian@chromium.org</owner>
   <owner>sinhak@chromium.org</owner>
   <summary>
