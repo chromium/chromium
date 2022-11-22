@@ -116,6 +116,8 @@ def main():
     ffx_runner.run_ffx(
         ('config', 'set', 'pbms.storage.path', common.IMAGES_ROOT))
 
+    logging.debug('Checking for override file')
+
     # TODO(crbug/1380807): Remove when product bundles can be downloaded
     # for custom SDKs without editing metadata
     override_file = os.path.join(os.path.dirname(__file__), 'sdk_override.txt')
@@ -125,55 +127,65 @@ def main():
         pb_metadata.append('{sdk.root}/*.json')
       stack.enter_context(
           ffx_runner.scoped_config('pbms.metadata', json.dumps((pb_metadata))))
+      logging.debug('Applied overrides')
 
+    logging.debug('Checking for current signature')
     signature_filename = common.PRODUCT_BUNDLE_SIGNATURE_FILE
     curr_signature = {}
     if os.path.exists(signature_filename):
       with open(signature_filename, 'r') as f:
         curr_signature = json.load(f)
+      logging.debug('Loaded current signature')
 
+    logging.debug('Getting new SDK hash')
     new_sdk_hash = get_hash_from_sdk()
     new_signature = {'sdk_hash': new_sdk_hash}
 
     # If SDK versions match, remove the product bundles that are no longer
     # needed and download missing ones.
     if curr_signature.get('sdk_hash') == new_sdk_hash:
-      curr_signature.get('sdk_hash')
+      logging.debug('SDK hash has not changed')
       new_signature['path'] = curr_signature.get('path')
       new_product_bundle_hash = []
 
       for image in curr_signature.get('images', []):
+        logging.debug('Checking hash for image: %s', image)
         if image in new_product_bundles:
           new_product_bundle_hash.append(image)
         else:
-          logging.info('Removing no longer needed Fuchsia image %s' % image)
+          logging.info('Removing no longer needed Fuchsia image %s', image)
           ffx_runner.run_ffx(('product-bundle', 'remove', '-f', image))
 
       bundles_to_download = set(new_product_bundles) - \
                             set(curr_signature.get('images', []))
       for bundle in bundles_to_download:
+        logging.debug('Downloading image: %s', image)
         download_product_bundle(bundle, ffx_runner)
       new_product_bundle_hash.extend(bundles_to_download)
       new_signature['images'] = new_product_bundle_hash
 
+      logging.debug('Writing bundle signatures')
       with open(signature_filename, 'w') as f:
         f.write(json.dumps(new_signature))
       return 0
 
     # If SDK versions do not match, remove all existing product bundles
     # and download the ones required.
-    for pb in curr_signature.get('images', []):
-      ffx_runner.run_ffx(('product-bundle', 'remove', '-f', pb))
+    logging.debug('Removing all images')
+    ffx_runner.run_ffx(('product-bundle', 'remove', '-a', '-f'))
 
+    logging.debug('Make clean images root')
     curr_subdir = []
     if os.path.exists(common.IMAGES_ROOT):
       curr_subdir = os.listdir(common.IMAGES_ROOT)
     common.MakeCleanDirectory(common.IMAGES_ROOT)
 
     for pb in new_product_bundles:
+      logging.debug('Downloading bundle: %s', pb)
       download_product_bundle(pb, ffx_runner)
     new_signature['images'] = new_product_bundles
 
+    logging.debug('Writing new images signature')
     new_subdir = os.listdir(common.IMAGES_ROOT)
     subdir_diff = set(new_subdir) - set(curr_subdir)
     if len(subdir_diff) != 1:
