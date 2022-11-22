@@ -234,6 +234,7 @@
     appearance.backgroundEffect = [UIBlurEffect
         effectWithStyle:UIBlurEffectStyleSystemUltraThinMaterialLight];
     _toolbar.standardAppearance = appearance;
+    _toolbar.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
   } else {
     _toolbar.barStyle = UIBarStyleBlack;
     _toolbar.translucent = YES;

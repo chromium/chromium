@@ -570,7 +570,7 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
   }
 
   if (UseSymbols()) {
-    iconNotSelected.tintColor = [UIColor colorNamed:kGrey300Color];
+    iconNotSelected.tintColor = [UIColor colorNamed:kStaticGrey300Color];
     iconSelected.tintColor = UIColor.blackColor;
   } else {
     iconNotSelected.tintColor = UIColorFromRGB(kLegacySliderColor);
@@ -777,7 +777,8 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
   CGFloat size = selected ? kSelectedLabelSize : kLabelSize;
   UIColor* color;
   if (UseSymbols()) {
-    color = selected ? UIColor.blackColor : [UIColor colorNamed:kGrey300Color];
+    color = selected ? UIColor.blackColor
+                     : [UIColor colorNamed:kStaticGrey300Color];
   } else {
     color = selected ? UIColorFromRGB(kLegacySelectedColor)
                      : UIColorFromRGB(kLegacySliderColor);
