@@ -38,6 +38,11 @@ class TestResult : public ChromeSearchResult {
              double relevance,
              double ftrl_result_score);
 
+  TestResult(const std::string& id,
+             ResultType result_type,
+             crosapi::mojom::SearchResult::AnswerType answer_type,
+             DisplayType display_type);
+
   ~TestResult() override;
 
   // ChromeSearchResult overrides:

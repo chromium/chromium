@@ -332,31 +332,4 @@ TEST_F(OmniboxLacrosProviderTest, UnhandledUrls) {
             search_controller_->last_results()[1]->id());
 }
 
-// Test that answers of certain kinds (that tend to over-trigger) aren't shown
-// on very short queries.
-TEST_F(OmniboxLacrosProviderTest, ShortQuery) {
-  // Start with a query that is one character too short.
-  StartSearch(std::u16string(kMinQueryLengthForCommonAnswers - 1, 'a'));
-
-  // All results except dictionary and translate answers are allowed.
-  std::vector<cam::SearchResultPtr> to_produce;
-  to_produce.emplace_back(NewOmniboxResult("https://nonanswer.com/"));
-  to_produce.emplace_back(NewAnswerResult(
-      "https://finance.com/", cam::SearchResult::AnswerType::kFinance));
-  to_produce.emplace_back(NewOpenTabResult("https://opentab.com/"));
-  to_produce.emplace_back(NewAnswerResult(
-      "https://translation.com/", cam::SearchResult::AnswerType::kTranslation));
-  to_produce.emplace_back(NewAnswerResult(
-      "https://dictionary.com/", cam::SearchResult::AnswerType::kDictionary));
-  ProduceResults(std::move(to_produce));
-
-  ASSERT_EQ(3u, search_controller_->last_results().size());
-  EXPECT_EQ("omnibox_answer://https://finance.com/",
-            search_controller_->last_results()[0]->id());
-  EXPECT_EQ("opentab://https://opentab.com/",
-            search_controller_->last_results()[1]->id());
-  EXPECT_EQ("https://nonanswer.com/",
-            search_controller_->last_results()[2]->id());
-}
-
 }  // namespace app_list::test

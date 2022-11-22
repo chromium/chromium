@@ -6,16 +6,15 @@
 
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/containers/flat_set.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/app_list/search/omnibox/omnibox_util.h"
 #include "chrome/browser/ui/app_list/search/ranking/constants.h"
-#include "chrome/browser/ui/app_list/search/ranking/util.h"
+#include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 
 namespace app_list {
 namespace {
+
+using CrosApiSearchResult = ::crosapi::mojom::SearchResult;
 
 // Given `higher_priority` and `lower_priority` result types, deduplicate
 // results between the two result types in `results` based on their id,
@@ -67,12 +66,30 @@ void DeduplicateDriveFilesAndTabs(ResultsMap& results) {
   }
 }
 
-void FilterOmniboxResults(ResultsMap& results) {
+void FilterOmniboxResults(ResultsMap& results, const std::u16string& query) {
   // We currently only filter omnibox results. So if we don't have any yet,
   // early exit.
   const auto it = results.find(ProviderType::kOmnibox);
   if (it == results.end())
     return;
+
+  auto& omnibox_results = results[ProviderType::kOmnibox];
+
+  // Some answer result types overtrigger on short queries, so these will be
+  // filtered out be default.
+  if (query.size() <= kMinQueryLengthForCommonAnswers) {
+    for (const auto& omnibox_result : omnibox_results) {
+      auto& scoring = omnibox_result->scoring();
+      bool is_type_dictionary_or_translation =
+          omnibox_result->answer_type() ==
+              CrosApiSearchResult::AnswerType::kDictionary ||
+          omnibox_result->answer_type() ==
+              CrosApiSearchResult::AnswerType::kTranslation;
+      if (omnibox_result->display_type() == DisplayType::kAnswerCard &&
+          is_type_dictionary_or_translation)
+        scoring.filter = true;
+    }
+  }
 
   // Compute the total number of results. If we have fewer than can fit in the
   // UI, early exit.
@@ -85,26 +102,26 @@ void FilterOmniboxResults(ResultsMap& results) {
     return;
 
   // Sort the list of omnibox results best-to-worst.
-  auto& omnibox_results = results[ProviderType::kOmnibox];
   std::sort(omnibox_results.begin(), omnibox_results.end(),
             [](const auto& a, const auto& b) {
               return a->relevance() > b->relevance();
             });
 
-  // Filter all results after the |kMaxOmniboxResults|th one out of the UI, but
-  // never remove best matches.
+  // Filter all results after the |kMaxOmniboxResults|th one out of the UI,
+  // but never remove best matches  or answer cards.
   for (size_t i = kMaxOmniboxResults; i < omnibox_results.size(); ++i) {
     auto& scoring = omnibox_results[i]->scoring();
-    if (scoring.best_match_rank == -1)
+    if (scoring.best_match_rank == -1 &&
+        omnibox_results[i]->display_type() != DisplayType::kAnswerCard)
       scoring.filter = true;
   }
 }
 
 }  //  namespace
 
-FilteringRanker::FilteringRanker() {}
+FilteringRanker::FilteringRanker() = default;
 
-FilteringRanker::~FilteringRanker() {}
+FilteringRanker::~FilteringRanker() = default;
 
 void FilteringRanker::Start(const std::u16string& query,
                             ResultsMap& results,
@@ -117,7 +134,7 @@ void FilteringRanker::UpdateResultRanks(ResultsMap& results,
   // Do not filter for zero-state.
   if (last_query_.empty())
     return;
-  FilterOmniboxResults(results);
+  FilterOmniboxResults(results, last_query_);
   DeduplicateDriveFilesAndTabs(results);
   // TODO(crbug.com/1305880): Verify that game URLs match the omnibox stripped
   // URL once game URLs are finalized.

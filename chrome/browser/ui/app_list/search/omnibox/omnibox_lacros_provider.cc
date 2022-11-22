@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/app_list/search/omnibox/omnibox_lacros_provider.h"
 
-#include "ash/public/cpp/app_list/app_list_features.h"
-#include "base/bind.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/search_provider_ash.h"
@@ -33,24 +31,6 @@ namespace {
 
 using ::ash::string_matching::TokenizedString;
 using CrosApiSearchResult = ::crosapi::mojom::SearchResult;
-
-// Some answer result types overtrigger on short queries. Returns true if an
-// answer should be filtered.
-bool ShouldFilterAnswer(const crosapi::mojom::SearchResultPtr& search_result,
-                        const std::u16string& query) {
-  // TODO(crbug.com/1258415): Move this to the filtering ranker once more
-  // detailed result subtype info is exposed by ChromeSearchResult.
-  if (query.size() >= kMinQueryLengthForCommonAnswers)
-    return false;
-
-  switch (search_result->answer_type) {
-    case CrosApiSearchResult::AnswerType::kDictionary:
-    case CrosApiSearchResult::AnswerType::kTranslation:
-      return true;
-    default:
-      return false;
-  }
-}
 
 }  // namespace
 
@@ -132,7 +112,7 @@ void OmniboxLacrosProvider::OnResultsReceived(
       // Omnibox result.
       list_results.emplace_back(std::make_unique<OmniboxResult>(
           profile_, list_controller_, std::move(search_result), last_query_));
-    } else if (!ShouldFilterAnswer(search_result, last_query_)) {
+    } else {
       // Answer result.
       new_results.emplace_back(std::make_unique<OmniboxAnswerResult>(
           profile_, list_controller_, std::move(search_result), last_query_));

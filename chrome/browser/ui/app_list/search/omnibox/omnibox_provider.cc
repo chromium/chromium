@@ -8,11 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
-#include "ash/public/cpp/app_list/app_list_features.h"
-#include "base/bind.h"
-#include "base/callback_forward.h"
-#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
@@ -21,14 +16,11 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
-#include "chrome/browser/ui/app_list/search/common/types_util.h"
 #include "chrome/browser/ui/app_list/search/omnibox/omnibox_answer_result.h"
 #include "chrome/browser/ui/app_list/search/omnibox/omnibox_result.h"
 #include "chrome/browser/ui/app_list/search/omnibox/omnibox_util.h"
 #include "chrome/browser/ui/app_list/search/omnibox/open_tab_result.h"
-#include "chrome/browser/ui/app_list/search/ranking/util.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -46,25 +38,6 @@ using ::ash::string_matching::TokenizedString;
 bool IsAnswer(const AutocompleteMatch& match) {
   return match.answer.has_value() ||
          match.type == AutocompleteMatchType::CALCULATOR;
-}
-
-// Some answer result types overtrigger on short queries. Returns true if an
-// answer should be filtered.
-bool ShouldFilterAnswer(const AutocompleteMatch& match,
-                        const std::u16string& query) {
-  // TODO(crbug.com/1258415): Move this to the filtering ranker once more
-  // detailed result subtype info is exposed by ChromeSearchResult.
-  if (query.size() >= kMinQueryLengthForCommonAnswers || !match.answer) {
-    return false;
-  }
-
-  switch (match.answer.value().type()) {
-    case SuggestionAnswer::ANSWER_TYPE_DICTIONARY:
-    case SuggestionAnswer::ANSWER_TYPE_TRANSLATION:
-      return true;
-    default:
-      return false;
-  }
 }
 
 int ProviderTypes() {
@@ -162,7 +135,7 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
               match, controller_.get(), &favicon_cache_,
               BookmarkModelFactory::GetForBrowserContext(profile_), input_),
           last_query_));
-    } else if (!ShouldFilterAnswer(match, last_query_)) {
+    } else {
       new_results.emplace_back(std::make_unique<OmniboxAnswerResult>(
           profile_, list_controller_,
           crosapi::CreateAnswerResult(match, controller_.get(), last_query_,

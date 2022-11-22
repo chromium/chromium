@@ -8,10 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/app_list/search/omnibox/omnibox_util.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
@@ -289,39 +287,6 @@ TEST_F(OmniboxProviderTest, UnhandledUrls) {
             search_controller_->last_results()[0]->id());
   EXPECT_EQ("opentab://https://docs.google.com/doc2",
             search_controller_->last_results()[1]->id());
-}
-
-// Test that answers of certain kinds (that tend to over-trigger) aren't shown
-// on very short queries.
-TEST_F(OmniboxProviderTest, ShortQuery) {
-  // Start with a query that is one character too short.
-  StartSearch(std::u16string(kMinQueryLengthForCommonAnswers - 1, 'a'));
-
-  // All results except dictionary and translate answers are allowed.
-  std::vector<AutocompleteMatch> to_produce;
-  AutocompleteResult result;
-
-  to_produce.emplace_back(NewOmniboxResult("https://nonanswer.com/"));
-  to_produce.emplace_back(
-      NewAnswerResult("https://finance.com/",
-                      SuggestionAnswer::AnswerType::ANSWER_TYPE_FINANCE));
-  to_produce.emplace_back(NewOpenTabResult("https://opentab.com/"));
-  to_produce.emplace_back(
-      NewAnswerResult("https://translation.com/",
-                      SuggestionAnswer::AnswerType::ANSWER_TYPE_TRANSLATION));
-  to_produce.emplace_back(
-      NewAnswerResult("https://dictionary.com/",
-                      SuggestionAnswer::AnswerType::ANSWER_TYPE_DICTIONARY));
-  result.AppendMatches(to_produce);
-  ProduceResults(std::move(result));
-
-  ASSERT_EQ(3u, search_controller_->last_results().size());
-  EXPECT_EQ("omnibox_answer://https://finance.com/",
-            search_controller_->last_results()[0]->id());
-  EXPECT_EQ("opentab://https://opentab.com/",
-            search_controller_->last_results()[1]->id());
-  EXPECT_EQ("https://nonanswer.com/",
-            search_controller_->last_results()[2]->id());
 }
 
 }  // namespace app_list::test

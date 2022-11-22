@@ -47,6 +47,17 @@ TestResult::TestResult(const std::string& id,
   scoring().ftrl_result_score = ftrl_result_score;
 }
 
+TestResult::TestResult(const std::string& id,
+                       ResultType result_type,
+                       crosapi::mojom::SearchResult::AnswerType answer_type,
+                       DisplayType display_type) {
+  set_id(id);
+  SetTitle(base::UTF8ToUTF16(id));
+  SetResultType(result_type);
+  set_answer_type(answer_type);
+  SetDisplayType(display_type);
+}
+
 TestResult::~TestResult() = default;
 
 }  // namespace app_list
