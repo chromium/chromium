@@ -318,6 +318,7 @@ bool WebContentsDevToolsAgentHost::AttachSession(DevToolsSession* session,
   // TODO(caseq): figure out if this can be a CHECK().
   if (!web_contents())
     return false;
+  session->SetBrowserOnly(true);
   const bool may_attach_to_brower = session->GetClient()->IsTrusted();
   session->CreateAndAddHandler<protocol::TargetHandler>(
       may_attach_to_brower
