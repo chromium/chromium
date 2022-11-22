@@ -32,8 +32,7 @@ enum class CloudProvider {
 // Initiates the upload workflow.
 bool UploadAndOpen(Profile* profile,
                    const std::vector<storage::FileSystemURL>& file_urls,
-                   const CloudProvider cloud_provider,
-                   bool show_dialog);
+                   const CloudProvider cloud_provider);
 
 // Defines the web dialog used to help users upload Office files to the cloud.
 class CloudUploadDialog : public SystemWebDialogDelegate {

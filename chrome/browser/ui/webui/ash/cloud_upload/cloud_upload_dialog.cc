@@ -83,6 +83,7 @@ void OnDialogComplete(Profile* profile,
                       const std::string& action) {
   using file_manager::file_tasks::kActionIdOpenInOffice;
   using file_manager::file_tasks::SetExcelFileHandler;
+  using file_manager::file_tasks::SetOfficeSetupComplete;
   using file_manager::file_tasks::SetPowerPointFileHandler;
   using file_manager::file_tasks::SetWordFileHandler;
 
@@ -93,11 +94,13 @@ void OnDialogComplete(Profile* profile,
                         file_manager::file_tasks::kActionIdWebDriveOfficeExcel);
     SetPowerPointFileHandler(
         profile, file_manager::file_tasks::kActionIdWebDriveOfficePowerPoint);
+    SetOfficeSetupComplete(profile);
     StartUpload(profile, file_urls, CloudProvider::kGoogleDrive);
   } else if (action == kUserActionUploadToOneDrive) {
     SetWordFileHandler(profile, kActionIdOpenInOffice);
     SetExcelFileHandler(profile, kActionIdOpenInOffice);
     SetPowerPointFileHandler(profile, kActionIdOpenInOffice);
+    SetOfficeSetupComplete(profile);
     StartUpload(profile, file_urls, CloudProvider::kOneDrive);
   } else if (action == kUserActionSetUpGoogleDrive) {
     CloudUploadDialog::Show(profile, file_urls,
@@ -115,9 +118,9 @@ void OnDialogComplete(Profile* profile,
 
 bool UploadAndOpen(Profile* profile,
                    const std::vector<storage::FileSystemURL>& file_urls,
-                   const CloudProvider cloud_provider,
-                   bool show_dialog) {
-  if (show_dialog) {
+                   const CloudProvider cloud_provider) {
+  // Run the setup flow if it's never been completed.
+  if (!file_manager::file_tasks::OfficeSetupComplete(profile)) {
     return CloudUploadDialog::Show(profile, file_urls,
                                    mojom::DialogPage::kFileHandlerDialog);
   }

@@ -380,6 +380,13 @@ void SetWordFileHandler(Profile* profile, const std::string& action_id);
 void SetExcelFileHandler(Profile* profile, const std::string& action_id);
 void SetPowerPointFileHandler(Profile* profile, const std::string& action_id);
 
+// TODO(petermarshall): Move these to a new file office_file_tasks.cc/h
+// Sets the user preference storing whether the setup flow for office files has
+// ever been completed.
+void SetOfficeSetupComplete(Profile* profile, bool complete = true);
+// Whether or not the setup flow for office files has ever been completed.
+bool OfficeSetupComplete(Profile* profile);
+
 }  // namespace file_manager::file_tasks
 
 #endif  // CHROME_BROWSER_ASH_FILE_MANAGER_FILE_TASKS_H_

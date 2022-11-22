@@ -26,4 +26,14 @@ void FilesInternalsPageHandler::SetSmbfsEnableVerboseLogging(bool enabled) {
   files_internals_ui_->delegate()->SetSmbfsEnableVerboseLogging(enabled);
 }
 
+void FilesInternalsPageHandler::GetOfficeSetupComplete(
+    GetOfficeSetupCompleteCallback callback) {
+  std::move(callback).Run(
+      files_internals_ui_->delegate()->GetOfficeSetupComplete());
+}
+
+void FilesInternalsPageHandler::SetOfficeSetupComplete(bool complete) {
+  files_internals_ui_->delegate()->SetOfficeSetupComplete(complete);
+}
+
 }  // namespace ash

@@ -636,6 +636,7 @@ extern const char kDefaultTasksBySuffix[];
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kDefaultHandlersForFileExtensions[];
+extern const char kOfficeSetupComplete[];
 #endif
 
 extern const char kSharedClipboardEnabled[];

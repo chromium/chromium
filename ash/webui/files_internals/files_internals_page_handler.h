@@ -29,6 +29,8 @@ class FilesInternalsPageHandler : public mojom::files_internals::PageHandler {
   void GetSmbfsEnableVerboseLogging(
       GetSmbfsEnableVerboseLoggingCallback callback) override;
   void SetSmbfsEnableVerboseLogging(bool enabled) override;
+  void GetOfficeSetupComplete(GetOfficeSetupCompleteCallback callback) override;
+  void SetOfficeSetupComplete(bool complete) override;
 
  private:
   raw_ptr<FilesInternalsUI> files_internals_ui_;  // Owns |this|.

@@ -478,8 +478,7 @@ bool ExecuteWebDriveOfficeTask(Profile* profile,
       // TODO(b/247038054) Add user preference to decide whether or not the
       // dialog should be shown.
       return ash::cloud_upload::UploadAndOpen(
-          profile, file_urls, ash::cloud_upload::CloudProvider::kGoogleDrive,
-          /*show_dialog=*/false);
+          profile, file_urls, ash::cloud_upload::CloudProvider::kGoogleDrive);
     }
   } else {
     UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName,
@@ -575,8 +574,7 @@ bool ExecuteOpenInOfficeTask(Profile* profile,
       // dialog should be shown.
       LOG(ERROR) << "File can be moved to ODFS";
       return ash::cloud_upload::UploadAndOpen(
-          profile, file_urls, ash::cloud_upload::CloudProvider::kOneDrive,
-          /*show_dialog=*/false);
+          profile, file_urls, ash::cloud_upload::CloudProvider::kOneDrive);
     }
   } else {
     LOG(ERROR) << "ODFS not available/mounted";
@@ -593,6 +591,7 @@ ResultingTasks::~ResultingTasks() = default;
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kDefaultHandlersForFileExtensions);
+  registry->RegisterBooleanPref(prefs::kOfficeSetupComplete, false);
 }
 
 // Converts a string to a TaskType. Returns TASK_TYPE_UNKNOWN on error.
@@ -1251,6 +1250,14 @@ void SetPowerPointFileHandler(Profile* profile, const std::string& action_id) {
       {"application/vnd.ms-powerpoint",
        "application/"
        "vnd.openxmlformats-officedocument.presentationml.presentation"});
+}
+
+void SetOfficeSetupComplete(Profile* profile, bool complete) {
+  profile->GetPrefs()->SetBoolean(prefs::kOfficeSetupComplete, complete);
+}
+
+bool OfficeSetupComplete(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(prefs::kOfficeSetupComplete);
 }
 
 }  // namespace file_manager::file_tasks

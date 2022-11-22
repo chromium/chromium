@@ -27,6 +27,9 @@ class ChromeFilesInternalsUIDelegate : public ash::FilesInternalsUIDelegate {
   bool GetSmbfsEnableVerboseLogging() const override;
   void SetSmbfsEnableVerboseLogging(bool enabled) override;
 
+  bool GetOfficeSetupComplete() const override;
+  void SetOfficeSetupComplete(bool complete) override;
+
  private:
   raw_ptr<content::WebUI> web_ui_;  // Owns |this|.
 };
