@@ -13,6 +13,8 @@
 #include "content/public/browser/android/browser_context_handle.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -52,7 +54,7 @@ void JNI_InstalledAppProviderImpl_CheckDigitalAssetLinksRelationshipForWebApk(
   // |handler| is owned by the callback, so it will be valid until the execution
   // is over.
   handler_ptr->CheckDigitalAssetLinkRelationshipForWebApk(
-      web_domain, manifest_url,
+      url::Origin::Create(GURL(web_domain)), manifest_url,
       base::BindOnce(&DidGetResult, std::move(handler), std::move(callback)));
 }
 

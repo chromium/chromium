@@ -234,9 +234,9 @@ void WebAppBrowserController::CheckDigitalAssetLinkRelationshipForAndroidApp(
   // and will be destroyed if this object is destroyed.
   // TODO(swestphal): Support passing several fingerprints for verification.
   std::vector<std::string> fingerprints{fingerprint};
-  const std::string origin = GetAppStartUrl().DeprecatedGetOriginAsURL().spec();
   asset_link_handler_->CheckDigitalAssetLinkRelationshipForAndroidApp(
-      origin, kRelationship, std::move(fingerprints), package_name,
+      url::Origin::Create(GetAppStartUrl()), kRelationship,
+      std::move(fingerprints), package_name,
       base::BindOnce(&WebAppBrowserController::OnRelationshipCheckComplete,
                      base::Unretained(this)));
 }

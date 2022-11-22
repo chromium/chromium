@@ -18,6 +18,8 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 using base::android::AppendJavaStringArrayToStringVector;
 using base::android::ConvertJavaStringToUTF16;
@@ -66,7 +68,8 @@ bool OriginVerifier::VerifyOrigin(
   auto* asset_link_handler_ptr = asset_link_handler.get();
 
   return asset_link_handler_ptr->CheckDigitalAssetLinkRelationshipForAndroidApp(
-      origin, relationship, std::move(fingerprints), package_name,
+      url::Origin::Create(GURL(origin)), relationship, std::move(fingerprints),
+      package_name,
       base::BindOnce(&OriginVerifier::OnRelationshipCheckComplete,
                      base::Unretained(this), std::move(asset_link_handler),
                      origin));
