@@ -38,6 +38,12 @@ void StoreZoneFunctions(const ChromeMallocZone* zone,
     // This may be nullptr.
     functions->free_definite_size = zone->free_definite_size;
   }
+  if (zone->version >= 10) {
+    functions->claimed_address = zone->claimed_address;
+  }
+  if (zone->version >= 13) {
+    functions->try_free_default = zone->try_free_default;
+  }
 
   // Note that zone version 8 introduced a pressure relief callback, and version
   // 10 introduced a claimed address callback, but neither are allocation or

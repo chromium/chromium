@@ -54,6 +54,18 @@ size_t GetSizeEstimateImpl(const AllocatorDispatch*, void* ptr, void* context) {
   return functions.size(reinterpret_cast<struct _malloc_zone_t*>(context), ptr);
 }
 
+bool ClaimedAddressImpl(const AllocatorDispatch*, void* ptr, void* context) {
+  MallocZoneFunctions& functions = GetFunctionsForZone(context);
+  if (functions.claimed_address) {
+    return functions.claimed_address(
+        reinterpret_cast<struct _malloc_zone_t*>(context), ptr);
+  }
+  // If the fast API 'claimed_address' is not implemented in the specified zone,
+  // fall back to 'size' function, which also tells whether the given address
+  // belongs to the zone or not although it'd be slow.
+  return functions.size(reinterpret_cast<struct _malloc_zone_t*>(context), ptr);
+}
+
 unsigned BatchMallocImpl(const AllocatorDispatch* self,
                          size_t size,
                          void** results,
@@ -83,6 +95,17 @@ void FreeDefiniteSizeImpl(const AllocatorDispatch* self,
       reinterpret_cast<struct _malloc_zone_t*>(context), ptr, size);
 }
 
+void TryFreeDefaultImpl(const AllocatorDispatch* self,
+                        void* ptr,
+                        void* context) {
+  MallocZoneFunctions& functions = GetFunctionsForZone(context);
+  if (functions.try_free_default) {
+    return functions.try_free_default(
+        reinterpret_cast<struct _malloc_zone_t*>(context), ptr);
+  }
+  allocator_shim::TryFreeDefaultFallbackToFindZoneAndFree(ptr);
+}
+
 }  // namespace
 
 const AllocatorDispatch AllocatorDispatch::default_dispatch = {
@@ -93,9 +116,11 @@ const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &ReallocImpl,          /* realloc_function */
     &FreeImpl,             /* free_function */
     &GetSizeEstimateImpl,  /* get_size_estimate_function */
+    &ClaimedAddressImpl,   /* claimed_address_function */
     &BatchMallocImpl,      /* batch_malloc_function */
     &BatchFreeImpl,        /* batch_free_function */
     &FreeDefiniteSizeImpl, /* free_definite_size_function */
+    &TryFreeDefaultImpl,   /* try_free_default_function */
     nullptr,               /* aligned_malloc_function */
     nullptr,               /* aligned_realloc_function */
     nullptr,               /* aligned_free_function */

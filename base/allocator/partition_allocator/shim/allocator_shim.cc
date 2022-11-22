@@ -12,6 +12,7 @@
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 #include "base/memory/page_size.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
@@ -126,6 +127,37 @@ void RemoveAllocatorDispatchForTesting(AllocatorDispatch* dispatch) {
   PA_DCHECK(GetChainHead() == dispatch);
   g_chain_head.store(dispatch->next, std::memory_order_relaxed);
 }
+
+#if BUILDFLAG(IS_APPLE)
+void TryFreeDefaultFallbackToFindZoneAndFree(void* ptr) {
+  unsigned int zone_count = 0;
+  vm_address_t* zones = nullptr;
+  kern_return_t result =
+      malloc_get_all_zones(mach_task_self(), nullptr, &zones, &zone_count);
+  MACH_CHECK(result == KERN_SUCCESS, result) << "malloc_get_all_zones";
+
+  // "find_zone_and_free" expected by try_free_default.
+  //
+  // libmalloc's zones call find_registered_zone() in case the default one
+  // doesn't handle the allocation. We can't, so we try to emulate it. See the
+  // implementation in libmalloc/src/malloc.c for details.
+  // https://github.com/apple-oss-distributions/libmalloc/blob/main/src/malloc.c
+  for (unsigned int i = 0; i < zone_count; ++i) {
+    malloc_zone_t* zone = reinterpret_cast<malloc_zone_t*>(zones[i]);
+    if (size_t size = zone->size(zone, ptr)) {
+      if (zone->version >= 6 && zone->free_definite_size) {
+        zone->free_definite_size(zone, ptr, size);
+      } else {
+        zone->free(zone, ptr);
+      }
+      return;
+    }
+  }
+
+  // There must be an owner zone.
+  PA_CHECK(false);
+}
+#endif  // BUILDFLAG(IS_APPLE)
 
 }  // namespace allocator_shim
 
@@ -277,6 +309,11 @@ ALWAYS_INLINE size_t ShimGetSizeEstimate(const void* address, void* context) {
       chain_head, const_cast<void*>(address), context);
 }
 
+ALWAYS_INLINE bool ShimClaimedAddress(void* address, void* context) {
+  const allocator_shim::AllocatorDispatch* const chain_head = GetChainHead();
+  return chain_head->claimed_address_function(chain_head, address, context);
+}
+
 ALWAYS_INLINE unsigned ShimBatchMalloc(size_t size,
                                        void** results,
                                        unsigned num_requested,
@@ -298,6 +335,11 @@ ALWAYS_INLINE void ShimFreeDefiniteSize(void* ptr, size_t size, void* context) {
   const allocator_shim::AllocatorDispatch* const chain_head = GetChainHead();
   return chain_head->free_definite_size_function(chain_head, ptr, size,
                                                  context);
+}
+
+ALWAYS_INLINE void ShimTryFreeDefault(void* ptr, void* context) {
+  const allocator_shim::AllocatorDispatch* const chain_head = GetChainHead();
+  return chain_head->try_free_default_function(chain_head, ptr, context);
 }
 
 ALWAYS_INLINE void* ShimAlignedMalloc(size_t size,

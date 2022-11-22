@@ -36,7 +36,10 @@ typedef void (*batch_free_type)(struct _malloc_zone_t* zone,
 typedef void (*free_definite_size_type)(struct _malloc_zone_t* zone,
                                         void* ptr,
                                         size_t size);
+typedef void (*try_free_default_type)(struct _malloc_zone_t* zone, void* ptr);
 typedef size_t (*size_fn_type)(struct _malloc_zone_t* zone, const void* ptr);
+typedef boolean_t (*claimed_address_type)(struct _malloc_zone_t* zone,
+                                          void* ptr);
 
 struct MallocZoneFunctions {
   malloc_type malloc;
@@ -48,7 +51,9 @@ struct MallocZoneFunctions {
   batch_malloc_type batch_malloc;
   batch_free_type batch_free;
   free_definite_size_type free_definite_size;
+  try_free_default_type try_free_default;
   size_fn_type size;
+  claimed_address_type claimed_address;
   const ChromeMallocZone* context;
 };
 

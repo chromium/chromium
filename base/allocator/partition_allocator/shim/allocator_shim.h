@@ -80,6 +80,9 @@ struct AllocatorDispatch {
   using GetSizeEstimateFn = size_t(const AllocatorDispatch* self,
                                    void* address,
                                    void* context);
+  using ClaimedAddressFn = bool(const AllocatorDispatch* self,
+                                void* address,
+                                void* context);
   using BatchMallocFn = unsigned(const AllocatorDispatch* self,
                                  size_t size,
                                  void** results,
@@ -93,6 +96,9 @@ struct AllocatorDispatch {
                                   void* ptr,
                                   size_t size,
                                   void* context);
+  using TryFreeDefaultFn = void(const AllocatorDispatch* self,
+                                void* ptr,
+                                void* context);
   using AlignedMallocFn = void*(const AllocatorDispatch* self,
                                 size_t size,
                                 size_t alignment,
@@ -113,11 +119,13 @@ struct AllocatorDispatch {
   ReallocFn* const realloc_function;
   FreeFn* const free_function;
   GetSizeEstimateFn* const get_size_estimate_function;
-  // batch_malloc, batch_free, and free_definite_size are specific to the OSX
-  // and iOS allocators.
+  // claimed_address, batch_malloc, batch_free, free_definite_size and
+  // try_free_default are specific to the OSX and iOS allocators.
+  ClaimedAddressFn* const claimed_address_function;
   BatchMallocFn* const batch_malloc_function;
   BatchFreeFn* const batch_free_function;
   FreeDefiniteSizeFn* const free_definite_size_function;
+  TryFreeDefaultFn* const try_free_default_function;
   // _aligned_malloc, _aligned_realloc, and _aligned_free are specific to the
   // Windows allocator.
   AlignedMallocFn* const aligned_malloc_function;
@@ -153,6 +161,12 @@ BASE_EXPORT void InsertAllocatorDispatch(AllocatorDispatch* dispatch);
 // removal of arbitrary elements from a singly linked list would require a lock
 // in malloc(), which we really don't want.
 BASE_EXPORT void RemoveAllocatorDispatchForTesting(AllocatorDispatch* dispatch);
+
+#if BUILDFLAG(IS_APPLE)
+// The fallback function to be called when try_free_default_function receives a
+// pointer which doesn't belong to the allocator.
+BASE_EXPORT void TryFreeDefaultFallbackToFindZoneAndFree(void* ptr);
+#endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_WIN)
 // Configures the allocator for the caller's allocation domain. Allocations that

@@ -20,6 +20,10 @@ MallocZoneFunctions MallocZoneFunctionsToReplaceDefault() {
   new_functions.size = [](malloc_zone_t* zone, const void* ptr) -> size_t {
     return ShimGetSizeEstimate(ptr, zone);
   };
+  new_functions.claimed_address = [](malloc_zone_t* zone,
+                                     void* ptr) -> boolean_t {
+    return ShimClaimedAddress(ptr, zone);
+  };
   new_functions.malloc = [](malloc_zone_t* zone, size_t size) -> void* {
     return ShimMalloc(size, zone);
   };
@@ -53,6 +57,9 @@ MallocZoneFunctions MallocZoneFunctionsToReplaceDefault() {
   new_functions.free_definite_size = [](malloc_zone_t* zone, void* ptr,
                                         size_t size) {
     ShimFreeDefiniteSize(ptr, size, zone);
+  };
+  new_functions.try_free_default = [](malloc_zone_t* zone, void* ptr) {
+    ShimTryFreeDefault(ptr, zone);
   };
   return new_functions;
 }

@@ -488,6 +488,15 @@ size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
   return size;
 }
 
+#if BUILDFLAG(IS_APPLE)
+bool PartitionClaimedAddress(const AllocatorDispatch*,
+                             void* address,
+                             void* context) {
+  return partition_alloc::IsManagedByPartitionAlloc(
+      reinterpret_cast<uintptr_t>(address));
+}
+#endif  // BUILDFLAG(IS_APPLE)
+
 unsigned PartitionBatchMalloc(const AllocatorDispatch*,
                               size_t size,
                               void** results,
@@ -514,6 +523,23 @@ void PartitionBatchFree(const AllocatorDispatch*,
     PartitionFree(nullptr, to_be_freed[i], nullptr);
   }
 }
+
+#if BUILDFLAG(IS_APPLE)
+void PartitionTryFreeDefault(const AllocatorDispatch*,
+                             void* address,
+                             void* context) {
+  partition_alloc::ScopedDisallowAllocations guard{};
+
+  if (UNLIKELY(!partition_alloc::IsManagedByPartitionAlloc(
+          reinterpret_cast<uintptr_t>(address)))) {
+    // The object pointed to by `address` is not allocated by the
+    // PartitionAlloc. Call find_zone_and_free.
+    return allocator_shim::TryFreeDefaultFallbackToFindZoneAndFree(address);
+  }
+
+  partition_alloc::ThreadSafePartitionRoot::FreeNoHooks(address);
+}
+#endif  // BUILDFLAG(IS_APPLE)
 
 // static
 partition_alloc::ThreadSafePartitionRoot* PartitionAllocMalloc::Allocator() {
@@ -728,6 +754,11 @@ const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &allocator_shim::internal::PartitionFree,      // free_function
     &allocator_shim::internal::
         PartitionGetSizeEstimate,  // get_size_estimate_function
+#if BUILDFLAG(IS_APPLE)
+    &allocator_shim::internal::PartitionClaimedAddress,  // claimed_address
+#else
+    nullptr,  // claimed_address
+#endif
     &allocator_shim::internal::PartitionBatchMalloc,  // batch_malloc_function
     &allocator_shim::internal::PartitionBatchFree,    // batch_free_function
 #if BUILDFLAG(IS_APPLE)
@@ -735,8 +766,12 @@ const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     // get_size_estimate() is used to determine whether an allocation belongs to
     // the current zone. It makes sense to optimize for it.
     &allocator_shim::internal::PartitionFreeDefiniteSize,
+    // On Apple OSes, try_free_default() is sometimes called as an optimization
+    // of free().
+    &allocator_shim::internal::PartitionTryFreeDefault,
 #else
     nullptr,  // free_definite_size_function
+    nullptr,  // try_free_default_function
 #endif
     &allocator_shim::internal::
         PartitionAlignedAlloc,  // aligned_malloc_function

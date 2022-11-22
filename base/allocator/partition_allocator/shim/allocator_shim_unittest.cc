@@ -144,6 +144,15 @@ class AllocatorShimTest : public testing::Test {
     return self->next->get_size_estimate_function(self->next, address, context);
   }
 
+  static bool MockClaimedAddress(const AllocatorDispatch* self,
+                                 void* address,
+                                 void* context) {
+    // The same as MockGetSizeEstimate.
+    if (address == kTestSizeEstimateAddress)
+      return true;
+    return self->next->claimed_address_function(self->next, address, context);
+  }
+
   static unsigned MockBatchMalloc(const AllocatorDispatch* self,
                                   size_t size,
                                   void** results,
@@ -179,6 +188,15 @@ class AllocatorShimTest : public testing::Test {
       ++instance_->free_definite_sizes_intercepted_by_size[size];
     }
     self->next->free_definite_size_function(self->next, ptr, size, context);
+  }
+
+  static void MockTryFreeDefault(const AllocatorDispatch* self,
+                                 void* ptr,
+                                 void* context) {
+    if (instance_) {
+      ++instance_->frees_intercepted_by_addr[Hash(ptr)];
+    }
+    self->next->try_free_default_function(self->next, ptr, context);
   }
 
   static void* MockAlignedMalloc(const AllocatorDispatch* self,
@@ -325,9 +343,11 @@ AllocatorDispatch g_mock_dispatch = {
     &AllocatorShimTest::MockRealloc,       /* realloc_function */
     &AllocatorShimTest::MockFree,          /* free_function */
     &AllocatorShimTest::MockGetSizeEstimate,  /* get_size_estimate_function */
+    &AllocatorShimTest::MockClaimedAddress,   /* claimed_address_function */
     &AllocatorShimTest::MockBatchMalloc,      /* batch_malloc_function */
     &AllocatorShimTest::MockBatchFree,        /* batch_free_function */
     &AllocatorShimTest::MockFreeDefiniteSize, /* free_definite_size_function */
+    &AllocatorShimTest::MockTryFreeDefault,   /* try_free_default_function */
     &AllocatorShimTest::MockAlignedMalloc,    /* aligned_malloc_function */
     &AllocatorShimTest::MockAlignedRealloc,   /* aligned_realloc_function */
     &AllocatorShimTest::MockAlignedFree,      /* aligned_free_function */
