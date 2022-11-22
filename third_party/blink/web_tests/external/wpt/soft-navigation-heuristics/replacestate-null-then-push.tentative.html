@@ -2,7 +2,8 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Detect simple soft navigation.</title>
+<title>Detect soft navigation with replaceState that has a null URL, then
+       pushState with the URL.</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -15,17 +16,19 @@
   </main>
   <script>
     const link = document.getElementById("link");
-    testSoftNavigationNotDetected({
-      eventHandler: url => {
-        addTextToDivOnMain();
-        history.pushState({}, '');
+    testSoftNavigation({
+      addContent: async (url) => {
+        await addImageToMain();
+        history.pushState({}, '', url);
       },
       link: link,
-      eventName: "click",
-      eventTarget: link,
-      testName: "Test that a soft navigation is not detected when a URL is not"
-        + " passed to the history API."});
+      pushState: async (url) =>{
+        history.replaceState({}, '');
+      },
+      test: "Detect soft navigation with replaceState that has a null URL," +
+            " then pushState with the URL"});
   </script>
 </body>
 </html>
+
 

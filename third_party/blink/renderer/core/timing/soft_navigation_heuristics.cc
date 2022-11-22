@@ -149,7 +149,7 @@ void SoftNavigationHeuristics::SawURLChange(ScriptState* script_state,
 void SoftNavigationHeuristics::ModifiedDOM(ScriptState* script_state) {
   bool descendant =
       SetFlagIfDescendantAndCheck(script_state, FlagType::kMainModification);
-  TRACE_EVENT1("scheduler", "SoftNavigationHeuristics::ModifiedMain",
+  TRACE_EVENT1("scheduler", "SoftNavigationHeuristics::ModifiedDOM",
                "descendant", descendant);
   SetIsTrackingSoftNavigationHeuristicsOnDocument(false);
 }
@@ -198,7 +198,7 @@ void SoftNavigationHeuristics::CheckAndReportSoftNavigation(
 
   ResetHeuristic();
   LogToConsole(frame, mojom::blink::ConsoleMessageLevel::kInfo,
-               String("A soft navigation has been detected."));
+               String("A soft navigation has been detected: ") + url_);
   TRACE_EVENT0("scheduler",
                "SoftNavigationHeuristics soft navigation detected");
   if (LocalFrameClient* frame_client = frame->Client()) {

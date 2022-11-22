@@ -57,7 +57,7 @@ void ReportURLChange(LocalDOMWindow* window,
                      const String& url) {
   DCHECK(window);
   DCHECK(window->GetFrame());
-  if (window->GetFrame()->IsMainFrame()) {
+  if (window->GetFrame()->IsMainFrame() && window->Url() != url) {
     SoftNavigationHeuristics* heuristics =
         SoftNavigationHeuristics::From(*window);
     heuristics->SawURLChange(script_state, url);
