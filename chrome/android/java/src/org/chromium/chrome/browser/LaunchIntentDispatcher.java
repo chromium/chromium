@@ -337,6 +337,11 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
             // in recents.
             newIntent.setFlags(newIntent.getFlags() & ~Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 
+            // Adjacent launch flag, if present, already would have made the launcher activity start
+            // on the adajcent screen in multi-window mode. Clear it on the new Intent for the flag
+            // to take effect only once.
+            newIntent.setFlags(newIntent.getFlags() & ~Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
+
             // Android will try to find and reuse an existing CCT activity in the background. Use
             // this flag to always start a new one instead.
             newIntent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
@@ -436,6 +441,12 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
             long time = SystemClock.elapsedRealtime();
             if (!chromeTabbedTaskExists()) {
                 newIntent.putExtra(IntentHandler.EXTRA_STARTED_TABBED_CHROME_TASK, true);
+            }
+            if ((newIntent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0) {
+                // Adjacent launch flag, if present, already would have made the launcher activity
+                // start on the adajcent screen in multi-window mode. Clear it on the new Intent for
+                // the flag to take effect only once.
+                newIntent.setFlags(newIntent.getFlags() & ~Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
             }
             RecordHistogram.recordTimesHistogram("Startup.Android.ChromeTabbedTaskExistsTime",
                     SystemClock.elapsedRealtime() - time);
