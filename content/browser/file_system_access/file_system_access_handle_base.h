@@ -19,7 +19,7 @@
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 namespace features {
-// TODO(crbug.com/1366652): Remove this flag eventually.
+// TODO(crbug.com/1381621): Remove this flag eventually.
 // When enabled, move() will result in a promise rejection when the specified
 // destination to move to exists.
 BASE_DECLARE_FEATURE(kFileSystemAccessDoNotOverwriteOnMove);
