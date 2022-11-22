@@ -4499,9 +4499,42 @@ class FencedFrameReportEventBrowserTest
     // destination will be the ultimate destination of the navigation.
     std::vector<Destination> redirects;
 
-    // Whether the reportEvent should succeed.
-    bool should_have_metadata = false;
+    // Specify the outcome of reportEvent.
+    enum class Result {
+      kSuccess,
+      kModeNotOpaque,
+      kCrossOrigin,
+      kNoMeta,
+      kNoDestination,
+      kNoReportingURL,
+      kInvalidReportingURL
+    };
+
+    // Outcome of reportEvent.
+    Result report_event_result = Result::kSuccess;
   };
+
+  std::string GetConsoleWarningPattern(Step::Result result) {
+    switch (result) {
+      case Step::Result::kModeNotOpaque:
+        return "fence.reportEvent is only available in the 'opaque-ads' mode.";
+      case Step::Result::kCrossOrigin:
+        return "fence.reportEvent is only available in same-origin subframes.";
+      case Step::Result::kNoMeta:
+        return "This frame did not register reporting metadata.";
+      case Step::Result::kNoDestination:
+        return "This frame did not register reporting metadata for "
+               "destination*";
+      case Step::Result::kNoReportingURL:
+        return "This frame did not register reporting url for destination (.*) "
+               "and event_type (.*)";
+      case Step::Result::kInvalidReportingURL:
+        return "This frame registered invalid reporting url for destination "
+               "(.*) and event_type (.*)";
+      default:
+        return "";
+    }
+  }
 
   // A helper function for specifying reportEvent tests. Each step consists of a
   // series of `Step`s specified above.
@@ -4651,6 +4684,19 @@ class FencedFrameReportEventBrowserTest
                     ->GetLastCommittedOrigin());
       navigation_index++;
 
+      // Monitor the console warnings.
+      WebContentsConsoleObserver console_observer(web_contents());
+      auto filter =
+          [](const content::WebContentsConsoleObserver::Message& message) {
+            return message.log_level ==
+                   blink::mojom::ConsoleMessageLevel::kWarning;
+          };
+      console_observer.SetFilter(base::BindRepeating(filter));
+      if (step.report_event_result != Step::Result::kSuccess) {
+        console_observer.SetPattern(
+            GetConsoleWarningPattern(step.report_event_result));
+      }
+
       // Perform the reportEvent call, with a unique body.
       const char report_event_script[] = R"(
         window.fence.reportEvent({
@@ -4663,13 +4709,16 @@ class FencedFrameReportEventBrowserTest
                          JsReplace(report_event_script, navigation_index)));
 
       // If relevant, check that the event report succeeded.
-      if (step.should_have_metadata) {
+      if (step.report_event_result == Step::Result::kSuccess) {
         auto& response = *responses[response_index];
         response.WaitForRequest();
         EXPECT_EQ(response.http_request()->content,
                   JsReplace("click $1", navigation_index));
         response.Done();
         response_index++;
+      } else {
+        EXPECT_FALSE(console_observer.messages().empty());
+        EXPECT_EQ(console_observer.messages().size(), 1u);
       }
     }
 
@@ -4696,7 +4745,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
           .is_embedder_initiated = true,
           .is_opaque = true,
           .destination = {"a.test", "/fenced_frames/title1.html"},
-          .should_have_metadata = true,
+          .report_event_result = Step::Result::kSuccess,
       },
   };
   RunTest(config);
@@ -4710,12 +4759,12 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
           .is_embedder_initiated = true,
           .is_opaque = true,
           .destination = {"a.test", "/fenced_frames/title1.html"},
-          .should_have_metadata = true,
+          .report_event_result = Step::Result::kSuccess,
       },
       {
           .is_target_nested_iframe = true,
           .destination = {"a.test", "/fenced_frames/title1.html"},
-          .should_have_metadata = true,
+          .report_event_result = Step::Result::kSuccess,
       },
   };
   RunTest(config);
@@ -4730,12 +4779,12 @@ IN_PROC_BROWSER_TEST_F(
           .is_embedder_initiated = true,
           .is_opaque = true,
           .destination = {"a.test", "/fenced_frames/title1.html"},
-          .should_have_metadata = true,
+          .report_event_result = Step::Result::kSuccess,
       },
       {
           .is_target_nested_iframe = true,
           .destination = {"b.test", "/fenced_frames/title1.html"},
-          .should_have_metadata = false,
+          .report_event_result = Step::Result::kCrossOrigin,
       },
   };
   RunTest(config);
@@ -4750,11 +4799,11 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
           .is_embedder_initiated = true,
           .is_opaque = true,
           .destination = {"a.test", "/fenced_frames/title1.html"},
-          .should_have_metadata = true,
+          .report_event_result = Step::Result::kSuccess,
       },
       {
           .destination = {"a.test", "/fenced_frames/title1.html?foo"},
-          .should_have_metadata = true,
+          .report_event_result = Step::Result::kSuccess,
       },
   };
   RunTest(config);
@@ -4769,17 +4818,17 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
           .is_embedder_initiated = true,
           .is_opaque = true,
           .destination = {"a.test", "/fenced_frames/title1.html"},
-          .should_have_metadata = true,
+          .report_event_result = Step::Result::kSuccess,
       },
       {
           .destination = {"b.test", "/fenced_frames/title1.html"},
-          .should_have_metadata = false,
+          .report_event_result = Step::Result::kNoMeta,
       },
       {
           .is_embedder_initiated = true,
           .is_opaque = true,
           .destination = {"a.test", "/fenced_frames/title1.html"},
-          .should_have_metadata = true,
+          .report_event_result = Step::Result::kSuccess,
       },
   };
   RunTest(config);
@@ -4793,13 +4842,13 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
           .is_embedder_initiated = true,
           .is_opaque = true,
           .destination = {"a.test", "/fenced_frames/title1.html"},
-          .should_have_metadata = true,
+          .report_event_result = Step::Result::kSuccess,
       },
       {
           .is_embedder_initiated = true,
           .is_opaque = false,
           .destination = {"a.test", "/fenced_frames/title1.html"},
-          .should_have_metadata = false,
+          .report_event_result = Step::Result::kNoMeta,
       },
   };
   RunTest(config);
@@ -4819,7 +4868,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                   {"a.test", "/fenced_frames/redirect2.html"},
                   {"a.test", "/fenced_frames/title1.html"},
               },
-          .should_have_metadata = true,
+          .report_event_result = Step::Result::kSuccess,
       },
   };
   RunTest(config);
@@ -4839,7 +4888,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                   {"b.test", "/fenced_frames/redirect2.html"},
                   {"c.test", "/fenced_frames/title1.html"},
               },
-          .should_have_metadata = true,
+          .report_event_result = Step::Result::kSuccess,
       },
   };
   RunTest(config);
@@ -4854,7 +4903,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
           .is_embedder_initiated = true,
           .is_opaque = true,
           .destination = {"a.test", "/fenced_frames/title1.html"},
-          .should_have_metadata = true,
+          .report_event_result = Step::Result::kSuccess,
       },
       {
           .destination = {"a.test", "/fenced_frames/redirect1.html"},
@@ -4863,7 +4912,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                   {"a.test", "/fenced_frames/redirect2.html"},
                   {"a.test", "/fenced_frames/title1.html?foo"},
               },
-          .should_have_metadata = true,
+          .report_event_result = Step::Result::kSuccess,
       },
   };
   RunTest(config);
@@ -4878,7 +4927,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
           .is_embedder_initiated = true,
           .is_opaque = true,
           .destination = {"a.test", "/fenced_frames/title1.html"},
-          .should_have_metadata = true,
+          .report_event_result = Step::Result::kSuccess,
       },
       {
           .destination = {"a.test", "/fenced_frames/redirect1.html"},
@@ -4887,7 +4936,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                   {"b.test", "/fenced_frames/redirect2.html"},
                   {"a.test", "/fenced_frames/title1.html"},
               },
-          .should_have_metadata = false,
+          .report_event_result = Step::Result::kNoMeta,
       },
   };
   RunTest(config);
