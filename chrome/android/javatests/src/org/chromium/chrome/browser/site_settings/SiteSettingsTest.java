@@ -275,6 +275,15 @@ public class SiteSettingsTest {
                 : withId(R.id.managed_view_legacy);
     }
 
+    private void createCookieExceptions() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            WebsitePreferenceBridge.setContentSettingCustomScope(getBrowserContextHandle(),
+                    ContentSettingsType.COOKIES, "*", "secondary.com", ContentSettingValues.ALLOW);
+            WebsitePreferenceBridge.setContentSettingCustomScope(getBrowserContextHandle(),
+                    ContentSettingsType.COOKIES, "primary.com", "*", ContentSettingValues.ALLOW);
+        });
+    }
+
     /**
      * Sets Allow Location Enabled to be true and make sure it is set correctly.
      */
@@ -421,9 +430,16 @@ public class SiteSettingsTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             SingleCategorySettings preferences =
                     (SingleCategorySettings) settingsActivity.getMainFragment();
-            ChromeSwitchPreference toggle = (ChromeSwitchPreference) preferences.findPreference(
-                    SingleCategorySettings.BINARY_TOGGLE_KEY);
-            preferences.onPreferenceChange(toggle, enabled);
+            if (type == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
+                TriStateCookieSettingsPreference preference =
+                        preferences.findPreference(SingleCategorySettings.TRI_STATE_COOKIE_TOGGLE);
+                preferences.onPreferenceChange(preference,
+                        enabled ? CookieControlsMode.OFF : CookieControlsMode.BLOCK_THIRD_PARTY);
+            } else {
+                ChromeSwitchPreference toggle =
+                        preferences.findPreference(SingleCategorySettings.BINARY_TOGGLE_KEY);
+                preferences.onPreferenceChange(toggle, enabled);
+            }
         });
         settingsActivity.finish();
     }
@@ -1320,6 +1336,16 @@ public class SiteSettingsTest {
         checkPreferencesForCategory(SiteSettingsCategory.Type.COOKIES, cookie);
         setFourStateCookieToggle(CookieSettingsState.BLOCK);
         checkPreferencesForCategory(SiteSettingsCategory.Type.COOKIES, cookie);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    public void testOnlyExpectedPreferencesThirdPartyCookies() {
+        testExpectedPreferences(SiteSettingsCategory.Type.THIRD_PARTY_COOKIES,
+                new String[] {"tri_state_cookie_toggle", "add_exception"},
+                new String[] {"tri_state_cookie_toggle"});
     }
 
     @Test
@@ -2251,6 +2277,7 @@ public class SiteSettingsTest {
 
     private void renderCategoryPage(@SiteSettingsCategory.Type int category, String name)
             throws IOException {
+        createCookieExceptions();
         var settingsActivity = SiteSettingsTestUtils.startSiteSettingsCategory(category);
         View view = settingsActivity.findViewById(android.R.id.content).getRootView();
         ChromeRenderTestRule.sanitize(view);

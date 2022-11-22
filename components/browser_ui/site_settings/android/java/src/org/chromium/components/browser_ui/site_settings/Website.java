@@ -86,7 +86,7 @@ public final class Website implements WebsiteEntry {
                 && !mEmbedder.getTitle().equals(SITE_WILDCARD);
     }
 
-    private WebsiteAddress getMainAddress() {
+    public WebsiteAddress getMainAddress() {
         if (representsThirdPartiesOnSite()) {
             return mEmbedder;
         }

@@ -80,7 +80,7 @@ class WebsitePreference extends ChromeImageViewPreference {
      * Returns the url of the site to fetch a favicon for.
      */
     private GURL faviconUrl() {
-        String origin = mSite.getAddress().getOrigin();
+        String origin = mSite.getMainAddress().getOrigin();
         GURL uri = new GURL(origin);
         return UrlUtilities.clearPort(uri);
     }

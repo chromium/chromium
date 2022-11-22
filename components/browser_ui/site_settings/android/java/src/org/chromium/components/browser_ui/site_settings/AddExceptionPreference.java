@@ -124,9 +124,8 @@ public class AddExceptionPreference
         LayoutInflater inflater =
                 (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.add_site_dialog, null);
-        final EditText input = (EditText) view.findViewById(R.id.site);
-        final CheckBoxWithDescription checkBox =
-                (CheckBoxWithDescription) view.findViewById(R.id.add_site_dialog_checkbox);
+        final EditText input = view.findViewById(R.id.site);
+        final CheckBoxWithDescription checkBox = view.findViewById(R.id.add_site_dialog_checkbox);
 
         if (mCategory.getType() == SiteSettingsCategory.Type.COOKIES) {
             checkBox.setVisibility(View.VISIBLE);
@@ -218,32 +217,36 @@ public class AddExceptionPreference
 
     @VisibleForTesting
     static String updatePatternIfNeeded(@NonNull String pattern, int type, boolean isChecked) {
-        if (type != SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
-            return pattern;
+        if (type == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
+            if (isChecked) {
+                return WebsitePreferenceBridge.toDomainWildcardPattern(pattern);
+            } else {
+                return WebsitePreferenceBridge.toHostOnlyPattern(pattern);
+            }
         }
-        if (isChecked) {
-            return WebsitePreferenceBridge.toDomainWildcardPattern(pattern);
-        } else {
-            return WebsitePreferenceBridge.toHostOnlyPattern(pattern);
-        }
+        return pattern;
     }
 
     @VisibleForTesting
     static String getPrimaryPattern(@NonNull String pattern, int type, boolean isChecked) {
-        if (type != SiteSettingsCategory.Type.COOKIES) {
-            return pattern;
+        if (type == SiteSettingsCategory.Type.COOKIES) {
+            // If a user clicks the third party checkbox, set wildcard as primary.
+            return isChecked ? SITE_WILDCARD : pattern;
+        } else if (type == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
+            return SITE_WILDCARD;
         }
-        // If a user clicks the third party checkbox, set wildcard as primary.
-        return isChecked ? SITE_WILDCARD : pattern;
+        return pattern;
     }
 
     @VisibleForTesting
     static String getSecondaryPattern(@NonNull String pattern, int type, boolean isChecked) {
-        if (type != SiteSettingsCategory.Type.COOKIES) {
-            return SITE_WILDCARD;
+        if (type == SiteSettingsCategory.Type.COOKIES) {
+            // If a user clicks the third party checkbox, set pattern as secondary.
+            return isChecked ? pattern : SITE_WILDCARD;
+        } else if (type == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
+            return pattern;
         }
-        // If a user clicks the third party checkbox, set pattern as secondary.
-        return isChecked ? pattern : SITE_WILDCARD;
+        return SITE_WILDCARD;
     }
 
     @VisibleForTesting

@@ -810,6 +810,9 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                 allowSpecifyingExceptions = ContentFeatureList.isEnabled(
                         ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS);
                 break;
+            case SiteSettingsCategory.Type.THIRD_PARTY_COOKIES:
+                allowSpecifyingExceptions = getCookieControlsMode() != CookieControlsMode.OFF;
+                break;
             default:
                 break;
         }
@@ -858,12 +861,9 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
             }
         } else {
             // Group sites into Allowed/Blocked lists.
-            PreferenceGroup allowedGroup =
-                    (PreferenceGroup) getPreferenceScreen().findPreference(ALLOWED_GROUP);
-            PreferenceGroup blockedGroup =
-                    (PreferenceGroup) getPreferenceScreen().findPreference(BLOCKED_GROUP);
-            PreferenceGroup managedGroup =
-                    (PreferenceGroup) getPreferenceScreen().findPreference(MANAGED_GROUP);
+            PreferenceGroup allowedGroup = getPreferenceScreen().findPreference(ALLOWED_GROUP);
+            PreferenceGroup blockedGroup = getPreferenceScreen().findPreference(BLOCKED_GROUP);
+            PreferenceGroup managedGroup = getPreferenceScreen().findPreference(MANAGED_GROUP);
 
             Set<String> delegatedOrigins =
                     mCategory.getType() == SiteSettingsCategory.Type.NOTIFICATIONS
@@ -997,7 +997,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
             case GlobalToggleLayout.TRI_STATE_COOKIE_TOGGLE:
                 TriStateCookieSettingsPreference triStateCookieToggle =
                         getPreferenceScreen().findPreference(TRI_STATE_COOKIE_TOGGLE);
-                return triStateCookieToggle.getState() == CookieControlsMode.BLOCK_THIRD_PARTY;
+                return triStateCookieToggle.getState() != CookieControlsMode.OFF;
             case GlobalToggleLayout.BINARY_TOGGLE:
                 ChromeSwitchPreference binaryToggle =
                         getPreferenceScreen().findPreference(BINARY_TOGGLE_KEY);
@@ -1251,8 +1251,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
 
         // The notifications vibrate checkbox.
         ChromeBaseCheckBoxPreference vibratePref =
-                (ChromeBaseCheckBoxPreference) getPreferenceScreen().findPreference(
-                        NOTIFICATIONS_VIBRATE_TOGGLE_KEY);
+                getPreferenceScreen().findPreference(NOTIFICATIONS_VIBRATE_TOGGLE_KEY);
         if (vibratePref != null) vibratePref.setEnabled(categoryEnabled);
 
         if (!getSiteSettingsDelegate().isQuietNotificationPromptsFeatureEnabled()) return;
