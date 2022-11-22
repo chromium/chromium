@@ -915,8 +915,9 @@ class PrefetchProxyBrowserTest
 
   std::unique_ptr<net::test_server::HttpResponse> HandleProxyRequest(
       const net::test_server::HttpRequest& request) {
-    if (request.all_headers.find("CONNECT auth_challenge.com:443") !=
-        std::string::npos) {
+    EXPECT_EQ(request.method, net::test_server::METHOD_CONNECT);
+
+    if (request.relative_url == "auth-challenge.test:443") {
       std::unique_ptr<net::test_server::BasicHttpResponse> resp =
           std::make_unique<net::test_server::BasicHttpResponse>();
       resp->set_code(net::HTTP_UNAUTHORIZED);
@@ -924,38 +925,21 @@ class PrefetchProxyBrowserTest
       return resp;
     }
 
-    if (request.all_headers.find("CONNECT error.com:443") !=
-        std::string::npos) {
+    if (request.relative_url == "error.test:443") {
       std::unique_ptr<net::test_server::BasicHttpResponse> resp =
           std::make_unique<net::test_server::BasicHttpResponse>();
       resp->set_code(net::HTTP_BAD_REQUEST);
       return resp;
     }
 
-    std::vector<std::string> request_lines =
-        base::SplitString(request.all_headers, "\r\n", base::TRIM_WHITESPACE,
-                          base::SPLIT_WANT_NONEMPTY);
-    DCHECK(!request_lines.empty());
-
-    std::vector<std::string> request_line =
-        base::SplitString(request_lines[0], " ", base::TRIM_WHITESPACE,
-                          base::SPLIT_WANT_NONEMPTY);
-    DCHECK_EQ(3U, request_line.size());
-    EXPECT_EQ("CONNECT", request_line[0]);
-    EXPECT_EQ("HTTP/1.1", request_line[2]);
-
-    GURL request_origin("https://" + request_line[1]);
+    GURL request_origin("https://" + request.relative_url);
     EXPECT_TRUE("a.test" == request_origin.host() ||
                 "b.test" == request_origin.host());
 
-    bool found_chrome_tunnel_header = false;
-    for (const std::string& header : request_lines) {
-      if (base::Contains(header, "chrome-tunnel") &&
-          base::Contains(header, "key=" + google_apis::GetAPIKey())) {
-        found_chrome_tunnel_header = true;
-        break;
-      }
-    }
+    auto iter = request.headers.find("chrome-tunnel");
+    bool found_chrome_tunnel_header =
+        iter != request.headers.end() &&
+        base::Contains(iter->second, "key=" + google_apis::GetAPIKey());
     EXPECT_TRUE(found_chrome_tunnel_header);
 
     auto new_tunnel = std::make_unique<TestProxyTunnelConnection>();
@@ -1127,7 +1111,7 @@ IN_PROC_BROWSER_TEST_F(
   auth_observer->Reset();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   GURL doc_url("https://www.google.com/search?q=test");
-  MakeNavigationPrediction(doc_url, {GURL("https://auth_challenge.com/")});
+  MakeNavigationPrediction(doc_url, {GURL("https://auth-challenge.test/")});
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(auth_observer->GotAuthChallenge());
@@ -1142,7 +1126,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
       PrefetchProxyTabHelper::FromWebContents(GetWebContents());
 
   TestTabHelperObserver tab_helper_observer(tab_helper);
-  GURL error_url("https://error.com/");
+  GURL error_url("https://error.test/");
 
   base::RunLoop run_loop;
   tab_helper_observer.SetOnPrefetchErrorClosure(run_loop.QuitClosure());

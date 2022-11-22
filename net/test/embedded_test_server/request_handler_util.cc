@@ -79,6 +79,10 @@ std::string GetContentType(const base::FilePath& path) {
 }
 
 bool ShouldHandle(const HttpRequest& request, const std::string& path_prefix) {
+  if (request.method == METHOD_CONNECT) {
+    return false;
+  }
+
   GURL url = request.GetURL();
   return url.path() == path_prefix ||
          base::StartsWith(url.path(), path_prefix + "/",
@@ -154,6 +158,10 @@ std::unique_ptr<HttpResponse> HandleFileRequest(
   // This is a test-only server. Ignore I/O thread restrictions.
   // TODO(svaldez): Figure out why thread is I/O restricted in the first place.
   base::ScopedAllowBlockingForTesting allow_blocking;
+
+  if (request.method == METHOD_CONNECT) {
+    return nullptr;
+  }
 
   // A proxy request will have an absolute path. Simulate the proxy by stripping
   // the scheme, host, and port.

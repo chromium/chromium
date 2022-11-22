@@ -372,11 +372,11 @@ bool Http2Connection::OnEndHeadersForStream(
     http2::adapter::Http2StreamId stream_id) {
   HttpRequest::HeaderMap header_map = header_map_[stream_id];
   auto request = std::make_unique<HttpRequest>();
+  // TODO(crbug.com/1375303): Handle proxy cases.
   request->relative_url = header_map[":path"];
   request->base_url = GURL(header_map[":authority"]);
   request->method_string = header_map[":method"];
-  request->method = HttpRequestParser::GetMethodType(
-      base::ToLowerASCII(request->method_string));
+  request->method = HttpRequestParser::GetMethodType(request->method_string);
   request->headers = header_map;
 
   request->has_content = false;
