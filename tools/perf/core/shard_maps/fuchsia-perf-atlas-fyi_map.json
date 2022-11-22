@@ -7,7 +7,7 @@
                     "--test-launcher-retry-limit=0",
                     "-d",
                     "--os-check=check",
-                    "--system-image-dir=../../third_party/fuchsia-sdk/images-internal/chromebook-x64-release/sucrose_eng"
+                    "--system-image-dir=workstation_eng.chromebook-x64"
                 ],
                 "path": "bin/run_base_perftests"
             }

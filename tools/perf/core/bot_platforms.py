@@ -315,15 +315,30 @@ FUCHSIA_EXEC_ARGS = {'astro': None, 'sherlock': None, 'atlas': None}
 FUCHSIA_EXEC_CONFIGS = {'astro': None, 'sherlock': None, 'atlas': None}
 _IMAGE_PATHS = {
     'astro': ('astro-release', 'smart_display_eng_arrested'),
-    'atlas': ('chromebook-x64-release', 'sucrose_eng'),
     'sherlock': ('sherlock-release', 'smart_display_max_eng_arrested'),
 }
+
+# Some image paths are just a product-bundle, which is not a relative path.
+_PB_IMAGE_PATHS = {
+    'atlas': 'workstation_eng.chromebook-x64',
+}
+
 _FUCHSIA_IMAGE_DIR = '../../third_party/fuchsia-sdk/images-internal/%s/%s'
 _COMMON_FUCHSIA_ARGS = ['-d', '--os-check=check']
 for board, path_parts in _IMAGE_PATHS.items():
   image_dir = _FUCHSIA_IMAGE_DIR % path_parts
   FUCHSIA_EXEC_ARGS[board] = _COMMON_FUCHSIA_ARGS + [
       '--system-image-dir=%s' % image_dir
+  ]
+  FUCHSIA_EXEC_CONFIGS[board] = frozenset([
+      _base_perftests(900,
+                      path='bin/run_base_perftests',
+                      additional_flags=FUCHSIA_EXEC_ARGS[board])
+  ])
+
+for board, pb_name in _PB_IMAGE_PATHS.items():
+  FUCHSIA_EXEC_ARGS[board] = _COMMON_FUCHSIA_ARGS + [
+      f'--system-image-dir={pb_name}'
   ]
   FUCHSIA_EXEC_CONFIGS[board] = frozenset([
       _base_perftests(900,

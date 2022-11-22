@@ -256,7 +256,7 @@
           "--experimental-tbmv3-metrics",
           "-d",
           "--os-check=check",
-          "--system-image-dir=../../third_party/fuchsia-sdk/images-internal/chromebook-x64-release/sucrose_eng"
+          "--system-image-dir=workstation_eng.chromebook-x64"
         ],
         "isolate_name": "performance_web_engine_test_suite",
         "merge": {
