@@ -25,7 +25,9 @@
 
 #include "third_party/blink/renderer/core/editing/position_iterator.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 
@@ -58,7 +60,7 @@ ContainerNode* SelectableParentOf(const Node& node) {
 static constexpr int kInvalidOffset = -1;
 
 template <typename Strategy>
-PositionIteratorAlgorithm<Strategy>::PositionIteratorAlgorithm(
+SlowPositionIteratorAlgorithm<Strategy>::SlowPositionIteratorAlgorithm(
     const PositionTemplate<Strategy>& pos) {
   if (pos.IsNull())
     return;
@@ -84,7 +86,7 @@ PositionIteratorAlgorithm<Strategy>::PositionIteratorAlgorithm(
 
 template <typename Strategy>
 PositionTemplate<Strategy>
-PositionIteratorAlgorithm<Strategy>::DeprecatedComputePosition() const {
+SlowPositionIteratorAlgorithm<Strategy>::DeprecatedComputePosition() const {
   // TODO(yoichio): Share code to check domTreeVersion with EphemeralRange.
   DCHECK(IsValid());
   if (node_after_position_in_anchor_) {
@@ -110,7 +112,7 @@ PositionIteratorAlgorithm<Strategy>::DeprecatedComputePosition() const {
 
 template <typename Strategy>
 PositionTemplate<Strategy>
-PositionIteratorAlgorithm<Strategy>::ComputePosition() const {
+SlowPositionIteratorAlgorithm<Strategy>::ComputePosition() const {
   DCHECK(IsValid());
   // Assume that we have the following DOM tree:
   // A
@@ -150,7 +152,7 @@ PositionIteratorAlgorithm<Strategy>::ComputePosition() const {
 }
 
 template <typename Strategy>
-void PositionIteratorAlgorithm<Strategy>::Increment() {
+void SlowPositionIteratorAlgorithm<Strategy>::Increment() {
   DCHECK(IsValid());
   if (!anchor_node_)
     return;
@@ -227,7 +229,7 @@ void PositionIteratorAlgorithm<Strategy>::Increment() {
 }
 
 template <typename Strategy>
-void PositionIteratorAlgorithm<Strategy>::Decrement() {
+void SlowPositionIteratorAlgorithm<Strategy>::Decrement() {
   DCHECK(IsValid());
   if (!anchor_node_)
     return;
@@ -338,7 +340,7 @@ void PositionIteratorAlgorithm<Strategy>::Decrement() {
 }
 
 template <typename Strategy>
-bool PositionIteratorAlgorithm<Strategy>::AtStart() const {
+bool SlowPositionIteratorAlgorithm<Strategy>::AtStart() const {
   DCHECK(IsValid());
   if (!anchor_node_)
     return true;
@@ -350,7 +352,7 @@ bool PositionIteratorAlgorithm<Strategy>::AtStart() const {
 }
 
 template <typename Strategy>
-bool PositionIteratorAlgorithm<Strategy>::AtEnd() const {
+bool SlowPositionIteratorAlgorithm<Strategy>::AtEnd() const {
   DCHECK(IsValid());
   if (!anchor_node_)
     return true;
@@ -362,7 +364,7 @@ bool PositionIteratorAlgorithm<Strategy>::AtEnd() const {
 }
 
 template <typename Strategy>
-bool PositionIteratorAlgorithm<Strategy>::AtStartOfNode() const {
+bool SlowPositionIteratorAlgorithm<Strategy>::AtStartOfNode() const {
   DCHECK(IsValid());
   if (!anchor_node_)
     return true;
@@ -374,7 +376,7 @@ bool PositionIteratorAlgorithm<Strategy>::AtStartOfNode() const {
 }
 
 template <typename Strategy>
-bool PositionIteratorAlgorithm<Strategy>::AtEndOfNode() const {
+bool SlowPositionIteratorAlgorithm<Strategy>::AtEndOfNode() const {
   DCHECK(IsValid());
   if (!anchor_node_)
     return true;
@@ -382,6 +384,676 @@ bool PositionIteratorAlgorithm<Strategy>::AtEndOfNode() const {
     return false;
   return Strategy::HasChildren(*anchor_node_) ||
          offset_in_anchor_ >= Strategy::LastOffsetForEditing(anchor_node_);
+}
+
+template class CORE_TEMPLATE_EXPORT
+    SlowPositionIteratorAlgorithm<EditingStrategy>;
+template class CORE_TEMPLATE_EXPORT
+    SlowPositionIteratorAlgorithm<EditingInFlatTreeStrategy>;
+
+// ---
+
+// static
+template <typename Strategy>
+typename FastPositionIteratorAlgorithm<Strategy>::ContainerType
+FastPositionIteratorAlgorithm<Strategy>::ContainerToContainerType(
+    const Node* node) {
+  if (!node)
+    return kNullNode;
+  if (IsA<Text>(node) && node->GetLayoutObject())
+    return kTextNode;
+  if (IsA<CharacterData>(node))
+    return kCharacterData;
+  if (!Strategy::HasChildren(*node))
+    return kNoChildren;
+  if (::blink::IsUserSelectContain(*node))
+    return kUserSelectContainNode;
+  return kContainerNode;
+}
+
+template <typename Strategy>
+FastPositionIteratorAlgorithm<Strategy>::FastPositionIteratorAlgorithm(
+    const PositionType& position) {
+  Initialize(position);
+  AssertOffsetInContainerIsValid();
+}
+
+template <typename Strategy>
+void FastPositionIteratorAlgorithm<Strategy>::Initialize(
+    const PositionType& position) {
+  container_node_ = position.AnchorNode();
+  if (!container_node_)
+    return;
+  dom_tree_version_ = container_node_->GetDocument().DomTreeVersion();
+  container_type_ = ContainerToContainerType(container_node_);
+
+  switch (container_type_) {
+    case kNullNode:
+      NOTREACHED();
+      return;
+    case kNoChildren:
+      switch (position.AnchorType()) {
+        case PositionAnchorType::kAfterChildren:
+        case PositionAnchorType::kAfterAnchor:
+          offset_in_container_ = IgnoresChildren() ? 1 : 0;
+          return;
+        case PositionAnchorType::kBeforeAnchor:
+          offset_in_container_ = 0;
+          return;
+        case PositionAnchorType::kOffsetInAnchor:
+          DCHECK(!position.OffsetInContainerNode());
+          offset_in_container_ = 0;
+          return;
+      }
+      NOTREACHED() << "Invalid PositionAnchorType";
+      return;
+    case kCharacterData:
+    case kTextNode:
+      // Note: `Position::ComputeOffsetInContainer()` for `kAfterAnchor`
+      // returns `container_node_->Index() + 1` instead of `Text::length()`.
+      switch (position.AnchorType()) {
+        case PositionAnchorType::kAfterChildren:
+          NOTREACHED();
+          break;
+        case PositionAnchorType::kAfterAnchor:
+          offset_in_container_ = To<CharacterData>(container_node_)->length();
+          return;
+        case PositionAnchorType::kBeforeAnchor:
+          offset_in_container_ = 0;
+          return;
+        case PositionAnchorType::kOffsetInAnchor:
+          offset_in_container_ = position.OffsetInContainerNode();
+          return;
+      }
+      NOTREACHED() << "Invalid PositionAnchorType";
+      return;
+    case kContainerNode:
+    case kUserSelectContainNode:
+      container_type_ = kContainerNode;
+      switch (position.AnchorType()) {
+        case PositionAnchorType::kAfterChildren:
+        case PositionAnchorType::kAfterAnchor:
+          child_before_position_ = Strategy::LastChild(*container_node_);
+          offset_in_container_ = child_before_position_ ? kInvalidOffset : 0;
+          container_type_ = kContainerNode;
+          return;
+        case PositionAnchorType::kBeforeAnchor:
+          child_before_position_ = nullptr;
+          offset_in_container_ = 0;
+          container_type_ = kContainerNode;
+          return;
+        case PositionAnchorType::kOffsetInAnchor:
+          // This takes `O(position.OffsetInContainerNode())`.
+          child_before_position_ = position.ComputeNodeBeforePosition();
+          offset_in_container_ = position.OffsetInContainerNode();
+          container_type_ = kContainerNode;
+          return;
+      }
+      NOTREACHED() << " Invalid PositionAnchorType=" << position.AnchorType();
+  }
+  NOTREACHED() << " Invalid container_type_=" << container_type_;
+}
+
+template <typename Strategy>
+FastPositionIteratorAlgorithm<Strategy>::FastPositionIteratorAlgorithm() =
+    default;
+
+template <typename Strategy>
+void FastPositionIteratorAlgorithm<Strategy>::AssertOffsetInContainerIsValid()
+    const {
+#if DCHECK_IS_ON()
+  switch (container_type_) {
+    case kNullNode:
+      DCHECK(!child_before_position_);
+      DCHECK_EQ(offset_in_container_, kInvalidOffset);
+      return;
+    case kNoChildren:
+      DCHECK(!child_before_position_);
+      DCHECK(offset_in_container_ == 0 || offset_in_container_ == 1);
+      return;
+    case kCharacterData:
+    case kTextNode:
+      DCHECK(!child_before_position_);
+      DCHECK_LE(offset_in_container_,
+                To<CharacterData>(container_node_)->length());
+      return;
+    case kContainerNode:
+    case kUserSelectContainNode:
+      if (!child_before_position_) {
+        DCHECK(!offset_in_container_);
+        return;
+      }
+      if (offset_in_container_ == kInvalidOffset)
+        return;
+      DCHECK_EQ(offset_in_container_,
+                Strategy::Index(*child_before_position_) + 1);
+      return;
+  }
+  NOTREACHED() << " Invalid container_type_=" << container_type_;
+#endif
+}
+
+template <typename Strategy>
+void FastPositionIteratorAlgorithm<Strategy>::AssertOffsetStackIsValid() const {
+#if DCHECK_IS_ON()
+  const auto* it = offset_stack_.begin();
+  for (const Node& ancestor : Strategy::AncestorsOf(*container_node_)) {
+    if (it == offset_stack_.end())
+      break;
+    DCHECK_EQ(*it, Strategy::Index(ancestor)) << " " << ancestor;
+    ++it;
+  }
+#endif
+}
+
+template <typename Strategy>
+bool FastPositionIteratorAlgorithm<Strategy>::IsValid() const {
+  if (container_node_ &&
+      container_node_->GetDocument().DomTreeVersion() != dom_tree_version_)
+    return false;
+  AssertOffsetInContainerIsValid();
+  return true;
+}
+
+template <typename Strategy>
+Node* FastPositionIteratorAlgorithm<Strategy>::ChildAfterPosition() const {
+  DCHECK(container_type_ == kContainerNode ||
+         container_type_ == kUserSelectContainNode);
+  return child_before_position_ ? Strategy::NextSibling(*child_before_position_)
+                                : Strategy::FirstChild(*container_node_);
+}
+
+template <typename Strategy>
+bool FastPositionIteratorAlgorithm<Strategy>::HasChildren() const {
+  DCHECK(container_node_);
+  return Strategy::HasChildren(*container_node_);
+}
+
+template <typename Strategy>
+bool FastPositionIteratorAlgorithm<Strategy>::IgnoresChildren() const {
+  DCHECK(container_node_);
+  return EditingIgnoresContent(*container_node_);
+}
+
+template <typename Strategy>
+bool FastPositionIteratorAlgorithm<Strategy>::IsUserSelectContain() const {
+  DCHECK(container_node_);
+  return ::blink::IsUserSelectContain(*container_node_);
+}
+
+template <typename Strategy>
+void FastPositionIteratorAlgorithm<Strategy>::Decrement() {
+  AssertOffsetInContainerIsValid();
+  DecrementInternal();
+  AssertOffsetInContainerIsValid();
+}
+
+template <typename Strategy>
+void FastPositionIteratorAlgorithm<Strategy>::Increment() {
+  AssertOffsetInContainerIsValid();
+  IncrementInternal();
+  AssertOffsetInContainerIsValid();
+}
+
+template <typename Strategy>
+void FastPositionIteratorAlgorithm<Strategy>::DecrementInternal() {
+  DCHECK(IsValid());
+  switch (container_type_) {
+    case kNullNode:
+      return;
+    case kNoChildren:
+      if (!offset_in_container_ || !container_node_->GetLayoutObject())
+        return MoveToPreviousContainer();
+      offset_in_container_ = 0;
+      return;
+    case kCharacterData:
+      return MoveToPreviousContainer();
+    case kContainerNode:
+      if (!child_before_position_)
+        return MoveToPreviousContainer();
+
+      if (IsUserSelectContain()) {
+        if (!container_node_->GetLayoutObject())
+          return MoveToPreviousContainer();
+        if (!ChildAfterPosition()) {
+          container_type_ = kUserSelectContainNode;
+          return MoveToPreviousSkippingChildren();
+        }
+        // TODO(crbug.com/1132412): We should move to before children.
+      }
+
+      MoveOffsetInContainerBy(-1);
+      SetContainer(child_before_position_);
+      switch (container_type_) {
+        case kNoChildren:
+          child_before_position_ = nullptr;
+          PushThenSetOffset(IgnoresChildren() ? 1 : 0);
+          return;
+        case kCharacterData:
+        case kTextNode:
+          child_before_position_ = nullptr;
+          PushThenSetOffset(To<CharacterData>(container_node_)->length());
+          return;
+        case kContainerNode:
+          child_before_position_ = Strategy::LastChild(*container_node_);
+          PushThenSetOffset(kInvalidOffset);
+          return;
+        case kUserSelectContainNode:
+          // TODO(crbug.com/1132412): We should move to before children.
+          child_before_position_ = Strategy::FirstChild(*container_node_);
+          PushThenSetOffset(child_before_position_ ? 1 : 0);
+          return;
+        case kNullNode:
+          NOTREACHED() << " Unexpected container_type_=" << container_type_;
+          return;
+      }
+      NOTREACHED() << " Invalid container_type_=" << container_type_;
+      return;
+
+    case kTextNode:
+      if (!offset_in_container_)
+        return MoveToPreviousContainer();
+      offset_in_container_ =
+          PreviousGraphemeBoundaryOf(*container_node_, offset_in_container_);
+      return;
+    case kUserSelectContainNode:
+      // TODO(crbug.com/1132412): We should move to next container
+      // unconditionally.
+      if (!container_node_->GetLayoutObject())
+        return MoveToPreviousContainer();
+      return MoveToPreviousSkippingChildren();
+  }
+  NOTREACHED() << " Invalid container_type_=" << container_type_;
+}
+
+template <typename Strategy>
+void FastPositionIteratorAlgorithm<Strategy>::IncrementInternal() {
+  DCHECK(IsValid());
+  switch (container_type_) {
+    case kNullNode:
+      return;
+    case kNoChildren:
+      if (offset_in_container_ || !container_node_->GetLayoutObject() ||
+          !IgnoresChildren())
+        return MoveToNextContainer();
+      offset_in_container_ = 1;
+      return;
+    case kCharacterData:
+      return MoveToNextContainer();
+    case kContainerNode:
+      if (!ChildAfterPosition())
+        return MoveToNextContainer();
+      MoveOffsetInContainerBy(1);
+      child_before_position_ = ChildAfterPosition();
+      SetContainer(child_before_position_);
+      child_before_position_ = nullptr;
+      return PushThenSetOffset(0);
+    case kTextNode:
+      if (offset_in_container_ == To<Text>(container_node_)->length())
+        return MoveToNextContainer();
+      offset_in_container_ =
+          NextGraphemeBoundaryOf(*container_node_, offset_in_container_);
+      return;
+    case kUserSelectContainNode:
+      // TODO(crbug.com/1132412): We should move to next container
+      // unconditionally.
+      if (!container_node_->GetLayoutObject())
+        return MoveToNextContainer();
+      // Note: We should skip to next container after visiting first child,
+      // because `LastOffsetForPositionIterator()` returns 1.
+      if (child_before_position_ == Strategy::FirstChild(*container_node_))
+        return MoveToNextContainer();
+      return MoveToNextSkippingChildren();
+  }
+  NOTREACHED() << " Invalid container_type_=" << container_type_;
+}
+
+template <typename Strategy>
+void FastPositionIteratorAlgorithm<Strategy>::MoveToNextContainer() {
+  PopOffsetStack();
+  child_before_position_ = container_node_;
+  SetContainer(SelectableParentOf<Strategy>(*container_node_));
+}
+
+template <typename Strategy>
+void FastPositionIteratorAlgorithm<Strategy>::MoveToNextSkippingChildren() {
+  if (child_before_position_ == Strategy::LastChild(*container_node_)) {
+    PopOffsetStack();
+    child_before_position_ = container_node_;
+    return SetContainer(SelectableParentOf<Strategy>(*container_node_));
+  }
+  MoveOffsetInContainerBy(1);
+  child_before_position_ = ChildAfterPosition();
+}
+
+template <typename Strategy>
+void FastPositionIteratorAlgorithm<Strategy>::MoveToPreviousContainer() {
+  PopOffsetStack();
+  child_before_position_ = Strategy::PreviousSibling(*container_node_);
+  if (!child_before_position_) {
+    DCHECK(offset_in_container_ == kInvalidOffset || !offset_in_container_);
+    offset_in_container_ = 0;
+  }
+  SetContainer(SelectableParentOf<Strategy>(*container_node_));
+}
+
+template <typename Strategy>
+void FastPositionIteratorAlgorithm<Strategy>::MoveToPreviousSkippingChildren() {
+  if (!child_before_position_) {
+    PopOffsetStack();
+    child_before_position_ = Strategy::PreviousSibling(*container_node_);
+    return SetContainer(SelectableParentOf<Strategy>(*container_node_));
+  }
+  MoveOffsetInContainerBy(-1);
+  child_before_position_ = Strategy::PreviousSibling(*child_before_position_);
+  if (!child_before_position_) {
+    DCHECK(offset_in_container_ == kInvalidOffset || !offset_in_container_);
+    offset_in_container_ = 0;
+  }
+}
+
+template <typename Strategy>
+void FastPositionIteratorAlgorithm<Strategy>::SetContainer(Node* node) {
+  container_node_ = node;
+  container_type_ = ContainerToContainerType(node);
+  if (container_type_ == kNullNode) {
+    child_before_position_ = nullptr;
+    offset_in_container_ = kInvalidOffset;
+    container_type_ = kNullNode;
+  }
+}
+
+template <typename Strategy>
+PositionTemplate<Strategy>
+FastPositionIteratorAlgorithm<Strategy>::BeforeOrAfterPosition() const {
+  DCHECK(IsValid());
+  return IsBeforePosition() ? PositionType::BeforeNode(*container_node_)
+                            : PositionType::AfterNode(*container_node_);
+}
+
+template <typename Strategy>
+bool FastPositionIteratorAlgorithm<Strategy>::IsBeforePosition() const {
+  DCHECK(IsValid());
+  switch (container_type_) {
+    case kNullNode:
+    case kTextNode:
+      NOTREACHED() << " Unexpected container_type_=" << container_type_;
+      return false;
+    case kNoChildren:
+    case kCharacterData:
+    case kUserSelectContainNode:
+      return !offset_in_container_;
+    case kContainerNode:
+      return !child_before_position_;
+  }
+  NOTREACHED() << " Invalid container_type_=" << container_type_;
+  return false;
+}
+
+template <typename Strategy>
+PositionTemplate<Strategy>
+FastPositionIteratorAlgorithm<Strategy>::DeprecatedComputePosition() const {
+  DCHECK(IsValid());
+  switch (container_type_) {
+    case kNullNode:
+      return PositionType();
+    case kNoChildren:
+      if (IgnoresChildren())
+        return BeforeOrAfterPosition();
+      DCHECK(!offset_in_container_);
+      return PositionType(*container_node_, 0);
+    case kCharacterData:
+      if (IsA<Text>(*container_node_))
+        return PositionType(*container_node_, offset_in_container_);
+      return BeforeOrAfterPosition();
+    case kContainerNode:
+      if (Node* child_after_position = ChildAfterPosition()) {
+        if (EditingIgnoresContent(*Strategy::Parent(*child_after_position)))
+          return PositionType::BeforeNode(*container_node_);
+        EnsureOffsetInContainer();
+        return PositionType(*container_node_, offset_in_container_);
+      }
+      return PositionType::LastPositionInOrAfterNode(*container_node_);
+    case kTextNode:
+      return PositionType(*container_node_, offset_in_container_);
+    case kUserSelectContainNode:
+      return PositionType::LastPositionInOrAfterNode(*container_node_);
+  }
+  NOTREACHED() << " Invalid container_type_=" << container_type_;
+}
+
+template <typename Strategy>
+PositionTemplate<Strategy>
+FastPositionIteratorAlgorithm<Strategy>::ComputePosition() const {
+  DCHECK(IsValid());
+  switch (container_type_) {
+    case kNullNode:
+      return PositionType();
+    case kNoChildren:
+      return BeforeOrAfterPosition();
+    case kCharacterData:
+      if (IsA<Text>(*container_node_))
+        return PositionType(*container_node_, offset_in_container_);
+      return BeforeOrAfterPosition();
+    case kContainerNode:
+      if (Node* child_after_position = ChildAfterPosition()) {
+        EnsureOffsetInContainer();
+        return PositionType(*container_node_, offset_in_container_);
+      }
+      if (IsUserSelectContain())
+        return BeforeOrAfterPosition();
+      return PositionType::LastPositionInOrAfterNode(*container_node_);
+    case kTextNode:
+      return PositionType(*container_node_, offset_in_container_);
+    case kUserSelectContainNode:
+      return BeforeOrAfterPosition();
+  }
+  NOTREACHED() << " Invalid container_type_=" << container_type_;
+}
+
+template <typename Strategy>
+int FastPositionIteratorAlgorithm<Strategy>::OffsetInTextNode() const {
+  DCHECK(IsValid());
+  //`VisiblePositionTest.PlaceholderBRWithCollapsedSpace` calls this function
+  // with `kCharacterData`.
+  DCHECK(container_type_ == kTextNode || container_type_ == kCharacterData)
+      << container_type_;
+  DCHECK(IsA<Text>(container_node_)) << container_node_;
+  return base::saturated_cast<int>(offset_in_container_);
+}
+
+template <typename Strategy>
+bool FastPositionIteratorAlgorithm<Strategy>::AtStart() const {
+  DCHECK(IsValid());
+  if (!container_node_)
+    return true;
+  return !Strategy::Parent(*container_node_) && AtStartOfNode();
+}
+
+template <typename Strategy>
+bool FastPositionIteratorAlgorithm<Strategy>::AtEnd() const {
+  DCHECK(IsValid());
+  if (!container_node_)
+    return true;
+  return !Strategy::Parent(*container_node_) && AtEndOfNode();
+}
+
+template <typename Strategy>
+bool FastPositionIteratorAlgorithm<Strategy>::AtStartOfNode() const {
+  DCHECK(IsValid());
+  switch (container_type_) {
+    case kNullNode:
+      return true;
+    case kContainerNode:
+      return !child_before_position_;
+    case kNoChildren:
+    case kCharacterData:
+    case kTextNode:
+      return !offset_in_container_;
+    case kUserSelectContainNode:
+      return !child_before_position_;
+  }
+  NOTREACHED() << " Invalid container_type_=" << container_type_;
+}
+
+template <typename Strategy>
+bool FastPositionIteratorAlgorithm<Strategy>::AtEndOfNode() const {
+  DCHECK(IsValid());
+  switch (container_type_) {
+    case kNullNode:
+      return true;
+    case kContainerNode:
+      return !ChildAfterPosition();
+    case kNoChildren:
+      return !IgnoresChildren() || offset_in_container_;
+    case kCharacterData:
+    case kTextNode:
+      return offset_in_container_ ==
+             To<CharacterData>(container_node_)->length();
+    case kUserSelectContainNode:
+      return HasChildren() || !ChildAfterPosition();
+  }
+  NOTREACHED() << " Invalid container_type_=" << container_type_;
+}
+
+template <typename Strategy>
+void FastPositionIteratorAlgorithm<Strategy>::EnsureOffsetInContainer() const {
+  DCHECK(container_type_ == kContainerNode ||
+         container_type_ == kUserSelectContainNode);
+  if (offset_in_container_ != kInvalidOffset)
+    return;
+  offset_in_container_ = Strategy::Index(*child_before_position_) + 1;
+}
+
+template <typename Strategy>
+void FastPositionIteratorAlgorithm<Strategy>::MoveOffsetInContainerBy(
+    int delta) {
+  DCHECK(delta == 1 || delta == -1) << delta;
+  if (offset_in_container_ == kInvalidOffset)
+    return;
+  offset_in_container_ += delta;
+}
+
+template <typename Strategy>
+void FastPositionIteratorAlgorithm<Strategy>::PopOffsetStack() {
+  if (offset_stack_.empty()) {
+    offset_in_container_ = kInvalidOffset;
+    return;
+  }
+  offset_in_container_ = offset_stack_.back();
+  offset_stack_.pop_back();
+}
+
+template <typename Strategy>
+void FastPositionIteratorAlgorithm<Strategy>::PushThenSetOffset(
+    unsigned offset_in_container) {
+  offset_stack_.push_back(offset_in_container_);
+  offset_in_container_ = offset_in_container;
+  AssertOffsetInContainerIsValid();
+}
+
+template class CORE_TEMPLATE_EXPORT
+    FastPositionIteratorAlgorithm<EditingStrategy>;
+template class CORE_TEMPLATE_EXPORT
+    FastPositionIteratorAlgorithm<EditingInFlatTreeStrategy>;
+
+// ---
+
+template <typename Strategy>
+PositionIteratorAlgorithm<Strategy>::PositionIteratorAlgorithm(
+    const PositionTemplate<Strategy>& position)
+    : fast_(!RuntimeEnabledFeatures::FastPositionIteratorEnabled()
+                ? PositionTemplate<Strategy>()
+                : position),
+
+      slow_(RuntimeEnabledFeatures::FastPositionIteratorEnabled()
+                ? PositionTemplate<Strategy>()
+                : position) {}
+
+template <typename Strategy>
+PositionIteratorAlgorithm<Strategy>::PositionIteratorAlgorithm(
+    const PositionIteratorAlgorithm& other)
+    : fast_(other.fast_), slow_(other.slow_) {}
+
+template <typename Strategy>
+PositionIteratorAlgorithm<Strategy>&
+PositionIteratorAlgorithm<Strategy>::operator=(
+    const PositionIteratorAlgorithm& other) {
+  fast_ = other.fast_;
+  slow_ = other.slow_;
+  return *this;
+}
+
+template <typename Strategy>
+PositionTemplate<Strategy>
+PositionIteratorAlgorithm<Strategy>::DeprecatedComputePosition() const {
+  if (!RuntimeEnabledFeatures::FastPositionIteratorEnabled())
+    return slow_.DeprecatedComputePosition();
+  return fast_.DeprecatedComputePosition();
+}
+
+template <typename Strategy>
+PositionTemplate<Strategy>
+PositionIteratorAlgorithm<Strategy>::ComputePosition() const {
+  if (!RuntimeEnabledFeatures::FastPositionIteratorEnabled())
+    return slow_.ComputePosition();
+  return fast_.ComputePosition();
+}
+
+template <typename Strategy>
+void PositionIteratorAlgorithm<Strategy>::Decrement() {
+  if (!RuntimeEnabledFeatures::FastPositionIteratorEnabled())
+    return slow_.Decrement();
+  fast_.Decrement();
+}
+
+template <typename Strategy>
+void PositionIteratorAlgorithm<Strategy>::Increment() {
+  if (!RuntimeEnabledFeatures::FastPositionIteratorEnabled())
+    return slow_.Increment();
+  fast_.Increment();
+}
+
+template <typename Strategy>
+Node* PositionIteratorAlgorithm<Strategy>::GetNode() const {
+  if (!RuntimeEnabledFeatures::FastPositionIteratorEnabled())
+    return slow_.GetNode();
+  return fast_.GetNode();
+}
+
+template <typename Strategy>
+int PositionIteratorAlgorithm<Strategy>::OffsetInTextNode() const {
+  if (!RuntimeEnabledFeatures::FastPositionIteratorEnabled())
+    return slow_.OffsetInTextNode();
+  return fast_.OffsetInTextNode();
+}
+
+template <typename Strategy>
+bool PositionIteratorAlgorithm<Strategy>::AtStart() const {
+  if (!RuntimeEnabledFeatures::FastPositionIteratorEnabled())
+    return slow_.AtStart();
+  return fast_.AtStart();
+}
+
+template <typename Strategy>
+bool PositionIteratorAlgorithm<Strategy>::AtEnd() const {
+  if (!RuntimeEnabledFeatures::FastPositionIteratorEnabled())
+    return slow_.AtEnd();
+  return fast_.AtEnd();
+}
+
+template <typename Strategy>
+bool PositionIteratorAlgorithm<Strategy>::AtStartOfNode() const {
+  if (!RuntimeEnabledFeatures::FastPositionIteratorEnabled())
+    return slow_.AtStartOfNode();
+  return fast_.AtStartOfNode();
+}
+
+template <typename Strategy>
+bool PositionIteratorAlgorithm<Strategy>::AtEndOfNode() const {
+  if (!RuntimeEnabledFeatures::FastPositionIteratorEnabled())
+    return slow_.AtEndOfNode();
+  return fast_.AtEndOfNode();
 }
 
 template class CORE_TEMPLATE_EXPORT PositionIteratorAlgorithm<EditingStrategy>;

@@ -1163,6 +1163,11 @@
       status: "test",
     },
     {
+      name: "FastPositionIterator",
+      status: "stable",
+      base_feature: "FastPositionIterator",
+    },
+    {
       name: "FeaturePolicyReporting",
       status: "experimental"
     },
