@@ -184,6 +184,11 @@ views::BoxLayout* CreateAndInitBoxLayoutForView(views::View* view);
 ASH_EXPORT std::string GetScreenCaptureNotificationIdForPath(
     const base::FilePath& path);
 
+// If the privacy indicators feature is enabled, the below functions update the
+// camera and microphone capture mode indicators according to the given values.
+void MaybeUpdateCameraPrivacyIndicator(bool camera_on);
+void MaybeUpdateMicrophonePrivacyIndicator(bool mic_on);
+
 }  // namespace capture_mode_util
 
 }  // namespace ash

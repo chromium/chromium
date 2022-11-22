@@ -19,6 +19,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/system/privacy/privacy_indicators_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check.h"
 #include "base/notreached.h"
@@ -43,6 +44,12 @@ namespace {
 constexpr int kBannerViewTopRadius = 0;
 constexpr int kBannerViewBottomRadius = 8;
 constexpr float kScaleUpFactor = 0.8f;
+
+// The app IDs used for the capture mode camera and microphone recording privacy
+// indicators.
+constexpr char kCameraPrivacyIndicatorId[] = "system-capture-mode-camera";
+constexpr char kMicrophonePrivacyIndicatorId[] =
+    "system-capture-mode-microphone";
 
 // Returns the target visibility of the camera preview, given the
 // `confine_bounds_short_side_length`. The out parameter
@@ -490,6 +497,20 @@ std::string GetScreenCaptureNotificationIdForPath(const base::FilePath& path) {
   DCHECK(!path.empty());
   return base::StringPrintf("%s-%s", kScreenCaptureNotificationId,
                             path.BaseName().value().c_str());
+}
+
+void MaybeUpdateCameraPrivacyIndicator(bool camera_on) {
+  if (features::IsPrivacyIndicatorsEnabled()) {
+    UpdatePrivacyIndicatorsView(kCameraPrivacyIndicatorId, camera_on,
+                                /*is_microphone_used=*/false);
+  }
+}
+
+void MaybeUpdateMicrophonePrivacyIndicator(bool mic_on) {
+  if (features::IsPrivacyIndicatorsEnabled()) {
+    UpdatePrivacyIndicatorsView(kMicrophonePrivacyIndicatorId,
+                                /*is_camera_used=*/false, mic_on);
+  }
 }
 
 }  // namespace ash::capture_mode_util

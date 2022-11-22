@@ -133,12 +133,14 @@ CameraPreviewView::CameraPreviewView(
   accessibility_observation_.Observe(Shell::Get()->accessibility_controller());
   RefreshResizeButtonVisibility();
   UpdateResizeButtonTooltip();
+  capture_mode_util::MaybeUpdateCameraPrivacyIndicator(/*camera_on=*/true);
 }
 
 CameraPreviewView::~CameraPreviewView() {
   auto* controller = CaptureModeController::Get();
   if (controller->IsActive() && !controller->is_recording_in_progress())
     controller->capture_mode_session()->OnCameraPreviewDestroyed();
+  capture_mode_util::MaybeUpdateCameraPrivacyIndicator(/*camera_on=*/false);
 }
 
 void CameraPreviewView::SetIsCollapsible(bool value) {

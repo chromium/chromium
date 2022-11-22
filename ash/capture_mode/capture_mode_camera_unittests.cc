@@ -25,14 +25,17 @@
 #include "ash/capture_mode/fake_folder_selection_dialog_factory.h"
 #include "ash/capture_mode/fake_video_source_provider.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
+#include "ash/constants/ash_features.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/system/accessibility/autoclick_menu_bubble_controller.h"
+#include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_state.h"
@@ -42,6 +45,7 @@
 #include "base/system/system_monitor.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "media/base/video_facing.h"
@@ -52,12 +56,14 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -4472,14 +4478,119 @@ TEST_F(NoSessionCaptureModeCameraTest, RequestCameraInfoAfterUserLogsIn) {
   // Simulate the user login process and wait for the camera info to be updated.
   {
     base::RunLoop loop;
-    GetCameraController()->SetOnCameraListReceivedForTesting(
-        loop.QuitClosure());
+    camera_controller->SetOnCameraListReceivedForTesting(loop.QuitClosure());
     SimulateUserLogin("example@gmail.com", user_manager::USER_TYPE_REGULAR);
     loop.Run();
   }
 
   // Verify that after the user logs in, the camera info is up-to-date.
   EXPECT_EQ(camera_controller->available_cameras().size(), 1u);
+}
+
+class CaptureModePrivacyIndicatorsTest : public CaptureModeCameraTest {
+ public:
+  CaptureModePrivacyIndicatorsTest()
+      : scoped_feature_list_(features::kPrivacyIndicators) {}
+  CaptureModePrivacyIndicatorsTest(const CaptureModePrivacyIndicatorsTest&) =
+      delete;
+  CaptureModePrivacyIndicatorsTest& operator=(
+      const CaptureModePrivacyIndicatorsTest&) = delete;
+  ~CaptureModePrivacyIndicatorsTest() override = default;
+
+  bool IsCameraIndicatorIconVisible() const {
+    auto* indicator_view = GetPrimaryDisplayPrivacyIndicatorsView();
+    return indicator_view && indicator_view->GetVisible() &&
+           indicator_view->IsCameraUsed() &&
+           indicator_view->camera_icon_->GetVisible();
+  }
+
+  bool IsMicrophoneIndicatorIconVisible() const {
+    auto* indicator_view = GetPrimaryDisplayPrivacyIndicatorsView();
+    return indicator_view && indicator_view->GetVisible() &&
+           indicator_view->IsMicrophoneUsed() &&
+           indicator_view->microphone_icon_->GetVisible();
+  }
+
+  PrivacyIndicatorsTrayItemView* GetPrimaryDisplayPrivacyIndicatorsView()
+      const {
+    return Shell::GetPrimaryRootWindowController()
+        ->GetStatusAreaWidget()
+        ->unified_system_tray()
+        ->privacy_indicators_view();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(CaptureModePrivacyIndicatorsTest, CameraPrivacyIndicators) {
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  // Initially the session doesn't show any camera preview since the camera
+  // hasn't connected yet. There should be no privacy indicators.
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  auto* camera_controller = GetCameraController();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  EXPECT_FALSE(camera_controller->camera_preview_widget());
+  EXPECT_FALSE(IsCameraIndicatorIconVisible());
+  EXPECT_FALSE(IsMicrophoneIndicatorIconVisible());
+
+  // Once the camera gets connected, the camera privacy indicator icon should
+  // show. No microphone yet (not until recording starts with audio).
+  AddDefaultCamera();
+  EXPECT_TRUE(camera_controller->camera_preview_widget());
+  EXPECT_TRUE(IsCameraIndicatorIconVisible());
+  EXPECT_FALSE(IsMicrophoneIndicatorIconVisible());
+
+  // If the camera gets disconnected for some reason, the indicator should go
+  // away, and come back once it reconnects again.
+  RemoveDefaultCamera();
+  EXPECT_FALSE(camera_controller->camera_preview_widget());
+  // The widget closes its window asynchronously, run a loop to finish that.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(IsCameraIndicatorIconVisible());
+  EXPECT_FALSE(IsMicrophoneIndicatorIconVisible());
+  AddDefaultCamera();
+  EXPECT_TRUE(camera_controller->camera_preview_widget());
+  EXPECT_TRUE(IsCameraIndicatorIconVisible());
+  EXPECT_FALSE(IsMicrophoneIndicatorIconVisible());
+}
+
+TEST_F(CaptureModePrivacyIndicatorsTest, DuringRecordingPrivacyIndicators) {
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  // Even with the selected camera present, no indicators will show until the
+  // capture session starts.
+  auto* camera_controller = GetCameraController();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  AddDefaultCamera();
+  EXPECT_FALSE(camera_controller->camera_preview_widget());
+  EXPECT_FALSE(IsCameraIndicatorIconVisible());
+  EXPECT_FALSE(IsMicrophoneIndicatorIconVisible());
+
+  auto* capture_controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                                 CaptureModeType::kVideo);
+  EXPECT_TRUE(camera_controller->camera_preview_widget());
+  EXPECT_TRUE(IsCameraIndicatorIconVisible());
+  EXPECT_FALSE(IsMicrophoneIndicatorIconVisible());
+
+  // When the user selects audio recording, the idicators won't change.
+  // Recording has to start first.
+  capture_controller->EnableAudioRecording(true);
+  EXPECT_FALSE(IsMicrophoneIndicatorIconVisible());
+
+  StartRecordingFromSource(CaptureModeSource::kFullscreen);
+  EXPECT_TRUE(IsCameraIndicatorIconVisible());
+  EXPECT_TRUE(IsMicrophoneIndicatorIconVisible());
+
+  // Once recording ends, both indicators should disappear.
+  capture_controller->EndVideoRecording(
+      EndRecordingReason::kStopRecordingButton);
+  WaitForCaptureFileToBeSaved();
+  EXPECT_FALSE(IsCameraIndicatorIconVisible());
+  EXPECT_FALSE(IsMicrophoneIndicatorIconVisible());
 }
 
 }  // namespace ash
