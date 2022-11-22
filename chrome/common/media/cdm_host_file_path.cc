@@ -49,17 +49,16 @@ void AddCdmHostFilePaths(
   // kBrowserProcessExecutableName (e.g. for a local build of Chrome).
   // DIR_ASSETS sorts this out for us.
   base::FilePath chrome_assets_dir;
-  CHECK(base::PathService::Get(base::DIR_ASSETS, &chrome_assets_dir));
 
   // Find where kBrowserProcessExecutableName is installed. Signature file is
-  // in the assets directory.
-  base::FilePath chrome_exe;
-  CHECK(base::PathService::Get(base::FILE_EXE, &chrome_exe));
-  DCHECK(base::FilePath::CompareEqualIgnoreCase(
-      chrome::kBrowserProcessExecutableName, chrome_exe.BaseName().value()))
-      << "Filename returned by FILE_EXE '" << chrome_exe.BaseName().value()
-      << "' does not match kBrowserProcessExecutableName '"
-      << chrome::kBrowserProcessExecutableName << "'.";
+  // in the assets directory. FILE_EXE may not be kBrowserProcessExecutableName,
+  // e.g. browser_tests.exe, which is fine since we don't verify those
+  // signatures in tests.
+  base::FilePath dir_exe;
+  CHECK(base::PathService::Get(base::DIR_EXE, &dir_exe));
+  base::FilePath chrome_exe =
+      dir_exe.DirName().Append(chrome::kBrowserProcessExecutableName);
+  CHECK(base::PathService::Get(base::DIR_ASSETS, &chrome_assets_dir));
   const auto chrome_exe_sig = GetSigFilePath(
       chrome_assets_dir.Append(chrome::kBrowserProcessExecutableName));
   DVLOG(2) << __func__ << ":" << chrome_exe.value() << ", signature file "
