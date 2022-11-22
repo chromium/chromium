@@ -4,6 +4,8 @@
 
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
 
+#include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
@@ -34,6 +36,8 @@ constexpr gfx::Insets kInsideBorderInsets(16);
 // The duration of the menu position animation.
 constexpr base::TimeDelta kPositionAnimationDurationMs =
     base::Milliseconds(250);
+
+constexpr base::TimeDelta kOpacityAnimationDurationMs = base::Milliseconds(150);
 
 }  // namespace
 
@@ -111,15 +115,12 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
-  params.parent = window->parent();
+  params.parent =
+      window->GetRootWindow()->GetChildById(kShellWindowId_FloatContainer);
   params.name = "TabletModeMultitaskMenuWidget";
 
   widget_->Init(std::move(params));
   widget_->SetVisibilityChangedAnimationsEnabled(false);
-  auto* multitask_menu_window = widget_->GetNativeWindow();
-  // TODO(sophiewen): Consider adding transient child instead.
-  multitask_menu_window->parent()->StackChildAbove(multitask_menu_window,
-                                                   window_);
 
   // Clip the widget's root view so that the menu appears to be sliding out from
   // the top, even if the window above it is stacked below it, which is the case
@@ -180,6 +181,21 @@ void TabletModeMultitaskMenu::Animate(bool show) {
       .SetOpacity(view_layer, show ? 1.f : 0.f, gfx::Tween::LINEAR);
 }
 
+void TabletModeMultitaskMenu::AnimateFadeOut() {
+  ui::Layer* view_layer = menu_view_->layer();
+  auto* animator = view_layer->GetAnimator();
+  if (animator->is_animating())
+    return;
+  views::AnimationBuilder()
+      .OnEnded(base::BindOnce(&TabletModeMultitaskMenu::Reset,
+                              weak_factory_.GetWeakPtr()))
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetDuration(kOpacityAnimationDurationMs)
+      .SetOpacity(view_layer, 0.0f, gfx::Tween::LINEAR);
+}
+
 void TabletModeMultitaskMenu::BeginDrag(float initial_y) {
   // Try to match the bottom of the menu with the drag location.
   // TODO(sophiewen): The drag location may not always be at the bottom of the
@@ -219,7 +235,7 @@ void TabletModeMultitaskMenu::OnWindowDestroying(aura::Window* window) {
   window_ = nullptr;
 
   // Destroys `this`.
-  event_handler_->ResetMultitaskMenu();
+  Reset();
 }
 
 void TabletModeMultitaskMenu::OnWidgetActivationChanged(views::Widget* widget,
@@ -227,7 +243,7 @@ void TabletModeMultitaskMenu::OnWidgetActivationChanged(views::Widget* widget,
   // `widget` gets deactivated when the window state changes.
   DCHECK(widget_observation_.IsObservingSource(widget));
   if (!active)
-    event_handler_->ResetMultitaskMenu();
+    Reset();
 }
 
 void TabletModeMultitaskMenu::OnDisplayMetricsChanged(

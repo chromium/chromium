@@ -147,6 +147,16 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
     default:
       break;
   }
+
+  // Tap outside will dismiss the menu with a fade out animation.
+  // TODO(b/260113268): Use increased tap target and `HitTestRect` instead.
+  if (!event->handled() && multitask_menu_ &&
+      !gfx::RectF(multitask_menu_->widget()->GetWindowBoundsInScreen())
+           .Contains(screen_location)) {
+    multitask_menu_->AnimateFadeOut();
+    event->SetHandled();
+    return;
+  }
 }
 
 }  // namespace ash

@@ -40,8 +40,13 @@ class ASH_EXPORT TabletModeMultitaskMenu : aura::WindowObserver,
 
   views::Widget* widget() { return widget_.get(); }
 
-  // Slides the menu down if `show` is true, otherwise slides up.
+  // Performs a slide down animation on the menu if `show` is true, otherwise
+  // slide up animation.
   void Animate(bool show);
+
+  // Performs a fade out animation and closes the menu. Called when tap outside
+  // the menu dismisses it.
+  void AnimateFadeOut();
 
   // Actions called by the event handler, where `initial_y` and `current_y` are
   // in `window_`'s coordinates.
