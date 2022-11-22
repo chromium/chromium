@@ -706,15 +706,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android_n5x_swarming_dbg",
-    mirrors = [
-        "ci/Android arm64 Builder (dbg)",
-        "ci/Marshmallow 64 bit Tester",
-    ],
-    goma_backend = None,
-)
-
-try_.builder(
     name = "android_unswarmed_pixel_aosp",
     mirrors = [
         "ci/Android arm64 Builder (dbg)",

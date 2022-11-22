@@ -603,17 +603,6 @@
           'junit_tests': 'cast_junit_tests',
         },
       },
-      'Marshmallow 64 bit Tester': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'marshmallow',
-          'bullhead',
-        ],
-        'test_suites': {
-          'gtest_tests': 'android_marshmallow_gtests',
-        },
-        'os_type': 'android',
-      },
       'Nougat Phone Tester': {
         'test_suites': {
           'gtest_tests': 'android_nougat_gtests',
