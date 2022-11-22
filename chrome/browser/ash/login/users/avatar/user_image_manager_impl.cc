@@ -291,12 +291,9 @@ void UserImageManagerImpl::Job::LoadImage(base::FilePath image_path,
                                        weak_factory_.GetWeakPtr(), true));
       }
     } else {
-      gfx::ImageSkia default_image =
-          default_user_image::GetDefaultImageDeprecated(image_index_);
       std::unique_ptr<user_manager::UserImage> user_image(
-          user_manager::UserImage::CreateAndEncode(
-              default_image, user_manager::UserImage::ChooseImageFormat(
-                                 *default_image.bitmap())));
+          new user_manager::UserImage(
+              default_user_image::GetDefaultImageDeprecated(image_index_)));
       UpdateUser(std::move(user_image));
       NotifyJobDone();
     }
@@ -333,12 +330,9 @@ void UserImageManagerImpl::Job::SetToDefaultImage(int default_image_index) {
         image_url_, base::BindOnce(&Job::OnLoadImageDone,
                                    weak_factory_.GetWeakPtr(), true));
   } else {
-    gfx::ImageSkia default_image =
-        default_user_image::GetDefaultImageDeprecated(image_index_);
     std::unique_ptr<user_manager::UserImage> user_image(
-        user_manager::UserImage::CreateAndEncode(
-            default_image, user_manager::UserImage::ChooseImageFormat(
-                               *default_image.bitmap())));
+        new user_manager::UserImage(
+            default_user_image::GetDefaultImageDeprecated(image_index_)));
 
     UpdateUser(std::move(user_image));
     UpdateLocalState();
