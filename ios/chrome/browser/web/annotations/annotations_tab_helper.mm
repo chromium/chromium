@@ -9,7 +9,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool.h"
-#import "base/threading/scoped_blocking_call.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/text_selection/text_classifier_model_service.h"
 #import "ios/chrome/browser/text_selection/text_classifier_model_service_factory.h"
@@ -32,25 +31,6 @@
 static NSString* kDecorationDate = @"DATE";
 static NSString* kDecorationAddress = @"ADDRESS";
 static NSString* kDecorationPhoneNumber = @"PHONE_NUMBER";
-
-namespace {
-
-// Applies text classifier to extract intents in the given text. Returns
-// a `base::Value::List` of annotations (see i/w/a/annotations_utils.h).
-// This runs in the thread pool.
-// TODO(crbug.com/1350974): move scope block to provider, and remove
-// ApplyDataExtractor.
-absl::optional<base::Value> ApplyDataExtractor(
-    const std::string& text,
-    NSTextCheckingType handled_types,
-    const base::FilePath& model_path) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::WILL_BLOCK);
-  return ios::provider::ExtractDataElementsFromText(text, handled_types,
-                                                    model_path);
-}
-
-}  //  namespace
 
 AnnotationsTabHelper::AnnotationsTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
@@ -98,7 +78,7 @@ void AnnotationsTabHelper::OnTextExtracted(web::WebState* web_state,
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&ApplyDataExtractor, text,
+      base::BindOnce(&ios::provider::ExtractDataElementsFromText, text,
                      ios::provider::GetHandledIntentTypes(web_state),
                      std::move(model_path)),
       base::BindOnce(&AnnotationsTabHelper::ApplyDeferredProcessing,
