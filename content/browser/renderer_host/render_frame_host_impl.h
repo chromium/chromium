@@ -2195,8 +2195,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
                          bool has_user_gesture,
                          absl::optional<blink::scheduler::TaskAttributionId>
                              soft_navigation_heuristic_task_id) override;
-  void NavigateToNavigationApiKey(const std::string& key,
-                                  bool has_user_gesture) override;
+  void NavigateToNavigationApiKey(
+      const std::string& key,
+      bool has_user_gesture,
+      absl::optional<blink::scheduler::TaskAttributionId> task_id) override;
   void UpdateTitle(const absl::optional<::std::u16string>& title,
                    base::i18n::TextDirection title_direction) override;
   void UpdateUserActivationState(

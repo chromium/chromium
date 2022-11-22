@@ -182,13 +182,13 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // Navigates to the specified offset from the "current entry" and marks the
   // navigations as initiated by the renderer.
   // |initiator_rfh| is the frame that requested the navigation.
-  // |soft_navigation_heuristic_task_id| is the task in the renderer that
+  // |soft_navigation_heuristics_task_id| is the task in the renderer that
   // initiated this call (if any).
   void GoToOffsetFromRenderer(
       int offset,
       RenderFrameHostImpl* initiator_rfh,
       absl::optional<blink::scheduler::TaskAttributionId>
-          soft_navigation_heuristic_task_id);
+          soft_navigation_heuristics_task_id);
 
 #if BUILDFLAG(IS_ANDROID)
   // The difference between (Can)GoToOffsetWithSkipping and
@@ -241,8 +241,13 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // |entries_|, or due to a race condition) or compromised.
   // If a matching entry is found, navigate to that entry and proceed like any
   // other history navigation.
-  void NavigateToNavigationApiKey(RenderFrameHostImpl* initiator_rfh,
-                                  const std::string& key);
+  // |soft_navigation_heuristics_task_id|: The task in the renderer that
+  // initiated this call (if any).
+  void NavigateToNavigationApiKey(
+      RenderFrameHostImpl* initiator_rfh,
+      absl::optional<blink::scheduler::TaskAttributionId>
+          soft_navigation_heuristics_task_id,
+      const std::string& key);
 
   // Whether this is the initial navigation in an unmodified new tab.  In this
   // case, we know there is no content displayed in the page.
@@ -549,7 +554,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
 
   // Navigates in session history to the given index.
   // |initiator_rfh| is nullptr for browser-initiated navigations.
-  // |soft_navigation_heuristic_task_id|: The task in the renderer that
+  // |soft_navigation_heuristics_task_id|: The task in the renderer that
   // initiated this call (if any).
   // If this navigation originated from the navigation API, |navigation_api_key|
   // will be set and indicate the navigation api key that |initiator_rfh|
@@ -565,7 +570,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // If this navigation originated from the navigation API, |navigation_api_key|
   // will be set and indicate the navigation api key that |initiator_rfh|
   // asked to be navigated to.
-  // |soft_navigation_heuristic_task_id|: The task in the renderer that
+  // |soft_navigation_heuristics_task_id|: The task in the renderer that
   // initiated this call (if any).
   void NavigateToExistingPendingEntry(
       ReloadType reload_type,
@@ -585,7 +590,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // to |pending_entry_|, starting at |frame| and exploring its children.
   // |same_document_loads| and |different_document_loads| will be filled with
   // the NavigationRequests needed to navigate to |pending_entry_|.
-  // |soft_navigation_heuristic_task_id|: The task in the renderer that
+  // |soft_navigation_heuristics_task_id|: The task in the renderer that
   // initiated this call (if any).
   void FindFramesToNavigate(
       FrameTreeNode* frame,
@@ -643,7 +648,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // Creates and returns a NavigationRequest for a navigation to |entry|. Will
   // return nullptr if the parameters are invalid and the navigation cannot
   // start.
-  // |soft_navigation_heuristic_task_id|: The task in the renderer that
+  // |soft_navigation_heuristics_task_id|: The task in the renderer that
   // initiated this call (if any).
   // TODO(clamy): Ensure this is only called for navigations to existing
   // NavigationEntries.

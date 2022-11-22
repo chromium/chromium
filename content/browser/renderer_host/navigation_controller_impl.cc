@@ -4535,6 +4535,8 @@ NavigationControllerImpl::ShouldNavigateToEntryForNavigationApiKey(
 
 void NavigationControllerImpl::NavigateToNavigationApiKey(
     RenderFrameHostImpl* initiator_rfh,
+    absl::optional<blink::scheduler::TaskAttributionId>
+        soft_navigation_heuristics_task_id,
     const std::string& key) {
   FrameTreeNode* node = initiator_rfh->frame_tree_node();
   FrameNavigationEntry* current_entry =
@@ -4554,8 +4556,7 @@ void NavigationControllerImpl::NavigateToNavigationApiKey(
     if (result == HistoryNavigationAction::kStopLooking)
       break;
     if (result != HistoryNavigationAction::kKeepLooking) {
-      GoToIndex(i, initiator_rfh,
-                /*soft_navigation_heuristics_task_id=*/absl::nullopt, &key);
+      GoToIndex(i, initiator_rfh, soft_navigation_heuristics_task_id, &key);
       return;
     }
   }
@@ -4565,8 +4566,7 @@ void NavigationControllerImpl::NavigateToNavigationApiKey(
     if (result == HistoryNavigationAction::kStopLooking)
       break;
     if (result != HistoryNavigationAction::kKeepLooking) {
-      GoToIndex(i, initiator_rfh,
-                /*soft_navigation_heuristics_task_id=*/absl::nullopt, &key);
+      GoToIndex(i, initiator_rfh, soft_navigation_heuristics_task_id, &key);
       return;
     }
   }

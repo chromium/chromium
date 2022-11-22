@@ -6105,8 +6105,10 @@ void RenderFrameHostImpl::GoToEntryAtOffset(
   }
 }
 
-void RenderFrameHostImpl::NavigateToNavigationApiKey(const std::string& key,
-                                                     bool has_user_gesture) {
+void RenderFrameHostImpl::NavigateToNavigationApiKey(
+    const std::string& key,
+    bool has_user_gesture,
+    absl::optional<blink::scheduler::TaskAttributionId> task_id) {
   // Non-user initiated navigations coming from the renderer should be ignored
   // if there is an ongoing browser-initiated navigation.
   // See https://crbug.com/879965.
@@ -6117,7 +6119,7 @@ void RenderFrameHostImpl::NavigateToNavigationApiKey(const std::string& key,
           frame_tree_->root()->navigation_request(), has_user_gesture)) {
     return;
   }
-  frame_tree_->controller().NavigateToNavigationApiKey(this, key);
+  frame_tree_->controller().NavigateToNavigationApiKey(this, task_id, key);
 }
 
 void RenderFrameHostImpl::HandleAccessibilityFindInPageResult(
