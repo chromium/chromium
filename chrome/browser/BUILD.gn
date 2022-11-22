@@ -8170,6 +8170,8 @@ static_library("test_support") {
 
   # Always include this via the main test support target.
   visibility = [
+    "//chrome/browser/autofill:interactive_ui_tests",
+    "//chrome/browser/autofill:test_support_ui",
     "//chrome/browser/extensions:test_support",
     "//chrome/test:test_support",
   ]
