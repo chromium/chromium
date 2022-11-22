@@ -216,8 +216,11 @@ void ChromeOSSystemProfileProvider::InitTaskGetCellularDeviceVariant(
 
 void ChromeOSSystemProfileProvider::OnMachineStatisticsLoaded(
     base::OnceClosure callback) {
-  chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
-      "hardware_class", &full_hardware_class_);
+  if (const absl::optional<base::StringPiece> full_hardware_class =
+          chromeos::system::StatisticsProvider::GetInstance()
+              ->GetMachineStatistic("hardware_class")) {
+    full_hardware_class_ = std::string(full_hardware_class.value());
+  }
   std::move(callback).Run();
 }
 
