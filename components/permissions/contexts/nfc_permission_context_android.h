@@ -28,7 +28,8 @@ class NfcPermissionContextAndroid : public NfcPermissionContext {
                            BrowserPermissionCallback callback,
                            bool persist,
                            ContentSetting content_setting,
-                           bool is_one_time) override;
+                           bool is_one_time,
+                           bool is_final_decision) override;
 
   void OnNfcSystemLevelSettingPromptClosed(const PermissionRequestID& id,
                                            const GURL& requesting_origin,

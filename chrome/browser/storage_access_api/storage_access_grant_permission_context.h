@@ -90,7 +90,8 @@ class StorageAccessGrantPermissionContext
                            permissions::BrowserPermissionCallback callback,
                            bool persist,
                            ContentSetting content_setting,
-                           bool is_one_time) override;
+                           bool is_one_time,
+                           bool is_final_decision) override;
   void UpdateContentSetting(const GURL& requesting_origin,
                             const GURL& embedding_origin,
                             ContentSetting content_setting,

@@ -64,6 +64,12 @@ class PermissionPrompt {
     virtual void Dismiss() = 0;
     virtual void Ignore() = 0;
 
+    // This method preemptively ignores a permission request but does not
+    // finalize a permission prompt. That is needed in case a permission prompt
+    // is a quiet chip. This should be called only if an origin is subscribed to
+    // the `PermissionStatus.onchange` listener.
+    virtual void PreIgnoreQuietPrompt() = 0;
+
     // If |ShouldCurrentRequestUseQuietUI| return true, this will provide a
     // reason as to why the quiet UI needs to be used. Returns `absl::nullopt`
     // otherwise.

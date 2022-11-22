@@ -55,7 +55,8 @@ void DurableStoragePermissionContext::DecidePermission(
   if (requesting_origin != embedding_origin) {
     NotifyPermissionSet(id, requesting_origin, embedding_origin,
                         std::move(callback), /*persist=*/false,
-                        CONTENT_SETTING_DEFAULT, /*is_one_time=*/false);
+                        CONTENT_SETTING_DEFAULT, /*is_one_time=*/false,
+                        /*is_final_decision=*/true);
     return;
   }
 
@@ -73,7 +74,8 @@ void DurableStoragePermissionContext::DecidePermission(
           content_settings::CookieSettings::QueryReason::kSiteStorage)) {
     NotifyPermissionSet(id, requesting_origin, embedding_origin,
                         std::move(callback), /*persist=*/false,
-                        CONTENT_SETTING_DEFAULT, /*is_one_time=*/false);
+                        CONTENT_SETTING_DEFAULT, /*is_one_time=*/false,
+                        /*is_final_decision=*/true);
     return;
   }
 
@@ -90,7 +92,8 @@ void DurableStoragePermissionContext::DecidePermission(
   if (base::Contains(installed_registerable_domains, registerable_domain)) {
     NotifyPermissionSet(id, requesting_origin, embedding_origin,
                         std::move(callback), /*persist=*/true,
-                        CONTENT_SETTING_ALLOW, /*is_one_time=*/false);
+                        CONTENT_SETTING_ALLOW, /*is_one_time=*/false,
+                        /*is_final_decision=*/true);
     return;
   }
 
@@ -105,14 +108,16 @@ void DurableStoragePermissionContext::DecidePermission(
     if (important_site.registerable_domain == registerable_domain) {
       NotifyPermissionSet(id, requesting_origin, embedding_origin,
                           std::move(callback), /*persist=*/true,
-                          CONTENT_SETTING_ALLOW, /*is_one_time=*/false);
+                          CONTENT_SETTING_ALLOW, /*is_one_time=*/false,
+                          /*is_final_decision=*/true);
       return;
     }
   }
 
   NotifyPermissionSet(id, requesting_origin, embedding_origin,
                       std::move(callback), /*persist=*/false,
-                      CONTENT_SETTING_DEFAULT, /*is_one_time=*/false);
+                      CONTENT_SETTING_DEFAULT, /*is_one_time=*/false,
+                      /*is_final_decision=*/true);
 }
 
 void DurableStoragePermissionContext::UpdateContentSetting(

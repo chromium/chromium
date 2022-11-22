@@ -13,6 +13,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/request_type.h"
+#include "content/public/browser/global_routing_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -37,7 +38,9 @@ class PermissionRequest {
   // If `is_one_time` is true, the decision will last until all tabs of
   // `requesting_origin_` are closed or navigated away from.
   using PermissionDecidedCallback =
-      base::OnceCallback<void(ContentSetting /*result*/, bool /*is_one_time*/)>;
+      base::RepeatingCallback<void(ContentSetting /*result*/,
+                                   bool /*is_one_time*/,
+                                   bool /*is_final_decision*/)>;
 
   // `permission_decided_callback` is called when the permission request is
   // resolved by the user (see comment on PermissionDecidedCallback above).
@@ -114,7 +117,7 @@ class PermissionRequest {
   // Called when the user has cancelled the permission request. This
   // corresponds to a denial, but is segregated in case the context needs to
   // be able to distinguish between an active refusal or an implicit refusal.
-  void Cancelled();
+  void Cancelled(bool is_final_decision = true);
 
   // The UI this request was associated with was answered by the user.
   // It is safe for the request to be deleted at this point -- it will receive
@@ -134,7 +137,17 @@ class PermissionRequest {
   // this permission request.
   ContentSettingsType GetContentSettingsType() const;
 
+  void set_requesting_frame_id(content::GlobalRenderFrameHostId id) {
+    request_frame_id_ = id;
+  }
+
+  content::GlobalRenderFrameHostId& get_requesting_frame_id() {
+    return request_frame_id_;
+  }
+
  private:
+  content::GlobalRenderFrameHostId request_frame_id_;
+
   // The origin on whose behalf this permission request is being made.
   GURL requesting_origin_;
 

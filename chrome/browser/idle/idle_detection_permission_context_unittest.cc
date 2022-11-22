@@ -47,13 +47,14 @@ class TestIdleDetectionPermissionContext
                            permissions::BrowserPermissionCallback callback,
                            bool persist,
                            ContentSetting content_setting,
-                           bool is_one_time) override {
+                           bool is_one_time,
+                           bool is_final_decision) override {
     permission_set_count_++;
     last_permission_set_persisted_ = persist;
     last_permission_set_setting_ = content_setting;
     IdleDetectionPermissionContext::NotifyPermissionSet(
         id, requesting_origin, embedder_origin, std::move(callback), persist,
-        content_setting, is_one_time);
+        content_setting, is_one_time, is_final_decision);
   }
 
   int permission_set_count_;

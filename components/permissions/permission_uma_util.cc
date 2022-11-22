@@ -428,14 +428,18 @@ const char PermissionUmaUtil::kPermissionsPromptDeniedNoGesture[] =
 
 // Make sure you update histograms.xml permission histogram_suffix if you
 // add new permission
-void PermissionUmaUtil::PermissionRequested(ContentSettingsType content_type,
-                                            const GURL& requesting_origin) {
+void PermissionUmaUtil::PermissionRequested(ContentSettingsType content_type) {
   PermissionType permission;
   bool success = PermissionUtil::GetPermissionType(content_type, &permission);
   DCHECK(success);
 
   base::UmaHistogramEnumeration("ContentSettings.PermissionRequested",
                                 permission, PermissionType::NUM);
+}
+
+void PermissionUmaUtil::PermissionRequestPreignored(PermissionType permission) {
+  base::UmaHistogramEnumeration("Permissions.QuietPrompt.Preignore", permission,
+                                PermissionType::NUM);
 }
 
 void PermissionUmaUtil::PermissionRevoked(

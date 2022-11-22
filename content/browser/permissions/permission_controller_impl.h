@@ -5,6 +5,9 @@
 #ifndef CONTENT_BROWSER_PERMISSIONS_PERMISSION_CONTROLLER_IMPL_H_
 #define CONTENT_BROWSER_PERMISSIONS_PERMISSION_CONTROLLER_IMPL_H_
 
+#include <map>
+#include <set>
+
 #include "base/containers/id_map.h"
 #include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
@@ -91,6 +94,10 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   void UnsubscribePermissionStatusChange(
       SubscriptionId subscription_id) override;
 
+  void add_notify_listener_observer_for_tests(base::RepeatingClosure callback) {
+    onchange_listeners_callback_for_tests_ = std::move(callback);
+  }
+
  private:
   friend class PermissionControllerImplTest;
   friend class PermissionServiceImpl;
@@ -158,8 +165,15 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   void NotifyChangedSubscriptions(const SubscriptionsStatusMap& old_statuses);
   void OnDelegatePermissionStatusChange(SubscriptionId subscription_id,
                                         blink::mojom::PermissionStatus status);
+  bool IsSubscribedToPermissionChangeEvent(
+      blink::PermissionType permission,
+      RenderFrameHost* render_frame_host) override;
+
+  void NotifyEventListener();
 
   PermissionOverrides permission_overrides_;
+
+  absl::optional<base::RepeatingClosure> onchange_listeners_callback_for_tests_;
 
   // Note that SubscriptionId is distinct from
   // PermissionControllerDelegate::SubscriptionId, and the concrete ID values

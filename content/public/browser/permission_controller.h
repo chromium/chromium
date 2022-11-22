@@ -111,6 +111,13 @@ class CONTENT_EXPORT PermissionController
 
   virtual void UnsubscribePermissionStatusChange(
       SubscriptionId subscription_id) = 0;
+
+  // Returns `true` if a document subscribed to
+  // `PermissionStatus.onchange` listener or `PermissionStatus.AddEventListener`
+  // with a type `change` was added. Returns `false` otherwise.
+  virtual bool IsSubscribedToPermissionChangeEvent(
+      blink::PermissionType permission,
+      RenderFrameHost* render_frame_host) = 0;
 };
 
 }  // namespace content

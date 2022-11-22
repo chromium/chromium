@@ -23,10 +23,10 @@ class TestPermissionRequestOwner {
  public:
   explicit TestPermissionRequestOwner(permissions::RequestType type) {
     const bool user_gesture = true;
-    auto decided = [](ContentSetting, bool) {};
+    auto decided = [](ContentSetting, bool, bool) {};
     request_ = std::make_unique<permissions::PermissionRequest>(
         GURL("https://example.com"), type, user_gesture,
-        base::BindOnce(decided),
+        base::BindRepeating(decided),
         base::BindOnce(&TestPermissionRequestOwner::DeleteThis,
                        base::Unretained(this)));
   }

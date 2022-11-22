@@ -203,6 +203,36 @@ void PermissionServiceImpl::AddPermissionObserver(
                                last_known_status, std::move(observer));
 }
 
+void PermissionServiceImpl::NotifyEventListener(
+    blink::mojom::PermissionDescriptorPtr permission,
+    const std::string& event_type,
+    bool is_added) {
+  auto type = blink::PermissionDescriptorToPermissionType(permission);
+  if (!type) {
+    ReceivedBadMessage();
+    return;
+  }
+
+  BrowserContext* browser_context = context_->GetBrowserContext();
+  if (!browser_context)
+    return;
+
+  if (!context_->render_frame_host()) {
+    return;
+  }
+
+  if (event_type == "change") {
+    if (is_added) {
+      context_->GetOnchangeEventListeners().insert(*type);
+    } else {
+      context_->GetOnchangeEventListeners().erase(*type);
+    }
+  }
+
+  PermissionControllerImpl::FromBrowserContext(browser_context)
+      ->NotifyEventListener();
+}
+
 PermissionStatus PermissionServiceImpl::GetPermissionStatus(
     const PermissionDescriptorPtr& permission) {
   auto type = blink::PermissionDescriptorToPermissionType(permission);

@@ -275,8 +275,10 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSet(
     permissions::BrowserPermissionCallback callback,
     bool persist,
     ContentSetting content_setting,
-    bool is_one_time) {
+    bool is_one_time,
+    bool is_final_decision) {
   DCHECK(!is_one_time);
+  DCHECK(is_final_decision);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   NotifyPermissionSetInternal(
       id, requesting_origin, embedding_origin, std::move(callback), persist,

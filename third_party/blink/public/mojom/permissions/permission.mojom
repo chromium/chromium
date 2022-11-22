@@ -91,4 +91,8 @@ interface PermissionService {
   AddPermissionObserver(PermissionDescriptor permission,
                         PermissionStatus last_known_status,
                         pending_remote<PermissionObserver> observer);
+  // Notifies when an event listener with `event_type` was added to
+  // PermissionStatus.
+  NotifyEventListener(PermissionDescriptor permission, string event_type,
+                      bool is_added);
 };

@@ -62,6 +62,7 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   void Deny() override { requests_.clear(); }
   void Dismiss() override { requests_.clear(); }
   void Ignore() override { requests_.clear(); }
+  void PreIgnoreQuietPrompt() override { requests_.clear(); }
   void SetManageClicked() override { requests_.clear(); }
   void SetLearnMoreClicked() override { requests_.clear(); }
   bool RecreateView() override { return false; }

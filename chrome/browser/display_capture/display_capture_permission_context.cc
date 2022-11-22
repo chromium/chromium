@@ -29,7 +29,8 @@ void DisplayCapturePermissionContext::DecidePermission(
     permissions::BrowserPermissionCallback callback) {
   NotifyPermissionSet(id, requesting_origin, embedding_origin,
                       std::move(callback), /*persist=*/false,
-                      CONTENT_SETTING_DEFAULT, /*is_one_time=*/false);
+                      CONTENT_SETTING_DEFAULT, /*is_one_time=*/false,
+                      /*is_final_decision=*/true);
 }
 
 void DisplayCapturePermissionContext::UpdateContentSetting(

@@ -48,6 +48,8 @@ class PermissionPromptChip : public PermissionPromptDesktop {
   }
 
  private:
+  void PreemptivelyResolvePermissionRequest(content::WebContents* web_contents,
+                                            Delegate* delegate);
   // The controller handling the chip view
   raw_ptr<ChipController> chip_controller_;
 

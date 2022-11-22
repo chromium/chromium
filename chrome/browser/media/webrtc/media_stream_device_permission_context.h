@@ -31,7 +31,8 @@ class MediaStreamDevicePermissionContext
                            permissions::BrowserPermissionCallback callback,
                            bool persist,
                            ContentSetting content_setting,
-                           bool is_one_time) override;
+                           bool is_one_time,
+                           bool is_final_decision) override;
 #endif
 
   // TODO(xhwang): GURL.DeprecatedGetOriginAsURL() shouldn't be used as the

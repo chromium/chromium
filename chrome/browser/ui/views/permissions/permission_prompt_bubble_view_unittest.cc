@@ -50,6 +50,7 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   void Deny() override {}
   void Dismiss() override {}
   void Ignore() override {}
+  void PreIgnoreQuietPrompt() override {}
   void SetManageClicked() override {}
   void SetLearnMoreClicked() override {}
 

@@ -25,7 +25,7 @@ RegisterProtocolHandlerPermissionRequest::
           url.DeprecatedGetOriginAsURL(),
           permissions::RequestType::kRegisterProtocolHandler,
           /*has_gesture=*/false,
-          base::BindOnce(
+          base::BindRepeating(
               &RegisterProtocolHandlerPermissionRequest::PermissionDecided,
               base::Unretained(this)),
           base::BindOnce(
@@ -64,8 +64,10 @@ RegisterProtocolHandlerPermissionRequest::GetMessageTextFragment() const {
 
 void RegisterProtocolHandlerPermissionRequest::PermissionDecided(
     ContentSetting result,
-    bool is_one_time) {
+    bool is_one_time,
+    bool is_final_decision) {
   DCHECK(!is_one_time);
+  DCHECK(is_final_decision);
   if (result == ContentSetting::CONTENT_SETTING_ALLOW) {
     base::RecordAction(
         base::UserMetricsAction("RegisterProtocolHandler.Infobar_Accept"));

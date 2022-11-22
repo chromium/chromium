@@ -65,6 +65,13 @@ BASE_FEATURE(kPermissionQuietChip,
 BASE_FEATURE(kPermissionChipAutoDismiss,
              "PermissionChipAutoDismiss",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables a faster permission request finalization if it is displayed as a
+// quiet chip.
+BASE_FEATURE(kFailFastQuietChip,
+             "FailFastQuietChip",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kPermissionChipAutoDismissDelay{
     &kPermissionChipAutoDismiss, "delay_ms", 6000};
 

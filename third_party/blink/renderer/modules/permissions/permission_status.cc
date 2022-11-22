@@ -39,6 +39,37 @@ ExecutionContext* PermissionStatus::GetExecutionContext() const {
   return ExecutionContextLifecycleStateObserver::GetExecutionContext();
 }
 
+void PermissionStatus::AddedEventListener(
+    const AtomicString& event_type,
+    RegisteredEventListener& registered_listener) {
+  EventTargetWithInlineData::AddedEventListener(event_type,
+                                                registered_listener);
+
+  if (!listener_)
+    return;
+
+  if (event_type == event_type_names::kChange) {
+    listener_->AddedEventListener(event_type);
+  }
+}
+
+void PermissionStatus::RemovedEventListener(
+    const AtomicString& event_type,
+    const RegisteredEventListener& registered_listener) {
+  EventTargetWithInlineData::RemovedEventListener(event_type,
+                                                  registered_listener);
+  if (!listener_)
+    return;
+
+  // Permission `change` event listener can be set via two independent JS-API.
+  // We should remove an internal listener only if none of the two JS-based
+  // event listeners exist. Without checking it, the internal listener will be
+  // removed while there could be an alive JS listener.
+  if (!HasJSBasedEventListeners(event_type_names::kChange)) {
+    listener_->RemovedEventListener(event_type);
+  }
+}
+
 bool PermissionStatus::HasPendingActivity() const {
   if (!listener_)
     return false;

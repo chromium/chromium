@@ -61573,6 +61573,7 @@ from previous Chrome versions.
   <int value="-16086999" label="TrimOnFreeze:enabled"/>
   <int value="-15879016"
       label="OmniboxUIExperimentUnboldSuggestionText:disabled"/>
+  <int value="-15772205" label="FailFastQuietChip:enabled"/>
   <int value="-13918890" label="disable-download-notification"/>
   <int value="-13180015" label="WebUsbDeviceDetection:disabled"/>
   <int value="-13062128" label="IsolateSandboxedIframes:disabled"/>
@@ -62666,6 +62667,7 @@ from previous Chrome versions.
   <int value="647662142" label="use-angle"/>
   <int value="648697679" label="VirtualKeyboardNewHeader:disabled"/>
   <int value="649111851" label="MidiManagerCros:enabled"/>
+  <int value="649384106" label="FailFastQuietChip:disabled"/>
   <int value="649508040" label="AutofillEnableCompanyName:enabled"/>
   <int value="650013099" label="PrivacySandboxSettings2:disabled"/>
   <int value="651421878" label="VideoRotateToFullscreen:enabled"/>

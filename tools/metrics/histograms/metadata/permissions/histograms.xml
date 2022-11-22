@@ -1010,6 +1010,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Permissions.QuietPrompt.Preignore" enum="PermissionType"
+    expires_after="2023-11-15">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records when a permission request was preignored because it will be shown as
+    a quiet chip.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Permissions.Revocation.ElapsedTimeSinceGrant"
     units="seconds" expires_after="2023-03-19">
   <owner>engedy@chromium.org</owner>

@@ -104,7 +104,10 @@ void MediaStreamDevicePermissionContext::NotifyPermissionSet(
     permissions::BrowserPermissionCallback callback,
     bool persist,
     ContentSetting content_setting,
-    bool is_one_time) {
+    bool is_one_time,
+    bool is_final_decision) {
+  DCHECK(is_final_decision);
+
   // For Android, we need to customize the PermissionContextBase's behavior if
   // the permission was granted. We will:
   // 1. Check if the permission was granted by the user - if not, we'll fall
@@ -138,7 +141,7 @@ void MediaStreamDevicePermissionContext::NotifyPermissionSet(
   if (content_setting != ContentSetting::CONTENT_SETTING_ALLOW) {
     PermissionContextBase::NotifyPermissionSet(
         id, requesting_origin, embedding_origin, std::move(callback), persist,
-        content_setting, is_one_time);
+        content_setting, is_one_time, is_final_decision);
     return;
   }
 
@@ -221,7 +224,8 @@ void MediaStreamDevicePermissionContext::OnAndroidPermissionDecided(
   // persisting permission.
   PermissionContextBase::NotifyPermissionSet(
       id, requesting_origin, embedding_origin, std::move(callback),
-      false /*persist*/, setting, /*is_one_time=*/false);
+      false /*persist*/, setting, /*is_one_time=*/false,
+      /*is_final_decision=*/true);
 }
 
 void MediaStreamDevicePermissionContext::UpdateTabContext(

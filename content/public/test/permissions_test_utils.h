@@ -25,6 +25,9 @@ void SetPermissionControllerOverrideForDevTools(
     blink::PermissionType permission,
     const blink::mojom::PermissionStatus& status);
 
+void AddNotifyListenerObserver(PermissionController* permission_controller,
+                               base::RepeatingClosure callback);
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_TEST_PERMISSIONS_TEST_UTILS_H_

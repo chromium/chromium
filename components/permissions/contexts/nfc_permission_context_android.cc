@@ -28,14 +28,17 @@ void NfcPermissionContextAndroid::NotifyPermissionSet(
     BrowserPermissionCallback callback,
     bool persist,
     ContentSetting content_setting,
-    bool is_one_time) {
+    bool is_one_time,
+    bool is_final_decision) {
   DCHECK(!is_one_time);
+  DCHECK(is_final_decision);
+
   if (content_setting != CONTENT_SETTING_ALLOW ||
       !nfc_system_level_setting_->IsNfcAccessPossible() ||
       nfc_system_level_setting_->IsNfcSystemLevelSettingEnabled()) {
     NfcPermissionContext::NotifyPermissionSet(
         id, requesting_origin, embedding_origin, std::move(callback), persist,
-        content_setting, is_one_time);
+        content_setting, is_one_time, is_final_decision);
     return;
   }
 
@@ -53,7 +56,8 @@ void NfcPermissionContextAndroid::NotifyPermissionSet(
   if (!delegate_->IsInteractable(web_contents)) {
     PermissionContextBase::NotifyPermissionSet(
         id, requesting_origin, embedding_origin, std::move(callback),
-        false /* persist */, CONTENT_SETTING_BLOCK, /*is_one_time=*/false);
+        false /* persist */, CONTENT_SETTING_BLOCK, /*is_one_time=*/false,
+        is_final_decision);
     return;
   }
 
@@ -74,7 +78,7 @@ void NfcPermissionContextAndroid::OnNfcSystemLevelSettingPromptClosed(
     ContentSetting content_setting) {
   NfcPermissionContext::NotifyPermissionSet(
       id, requesting_origin, embedding_origin, std::move(callback), persist,
-      content_setting, /*is_one_time=*/false);
+      content_setting, /*is_one_time=*/false, /*is_final_decision=*/true);
 }
 
 }  // namespace permissions

@@ -44,7 +44,8 @@ bool GeolocationPermissionContextDelegate::DecidePermission(
           permissions::PermissionUtil::GetLastCommittedOriginAsURL(
               render_frame_host->GetMainFrame()),
           std::move(*callback),
-          /*persist=*/false, content_setting, /*is_one_time=*/false);
+          /*persist=*/false, content_setting, /*is_one_time=*/false,
+          /*is_final_decision=*/true);
     }
     return true;
   }

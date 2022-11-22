@@ -34,12 +34,14 @@
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/request_type.h"
+#include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/permissions_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "permission_prompt_chip.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -59,6 +61,31 @@ enum ChipFeatureConfig {
   REQUEST_AND_CONFIRMATION_CHIP,
   REQUEST_AND_CONFIRMATION_CHIP_LOCATION_BAR_ICON_OVERRIDE
 };
+
+constexpr char kAddNotificationsEventListener[] = R"(
+    new Promise(async resolve => {
+      const PermissionStatus =
+        await navigator.permissions.query({name: 'notifications'});
+        PermissionStatus.onchange = () => {};
+      resolve(true);
+    })
+    )";
+
+constexpr char kCheckNotifications[] = R"(
+    new Promise(async resolve => {
+      const PermissionStatus =
+        await navigator.permissions.query({name: 'notifications'});
+      resolve(PermissionStatus.state === 'granted');
+    })
+    )";
+
+constexpr char kRequestNotifications[] = R"(
+      new Promise(resolve => {
+        Notification.requestPermission().then(function (permission) {
+          resolve(permission)
+        });
+      })
+      )";
 
 // Test implementation of PermissionUiSelector that always returns a canned
 // decision.
@@ -580,14 +607,6 @@ class PageInfoChangedWithin1mUmaTest : public PermissionChipInteractiveTest {
     content::WebContents* embedder_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(embedder_contents);
-
-    constexpr char kRequestNotifications[] = R"(
-      new Promise(resolve => {
-        Notification.requestPermission().then(function (permission) {
-          resolve(permission)
-        });
-      })
-      )";
 
     permissions::PermissionRequestObserver observer(embedder_contents);
 
@@ -1674,4 +1693,360 @@ IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
       test_api_->manager()->current_request_prompt_disposition_for_testing(),
       permissions::PermissionPromptDisposition::
           LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP);
+}
+
+class QuietChipFailFastInteractiveTest : public PermissionChipInteractiveTest {
+ public:
+  QuietChipFailFastInteractiveTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kQuietNotificationPrompts,
+         permissions::features::kPermissionQuietChip,
+         permissions::features::kPermissionChip,
+         permissions::features::kFailFastQuietChip},
+        {});
+  }
+
+ protected:
+  using QuietUiReason = permissions::PermissionUiSelector::QuietUiReason;
+  using WarningReason = permissions::PermissionUiSelector::WarningReason;
+
+  void SetCannedUiDecision(absl::optional<QuietUiReason> quiet_ui_reason,
+                           absl::optional<WarningReason> warning_reason) {
+    test_api_->manager()->set_permission_ui_selector_for_testing(
+        std::make_unique<TestQuietNotificationPermissionUiSelector>(
+            permissions::PermissionUiSelector::Decision(quiet_ui_reason,
+                                                        warning_reason)));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
+                       NormalChipNoPreignoreTest) {
+  base::HistogramTester histograms;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/title1.html"));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHost* main_rfh =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
+                                                                1);
+  ASSERT_TRUE(main_rfh);
+
+  // Keep it above `IsSubscribedToPermissionChangeEvent` to make sure it does
+  // not influence it.
+  EXPECT_FALSE(content::EvalJs(main_rfh, kCheckNotifications).value.GetBool());
+
+  bool IsPermissionStatusSubscribed =
+      web_contents->GetBrowserContext()
+          ->GetPermissionController()
+          ->IsSubscribedToPermissionChangeEvent(
+              blink::PermissionType::NOTIFICATIONS, main_rfh);
+
+  EXPECT_FALSE(IsPermissionStatusSubscribed);
+
+  base::RunLoop run_loop;
+
+  content::AddNotifyListenerObserver(
+      main_rfh->GetBrowserContext()->GetPermissionController(),
+      run_loop.QuitClosure());
+
+  EXPECT_TRUE(content::EvalJs(main_rfh, kAddNotificationsEventListener)
+                  .value.GetBool());
+
+  // `kAddNotificationsEventListener` execution is async. To informing that an
+  // event listener has been added for a permission we should wait otherwise
+  // `IsPermissionStatusSubscribed` is flaky.
+  run_loop.Run();
+
+  IsPermissionStatusSubscribed =
+      web_contents->GetBrowserContext()
+          ->GetPermissionController()
+          ->IsSubscribedToPermissionChangeEvent(
+              blink::PermissionType::NOTIFICATIONS, main_rfh);
+
+  EXPECT_TRUE(IsPermissionStatusSubscribed);
+
+  permissions::PermissionRequestManager* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+
+  EXPECT_FALSE(manager->IsRequestInProgress());
+
+  {
+    permissions::PermissionRequestObserver observer(web_contents);
+
+    // Request permission in foreground tab, prompt should be shown.
+    EXPECT_TRUE(content::ExecJs(
+        main_rfh, kRequestNotifications,
+        content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+    observer.Wait();
+    EXPECT_TRUE(observer.request_shown());
+  }
+
+  EXPECT_TRUE(manager->IsRequestInProgress());
+
+  manager->Accept();
+
+  EXPECT_TRUE(content::EvalJs(main_rfh, kCheckNotifications).value.GetBool());
+  EXPECT_FALSE(manager->IsRequestInProgress());
+
+  IsPermissionStatusSubscribed =
+      web_contents->GetBrowserContext()
+          ->GetPermissionController()
+          ->IsSubscribedToPermissionChangeEvent(
+              blink::PermissionType::NOTIFICATIONS, main_rfh);
+
+  EXPECT_TRUE(IsPermissionStatusSubscribed);
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histograms.ExpectBucketCount(
+      "Permissions.QuietPrompt.Preignore",
+      static_cast<int>(blink::PermissionType::NOTIFICATIONS), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
+                       EventListenerAddedTest) {
+  base::HistogramTester histograms;
+
+  SetCannedUiDecision(QuietUiReason::kTriggeredDueToAbusiveRequests,
+                      WarningReason::kAbusiveRequests);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/title1.html"));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHost* main_rfh =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
+                                                                1);
+  ASSERT_TRUE(main_rfh);
+
+  // Keep it above `IsSubscribedToPermissionChangeEvent` to make sure it does
+  // not influence it.
+  EXPECT_FALSE(content::EvalJs(main_rfh, kCheckNotifications).value.GetBool());
+
+  bool IsPermissionStatusSubscribed =
+      web_contents->GetBrowserContext()
+          ->GetPermissionController()
+          ->IsSubscribedToPermissionChangeEvent(
+              blink::PermissionType::NOTIFICATIONS, main_rfh);
+
+  EXPECT_FALSE(IsPermissionStatusSubscribed);
+
+  base::RunLoop run_loop;
+
+  content::AddNotifyListenerObserver(
+      main_rfh->GetBrowserContext()->GetPermissionController(),
+      run_loop.QuitClosure());
+
+  EXPECT_TRUE(content::EvalJs(main_rfh, kAddNotificationsEventListener)
+                  .value.GetBool());
+
+  // `kAddNotificationsEventListener` execution is async. To informing that an
+  // event listener has been added for a permission we should wait otherwise
+  // `IsPermissionStatusSubscribed` is flaky.
+  run_loop.Run();
+
+  IsPermissionStatusSubscribed =
+      web_contents->GetBrowserContext()
+          ->GetPermissionController()
+          ->IsSubscribedToPermissionChangeEvent(
+              blink::PermissionType::NOTIFICATIONS, main_rfh);
+
+  EXPECT_TRUE(IsPermissionStatusSubscribed);
+
+  permissions::PermissionRequestManager* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+
+  EXPECT_FALSE(manager->IsRequestInProgress());
+
+  EXPECT_EQ("default", content::EvalJs(main_rfh, kRequestNotifications));
+
+  EXPECT_TRUE(manager->IsRequestInProgress());
+  manager->Accept();
+
+  EXPECT_TRUE(content::EvalJs(main_rfh, kCheckNotifications).value.GetBool());
+  EXPECT_FALSE(manager->IsRequestInProgress());
+
+  IsPermissionStatusSubscribed =
+      web_contents->GetBrowserContext()
+          ->GetPermissionController()
+          ->IsSubscribedToPermissionChangeEvent(
+              blink::PermissionType::NOTIFICATIONS, main_rfh);
+
+  EXPECT_TRUE(IsPermissionStatusSubscribed);
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histograms.ExpectBucketCount(
+      "Permissions.QuietPrompt.Preignore",
+      static_cast<int>(blink::PermissionType::NOTIFICATIONS), 1);
+}
+
+// There are two ways of setting `change` event listener:
+// `PermissionStatus.onchange` and `PermissionStatus.addEventListener`. There
+// are two ways of removing the listener: `PermissionStatus.onchange = null`,
+// `PermissionStatus.removeEventListener`. Any of the listeners should
+// initialize internal subscribtion map. We should remove the internal
+// subscribtion only if there is no `change` event listener left.
+IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
+                       EventListenerRemovedTest) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/title1.html"));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHost* main_rfh =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
+                                                                1);
+  ASSERT_TRUE(main_rfh);
+
+  // Init global `PermissionStatus` variable and add API for assigning and
+  // removing event listeners.
+  ASSERT_EQ("", content::EvalJs(main_rfh, R"(
+    var PermissionStatus;
+
+    function onChangeListener(event) {}
+
+    function addOnChange(){
+      PermissionStatus.onchange = () => {};
+    }
+
+    function addEventListener(){
+      PermissionStatus.addEventListener('change', onChangeListener);
+    }
+
+    function removeOnchange(){
+      PermissionStatus.onchange = null;
+    }
+
+    function removeEventListener(){
+      PermissionStatus.removeEventListener("change", onChangeListener);
+    }
+    )")
+                    .error);
+
+  // Initialize global JS variable `PermissionStatus`.
+  EXPECT_TRUE(content::EvalJs(main_rfh, R"(
+    new Promise(async resolve => {
+      PermissionStatus =
+        await navigator.permissions.query({name: 'notifications'});
+      resolve(true);
+    })
+    )")
+                  .value.GetBool());
+
+  bool IsPermissionStatusSubscribed =
+      web_contents->GetBrowserContext()
+          ->GetPermissionController()
+          ->IsSubscribedToPermissionChangeEvent(
+              blink::PermissionType::NOTIFICATIONS, main_rfh);
+
+  EXPECT_FALSE(IsPermissionStatusSubscribed);
+
+  {
+    // For each event create a new RunLoop otherwise crashes with
+    // `run_loop.cc(335)] Check failed: run_allowed_`.
+    base::RunLoop run_loop;
+    content::AddNotifyListenerObserver(
+        main_rfh->GetBrowserContext()->GetPermissionController(),
+        run_loop.QuitClosure());
+
+    // Set PermissionState.onchange listener.
+    ASSERT_EQ("", content::EvalJs(main_rfh, "addOnChange()").error);
+
+    // `kAddNotificationsEventListener` execution is async. To informing that an
+    // event listener has been added for a permission we should wait otherwise
+    // `IsPermissionStatusSubscribed` is flaky.
+    run_loop.Run();
+
+    IsPermissionStatusSubscribed =
+        web_contents->GetBrowserContext()
+            ->GetPermissionController()
+            ->IsSubscribedToPermissionChangeEvent(
+                blink::PermissionType::NOTIFICATIONS, main_rfh);
+
+    EXPECT_TRUE(IsPermissionStatusSubscribed);
+  }
+
+  {
+    base::RunLoop run_loop;
+    content::AddNotifyListenerObserver(
+        main_rfh->GetBrowserContext()->GetPermissionController(),
+        run_loop.QuitClosure());
+
+    ASSERT_EQ("", content::EvalJs(main_rfh, "removeOnchange()").error);
+
+    run_loop.Run();
+
+    IsPermissionStatusSubscribed =
+        web_contents->GetBrowserContext()
+            ->GetPermissionController()
+            ->IsSubscribedToPermissionChangeEvent(
+                blink::PermissionType::NOTIFICATIONS, main_rfh);
+
+    EXPECT_FALSE(IsPermissionStatusSubscribed);
+  }
+
+  {
+    base::RunLoop run_loop;
+    content::AddNotifyListenerObserver(
+        main_rfh->GetBrowserContext()->GetPermissionController(),
+        run_loop.QuitClosure());
+
+    // Add `change` event listener.
+    ASSERT_EQ("", content::EvalJs(main_rfh, "addEventListener()").error);
+
+    run_loop.Run();
+
+    IsPermissionStatusSubscribed =
+        web_contents->GetBrowserContext()
+            ->GetPermissionController()
+            ->IsSubscribedToPermissionChangeEvent(
+                blink::PermissionType::NOTIFICATIONS, main_rfh);
+
+    EXPECT_TRUE(IsPermissionStatusSubscribed);
+  }
+
+  {
+    base::RunLoop run_loop;
+    content::AddNotifyListenerObserver(
+        main_rfh->GetBrowserContext()->GetPermissionController(),
+        run_loop.QuitClosure());
+    // Add the second lisener.
+    ASSERT_EQ("", content::EvalJs(main_rfh, "addOnChange()").error);
+    run_loop.Run();
+  }
+
+  {
+    // Removing the first listener should not endup in disablign
+    // `IsPermissionStatusSubscribed`. Do not need to call `run_loop.Run()` as
+    // that event will not be processed.
+    ASSERT_EQ("", content::EvalJs(main_rfh, "removeEventListener()").error);
+    // run_loop.Run();
+
+    IsPermissionStatusSubscribed =
+        web_contents->GetBrowserContext()
+            ->GetPermissionController()
+            ->IsSubscribedToPermissionChangeEvent(
+                blink::PermissionType::NOTIFICATIONS, main_rfh);
+
+    EXPECT_TRUE(IsPermissionStatusSubscribed);
+
+    base::RunLoop run_loop;
+    content::AddNotifyListenerObserver(
+        main_rfh->GetBrowserContext()->GetPermissionController(),
+        run_loop.QuitClosure());
+    // This will remove the internal listener.
+    ASSERT_EQ("", content::EvalJs(main_rfh, "removeOnchange()").error);
+    run_loop.Run();
+
+    IsPermissionStatusSubscribed =
+        web_contents->GetBrowserContext()
+            ->GetPermissionController()
+            ->IsSubscribedToPermissionChangeEvent(
+                blink::PermissionType::NOTIFICATIONS, main_rfh);
+
+    EXPECT_FALSE(IsPermissionStatusSubscribed);
+  }
 }

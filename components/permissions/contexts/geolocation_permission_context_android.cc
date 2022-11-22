@@ -106,7 +106,7 @@ void GeolocationPermissionContextAndroid::RequestPermission(
     NotifyPermissionSet(id, requesting_frame_origin, embedding_origin,
                         std::move(callback), /*persist=*/false,
                         CONTENT_SETTING_BLOCK,
-                        /*is_one_time=*/false);
+                        /*is_one_time=*/false, /*is_final_decision=*/true);
     return;
   }
 
@@ -155,8 +155,11 @@ void GeolocationPermissionContextAndroid::NotifyPermissionSet(
     BrowserPermissionCallback callback,
     bool persist,
     ContentSetting content_setting,
-    bool is_one_time) {
+    bool is_one_time,
+    bool is_final_decision) {
   DCHECK(!is_one_time);
+  DCHECK(is_final_decision);
+
   bool is_default_search = IsRequestingOriginDSE(requesting_origin);
   if (content_setting == CONTENT_SETTING_ALLOW &&
       !location_settings_->IsSystemLocationSettingEnabled()) {
@@ -358,7 +361,7 @@ void GeolocationPermissionContextAndroid::HandleUpdateAndroidPermissions(
 
   NotifyPermissionSet(id, requesting_frame_origin, embedding_origin,
                       std::move(callback), false /* persist */, new_setting,
-                      /*is_one_time=*/false);
+                      /*is_one_time=*/false, /*is_final_decision=*/true);
 }
 
 bool GeolocationPermissionContextAndroid::CanShowLocationSettingsDialog(
@@ -421,7 +424,7 @@ void GeolocationPermissionContextAndroid::FinishNotifyPermissionSet(
     ContentSetting content_setting) {
   GeolocationPermissionContext::NotifyPermissionSet(
       id, requesting_origin, embedding_origin, std::move(callback), persist,
-      content_setting, /*is_one_time=*/false);
+      content_setting, /*is_one_time=*/false, /*is_final_decision=*/true);
 }
 
 void GeolocationPermissionContextAndroid::SetLocationSettingsForTesting(

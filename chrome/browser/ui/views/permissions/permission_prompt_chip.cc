@@ -15,10 +15,13 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/request_type.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/web_contents.h"
-
 #include "permission_prompt_chip_model.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
@@ -32,6 +35,9 @@ PermissionPromptChip::PermissionPromptChip(Browser* browser,
   if (!lbv->chip_controller()->chip()) {
     lbv->CreateChip();
   }
+
+  if (delegate->ShouldCurrentRequestUseQuietUI())
+    PreemptivelyResolvePermissionRequest(web_contents, delegate);
 
   chip_controller_ = lbv->chip_controller();
   chip_controller_->ShowPermissionPrompt(web_contents, delegate->GetWeakPtr());
@@ -84,4 +90,45 @@ views::Widget* PermissionPromptChip::GetPromptBubbleWidgetForTesting() {
                  lbv->chip_controller()->IsBubbleShowing()
              ? lbv->chip_controller()->GetBubbleWidget()
              : nullptr;
+}
+
+void PermissionPromptChip::PreemptivelyResolvePermissionRequest(
+    content::WebContents* web_contents,
+    Delegate* delegate) {
+  if (base::FeatureList::IsEnabled(permissions::features::kFailFastQuietChip)) {
+    DCHECK(delegate->ShouldCurrentRequestUseQuietUI());
+
+    bool is_subscribed_to_permission_change_event = true;
+    content::PermissionController* permission_controller =
+        web_contents->GetBrowserContext()->GetPermissionController();
+
+    // If at least one RFH is not subscribed to the PermissionChange event, we
+    // should not preemptively resolve a prompt.
+    for (auto* request : delegate->Requests()) {
+      content::RenderFrameHost* rfh =
+          content::RenderFrameHost::FromID(request->get_requesting_frame_id());
+      if (rfh == nullptr)
+        return;
+
+      ContentSettingsType type = request->GetContentSettingsType();
+
+      blink::PermissionType permission_type =
+          permissions::PermissionUtil::ContentSettingTypeToPermissionType(type);
+
+      // Pre-ignore is allowed only for the quiet chip. The quiet chip is
+      // enabled only for `NOTIFICATIONS` and `GEOLOCATION`.
+      DCHECK(permission_type == blink::PermissionType::NOTIFICATIONS ||
+             permission_type == blink::PermissionType::GEOLOCATION);
+
+      is_subscribed_to_permission_change_event &=
+          permission_controller->IsSubscribedToPermissionChangeEvent(
+              permission_type, rfh);
+    }
+
+    if (is_subscribed_to_permission_change_event) {
+      // This will resolve a promise so an origin is not waiting for the user's
+      // decision.
+      delegate->PreIgnoreQuietPrompt();
+    }
+  }
 }

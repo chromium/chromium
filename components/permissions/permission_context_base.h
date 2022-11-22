@@ -144,7 +144,8 @@ class PermissionContextBase : public content_settings::Observer {
                                    BrowserPermissionCallback callback,
                                    bool persist,
                                    ContentSetting content_setting,
-                                   bool is_one_time);
+                                   bool is_one_time,
+                                   bool is_final_decision);
 
   // Implementors can override this method to update the icons on the
   // url bar with the result of the new permission.
@@ -214,14 +215,16 @@ class PermissionContextBase : public content_settings::Observer {
   void PermissionDecided(const PermissionRequestID& id,
                          const GURL& requesting_origin,
                          const GURL& embedding_origin,
-                         BrowserPermissionCallback callback,
                          ContentSetting content_setting,
-                         bool is_one_time);
+                         bool is_one_time,
+                         bool is_final_decision);
 
   raw_ptr<content::BrowserContext> browser_context_;
   const ContentSettingsType content_settings_type_;
   const blink::mojom::PermissionsPolicyFeature permissions_policy_feature_;
-  std::unordered_map<std::string, std::unique_ptr<PermissionRequest>>
+  std::unordered_map<
+      std::string,
+      std::pair<std::unique_ptr<PermissionRequest>, BrowserPermissionCallback>>
       pending_requests_;
 
   // Must be the last member, to ensure that it will be

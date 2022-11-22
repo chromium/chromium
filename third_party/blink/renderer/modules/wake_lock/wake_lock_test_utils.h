@@ -128,6 +128,10 @@ class MockPermissionService final : public mojom::blink::PermissionService {
       mojom::blink::PermissionStatus last_known_status,
       mojo::PendingRemote<mojom::blink::PermissionObserver>) override;
 
+  void NotifyEventListener(mojom::blink::PermissionDescriptorPtr permission,
+                           const String& event_type,
+                           bool is_added) override;
+
   void OnConnectionError();
 
   mojo::Receiver<mojom::blink::PermissionService> receiver_{this};

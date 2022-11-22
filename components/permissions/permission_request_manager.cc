@@ -14,6 +14,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/observer_list.h"
+#include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/autofill_assistant/browser/public/runtime_manager.h"
@@ -124,7 +125,7 @@ bool ShouldGroupRequests(PermissionRequest* a, PermissionRequest* b) {
 bool PermissionRequestManager::PermissionRequestSource::
     IsSourceFrameInactiveAndDisallowActivation() const {
   content::RenderFrameHost* rfh =
-      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
+      content::RenderFrameHost::FromID(requesting_frame_id);
   return !rfh ||
          rfh->IsInactiveAndDisallowActivation(
              content::DisallowActivationReasonId::kPermissionRequestSource);
@@ -266,6 +267,8 @@ void PermissionRequestManager::AddRequest(
         base::UserMetricsAction("PermissionBubbleIFrameRequestQueued"));
   }
 
+  request->set_requesting_frame_id(source_frame->GetGlobalId());
+
   QueueRequest(source_frame, request);
 
   if (!IsRequestInProgress()) {
@@ -374,8 +377,7 @@ void PermissionRequestManager::QueueRequest(
   pending_permission_requests_.Push(request,
                                     true /*reorder_based_on_priority*/);
   request_sources_map_.emplace(
-      request, PermissionRequestSource({source_frame->GetProcess()->GetID(),
-                                        source_frame->GetRoutingID()}));
+      request, PermissionRequestSource({source_frame->GetGlobalId()}));
 }
 
 void PermissionRequestManager::PreemptAndRequeueCurrentRequest() {
@@ -628,6 +630,31 @@ void PermissionRequestManager::Ignore() {
 
   NotifyRequestDecided(PermissionAction::IGNORED);
   FinalizeCurrentRequests(PermissionAction::IGNORED);
+}
+
+void PermissionRequestManager::PreIgnoreQuietPrompt() {
+  // Random number of seconds in the range [1.0, 2.0).
+  double delay_seconds = 1.0 + 1.0 * base::RandDouble();
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PermissionRequestManager::PreIgnoreQuietPromptInternal,
+                     weak_factory_.GetWeakPtr()),
+      base::Seconds(delay_seconds));
+}
+
+void PermissionRequestManager::PreIgnoreQuietPromptInternal() {
+  std::vector<PermissionRequest*>::iterator requests_iter;
+  for (requests_iter = requests_.begin(); requests_iter != requests_.end();
+       requests_iter++) {
+    CancelledIncludingDuplicates(*requests_iter, /*is_final_decision=*/false);
+  }
+
+  blink::PermissionType permission;
+  bool success = PermissionUtil::GetPermissionType(
+      requests_[0]->GetContentSettingsType(), &permission);
+  DCHECK(success);
+
+  PermissionUmaUtil::PermissionRequestPreignored(permission);
 }
 
 bool PermissionRequestManager::WasCurrentRequestAlreadyDisplayed() {
@@ -992,14 +1019,15 @@ void PermissionRequestManager::PermissionDeniedIncludingDuplicates(
 }
 
 void PermissionRequestManager::CancelledIncludingDuplicates(
-    PermissionRequest* request) {
+    PermissionRequest* request,
+    bool is_final_decision) {
   DCHECK_EQ(1ul, base::ranges::count(requests_, request) +
                      pending_permission_requests_.Count(request))
       << "Only requests in [pending_permission_]requests_ can have duplicates";
-  request->Cancelled();
+  request->Cancelled(is_final_decision);
   auto range = duplicate_requests_.equal_range(request);
   for (auto it = range.first; it != range.second; ++it)
-    it->second->Cancelled();
+    it->second->Cancelled(is_final_decision);
 }
 
 void PermissionRequestManager::RequestFinishedIncludingDuplicates(

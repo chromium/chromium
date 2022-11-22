@@ -7,6 +7,7 @@
 
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "base/bind.h"
+#include "content/browser/permissions/permission_service_context.h"
 #include "content/browser/permissions/permission_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -275,10 +276,14 @@ PermissionControllerImpl::SubscriptionsStatusMap
 PermissionControllerImpl::GetSubscriptionsStatuses(
     const absl::optional<GURL>& origin) {
   SubscriptionsStatusMap statuses;
+
+  if (!origin.has_value()) {
+    return statuses;
+  }
   for (SubscriptionsMap::iterator iter(&subscriptions_); !iter.IsAtEnd();
        iter.Advance()) {
     Subscription* subscription = iter.GetCurrentValue();
-    if (origin.has_value() && subscription->requesting_origin != *origin)
+    if (subscription->requesting_origin != *origin)
       continue;
     statuses[iter.GetCurrentKey()] = GetSubscriptionCurrentValue(*subscription);
   }
@@ -693,6 +698,23 @@ void PermissionControllerImpl::UnsubscribePermissionStatusChange(
         subscription->delegate_subscription_id);
   }
   subscriptions_.Remove(subscription_id);
+}
+
+bool PermissionControllerImpl::IsSubscribedToPermissionChangeEvent(
+    blink::PermissionType permission,
+    RenderFrameHost* render_frame_host) {
+  PermissionServiceContext* permission_service_context =
+      PermissionServiceContext::GetForCurrentDocument(render_frame_host);
+
+  return permission_service_context->GetOnchangeEventListeners().find(
+             permission) !=
+         permission_service_context->GetOnchangeEventListeners().end();
+}
+
+void PermissionControllerImpl::NotifyEventListener() {
+  if (onchange_listeners_callback_for_tests_.has_value()) {
+    onchange_listeners_callback_for_tests_.value().Run();
+  }
 }
 
 }  // namespace content

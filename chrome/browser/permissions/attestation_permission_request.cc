@@ -29,16 +29,22 @@ class U2fApiPermissionRequest : public permissions::PermissionRequest {
             requesting_origin.GetURL(),
             type,
             /*has_gesture=*/false,
-            base::BindOnce(&U2fApiPermissionRequest::PermissionDecided,
-                           base::Unretained(this)),
+            base::BindRepeating(&U2fApiPermissionRequest::PermissionDecided,
+                                base::Unretained(this)),
             base::BindOnce(&U2fApiPermissionRequest::DeleteRequest,
                            base::Unretained(this))),
         callback_(std::move(callback)) {}
   ~U2fApiPermissionRequest() override = default;
 
-  void PermissionDecided(ContentSetting result, bool is_one_time) {
+  void PermissionDecided(ContentSetting result,
+                         bool is_one_time,
+                         bool is_final_decision) {
     DCHECK(!is_one_time);
-    std::move(callback_).Run(result == CONTENT_SETTING_ALLOW);
+    DCHECK(is_final_decision);
+
+    if (callback_) {
+      std::move(callback_).Run(result == CONTENT_SETTING_ALLOW);
+    }
   }
 
   void DeleteRequest() {

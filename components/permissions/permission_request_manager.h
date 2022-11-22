@@ -18,6 +18,7 @@
 #include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/request_type.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -145,6 +146,7 @@ class PermissionRequestManager
   void Deny() override;
   void Dismiss() override;
   void Ignore() override;
+  void PreIgnoreQuietPrompt() override;
   bool WasCurrentRequestAlreadyDisplayed() override;
   bool ShouldDropCurrentRequestIfCannotShowQuietly() const override;
   bool ShouldCurrentRequestUseQuietUI() const override;
@@ -307,7 +309,8 @@ class PermissionRequestManager
   // Calls PermissionDenied on a request and all its duplicates.
   void PermissionDeniedIncludingDuplicates(PermissionRequest* request);
   // Calls Cancelled on a request and all its duplicates.
-  void CancelledIncludingDuplicates(PermissionRequest* request);
+  void CancelledIncludingDuplicates(PermissionRequest* request,
+                                    bool is_final_decision = true);
   // Calls RequestFinished on a request and all its duplicates.
   void RequestFinishedIncludingDuplicates(PermissionRequest* request);
 
@@ -329,6 +332,8 @@ class PermissionRequestManager
   void LogWarningToConsole(const char* message);
 
   void DoAutoResponseForTesting();
+
+  void PreIgnoreQuietPromptInternal();
 
   // Factory to be used to create views when needed.
   PermissionPrompt::Factory view_factory_;
@@ -354,8 +359,7 @@ class PermissionRequestManager
   std::vector<PermissionRequest*> requests_;
 
   struct PermissionRequestSource {
-    int render_process_id;
-    int render_frame_id;
+    content::GlobalRenderFrameHostId requesting_frame_id;
 
     bool IsSourceFrameInactiveAndDisallowActivation() const;
   };

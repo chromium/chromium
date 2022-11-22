@@ -83,6 +83,10 @@ class PermissionServiceContext : public RenderProcessHostObserver {
   // RenderProcessHostObserver:
   void RenderProcessHostDestroyed(RenderProcessHost* host) override;
 
+  std::set<blink::PermissionType>& GetOnchangeEventListeners() {
+    return onchange_event_listeners_;
+  }
+
  private:
   class PermissionSubscription;
   struct DocumentPermissionServiceContextHolder;
@@ -97,6 +101,8 @@ class PermissionServiceContext : public RenderProcessHostObserver {
   std::unordered_map<PermissionController::SubscriptionId,
                      std::unique_ptr<PermissionSubscription>>
       subscriptions_;
+
+  std::set<blink::PermissionType> onchange_event_listeners_;
 };
 
 }  // namespace content

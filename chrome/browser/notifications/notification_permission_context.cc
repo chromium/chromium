@@ -167,7 +167,8 @@ void NotificationPermissionContext::DecidePermission(
                            weak_factory_ui_thread_.GetWeakPtr(), id,
                            requesting_origin, embedding_origin,
                            std::move(callback), /*persist=*/true,
-                           CONTENT_SETTING_BLOCK, /*is_one_time=*/false),
+                           CONTENT_SETTING_BLOCK, /*is_one_time=*/false,
+                           /*is_final_decision=*/true),
             base::Seconds(delay_seconds));
     return;
   }

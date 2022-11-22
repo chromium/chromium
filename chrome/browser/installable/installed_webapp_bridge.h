@@ -14,8 +14,8 @@ class GURL;
 
 class InstalledWebappBridge {
  public:
-  using PermissionCallback =
-      base::OnceCallback<void(ContentSetting setting, bool is_one_time)>;
+  using PermissionCallback = base::OnceCallback<
+      void(ContentSetting setting, bool is_one_time, bool is_final_decision)>;
 
   InstalledWebappBridge() = delete;
   InstalledWebappBridge(const InstalledWebappBridge&) = delete;

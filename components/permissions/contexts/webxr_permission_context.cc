@@ -43,8 +43,10 @@ void WebXrPermissionContext::NotifyPermissionSet(
     BrowserPermissionCallback callback,
     bool persist,
     ContentSetting content_setting,
-    bool is_one_time) {
+    bool is_one_time,
+    bool is_final_decision) {
   DCHECK(!is_one_time);
+  DCHECK(is_final_decision);
 
   // Note that this method calls into base class implementation version of
   // `NotifyPermissionSet()`, which would call `UpdateTabContext()`.
@@ -60,7 +62,7 @@ void WebXrPermissionContext::NotifyPermissionSet(
         content_setting == ContentSetting::CONTENT_SETTING_ALLOW)) {
     PermissionContextBase::NotifyPermissionSet(
         id, requesting_origin, embedding_origin, std::move(callback), persist,
-        content_setting, is_one_time);
+        content_setting, is_one_time, is_final_decision);
     return;
   }
 
@@ -138,7 +140,8 @@ void WebXrPermissionContext::OnAndroidPermissionDecided(
                                : ContentSetting::CONTENT_SETTING_BLOCK;
   PermissionContextBase::NotifyPermissionSet(
       id, requesting_origin, embedding_origin, std::move(callback),
-      false /*persist*/, setting, /*is_one_time=*/false);
+      false /*persist*/, setting, /*is_one_time=*/false,
+      /*is_final_decision=*/true);
 }
 
 void WebXrPermissionContext::UpdateTabContext(

@@ -51,6 +51,8 @@ class PermissionStatusListener final
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+  void AddedEventListener(const AtomicString& event_type);
+  void RemovedEventListener(const AtomicString& event_type);
 
   bool HasPendingActivity();
   void SetStatus(MojoPermissionStatus status) { status_ = status; }
@@ -63,6 +65,7 @@ class PermissionStatusListener final
  private:
   void StartListening();
   void StopListening();
+  void NotifyEventListener(const AtomicString& event_type, bool is_added);
 
   // mojom::blink::PermissionObserver
   void OnPermissionStatusChange(MojoPermissionStatus) override;

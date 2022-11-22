@@ -80,7 +80,7 @@ class PerDeviceProvisioningPermissionRequest final
             origin.GetURL(),
             permissions::RequestType::kProtectedMediaIdentifier,
             /*has_gesture=*/false,
-            base::BindOnce(
+            base::BindRepeating(
                 &PerDeviceProvisioningPermissionRequest::PermissionDecided,
                 base::Unretained(this)),
             base::BindOnce(
@@ -94,8 +94,11 @@ class PerDeviceProvisioningPermissionRequest final
   PerDeviceProvisioningPermissionRequest& operator=(
       const PerDeviceProvisioningPermissionRequest&) = delete;
 
-  void PermissionDecided(ContentSetting result, bool is_one_time) {
+  void PermissionDecided(ContentSetting result,
+                         bool is_one_time,
+                         bool is_final_decision) {
     DCHECK(!is_one_time);
+    DCHECK(!is_final_decision);
     const bool granted = result == ContentSetting::CONTENT_SETTING_ALLOW;
     UpdateLastResponse(granted);
     std::move(callback_).Run(granted);

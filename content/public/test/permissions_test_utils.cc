@@ -20,4 +20,12 @@ void SetPermissionControllerOverrideForDevTools(
                                                      status);
 }
 
+void AddNotifyListenerObserver(PermissionController* permission_controller,
+                               base::RepeatingClosure callback) {
+  PermissionControllerImpl* permission_controller_impl =
+      static_cast<PermissionControllerImpl*>(permission_controller);
+  permission_controller_impl->add_notify_listener_observer_for_tests(
+      std::move(callback));
+}
+
 }  // namespace content

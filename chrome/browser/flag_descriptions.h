@@ -325,6 +325,9 @@ extern const char kTouchToFillPasswordSubmissionDescription[];
 extern const char kFastCheckoutName[];
 extern const char kFastCheckoutDescription[];
 
+extern const char kFailFastQuietChipName[];
+extern const char kFailFastQuietChipDescription[];
+
 extern const char kBorealisBigGlName[];
 extern const char kBorealisBigGlDescription[];
 

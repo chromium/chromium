@@ -3536,6 +3536,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "fail-fast-quiet-chip",
+    "owners": [ "elklm", "//components/permissions/PERMISSIONS_OWNERS"],
+    "expiry_milestone": 115
+  },
+  {
     "name": "fake-audio-capture-timestamps",
     "owners": [ "henrika@google.com", "video-cmi-mpp@google.com" ],
     "expiry_milestone": 115

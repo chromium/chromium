@@ -1401,10 +1401,10 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
 
   // Fire a geolocation permission request, which should show a permission
   // request bubble resulting in top chrome unhiding.
-  auto decided = [](ContentSetting, bool) {};
+  auto decided = [](ContentSetting, bool, bool) {};
   permissions::PermissionRequest permission_request(
       url, permissions::RequestType::kGeolocation, true /* user_gesture */,
-      base::BindOnce(decided), base::DoNothing() /* delete_callback */);
+      base::BindRepeating(decided), base::DoNothing() /* delete_callback */);
   auto* permission_manager =
       permissions::PermissionRequestManager::FromWebContents(active_contents);
   TopControlsShownRatioWaiter waiter(top_controls_slide_controller());

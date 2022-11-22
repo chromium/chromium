@@ -247,6 +247,12 @@ void MockPermissionService::AddPermissionObserver(
   NOTREACHED();
 }
 
+void MockPermissionService::NotifyEventListener(
+    PermissionDescriptorPtr permission,
+    const String& event_type,
+    bool is_added) {
+  NOTREACHED();
+}
 // WakeLockTestingContext
 
 WakeLockTestingContext::WakeLockTestingContext(

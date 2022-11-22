@@ -599,6 +599,11 @@ const char kFastCheckoutName[] = "Fast Checkout";
 const char kFastCheckoutDescription[] =
     "Enables Fast Checkout experiences in Chrome.";
 
+const char kFailFastQuietChipName[] = "Fail fast quiet chip";
+const char kFailFastQuietChipDescription[] =
+    "Enables fast finalization of a permission request if it is displayed as a "
+    "quiet chip.";
+
 const char kBorealisBigGlName[] = "Borealis Big GL";
 const char kBorealisBigGlDescription[] = "Enable Big GL when running Borealis.";
 
