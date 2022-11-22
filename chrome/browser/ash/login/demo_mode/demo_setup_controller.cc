@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -427,6 +428,19 @@ bool DemoSetupController::IsOobeDemoSetupFlowInProgress() {
 
 // static
 std::string DemoSetupController::GetSubOrganizationEmail() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  DCHECK(command_line);
+
+  if (command_line->HasSwitch(switches::kDemoModeEnrollingUsername)) {
+    std::string customUser =
+        command_line->GetSwitchValueASCII(switches::kDemoModeEnrollingUsername);
+    if (!customUser.empty()) {
+      std::string email = customUser + "@" + policy::kDemoModeDomain;
+      VLOG(1) << "Enrolling into Demo Mode with user: " << email;
+      return email;
+    }
+  }
+
   const std::string country =
       g_browser_process->local_state()->GetString(prefs::kDemoModeCountry);
 

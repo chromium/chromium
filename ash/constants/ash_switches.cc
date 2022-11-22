@@ -318,6 +318,10 @@ const char kDefaultWallpaperLarge[] = "default-wallpaper-large";
 // file).
 const char kDefaultWallpaperSmall[] = "default-wallpaper-small";
 
+// Test Organization Unit (OU) user to use for demo mode. Only pass the part
+// before "@cros-demo-mode.com".
+const char kDemoModeEnrollingUsername[] = "demo-mode-enrolling-username";
+
 // App ID to use for highlights app in demo mode.
 const char kDemoModeHighlightsApp[] = "demo-mode-highlights-extension";
 
