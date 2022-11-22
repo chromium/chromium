@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$} from 'chrome://resources/js/util.js';
+import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
 import {DeviceData, PageCallbackRouter, PageHandlerRemote} from './audio.mojom-webui.js';
 import {AudioBroker} from './audio_broker.js';
@@ -24,16 +24,16 @@ export class DevicePage extends Page {
     this.router = AudioBroker.getInstance().callbackRouter;
     this.mojoHandler = AudioBroker.getInstance().handler;
     this.deviceTable = new DeviceTable();
-    $('deviceTable').appendChild(this.deviceTable);
+    getRequiredElement('deviceTable').appendChild(this.deviceTable);
     this.setUpAudioDevices();
     this.setUpButtons();
   }
 
   setUpButtons() {
-    $('banner-feedback').addEventListener('click', () => {
+    getRequiredElement('banner-feedback').addEventListener('click', () => {
       PageNavigator.getInstance().showPage('feedback');
     });
-    $('no-device-feedback').addEventListener('click', () => {
+    getRequiredElement('no-device-feedback').addEventListener('click', () => {
       PageNavigator.getInstance().showPage('feedback');
     });
   }

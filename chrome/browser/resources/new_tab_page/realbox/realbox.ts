@@ -6,7 +6,7 @@ import './realbox_dropdown.js';
 import './realbox_icon.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {hasKeyModifiers} from 'chrome://resources/js/util.js';
+import {hasKeyModifiers} from 'chrome://resources/js/util_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';

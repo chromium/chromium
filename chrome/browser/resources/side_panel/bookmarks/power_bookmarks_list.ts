@@ -16,7 +16,7 @@ import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_act
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {listenOnce} from 'chrome://resources/js/util.js';
+import {listenOnce} from 'chrome://resources/js/util_ts.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ActionSource} from './bookmarks.mojom-webui.js';

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$} from 'chrome://resources/js/util.js';
+import {$, getRequiredElement} from 'chrome://resources/js/util_ts.js';
 import {DeviceData} from './audio.mojom-webui.js';
 import {DeviceMap} from './device_page.js';
 
@@ -12,7 +12,8 @@ export class DeviceTable extends HTMLTableElement {
   constructor() {
     super();
     this.devices = {};
-    const clone = ($('deviceTable-template') as HTMLTemplateElement)
+    const clone =
+        getRequiredElement<HTMLTemplateElement>('deviceTable-template')
                       .content.cloneNode(true);
     const thead = (clone as HTMLTableElement).querySelector('thead')!;
     this.appendChild(thead);
@@ -30,7 +31,7 @@ export class DeviceTable extends HTMLTableElement {
   setDeviceVolume(nodeId: number, volume: number) {
     if (nodeId in this.devices) {
       (this.devices[nodeId] as DeviceData).volumeGainPercent = volume;
-      const row = $(String(nodeId)) as HTMLTableRowElement;
+      const row = $<HTMLTableRowElement>(String(nodeId));
       if (row && row.cells[3]) {
         row.cells[3].textContent = String(volume) + '%';
       }
@@ -40,7 +41,7 @@ export class DeviceTable extends HTMLTableElement {
   setDeviceMuteState(nodeId: number, isMuted: boolean) {
     if (nodeId in this.devices) {
       (this.devices[nodeId] as DeviceData).isMuted = isMuted;
-      const row = $(String(nodeId)) as HTMLTableRowElement;
+      const row = $<HTMLTableRowElement>(String(nodeId));
       if (row && row.cells[4]) {
         row.cells[4].textContent = String(isMuted);
       }
@@ -88,7 +89,7 @@ export class DeviceTable extends HTMLTableElement {
     if (hasMuted) {
       this.updateWarningBanner('muted');
     } else {
-      $('warning-banner').hidden = true;
+      getRequiredElement('warning-banner').hidden = true;
     }
   }
 
@@ -103,19 +104,19 @@ export class DeviceTable extends HTMLTableElement {
     if (allInactive) {
       this.updateWarningBanner('inactive');
     } else {
-      $('warning-banner').hidden = true;
+      getRequiredElement('warning-banner').hidden = true;
     }
   }
 
   updateWarningBanner(reason: string) {
-    $('warning-banner').hidden = false;
+    getRequiredElement('warning-banner').hidden = false;
     if (reason === 'inactive') {
-      $('warning-msg').innerHTML =
+      getRequiredElement('warning-msg').innerHTML =
           'Warning: There is no detected active audio device. ' +
           'Have a device connected but cannot see it on the table or marked as active?';
     }
     if (reason === 'muted') {
-      $('warning-msg').innerHTML =
+      getRequiredElement('warning-msg').innerHTML =
           'Warning: One or more of your active devices is muted. ' +
           'Please try unmuting it by toggling the audio setting. ' +
           'Have unmuted the device but still see it marked as muted?';

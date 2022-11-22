@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {$} from 'chrome://resources/js/util.js';
+import {$, getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
 import {FEEDBACK_LANDING_PAGE, FEEDBACK_LANDING_PAGE_TECHSTOP, FEEDBACK_LEGAL_HELP_URL, FEEDBACK_PRIVACY_POLICY_URL, FEEDBACK_TERM_OF_SERVICE_URL, openUrlInAppWindow} from './feedback_util.js';
 import {domainQuestions, questionnaireBegin, questionnaireNotification} from './questionnaire.js';
@@ -214,10 +214,10 @@ function onFileSelected(fileSelectedEvent: Event) {
   }
 
   if (file.size > MAX_ATTACH_FILE_SIZE) {
-    $('attach-error').hidden = false;
+    getRequiredElement('attach-error').hidden = false;
 
     // Clear our selected file.
-    ($('attach-file') as HTMLInputElement).value = '';
+    getRequiredElement<HTMLInputElement>('attach-file').value = '';
     attachedFileBlob = null;
     return;
   }
@@ -226,11 +226,11 @@ function onFileSelected(fileSelectedEvent: Event) {
 }
 
 /**
- * Called when user opens the file dialog. Hide $('attach-error') before file
+ * Called when user opens the file dialog. Hide 'attach-error' before file
  * dialog is open to prevent a11y bug https://crbug.com/1020047
  */
 function onOpenFileDialog() {
-  $('attach-error').hidden = true;
+  getRequiredElement('attach-error').hidden = true;
 }
 
 /**
@@ -239,10 +239,10 @@ function onOpenFileDialog() {
  * attach another file.
  */
 function clearAttachedFile() {
-  $('custom-file-container').hidden = true;
+  getRequiredElement('custom-file-container').hidden = true;
   attachedFileBlob = null;
   feedbackInfo.attachedFile = undefined;
-  $('attach-file').hidden = false;
+  getRequiredElement('attach-file').hidden = false;
 }
 
 /**
@@ -288,12 +288,13 @@ function checkForSendBluetoothLogs(inputEvent: Event) {
       cantConnectRegEx.test(value) || tetherRegEx.test(value) ||
       smartLockRegEx.test(value) || nearbyShareRegEx.test(value) ||
       fastPairRegEx.test(value) || btDeviceRegEx.test(value);
-  $('bluetooth-checkbox-container').hidden = !isRelatedToBluetooth;
+  getRequiredElement('bluetooth-checkbox-container').hidden =
+      !isRelatedToBluetooth;
 }
 
 /**
  * Checks if any keywords have associated questionnaire in a domain. If so,
- * we append the questionnaire in $('description-text').
+ * we append the questionnaire in getRequiredElement('description-text').
  * @param inputEvent The input event for the description textarea.
  */
 function checkForShowQuestionnaire(inputEvent: Event) {
@@ -323,11 +324,12 @@ function checkForShowQuestionnaire(inputEvent: Event) {
     return;
   }
 
-  const textarea = $('description-text') as HTMLTextAreaElement;
+  const textarea = getRequiredElement<HTMLTextAreaElement>('description-text');
   const savedCursor = textarea.selectionStart;
   if (Object.keys(appendedQuestions).length === 0) {
     textarea.value += '\n\n' + questionnaireBegin + '\n';
-    $('questionnaire-notification').textContent = questionnaireNotification;
+    getRequiredElement('questionnaire-notification').textContent =
+        questionnaireNotification;
   }
 
   for (const question of toAppend) {
@@ -353,13 +355,13 @@ function checkForShowQuestionnaire(inputEvent: Event) {
 function updateDescription(wasValid: boolean) {
   // Set visibility of the alert text for users who don't use a screen
   // reader.
-  $('description-empty-error').hidden = wasValid;
+  getRequiredElement('description-empty-error').hidden = wasValid;
 
   // Change the textarea's aria-labelled by to ensure the screen reader does
   // (or doesn't) read the error, as appropriate.
   // If it does read the error, it should do so _before_ it reads the normal
   // description.
-  const description = $('description-text');
+  const description = getRequiredElement('description-text');
   description.setAttribute(
       'aria-labelledby',
       (wasValid ? '' : 'description-empty-error ') + 'free-form-text');
@@ -382,7 +384,7 @@ function updateDescription(wasValid: boolean) {
  * @return Whether the report was sent.
  */
 function sendReport(): boolean {
-  const textarea = $('description-text') as HTMLTextAreaElement;
+  const textarea = getRequiredElement<HTMLTextAreaElement>('description-text');
   if (textarea.value.length === 0) {
     updateDescription(false);
     return false;
@@ -393,16 +395,16 @@ function sendReport(): boolean {
   updateDescription(true);
 
   // Prevent double clicking from sending additional reports.
-  ($('send-report-button') as HTMLButtonElement).disabled = true;
+  getRequiredElement<HTMLButtonElement>('send-report-button').disabled = true;
   if (!feedbackInfo.attachedFile && attachedFileBlob) {
     feedbackInfo.attachedFile = {
-      name: ($('attach-file') as HTMLInputElement).value,
+      name: getRequiredElement<HTMLInputElement>('attach-file').value,
       data: attachedFileBlob,
     };
   }
 
   const consentCheckboxValue: boolean =
-      ($('consent-checkbox') as HTMLInputElement).checked;
+      getRequiredElement<HTMLInputElement>('consent-checkbox').checked;
   feedbackInfo.systemInformation = [
     {
       key: 'feedbackUserCtlConsent',
@@ -411,12 +413,14 @@ function sendReport(): boolean {
   ];
 
   feedbackInfo.description = textarea.value;
-  feedbackInfo.pageUrl = ($('page-url-text') as HTMLInputElement).value;
-  feedbackInfo.email = ($('user-email-drop-down') as HTMLSelectElement).value;
+  feedbackInfo.pageUrl =
+      getRequiredElement<HTMLInputElement>('page-url-text').value;
+  feedbackInfo.email =
+      getRequiredElement<HTMLSelectElement>('user-email-drop-down').value;
 
   let useSystemInfo = false;
   let useHistograms = false;
-  const checkbox = $('sys-info-checkbox') as HTMLInputElement | null;
+  const checkbox = $<HTMLInputElement>('sys-info-checkbox');
   if (checkbox != null && checkbox.checked) {
     // Send histograms along with system info.
     useHistograms = true;
@@ -424,24 +428,21 @@ function sendReport(): boolean {
   }
 
   // <if expr="chromeos_ash">
-  const assistantCheckbox =
-      $('assistant-info-checkbox') as HTMLInputElement | null;
+  const assistantCheckbox = $<HTMLInputElement>('assistant-info-checkbox');
   if (assistantCheckbox != null && assistantCheckbox.checked &&
-      !$('assistant-checkbox-container').hidden) {
+      !getRequiredElement('assistant-checkbox-container').hidden) {
     // User consent to link Assistant debug info on Assistant server.
     feedbackInfo.assistantDebugInfoAllowed = true;
   }
 
-  const bluetoothCheckbox =
-      $('bluetooth-logs-checkbox') as HTMLInputElement | null;
+  const bluetoothCheckbox = $<HTMLInputElement>('bluetooth-logs-checkbox');
   if (bluetoothCheckbox != null && bluetoothCheckbox.checked &&
-      !$('bluetooth-checkbox-container').hidden) {
+      !getRequiredElement('bluetooth-checkbox-container').hidden) {
     feedbackInfo.sendBluetoothLogs = true;
     feedbackInfo.categoryTag = 'BluetoothReportWithLogs';
   }
 
-  const performanceCheckbox =
-      $('performance-info-checkbox') as HTMLInputElement | null;
+  const performanceCheckbox = $<HTMLInputElement>('performance-info-checkbox');
   if (performanceCheckbox == null || !performanceCheckbox.checked) {
     feedbackInfo.traceId = undefined;
   }
@@ -449,7 +450,7 @@ function sendReport(): boolean {
 
   feedbackInfo.sendHistograms = useHistograms;
 
-  if (($('screenshot-checkbox') as HTMLInputElement).checked) {
+  if (getRequiredElement<HTMLInputElement>('screenshot-checkbox').checked) {
     // The user is okay with sending the screenshot and tab titles.
     feedbackInfo.sendTabTitles = true;
   } else {
@@ -485,10 +486,12 @@ function cancel(e: Event) {
  * Update the page when performance feedback state is changed.
  */
 function performanceFeedbackChanged() {
-  const screenshotCheckbox = $('screenshot-checkbox') as HTMLInputElement;
-  const fileInput = $('attach-file') as HTMLInputElement;
+  const screenshotCheckbox =
+      getRequiredElement<HTMLInputElement>('screenshot-checkbox');
+  const fileInput = getRequiredElement<HTMLInputElement>('attach-file');
 
-  if (($('performance-info-checkbox') as HTMLInputElement).checked) {
+  if (getRequiredElement<HTMLInputElement>(
+      'performance-info-checkbox').checked) {
     fileInput.disabled = true;
     fileInput.checked = false;
 
@@ -534,7 +537,7 @@ function initialize() {
       assert(
           feedbackInfo.flow ===
           chrome.feedbackPrivate.FeedbackFlow.GOOGLE_INTERNAL);
-      $('description-text')
+      getRequiredElement('description-text')
           .addEventListener('input', checkForSendBluetoothLogs);
     }
 
@@ -542,7 +545,7 @@ function initialize() {
       assert(
           feedbackInfo.flow ===
           chrome.feedbackPrivate.FeedbackFlow.GOOGLE_INTERNAL);
-      $('description-text')
+      getRequiredElement('description-text')
           .addEventListener('input', checkForShowQuestionnaire);
     }
 
@@ -550,16 +553,18 @@ function initialize() {
         feedbackInfo.flow ===
             chrome.feedbackPrivate.FeedbackFlow.GOOGLE_INTERNAL &&
         feedbackInfo.fromAssistant) {
-      $('assistant-checkbox-container').hidden = false;
+      getRequiredElement('assistant-checkbox-container').hidden = false;
     }
 
-    $('description-text').textContent = feedbackInfo.description;
+    getRequiredElement('description-text').textContent =
+        feedbackInfo.description;
     if (feedbackInfo.descriptionPlaceholder) {
-      ($('description-text') as HTMLTextAreaElement).placeholder =
+      getRequiredElement<HTMLTextAreaElement>('description-text').placeholder =
           feedbackInfo.descriptionPlaceholder;
     }
     if (feedbackInfo.pageUrl) {
-      ($('page-url-text') as HTMLInputElement).value = feedbackInfo.pageUrl;
+      getRequiredElement<HTMLInputElement>('page-url-text').value =
+          feedbackInfo.pageUrl;
     }
 
     takeScreenshot(function(screenshotCanvas) {
@@ -573,14 +578,15 @@ function initialize() {
 
       // Allow feedback to be sent even if the screenshot failed.
       if (!screenshotCanvas) {
-        const checkbox = $('screenshot-checkbox') as HTMLInputElement;
+        const checkbox =
+            getRequiredElement<HTMLInputElement>('screenshot-checkbox');
         checkbox.disabled = true;
         checkbox.checked = false;
         return;
       }
 
       screenshotCanvas.toBlob(function(blob) {
-        const image = $('screenshot-image') as HTMLImageElement;
+        const image = getRequiredElement<HTMLImageElement>('screenshot-image');
         image.src = URL.createObjectURL(blob!);
         // Only set the alt text when the src url is available, otherwise we'd
         // get a broken image picture instead. crbug.com/773985.
@@ -601,34 +607,37 @@ function initialize() {
       optionElement.text = email;
       optionElement.selected = true;
       // Make sure the "Report anonymously" option comes last.
-      $('user-email-drop-down')
-          .insertBefore(optionElement, $('anonymous-user-option'));
+      getRequiredElement('user-email-drop-down')
+          .insertBefore(optionElement,
+                        getRequiredElement('anonymous-user-option'));
 
       // Now we can unhide the user email section:
-      $('user-email').hidden = false;
+      getRequiredElement('user-email').hidden = false;
     });
 
     // An extension called us with an attached file.
     if (feedbackInfo.attachedFile) {
-      $('attached-filename-text').textContent = feedbackInfo.attachedFile.name;
+      getRequiredElement('attached-filename-text').textContent =
+          feedbackInfo.attachedFile.name;
       attachedFileBlob = feedbackInfo.attachedFile.data!;
-      $('custom-file-container').hidden = false;
-      $('attach-file').hidden = true;
+      getRequiredElement('custom-file-container').hidden = false;
+      getRequiredElement('attach-file').hidden = true;
     }
 
     // No URL, file attachment for login screen feedback.
     if (feedbackInfo.flow === chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
-      $('page-url').hidden = true;
-      $('attach-file-container').hidden = true;
-      $('attach-file-note').hidden = true;
+      getRequiredElement('page-url').hidden = true;
+      getRequiredElement('attach-file-container').hidden = true;
+      getRequiredElement('attach-file-note').hidden = true;
     }
 
     // <if expr="chromeos_ash">
     if (feedbackInfo.traceId && ($('performance-info-area'))) {
-      $('performance-info-area').hidden = false;
-      ($('performance-info-checkbox') as HTMLInputElement).checked = true;
+      getRequiredElement('performance-info-area').hidden = false;
+      getRequiredElement<HTMLInputElement>(
+          'performance-info-checkbox').checked = true;
       performanceFeedbackChanged();
-      $('performance-info-link').onclick = openSlowTraceWindow;
+      getRequiredElement('performance-info-link').onclick = openSlowTraceWindow;
     }
     // </if>
 
@@ -716,7 +725,7 @@ function initialize() {
     }
 
     // Make sure our focus starts on the description field.
-    $('description-text').focus();
+    getRequiredElement('description-text').focus();
   }
 
   window.addEventListener('DOMContentLoaded', function() {
@@ -728,13 +737,15 @@ function initialize() {
     Object.assign(window, {feedbackInfo, feedbackHelper});
 
     // Setup our event handlers.
-    $('attach-file').addEventListener('change', onFileSelected);
-    $('attach-file').addEventListener('click', onOpenFileDialog);
-    $('send-report-button').onclick = sendReport;
-    $('cancel-button').onclick = cancel;
-    $('remove-attached-file').onclick = clearAttachedFile;
+    getRequiredElement('attach-file').addEventListener(
+        'change', onFileSelected);
+    getRequiredElement('attach-file').addEventListener(
+        'click', onOpenFileDialog);
+    getRequiredElement('send-report-button').onclick = sendReport;
+    getRequiredElement('cancel-button').onclick = cancel;
+    getRequiredElement('remove-attached-file').onclick = clearAttachedFile;
     // <if expr="chromeos_ash">
-    $('performance-info-checkbox')
+    getRequiredElement('performance-info-checkbox')
         .addEventListener('change', performanceFeedbackChanged);
     // </if>
   });

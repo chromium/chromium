@@ -6,7 +6,7 @@ import 'chrome://resources/js/action_link.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
-import {$} from 'chrome://resources/js/util.js';
+import {$, getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
 // Note: keep these values in sync with the values in
 // ui/accessibility/ax_mode.h
@@ -164,9 +164,10 @@ function toggleAccessibility(
 }
 
 function requestTree(data: BrowserData|PageData|WidgetData, element: Element) {
-  const allow = ($('filter-allow') as HTMLInputElement).value;
-  const allowEmpty = ($('filter-allow-empty') as HTMLInputElement).value;
-  const deny = ($('filter-deny') as HTMLInputElement).value;
+  const allow = getRequiredElement<HTMLInputElement>('filter-allow').value;
+  const allowEmpty =
+      getRequiredElement<HTMLInputElement>('filter-allow-empty').value;
+  const deny = getRequiredElement<HTMLInputElement>('filter-deny').value;
   window.localStorage['chrome-accessibility-filter-allow'] = allow;
   window.localStorage['chrome-accessibility-filter-allow-empty'] = allowEmpty;
   window.localStorage['chrome-accessibility-filter-deny'] = deny;
@@ -177,7 +178,8 @@ function requestTree(data: BrowserData|PageData|WidgetData, element: Element) {
   // function with the result.
   const requestType = element.id.split(':')[1] as RequestType;
   if (data.type === 'browser') {
-    const delay = ($('native-ui-delay') as HTMLInputElement).valueAsNumber;
+    const delay =
+        getRequiredElement<HTMLInputElement>('native-ui-delay').valueAsNumber;
     setTimeout(() => {
       browserProxy.requestNativeUITree(
           (data as BrowserData).sessionId, requestType, allow, allowEmpty,
@@ -236,7 +238,7 @@ function initialize() {
   bindCheckbox('html', data.html);
   bindCheckbox('internal', data.internal);
 
-  $('pages').textContent = '';
+  getRequiredElement('pages').textContent = '';
 
   const pages = data.pages;
   for (let i = 0; i < pages.length; i++) {
@@ -256,15 +258,15 @@ function initialize() {
       // window). If this is not the case, and Views Accessibility is enabled,
       // the only possibility is that Views Accessibility is not enabled for
       // the current platform. Display a message to the user to indicate this.
-      $('widgets-not-supported').style.display = 'block';
+      getRequiredElement('widgets-not-supported').style.display = 'block';
     } else {
       for (let i = 0; i < widgets.length; i++) {
         addToWidgetsList(widgets[i]!);
       }
     }
   } else {
-    $('widgets').style.display = 'none';
-    $('widgets-header').style.display = 'none';
+    getRequiredElement('widgets').style.display = 'none';
+    getRequiredElement('widgets-header').style.display = 'none';
   }
 
   // Cache filters so they're easily accessible on page refresh.
@@ -272,10 +274,11 @@ function initialize() {
   const allowEmpty =
       window.localStorage['chrome-accessibility-filter-allow-empty'];
   const deny = window.localStorage['chrome-accessibility-filter-deny'];
-  ($('filter-allow') as HTMLInputElement).value = allow ? allow : '*';
-  ($('filter-allow-empty') as HTMLInputElement).value =
+  getRequiredElement<HTMLInputElement>('filter-allow').value =
+      allow ? allow : '*';
+  getRequiredElement<HTMLInputElement>('filter-allow-empty').value =
       allowEmpty ? allowEmpty : '';
-  ($('filter-deny') as HTMLInputElement).value = deny ? deny : '';
+  getRequiredElement<HTMLInputElement>('filter-deny').value = deny ? deny : '';
 
   addWebUiListener('copyTree', copyTree);
   addWebUiListener('showOrRefreshTree', showOrRefreshTree);
@@ -283,7 +286,7 @@ function initialize() {
 }
 
 function bindCheckbox(name: string, value: EnabledStatus) {
-  const checkbox = $(name) as HTMLInputElement;
+  const checkbox = getRequiredElement<HTMLInputElement>(name);
   if (value === 'on') {
     checkbox.checked = true;
   }
@@ -305,7 +308,7 @@ function addToPagesList(data: PageData) {
   row.id = id;
   formatRow(row, data, null);
 
-  const pages = $('pages');
+  const pages = getRequiredElement('pages');
   pages.appendChild(row);
 }
 
@@ -316,7 +319,7 @@ function addToBrowsersList(data: BrowserData) {
   row.id = id;
   formatRow(row, data, null);
 
-  const browsers = $('browsers');
+  const browsers = getRequiredElement('browsers');
   browsers.appendChild(row);
 }
 
@@ -327,7 +330,7 @@ function addToWidgetsList(data: WidgetData) {
   row.id = id;
   formatRow(row, data, null);
 
-  const widgets = $('widgets');
+  const widgets = getRequiredElement('widgets');
   widgets.appendChild(row);
 }
 
@@ -501,7 +504,7 @@ function createHideAccessibilityTreeElement(id: string) {
   hide.textContent = 'Hide accessibility tree';
   hide.id = id + ':hideTree';
   hide.addEventListener('click', function() {
-    const show = $(id + ':showOrRefreshTree');
+    const show = getRequiredElement(id + ':showOrRefreshTree');
     show.textContent = 'Show accessibility tree';
     show.setAttribute('aria-expanded', 'false');
     show.focus();
@@ -565,7 +568,7 @@ function showOrRefreshTree(data: PageData) {
 
   row.textContent = '';
   formatRow(row, data, 'showOrRefreshTree');
-  $(id + ':showOrRefreshTree').focus();
+  getRequiredElement(id + ':showOrRefreshTree').focus();
 }
 
 // WebUI listener handler for the 'startOrStopEvents' event.
@@ -578,7 +581,7 @@ function startOrStopEvents(data: PageData) {
 
   row.textContent = '';
   formatRow(row, data, null);
-  $(id + ':startOrStopEvents').focus();
+  getRequiredElement(id + ':startOrStopEvents').focus();
 }
 
 // WebUI listener handler for the 'copyTree' event.
@@ -593,6 +596,7 @@ function copyTree(data: PageData) {
   if ('tree' in data) {
     navigator.clipboard.writeText(data.tree!)
         .then(() => {
+          assert(copy);
           copy.textContent = 'Copied to clipboard!';
           setTimeout(() => {
             copy.textContent = 'Copy accessibility tree';
@@ -609,7 +613,7 @@ function copyTree(data: PageData) {
   // If the tree is currently shown, update it since it may have changed.
   if (tree && tree.style.display !== 'none') {
     showOrRefreshTree(data);
-    $(id + ':copyTree').focus();
+    getRequiredElement(id + ':copyTree').focus();
   }
 }
 

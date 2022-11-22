@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
-import {$} from 'chrome://resources/js/util.js';
+import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
 interface SandboxFeature {
   name: string;
@@ -340,7 +340,7 @@ function addRow(args: Node[]) {
   for (const td of args) {
     row.appendChild(td);
   }
-  $('sandbox-status').appendChild(row);
+  getRequiredElement('sandbox-status').appendChild(row);
 }
 
 /**
@@ -534,7 +534,7 @@ function onGetSandboxDiagnostics(results: SandboxDiagnostics) {
   }
 
   // Raw Diagnostics.
-  $('raw-info').textContent =
+  getRequiredElement('raw-info').textContent =
       'features: ' + JSON.stringify(results.features, null, 2) + '\n' +
       'policies: ' + JSON.stringify(results.policies, null, 2);
 }

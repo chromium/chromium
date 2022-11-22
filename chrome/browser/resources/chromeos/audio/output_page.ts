@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$} from 'chrome://resources/js/util.js';
+import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
 import {AudioBroker} from './audio_broker.js';
 import {AudioPlayer} from './audio_player.js';
@@ -75,9 +75,10 @@ export class OutputPage extends Page {
     const handler = AudioBroker.getInstance().handler;
     handler.getActiveOutputDeviceName().then(({deviceName}) => {
       if (deviceName) {
-        $('active-output').innerHTML = deviceName;
+        getRequiredElement('active-output').innerHTML = deviceName;
       } else {
-        $('active-output').innerHTML = 'No active output device';
+        getRequiredElement('active-output').innerHTML =
+            'No active output device';
       }
     });
   }
@@ -88,7 +89,7 @@ export class OutputPage extends Page {
 
   createAudioPlayer() {
     const audioPlayer = new AudioPlayer(audiosSamples);
-    $('audio-player').appendChild(audioPlayer);
+    getRequiredElement('audio-player').appendChild(audioPlayer);
   }
 
   static getInstance() {

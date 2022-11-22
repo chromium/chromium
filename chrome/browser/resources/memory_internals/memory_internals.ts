@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
-import {$} from 'chrome://resources/js/util.js';
+import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
 type Process = [number, string, boolean];
 
@@ -44,9 +44,9 @@ function addListRow(
 }
 
 function onProcessListReceived(data: ProcessList) {
-  $('message').innerText = data['message'];
+  getRequiredElement('message').innerText = data['message'];
 
-  const proclist = $('proclist');
+  const proclist = getRequiredElement('proclist');
   proclist.innerText = '';  // Clear existing contents.
 
   const processes = data['processes'];
@@ -87,11 +87,11 @@ function onProcessListReceived(data: ProcessList) {
 
 // Get data and have it displayed upon loading.
 document.addEventListener('DOMContentLoaded', () => {
-  $('refresh').onclick = requestProcessList;
-  $('save').onclick = saveDump;
+  getRequiredElement('refresh').onclick = requestProcessList;
+  getRequiredElement('save').onclick = saveDump;
 
   addWebUiListener('save-dump-progress', (progress: string) => {
-    $('save-dump-text').innerText = progress;
+    getRequiredElement('save-dump-text').innerText = progress;
   });
 
   requestProcessList();

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {$} from 'chrome://resources/js/util.js';
+import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
 import {TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
 import {FeedOrder, LastFetchProperties, PageHandler, PageHandlerRemote} from './feed_internals.mojom-webui.js';
@@ -20,37 +20,48 @@ function updatePageWithProperties() {
   assert(pageHandler);
   pageHandler.getGeneralProperties().then(response => {
     const properties = response.properties;
-    $('is-feed-enabled').textContent = String(properties.isFeedEnabled);
-    $('is-feed-visible').textContent = String(properties.isFeedVisible);
-    $('is-feed-allowed').textContent = String(properties.isFeedAllowed);
-    $('is-prefetching-enabled').textContent =
+    getRequiredElement('is-feed-enabled').textContent =
+        String(properties.isFeedEnabled);
+    getRequiredElement('is-feed-visible').textContent =
+        String(properties.isFeedVisible);
+    getRequiredElement('is-feed-allowed').textContent =
+        String(properties.isFeedAllowed);
+    getRequiredElement('is-prefetching-enabled').textContent =
         String(properties.isPrefetchingEnabled);
-    $('load-stream-status').textContent = properties.loadStreamStatus;
-    $('feed-fetch-url').textContent = properties.feedFetchUrl.url;
-    $('feed-actions-url').textContent = properties.feedActionsUrl.url;
-    ($('enable-webfeed-follow-intro-debug') as HTMLInputElement).checked =
-        properties.isWebFeedFollowIntroDebugEnabled;
-    ($('enable-webfeed-follow-intro-debug') as HTMLInputElement).disabled =
-        false;
-    ($('use-feed-query-requests') as HTMLInputElement).checked =
+    getRequiredElement('load-stream-status').textContent =
+        properties.loadStreamStatus;
+    getRequiredElement('feed-fetch-url').textContent =
+        properties.feedFetchUrl.url;
+    getRequiredElement('feed-actions-url').textContent =
+        properties.feedActionsUrl.url;
+    getRequiredElement<HTMLInputElement>('enable-webfeed-follow-intro-debug')
+        .checked = properties.isWebFeedFollowIntroDebugEnabled;
+    getRequiredElement<HTMLInputElement>('enable-webfeed-follow-intro-debug')
+        .disabled = false;
+    getRequiredElement<HTMLInputElement>('use-feed-query-requests').checked =
         properties.useFeedQueryRequests;
 
     switch (properties.followingFeedOrder) {
       case FeedOrder.kUnspecified:
-        ($('following-feed-order-unset') as HTMLInputElement).checked = true;
+        getRequiredElement<HTMLInputElement>('following-feed-order-unset')
+            .checked = true;
         break;
       case FeedOrder.kGrouped:
-        ($('following-feed-order-grouped') as HTMLInputElement).checked = true;
+        getRequiredElement<HTMLInputElement>('following-feed-order-grouped')
+            .checked = true;
         break;
       case FeedOrder.kReverseChron:
-        ($('following-feed-order-reverse-chron') as HTMLInputElement).checked =
-            true;
+        getRequiredElement<HTMLInputElement>(
+            'following-feed-order-reverse-chron')
+            .checked = true;
         break;
     }
-    ($('following-feed-order-grouped') as HTMLInputElement).disabled = false;
-    ($('following-feed-order-reverse-chron') as HTMLInputElement).disabled =
-        false;
-    ($('following-feed-order-unset') as HTMLInputElement).disabled = false;
+    getRequiredElement<HTMLInputElement>('following-feed-order-grouped')
+        .disabled = false;
+    getRequiredElement<HTMLInputElement>('following-feed-order-reverse-chron')
+        .disabled = false;
+    getRequiredElement<HTMLInputElement>('following-feed-order-unset')
+        .disabled = false;
   });
 }
 
@@ -61,15 +72,19 @@ function updatePageWithLastFetchProperties() {
   assert(pageHandler);
   pageHandler.getLastFetchProperties().then(response => {
     const properties: LastFetchProperties = response.properties;
-    $('last-fetch-status').textContent = String(properties.lastFetchStatus);
-    $('last-fetch-trigger').textContent = properties.lastFetchTrigger;
-    $('last-fetch-time').textContent = toDateString(properties.lastFetchTime);
-    $('refresh-suppress-time').textContent =
+    getRequiredElement('last-fetch-status').textContent =
+        String(properties.lastFetchStatus);
+    getRequiredElement('last-fetch-trigger').textContent =
+        properties.lastFetchTrigger;
+    getRequiredElement('last-fetch-time').textContent =
+        toDateString(properties.lastFetchTime);
+    getRequiredElement('refresh-suppress-time').textContent =
         toDateString(properties.refreshSuppressTime);
-    $('last-fetch-bless-nonce').textContent = properties.lastBlessNonce;
-    $('last-action-upload-status').textContent =
+    getRequiredElement('last-fetch-bless-nonce').textContent =
+        properties.lastBlessNonce;
+    getRequiredElement('last-action-upload-status').textContent =
         String(properties.lastActionUploadStatus);
-    $('last-action-upload-time').textContent =
+    getRequiredElement('last-action-upload-time').textContent =
         toDateString(properties.lastActionUploadTime);
   });
 }
@@ -87,92 +102,114 @@ function toDateString(timeSinceEpoch: TimeDelta): string {
  * Hook up buttons to event listeners.
  */
 function setupEventListeners() {
-  $('refresh-for-you').addEventListener('click', function() {
+  getRequiredElement('refresh-for-you').addEventListener('click', function() {
     assert(pageHandler);
     pageHandler.refreshForYouFeed();
   });
 
-  $('refresh-following').addEventListener('click', function() {
+  getRequiredElement('refresh-following').addEventListener('click', function() {
     assert(pageHandler);
     pageHandler.refreshFollowingFeed();
   });
 
-  $('refresh-webfeed-suggestions').addEventListener('click', () => {
-    assert(pageHandler);
-    pageHandler.refreshWebFeedSuggestions();
-  });
-
-  $('dump-feed-process-scope').addEventListener('click', function() {
-    assert(pageHandler);
-    pageHandler.getFeedProcessScopeDump().then(response => {
-      $('feed-process-scope-dump').textContent = response.dump;
-      ($('feed-process-scope-details') as HTMLDetailsElement).open = true;
-    });
-  });
-
-  $('load-feed-histograms').addEventListener('click', function() {
-    assert(pageHandler);
-    pageHandler.getFeedHistograms().then(response => {
-      $('feed-histograms-log').textContent = response.log;
-      ($('feed-histograms-details') as HTMLDetailsElement).open = true;
-    });
-  });
-
-  $('feed-host-override-apply').addEventListener('click', function() {
-    assert(pageHandler);
-    pageHandler.overrideFeedHost(
-        {url: ($('feed-host-override') as HTMLInputElement).value});
-  });
-
-  $('discover-api-override-apply').addEventListener('click', function() {
-    assert(pageHandler);
-    pageHandler.overrideDiscoverApiEndpoint(
-        {url: ($('discover-api-override') as HTMLInputElement).value});
-  });
-
-  $('feed-stream-data-override').addEventListener('click', function() {
-    assert(pageHandler);
-    const file = ($('feed-stream-data-file') as HTMLInputElement).files![0];
-    if (file && typeof pageHandler.overrideFeedStreamData === 'function') {
-      const reader = new FileReader();
-      reader.readAsArrayBuffer(file);
-      reader.onload = function(e) {
+  getRequiredElement('refresh-webfeed-suggestions')
+      .addEventListener('click', () => {
         assert(pageHandler);
-        const typedArray = new Uint8Array(e.target!.result as ArrayBuffer);
-        pageHandler.overrideFeedStreamData([...typedArray]);
-      };
-    }
-  });
+        pageHandler.refreshWebFeedSuggestions();
+      });
 
-  $('enable-webfeed-follow-intro-debug').addEventListener('click', function() {
-    assert(pageHandler);
-    pageHandler.setWebFeedFollowIntroDebugEnabled(
-        ($('enable-webfeed-follow-intro-debug') as HTMLInputElement).checked);
-    ($('enable-webfeed-follow-intro-debug') as HTMLInputElement).disabled =
-        true;
-  });
+  getRequiredElement('dump-feed-process-scope')
+      .addEventListener('click', function() {
+        assert(pageHandler);
+        pageHandler.getFeedProcessScopeDump().then(response => {
+          getRequiredElement('feed-process-scope-dump').textContent =
+              response.dump;
+          getRequiredElement<HTMLDetailsElement>('feed-process-scope-details')
+              .open = true;
+        });
+      });
 
-  $('use-feed-query-requests').addEventListener('click', function() {
-    assert(pageHandler);
-    pageHandler.setUseFeedQueryRequests(
-        ($('use-feed-query-requests') as HTMLInputElement).checked);
-  });
+  getRequiredElement('load-feed-histograms')
+      .addEventListener('click', function() {
+        assert(pageHandler);
+        pageHandler.getFeedHistograms().then(response => {
+          getRequiredElement('feed-histograms-log').textContent = response.log;
+          getRequiredElement<HTMLDetailsElement>('feed-histograms-details')
+              .open = true;
+        });
+      });
+
+  getRequiredElement('feed-host-override-apply')
+      .addEventListener('click', function() {
+        assert(pageHandler);
+        pageHandler.overrideFeedHost({
+          url: getRequiredElement<HTMLInputElement>('feed-host-override').value,
+        });
+      });
+
+  getRequiredElement('discover-api-override-apply')
+      .addEventListener('click', function() {
+        assert(pageHandler);
+        pageHandler.overrideDiscoverApiEndpoint({
+          url: getRequiredElement<HTMLInputElement>('discover-api-override')
+                   .value,
+        });
+      });
+
+  getRequiredElement('feed-stream-data-override')
+      .addEventListener('click', function() {
+        assert(pageHandler);
+        const file =
+            getRequiredElement<HTMLInputElement>('feed-stream-data-file')
+                .files![0];
+        if (file && typeof pageHandler.overrideFeedStreamData === 'function') {
+          const reader = new FileReader();
+          reader.readAsArrayBuffer(file);
+          reader.onload = function(e) {
+            assert(pageHandler);
+            const typedArray = new Uint8Array(e.target!.result as ArrayBuffer);
+            pageHandler.overrideFeedStreamData([...typedArray]);
+          };
+        }
+      });
+
+  getRequiredElement('enable-webfeed-follow-intro-debug')
+      .addEventListener('click', function() {
+        assert(pageHandler);
+        pageHandler.setWebFeedFollowIntroDebugEnabled(
+            getRequiredElement<HTMLInputElement>(
+                'enable-webfeed-follow-intro-debug')
+                .checked);
+        getRequiredElement<HTMLInputElement>(
+            'enable-webfeed-follow-intro-debug')
+            .disabled = true;
+      });
+
+  getRequiredElement('use-feed-query-requests')
+      .addEventListener('click', function() {
+        assert(pageHandler);
+        pageHandler.setUseFeedQueryRequests(
+            getRequiredElement<HTMLInputElement>('use-feed-query-requests')
+                .checked);
+      });
 
   const orderRadioClickListener = function(order: FeedOrder) {
     assert(pageHandler);
-    ($('following-feed-order-grouped') as HTMLInputElement).disabled = true;
-    ($('following-feed-order-reverse-chron') as HTMLInputElement).disabled =
-        true;
-    ($('following-feed-order-unset') as HTMLInputElement).disabled = true;
+    getRequiredElement<HTMLInputElement>('following-feed-order-grouped')
+        .disabled = true;
+    getRequiredElement<HTMLInputElement>('following-feed-order-reverse-chron')
+        .disabled = true;
+    getRequiredElement<HTMLInputElement>('following-feed-order-unset')
+        .disabled = true;
     pageHandler.setFollowingFeedOrder(order);
   };
-  $('following-feed-order-unset')
+  getRequiredElement('following-feed-order-unset')
       .addEventListener(
           'click', () => orderRadioClickListener(FeedOrder.kUnspecified));
-  $('following-feed-order-grouped')
+  getRequiredElement('following-feed-order-grouped')
       .addEventListener(
           'click', () => orderRadioClickListener(FeedOrder.kGrouped));
-  $('following-feed-order-reverse-chron')
+  getRequiredElement('following-feed-order-reverse-chron')
       .addEventListener(
           'click', () => orderRadioClickListener(FeedOrder.kReverseChron));
 }

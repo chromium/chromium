@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$} from 'chrome://resources/js/util.js';
+import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
 import {AudioBroker} from './audio_broker.js';
 import {InputPage} from './input_page.js';
@@ -31,10 +31,10 @@ export class FeedbackPage extends Page {
   }
 
   registerButtons() {
-    $('copy-btn').addEventListener('click', () => {
+    getRequiredElement('copy-btn').addEventListener('click', () => {
       navigator.clipboard.writeText(this.audioInfoString);
     });
-    $('submit-btn').addEventListener('click', () => {
+    getRequiredElement('submit-btn').addEventListener('click', () => {
       AudioBroker.getInstance().handler.openFeedbackDialog();
     });
   }
@@ -43,13 +43,15 @@ export class FeedbackPage extends Page {
     if (this.inputFeedbackMap.has('audioUrl')) {
       const url = this.inputFeedbackMap.get('audioUrl');
       if (url) {
-        const downloadBtn = $('download-btn') as HTMLAnchorElement;
-        const inputAudio = $('test-input-audio') as HTMLAudioElement;
+        const downloadBtn =
+            getRequiredElement<HTMLAnchorElement>('download-btn');
+        const inputAudio =
+            getRequiredElement<HTMLAudioElement>('test-input-audio');
         inputAudio.src = url;
         downloadBtn.href = url;
         downloadBtn.download =
             'test_input_' + new Date().toISOString() + '.wav';
-        $('input-replay').hidden = false;
+        getRequiredElement('input-replay').hidden = false;
       }
     }
   }
@@ -70,7 +72,8 @@ export class FeedbackPage extends Page {
     3. Any specific behavior you notice during the testing process?: \n
     4. audio info: `;
     this.audioInfoString = guidedQuestions + infoString;
-    ($('audio-info') as HTMLTextAreaElement).value = this.audioInfoString;
+    getRequiredElement<HTMLTextAreaElement>('audio-info').value =
+        this.audioInfoString;
   }
 
   mapToObject(map: Map<string, any>) {

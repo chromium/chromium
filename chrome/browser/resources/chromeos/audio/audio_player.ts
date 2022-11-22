@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$} from 'chrome://resources/js/util.js';
+import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
 import {AudioSample, OutputPage} from './output_page.js';
 import {PageNavigator} from './page.js';
@@ -22,7 +22,8 @@ export class AudioPlayer extends HTMLElement {
     this.sampleIdx = 0;
     this.audioContext = null;
     this.timerId = null;
-    const clone = ($('audioPlayer-template') as HTMLTemplateElement)
+    const clone =
+        getRequiredElement<HTMLTemplateElement>('audioPlayer-template')
                       .content.cloneNode(true);
     this.audioDiv = (clone as HTMLElement).querySelector('div')!;
     this.audioPlay =

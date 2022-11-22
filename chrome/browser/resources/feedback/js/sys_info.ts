@@ -5,7 +5,7 @@
 import '../strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {$} from 'chrome://resources/js/util.js';
+import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
 /**
  * A queue of a sequence of closures that will incrementally build the sys info
@@ -38,26 +38,26 @@ function updateGlobalExpandButtonStates() {
   const hasCollapsed = multilineRowsCount - expandedRowsCount > 0;
 
   if (hasExpanded && hasCollapsed) {
-    $('expandAllBtn').ariaPressed = 'mixed';
-    $('collapseAllBtn').ariaPressed = 'mixed';
+    getRequiredElement('expandAllBtn').ariaPressed = 'mixed';
+    getRequiredElement('collapseAllBtn').ariaPressed = 'mixed';
   } else if (hasExpanded && !hasCollapsed) {
-    $('expandAllBtn').ariaPressed = 'true';
-    $('collapseAllBtn').ariaPressed = 'false';
+    getRequiredElement('expandAllBtn').ariaPressed = 'true';
+    getRequiredElement('collapseAllBtn').ariaPressed = 'false';
   } else if (!hasExpanded && hasCollapsed) {
-    $('expandAllBtn').ariaPressed = 'false';
-    $('collapseAllBtn').ariaPressed = 'true';
+    getRequiredElement('expandAllBtn').ariaPressed = 'false';
+    getRequiredElement('collapseAllBtn').ariaPressed = 'true';
   } else {
-    $('expandAllBtn').ariaPressed = 'false';
-    $('collapseAllBtn').ariaPressed = 'false';
+    getRequiredElement('expandAllBtn').ariaPressed = 'false';
+    getRequiredElement('collapseAllBtn').ariaPressed = 'false';
   }
 }
 
 function getValueDivForButton(button: HTMLElement) {
-  return $(button.id.substr(0, button.id.length - 4));
+  return getRequiredElement(button.id.substr(0, button.id.length - 4));
 }
 
 function getButtonForValueDiv(valueDiv: HTMLElement) {
-  return $(valueDiv.id + '-btn');
+  return getRequiredElement(valueDiv.id + '-btn');
 }
 
 function getSystemInformation():
@@ -203,7 +203,7 @@ function createValueCell(
   if (isMultiLine) {
     valueCell.className = 'number-collapsed';
     const loadingContainer =
-        $('spinner-container').cloneNode(true) as HTMLElement;
+        getRequiredElement('spinner-container').cloneNode(true) as HTMLElement;
     loadingContainer.setAttribute('id', '' + key + '-value-loading');
     loadingContainer.hidden = true;
     valueCell.appendChild(loadingContainer);
@@ -234,10 +234,10 @@ function createTableRow(key: string, value: string): HTMLElement {
  * Finalize the page after the content has been loaded.
  */
 function finishPageLoading() {
-  $('collapseAllBtn').onclick = collapseAll;
-  $('expandAllBtn').onclick = expandAll;
+  getRequiredElement('collapseAllBtn').onclick = collapseAll;
+  getRequiredElement('expandAllBtn').onclick = expandAll;
 
-  $('spinner-container').hidden = true;
+  getRequiredElement('spinner-container').hidden = true;
   updateGlobalExpandButtonStates();
 }
 
@@ -264,7 +264,7 @@ function processQueue() {
  */
 function createTableRowWrapper(key: string, value: string): () => void {
   return function() {
-    $('detailsTable').appendChild(createTableRow(key, value));
+    getRequiredElement('detailsTable').appendChild(createTableRow(key, value));
   };
 }
 

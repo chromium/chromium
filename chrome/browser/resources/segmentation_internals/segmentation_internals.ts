@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
-import {$} from 'chrome://resources/js/util.js';
+import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
 import {ClientInfo, SegmentInfo} from './segmentation_internals.mojom-webui.js';
 import {SegmentationInternalsBrowserProxy} from './segmentation_internals_browser_proxy.js';
@@ -91,13 +91,13 @@ function addSegmentInfoToParent(
 function initialize() {
   getProxy().getCallbackRouter().onServiceStatusChanged.addListener(
       (initialized: boolean, status: number) => {
-        $('initialized').textContent = String(initialized);
-        $('service-status').textContent = String(status);
+        getRequiredElement('initialized').textContent = String(initialized);
+        getRequiredElement('service-status').textContent = String(status);
       });
 
   getProxy().getCallbackRouter().onClientInfoAvailable.addListener(
       (clientInfos: ClientInfo[]) => {
-        const parent = $('client-container');
+        const parent = getRequiredElement('client-container');
         // Remove all current children.
         while (parent.firstChild) {
           parent.removeChild(parent.firstChild);
