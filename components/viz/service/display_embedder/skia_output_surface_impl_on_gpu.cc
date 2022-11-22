@@ -61,6 +61,7 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/core/SkSamplingOptions.h"
+#include "third_party/skia/include/core/SkSwizzle.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "ui/gfx/color_space.h"
@@ -2289,15 +2290,30 @@ void SkiaOutputSurfaceImplOnGpu::CreateSolidColorSharedImage(
     gpu::Mailbox mailbox,
     const SkColor4f& color,
     const gfx::ColorSpace& color_space) {
-  // Create a 1x1 pixel span of the colour in RGBA format.
+#if BUILDFLAG(IS_OZONE)
+  auto preferred_solid_color_format = ui::OzonePlatform::GetInstance()
+                                          ->GetSurfaceFactoryOzone()
+                                          ->GetPreferredFormatForSolidColor();
+  if (preferred_solid_color_format)
+    solid_color_image_format_ =
+        GetResourceFormat(preferred_solid_color_format.value());
+#endif
+  DCHECK(solid_color_image_format_ == RGBA_8888 ||
+         solid_color_image_format_ == BGRA_8888);
+  // Create a 1x1 pixel span of the colour in |solid_color_image_format_|.
   gfx::Size size(1, 1);
-  SharedImageFormat si_format = SharedImageFormat::SinglePlane(RGBA_8888);
+  SharedImageFormat si_format =
+      SharedImageFormat::SinglePlane(solid_color_image_format_);
   // Premultiply the SkColor4f to support transparent quads.
   SkColor4f premul{color[0] * color[3], color[1] * color[3],
                    color[2] * color[3], color[3]};
   const uint32_t premul_rgba_bytes = premul.toBytes_RGBA();
+  uint32_t premul_bytes = premul_rgba_bytes;
+  if (solid_color_image_format_ == BGRA_8888) {
+    SkSwapRB(&premul_bytes, &premul_rgba_bytes, 1);
+  }
   auto pixel_span = base::make_span(
-      reinterpret_cast<const uint8_t*>(&premul_rgba_bytes), sizeof(uint32_t));
+      reinterpret_cast<const uint8_t*>(&premul_bytes), sizeof(uint32_t));
 
   // TODO(crbug.com/1360538) Some work is needed to properly support F16 format.
   shared_image_factory_->CreateSharedImage(

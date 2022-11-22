@@ -58,6 +58,8 @@ class WaylandSurfaceFactory : public SurfaceFactoryOzone {
       gfx::Size size,
       gfx::BufferFormat format,
       gfx::NativePixmapHandle handle) override;
+  absl::optional<gfx::BufferFormat> GetPreferredFormatForSolidColor()
+      const override;
 
   bool SupportsNativePixmaps() const;
 

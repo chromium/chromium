@@ -288,4 +288,11 @@ bool WaylandSurfaceFactory::SupportsNativePixmaps() const {
   return supports_native_pixmaps;
 }
 
+absl::optional<gfx::BufferFormat>
+WaylandSurfaceFactory::GetPreferredFormatForSolidColor() const {
+  if (!buffer_manager_->SupportsFormat(gfx::BufferFormat::RGBA_8888))
+    return gfx::BufferFormat::BGRA_8888;
+  return gfx::BufferFormat::RGBA_8888;
+}
+
 }  // namespace ui

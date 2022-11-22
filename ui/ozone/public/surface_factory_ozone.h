@@ -208,6 +208,10 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceFactoryOzone {
   virtual std::vector<gfx::BufferFormat> GetSupportedFormatsForTexturing()
       const;
 
+  // This returns a preferred format for solid color image on Wayland.
+  virtual absl::optional<gfx::BufferFormat> GetPreferredFormatForSolidColor()
+      const;
+
  protected:
   SurfaceFactoryOzone();
   virtual ~SurfaceFactoryOzone();

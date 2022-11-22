@@ -130,4 +130,9 @@ SurfaceFactoryOzone::GetSupportedFormatsForTexturing() const {
   return std::vector<gfx::BufferFormat>();
 }
 
+absl::optional<gfx::BufferFormat>
+SurfaceFactoryOzone::GetPreferredFormatForSolidColor() const {
+  return absl::nullopt;
+}
+
 }  // namespace ui

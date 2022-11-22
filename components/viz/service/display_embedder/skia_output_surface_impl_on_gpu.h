@@ -553,6 +553,11 @@ class SkiaOutputSurfaceImplOnGpu
   // destructor.
   base::flat_set<gpu::Mailbox> solid_color_images_;
 
+  // The format that will be used to CreateSolidColorSharedImage(). This should
+  // be either RGBA_8888 by default, or BGRA_8888 if the default is not
+  // supported on Linux.
+  ResourceFormat solid_color_image_format_ = RGBA_8888;
+
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtr<SkiaOutputSurfaceImplOnGpu> weak_ptr_;
