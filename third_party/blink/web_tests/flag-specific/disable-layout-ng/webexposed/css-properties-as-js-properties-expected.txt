@@ -191,6 +191,7 @@ fontSynthesisSmallCaps
 fontSynthesisStyle
 fontSynthesisWeight
 fontVariant
+fontVariantAlternates
 fontVariantCaps
 fontVariantEastAsian
 fontVariantLigatures

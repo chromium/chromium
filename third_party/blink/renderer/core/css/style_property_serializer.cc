@@ -692,6 +692,7 @@ bool StylePropertySerializer::AppendFontLonghandValueIfNotNormal(
       case CSSPropertyID::kFontVariantLigatures:
       case CSSPropertyID::kFontVariantNumeric:
       case CSSPropertyID::kFontVariantEastAsian:
+      case CSSPropertyID::kFontVariantAlternates:
       case CSSPropertyID::kFontWeight:
         result.Append(' ');
         break;
@@ -947,6 +948,10 @@ String StylePropertySerializer::FontVariantValue() const {
   AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontVariantLigatures(),
                                      result);
   AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontVariantCaps(), result);
+  if (RuntimeEnabledFeatures::FontVariantAlternatesEnabled()) {
+    AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontVariantAlternates(),
+                                       result);
+  }
   AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontVariantNumeric(),
                                      result);
   AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontVariantEastAsian(),

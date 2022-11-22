@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL CSS Test:  font-variant-alternates: historical-forms; parses case-insensitively assert_equals: historical-forms is parsed case-insensitively expected (string) "historical-forms" but got (undefined) undefined
-Harness: the test ran to completion.
-

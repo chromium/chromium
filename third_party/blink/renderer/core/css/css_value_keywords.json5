@@ -102,6 +102,15 @@
     "ordinal",
     "slashed-zero",
 
+    // font-variant-alternates
+    "stylistic",
+    "historical-forms",
+    "styleset",
+    "character-variant",
+    "swash",
+    "ornaments",
+    "annotation",
+
     //
     // font-weight
     //

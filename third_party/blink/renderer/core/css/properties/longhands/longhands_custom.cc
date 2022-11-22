@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
+#include "third_party/blink/renderer/core/css/parser/font_variant_alternates_parser.h"
 #include "third_party/blink/renderer/core/css/parser/font_variant_east_asian_parser.h"
 #include "third_party/blink/renderer/core/css/parser/font_variant_ligatures_parser.h"
 #include "third_party/blink/renderer/core/css/parser/font_variant_numeric_parser.h"
@@ -3108,6 +3109,33 @@ const CSSValue* FontVariantNumeric::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style) const {
   return ComputedStyleUtils::ValueForFontVariantNumeric(style);
+}
+
+const CSSValue* FontVariantAlternates::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  DCHECK(RuntimeEnabledFeatures::FontVariantAlternatesEnabled());
+
+  if (range.Peek().Id() == CSSValueID::kNormal)
+    return css_parsing_utils::ConsumeIdent(range);
+
+  FontVariantAlternatesParser alternates_parser;
+  do {
+    if (alternates_parser.ConsumeAlternates(range, context) !=
+        FontVariantAlternatesParser::ParseResult::kConsumedValue) {
+      return nullptr;
+    }
+  } while (!range.AtEnd());
+
+  return alternates_parser.FinalizeValue();
+}
+
+const CSSValue* FontVariantAlternates::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return ComputedStyleUtils::ValueForFontVariantAlternates(style);
 }
 
 namespace {

@@ -20,6 +20,7 @@ font-variant-caps: normal
 font-variant-ligatures: normal
 font-variant-numeric: normal
 font-variant-east-asian: normal
+font-variant-alternates: normal
 font-weight: normal
 font-stretch: normal
 font-size: 24px

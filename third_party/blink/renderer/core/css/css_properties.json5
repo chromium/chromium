@@ -1206,6 +1206,26 @@
       valid_for_formatted_text_run: true,
     },
     {
+      name: "font-variant-alternates",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      inherited: true,
+      font: true,
+      runtime_flag: "FontVariantAlternates",
+      type_name: "FontVariantAlternates",
+      name_for_methods: "FontVariantAlternates",
+      converter: "ConvertFontVariantAlternates",
+      priority: "High",
+      keywords: [
+        "normal",
+      ],
+      typedom_types: ["Keyword"],
+      valid_for_first_letter: true,
+      valid_for_first_line: true,
+      valid_for_marker: true,
+      valid_for_formatted_text: true,
+      valid_for_formatted_text_run: true,
+    },
+    {
       name: "font-weight",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       is_descriptor: true,
@@ -6716,7 +6736,7 @@
       name: "font",
       longhands: [
         "font-style", "font-variant-ligatures", "font-variant-caps",
-        "font-variant-numeric", "font-variant-east-asian", "font-weight",
+        "font-variant-numeric", "font-variant-east-asian", "font-variant-alternates", "font-weight",
         "font-stretch", "font-size", "line-height", "font-family"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
@@ -6724,7 +6744,7 @@
     {
       name: "font-variant",
       longhands: [
-        "font-variant-ligatures", "font-variant-caps",
+        "font-variant-ligatures", "font-variant-caps", "font-variant-alternates",
         "font-variant-numeric", "font-variant-east-asian"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],

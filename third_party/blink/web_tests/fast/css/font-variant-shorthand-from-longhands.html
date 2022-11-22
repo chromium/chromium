@@ -27,13 +27,21 @@ style.fontVariantNumeric = "proportional-nums";
 shouldBeEqualToString("style.fontVariant", "");
 shouldBeEqualToString("computedStyle.fontVariant", "discretionary-ligatures small-caps proportional-nums");
 
+style.fontVariantAlternates = "historical-forms";
+shouldBeEqualToString("style.fontVariant", "");
+shouldBeEqualToString("computedStyle.fontVariant", "discretionary-ligatures small-caps historical-forms proportional-nums");
+
 style.fontVariantEastAsian = "ruby";
 // The |style.fontVariant| shorthand is set when all currently supported
 // sub-properties are set.
-shouldBeEqualToString("style.fontVariant", "discretionary-ligatures small-caps proportional-nums ruby");
-shouldBeEqualToString("computedStyle.fontVariant", "discretionary-ligatures small-caps proportional-nums ruby");
+shouldBeEqualToString("style.fontVariant", "discretionary-ligatures small-caps historical-forms proportional-nums ruby");
+shouldBeEqualToString("computedStyle.fontVariant", "discretionary-ligatures small-caps historical-forms proportional-nums ruby");
 
 style.fontVariantCaps = "normal";
+shouldBeEqualToString("style.fontVariant", "discretionary-ligatures historical-forms proportional-nums ruby");
+shouldBeEqualToString("computedStyle.fontVariant", "discretionary-ligatures historical-forms proportional-nums ruby");
+
+style.fontVariantAlternates = "normal";
 shouldBeEqualToString("style.fontVariant", "discretionary-ligatures proportional-nums ruby");
 shouldBeEqualToString("computedStyle.fontVariant", "discretionary-ligatures proportional-nums ruby");
 
@@ -54,6 +62,7 @@ style.fontVariantCaps = "initial";
 style.fontVariantLigatures = "initial";
 style.fontVariantNumeric = "initial";
 style.fontVariantEastAsian = "initial";
+style.fontVariantAlternates = "initial";
 shouldBeEqualToString("style.fontVariant", "initial");
 
 document.body.removeChild(testContainer);

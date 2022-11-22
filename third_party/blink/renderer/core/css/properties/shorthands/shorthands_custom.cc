@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_fast_paths.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
+#include "third_party/blink/renderer/core/css/parser/font_variant_alternates_parser.h"
 #include "third_party/blink/renderer/core/css/parser/font_variant_east_asian_parser.h"
 #include "third_party/blink/renderer/core/css/parser/font_variant_ligatures_parser.h"
 #include "third_party/blink/renderer/core/css/parser/font_variant_numeric_parser.h"
@@ -1134,6 +1135,12 @@ bool ConsumeFont(bool important,
       CSSPropertyID::kFontVariantEastAsian, CSSPropertyID::kFont,
       *CSSIdentifierValue::Create(CSSValueID::kNormal), important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  if (RuntimeEnabledFeatures::FontVariantAlternatesEnabled()) {
+    css_parsing_utils::AddProperty(
+        CSSPropertyID::kFontVariantAlternates, CSSPropertyID::kFont,
+        *CSSIdentifierValue::Create(CSSValueID::kNormal), important,
+        css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  }
 
   css_parsing_utils::AddProperty(
       CSSPropertyID::kFontWeight, CSSPropertyID::kFont,
@@ -1213,7 +1220,7 @@ const CSSValue* Font::CSSValueFromComputedStyleInternal(
 bool FontVariant::ParseShorthand(
     bool important,
     CSSParserTokenRange& range,
-    const CSSParserContext&,
+    const CSSParserContext& context,
     const CSSParserLocalContext&,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   if (css_parsing_utils::IdentMatches<CSSValueID::kNormal, CSSValueID::kNone>(
@@ -1234,6 +1241,12 @@ bool FontVariant::ParseShorthand(
         CSSPropertyID::kFontVariantEastAsian, CSSPropertyID::kFontVariant,
         *CSSIdentifierValue::Create(CSSValueID::kNormal), important,
         css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+    if (RuntimeEnabledFeatures::FontVariantAlternatesEnabled()) {
+      css_parsing_utils::AddProperty(
+          CSSPropertyID::kFontVariantAlternates, CSSPropertyID::kFontVariant,
+          *CSSIdentifierValue::Create(CSSValueID::kNormal), important,
+          css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+    }
     return range.AtEnd();
   }
 
@@ -1241,6 +1254,7 @@ bool FontVariant::ParseShorthand(
   FontVariantLigaturesParser ligatures_parser;
   FontVariantNumericParser numeric_parser;
   FontVariantEastAsianParser east_asian_parser;
+  FontVariantAlternatesParser alternates_parser;
   do {
     FontVariantLigaturesParser::ParseResult ligatures_parse_result =
         ligatures_parser.ConsumeLigature(range);
@@ -1248,12 +1262,18 @@ bool FontVariant::ParseShorthand(
         numeric_parser.ConsumeNumeric(range);
     FontVariantEastAsianParser::ParseResult east_asian_parse_result =
         east_asian_parser.ConsumeEastAsian(range);
+    FontVariantAlternatesParser::ParseResult alternates_parse_result =
+        RuntimeEnabledFeatures::FontVariantAlternatesEnabled()
+            ? alternates_parser.ConsumeAlternates(range, context)
+            : FontVariantAlternatesParser::ParseResult::kUnknownValue;
     if (ligatures_parse_result ==
             FontVariantLigaturesParser::ParseResult::kConsumedValue ||
         numeric_parse_result ==
             FontVariantNumericParser::ParseResult::kConsumedValue ||
         east_asian_parse_result ==
-            FontVariantEastAsianParser::ParseResult::kConsumedValue)
+            FontVariantEastAsianParser::ParseResult::kConsumedValue ||
+        alternates_parse_result ==
+            FontVariantAlternatesParser::ParseResult::kConsumedValue)
       continue;
 
     if (ligatures_parse_result ==
@@ -1261,7 +1281,9 @@ bool FontVariant::ParseShorthand(
         numeric_parse_result ==
             FontVariantNumericParser::ParseResult::kDisallowedValue ||
         east_asian_parse_result ==
-            FontVariantEastAsianParser::ParseResult::kDisallowedValue)
+            FontVariantEastAsianParser::ParseResult::kDisallowedValue ||
+        alternates_parse_result ==
+            FontVariantAlternatesParser::ParseResult::kDisallowedValue)
       return false;
 
     CSSValueID id = range.Peek().Id();
@@ -1300,6 +1322,12 @@ bool FontVariant::ParseShorthand(
                  : *CSSIdentifierValue::Create(CSSValueID::kNormal),
       important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
       properties);
+  if (RuntimeEnabledFeatures::FontVariantAlternatesEnabled()) {
+    css_parsing_utils::AddProperty(
+        CSSPropertyID::kFontVariantAlternates, CSSPropertyID::kFontVariant,
+        *alternates_parser.FinalizeValue(), important,
+        css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  }
   return true;
 }
 

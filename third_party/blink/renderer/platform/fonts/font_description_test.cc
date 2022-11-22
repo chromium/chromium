@@ -162,6 +162,32 @@ TEST_F(FontDescriptionTest, PaletteDifferent) {
   ASSERT_NE(cache_key_a, cache_key_b);
 }
 
+TEST_F(FontDescriptionTest, VariantAlternatesDifferent) {
+  FontDescription a;
+  FontDescription b(a);
+
+  scoped_refptr<FontVariantAlternates> variants_a =
+      FontVariantAlternates::Create();
+  variants_a->SetHistoricalForms();
+
+  scoped_refptr<FontVariantAlternates> variants_b =
+      FontVariantAlternates::Create();
+  variants_b->SetStyleset({"foo", "bar"});
+
+  ASSERT_NE(*variants_a, *variants_b);
+  ASSERT_EQ(*variants_a, *variants_a);
+  a.SetFontVariantAlternates(variants_a);
+  b.SetFontVariantAlternates(variants_b);
+
+  ASSERT_NE(a, b);
+
+  FontFaceCreationParams test_creation_params;
+  FontCacheKey key_a = a.CacheKey(test_creation_params, false);
+  FontCacheKey key_b = b.CacheKey(test_creation_params, false);
+
+  ASSERT_NE(key_a, key_b);
+}
+
 TEST_F(FontDescriptionTest, ToString) {
   FontDescription description;
 

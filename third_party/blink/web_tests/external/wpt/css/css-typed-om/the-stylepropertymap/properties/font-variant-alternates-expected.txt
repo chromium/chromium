@@ -1,8 +1,8 @@
 This is a testharness.js-based test.
-FAIL Can set 'font-variant-alternates' to CSS-wide keywords Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-variant-alternates
-FAIL Can set 'font-variant-alternates' to var() references Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-variant-alternates
-FAIL Can set 'font-variant-alternates' to the 'normal' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-variant-alternates
-FAIL Can set 'font-variant-alternates' to the 'historical-forms' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-variant-alternates
+PASS Can set 'font-variant-alternates' to CSS-wide keywords
+PASS Can set 'font-variant-alternates' to var() references
+PASS Can set 'font-variant-alternates' to the 'normal' keyword
+FAIL Can set 'font-variant-alternates' to the 'historical-forms' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
 PASS Setting 'font-variant-alternates' to a length throws TypeError
 PASS Setting 'font-variant-alternates' to a percent throws TypeError
 PASS Setting 'font-variant-alternates' to a time throws TypeError
@@ -12,12 +12,12 @@ PASS Setting 'font-variant-alternates' to a number throws TypeError
 PASS Setting 'font-variant-alternates' to a position throws TypeError
 PASS Setting 'font-variant-alternates' to a URL throws TypeError
 PASS Setting 'font-variant-alternates' to a transform throws TypeError
-FAIL 'font-variant-alternates' does not supported 'stylistic(foo)' Failed to execute 'get' on 'StylePropertyMapReadOnly': Invalid propertyName: font-variant-alternates
-FAIL 'font-variant-alternates' does not supported 'styleset(foo)' Failed to execute 'get' on 'StylePropertyMapReadOnly': Invalid propertyName: font-variant-alternates
-FAIL 'font-variant-alternates' does not supported 'character-variant(foo)' Failed to execute 'get' on 'StylePropertyMapReadOnly': Invalid propertyName: font-variant-alternates
-FAIL 'font-variant-alternates' does not supported 'swash(foo)' Failed to execute 'get' on 'StylePropertyMapReadOnly': Invalid propertyName: font-variant-alternates
-FAIL 'font-variant-alternates' does not supported 'ornaments(foo)' Failed to execute 'get' on 'StylePropertyMapReadOnly': Invalid propertyName: font-variant-alternates
-FAIL 'font-variant-alternates' does not supported 'annotation(foo)' Failed to execute 'get' on 'StylePropertyMapReadOnly': Invalid propertyName: font-variant-alternates
-FAIL 'font-variant-alternates' does not supported 'swash(foo) annotation(foo2)' Failed to execute 'get' on 'StylePropertyMapReadOnly': Invalid propertyName: font-variant-alternates
+PASS 'font-variant-alternates' does not supported 'stylistic(foo)'
+PASS 'font-variant-alternates' does not supported 'styleset(foo)'
+PASS 'font-variant-alternates' does not supported 'character-variant(foo)'
+PASS 'font-variant-alternates' does not supported 'swash(foo)'
+PASS 'font-variant-alternates' does not supported 'ornaments(foo)'
+PASS 'font-variant-alternates' does not supported 'annotation(foo)'
+PASS 'font-variant-alternates' does not supported 'swash(foo) annotation(foo2)'
 Harness: the test ran to completion.
 

@@ -33,6 +33,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
+#include "third_party/blink/renderer/core/css/css_alternate_value.h"
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_content_distribution_value.h"
@@ -96,6 +97,21 @@ static GridLength ConvertGridTrackBreadth(const StyleResolverState& state,
   }
 
   return StyleBuilderConverter::ConvertLengthOrAuto(state, value);
+}
+
+Vector<AtomicString> ValueListToAtomicStringVector(
+    const CSSValueList& value_list) {
+  Vector<AtomicString> ret;
+  for (auto list_entry : value_list) {
+    const CSSCustomIdentValue& ident = To<CSSCustomIdentValue>(*list_entry);
+    ret.push_back(ident.Value());
+  }
+  return ret;
+}
+
+AtomicString FirstEntryAsAtomicString(const CSSValueList& value_list) {
+  DCHECK_EQ(value_list.length(), 1u);
+  return To<CSSCustomIdentValue>(value_list.Item(0)).Value();
 }
 
 }  // namespace
@@ -789,6 +805,66 @@ FontVariantNumeric StyleBuilderConverter::ConvertFontVariantNumeric(
     }
   }
   return variant_numeric;
+}
+
+scoped_refptr<FontVariantAlternates>
+StyleBuilderConverter::ConvertFontVariantAlternates(StyleResolverState&,
+                                                    const CSSValue& value) {
+  scoped_refptr<FontVariantAlternates> alternates =
+      FontVariantAlternates::Create();
+  // See FontVariantAlternates::ParseSingleValue - we either receive the normal
+  // identifier or a list of 1 or more elements if it's non normal.
+  if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNormal);
+    return alternates;
+  }
+
+  if (value.IsPendingSystemFontValue())
+    return alternates;
+
+  // If it's not the single normal identifier, it has to be a list.
+  for (const CSSValue* alternate : To<CSSValueList>(value)) {
+    const cssvalue::CSSAlternateValue* alternate_value =
+        DynamicTo<cssvalue::CSSAlternateValue>(alternate);
+    if (alternate_value) {
+      switch (alternate_value->Function().FunctionType()) {
+        case CSSValueID::kStylistic:
+          alternates->SetStylistic(
+              FirstEntryAsAtomicString(alternate_value->Aliases()));
+          break;
+        case CSSValueID::kSwash:
+          alternates->SetSwash(
+              FirstEntryAsAtomicString(alternate_value->Aliases()));
+          break;
+        case CSSValueID::kOrnaments:
+          alternates->SetOrnaments(
+              FirstEntryAsAtomicString(alternate_value->Aliases()));
+          break;
+        case CSSValueID::kAnnotation:
+          alternates->SetAnnotation(
+              FirstEntryAsAtomicString(alternate_value->Aliases()));
+          break;
+        case CSSValueID::kStyleset:
+          alternates->SetStyleset(
+              ValueListToAtomicStringVector(alternate_value->Aliases()));
+          break;
+        case CSSValueID::kCharacterVariant:
+          alternates->SetCharacterVariant(
+              ValueListToAtomicStringVector(alternate_value->Aliases()));
+          break;
+        default:
+          NOTREACHED();
+      }
+    }
+    const CSSIdentifierValue* alternate_value_ident =
+        DynamicTo<CSSIdentifierValue>(alternate);
+    if (alternate_value_ident) {
+      DCHECK_EQ(alternate_value_ident->GetValueID(),
+                CSSValueID::kHistoricalForms);
+      alternates->SetHistoricalForms();
+    }
+  }
+  return alternates;
 }
 
 FontVariantEastAsian StyleBuilderConverter::ConvertFontVariantEastAsian(

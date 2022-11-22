@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
+#include "third_party/blink/renderer/core/css/css_alternate_value.h"
 #include "third_party/blink/renderer/core/css/css_border_image.h"
 #include "third_party/blink/renderer/core/css/css_border_image_slice_value.h"
 #include "third_party/blink/renderer/core/css/css_bracketed_value_list.h"
@@ -957,6 +958,70 @@ CSSValue* ComputedStyleUtils::ValueForFontVariantNumeric(
   if (variant_numeric.SlashedZeroValue() == FontVariantNumeric::kSlashedZeroOn)
     value_list->Append(*CSSIdentifierValue::Create(CSSValueID::kSlashedZero));
 
+  return value_list;
+}
+
+CSSValue* ComputedStyleUtils::ValueForFontVariantAlternates(
+    const ComputedStyle& style) {
+  FontVariantAlternates* variant_alternates =
+      style.GetFontDescription().GetFontVariantAlternates();
+  if (!variant_alternates || variant_alternates->IsNormal())
+    return CSSIdentifierValue::Create(CSSValueID::kNormal);
+
+  DCHECK(RuntimeEnabledFeatures::FontVariantAlternatesEnabled());
+
+  auto make_single_ident_list = [](const AtomicString& alias) {
+    CSSValueList* aliases_list = CSSValueList::CreateCommaSeparated();
+    aliases_list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(alias));
+    return aliases_list;
+  };
+
+  CSSValueList* value_list = CSSValueList::CreateSpaceSeparated();
+  if (AtomicString* opt_stylistic = variant_alternates->Stylistic()) {
+    value_list->Append(*MakeGarbageCollected<cssvalue::CSSAlternateValue>(
+        *MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kStylistic),
+        *make_single_ident_list(*opt_stylistic)));
+  }
+  if (variant_alternates->HistoricalForms()) {
+    value_list->Append(
+        *CSSIdentifierValue::Create(CSSValueID::kHistoricalForms));
+  }
+  if (AtomicString* opt_swash = variant_alternates->Swash()) {
+    value_list->Append(*MakeGarbageCollected<cssvalue::CSSAlternateValue>(
+        *MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kSwash),
+        *make_single_ident_list(*opt_swash)));
+  }
+  if (AtomicString* opt_ornaments = variant_alternates->Ornaments()) {
+    value_list->Append(*MakeGarbageCollected<cssvalue::CSSAlternateValue>(
+        *MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kOrnaments),
+        *make_single_ident_list(*opt_ornaments)));
+  }
+  if (AtomicString* opt_annotation = variant_alternates->Annotation()) {
+    value_list->Append(*MakeGarbageCollected<cssvalue::CSSAlternateValue>(
+        *MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kAnnotation),
+        *make_single_ident_list(*opt_annotation)));
+  }
+
+  if (!variant_alternates->Styleset().empty()) {
+    CSSValueList* aliases_list = CSSValueList::CreateCommaSeparated();
+    for (auto alias : variant_alternates->Styleset()) {
+      aliases_list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(alias));
+    }
+    value_list->Append(*MakeGarbageCollected<cssvalue::CSSAlternateValue>(
+        *MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kStyleset),
+        *aliases_list));
+  }
+  if (!variant_alternates->CharacterVariant().empty()) {
+    CSSValueList* aliases_list = CSSValueList::CreateCommaSeparated();
+    for (auto alias : variant_alternates->CharacterVariant()) {
+      aliases_list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(alias));
+    }
+    value_list->Append(*MakeGarbageCollected<cssvalue::CSSAlternateValue>(
+        *MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kCharacterVariant),
+        *aliases_list));
+  }
+
+  DCHECK(value_list->length());
   return value_list;
 }
 

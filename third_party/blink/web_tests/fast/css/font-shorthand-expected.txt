@@ -4,6 +4,7 @@ font-variant-caps: normal
 font-variant-ligatures: normal
 font-variant-numeric: normal
 font-variant-east-asian: normal
+font-variant-alternates: normal
 font-weight: normal
 font-stretch: normal
 font-size: 12px
@@ -16,6 +17,7 @@ font-variant-caps: normal
 font-variant-ligatures: normal
 font-variant-numeric: normal
 font-variant-east-asian: normal
+font-variant-alternates: normal
 font-weight: normal
 font-stretch: normal
 font-size: 12px
@@ -28,6 +30,7 @@ font-variant-caps: normal
 font-variant-ligatures: normal
 font-variant-numeric: normal
 font-variant-east-asian: normal
+font-variant-alternates: normal
 font-weight: normal
 font-stretch: normal
 font-size: 12px
@@ -40,6 +43,7 @@ font-variant-caps: normal
 font-variant-ligatures: normal
 font-variant-numeric: normal
 font-variant-east-asian: normal
+font-variant-alternates: normal
 font-weight: normal
 font-stretch: normal
 font-size: 12px
@@ -52,6 +56,7 @@ font-variant-caps: normal
 font-variant-ligatures: normal
 font-variant-numeric: normal
 font-variant-east-asian: normal
+font-variant-alternates: normal
 font-weight: normal
 font-stretch: normal
 font-size: 12px
@@ -64,6 +69,7 @@ font-variant-caps: small-caps
 font-variant-ligatures: normal
 font-variant-numeric: normal
 font-variant-east-asian: normal
+font-variant-alternates: normal
 font-weight: normal
 font-stretch: normal
 font-size: 12px
@@ -76,6 +82,7 @@ font-variant-caps: normal
 font-variant-ligatures: normal
 font-variant-numeric: normal
 font-variant-east-asian: normal
+font-variant-alternates: normal
 font-weight: bold
 font-stretch: normal
 font-size: 12px
@@ -88,6 +95,7 @@ font-variant-caps: small-caps
 font-variant-ligatures: normal
 font-variant-numeric: normal
 font-variant-east-asian: normal
+font-variant-alternates: normal
 font-weight: bold
 font-stretch: normal
 font-size: 14px
@@ -100,6 +108,7 @@ font-variant-caps: small-caps
 font-variant-ligatures: normal
 font-variant-numeric: normal
 font-variant-east-asian: normal
+font-variant-alternates: normal
 font-weight: bold
 font-stretch: normal
 font-size: 14px
@@ -112,6 +121,7 @@ font-variant-ligatures:
 font-variant-caps: 
 font-variant-numeric: 
 font-variant-east-asian: 
+font-variant-alternates: 
 font-weight: 
 font-stretch: 
 font-size: 
@@ -124,6 +134,7 @@ font-variant-ligatures:
 font-variant-caps: 
 font-variant-numeric: 
 font-variant-east-asian: 
+font-variant-alternates: 
 font-weight: 
 font-stretch: 
 font-size: 
@@ -136,6 +147,7 @@ font-variant-ligatures:
 font-variant-caps: 
 font-variant-numeric: 
 font-variant-east-asian: 
+font-variant-alternates: 
 font-weight: 
 font-stretch: 
 font-size: 
@@ -148,6 +160,7 @@ font-variant-ligatures:
 font-variant-caps: 
 font-variant-numeric: 
 font-variant-east-asian: 
+font-variant-alternates: 
 font-weight: 
 font-stretch: 
 font-size: 
@@ -160,6 +173,7 @@ font-variant-ligatures:
 font-variant-caps: 
 font-variant-numeric: 
 font-variant-east-asian: 
+font-variant-alternates: 
 font-weight: 
 font-stretch: 
 font-size: 
@@ -172,6 +186,7 @@ font-variant-ligatures:
 font-variant-caps: 
 font-variant-numeric: 
 font-variant-east-asian: 
+font-variant-alternates: 
 font-weight: 
 font-stretch: 
 font-size: 
@@ -184,6 +199,7 @@ font-variant-ligatures:
 font-variant-caps: 
 font-variant-numeric: 
 font-variant-east-asian: 
+font-variant-alternates: 
 font-weight: 
 font-stretch: 
 font-size: 
@@ -196,6 +212,7 @@ font-variant-ligatures:
 font-variant-caps: 
 font-variant-numeric: 
 font-variant-east-asian: 
+font-variant-alternates: 
 font-weight: 
 font-stretch: 
 font-size: 
@@ -208,6 +225,7 @@ font-variant-ligatures:
 font-variant-caps: 
 font-variant-numeric: 
 font-variant-east-asian: 
+font-variant-alternates: 
 font-weight: 
 font-stretch: 
 font-size: 

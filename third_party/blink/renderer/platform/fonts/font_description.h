@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_palette.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
 #include "third_party/blink/renderer/platform/fonts/font_smoothing_mode.h"
+#include "third_party/blink/renderer/platform/fonts/font_variant_alternates.h"
 #include "third_party/blink/renderer/platform/fonts/font_variant_east_asian.h"
 #include "third_party/blink/renderer/platform/fonts/font_variant_numeric.h"
 #include "third_party/blink/renderer/platform/fonts/font_width_variant.h"
@@ -269,6 +270,9 @@ class PLATFORM_EXPORT FontDescription {
     return static_cast<OpticalSizing>(fields_.font_optical_sizing_);
   }
   FontPalette* GetFontPalette() const { return font_palette_.get(); }
+  FontVariantAlternates* GetFontVariantAlternates() const {
+    return font_variant_alternates_.get();
+  }
   TextRenderingMode TextRendering() const {
     return static_cast<TextRenderingMode>(fields_.text_rendering_);
   }
@@ -368,6 +372,10 @@ class PLATFORM_EXPORT FontDescription {
   }
   void SetFontPalette(scoped_refptr<FontPalette> palette) {
     font_palette_ = std::move(palette);
+  }
+  void SetFontVariantAlternates(
+      scoped_refptr<FontVariantAlternates> alternates) {
+    font_variant_alternates_ = std::move(alternates);
   }
   void SetTextRendering(TextRenderingMode rendering) {
     fields_.text_rendering_ = rendering;
@@ -473,6 +481,7 @@ class PLATFORM_EXPORT FontDescription {
   scoped_refptr<FontVariationSettings> variation_settings_;
   scoped_refptr<const LayoutLocale> locale_;
   scoped_refptr<FontPalette> font_palette_;
+  scoped_refptr<FontVariantAlternates> font_variant_alternates_;
 
   void UpdateTypesettingFeatures();
 

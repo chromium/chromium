@@ -20,8 +20,8 @@ PASS Property font-synthesis has initial value weight style small-caps
 PASS Property font-synthesis inherits
 PASS Property font-variant has initial value normal
 PASS Property font-variant inherits
-FAIL Property font-variant-alternates has initial value normal assert_true: font-variant-alternates doesn't seem to be supported in the computed style expected true got false
-FAIL Property font-variant-alternates inherits assert_true: font-variant-alternates doesn't seem to be supported in the computed style expected true got false
+PASS Property font-variant-alternates has initial value normal
+PASS Property font-variant-alternates inherits
 PASS Property font-variant-caps has initial value normal
 PASS Property font-variant-caps inherits
 PASS Property font-variant-east-asian has initial value normal

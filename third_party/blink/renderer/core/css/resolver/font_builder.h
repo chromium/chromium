@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_palette.h"
+#include "third_party/blink/renderer/platform/fonts/font_variant_alternates.h"
 #include "third_party/blink/renderer/platform/fonts/font_variant_numeric.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -80,6 +81,7 @@ class CORE_EXPORT FontBuilder {
   void SetTextRendering(TextRenderingMode);
   void SetKerning(FontDescription::Kerning);
   void SetFontPalette(scoped_refptr<FontPalette>);
+  void SetFontVariantAlternates(scoped_refptr<FontVariantAlternates>);
   void SetFontOpticalSizing(OpticalSizing);
   void SetFontSmoothing(FontSmoothingMode);
   void SetVariationSettings(scoped_refptr<FontVariationSettings>);
@@ -99,6 +101,9 @@ class CORE_EXPORT FontBuilder {
   static FontFeatureSettings* InitialFeatureSettings() { return nullptr; }
   static FontVariationSettings* InitialVariationSettings() { return nullptr; }
   static FontPalette* InitialFontPalette() { return nullptr; }
+  static FontVariantAlternates* InitialFontVariantAlternates() {
+    return nullptr;
+  }
   static FontDescription::GenericFamilyType InitialGenericFamily() {
     return FontDescription::kStandardFamily;
   }
@@ -186,6 +191,7 @@ class CORE_EXPORT FontBuilder {
     kKerning,
     kFontOpticalSizing,
     kFontPalette,
+    kFontVariantAlternates,
     kFontSmoothing,
     kFontSynthesisWeight,
     kFontSynthesisStyle,

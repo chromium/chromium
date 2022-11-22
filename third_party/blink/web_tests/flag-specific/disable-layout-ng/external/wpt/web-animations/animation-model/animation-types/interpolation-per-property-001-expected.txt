@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 381 tests; 369 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 385 tests; 373 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup
 PASS align-content (type: discrete) has testInterpolation function
 PASS align-content uses discrete animation when animating between "flex-start" and "flex-end" with linear easing
@@ -310,6 +310,10 @@ PASS font-synthesis (type: discrete) has testInterpolation function
 PASS font-synthesis uses discrete animation when animating between "none" and "weight style" with linear easing
 PASS font-synthesis uses discrete animation when animating between "none" and "weight style" with effect easing
 PASS font-synthesis uses discrete animation when animating between "none" and "weight style" with keyframe easing
+PASS font-variant-alternates (type: discrete) has testInterpolation function
+PASS font-variant-alternates uses discrete animation when animating between "swash(unknown)" and "stylistic(unknown)" with linear easing
+PASS font-variant-alternates uses discrete animation when animating between "swash(unknown)" and "stylistic(unknown)" with effect easing
+PASS font-variant-alternates uses discrete animation when animating between "swash(unknown)" and "stylistic(unknown)" with keyframe easing
 PASS font-variant-caps (type: discrete) has testInterpolation function
 PASS font-variant-caps uses discrete animation when animating between "small-caps" and "unicase" with linear easing
 PASS font-variant-caps uses discrete animation when animating between "small-caps" and "unicase" with effect easing

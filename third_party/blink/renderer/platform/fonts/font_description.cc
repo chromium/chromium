@@ -51,6 +51,7 @@ struct SameSizeAsFontDescription {
   scoped_refptr<FontFeatureSettings> feature_settings_;
   scoped_refptr<FontVariationSettings> variation_settings_;
   scoped_refptr<FontPalette> palette_;
+  scoped_refptr<FontVariantAlternates> font_variant_alternates_;
   AtomicString locale;
   float sizes[6];
   FontSelectionRequest selection_request_;
@@ -136,7 +137,9 @@ bool FontDescription::operator==(const FontDescription& other) const {
          (variation_settings_ == other.variation_settings_ ||
           (variation_settings_ && other.variation_settings_ &&
            *variation_settings_ == *other.variation_settings_)) &&
-         base::ValuesEquivalent(font_palette_, other.font_palette_);
+         base::ValuesEquivalent(font_palette_, other.font_palette_) &&
+         base::ValuesEquivalent(font_variant_alternates_,
+                                other.font_variant_alternates_);
 }
 
 // Compute a 'lighter' weight per
@@ -279,7 +282,8 @@ FontCacheKey FontDescription::CacheKey(
   FontCacheKey cache_key(creation_params, EffectiveFontSize(),
                          options | font_selection_request_.GetHash() << 9,
                          device_scale_factor_for_key, variation_settings_,
-                         font_palette_, is_unique_match);
+                         font_palette_, font_variant_alternates_,
+                         is_unique_match);
 #if BUILDFLAG(IS_ANDROID)
   if (const LayoutLocale* locale = Locale()) {
     if (FontCache::GetLocaleSpecificFamilyName(creation_params.Family()))

@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/css/css_value.h"
 
+#include "third_party/blink/renderer/core/css/css_alternate_value.h"
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
 #include "third_party/blink/renderer/core/css/css_basic_shape_values.h"
 #include "third_party/blink/renderer/core/css/css_border_image_slice_value.h"
@@ -204,6 +205,8 @@ bool CSSValue::operator==(const CSSValue& other) const {
         return CompareCSSValues<cssvalue::CSSFontStyleRangeValue>(*this, other);
       case kFontVariationClass:
         return CompareCSSValues<cssvalue::CSSFontVariationValue>(*this, other);
+      case kAlternateClass:
+        return CompareCSSValues<cssvalue::CSSAlternateValue>(*this, other);
       case kFunctionClass:
         return CompareCSSValues<CSSFunctionValue>(*this, other);
       case kLayoutFunctionClass:
@@ -346,6 +349,8 @@ String CSSValue::CssText() const {
       return To<cssvalue::CSSFontStyleRangeValue>(this)->CustomCSSText();
     case kFontVariationClass:
       return To<cssvalue::CSSFontVariationValue>(this)->CustomCSSText();
+    case kAlternateClass:
+      return To<cssvalue::CSSAlternateValue>(this)->CustomCSSText();
     case kFunctionClass:
       return To<CSSFunctionValue>(this)->CustomCSSText();
     case kLayoutFunctionClass:
@@ -498,6 +503,9 @@ void CSSValue::Trace(Visitor* visitor) const {
       return;
     case kFontVariationClass:
       To<cssvalue::CSSFontVariationValue>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kAlternateClass:
+      To<cssvalue::CSSAlternateValue>(this)->TraceAfterDispatch(visitor);
       return;
     case kFunctionClass:
       To<CSSFunctionValue>(this)->TraceAfterDispatch(visitor);

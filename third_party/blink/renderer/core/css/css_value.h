@@ -172,6 +172,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsCyclicVariableValue() const {
     return class_type_ == kCyclicVariableValueClass;
   }
+  bool IsAlternateValue() const { return class_type_ == kAlternateClass; }
   bool IsAxisValue() const { return class_type_ == kAxisClass; }
   bool IsShorthandWrapperValue() const {
     return class_type_ == kKeyframeShorthandClass;
@@ -244,6 +245,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kFontFamilyClass,
     kFontStyleRangeClass,
     kFontVariationClass,
+    kAlternateClass,
 
     kInheritedClass,
     kInitialClass,

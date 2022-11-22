@@ -612,6 +612,8 @@ component("platform") {
     "fonts/font_smoothing_mode.h",
     "fonts/font_unique_name_lookup.cc",
     "fonts/font_unique_name_lookup.h",
+    "fonts/font_variant_alternates.cc",
+    "fonts/font_variant_alternates.h",
     "fonts/font_variant_east_asian.cc",
     "fonts/font_variant_east_asian.h",
     "fonts/font_variant_numeric.cc",
