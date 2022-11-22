@@ -9,7 +9,6 @@
   <release seq="1">
     <structures>
       <!-- Resources in this section still depend on flattenhtml -->
-      <structure name="IDR_OOBE_DEBUGGER_UTIL_JS" file="debug\debug_util.js" type="chrome_html" flattenhtml="true" />
       <structure name="IDR_KEYBOARD_UTILS_FOR_INJECTION_M_JS" file="components/keyboard_utils_for_injection.m.js" flattenhtml="true" type="chrome_html" />
 
     </structures>
