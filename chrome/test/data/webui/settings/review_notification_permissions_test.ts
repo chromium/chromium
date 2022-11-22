@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
+import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -10,6 +11,7 @@ import {SettingsReviewNotificationPermissionsElement, SiteSettingsPrefsBrowserPr
 import {CrActionMenuElement} from 'chrome://settings/settings.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
+import {isMac} from 'chrome://resources/js/platform.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
@@ -345,6 +347,36 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     assertEquals(2, origins2.length);
     assertEquals(
         JSON.stringify(origins2.sort()), JSON.stringify([origin1, origin2]));
+  });
+
+  /**
+   * Tests whether pressing the ctrl+z key combination correctly undoes the last
+   * user action.
+   */
+  test('Undo Block via Ctrl+Z', async function() {
+    await browserProxy.whenCalled('getNotificationPermissionReview');
+    flush();
+
+    // User blocks the site.
+    testElement.shadowRoot!.querySelector<HTMLElement>(
+                               '.site-entry #block')!.click();
+    assertAnimation([true, false]);
+
+    const entries = getEntries();
+    const expectedOrigin =
+        entries[0]!.querySelector('.site-representation')!.textContent!.trim();
+    browserProxy.resetResolver('allowNotificationPermissionForOrigins');
+    const notificationText = testElement.i18n(
+        'safetyCheckNotificationPermissionReviewBlockedToastLabel',
+        expectedOrigin);
+    assertNotification(true, notificationText);
+
+    keyDownOn(document.documentElement, 0, isMac ? 'meta' : 'ctrl', 'z');
+
+    const origins =
+        await browserProxy.whenCalled('allowNotificationPermissionForOrigins');
+    assertEquals(origins[0], expectedOrigin);
+    assertNotification(false);
   });
 
   test('Block All Click single entry', async function() {
