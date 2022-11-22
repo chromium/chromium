@@ -1170,13 +1170,13 @@ Try tapping the mic to ask me anything.
       </message>
 
       <message name="IDS_INPUT_DIAGNOSTICS_INTERNAL_KEYBOARD" desc="Noun phrase that describes an internal keyboard (built-in, as found on a laptop) to the user. Used as a label in a list of input devices in a diagnostic tool.">
-        Internal keyboard
+        Built-in keyboard
       </message>
       <message name="IDS_INPUT_DIAGNOSTICS_INTERNAL_TOUCHPAD" desc="Noun phrase that describes an internal touchpad (built-in, as found on a laptop) to the user. Used as a label in a list of input devices in a diagnostic tool.">
-        Internal touchpad
+        Built-in touchpad
       </message>
       <message name="IDS_INPUT_DIAGNOSTICS_INTERNAL_TOUCHSCREEN" desc="Noun phrase that describes an internal (built-in) touchscreen to the user. Used as a label in a list of input devices in a diagnostic tool.">
-        Internal touchscreen
+        Built-in touchscreen
       </message>
 
       <message name="IDS_INPUT_DIAGNOSTICS_USB_KEYBOARD" desc="Noun phrase that describes a USB keyboard to the user. Used as a label in a list of input devices in a diagnostic tool.">

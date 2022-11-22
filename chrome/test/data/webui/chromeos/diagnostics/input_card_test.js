@@ -87,7 +87,7 @@ suite('inputCardTestSuite', function() {
     assertEquals(
         keyboards[0].name, elements[0].querySelector('.device-name').innerText);
     assertEquals(
-        'Internal keyboard',
+        'Built-in keyboard',
         elements[0].querySelector('.device-description').innerText);
     assertEquals(
         keyboards[1].name, elements[1].querySelector('.device-name').innerText);
