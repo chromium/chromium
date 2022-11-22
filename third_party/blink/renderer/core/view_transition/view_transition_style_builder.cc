@@ -62,8 +62,6 @@ void ViewTransitionStyleBuilder::AddAnimationAndBlending(
   rule_builder.Append("animation-name: ");
   rule_builder.Append(animation_name);
   rule_builder.Append(";\n");
-  rule_builder.Append("animation-duration: 0.25s;\n");
-  rule_builder.Append("animation-fill-mode: both;\n");
   rule_builder.Append("animation-timing-function: ease;\n");
   rule_builder.Append("animation-delay: 0s;\n");
   rule_builder.Append("animation-iteration-count: 1;\n");

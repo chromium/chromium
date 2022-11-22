@@ -9,6 +9,12 @@
 
 @namespace "http://www.w3.org/1999/xhtml";
 
+
+html::view-transition-group(*) {
+  animation-duration: 0.25s;
+  animation-fill-mode: both;
+}
+
 @keyframes -ua-view-transition-fade-in {
   from {
     opacity: 0;
@@ -16,7 +22,9 @@
 }
 
 html::view-transition-new(*) {
-  animation: -ua-view-transition-fade-in 0.25s both;
+  animation-name: -ua-view-transition-fade-in;
+  animation-duration: inherit;
+  animation-fill-mode: inherit;
 }
 
 @keyframes -ua-view-transition-fade-out {
@@ -26,5 +34,12 @@ html::view-transition-new(*) {
 }
 
 html::view-transition-old(*) {
-  animation: -ua-view-transition-fade-out 0.25s both;
+  animation-name: -ua-view-transition-fade-out;
+  animation-duration: inherit;
+  animation-fill-mode: inherit;
+}
+
+html::view-transition-image-pair(*) {
+  animation-duration: inherit;
+  animation-fill-mode: inherit;
 }

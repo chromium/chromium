@@ -234,6 +234,46 @@ The test verifies functionality of querying style information for view-transitio
                             selectorList : {
                                 selectors : [
                                     [0] : {
+                                        text : html::view-transition-group()
+                                    }
+                                ]
+                                text : html::view-transition-group()
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : animation-duration
+                                        value : 0.25s
+                                    }
+                                    [1] : {
+                                        name : animation-fill-mode
+                                        value : both
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [2] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
                                         text : html::view-transition-group(root)
                                     }
                                 ]
@@ -336,28 +376,20 @@ The test verifies functionality of querying style information for view-transitio
                             selectorList : {
                                 selectors : [
                                     [0] : {
-                                        text : html::view-transition-group(shared)
+                                        text : html::view-transition-group()
                                     }
                                 ]
-                                text : html::view-transition-group(shared)
+                                text : html::view-transition-group()
                             }
                             style : {
                                 cssProperties : [
                                     [0] : {
-                                        name : width
-                                        value : 100px
+                                        name : animation-duration
+                                        value : 0.25s
                                     }
                                     [1] : {
-                                        name : height
-                                        value : 100px
-                                    }
-                                    [2] : {
-                                        name : transform
-                                        value : matrix(1, 0, 0, 1, 8, 8)
-                                    }
-                                    [3] : {
-                                        name : writing-mode
-                                        value : horizontal-tb
+                                        name : animation-fill-mode
+                                        value : both
                                     }
                                 ]
                                 shorthandEntries : [
@@ -392,30 +424,70 @@ The test verifies functionality of querying style information for view-transitio
                             style : {
                                 cssProperties : [
                                     [0] : {
+                                        name : width
+                                        value : 100px
+                                    }
+                                    [1] : {
+                                        name : height
+                                        value : 100px
+                                    }
+                                    [2] : {
+                                        name : transform
+                                        value : matrix(1, 0, 0, 1, 8, 8)
+                                    }
+                                    [3] : {
+                                        name : writing-mode
+                                        value : horizontal-tb
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [3] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        text : html::view-transition-group(shared)
+                                    }
+                                ]
+                                text : html::view-transition-group(shared)
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
                                         name : animation-name
                                         value : -ua-view-transition-group-anim-shared
                                     }
                                     [1] : {
-                                        name : animation-duration
-                                        value : 0.25s
-                                    }
-                                    [2] : {
-                                        name : animation-fill-mode
-                                        value : both
-                                    }
-                                    [3] : {
                                         name : animation-timing-function
                                         value : ease
                                     }
-                                    [4] : {
+                                    [2] : {
                                         name : animation-delay
                                         value : 0s
                                     }
-                                    [5] : {
+                                    [3] : {
                                         name : animation-iteration-count
                                         value : 1
                                     }
-                                    [6] : {
+                                    [4] : {
                                         name : animation-direction
                                         value : normal
                                     }
@@ -490,6 +562,46 @@ The test verifies functionality of querying style information for view-transitio
                         }
                     }
                     [1] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        text : html::view-transition-image-pair()
+                                    }
+                                ]
+                                text : html::view-transition-image-pair()
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : animation-duration
+                                        value : inherit
+                                    }
+                                    [1] : {
+                                        name : animation-fill-mode
+                                        value : inherit
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [2] : {
                         matchingSelectors : [
                             [0] : 0
                         ]
@@ -588,6 +700,46 @@ The test verifies functionality of querying style information for view-transitio
                         }
                     }
                     [1] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        text : html::view-transition-image-pair()
+                                    }
+                                ]
+                                text : html::view-transition-image-pair()
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : animation-duration
+                                        value : inherit
+                                    }
+                                    [1] : {
+                                        name : animation-fill-mode
+                                        value : inherit
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [2] : {
                         matchingSelectors : [
                             [0] : 0
                         ]
@@ -709,47 +861,19 @@ The test verifies functionality of querying style information for view-transitio
                             style : {
                                 cssProperties : [
                                     [0] : {
-                                        name : animation-duration
-                                        value : 0.25s
-                                    }
-                                    [1] : {
-                                        name : animation-timing-function
-                                        value : ease
-                                    }
-                                    [2] : {
-                                        name : animation-delay
-                                        value : 0s
-                                    }
-                                    [3] : {
-                                        name : animation-iteration-count
-                                        value : 1
-                                    }
-                                    [4] : {
-                                        name : animation-direction
-                                        value : normal
-                                    }
-                                    [5] : {
-                                        name : animation-fill-mode
-                                        value : both
-                                    }
-                                    [6] : {
-                                        name : animation-play-state
-                                        value : running
-                                    }
-                                    [7] : {
                                         name : animation-name
                                         value : -ua-view-transition-fade-out
                                     }
-                                    [8] : {
-                                        name : animation-timeline
-                                        value : auto
+                                    [1] : {
+                                        name : animation-duration
+                                        value : inherit
+                                    }
+                                    [2] : {
+                                        name : animation-fill-mode
+                                        value : inherit
                                     }
                                 ]
                                 shorthandEntries : [
-                                    [0] : {
-                                        name : animation
-                                        value : 0.25s ease 0s 1 normal both running -ua-view-transition-fade-out
-                                    }
                                 ]
                             }
                             supports : [
@@ -1024,47 +1148,19 @@ The test verifies functionality of querying style information for view-transitio
                             style : {
                                 cssProperties : [
                                     [0] : {
-                                        name : animation-duration
-                                        value : 0.25s
-                                    }
-                                    [1] : {
-                                        name : animation-timing-function
-                                        value : ease
-                                    }
-                                    [2] : {
-                                        name : animation-delay
-                                        value : 0s
-                                    }
-                                    [3] : {
-                                        name : animation-iteration-count
-                                        value : 1
-                                    }
-                                    [4] : {
-                                        name : animation-direction
-                                        value : normal
-                                    }
-                                    [5] : {
-                                        name : animation-fill-mode
-                                        value : both
-                                    }
-                                    [6] : {
-                                        name : animation-play-state
-                                        value : running
-                                    }
-                                    [7] : {
                                         name : animation-name
                                         value : -ua-view-transition-fade-out
                                     }
-                                    [8] : {
-                                        name : animation-timeline
-                                        value : auto
+                                    [1] : {
+                                        name : animation-duration
+                                        value : inherit
+                                    }
+                                    [2] : {
+                                        name : animation-fill-mode
+                                        value : inherit
                                     }
                                 ]
                                 shorthandEntries : [
-                                    [0] : {
-                                        name : animation
-                                        value : 0.25s ease 0s 1 normal both running -ua-view-transition-fade-out
-                                    }
                                 ]
                             }
                             supports : [
@@ -1339,47 +1435,19 @@ The test verifies functionality of querying style information for view-transitio
                             style : {
                                 cssProperties : [
                                     [0] : {
-                                        name : animation-duration
-                                        value : 0.25s
-                                    }
-                                    [1] : {
-                                        name : animation-timing-function
-                                        value : ease
-                                    }
-                                    [2] : {
-                                        name : animation-delay
-                                        value : 0s
-                                    }
-                                    [3] : {
-                                        name : animation-iteration-count
-                                        value : 1
-                                    }
-                                    [4] : {
-                                        name : animation-direction
-                                        value : normal
-                                    }
-                                    [5] : {
-                                        name : animation-fill-mode
-                                        value : both
-                                    }
-                                    [6] : {
-                                        name : animation-play-state
-                                        value : running
-                                    }
-                                    [7] : {
                                         name : animation-name
                                         value : -ua-view-transition-fade-in
                                     }
-                                    [8] : {
-                                        name : animation-timeline
-                                        value : auto
+                                    [1] : {
+                                        name : animation-duration
+                                        value : inherit
+                                    }
+                                    [2] : {
+                                        name : animation-fill-mode
+                                        value : inherit
                                     }
                                 ]
                                 shorthandEntries : [
-                                    [0] : {
-                                        name : animation
-                                        value : 0.25s ease 0s 1 normal both running -ua-view-transition-fade-in
-                                    }
                                 ]
                             }
                             supports : [
@@ -1508,47 +1576,19 @@ The test verifies functionality of querying style information for view-transitio
                             style : {
                                 cssProperties : [
                                     [0] : {
-                                        name : animation-duration
-                                        value : 0.25s
-                                    }
-                                    [1] : {
-                                        name : animation-timing-function
-                                        value : ease
-                                    }
-                                    [2] : {
-                                        name : animation-delay
-                                        value : 0s
-                                    }
-                                    [3] : {
-                                        name : animation-iteration-count
-                                        value : 1
-                                    }
-                                    [4] : {
-                                        name : animation-direction
-                                        value : normal
-                                    }
-                                    [5] : {
-                                        name : animation-fill-mode
-                                        value : both
-                                    }
-                                    [6] : {
-                                        name : animation-play-state
-                                        value : running
-                                    }
-                                    [7] : {
                                         name : animation-name
                                         value : -ua-view-transition-fade-in
                                     }
-                                    [8] : {
-                                        name : animation-timeline
-                                        value : auto
+                                    [1] : {
+                                        name : animation-duration
+                                        value : inherit
+                                    }
+                                    [2] : {
+                                        name : animation-fill-mode
+                                        value : inherit
                                     }
                                 ]
                                 shorthandEntries : [
-                                    [0] : {
-                                        name : animation
-                                        value : 0.25s ease 0s 1 normal both running -ua-view-transition-fade-in
-                                    }
                                 ]
                             }
                             supports : [
@@ -1840,6 +1880,46 @@ Dumping styles for : ::view-transition-group with id root{
                     selectorList : {
                         selectors : [
                             [0] : {
+                                text : html::view-transition-group()
+                            }
+                        ]
+                        text : html::view-transition-group()
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : animation-duration
+                                value : 0.25s
+                            }
+                            [1] : {
+                                name : animation-fill-mode
+                                value : both
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [2] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
                                 text : html::view-transition-group(root)
                             }
                         ]
@@ -1930,6 +2010,46 @@ Dumping styles for : ::view-transition-image-pair with id root{
                 }
             }
             [1] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                text : html::view-transition-image-pair()
+                            }
+                        ]
+                        text : html::view-transition-image-pair()
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : animation-duration
+                                value : inherit
+                            }
+                            [1] : {
+                                name : animation-fill-mode
+                                value : inherit
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [2] : {
                 matchingSelectors : [
                     [0] : 0
                 ]
@@ -2055,47 +2175,19 @@ Dumping styles for : ::view-transition-old with id root{
                     style : {
                         cssProperties : [
                             [0] : {
-                                name : animation-duration
-                                value : 0.25s
-                            }
-                            [1] : {
-                                name : animation-timing-function
-                                value : ease
-                            }
-                            [2] : {
-                                name : animation-delay
-                                value : 0s
-                            }
-                            [3] : {
-                                name : animation-iteration-count
-                                value : 1
-                            }
-                            [4] : {
-                                name : animation-direction
-                                value : normal
-                            }
-                            [5] : {
-                                name : animation-fill-mode
-                                value : both
-                            }
-                            [6] : {
-                                name : animation-play-state
-                                value : running
-                            }
-                            [7] : {
                                 name : animation-name
                                 value : -ua-view-transition-fade-out
                             }
-                            [8] : {
-                                name : animation-timeline
-                                value : auto
+                            [1] : {
+                                name : animation-duration
+                                value : inherit
+                            }
+                            [2] : {
+                                name : animation-fill-mode
+                                value : inherit
                             }
                         ]
                         shorthandEntries : [
-                            [0] : {
-                                name : animation
-                                value : 0.25s ease 0s 1 normal both running -ua-view-transition-fade-out
-                            }
                         ]
                     }
                     supports : [
@@ -2374,47 +2466,19 @@ Dumping styles for : ::view-transition-new with id root{
                     style : {
                         cssProperties : [
                             [0] : {
-                                name : animation-duration
-                                value : 0.25s
-                            }
-                            [1] : {
-                                name : animation-timing-function
-                                value : ease
-                            }
-                            [2] : {
-                                name : animation-delay
-                                value : 0s
-                            }
-                            [3] : {
-                                name : animation-iteration-count
-                                value : 1
-                            }
-                            [4] : {
-                                name : animation-direction
-                                value : normal
-                            }
-                            [5] : {
-                                name : animation-fill-mode
-                                value : both
-                            }
-                            [6] : {
-                                name : animation-play-state
-                                value : running
-                            }
-                            [7] : {
                                 name : animation-name
                                 value : -ua-view-transition-fade-in
                             }
-                            [8] : {
-                                name : animation-timeline
-                                value : auto
+                            [1] : {
+                                name : animation-duration
+                                value : inherit
+                            }
+                            [2] : {
+                                name : animation-fill-mode
+                                value : inherit
                             }
                         ]
                         shorthandEntries : [
-                            [0] : {
-                                name : animation
-                                value : 0.25s ease 0s 1 normal both running -ua-view-transition-fade-in
-                            }
                         ]
                     }
                     supports : [
@@ -2540,28 +2604,20 @@ Dumping styles for : ::view-transition-group with id shared{
                     selectorList : {
                         selectors : [
                             [0] : {
-                                text : html::view-transition-group(shared)
+                                text : html::view-transition-group()
                             }
                         ]
-                        text : html::view-transition-group(shared)
+                        text : html::view-transition-group()
                     }
                     style : {
                         cssProperties : [
                             [0] : {
-                                name : width
-                                value : 100px
+                                name : animation-duration
+                                value : 0.25s
                             }
                             [1] : {
-                                name : height
-                                value : 100px
-                            }
-                            [2] : {
-                                name : transform
-                                value : matrix(1, 0, 0, 1, 8, 8)
-                            }
-                            [3] : {
-                                name : writing-mode
-                                value : horizontal-tb
+                                name : animation-fill-mode
+                                value : both
                             }
                         ]
                         shorthandEntries : [
@@ -2596,30 +2652,70 @@ Dumping styles for : ::view-transition-group with id shared{
                     style : {
                         cssProperties : [
                             [0] : {
+                                name : width
+                                value : 100px
+                            }
+                            [1] : {
+                                name : height
+                                value : 100px
+                            }
+                            [2] : {
+                                name : transform
+                                value : matrix(1, 0, 0, 1, 8, 8)
+                            }
+                            [3] : {
+                                name : writing-mode
+                                value : horizontal-tb
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [3] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                text : html::view-transition-group(shared)
+                            }
+                        ]
+                        text : html::view-transition-group(shared)
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
                                 name : animation-name
                                 value : -ua-view-transition-group-anim-shared
                             }
                             [1] : {
-                                name : animation-duration
-                                value : 0.25s
-                            }
-                            [2] : {
-                                name : animation-fill-mode
-                                value : both
-                            }
-                            [3] : {
                                 name : animation-timing-function
                                 value : ease
                             }
-                            [4] : {
+                            [2] : {
                                 name : animation-delay
                                 value : 0s
                             }
-                            [5] : {
+                            [3] : {
                                 name : animation-iteration-count
                                 value : 1
                             }
-                            [6] : {
+                            [4] : {
                                 name : animation-direction
                                 value : normal
                             }
@@ -2698,6 +2794,46 @@ Dumping styles for : ::view-transition-image-pair with id shared{
                 }
             }
             [1] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                text : html::view-transition-image-pair()
+                            }
+                        ]
+                        text : html::view-transition-image-pair()
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : animation-duration
+                                value : inherit
+                            }
+                            [1] : {
+                                name : animation-fill-mode
+                                value : inherit
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [2] : {
                 matchingSelectors : [
                     [0] : 0
                 ]
@@ -2823,47 +2959,19 @@ Dumping styles for : ::view-transition-old with id shared{
                     style : {
                         cssProperties : [
                             [0] : {
-                                name : animation-duration
-                                value : 0.25s
-                            }
-                            [1] : {
-                                name : animation-timing-function
-                                value : ease
-                            }
-                            [2] : {
-                                name : animation-delay
-                                value : 0s
-                            }
-                            [3] : {
-                                name : animation-iteration-count
-                                value : 1
-                            }
-                            [4] : {
-                                name : animation-direction
-                                value : normal
-                            }
-                            [5] : {
-                                name : animation-fill-mode
-                                value : both
-                            }
-                            [6] : {
-                                name : animation-play-state
-                                value : running
-                            }
-                            [7] : {
                                 name : animation-name
                                 value : -ua-view-transition-fade-out
                             }
-                            [8] : {
-                                name : animation-timeline
-                                value : auto
+                            [1] : {
+                                name : animation-duration
+                                value : inherit
+                            }
+                            [2] : {
+                                name : animation-fill-mode
+                                value : inherit
                             }
                         ]
                         shorthandEntries : [
-                            [0] : {
-                                name : animation
-                                value : 0.25s ease 0s 1 normal both running -ua-view-transition-fade-out
-                            }
                         ]
                     }
                     supports : [
@@ -3142,47 +3250,19 @@ Dumping styles for : ::view-transition-new with id shared{
                     style : {
                         cssProperties : [
                             [0] : {
-                                name : animation-duration
-                                value : 0.25s
-                            }
-                            [1] : {
-                                name : animation-timing-function
-                                value : ease
-                            }
-                            [2] : {
-                                name : animation-delay
-                                value : 0s
-                            }
-                            [3] : {
-                                name : animation-iteration-count
-                                value : 1
-                            }
-                            [4] : {
-                                name : animation-direction
-                                value : normal
-                            }
-                            [5] : {
-                                name : animation-fill-mode
-                                value : both
-                            }
-                            [6] : {
-                                name : animation-play-state
-                                value : running
-                            }
-                            [7] : {
                                 name : animation-name
                                 value : -ua-view-transition-fade-in
                             }
-                            [8] : {
-                                name : animation-timeline
-                                value : auto
+                            [1] : {
+                                name : animation-duration
+                                value : inherit
+                            }
+                            [2] : {
+                                name : animation-fill-mode
+                                value : inherit
                             }
                         ]
                         shorthandEntries : [
-                            [0] : {
-                                name : animation
-                                value : 0.25s ease 0s 1 normal both running -ua-view-transition-fade-in
-                            }
                         ]
                     }
                     supports : [

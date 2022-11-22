@@ -626,6 +626,10 @@ void ViewTransition::ProcessCurrentState() {
       case State::kAnimating: {
         if (first_animating_frame_) {
           first_animating_frame_ = false;
+          // We need to schedule an animation frame, in case this is the only
+          // kAnimating frame we will get, so that we can clean up in the next
+          // frame.
+          document_->View()->ScheduleAnimation();
           break;
         }
 
