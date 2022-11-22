@@ -42669,6 +42669,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4393" label="DocumentLoaderDeliveryTypeNavigationalPrefetch"/>
   <int value="4394" label="SpeculationRulesHeader"/>
   <int value="4395" label="SpeculationRulesDocumentRules"/>
+  <int value="4396" label="FederatedCredentialManagementIframe"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

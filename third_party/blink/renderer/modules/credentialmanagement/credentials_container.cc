@@ -1274,6 +1274,10 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
 
     // Log the UseCounter only when the WebID flag is enabled.
     UseCounter::Count(context, WebFeature::kFederatedCredentialManagement);
+    if (!resolver->DomWindow()->GetFrame()->IsMainFrame()) {
+      UseCounter::Count(resolver->GetExecutionContext(),
+                        WebFeature::kFederatedCredentialManagementIframe);
+    }
 
     int provider_index = 0;
     Vector<mojom::blink::IdentityProviderPtr> identity_provider_ptrs;
