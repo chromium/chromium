@@ -60,7 +60,7 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/event_router.h"
-#include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/constants.h"
 #include "ui/display/types/display_constants.h"
@@ -742,10 +742,10 @@ ExtensionFunction::ResponseAction TerminalPrivateGetOSInfoFunction::Run() {
       base::FeatureList::IsEnabled(chromeos::features::kTerminalMultiProfile));
   info.SetBoolKey(
       "sftp", base::FeatureList::IsEnabled(chromeos::features::kTerminalSftp));
-  info.SetBoolKey("tast", extensions::ExtensionSystem::Get(browser_context())
-                              ->extension_service()
-                              ->IsExtensionEnabled(
-                                  extension_misc::kGuestModeTestExtensionId));
+  info.SetBoolKey("tast",
+                  extensions::ExtensionRegistry::Get(browser_context())
+                      ->enabled_extensions()
+                      .Contains(extension_misc::kGuestModeTestExtensionId));
   info.SetBoolKey("tmux_integration",
                   base::FeatureList::IsEnabled(
                       chromeos::features::kTerminalTmuxIntegration));
