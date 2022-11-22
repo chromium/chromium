@@ -15,6 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/media_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -56,6 +57,8 @@ class MEDIA_EXPORT AudioDeviceListenerMac {
       kDefaultInputDeviceChangePropertyAddress;
   static const AudioObjectPropertyAddress kDevicesPropertyAddress;
   static const AudioObjectPropertyAddress kPropertyOutputSampleRateChanged;
+  static const AudioObjectPropertyAddress kPropertyOutputSourceChanged;
+  static const AudioObjectPropertyAddress kPropertyInputSourceChanged;
 
   AudioDeviceListenerMac(base::RepeatingClosure listener_cb,
                          bool monitor_output_sample_rate_changes,
@@ -81,6 +84,8 @@ class MEDIA_EXPORT AudioDeviceListenerMac {
   // Virtual for testing.
   virtual std::vector<AudioObjectID> GetAllAudioDeviceIDs();
   virtual bool IsOutputDevice(AudioObjectID id);
+  virtual absl::optional<uint32_t> GetDeviceSource(AudioObjectID device_id,
+                                                   bool is_input);
   virtual OSStatus AddPropertyListener(
       AudioObjectID inObjectID,
       const AudioObjectPropertyAddress* inAddress,

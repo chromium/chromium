@@ -16,6 +16,7 @@
 #include "media/base/bind_to_current_loop.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::Return;
 
@@ -38,6 +39,7 @@ class AudioDeviceListenerMacUnderTest final : public AudioDeviceListenerMac {
 
   MOCK_METHOD0(GetAllAudioDeviceIDs, std::vector<AudioObjectID>());
   MOCK_METHOD1(IsOutputDevice, bool(AudioObjectID));
+  MOCK_METHOD2(GetDeviceSource, absl::optional<uint32_t>(AudioObjectID, bool));
 
   OSStatus AddPropertyListener(AudioObjectID inObjectID,
                                const AudioObjectPropertyAddress* inAddress,
@@ -81,10 +83,10 @@ class AudioDeviceListenerMacTest : public testing::Test {
     return true;
   }
 
-  static bool SimulateSampleRateChange(AudioObjectID id,
-                                       std::vector<void*>& contexts) {
-    const AudioObjectPropertyAddress addresses[] = {
-        AudioDeviceListenerMac::kPropertyOutputSampleRateChanged};
+  static bool SimulateDeviceEvent(AudioObjectID id,
+                                  std::vector<void*>& contexts,
+                                  const AudioObjectPropertyAddress& address) {
+    const AudioObjectPropertyAddress addresses[] = {address};
     for (void* context : contexts) {
       OSStatus status = AudioDeviceListenerMac::SimulateEventForTesting(
           id, 1, addresses, context);
@@ -92,6 +94,24 @@ class AudioDeviceListenerMacTest : public testing::Test {
         return false;
     }
     return true;
+  }
+
+  static bool SimulateSampleRateChange(AudioObjectID id,
+                                       std::vector<void*>& contexts) {
+    return SimulateDeviceEvent(
+        id, contexts, AudioDeviceListenerMac::kPropertyOutputSampleRateChanged);
+  }
+
+  static bool SimulateOutputSourceChange(AudioObjectID id,
+                                         std::vector<void*>& contexts) {
+    return SimulateDeviceEvent(
+        id, contexts, AudioDeviceListenerMac::kPropertyOutputSourceChanged);
+  }
+
+  static bool SimluateInputSourceChange(AudioObjectID id,
+                                        std::vector<void*>& contexts) {
+    return SimulateDeviceEvent(
+        id, contexts, AudioDeviceListenerMac::kPropertyInputSourceChanged);
   }
 
   static void CreatePropertyListeners(AudioDeviceListenerMac* device_listener) {
@@ -358,6 +378,187 @@ TEST_F(AudioDeviceListenerMacTest,
     SimulateSampleRateChange(1, property_listeners);
     SimulateSampleRateChange(2, property_listeners);
     SimulateSampleRateChange(3, property_listeners);
+    testing::Mock::VerifyAndClearExpectations(this);
+  }
+
+  device_listener.reset();
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(AudioDeviceListenerMacTest,
+       SourceChangeSubscriptionUpdatedWhenDevicesAddedRemoved) {
+  auto device_listener = std::make_unique<AudioDeviceListenerMacUnderTest>(
+      base::BindRepeating(&AudioDeviceListenerMacTest::OnDeviceChange,
+                          base::Unretained(this)),
+      /*monitor_output_sample_rate_changes=*/false,
+      /*monitor_default_input=*/false, /*monitor_addition_removal=*/true,
+      /*monitor_sources*/ true);
+
+  AudioDeviceListenerMacUnderTest& system_audio_mock = *device_listener.get();
+
+  EXPECT_CALL(system_audio_mock, GetAllAudioDeviceIDs())
+      .WillOnce(Return(std::vector<AudioObjectID>{1}))
+      .WillOnce(Return(std::vector<AudioObjectID>{}))
+      .WillOnce(Return(std::vector<AudioObjectID>{1, 2}))
+      .WillOnce(Return(std::vector<AudioObjectID>{1, 3}));
+
+  // Device 1 is an input device.
+  EXPECT_CALL(system_audio_mock, GetDeviceSource(1, false))
+      .Times(3)
+      .WillRepeatedly(Return(absl::optional<uint32_t>()));
+  EXPECT_CALL(system_audio_mock, GetDeviceSource(1, true))
+      .Times(3)
+      .WillRepeatedly(Return(123));
+
+  // Device 2 is an output device.
+  EXPECT_CALL(system_audio_mock, GetDeviceSource(2, false))
+      .WillOnce(Return(123));
+  EXPECT_CALL(system_audio_mock, GetDeviceSource(2, true))
+      .WillOnce(Return(absl::optional<uint32_t>()));
+
+  // Device 3 is both an input and output device.
+  EXPECT_CALL(system_audio_mock, GetDeviceSource(3, false))
+      .WillOnce(Return(123));
+  EXPECT_CALL(system_audio_mock, GetDeviceSource(3, true))
+      .WillOnce(Return(123));
+
+  // We add or remove devices three times, expect a call for each of them.
+  EXPECT_CALL(*this, OnDeviceChange()).Times(3);
+
+  CreatePropertyListeners(device_listener.get());
+
+  std::vector<void*> property_listeners =
+      GetPropertyListeners(device_listener.get());
+
+  // Default output, addition-removal and one device source
+  EXPECT_EQ(property_listeners.size(), 3u);
+
+  ASSERT_TRUE(SimulateDeviceAdditionRemoval(property_listeners));
+  property_listeners = GetPropertyListeners(device_listener.get());
+  // Default output, addition-removal and no device source
+  EXPECT_EQ(property_listeners.size(), 2u);
+
+  ASSERT_TRUE(SimulateDeviceAdditionRemoval(property_listeners));
+  property_listeners = GetPropertyListeners(device_listener.get());
+  // Default output, addition-removal and two device sources
+  EXPECT_EQ(property_listeners.size(), 4u);
+
+  ASSERT_TRUE(SimulateDeviceAdditionRemoval(property_listeners));
+  property_listeners = GetPropertyListeners(device_listener.get());
+  // Default output, addition-removal and three device sources
+  EXPECT_EQ(property_listeners.size(), 5u);
+
+  device_listener.reset();
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(AudioDeviceListenerMacTest, SourceChangeNotifications) {
+  auto device_listener = std::make_unique<AudioDeviceListenerMacUnderTest>(
+      base::BindRepeating(&AudioDeviceListenerMacTest::OnDeviceChange,
+                          base::Unretained(this)),
+      /*monitor_output_sample_rate_changes=*/false,
+      /*monitor_default_input=*/false, /*monitor_addition_removal=*/true,
+      /*monitor_sources*/ true);
+
+  AudioDeviceListenerMacUnderTest& system_audio_mock = *device_listener.get();
+
+  EXPECT_CALL(system_audio_mock, GetAllAudioDeviceIDs())
+      .WillOnce(Return(std::vector<AudioObjectID>{1}))
+      .WillOnce(Return(std::vector<AudioObjectID>{}))
+      .WillOnce(Return(std::vector<AudioObjectID>{1, 2}))
+      .WillOnce(Return(std::vector<AudioObjectID>{1, 3}));
+
+  // Device 1 is an input device.
+  EXPECT_CALL(system_audio_mock, GetDeviceSource(1, false))
+      .Times(3)
+      .WillRepeatedly(Return(absl::optional<uint32_t>()));
+  EXPECT_CALL(system_audio_mock, GetDeviceSource(1, true))
+      .Times(3)
+      .WillRepeatedly(Return(123));
+
+  // Device 2 is an output device.
+  EXPECT_CALL(system_audio_mock, GetDeviceSource(2, false))
+      .WillOnce(Return(123));
+  EXPECT_CALL(system_audio_mock, GetDeviceSource(2, true))
+      .WillOnce(Return(absl::optional<uint32_t>()));
+
+  // Device 3 is both an input and output device.
+  EXPECT_CALL(system_audio_mock, GetDeviceSource(3, false))
+      .WillOnce(Return(123));
+  EXPECT_CALL(system_audio_mock, GetDeviceSource(3, true))
+      .WillOnce(Return(123));
+
+  CreatePropertyListeners(device_listener.get());
+
+  std::vector<void*> property_listeners =
+      GetPropertyListeners(device_listener.get());
+
+  // Default output, addition-removal and one device source
+  EXPECT_EQ(property_listeners.size(), 3u);
+  {
+    EXPECT_CALL(*this, OnDeviceChange()).Times(1);
+    SimluateInputSourceChange(1, property_listeners);
+    SimluateInputSourceChange(2, property_listeners);
+    SimluateInputSourceChange(3, property_listeners);
+    testing::Mock::VerifyAndClearExpectations(this);
+    EXPECT_CALL(*this, OnDeviceChange()).Times(0);
+    SimulateOutputSourceChange(1, property_listeners);
+    SimulateOutputSourceChange(2, property_listeners);
+    SimulateOutputSourceChange(3, property_listeners);
+    testing::Mock::VerifyAndClearExpectations(this);
+  }
+
+  EXPECT_CALL(*this, OnDeviceChange());
+  ASSERT_TRUE(SimulateDeviceAdditionRemoval(property_listeners));
+  property_listeners = GetPropertyListeners(device_listener.get());
+  // Default output, addition-removal and no device source
+  EXPECT_EQ(property_listeners.size(), 2u);
+  {
+    EXPECT_CALL(*this, OnDeviceChange()).Times(0);
+    SimluateInputSourceChange(1, property_listeners);
+    SimluateInputSourceChange(2, property_listeners);
+    SimluateInputSourceChange(3, property_listeners);
+    testing::Mock::VerifyAndClearExpectations(this);
+    EXPECT_CALL(*this, OnDeviceChange()).Times(0);
+    SimulateOutputSourceChange(1, property_listeners);
+    SimulateOutputSourceChange(2, property_listeners);
+    SimulateOutputSourceChange(3, property_listeners);
+    testing::Mock::VerifyAndClearExpectations(this);
+  }
+
+  EXPECT_CALL(*this, OnDeviceChange());
+  ASSERT_TRUE(SimulateDeviceAdditionRemoval(property_listeners));
+  property_listeners = GetPropertyListeners(device_listener.get());
+  // Default output, addition-removal and two device sources
+  EXPECT_EQ(property_listeners.size(), 4u);
+  {
+    EXPECT_CALL(*this, OnDeviceChange()).Times(1);
+    SimluateInputSourceChange(1, property_listeners);
+    SimluateInputSourceChange(2, property_listeners);
+    SimluateInputSourceChange(3, property_listeners);
+    testing::Mock::VerifyAndClearExpectations(this);
+    EXPECT_CALL(*this, OnDeviceChange()).Times(1);
+    SimulateOutputSourceChange(1, property_listeners);
+    SimulateOutputSourceChange(2, property_listeners);
+    SimulateOutputSourceChange(3, property_listeners);
+    testing::Mock::VerifyAndClearExpectations(this);
+  }
+
+  EXPECT_CALL(*this, OnDeviceChange());
+  ASSERT_TRUE(SimulateDeviceAdditionRemoval(property_listeners));
+  property_listeners = GetPropertyListeners(device_listener.get());
+  // Default output, addition-removal and three device sources
+  EXPECT_EQ(property_listeners.size(), 5u);
+  {
+    EXPECT_CALL(*this, OnDeviceChange()).Times(2);
+    SimluateInputSourceChange(1, property_listeners);
+    SimluateInputSourceChange(2, property_listeners);
+    SimluateInputSourceChange(3, property_listeners);
+    testing::Mock::VerifyAndClearExpectations(this);
+    EXPECT_CALL(*this, OnDeviceChange()).Times(1);
+    SimulateOutputSourceChange(1, property_listeners);
+    SimulateOutputSourceChange(2, property_listeners);
+    SimulateOutputSourceChange(3, property_listeners);
     testing::Mock::VerifyAndClearExpectations(this);
   }
 

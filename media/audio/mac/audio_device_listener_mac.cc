@@ -40,13 +40,15 @@ const AudioObjectPropertyAddress
         kAudioDevicePropertyNominalSampleRate, kAudioObjectPropertyScopeGlobal,
         kAudioObjectPropertyElementMaster};
 
-const AudioObjectPropertyAddress kPropertyOutputSourceChanged = {
-    kAudioDevicePropertyDataSource, kAudioDevicePropertyScopeOutput,
-    kAudioObjectPropertyElementMaster};
+const AudioObjectPropertyAddress
+    AudioDeviceListenerMac::kPropertyOutputSourceChanged = {
+        kAudioDevicePropertyDataSource, kAudioDevicePropertyScopeOutput,
+        kAudioObjectPropertyElementMaster};
 
-const AudioObjectPropertyAddress kPropertyInputSourceChanged = {
-    kAudioDevicePropertyDataSource, kAudioDevicePropertyScopeInput,
-    kAudioObjectPropertyElementMaster};
+const AudioObjectPropertyAddress
+    AudioDeviceListenerMac::kPropertyInputSourceChanged = {
+        kAudioDevicePropertyDataSource, kAudioDevicePropertyScopeInput,
+        kAudioObjectPropertyElementMaster};
 
 class AudioDeviceListenerMac::PropertyListener {
  public:
@@ -306,31 +308,34 @@ void AudioDeviceListenerMac::UpdateSourceListeners(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(monitor_sources_);
   DVLOG(1) << __func__ << " this=" << this;
+
+  SourceListenerMap new_listeners;
   for (bool is_input : {true, false}) {
     for (auto device_id : device_ids) {
+      // Do not monitor devices which do not have sources.
+      if (!GetDeviceSource(device_id, is_input))
+        continue;
+
+      SourceListenerKey key = {device_id, is_input};
+      auto listener_iter = source_listeners_.find(key);
+      if (listener_iter != source_listeners_.end()) {
+        // Continue monitoring.
+        new_listeners[key] = std::move(listener_iter->second);
+        continue;
+      }
+      // Start monitoring
       const AudioObjectPropertyAddress* property_address =
           is_input ? &kPropertyInputSourceChanged
                    : &kPropertyOutputSourceChanged;
-      SourceListenerKey key = {device_id, is_input};
-      auto it_key = source_listeners_.find(key);
-      bool is_monitored = it_key != source_listeners_.end();
-      if (core_audio_mac::GetDeviceSource(device_id, is_input)) {
-        if (!is_monitored) {
-          // Start monitoring if the device has source and is not currently
-          // being monitored.
-          auto source_listener =
-              CreatePropertyListener(device_id, property_address, listener_cb_);
-          if (source_listener) {
-            source_listeners_[key] = std::move(source_listener);
-          }
-        }
-      } else if (is_monitored) {
-        // Stop monitoring if the device has no source but is currently being
-        // monitored.
-        source_listeners_.erase(it_key);
-      }
+      auto new_listener =
+          CreatePropertyListener(device_id, property_address, listener_cb_);
+      if (new_listener)
+        new_listeners[key] = std::move(new_listener);
     }
   }
+
+  // Drop all the listeners not in |device_ids|.
+  source_listeners_.swap(new_listeners);
 }
 
 void AudioDeviceListenerMac::UpdateOutputSampleRateListeners(
@@ -384,6 +389,12 @@ std::vector<AudioObjectID> AudioDeviceListenerMac::GetAllAudioDeviceIDs() {
 
 bool AudioDeviceListenerMac::IsOutputDevice(AudioObjectID id) {
   return core_audio_mac::IsOutputDevice(id);
+}
+
+absl::optional<uint32_t> AudioDeviceListenerMac::GetDeviceSource(
+    AudioObjectID device_id,
+    bool is_input) {
+  return core_audio_mac::GetDeviceSource(device_id, is_input);
 }
 
 OSStatus AudioDeviceListenerMac::AddPropertyListener(
