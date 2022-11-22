@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_sender_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_session_description_platform.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/webrtc/api/rtc_error.h"
 #include "v8/include/v8.h"
 
@@ -279,13 +280,13 @@ void PostToCompleteRequest(AsyncOperationAction action, RequestType* request) {
       return;
     case AsyncOperationAction::kResolve:
       scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&CompleteRequest<RequestType>, request, true));
+          FROM_HERE, WTF::BindOnce(&CompleteRequest<RequestType>,
+                                   WrapWeakPersistent(request), true));
       return;
     case AsyncOperationAction::kReject:
       scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&CompleteRequest<RequestType>, request, false));
+          FROM_HERE, WTF::BindOnce(&CompleteRequest<RequestType>,
+                                   WrapWeakPersistent(request), false));
       return;
   }
 }

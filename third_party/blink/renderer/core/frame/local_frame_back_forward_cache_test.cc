@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/testing/fake_local_frame_host.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -109,12 +110,12 @@ TEST_F(LocalFrameBackForwardCacheTest, EvictionOnV8ExecutionAtMicrotask) {
   //   2) C++ closure
   // The case 1) should never happen when the frame is in bfcache. On the other
   // hand, the case 2) can happen. See https://crbug.com/994169
-  frame->DomWindow()->GetAgent()->event_loop()->EnqueueMicrotask(base::BindOnce(
+  frame->DomWindow()->GetAgent()->event_loop()->EnqueueMicrotask(WTF::BindOnce(
       [](LocalFrame* frame) {
         ClassicScript::CreateUnspecifiedScript("console.log('hi');")
             ->RunScript(frame->DomWindow());
       },
-      frame));
+      WrapWeakPersistent(frame)));
   frame_host.WaitUntilEvictedFromBackForwardCache();
 }
 

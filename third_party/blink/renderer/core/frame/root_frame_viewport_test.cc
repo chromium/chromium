@@ -514,24 +514,26 @@ TEST_F(RootFrameViewportTest, ViewportScrollOrder) {
   root_frame_viewport->SetScrollOffset(
       ScrollOffset(40, 40), mojom::blink::ScrollType::kUser,
       mojom::blink::ScrollBehavior::kInstant,
-      ScrollableArea::ScrollCallback(base::BindOnce(
+      ScrollableArea::ScrollCallback(WTF::BindOnce(
           [](ScrollableArea* visual_viewport, ScrollableArea* layout_viewport) {
             EXPECT_EQ(ScrollOffset(40, 40), visual_viewport->GetScrollOffset());
             EXPECT_EQ(ScrollOffset(0, 0), layout_viewport->GetScrollOffset());
           },
-          visual_viewport, layout_viewport)));
+          WrapWeakPersistent(visual_viewport),
+          WrapWeakPersistent(layout_viewport))));
   EXPECT_EQ(ScrollOffset(40, 40), visual_viewport->GetScrollOffset());
   EXPECT_EQ(ScrollOffset(0, 0), layout_viewport->GetScrollOffset());
 
   root_frame_viewport->SetScrollOffset(
       ScrollOffset(60, 60), mojom::blink::ScrollType::kProgrammatic,
       mojom::blink::ScrollBehavior::kInstant,
-      ScrollableArea::ScrollCallback(base::BindOnce(
+      ScrollableArea::ScrollCallback(WTF::BindOnce(
           [](ScrollableArea* visual_viewport, ScrollableArea* layout_viewport) {
             EXPECT_EQ(ScrollOffset(50, 50), visual_viewport->GetScrollOffset());
             EXPECT_EQ(ScrollOffset(10, 10), layout_viewport->GetScrollOffset());
           },
-          visual_viewport, layout_viewport)));
+          WrapWeakPersistent(visual_viewport),
+          WrapWeakPersistent(layout_viewport))));
   EXPECT_EQ(ScrollOffset(50, 50), visual_viewport->GetScrollOffset());
   EXPECT_EQ(ScrollOffset(10, 10), layout_viewport->GetScrollOffset());
 }
@@ -594,12 +596,13 @@ TEST_F(RootFrameViewportTest, DistributeScrollOrder) {
   root_frame_viewport->DistributeScrollBetweenViewports(
       ScrollOffset(60, 60), mojom::blink::ScrollType::kProgrammatic,
       mojom::blink::ScrollBehavior::kSmooth, RootFrameViewport::kVisualViewport,
-      ScrollableArea::ScrollCallback(base::BindOnce(
+      ScrollableArea::ScrollCallback(WTF::BindOnce(
           [](ScrollableArea* visual_viewport, ScrollableArea* layout_viewport) {
             EXPECT_EQ(ScrollOffset(50, 50), visual_viewport->GetScrollOffset());
             EXPECT_EQ(ScrollOffset(10, 10), layout_viewport->GetScrollOffset());
           },
-          visual_viewport, layout_viewport)));
+          WrapWeakPersistent(visual_viewport),
+          WrapWeakPersistent(layout_viewport))));
   root_frame_viewport->UpdateCompositorScrollAnimations();
   root_frame_viewport->ServiceScrollAnimations(1);
   EXPECT_EQ(ScrollOffset(0, 0), visual_viewport->GetScrollOffset());

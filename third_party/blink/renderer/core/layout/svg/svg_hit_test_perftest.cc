@@ -87,18 +87,18 @@ TEST_F(SvgHitTestPerfTest, HandleMouseMoveEvent) {
 
   RunTest("HandleMouseMoveEvent",
           WTF::BindRepeating(
-              [](EventHandler& event_handler) {
+              [](EventHandler* event_handler) {
                 WebMouseEvent mouse_move_event(
                     WebMouseEvent::Type::kMouseMove, gfx::PointF(1, 1),
                     gfx::PointF(1, 1), WebPointerProperties::Button::kNoButton,
                     0, WebInputEvent::Modifiers::kNoModifiers,
                     WebInputEvent::GetStaticTimeStampForTests());
                 mouse_move_event.SetFrameScale(1);
-                event_handler.HandleMouseMoveEvent(mouse_move_event,
-                                                   Vector<WebMouseEvent>(),
-                                                   Vector<WebMouseEvent>());
+                event_handler->HandleMouseMoveEvent(mouse_move_event,
+                                                    Vector<WebMouseEvent>(),
+                                                    Vector<WebMouseEvent>());
               },
-              std::ref(event_handler)));
+              WrapWeakPersistent(&event_handler)));
 }
 
 TEST_F(SvgHitTestPerfTest, IntersectsClipPath) {

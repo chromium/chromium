@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/worker_main_script_loader_client.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -102,8 +103,8 @@ void WorkerMainScriptLoader::Start(
   receiver_.Bind(
       std::move(worker_main_script_load_params->url_loader_client_endpoints
                     ->url_loader_client));
-  receiver_.set_disconnect_handler(base::BindOnce(
-      &WorkerMainScriptLoader::OnConnectionClosed, base::Unretained(this)));
+  receiver_.set_disconnect_handler(WTF::BindOnce(
+      &WorkerMainScriptLoader::OnConnectionClosed, WrapWeakPersistent(this)));
   data_pipe_ = std::move(worker_main_script_load_params->response_body);
 
   client_->OnStartLoadingBody(resource_response_);
@@ -203,8 +204,8 @@ void WorkerMainScriptLoader::StartLoadingBody() {
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL);
   MojoResult rv =
       watcher_->Watch(data_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
-                      base::BindRepeating(&WorkerMainScriptLoader::OnReadable,
-                                          base::Unretained(this)));
+                      WTF::BindRepeating(&WorkerMainScriptLoader::OnReadable,
+                                         WrapWeakPersistent(this)));
   DCHECK_EQ(MOJO_RESULT_OK, rv);
   watcher_->ArmOrNotify();
 }

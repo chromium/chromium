@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/heap/trace_traits.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -1228,7 +1229,7 @@ TEST_F(IncrementalMarkingTest, StepDuringObjectConstruction) {
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
   MakeGarbageCollected<O>(
-      base::BindOnce(
+      WTF::BindOnce(
           [](IncrementalMarkingTestDriver* driver, Holder* holder, O* thiz) {
             // Publish not-fully-constructed object |thiz| by triggering write
             // barrier for the object.
@@ -1237,7 +1238,7 @@ TEST_F(IncrementalMarkingTest, StepDuringObjectConstruction) {
             driver->TriggerMarkingSteps(
                 ThreadState::StackState::kMayContainHeapPointers);
           },
-          &driver, holder.Get()),
+          WTF::Unretained(&driver), WrapWeakPersistent(holder.Get())),
       MakeGarbageCollected<LinkedObject>());
   driver.FinishGC();
   PreciselyCollectGarbage();
@@ -1254,7 +1255,7 @@ TEST_F(IncrementalMarkingTest, StepDuringMixinObjectConstruction) {
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
   MakeGarbageCollected<Parent>(
-      base::BindOnce(
+      WTF::BindOnce(
           [](IncrementalMarkingTestDriver* driver, Holder* holder,
              Mixin* thiz) {
             // Publish not-fully-constructed object
@@ -1265,7 +1266,7 @@ TEST_F(IncrementalMarkingTest, StepDuringMixinObjectConstruction) {
             driver->TriggerMarkingSteps(
                 ThreadState::StackState::kMayContainHeapPointers);
           },
-          &driver, holder.Get()),
+          WTF::Unretained(&driver), WrapWeakPersistent(holder.Get())),
       MakeGarbageCollected<LinkedObject>());
   driver.FinishGC();
   PreciselyCollectGarbage();

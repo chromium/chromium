@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/loader/testing/mock_resource.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -33,12 +34,12 @@ TEST(ResourceLoadObserverForFrameTest, MemoryCacheCertificateError) {
       *MakeGarbageCollected<TestResourceFetcherProperties>());
 
   testing::StrictMock<MockContentSecurityNotifier> mock_notifier;
-  base::ScopedClosureRunner clear_binder(base::BindOnce(
+  base::ScopedClosureRunner clear_binder(WTF::BindOnce(
       [](LocalFrame* frame) {
         frame->Client()->GetBrowserInterfaceBroker().SetBinderForTesting(
             mojom::blink::ContentSecurityNotifier::Name_, {});
       },
-      &frame));
+      WrapWeakPersistent(&frame)));
 
   frame.Client()->GetBrowserInterfaceBroker().SetBinderForTesting(
       mojom::blink::ContentSecurityNotifier::Name_,

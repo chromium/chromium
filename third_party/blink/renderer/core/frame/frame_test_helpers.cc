@@ -922,17 +922,16 @@ void TestWebFrameWidget::DispatchThroughCcInputHandler(
   GetWidgetInputHandlerManager()->DispatchEvent(
       std::make_unique<WebCoalescedInputEvent>(event.Clone(),
                                                ui::LatencyInfo()),
-      base::BindOnce(
-          [](WeakMember<TestWebFrameWidget> widget,
-             mojom::blink::InputEventResultSource, const ui::LatencyInfo&,
-             mojom::blink::InputEventResultState,
+      WTF::BindOnce(
+          [](TestWebFrameWidget* widget, mojom::blink::InputEventResultSource,
+             const ui::LatencyInfo&, mojom::blink::InputEventResultState,
              mojom::blink::DidOverscrollParamsPtr overscroll,
              mojom::blink::TouchActionOptionalPtr,
              mojom::blink::ScrollResultDataPtr) {
             if (widget)
               widget->last_overscroll_ = std::move(overscroll);
           },
-          this));
+          WrapWeakPersistent(this)));
   FlushInputHandlerTasks();
 }
 

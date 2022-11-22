@@ -91,6 +91,7 @@
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "url/url_constants.h"
@@ -316,9 +317,10 @@ bool ResourceLoader::CodeCacheRequest::FetchFromCodeCache(
   // through ResourceLoader.
   url_loader->Freeze(LoaderFreezeMode::kStrict);
 
-  WebCodeCacheLoader::FetchCodeCacheCallback callback = base::BindOnce(
-      &ResourceLoader::CodeCacheRequest::DidReceiveCachedCode,
-      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(), resource_loader);
+  WebCodeCacheLoader::FetchCodeCacheCallback callback =
+      WTF::BindOnce(&ResourceLoader::CodeCacheRequest::DidReceiveCachedCode,
+                    weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
+                    WrapWeakPersistent(resource_loader));
   auto cache_type = resource_loader->GetCodeCacheType();
   code_cache_loader_->FetchFromCodeCache(cache_type, url_, std::move(callback));
   return true;

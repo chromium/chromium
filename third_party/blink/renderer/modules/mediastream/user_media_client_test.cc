@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/display/screen_info.h"
 
@@ -393,19 +394,22 @@ class UserMediaProcessorUnderTest : public UserMediaProcessor {
       RequestState* state)
       : UserMediaProcessor(
             frame,
-            base::BindRepeating(
-                &UserMediaProcessorUnderTest::media_devices_dispatcher,
-                base::Unretained(this)),
+            WTF::BindRepeating(
+                // Note: this uses a lambda because binding a non-static method
+                // with a weak receiver triggers special cancellation handling,
+                // which cannot handle non-void return types.
+                [](UserMediaProcessorUnderTest* processor)
+                    -> blink::mojom::blink::MediaDevicesDispatcherHost* {
+                  // In a test, `processor` should always be kept alive.
+                  CHECK(processor);
+                  return processor->media_devices_dispatcher_.get();
+                },
+                WrapWeakPersistent(this)),
             blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
         media_stream_device_observer_(std::move(media_stream_device_observer)),
         media_devices_dispatcher_(std::move(media_devices_dispatcher)),
         state_(state) {
     SetMediaStreamDeviceObserverForTesting(media_stream_device_observer_.get());
-  }
-
-  blink::mojom::blink::MediaDevicesDispatcherHost* media_devices_dispatcher()
-      const {
-    return media_devices_dispatcher_.get();
   }
 
   MockMediaStreamVideoCapturerSource* last_created_video_source() const {
