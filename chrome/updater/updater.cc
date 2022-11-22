@@ -26,6 +26,7 @@
 #include "chrome/updater/app/app_uninstall.h"
 #include "chrome/updater/app/app_update.h"
 #include "chrome/updater/app/app_wake.h"
+#include "chrome/updater/app/app_wakeall.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/crash_client.h"
@@ -187,6 +188,10 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
     return MakeAppWake()->Run();
   }
 
+  if (command_line->HasSwitch(kWakeAllSwitch)) {
+    return MakeAppWakeAll()->Run();
+  }
+
   VLOG(1) << "Unknown command line switch.";
   return kErrorUnknownCommandLine;
 }
@@ -203,8 +208,8 @@ const char* GetUpdaterCommand(const base::CommandLine* command_line) {
       kTestSwitch,           kUninstallIfUnusedSwitch,
       kUninstallSelfSwitch,  kUninstallSwitch,
       kUpdateSwitch,         kWakeSwitch,
-      kHealthCheckSwitch,    kHandoffSwitch,
-      kRuntimeSwitch,
+      kWakeAllSwitch,        kHealthCheckSwitch,
+      kHandoffSwitch,        kRuntimeSwitch,
   };
   const char** it = base::ranges::find_if(commands, [command_line](auto cmd) {
     return command_line->HasSwitch(cmd);

@@ -107,6 +107,9 @@ extern const char kUninstallIfUnusedSwitch[];
 // scheduled to invoke the updater periodically.
 extern const char kWakeSwitch[];
 
+// Kicks off the update service for all versions.
+extern const char kWakeAllSwitch[];
+
 // The updater needs to operate in the system context.
 extern const char kSystemSwitch[];
 

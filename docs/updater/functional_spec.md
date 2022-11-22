@@ -148,6 +148,8 @@ process is determined by command-line arguments:
         updater is inactive, it may qualify and activate, or uninstall itself.
         If this version of the updater is active, it may check for updates for
         applications, unregister uninstalled applications, and more.
+*   --wakeall
+    *   Runs --wake for every updater version installed in this scope.
 *   --crash-me
     *   Record a backtrace in the log, crash the program, save a crash dump,
         and report the crash.
