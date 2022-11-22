@@ -176,7 +176,7 @@ void PersonalizationAppAmbientProviderImpl::SetAlbumSelected(
     case (ash::AmbientModeTopicSource::kGooglePhotos): {
       ash::PersonalAlbum* target_personal_album = FindPersonalAlbumById(id);
       if (!target_personal_album) {
-        mojo::ReportBadMessage("Invalid album id.");
+        ambient_receiver_.ReportBadMessage("Invalid album id.");
         return;
       }
       target_personal_album->selected = selected;
@@ -214,7 +214,7 @@ void PersonalizationAppAmbientProviderImpl::SetAlbumSelected(
       // based on the selections.
       auto* art_setting = FindArtAlbumById(id);
       if (!art_setting || !art_setting->visible) {
-        mojo::ReportBadMessage("Invalid album id.");
+        ambient_receiver_.ReportBadMessage("Invalid album id.");
         return;
       }
       art_setting->enabled = selected;
