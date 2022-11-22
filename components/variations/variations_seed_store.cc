@@ -448,13 +448,12 @@ void VariationsSeedStore::ImportInitialSeed(
     return;
   }
 
-  if (initial_seed->date == 0) {
+  if (initial_seed->date.is_null()) {
     RecordFirstRunSeedImportResult(
         FirstRunSeedImportResult::FAIL_INVALID_RESPONSE_DATE);
     LOG(WARNING) << "Missing response date";
     return;
   }
-  base::Time date = base::Time::FromJavaTime(initial_seed->date);
 
   auto done_callback =
       base::BindOnce([](bool store_success, VariationsSeed seed) {
@@ -468,7 +467,7 @@ void VariationsSeedStore::ImportInitialSeed(
       });
   StoreSeedData(std::move(initial_seed->data),
                 std::move(initial_seed->signature),
-                std::move(initial_seed->country), date,
+                std::move(initial_seed->country), initial_seed->date,
                 /*is_delta_compressed=*/false, initial_seed->is_gzip_compressed,
                 std::move(done_callback),
                 /*require_synchronous=*/true);

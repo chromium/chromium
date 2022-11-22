@@ -852,7 +852,7 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_LoadsCountryOnFirstRun) {
   initial_seed->data = SerializeSeed(CreateTestSeedWithCountryFilter());
   initial_seed->signature = kTestSeedSignature;
   initial_seed->country = kTestSeedCountry;
-  initial_seed->date = one_day_ago.ToJavaTime();
+  initial_seed->date = one_day_ago;
   initial_seed->is_gzip_compressed = false;
 
   TestVariationsServiceClient variations_service_client;

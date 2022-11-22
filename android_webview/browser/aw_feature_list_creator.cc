@@ -210,18 +210,18 @@ void AwFeatureListCreator::SetUpFieldTrials() {
   std::unique_ptr<variations::SeedResponse> seed;
   base::Time seed_date;  // Initializes to null time.
   if (seed_proto) {
-    seed = std::make_unique<variations::SeedResponse>();
-    seed->data = seed_proto->seed_data();
-    seed->signature = seed_proto->signature();
-    seed->country = seed_proto->country();
-    seed->date = seed_proto->date();
-    seed->is_gzip_compressed = seed_proto->is_gzip_compressed();
-
     // We set the seed fetch time to when the service downloaded the seed rather
     // than base::Time::Now() because we want to compute seed freshness based on
     // the initial download time, which happened in the service at some earlier
     // point.
-    seed_date = base::Time::FromJavaTime(seed->date);
+    seed_date = base::Time::FromJavaTime(seed_proto->date());
+
+    seed = std::make_unique<variations::SeedResponse>();
+    seed->data = seed_proto->seed_data();
+    seed->signature = seed_proto->signature();
+    seed->country = seed_proto->country();
+    seed->date = seed_date;
+    seed->is_gzip_compressed = seed_proto->is_gzip_compressed();
   }
 
   client_ = std::make_unique<AwVariationsServiceClient>();

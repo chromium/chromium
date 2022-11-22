@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/time/time.h"
 
 namespace variations {
 
@@ -21,7 +22,7 @@ struct COMPONENT_EXPORT(VARIATIONS) SeedResponse {
   std::string data;  // "data" is binary, for which protobuf uses strings.
   std::string signature;
   std::string country;
-  int64_t date;
+  base::Time date;
   bool is_gzip_compressed = false;
 };
 

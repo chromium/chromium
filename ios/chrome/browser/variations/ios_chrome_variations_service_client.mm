@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/variations/ios_chrome_variations_service_client.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "base/version.h"
 #import "components/variations/seed_response.h"
 #import "components/version_info/version_info.h"
@@ -67,7 +68,7 @@ IOSChromeVariationsServiceClient::TakeSeedFromNativeVariationsSeedStore() {
   }
   seed->signature = base::SysNSStringToUTF8(ios_seed.signature);
   seed->country = base::SysNSStringToUTF8(ios_seed.country);
-  seed->date = ios_seed.time.timeIntervalSince1970;
+  seed->date = base::Time::FromNSDate(ios_seed.time);
   seed->is_gzip_compressed = ios_seed.compressed;
   return seed;
 }
