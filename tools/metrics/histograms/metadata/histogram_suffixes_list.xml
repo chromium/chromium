@@ -5904,14 +5904,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="SettingsResetPrompt.ResetState"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SetupInstallWin32Apis" separator=".">
-  <suffix name="ChangeServiceConfig" label=""/>
-  <suffix name="CreateService" label=""/>
-  <suffix name="DeleteService" label=""/>
-  <suffix name="OpenSCManager" label=""/>
-  <affected-histogram name="Setup.Install.Win32ApiError"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="SharingChannelType" separator=".">
   <suffix name="FcmSenderId" label="FCM Sender ID"/>
   <suffix name="FcmVapid" label="FCM VAPID"/>

@@ -12847,34 +12847,6 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
-<histogram name="Setup.Install.ServiceInstallResult"
-    enum="SetupInstallServiceInstallResult" expires_after="2020-12-30">
-  <owner>ganesh@chromium.org</owner>
-  <owner>sorin@chromium.org</owner>
-  <owner>xiaolingbao@chromium.org</owner>
-  <summary>The outcome of attempting to install a service on Windows.</summary>
-</histogram>
-
-<histogram name="Setup.Install.ServiceRollbackResult"
-    enum="SetupInstallServiceRollbackResult" expires_after="2020-12-30">
-  <owner>ganesh@chromium.org</owner>
-  <owner>sorin@chromium.org</owner>
-  <owner>xiaolingbao@chromium.org</owner>
-  <summary>
-    The outcome of attempting to rollback an install of a service on Windows.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Setup.Install.Win32ApiError"
-    enum="WinGetLastError" expires_after="2020-12-30">
-<!-- Name completed by histogram_suffixes name="SetupInstallWin32Apis". -->
-
-  <owner>ganesh@chromium.org</owner>
-  <owner>sorin@chromium.org</owner>
-  <owner>xiaolingbao@chromium.org</owner>
-  <summary>Win32 APIs that error out during setup.</summary>
-</histogram>
-
 <histogram name="SharedMemory.MapBlockedForSecurity" enum="BooleanBlocked"
     expires_after="M85">
   <obsolete>

@@ -92621,26 +92621,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="75" label="DMToken deletion succeeded."/>
 </enum>
 
-<enum name="SetupInstallServiceInstallResult">
-  <int value="0" label="Failed fresh install of service."/>
-  <int value="1" label="Failed install new service after upgrade failed."/>
-  <int value="2" label="Failed to open the SC manager."/>
-  <int value="3" label="Succeeded change service config."/>
-  <int value="4" label="Succeeded fresh install of service."/>
-  <int value="5" label="Succeeded install new and delete original service."/>
-  <int value="6"
-      label="Succeeded install new but failed delete original service."/>
-  <int value="7"
-      label="Succeeded, service correctly configured, nothing to be done."/>
-</enum>
-
-<enum name="SetupInstallServiceRollbackResult">
-  <int value="0" label="Failed to delete the currently installed service."/>
-  <int value="1" label="Failed to rollback to the original service config."/>
-  <int value="2" label="Succeeded deleting the currently installed service."/>
-  <int value="3" label="Succeeded rollback to the original service config."/>
-</enum>
-
 <enum name="SetupSingletonAcquisitionResult">
   <int value="0" label="The setup singleton was acquired successfully."/>
   <int value="1" label="Acquisition of the exit event mutex timed out."/>
