@@ -51,7 +51,7 @@ class NetExportView {
   initialize() {
     // Tell NetExportMessageHandler to notify the UI of future state changes
     // from this point on and listen for net-log-info-changed events.
-    addWebUIListener(
+    addWebUiListener(
         'net-log-info-changed', info => this.onExportNetLogInfoChanged_(info));
     chrome.send('enableNotifyUIWithState');
   }
