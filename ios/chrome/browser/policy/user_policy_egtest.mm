@@ -263,7 +263,8 @@ void VerifyTheNotificationUI() {
       [FakeSystemIdentity encodeIdentitiesToBase64:@[ fakeManagedIdentity ]]);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
-  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:base::Seconds(5)];
+  [ChromeEarlGrey waitForSyncEngineInitialized:YES
+                                   syncTimeout:base::Seconds(5)];
 
   // Wait until the user policies are loaded from disk.
   WaitOnUserPolicy(kWaitOnScheduledUserPolicyFetchInterval);

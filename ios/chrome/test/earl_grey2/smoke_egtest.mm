@@ -155,7 +155,8 @@
 // Tests sync server converted helpers in chrome_earl_grey.h.
 - (void)testSyncServerHelpers {
   [ChromeEarlGrey startSync];
-  [ChromeEarlGrey waitForSyncInitialized:NO syncTimeout:base::Seconds(10)];
+  [ChromeEarlGrey waitForSyncEngineInitialized:NO
+                                   syncTimeout:base::Seconds(10)];
   [ChromeEarlGrey clearSyncServerData];
 }
 

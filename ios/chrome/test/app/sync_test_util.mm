@@ -103,7 +103,7 @@ void TearDownFakeSyncServer() {
 }
 
 void StartSync() {
-  DCHECK(!IsSyncInitialized());
+  DCHECK(!IsSyncEngineInitialized());
   ChromeBrowserState* browser_state =
       chrome_test_util::GetOriginalBrowserState();
   SyncSetupService* sync_setup_service =
@@ -112,7 +112,7 @@ void StartSync() {
 }
 
 void StopSync() {
-  DCHECK(IsSyncInitialized());
+  DCHECK(IsSyncEngineInitialized());
   ChromeBrowserState* browser_state =
       chrome_test_util::GetOriginalBrowserState();
   SyncSetupService* sync_setup_service =
@@ -186,7 +186,7 @@ void AddLegacyBookmarkToFakeSyncServer(std::string url,
           .BuildBookmark(GURL(url)));
 }
 
-bool IsSyncInitialized() {
+bool IsSyncEngineInitialized() {
   ChromeBrowserState* browser_state =
       chrome_test_util::GetOriginalBrowserState();
   DCHECK(browser_state);
@@ -196,7 +196,7 @@ bool IsSyncInitialized() {
 }
 
 std::string GetSyncCacheGuid() {
-  DCHECK(IsSyncInitialized());
+  DCHECK(IsSyncEngineInitialized());
   ChromeBrowserState* browser_state =
       chrome_test_util::GetOriginalBrowserState();
   syncer::DeviceInfoSyncService* service =

@@ -2321,7 +2321,8 @@ id<GREYMatcher> EditDoneButton() {
   // Sign-in and synced user.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
-  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:base::Seconds(5)];
+  [ChromeEarlGrey waitForSyncEngineInitialized:YES
+                                   syncTimeout:base::Seconds(5)];
 
   // Add passwords for the user.
   SaveExamplePasswordForms();

@@ -43,8 +43,9 @@ using chrome_test_util::SettingsDoneButton;
 - (void)setUp {
   [super setUp];
 
-  [ChromeEarlGrey waitForSyncInitialized:NO
-                             syncTimeout:syncher::kSyncUKMOperationsTimeout];
+  [ChromeEarlGrey
+      waitForSyncEngineInitialized:NO
+                       syncTimeout:syncher::kSyncUKMOperationsTimeout];
   GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:NO],
              @"Failed to assert that UKM was not enabled.");
   // Sign in to Chrome and turn sync on.
@@ -53,8 +54,9 @@ using chrome_test_util::SettingsDoneButton;
   // flow to Sign in to Chrome and Turn sync on. This matches the main user
   // flow that enables UKM.
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGrey waitForSyncInitialized:YES
-                             syncTimeout:syncher::kSyncUKMOperationsTimeout];
+  [ChromeEarlGrey
+      waitForSyncEngineInitialized:YES
+                       syncTimeout:syncher::kSyncUKMOperationsTimeout];
 
   // Grant metrics consent and update MetricsServicesManager.
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
@@ -65,8 +67,9 @@ using chrome_test_util::SettingsDoneButton;
 }
 
 - (void)tearDown {
-  [ChromeEarlGrey waitForSyncInitialized:YES
-                             syncTimeout:syncher::kSyncUKMOperationsTimeout];
+  [ChromeEarlGrey
+      waitForSyncEngineInitialized:YES
+                       syncTimeout:syncher::kSyncUKMOperationsTimeout];
   GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:YES],
              @"Failed to assert that UKM was enabled.");
 
@@ -84,8 +87,9 @@ using chrome_test_util::SettingsDoneButton;
   // flow that disables UKM.
   [SigninEarlGrey signOut];
 
-  [ChromeEarlGrey waitForSyncInitialized:NO
-                             syncTimeout:syncher::kSyncUKMOperationsTimeout];
+  [ChromeEarlGrey
+      waitForSyncEngineInitialized:NO
+                       syncTimeout:syncher::kSyncUKMOperationsTimeout];
   [ChromeEarlGrey clearSyncServerData];
 
   [super tearDown];

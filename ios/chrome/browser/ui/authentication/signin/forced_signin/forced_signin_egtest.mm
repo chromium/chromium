@@ -408,7 +408,8 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
   // Enable sync.
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
-  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
+  [ChromeEarlGrey waitForSyncEngineInitialized:YES
+                                   syncTimeout:kSyncOperationTimeout];
 
   OpenAccountSettingsAndSignOut(YES);
 
@@ -454,7 +455,8 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
   // Enable sync.
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
-  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
+  [ChromeEarlGrey waitForSyncEngineInitialized:YES
+                                   syncTimeout:kSyncOperationTimeout];
 
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:GoogleSyncSettingsButton()];
@@ -718,7 +720,8 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
   // Sync utilities require sync to be initialized in order to perform
   // operations on the Sync server.
-  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:base::Seconds(10)];
+  [ChromeEarlGrey waitForSyncEngineInitialized:YES
+                                   syncTimeout:base::Seconds(10)];
 
   // Make sure the forced sign-in screen isn't shown because sign-in was
   // already done.
@@ -857,7 +860,8 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
   // Sync utilities require sync to be initialized in order to perform
   // operations on the Sync server.
-  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:base::Seconds(10)];
+  [ChromeEarlGrey waitForSyncEngineInitialized:YES
+                                   syncTimeout:base::Seconds(10)];
 
   // Make sure the forced sign-in screen isn't shown because the browser is
   // already signed in.

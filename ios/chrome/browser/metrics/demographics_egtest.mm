@@ -127,8 +127,9 @@ const metrics::UserDemographicsProto::Gender kTestGender =
   // Chrome and Turn on sync. This matches the main user flow that enables
   // UKM.
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGrey waitForSyncInitialized:YES
-                             syncTimeout:syncher::kSyncUKMOperationsTimeout];
+  [ChromeEarlGrey
+      waitForSyncEngineInitialized:YES
+                       syncTimeout:syncher::kSyncUKMOperationsTimeout];
 }
 
 // Adds a dummy UKM source to the UKM service's recordings. The presence of this

@@ -80,8 +80,8 @@ void ClearAutofillProfile(std::string guid);
 // nothing.
 void ClearSyncServerData();
 
-// Returns true if the sync backend server is intialized.
-bool IsSyncInitialized();
+// See SyncService::IsEngineInitialized().
+bool IsSyncEngineInitialized();
 
 // Returns the current sync cache guid. The sync server must be running when
 // calling this.

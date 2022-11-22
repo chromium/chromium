@@ -295,7 +295,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
-  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
+  [ChromeEarlGrey waitForSyncEngineInitialized:YES
+                                   syncTimeout:kSyncOperationTimeout];
   [ChromeEarlGrey triggerSyncCycleForType:syncer::TYPED_URLS];
 
   [ChromeEarlGrey waitForSyncServerEntitiesWithType:syncer::TYPED_URLS
