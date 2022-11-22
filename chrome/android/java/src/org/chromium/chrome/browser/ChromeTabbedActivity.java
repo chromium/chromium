@@ -118,8 +118,6 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.navigation_predictor.NavigationPredictorBridge;
-import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionController;
-import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionRationaleDialogController;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
@@ -380,7 +378,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private TabbedModeTabDelegateFactory mTabDelegateFactory;
 
     private final AppLaunchDrawBlocker mAppLaunchDrawBlocker;
-    private NotificationPermissionController mNotificationPermissionController;
 
     private ReturnToChromeBackPressHandler mReturnToChromeBackPressHandler;
     private ReadingListBackPressHandler mReadingListBackPressHandler;
@@ -1043,14 +1040,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             ChromeAccessibilityUtil.get().addObserver(mLayoutManager);
             if (isTablet()) ChromeAccessibilityUtil.get().addObserver(mCompositorViewHolder);
-
-            mNotificationPermissionController =
-                    new NotificationPermissionController(getWindowAndroid(),
-                            new NotificationPermissionRationaleDialogController(
-                                    this, getModalDialogManager()));
-            NotificationPermissionController.attach(
-                    getWindowAndroid(), mNotificationPermissionController);
-            mNotificationPermissionController.requestPermissionIfNeeded(false /* contextual */);
             if (BackPressManager.isEnabled()) initializeBackPressHandlers();
         }
     }
@@ -2654,11 +2643,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (mMinimizeAppAndCloseTabBackPressHandler != null) {
             mMinimizeAppAndCloseTabBackPressHandler.destroy();
             mMinimizeAppAndCloseTabBackPressHandler = null;
-        }
-
-        if (mNotificationPermissionController != null) {
-            NotificationPermissionController.detach(mNotificationPermissionController);
-            mNotificationPermissionController = null;
         }
 
         if (mCallbackController != null) {

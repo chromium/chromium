@@ -64,6 +64,8 @@ import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceIphController;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageController;
+import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionController;
+import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionRationaleDialogController;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerV2;
@@ -155,6 +157,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private AddToHomescreenMostVisitedTileClickObserver mAddToHomescreenMostVisitedTileObserver;
     private AppBannerInProductHelpController mAppBannerInProductHelpController;
     private PwaBottomSheetController mPwaBottomSheetController;
+    private NotificationPermissionController mNotificationPermissionController;
     private HistoryNavigationCoordinator mHistoryNavigationCoordinator;
     private NavigationSheet mNavigationSheet;
     private ComposedBrowserControlsVisibilityDelegate mAppBrowserControlsVisibilityDelegate;
@@ -385,6 +388,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mCommerceSubscriptionsService != null) {
             mCommerceSubscriptionsService.destroy();
             mCommerceSubscriptionsService = null;
+        }
+
+        if (mNotificationPermissionController != null) {
+            NotificationPermissionController.detach(mNotificationPermissionController);
+            mNotificationPermissionController = null;
         }
 
         super.onDestroy();
@@ -666,6 +674,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             new SettingsLauncherImpl(),
                             mTabModelSelectorSupplier.get().isIncognitoSelected(),
                             /*bottomSheetController = */ null);
+        }
+
+        if (!didTriggerPromo) {
+            mNotificationPermissionController = new NotificationPermissionController(mWindowAndroid,
+                    new NotificationPermissionRationaleDialogController(
+                            mActivity, mModalDialogManagerSupplier.get()));
+            NotificationPermissionController.attach(
+                    mWindowAndroid, mNotificationPermissionController);
+            didTriggerPromo = mNotificationPermissionController.requestPermissionIfNeeded(
+                    false /* contextual */);
         }
 
         if (!didTriggerPromo) {

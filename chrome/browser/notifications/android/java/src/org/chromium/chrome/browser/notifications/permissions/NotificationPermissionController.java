@@ -138,10 +138,11 @@ public class NotificationPermissionController implements UnownedUserData {
      * permission request directly and when to show a rationale beforehand.
      * @param contextual Whether this request is made in context. True for requesting from features
      *        using notifications, false for invoking on startup.
+     * @return True if any UI was shown (either rationale dialog or OS prompt), false otherwise.
      */
-    public void requestPermissionIfNeeded(boolean contextual) {
+    public boolean requestPermissionIfNeeded(boolean contextual) {
         if (!BuildInfo.isAtLeastT() || !BuildInfo.targetsAtLeastT()) {
-            return;
+            return false;
         }
 
         // Record the state of the notification permission before trying to ask but after verifying
@@ -150,7 +151,7 @@ public class NotificationPermissionController implements UnownedUserData {
 
         @PermissionRequestMode
         int requestMode = shouldRequestPermission();
-        if (requestMode == PermissionRequestMode.DO_NOT_REQUEST) return;
+        if (requestMode == PermissionRequestMode.DO_NOT_REQUEST) return false;
 
         SharedPreferencesManager.getInstance().incrementInt(
                 ChromePreferenceKeys.NOTIFICATION_PERMISSION_REQUEST_COUNT);
@@ -168,6 +169,7 @@ public class NotificationPermissionController implements UnownedUserData {
                 }
             });
         }
+        return true;
     }
 
     @PermissionRequestMode
