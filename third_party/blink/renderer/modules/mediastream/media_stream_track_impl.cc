@@ -211,6 +211,20 @@ absl::optional<media::mojom::DisplayCaptureSurfaceType> GetDisplayCaptureType(
   return settings.display_surface;
 }
 
+WebString GetDisplaySurfaceString(
+    media::mojom::DisplayCaptureSurfaceType value) {
+  switch (value) {
+    case media::mojom::DisplayCaptureSurfaceType::MONITOR:
+      return WebString::FromUTF8("monitor");
+    case media::mojom::DisplayCaptureSurfaceType::WINDOW:
+      return WebString::FromUTF8("window");
+    case media::mojom::DisplayCaptureSurfaceType::BROWSER:
+      return WebString::FromUTF8("browser");
+  }
+  NOTREACHED();
+  return WebString();
+}
+
 }  // namespace
 
 MediaStreamTrack* MediaStreamTrackImpl::Create(ExecutionContext* context,
@@ -544,6 +558,11 @@ MediaTrackCapabilities* MediaStreamTrackImpl::getCapabilities() const {
     capabilities->setFacingMode(facing_mode);
     capabilities->setResizeMode({WebMediaStreamTrack::kResizeModeNone,
                                  WebMediaStreamTrack::kResizeModeRescale});
+    const absl::optional<const MediaStreamDevice> source_device = device();
+    if (source_device && source_device->display_media_info) {
+      capabilities->setDisplaySurface(GetDisplaySurfaceString(
+          source_device->display_media_info->display_surface));
+    }
   }
   return capabilities;
 }
@@ -625,19 +644,8 @@ MediaTrackSettings* MediaStreamTrackImpl::getSettings() const {
     image_capture_->GetMediaTrackSettings(settings);
 
   if (platform_settings.display_surface) {
-    WTF::String value;
-    switch (platform_settings.display_surface.value()) {
-      case media::mojom::DisplayCaptureSurfaceType::MONITOR:
-        value = "monitor";
-        break;
-      case media::mojom::DisplayCaptureSurfaceType::WINDOW:
-        value = "window";
-        break;
-      case media::mojom::DisplayCaptureSurfaceType::BROWSER:
-        value = "browser";
-        break;
-    }
-    settings->setDisplaySurface(value);
+    settings->setDisplaySurface(
+        GetDisplaySurfaceString(platform_settings.display_surface.value()));
   }
   if (platform_settings.logical_surface)
     settings->setLogicalSurface(platform_settings.logical_surface.value());
