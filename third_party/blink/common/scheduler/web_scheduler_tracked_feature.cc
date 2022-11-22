@@ -120,7 +120,7 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
     case WebSchedulerTrackedFeature::kInjectedStyleSheet:
       return {"InjectedStyleSheet", "External systesheet injected"};
     case WebSchedulerTrackedFeature::kKeepaliveRequest:
-      return {"InjectedStyleSheet", "requests with keepalive set"};
+      return {"KeepaliveRequest", "requests with keepalive set"};
     case WebSchedulerTrackedFeature::kDummy:
       return {"Dummy", "Dummy for testing"};
   }
