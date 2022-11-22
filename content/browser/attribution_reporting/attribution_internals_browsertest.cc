@@ -616,8 +616,11 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             table.children[2].children[6].innerText === "0" &&
             table.children[2].children[7].innerText === "no" &&
             table.children[2].children[2].innerText === "Sent: HTTP 200" &&
+            !table.children[2].classList.contains('send-error') &&
             table.children[3].children[2].innerText === "Prohibited by browser policy" &&
+            !table.children[3].classList.contains('send-error') &&
             table.children[4].children[2].innerText === "Network error: ERR_METHOD_NOT_SUPPORTED" &&
+            table.children[4].classList.contains('send-error') &&
             table.children[5].children[2].innerText === "Network error: ERR_TIMED_OUT" &&
             table.children[5].children[3].innerText ===
               "https://report.test/.well-known/attribution-reporting/debug/report-event-attribution") {

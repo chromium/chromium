@@ -465,7 +465,7 @@ class Report extends Selectable {
   reportTime: Date;
   isDebug: boolean;
   status: string;
-  httpResponseCode?: number;
+  sendFailed: boolean;
 
   constructor(mojo: WebUIReport) {
     super();
@@ -484,9 +484,11 @@ class Report extends Selectable {
     this.isDebug = this.reportUrl.indexOf(
                        '/.well-known/attribution-reporting/debug/') >= 0;
 
+    this.sendFailed = false;
+
     if (mojo.status.sent !== undefined) {
       this.status = `Sent: HTTP ${mojo.status.sent}`;
-      this.httpResponseCode = mojo.status.sent;
+      this.sendFailed = mojo.status.sent < 200 || mojo.status.sent >= 400;
     } else if (mojo.status.pending !== undefined) {
       this.status = 'Pending';
     } else if (mojo.status.replacedByHigherPriorityReport !== undefined) {
@@ -496,6 +498,7 @@ class Report extends Selectable {
       this.status = 'Prohibited by browser policy';
     } else if (mojo.status.networkError !== undefined) {
       this.status = `Network error: ${mojo.status.networkError}`;
+      this.sendFailed = true;
     } else if (mojo.status.failedToAssemble !== undefined) {
       this.status = 'Dropped due to assembly failure';
     } else {
@@ -572,10 +575,7 @@ class ReportTableModel extends TableModel<Report> {
   }
 
   override styleRow(tr: HTMLElement, report: Report) {
-    tr.classList.toggle(
-        'http-error',
-        report.httpResponseCode !== undefined &&
-            (report.httpResponseCode < 200 || report.httpResponseCode >= 400));
+    tr.classList.toggle('send-error', report.sendFailed);
   }
 
   override getRows() {
