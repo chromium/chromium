@@ -19,6 +19,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/range/range.h"
 
+class SavedTabGroupModel;
 class TabGroupController;
 
 // The metadata and state of a tab group. This handles state changes that are
@@ -111,6 +112,10 @@ class TabGroup {
 
  private:
   raw_ptr<TabGroupController> controller_;
+
+  // Used to check if `id_` is saved in the `SavedTabGroupModel`.
+  // `SavedTabGroupModel` is tied to the Profile and should outlive this.
+  const raw_ptr<SavedTabGroupModel> saved_tab_group_model_;
 
   tab_groups::TabGroupId id_;
   std::unique_ptr<tab_groups::TabGroupVisualData> visual_data_;

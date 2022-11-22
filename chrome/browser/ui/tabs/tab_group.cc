@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/guid.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_group_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
@@ -31,7 +33,13 @@
 TabGroup::TabGroup(TabGroupController* controller,
                    const tab_groups::TabGroupId& id,
                    const tab_groups::TabGroupVisualData& visual_data)
-    : controller_(controller), id_(id) {
+    : controller_(controller),
+      saved_tab_group_model_([](Profile* profile) -> SavedTabGroupModel* {
+        SavedTabGroupKeyedService* const service =
+            SavedTabGroupServiceFactory::GetForProfile(profile);
+        return service ? service->model() : nullptr;
+      }(controller->GetProfile())),
+      id_(id) {
   visual_data_ = std::make_unique<tab_groups::TabGroupVisualData>(visual_data);
 }
 
@@ -95,12 +103,7 @@ bool TabGroup::IsCustomized() const {
 }
 
 bool TabGroup::IsSaved() const {
-  // TODO(dljames): Retrieving the service factory each time we want to check
-  // the saved status of a tab group is expensive computationally. Find a way to
-  // simplify this.
-  SavedTabGroupKeyedService* backend =
-      SavedTabGroupServiceFactory::GetForProfile(controller_->GetProfile());
-  return backend && backend->model() && backend->model()->Contains(id());
+  return saved_tab_group_model_ && saved_tab_group_model_->Contains(id());
 }
 
 absl::optional<int> TabGroup::GetFirstTab() const {
