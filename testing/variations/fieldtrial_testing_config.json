@@ -7844,10 +7844,13 @@
             ]
         }
     ],
-    "PageInfoAboutThisSiteMoreInfo": [
+    "PageInfoAboutThisSiteMoreInfoDesktop": [
         {
             "platforms": [
-                "android"
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {

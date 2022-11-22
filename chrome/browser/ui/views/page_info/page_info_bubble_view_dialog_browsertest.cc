@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 
 #include "build/build_config.h"
@@ -478,6 +479,9 @@ class PageInfoBubbleViewAboutThisSiteDialogBrowserTest
     description->mutable_source()->set_url("https://example.com");
     description->mutable_source()->set_label("Example source");
 
+    auto* more_about = site_info->mutable_more_about();
+    more_about->set_url("https://example.com/moreinfo");
+
     optimization_metadata.SetAnyMetadataForTesting(metadata);
 
     auto* optimization_guide_decider =
@@ -545,6 +549,9 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteDialogBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteDialogBrowserTest,
                        InvokeUi_AboutThisSiteSubpage) {
+  // The subpage only exists in the old UI.
+  if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSiteMoreInfo))
+    return;
   ShowAndVerifyUi();
 }
 
