@@ -838,16 +838,14 @@ void BackForwardCacheImpl::PopulateReasonsForMainDocument(
   // change this part to use the information stored in RenderFrameHostImpl
   // instead.
 
-  BlockListedFeatures cache_control_no_store_feature(
-      WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore);
-  if (!Intersection(rfh->GetBackForwardCacheDisablingFeatures(),
-                    cache_control_no_store_feature)
-           .Empty()) {
+  if (rfh->GetBackForwardCacheDisablingFeatures().Has(
+          WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore)) {
     if (!AllowStoringPagesWithCacheControlNoStore()) {
       // Block pages with cache-control: no-store only when
       // |should_cache_control_no_store_enter| flag is false. If true, put the
       // page in and evict later.
-      result.NoDueToFeatures(cache_control_no_store_feature);
+      result.NoDueToFeatures(
+          WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore);
     }
   }
 
