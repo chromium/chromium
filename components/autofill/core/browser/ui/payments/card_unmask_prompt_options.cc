@@ -6,6 +6,8 @@
 
 namespace autofill {
 
+CardUnmaskPromptOptions::CardUnmaskPromptOptions() = default;
+
 CardUnmaskPromptOptions::CardUnmaskPromptOptions(
     const absl::optional<CardUnmaskChallengeOption>& challenge_option,
     AutofillClient::UnmaskCardReason reason)

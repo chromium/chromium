@@ -15,6 +15,7 @@ namespace autofill {
 // Holds additional parameters needed to call ShowDialog in the Card Unmask
 // Prompt Controller.
 struct CardUnmaskPromptOptions {
+  CardUnmaskPromptOptions();
   CardUnmaskPromptOptions(
       const absl::optional<CardUnmaskChallengeOption>& challenge_option,
       AutofillClient::UnmaskCardReason reason);

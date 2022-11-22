@@ -64,10 +64,9 @@ void CardUnmaskPromptControllerImpl::ShowPrompt(
   new_card_link_clicked_ = false;
   shown_timestamp_ = AutofillClock::Now();
   pending_details_ = CardUnmaskDelegate::UserProvidedUnmaskDetails();
-  card_unmask_challenge_option_ = card_unmask_prompt_options.challenge_option;
+  card_unmask_prompt_options_ = card_unmask_prompt_options;
   card_ = card;
   delegate_ = delegate;
-  reason_ = card_unmask_prompt_options.reason;
   card_unmask_view_ = std::move(card_unmask_view_factory).Run();
   card_unmask_view_->Show();
   unmasking_result_ = AutofillClient::PaymentsRpcResult::kNone;
@@ -91,7 +90,7 @@ void CardUnmaskPromptControllerImpl::OnVerificationResult(
         error_message = l10n_util::GetStringFUTF16(
             IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_SECURITY_CODE,
             GetSideOfCardTranslationString(
-                card_unmask_challenge_option_->cvc_position));
+                card_unmask_prompt_options_.challenge_option->cvc_position));
       } else {
         error_message = l10n_util::GetStringUTF16(
             IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_CVC);
@@ -224,7 +223,8 @@ std::u16string CardUnmaskPromptControllerImpl::GetInstructionsMessage() const {
 // prompt for local cards should not.
 #if BUILDFLAG(IS_IOS)
   int ids;
-  if (reason_ == AutofillClient::UnmaskCardReason::kAutofill &&
+  if (card_unmask_prompt_options_.reason ==
+          AutofillClient::UnmaskCardReason::kAutofill &&
       ShouldRequestExpirationDate()) {
     ids = card_.record_type() == CreditCard::LOCAL_CARD
               ? IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_EXPIRED_LOCAL_CARD
@@ -242,14 +242,14 @@ std::u16string CardUnmaskPromptControllerImpl::GetInstructionsMessage() const {
   // If the challenge option is present, return the challenge option instruction
   // information.
   if (IsChallengeOptionPresent()) {
-    DCHECK_EQ(card_unmask_challenge_option_->type,
+    DCHECK_EQ(card_unmask_prompt_options_.challenge_option->type,
               CardUnmaskChallengeOptionType::kCvc);
     return l10n_util::GetStringFUTF16(
         IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_VIRTUAL_CARD,
-        base::NumberToString16(
-            card_unmask_challenge_option_->challenge_input_length),
+        base::NumberToString16(card_unmask_prompt_options_.challenge_option
+                                   ->challenge_input_length),
         GetSideOfCardTranslationString(
-            card_unmask_challenge_option_->cvc_position));
+            card_unmask_prompt_options_.challenge_option->cvc_position));
   }
   return l10n_util::GetStringUTF16(
       card_.record_type() == CreditCard::LOCAL_CARD
@@ -267,7 +267,7 @@ int CardUnmaskPromptControllerImpl::GetCvcImageRid() const {
   // case. Rely on the challenge option to inform us whether the
   // CVC is on the front or back of the card.
   if (IsChallengeOptionPresent()) {
-    return card_unmask_challenge_option_->cvc_position ==
+    return card_unmask_prompt_options_.challenge_option->cvc_position ==
                    CvcPosition::kFrontOfCard
                ? IDR_CREDIT_CARD_CVC_HINT_AMEX
                : IDR_CREDIT_CARD_CVC_HINT;
@@ -321,8 +321,9 @@ bool CardUnmaskPromptControllerImpl::InputCvcIsValid(
 
   // Allow three digit American Express Cvc value when it is a back of card cvc
   // challenge option.
-  if (card_unmask_challenge_option_ &&
-      card_unmask_challenge_option_->cvc_position == CvcPosition::kBackOfCard) {
+  if (card_unmask_prompt_options_.challenge_option &&
+      card_unmask_prompt_options_.challenge_option->cvc_position ==
+          CvcPosition::kBackOfCard) {
     return IsValidCreditCardSecurityCode(trimmed_text, card_.network(),
                                          CvcType::kBackOfAmexCvc);
   }
@@ -362,7 +363,8 @@ int CardUnmaskPromptControllerImpl::GetExpectedCvcLength() const {
   // is on the back of the American Express card, we need to handle it
   // separately because its length will be 3.
   if (IsChallengeOptionPresent() && card_.network() == kAmericanExpressCard &&
-      card_unmask_challenge_option_->cvc_position == CvcPosition::kBackOfCard) {
+      card_unmask_prompt_options_.challenge_option->cvc_position ==
+          CvcPosition::kBackOfCard) {
     cvc_type = CvcType::kBackOfAmexCvc;
   } else {
     cvc_type = CvcType::kRegularCvc;
@@ -372,14 +374,15 @@ int CardUnmaskPromptControllerImpl::GetExpectedCvcLength() const {
 }
 
 bool CardUnmaskPromptControllerImpl::IsChallengeOptionPresent() const {
-  return card_unmask_challenge_option_.has_value();
+  return card_unmask_prompt_options_.challenge_option.has_value();
 }
 
 base::TimeDelta CardUnmaskPromptControllerImpl::GetSuccessMessageDuration()
     const {
   return base::Milliseconds(
       card_.record_type() == CreditCard::LOCAL_CARD ||
-              reason_ == AutofillClient::UnmaskCardReason::kPaymentRequest
+              card_unmask_prompt_options_.reason ==
+                  AutofillClient::UnmaskCardReason::kPaymentRequest
           ? 0
           : 500);
 }
