@@ -19,19 +19,17 @@ std::string Base64Encode(span<const uint8_t> input) {
 }
 
 void Base64EncodeAppend(span<const uint8_t> input, std::string* output) {
-  // Ensure `modp_b64_encode_len` will not overflow. Note this length and
-  // `modp_b64_encode`'s output includes a trailing NUL byte.
+  // Ensure `modp_b64_encode_data_len` will not overflow.
   CHECK_LE(input.size(), MODP_B64_MAX_INPUT_LEN);
-  size_t encode_len = modp_b64_encode_len(input.size());
+  size_t encode_data_len = modp_b64_encode_data_len(input.size());
 
   size_t prefix_len = output->size();
-  output->resize(base::CheckAdd(encode_len, prefix_len).ValueOrDie());
+  output->resize(base::CheckAdd(encode_data_len, prefix_len).ValueOrDie());
 
-  const size_t output_size = modp_b64_encode(
+  const size_t output_size = modp_b64_encode_data(
       output->data() + prefix_len, reinterpret_cast<const char*>(input.data()),
       input.size());
-  // `output_size` does not include the trailing NUL byte, so this removes it.
-  output->resize(prefix_len + output_size);
+  CHECK_EQ(output->size(), prefix_len + output_size);
 }
 
 void Base64Encode(StringPiece input, std::string* output) {

@@ -18,3 +18,4 @@ The source code was modified from upstream as follows:
 - Removed big endian support entirely
 - Removed std::string APIs
 - Added multiple decoding options to support Blink callers
+- Added modp_b64_encode_data which doesn't append a null terminator

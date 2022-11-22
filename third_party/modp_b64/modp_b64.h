@@ -37,17 +37,16 @@ extern "C" {
  * len contains the number of bytes in the src
  * dest should be allocated by the caller to contain
  *   at least modp_b64_encode_len(len) bytes (see below)
- *   This will contain the null-terminated b64 encoded result
- * returns length of the destination string plus the ending null byte
- *    i.e.  the result will be equal to strlen(dest) + 1
+ *   This will contain the (non-null terminated) b64 bytes.
+ * returns length of the destination string.
  *
  * Example
- * 
+ *
  * \code
  * char* src = ...;
  * int srclen = ...; //the length of number of bytes in src
  * char* dest = (char*) malloc(modp_b64_encode_len);
- * int len = modp_b64_encode(dest, src, sourcelen);
+ * int len = modp_b64_encode_data(dest, src, sourcelen);
  * if (len == -1) {
  *   printf("Error\n");
  * } else {
@@ -55,6 +54,17 @@ extern "C" {
  * }
  * \endcode
  *
+ */
+size_t modp_b64_encode_data(char* dest, const char* str, size_t len);
+
+/**
+ * Same as modp_b64_encode_data, but additionally sets a null terminator at the
+ * end of `dest` (i.e. at dest[output_size]).
+ * Like modp_b64_encode_data, returns the length of the destination string (i.e.
+ * not counting the null terminator).
+ *
+ * TODO(csharrison): Consider removing this once all callers migrate to
+ * modp_b64_encode_data.
  */
 size_t modp_b64_encode(char* dest, const char* str, size_t len);
 
@@ -98,8 +108,8 @@ size_t modp_b64_decode(
     ModpDecodePolicy policy = ModpDecodePolicy::kStrict);
 
 /**
- * The maximum input that can be passed into modp_b64_encode. Lengths beyond
- * this will overflow modp_b64_encode_len.
+ * The maximum input that can be passed into modp_b64_encode{_data}.
+ * Lengths beyond this will overflow modp_b64_encode_len.
  *
  * This works because modp_b64_encode_len(A) computes:
  *     ceiling[max_len / 3] * 4 + 1
@@ -107,23 +117,27 @@ size_t modp_b64_decode(
  *   = floor[(SIZE_MAX-1)/4] * 4 + 1
  *  <= SIZE_MAX-1 + 1
  *   = SIZE_MAX
+ *
+ * Note: technically modp_b64_encode_data can take one extra byte, but for
+ * simplicity the bound is shared between the two functions.
  */
 #define MODP_B64_MAX_INPUT_LEN ((SIZE_MAX - 1) / 4 * 3)
 
 /**
  * Given a source string of length len, this returns the amount of
- * memory the destination string should have.
+ * memory the destination string should have, for modp_b64_encode_data and
+ * modp_b64_encode, respectively.
  *
  * remember, this is integer math
  * 3 bytes turn into 4 chars
- * ceiling[len / 3] * 4 + 1
+ * ceiling[len / 3] * 4
  *
- * +1 is for any extra null.
  *
- * WARNING: This expression will overflow if the A is above
+ * WARNING: These expressions will overflow if the A is above
  * MODP_B64_MAX_INPUT_LEN. The caller must check this bound first.
  */
-#define modp_b64_encode_len(A) ((A+2)/3 * 4 + 1)
+#define modp_b64_encode_data_len(A) ((A + 2) / 3 * 4)
+#define modp_b64_encode_len(A) (modp_b64_encode_data_len(A) + 1)
 
 /**
  * Given a base64 string of length len,

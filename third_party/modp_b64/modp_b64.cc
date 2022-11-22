@@ -49,7 +49,7 @@
 
 #define BADCHAR 0x01FFFFFF
 
-size_t modp_b64_encode(char* dest, const char* str, size_t len)
+size_t modp_b64_encode_data(char* dest, const char* str, size_t len)
 {
     size_t i = 0;
     uint8_t* p = (uint8_t*) dest;
@@ -85,8 +85,13 @@ size_t modp_b64_encode(char* dest, const char* str, size_t len)
         *p++ = CHARPAD;
     }
 
-    *p = '\0';
     return p - (uint8_t*)dest;
+}
+
+size_t modp_b64_encode(char* dest, const char* str, size_t len) {
+  size_t output_size = modp_b64_encode_data(dest, str, len);
+  dest[output_size] = '\0';
+  return output_size;
 }
 
 size_t do_decode_padding(const char* src, size_t len, ModpDecodePolicy policy) {

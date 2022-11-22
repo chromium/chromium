@@ -79,10 +79,10 @@ TEST(Base64Test, Overflow) {
   std::string output = "PREFIX";
   EXPECT_CHECK_DEATH(Base64EncodeAppend(large_span, &output));
 
-  // `modp_b64_encode_len` is a macro, so check `MODP_B64_MAX_INPUT_LEN` is
+  // `modp_b64_encode_data_len` is a macro, so check `MODP_B64_MAX_INPUT_LEN` is
   // correct be verifying the computation doesn't overflow.
   base::CheckedNumeric<size_t> max_len = MODP_B64_MAX_INPUT_LEN;
-  EXPECT_TRUE(modp_b64_encode_len(max_len).IsValid());
+  EXPECT_TRUE(modp_b64_encode_data_len(max_len).IsValid());
 }
 
 }  // namespace base
