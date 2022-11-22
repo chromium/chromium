@@ -1391,6 +1391,59 @@ TEST_F(AllowAllRequestsTest, GetBeforeRequestAction) {
   }
 }
 
+// Tests disable rules with simple blocking rules.
+TEST_F(RulesetMatcherTest, SetDisabledRuleIds) {
+  TestRule rule_1 = CreateGenericRule(kMinValidID);
+  rule_1.condition->url_filter = std::string("google.com");
+  GURL google_url("http://google.com");
+
+  TestRule rule_2 = CreateGenericRule(kMinValidID + 1);
+  rule_2.condition->url_filter = std::string("yahoo.com");
+  GURL yahoo_url("http://yahoo.com");
+
+  GURL example_url("http://example.com");
+
+  auto should_block_request = [](const RulesetMatcher& matcher,
+                                 const RequestParams& params) {
+    auto action = matcher.GetBeforeRequestAction(params);
+    return action.has_value() && action->IsBlockOrCollapse();
+  };
+
+  RequestParams params;
+  params.element_type = url_pattern_index::flat::ElementType_SUBDOCUMENT;
+  params.is_third_party = true;
+
+  std::unique_ptr<RulesetMatcher> matcher;
+  ASSERT_TRUE(CreateVerifiedMatcher({rule_1, rule_2}, CreateTemporarySource(),
+                                    &matcher));
+  ASSERT_TRUE(matcher);
+
+  params.url = &google_url;
+  EXPECT_TRUE(should_block_request(*matcher, params));
+
+  params.url = &yahoo_url;
+  EXPECT_TRUE(should_block_request(*matcher, params));
+
+  params.url = &example_url;
+  EXPECT_FALSE(should_block_request(*matcher, params));
+
+  EXPECT_THAT(matcher->GetDisabledRuleIdsForTesting(), testing::IsEmpty());
+
+  matcher->SetDisabledRuleIds({*rule_1.id});
+
+  EXPECT_THAT(matcher->GetDisabledRuleIdsForTesting(),
+              testing::ElementsAreArray({*rule_1.id}));
+
+  params.url = &google_url;
+  EXPECT_FALSE(should_block_request(*matcher, params));
+
+  params.url = &yahoo_url;
+  EXPECT_TRUE(should_block_request(*matcher, params));
+
+  params.url = &example_url;
+  EXPECT_FALSE(should_block_request(*matcher, params));
+}
+
 }  // namespace
 }  // namespace declarative_net_request
 }  // namespace extensions

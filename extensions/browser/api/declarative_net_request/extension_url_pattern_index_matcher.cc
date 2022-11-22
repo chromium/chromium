@@ -162,7 +162,8 @@ const flat_rule::UrlRule* ExtensionUrlPatternIndexMatcher::GetMatchingRule(
   return matchers_[index].FindMatch(
       *params.url, params.first_party_origin, params.element_type,
       flat_rule::ActivationType_NONE, params.method, params.is_third_party,
-      kDisableGenericRules, params.embedder_conditions_matcher, strategy);
+      kDisableGenericRules, params.embedder_conditions_matcher, strategy,
+      disabled_rule_ids_);
 }
 
 std::vector<const url_pattern_index::flat::UrlRule*>
@@ -180,7 +181,19 @@ ExtensionUrlPatternIndexMatcher::GetAllMatchingRules(
   return matchers_[index].FindAllMatches(
       *params.url, params.first_party_origin, params.element_type,
       flat_rule::ActivationType_NONE, params.method, params.is_third_party,
-      kDisableGenericRules, params.embedder_conditions_matcher);
+      kDisableGenericRules, params.embedder_conditions_matcher,
+      disabled_rule_ids_);
+}
+
+void ExtensionUrlPatternIndexMatcher::SetDisabledRuleIds(
+    base::flat_set<int> disabled_rule_ids) {
+  disabled_rule_ids_ = std::move(disabled_rule_ids);
+  disabled_rule_ids_.shrink_to_fit();
+}
+
+const base::flat_set<int>&
+ExtensionUrlPatternIndexMatcher::GetDisabledRuleIdsForTesting() const {
+  return disabled_rule_ids_;
 }
 
 }  // namespace declarative_net_request

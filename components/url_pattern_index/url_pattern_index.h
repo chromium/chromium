@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "components/url_pattern_index/closed_hash_map.h"
@@ -201,7 +202,8 @@ class UrlPatternIndexMatcher {
       bool is_third_party,
       bool disable_generic_rules,
       const EmbedderConditionsMatcher& embedder_conditions_matcher,
-      FindRuleStrategy strategy) const;
+      FindRuleStrategy strategy,
+      const base::flat_set<int>& disabled_rule_ids) const;
 
   // Helper function to work with flat::*Type(s). If the index contains one or
   // more UrlRules that match the request, returns one of them depending on
@@ -215,7 +217,8 @@ class UrlPatternIndexMatcher {
       bool is_third_party,
       bool disable_generic_rules,
       const EmbedderConditionsMatcher& embedder_conditions_matcher,
-      FindRuleStrategy strategy) const;
+      FindRuleStrategy strategy,
+      const base::flat_set<int>& disabled_rule_ids) const;
 
   // Same as FindMatch, except this function returns all UrlRules that match the
   // request for the index. If no UrlRules match, returns an empty vector.
@@ -226,7 +229,8 @@ class UrlPatternIndexMatcher {
       proto::ActivationType activation_type,
       bool is_third_party,
       bool disable_generic_rules,
-      const EmbedderConditionsMatcher& embedder_conditions_matcher) const;
+      const EmbedderConditionsMatcher& embedder_conditions_matcher,
+      const base::flat_set<int>& disabled_rule_ids) const;
 
   // Helper function to work with flat::*Type(s). Returns all UrlRules that
   // match the request for the index. If no UrlRules match, returns an empty
@@ -239,7 +243,8 @@ class UrlPatternIndexMatcher {
       flat::RequestMethod request_method,
       bool is_third_party,
       bool disable_generic_rules,
-      const EmbedderConditionsMatcher& embedder_conditions_matcher) const;
+      const EmbedderConditionsMatcher& embedder_conditions_matcher,
+      const base::flat_set<int>& disabled_rule_ids) const;
 
  private:
   // Must outlive this instance.

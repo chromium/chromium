@@ -101,5 +101,14 @@ RulesetMatcher::GetAllowlistedFrameActionForTesting(
       regex_matcher_.GetAllowlistedFrameActionForTesting(host));
 }
 
+void RulesetMatcher::SetDisabledRuleIds(base::flat_set<int> disabled_rule_ids) {
+  url_pattern_index_matcher_.SetDisabledRuleIds(std::move(disabled_rule_ids));
+}
+
+const base::flat_set<int>& RulesetMatcher::GetDisabledRuleIdsForTesting()
+    const {
+  return url_pattern_index_matcher_.GetDisabledRuleIdsForTesting();
+}
+
 }  // namespace declarative_net_request
 }  // namespace extensions

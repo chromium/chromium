@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "components/url_pattern_index/url_pattern_index.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher_base.h"
@@ -40,6 +41,11 @@ class ExtensionUrlPatternIndexMatcher final : public RulesetMatcherBase {
   bool IsExtraHeadersMatcher() const override;
   size_t GetRulesCount() const override;
 
+  // Sets the disabled rule ids so that the disabled rules are not matched.
+  void SetDisabledRuleIds(base::flat_set<int> disabled_rule_ids);
+
+  const base::flat_set<int>& GetDisabledRuleIdsForTesting() const;
+
  private:
   using UrlPatternIndexMatcher = url_pattern_index::UrlPatternIndexMatcher;
 
@@ -72,6 +78,10 @@ class ExtensionUrlPatternIndexMatcher final : public RulesetMatcherBase {
   const bool is_extra_headers_matcher_;
 
   const size_t rules_count_;
+
+  // Disabled rule ids. The ids are passed to the matching algorithm in the
+  // UrlPatternIndexMatcher so that the algorithm can skip the disabled rules.
+  base::flat_set<int> disabled_rule_ids_;
 };
 
 }  // namespace declarative_net_request

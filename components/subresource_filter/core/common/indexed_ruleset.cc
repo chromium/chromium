@@ -138,7 +138,8 @@ bool IndexedRulesetMatcher::ShouldDisableFilteringForDocument(
       document_url, parent_document_origin, proto::ELEMENT_TYPE_UNSPECIFIED,
       activation_type,
       FirstPartyOrigin::IsThirdParty(document_url, parent_document_origin),
-      false, EmbedderConditionsMatcher(), FindRuleStrategy::kAny);
+      false, EmbedderConditionsMatcher(), FindRuleStrategy::kAny,
+      {} /* disabled_rule_ids */);
 }
 
 LoadPolicy IndexedRulesetMatcher::GetLoadPolicyForResourceLoad(
@@ -167,11 +168,11 @@ const url_pattern_index::flat::UrlRule* IndexedRulesetMatcher::MatchedUrlRule(
 
   auto find_match =
       [&](const url_pattern_index::UrlPatternIndexMatcher& matcher) {
-        return matcher.FindMatch(url, first_party.origin(), element_type,
-                                 proto::ACTIVATION_TYPE_UNSPECIFIED,
-                                 is_third_party, disable_generic_rules,
-                                 embedder_conditions_matcher,
-                                 FindRuleStrategy::kAny);
+        return matcher.FindMatch(
+            url, first_party.origin(), element_type,
+            proto::ACTIVATION_TYPE_UNSPECIFIED, is_third_party,
+            disable_generic_rules, embedder_conditions_matcher,
+            FindRuleStrategy::kAny, {} /* disabled_rule_ids */);
       };
 
   // Always check the allowlist for subdocuments. For other forms of resources,
