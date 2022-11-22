@@ -12,7 +12,7 @@
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_model_storage.h"
-#include "components/reading_list/core/reading_list_store_delegate.h"
+#include "components/reading_list/core/reading_list_sync_bridge_delegate.h"
 
 namespace base {
 class Clock;
@@ -22,7 +22,7 @@ class PrefService;
 
 // Concrete implementation of a reading list model using in memory lists.
 class ReadingListModelImpl : public ReadingListModel,
-                             public ReadingListStoreDelegate {
+                             public ReadingListSyncBridgeDelegate {
  public:
   using ReadingListEntries = std::map<GURL, ReadingListEntry>;
 

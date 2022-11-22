@@ -14,7 +14,7 @@
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/reading_list/core/reading_list_model_impl.h"
 #import "components/reading_list/core/reading_list_pref_names.h"
-#import "components/reading_list/core/reading_list_store.h"
+#import "components/reading_list/core/reading_list_sync_bridge.h"
 #import "components/sync/base/report_unrecoverable_error.h"
 #import "components/sync/model/client_tag_based_model_type_processor.h"
 #import "components/sync/model/model_type_store_service.h"
@@ -71,8 +71,8 @@ std::unique_ptr<KeyedService> ReadingListModelFactory::BuildServiceInstanceFor(
           syncer::READING_LIST,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
                               ::GetChannel()));
-  auto store = std::make_unique<ReadingListStore>(std::move(store_factory),
-                                                  std::move(change_processor));
+  auto store = std::make_unique<ReadingListSyncBridge>(
+      std::move(store_factory), std::move(change_processor));
   std::unique_ptr<KeyedService> reading_list_model =
       std::make_unique<ReadingListModelImpl>(std::move(store),
                                              chrome_browser_state->GetPrefs(),

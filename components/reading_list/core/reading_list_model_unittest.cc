@@ -9,7 +9,7 @@
 #include "base/test/simple_test_clock.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/reading_list/core/reading_list_model_storage.h"
-#include "components/reading_list/core/reading_list_store_delegate.h"
+#include "components/reading_list/core/reading_list_sync_bridge_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -29,7 +29,7 @@ class TestReadingListStorage : public ReadingListModelStorage {
  public:
   TestReadingListStorage(TestReadingListStorageObserver* observer,
                          base::SimpleTestClock* clock)
-      : entries_(new ReadingListStoreDelegate::ReadingListEntries()),
+      : entries_(new ReadingListSyncBridgeDelegate::ReadingListEntries()),
         observer_(observer),
         clock_(clock) {}
 
@@ -76,7 +76,7 @@ class TestReadingListStorage : public ReadingListModelStorage {
   }
 
   void SetReadingListModel(ReadingListModel* model,
-                           ReadingListStoreDelegate* delegate,
+                           ReadingListSyncBridgeDelegate* delegate,
                            base::Clock* clock) override {
     delegate->StoreLoaded(std::move(entries_));
     clock_ = static_cast<base::SimpleTestClock*>(clock);
@@ -104,7 +104,7 @@ class TestReadingListStorage : public ReadingListModelStorage {
   }
 
  private:
-  std::unique_ptr<ReadingListStoreDelegate::ReadingListEntries> entries_;
+  std::unique_ptr<ReadingListSyncBridgeDelegate::ReadingListEntries> entries_;
   raw_ptr<TestReadingListStorageObserver> observer_;
   raw_ptr<base::SimpleTestClock> clock_;
 };

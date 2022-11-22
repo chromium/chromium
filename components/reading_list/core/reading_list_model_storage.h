@@ -10,7 +10,7 @@
 #include "components/reading_list/core/reading_list_entry.h"
 
 class ReadingListModel;
-class ReadingListStoreDelegate;
+class ReadingListSyncBridgeDelegate;
 
 namespace base {
 class Clock;
@@ -37,8 +37,10 @@ class ReadingListModelStorage {
   // This will trigger store initalization and load persistent entries.
   // Pass the |clock| from the |model| to ensure synchroization when loading
   // entries. Must be called no more than once.
+  // TODO(crbug.com/1386158): ReadingListSyncBridgeDelegate shouldn't belong in
+  // this interface.
   virtual void SetReadingListModel(ReadingListModel* model,
-                                   ReadingListStoreDelegate* delegate,
+                                   ReadingListSyncBridgeDelegate* delegate,
                                    base::Clock* clock) = 0;
 
   // Starts a transaction. All Save/Remove entry will be delayed until the

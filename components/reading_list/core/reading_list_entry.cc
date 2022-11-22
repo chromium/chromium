@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "components/reading_list/core/offline_url_utils.h"
 #include "components/reading_list/core/proto/reading_list.pb.h"
-#include "components/reading_list/core/reading_list_store.h"
+#include "components/reading_list/core/reading_list_sync_bridge.h"
 #include "components/sync/protocol/reading_list_specifics.pb.h"
 #include "net/base/backoff_entry_serializer.h"
 
@@ -568,8 +568,9 @@ void ReadingListEntry::MergeWithEntry(const ReadingListEntry& other) {
 #if !defined(NDEBUG)
   std::unique_ptr<sync_pb::ReadingListSpecifics> new_this_pb(
       AsReadingListSpecifics());
-  DCHECK(ReadingListStore::CompareEntriesForSync(*old_this_pb, *new_this_pb));
-  DCHECK(ReadingListStore::CompareEntriesForSync(*other_pb, *new_this_pb));
+  DCHECK(
+      ReadingListSyncBridge::CompareEntriesForSync(*old_this_pb, *new_this_pb));
+  DCHECK(ReadingListSyncBridge::CompareEntriesForSync(*other_pb, *new_this_pb));
 #endif
 }
 

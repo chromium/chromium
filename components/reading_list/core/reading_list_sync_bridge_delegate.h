@@ -2,22 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_READING_LIST_CORE_READING_LIST_STORE_DELEGATE_H_
-#define COMPONENTS_READING_LIST_CORE_READING_LIST_STORE_DELEGATE_H_
+#ifndef COMPONENTS_READING_LIST_CORE_READING_LIST_SYNC_BRIDGE_DELEGATE_H_
+#define COMPONENTS_READING_LIST_CORE_READING_LIST_SYNC_BRIDGE_DELEGATE_H_
 
 #include <map>
 
 class ReadingListEntry;
 
-// The delegate to handle callbacks from the ReadingListStore.
-class ReadingListStoreDelegate {
+// The delegate to handle callbacks from the ReadingListSyncBridge.
+class ReadingListSyncBridgeDelegate {
  public:
   using ReadingListEntries = std::map<GURL, ReadingListEntry>;
 
-  ReadingListStoreDelegate(const ReadingListStoreDelegate&) = delete;
-  ReadingListStoreDelegate& operator=(const ReadingListStoreDelegate&) = delete;
+  ReadingListSyncBridgeDelegate(const ReadingListSyncBridgeDelegate&) = delete;
+  ReadingListSyncBridgeDelegate& operator=(
+      const ReadingListSyncBridgeDelegate&) = delete;
 
-  // These three methods handle callbacks from a ReadingListStore.
+  // These three methods handle callbacks from a ReadingListSyncBridge.
   // This method is called when the local store is loaded. |entries| contains
   // the ReadingListEntry present on the device before sync starts.
   virtual void StoreLoaded(std::unique_ptr<ReadingListEntries> entries) = 0;
@@ -37,8 +38,8 @@ class ReadingListStoreDelegate {
   virtual void SyncRemoveEntry(const GURL& url) = 0;
 
  protected:
-  ReadingListStoreDelegate() {}
-  virtual ~ReadingListStoreDelegate() {}
+  ReadingListSyncBridgeDelegate() {}
+  virtual ~ReadingListSyncBridgeDelegate() {}
 };
 
-#endif  // COMPONENTS_READING_LIST_CORE_READING_LIST_STORE_DELEGATE_H_
+#endif  // COMPONENTS_READING_LIST_CORE_READING_LIST_SYNC_BRIDGE_DELEGATE_H_

@@ -18,9 +18,9 @@ source_set("core") {
     "reading_list_model_storage.h",
     "reading_list_pref_names.cc",
     "reading_list_pref_names.h",
-    "reading_list_store.cc",
-    "reading_list_store.h",
-    "reading_list_store_delegate.h",
+    "reading_list_sync_bridge.cc",
+    "reading_list_sync_bridge.h",
+    "reading_list_sync_bridge_delegate.h",
   ]
   deps = [
     "//base",
@@ -40,7 +40,7 @@ source_set("unit_tests") {
     "offline_url_utils_unittest.cc",
     "reading_list_entry_unittest.cc",
     "reading_list_model_unittest.cc",
-    "reading_list_store_unittest.cc",
+    "reading_list_sync_bridge_unittest.cc",
   ]
   deps = [
     ":core",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_READING_LIST_CORE_READING_LIST_STORE_H_
-#define COMPONENTS_READING_LIST_CORE_READING_LIST_STORE_H_
+#ifndef COMPONENTS_READING_LIST_CORE_READING_LIST_SYNC_BRIDGE_H_
+#define COMPONENTS_READING_LIST_CORE_READING_LIST_SYNC_BRIDGE_H_
 
 #include <memory>
 #include <string>
@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/reading_list/core/reading_list_model_storage.h"
-#include "components/reading_list/core/reading_list_store_delegate.h"
+#include "components/reading_list/core/reading_list_sync_bridge_delegate.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
@@ -25,23 +25,23 @@ class MutableDataBatch;
 class ReadingListModel;
 
 // A ReadingListModelStorage storing and syncing data in protobufs.
-class ReadingListStore : public ReadingListModelStorage,
-                         public syncer::ModelTypeSyncBridge {
+class ReadingListSyncBridge : public ReadingListModelStorage,
+                              public syncer::ModelTypeSyncBridge {
  public:
-  ReadingListStore(
+  ReadingListSyncBridge(
       syncer::OnceModelTypeStoreFactory create_store_callback,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
 
-  ReadingListStore(const ReadingListStore&) = delete;
-  ReadingListStore& operator=(const ReadingListStore&) = delete;
+  ReadingListSyncBridge(const ReadingListSyncBridge&) = delete;
+  ReadingListSyncBridge& operator=(const ReadingListSyncBridge&) = delete;
 
-  ~ReadingListStore() override;
+  ~ReadingListSyncBridge() override;
 
   std::unique_ptr<ScopedBatchUpdate> EnsureBatchCreated() override;
 
   // ReadingListModelStorage implementation
   void SetReadingListModel(ReadingListModel* model,
-                           ReadingListStoreDelegate* delegate,
+                           ReadingListSyncBridgeDelegate* delegate,
                            base::Clock* clock) override;
 
   void SaveEntry(const ReadingListEntry& entry) override;
@@ -141,7 +141,7 @@ class ReadingListStore : public ReadingListModelStorage,
 
   class ScopedBatchUpdate : public ReadingListModelStorage::ScopedBatchUpdate {
    public:
-    explicit ScopedBatchUpdate(ReadingListStore* store);
+    explicit ScopedBatchUpdate(ReadingListSyncBridge* store);
 
     ScopedBatchUpdate(const ScopedBatchUpdate&) = delete;
     ScopedBatchUpdate& operator=(const ScopedBatchUpdate&) = delete;
@@ -149,7 +149,7 @@ class ReadingListStore : public ReadingListModelStorage,
     ~ScopedBatchUpdate() override;
 
    private:
-    raw_ptr<ReadingListStore> store_;
+    raw_ptr<ReadingListSyncBridge> store_;
   };
 
  private:
@@ -168,7 +168,7 @@ class ReadingListStore : public ReadingListModelStorage,
 
   std::unique_ptr<syncer::ModelTypeStore> store_;
   raw_ptr<ReadingListModel> model_;
-  raw_ptr<ReadingListStoreDelegate> delegate_;
+  raw_ptr<ReadingListSyncBridgeDelegate> delegate_;
   syncer::OnceModelTypeStoreFactory create_store_callback_;
 
   int pending_transaction_count_;
@@ -178,7 +178,7 @@ class ReadingListStore : public ReadingListModelStorage,
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<ReadingListStore> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ReadingListSyncBridge> weak_ptr_factory_{this};
 };
 
-#endif  // COMPONENTS_READING_LIST_CORE_READING_LIST_STORE_H_
+#endif  // COMPONENTS_READING_LIST_CORE_READING_LIST_SYNC_BRIDGE_H_

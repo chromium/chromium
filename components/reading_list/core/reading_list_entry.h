@@ -158,14 +158,16 @@ class ReadingListEntry {
   // Merge |this| and |other| into this.
   // Local fields are kept from |this|.
   // Each field is merged individually keeping the highest value as defined by
-  // the |ReadingListStore.CompareEntriesForSync| function.
+  // the |ReadingListSyncBridge.CompareEntriesForSync| function.
   //
   // After calling |MergeLocalStateFrom|, the result must verify
-  // ReadingListStore.CompareEntriesForSync(old_this.AsReadingListSpecifics(),
-  //                                        new_this.AsReadingListSpecifics())
+  // ReadingListSyncBridge::CompareEntriesForSync(
+  //     old_this.AsReadingListSpecifics(),
+  //     new_this.AsReadingListSpecifics())
   // and
-  // ReadingListStore.CompareEntriesForSync(other.AsReadingListSpecifics(),
-  //                                        new_this.AsReadingListSpecifics()).
+  // ReadingListSyncBridge::CompareEntriesForSync(
+  //     other.AsReadingListSpecifics(),
+  //     new_this.AsReadingListSpecifics()).
   void MergeWithEntry(const ReadingListEntry& other);
 
   ReadingListEntry& operator=(ReadingListEntry&& other);

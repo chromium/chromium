@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/reading_list/core/reading_list_store.h"
+#include "components/reading_list/core/reading_list_sync_bridge.h"
 
 #include <set>
 #include <utility>
@@ -19,46 +19,48 @@
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 
-ReadingListStore::ReadingListStore(
+ReadingListSyncBridge::ReadingListSyncBridge(
     syncer::OnceModelTypeStoreFactory create_store_callback,
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
     : ModelTypeSyncBridge(std::move(change_processor)),
       create_store_callback_(std::move(create_store_callback)),
       pending_transaction_count_(0) {}
 
-ReadingListStore::~ReadingListStore() {
+ReadingListSyncBridge::~ReadingListSyncBridge() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(0, pending_transaction_count_);
 }
 
-void ReadingListStore::SetReadingListModel(ReadingListModel* model,
-                                           ReadingListStoreDelegate* delegate,
-                                           base::Clock* clock) {
+void ReadingListSyncBridge::SetReadingListModel(
+    ReadingListModel* model,
+    ReadingListSyncBridgeDelegate* delegate,
+    base::Clock* clock) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   model_ = model;
   delegate_ = delegate;
   clock_ = clock;
   std::move(create_store_callback_)
       .Run(syncer::READING_LIST,
-           base::BindOnce(&ReadingListStore::OnStoreCreated,
+           base::BindOnce(&ReadingListSyncBridge::OnStoreCreated,
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
 std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate>
-ReadingListStore::EnsureBatchCreated() {
+ReadingListSyncBridge::EnsureBatchCreated() {
   return std::make_unique<ScopedBatchUpdate>(this);
 }
 
-ReadingListStore::ScopedBatchUpdate::ScopedBatchUpdate(ReadingListStore* store)
+ReadingListSyncBridge::ScopedBatchUpdate::ScopedBatchUpdate(
+    ReadingListSyncBridge* store)
     : store_(store) {
   store_->BeginTransaction();
 }
 
-ReadingListStore::ScopedBatchUpdate::~ScopedBatchUpdate() {
+ReadingListSyncBridge::ScopedBatchUpdate::~ScopedBatchUpdate() {
   store_->CommitTransaction();
 }
 
-void ReadingListStore::BeginTransaction() {
+void ReadingListSyncBridge::BeginTransaction() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pending_transaction_count_++;
   if (pending_transaction_count_ == 1) {
@@ -66,18 +68,19 @@ void ReadingListStore::BeginTransaction() {
   }
 }
 
-void ReadingListStore::CommitTransaction() {
+void ReadingListSyncBridge::CommitTransaction() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pending_transaction_count_--;
   if (pending_transaction_count_ == 0) {
-    store_->CommitWriteBatch(std::move(batch_),
-                             base::BindOnce(&ReadingListStore::OnDatabaseSave,
-                                            weak_ptr_factory_.GetWeakPtr()));
+    store_->CommitWriteBatch(
+        std::move(batch_),
+        base::BindOnce(&ReadingListSyncBridge::OnDatabaseSave,
+                       weak_ptr_factory_.GetWeakPtr()));
     batch_.reset();
   }
 }
 
-void ReadingListStore::SaveEntry(const ReadingListEntry& entry) {
+void ReadingListSyncBridge::SaveEntry(const ReadingListEntry& entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto token = EnsureBatchCreated();
 
@@ -100,7 +103,7 @@ void ReadingListStore::SaveEntry(const ReadingListEntry& entry) {
                           batch_->GetMetadataChangeList());
 }
 
-void ReadingListStore::RemoveEntry(const ReadingListEntry& entry) {
+void ReadingListSyncBridge::RemoveEntry(const ReadingListEntry& entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto token = EnsureBatchCreated();
 
@@ -112,11 +115,11 @@ void ReadingListStore::RemoveEntry(const ReadingListEntry& entry) {
                              batch_->GetMetadataChangeList());
 }
 
-syncer::ModelTypeSyncBridge* ReadingListStore::GetModelTypeSyncBridge() {
+syncer::ModelTypeSyncBridge* ReadingListSyncBridge::GetModelTypeSyncBridge() {
   return this;
 }
 
-void ReadingListStore::OnDatabaseLoad(
+void ReadingListSyncBridge::OnDatabaseLoad(
     const absl::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore::RecordList> entries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -125,7 +128,7 @@ void ReadingListStore::OnDatabaseLoad(
     return;
   }
   auto loaded_entries =
-      std::make_unique<ReadingListStoreDelegate::ReadingListEntries>();
+      std::make_unique<ReadingListSyncBridgeDelegate::ReadingListEntries>();
 
   for (const syncer::ModelTypeStore::Record& r : *entries) {
     reading_list::ReadingListLocal proto;
@@ -147,11 +150,12 @@ void ReadingListStore::OnDatabaseLoad(
 
   delegate_->StoreLoaded(std::move(loaded_entries));
 
-  store_->ReadAllMetadata(base::BindOnce(&ReadingListStore::OnReadAllMetadata,
-                                         weak_ptr_factory_.GetWeakPtr()));
+  store_->ReadAllMetadata(
+      base::BindOnce(&ReadingListSyncBridge::OnReadAllMetadata,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ReadingListStore::OnReadAllMetadata(
+void ReadingListSyncBridge::OnReadAllMetadata(
     const absl::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -162,12 +166,12 @@ void ReadingListStore::OnReadAllMetadata(
   }
 }
 
-void ReadingListStore::OnDatabaseSave(
+void ReadingListSyncBridge::OnDatabaseSave(
     const absl::optional<syncer::ModelError>& error) {
   return;
 }
 
-void ReadingListStore::OnStoreCreated(
+void ReadingListSyncBridge::OnStoreCreated(
     const absl::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore> store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -176,7 +180,7 @@ void ReadingListStore::OnStoreCreated(
     return;
   }
   store_ = std::move(store);
-  store_->ReadAllData(base::BindOnce(&ReadingListStore::OnDatabaseLoad,
+  store_->ReadAllData(base::BindOnce(&ReadingListSyncBridge::OnDatabaseLoad,
                                      weak_ptr_factory_.GetWeakPtr()));
   return;
 }
@@ -184,7 +188,7 @@ void ReadingListStore::OnStoreCreated(
 // Creates an object used to communicate changes in the sync metadata to the
 // model type store.
 std::unique_ptr<syncer::MetadataChangeList>
-ReadingListStore::CreateMetadataChangeList() {
+ReadingListSyncBridge::CreateMetadataChangeList() {
   return syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
@@ -200,7 +204,7 @@ ReadingListStore::CreateMetadataChangeList() {
 // Durable storage writes, if not able to combine all change atomically, should
 // save the metadata after the data changes, so that this merge will be re-
 // driven by sync if is not completely saved during the current run.
-absl::optional<syncer::ModelError> ReadingListStore::MergeSyncData(
+absl::optional<syncer::ModelError> ReadingListSyncBridge::MergeSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -289,7 +293,7 @@ absl::optional<syncer::ModelError> ReadingListStore::MergeSyncData(
 // |metadata_change_list| in case when some of the data changes are filtered
 // out, or even be empty in case when a commit confirmation is processed and
 // only the metadata needs to persisted.
-absl::optional<syncer::ModelError> ReadingListStore::ApplySyncChanges(
+absl::optional<syncer::ModelError> ReadingListSyncBridge::ApplySyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -345,8 +349,8 @@ absl::optional<syncer::ModelError> ReadingListStore::ApplySyncChanges(
   return {};
 }
 
-void ReadingListStore::GetData(StorageKeyList storage_keys,
-                               DataCallback callback) {
+void ReadingListSyncBridge::GetData(StorageKeyList storage_keys,
+                                    DataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const std::string& url_string : storage_keys) {
@@ -359,7 +363,7 @@ void ReadingListStore::GetData(StorageKeyList storage_keys,
   std::move(callback).Run(std::move(batch));
 }
 
-void ReadingListStore::GetAllDataForDebugging(DataCallback callback) {
+void ReadingListSyncBridge::GetAllDataForDebugging(DataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto batch = std::make_unique<syncer::MutableDataBatch>();
 
@@ -371,8 +375,8 @@ void ReadingListStore::GetAllDataForDebugging(DataCallback callback) {
   std::move(callback).Run(std::move(batch));
 }
 
-void ReadingListStore::AddEntryToBatch(syncer::MutableDataBatch* batch,
-                                       const ReadingListEntry& entry) {
+void ReadingListSyncBridge::AddEntryToBatch(syncer::MutableDataBatch* batch,
+                                            const ReadingListEntry& entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::unique_ptr<sync_pb::ReadingListSpecifics> entry_pb =
       entry.AsReadingListSpecifics();
@@ -391,7 +395,7 @@ void ReadingListStore::AddEntryToBatch(syncer::MutableDataBatch* batch,
 // it is also used to verify the hash of remote data. If a data type was never
 // launched pre-USS, then method does not need to be different from
 // GetStorageKey().
-std::string ReadingListStore::GetClientTag(
+std::string ReadingListSyncBridge::GetClientTag(
     const syncer::EntityData& entity_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetStorageKey(entity_data);
@@ -403,13 +407,13 @@ std::string ReadingListStore::GetClientTag(
 // Theoretically this function doesn't need to be stable across multiple calls
 // on the same or different clients, but to keep things simple, it probably
 // should be.
-std::string ReadingListStore::GetStorageKey(
+std::string ReadingListSyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return entity_data.specifics.reading_list().entry_id();
 }
 
-bool ReadingListStore::CompareEntriesForSync(
+bool ReadingListSyncBridge::CompareEntriesForSync(
     const sync_pb::ReadingListSpecifics& lhs,
     const sync_pb::ReadingListSpecifics& rhs) {
   DCHECK(lhs.entry_id() == rhs.entry_id());

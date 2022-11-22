@@ -22,7 +22,7 @@
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/reading_list/core/reading_list_pref_names.h"
-#include "components/reading_list/core/reading_list_store.h"
+#include "components/reading_list/core/reading_list_sync_bridge.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/model_type_store_service.h"
@@ -41,11 +41,12 @@ std::unique_ptr<KeyedService> BuildReadingListModel(
           syncer::READING_LIST,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
                               chrome::GetChannel()));
-  std::unique_ptr<ReadingListStore> store = std::make_unique<ReadingListStore>(
+  auto bridge = std::make_unique<ReadingListSyncBridge>(
       std::move(store_factory), std::move(change_processor));
 
   return std::make_unique<ReadingListModelImpl>(
-      std::move(store), profile->GetPrefs(), base::DefaultClock::GetInstance());
+      std::move(bridge), profile->GetPrefs(),
+      base::DefaultClock::GetInstance());
 }
 
 }  // namespace
