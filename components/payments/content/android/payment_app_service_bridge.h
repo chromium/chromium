@@ -16,10 +16,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace autofill {
-class AutofillProfile;
-}  // namespace autofill
-
 namespace content {
 class RenderFrameHost;
 class WebContents;
@@ -83,8 +79,6 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
   scoped_refptr<PaymentManifestWebDataService>
   GetPaymentManifestWebDataService() const override;
   bool IsOffTheRecord() const override;
-  const std::vector<autofill::AutofillProfile*>& GetBillingProfiles() override;
-  bool IsRequestedAutofillDataAvailable() override;
   base::WeakPtr<ContentPaymentRequestDelegate> GetPaymentRequestDelegate()
       const override;
   void ShowProcessingSpinner() override;
@@ -94,7 +88,6 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
   void OnPaymentAppCreationError(
       const std::string& error_message,
       AppCreationFailureReason error_reason) override;
-  bool SkipCreatingNativePaymentApps() const override;
   void OnDoneCreatingPaymentApps() override;
   void SetCanMakePaymentEvenWithoutApps() override;
   base::WeakPtr<CSPChecker> GetCSPChecker() override;
@@ -129,7 +122,6 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
   scoped_refptr<PaymentManifestWebDataService>
       payment_manifest_web_data_service_;
   bool is_off_the_record_;
-  std::vector<autofill::AutofillProfile*> dummy_profiles_;
   base::WeakPtr<CSPChecker> csp_checker_;
 
   CanMakePaymentCalculatedCallback can_make_payment_calculated_callback_;

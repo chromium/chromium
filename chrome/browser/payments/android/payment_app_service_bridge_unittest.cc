@@ -124,7 +124,6 @@ TEST_P(PaymentAppServiceBridgeUnitTest, Smoke) {
                               base::Unretained(&mock_callback)))
           ->GetWeakPtrForTest();
 
-  EXPECT_TRUE(bridge->SkipCreatingNativePaymentApps());
   EXPECT_EQ(web_contents_, bridge->GetWebContents());
   EXPECT_EQ(top_origin_, bridge->GetTopOrigin());
   EXPECT_EQ(frame_origin_, bridge->GetFrameOrigin());

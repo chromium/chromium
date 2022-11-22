@@ -53,16 +53,12 @@ class MockPaymentAppFactoryDelegate : public PaymentAppFactory::Delegate {
   }
   MOCK_CONST_METHOD0(GetTwaPackageName, std::string());
   MOCK_METHOD0(ShowProcessingSpinner, void());
-  MOCK_METHOD0(GetBillingProfiles,
-               const std::vector<autofill::AutofillProfile*>&());
-  MOCK_METHOD0(IsRequestedAutofillDataAvailable, bool());
   MOCK_CONST_METHOD0(GetPaymentRequestDelegate,
                      base::WeakPtr<ContentPaymentRequestDelegate>());
   MOCK_METHOD1(OnPaymentAppCreated, void(std::unique_ptr<PaymentApp> app));
   MOCK_METHOD2(OnPaymentAppCreationError,
                void(const std::string& error_message,
                     AppCreationFailureReason reason));
-  MOCK_CONST_METHOD0(SkipCreatingNativePaymentApps, bool());
   MOCK_METHOD0(OnDoneCreatingPaymentApps, void());
   MOCK_METHOD0(SetCanMakePaymentEvenWithoutApps, void());
   MOCK_METHOD0(GetCSPChecker, base::WeakPtr<CSPChecker>());

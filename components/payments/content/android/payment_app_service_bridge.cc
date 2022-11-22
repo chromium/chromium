@@ -279,19 +279,6 @@ bool PaymentAppServiceBridge::IsOffTheRecord() const {
   return is_off_the_record_;
 }
 
-const std::vector<autofill::AutofillProfile*>&
-PaymentAppServiceBridge::GetBillingProfiles() {
-  // PaymentAppService flow should have short-circuited before this point.
-  NOTREACHED();
-  return dummy_profiles_;
-}
-
-bool PaymentAppServiceBridge::IsRequestedAutofillDataAvailable() {
-  // PaymentAppService flow should have short-circuited before this point.
-  NOTREACHED();
-  return false;
-}
-
 base::WeakPtr<ContentPaymentRequestDelegate>
 PaymentAppServiceBridge::GetPaymentRequestDelegate() const {
   // PaymentAppService flow should have short-circuited before this point.
@@ -317,10 +304,6 @@ void PaymentAppServiceBridge::OnPaymentAppCreated(
     std::move(can_make_payment_calculated_callback_).Run(true);
 
   payment_app_created_callback_.Run(std::move(app));
-}
-
-bool PaymentAppServiceBridge::SkipCreatingNativePaymentApps() const {
-  return true;
 }
 
 void PaymentAppServiceBridge::OnPaymentAppCreationError(

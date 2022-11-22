@@ -16,10 +16,6 @@
 
 class GURL;
 
-namespace autofill {
-class AutofillProfile;
-}  // namespace autofill
-
 namespace content {
 class RenderFrameHost;
 class WebContents;
@@ -93,10 +89,6 @@ class PaymentAppFactory {
     // notification.
     virtual void ShowProcessingSpinner() = 0;
 
-    // These parameters are only used to create the autofill payment app.
-    virtual const std::vector<autofill::AutofillProfile*>&
-    GetBillingProfiles() = 0;
-    virtual bool IsRequestedAutofillDataAvailable() = 0;
     virtual base::WeakPtr<ContentPaymentRequestDelegate>
     GetPaymentRequestDelegate() const = 0;
 
@@ -109,12 +101,6 @@ class PaymentAppFactory {
         const std::string& error_message,
         AppCreationFailureReason failure_reason =
             AppCreationFailureReason::UNKNOWN) = 0;
-
-    // Whether the factory should early exit before creating platform-specific
-    // PaymentApp objects. This is used by PaymentAppServiceBridge to skip
-    // creating native AutofillPaymentApp, which currently cannot be used over
-    // JNI.
-    virtual bool SkipCreatingNativePaymentApps() const = 0;
 
     // Called when all apps of this factory have been created.
     virtual void OnDoneCreatingPaymentApps() = 0;

@@ -30,7 +30,6 @@
 namespace autofill {
 class AddressNormalizer;
 class AutofillProfile;
-class CreditCard;
 class PersonalDataManager;
 class RegionDataLoader;
 }  // namespace autofill
@@ -138,15 +137,12 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
       const override;
   scoped_refptr<PaymentManifestWebDataService>
   GetPaymentManifestWebDataService() const override;
-  const std::vector<autofill::AutofillProfile*>& GetBillingProfiles() override;
-  bool IsRequestedAutofillDataAvailable() override;
   bool IsOffTheRecord() const override;
   void OnPaymentAppCreated(std::unique_ptr<PaymentApp> app) override;
   void OnPaymentAppCreationError(
       const std::string& error_message,
       AppCreationFailureReason reason =
           AppCreationFailureReason::UNKNOWN) override;
-  bool SkipCreatingNativePaymentApps() const override;
   void OnDoneCreatingPaymentApps() override;
   void SetCanMakePaymentEvenWithoutApps() override;
   base::WeakPtr<CSPChecker> GetCSPChecker() override;
@@ -232,11 +228,6 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   const std::vector<std::unique_ptr<PaymentApp>>& available_apps() {
     return available_apps_;
   }
-
-  // Creates and adds an AutofillPaymentApp, which makes a copy of |card|.
-  // |selected| indicates if the newly-created app should be selected, after
-  // which observers will be notified.
-  void AddAutofillPaymentApp(bool selected, const autofill::CreditCard& card);
 
   // Creates and adds an AutofillProfile as a shipping profile, which makes a
   // copy of |profile|. |selected| indicates if the newly-created shipping
@@ -355,11 +346,6 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   // complete, valid, and selected.
   bool is_ready_to_pay_ = false;
 
-  // True when the requested autofill data (shipping address and/or contact
-  // information) is complete and valid, even if not selected. This variable is
-  // not affected by payment apps.
-  bool is_requested_autofill_data_available_ = true;
-
   // Whether getting all available apps is finished.
   bool get_all_apps_finished_ = false;
 
@@ -413,7 +399,6 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   std::vector<autofill::AutofillProfile*> shipping_profiles_;
   std::vector<autofill::AutofillProfile*> contact_profiles_;
 
-  // Credit cards are directly owned by the apps in this list.
   std::vector<std::unique_ptr<PaymentApp>> available_apps_;
 
   base::WeakPtr<ContentPaymentRequestDelegate> payment_request_delegate_;

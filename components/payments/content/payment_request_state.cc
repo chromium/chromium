@@ -19,7 +19,6 @@
 #include "components/autofill/core/browser/address_normalizer.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/validation.h"
@@ -155,15 +154,6 @@ PaymentRequestState::GetPaymentManifestWebDataService() const {
   return GetPaymentRequestDelegate()->GetPaymentManifestWebDataService();
 }
 
-const std::vector<autofill::AutofillProfile*>&
-PaymentRequestState::GetBillingProfiles() {
-  return shipping_profiles_;
-}
-
-bool PaymentRequestState::IsRequestedAutofillDataAvailable() {
-  return is_requested_autofill_data_available_;
-}
-
 bool PaymentRequestState::IsOffTheRecord() const {
   return GetPaymentRequestDelegate()->IsOffTheRecord();
 }
@@ -187,10 +177,6 @@ void PaymentRequestState::OnPaymentAppCreationError(
     AppCreationFailureReason reason) {
   get_all_payment_apps_error_ = error_message;
   get_all_payment_apps_error_reason_ = reason;
-}
-
-bool PaymentRequestState::SkipCreatingNativePaymentApps() const {
-  return false;
 }
 
 void PaymentRequestState::OnDoneCreatingPaymentApps() {
@@ -433,13 +419,6 @@ void PaymentRequestState::SetAvailablePaymentAppForRetry() {
   is_retry_called_ = true;
 }
 
-void PaymentRequestState::AddAutofillPaymentApp(
-    bool selected,
-    const autofill::CreditCard& card) {
-  // TODO(https://crbug.com/1209835): Remove this method.
-  return;
-}
-
 void PaymentRequestState::AddAutofillShippingProfile(
     bool selected,
     const autofill::AutofillProfile& profile) {
@@ -628,7 +607,6 @@ void PaymentRequestState::PopulateProfileCache() {
         contact_profiles_.empty()
             ? false
             : profile_comparator()->IsContactInfoComplete(contact_profiles_[0]);
-    is_requested_autofill_data_available_ &= has_complete_contact;
     if (journey_logger_) {
       journey_logger_->SetNumberOfSuggestionsShown(
           JourneyLogger::Section::SECTION_CONTACT_INFO,
@@ -640,8 +618,6 @@ void PaymentRequestState::PopulateProfileCache() {
         shipping_profiles_.empty()
             ? false
             : profile_comparator()->IsShippingComplete(shipping_profiles_[0]);
-    is_requested_autofill_data_available_ &= has_complete_shipping;
-
     if (journey_logger_) {
       journey_logger_->SetNumberOfSuggestionsShown(
           JourneyLogger::Section::SECTION_SHIPPING_ADDRESS,
