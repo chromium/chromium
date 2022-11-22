@@ -427,8 +427,10 @@ void XDGToplevelWrapperImpl::RequestWindowBounds(const gfx::Rect& bounds) {
 
   // `entered_output` can be null in unit tests, where it doesn't wait for
   // output events.
-  if (!entered_output)
+  if (!entered_output) {
+    DLOG(WARNING) << "Entered output is null, cannot request window bounds.";
     return;
+  }
 
   if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
                             ZAURA_TOPLEVEL_SET_WINDOW_BOUNDS_SINCE_VERSION) {
